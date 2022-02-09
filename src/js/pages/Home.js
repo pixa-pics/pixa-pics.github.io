@@ -193,7 +193,7 @@ class Home extends React.Component {
                             <span><img src={get_svg_in_b64(<AngelEmojiSvg />)} className="emoji"/> everywhere.</span>
                         </h1>
                         <h2 className={classes.subtitle}>
-                            At the horizon of <span className={classes.blue}>matricidal</span> and <span className={classes.blue}>vectorial</span>, <br/>
+                            At the horizon of <span className={classes.blue}>matrix</span> and <span className={classes.blue}>vectorial</span>, <br/>
                             discover an unprecedented industrial and educative purpose.<br />
                             Made with <img className={"emoji pulse"} src={get_svg_in_b64(<HearthEmojiSvg />)}/>, our software is designed for everyone and forever open-source. <img src={get_svg_in_b64(<EarthEmojiSvg />)} className={"emoji"}/>.<br />
                         </h2>
