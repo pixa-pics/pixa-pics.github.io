@@ -1,0 +1,14 @@
+.DS_Store
+node_modules/
+libs/
+/dist/
+/src/js/twemoji/react/
+npm-debug.log*
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+package-lock.json

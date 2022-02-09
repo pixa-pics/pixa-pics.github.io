@@ -1,0 +1,36 @@
+{
+  "manifest_version": 2,
+  "version": "65",
+  "name": "WALLET.CRYPTO.RED",
+  "start_url": "/",
+  "scope": "/",
+  "serviceworker": {
+    "src": "/service-worker.js",
+    "scope": "/"
+  },
+  "short_name": "W.C.R.",
+  "description": "Fast and very simple cryptocurrency wallet. Invest in various cryptocurrencies anonymously now.",
+  "display": "standalone",
+  "theme_color": "#060f23",
+  "background_color": "#ffffff",
+  "browser_action": {
+    "default_icon": "/src/images/logo-transparent.png",
+    "default_popup": "index.html"
+  },
+  "icons": [
+    {
+      "src": "/src/images/manifest/icon-white.png",
+      "sizes": "2048x2048",
+      "type": "image/png"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "WALLET.CRYPTO.RED",
+      "short_name": "W.C.R.",
+      "description": "Fast and very simple cryptocurrency wallet. Invest in various cryptocurrencies anonymously now.",
+      "url": "/",
+      "icons": [{ "src": "/src/images/logo-transparent.png", "sizes": "640x640" }]
+    }
+  ]
+}
