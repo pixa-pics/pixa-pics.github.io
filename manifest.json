@@ -1,15 +1,15 @@
 {
   "manifest_version": 2,
-  "version": "65",
-  "name": "WALLET.CRYPTO.RED",
+  "version": "1",
+  "name": "Pixa Pics",
   "start_url": "/",
   "scope": "/",
   "serviceworker": {
     "src": "/service-worker.js",
     "scope": "/"
   },
-  "short_name": "W.C.R.",
-  "description": "Fast and very simple cryptocurrency wallet. Invest in various cryptocurrencies anonymously now.",
+  "short_name": "Pixa.",
+  "description": "Pixel art editor. Make potential (un)limited.",
   "display": "standalone",
   "theme_color": "#060f23",
   "background_color": "#ffffff",
@@ -26,9 +26,9 @@
   ],
   "shortcuts": [
     {
-      "name": "WALLET.CRYPTO.RED",
-      "short_name": "W.C.R.",
-      "description": "Fast and very simple cryptocurrency wallet. Invest in various cryptocurrencies anonymously now.",
+      "name": "Pixa Pics",
+      "short_name": "Pixa.",
+      "description": "Pixel art editor. Make potential (un)limited.",
       "url": "/",
       "icons": [{ "src": "/src/images/logo-transparent.png", "sizes": "640x640" }]
     }

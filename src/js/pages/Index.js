@@ -1,10 +1,6 @@
 import React from "react";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import { withStyles } from "@material-ui/core/styles";
-
-import { t } from "../utils/t";
-
-import { AutoRotatingCarousel, Slide } from "material-auto-rotating-carousel";
 import Snackbar from "@material-ui/core/Snackbar";
 import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
@@ -461,27 +457,6 @@ class Index extends React.Component {
                         onClose={this._close_snackbar}
                     />
                     <div>
-                        <AutoRotatingCarousel
-                            label={t( "pages.index.carousel.button_label")}
-                            onClose={this._close_carousel}
-                            onStart={this._accept_close_carousel}
-                            mobile={_width <= 960}
-                            open={_onboarding_enabled && !_onboarding_showed_once_in_session}
-                            autoplay={_onboarding_autoplay_enabled}
-                            interval={6000}
-                        >
-                            {t( "pages.index.carousel.slides").map((slide, index) =>
-                                <Slide
-                                    key={index}
-                                    onClick={this._stop_carousel_autoplay}
-                                    media={<img className={classes.carouselImage} src={slide.img} />}
-                                    mediaBackgroundStyle={{ backgroundColor: "#fff" }}
-                                    style={{ backgroundColor: "#060f23" }}
-                                    title={slide.title}
-                                    subtitle={slide.subtitle}
-                                />
-                            )}
-                        </AutoRotatingCarousel>
                     </div>
                     <AppToolbar
                         loaded_progress_percent={_loaded_progress_percent}

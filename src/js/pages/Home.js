@@ -35,7 +35,7 @@ const styles = theme => ({
         width: "100%",
         height: "100%",
         overflow: "hidden",
-        backgroundImage: "radial-gradient(ellipse farthest-corner, #d05e5e, #ffffff00 66%), url(/src/images/designer.svg)",
+        backgroundImage: "radial-gradient(ellipse farthest-corner, #ffffff, #ffffff00 66%), url(/src/images/designer.svg)",
         position: "fixed",
         backgroundSize: "min(75vh, 75vw)",
         backgroundPosition: "min(75vh, 75vw) 0%",
@@ -164,21 +164,12 @@ class Home extends React.Component {
         this.setState({_is_speed_dial_open: true});
     };
 
-    _send_feedback = () => {
-
-        window.open("https://github.com/crypto-red/crypto-red.github.io/discussions/categories/feedback");
-    };
-
     _handle_speed_dial_action = (event, action) => {
 
         switch (action) {
 
             case "share":
                 this._handle_share_dialog_open();
-                break;
-
-            case "feedback":
-                this._send_feedback();
                 break;
         }
     };
