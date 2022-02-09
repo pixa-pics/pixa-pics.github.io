@@ -4,7 +4,7 @@
 
 PIXA.pics - Pixel art editor.
 Make potential (un)limited.
-At the horizon of matricidal and vectorial, discover an unprecedented industrial and educative purpose. Our software is for everyone and forever open-source.
+At the horizon of matrix and vectorial, discover an unprecedented industrial and educative purpose. Our software is for everyone and forever open-source.
 
 ![Editing of a movie image](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/Screenshot%20from%202022-02-09%2016-30-06.png)
 
