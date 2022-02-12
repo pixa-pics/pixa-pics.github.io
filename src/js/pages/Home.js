@@ -188,7 +188,7 @@ class Home extends React.Component {
                 <div className={classes.backgroundImage}>
                     <div className={classes.headerContainer}>
                         <h1 className={classes.title}>
-                            <span><span className={classes.blue}>PIXA.PICS</span> - Pixel art editor.</span><br />
+                            <span><span className={classes.blue}>PIXA.PICS</span> - to pixel art, then draw.</span><br />
                             <span>Make potential (un)limited</span><br />
                             <span><img src={get_svg_in_b64(<AngelEmojiSvg />)} className="emoji"/> everywhere.</span>
                         </h1>
