@@ -7,7 +7,7 @@ At the horizon of matrix and vectorial, discover an unprecedented industrial and
 
 ![Image of the homescreen, decorated](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/og-image-logo.jpg)
 
-![Editing of a movie image with pixa pics](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/Screenshot%20from%202022-02-09%2016-30-06.png)
+![Image of the homescreen, decorated](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/og-image-logo-2.jpg)
 
 # Computer’s art, Crypto, and Surveillance.
 
