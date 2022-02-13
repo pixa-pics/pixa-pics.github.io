@@ -6,4 +6,4 @@ At the horizon of matrix and vectorial, discover an unprecedented industrial and
 
 ![Editing of a movie image](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/Screenshot%20from%202022-02-09%2016-30-06.png)
 
-[Download Whitepaper](https://github.com/pixa-pics/pixa-pics.github.io/raw/main/src/files/Computer%E2%80%99s%20art%2C%20Crypto%2C%20and%20Surveillance.pdf)
+[Computer’s art, Crypto, and Surveillance.pdf](https://github.com/pixa-pics/pixa-pics.github.io/raw/main/src/files/Computer%E2%80%99s%20art%2C%20Crypto%2C%20and%20Surveillance.pdf)
