@@ -6,12 +6,4 @@ At the horizon of matrix and vectorial, discover an unprecedented industrial and
 
 ![Editing of a movie image](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/Screenshot%20from%202022-02-09%2016-30-06.png)
 
-
-At https://pixa.pics and https://wallet.crypto.red/pixel too, our image editor stands trough:
-
-* A smart import with fancy resizing and color reduction algorithms (Thought and developed exclusively for it)
-* A powerful layer systems
-* 16 Painting tools
-* 23 Selection tools
-* 12 Effects (color tuning)
-* 24 Filters (color correction)
+[Download Whitepaper](https://github.com/pixa-pics/pixa-pics.github.io/raw/main/src/files/Computer%E2%80%99s%20art%2C%20Crypto%2C%20and%20Surveillance.pdf)
