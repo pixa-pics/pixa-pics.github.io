@@ -11,7 +11,9 @@ At the horizon of matrix and vectorial, discover an unprecedented industrial and
 
 # Features of https://pixa.pics/ 
 
-LOOK: [Documentation](https://github.com/pixa-pics/pixa-pics.github.io/)
+PixaPics benefit a algorithm converting in any of your photo imported from thaousands of color to only a few using a blazing new algorithm which is very costly for any modern CPUs yet it doesn't take more than 15sec in average for it to be done. The powerful selections tools and layer systems constitute a real advantage to manipulate with ease some portion of your pixel art, and while drawing tools doesn't stop to pencil filters and effects will also be an ally for modifying the arts you can create with it.
+
+LOOK: [Documentation](https://github.com/pixa-pics/pixa-pics.github.io/tree/main/doc)
 
 # Computer’s art, Crypto, and Surveillance.
 
