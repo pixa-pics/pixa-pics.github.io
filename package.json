@@ -35,6 +35,7 @@
     "regenerator-runtime": "^0.13.9",
     "sanitize-html": "~2.6.1",
     "svg64": "^1.1.0",
+    "svgo": "~2.8.0",
     "workerpool": "^6.1.5"
   },
   "devDependencies": {

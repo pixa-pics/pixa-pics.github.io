@@ -343,6 +343,15 @@ class PixelToolboxSwipeableViews extends React.Component {
         }
     };
 
+    _download_svg = () => {
+
+        console.log("hello")
+        if(this.props.on_download_svg) {
+
+            this.props.on_download_svg();
+        }
+    };
+
     _less_colors_stepped = (increase = 1) => {
 
         const { canvas } = this.state;
@@ -650,6 +659,7 @@ class PixelToolboxSwipeableViews extends React.Component {
                     text: "Download",
                     tools: [
                         {icon: <FileDownloadIcon />, text: "Download (small size)", sub: "[CTRL + Q]", on_click: () => {this._download_png(1)}},
+                        {icon: <FileDownloadIcon />, text: "Download SVG", sub: "Upscale with XBRZ to SVG", on_click: () => {this._download_svg()}},
                         {icon: <FileDownloadIcon />, text: "Download (big size)", sub: "[CTRL + S]", on_click: () => {this._download_png(32)}},
                     ]
                 },

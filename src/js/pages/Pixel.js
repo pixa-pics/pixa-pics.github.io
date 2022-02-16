@@ -63,6 +63,8 @@ import LABTwemoji from "../twemoji/react/1F9Ea";
 import ShufflingSpanText from "../components/ShufflingSpanText";
 import ImageFileDialog from "../components/ImageFileDialog";
 
+import {base64png_to_xbrz_svg} from "../utils/png-xbrz-svg";
+
 const styles = theme => ({
     green: {
         color: lightGreen[700],
@@ -689,7 +691,7 @@ class Pixel extends React.Component {
         if(_canvas === null) {return}
 
         let a = document.createElement("a"); //Create <a>
-        a.download = `Pixel art n°${Date.now()} from WCR (x${size}).png`; //File name Here
+        a.download = `Pixel art n°${Date.now()} from PIXAPICS (x${size}).png`; //File name Here
 
 
         _canvas.get_base64_png_data_url(size, (href) => {
@@ -702,6 +704,33 @@ class Pixel extends React.Component {
                 actions.trigger_snackbar("Do You Want To Share? Yes or No", 7000);
                 actions.jamy_update("happy");
             }, 2000);
+
+        }); //Image Base64 Goes here
+    };
+
+    _download_svg = () => {
+
+        const { _canvas } = this.state;
+        if(_canvas === null) {return}
+
+        let a = document.createElement("a"); //Create <a>
+        a.download = `Pixel art n°${Date.now()} from PIXAPICS.svg`; //File name Here
+
+
+        _canvas.get_base64_png_data_url(1, (href) => {
+
+            base64png_to_xbrz_svg(href, (h) => {
+
+                a.href = "" + h;
+                a.click();
+
+                actions.trigger_sfx("hero_decorative-celebration-02");
+                setTimeout(() => {
+                    actions.trigger_snackbar("Do You Want To Share? Yes or No", 7000);
+                    actions.jamy_update("happy");
+                }, 2000);
+
+            });
 
         }); //Image Base64 Goes here
     };
@@ -1299,6 +1328,7 @@ class Pixel extends React.Component {
                                 on_import_image={this._import_image}
                                 on_import_image_library={this._import_image_library}
                                 on_download_image={this._download_image}
+                                on_download_svg={this._download_svg}
                             />
                         </div>
                     </div>
@@ -1397,6 +1427,7 @@ class Pixel extends React.Component {
                                 on_import_image={this._import_image}
                                 on_import_image_library={this._import_image_library}
                                 on_download_image={this._download_image}
+                                on_download_svg={this._download_svg}
                             />
                         </div>
                     </div>
