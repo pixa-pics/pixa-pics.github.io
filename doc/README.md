@@ -1,5 +1,10 @@
 # Documentation
 
+## Context Menu
+
+![](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/doc/screenshots/Screenshot_context_menu_1.png?raw=true)
+![](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/doc/screenshots/Screenshot_context_menu_2.png?raw=true)
+
 ## Colors
 
 ![](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/doc/screenshots/Screenshot_colors.png?raw=true)
