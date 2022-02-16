@@ -714,14 +714,18 @@ class Pixel extends React.Component {
         if(_canvas === null) {return}
 
         let a = document.createElement("a"); //Create <a>
-        a.download = `Pixel art n°${Date.now()} from PIXAPICS.svg`; //File name Here
 
 
         _canvas.get_base64_png_data_url(1, (href) => {
 
-            base64png_to_xbrz_svg(href, (h) => {
+            base64png_to_xbrz_svg(href, (svg_base64, png_base64) => {
 
-                a.href = "" + h;
+                a.download = `Pixel art n°${Date.now()} from PIXAPICS.svg`; //File name Here
+                a.href = "" + svg_base64;
+                a.click();
+
+                a.download = `Pixel art n°${Date.now()} from PIXAPICS.png`; //File name Here
+                a.href = "" + png_base64;
                 a.click();
 
                 actions.trigger_sfx("hero_decorative-celebration-02");

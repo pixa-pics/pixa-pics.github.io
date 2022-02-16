@@ -345,7 +345,6 @@ class PixelToolboxSwipeableViews extends React.Component {
 
     _download_svg = () => {
 
-        console.log("hello")
         if(this.props.on_download_svg) {
 
             this.props.on_download_svg();

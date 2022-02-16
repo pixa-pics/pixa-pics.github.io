@@ -11,9 +11,9 @@ function base64png_to_xbrz_svg (base64png, callback_function) {
         const ctx = canvas.getContext('2d');
 
         const canvasScale = document.createElement('canvas');
+        const ctxScale = canvasScale.getContext('2d');
 
         const srcImage = new Image();
-        srcImage.src = base64png;
         srcImage.onload = () => {
             const {width, height} = srcImage;
             canvas.width = width;
@@ -67,7 +67,7 @@ function base64png_to_xbrz_svg (base64png, callback_function) {
 
                 // Color quantization
                 colorsampling : 2,
-                numberofcolors : 64,
+                numberofcolors : 128,
                 mincolorratio : 0,
                 colorquantcycles : 1,
 
@@ -97,10 +97,25 @@ function base64png_to_xbrz_svg (base64png, callback_function) {
                 multipass: true,
             }).data;
 
-            const encodedData = "data:image/svg+xml;base64," + window.btoa(svgstr);
-            callback_function(encodedData);
+            const svg_base64 = "data:image/svg+xml;base64," + window.btoa(svgstr);
+
+            let svgImage = new Image();
+            svgImage.onload = () => {
+
+                const svgCanvas = document.createElement("canvas");
+                svgCanvas.width = svgImage.width;
+                svgCanvas.height = svgImage.height;
+                const svgCtx = svgCanvas.getContext("2d");
+                svgCtx.drawImage(svgImage, 0, 0, svgImage.width, svgImage.height);
+                const png_base64 = svgCanvas.toDataURL("image/png");
+
+                callback_function(svg_base64, png_base64);
+
+            }
+            svgImage.src = svg_base64;
 
         }
+        srcImage.src = base64png;
     };
     image.src = base64png;
 }
