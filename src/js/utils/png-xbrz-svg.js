@@ -62,11 +62,11 @@ function base64png_to_xbrz_svg (base64png, callback_function) {
                 corsenabled : false,
                 ltres : 1,
                 qtres : 1,
-                pathomit : 6,
+                pathomit : 18,
                 rightangleenhance : false,
 
                 // Color quantization
-                colorsampling : 1,
+                colorsampling : 2,
                 numberofcolors : 64,
                 mincolorratio : 0,
                 colorquantcycles : 1,
@@ -78,7 +78,7 @@ function base64png_to_xbrz_svg (base64png, callback_function) {
                 strokewidth : 6,
                 linefilter : false,
                 scale : 3,
-                roundcoords : 18,
+                roundcoords : 1,
                 viewbox : false,
                 desc : false,
                 lcpr : 0,
