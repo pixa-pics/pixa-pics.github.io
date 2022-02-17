@@ -21,7 +21,9 @@ Through this example we used a small thumbnail in JP(e)G format of 500 by 500 wh
 ![](https://steemitimages.com/500x500/https://github.com/pixa-pics/pixa-pics.github.io/blob/main/doc/test/LDR%20PNG.png?raw=true) 3.7Kb (301.5Kb)
 ![](https://steemitimages.com/500x500/https://github.com/pixa-pics/pixa-pics.github.io/blob/main/doc/test/LDR%20SVG.png?raw=true) 3.7Kb (51.3Kb)
 
-Everything is PURE PROCEDURES, and it can make us quote: "4Kb is enough to store an art that looks like art which can be printed with both finite and infinite shapes with pixa.pics at any time with any size". #digital #art #painting
+Everything is PURE PROCEDURES, and it can make us say:
+
+> "Using a photo of 1.2Mb, 4Kb of data is enough to store an art that looks like art which can be printed with both finite and infinite shapes with pixa.pics at any time with any size which makes it being a `300x lossly compression`". #digital #art #painting
 
 LOOK: [Documentation](https://github.com/pixa-pics/pixa-pics.github.io/tree/main/doc)
 
