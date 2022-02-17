@@ -17,9 +17,17 @@ On https://pixa.pics/ you can do pixel art which transforms into SVG.
 
 Through this example we used a small thumbnail in JP(e)G format of 500 by 500 which was of a size of 45.5Kb to then through our own color quantization and classical size reduction we transformed it into a pixel art of 3.7Kb which can be stored cost-efficiently on a blockchain for example, then when it is needed to display it on a support that should be printed the pixel art can after be passed through xBRZ algorithms which increase its size by 6x without any annoying transformation except a kind of stylized transformation which is by then, "shaped humanly" enough to pass it inside a transformation that recreate a infinite SVG from it which is optimized on the fly but weight 51.3Kb when we don't store it in pixel art but since we can as it has been produced from it this infinite digital painting weights less than 4Kb. #blockchain #transformation #algorithms
 
-![](https://steemitimages.com/500x500/https://github.com/pixa-pics/pixa-pics.github.io/blob/main/doc/test/LDR%20JPG.jpg?raw=true) 45.5Kb (45.5Kb)
-![](https://steemitimages.com/500x500/https://github.com/pixa-pics/pixa-pics.github.io/blob/main/doc/test/LDR%20PNG.png?raw=true) 3.7Kb (301.5Kb)
-![](https://steemitimages.com/500x500/https://github.com/pixa-pics/pixa-pics.github.io/blob/main/doc/test/LDR%20SVG.png?raw=true) 3.7Kb (51.3Kb)
+**Lana Del Rey with US flag** 45.5Kb -> 3.7Kb
+
+![](https://steemitimages.com/325x325/https://github.com/pixa-pics/pixa-pics.github.io/blob/main/doc/test/LDR%20JPG.jpg?raw=true)
+![](https://steemitimages.com/325x325/https://github.com/pixa-pics/pixa-pics.github.io/blob/main/doc/test/LDR%20PNG.png?raw=true)
+![](https://steemitimages.com/325x325/https://github.com/pixa-pics/pixa-pics.github.io/blob/main/doc/test/LDR%20SVG.png?raw=true)
+
+**Grafitti in Amsterdam** 120Kb (original ~1.2Mb) -> 4.1Kb
+
+![](https://steemitimages.com/0x0/https://github.com/pixa-pics/pixa-pics.github.io/blob/main/doc/test/IMG-2020%20O.jpg?raw=true)
+![](https://steemitimages.com/0x0/https://github.com/pixa-pics/pixa-pics.github.io/blob/main/doc/test/IMG-2020%20PA.png?raw=true)
+![](https://steemitimages.com/0x0/https://github.com/pixa-pics/pixa-pics.github.io/blob/main/doc/test/IMG-2020%20SVG.png?raw=true)
 
 Everything is PURE PROCEDURES, and it can make us say:
 
