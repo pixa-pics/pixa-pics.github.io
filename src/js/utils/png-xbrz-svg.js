@@ -1,6 +1,5 @@
 import {scaleImage} from "../utils/xbrz/xBRZ";
-import ImageTracer from "../utils/imagetracer";
-import { optimize } from "svgo/dist/svgo.browser.js";
+import {imagedataToSVG} from "../utils/imagetracer";
 
 function base64png_to_xbrz_svg (base64png, callback_function) {
 
@@ -55,8 +54,7 @@ function base64png_to_xbrz_svg (base64png, callback_function) {
             const imgScaleBuffer = new Uint8ClampedArray(bufferScale);
             const imgScaleData = new ImageData(imgScaleBuffer, widthScale, heightScale);
 
-            let imagetracer = new ImageTracer();
-            let svgstr = imagetracer.imagedataToSVG( imgScaleData, {
+            imagedataToSVG( imgScaleData, {
 
                 // Tracing
                 corsenabled : false,
@@ -88,31 +86,38 @@ function base64png_to_xbrz_svg (base64png, callback_function) {
                 blurradius : 0,
                 blurdelta : 20
 
+            }, (svgstr) => {
+
+                 const svg_base64 = "data:image/svg+xml;base64," + window.btoa(svgstr);
+
+                 let svgImage = new Image();
+                 svgImage.onload = () => {
+
+                     const size = 3840 * 2160;
+                     let width = svgImage.width;
+                     let height = svgImage.height;
+
+                     while(width * height > size) {
+
+                         width *= 0.95;
+                         height *= 0.95;
+                     }
+
+                     width = Math.round(width);
+                     height = Math.round(height);
+
+                     const svgCanvas = document.createElement("canvas");
+                     svgCanvas.width = width;
+                     svgCanvas.height = height;
+                     const svgCtx = svgCanvas.getContext("2d");
+                     svgCtx.drawImage(svgImage, 0, 0, width, height);
+                     const png_base64 = svgCanvas.toDataURL("image/png");
+
+                     callback_function(svg_base64, png_base64);
+
+                 }
+                 svgImage.src = svg_base64;
             } );
-
-            svgstr = optimize(svgstr, {
-                // optional but recommended field
-                path: 'path-to.svg',
-                // all config fields are also available here
-                multipass: true,
-            }).data;
-
-            const svg_base64 = "data:image/svg+xml;base64," + window.btoa(svgstr);
-
-            let svgImage = new Image();
-            svgImage.onload = () => {
-
-                const svgCanvas = document.createElement("canvas");
-                svgCanvas.width = svgImage.width;
-                svgCanvas.height = svgImage.height;
-                const svgCtx = svgCanvas.getContext("2d");
-                svgCtx.drawImage(svgImage, 0, 0, svgImage.width, svgImage.height);
-                const png_base64 = svgCanvas.toDataURL("image/png");
-
-                callback_function(svg_base64, png_base64);
-
-            }
-            svgImage.src = svg_base64;
 
         }
         srcImage.src = base64png;

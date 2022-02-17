@@ -713,8 +713,10 @@ class Pixel extends React.Component {
         const { _canvas } = this.state;
         if(_canvas === null) {return}
 
-        let a = document.createElement("a"); //Create <a>
+        actions.trigger_snackbar("Please wait...", 2000);
+        actions.jamy_update("happy");
 
+        let a = document.createElement("a"); //Create <a>
 
         _canvas.get_base64_png_data_url(1, (href) => {
 
