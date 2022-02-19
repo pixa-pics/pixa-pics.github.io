@@ -661,7 +661,7 @@ class PixelToolboxSwipeableViews extends React.Component {
                         {icon: <FileDownloadIcon />, text: "Download (16x size)", sub: "Upscale 16x", on_click: () => {this._download_png(16)}},
                         {icon: <FileDownloadIcon />, text: "Download (32x size)", sub: "[CTRL + S]", on_click: () => {this._download_png(32)}},
                         {icon: <FileDownloadIcon />, text: "Download (48x size)", sub: "Upscale 48x", on_click: () => {this._download_png(32)}},
-                        {icon: <FileDownloadIcon />, text: "Download SVG+4K (xBRZ)", sub: "Upscale with XBRZ to SVG and 4K PNG", on_click: () => {this._download_svg()}},
+                        {icon: <FileDownloadIcon />, text: "Download PAINTING (SRC, JPG, SVG)", sub: "It upscale by 6x using xBRZ", on_click: () => {this._download_svg()}},
                     ]
                 },
             ],

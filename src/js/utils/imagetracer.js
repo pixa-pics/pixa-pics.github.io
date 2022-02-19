@@ -1176,10 +1176,10 @@ function imagedataToSVG(image_data, options, callback_function) {
 
 		}// End of ImageTracer object
 
+	
 		var imgtrc = new ImageTracer();
-		return "data:image/svg+xml;base64," + btoa(
-		     imgtrc.imagedataToSVG(image_data, options)
-		);
+		var svg_source = imgtrc.imagedataToSVG(image_data, options);
+		return svg_source;
 }`;
 
 	const process_function = new Function(getImageTracerImagedataToSVG)();
@@ -1196,7 +1196,7 @@ function imagedataToSVG(image_data, options, callback_function) {
 	.then((result) => {
 
 		callback_function(result);
-	}).timeout(120000);
+	}).timeout(360 * 1000);
 
 }
 

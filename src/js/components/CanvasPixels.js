@@ -1239,7 +1239,7 @@ class CanvasPixels extends React.Component {
 
     get_base64_png_data_url(scale = 1, callback_function = () => {}, with_palette = false) {
 
-        this._get_base64_png_data_url(scale, callback_function, with_palette = false)
+        this._get_base64_png_data_url(scale, callback_function, with_palette);
     }
 
     _get_base64_png_data_url = (scale = 1, callback_function = () => {}, with_palette = false) => {
@@ -1250,7 +1250,8 @@ class CanvasPixels extends React.Component {
             _s_pxls, 
             _s_pxl_colors,
             _layers,
-            scale
+            scale,
+            with_palette
         ) {
         
             function this_rgb_to_hsl(r, g, b) {
@@ -1454,6 +1455,7 @@ class CanvasPixels extends React.Component {
 
             var canvas = new OffscreenCanvas(pxl_width * scale, pxl_height * scale);
             var ctx = canvas.getContext('2d');
+            var all_colors = new Set();
     
             _s_pxls[0].forEach((pxl, index) => {
     
@@ -1490,6 +1492,7 @@ class CanvasPixels extends React.Component {
                 var pos_x = index % pxl_width;
                 var pos_y = (index - pos_x) / pxl_width;
     
+                all_colors.add(pixel_color_hex);
                 ctx.fillStyle = pixel_color_hex;
                 ctx.fillRect(pos_x * scale, pos_y * scale, 1 * scale, 1 * scale);
             });
@@ -1502,7 +1505,15 @@ class CanvasPixels extends React.Component {
               });
 
             const blob = await canvas.convertToBlob({type: "image/png"});
-            return await to_data_URL(blob);
+            const data_url = await to_data_URL(blob);
+            
+            if(with_palette) {
+            
+                return [data_url, Array.from(all_colors)];
+            }else {
+            
+                return data_url;
+            }
         }`;
 
 
@@ -1518,9 +1529,11 @@ class CanvasPixels extends React.Component {
                 _s_pxls,
                 _s_pxl_colors,
                 _layers,
-                scale
+                scale,
+                with_palette
             ]).catch((error) => {
 
+                let all_colors = new Set();
                 let canvas = document.createElement("canvas");
                 canvas.width = pxl_width * scale;
                 canvas.height = pxl_height * scale;
@@ -1558,11 +1571,18 @@ class CanvasPixels extends React.Component {
 
                     let pos_x = index % pxl_width;
                     let pos_y = (index - pos_x) / pxl_width;
+                    all_colors.add(pixel_color_hex);
                     ctx.fillStyle = pixel_color_hex;
                     ctx.fillRect(pos_x * scale, pos_y * scale, 1 * scale, 1 * scale);
                 });
 
-                return canvas.toDataURL();
+                if(with_palette) {
+
+                    return [canvas.toDataURL(), [...all_colors]];
+                }else {
+
+                    return canvas.toDataURL();
+                }
 
             }).timeout(120000);
 
