@@ -713,21 +713,25 @@ class Pixel extends React.Component {
         const { _canvas } = this.state;
         if(_canvas === null) {return}
 
-        actions.trigger_snackbar("Please wait...", 2000);
-        actions.jamy_update("happy");
-
         let a = document.createElement("a"); //Create <a>
 
         _canvas.get_base64_png_data_url(1, (href) => {
 
-            base64png_to_xbrz_svg(href, (svg_base64, png_base64) => {
+            a.download = `Pixel art n°${Date.now()} from PIXAPICS.png`; //File name Here
+            a.href = "" + href;
+            a.click();
 
-                a.download = `Pixel art n°${Date.now()} from PIXAPICS.svg`; //File name Here
+            actions.trigger_snackbar("Please wait... Two other files will download in a few seconds.", 14000);
+            actions.jamy_update("happy");
+
+            base64png_to_xbrz_svg(href, (svg_base64, jpeg_base64) => {
+
+                a.download = `Painting vector n°${Date.now()} from PIXAPICS.svg`; //File name Here
                 a.href = "" + svg_base64;
                 a.click();
 
-                a.download = `Pixel art n°${Date.now()} from PIXAPICS.png`; //File name Here
-                a.href = "" + png_base64;
+                a.download = `Painting image n°${Date.now()} from PIXAPICS.jpeg`; //File name Here
+                a.href = "" + jpeg_base64;
                 a.click();
 
                 actions.trigger_sfx("hero_decorative-celebration-02");
@@ -1488,7 +1492,7 @@ class Pixel extends React.Component {
                                     convert_scale={1}
                                     default_size={_import_size}
                                     ideal_size={_import_size}
-                                    max_size={_import_size*1.25}
+                                    max_size={_import_size}
                                     fast_drawing={true}
                                     px_per_px={1}/>
                                 <TouchRipple

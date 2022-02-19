@@ -1,5 +1,6 @@
 import {scaleImage} from "../utils/xbrz/xBRZ";
 import {imagedataToSVG} from "../utils/imagetracer";
+import pool from "../utils/worker-pool";
 
 function base64png_to_xbrz_svg (base64png, callback_function) {
 
@@ -60,12 +61,12 @@ function base64png_to_xbrz_svg (base64png, callback_function) {
                 corsenabled : false,
                 ltres : 1,
                 qtres : 1,
-                pathomit : 18,
+                pathomit : 9,
                 rightangleenhance : false,
 
                 // Color quantization
                 colorsampling : 2,
-                numberofcolors : 128,
+                numberofcolors : 666,
                 mincolorratio : 0,
                 colorquantcycles : 1,
 
@@ -86,37 +87,42 @@ function base64png_to_xbrz_svg (base64png, callback_function) {
                 blurradius : 0,
                 blurdelta : 20
 
-            }, (svgstr) => {
+            }, (svg_base64) => {
 
-                 const svg_base64 = "data:image/svg+xml;base64," + window.btoa(svgstr);
+                let size = (1920 * 2) * (1280 * 2);
+                let svg_image = new Image();
+                svg_image.onload = async () => {
 
-                 let svgImage = new Image();
-                 svgImage.onload = () => {
+                    let width = svg_image.width;
+                    let height = svg_image.height;
 
-                     const size = 3840 * 2160;
-                     let width = svgImage.width;
-                     let height = svgImage.height;
+                    while(width * height < size) {
 
-                     while(width * height > size) {
+                        width *= 1.1;
+                        height *= 1.1;
+                    }
 
-                         width *= 0.95;
-                         height *= 0.95;
-                     }
+                    while(width * height > size) {
 
-                     width = Math.round(width);
-                     height = Math.round(height);
+                        width *= 0.95;
+                        height *= 0.95;
+                    }
+                    width = Math.round(width);
+                    height = Math.round(height);
 
-                     const svgCanvas = document.createElement("canvas");
-                     svgCanvas.width = width;
-                     svgCanvas.height = height;
-                     const svgCtx = svgCanvas.getContext("2d");
-                     svgCtx.drawImage(svgImage, 0, 0, width, height);
-                     const png_base64 = svgCanvas.toDataURL("image/png");
+                    let svgCanvas = document.createElement("canvas");
+                        svgCanvas.width = width;
+                        svgCanvas.height = height;
 
-                     callback_function(svg_base64, png_base64);
 
-                 }
-                 svgImage.src = svg_base64;
+                    let svgCtx = svgCanvas.getContext("2d");
+                    svgCtx.drawImage(svg_image, 0, 0, width, height);
+                    let jpeg_base64 = svgCanvas.toDataURL("image/jpeg");
+
+                    callback_function(svg_base64, jpeg_base64);
+                };
+                svg_image.src = svg_base64;
+
             } );
 
         }
