@@ -59,6 +59,7 @@ import SelectColorIcon from "../icons/SelectColor";
 import SelectRemoveDifferenceIcon from "../icons/SelectRemoveDifference";
 import UFOTwemoji from "../twemoji/react/1F6F8";
 import LABTwemoji from "../twemoji/react/1F9Ea";
+import NINJATwemoji from "../twemoji/react/1F977";
 
 import ShufflingSpanText from "../components/ShufflingSpanText";
 import ImageFileDialog from "../components/ImageFileDialog";
@@ -708,7 +709,7 @@ class Pixel extends React.Component {
         }); //Image Base64 Goes here
     };
 
-    _download_svg = () => {
+    _download_svg = (using = "xbrz") => {
 
         const { _canvas } = this.state;
         if(_canvas === null) {return}
@@ -716,35 +717,55 @@ class Pixel extends React.Component {
         actions.trigger_snackbar("Please wait... Files will download in a few seconds.", 14000);
         actions.jamy_update("happy");
 
-        let a = document.createElement("a"); //Create <a>
+        this.setState({_loading: true, _loading_process: "image_render"}, () => {
 
-        _canvas.get_base64_png_data_url(1, ([href, palette]) => {
+            setTimeout(() => {
 
-            a.download = `Painting SRC n°${Date.now()} from PIXAPICS.png`; //File name Here
-            a.href = "" + href;
-            a.click();
+                let a = document.createElement("a"); //Create <a>
+                _canvas.get_base64_png_data_url(1, ([href, palette]) => {
 
-            base64png_to_xbrz_svg(href, (jpeg_base64, webp_base64, png_base64) => {
+                    a.download = `Painting SRC 1x n°${Date.now()} from PIXAPICS.png`; //File name Here
+                    a.href = "" + href;
+                    a.click();
 
-                a.download = `Painting IMG n°${Date.now()} from PIXAPICS.jpeg`; //File name Here
-                a.href = "" + jpeg_base64;
-                a.click();
+                    base64png_to_xbrz_svg(href, (jpeg_base64, webp_base64, png_base64) => {
 
-            }, (svg_base64, width, height) => {
+                        if(jpeg_base64 !== null){
 
-                a.download = `Painting VECT n°${Date.now()} from PIXAPICS.svg`; //File name Here
-                a.href = "" + svg_base64;
-                a.click();
+                            a.download = `Painting IMG ${using.toUpperCase()} n°${Date.now()} from PIXAPICS.jpeg`; //File name Here
+                            a.href = "" + jpeg_base64;
+                            a.click();
+                        }else {
 
-                actions.trigger_sfx("hero_decorative-celebration-02");
-                setTimeout(() => {
-                    actions.trigger_snackbar("Do You Want To Share? Yes or No", 7000);
-                    actions.jamy_update("happy");
-                }, 2000);
+                            a.download = `Painting IMG ${using.toUpperCase()} n°${Date.now()} from PIXAPICS.webp`; //File name Here
+                            a.href = "" + webp_base64;
+                            a.click();
+                        }
 
-            }, palette);
+                    }, (svg_base64, width, height) => {
 
-        }, true); //Image Base64 Goes here
+                        a.download = `Painting VECT infX n°${Date.now()} from PIXAPICS.svg`; //File name Here
+                        a.href = "" + svg_base64;
+                        a.click();
+
+                        this.setState({_loading: false, _loading_process: ""}, () => {
+
+                            actions.trigger_sfx("hero_decorative-celebration-02");
+                            setTimeout(() => {
+                                actions.trigger_snackbar("Do You Want To Share? Yes or No", 7000);
+                                actions.jamy_update("happy");
+
+                            }, 2000);
+
+                        });
+
+                    }, palette, using);
+
+                }, true);
+
+            }, 500);
+
+        });
     };
 
     _handle_keyup = (event) => {
@@ -1680,6 +1701,8 @@ class Pixel extends React.Component {
                         {_loading && <h1><ShufflingSpanText text={"Laboratory processing..."} animation_delay_ms={0} animation_duration_ms={250}/></h1>}
                         {_loading && _loading_process === "image_load" && <h4><ShufflingSpanText text={"Abducting your image..."} animation_delay_ms={300} animation_duration_ms={500}/></h4>}
                         {_loading && _loading_process === "image_load" && <div><UFOTwemoji style={{width: 72}}/></div>}
+                        {_loading && _loading_process === "image_render" && <div><NINJATwemoji style={{width: 72}}/></div>}
+                        {_loading && _loading_process === "image_render" && <h4><ShufflingSpanText text={"Getting a ninja rendering running..."} animation_delay_ms={300} animation_duration_ms={500}/></h4>}
                         {_loading && _loading_process === "less_color" && <h4><ShufflingSpanText text={"Coupling few color matrices..."} animation_delay_ms={300} animation_duration_ms={500}/></h4>}
                         {_loading && _loading_process === "less_color" && <div><LABTwemoji style={{width: 72}}/></div>}
                         {_loading && _loading_process === "less_color_auto" && <h4><ShufflingSpanText text={"Coupling many color matrices..."} animation_delay_ms={500} animation_duration_ms={500}/></h4>}
