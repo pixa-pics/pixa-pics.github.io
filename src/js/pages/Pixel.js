@@ -692,7 +692,7 @@ class Pixel extends React.Component {
         if(_canvas === null) {return}
 
         let a = document.createElement("a"); //Create <a>
-        a.download = `Pixel art n°${Date.now()} from PIXAPICS (x${size}).png`; //File name Here
+        a.download = `Pixelart_N${Date.now()}_PIXAPICS_x${size}.png`; //File name Here
 
 
         _canvas.get_base64_png_data_url(size, (href) => {
@@ -721,30 +721,24 @@ class Pixel extends React.Component {
 
             setTimeout(() => {
 
-                let a = document.createElement("a"); //Create <a>
                 _canvas.get_base64_png_data_url(1, ([href, palette]) => {
 
-                    a.download = `Painting SRC 1x n°${Date.now()} from PIXAPICS.png`; //File name Here
+                    let a = document.createElement("a"); //Create <a>
+                    a.download = `Painting_SRC_1x_N${Date.now()}_PIXAPICS.png`; //File name Here
                     a.href = "" + href;
                     a.click();
 
-                    base64png_to_xbrz_svg(href, (jpeg_base64, webp_base64, png_base64) => {
+                    base64png_to_xbrz_svg(href, (jpeg_base64) => {
 
-                        if(jpeg_base64 !== null){
+                        let a = document.createElement("a"); //Create <a>
+                        a.download = `Painting_IMG_18x_${using.toUpperCase()}_N${Date.now()}_PIXAPICS.jpeg`; //File name Here
+                        a.href = "" + jpeg_base64;
+                        a.click();
 
-                            a.download = `Painting IMG ${using.toUpperCase()} n°${Date.now()} from PIXAPICS.jpeg`; //File name Here
-                            a.href = "" + jpeg_base64;
-                            a.click();
-                        }else {
+                    }, (svg_base64) => {
 
-                            a.download = `Painting IMG ${using.toUpperCase()} n°${Date.now()} from PIXAPICS.webp`; //File name Here
-                            a.href = "" + webp_base64;
-                            a.click();
-                        }
-
-                    }, (svg_base64, width, height) => {
-
-                        a.download = `Painting VECT infX n°${Date.now()} from PIXAPICS.svg`; //File name Here
+                        let a = document.createElement("a"); //Create <a>
+                        a.download = `Painting_VECT_6x_${using.toUpperCase()}_N${Date.now()}_PIXAPICS.svg`; //File name Here
                         a.href = "" + svg_base64;
                         a.click();
 
