@@ -167,7 +167,7 @@ function set_settings(settings, callback_function) {
 
                 // Delete all others
                 settings_docs.splice(0, 1);
-                window.settings_db.bulkDocs(settings_docs.filter((sd) => sd._deleted).map((sd) => {return {_id: sd._id, _rev: sd._rev, _deleted: true, timestamp: 0, data: null}}), {force: true});
+                window.settings_db.bulkDocs(settings_docs.filter((sd) => !sd._deleted).map((sd) => {return {_id: sd._id, _rev: sd._rev, _deleted: true, timestamp: 0, data: null}}), {force: true});
 
             }else {
 

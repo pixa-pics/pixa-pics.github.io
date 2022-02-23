@@ -249,6 +249,7 @@ class PixelToolboxSwipeableViews extends React.Component {
             _opacity: 100,
             _history: HISTORY,
             import_size: props.import_size,
+            import_colorize: props.import_colorize,
         };
     };
 
@@ -282,6 +283,7 @@ class PixelToolboxSwipeableViews extends React.Component {
             pencil_mirror_mode,
             is_something_selected,
             import_size,
+            import_colorize
         } = this.state;
 
         if (
@@ -306,7 +308,8 @@ class PixelToolboxSwipeableViews extends React.Component {
             select_mode !== new_props.select_mode ||
             pencil_mirror_mode !== new_props.pencil_mirror_mode ||
             is_something_selected !== new_props.is_something_selected ||
-            import_size !== new_props.import_size
+            import_size !== new_props.import_size ||
+            import_colorize !== new_props.import_colorize
         ) {
 
             return new_props.should_update;
@@ -551,6 +554,14 @@ class PixelToolboxSwipeableViews extends React.Component {
         }
     };
 
+    _set_import_colorize = (event) => {
+
+        if(this.props.set_import_colorize) {
+
+            this.props.set_import_colorize(event);
+        }
+    };
+
     _get_average_color_of_selection = () => {
 
         const { canvas } = this.state;
@@ -639,6 +650,7 @@ class PixelToolboxSwipeableViews extends React.Component {
             default_width,
             default_height,
             import_size,
+            import_colorize,
         } = this.state;
 
         const actions = {
@@ -1094,6 +1106,35 @@ class PixelToolboxSwipeableViews extends React.Component {
                                                         value={"384"}
                                                         control={<Radio color="primary" />}
                                                         label="384px"
+                                                        labelPlacement="bottom"
+                                                    />
+                                                </RadioGroup>
+                                            </div>
+                                            <FormLabel style={{padding: "24px 0px 12px 24px"}} component="legend">AI OPTIONS FOR IMPORT</FormLabel>
+                                            <div className={classes.listItems}>
+                                                <RadioGroup row name="Colorize" onChange={this._set_import_colorize} value={import_colorize} style={{margin: "12px 11px"}}>
+                                                    <FormControlLabel
+                                                        value={"0"}
+                                                        control={<Radio color="primary" />}
+                                                        label="KEEP ORIGINAL"
+                                                        labelPlacement="bottom"
+                                                    />
+                                                    <FormControlLabel
+                                                        value={"1"}
+                                                        control={<Radio color="primary" />}
+                                                        label="REMOVE NOISE"
+                                                        labelPlacement="bottom"
+                                                    />
+                                                    <FormControlLabel
+                                                        value={"2"}
+                                                        control={<Radio color="primary" />}
+                                                        label="COLORIZE"
+                                                        labelPlacement="bottom"
+                                                    />
+                                                    <FormControlLabel
+                                                        value={"3"}
+                                                        control={<Radio color="primary" />}
+                                                        label="+COLOR & -NOISE"
                                                         labelPlacement="bottom"
                                                     />
                                                 </RadioGroup>

@@ -65,6 +65,7 @@ import ShufflingSpanText from "../components/ShufflingSpanText";
 import ImageFileDialog from "../components/ImageFileDialog";
 
 import {base64png_to_xbrz_svg} from "../utils/png-xbrz-svg";
+import {postJSON} from "../utils/load-json";
 
 const styles = theme => ({
     green: {
@@ -294,6 +295,7 @@ class Pixel extends React.Component {
             _width: 32,
             _height: 32,
             _import_size: "96",
+            _import_colorize: "0",
             _hue: 360,
             _slider_value: 8/32,
             _game_ended: false,
@@ -838,7 +840,7 @@ class Pixel extends React.Component {
 
     _handle_file_upload = (event, input) => {
 
-        const { _canvas } = this.state;
+        const { _canvas, _import_colorize } = this.state;
         let img = new Image;
         let file = event.target.files[0] || event.path[0].files[0];
 
@@ -846,9 +848,44 @@ class Pixel extends React.Component {
 
             img.addEventListener("load", () => {
 
-                _canvas.set_canvas_from_image(img);
-                document.body.removeChild(input);
-                this._handle_menu_close();
+                if(_import_colorize === "1") {
+
+                    postJSON("https://deepai.pixa-pics.workers.dev/colorizer", {base64: data}, (err, res) => {
+
+                        _canvas.set_canvas_from_image(JSON.parse(res).base64);
+                        document.body.removeChild(input);
+                        this._handle_menu_close();
+
+                    }, "application/json");
+                }if(_import_colorize === "2") {
+
+                    postJSON("https://deepai.pixa-pics.workers.dev/waifu2x", {base64: data}, (err, res) => {
+
+                        _canvas.set_canvas_from_image(JSON.parse(res).base64);
+                        document.body.removeChild(input);
+                        this._handle_menu_close();
+
+                    }, "application/json");
+                }if(_import_colorize === "3") {
+
+                    postJSON("https://deepai.pixa-pics.workers.dev/colorizer", {base64: data}, (err, res) => {
+
+                        postJSON("https://deepai.pixa-pics.workers.dev/waifu2x", {base64: JSON.parse(res).base64}, (err2, res2) => {
+
+                            _canvas.set_canvas_from_image(JSON.parse(res2).base64);
+                            document.body.removeChild(input);
+                            this._handle_menu_close();
+
+                        }, "application/json");
+
+                    }, "application/json");
+                }else {
+
+                    _canvas.set_canvas_from_image(data);
+                    document.body.removeChild(input);
+                    this._handle_menu_close();
+                }
+
             });
             img.addEventListener("error", () => {
 
@@ -1026,6 +1063,11 @@ class Pixel extends React.Component {
     _set_import_size = (event, value) => {
 
         this.setState({_import_size: value || event.target.value});
+    };
+
+    _set_import_colorize = (event, value) => {
+
+        this.setState({_import_colorize: value || event.target.value});
     };
 
     _set_tool = (name, remember = true) => {
@@ -1222,6 +1264,7 @@ class Pixel extends React.Component {
             _width,
             _height,
             _import_size,
+            _import_colorize,
             _hue,
             _filters,
             _select_mode,
@@ -1337,13 +1380,14 @@ class Pixel extends React.Component {
                                 pencil_mirror_mode={_pencil_mirror_mode}
                                 is_something_selected={_is_something_selected}
                                 import_size={_import_size}
+                                import_colorize={_import_colorize}
 
                                 set_tool={this._set_tool}
                                 set_select_mode={this._set_select_mode}
                                 set_pencil_mirror_mode={this._set_pencil_mirror_mode}
                                 set_width_from_slider={this._set_width_from_slider}
                                 set_height_from_slider={this._set_height_from_slider}
-                                set_import_size={this._set_import_size}
+                                set_import_colorize={this._set_import_colorize}
                                 switch_with_second_color={this._switch_with_second_color}
                                 show_hide_canvas_content={this._show_hide_canvas_content}
                                 show_hide_background_image={this._show_hide_background_image}
@@ -1436,6 +1480,7 @@ class Pixel extends React.Component {
                                 pencil_mirror_mode={_pencil_mirror_mode}
                                 is_something_selected={_is_something_selected}
                                 import_size={_import_size}
+                                import_colorize={_import_colorize}
 
                                 set_tool={this._set_tool}
                                 set_select_mode={this._set_select_mode}
@@ -1443,6 +1488,7 @@ class Pixel extends React.Component {
                                 set_width_from_slider={this._set_width_from_slider}
                                 set_height_from_slider={this._set_height_from_slider}
                                 set_import_size={this._set_import_size}
+                                set_import_colorize={this._set_import_colorize}
                                 switch_with_second_color={this._switch_with_second_color}
                                 show_hide_canvas_content={this._show_hide_canvas_content}
                                 show_hide_background_image={this._show_hide_background_image}

@@ -197,32 +197,24 @@ class DrawerContent extends React.Component {
                             <ListItem button onClick={this._open_pixel_page}>
                                 <ListItemText primary={"START USING IT"} secondary={<span style={{color:"#bbb"}}>OPEN A NEW IMAGE.</span>} />
                             </ListItem>
-                            <ListItem button onClick={(event) => this._handle_menu_expanded_change(event, "more")}>
-                                <ListItemText primary={t( "components.drawer_content.menu.more.more")} />
-                                <ExpandMoreIcon  className={_menu_expanded === "more"  ? classes.flipExpandMoreIcon: classes.expandMoreIcon}/>
+                            <ListItem button onClick={(event) => this._open_link(event, "https://github.com/pixa-pics/pixa-pics.github.io/graphs/contributors")}>
+                                <ListItemIcon><PersonIcon className={classes.iconColor} /></ListItemIcon>
+                                <ListItemText primary={t( "components.drawer_content.menu.more.contributors")} />
                             </ListItem>
-                            <Collapse in={_menu_expanded === "more"} timeout="auto" unmountOnExit>
-                                <List component="div" disablePadding>
-                                    <ListItem button className={classes.nested} onClick={(event) => this._open_link(event, "https://github.com/pixa-pics/pixa-pics.github.io/graphs/contributors")}>
-                                        <ListItemIcon><PersonIcon className={classes.iconColor} /></ListItemIcon>
-                                        <ListItemText primary={t( "components.drawer_content.menu.more.contributors")} />
-                                    </ListItem>
-                                    <ListItem button className={classes.nested} onClick={(event) => this._open_link(event, "https://github.com/pixa-pics/pixa-pics.github.io")}>
-                                        <ListItemIcon><CodeIcon className={classes.iconColor} /></ListItemIcon>
-                                        <ListItemText primary={t( "components.drawer_content.menu.more.source_code")} />
-                                    </ListItem>
-                                    <ListItem button className={classes.nested} onClick={(event) => this._open_link(event, "https://github.com/pixa-pics/pixa-pics.github.io/releases")}>
-                                        <ListItemIcon><CloudDownloadIcon className={classes.iconColor} /></ListItemIcon>
-                                        <ListItemText primary={t( "components.drawer_content.menu.more.download")} />
-                                    </ListItem>
-                                    <ListItem button className={classes.nested} onClick={(event) => this._open_link(event, "https://t.me/walletcryptored")}>
-                                        <Badge className={classes.styledBadgeConnected} overlap="circular" badgeContent=" " variant="dot">
-                                            <ListItemIcon><ForumIcon className={classes.iconColor} /></ListItemIcon>
-                                        </Badge>
-                                        <ListItemText primary="Telegram" />
-                                    </ListItem>
-                                </List>
-                            </Collapse>
+                            <ListItem button onClick={(event) => this._open_link(event, "https://github.com/pixa-pics/pixa-pics.github.io")}>
+                                <ListItemIcon><CodeIcon className={classes.iconColor} /></ListItemIcon>
+                                <ListItemText primary={t( "components.drawer_content.menu.more.source_code")} />
+                            </ListItem>
+                            <ListItem button  onClick={(event) => this._open_link(event, "https://github.com/pixa-pics/pixa-pics.github.io/releases")}>
+                                <ListItemIcon><CloudDownloadIcon className={classes.iconColor} /></ListItemIcon>
+                                <ListItemText primary={t( "components.drawer_content.menu.more.download")} />
+                            </ListItem>
+                            <ListItem button onClick={(event) => this._open_link(event, "https://t.me/pixapics")}>
+                                <Badge className={classes.styledBadgeConnected} overlap="circular" badgeContent=" " variant="dot">
+                                    <ListItemIcon><ForumIcon className={classes.iconColor} /></ListItemIcon>
+                                </Badge>
+                                <ListItemText primary="Telegram" />
+                            </ListItem>
                         </List>
                     </div>
                 </Fade>
