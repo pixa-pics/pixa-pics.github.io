@@ -1,4 +1,4 @@
-import { CORS_PROXY_URL } from "../utils/constants";
+//import { CORS_PROXY_URL } from "../utils/constants";
 import {clean_json_text} from "./json";
 
 function loadJSON(url, callback_function) {
@@ -113,7 +113,7 @@ function postDATA(url, data, callback_function) {
 
 function postJSON(url, payload, callback_function, content_type = "application/x-www-form-urlencoded") {
 
-    url = CORS_PROXY_URL + url;
+    //url = CORS_PROXY_URL + url;
 
     let headers = new Headers();
 
