@@ -846,53 +846,59 @@ class Pixel extends React.Component {
 
         this.get_base64(file).then((data) => {
 
-            img.addEventListener("load", () => {
+            if(_import_colorize === "1") {
 
-                if(_import_colorize === "1") {
+                postJSON("https://deepai.pixa-pics.workers.dev/colorizer", data, (err, res) => {
 
-                    postJSON("https://deepai.pixa-pics.workers.dev/colorizer", {base64: data}, (err, res) => {
+                    img.addEventListener("load", () => {
 
-                        _canvas.set_canvas_from_image(JSON.parse(res).base64);
+                        _canvas.set_canvas_from_image(img);
                         document.body.removeChild(input);
                         this._handle_menu_close();
+                    });
+                    img.src = res;
 
-                    }, "application/json");
-                }if(_import_colorize === "2") {
+                }, "application/text");
+            }if(_import_colorize === "2") {
 
-                    postJSON("https://deepai.pixa-pics.workers.dev/waifu2x", {base64: data}, (err, res) => {
+                postJSON("https://deepai.pixa-pics.workers.dev/waifu2x", data, (err, res) => {
 
-                        _canvas.set_canvas_from_image(JSON.parse(res).base64);
+                    img.addEventListener("load", () => {
+
+                        _canvas.set_canvas_from_image(img);
                         document.body.removeChild(input);
                         this._handle_menu_close();
+                    });
+                    img.src = res;
 
-                    }, "application/json");
-                }if(_import_colorize === "3") {
+                }, "application/text");
+            }if(_import_colorize === "3") {
 
-                    postJSON("https://deepai.pixa-pics.workers.dev/colorizer", {base64: data}, (err, res) => {
+                postJSON("https://deepai.pixa-pics.workers.dev/colorizer", data, (err, res) => {
 
-                        postJSON("https://deepai.pixa-pics.workers.dev/waifu2x", {base64: JSON.parse(res).base64}, (err2, res2) => {
+                    postJSON("https://deepai.pixa-pics.workers.dev/waifu2x",  res, (err2, res2) => {
 
-                            _canvas.set_canvas_from_image(JSON.parse(res2).base64);
+                        img.addEventListener("load", () => {
+
+                            _canvas.set_canvas_from_image(img);
                             document.body.removeChild(input);
                             this._handle_menu_close();
+                        });
+                        img.src = res2;
 
-                        }, "application/json");
+                    }, "application/text");
 
-                    }, "application/json");
-                }else {
+                }, "application/text");
+            }else {
 
-                    _canvas.set_canvas_from_image(data);
+                img.addEventListener("load", () => {
+
+                    _canvas.set_canvas_from_image(img);
                     document.body.removeChild(input);
                     this._handle_menu_close();
-                }
-
-            });
-            img.addEventListener("error", () => {
-
-                document.body.removeChild(input);
-                this._handle_menu_close();
-            });
-            img.src = data;
+                });
+                img.src = data;
+            }
         });
     };
 

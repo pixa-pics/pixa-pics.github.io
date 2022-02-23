@@ -1122,13 +1122,13 @@ class PixelToolboxSwipeableViews extends React.Component {
                                                     <FormControlLabel
                                                         value={"1"}
                                                         control={<Radio color="primary" />}
-                                                        label="REMOVE NOISE"
+                                                        label="COLORIZE"
                                                         labelPlacement="bottom"
                                                     />
                                                     <FormControlLabel
                                                         value={"2"}
                                                         control={<Radio color="primary" />}
-                                                        label="COLORIZE"
+                                                        label="REMOVE NOISE"
                                                         labelPlacement="bottom"
                                                     />
                                                     <FormControlLabel
