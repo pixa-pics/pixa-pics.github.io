@@ -2048,7 +2048,7 @@ class CanvasPixels extends React.Component {
                 let is_crop_necessary = false;
                 let a_better_scale = 1;
 
-                if(dont_change_img_size_onload === false && !dont_smart_resize) {
+                if(dont_change_img_size_onload === false) {
 
                     // From the result in colors and pixels color index find if the image is resized bigger but from a pixelart image
                     let { new_pxl_colors, new_pxls, ratio_pixel_per_color, too_much_pixel_cpu_would_go_brrrrr } = this._get_pixels_palette_and_list_from_image_data(image_data, false, (256 - 256 / (merge_color_threshold * 256)) / 256);
@@ -2209,7 +2209,7 @@ class CanvasPixels extends React.Component {
                     const is_less_color_enough = a_better_scale_size > new_pxl_colors.length;
                     const is_small_enough = a_better_scale_size < max_size * max_size;
 
-                    if(!is_low_color_number_xor_small_enough && !enough_sure || (!is_small_enough || !is_less_color_enough)) { // The image must be lowered
+                    if((!is_low_color_number_xor_small_enough && !enough_sure || (!is_small_enough || !is_less_color_enough)) || dont_smart_resize === true) { // The image must be lowered
 
                         let scale = 1;
 
@@ -7471,7 +7471,7 @@ class CanvasPixels extends React.Component {
         });
     };
 
-    _remove_close_pxl_colors = async(pxls = [], pxl_colors  = [], bucket_threshold = null, threshold_steps = null, color_number_bonus = 8, best_color_number = null, callback_function = () =>{}) => {
+    _remove_close_pxl_colors = async(pxls = [], pxl_colors  = [], bucket_threshold = null, threshold_steps = null, color_number_bonus = 16, best_color_number = null, callback_function = () =>{}) => {
 
         const this_state_bucket_threshold = this.state.bucket_threshold;
 
@@ -7723,9 +7723,9 @@ class CanvasPixels extends React.Component {
             let original_pxl_colors = Array.from(pxl_colors);
             let is_bucket_threshold_auto = bucket_threshold === "auto";
             let is_bucket_threshold_auto_goal_reached = !is_bucket_threshold_auto;
-            let bucket_threshold_auto_goal_target = 6;
+            let bucket_threshold_auto_goal_target = 5;
             let bucket_threshold_auto_goal_attempt = new Set();
-            best_color_number = best_color_number !== null ? best_color_number: Math.max(Math.sqrt(original_pxl_colors.length) + color_number_bonus, 24);
+            best_color_number = best_color_number !== null ? best_color_number: Math.max(Math.sqrt(original_pxl_colors.length) + color_number_bonus, 64);
 
             if(best_color_number < 2 || best_color_number > pxl_colors.length) {
 
@@ -7853,9 +7853,9 @@ class CanvasPixels extends React.Component {
             let original_pxl_colors = Array.from(pxl_colors);
             let is_bucket_threshold_auto = bucket_threshold === "auto";
             let is_bucket_threshold_auto_goal_reached = !is_bucket_threshold_auto;
-            let bucket_threshold_auto_goal_target = 6;
+            let bucket_threshold_auto_goal_target = 5;
             let bucket_threshold_auto_goal_attempt = new Set();
-            best_color_number = best_color_number !== null ? best_color_number: Math.max(Math.sqrt(original_pxl_colors.length) + color_number_bonus, 24);
+            best_color_number = best_color_number !== null ? best_color_number: Math.max(Math.sqrt(original_pxl_colors.length) + color_number_bonus, 64);
 
             if(best_color_number < 2 || best_color_number > pxl_colors.length) {
 

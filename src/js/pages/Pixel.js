@@ -859,7 +859,7 @@ class Pixel extends React.Component {
                     img.src = res;
 
                 }, "application/text");
-            }if(_import_colorize === "2") {
+            }else if(_import_colorize === "2") {
 
                 postJSON("https://deepai.pixa-pics.workers.dev/waifu2x", data, (err, res) => {
 
@@ -872,7 +872,7 @@ class Pixel extends React.Component {
                     img.src = res;
 
                 }, "application/text");
-            }if(_import_colorize === "3") {
+            }else if(_import_colorize === "3") {
 
                 postJSON("https://deepai.pixa-pics.workers.dev/colorizer", data, (err, res) => {
 

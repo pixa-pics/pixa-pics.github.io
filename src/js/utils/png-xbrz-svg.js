@@ -84,21 +84,16 @@ function base64png_to_xbrz_svg (base64png, callback_function_for_jpeg, callback_
             if(using === "omniscale") {
 
                 const first_scale_size = 6;
-                const second_scale_size = 3;
                 const third_canvas = document.createElement("canvas");
 
                 omniscale(image_data, first_scale_size, (second_image_data) => {
 
-                    xbrz(second_image_data, second_scale_size, (third_image_data) => {
-
-                        console.log(third_image_data);
-                        third_canvas.width = third_image_data.width;
-                        third_canvas.height = third_image_data.height;
-                        let third_canvas_ctx = third_canvas.getContext("2d");
-                        third_canvas_ctx.putImageData(third_image_data, 0, 0);
-                        const jpeg_base64 = third_canvas_ctx.canvas.toDataURL("image/jpeg", 0.50);
-                        callback_function_for_jpeg(jpeg_base64);
-                    }, pool);
+                    third_canvas.width = second_image_data.width;
+                    third_canvas.height = second_image_data.height;
+                    let third_canvas_ctx = third_canvas.getContext("2d");
+                    third_canvas_ctx.putImageData(second_image_data, 0, 0);
+                    const jpeg_base64 = third_canvas_ctx.canvas.toDataURL("image/jpeg", 0.666);
+                    callback_function_for_jpeg(jpeg_base64);
 
                     process_svg(second_image_data, first_scale_size);
                 }, pool);
@@ -106,20 +101,16 @@ function base64png_to_xbrz_svg (base64png, callback_function_for_jpeg, callback_
             }else {
 
                 const first_scale_size = 6;
-                const second_scale_size = 3;
                 const third_canvas = document.createElement("canvas");
 
                 xbrz(image_data, first_scale_size, (second_image_data) => {
 
-                    xbrz(second_image_data, second_scale_size, (third_image_data) => {
-
-                        third_canvas.width = third_image_data.width;
-                        third_canvas.height = third_image_data.height;
-                        let third_canvas_ctx = third_canvas.getContext("2d");
-                        third_canvas_ctx.putImageData(third_image_data, 0, 0);
-                        const jpeg_base64 = third_canvas_ctx.canvas.toDataURL("image/jpeg", 0.50);
-                        callback_function_for_jpeg(jpeg_base64);
-                    }, pool);
+                    third_canvas.width = second_image_data.width;
+                    third_canvas.height = second_image_data.height;
+                    let third_canvas_ctx = third_canvas.getContext("2d");
+                    third_canvas_ctx.putImageData(second_image_data, 0, 0);
+                    const jpeg_base64 = third_canvas_ctx.canvas.toDataURL("image/jpeg", 0.666);
+                    callback_function_for_jpeg(jpeg_base64);
 
                     process_svg(second_image_data, first_scale_size);
                 }, pool);
