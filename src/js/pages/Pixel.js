@@ -852,7 +852,7 @@ class Pixel extends React.Component {
 
                     img.addEventListener("load", () => {
 
-                        _canvas.set_canvas_from_image(img);
+                        _canvas.set_canvas_from_image(img, "", {}, true);
                         document.body.removeChild(input);
                         this._handle_menu_close();
                     });
@@ -865,7 +865,7 @@ class Pixel extends React.Component {
 
                     img.addEventListener("load", () => {
 
-                        _canvas.set_canvas_from_image(img);
+                        _canvas.set_canvas_from_image(img, "", {}, true);
                         document.body.removeChild(input);
                         this._handle_menu_close();
                     });
@@ -880,7 +880,7 @@ class Pixel extends React.Component {
 
                         img.addEventListener("load", () => {
 
-                            _canvas.set_canvas_from_image(img);
+                            _canvas.set_canvas_from_image(img, "", {}, true);
                             document.body.removeChild(input);
                             this._handle_menu_close();
                         });

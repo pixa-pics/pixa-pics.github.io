@@ -1992,7 +1992,7 @@ class CanvasPixels extends React.Component {
 
     };
 
-    set_canvas_from_image = (image_obj = null, loading_base64_img = "", img_d = {}) => {
+    set_canvas_from_image = (image_obj = null, loading_base64_img = "", img_d = {}, dont_smart_resize = false) => {
 
         if(this.props.onLoad) {this.props.onLoad("image_load");}
 
@@ -2048,7 +2048,7 @@ class CanvasPixels extends React.Component {
                 let is_crop_necessary = false;
                 let a_better_scale = 1;
 
-                if(dont_change_img_size_onload === false) {
+                if(dont_change_img_size_onload === false && !dont_smart_resize) {
 
                     // From the result in colors and pixels color index find if the image is resized bigger but from a pixelart image
                     let { new_pxl_colors, new_pxls, ratio_pixel_per_color, too_much_pixel_cpu_would_go_brrrrr } = this._get_pixels_palette_and_list_from_image_data(image_data, false, (256 - 256 / (merge_color_threshold * 256)) / 256);
