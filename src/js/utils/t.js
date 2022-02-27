@@ -1,6 +1,3 @@
-import svg64 from "svg64";
-
-import svg from "../locales/svg";
 import en from "../locales/en";
 import fr from "../locales/fr";
 import id from "../locales/id";
@@ -18,8 +15,6 @@ const PARAM_PROPS_NAME = ["faw", "fluc", "flc", "fllc", "tuc", "tlc", "aed", "at
 const T = (name) => {
 
     switch(name) {
-        case "svg":
-            return svg;
         case "en":
             return en;
         case "fr":
@@ -184,69 +179,6 @@ let t = (path = "", variables = {}, parameters = {}) => {
             }
 
         });
-
-        const svg_image_regex = /\{\{\{_svg\.(.*?)\}\}\}/gm;
-
-        let svg_image_regex_match;
-        while((svg_image_regex_match = svg_image_regex.exec(value_with_variables)) !== null) {
-
-            const svg_image_key = svg_image_regex_match[1];
-
-            if(typeof svg_image_key !== "undefined") {
-
-                let svg_image = "";
-
-                if(typeof T("svg")[svg_image_key] !== "undefined") {
-
-                    svg_image = T("svg")[svg_image_key];
-
-                    const svg_image_params = LANG_DIR["_svg"][svg_image_key] || {};
-
-                    Object.entries(svg_image_params).forEach(svg_image_params_entry => {
-
-                        const [
-                            svg_image_params_variable_name_to_replace,
-                            svg_image_params_variable_value_to_replace
-                        ] = svg_image_params_entry;
-
-                        if(svg_image_params_variable_name_to_replace.length || svg_image_params_variable_value_to_replace.toString()){
-
-                            svg_image = svg_image.replaceAll("{{"+svg_image_params_variable_name_to_replace+"}}", svg_image_params_variable_value_to_replace);
-                        }
-
-                    });
-
-                    let svg_image_for_replace_regex = /\!\[(.*?)?(\]\(data\:image\/svg\+xml\;utf8\,(.+)\))/gm;
-
-                    let svg_image_for_replace_regex_match;
-                    while((svg_image_for_replace_regex_match = svg_image_for_replace_regex.exec(svg_image)) !== null) {
-
-                        if(typeof svg_image_for_replace_regex_match[3] !== "undefined") {
-
-                            let svg_image_string = svg_image_for_replace_regex_match[3]
-                                .replaceAll(/\\\"/g, `"`)
-                                .replaceAll(/\\\'/g, `'`);
-
-                            svg_image = svg_image
-                                .replace(
-                                    svg_image_for_replace_regex_match[0],
-                                    svg_image_for_replace_regex_match[0]
-                                        .replace("data:image/svg+xml;utf8,", "")
-                                        .replace(svg_image_for_replace_regex_match[3], svg64(svg_image_string))
-                                );
-
-                        }
-                    }
-
-                }
-
-                const need_to_find_string = "{{{_svg." + svg_image_key + "}}}";
-                const need_to_replace_string = svg_image;
-
-                value_with_variables = value_with_variables.replaceAll(need_to_find_string, need_to_replace_string);
-
-            }
-        }
 
         value_with_variables = JSON.parse(value_with_variables);
         parameters = Object.assign(variables, parameters);

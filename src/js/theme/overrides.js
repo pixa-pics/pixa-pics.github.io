@@ -6,7 +6,7 @@ const overrides = {
                 overscrollBehavior: "none",
                 textRendering: "optimizespeed",
                 touchAction: "none",
-                fontFamily: `"Noto Sans"`,
+                fontFamily: `"Jura"`,
                 height: "100%",
             },
             body: {

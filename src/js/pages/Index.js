@@ -56,6 +56,7 @@ const styles = theme => ({
         maxWidth: "100%",
     },
     content: {
+        position: "relative",
         overflow: "overlay",
         width: "calc(100vw - 256px)",
         height: "100%",
@@ -456,8 +457,6 @@ class Index extends React.Component {
                         autoHideDuration={_snackbar_auto_hide_duration}
                         onClose={this._close_snackbar}
                     />
-                    <div>
-                    </div>
                     <AppToolbar
                         loaded_progress_percent={_loaded_progress_percent}
                         know_if_logged={_know_if_logged}

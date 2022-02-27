@@ -1,6 +1,6 @@
-var REQUIRED_CACHE = "network-or-cache-v12-required";
-var USEFUL_CACHE = "network-or-cache-v12-useful";
-var STATIC_CACHE = "network-or-cache-v12-static";
+var REQUIRED_CACHE = "network-or-cache-v14-required";
+var USEFUL_CACHE = "network-or-cache-v14-useful";
+var STATIC_CACHE = "network-or-cache-v14-static";
 
 // On install, cache some resource.
 self.addEventListener("install", function(evt) {
@@ -15,11 +15,8 @@ self.addEventListener("install", function(evt) {
                 "/index.html",
                 "/404.html",
                 "/client.min.js",
-                "/src/fonts/NotoSans-Regular.woff2",
-                "/src/fonts/SpecialElite-Regular.woff2",
-                "/src/fonts/NotoSansMono-Regular.woff2",
+                "/src/fonts/Jura-Medium.woff2",
                 "/src/fonts/ShareTechMono-Regular.woff2",
-                "/src/fonts/Saira-Regular.woff2",
             ]);
       }),
       caches.open(USEFUL_CACHE).then(function (cache) {
@@ -70,6 +67,86 @@ self.addEventListener("fetch", function(event) {
         })
     );
 
+  }else if(url.includes("0.client.min.js") && event.request.mode === "same-origin") {
+
+    event.respondWith(
+        caches.open(REQUIRED_CACHE).then(function (cache) {
+          return cache.match("/0.client.min.js").then(function (response) {
+            return (
+                response ||
+                fetch(event.request).then(function (response) { // Fetch, clone, and serve
+                  cache.put("/0.client.min.js", response.clone());
+                  return response;
+                })
+            );
+          });
+        })
+    );
+
+  }else if(url.includes("1.client.min.js") && event.request.mode === "same-origin") {
+
+    event.respondWith(
+        caches.open(REQUIRED_CACHE).then(function (cache) {
+          return cache.match("/1.client.min.js").then(function (response) {
+            return (
+                response ||
+                fetch(event.request).then(function (response) { // Fetch, clone, and serve
+                  cache.put("/1.client.min.js", response.clone());
+                  return response;
+                })
+            );
+          });
+        })
+    );
+
+  }else if(url.includes("2.client.min.js") && event.request.mode === "same-origin") {
+
+      event.respondWith(
+          caches.open(REQUIRED_CACHE).then(function (cache) {
+              return cache.match("/2.client.min.js").then(function (response) {
+                  return (
+                      response ||
+                      fetch(event.request).then(function (response) { // Fetch, clone, and serve
+                          cache.put("/2.client.min.js", response.clone());
+                          return response;
+                      })
+                  );
+              });
+          })
+      );
+
+  }else if(url.includes("3.client.min.js") && event.request.mode === "same-origin") {
+
+      event.respondWith(
+          caches.open(REQUIRED_CACHE).then(function (cache) {
+              return cache.match("/3.client.min.js").then(function (response) {
+                  return (
+                      response ||
+                      fetch(event.request).then(function (response) { // Fetch, clone, and serve
+                          cache.put("/3.client.min.js", response.clone());
+                          return response;
+                      })
+                  );
+              });
+          })
+      );
+
+  }else if(url.includes("4.client.min.js") && event.request.mode === "same-origin") {
+
+      event.respondWith(
+          caches.open(REQUIRED_CACHE).then(function (cache) {
+              return cache.match("/4.client.min.js").then(function (response) {
+                  return (
+                      response ||
+                      fetch(event.request).then(function (response) { // Fetch, clone, and serve
+                          cache.put("/4.client.min.js", response.clone());
+                          return response;
+                      })
+                  );
+              });
+          })
+      );
+
   }else if(event.request.mode === "navigate") {
 
       // Return the same index.html page for all navigation query
@@ -110,6 +187,15 @@ self.addEventListener("fetch", function(event) {
 self.addEventListener("activate", function(event) {
 
   event.waitUntil(Promise.allSettled([
+          caches.open(REQUIRED_CACHE).then(function (cache) {
+            return cache.addAll([
+                "/client.min.js",
+                "/1.client.min.js",
+                "/2.client.min.js",
+                "/3.client.min.js",
+                "/4.client.min.js",
+            ]);
+          }),
           caches.open(USEFUL_CACHE).then(function (cache) {
             return cache.addAll([
                 "/src/images/404-dark-2.svg",

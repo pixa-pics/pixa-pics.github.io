@@ -1,6 +1,6 @@
 {
   "name": "pixa.pics",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Pixel art editor. Make potential (un)limited.",
   "main": "/index.html",
   "dependencies": {
@@ -68,11 +68,10 @@
     "files": [
       "/index.html",
       "/client.min.js",
-      "/src/fonts/NotoSans-Regular.woff2",
-      "/src/fonts/NotoSansMono-Regular.woff2",
-      "/src/fonts/Saira-Regular.woff2",
+      "/0.client.min.js",
+      "/1.client.min.js",
+      "/src/fonts/Jura-Medium.woff2",
       "/src/fonts/ShareTechMono-Regular.woff2",
-      "/src/fonts/SpecialElite-Regular.woff2",
       "/src/sounds/sfx/md/alert_error-01.mp3",
       "/src/sounds/sfx/md/navigation_transition-left.mp3",
       "/src/sounds/sfx/md/alert_high-intensity.mp3",

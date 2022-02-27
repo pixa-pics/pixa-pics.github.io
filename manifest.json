@@ -1,14 +1,14 @@
 {
   "manifest_version": 2,
-  "version": "1",
-  "name": "Pixa Pics",
+  "version": "2",
+  "name": "PixaPics",
   "start_url": "/",
   "scope": "/",
   "serviceworker": {
     "src": "/service-worker.js",
     "scope": "/"
   },
-  "short_name": "Pixa.",
+  "short_name": "PixaPics",
   "description": "Pixel art editor. Make potential (un)limited.",
   "display": "standalone",
   "theme_color": "#060f23",

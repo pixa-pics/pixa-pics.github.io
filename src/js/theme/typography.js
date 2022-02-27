@@ -1,48 +1,48 @@
 const typography = {
     h1: {
-        fontFamily: `"Noto Sans"`
+        fontFamily: `"Jura"`
     },
     h2: {
-        fontFamily: `"Noto Sans"`
+        fontFamily: `"Jura"`
     },
     h3: {
-        fontFamily: `"Noto Sans"`
+        fontFamily: `"Jura"`
     },
     h4: {
-        fontFamily: `"Noto Sans"`
+        fontFamily: `"Jura"`
     },
     h5: {
-        fontFamily: `"Noto Sans"`
+        fontFamily: `"Jura"`
     },
     h6: {
-        fontFamily: `"Noto Sans"`
+        fontFamily: `"Jura"`
     },
     subtitle1: {
-        fontFamily: `"Noto Sans"`
+        fontFamily: `"Jura"`
     },
     subtitle2: {
-        fontFamily: `"Noto Sans"`
+        fontFamily: `"Jura"`
     },
     body1: {
-        fontFamily: `"Noto Sans"`
+        fontFamily: `"Jura"`
     },
     body2: {
-        fontFamily: `"Noto Sans"`
+        fontFamily: `"Jura"`
     },
     button: {
-        fontFamily: `"Noto Sans"`
+        fontFamily: `"Jura"`
     },
     caption: {
-        fontFamily: `"Noto Sans"`
+        fontFamily: `"Jura"`
     },
     overline: {
-        fontFamily: `"Noto Sans"`
+        fontFamily: `"Jura"`
     },
     text: {
-        fontFamily: `"Noto Sans"`
+        fontFamily: `"Jura"`
     },
     label: {
-        fontFamily: `"Noto Sans"`
+        fontFamily: `"Jura"`
     },
 }
 

@@ -1,6 +1,6 @@
-import React from "react";
+import React, { Suspense } from "react";
 import { withStyles } from "@material-ui/core/styles";
-import CanvasPixels from "../components/CanvasPixels";
+const CanvasPixels = React.lazy(() => import("../components/CanvasPixels"));
 
 import Typography from "@material-ui/core/Typography";
 import Backdrop from "@material-ui/core/Backdrop";
@@ -17,7 +17,6 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import TouchRipple from "@material-ui/core/ButtonBase/TouchRipple";
 
 import { HISTORY } from "../utils/constants";
-import RESSOURCE_PIXELS from "../utils/ressource-pixel";
 
 import actions from "../actions/utils";
 
@@ -64,8 +63,10 @@ import NINJATwemoji from "../twemoji/react/1F977";
 import ShufflingSpanText from "../components/ShufflingSpanText";
 import ImageFileDialog from "../components/ImageFileDialog";
 
-import {base64png_to_xbrz_svg} from "../utils/png-xbrz-svg";
 import {postJSON} from "../utils/load-json";
+
+import HexGrid from "../icons/HexGrid";
+import get_svg_in_b64 from "../utils/svgToBase64Worker";
 
 const styles = theme => ({
     green: {
@@ -76,31 +77,33 @@ const styles = theme => ({
     },
     root: {
         height: "100%",
+        maxHeight: "100%",
         width: "100%",
         position: "relative",
+        [theme.breakpoints.down("md")]: {
+            position: "fixed",
+        },
+        overflow: "hidden",
     },
     content: {
-        position: "absolute",
-        margin: "auto",
         height: "100%",
         width: "100%",
-        top: 0,
-        bottom: 0,
-        right: 0,
-        left: 0,
+        maxHeight: "100%",
     },
     contentInner: {
         height: "100%",
-        display: "flex",
-        flexGrow: 1,
+        width: "100%",
+        maxHeight: "100%",
         position: "relative",
-        backgroundSize: "32px 32px !important"
+        display: "flex",
     },
     contentCanvas: {
         width: "100%",
         height: "100%",
+        maxHeight: "100%",
         display: "flex",
-        overflow: "hidden",
+        transform: "translateZ(0px)",
+        contain: "paint style size"
     },
     contentDrawer: {
         overscrollBehavior: "none",
@@ -138,6 +141,8 @@ const styles = theme => ({
         transform: "translateY(96px)"
     },
     contentDrawerFixed: {
+        maxHeight: "100%",
+        height: "100%",
         [theme.breakpoints.down("md")]: {
             display: "none",
         },
@@ -278,7 +283,7 @@ class Pixel extends React.Component {
             classes: props.classes,
             _history: HISTORY,
             _library_dialog_open: false,
-            _library: RESSOURCE_PIXELS,
+            _library: {},
             _library_type: "open",
             _view_name_index: 1,
             _previous_view_name_index: 1,
@@ -356,6 +361,16 @@ class Pixel extends React.Component {
 
             this._maybe_save_unsaved_pixel_art();
         }, 10 * 1000);
+
+        get_svg_in_b64(<HexGrid color={"#e5e5e5"}/>, (svg) => {
+
+            this.setState({_h_svg: svg});
+        });
+
+        import("../utils/ressource-pixel").then((RESSOURCE_PIXELS) => {
+
+            this.setState({_library: RESSOURCE_PIXELS});
+        });
     }
 
     _maybe_save_unsaved_pixel_art = () => {
@@ -730,32 +745,36 @@ class Pixel extends React.Component {
                     a.href = "" + href;
                     a.click();
 
-                    base64png_to_xbrz_svg(href, (jpeg_base64) => {
+                    import("../utils/png-xbrz-svg").then(({base64png_to_xbrz_svg}) => {
 
-                        let a = document.createElement("a"); //Create <a>
-                        a.download = `Painting_IMG_18x_${using.toUpperCase()}_N${Date.now()}_PIXAPICS.jpeg`; //File name Here
-                        a.href = "" + jpeg_base64;
-                        a.click();
+                        base64png_to_xbrz_svg(href, (jpeg_base64) => {
 
-                    }, (svg_base64) => {
+                            let a = document.createElement("a"); //Create <a>
+                            a.download = `Painting_IMG_18x_${using.toUpperCase()}_N${Date.now()}_PIXAPICS.jpeg`; //File name Here
+                            a.href = "" + jpeg_base64;
+                            a.click();
 
-                        let a = document.createElement("a"); //Create <a>
-                        a.download = `Painting_VECT_6x_${using.toUpperCase()}_N${Date.now()}_PIXAPICS.svg`; //File name Here
-                        a.href = "" + svg_base64;
-                        a.click();
+                        }, (svg_base64) => {
 
-                        this.setState({_loading: false, _loading_process: ""}, () => {
+                            let a = document.createElement("a"); //Create <a>
+                            a.download = `Painting_VECT_6x_${using.toUpperCase()}_N${Date.now()}_PIXAPICS.svg`; //File name Here
+                            a.href = "" + svg_base64;
+                            a.click();
 
-                            actions.trigger_sfx("hero_decorative-celebration-02");
-                            setTimeout(() => {
-                                actions.trigger_snackbar("Do You Want To Share? Yes or No", 7000);
-                                actions.jamy_update("happy");
+                            this.setState({_loading: false, _loading_process: ""}, () => {
 
-                            }, 2000);
+                                actions.trigger_sfx("hero_decorative-celebration-02");
+                                setTimeout(() => {
+                                    actions.trigger_snackbar("Do You Want To Share? Yes or No", 7000);
+                                    actions.jamy_update("happy");
 
-                        });
+                                }, 2000);
 
-                    }, palette, using);
+                            });
+
+                        }, palette, using);
+
+                    });
 
                 }, true);
 
@@ -1293,7 +1312,8 @@ class Pixel extends React.Component {
             _less_than_1280w,
             _pixel_dialog_create_open,
             _pixel_arts,
-            _post_img
+            _post_img,
+            _h_svg,
         } = this.state;
 
         let { _logged_account } = this.state;
@@ -1393,6 +1413,7 @@ class Pixel extends React.Component {
                                 set_pencil_mirror_mode={this._set_pencil_mirror_mode}
                                 set_width_from_slider={this._set_width_from_slider}
                                 set_height_from_slider={this._set_height_from_slider}
+                                set_import_size={this._set_import_size}
                                 set_import_colorize={this._set_import_colorize}
                                 switch_with_second_color={this._switch_with_second_color}
                                 show_hide_canvas_content={this._show_hide_canvas_content}
@@ -1518,8 +1539,15 @@ class Pixel extends React.Component {
             <div style={{height: "100%"}}>
                 <div className={classes.root}>
                     <div className={classes.content}>
-                        <div className={classes.contentInner} style={{background: `linear-gradient(90deg, rgb(${rgb}, ${rgb}, ${rgb}) 30px, transparent 1%) center, linear-gradient(rgb(${rgb}, ${rgb}, ${rgb}) 30px, transparent 1%) center, rgb(${rgb-70}, ${rgb-70}, ${rgb-70})`}}>
-                            <div className={classes.contentCanvas}>
+                        <div className={classes.contentInner} style={{
+                            backgroundColor: "#f7f7f7",
+                            backgroundImage: `url("${_h_svg}")`,
+                            backgroundRepeat: "repeat",
+                            backgroundSize: `${Math.ceil(.5*200)}px ${Math.ceil(.5*229.3)}px`,
+                            textRendering: "optimizespeed",
+                            imageRendering: "optimizespeed",
+                        }}>
+                            <Suspense fallback={<div />}>
                                 <CanvasPixels
                                     onContextMenu={(e) => {e.preventDefault()}}
                                     key={"canvas"}
@@ -1539,6 +1567,7 @@ class Pixel extends React.Component {
                                     bucket_threshold={_slider_value}
                                     color_loss={_slider_value}
                                     pxl_current_opacity={1}
+                                    shadow_size={1}
                                     onLoadComplete={this._handle_load_complete}
                                     onLoad={this._handle_load}
                                     onCanUndoRedoChange={this._handle_can_undo_redo_change}
@@ -1564,13 +1593,7 @@ class Pixel extends React.Component {
                                     max_size={_import_size}
                                     fast_drawing={true}
                                     px_per_px={1}/>
-                                <TouchRipple
-                                    className={classes.ripple}
-                                    ref={this._set_ripple_ref}
-                                    center={false}
-                                    style={{color: _ripple_color, opacity: _ripple_opacity, position: "fixed", width: "100vw", height: "100vh", zIndex: 2000}}
-                                />
-                            </div>
+                            </Suspense>
                             {drawer}
                         </div>
                     </div>
@@ -1759,20 +1782,26 @@ class Pixel extends React.Component {
 
                 <ImageFileDialog
                     open={_library_dialog_open}
-                    object={_library_type === "open" ? _library["backgrounds"]: _library_type === "import" ? _library["items"]: _library}
+                    object={_library}
                     onClose={this._close_library}
                     onSelectImage={this._from_library}
                 />
 
 
-              <PixelDialogCreate open={_pixel_dialog_create_open}
-                                 pixel_arts={_pixel_arts}
-                                 size={_import_size}
-                                 on_import_size_change={this._set_import_size}
-                                 on_pixel_art_delete={(id) => {this._delete_unsaved_pixel_art(id)}}
-                                 import_JSON_state={(s) => {this._handle_import_json_state(s)}}
-                                 on_upload={() => {this._upload_image()}}
-                                 onClose={this._set_pixel_dialog_create_closed}/>
+                <PixelDialogCreate open={_pixel_dialog_create_open}
+                                   pixel_arts={_pixel_arts}
+                                   size={_import_size}
+                                   on_import_size_change={this._set_import_size}
+                                   on_pixel_art_delete={(id) => {this._delete_unsaved_pixel_art(id)}}
+                                   import_JSON_state={(s) => {this._handle_import_json_state(s)}}
+                                   on_upload={() => {this._upload_image()}}
+                                   onClose={this._set_pixel_dialog_create_closed}/>
+
+                <TouchRipple
+                    className={classes.ripple}
+                    ref={this._set_ripple_ref}
+                    center={false}
+                    style={{color: _ripple_color, opacity: _ripple_opacity, position: "fixed", width: "100vw", height: "100vh", zIndex: 2000}}/>
             </div>
         );
     }

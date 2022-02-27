@@ -89,13 +89,13 @@ const styles = theme => ({
     appTitle: {
         verticalAlign: "middle",
         fontWeight: "bold",
-        fontFamily: `"Saira"`,
+        fontFamily: `"Share Tech Mono"`,
         userSelect: "none",
     },
     swipeableDrawerAppTitle: {
         verticalAlign: "middle",
         fontWeight: "bold",
-        fontFamily: `"Saira"`,
+        fontFamily: `"Share Tech Mono"`,
         userSelect: "none",
     },
     avatar: {
@@ -150,7 +150,7 @@ const styles = theme => ({
         }
     },
     logo: {
-        height: "calc(100% - 36px)",
+        height: "calc(100% - 18px)",
         marginRight: theme.spacing(1),
         verticalAlign: "middle",
     }
