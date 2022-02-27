@@ -31,8 +31,15 @@ module.exports = {
                         ]
                     },
                     compress: {
+                        sequences: true,
+                        dead_code: true,
+                        conditionals: true,
+                        booleans: true,
+                        unused: true,
+                        if_return: true,
+                        join_vars: true,
                         drop_console: true,
-                        passes: 2,
+                        passes: 3,
                     },
                     output: {
                         comments: false,
@@ -70,7 +77,8 @@ module.exports = {
     },
     output: {
         path: path.join(__dirname),
-        filename: "client.min.js"
+        filename: "client.min.js",
+        chunkFilename: "chunk.[id].min.js"
     },
     resolve: {
         alias: {

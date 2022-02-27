@@ -2,25 +2,19 @@ import React from "react";
 import { withStyles } from "@material-ui/core/styles";
 
 import { t } from "../utils/t";
-
-import FlashInfo from "../components/FlashInfo";
 import { HISTORY } from "../utils/constants";
-
 import ShareIcon from "@material-ui/icons/Share";
-
 import ShareDialog from "../components/ShareDialog";
-import Fab from "@material-ui/core/Fab";
-import Grow from "@material-ui/core/Grow";
+
+import {Fab, Grow, Button} from "@material-ui/core";
 
 import actions from "../actions/utils";
 
-import DollarEmojiSvg from "../twemoji/react/1F911";
 import AngelEmojiSvg from "../twemoji/react/1F607";
 import HearthEmojiSvg from "../twemoji/react/2665";
 import EarthEmojiSvg from "../twemoji/react/1F30D";
 
 import get_svg_in_b64 from "../utils/svgToBase64";
-import Button from "@material-ui/core/Button";
 
 const quotes = t( "pages.home.quotes");
 const random_quote_index = Math.floor(Math.random() * quotes.length);

@@ -1,6 +1,6 @@
-var REQUIRED_CACHE = "network-or-cache-v14-required";
-var USEFUL_CACHE = "network-or-cache-v14-useful";
-var STATIC_CACHE = "network-or-cache-v14-static";
+var REQUIRED_CACHE = "network-or-cache-v15-required";
+var USEFUL_CACHE = "network-or-cache-v15-useful";
+var STATIC_CACHE = "network-or-cache-v15-static";
 
 // On install, cache some resource.
 self.addEventListener("install", function(evt) {
@@ -30,7 +30,6 @@ self.addEventListener("install", function(evt) {
 
 self.addEventListener("fetch", function(event) {
 
-    console.log(event);
   const url = event.request.url;
 
   if((url.includes(".png") || url.includes(".jpg") || url.includes(".jpeg") || url.includes(".gif")) && event.request.mode !== "same-origin") {
@@ -67,15 +66,15 @@ self.addEventListener("fetch", function(event) {
         })
     );
 
-  }else if(url.includes("0.client.min.js") && event.request.mode === "same-origin") {
+  }else if(url.includes("chunk.1.min.js") && event.request.mode === "same-origin") {
 
     event.respondWith(
         caches.open(REQUIRED_CACHE).then(function (cache) {
-          return cache.match("/0.client.min.js").then(function (response) {
+          return cache.match("/chunk.1.min.js").then(function (response) {
             return (
                 response ||
                 fetch(event.request).then(function (response) { // Fetch, clone, and serve
-                  cache.put("/0.client.min.js", response.clone());
+                  cache.put("/chunk.1.min.js", response.clone());
                   return response;
                 })
             );
@@ -83,15 +82,15 @@ self.addEventListener("fetch", function(event) {
         })
     );
 
-  }else if(url.includes("1.client.min.js") && event.request.mode === "same-origin") {
+  }else if(url.includes("chunk.2.min.js") && event.request.mode === "same-origin") {
 
     event.respondWith(
         caches.open(REQUIRED_CACHE).then(function (cache) {
-          return cache.match("/1.client.min.js").then(function (response) {
+          return cache.match("/chunk.2.min.js").then(function (response) {
             return (
                 response ||
                 fetch(event.request).then(function (response) { // Fetch, clone, and serve
-                  cache.put("/1.client.min.js", response.clone());
+                  cache.put("/chunk.2.min.js", response.clone());
                   return response;
                 })
             );
@@ -99,15 +98,15 @@ self.addEventListener("fetch", function(event) {
         })
     );
 
-  }else if(url.includes("2.client.min.js") && event.request.mode === "same-origin") {
+  }else if(url.includes("chunk.3.min.js") && event.request.mode === "same-origin") {
 
       event.respondWith(
           caches.open(REQUIRED_CACHE).then(function (cache) {
-              return cache.match("/2.client.min.js").then(function (response) {
+              return cache.match("/chunk.3.min.js").then(function (response) {
                   return (
                       response ||
                       fetch(event.request).then(function (response) { // Fetch, clone, and serve
-                          cache.put("/2.client.min.js", response.clone());
+                          cache.put("/chunk.3.min.js", response.clone());
                           return response;
                       })
                   );
@@ -115,31 +114,15 @@ self.addEventListener("fetch", function(event) {
           })
       );
 
-  }else if(url.includes("3.client.min.js") && event.request.mode === "same-origin") {
+  }else if(url.includes("chunk.4.min.js") && event.request.mode === "same-origin") {
 
       event.respondWith(
           caches.open(REQUIRED_CACHE).then(function (cache) {
-              return cache.match("/3.client.min.js").then(function (response) {
+              return cache.match("/chunk.4.min.js").then(function (response) {
                   return (
                       response ||
                       fetch(event.request).then(function (response) { // Fetch, clone, and serve
-                          cache.put("/3.client.min.js", response.clone());
-                          return response;
-                      })
-                  );
-              });
-          })
-      );
-
-  }else if(url.includes("4.client.min.js") && event.request.mode === "same-origin") {
-
-      event.respondWith(
-          caches.open(REQUIRED_CACHE).then(function (cache) {
-              return cache.match("/4.client.min.js").then(function (response) {
-                  return (
-                      response ||
-                      fetch(event.request).then(function (response) { // Fetch, clone, and serve
-                          cache.put("/4.client.min.js", response.clone());
+                          cache.put("/chunk.4.min.js", response.clone());
                           return response;
                       })
                   );
@@ -190,10 +173,10 @@ self.addEventListener("activate", function(event) {
           caches.open(REQUIRED_CACHE).then(function (cache) {
             return cache.addAll([
                 "/client.min.js",
-                "/1.client.min.js",
-                "/2.client.min.js",
-                "/3.client.min.js",
-                "/4.client.min.js",
+                "/chunk.1.min.js",
+                "/chunk.2.min.js",
+                "/chunk.3.min.js",
+                "/chunk.4.min.js",
             ]);
           }),
           caches.open(USEFUL_CACHE).then(function (cache) {

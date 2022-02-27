@@ -3,20 +3,13 @@ import { withStyles } from "@material-ui/core/styles";
 
 import { t } from "../utils/t";
 
-import Container from "@material-ui/core/Container";
-import Card from "@material-ui/core/Card";
-import CardContent from "@material-ui/core/CardContent";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Switch from "@material-ui/core/Switch";
-import TextField from "@material-ui/core/TextField";
-import Fade from "@material-ui/core/Fade";
-import Autocomplete from "@material-ui/lab/Autocomplete";
+import {CardHeader, Container, Card, CardContent, FormControlLabel, Switch, TextField, Fade} from "@material-ui/core";
+import {Autocomplete} from "@material-ui/lab";
 
 import { LANGUAGES, LOCALES, CURRENCY_COUNTRIES } from "../utils/constants";
 import get_svg_in_b64 from "../utils/svgToBase64";
 import api from "../utils/api";
 import actions from "../actions/utils";
-import CardHeader from "@material-ui/core/CardHeader";
 
 import fuzzy from "fuzzy";
 

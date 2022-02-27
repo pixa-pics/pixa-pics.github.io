@@ -1,12 +1,7 @@
 import React from "react";
 import { withStyles } from "@material-ui/core/styles";
-
 import { t } from "../utils/t";
-
-import AppBar from "@material-ui/core/AppBar";
-import Tabs from "@material-ui/core/Tabs";
-import Tab from "@material-ui/core/Tab";
-
+import {AppBar, Tabs, Tab} from "@material-ui/core";
 import AccountBalanceIcon from "@material-ui/icons/AccountBalance";
 import BarChartIcon from "@material-ui/icons/BarChart";
 import CallMadeIcon from "@material-ui/icons/CallMade";

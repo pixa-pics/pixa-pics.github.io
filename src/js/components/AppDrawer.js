@@ -1,9 +1,6 @@
 import React from "react";
 import { withStyles } from "@material-ui/core/styles";
-import Toolbar from "@material-ui/core/Toolbar";
-import Drawer from "@material-ui/core/Drawer";
-import Box from "@material-ui/core/Box";
-
+import {Toolbar, Drawer, Box} from "@material-ui/core";
 import DrawerContent from "../components/DrawerContent";
 
 

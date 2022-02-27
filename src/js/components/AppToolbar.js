@@ -3,25 +3,13 @@ import { withStyles } from "@material-ui/core/styles";
 
 import { t } from "../utils/t";
 
-import Fade from "@material-ui/core/Fade";
-import AppBar from "@material-ui/core/AppBar";
-import Toolbar from "@material-ui/core/Toolbar";
-import Divider from "@material-ui/core/Divider";
-import SwipeableDrawer from "@material-ui/core/SwipeableDrawer";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import ListItemText from "@material-ui/core/ListItemText";
-import IconButton from "@material-ui/core/IconButton";
-import MenuItem from "@material-ui/core/MenuItem";
-import Menu from "@material-ui/core/Menu";
-import Avatar from "@material-ui/core/Avatar";
-import Tooltip from "@material-ui/core/Tooltip";
+import {Fade, AppBar, Toolbar, Divider, SwipeableDrawer, ListItemIcon, ListItemText, IconButton, MenuItem, Menu, Tooltip} from "@material-ui/core";
 
 import MenuIcon from "@material-ui/icons/Menu";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import SettingsIcon from "@material-ui/icons/Settings";
 import SecurityIcon from "@material-ui/icons/Security";
 
-import Jdenticon from "react-jdenticon";
 import api  from "../utils/api";
 import { HISTORY } from "../utils/constants";
 import InnerToolbar from "../components/InnerToolbar";
@@ -97,18 +85,6 @@ const styles = theme => ({
         fontWeight: "bold",
         fontFamily: `"Share Tech Mono"`,
         userSelect: "none",
-    },
-    avatar: {
-        backgroundColor: "transparent",
-        marginLeft: theme.spacing(1),
-        marginRight: theme.spacing(-1.5),
-        padding: theme.spacing(1.5),
-        height: 48,
-        width: 48,
-        cursor: "pointer",
-        "& div": {
-            display: "inherit"
-        }
     },
     jamyContainer: {
         display: "initial",

@@ -3664,24 +3664,23 @@ class CanvasPixels extends React.Component {
 
             const of = _latest_pointers_distance > 0 ? anchor_diff / _latest_pointers_distance : 1;
 
-            this.setState({
-                _previous_double_pointer_move_timestamp: Date.now(),
-                _latest_pointers_distance: anchor_diff,
-                _latest_pointers_client_x_center: client_x_center,
-                _latest_pointers_client_y_center: client_y_center,
-            }, () => {
-
-                if(_previous_double_pointer_down_timestamp + 50 < Date.now()) {
+            if(_previous_double_pointer_down_timestamp + 50 < Date.now()) {
+                this.setState({
+                    _previous_double_pointer_move_timestamp: Date.now(),
+                    _latest_pointers_distance: anchor_diff,
+                    _latest_pointers_client_x_center: client_x_center,
+                    _latest_pointers_client_y_center: client_y_center,
+                }, () => {
 
                     this.zoom_of(of, page_x_center, page_y_center, -move_x, -move_y);
-                }
-            });
+                });
+            }
 
             this._handle_position_change(event, client_x_center, client_y_center);
 
-        }else /*if(canvas_event_target === "CANVAS_WRAPPER_OVERFLOW")*/ {
+        }else if(_pointer_events.length === 1) {
 
-            /*this._handle_canvas_move(event, canvas_event_target);*/ if(_previous_double_pointer_move_timestamp + 200 < Date.now()) {this._handle_canvas_mouse_move(event, canvas_event_target)};
+            /*this._handle_canvas_move(event, canvas_event_target);*/ if(_previous_double_pointer_move_timestamp + 200 < Date.now()) {this._handle_canvas_mouse_move(event, canvas_event_target);}
             this._handle_position_change(event, _pointer_events[0].clientX, _pointer_events[0].clientY);
         }
     };
@@ -3734,33 +3733,23 @@ class CanvasPixels extends React.Component {
 
         if(this.state._canvas_event_target !== canvas_event_target) {
 
-            this.setState({_canvas_event_target: canvas_event_target}, () => {
-
-                this._request_force_update();
-            });
+            this.setState({_canvas_event_target: canvas_event_target});
         }
 
         if(event.pointerType === "mouse") {
 
-            this._handle_position_change(event);
+            this._handle_position_change(event, event.pageX, event.pageY);
             this._handle_canvas_mouse_move(event, canvas_event_target);
 
         }else {
 
             let { _pointer_events } = this.state;
-            let pointer_event_got_deleted = true;
 
             for (let i = 0; i < _pointer_events.length; i++) {
                 if (event.pointerId === _pointer_events[i].pointerId) {
                     _pointer_events[i] = event;
-                    pointer_event_got_deleted = false;
                     break;
                 }
-            }
-
-            if(pointer_event_got_deleted){
-
-                _pointer_events.push(event);
             }
 
             this.setState({_pointer_events: [..._pointer_events]});

@@ -1,8 +1,8 @@
 import React from "react";
 import { withStyles } from "@material-ui/core/styles";
 
-import Typography from "@material-ui/core/Typography";
-import Slider from "@material-ui/core/Slider";
+import {Avatar, List, ListItem, ListItemAvatar, ListItemIcon, ListItemText, ListSubheader, Typography, Slider, RadioGroup, Radio, FormLabel, Collapse, Divider, FormControlLabel, Button, Menu} from "@material-ui/core";
+
 import {HISTORY} from "../utils/constants";
 
 import AllLayersIcon from "../icons/AllLayers";
@@ -10,20 +10,10 @@ import SelectIcon from "../icons/Select";
 import ImageEffectIcon from "../icons/ImageEffect";
 import ImageFilterIcon from "../icons/ImageFilter";
 import SwipeableViews from "react-swipeable-views";
-import {Avatar, List, ListItem, ListItemAvatar, ListItemIcon, ListItemText, ListSubheader} from "@material-ui/core";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import RadioGroup from "@material-ui/core/RadioGroup";
-import Radio from "@material-ui/core/Radio";
-import FormLabel from "@material-ui/core/FormLabel";
-import Collapse from "@material-ui/core/Collapse";
-import Divider from "@material-ui/core/Divider";
 import PixelColorPalette from "./PixelColorPalette";
-import Button from "@material-ui/core/Button";
-import Menu from "@material-ui/core/Menu";
 import {ChromePicker} from "react-color";
 import ImagePlusIcon from "../icons/ImagePlus";
-import HistoryIcon from "../icons/History";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import ArrowForwardIcon from "@material-ui/icons/ArrowForward";
 import ImportIcon from "../icons/Import";
@@ -39,9 +29,6 @@ import LayerAddIcon from "../icons/LayerAdd";
 import LayerDeleteIcon from "../icons/LayerDelete";
 import ContentDuplicateIcon from "../icons/ContentDuplicate";
 import MergeIcon from "../icons/Merge";
-import EyeIcon from "../icons/Eye";
-import EyeOffIcon from "../icons/EyeOff";
-import OpacityIcon from "../icons/Opacity";
 import FileImportIcon from "../icons/FileImport";
 import DrawIcon from "../icons/Draw";
 import ColorPickerIcon from "../icons/ColorPicker";
@@ -70,7 +57,6 @@ import SelectionEllipseIcon from "../icons/SelectionEllipse";
 import ImageMoveIcon from "../icons/ImageMove";
 import SelectInvertIcon from "../icons/SelectInvert";
 import CopyIcon from "@material-ui/icons/FileCopy";
-import PublishIcon from "@material-ui/icons/Publish";
 import CutIcon from "../icons/Cut";
 import EraserIcon from "../icons/Eraser";
 
@@ -87,12 +73,9 @@ import RotateRightIcon from "../icons/RotateRight";
 import SwapHorizontalIcon from "../icons/SwapHorizontal";
 import SwapVerticalIcon from "../icons/SwapVertical";
 
-import MagnifyPlusIcon from "../icons/MagnifyPlus";
-import MagnifyMinusIcon from "../icons/MagnifyMinus";
 import NavigationIcon from "../icons/Navigation";
 
 import Jdenticon from "react-jdenticon";
-import InfoIcon from "@material-ui/icons/Info";
 
 const styles = theme => ({
     listSubHeader: {

@@ -1,13 +1,8 @@
 import React from "react";
 import { withStyles } from "@material-ui/core/styles"
+import {Breadcrumbs, Divider, Link, DialogActions, DialogContent, Button, Dialog} from "@material-ui/core";
 
-import Dialog from "@material-ui/core/Dialog";
-import Button from "@material-ui/core/Button";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogActions from "@material-ui/core/DialogActions";
 import {t} from "../utils/t";
-import {Breadcrumbs, Divider, Link} from "@material-ui/core";
-import IconButton from "@material-ui/core/IconButton";
 
 const styles = theme => ({
 

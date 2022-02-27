@@ -4,11 +4,8 @@ import { withStyles } from "@material-ui/core/styles";
 import { t } from "../utils/t";
 import { HISTORY } from "../utils/constants";
 
-import Fade from "@material-ui/core/Fade";
-import Button from "@material-ui/core/Button";
-import LinearProgress from "@material-ui/core/LinearProgress";
-import IconButton from "@material-ui/core/IconButton";
-import InputBase from "@material-ui/core/InputBase";
+import {Fade, Button, LinearProgress, IconButton, InputBase} from "@material-ui/core";
+
 import CloseIcon from "@material-ui/icons/Close";
 import SearchIcon from "@material-ui/icons/Search";
 

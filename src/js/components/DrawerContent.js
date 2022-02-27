@@ -3,13 +3,7 @@ import { withStyles } from "@material-ui/core/styles";
 
 import { t } from "../utils/t";
 
-import Fade from "@material-ui/core/Fade";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import ListItemText from "@material-ui/core/ListItemText";
-import Badge from "@material-ui/core/Badge";
-
+import {Fade, List, ListItem, ListItemIcon, ListItemText, Badge} from "@material-ui/core";
 
 import PhotoShootTweemoji from "../twemoji/react/1F4F8";
 import PersonIcon from "@material-ui/icons/Person";
@@ -18,7 +12,6 @@ import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
 import ForumIcon from "@material-ui/icons/Forum";
 
 import { HISTORY } from "../utils/constants";
-import api from "../utils/api";
 import actions from "../actions/utils";
 
 const styles = theme => ({

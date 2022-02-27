@@ -1,9 +1,8 @@
 import React from "react";
 import { withStyles } from "@material-ui/core/styles";
-import ButtonBase from "@material-ui/core/ButtonBase";
-import Fade from "@material-ui/core/Fade";
+import {ButtonBase, Tooltip, Fade} from "@material-ui/core";
+
 import CheckBoldIcon from "../icons/CheckBold";
-import Tooltip from "@material-ui/core/Tooltip";
 
 const styles = theme => ({
     colorPaletteItem: {

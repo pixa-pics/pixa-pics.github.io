@@ -2,18 +2,7 @@ import React, { Suspense } from "react";
 import { withStyles } from "@material-ui/core/styles";
 const CanvasPixels = React.lazy(() => import("../components/CanvasPixels"));
 
-import Typography from "@material-ui/core/Typography";
-import Backdrop from "@material-ui/core/Backdrop";
-import Slider from "@material-ui/core/Slider";
-import SwipeableDrawer from "@material-ui/core/SwipeableDrawer";
-import Drawer from "@material-ui/core/Drawer";
-import Toolbar from "@material-ui/core/Toolbar";
-import Tabs from "@material-ui/core/Tabs";
-import Tab from "@material-ui/core/Tab";
-import Menu from "@material-ui/core/Menu";
-import ListSubheader from "@material-ui/core/ListSubheader";
-import ListItemText from "@material-ui/core/ListItemText";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
+import {Fab, Grow, ListItem, Typography, Backdrop, Slider, SwipeableDrawer, Drawer, Toolbar, Tabs, Tab, Menu, ListSubheader, ListItemText, ListItemIcon} from "@material-ui/core";
 import TouchRipple from "@material-ui/core/ButtonBase/TouchRipple";
 
 import { HISTORY } from "../utils/constants";
@@ -30,15 +19,12 @@ import ImageFilterIcon from "../icons/ImageFilter";
 import ImageEditIcon from "../icons/ImageEdit";
 import SquareIcon from "../icons/Square";
 
-import Fab from "@material-ui/core/Fab";
-import Grow from "@material-ui/core/Grow";
 import DialogCloseButton from "../components/DialogCloseButton";
 import lightGreen from "@material-ui/core/colors/lightGreen";
 import red from "@material-ui/core/colors/red";
 import PixelToolboxSwipeableViews from "../components/PixelToolboxSwipeableViews";
 import PixelDialogCreate from "../components/PixelDialogCreate";
 import api from "../utils/api";
-import ListItem from "@material-ui/core/ListItem";
 import FileImportIcon from "../icons/FileImport";
 import ContrastCircleIcon from "../icons/ContrastCircle";
 import LessColorIcon from "../icons/LessColor";

@@ -1,10 +1,9 @@
 import React from "react";
-import CssBaseline from "@material-ui/core/CssBaseline";
 import { withStyles } from "@material-ui/core/styles";
-import Snackbar from "@material-ui/core/Snackbar";
-import IconButton from "@material-ui/core/IconButton";
+
+import {Snackbar, CssBaseline, IconButton, Toolbar} from "@material-ui/core";
+
 import CloseIcon from "@material-ui/icons/Close";
-import Toolbar from "@material-ui/core/Toolbar";
 
 import AppToolbar from "../components/AppToolbar";
 import AppDrawer from "../components/AppDrawer";

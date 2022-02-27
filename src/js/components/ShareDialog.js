@@ -3,20 +3,11 @@ import { withStyles } from "@material-ui/core/styles"
 
 import { t } from "../utils/t";
 
-import Dialog from "@material-ui/core/Dialog";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import InputLabel from "@material-ui/core/InputLabel";
-import Input from "@material-ui/core/Input";
-import InputAdornment from "@material-ui/core/InputAdornment";
-import IconButton from "@material-ui/core/IconButton";
-import FileCopyIcon from "@material-ui/icons/FileCopy";
-import FormControl from "@material-ui/core/FormControl";
-import Tooltip from "@material-ui/core/Tooltip";
+import {Dialog, DialogContent, DialogContentText, DialogTitle, InputLabel, Input, InputAdornment, IconButton, FormControl, Tooltip} from "@material-ui/core";
 
 import DialogCloseButton from "../components/DialogCloseButton";
 
+import FileCopyIcon from "@material-ui/icons/FileCopy";
 import EmailIcon from "@material-ui/icons/Email"
 import WhatsAppIcon from "../icons/WhatsApp";
 import PinterestIcon from "../icons/Pinterest";
