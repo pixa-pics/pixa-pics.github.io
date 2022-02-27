@@ -18,6 +18,11 @@ const styles = theme => ({
     nested: {
         paddingLeft: theme.spacing(4),
     },
+    boldListItemText: {
+        "& > span": {
+            fontWeight: "bold"
+        }
+    },
     iconColor: {
         color: theme.palette.secondary.contrastText
     },
@@ -121,8 +126,8 @@ class DrawerContent extends React.Component {
                     <div>
                         <List>
                             <ListItem button onClick={this._open_pixel_page}>
-                                <ListItemIcon><PhotoShootTweemoji className={classes.iconLeft}/></ListItemIcon>
-                                <ListItemText primary={"START USING IT"} />
+                                <ListItemText className={classes.boldListItemText} primary={"START USING IT"} />
+                                <ListItemIcon><PhotoShootTweemoji className={classes.iconRight}/></ListItemIcon>
                             </ListItem>
                             <ListItem button onClick={(event) => this._open_link(event, "https://github.com/pixa-pics/pixa-pics.github.io/graphs/contributors")}>
                                 <ListItemIcon><PersonIcon className={classes.iconColor} /></ListItemIcon>

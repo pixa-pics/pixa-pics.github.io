@@ -199,7 +199,7 @@ class CanvasPixels extends React.Component {
             fast_drawing: props.fast_drawing || false,
             canvas_cursor: props.canvas_cursor || 'url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB8AAAAfCAYAAAAfrhY5AAAAAXNSR0IArs4c6QAAAFxJREFUSIntlkEKACEQw6b7/z/Hq7cdqeAcmrtJQRCrDACc824YZ8B3cU/iiSc+M27x7IULDqrq3Z0kdaVdnwA6XqA14Mh3svTXuA246QtzyB8u8cQTHx23cF+4BaK1P/6WF9EdAAAAAElFTkSuQmCC") 15 15, auto',
             canvas_border_radius: props.canvas_border_radius || 0,
-            canvas_wrapper_background_color: props.canvas_wrapper_background_color || "#575757",
+            canvas_wrapper_background_color: props.canvas_wrapper_background_color || "#757575",
             canvas_wrapper_border_width: props.canvas_wrapper_border_width || 0,
             canvas_wrapper_border_radius: props.canvas_wrapper_border_radius || 4,
             canvas_wrapper_padding: props.canvas_wrapper_padding || 72,
@@ -3626,19 +3626,12 @@ class CanvasPixels extends React.Component {
         }else if(_pointer_events.length === 1) {
 
             this._handle_canvas_mouse_down(event, null);
-            _previous_single_pointer_down_timestamp = Date.now();
-            _previous_double_pointer_down_timestamp = 0;
-            this.setState({_previous_single_pointer_down_timestamp, _previous_double_pointer_down_timestamp});
         }else if(_pointer_events.length === 2) {
 
-            _previous_double_pointer_down_timestamp = Date.now();
-            const time_between_way_from_one_to_multiple_pointers = _previous_double_pointer_down_timestamp - _previous_single_pointer_down_timestamp;
-            _previous_single_pointer_down_timestamp = 0;
-            this.setState({_previous_double_pointer_down_timestamp, _previous_single_pointer_down_timestamp});
-            
-            if(time_between_way_from_one_to_multiple_pointers < 200){
+            const time_between_way_from_one_to_multiple_pointers = _previous_single_pointer_down_timestamp - _previous_double_pointer_down_timestamp;
+            if(time_between_way_from_one_to_multiple_pointers < 0 && time_between_way_from_one_to_multiple_pointers > -200){
                 
-                this.nothing_happened_undo(200);
+                this.nothing_happened_undo(Math.abs(time_between_way_from_one_to_multiple_pointers));
             }
         }
     };
@@ -3733,8 +3726,13 @@ class CanvasPixels extends React.Component {
 
         if(this.state._canvas_event_target !== canvas_event_target) {
 
-            this.setState({_canvas_event_target: canvas_event_target});
+            this.setState({_canvas_event_target: canvas_event_target}, () => {
+
+                this._request_force_update();
+            });
         }
+
+        let { _pointer_events } = this.state;
 
         if(event.pointerType === "mouse") {
 
@@ -3742,8 +3740,6 @@ class CanvasPixels extends React.Component {
             this._handle_canvas_mouse_move(event, canvas_event_target);
 
         }else {
-
-            let { _pointer_events } = this.state;
 
             for (let i = 0; i < _pointer_events.length; i++) {
                 if (event.pointerId === _pointer_events[i].pointerId) {
@@ -3809,16 +3805,19 @@ class CanvasPixels extends React.Component {
 
         }else {
 
-            const { scale_move_x, scale_move_y } = this.state;
+            const { scale_move_x, scale_move_y, _mouse_down, _previous_single_pointer_down_x_y } = this.state;
+            const one_pointer = Boolean(_pointer_events.length === 1);
+            const two_pointer = Boolean(_pointer_events.length === 2);
 
             this.setState({
                 _event_button: event.button,
                 _mouse_down: true,
                 _previous_initial_scale_move: [scale_move_x, scale_move_y],
-                _pointer_events
+                _pointer_events,
+                _previous_single_pointer_down_x_y: one_pointer ? [event.pageX, event.pageY]: _previous_single_pointer_down_x_y,
+                _previous_single_pointer_down_timestamp: one_pointer ? Date.now(): 0,
+                _previous_double_pointer_down_timestamp: two_pointer ? Date.now(): 0,
             }, ()  => {
-
-                this.setState({_previous_single_pointer_down_x_y: [event.pageX, event.pageY]});
 
                 this._handle_canvas_pointer_down(event, canvas_event_target);
             });
@@ -8123,7 +8122,7 @@ class CanvasPixels extends React.Component {
         return shadows[elevation];
     }
 
-    _get_cursor = (_is_on_resize_element, _is_image_import_mode, _mouse_down, tool, select_mode) => {
+    _get_cursor = (_is_on_resize_element, _is_image_import_mode, _mouse_down, tool, select_mode, _canvas_event_target) => {
 
         let cursor = 'url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAAAAq0lEQVRYR+1WQQrAIAxb///oDmUOkc3W2kEG2XHQGpPURg6wTzLwqKr2fUQk3Ddc2AMogBqGgo2ARpkhGaKHZtMIKRmnjJLtrBBIU0O9QzvsjrUpyzUd0BgfvAdYWz3StzLUm7KBuWLEKzZPzHjqO8SWElXuX7UnLCCvTCvTFJYsAuarGswp270tQ77FIOQuY0BjQLOM+zuGVlbK7HIpLzXH3vIXGfIwlGXqE9034xUtxdxDAAAAAElFTkSuQmCC") 18 18, auto';
 
@@ -8142,6 +8141,12 @@ class CanvasPixels extends React.Component {
                 cursor = 'url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAAAA9ElEQVRYR+3X0Q6FIAgGYDjn/R/5xBmtmjMTmIBd2G3WvsE/VISXPfgyDyyQ1JFbhYiIpI/q94joVukmyPJ/9i+Q1MUpFTpa8wWAzZoxy/puhg7E9b8MlAhiTRnyaJQIQsQPEW1ZKA2I12AWSgvaO5eBsoBSUFZQOErcyx6GHgf9FxH0kU0xJFMjoJD2jYIYZWpffbypI+EBMlWKQWf2WkcXL5AalQlSobJBImoGqIsq51d0hm5n/9beVx5nskG9kbDjZ4Ca7TtLGQ6S7nT19SoFNHqn8xyMnIlrCmtuGikV0kDKNVF7mdXxuN61ZR6qBZKq+Aeqdig0aelV6gAAAABJRU5ErkJggg==") 18 18, auto'
             }
 
+        }else if ((tool === "MOVE" || _canvas_event_target.includes("CANVAS_WRAPPER")) && !_mouse_down) {
+
+            cursor = "grab";
+        }else if((tool === "MOVE" || _canvas_event_target.includes("CANVAS_WRAPPER")) && _mouse_down){
+
+            cursor = "grabbing";
         }else if (tool === "RECTANGLE") {
 
             cursor = 'url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAAAAv0lEQVRYR+2X3Q6AIAiF5f0fmuaFG6OSH9F00a0IX+dAKZTNHtiMpySQ5Mg/FUJEpMoAwKsQSxSqQI2hsiUQb9whhbjf0lS0dWrDUw5qGc9J9956iL6NFob3hSUH33sWEJvWrmBLLJNG1GCpf+wtE5FAkZa5fx0zLNNaW+O6Yx+lUAJJCgwdP2b0kCXnkh5KIE0PuU+MXF6pmHY9BEhbzBInfdtCzkPTgSwFPLGf3zos0EvuZQlkUUCKTcuOU+gCTnb3JcS3RYIAAAAASUVORK5CYII=") 27 12, auto';
@@ -8169,13 +8174,6 @@ class CanvasPixels extends React.Component {
         }else if (tool === "HUE BUCKET") {
 
             cursor = 'url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAAABMklEQVRYR+2XwRLDIAhEpen/f3FTOmaajrUgC5jpxVyD+lwXUCoXfszM5/RERMhSUBAyUR9TYVqGyoZAXQLUw1TYvwFlYCr4VIWyMFOBZsBMA5JgTpOj3vlkYySD2jEjmAhUykPaMR3Sd2UHVSoMZHnG+q+dTAgIXQyNa+HcQN5FvPEuIO/kjam/2siocsNAURgvFAQ0yiZv2bCyLwzkBdHi+3IAAb3P/McHWSipNo2Absy8E9FWSnnOhtIKpQp0+qYfiLQKS7lR1RaBrNteBspqIRLQxswP4fp5L6XsozTOKKN2e2330s48SlnKTAFCjY7CiBc0j0LI8Xlg1BujZWrJK9nWYt4YI4+8FsqrjAlkZcygFRyvVeRRKM0Bt44ooHfcArIUWwothSwFrP/LQ5ZCL65vGzRTMXdZAAAAAElFTkSuQmCC") 6 25, auto';
-        }else if (tool === "MOVE" && !_mouse_down) {
-
-            cursor = "grab";
-            //cursor = 'url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAAABKklEQVRYR9WYURLDIAhE4/0PbcZMdCgRZIG2Jr914AGyQsux2Vc24zlSgGqttQVWSgnbCxtoMJ2jcUWhQkAUppc+CuUGmsFkQLmANJgoFAxkgYlAQUAIjBcKBprpFu0y4XezH/NBSUB/3vYr0bMCrez0gNUMdWeatiBArbQrnRKBUEctwgzwKRDvpgxHVpsPIPQ58GRSk4QPIEln7sdcnFRWbT8u7GQY4NkfQB7Ry5qlKNS+QHeXjNmGRv+XkpGL9oD6RpdJMrF/288ylZ0hzd57ng6aKW2jQITRspm8b/xg7X/tX/xbKTWyGkEZ8qj5atx4BIfKPwKFwlx3DAXSFJ2rO1Iq08SowW61KHqfGUs1XCXjnbfNnw1W8bRkJnyHECfI2XDJEGeWsyd5ZmY0dNgEnAAAAABJRU5ErkJggg==") 18 18, auto';
-        }else if(tool === "MOVE" && _mouse_down){
-
-            cursor = "grabbing";
         }else if (tool === "CONTOUR") {
 
             cursor = 'url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAAAA/klEQVRYR+XX7Q6FIAgG4Lz/i/bMlo2ZIB++zO30t1xPgEjlOuwqh3mu/wPVWuuYhVIKGwhohBpm9u5m5FAwEIfp0eJQENAM0zNHIzZDbQdxmJ4ieh8O0tRMGkiqGbrRUlK2KmCu+UJSthPT4KGi3o0JgRAYNwiFcYGQGDMIjTGBMjBqUBbGBLof5seYT++TRgxpSjX1oT5srWBejCpCBPHiJVgEswSNJ3MPNR0laCqjGBOI5p0MW3fUZlH0/s2INbTaXSPMi6DrwiDpD8IDdIN21MsM7AKhMK6iRmLMIDTGBMrAqEFZGBXo6cSmM8+z3d9TILIYsTbty7X440A/uhPvJTjQhwcAAAAASUVORK5CYII=") 8 33, auto';
@@ -8445,7 +8443,7 @@ class CanvasPixels extends React.Component {
         background_image_style_props = (show_image_only_before_canvas_set && !has_shown_canvas_once) || !show_image_only_before_canvas_set ?
             background_image_style_props: {};
 
-        const cursor = this._get_cursor(_is_on_resize_element, _is_image_import_mode, _mouse_down, tool, select_mode);
+        const cursor = this._get_cursor(_is_on_resize_element, _is_image_import_mode, _mouse_down, tool, select_mode, _canvas_event_target);
 
         const canvas_wrapper_width = Math.round(pxl_width * _screen_zoom_ratio * scale);
         const canvas_wrapper_height = Math.round(pxl_height * _screen_zoom_ratio * scale);
@@ -8527,6 +8525,7 @@ class CanvasPixels extends React.Component {
                                 transformOrigin: "left top",
                                 boxSizing: "content-box",
                                 filter: "drop-shadow(0 0 0px #fff)",
+                                backgroundBlendMode: "color",
                                 borderWidth: 0,
                                 ...background_image_style_props,
                             }}
