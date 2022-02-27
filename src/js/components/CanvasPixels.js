@@ -199,7 +199,7 @@ class CanvasPixels extends React.Component {
             fast_drawing: props.fast_drawing || false,
             canvas_cursor: props.canvas_cursor || 'url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB8AAAAfCAYAAAAfrhY5AAAAAXNSR0IArs4c6QAAAFxJREFUSIntlkEKACEQw6b7/z/Hq7cdqeAcmrtJQRCrDACc824YZ8B3cU/iiSc+M27x7IULDqrq3Z0kdaVdnwA6XqA14Mh3svTXuA246QtzyB8u8cQTHx23cF+4BaK1P/6WF9EdAAAAAElFTkSuQmCC") 15 15, auto',
             canvas_border_radius: props.canvas_border_radius || 0,
-            canvas_wrapper_background_color: props.canvas_wrapper_background_color || "#757575",
+            canvas_wrapper_background_color: props.canvas_wrapper_background_color || "#020529",
             canvas_wrapper_border_width: props.canvas_wrapper_border_width || 0,
             canvas_wrapper_border_radius: props.canvas_wrapper_border_radius || 4,
             canvas_wrapper_padding: props.canvas_wrapper_padding || 72,
@@ -686,11 +686,6 @@ class CanvasPixels extends React.Component {
 
         return false;
     }
-
-    force_click = () => {
-
-        this._handle_canvas_mouse_down(null, 1);
-    };
 
     zoom_of = (of = 1, page_x = null, page_y = null, move_x = 0, move_y = 0) => {
 
@@ -3597,48 +3592,54 @@ class CanvasPixels extends React.Component {
     _handle_canvas_pointer_down = (event, canvas_event_target) => {
 
         let { _pointer_events, _previous_single_pointer_down_timestamp, _previous_double_pointer_down_timestamp, _previous_single_pointer_down_x_y } = this.state;
-
+        const one_pointer = Boolean(_pointer_events.length === 1);
+        const two_pointer = Boolean(_pointer_events.length === 2);
         const [x, y] = _previous_single_pointer_down_x_y;
 
-        if(_previous_single_pointer_down_timestamp + 400 > Date.now() && _pointer_events.length === 1 && Math.abs(x - event.pageX) < 20 && Math.abs(y - event.pageY) < 20) {
+        this.setState({
+            _previous_single_pointer_down_timestamp: one_pointer ? Date.now(): 0,
+            _previous_double_pointer_down_timestamp: two_pointer ? Date.now(): 0,
+            _previous_single_pointer_down_x_y: one_pointer ? [event.pageX, event.pageY]: _previous_single_pointer_down_x_y
+        }, () => {
 
-            setTimeout(() => {
+            if(_previous_single_pointer_down_timestamp + 400 > Date.now() && _pointer_events.length === 1 && Math.abs(x - event.pageX) < 20 && Math.abs(y - event.pageY) < 20) {
 
-                const [pos_x, pos_y] = this._get_canvas_pos_from_event(event);
-                const {_s_pxl_colors, _layer_index, _s_pxls, pxl_width} = this.state;
-                const pxl_index = (pos_y * pxl_width) + pos_x;
-                const pxl_color_index = pxl_index >= 0 ? _s_pxls[_layer_index][pxl_index]: null;
+                setTimeout(() => {
 
-                if(this.props.onRightClick) {
+                    const [pos_x, pos_y] = this._get_canvas_pos_from_event(event);
+                    const {_s_pxl_colors, _layer_index, _s_pxls, pxl_width} = this.state;
+                    const pxl_index = (pos_y * pxl_width) + pos_x;
+                    const pxl_color_index = pxl_index >= 0 ? _s_pxls[_layer_index][pxl_index]: null;
 
-                    this.props.onRightClick(event, {
-                        pos_x: pos_x,
-                        pos_y: pos_y,
-                        pxl_color: pxl_color_index === null ? null: _s_pxl_colors[_layer_index][pxl_color_index],
-                    });
+                    if(this.props.onRightClick) {
+
+                        this.props.onRightClick(event, {
+                            pos_x: pos_x,
+                            pos_y: pos_y,
+                            pxl_color: pxl_color_index === null ? null: _s_pxl_colors[_layer_index][pxl_color_index],
+                        });
+                    }
+
+                }, 250);
+
+            }else if(one_pointer) {
+
+                this._handle_canvas_mouse_down(event, null);
+            }else if(two_pointer) {
+
+                const time_between_way_from_one_to_multiple_pointers = _previous_single_pointer_down_timestamp - _previous_double_pointer_down_timestamp;
+                if(time_between_way_from_one_to_multiple_pointers < 0 && time_between_way_from_one_to_multiple_pointers > -200){
+
+                    this.nothing_happened_undo(Math.abs(time_between_way_from_one_to_multiple_pointers));
                 }
-
-            }, 250);
-
-            _previous_single_pointer_down_timestamp = Date.now();
-            this.setState({_previous_single_pointer_down_timestamp});
-
-        }else if(_pointer_events.length === 1) {
-
-            this._handle_canvas_mouse_down(event, null);
-        }else if(_pointer_events.length === 2) {
-
-            const time_between_way_from_one_to_multiple_pointers = _previous_single_pointer_down_timestamp - _previous_double_pointer_down_timestamp;
-            if(time_between_way_from_one_to_multiple_pointers < 0 && time_between_way_from_one_to_multiple_pointers > -200){
-                
-                this.nothing_happened_undo(Math.abs(time_between_way_from_one_to_multiple_pointers));
             }
-        }
+
+        });
     };
 
     _handle_canvas_pointer_move = (event, canvas_event_target, _pointer_events) => {
 
-        const { _latest_pointers_client_x_center, _latest_pointers_client_y_center, _previous_single_pointer_down_timestamp, _previous_double_pointer_down_timestamp, _previous_double_pointer_move_timestamp } = this.state;
+        const { _latest_pointers_client_x_center, _latest_pointers_client_y_center, _previous_double_pointer_down_timestamp, _previous_double_pointer_move_timestamp } = this.state;
         let { _latest_pointers_distance } = this.state;
 
         if (_pointer_events.length === 2) {
@@ -3805,18 +3806,13 @@ class CanvasPixels extends React.Component {
 
         }else {
 
-            const { scale_move_x, scale_move_y, _mouse_down, _previous_single_pointer_down_x_y } = this.state;
-            const one_pointer = Boolean(_pointer_events.length === 1);
-            const two_pointer = Boolean(_pointer_events.length === 2);
+            const { scale_move_x, scale_move_y } = this.state;
 
             this.setState({
                 _event_button: event.button,
                 _mouse_down: true,
                 _previous_initial_scale_move: [scale_move_x, scale_move_y],
-                _pointer_events,
-                _previous_single_pointer_down_x_y: one_pointer ? [event.pageX, event.pageY]: _previous_single_pointer_down_x_y,
-                _previous_single_pointer_down_timestamp: one_pointer ? Date.now(): 0,
-                _previous_double_pointer_down_timestamp: two_pointer ? Date.now(): 0,
+                _pointer_events
             }, ()  => {
 
                 this._handle_canvas_pointer_down(event, canvas_event_target);

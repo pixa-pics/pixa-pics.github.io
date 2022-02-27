@@ -6,6 +6,7 @@ import { t } from "../utils/t";
 import {Fade, List, ListItem, ListItemIcon, ListItemText, Badge} from "@material-ui/core";
 
 import PhotoShootTweemoji from "../twemoji/react/1F4F8";
+import Rocket from "../icons/Rocket";
 import PersonIcon from "@material-ui/icons/Person";
 import CodeIcon from "@material-ui/icons/Code";
 import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
@@ -85,7 +86,7 @@ class DrawerContent extends React.Component {
         this.state = {
             classes: props.classes,
             pathname: props.pathname,
-            _history: HISTORY
+            _history: HISTORY,
         };
     };
 
@@ -125,9 +126,9 @@ class DrawerContent extends React.Component {
                 <Fade in timeout={500}>
                     <div>
                         <List>
-                            <ListItem button onClick={this._open_pixel_page}>
+                            <ListItem button onClick={this._open_pixel_page} style={{backgroundColor: "#ffffff1c"}}>
                                 <ListItemText className={classes.boldListItemText} primary={"START USING IT"} />
-                                <ListItemIcon><PhotoShootTweemoji className={classes.iconRight}/></ListItemIcon>
+                                <ListItemIcon><Rocket className={classes.iconRight}/></ListItemIcon>
                             </ListItem>
                             <ListItem button onClick={(event) => this._open_link(event, "https://github.com/pixa-pics/pixa-pics.github.io/graphs/contributors")}>
                                 <ListItemIcon><PersonIcon className={classes.iconColor} /></ListItemIcon>

@@ -76,6 +76,9 @@ import SwapVerticalIcon from "../icons/SwapVertical";
 import NavigationIcon from "../icons/Navigation";
 
 import Jdenticon from "react-jdenticon";
+import SensitiveData from "../icons/SensitiveData";
+import svg_to_base64 from "../utils/svgToBase64";
+const SENSITIVE_DATA = svg_to_base64(<SensitiveData />);
 
 const styles = theme => ({
     listSubHeader: {
@@ -1643,15 +1646,8 @@ class PixelToolboxSwipeableViews extends React.Component {
                                                     />
                                                 </RadioGroup>
                                             </div>
-                                            <FormLabel style={{padding: "24px 0px 12px 24px"}} component="legend">AI
-                                                OPTIONS FOR IMPORT</FormLabel>
+                                            <FormLabel style={{padding: "24px 0px 12px 24px"}} component="legend">AI TUNING BEFORE IMPORT</FormLabel>
                                             <div className={classes.listItems}>
-                                                <blockquote>
-                                                    Choosing a AI option will require an Internet connection and
-                                                    will use the remote service named DeepAI, yet anonymously through
-                                                    Cloudflare. For now the service cost to pixa.pics, 5-10 cents per
-                                                    100 images but we pay for you.
-                                                </blockquote>
                                                 <RadioGroup row name="Colorize" onChange={this._set_import_colorize}
                                                             value={import_colorize} style={{margin: "12px 11px"}}>
                                                     <FormControlLabel
@@ -1680,6 +1676,9 @@ class PixelToolboxSwipeableViews extends React.Component {
                                                     />
                                                 </RadioGroup>
                                             </div>
+                                            <p style={{padding: "0px 16px"}}>
+                                                <img style={{filter: "drop-shadow(1px 2px 3px grey)"}} src={SENSITIVE_DATA}/>
+                                            </p>
                                             <ListSubheader className={classes.listSubHeader}>
                                                 <span><ImagePlusIcon/></span>
                                                 <span>Create new</span>
