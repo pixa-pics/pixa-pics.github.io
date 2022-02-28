@@ -1,6 +1,6 @@
 import React from 'react';
 import SvgIcon from '@material-ui/core/SvgIcon';
-import { withStyles } from "@material-ui/core/styles";
+import { withStyles } from "@material-ui/core";
 
 const styles = theme => ({});
 

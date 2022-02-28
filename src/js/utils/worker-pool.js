@@ -1,3 +1,2 @@
 import workerpool from "workerpool";
-
-module.exports = workerpool.pool(null, {minWorkers: "max"});
+export default workerpool.pool(null, {minWorkers: "max"});

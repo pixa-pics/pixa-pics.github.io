@@ -1,5 +1,5 @@
 import React from "react";
-import { withStyles } from "@material-ui/core/styles";
+import { withStyles } from "@material-ui/core";
 
 import PixelColorPaletteItem from "../components/PixelColorPaletteItem";
 import EraserIcon from "../icons/Eraser";

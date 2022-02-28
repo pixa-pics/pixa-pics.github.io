@@ -1,31 +1,30 @@
-var REQUIRED_CACHE = "network-or-cache-v17-required";
-var USEFUL_CACHE = "network-or-cache-v17-useful";
-var STATIC_CACHE = "network-or-cache-v17-static";
+var REQUIRED_CACHE = "network-or-cache-v18-required";
+var USEFUL_CACHE = "network-or-cache-v18-useful";
+var STATIC_CACHE = "network-or-cache-v18-static";
 
 // On install, cache some resource.
 self.addEventListener("install", function(evt) {
 
-  // Open a cache and use `addAll()` with an array of assets to add all of them
-  // to the cache. Ask the service worker to keep installing until the
-  // returning promise resolves.
-  evt.waitUntil(Promise.allSettled([
-      caches.open(REQUIRED_CACHE).then(function (cache) {
-            return cache.addAll([
-                "/",
-                "/index.html",
-                "/404.html",
-                "/client.min.js",
-                "/src/fonts/Jura-Medium.woff2",
-                "/src/fonts/ShareTechMono-Regular.woff2",
-            ]);
-      }),
-      caches.open(USEFUL_CACHE).then(function (cache) {
-          return cache.addAll([]);
-      }),
-      caches.open(STATIC_CACHE).then(function (cache) {
-          return cache.addAll([]);
-      })
-  ]));
+    self.skipWaiting();
+
+    evt.waitUntil(Promise.allSettled([
+          caches.open(REQUIRED_CACHE).then(function (cache) {
+                return cache.addAll([
+                    "/",
+                    "/index.html",
+                    "/404.html",
+                    "/client.min.js",
+                    "/src/fonts/Jura-Medium.woff2",
+                    "/src/fonts/ShareTechMono-Regular.woff2",
+                ]);
+          }),
+          caches.open(USEFUL_CACHE).then(function (cache) {
+              return cache.addAll([]);
+          }),
+          caches.open(STATIC_CACHE).then(function (cache) {
+              return cache.addAll([]);
+          })
+    ]));
 });
 
 self.addEventListener("fetch", function(event) {
@@ -167,9 +166,9 @@ self.addEventListener("fetch", function(event) {
   }
 });
 
-self.addEventListener("activate", function(event) {
+self.addEventListener("activate", function(evt) {
 
-  event.waitUntil(Promise.allSettled([
+  evt.waitUntil(Promise.allSettled([
           caches.open(REQUIRED_CACHE).then(function (cache) {
             return cache.addAll([
                 "/client.min.js",
@@ -222,5 +221,5 @@ self.addEventListener("activate", function(event) {
               })
           ))
         ])
-    ).then(function(response){return response});
+    );
 });

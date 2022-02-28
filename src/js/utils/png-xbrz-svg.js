@@ -1,4 +1,4 @@
-import {xbrz} from "./xBRZ";
+import {xbrz} from "../utils/xBRZ";
 import {omniscale} from "../utils/omniscale";
 import {imagedataToSVG} from "../utils/imagetracer";
 import { optimize } from "svgo/dist/svgo.browser";

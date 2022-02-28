@@ -2,40 +2,24 @@ import { CURRENCY_COUNTRIES } from "../utils/constants";
 
 import PouchDB from "pouchdb";
 import get_browser_locales from "../utils/locales";
-window.settings_db = new PouchDB("settings_db", {deterministic_revs: false, revs_limit: 0, auto_compaction: false});
+window.settings_db = new PouchDB("settings_db", {deterministic_revs: false, revs_limit: 1});
+import pool from "../utils/worker-pool";
+import {LZMA} from "./LZMAString";
 
-function _merge_object(obj1, obj2){
+let _merge_object = (obj1, obj2) => {
 
-    let merged_object = obj1 || {};
+    return {...obj1, ...obj2};
+};
 
-    for (let attrname in obj2) {
-
-        if(typeof obj2[attrname] !== "undefined") {
-
-            if(typeof obj2[attrname] === "object") {
-
-                merged_object[attrname] = {...obj2[attrname]};
-            }else {
-
-                merged_object[attrname] = obj2[attrname];
-            }
-
-        }
-    }
-
-    return merged_object;
-}
-
-function _get_default_settings() {
+let _get_default_settings = () => {
 
     const locales = get_browser_locales()[0].split("-").length === 2 ? get_browser_locales()[0]: "en-US";
 
     return {
-        locales,
-        pixel_arts: [],
+        locales: locales,
         currency: _get_currency_by_locales(locales),
-        sfx_enabled: false,
-        jamy_enabled: false,
+        sfx_enabled: true,
+        jamy_enabled: true,
         fees: 1,
         panic: false,
         enable_3d: false,
@@ -46,9 +30,9 @@ function _get_default_settings() {
             swap: true
             }
     };
-}
+};
 
-function _get_currency_by_locales(locales) {
+let _get_currency_by_locales = (locales) => {
 
     const country = locales.split("-").length === 2 ? locales.split("-")[1] : "US";
     let currency = "USD";
@@ -61,139 +45,249 @@ function _get_currency_by_locales(locales) {
     });
 
     return currency;
-}
+};
 
-function reset_all_databases(callback_function) {
+let reset_all_databases = (callback_function) => {
 
-    delete window._wcr_settings;
+    delete window._pixa_settings;
 
     Promise.all([
         window.settings_db.destroy(),
-    ]).then(function (){
+    ]).then(() => {
 
         callback_function();
     });
 }
 
-function get_settings(callback_function) {
+let get_settings = (callback_function_info = null, callback_function_data = null) => {
 
-    if(typeof window._wcr_settings !== "undefined") {
+    if(typeof window._pixa_settings !== "undefined" && window._pixa_settings !== null) {
 
-        callback_function(null, window._wcr_settings);
-        return;
+        if(typeof window._pixa_settings.locales !== "undefined" && window._pixa_settings.locales !== null && callback_function_data === null) {
+
+            callback_function_info(null, {...window._pixa_settings});
+            return;
+        }
     }
 
     window.settings_db.allDocs({
-        include_docs: true
-    }, function(error, response) {
+        include_docs: true,
+    }, (error, response) => {
 
         let settings_docs_undefined = false;
 
         if(!error) {
 
             // Get settings docs
-            const settings_docs = response.rows.map(function (row) {
-
+            let settings_docs = response.rows.map((row) => {
                 return row.doc;
-            });
+            }).sort((a, b) =>  new Date(b.timestamp) - new Date(a.timestamp));
 
             // Choose the first
             if(typeof settings_docs[0] !== "undefined") {
 
-                if(settings_docs[0].data !== "undefined") {
+                try {
 
-                    window._wcr_settings = JSON.parse(settings_docs[0].data);
+                    const pixa_settings = JSON.parse(settings_docs[0].info);
+                    window._pixa_settings = {...pixa_settings};
+                    callback_function_info && callback_function_info(null, {...pixa_settings});
 
-                    callback_function(null, window._wcr_settings);
+                    if(callback_function_data !== null) {
+
+                        // retrieve a data attachment
+                        window.settings_db.get(settings_docs[0]._id, {
+                            rev: settings_docs[0]._rev,
+                            attachments: true,
+                            binary: true
+                        }).then((doc) => {
+
+                            const blob = doc._attachments["data.txt"].data;
+                            blob.arrayBuffer().then((array_buffer) => {
+
+                                const uint8a = new Uint8Array(array_buffer);
+                                LZMA(uint8a, "DECOMPRESS_UINT8A", (obj) => {
+
+                                    callback_function_data(null, {...obj});
+                                }, pool);
+
+                            })
+
+                        }).catch((e) => {
+
+                            error = e;
+                        });
+
+                    }
+
+                } catch (err) {
+
+                    error = err;
                 }
-
-                if(settings_docs.length > 1) {
-
-                    // Delete all others
-                    settings_docs.splice(0, 1);
-                    window.settings_db.bulkDocs(settings_docs.map((sd) => {delete sd.data; return {_id: sd._id, _rev: sd._rev, _deleted: true, timestamp: 0, data: null}}), {force: true});
-                }
-
             }else {
+
                 settings_docs_undefined = true;
             }
         }
 
-        if(settings_docs_undefined || error){
+        if(settings_docs_undefined){
 
-            window._wcr_settings = _get_default_settings();
+            const pixa_settings = _get_default_settings();
 
             window.settings_db.post({
-                data: JSON.stringify(window._wcr_settings)
-            });
+                info: JSON.stringify(pixa_settings),
+                timestamp: Date.now(),
+            }).then((response) => {
 
-            callback_function(null, window._wcr_settings);
+                window._pixa_settings = {...pixa_settings};
+                callback_function_info(null, {...pixa_settings});
+            });
+        }else if(error) {
+
+            callback_function_info(error, null);
         }
     });
 }
 
-function set_settings(settings, callback_function) {
+let set_settings = (info = {}, data = {}, callback_function_info = () => {}, callback_function_data = () => {}) => {
 
-    let settings_doc_undefined = false;
+    window.settings_db.allDocs({
+        include_docs: true
+    }, (error, response) => {
 
-    function cache_callback_function(error, response) {
+        let settings_docs_undefined = false;
 
         if(!error) {
 
             // Get settings docs
-            const settings_docs = response.rows.map(function (row) {
-
+            let settings_docs = response.rows.map((row) => {
                 return row.doc;
-            });
+            }).sort((a, b) =>  new Date(b.timestamp) - new Date(a.timestamp));
 
             // Choose the first
             if(typeof settings_docs[0] !== "undefined") {
 
-                if(settings_docs[0].data !== "undefined") {
+                try {
 
-                    window._wcr_settings = _merge_object(
-                        JSON.parse(settings_docs[0].data),
-                        settings);
+                    const pixa_settings = _merge_object(JSON.parse(settings_docs[0].info), info);
 
-                    window.settings_db.put({
-                        _id: settings_docs[0]._id,
-                        _rev: settings_docs[0]._rev,
-                        timestamp: Date.now(),
-                        data: JSON.stringify(window._wcr_settings)
-                    }, {force: true});
+                    if(JSON.stringify(data).length > 100) {
 
-                    callback_function(null, window._wcr_settings);
+                        // Create a data attachment
+                        LZMA(data, "COMPRESS_OBJECT", (uint8a) => {
+
+                            window.settings_db.put({
+                                _id: settings_docs[0]._id,
+                                _rev: settings_docs[0]._rev,
+                                info: JSON.stringify(pixa_settings),
+                                timestamp: Date.now(),
+                                _attachments: {
+                                    "data.txt": {
+                                        content_type: "application/octet-stream",
+                                        data: new Blob([uint8a], {type : "application/octet-stream"})
+                                    }
+                                }
+                            }, {force: true}).then((response) => {
+
+                                if(settings_docs.length > 1) {
+
+                                    // Delete all others
+                                    settings_docs.splice(0, 1);
+                                    window.settings_db.bulkDocs(settings_docs.map((sd) => {return {_id: sd._id, _rev: sd._rev, _deleted: true, timestamp: 0, data: null, info: null}}), {force: true});
+                                }
+
+                                window._pixa_settings = {...pixa_settings};
+                                callback_function_info(null, {...pixa_settings});
+                                callback_function_data(null, {...data});
+                            });
+
+                        }, pool);
+                    }else {
+
+                        window.settings_db.get(settings_docs[0]._id, {
+                            rev: settings_docs[0]._rev,
+                            attachments: true,
+                            binary: true
+                        }).then((doc) => {
+
+                            window.settings_db.put({
+                                _id: doc._id,
+                                _rev: doc._rev,
+                                _attachments: doc._attachments,
+                                info: JSON.stringify(pixa_settings),
+                                timestamp: Date.now(),
+                            }, {force: true}).then((response) => {
+
+                                if(settings_docs.length > 1) {
+
+                                    // Delete all others
+                                    settings_docs.splice(0, 1);
+                                    window.settings_db.bulkDocs(settings_docs.map((sd) => {return {_id: sd._id, _rev: sd._rev, _deleted: true, timestamp: 0, data: null, info: null}}), {force: true});
+                                }
+
+                                window._pixa_settings = {...pixa_settings};
+                                callback_function_info(null, {...pixa_settings});
+                                callback_function_data(null, {...data});
+                            });
+
+                        });
+
+                    }
+
+                } catch (err) {
+
+                    error = err;
                 }
-
-                // Delete all others
-                settings_docs.splice(0, 1);
-                window.settings_db.bulkDocs(settings_docs.filter((sd) => !sd._deleted).map((sd) => {return {_id: sd._id, _rev: sd._rev, _deleted: true, timestamp: 0, data: null}}), {force: true});
-
             }else {
 
-                settings_doc_undefined = true;
+                settings_docs_undefined = true;
             }
         }
 
-        // Create new
-        if(error || settings_doc_undefined) {
+        if(settings_docs_undefined){
 
-            const default_all_settings = _get_default_settings();
+            const pixa_settings = _get_default_settings();
 
-            window._wcr_settings = _merge_object(default_all_settings, settings);
+            if(Object.keys(data).length > 0) {
 
-            window.settings_db.post({
-                data: JSON.stringify(window._wcr_settings)
-            });
+                // Create a data attachment
+                LZMA(data, "COMPRESS_OBJECT", (uint8a) => {
 
+                    window.settings_db.post({
+                        info: JSON.stringify(pixa_settings),
+                        timestamp: Date.now(),
+                        _attachments: {
+                            "data.txt": {
+                                content_type: "application/octet-stream",
+                                data: new Blob([uint8a], {type : "application/octet-stream"})
+                            }
+                        }
+                    }).then((response) => {
 
-            callback_function(null, window._wcr_settings);
+                        window._pixa_settings = {...pixa_settings};
+                        callback_function_info(null, {...pixa_settings});
+                        callback_function_data(null, {...data});
+
+                    });
+
+                }, pool);
+            }else {
+
+                window.settings_db.post({
+                    info: JSON.stringify(pixa_settings),
+                    timestamp: Date.now(),
+                }).then((response) => {
+
+                    window._pixa_settings = {...pixa_settings};
+                    callback_function_info(null, {...pixa_settings});
+
+                });
+
+            }
+        }else if(error) {
+
+            callback_function_info(error, null);
         }
-    }
-
-    window.settings_db.allDocs({
-        include_docs: true
-    }, cache_callback_function);
+    });
 }
 
 module.exports = {

@@ -1,5 +1,5 @@
 import React from "react";
-import { withStyles } from "@material-ui/core/styles";
+import { withStyles } from "@material-ui/core";
 import { t } from "../utils/t";
 import {AppBar, Tabs, Tab} from "@material-ui/core";
 import AccountBalanceIcon from "@material-ui/icons/AccountBalance";

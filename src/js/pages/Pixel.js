@@ -7,7 +7,7 @@ window.mobileAndTabletCheck = function() {
 let is_mobile_or_tablet = window.mobileAndTabletCheck();
 
 import React, { Suspense } from "react";
-import { withStyles } from "@material-ui/core/styles";
+import { withStyles } from "@material-ui/core";
 const CanvasPixels = React.lazy(() => import("../components/CanvasPixels"));
 
 import {Fab, Grow, ListItem, Typography, Backdrop, Slider, SwipeableDrawer, Drawer, Toolbar, Tabs, Tab, Menu, ListSubheader, ListItemText, ListItemIcon} from "@material-ui/core";
@@ -331,13 +331,17 @@ class Pixel extends React.Component {
             _logged_account: {},
             _less_than_1280w: false,
             _pixel_dialog_create_open: true,
-            _pixel_arts: [],
+            pixel_arts: [],
         };
     };
 
     componentDidMount() {
 
         this._update_settings();
+        setInterval(() => {
+
+            this._maybe_save_unsaved_pixel_art();
+        }, 15 * 1000);
         actions.trigger_snackbar(`This is PIXAAAAAA! Enjoy ;)`, 5000);
         window.addEventListener("resize", this._updated_dimensions);
         this._updated_dimensions();
@@ -350,11 +354,6 @@ class Pixel extends React.Component {
 
             actions.trigger_loading_update(100);
         }, 350);
-
-        setInterval(() => {
-
-            this._maybe_save_unsaved_pixel_art();
-        }, 10 * 1000);
 
         get_svg_in_b64(<HexGrid color={"#e5e5e5"}/>, (svg) => {
 
@@ -373,7 +372,12 @@ class Pixel extends React.Component {
 
             this.state._canvas.export_JSON_state((state) => {
 
-                let states = this.state._pixel_arts;
+                let states = this.state.pixel_arts;
+
+                if(typeof states[JSON.parse(state).id] !== "undefined") {
+
+                    if(states[JSON.parse(state).id].length - state.length === 0) { return; }
+                }
                 states[JSON.parse(state).id] = state;
                 let new_states = {};
                 let new_states_id_and_ts = [];
@@ -406,13 +410,7 @@ class Pixel extends React.Component {
                     }
                 });
 
-                api.set_settings({pixel_arts: {...new_states_filtered}}, () => {
-
-                    this.setState({_pixel_arts: {...new_states_filtered}}, () => {
-
-                        this.forceUpdate();
-                    });
-                });
+                api.set_settings({}, {pixel_arts: new_states_filtered}, () => {},this._process_settings_data_result);
             });
         }
 
@@ -420,16 +418,10 @@ class Pixel extends React.Component {
 
     _delete_unsaved_pixel_art = (id) => {
 
-        let { _pixel_arts } = this.state;
-        delete _pixel_arts[id];
+        let { pixel_arts } = this.state;
+        delete pixel_arts[id];
 
-        api.set_settings({pixel_arts: {..._pixel_arts}}, () => {
-
-            this.setState({_pixel_arts: {..._pixel_arts}}, () => {
-
-                this.forceUpdate();
-            });
-        });
+        api.set_settings({}, {pixel_arts: {...pixel_arts}}, () => {},  this._process_settings_data_result);
     };
 
     _updated_dimensions = () => {
@@ -480,18 +472,25 @@ class Pixel extends React.Component {
 
         // Set new settings from query result
         const _sfx_enabled = typeof settings.sfx_enabled !== "undefined" ? settings.sfx_enabled: false;
-        const _pixel_arts = typeof settings.pixel_arts !== "undefined" ? settings.pixel_arts: [];
 
-        this.setState({ _sfx_enabled, _pixel_arts }, () => {
+        this.setState({ _sfx_enabled }, () => {
 
             this.forceUpdate();
         });
     };
 
-    _update_settings() {
+    _process_settings_data_result = (error, data) => {
+
+        this.setState({ pixel_arts: data.pixel_arts }, () => {
+
+            this.forceUpdate();
+        });
+    };
+
+    _update_settings(callback_function = null) {
 
         // Call the api to get results of current settings and send it to a callback function
-        api.get_settings(this._process_settings_query_result);
+        api.get_settings(this._process_settings_query_result, this._process_settings_data_result);
     }
 
     _handle_view_name_change = (view_name_index, previous_name_index = null) => {
@@ -1305,7 +1304,7 @@ class Pixel extends React.Component {
             _library_type,
             _less_than_1280w,
             _pixel_dialog_create_open,
-            _pixel_arts,
+            pixel_arts,
             _post_img,
             _h_svg,
         } = this.state;
@@ -1783,7 +1782,7 @@ class Pixel extends React.Component {
 
 
                 <PixelDialogCreate open={_pixel_dialog_create_open}
-                                   pixel_arts={_pixel_arts}
+                                   pixel_arts={pixel_arts}
                                    size={_import_size}
                                    on_import_size_change={this._set_import_size}
                                    on_pixel_art_delete={(id) => {this._delete_unsaved_pixel_art(id)}}

@@ -5355,7 +5355,7 @@ class CanvasPixels extends React.Component {
 
         let {state_history, history_position, previous_history_position} = JSON.parse(_json_state_history);
 
-        if(this._can_undo() & !is_pending_save_data && _saved_json_state_history_timestamp_from_drawing + if_more_recent_than_ms > Date.now()){
+        if(this._can_undo() & !is_pending_save_data && this.state._saved_json_state_history_timestamp_from_drawing + if_more_recent_than_ms > Date.now()){
 
             previous_history_position = history_position;
             history_position--;
@@ -5408,7 +5408,6 @@ class CanvasPixels extends React.Component {
 
         const is_pending_save_data = this._maybe_save_state(true);
         const _json_state_history = is_pending_save_data === null ? this.state._json_state_history: is_pending_save_data;
-
         let {state_history, history_position, previous_history_position} = JSON.parse(_json_state_history);
 
         if(this._can_undo() & !is_pending_save_data){

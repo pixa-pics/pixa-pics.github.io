@@ -27,17 +27,11 @@ module.exports = {
                             'sha512_asm',
                             'asm',
                             'ECPair',
-                            'HDNode'
+                            'HDNode',
+                            'SharedArrayBuffer',
                         ]
                     },
                     compress: {
-                        sequences: true,
-                        dead_code: true,
-                        conditionals: true,
-                        booleans: true,
-                        unused: true,
-                        if_return: true,
-                        join_vars: true,
                         drop_console: true,
                         passes: 3,
                     },

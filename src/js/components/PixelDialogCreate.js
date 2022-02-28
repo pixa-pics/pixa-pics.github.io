@@ -21,7 +21,7 @@ class PixelDialogCreate extends React.Component {
             keepMounted: props.keepMounted || false,
             open: props.open,
             size: props.size,
-            pixel_arts: props.pixel_arts,
+            pixel_art_entries: Object.entries(props.pixel_arts).reverse(),
         };
     };
 
@@ -32,9 +32,17 @@ class PixelDialogCreate extends React.Component {
 
     componentWillReceiveProps(new_props) {
 
-        if(this.state.open !== new_props.open || this.state.size !== new_props.size || Object.entries(this.state.pixel_arts).length !== Object.entries(new_props.pixel_arts).length) {
+        const new_pixel_art_entries = Object.entries(new_props.pixel_arts).reverse();
 
-            this.setState(new_props, () => {
+        if(
+            this.state.open !== new_props.open ||
+            this.state.size !== new_props.size ||
+            this.state.pixel_art_entries.length !== new_pixel_art_entries.length
+        ) {
+
+
+
+            this.setState({...new_props, pixel_art_entries: new_pixel_art_entries}, () => {
 
                 this.forceUpdate();
             });
@@ -61,7 +69,7 @@ class PixelDialogCreate extends React.Component {
             size,
             open,
             keepMounted,
-            pixel_arts,
+            pixel_art_entries,
         } = this.state;
 
         return (
@@ -79,9 +87,7 @@ class PixelDialogCreate extends React.Component {
                     <div style={{padding: "8px 24px", position: "relative", display: "flex", flexWrap: "wrap", justifyContent: "space-around", overflow: "hidden",}}>
                         <ImageList rowHeight={200} cols={2.5} style={{minWidth: 508, flexWrap: "nowrap", transform: "translateZ(0)", contains: "strict"}}>
                             {
-                                Object.entries(pixel_arts).reverse().map((e) => {
-
-                                    const [k, v] = e;
+                                pixel_art_entries.map(([k, v]) => {
 
                                     if(!v){return}
 

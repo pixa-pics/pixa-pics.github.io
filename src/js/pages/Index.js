@@ -1,5 +1,5 @@
 import React from "react";
-import { withStyles } from "@material-ui/core/styles";
+import { withStyles } from "@material-ui/core";
 
 import {Snackbar, CssBaseline, IconButton, Toolbar} from "@material-ui/core";
 
@@ -114,8 +114,8 @@ class Index extends React.Component {
             _snackbar_open: false,
             _snackbar_message: "",
             _snackbar_auto_hide_duration: 1975,
-            _sfx_enabled: false,
-            _jamy_enabled: false,
+            _sfx_enabled: true,
+            _jamy_enabled: true,
             _vocal_enabled: false,
             _onboarding_enabled: false,
             _onboarding_autoplay_enabled: true,
@@ -129,7 +129,8 @@ class Index extends React.Component {
             /*is_online: true,*/
             classes: props.classes,
             _width: 0,
-            _height: 0
+            _height: 0,
+            _database_attempt: 0,
         };
     };
     
@@ -244,10 +245,6 @@ class Index extends React.Component {
                 this._update_jamy(event.data.state_of_mind, event.data.duration);
                 break;
 
-            case "LOGIN_UPDATE":
-                this._update_login();
-                break;
-
             case "SETTINGS_UPDATE":
                 this._update_settings();
                 break;
@@ -260,11 +257,12 @@ class Index extends React.Component {
 
     _process_settings_query_result = (error, settings) => {
 
-        if(!error) {
+        console.log(error, settings);
+        if(!error && settings) {
 
             // Set new settings from query result
-            const _sfx_enabled = typeof settings.sfx_enabled !== "undefined" ? settings.sfx_enabled: false;
-            const _jamy_enabled = typeof settings.jamy_enabled !== "undefined" ? settings.jamy_enabled: false;
+            const _sfx_enabled = typeof settings.sfx_enabled !== "undefined" ? settings.sfx_enabled: true;
+            const _jamy_enabled = typeof settings.jamy_enabled !== "undefined" ? settings.jamy_enabled: true;
             const _selected_locales_code =  typeof settings.locales !== "undefined" ? settings.locales: "en-US";
             const _language = _selected_locales_code.split("-")[0];
             const _selected_currency = typeof settings.currency !== "undefined" ? settings.currency: "USD";
@@ -273,14 +271,32 @@ class Index extends React.Component {
 
             document.documentElement.lang = _language;
             this.setState({ _onboarding_enabled, _sfx_enabled, _jamy_enabled, _selected_locales_code, _language, _selected_currency, _panic_mode, _know_the_settings: true });
+        }else {
+
+            if(this.state._database_attempt > 3) {
+
+                api.reset_all_databases(function(){
+
+                    window.location.reload();
+                });
+            }else {
+
+                setTimeout(() => {
+
+                    this.setState({_database_attempt: this.state._database_attempt + 1}, () => {
+
+                        this._update_settings();
+                    });
+                }, 150);
+            }
         }
     };
 
-    _update_settings() {
+    _update_settings = () => {
 
         // Call the api to get results of current settings and send it to a callback function
-        api.get_settings(this._process_settings_query_result);
-    }
+        api.get_settings(this._process_settings_query_result, null);
+    };
 
     _set_new_pathname_or_redirect = (new_pathname) => {
         
@@ -387,7 +403,7 @@ class Index extends React.Component {
 
         const { pathname, classes } = this.state;
         const { _snackbar_open, _snackbar_message, _snackbar_auto_hide_duration } = this.state;
-        const { _onboarding_enabled, _onboarding_showed_once_in_session, _onboarding_autoplay_enabled, _width, _language } = this.state;
+        const { _language } = this.state;
         const { _logged_account, _panic_mode, _know_if_logged, _loaded_progress_percent, _know_the_settings, _jamy_state_of_mind, _jamy_enabled } = this.state;
 
         const JAMY = {

@@ -1,5 +1,5 @@
 import React from "react";
-import { withStyles } from "@material-ui/core/styles";
+import { withStyles } from "@material-ui/core";
 
 import { t } from "../utils/t";
 
@@ -38,8 +38,8 @@ class Settings extends React.Component {
             _language: document.documentElement.lang,
             _selected_currency: null,
             _fees: 1,
-            _sfx_enabled: false,
-            _jamy_enabled: false,
+            _sfx_enabled: true,
+            _jamy_enabled: true,
             _panic_mode: false
         };
     };
@@ -59,8 +59,8 @@ class Settings extends React.Component {
 
         // Set new settings from query result
         const _fees = typeof settings.fees !== "undefined" ? settings.fees: 1;
-        const _sfx_enabled = typeof settings.sfx_enabled !== "undefined" ? settings.sfx_enabled: false;
-        const _jamy_enabled = typeof settings.jamy_enabled !== "undefined" ? settings.jamy_enabled: false;
+        const _sfx_enabled = typeof settings.sfx_enabled !== "undefined" ? settings.sfx_enabled: true;
+        const _jamy_enabled = typeof settings.jamy_enabled !== "undefined" ? settings.jamy_enabled: true;
         const _selected_locales_code =  typeof settings.locales !== "undefined" ? settings.locales: "en-US";
         const _language = _selected_locales_code.split("-")[0];
         const _selected_currency = typeof settings.currency !== "undefined" ? settings.currency: "USD";
@@ -98,7 +98,7 @@ class Settings extends React.Component {
 
             const settings = { locales: value.original.code };
             this.setState({_selected_locales_code: value.original.code, _language: value.original.code.split("-")[0]});
-            api.set_settings(settings, this._on_settings_changed);
+            api.set_settings(settings, null, this._on_settings_changed);
             actions.trigger_sfx("ui_lock");
             actions.jamy_update("happy");
         }
@@ -110,7 +110,7 @@ class Settings extends React.Component {
 
             const settings = { currency: value.original.toUpperCase() };
             this.setState({_selected_currency: value.original.toUpperCase()});
-            api.set_settings(settings, this._on_settings_changed);
+            api.set_settings(settings, null, this._on_settings_changed);
             actions.trigger_sfx("ui_lock");
             actions.jamy_update("happy");
         }
@@ -132,7 +132,7 @@ class Settings extends React.Component {
 
         const settings = { panic: !checked };
         this.setState({_panic_mode: !checked});
-        api.set_settings(settings, this._on_settings_changed);
+        api.set_settings(settings, null, this._on_settings_changed);
     };
 
     _handle_sfx_enabled_switch_change = (event) => {
@@ -151,7 +151,7 @@ class Settings extends React.Component {
 
         const settings = { sfx_enabled: !checked };
         this.setState({_sfx_enabled: !checked});
-        api.set_settings(settings, this._on_settings_changed);
+        api.set_settings(settings, null, this._on_settings_changed);
     };
 
     _handle_jamy_enabled_switch_change = (event) => {
@@ -170,7 +170,7 @@ class Settings extends React.Component {
 
         const settings = { jamy_enabled: !checked };
         this.setState({_jamy_enabled: !checked});
-        api.set_settings(settings, this._on_settings_changed);
+        api.set_settings(settings, null, this._on_settings_changed);
     };
 
     _handle_input_fees_change = (event, _fees) => {
@@ -190,7 +190,7 @@ class Settings extends React.Component {
 
         const settings = { fees: _fees };
         this.setState({_fees});
-        api.set_settings(settings, this._on_settings_changed);
+        api.set_settings(settings, null, this._on_settings_changed);
     };
 
     _fuzzy_filter_locales = (list, input_value) => {

@@ -30,7 +30,7 @@ TimeAgo.addLocale(ru);
 TimeAgo.addLocale(hi);
 
 // Pages
-import Index from "./pages/Index";
+import Index from "../js/pages/Index";
 
 // Theme
 import { ThemeProvider } from "@material-ui/core"
