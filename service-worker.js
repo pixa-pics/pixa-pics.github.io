@@ -1,11 +1,9 @@
-var REQUIRED_CACHE = "network-or-cache-v18-required";
-var USEFUL_CACHE = "network-or-cache-v18-useful";
-var STATIC_CACHE = "network-or-cache-v18-static";
+var REQUIRED_CACHE = "network-or-cache-v19-required";
+var USEFUL_CACHE = "network-or-cache-v19-useful";
+var STATIC_CACHE = "network-or-cache-v19-static";
 
 // On install, cache some resource.
 self.addEventListener("install", function(evt) {
-
-    self.skipWaiting();
 
     evt.waitUntil(Promise.allSettled([
           caches.open(REQUIRED_CACHE).then(function (cache) {

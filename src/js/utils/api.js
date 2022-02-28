@@ -4,7 +4,7 @@ import PouchDB from "pouchdb";
 import get_browser_locales from "../utils/locales";
 window.settings_db = new PouchDB("settings_db", {deterministic_revs: false, revs_limit: 1});
 import pool from "../utils/worker-pool";
-import {LZMA} from "./LZMAString";
+import { LZP3 } from "./LZP3JSON";
 
 let _merge_object = (obj1, obj2) => {
 
@@ -105,7 +105,7 @@ let get_settings = (callback_function_info = null, callback_function_data = null
                             blob.arrayBuffer().then((array_buffer) => {
 
                                 const uint8a = new Uint8Array(array_buffer);
-                                LZMA(uint8a, "DECOMPRESS_UINT8A", (obj) => {
+                                LZP3(uint8a, "DECOMPRESS_UINT8A", (obj) => {
 
                                     callback_function_data(null, {...obj});
                                 }, pool);
@@ -173,7 +173,7 @@ let set_settings = (info = {}, data = {}, callback_function_info = () => {}, cal
                     if(JSON.stringify(data).length > 100) {
 
                         // Create a data attachment
-                        LZMA(data, "COMPRESS_OBJECT", (uint8a) => {
+                        LZP3(data, "COMPRESS_OBJECT", (uint8a) => {
 
                             window.settings_db.put({
                                 _id: settings_docs[0]._id,
@@ -250,7 +250,7 @@ let set_settings = (info = {}, data = {}, callback_function_info = () => {}, cal
             if(Object.keys(data).length > 0) {
 
                 // Create a data attachment
-                LZMA(data, "COMPRESS_OBJECT", (uint8a) => {
+                LZP3(data, "COMPRESS_OBJECT", (uint8a) => {
 
                     window.settings_db.post({
                         info: JSON.stringify(pixa_settings),
