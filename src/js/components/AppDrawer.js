@@ -29,18 +29,25 @@ const styles = theme => ({
         backgroundPosition: "center",
         color: theme.palette.secondary.contrastText,
         boxShadow: "0px 2px 4px -1px rgb(0 0 0 / 20%), 0px 4px 5px 0px rgb(0 0 0 / 14%), 0px 1px 10px 0px rgb(0 0 0 / 12%)",
-        border: 0
+        border: 0,
+        "& > div": {
+            transition: "opacity cubic-bezier(0.4, 0, 0.2, 1) 175ms",
+            opacity: .75,
+        },
+        "&:hover > div": {
+            opacity: 1,
+        },
+        "& .drawershare": {
+            opacity: ".33",
+            transition: "opacity cubic-bezier(0.4, 0, 0.2, 1) 300ms",
+        },
+        "&:hover .drawershare": {
+            opacity: "1"
+        }
     },
     drawerContainer: {
         overflow: "auto"
     },
-    opacityHover: {
-        opacity: ".25",
-        transition: "opacity ease-in-out 300ms",
-        "&:hover": {
-            opacity: "1"
-        }
-    }
 });
 
 
@@ -74,7 +81,7 @@ class AppDrawer extends React.Component {
                     <div className={classes.drawerContainer}>
                         <DrawerContent pathname={pathname} onClose={() => {}}/>
                     </div>
-                    <img onClick={this.trigger_share} className={classes.opacityHover} src={SENDTOAFRIEND} style={{position: "absolute", left: 16, bottom: 16, width: 220, cursor: "pointer"}}/>
+                    <img onClick={this.trigger_share} className={"drawershare"} src={SENDTOAFRIEND} style={{position: "absolute", left: 16, bottom: 16, width: 220, cursor: "pointer"}}/>
                 </Drawer>
             </Box>
         );

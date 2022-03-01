@@ -12,9 +12,11 @@ import actions from "../actions/utils";
 import AngelEmojiSvg from "../twemoji/react/1F607";
 import HearthEmojiSvg from "../twemoji/react/2665";
 import EarthEmojiSvg from "../twemoji/react/1F30D";
+import OpenSource from "../icons/OpenSource";
 
 import get_svg_in_b64 from "../utils/svgToBase64";
 
+const OPEN_SOURCE = get_svg_in_b64(<OpenSource />);
 const quotes = t( "pages.home.quotes");
 const random_quote_index = Math.floor(Math.random() * quotes.length);
 
@@ -52,20 +54,6 @@ const styles = theme => ({
         borderRadius: 4,
         [theme.breakpoints.down("sm")]: {
             display: "none",
-        },
-    },
-    fab: {
-        display: "none",
-        position: "fixed",
-        backgroundColor: theme.palette.primary.action,
-        color: theme.palette.primary.contrastText,
-        "&:hover": {
-            backgroundColor: theme.palette.primary.actionLighter,
-        },
-        bottom: theme.spacing(2),
-        right: theme.spacing(2),
-        "& svg": {
-            marginRight: 4
         },
     },
     headerContainer: {
@@ -136,6 +124,11 @@ class Home extends React.Component {
         }
     };
 
+    _open_link = (event, url) =>{
+
+        window.open(url);
+    };
+
     render() {
 
         const { classes, _quote } = this.state;
@@ -158,18 +151,7 @@ class Home extends React.Component {
                             Start using it
                         </Button>
                     </div>
-                    <div className={classes.quoteContainer}>
-                        <blockquote>
-                            “{_quote.text}”<br />
-                            ― {_quote.author}
-                        </blockquote>
-                    </div>
                 </div>
-                <Grow in>
-                    <Fab className={classes.fab} variant="extended" onClick={this._handle_share_dialog_open}>
-                        <ShareIcon /> {t("words.share")}
-                    </Fab>
-                </Grow>
             </div>
         );
     }

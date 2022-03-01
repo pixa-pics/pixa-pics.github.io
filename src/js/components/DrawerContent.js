@@ -24,6 +24,11 @@ const styles = theme => ({
             fontStyle: "italic",
         }
     },
+    listItemGrey: {
+        "& > div > span": {
+            opacity: .75,
+        }
+    },
     iconColor: {
         color: theme.palette.secondary.contrastText
     },
@@ -126,23 +131,23 @@ class DrawerContent extends React.Component {
                 <Fade in timeout={500}>
                     <div>
                         <List>
-                            <ListItem button onClick={this._open_pixel_page}>
-                                <ListItemText className={classes.boldItalicListItemText} primary={"START USING IT..."} />
+                            <ListItem style={{backgroundColor: "#ffffff11"}} button onClick={this._open_pixel_page}>
+                                <ListItemText className={classes.boldItalicListItemText} primary={"START DRAWING..."} />
                                 <ListItemIcon><ArrowFRight color={"#fff"} className={classes.iconRight}/></ListItemIcon>
                             </ListItem>
-                            <ListItem button onClick={(event) => this._open_link(event, "https://github.com/pixa-pics/pixa-pics.github.io/graphs/contributors")}>
+                            <ListItem button className={classes.listItemGrey} onClick={(event) => this._open_link(event, "https://github.com/pixa-pics/pixa-pics.github.io/graphs/contributors")}>
                                 <ListItemIcon><PersonIcon className={classes.iconColor} /></ListItemIcon>
                                 <ListItemText primary={t( "components.drawer_content.menu.more.contributors")} />
                             </ListItem>
-                            <ListItem button onClick={(event) => this._open_link(event, "https://github.com/pixa-pics/pixa-pics.github.io")}>
+                            <ListItem button className={classes.listItemGrey} onClick={(event) => this._open_link(event, "https://github.com/pixa-pics/pixa-pics.github.io")}>
                                 <ListItemIcon><CodeIcon className={classes.iconColor} /></ListItemIcon>
                                 <ListItemText primary={t( "components.drawer_content.menu.more.source_code")} />
                             </ListItem>
-                            <ListItem button  onClick={(event) => this._open_link(event, "https://github.com/pixa-pics/pixa-pics.github.io/releases")}>
+                            <ListItem button  className={classes.listItemGrey} onClick={(event) => this._open_link(event, "https://github.com/pixa-pics/pixa-pics.github.io/releases")}>
                                 <ListItemIcon><CloudDownloadIcon className={classes.iconColor} /></ListItemIcon>
                                 <ListItemText primary={t( "components.drawer_content.menu.more.download")} />
                             </ListItem>
-                            <ListItem button onClick={(event) => this._open_link(event, "https://t.me/pixapics")}>
+                            <ListItem button className={classes.listItemGrey} onClick={(event) => this._open_link(event, "https://t.me/pixapics")}>
                                 <Badge className={classes.styledBadgeConnected} overlap="circular" badgeContent=" " variant="dot">
                                     <ListItemIcon><ForumIcon className={classes.iconColor} /></ListItemIcon>
                                 </Badge>
