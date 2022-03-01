@@ -4,7 +4,6 @@ import { withStyles } from "@material-ui/core";
 import { t } from "../utils/t";
 import { HISTORY } from "../utils/constants";
 import ShareIcon from "@material-ui/icons/Share";
-import ShareDialog from "../components/ShareDialog";
 
 import {Fab, Grow, Button} from "@material-ui/core";
 
@@ -56,6 +55,7 @@ const styles = theme => ({
         },
     },
     fab: {
+        display: "none",
         position: "fixed",
         backgroundColor: theme.palette.primary.action,
         color: theme.palette.primary.contrastText,
@@ -107,7 +107,6 @@ class Home extends React.Component {
         this.state = {
             classes: props.classes,
             _history: HISTORY,
-            _is_share_dialog_open: false,
             _quote: t( "pages.home.quotes")[random_quote_index]
         };
     };
@@ -127,45 +126,19 @@ class Home extends React.Component {
         _history.push(url);
     };
 
-
-    _handle_share_dialog_close = () => {
-
-        this.setState({_is_share_dialog_open: false});
-        actions.trigger_sfx("state-change_confirm-down");
-        actions.jamy_update("suspicious");
-    };
-
-    _handle_share_dialog_open = () => {
-
-        this.setState({_is_share_dialog_open: true});
-        actions.trigger_sfx("hero_decorative-celebration-02");
-        actions.jamy_update("happy");
-    };
-
-    _handle_speed_dial_close = () => {
-
-        this.setState({_is_speed_dial_open: false});
-    };
-
-    _handle_speed_dial_open = () => {
-
-        this.setState({_is_speed_dial_open: true});
-    };
-
     _handle_speed_dial_action = (event, action) => {
 
         switch (action) {
 
             case "share":
-                this._handle_share_dialog_open();
+                actions.trigger_share();
                 break;
         }
     };
 
     render() {
 
-        const { classes, _is_share_dialog_open, _quote } = this.state;
-
+        const { classes, _quote } = this.state;
 
         return (
             <div className={classes.root}>
@@ -197,9 +170,6 @@ class Home extends React.Component {
                         <ShareIcon /> {t("words.share")}
                     </Fab>
                 </Grow>
-                <ShareDialog
-                    open={_is_share_dialog_open}
-                    onClose={this._handle_share_dialog_close}/>
             </div>
         );
     }

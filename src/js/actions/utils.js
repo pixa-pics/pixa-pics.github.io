@@ -26,6 +26,14 @@ function trigger_sfx(name, volume = 1, pack = "md") {
     });
 }
 
+function trigger_share() {
+
+    dispatcher.dispatch({
+        type: 'TRIGGER_SHARE',
+        data: {}
+    });
+}
+
 function trigger_vocal(name, volume = 1, pack = "gg") {
 
     dispatcher.dispatch({
@@ -75,6 +83,7 @@ function trigger_loading_update(percent) {
 module.exports = {
     jamy_update: jamy_update,
     trigger_sfx: trigger_sfx,
+    trigger_share: trigger_share,
     trigger_snackbar: trigger_snackbar,
     trigger_login_update: trigger_login_update,
     trigger_settings_update: trigger_settings_update,

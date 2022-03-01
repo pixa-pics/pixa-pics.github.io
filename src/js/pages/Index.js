@@ -43,6 +43,7 @@ import api from "../utils/api";
 import sound_api from "../utils/sound-api";
 import { update_meta_title } from "../utils/meta-tags";
 import { PAGE_ROUTES, HISTORY } from "../utils/constants";
+import ShareDialog from "../components/ShareDialog";
 
 const styles = theme => ({
     root: {
@@ -131,6 +132,7 @@ class Index extends React.Component {
             _width: 0,
             _height: 0,
             _database_attempt: 0,
+            _is_share_dialog_open: false,
         };
     };
     
@@ -235,6 +237,10 @@ class Index extends React.Component {
 
             case "TRIGGER_SFX":
                 if(_sfx_enabled) { this._trigger_sound("sfx", event.data.pack, event.data.name, event.data.volume); }
+                break;
+
+            case "TRIGGER_SHARE":
+                this._handle_share_dialog_open();
                 break;
 
             case "SNACKBAR":
@@ -399,11 +405,25 @@ class Index extends React.Component {
         return true;
     }
 
+    _handle_share_dialog_close = () => {
+
+        this.setState({_is_share_dialog_open: false});
+        actions.trigger_sfx("state-change_confirm-down");
+        actions.jamy_update("suspicious");
+    };
+
+    _handle_share_dialog_open = () => {
+
+        this.setState({_is_share_dialog_open: true});
+        actions.trigger_sfx("hero_decorative-celebration-02");
+        actions.jamy_update("happy");
+    };
+
     render() {
 
         const { pathname, classes } = this.state;
         const { _snackbar_open, _snackbar_message, _snackbar_auto_hide_duration } = this.state;
-        const { _language } = this.state;
+        const { _language, _is_share_dialog_open } = this.state;
         const { _logged_account, _panic_mode, _know_if_logged, _loaded_progress_percent, _know_the_settings, _jamy_state_of_mind, _jamy_enabled } = this.state;
 
         const JAMY = {
@@ -492,6 +512,9 @@ class Index extends React.Component {
                             </main>
                         </div>
                 </div>
+                <ShareDialog
+                    open={_is_share_dialog_open}
+                    onClose={this._handle_share_dialog_close}/>
             </div>
         );
     }

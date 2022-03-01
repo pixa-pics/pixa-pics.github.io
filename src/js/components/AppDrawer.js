@@ -3,9 +3,12 @@ import { withStyles } from "@material-ui/core";
 import {Toolbar, Drawer, Box} from "@material-ui/core";
 import DrawerContent from "../components/DrawerContent";
 
+import actions from "../actions/utils";
 import get_svg_in_base64 from "../utils/svgToBase64";
 import DrawerChip from "../icons/DrawerChip";
+import SendToAFriend from "../icons/SendToAFriend";
 const DRAWER_CHIP = get_svg_in_base64(<DrawerChip color={"#0a0539"} />)
+const SENDTOAFRIEND = get_svg_in_base64(<SendToAFriend />)
 
 const styles = theme => ({
     [theme.breakpoints.down("md")]: {
@@ -48,6 +51,11 @@ class AppDrawer extends React.Component {
         this.setState(new_props);
     }
 
+    trigger_share = () => {
+
+        actions.trigger_share();
+    };
+
     render() {
 
         const { classes, pathname } = this.state;
@@ -59,6 +67,7 @@ class AppDrawer extends React.Component {
                     <div className={classes.drawerContainer}>
                         <DrawerContent pathname={pathname} onClose={() => {}}/>
                     </div>
+                    <img onClick={this.trigger_share} src={SENDTOAFRIEND} style={{filter: "drop-shadow(0px 0px 3px #6449ce57)", position: "absolute", left: 16, bottom: 16, width: 220, cursor: "pointer"}}/>
                 </Drawer>
             </Box>
         );
