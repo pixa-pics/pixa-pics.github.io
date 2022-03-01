@@ -18,9 +18,10 @@ const styles = theme => ({
     nested: {
         paddingLeft: theme.spacing(4),
     },
-    boldListItemText: {
+    boldItalicListItemText: {
         "& > span": {
-            fontWeight: "bold"
+            fontWeight: "bold",
+            fontStyle: "italic",
         }
     },
     iconColor: {
@@ -125,8 +126,8 @@ class DrawerContent extends React.Component {
                 <Fade in timeout={500}>
                     <div>
                         <List>
-                            <ListItem button onClick={this._open_pixel_page} style={{backgroundColor: "#ffffff1c"}}>
-                                <ListItemText className={classes.boldListItemText} primary={"START USING IT"} />
+                            <ListItem button onClick={this._open_pixel_page}>
+                                <ListItemText className={classes.boldItalicListItemText} primary={"START USING IT..."} />
                                 <ListItemIcon><ArrowFRight color={"#fff"} className={classes.iconRight}/></ListItemIcon>
                             </ListItem>
                             <ListItem button onClick={(event) => this._open_link(event, "https://github.com/pixa-pics/pixa-pics.github.io/graphs/contributors")}>

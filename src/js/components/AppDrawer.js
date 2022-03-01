@@ -33,6 +33,13 @@ const styles = theme => ({
     },
     drawerContainer: {
         overflow: "auto"
+    },
+    opacityHover: {
+        opacity: ".25",
+        transition: "opacity ease-in-out 300ms",
+        "&:hover": {
+            opacity: "1"
+        }
     }
 });
 
@@ -67,7 +74,7 @@ class AppDrawer extends React.Component {
                     <div className={classes.drawerContainer}>
                         <DrawerContent pathname={pathname} onClose={() => {}}/>
                     </div>
-                    <img onClick={this.trigger_share} src={SENDTOAFRIEND} style={{filter: "drop-shadow(0px 0px 3px #6449ce57)", position: "absolute", left: 16, bottom: 16, width: 220, cursor: "pointer"}}/>
+                    <img onClick={this.trigger_share} className={classes.opacityHover} src={SENDTOAFRIEND} style={{position: "absolute", left: 16, bottom: 16, width: 220, cursor: "pointer"}}/>
                 </Drawer>
             </Box>
         );

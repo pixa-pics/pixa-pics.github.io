@@ -19,50 +19,46 @@ const SendToAFriend = (props) => (
             </style>
         </defs>
         <g clipPath="url(#A)">
-            <g stroke="#6449ce">
+            <g stroke={"#768ad2"}>
                 <g strokeMiterlimit={10}>
                     <path
                         d="M99.1 16.9h-37v186.2h37"
                         fill="none"
-                        
+
                         strokeWidth={14.022}
                     />
                     <path
-                        
+
                         strokeWidth={9.348}
                         d="M40.1 9.9v200.2"
                     />
                     <path
                         d="M830.9 16.9h37v186.2h-37"
                         fill="none"
-                        
+
                         strokeWidth={14.022}
                     />
                     <path
-                        
+
                         strokeWidth={9.348}
                         d="M889.9 9.9v200.2"
                     />
                 </g>
                 <path
                     d="M918.5 188.8 905 205.3V14.6l13.5 16.6v157.6zm-907 0L25 205.3V14.6L11.5 31.2v157.6z"
-                    
-                    fill="#6348ce"
+                    fill={"#768ad2"}
                 />
             </g>
-            <path d="M739.5 50.9 759 33.6H171l19.5 17.3h549z" fill="#3012a8" />
-            <path
-                d="m766.9 33.6-25.1 22.3H188.2l-25.1-22.3H80.6v152.7h82.5l25.1-22.2h553.6l25.1 22.2h82.5V33.6h-82.5z"
-                fill="#1a1a1a"
-            />
-            <path d="M190.5 169.1 171 186.3h588l-19.5-17.2h-549z" fill="#3012a8" />
+            <path d="M739.5 50.9 759 33.6H171l19.5 17.3h549z" fill={"#2f4b8e"} />
+            <path d="m766.9 33.6-25.1 22.3H188.2l-25.1-22.3H80.6v152.7h82.5l25.1-22.2h553.6l25.1 22.2h82.5V33.6h-82.5z" fill={"#102353"}/>
+            <path d="M190.5 169.1 171 186.3h588l-19.5-17.2h-549z" fill={"#2F4B8E"} />
             <g clipPath="url(#B)">
                 <text
                     transform="translate(225.798 130.673)"
                     fontFamily="Open Sans"
                     fontWeight={700}
                     fontSize={52}
-                    fill="#e6e6e6"
+                    fill={"#e6e6e6"}
                 >
                     {"SEND TO A FRIEND"}
                 </text>
