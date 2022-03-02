@@ -18,6 +18,7 @@ let _get_default_settings = () => {
     return {
         locales: locales,
         currency: _get_currency_by_locales(locales),
+        manual_warning_enabled: true,
         sfx_enabled: true,
         jamy_enabled: true,
         fees: 1,

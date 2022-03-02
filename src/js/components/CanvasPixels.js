@@ -8492,8 +8492,8 @@ class CanvasPixels extends React.Component {
                              padding: padding,
                              position: "absolute",
                              //clipPath: `polygon(calc(100% - 10%) 0%, 100% 0%, 100% 200%, ${padding}px 100%, 0% calc(100% - ${padding}px), 0% -100%, calc(100% - 25%) 0%, calc(100% - 25%) ${padding / 1.5}px, calc(100% - 15%) ${padding / 1.5}px)`,
-                             width: Math.round(canvas_wrapper_width * 1000) / 1000,
-                             height: Math.round(canvas_wrapper_height  * 1000) / 1000,
+                             width: Math.floor(canvas_wrapper_width),
+                             height: Math.floor(canvas_wrapper_height),
                              filter: `drop-shadow(0 0 ${shadow_depth*shadow_size}px ${shadow_color}) opacity(${has_shown_canvas_once && !_hidden ? "1": "0"})`,
                              transform: `translate3d(${Math.round(scale_move_x * 1000) / 1000}px, ${Math.round(scale_move_y * 1000) / 1000}px, 0px) rotateX(${rotate_x}deg) rotateY(${rotate_y}deg) rotateZ(0deg)`,
                              transformOrigin: "center middle",
@@ -8522,6 +8522,7 @@ class CanvasPixels extends React.Component {
                                 filter: "drop-shadow(0 0 0px #fff)",
                                 backgroundBlendMode: "color",
                                 borderWidth: 0,
+                                clipPath: "polygon(.05% .05%, 99.95% .05%, 99.95% 99.95%, .05% 99.95%)",
                                 ...background_image_style_props,
                             }}
                             className={"Canvas-Pixels"}

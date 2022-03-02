@@ -36,7 +36,7 @@ const styles = theme => ({
         }
     },
     drawerPaper: {
-        background: theme.palette.primary.main,
+        background: theme.palette.primary.dark,
         color: theme.palette.primary.contrastText,
         width: 256
     },

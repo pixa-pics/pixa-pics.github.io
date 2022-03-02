@@ -56,7 +56,7 @@ const styles = theme => ({
         "& .MuiBadge-badge": {
             backgroundColor: "#44b700",
             color: "#44b700",
-            boxShadow: `0 0 0 2px ${theme.palette.secondary.main}`,
+            boxShadow: `0 0 0 2px ${theme.palette.secondary.dark}`,
             "&::after": {
                 position: "absolute",
                 top: 0,
@@ -132,7 +132,7 @@ class DrawerContent extends React.Component {
                     <div>
                         <List>
                             <ListItem style={{backgroundColor: "#ffffff11"}} button onClick={this._open_pixel_page}>
-                                <ListItemText className={classes.boldItalicListItemText} primary={"START DRAWING..."} />
+                                <ListItemText className={classes.boldItalicListItemText} primary={"Knock Knock, START DRAWING"} />
                                 <ListItemIcon><ArrowFRight color={"#fff"} className={classes.iconRight}/></ListItemIcon>
                             </ListItem>
                             <ListItem button className={classes.listItemGrey} onClick={(event) => this._open_link(event, "https://github.com/pixa-pics/pixa-pics.github.io/graphs/contributors")}>

@@ -5,9 +5,7 @@ import DrawerContent from "../components/DrawerContent";
 
 import actions from "../actions/utils";
 import get_svg_in_base64 from "../utils/svgToBase64";
-import DrawerChip from "../icons/DrawerChip";
 import SendToAFriend from "../icons/SendToAFriend";
-const DRAWER_CHIP = get_svg_in_base64(<DrawerChip color={"#0a0539"} />)
 const SENDTOAFRIEND = get_svg_in_base64(<SendToAFriend />)
 
 const styles = theme => ({
@@ -23,8 +21,7 @@ const styles = theme => ({
     },
     drawerPaper: {
         width: 256,
-        backgroundColor: theme.palette.secondary.main,
-        backgroundImage: `url(${DRAWER_CHIP})`,
+        backgroundColor: theme.palette.secondary.dark,
         backgroundSize: "100%",
         backgroundPosition: "center",
         color: theme.palette.secondary.contrastText,
