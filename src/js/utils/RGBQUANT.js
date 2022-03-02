@@ -930,6 +930,8 @@ function RGBQUANT(img, limit = 1024, resize_to = 1920*1080, callback_function = 
         }
         
         // img = base64_string
+        var img_type_png = img.includes("image/png;base64");
+        var img_smaller_768 = false;
         var img_data = null; // Create image data
         
         let scale = 1;
@@ -940,6 +942,7 @@ function RGBQUANT(img, limit = 1024, resize_to = 1920*1080, callback_function = 
             var resA0 = await fetch(img); // Response
             var blbA0 = await resA0.blob(); // Blob     
             var bmpA0 = await createImageBitmap(blbA0);
+            img_smaller_768 = Boolean(bmpA0.width * bmpA0.height < 768*768);
             
             while (bmpA0.width * scale * bmpA0.height * scale > resize_to) { scale -= 0.01; }
             
@@ -959,6 +962,7 @@ function RGBQUANT(img, limit = 1024, resize_to = 1920*1080, callback_function = 
             };
     
             var img_htmlA0 = await to_image(img); // HTMLImageElement
+            img_smaller_768 = Boolean(img_htmlA0.width * img_htmlA0.height < 768*768);
             
             while (img_htmlA0.width * scale * img_htmlA0.height * scale > resize_to) { scale -= 0.01; }
             
@@ -1006,12 +1010,22 @@ function RGBQUANT(img, limit = 1024, resize_to = 1920*1080, callback_function = 
             
             ctxB0.transferFromImageBitmap(bmpB0);
             var blbB0 = null;
-            try { 
-                blbB0 = await canvasB0.convertToBlob({type: "image/webp", quality: 0.75});
-            }catch(e) {
             
-                blbB0 = await canvasB0.convertToBlob({type: "image/jpeg", quality: 0.75});
+            if(img_smaller_768 && img_type_png) {
+            
+                blbB0 = await canvasB0.convertToBlob({type: "image/png"});
+            
+            }else {
+           
+                try { 
+                    
+                    blbB0 = await canvasB0.convertToBlob({type: "image/webp", quality: 0.75});
+                }catch(e) {
+                
+                    blbB0 = await canvasB0.convertToBlob({type: "image/jpeg", quality: 0.85});
+                } 
             }
+           
             return await to_data_URL(blbB0);
            
         }catch(e) {
@@ -1021,12 +1035,20 @@ function RGBQUANT(img, limit = 1024, resize_to = 1920*1080, callback_function = 
             canvasB0.height = img_data.height;
             var ctxB0 = canvasB0.getContext("2d");
             ctxB0.putImageData(img_data, 0, 0);
-            try {
             
-                return ctxB0.canvas.toDataURL("image/webp", 0.75);
-            }catch(e2) {
+            if(img_smaller_768 && img_type_png) {
             
-                return ctxB0.canvas.toDataURL("image/jpeg", 0.85);
+                return ctxB0.canvas.toDataURL("image/png");
+            
+            }else {
+           
+                 try {
+            
+                     return ctxB0.canvas.toDataURL("image/webp", 0.75);
+                 }catch(e2) {
+                    
+                     return ctxB0.canvas.toDataURL("image/jpeg", 0.85);
+                 }
             }
         }
     }`;

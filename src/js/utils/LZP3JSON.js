@@ -2420,20 +2420,18 @@ function LZP3(uint8a_or_obj, mode = "COMPRESS_OBJECT", callback_function = () =>
         
             return Lzp3;
         }());
-
-        var algorithm = Lzp3;
         
         if(mode === "COMPRESS_OBJECT") {
         
             var json_str = JSON.stringify(uint8a_or_obj, null, 0);
             var ui8a = new TextEncoder("utf-8").encode(json_str);
-            var compressed = algorithm.compressFile(ui8a);
+            var compressed = Lzp3.compressFile(ui8a);
             
             return Uint8Array.from(compressed);
             
         }else if(mode === "DECOMPRESS_UINT8A") {
           
-             var decompressed = algorithm.decompressFile(uint8a_or_obj);
+             var decompressed = Lzp3.decompressFile(uint8a_or_obj);
              var ui8a =  Uint8Array.from(decompressed);
              var json_str = new TextDecoder().decode(ui8a);
              
