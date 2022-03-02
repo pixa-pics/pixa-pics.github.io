@@ -1,6 +1,6 @@
-var REQUIRED_CACHE = "network-or-cache-v23-required";
-var USEFUL_CACHE = "network-or-cache-v23-useful";
-var STATIC_CACHE = "network-or-cache-v23-static";
+var REQUIRED_CACHE = "network-or-cache-v24-required";
+var USEFUL_CACHE = "network-or-cache-v24-useful";
+var STATIC_CACHE = "network-or-cache-v24-static";
 
 // On install, cache some resource.
 self.addEventListener("install", function(evt) {
@@ -13,16 +13,77 @@ self.addEventListener("install", function(evt) {
                     "/404.html",
                     "/client.min.js",
                     "/src/fonts/Jura-Medium.woff2",
-                    "/src/fonts/ShareTechMono-Regular.woff2",
+                    "/src/fonts/ShareTechMono-Regular.woff2"
                 ]);
           }),
           caches.open(USEFUL_CACHE).then(function (cache) {
-              return cache.addAll([]);
+              return cache.addAll([
+                  "/src/images/designer.svg",
+                  "/manifest.json"
+              ]);
           }),
           caches.open(STATIC_CACHE).then(function (cache) {
               return cache.addAll([]);
           })
-    ]));
+    ])).then(function() {
+
+        const caching = Promise.allSettled([
+            caches.open(REQUIRED_CACHE).then(function (cache) {
+                return cache.addAll([
+                    "/client.min.js",
+                    "/chunk.1.min.js",
+                    "/chunk.2.min.js",
+                    "/chunk.3.min.js",
+                    "/chunk.4.min.js",
+                ]);
+            }),
+            caches.open(USEFUL_CACHE).then(function (cache) {
+                return cache.addAll([
+                    "/src/images/404-dark-2.svg",
+                    "/src/images/404-dark.svg",
+                    "/src/images/segment.svg",
+                    "/src/images/designer.svg",
+                    "/src/images/share.svg",
+                    "/src/images/logo-transparent.png",
+                    "/src/images/favicon.ico"
+                ]);
+            }),
+            caches.open(STATIC_CACHE).then(function (cache) {
+                return cache.addAll([
+                    "/src/sounds/sfx/md/alert_error-01.mp3",
+                    "/src/sounds/sfx/md/navigation_transition-left.mp3",
+                    "/src/sounds/sfx/md/alert_high-intensity.mp3",
+                    "/src/sounds/sfx/md/FullHorizonThrow.mp3",
+                    "/src/sounds/sfx/md/navigation_transition-right.mp3",
+                    "/src/sounds/sfx/md/PrometheusVertical2.mp3",
+                    "/src/sounds/sfx/md/hero_decorative-celebration-01.mp3",
+                    "/src/sounds/sfx/md/state-change_confirm-down.mp3",
+                    "/src/sounds/sfx/md/hero_decorative-celebration-02.mp3",
+                    "/src/sounds/sfx/md/state-change_confirm-up.mp3",
+                    "/src/sounds/sfx/md/hero_decorative-celebration-03.mp3",
+                    "/src/sounds/sfx/md/ETesla.mp3",
+                    "/src/sounds/sfx/md/ui_camera-shutter.mp3",
+                    "/src/sounds/sfx/md/navigation_backward-selection-minimal.mp3",
+                    "/src/sounds/sfx/md/ui_loading.mp3",
+                    "/src/sounds/sfx/md/navigation_backward-selection.mp3",
+                    "/src/sounds/sfx/md/ui_lock.mp3",
+                    "/src/sounds/sfx/md/navigation_forward-selection.mp3",
+                    "/src/sounds/sfx/md/ui_tap-variant-01.mp3",
+                    "/src/sounds/sfx/md/navigation_selection-complete-celebration.mp3",
+                    "/src/sounds/sfx/md/ui_unlock.mp3",
+                ]);
+            }),
+            caches.keys().then(keys => Promise.allSettled(
+                keys.map(key => {
+                    if (key !== REQUIRED_CACHE && key !== STATIC_CACHE && key !== USEFUL_CACHE) {
+                        return caches.delete(key);
+                    }
+                })
+            ))
+        ]);
+
+        return self.skipWaiting();
+    });
 });
 
 self.addEventListener("fetch", function(event) {
@@ -166,58 +227,5 @@ self.addEventListener("fetch", function(event) {
 
 self.addEventListener("activate", function(evt) {
 
-  evt.waitUntil(Promise.allSettled([
-          caches.open(REQUIRED_CACHE).then(function (cache) {
-            return cache.addAll([
-                "/client.min.js",
-                "/chunk.1.min.js",
-                "/chunk.2.min.js",
-                "/chunk.3.min.js",
-                "/chunk.4.min.js",
-            ]);
-          }),
-          caches.open(USEFUL_CACHE).then(function (cache) {
-            return cache.addAll([
-                "/src/images/404-dark-2.svg",
-                "/src/images/404-dark.svg",
-                "/src/images/segment.svg",
-                "/src/images/share.svg",
-                "/src/images/logo-transparent.png",
-                "/src/images/favicon.ico"
-            ]);
-          }),
-          caches.open(STATIC_CACHE).then(function (cache) {
-            return cache.addAll([
-              "/src/sounds/sfx/md/alert_error-01.mp3",
-              "/src/sounds/sfx/md/navigation_transition-left.mp3",
-              "/src/sounds/sfx/md/alert_high-intensity.mp3",
-              "/src/sounds/sfx/md/FullHorizonThrow.mp3",
-              "/src/sounds/sfx/md/navigation_transition-right.mp3",
-              "/src/sounds/sfx/md/PrometheusVertical2.mp3",
-              "/src/sounds/sfx/md/hero_decorative-celebration-01.mp3",
-              "/src/sounds/sfx/md/state-change_confirm-down.mp3",
-              "/src/sounds/sfx/md/hero_decorative-celebration-02.mp3",
-              "/src/sounds/sfx/md/state-change_confirm-up.mp3",
-              "/src/sounds/sfx/md/hero_decorative-celebration-03.mp3",
-              "/src/sounds/sfx/md/ETesla.mp3",
-              "/src/sounds/sfx/md/ui_camera-shutter.mp3",
-              "/src/sounds/sfx/md/navigation_backward-selection-minimal.mp3",
-              "/src/sounds/sfx/md/ui_loading.mp3",
-              "/src/sounds/sfx/md/navigation_backward-selection.mp3",
-              "/src/sounds/sfx/md/ui_lock.mp3",
-              "/src/sounds/sfx/md/navigation_forward-selection.mp3",
-              "/src/sounds/sfx/md/ui_tap-variant-01.mp3",
-              "/src/sounds/sfx/md/navigation_selection-complete-celebration.mp3",
-              "/src/sounds/sfx/md/ui_unlock.mp3",
-            ]);
-          }),
-          caches.keys().then(keys => Promise.allSettled(
-              keys.map(key => {
-                  if (key !== REQUIRED_CACHE && key !== STATIC_CACHE && key !== USEFUL_CACHE) {
-                      return caches.delete(key);
-                  }
-              })
-          ))
-        ])
-    );
+    return self.clients.claim();
 });
