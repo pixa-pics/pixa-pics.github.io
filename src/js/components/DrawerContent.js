@@ -132,7 +132,7 @@ class DrawerContent extends React.Component {
                     <div>
                         <List>
                             <ListItem style={{backgroundColor: "#ffffff11"}} button onClick={this._open_pixel_page}>
-                                <ListItemText className={classes.boldItalicListItemText} primary={"Knock Knock, START DRAWING"} />
+                                <ListItemText className={classes.boldItalicListItemText} primary={"PIXEL LABORATORY..."} />
                                 <ListItemIcon><ArrowFRight color={"#fff"} className={classes.iconRight}/></ListItemIcon>
                             </ListItem>
                             <ListItem button className={classes.listItemGrey} onClick={(event) => this._open_link(event, "https://github.com/pixa-pics/pixa-pics.github.io/graphs/contributors")}>

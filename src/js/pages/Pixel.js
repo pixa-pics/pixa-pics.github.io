@@ -54,9 +54,12 @@ import PencilPerfectIcon from "../icons/PencilPerfect";
 import ChangeHistoryIcon from "@material-ui/icons/ChangeHistory";
 import SelectColorIcon from "../icons/SelectColor";
 import SelectRemoveDifferenceIcon from "../icons/SelectRemoveDifference";
-import UFOTwemoji from "../twemoji/react/1F6F8";
-import LABTwemoji from "../twemoji/react/1F9Ea";
-import NINJATwemoji from "../twemoji/react/1F977";
+
+import FUIalien from "../icons/FUIalien";
+import FUIatom from "../icons/FUIatom";
+import FUIlab from "../icons/FUIlab";
+import FUIufo from "../icons/FUIufo";
+import FUIdna from "../icons/FUIdna";
 
 import ShufflingSpanText from "../components/ShufflingSpanText";
 import ImageFileDialog from "../components/ImageFileDialog";
@@ -724,7 +727,7 @@ class Pixel extends React.Component {
 
             actions.trigger_sfx("hero_decorative-celebration-02");
             setTimeout(() => {
-                actions.trigger_snackbar("Do You Want To Share? Yes or No", 7000);
+                actions.trigger_snackbar("Fantastic! Share? Yes or No", 7500);
                 actions.jamy_update("happy");
             }, 2000);
 
@@ -736,7 +739,7 @@ class Pixel extends React.Component {
         const { _canvas } = this.state;
         if(_canvas === null) {return}
 
-        actions.trigger_snackbar("Please wait... Files will download in a few seconds.", 14000);
+        actions.trigger_snackbar("Please wait... Files will download in a few seconds.", 5700);
         actions.jamy_update("happy");
 
         this.setState({_loading: true, _loading_process: "image_render"}, () => {
@@ -770,7 +773,7 @@ class Pixel extends React.Component {
 
                                 actions.trigger_sfx("hero_decorative-celebration-02");
                                 setTimeout(() => {
-                                    actions.trigger_snackbar("Do You Want To Share? Yes or No", 7000);
+                                    actions.trigger_snackbar("Fantastic! Share? Yes or No", 7500);
                                     actions.jamy_update("happy");
 
                                 }, 2000);
@@ -868,14 +871,17 @@ class Pixel extends React.Component {
         let img = new Image;
         let file = event.target.files[0] || event.path[0].files[0];
 
-        actions.trigger_snackbar(`OK - Let's start the proceed very soon...`, 5000);
-
+        this._handle_load("image_preload");
         this.get_base64(file).then((b) => {
 
-            RGBQUANT(b, 4096, (data) => {
+            RGBQUANT(b, 2048, 1280*720, (data) => {
+
+                this._handle_load_complete("image_preload", {});
 
                 if(_import_colorize === "1") {
 
+                    actions.trigger_snackbar("Getting impaired with DeepAI systems", 5700);
+                    actions.jamy_update("angry");
                     postJSON("https://deepai.pixa-pics.workers.dev/colorizer", data, (err, res) => {
 
                         img.addEventListener("load", () => {
@@ -889,6 +895,9 @@ class Pixel extends React.Component {
                     }, "application/text");
                 }else if(_import_colorize === "2") {
 
+                    actions.trigger_snackbar("Getting impaired with DeepAI systems", 5700);
+                    actions.jamy_update("angry");
+
                     postJSON("https://deepai.pixa-pics.workers.dev/waifu2x", data, (err, res) => {
 
                         img.addEventListener("load", () => {
@@ -901,6 +910,9 @@ class Pixel extends React.Component {
 
                     }, "application/text");
                 }else if(_import_colorize === "3") {
+
+                    actions.trigger_snackbar("Getting impaired with DeepAI systems", 7500);
+                    actions.jamy_update("angry");
 
                     postJSON("https://deepai.pixa-pics.workers.dev/colorizer", data, (err, res) => {
 
@@ -1794,17 +1806,23 @@ class Pixel extends React.Component {
                     </div>
                 </Grow>
                 <Backdrop className={classes.backdrop} open={_loading} keepMounted={false}>
-                    <div className={classes.backdropTextContent} style={{fontFamily: `"Share Tech Mono"`}}>
+                    <div className={classes.backdropTextContent} style={{fontFamily: `"Jura"`}}>
                         {_loading && <h1><ShufflingSpanText text={"Laboratory processing..."} animation_delay_ms={0} animation_duration_ms={250}/></h1>}
-                        {_loading && _loading_process === "image_load" && <h4><ShufflingSpanText text={"Abducting your image..."} animation_delay_ms={300} animation_duration_ms={500}/></h4>}
-                        {_loading && _loading_process === "image_load" && <div><UFOTwemoji style={{width: 72}}/></div>}
-                        {_loading && _loading_process === "image_render" && <div><NINJATwemoji style={{width: 72}}/></div>}
-                        {_loading && _loading_process === "image_render" && <h4><ShufflingSpanText text={"Getting a ninja rendering running..."} animation_delay_ms={300} animation_duration_ms={500}/></h4>}
-                        {_loading && _loading_process === "less_color" && <h4><ShufflingSpanText text={"Coupling few color matrices..."} animation_delay_ms={300} animation_duration_ms={500}/></h4>}
-                        {_loading && _loading_process === "less_color" && <div><LABTwemoji style={{width: 72}}/></div>}
-                        {_loading && _loading_process === "less_color_auto" && <h4><ShufflingSpanText text={"Coupling many color matrices..."} animation_delay_ms={500} animation_duration_ms={500}/></h4>}
-                        {_loading && _loading_process === "less_color_auto" && <div><LABTwemoji style={{width: 72}}/></div>}
-                        {_loading && <h5><ShufflingSpanText text={"It can take a while, please wait ~15sec."} animation_delay_ms={5000} animation_duration_ms={500}/></h5>}
+                        {_loading && _loading_process === "image_preload" && <h4><ShufflingSpanText text={"Preparing alien scripts"} animation_delay_ms={300} animation_duration_ms={500}/></h4>}
+                        {_loading && _loading_process === "image_preload" && <div><FUIalien style={{width: 72}}/></div>}
+                        {_loading && _loading_process === "image_preload" && <h5><ShufflingSpanText text={"It can take a while, please wait ~5sec."} animation_delay_ms={5000} animation_duration_ms={500}/></h5>}
+                        {_loading && _loading_process === "image_load" && <h4><ShufflingSpanText text={"Abducting your image"} animation_delay_ms={300} animation_duration_ms={500}/></h4>}
+                        {_loading && _loading_process === "image_load" && <div><FUIufo style={{width: 72}}/></div>}
+                        {_loading && _loading_process === "less_color" && <h5><ShufflingSpanText text={"It can take a while, please wait ~10sec."} animation_delay_ms={5000} animation_duration_ms={500}/></h5>}
+                        {_loading && _loading_process === "image_render" && <div><FUIatom style={{width: 72}}/></div>}
+                        {_loading && _loading_process === "image_render" && <h4><ShufflingSpanText text={"Atomic rendering working"} animation_delay_ms={300} animation_duration_ms={500}/></h4>}
+                        {_loading && _loading_process === "image_render" && <h5><ShufflingSpanText text={"It can take a while, please wait ~15sec."} animation_delay_ms={5000} animation_duration_ms={500}/></h5>}
+                        {_loading && _loading_process === "less_color" && <h4><ShufflingSpanText text={"Coupling few color DNA"} animation_delay_ms={300} animation_duration_ms={500}/></h4>}
+                        {_loading && _loading_process === "less_color" && <div><FUIdna style={{width: 72}}/></div>}
+                        {_loading && _loading_process === "less_color" && <h5><ShufflingSpanText text={"It can take a while, please wait ~5sec."} animation_delay_ms={5000} animation_duration_ms={500}/></h5>}
+                        {_loading && _loading_process === "less_color_auto" && <h4><ShufflingSpanText text={"Coupling many color DNA"} animation_delay_ms={500} animation_duration_ms={500}/></h4>}
+                        {_loading && _loading_process === "less_color_auto" && <div><FUIdna style={{width: 72}}/></div>}
+                        {_loading && _loading_process === "less_color_auto" && <h5><ShufflingSpanText text={"It can take a while, please wait ~20sec."} animation_delay_ms={5000} animation_duration_ms={500}/></h5>}
                     </div>
                 </Backdrop>
 
