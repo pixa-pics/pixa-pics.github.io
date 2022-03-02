@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Suspense } from "react";
 import { withStyles } from "@material-ui/core";
 
 import {Snackbar, CssBaseline, IconButton, Toolbar} from "@material-ui/core";
@@ -13,9 +13,10 @@ import dispatcher from "../dispatcher";
 import actions from "../actions/utils";
 
 import Home from "./Home";
-import Pixel from "./Pixel";
+const Pixel = React.lazy(() => import("../pages/Pixel"));
 import Settings from "./Settings";
 import Unknown from "./Unknown";
+
 
 const PAGE_COMPONENTS = (name, pathname) => {
 
@@ -23,7 +24,7 @@ const PAGE_COMPONENTS = (name, pathname) => {
         case "home":
             return <Home />;
         case "pixel":
-            return <Pixel />;
+            return <Suspense fallback={<div/>}><Pixel /></Suspense>;
         case "unknown":
             return <Unknown />;
         case "settings":

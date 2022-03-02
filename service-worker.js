@@ -12,8 +12,7 @@ self.addEventListener("install", function(evt) {
                     "/index.html",
                     "/404.html",
                     "/client.min.js",
-                    "/src/fonts/Jura-Medium.woff2",
-                    "/src/fonts/ShareTechMono-Regular.woff2"
+                    "/src/fonts/Jura-Medium.woff2"
                 ]);
           }),
           caches.open(USEFUL_CACHE).then(function (cache) {
@@ -35,13 +34,12 @@ self.addEventListener("install", function(evt) {
                     "/chunk.2.min.js",
                     "/chunk.3.min.js",
                     "/chunk.4.min.js",
+                    "/chunk.5.min.js",
                 ]);
             }),
             caches.open(USEFUL_CACHE).then(function (cache) {
                 return cache.addAll([
                     "/src/images/404-dark-2.svg",
-                    "/src/images/404-dark.svg",
-                    "/src/images/segment.svg",
                     "/src/images/designer.svg",
                     "/src/images/share.svg",
                     "/src/images/logo-transparent.png",
@@ -50,26 +48,13 @@ self.addEventListener("install", function(evt) {
             }),
             caches.open(STATIC_CACHE).then(function (cache) {
                 return cache.addAll([
-                    "/src/sounds/sfx/md/alert_error-01.mp3",
-                    "/src/sounds/sfx/md/navigation_transition-left.mp3",
-                    "/src/sounds/sfx/md/alert_high-intensity.mp3",
                     "/src/sounds/sfx/md/FullHorizonThrow.mp3",
-                    "/src/sounds/sfx/md/navigation_transition-right.mp3",
-                    "/src/sounds/sfx/md/PrometheusVertical2.mp3",
-                    "/src/sounds/sfx/md/hero_decorative-celebration-01.mp3",
-                    "/src/sounds/sfx/md/state-change_confirm-down.mp3",
                     "/src/sounds/sfx/md/hero_decorative-celebration-02.mp3",
-                    "/src/sounds/sfx/md/state-change_confirm-up.mp3",
-                    "/src/sounds/sfx/md/hero_decorative-celebration-03.mp3",
-                    "/src/sounds/sfx/md/ETesla.mp3",
-                    "/src/sounds/sfx/md/ui_camera-shutter.mp3",
-                    "/src/sounds/sfx/md/navigation_backward-selection-minimal.mp3",
-                    "/src/sounds/sfx/md/ui_loading.mp3",
-                    "/src/sounds/sfx/md/navigation_backward-selection.mp3",
-                    "/src/sounds/sfx/md/ui_lock.mp3",
-                    "/src/sounds/sfx/md/navigation_forward-selection.mp3",
-                    "/src/sounds/sfx/md/ui_tap-variant-01.mp3",
                     "/src/sounds/sfx/md/navigation_selection-complete-celebration.mp3",
+                    "/src/sounds/sfx/md/navigation_transition-left.mp3",
+                    "/src/sounds/sfx/md/navigation_transition-right.mp3",
+                    "/src/sounds/sfx/md/state-change_confirm-down.mp3",
+                    "/src/sounds/sfx/md/ui_lock.mp3",
                     "/src/sounds/sfx/md/ui_unlock.mp3",
                 ]);
             }),
@@ -181,6 +166,22 @@ self.addEventListener("fetch", function(event) {
                       response ||
                       fetch(event.request).then(function (response) { // Fetch, clone, and serve
                           cache.put("/chunk.4.min.js", response.clone());
+                          return response;
+                      })
+                  );
+              });
+          })
+      );
+
+  }else if(url.includes("chunk.5.min.js") && event.request.mode === "same-origin") {
+
+      event.respondWith(
+          caches.open(REQUIRED_CACHE).then(function (cache) {
+              return cache.match("/chunk.5.min.js").then(function (response) {
+                  return (
+                      response ||
+                      fetch(event.request).then(function (response) { // Fetch, clone, and serve
+                          cache.put("/chunk.5.min.js", response.clone());
                           return response;
                       })
                   );

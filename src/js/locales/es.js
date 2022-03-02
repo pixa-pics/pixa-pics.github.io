@@ -204,48 +204,6 @@
             "second_snackbar": "Código abierto, gratis, para todos, para siempre",
         },
         "home": {
-            "quotes": [
-                {
-                    "author": "Charlie Chaplin",
-                    "text": "YVosotros, el pueblo, tenéis el poder. El poder de crear máquinas, el poder de crear felicidad. Vosotros, el pueblo, tenéis el poder de hacer esta vida libre y hermosa. De convertirla en una maravillosa aventura."
-                },
-                {
-                    "author": "Desconocido",
-                    "text": "Sabed que los cielos fueron creados para descender a las cinco manifestaciones elementales. Una pieza, un pequeño espejo de todas las demás. Todo es lo mismo. Todo es lo mismo. Cada trozo de existencia es su propio pequeño universo."
-                },
-                {
-                    "author": "Nikola Tesla",
-                    "text": "Lo que ahora queremos es un contacto más estrecho y un mejor entendimiento entre los individuos y las comunidades de toda la tierra, y la eliminación del egoísmo y el orgullo, que siempre son propensos a sumir al mundo en la barbarie y las luchas primitivas... La paz sólo puede llegar como consecuencia natural de la iluminación universal..."
-                },
-                {
-                    "author": "Eric Schmidt",
-                    "text": "Bitcoin es un logro criptográfico notable… La capacidad de crear algo que no es duplicable en el mundo digital tiene un enorme valor."
-                },
-                {
-                    "author": "Oscar Wilde",
-                    "text": "El hombre es menos él mismo cuando habla en su propia persona. Dale una máscara y te dirá la verdad."
-                },
-                {
-                    "author": "Elon Musk",
-                    "text": "Poder hablar con la gente a larga distancia, transmitir imágenes, volar, acceder a grandes cantidades de datos como un oráculo. Todas estas cosas se habrían considerado magia hace unos cientos de años. Así que la ingeniería es, a todos los efectos, magia, y ¿quién no querría ser mago?"
-                },
-                {
-                    "author": "Desconocido",
-                    "text": "Si la palabra gobierno significa literalmente \"controlar la mente\", ¿no sería aprender a controlar tu propia mente lo que anula la oportunidad de un gobierno externo? Verás, es el simple hecho de hacer preguntas lo que ejemplifica el talón de Aquiles del sistema de control; puedes condicionar a los animales, pero si los humanos hacen preguntas, pueden aprender el camino hacia la libertad."
-                },
-                {
-                    "author": "Desconocido",
-                    "text": "La verdad no se puede enseñar. Debe ser experimentada, por lo tanto, considera siempre la luz interior del entendimiento antes que la luz exterior del dogma común."
-                },
-                {
-                    "author": "Gandhi",
-                    "text": "Existen muchas causas por las cuales estoy dispuesto a morir, pero ninguna por la cual esté dispuesto a matar."
-                },
-                {
-                    "author": "Desconocido",
-                    "text": "A veces no sé qué hay que hacer aquí en la tierra para que la gente se mueva porque sigue sentada en su silla. Y no me refiero a una rebelión violenta de algún tipo. No, me refiero a hacer la conexión. Unirse."
-                }
-            ],
             "ready_to_start_cta": "¿Estas listo para empezar? ¡Crear una nueva cartera anónima!"
         },
         "settings": {

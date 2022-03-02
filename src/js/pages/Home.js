@@ -1,24 +1,19 @@
 import React from "react";
 import { withStyles } from "@material-ui/core";
 
-import { t } from "../utils/t";
 import { HISTORY } from "../utils/constants";
-import ShareIcon from "@material-ui/icons/Share";
 
-import {Fab, Grow, Button} from "@material-ui/core";
-
+import {Button} from "@material-ui/core";
 import actions from "../actions/utils";
 
 import AngelEmojiSvg from "../twemoji/react/1F607";
+const ANGELEMOJI = get_svg_in_b64(<AngelEmojiSvg />);
 import HearthEmojiSvg from "../twemoji/react/2665";
+const HEARTHEMOJI = get_svg_in_b64(<HearthEmojiSvg />);
 import EarthEmojiSvg from "../twemoji/react/1F30D";
-import OpenSource from "../icons/OpenSource";
+const EARTHEMOJI = get_svg_in_b64(<EarthEmojiSvg />);
 
 import get_svg_in_b64 from "../utils/svgToBase64";
-
-const OPEN_SOURCE = get_svg_in_b64(<OpenSource />);
-const quotes = t( "pages.home.quotes");
-const random_quote_index = Math.floor(Math.random() * quotes.length);
 
 const styles = theme => ({
     root: {
@@ -95,7 +90,6 @@ class Home extends React.Component {
         this.state = {
             classes: props.classes,
             _history: HISTORY,
-            _quote: t( "pages.home.quotes")[random_quote_index]
         };
     };
 
@@ -140,12 +134,12 @@ class Home extends React.Component {
                         <h1 className={classes.title}>
                             <span><span className={classes.blue}>PIXA.PICS</span> - to pixel art, then draw.</span><br />
                             <span>Make potential (un)limited</span><br />
-                            <span><img src={get_svg_in_b64(<AngelEmojiSvg />)} className="emoji"/> everywhere.</span>
+                            <span><img src={ANGELEMOJI} className="emoji"/> everywhere.</span>
                         </h1>
                         <h2 className={classes.subtitle}>
                             At the horizon of <span className={classes.blue}>matrix</span> and <span className={classes.blue}>vectorial</span>, <br/>
                             discover an unprecedented industrial and educative purpose.<br />
-                            Made with <img className={"emoji pulse"} src={get_svg_in_b64(<HearthEmojiSvg />)}/>, it is designed to be - forever open-source & for everyone. <img src={get_svg_in_b64(<EarthEmojiSvg />)} className={"emoji"}/>.<br />
+                            Made with <img className={"emoji pulse"} src={HEARTHEMOJI}/>, it is designed to be - forever open-source & for everyone. <img src={EARTHEMOJI} className={"emoji"}/>.<br />
                         </h2>
                         <Button variant={"contained"} color="primary" onClick={(event) => this._go_to_url(event, "/pixel")}>
                             Start using it

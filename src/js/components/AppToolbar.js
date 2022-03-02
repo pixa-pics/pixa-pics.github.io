@@ -77,13 +77,13 @@ const styles = theme => ({
     appTitle: {
         verticalAlign: "middle",
         fontWeight: "bold",
-        fontFamily: `"Share Tech Mono"`,
+        fontFamily: `"Jura"`,
         userSelect: "none",
     },
     swipeableDrawerAppTitle: {
         verticalAlign: "middle",
         fontWeight: "bold",
-        fontFamily: `"Share Tech Mono"`,
+        fontFamily: `"Jura"`,
         userSelect: "none",
     },
     jamyContainer: {

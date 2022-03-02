@@ -207,48 +207,6 @@ module.exports = {
             "logged_new_account": "Anda telah masuk di akun baru."
         },
         "home": {
-            "quotes": [
-                {
-                    "author": "Charlie Chaplin",
-                    "text": "Kalian semua punya kekuatan - kekuatan untuk membuat mesin. Kekuatan untuk membuat kebahagiaan! Kalian semua, punya kekuatan untuk membuat hidup ini bebas dan indah, untuk membuat hidup ini menjadi petualangan yang luar biasa."
-                },
-                {
-                    "author": "Anonim",
-                    "text": "Ketahuilah bahwa langit diciptakan dalam bentuk lima wujud dasar. Satu potongan, sebuah cermin bagi yang lainnya. Semuanya sama saja. Setiap potongan yang ada adalah alam semestanya sendiri."
-                },
-                {
-                    "author": "Nikola Tesla",
-                    "text": "Yang kita perlukan sekarang adalah hubungan yang lebih dekat dan tenggang rasa yang lebih kuat baik antara perorangan maupun komunitas di seluruh dunia, dan hilangnya egoisme dan rasa gengsi yang selalu cenderung mendatangkan kebiadaban dan perselisihan ke dunia ini... Kedamaian akan hadir hanya jika ada pencerahan di seluruh semesta..."
-                },
-                {
-                    "author": "Eric Schmidt",
-                    "text": "Bitcoin adalah capaian kriptografi yang hebat dan kemampuan untuk menciptakan sesuatu yang bukan duplikat di dunia digital memiliki nilai yang sangat besar."
-                },
-                {
-                    "author": "Oscar Wilde",
-                    "text": "Orang tidak sepenuhnya menjadi diri sendiri ketika ia bicara atas nama dirinya. Berilah ia topeng maka ia akan mengatakan yang sebenarnya."
-                },
-                {
-                    "author": "Elon Musk",
-                    "text": "Mampu berbicara dengan orang-orang dari jarak jauh, mengirimkan pesan, terbang, mengakses miliaran data layaknya peramal. Itu semua sudah pasti disebut sihir ratusan tahun yang lalu. Jadi bidang perteknikan sama saja dengan bidang sihir. Siapa yang tak mau jadi penyihir?"
-                },
-                {
-                    "author": "Anonim",
-                    "text": "Jika kata pemerintah secara literal berarti \"mengontrol pikiran,\" bukannya belajar cara mengendalikan pikiran sendiri meniadakan kesempatan di luar pemerintah? Tindakan sesederhana mengajukan pertanyaan bisa menemukan kelemahan dari sistem yang mengontrol; binatang bisa saja dikontrol, tapi jika manusia mau mengajukan pertanyaan, mereka bisa menemukan jalan menuju kebebasan."
-                },
-                {
-                    "author": "Anonim",
-                    "text": "Kebenaran tak bisa diajarkan. Itu harus dialami. Karenanya selalu pertimbangkan lebih dulu cahaya dalam dari pemahaman sebelum cahaya luar dari dogma yang lazim."
-                },
-                {
-                    "author": "Anonim",
-                    "text": "Ada banyak sebab yang saya rela mati karenanya. Tak ada satu sebab pun yang saking inginnya saya raih sampai-sampai saya mau melakukan apa pun karenanya."
-                },
-                {
-                    "author": "Anonim",
-                    "text": "Tahu tidak, kadang-kadang saya tak tahu apa yang mesti dilakukan di dunia ini supaya orang-orang mau bergerak karena mereka masih saja duduk-duduk santai. Maksudnya bukan untuk melakukan pemberontakan atau semacamnya. Yang saya maksudkan adalah membangun hubungan. Bersatulah."
-                }
-            ],
             "ready_to_start_cta": "Siap memulai sekarang? Buat dompet anonim baru!"
         },
         "settings": {

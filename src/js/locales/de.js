@@ -225,48 +225,6 @@ module.exports = {
             "second_snackbar": "Open-Source, kostenlos, for alle, für immer",
         },
         "home": {
-            "quotes": [
-                {
-                    "author": "Charlie Chaplin",
-                    "text": "Sie, die Menschen, haben die Macht - die Macht, Maschinen zu schaffen. Die Macht, Glück zu schaffen! Ihr, die Menschen, habt die Macht, dieses Leben frei und schön zu gestalten, dieses Leben zu einem wunderbaren Abenteuer zu machen."
-                },
-                {
-                    "author": "Unbekannt",
-                    "text": "Wisse, dass der Himmel geschaffen wurde, um in die fünf elementaren Manifestationen hinabzusteigen. Ein Stück, ein kleiner Spiegel von allen anderen. Es ist alles dasselbe. Alles dasselbe. Jedes Stück der Existenz ist sein eigenes kleines Universum."
-                },
-                {
-                    "author": "Nikola Tesla",
-                    "text": "Was wir jetzt wollen, ist ein engerer Kontakt und ein besseres Verständnis zwischen Individuen und Gemeinschaften auf der ganzen Erde, und die Beseitigung von Egoismus und Stolz, die immer dazu neigen, die Welt in urzeitliche Barbarei und Zwietracht zu stürzen... Der Friede kann nur eine natürliche Folge der universellen Erleuchtung sein..."
-                },
-                {
-                    "author": "Eric Schmidt",
-                    "text": "Bitcoin ist eine bemerkenswerte kryptografische Errungenschaft, und die Fähigkeit, etwas zu schaffen, das in der digitalen Welt nicht dupliziert werden kann, hat einen enormen Wert."
-                },
-                {
-                    "author": "Oscar Wilde",
-                    "text": "Der Mensch ist am wenigsten er selbst, wenn er in seiner eigenen Person spricht. Gib ihm eine Maske, und er wird dir die Wahrheit sagen."
-                },
-                {
-                    "author": "Elon Musk",
-                    "text": "Über große Entfernungen mit Menschen sprechen, Bilder übertragen, fliegen, wie ein Orakel auf riesige Datenmengen zugreifen können. Das sind alles Dinge, die vor ein paar hundert Jahren noch als Magie gegolten hätten. Technik ist also in jeder Hinsicht Magie, und wer möchte nicht gerne ein Magier sein?"
-                },
-                {
-                    "author": "Unbekannt",
-                    "text": "Wenn das Wort Regierung buchstäblich \"den Verstand kontrollieren\" bedeutet, würde dann nicht das Erlernen der Kontrolle über den eigenen Verstand die Möglichkeit einer Regierung von außen zunichte machen? Sehen Sie, es ist der einfache Akt des Fragenstellens, der die Achillesferse des Kontrollsystems verdeutlicht; man kann Tiere konditionieren, aber wenn Menschen Fragen stellen, können sie den Weg zur Freiheit lernen."
-                },
-                {
-                    "author": "Unbekannt",
-                    "text": "Die Wahrheit kann nicht gelehrt werden. Sie muss erfahren werden, deshalb sollte man immer das innere Licht des Verstehens vor dem äußeren Licht des allgemeinen Dogmas betrachten."
-                },
-                {
-                    "author": "Gandhi",
-                    "text": "Es gibt viele Gründe, für die ich sterben würde. Es gibt keine einzige Sache, für die ich töten würde."
-                },
-                {
-                    "author": "Unbekannt",
-                    "text": "Wissen Sie was, manchmal weiß ich wirklich nicht, was hier auf der Erde getan werden muss, um die Menschen zu bewegen, weil sie immer noch in ihrem Stuhl sitzen. Und ich spreche nicht von gewaltsamer Rebellion irgendeiner Art. Nein, ich spreche davon, eine Verbindung herzustellen. Sich vereinigen."
-                }
-            ],
             "ready_to_start_cta": "Sind Sie bereit loszulegen? Erstellen Sie Ihr neues anonynmes Wallte!"
         },
         "settings": {

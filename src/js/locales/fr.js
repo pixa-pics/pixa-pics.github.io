@@ -204,18 +204,6 @@ module.exports = {
             second_snackbar: "Open-source, gratuitement, pour tout le monde, pour toujours",
         },
         home: {
-            quotes: [
-                {author: "Charlie Chaplin", text: "Vous, les gens, avez le pouvoir - le pouvoir de créer des machines. Le pouvoir de créer du bonheur ! Vous, le peuple, avez le pouvoir de rendre cette vie libre et belle, de faire de cette vie une aventure merveilleuse."},
-                {author: "Inconnu", text: "Sachez que les cieux ont été créés pour descendre dans les cinq manifestations élémentaires. Une pièce, un petit miroir de tous les autres. C'est tout pareil. Tous les mêmes. Chaque morceau d'existence est son propre petit univers."},
-                {author: "Nikola Tesla", text: "Ce que nous voulons maintenant, c'est un contact plus étroit et une meilleure compréhension entre les individus et les communautés partout sur la terre, et l'élimination de l'égoïsme et de l'orgueil qui sont toujours enclins à plonger le monde dans la barbarie et les conflits primitifs... La paix ne peut venir que comme une conséquence naturelle de l'illumination universelle..."},
-                {author: "Eric Schmidt", text: "Bitcoin est une réalisation cryptographique remarquable et la capacité de créer quelque chose qui n'est pas dupliqué dans le monde numérique a une valeur énorme."},
-                {author: "Oscar Wilde", text: "L'homme est le moins lui-même quand il parle en sa propre personne. Donnez-lui un masque et il vous dira la vérité."},
-                {author: "Elon Musk", text: "Être capable de parler aux gens sur de longues distances, de transmettre des images, voler, accéder à de vastes quantités de données comme un oracle. Ce sont toutes des choses qui auraient été considérées comme magiques il y a quelques centaines d'années. Donc, l'ingénierie est à toutes fins utiles, de la magie, et qui ne voudrait pas être un magicien ?"},
-                {author: "Inconnu", text: "Si le mot gouvernement signifie littéralement \"contrôler l'esprit,\" apprendre à contrôler votre propre esprit n'annulerait-il pas l'opportunité pour un gouvernement extérieur ? Vous voyez, c'est le simple fait de poser des questions qui illustre le talon d'Achille du système de contrôle ; vous pouvez conditionner les animaux, mais si les humains posent des questions, ils peuvent apprendre le chemin de la liberté."},
-                {author: "Inconnu", text: "La vérité ne peut pas être enseignée. Il doit être expérimenté donc toujours considérer la lumière intérieure de la compréhension avant la lumière extérieure du dogme commun."},
-                {author: "Gandhi", text: "Il y a plusieurs causes que je mourrait pour. Il n'y a pas une seule cause pour laquelle je tuerais."},
-                {author: "Inconnu", text: "Vous savez quoi, parfois je ne sais vraiment pas ce qui doit être fait ici sur terre pour faire bouger les gens parce qu'ils sont toujours assis sur leur chaise. Et je ne parle pas de rébellion violente de quelque sorte. Non, je parle de faire la connexion. Unite."},
-            ],
             ready_to_start_cta: "Prêt à commencer maintenant ? Créez un nouveau portefeuille anonyme !",
         },
         settings: {

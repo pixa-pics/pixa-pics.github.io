@@ -414,7 +414,7 @@ class CanvasPixels extends React.Component {
                 transform: translate(0px, -100%);
                 line-height: 20px;
                 font-size: 14px;
-                font-family: "Share Tech Mono";
+                font-family: "Jura";
                 color: #FAFAFAAA;` +
             "}" +
             ".Canvas-Pixels-Cover::before {" +
@@ -428,7 +428,7 @@ class CanvasPixels extends React.Component {
                 transform: translate(0px, 100%);
                 line-height: 20px;
                 font-size: 14px;
-                font-family: "Share Tech Mono";
+                font-family: "Jura";
                 color: #FAFAFAAA;` +
             "}" +
             ".Canvas-Wrapper.MOVE:not(.Canvas-Focused), .Canvas-Wrapper.PICKER:not(.Canvas-Focused) {" +
@@ -2039,7 +2039,7 @@ class CanvasPixels extends React.Component {
                 let [canvas_ctx, canvas] = this._get_new_ctx_from_canvas(width, height, false);
                 canvas_ctx.drawImage(image_obj, 0, 0, width, height);
                 const image_data = canvas_ctx.getImageData(0, 0, width, height);
-                const base64_original_image = dont_compute_base64_original_image ? "": canvas.toDataURL("image/jpeg");
+                const base64_original_image = dont_compute_base64_original_image ? "": loading_base64_img.length > 0 ? loading_base64_img: canvas.toDataURL("image/jpeg");
                 canvas = null;
 
                 const merge_color_threshold = 4/16;

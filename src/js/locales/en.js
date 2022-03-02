@@ -204,48 +204,6 @@ module.exports = {
             "second_snackbar": "Open-source, for free, for everyone, forever",
         },
         "home": {
-            "quotes": [
-                {
-                    "author": "Charlie Chaplin",
-                    "text": "You, the people have the power - the power to create machines. The power to create happiness! You, the people, have the power to make this life free and beautiful, to make this life a wonderful adventure."
-                },
-                {
-                    "author": "Unknown",
-                    "text": "Know that the heavens were created to descend into the five elemental manifestations. One piece, a small mirror of all others. It is all the same. All the same. Each piece of existence is its own small universe."
-                },
-                {
-                    "author": "Nikola Tesla",
-                    "text": "What we now want is closer contact and better understanding between individuals and communities all over the earth, and the elimination of egoism and pride which is always prone to plunge the world into primeval barbarism and strife... Peace can only come as a natural consequence of universal enlightenment..."
-                },
-                {
-                    "author": "Eric Schmidt",
-                    "text": "Bitcoin is a remarkable cryptographic achievement and the ability to create something that is not duplicate in the digital world has enormous value."
-                },
-                {
-                    "author": "Oscar Wilde",
-                    "text": "Man is least himself when he talks in his own person. Give him a mask, and he will tell you the truth."
-                },
-                {
-                    "author": "Elon Musk",
-                    "text": "Being able to talk to people over long distances, to transmit images, flying, accessing vast amounts of data like an oracle. These are all things that would have been considered magic a few hundred years ago. So engineering is for all intents and purposes, magic, and who wouldn't want to be a magician?"
-                },
-                {
-                    "author": "Unknown",
-                    "text": "If the word government literally means \"to control the mind,\" wouldn't learning to control your own mind negate the opportunity for outside government? You see, it's the simple act of asking questions that exemplifies the Achilles heel of the control system; you can condition animals, but if humans ask questions, they can learn the path to freedom."
-                },
-                {
-                    "author": "Unknown",
-                    "text": "Truth cannot be taught. It must be experienced therefore always consider the inner light of understanding before the outer light of common dogma."
-                },
-                {
-                    "author": "Gandhi",
-                    "text": "There are many causes I would die for. There is not a single cause I would kill for."
-                },
-                {
-                    "author": "Unknown",
-                    "text": "You know what, sometimes I really do not know what needs to be done here on earth to get the people moving because they are still sitting in their chair. And I do not refer to violent rebellion of some kind. No, I am talking about making connection. Unite."
-                }
-            ],
             "ready_to_start_cta": "Ready to start now? Create a new anonymous wallet!"
         },
         "settings": {

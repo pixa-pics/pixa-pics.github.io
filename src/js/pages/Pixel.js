@@ -8,9 +8,9 @@ window.mobileAndTabletCheck = function() {
 
 let is_mobile_or_tablet = window.mobileAndTabletCheck();
 
-import React, { Suspense } from "react";
+import React from "react";
+import CanvasPixels from "../components/CanvasPixels";
 import { withStyles } from "@material-ui/core";
-const CanvasPixels = React.lazy(() => import("../components/CanvasPixels"));
 import pool from "../utils/worker-pool";
 import { RGBQUANT } from "../utils/RGBQUANT";
 
@@ -867,14 +867,29 @@ class Pixel extends React.Component {
 
     _handle_file_upload = (event, input) => {
 
-        const { _canvas, _import_colorize } = this.state;
+        const { _canvas, _import_colorize, _import_size } = this.state;
         let img = new Image;
         let file = event.target.files[0] || event.path[0].files[0];
 
         this._handle_load("image_preload");
         this.get_base64(file).then((b) => {
 
-            RGBQUANT(b, 2048, 1280*720, (data) => {
+            const max_size = Math.sqrt(1920*1280);
+            const max_color = 2024;
+
+            let ratio_l_l2 = 4/3;
+            let min_size = 512;
+            let min_color = 256;
+            if(["1", "3"].includes(_import_colorize)) {
+
+                min_size = 1280;
+                min_color = 960;
+            }
+
+            const resize_to = Math.min(max_size * max_size, Math.max(_import_size * _import_size, min_size * min_size));
+            const limit_color_number = Math.min(max_color * ratio_l_l2, Math.max(_import_size * ratio_l_l2, min_color * ratio_l_l2));
+
+            RGBQUANT(b, limit_color_number, resize_to, (data) => {
 
                 this._handle_load_complete("image_preload", {});
 
@@ -886,7 +901,7 @@ class Pixel extends React.Component {
 
                         img.addEventListener("load", () => {
 
-                            _canvas.set_canvas_from_image(img, "", {}, true);
+                            _canvas.set_canvas_from_image(img, b, {}, true);
                             document.body.removeChild(input);
                             this._handle_menu_close();
                         });
@@ -902,7 +917,7 @@ class Pixel extends React.Component {
 
                         img.addEventListener("load", () => {
 
-                            _canvas.set_canvas_from_image(img, "", {}, true);
+                            _canvas.set_canvas_from_image(img, b, {}, true);
                             document.body.removeChild(input);
                             this._handle_menu_close();
                         });
@@ -920,7 +935,7 @@ class Pixel extends React.Component {
 
                             img.addEventListener("load", () => {
 
-                                _canvas.set_canvas_from_image(img, "", {}, true);
+                                _canvas.set_canvas_from_image(img, b, {}, true);
                                 document.body.removeChild(input);
                                 this._handle_menu_close();
                             });
@@ -933,7 +948,7 @@ class Pixel extends React.Component {
 
                     img.addEventListener("load", () => {
 
-                        _canvas.set_canvas_from_image(img);
+                        _canvas.set_canvas_from_image(img, b);
                         document.body.removeChild(input);
                         this._handle_menu_close();
                     });
@@ -1587,53 +1602,51 @@ class Pixel extends React.Component {
                             textRendering: "optimizespeed",
                             imageRendering: "optimizespeed",
                         }}>
-                            <Suspense fallback={<div />}>
-                                <CanvasPixels
-                                    onContextMenu={(e) => {e.preventDefault()}}
-                                    key={"canvas"}
-                                    className={classes.contentCanvas}
-                                    ref={this._set_canvas_ref}
-                                    no_actions={_is_pixel_dialog_post_edit_open}
-                                    dont_show_canvas_until_img_set={_is_pixel_dialog_post_edit_open}
-                                    dont_show_canvas={_is_pixel_dialog_post_edit_open}
-                                    tool={_tool}
-                                    canvas_wrapper_padding={32}
-                                    hide_canvas_content={_hide_canvas_content}
-                                    show_original_image_in_background={_show_original_image_in_background}
-                                    show_transparent_image_in_background={_show_transparent_image_in_background}
-                                    select_mode={_select_mode}
-                                    pencil_mirror_mode={_pencil_mirror_mode}
-                                    hue={_hue}
-                                    bucket_threshold={_slider_value}
-                                    color_loss={_slider_value}
-                                    pxl_current_opacity={1}
-                                    shadow_size={1}
-                                    onLoadComplete={this._handle_load_complete}
-                                    onLoad={this._handle_load}
-                                    onCanUndoRedoChange={this._handle_can_undo_redo_change}
-                                    onSizeChange={this._handle_size_change}
-                                    onCurrentColorChange={this._handle_current_color_change}
-                                    onSomethingSelectedChange={this._handle_something_selected_change}
-                                    onImageImportModeChange={this._handle_image_import_mode_change}
-                                    on_kb_change={this._handle_kb_change}
-                                    on_fps_change={this._handle_fps_change}
-                                    on_elevation_change={this._handle_elevation_change}
-                                    onPositionChange={this._handle_position_change}
-                                    onLayersChange={this._handle_layers_change}
-                                    onGameEnd={this._handle_game_end}
-                                    onRelevantActionEvent={this._handle_relevant_action_event}
-                                    onRightClick={this._handle_right_click}
-                                    mine_player_direction={_mine_player_direction}
-                                    pxl_width={_width}
-                                    pxl_height={_height}
-                                    pxl_current_color={_current_color}
-                                    convert_scale={1}
-                                    default_size={_import_size}
-                                    ideal_size={_import_size}
-                                    max_size={_import_size}
-                                    fast_drawing={true}
-                                    px_per_px={1}/>
-                            </Suspense>
+                            <CanvasPixels
+                                onContextMenu={(e) => {e.preventDefault()}}
+                                key={"canvas"}
+                                className={classes.contentCanvas}
+                                ref={this._set_canvas_ref}
+                                no_actions={_is_pixel_dialog_post_edit_open}
+                                dont_show_canvas_until_img_set={_is_pixel_dialog_post_edit_open}
+                                dont_show_canvas={_is_pixel_dialog_post_edit_open}
+                                tool={_tool}
+                                canvas_wrapper_padding={32}
+                                hide_canvas_content={_hide_canvas_content}
+                                show_original_image_in_background={_show_original_image_in_background}
+                                show_transparent_image_in_background={_show_transparent_image_in_background}
+                                select_mode={_select_mode}
+                                pencil_mirror_mode={_pencil_mirror_mode}
+                                hue={_hue}
+                                bucket_threshold={_slider_value}
+                                color_loss={_slider_value}
+                                pxl_current_opacity={1}
+                                shadow_size={1}
+                                onLoadComplete={this._handle_load_complete}
+                                onLoad={this._handle_load}
+                                onCanUndoRedoChange={this._handle_can_undo_redo_change}
+                                onSizeChange={this._handle_size_change}
+                                onCurrentColorChange={this._handle_current_color_change}
+                                onSomethingSelectedChange={this._handle_something_selected_change}
+                                onImageImportModeChange={this._handle_image_import_mode_change}
+                                on_kb_change={this._handle_kb_change}
+                                on_fps_change={this._handle_fps_change}
+                                on_elevation_change={this._handle_elevation_change}
+                                onPositionChange={this._handle_position_change}
+                                onLayersChange={this._handle_layers_change}
+                                onGameEnd={this._handle_game_end}
+                                onRelevantActionEvent={this._handle_relevant_action_event}
+                                onRightClick={this._handle_right_click}
+                                mine_player_direction={_mine_player_direction}
+                                pxl_width={_width}
+                                pxl_height={_height}
+                                pxl_current_color={_current_color}
+                                convert_scale={1}
+                                default_size={_import_size}
+                                ideal_size={_import_size}
+                                max_size={_import_size}
+                                fast_drawing={true}
+                                px_per_px={1}/>
                             {drawer}
                         </div>
                     </div>
@@ -1808,21 +1821,21 @@ class Pixel extends React.Component {
                 <Backdrop className={classes.backdrop} open={_loading} keepMounted={false}>
                     <div className={classes.backdropTextContent} style={{fontFamily: `"Jura"`}}>
                         {_loading && <h1><ShufflingSpanText text={"Laboratory processing..."} animation_delay_ms={0} animation_duration_ms={250}/></h1>}
-                        {_loading && _loading_process === "image_preload" && <h4><ShufflingSpanText text={"Preparing alien scripts"} animation_delay_ms={300} animation_duration_ms={500}/></h4>}
+                        {_loading && _loading_process === "image_preload" && <h4><ShufflingSpanText text={"Preparing scripts execution"} animation_delay_ms={300} animation_duration_ms={500}/></h4>}
                         {_loading && _loading_process === "image_preload" && <div><FUIalien style={{width: 72}}/></div>}
                         {_loading && _loading_process === "image_preload" && <h5><ShufflingSpanText text={"It can take a while, please wait ~5sec."} animation_delay_ms={5000} animation_duration_ms={500}/></h5>}
                         {_loading && _loading_process === "image_load" && <h4><ShufflingSpanText text={"Abducting your image"} animation_delay_ms={300} animation_duration_ms={500}/></h4>}
                         {_loading && _loading_process === "image_load" && <div><FUIufo style={{width: 72}}/></div>}
-                        {_loading && _loading_process === "less_color" && <h5><ShufflingSpanText text={"It can take a while, please wait ~10sec."} animation_delay_ms={5000} animation_duration_ms={500}/></h5>}
+                        {_loading && _loading_process === "image_load" && <h5><ShufflingSpanText text={"It can take a while, please wait ~7sec."} animation_delay_ms={5000} animation_duration_ms={500}/></h5>}
                         {_loading && _loading_process === "image_render" && <div><FUIatom style={{width: 72}}/></div>}
                         {_loading && _loading_process === "image_render" && <h4><ShufflingSpanText text={"Atomic rendering working"} animation_delay_ms={300} animation_duration_ms={500}/></h4>}
-                        {_loading && _loading_process === "image_render" && <h5><ShufflingSpanText text={"It can take a while, please wait ~15sec."} animation_delay_ms={5000} animation_duration_ms={500}/></h5>}
+                        {_loading && _loading_process === "image_render" && <h5><ShufflingSpanText text={"It can take a while, please wait ~14sec."} animation_delay_ms={5000} animation_duration_ms={500}/></h5>}
                         {_loading && _loading_process === "less_color" && <h4><ShufflingSpanText text={"Coupling few color DNA"} animation_delay_ms={300} animation_duration_ms={500}/></h4>}
                         {_loading && _loading_process === "less_color" && <div><FUIdna style={{width: 72}}/></div>}
                         {_loading && _loading_process === "less_color" && <h5><ShufflingSpanText text={"It can take a while, please wait ~5sec."} animation_delay_ms={5000} animation_duration_ms={500}/></h5>}
-                        {_loading && _loading_process === "less_color_auto" && <h4><ShufflingSpanText text={"Coupling many color DNA"} animation_delay_ms={500} animation_duration_ms={500}/></h4>}
+                        {_loading && _loading_process === "less_color_auto" && <h4><ShufflingSpanText text={"Coupling the DNA of many color"} animation_delay_ms={500} animation_duration_ms={500}/></h4>}
                         {_loading && _loading_process === "less_color_auto" && <div><FUIdna style={{width: 72}}/></div>}
-                        {_loading && _loading_process === "less_color_auto" && <h5><ShufflingSpanText text={"It can take a while, please wait ~20sec."} animation_delay_ms={5000} animation_duration_ms={500}/></h5>}
+                        {_loading && _loading_process === "less_color_auto" && <h5><ShufflingSpanText text={"It can take a while, please wait ~7sec."} animation_delay_ms={5000} animation_duration_ms={500}/></h5>}
                     </div>
                 </Backdrop>
 

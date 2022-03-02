@@ -204,48 +204,6 @@ module.exports = {
             "second_snackbar": "Open-source, gratis, per tutti, per sempre",
         },
         "home": {
-            "quotes": [
-                {
-                    "author": "Charlie Chaplin",
-                    "text": "Voi, gente, avete il potere. Il potere di creare macchine. Il potere di creare la felicità! Voi, gente, avete il potere di rendere questa vita bella e libera, per rendere questa vita una meravigliosa avventura."
-                },
-                {
-                    "author": "Sconosciuto",
-                    "text": "Sappiate che i cieli sono stati creati per discendere nelle cinque manifestazioni elementali. Un pezzo, un piccolo specchio di tutti gli altri. È lo stesso. Lo stesso. Ogni pezzo di esistenza è il suo piccolo universo."
-                },
-                {
-                    "author": "Nikola Tesla",
-                    "text": "Quello che ora vogliamo è un contatto più stretto e una migliore comprensione tra gli individui e le comunità di tutta la Terra, e l'eliminazione dell'egoismo e dell'orgoglio, che è sempre incline a immergere il mondo nella barbarie primordiale e nei conflitti... La pace è la conseguenza naturale dell'illuminazione universale..."
-                },
-                {
-                    "author": "Eric Schmidt",
-                    "text": "Bitcoin è un notevole risultato crittografico, e la capacità di creare qualcosa che non è duplicato nel mondo digitale possiede un valore enorme."
-                },
-                {
-                    "author": "Oscar Wilde",
-                    "text": "Un uomo non è del tutto se stesso quando parla in prima persona. Dategli una maschera, e vi dirà la verità."
-                },
-                {
-                    "author": "Elon Musk",
-                    "text": "Poter parlare con altri a distanza, trasmettere immagini, volare, accedere a grandi quantità di dati come un oracolo. Queste sono cose che sarebbero state considerate magiche qualche centinaio di anni fa. Per cui l'ingegneria è, a tutti gli effetti, magia... e chi non vorrebbe essere un mago?"
-                },
-                {
-                    "author": "Sconosciuto",
-                    "text": "Se la parola governo significa letteralmente  \"controllare la mente\", imparare a controllare la propria mente non impedirebbe di farlo fare al governo esterno? Vedete, il semplice atto di fare domande è il tallone d'Achille del sistema di controllo. Si possono addomesticare facilmente gli animali, ma se gli esseri umani si pongono delle domande, impareranno da sé la strada verso la libertà."
-                },
-                {
-                    "author": "Sconosciuto",
-                    "text": "La verità non può essere insegnata. Deve essere sperimentata e ascoltare sempre la luce interiore della comprensione prima della luce esterna del dogma comune."
-                },
-                {
-                    "author": "Gandhi",
-                    "text": "Ci sono molte cause per cui morirei. MA non c'è una sola causa per cui ucciderei."
-                },
-                {
-                    "author": "Sconosciuto",
-                    "text": "Sapete, a volte non so cosa si debba fare qui sulla Terra per far smuovere le persone che sono ancora sedute comodamente sulle loro sedie. E non mi riferisco alla ribellione violenta. No, sto parlando di creare connessioni. Di unirsi."
-                }
-            ],
             "ready_to_start_cta": "Pronto per iniziare adesso? Crea un nuovo portafoglio anonimo!"
         },
         "settings": {
