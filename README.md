@@ -20,7 +20,7 @@ At the horizon of matrix and vectorial, discover an unprecedented industrial and
  * AI Processing (Deepai.org, remotely)
  * Up-Scaling (xBRZ)
  * Vectorizer (ImageTracerJS)
- * Color Quantization (Custom)
+ * Color Quantization (RGBQuant + Custom)
 
 # Features
 

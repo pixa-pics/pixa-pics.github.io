@@ -11,6 +11,8 @@ let is_mobile_or_tablet = window.mobileAndTabletCheck();
 import React, { Suspense } from "react";
 import { withStyles } from "@material-ui/core";
 const CanvasPixels = React.lazy(() => import("../components/CanvasPixels"));
+import pool from "../utils/worker-pool";
+import { RGBQUANT } from "../utils/RGBQUANT";
 
 import {Fab, Grow, ListItem, Typography, Backdrop, Slider, SwipeableDrawer, Drawer, Toolbar, Tabs, Tab, Menu, ListSubheader, ListItemText, ListItemIcon} from "@material-ui/core";
 import TouchRipple from "@material-ui/core/ButtonBase/TouchRipple";
@@ -866,39 +868,15 @@ class Pixel extends React.Component {
         let img = new Image;
         let file = event.target.files[0] || event.path[0].files[0];
 
-        this.get_base64(file).then((data) => {
+        actions.trigger_snackbar(`OK - Let's start the proceed very soon...`, 5000);
 
-            if(_import_colorize === "1") {
+        this.get_base64(file).then((b) => {
 
-                postJSON("https://deepai.pixa-pics.workers.dev/colorizer", data, (err, res) => {
+            RGBQUANT(b, 2024, (data) => {
 
-                    img.addEventListener("load", () => {
+                if(_import_colorize === "1") {
 
-                        _canvas.set_canvas_from_image(img, "", {}, true);
-                        document.body.removeChild(input);
-                        this._handle_menu_close();
-                    });
-                    img.src = res;
-
-                }, "application/text");
-            }else if(_import_colorize === "2") {
-
-                postJSON("https://deepai.pixa-pics.workers.dev/waifu2x", data, (err, res) => {
-
-                    img.addEventListener("load", () => {
-
-                        _canvas.set_canvas_from_image(img, "", {}, true);
-                        document.body.removeChild(input);
-                        this._handle_menu_close();
-                    });
-                    img.src = res;
-
-                }, "application/text");
-            }else if(_import_colorize === "3") {
-
-                postJSON("https://deepai.pixa-pics.workers.dev/colorizer", data, (err, res) => {
-
-                    postJSON("https://deepai.pixa-pics.workers.dev/waifu2x",  res, (err2, res2) => {
+                    postJSON("https://deepai.pixa-pics.workers.dev/colorizer", data, (err, res) => {
 
                         img.addEventListener("load", () => {
 
@@ -906,21 +884,51 @@ class Pixel extends React.Component {
                             document.body.removeChild(input);
                             this._handle_menu_close();
                         });
-                        img.src = res2;
+                        img.src = res;
 
                     }, "application/text");
+                }else if(_import_colorize === "2") {
 
-                }, "application/text");
-            }else {
+                    postJSON("https://deepai.pixa-pics.workers.dev/waifu2x", data, (err, res) => {
 
-                img.addEventListener("load", () => {
+                        img.addEventListener("load", () => {
 
-                    _canvas.set_canvas_from_image(img);
-                    document.body.removeChild(input);
-                    this._handle_menu_close();
-                });
-                img.src = data;
-            }
+                            _canvas.set_canvas_from_image(img, "", {}, true);
+                            document.body.removeChild(input);
+                            this._handle_menu_close();
+                        });
+                        img.src = res;
+
+                    }, "application/text");
+                }else if(_import_colorize === "3") {
+
+                    postJSON("https://deepai.pixa-pics.workers.dev/colorizer", data, (err, res) => {
+
+                        postJSON("https://deepai.pixa-pics.workers.dev/waifu2x",  res, (err2, res2) => {
+
+                            img.addEventListener("load", () => {
+
+                                _canvas.set_canvas_from_image(img, "", {}, true);
+                                document.body.removeChild(input);
+                                this._handle_menu_close();
+                            });
+                            img.src = res2;
+
+                        }, "application/text");
+
+                    }, "application/text");
+                }else {
+
+                    img.addEventListener("load", () => {
+
+                        _canvas.set_canvas_from_image(img);
+                        document.body.removeChild(input);
+                        this._handle_menu_close();
+                    });
+                    img.src = data;
+                }
+
+            }, pool);
         });
     };
 

@@ -1579,12 +1579,6 @@ class PixelToolboxSwipeableViews extends React.Component {
                                                 <RadioGroup row name="Import size" onChange={this._set_import_size}
                                                             value={import_size} style={{margin: "12px 11px"}}>
                                                     <FormControlLabel
-                                                        value={"16"}
-                                                        control={<Radio color="primary"/>}
-                                                        label="16px"
-                                                        labelPlacement="bottom"
-                                                    />
-                                                    <FormControlLabel
                                                         value={"32"}
                                                         control={<Radio color="primary"/>}
                                                         label="32px"
@@ -1642,6 +1636,12 @@ class PixelToolboxSwipeableViews extends React.Component {
                                                         value={"384"}
                                                         control={<Radio color="primary"/>}
                                                         label="384px"
+                                                        labelPlacement="bottom"
+                                                    />
+                                                    <FormControlLabel
+                                                        value={"512"}
+                                                        control={<Radio color="primary"/>}
+                                                        label="512px"
                                                         labelPlacement="bottom"
                                                     />
                                                 </RadioGroup>
