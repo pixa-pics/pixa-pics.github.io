@@ -1,6 +1,6 @@
-var REQUIRED_CACHE = "network-or-cache-v24-required";
-var USEFUL_CACHE = "network-or-cache-v24-useful";
-var STATIC_CACHE = "network-or-cache-v24-static";
+var REQUIRED_CACHE = "network-or-cache-v25-required";
+var USEFUL_CACHE = "network-or-cache-v25-useful";
+var STATIC_CACHE = "network-or-cache-v25-static";
 
 // On install, cache some resource.
 self.addEventListener("install", function(evt) {
@@ -25,7 +25,7 @@ self.addEventListener("install", function(evt) {
           caches.open(STATIC_CACHE).then(function (cache) {
               return cache.addAll([]);
           })
-    ])).then(function() {
+    ]).then(function() {
 
         const caching = Promise.allSettled([
             caches.open(REQUIRED_CACHE).then(function (cache) {
@@ -83,7 +83,7 @@ self.addEventListener("install", function(evt) {
         ]);
 
         return self.skipWaiting();
-    });
+    }));
 });
 
 self.addEventListener("fetch", function(event) {
