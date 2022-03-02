@@ -872,7 +872,7 @@ class Pixel extends React.Component {
 
         this.get_base64(file).then((b) => {
 
-            RGBQUANT(b, 2024, (data) => {
+            RGBQUANT(b, 4096, (data) => {
 
                 if(_import_colorize === "1") {
 

@@ -956,30 +956,42 @@ function RGBQUANT(img, limit = 256, callback_function = () => {}, pool = null) {
         // img = base64_string
         var img_data = null; // Create image data
         try {
-             
+            
             // Worker based on BLOB       
-            var res = await fetch(img); // Response
-            var blb = await res.blob(); // Blob
-            var bmp = await createImageBitmap(blb, {
+            var resA0 = await fetch(img); // Response
+            var blbA0 = await resA0.blob(); // Blob
+            var bmpA0 = await createImageBitmap(blbA0, {
                 premultiplyAlpha: 'none',
                 colorSpaceConversion: 'none',
             });
             
-            var ctx = new OffscreenCanvas(1, 1).getContext("2d");
-            ctx.canvas.width = bmp.width;
-            ctx.canvas.height = bmp.height;
-            ctx.drawImage(bmp, 0, 0);
-            img_data = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
-          
+            var canvasA0 = new OffscreenCanvas(bmpA0.width, bmpA0.height);
+            var ctxA0 = canvasA0.getContext("bitmaprenderer");
+            ctxA0.transferFromImageBitmap(bmpA0);
+            var blbA1 = await canvasA0.convertToBlob({type: "image/jpeg", quality: 0.95});
+            var bmpA1 = await createImageBitmap(blb, {
+                premultiplyAlpha: 'none',
+                colorSpaceConversion: 'none',
+            });
+            
+            var ctxA1 = canvasA0.getContext("2d");
+            ctxA1.drawImage(bmpA1, 0, 0);
+            img_data = ctxA1.getImageData(0, 0, canvasA0.width, canvasA0.height);
+      
         }catch (e) {
-        
-            var img_html = await to_image(img); // HTMLImageElement
-            var can = document.createElement("canvas");
-            can.width = img_html.width;
-            can.height = img_html.height;
-            var ctx = can.getContext("2d");
-            ctx.drawImage(img_html, 0, 0, img_html.width, img_html.height);
-            img_data = ctx.getImageData(0, 0, can.width, can.height); // ImageData
+    
+            var img_htmlA0 = await to_image(img); // HTMLImageElement
+            var canvasA0 = document.createElement("canvas");
+            canvasA0.width = img_htmlA0.width;
+            canvasA0.height = img_htmlA0.height;
+            var ctxA0 = canvasA0.getContext("2d");
+            ctxA0.drawImage(img_htmlA0, 0, 0, canvasA0.width, canvasA0.height);
+            
+            var imgA1 = canvasA0.toDataURL("image/jpeg", 0.95);
+            var img_htmlA1 = await to_image(imgA1); // HTMLImageElement
+            var ctxA1 = canvasA0.getContext("2d");
+            ctxA1.drawImage(img_htmlA1, 0, 0, img_htmlA1.width, img_htmlA1.height);
+            img_data = ctxA1.getImageData(0, 0, img_htmlA1.width, img_htmlA1.height); // ImageData
         }
         
         // options
@@ -1001,25 +1013,25 @@ function RGBQUANT(img, limit = 256, callback_function = () => {}, pool = null) {
         // Build base64 response
         try {
 
-            var canvas = new OffscreenCanvas(img_data.width, img_data.height);
-            var ctx = canvas.getContext("bitmaprenderer");
-            var bmp = await createImageBitmap(img_data, {
+            var canvasB0 = new OffscreenCanvas(img_data.width, img_data.height);
+            var ctxB0 = canvasB0.getContext("bitmaprenderer");
+            var bmpB0 = await createImageBitmap(img_data, {
                 premultiplyAlpha: 'none',
                 colorSpaceConversion: 'none',
             });
             
-            ctx.transferFromImageBitmap(bmp);
-            var blb = await canvas.convertToBlob({type: "image/png"});
-            return await to_data_URL(blb);
+            ctxB0.transferFromImageBitmap(bmpB0);
+            var blbB0 = await canvasB0.convertToBlob({type: "image/png"});
+            return await to_data_URL(blbB0);
            
         }catch(e) {
 
-            var canvas = document.createElement("canvas");
-            canvas.width = img_data.width;
-            canvas.height = img_data.height;
-            var ctx = canvas.getContext("2d");
-            ctx.putImageData(img_data, 0, 0);
-            return canvas.toDataURL("image/png");
+            var canvasB0 = document.createElement("canvas");
+            canvasB0.width = img_data.width;
+            canvasB0.height = img_data.height;
+            var ctxB0 = canvasB0.getContext("2d");
+            ctxB0.putImageData(img_data, 0, 0);
+            canvasB0.toDataURL("image/png");
         }
     }`;
 
