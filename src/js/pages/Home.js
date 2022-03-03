@@ -26,7 +26,7 @@ const styles = theme => ({
         width: "100%",
         height: "100%",
         overflow: "hidden",
-        backgroundImage: "radial-gradient(ellipse farthest-corner, #ffffff, #ffffff00 66%), url(/src/images/designer.svg)",
+        backgroundImage: "radial-gradient(ellipse farthest-corner, #ffffff, #ffffff00 66%), url(/src/images/fun.svg)",
         position: "relative",
         backgroundSize: "75%",
         backgroundPosition: "100% 25%",

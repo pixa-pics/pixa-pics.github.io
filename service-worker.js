@@ -1,6 +1,6 @@
-var REQUIRED_CACHE = "network-or-cache-v27-required";
-var USEFUL_CACHE = "network-or-cache-v27-useful";
-var STATIC_CACHE = "network-or-cache-v27-static";
+var REQUIRED_CACHE = "network-or-cache-v28-required";
+var USEFUL_CACHE = "network-or-cache-v28-useful";
+var STATIC_CACHE = "network-or-cache-v28-static";
 
 // On install, cache some resource.
 self.addEventListener("install", function(evt) {
@@ -17,7 +17,7 @@ self.addEventListener("install", function(evt) {
           }),
           caches.open(USEFUL_CACHE).then(function (cache) {
               return cache.addAll([
-                  "/src/images/designer.svg",
+                  "/src/images/fun.svg",
                   "/manifest.json"
               ]);
           }),
@@ -40,7 +40,7 @@ self.addEventListener("install", function(evt) {
             caches.open(USEFUL_CACHE).then(function (cache) {
                 return cache.addAll([
                     "/src/images/404-dark-2.svg",
-                    "/src/images/designer.svg",
+                    "/src/images/fun.svg",
                     "/src/images/share.svg",
                     "/src/images/logo-transparent.png",
                     "/src/images/favicon.ico"
