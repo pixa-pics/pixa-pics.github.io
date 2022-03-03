@@ -24,10 +24,7 @@ SOFTWARE.
 */
 
 // Lior Halphon's Omniscale (Modified: Uses Maxim Stepin's Color comparison routine)
-
-const omniscale = (image_data, scale, callback_function, pool = null) => {
-
-    const process_function_string = `return async function(image_data, scale) {
+const process_function_string = `return async function(image_data, scale) {
 
         // static class methods for common filter operations
         class Common {
@@ -1219,7 +1216,9 @@ const omniscale = (image_data, scale, callback_function, pool = null) => {
         return fltr.Apply(image_data.data, image_data.width, image_data.height, scale, 1);
     }`;
 
-    const process_function = new Function(process_function_string)();
+const omniscale = (image_data, scale, callback_function, pool = null) => {
+
+    let process_function = new Function(process_function_string)();
 
     if(pool) {
 
@@ -1233,12 +1232,12 @@ const omniscale = (image_data, scale, callback_function, pool = null) => {
         }).then((result) => {
 
             callback_function(result);
-        }).timeout(360 * 1000);
+        }).then(() => { return;}).timeout(360 * 1000);
     }else {
 
-        callback_function(
-            process_function(image_data, scale)
-        );
+        process_function(image_data, scale).then((result) => {
+            callback_function(result);
+        }).then(() => { return;});
     }
 };
 

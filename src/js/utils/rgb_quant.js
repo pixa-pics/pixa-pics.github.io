@@ -5,9 +5,7 @@
 *
 * RgbQuant.js - an image quantization lib
 */
-const RGBQUANT = (img, limit = 1024, resize_to = 1920*1080, callback_function = () => {}, pool = null) => {
-
-    const process_function_string = `return async function(img, limit, resize_to) {
+const process_function_string = `return async function(img, limit, resize_to) {
     
         function RgbQuant(opts) {
             opts = opts || {};
@@ -1053,31 +1051,29 @@ const RGBQUANT = (img, limit = 1024, resize_to = 1920*1080, callback_function = 
         }
     }`;
 
-    const process_function = new Function(process_function_string)();
+const rgb_quant = (img, limit = 1024, resize_to = 1920*1080, callback_function = () => {}, pool = null) => {
 
-    (async () => {
+    let process_function = new Function(process_function_string)();
 
-            if(Boolean(pool)) {
+    if(Boolean(pool)) {
 
-                const result = await pool.exec(process_function, [
-                    img, limit, resize_to
-                ]).catch((e) => {
+        pool.exec(process_function, [
+            img, limit, resize_to
+        ]).catch((e) => {
 
-                    return process_function(img, limit, resize_to);
-                }).then((result) => {
+            return process_function(img, limit, resize_to);
+        }).then((result) => {
 
-                    return result;
-                }).timeout(36 * 1000);
+            callback_function(result);
+        }).then(() => { return;}).timeout(36 * 1000);
 
-                callback_function(result);
+    }else {
 
-            }else {
+        process_function(img, limit, resize_to).then((result) => {
 
-                const result = await process_function(img, limit, resize_to);
-                callback_function(result);
-            }
-
-    })();
+            callback_function(result);
+        }).then(() => { return;});
+    }
 };
 
-module.exports = { RGBQUANT }
+module.exports = { rgb_quant }

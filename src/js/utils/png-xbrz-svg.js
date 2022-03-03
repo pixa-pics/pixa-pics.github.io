@@ -4,7 +4,7 @@ import {imagedataToSVG} from "../utils/imagetracer";
 import { optimize } from "svgo/dist/svgo.browser";
 import pool from "../utils/worker-pool";
 
-function base64png_to_xbrz_svg (base64png, callback_function_for_jpeg, callback_function_for_svg, pal= [], using = "xbrz") {
+function base64png_to_xbrz_svg (base64png, callback_function_for_image, callback_function_for_svg, pal= [], using = "xbrz") {
 
     let image = new Image();
     image.onload = () => {
@@ -92,8 +92,8 @@ function base64png_to_xbrz_svg (base64png, callback_function_for_jpeg, callback_
                     third_canvas.height = second_image_data.height;
                     let third_canvas_ctx = third_canvas.getContext("2d");
                     third_canvas_ctx.putImageData(second_image_data, 0, 0);
-                    const jpeg_base64 = third_canvas_ctx.canvas.toDataURL("image/jpeg", 0.666);
-                    callback_function_for_jpeg(jpeg_base64);
+                    const base64_out = third_canvas_ctx.canvas.toDataURL("image/jpeg", .666);
+                    callback_function_for_image(base64_out);
 
                     process_svg(second_image_data, first_scale_size);
                 }, pool);
@@ -109,8 +109,9 @@ function base64png_to_xbrz_svg (base64png, callback_function_for_jpeg, callback_
                     third_canvas.height = second_image_data.height;
                     let third_canvas_ctx = third_canvas.getContext("2d");
                     third_canvas_ctx.putImageData(second_image_data, 0, 0);
-                    const jpeg_base64 = third_canvas_ctx.canvas.toDataURL("image/jpeg", 0.666);
-                    callback_function_for_jpeg(jpeg_base64);
+                    const base64_out = third_canvas_ctx.canvas.toDataURL("image/jpeg", .666);
+                    callback_function_for_image(base64_out);
+
 
                     process_svg(second_image_data, first_scale_size);
                 }, pool);

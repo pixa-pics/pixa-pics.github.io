@@ -1,6 +1,6 @@
-var REQUIRED_CACHE = "network-or-cache-v31-required";
-var USEFUL_CACHE = "network-or-cache-v31-useful";
-var STATIC_CACHE = "network-or-cache-v31-static";
+var REQUIRED_CACHE = "network-or-cache-v32-required";
+var USEFUL_CACHE = "network-or-cache-v32-useful";
+var STATIC_CACHE = "network-or-cache-v32-static";
 
 // On install, cache some resource.
 self.addEventListener("install", function(evt) {
@@ -8,14 +8,14 @@ self.addEventListener("install", function(evt) {
     evt.waitUntil(Promise.allSettled([
           caches.open(REQUIRED_CACHE).then(function (cache) {
                 return cache.addAll([
+                    "/src/fonts/Jura-Medium.woff2",
+                    "/client.min.js",
+                    "/chunk.1.min.js",
                     "/",
                     "/index.html",
                     "/404.html",
-                    "/src/fonts/Jura-Medium.woff2",
-                    "/client.min.js",
                     "/manifest.json",
                     "/src/images/favicon.ico",
-                    "/chunk.1.min.js",
                 ]);
           })
     ]).then(function() {
@@ -27,6 +27,7 @@ self.addEventListener("install", function(evt) {
                     "/chunk.3.min.js",
                     "/chunk.4.min.js",
                     "/chunk.5.min.js",
+                    "/chunk.6.min.js",
                 ]);
             }),
             caches.open(USEFUL_CACHE).then(function (cache) {
@@ -174,6 +175,22 @@ self.addEventListener("fetch", function(event) {
                       response ||
                       fetch(event.request).then(function (response) { // Fetch, clone, and serve
                           cache.put("/chunk.5.min.js", response.clone());
+                          return response;
+                      })
+                  );
+              });
+          })
+      );
+
+  }else if(url.includes("chunk.6.min.js") && event.request.mode === "same-origin") {
+
+      event.respondWith(
+          caches.open(REQUIRED_CACHE).then(function (cache) {
+              return cache.match("/chunk.6.min.js").then(function (response) {
+                  return (
+                      response ||
+                      fetch(event.request).then(function (response) { // Fetch, clone, and serve
+                          cache.put("/chunk.6.min.js", response.clone());
                           return response;
                       })
                   );

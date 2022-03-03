@@ -4,7 +4,7 @@ import PouchDB from "pouchdb";
 import get_browser_locales from "../utils/locales";
 window.settings_db = new PouchDB("settings_db", {deterministic_revs: false, revs_limit: 1});
 import pool from "../utils/worker-pool";
-import { LZP3 } from "./LZP3JSON";
+import { LZP3 } from "./lzp3_json";
 
 const _merge_object = (obj1, obj2) => {
 

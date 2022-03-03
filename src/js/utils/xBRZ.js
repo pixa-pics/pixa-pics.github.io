@@ -23,10 +23,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
 
-const xbrz = (image_data, scale, callback_function, pool = null) => {
-
-
-  const process_function_string = `return async function(image_data, scale) {
+const process_function_string = `return async function(image_data, scale) {
 
     const redMask = 0xff0000
     const greenMask = 0x00ff00
@@ -884,7 +881,9 @@ const xbrz = (image_data, scale, callback_function, pool = null) => {
     return final_image_data;
   }`;
 
-    const process_function = new Function(process_function_string)();
+const xbrz = (image_data, scale, callback_function, pool = null) => {
+
+    let process_function = new Function(process_function_string)();
 
     if(pool) {
 
@@ -898,12 +897,22 @@ const xbrz = (image_data, scale, callback_function, pool = null) => {
       }).then((result) => {
 
         callback_function(result);
-      }).timeout(360 * 1000);
+      }).then(() => {
+
+
+          return;
+      }).timeout(10 * 1000);
     }else {
 
-      callback_function(
-          process_function(image_data, scale)
-      );
+      process_function(image_data, scale).then((result) => {
+
+        callback_function(result);
+
+      }).then(() => {
+
+
+        return;
+      });
     }
 };
 

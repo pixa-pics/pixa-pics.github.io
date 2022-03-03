@@ -12,7 +12,7 @@ import React from "react";
 import CanvasPixels from "../components/CanvasPixels";
 import { withStyles } from "@material-ui/core";
 import pool from "../utils/worker-pool";
-import { RGBQUANT } from "../utils/RGBQUANT";
+import { rgb_quant } from "../utils/rgb_quant";
 
 import {Fab, Grow, ListItem, Typography, Backdrop, Slider, SwipeableDrawer, Drawer, Toolbar, Tabs, Tab, Menu, ListSubheader, ListItemText, ListItemIcon} from "@material-ui/core";
 import TouchRipple from "@material-ui/core/ButtonBase/TouchRipple";
@@ -746,20 +746,28 @@ class Pixel extends React.Component {
 
             setTimeout(() => {
 
-                _canvas.get_base64_png_data_url(1, ([href, palette]) => {
+                _canvas.get_base64_png_data_url(1, ([png_base64_in, palette]) => {
 
-                    let a = document.createElement("a"); //Create <a>
-                    a.download = `Painting_SRC_1x_N${Date.now()}_PIXAPICS.png`; //File name Here
-                    a.href = "" + href;
-                    a.click();
+                    import("../utils/png_quant").then(({png_quant}) => {
+
+                        png_quant(png_base64_in, 100, 100, 1, (png_base64_out) => {
+
+                            console.log(png_base64_out);
+                            let a = document.createElement("a"); //Create <a>
+                            a.download = `Painting_SRC_1x_N${Date.now()}_PIXAPICS.png`; //File name Here
+                            a.href = "" + png_base64_out;
+                            a.click();
+
+                        }, pool);
+                    });
 
                     import("../utils/png-xbrz-svg").then(({base64png_to_xbrz_svg}) => {
 
-                        base64png_to_xbrz_svg(href, (jpeg_base64) => {
+                        base64png_to_xbrz_svg(png_base64_in, (image_base64) => {
 
                             let a = document.createElement("a"); //Create <a>
                             a.download = `Painting_IMG_18x_${using.toUpperCase()}_N${Date.now()}_PIXAPICS.jpeg`; //File name Here
-                            a.href = "" + jpeg_base64;
+                            a.href = "" + image_base64;
                             a.click();
 
                         }, (svg_base64) => {
@@ -889,7 +897,7 @@ class Pixel extends React.Component {
             const resize_to = Math.min(max_size * max_size, Math.max(_import_size * _import_size, min_size * min_size));
             const limit_color_number = Math.min(max_color * ratio_l_l2, Math.max(_import_size * ratio_l_l2, min_color * ratio_l_l2));
 
-            RGBQUANT(b, limit_color_number, resize_to, (data) => {
+            rgb_quant(b, limit_color_number, resize_to, (data) => {
 
                 this._handle_load_complete("image_preload", {});
 

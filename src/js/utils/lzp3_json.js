@@ -343,9 +343,7 @@ Public License instead of this License.
 
 // 97% SOURCE: https://github.com/eladkarako/compressjs-flattened/blob/master/Lzp3_joined_.js
 
-const LZP3 = (uint8a_or_obj, mode = "COMPRESS_OBJECT", callback_function = () => {}, pool = null) => {
-
-    let process_function_string = `return async function(uint8a_or_obj, mode) {
+const process_function_string = `return async function(uint8a_or_obj, mode) {
         
         var RangeCoder          //no dependencies
             ,Stream              //no dependencies
@@ -2443,31 +2441,31 @@ const LZP3 = (uint8a_or_obj, mode = "COMPRESS_OBJECT", callback_function = () =>
         }
     }`;
 
-    const process_function = new Function(process_function_string)();
+const LZP3 = (uint8a_or_obj, mode = "COMPRESS_OBJECT", callback_function = () => {}, pool = null) => {
 
-    (async () => {
+    let process_function = new Function(process_function_string)();
 
-        if(Boolean(pool)) {
+    if(Boolean(pool)) {
 
-            const result = await pool.exec(process_function, [
-                uint8a_or_obj,
-                mode,
-            ]).catch((e) => {
+        pool.exec(process_function, [
+            uint8a_or_obj,
+            mode,
+        ]).catch((e) => {
 
-                return process_function(uint8a_or_obj, mode);
-            }).then((result) => {
-
-                return result;
-            }).timeout(5 * 1000);
+            return process_function(uint8a_or_obj, mode);
+        }).then((result) => {
 
             callback_function(result);
 
-        }else {
+        }).then(() => { return;}).timeout(15 * 1000);
 
-            const result = await process_function(uint8a_or_obj, mode);
+    }else {
+
+        process_function(uint8a_or_obj, mode).then((result) => {
+
             callback_function(result);
-        }
-    })();
+        }).then(() => { return;});
+    }
 };
 
 module.exports = { LZP3 }
