@@ -9,21 +9,20 @@ self.addEventListener("install", function(evt) {
           caches.open(REQUIRED_CACHE).then(function (cache) {
                 return cache.addAll([
                     "/",
-                    "/index.html",
-                    "/404.html",
+                    "/manifest.json",
+                    "/favicon.ico",
+                    "/icon-white.png",
                     "/client.min.js",
+                    "/chunk.1.min.js",
                     "/src/fonts/Jura-Medium.woff2"
                 ]);
-          }),
+          })/*,
           caches.open(USEFUL_CACHE).then(function (cache) {
-              return cache.addAll([
-                  "/src/images/fun.svg",
-                  "/manifest.json"
-              ]);
+              return cache.addAll([]);
           }),
           caches.open(STATIC_CACHE).then(function (cache) {
               return cache.addAll([]);
-          })
+          })*/
     ]).then(function() {
 
         const caching = Promise.allSettled([
