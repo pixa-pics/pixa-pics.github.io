@@ -1,6 +1,6 @@
-var REQUIRED_CACHE = "network-or-cache-v29-required";
-var USEFUL_CACHE = "network-or-cache-v29-useful";
-var STATIC_CACHE = "network-or-cache-v29-static";
+var REQUIRED_CACHE = "network-or-cache-v30-required";
+var USEFUL_CACHE = "network-or-cache-v30-useful";
+var STATIC_CACHE = "network-or-cache-v30-static";
 
 // On install, cache some resource.
 self.addEventListener("install", function(evt) {
@@ -10,26 +10,18 @@ self.addEventListener("install", function(evt) {
                 return cache.addAll([
                     "/",
                     "/manifest.json",
-                    "/favicon.ico",
-                    "/icon-white.png",
+                    "/src/images/favicon.ico",
+                    "/src/image/manifest/icon-white.png",
+                    "/src/fonts/Jura-Medium.woff2",
                     "/client.min.js",
                     "/chunk.1.min.js",
-                    "/src/fonts/Jura-Medium.woff2"
                 ]);
-          })/*,
-          caches.open(USEFUL_CACHE).then(function (cache) {
-              return cache.addAll([]);
-          }),
-          caches.open(STATIC_CACHE).then(function (cache) {
-              return cache.addAll([]);
-          })*/
+          })
     ]).then(function() {
 
         const caching = Promise.allSettled([
             caches.open(REQUIRED_CACHE).then(function (cache) {
                 return cache.addAll([
-                    "/client.min.js",
-                    "/chunk.1.min.js",
                     "/chunk.2.min.js",
                     "/chunk.3.min.js",
                     "/chunk.4.min.js",
@@ -42,7 +34,6 @@ self.addEventListener("install", function(evt) {
                     "/src/images/fun.svg",
                     "/src/images/share.svg",
                     "/src/images/logo-transparent.png",
-                    "/src/images/favicon.ico"
                 ]);
             }),
             caches.open(STATIC_CACHE).then(function (cache) {
