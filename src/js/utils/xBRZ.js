@@ -884,7 +884,7 @@ const xbrz = (image_data, scale, callback_function, pool = null) => {
     return final_image_data;
   }`;
 
-    let process_function = new Function(process_function_string)();
+    const process_function = new Function(process_function_string)();
 
     if(pool) {
 

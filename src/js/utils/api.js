@@ -6,12 +6,12 @@ window.settings_db = new PouchDB("settings_db", {deterministic_revs: false, revs
 import pool from "../utils/worker-pool";
 import { LZP3 } from "./LZP3JSON";
 
-let _merge_object = (obj1, obj2) => {
+const _merge_object = (obj1, obj2) => {
 
     return {...obj1, ...obj2};
 };
 
-let _get_default_settings = () => {
+const _get_default_settings = () => {
 
     const locales = get_browser_locales()[0].split("-").length === 2 ? get_browser_locales()[0]: "en-US";
 
@@ -33,7 +33,7 @@ let _get_default_settings = () => {
     };
 };
 
-let _get_currency_by_locales = (locales) => {
+const _get_currency_by_locales = (locales) => {
 
     const country = locales.split("-").length === 2 ? locales.split("-")[1] : "US";
     let currency = "USD";
@@ -48,7 +48,7 @@ let _get_currency_by_locales = (locales) => {
     return currency;
 };
 
-let reset_all_databases = (callback_function) => {
+const reset_all_databases = (callback_function) => {
 
     delete window._pixa_settings;
 
@@ -60,7 +60,7 @@ let reset_all_databases = (callback_function) => {
     });
 }
 
-let get_settings = (callback_function_info = null, callback_function_data = null) => {
+const get_settings = (callback_function_info = null, callback_function_data = null) => {
 
     if(typeof window._pixa_settings !== "undefined" && window._pixa_settings !== null) {
 
@@ -149,7 +149,7 @@ let get_settings = (callback_function_info = null, callback_function_data = null
     });
 }
 
-let set_settings = (info = {}, data = {}, callback_function_info = () => {}, callback_function_data = () => {}) => {
+const set_settings = (info = {}, data = {}, callback_function_info = () => {}, callback_function_data = () => {}) => {
 
     window.settings_db.allDocs({
         include_docs: true

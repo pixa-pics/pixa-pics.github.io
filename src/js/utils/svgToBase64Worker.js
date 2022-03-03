@@ -3,7 +3,7 @@ import React from "react";
 import svg64 from "svg64";
 import pool from "../utils/worker-pool";
 
-function get_svg_in_b64_async(Component, callback_function) {
+const get_svg_in_b64_async = (Component, callback_function) => {
 
     const process_function_string = `return async function(
            svg_string 
@@ -122,7 +122,7 @@ function get_svg_in_b64_async(Component, callback_function) {
 
         callback_function(result);
     })();
-}
+};
 
 
 module.exports = get_svg_in_b64_async;

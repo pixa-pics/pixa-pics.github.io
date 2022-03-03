@@ -5,7 +5,7 @@
 *
 * RgbQuant.js - an image quantization lib
 */
-function RGBQUANT(img, limit = 1024, resize_to = 1920*1080, callback_function = () => {}, pool = null) {
+const RGBQUANT = (img, limit = 1024, resize_to = 1920*1080, callback_function = () => {}, pool = null) => {
 
     const process_function_string = `return async function(img, limit, resize_to) {
     
@@ -1053,9 +1053,9 @@ function RGBQUANT(img, limit = 1024, resize_to = 1920*1080, callback_function = 
         }
     }`;
 
-    (async () => {
+    const process_function = new Function(process_function_string)();
 
-        const process_function = new Function(process_function_string)();
+    (async () => {
 
             if(Boolean(pool)) {
 
@@ -1078,6 +1078,6 @@ function RGBQUANT(img, limit = 1024, resize_to = 1920*1080, callback_function = 
             }
 
     })();
-}
+};
 
 module.exports = { RGBQUANT }

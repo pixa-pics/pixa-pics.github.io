@@ -1,6 +1,6 @@
-var REQUIRED_CACHE = "network-or-cache-v30-required";
-var USEFUL_CACHE = "network-or-cache-v30-useful";
-var STATIC_CACHE = "network-or-cache-v30-static";
+var REQUIRED_CACHE = "network-or-cache-v31-required";
+var USEFUL_CACHE = "network-or-cache-v31-useful";
+var STATIC_CACHE = "network-or-cache-v31-static";
 
 // On install, cache some resource.
 self.addEventListener("install", function(evt) {
@@ -9,17 +9,18 @@ self.addEventListener("install", function(evt) {
           caches.open(REQUIRED_CACHE).then(function (cache) {
                 return cache.addAll([
                     "/",
-                    "/manifest.json",
-                    "/src/images/favicon.ico",
-                    "/src/image/manifest/icon-white.png",
+                    "/index.html",
+                    "/404.html",
                     "/src/fonts/Jura-Medium.woff2",
                     "/client.min.js",
+                    "/manifest.json",
+                    "/src/images/favicon.ico",
                     "/chunk.1.min.js",
                 ]);
           })
     ]).then(function() {
 
-        const caching = Promise.allSettled([
+        Promise.allSettled([
             caches.open(REQUIRED_CACHE).then(function (cache) {
                 return cache.addAll([
                     "/chunk.2.min.js",
@@ -30,8 +31,9 @@ self.addEventListener("install", function(evt) {
             }),
             caches.open(USEFUL_CACHE).then(function (cache) {
                 return cache.addAll([
-                    "/src/images/404-dark-2.svg",
                     "/src/images/fun.svg",
+                    "/src/images/manifest/icon-white.png",
+                    "/src/images/404-dark-2.svg",
                     "/src/images/share.svg",
                     "/src/images/logo-transparent.png",
                 ]);

@@ -1219,7 +1219,7 @@ const omniscale = (image_data, scale, callback_function, pool = null) => {
         return fltr.Apply(image_data.data, image_data.width, image_data.height, scale, 1);
     }`;
 
-    let process_function = new Function(process_function_string)();
+    const process_function = new Function(process_function_string)();
 
     if(pool) {
 

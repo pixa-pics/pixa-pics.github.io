@@ -343,7 +343,7 @@ Public License instead of this License.
 
 // 97% SOURCE: https://github.com/eladkarako/compressjs-flattened/blob/master/Lzp3_joined_.js
 
-function LZP3(uint8a_or_obj, mode = "COMPRESS_OBJECT", callback_function = () => {}, pool = null) {
+const LZP3 = (uint8a_or_obj, mode = "COMPRESS_OBJECT", callback_function = () => {}, pool = null) => {
 
     let process_function_string = `return async function(uint8a_or_obj, mode) {
         
@@ -2443,9 +2443,9 @@ function LZP3(uint8a_or_obj, mode = "COMPRESS_OBJECT", callback_function = () =>
         }
     }`;
 
-    (async () => {
+    const process_function = new Function(process_function_string)();
 
-        const process_function = new Function(process_function_string)();
+    (async () => {
 
         if(Boolean(pool)) {
 
@@ -2468,6 +2468,6 @@ function LZP3(uint8a_or_obj, mode = "COMPRESS_OBJECT", callback_function = () =>
             callback_function(result);
         }
     })();
-}
+};
 
 module.exports = { LZP3 }
