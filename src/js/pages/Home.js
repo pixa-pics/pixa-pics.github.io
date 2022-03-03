@@ -137,7 +137,7 @@ class Home extends React.Component {
                             <span><img src={ANGELEMOJI} className="emoji"/> everywhere.</span>
                         </h1>
                         <h2 className={classes.subtitle}>
-                            At the horizon of <span className={classes.blue}>matrix</span> and <span className={classes.blue}>vectorial</span>, <br/>
+                            At the horizon of both <span className={classes.blue}>matrix</span> and <span className={classes.blue}>vectorial</span> universe, <br/>
                             discover an unprecedented industrial and educative purpose.<br />
                             Made with <img className={"emoji pulse"} src={HEARTHEMOJI}/>, it is designed to be - forever open-source & for everyone. <img src={EARTHEMOJI} className={"emoji"}/>.<br />
                         </h2>

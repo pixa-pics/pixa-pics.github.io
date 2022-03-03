@@ -17,6 +17,40 @@ const styles = theme => ({
         flexShrink: 0,
         [theme.breakpoints.down("sm")]: {
             display: "none"
+        },
+        "& > div > div": {
+            transition: "opacity cubic-bezier(0.4, 0, 0.2, 1) 175ms",
+            opacity: .75,
+        },
+        "& > div:hover > div": {
+            transition: "opacity cubic-bezier(0.4, 0, 0.2, 1) 175ms",
+            opacity: 1,
+        },
+        "& > div .drawershare": {
+            opacity: ".33",
+            transition: "opacity cubic-bezier(0.4, 0, 0.2, 1) 300ms",
+        },
+        "& > div:hover .drawershare": {
+            opacity: "1",
+            transition: "opacity cubic-bezier(0.4, 0, 0.2, 1) 300ms",
+        }
+    },
+    drawerHome: {
+        width: 256,
+        flexShrink: 0,
+        [theme.breakpoints.down("sm")]: {
+            display: "none"
+        },
+        "& > div > div": {
+            transition: "opacity cubic-bezier(0.4, 0, 0.2, 1) 175ms",
+            opacity: 1,
+        },
+        "& > div .drawershare": {
+            opacity: ".66",
+            transition: "opacity cubic-bezier(0.4, 0, 0.2, 1) 300ms",
+        },
+        "& > div:hover .drawershare": {
+            opacity: "1"
         }
     },
     drawerPaper: {
@@ -27,20 +61,6 @@ const styles = theme => ({
         color: theme.palette.secondary.contrastText,
         boxShadow: "0px 2px 4px -1px rgb(0 0 0 / 20%), 0px 4px 5px 0px rgb(0 0 0 / 14%), 0px 1px 10px 0px rgb(0 0 0 / 12%)",
         border: 0,
-        "& > div": {
-            transition: "opacity cubic-bezier(0.4, 0, 0.2, 1) 175ms",
-            opacity: .75,
-        },
-        "&:hover > div": {
-            opacity: 1,
-        },
-        "& .drawershare": {
-            opacity: ".33",
-            transition: "opacity cubic-bezier(0.4, 0, 0.2, 1) 300ms",
-        },
-        "&:hover .drawershare": {
-            opacity: "1"
-        }
     },
     drawerContainer: {
         overflow: "auto"
@@ -73,7 +93,7 @@ class AppDrawer extends React.Component {
         
         return (
             <Box elevation={4}>
-                <Drawer keepMounted={true} className={classes.drawer} variant="permanent" classes={{paper: classes.drawerPaper}}>
+                <Drawer keepMounted={true} className={pathname === "/" ? classes.drawerHome: classes.drawer} variant="permanent" classes={{paper: classes.drawerPaper}}>
                     <Toolbar />
                     <div className={classes.drawerContainer}>
                         <DrawerContent pathname={pathname} onClose={() => {}}/>
