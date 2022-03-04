@@ -8,23 +8,32 @@ self.addEventListener("install", function(evt) {
     return evt.waitUntil(Promise.allSettled([
         caches.open(REQUIRED_CACHE).then(function (cache) {
             return cache.addAll([
-                "/src/fonts/Jura-Medium.woff2",
-                "/src/images/fun.svg",
-                "/client.min.js", // This is chunck norris, master of all chunk
                 "/",
                 "/index.html",
                 "/404.html",
-                "/manifest.json",
+                "/client.min.js", // This is chunck norris, master of all chunk
+                "/src/fonts/Jura-Medium.woff2",
                 "/src/images/favicon.ico",
-                "/src/images/logo-transparent.png",
-                "/src/images/manifest/icon-white.png",
+                "/manifest.json",
             ]);
+        }),
+        caches.open(USEFUL_CACHE).then(function (cache) {
+            return cache.addAll([
+                "/src/images/designer.svg",
+                "/manifest.json"
+            ]);
+        }),
+        caches.open(STATIC_CACHE).then(function (cache) {
+            return cache.addAll([]);
         })
     ]).then(() => {
 
         const caching = Promise.allSettled([
             caches.open(USEFUL_CACHE).then(function (cache) {
                 return cache.addAll([
+                    "/src/images/fun.svg",
+                    "/src/images/logo-transparent.png",
+                    "/src/images/manifest/icon-white.png",
                     "/src/images/404-dark-2.svg",
                     "/src/images/share.svg",
                 ]);
