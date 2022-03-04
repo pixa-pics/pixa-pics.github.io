@@ -5,7 +5,8 @@ var STATIC_CACHE = "network-or-cache-v36-static";
 // On install, cache some resource.
 self.addEventListener("install", function(evt) {
 
-    evt.waitUntil(Promise.allSettled([
+    evt.waitUntil(
+        Promise.allSettled([
             caches.open(REQUIRED_CACHE).then(function (cache) {
                 return cache.addAll([
                     "/src/fonts/Jura-Medium.woff2",
@@ -25,7 +26,7 @@ self.addEventListener("install", function(evt) {
             caches.open(STATIC_CACHE).then(function (cache) {
                 return cache.addAll([]);
             })
-    ])).then(() => {
+    ]).then(() => {
 
         if(!navigator.onLine){
 
@@ -74,7 +75,7 @@ self.addEventListener("install", function(evt) {
             ]);
         }
 
-    });
+    }));
 });
 
 self.addEventListener("fetch", function(event) {
