@@ -1,6 +1,6 @@
-var REQUIRED_CACHE = "network-or-cache-v36-required";
-var USEFUL_CACHE = "network-or-cache-v36-useful";
-var STATIC_CACHE = "network-or-cache-v36-static";
+var REQUIRED_CACHE = "unless-update-cache-v1-required";
+var USEFUL_CACHE = "unless-update-cache-v1-useful";
+var STATIC_CACHE = "unless-update-cache-v1-static";
 
 // On install, cache some resource.
 self.addEventListener("install", function(evt) {
@@ -9,29 +9,22 @@ self.addEventListener("install", function(evt) {
         caches.open(REQUIRED_CACHE).then(function (cache) {
             return cache.addAll([
                 "/",
-                "/index.html",
                 "/404.html",
+                "/index.html",
                 "/client.min.js", // This is chunck norris, master of all chunk
+                "/chunk.2.min.js",
                 "/src/fonts/Jura-Medium.woff2",
-                "/src/images/favicon.ico",
                 "/manifest.json",
             ]);
-        }),
-        caches.open(USEFUL_CACHE).then(function (cache) {
-            return cache.addAll([
-                "/src/images/designer.svg",
-                "/manifest.json"
-            ]);
-        }),
-        caches.open(STATIC_CACHE).then(function (cache) {
-            return cache.addAll([]);
         })
     ]).then(() => {
 
-        const caching = Promise.allSettled([
+        var waiting = Promise.allSettled([
             caches.open(USEFUL_CACHE).then(function (cache) {
                 return cache.addAll([
+                    "/src/images/favicon.ico",
                     "/src/images/fun.svg",
+                    "/src/images/background.svg",
                     "/src/images/logo-transparent.png",
                     "/src/images/manifest/icon-white.png",
                     "/src/images/404-dark-2.svg",
@@ -40,10 +33,10 @@ self.addEventListener("install", function(evt) {
             }),
             caches.open(REQUIRED_CACHE).then(function (cache) {
                 return cache.addAll([
-                    "/chunk.3.min.js", // Second js to be loaded is this one
-                    //"/chunk.1.min.js", The compiler doesn't want to create chunk.1.min.js instead he pass from the n°0 to the n°2 directly :[
-                    "/chunk.0.min.js",
+                    "/client.min.js",
                     "/chunk.2.min.js",
+                    "/chunk.0.min.js",
+                    "/chunk.3.min.js",
                     "/chunk.4.min.js",
                     "/chunk.5.min.js",
                     "/chunk.6.min.js",
@@ -70,7 +63,12 @@ self.addEventListener("install", function(evt) {
             ))
         ]);
 
-        return self.skipWaiting();
+        if(navigator.onLine) {
+
+            waiting = self.skipWaiting();
+        }
+
+        return waiting;
     }));
 });
 
@@ -78,7 +76,25 @@ self.addEventListener("fetch", function(event) {
 
     const url = event.request.url;
 
-    if((url.includes(".png") || url.includes(".jpg") || url.includes(".jpeg") || url.includes(".gif")) && event.request.mode !== "same-origin") {
+    if((url.includes(".png") || url.includes(".jpg") || url.includes(".jpeg") || url.includes(".gif") || url.includes(".ico")) && event.request.mode === "same-origin") {
+
+        // Serve cached image if doesn't fail
+        event.respondWith(
+            caches.open(USEFUL_CACHE).then(function (cache) {
+                return cache.match(event.request).then(function (response) {
+                    return (
+                        response ||
+                        fetch(event.request).then(function (response) { // Fetch, clone, and serve
+                            cache.put(event.request, response.clone());
+                            return response;
+                        })
+                    );
+                });
+            }),
+        );
+
+
+    }else if(url.includes(".png") || url.includes(".jpg") || url.includes(".jpeg") || url.includes(".gif") || url.includes(".ico")) {
 
         // Serve cached image if doesn't fail
         event.respondWith(
@@ -226,12 +242,17 @@ self.addEventListener("fetch", function(event) {
 
     }else if(event.request.mode === "navigate") {
 
-        // Return the same index.html page for all navigation query
-        event.respondWith( caches.match("/").then(function (response) {
-            return (
-                response || fetch(event.request).then(function (response) {return response})
-            );
-        }));
+        event.respondWith(
+            caches.open(REQUIRED_CACHE).then(function (cache) {
+
+                // Return the same index.html page for all navigation query
+                event.respondWith( cache.match("/").then(function (response) {
+                    return (
+                        response || fetch(event.request).then(function (response) {return response})
+                    );
+                }));
+            })
+        );
 
     }else {
         Promise.race([
@@ -263,5 +284,20 @@ self.addEventListener("fetch", function(event) {
 
 self.addEventListener("activate", function(evt) {
 
-    return self.clients.claim();
+    if(navigator.onLine) {
+
+        return self.clients.claim();
+    }else {
+
+        return event.waitUntil(Promise.allSettled([
+                caches.keys().then(keys => Promise.allSettled(
+                    keys.map(key => {
+                        if (key !== REQUIRED_CACHE && key !== STATIC_CACHE && key !== USEFUL_CACHE) {
+                            return caches.delete(key);
+                        }
+                    })
+                ))
+            ])
+        ).then(function(response){return response});
+    }
 });

@@ -26,10 +26,23 @@ const styles = theme => ({
         width: "100%",
         height: "100%",
         overflow: "hidden",
-        backgroundImage: "radial-gradient(ellipse farthest-corner, #ffffff, #ffffff00 66%)",
+        backgroundImage: "radial-gradient(ellipse, #f0f8ffee, #ffffff00 100%), url(/src/images/background.svg)",
         position: "relative",
-        backgroundSize: "75%",
-        backgroundPosition: "100% 25%",
+        backgroundSize: "150%",
+        backgroundPosition: "0% 25vh",
+        "&": {
+            animation: "$slide 56s linear infinite",
+            "@global": {
+                "@keyframes slide": {
+                    "0%": {backgroundPosition: "-150% 20vh"},
+                    "20%": {backgroundPosition: "-50% 25vh"},
+                    "40%": {backgroundPosition: "50% 30vh"},
+                    "60%": {backgroundPosition: "150% 35vh"},
+                    "80%": {backgroundPosition: "225% 30vh"},
+                    "100%": {backgroundPosition: "300% 25vh"},
+                }
+            },
+        },
         backgroundRepeat: "no-repeat",
         backgroundOrigin: "border-box",
         padding: 64,
@@ -39,35 +52,38 @@ const styles = theme => ({
     },
     backgroundImageImage: {
         position: "absolute",
-        width: "88%",
-        left: "25%",
+        width: "max(75vh, 75%)",
+        left: "calc(min(14vh, 14%) - 128px)",
         top: "calc(64% - 128px)",
-        transform: "translateY(-50%)",
-        mixBlendMode: "multiply",
-        zIndex: -1,
+        transform: "translate(25%, -50%)",
+        zIndex: 1,
+        "&": {
+            animation: "$slide 14s linear infinite",
+            "@global": {
+                "@keyframes slide": {
+                    "0%": {transform: "translate(calc(25vw - 25vh + 0%), -50%)"},
+                    "20%": {transform: "translate(calc(25vw - 25vh + 0%), -50%)"},
+                    "40%": {transform: "translate(calc(25vw - 25vh + 7%), -50%)"},
+                    "60%": {transform: "translate(calc(25vw - 25vh + 14%), -50%)"},
+                    "80%": {transform: "translate(calc(25vw - 25vh + 14%), -50%)"},
+                    "100%": {transform: "translate(calc(25vw - 25vh + 7%), -50%)"},
+                }
+            },
+        },
     },
     card: {
         margin: theme.spacing(1, 2)
-    },
-    quoteContainer: {
-        width: "calc(100% - 64px)",
-        position: "absolute",
-        left: 32,
-        bottom: 32,
-        backgroundColor: "rgba(192, 192, 192, .5)",
-        borderRadius: 4,
-        [theme.breakpoints.down("sm")]: {
-            display: "none",
-        },
     },
     headerContainer: {
         fontFamily: `"Jura"`,
         position: "absolute",
         marginTop: theme.spacing(-2),
         color: "#000000",
+        textShadow: "3px 6px 9px azure",
         [theme.breakpoints.down("sm")]: {
             marginTop: theme.spacing(-4)
         },
+        zIndex: 2,
     },
     title: {
         fontSize: 56,
