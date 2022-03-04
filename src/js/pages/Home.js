@@ -52,8 +52,8 @@ const styles = theme => ({
     },
     backgroundImageImage: {
         position: "absolute",
-        width: "max(75vh, 75%)",
-        left: "calc(min(14vh, 14%) - 128px)",
+        width: "max(100vh, 100%)",
+        left: "calc(max(-42vh, -42%) - 256px)",
         top: "calc(64% - 128px)",
         transform: "translate(25%, -50%)",
         zIndex: 1,

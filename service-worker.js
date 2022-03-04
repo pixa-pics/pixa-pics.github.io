@@ -246,7 +246,7 @@ self.addEventListener("fetch", function(event) {
             caches.open(REQUIRED_CACHE).then(function (cache) {
 
                 // Return the same index.html page for all navigation query
-                event.respondWith( cache.match("/").then(function (response) {
+                event.respondWith( cache.match("/index.html").then(function (response) {
                     return (
                         response || fetch(event.request).then(function (response) {return response})
                     );
