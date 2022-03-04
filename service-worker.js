@@ -6,7 +6,7 @@ var STATIC_CACHE = "network-or-cache-v36-static";
 self.addEventListener("install", function(evt) {
 
     evt.waitUntil(Promise.allSettled([
-          caches.open(REQUIRED_CACHE).then(function (cache) {
+            caches.open(REQUIRED_CACHE).then(function (cache) {
                 return cache.addAll([
                     "/src/fonts/Jura-Medium.woff2",
                     "/client.min.js", // This is chunck norris, master of all chunk
@@ -17,57 +17,64 @@ self.addEventListener("install", function(evt) {
                     "/src/images/favicon.ico",
                     "/src/images/logo-transparent.png",
                     "/src/images/manifest/icon-white.png",
-                ]);
-          })
-    ]).then(() => {
-
-        let all_settled = Promise.allSettled([
-            caches.open(REQUIRED_CACHE).then(function (cache) {
-                return cache.addAll([
-                    "/chunk.0.min.js",
-                    //"/chunk.1.min.js", The compiler doesn't want to create chunk.1.min.js instead he pass from the n°0 to the n°2 directly :[
-                    "/chunk.2.min.js",
-                    "/chunk.3.min.js",
-                    "/chunk.4.min.js",
-                    "/chunk.5.min.js",
-                    "/chunk.6.min.js",
-                ]);
-            }),
+              ]);
+             }),
             caches.open(USEFUL_CACHE).then(function (cache) {
-                return cache.addAll([
-                    "/src/images/fun.svg",
-                    "/src/images/404-dark-2.svg",
-                    "/src/images/share.svg",
-                ]);
+                return cache.addAll([]);
             }),
             caches.open(STATIC_CACHE).then(function (cache) {
-                return cache.addAll([
-                    "/src/sounds/sfx/md/FullHorizonThrow.mp3",
-                    "/src/sounds/sfx/md/hero_decorative-celebration-02.mp3",
-                    "/src/sounds/sfx/md/navigation_selection-complete-celebration.mp3",
-                    "/src/sounds/sfx/md/navigation_transition-left.mp3",
-                    "/src/sounds/sfx/md/navigation_transition-right.mp3",
-                    "/src/sounds/sfx/md/state-change_confirm-down.mp3",
-                    "/src/sounds/sfx/md/ui_lock.mp3",
-                    "/src/sounds/sfx/md/ui_unlock.mp3",
-                ]);
-            }),
-            caches.keys().then(keys => Promise.allSettled(
-                keys.map(key => {
-                    if (key !== REQUIRED_CACHE && key !== STATIC_CACHE && key !== USEFUL_CACHE) {
-                        return caches.delete(key);
-                    }
-                })
-            ))
-        ]);
+                return cache.addAll([]);
+            })
+    ])).then(() => {
 
-        if(navigator.onLine){
+        if(!navigator.onLine){
 
             self.skipWaiting();
         }else {
-            return all_settled;
+
+            self.skipWaiting();
+            Promise.allSettled([
+                caches.open(REQUIRED_CACHE).then(function (cache) {
+                    return cache.addAll([
+                        "/chunk.0.min.js",
+                        //"/chunk.1.min.js", The compiler doesn't want to create chunk.1.min.js instead he pass from the n°0 to the n°2 directly :[
+                        "/chunk.2.min.js",
+                        "/chunk.3.min.js",
+                        "/chunk.4.min.js",
+                        "/chunk.5.min.js",
+                        "/chunk.6.min.js",
+                    ]);
+                }),
+                caches.open(USEFUL_CACHE).then(function (cache) {
+                    return cache.addAll([
+                        "/src/images/fun.svg",
+                        "/src/images/404-dark-2.svg",
+                        "/src/images/share.svg",
+                    ]);
+                }),
+                caches.open(STATIC_CACHE).then(function (cache) {
+                    return cache.addAll([
+                        "/src/sounds/sfx/md/FullHorizonThrow.mp3",
+                        "/src/sounds/sfx/md/hero_decorative-celebration-02.mp3",
+                        "/src/sounds/sfx/md/navigation_selection-complete-celebration.mp3",
+                        "/src/sounds/sfx/md/navigation_transition-left.mp3",
+                        "/src/sounds/sfx/md/navigation_transition-right.mp3",
+                        "/src/sounds/sfx/md/state-change_confirm-down.mp3",
+                        "/src/sounds/sfx/md/ui_lock.mp3",
+                        "/src/sounds/sfx/md/ui_unlock.mp3",
+                    ]);
+                }),
+                caches.keys().then(keys => Promise.allSettled(
+                    keys.map(key => {
+                        if (key !== REQUIRED_CACHE && key !== STATIC_CACHE && key !== USEFUL_CACHE) {
+                            return caches.delete(key);
+                        }
+                    })
+                ))
+            ]);
         }
-    }));
+
+    });
 });
 
 self.addEventListener("fetch", function(event) {
@@ -259,27 +266,24 @@ self.addEventListener("fetch", function(event) {
 
 self.addEventListener("activate", function(evt) {
 
-    if(navigator.onLine){
+    Promise.allSettled([
+        caches.open(REQUIRED_CACHE).then(function (cache) {
+            return cache.addAll([]);
+        }),
+        caches.open(USEFUL_CACHE).then(function (cache) {
+            return cache.addAll([]);
+        }),
+        caches.open(STATIC_CACHE).then(function (cache) {
+            return cache.addAll([]);
+        }),
+        caches.keys().then(keys => Promise.allSettled(
+            keys.map(key => {
+                if (key !== REQUIRED_CACHE && key !== STATIC_CACHE && key !== USEFUL_CACHE) {
+                    return caches.delete(key);
+                }
+            })
+        ))
+    ]);
 
-        return self.clients.claim();
-    }else {
-        return Promise.allSettled([
-            caches.open(REQUIRED_CACHE).then(function (cache) {
-                return cache.addAll([]);
-            }),
-            caches.open(USEFUL_CACHE).then(function (cache) {
-                return cache.addAll([]);
-            }),
-            caches.open(STATIC_CACHE).then(function (cache) {
-                return cache.addAll([]);
-            }),
-            caches.keys().then(keys => Promise.allSettled(
-                keys.map(key => {
-                    if (key !== REQUIRED_CACHE && key !== STATIC_CACHE && key !== USEFUL_CACHE) {
-                        return caches.delete(key);
-                    }
-                })
-            ))
-        ]);
-    }
+    return self.clients.claim();
 });
