@@ -9,11 +9,10 @@ self.addEventListener("install", function(evt) {
           caches.open(REQUIRED_CACHE).then(function (cache) {
                 return cache.addAll([
                     "/src/fonts/Jura-Medium.woff2",
+                    "/client.min.js", // This is chunck norris, master of all chunk
                     "/",
                     "/index.html",
                     "/404.html",
-                    "/client.min.js", // This is chunck norris, master of all chunk
-                    "/chunk.0.min.js", // Chunk 0 is necessary
                     "/manifest.json",
                     "/src/images/favicon.ico",
                     "/src/images/logo-transparent.png",
@@ -25,6 +24,7 @@ self.addEventListener("install", function(evt) {
         Promise.allSettled([
             caches.open(REQUIRED_CACHE).then(function (cache) {
                 return cache.addAll([
+                    "/chunk.0.min.js",
                     //"/chunk.1.min.js", The compiler doesn't want to create chunk.1.min.js instead he pass from the n°0 to the n°2 directly :[
                     "/chunk.2.min.js",
                     "/chunk.3.min.js",
