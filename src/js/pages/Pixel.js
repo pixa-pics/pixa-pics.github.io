@@ -405,7 +405,10 @@ class Pixel extends React.Component {
 
     _delete_unsaved_pixel_art = (id) => {
 
+        const attachments = {};
+        attachments["json_state-ID" + id + ".json.lzp3"] = "delete";
 
+        api.set_settings({}, this._process_settings_info_result, attachments);
     };
 
     _updated_dimensions = () => {
@@ -456,7 +459,6 @@ class Pixel extends React.Component {
 
         if(!error && typeof settings !== "undefined") {
 
-            console.log(settings);
             // Set new settings from query result
             const _sfx_enabled = typeof settings.sfx_enabled !== "undefined" ? settings.sfx_enabled: false;
             const _is_manual_warning_open = typeof settings.manual_warning_enabled !== "undefined" ? settings.manual_warning_enabled: true;
@@ -731,7 +733,6 @@ class Pixel extends React.Component {
 
                         png_quant(png_base64_in, 100, 100, 1, (png_base64_out) => {
 
-                            console.log(png_base64_out);
                             let a = document.createElement("a"); //Create <a>
                             a.download = `Painting_SRC_1x_N${Date.now()}_PIXAPICS.png`; //File name Here
                             a.href = "" + png_base64_out;
@@ -863,12 +864,12 @@ class Pixel extends React.Component {
 
             const max_original_size = Math.sqrt(4096 * 2160);
             const max_original_color = 1/0;
-            const max_size = Math.sqrt(1920 * 1280);
-            const max_color = 2024;
+            const max_size = is_mobile_or_tablet ? Math.sqrt(1280 * 720): Math.sqrt(1920 * 1280);
+            const max_color = is_mobile_or_tablet ? 1024: 2048;
 
-            let ratio_l_l2 = 5/3;
-            let min_size = 512;
-            let min_color = 256;
+            let ratio_l_l2 = is_mobile_or_tablet ? 2/3: 5/3;
+            let min_size = is_mobile_or_tablet ? 256: 512;
+            let min_color = is_mobile_or_tablet ? 128: 256;
 
             const resize_original_to = max_original_size * max_original_size;
             const resize_to = Math.min(max_size * max_size, Math.max(_import_size * _import_size, min_size * min_size));

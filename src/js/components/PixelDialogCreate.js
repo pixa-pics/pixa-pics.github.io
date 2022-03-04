@@ -38,8 +38,6 @@ class PixelDialogCreate extends React.Component {
             Object.keys(this.state.pixel_arts).length !== Object.keys(new_props.pixel_arts).length
         ) {
 
-
-
             this.setState({...new_props}, () => {
 
                 this.forceUpdate();
@@ -85,7 +83,7 @@ class PixelDialogCreate extends React.Component {
                     <div style={{padding: "8px 24px", position: "relative", display: "flex", flexWrap: "wrap", justifyContent: "space-around", overflow: "hidden",}}>
                         <ImageList rowHeight={200} cols={2.5} style={{minWidth: 508, flexWrap: "nowrap", transform: "translateZ(0)", contains: "strict"}}>
                             {
-                                Object.values(pixel_arts).sort((a, b) => b.timestamp - a.timestamp).map((v) => {
+                                Object.values(pixel_arts).sort((a, b) => b.timestamp - a.timestamp).map((v, i) => {
 
                                     const {id, kb, preview, timestamp} = v;
                                     return (
@@ -94,7 +92,7 @@ class PixelDialogCreate extends React.Component {
                                             <ImageListItemBar
                                                 title={new TimeAgo(document.documentElement.lang).format(timestamp)}
                                                 subtitle={<span>{kb.toFixed(2)} Kb</span>}
-                                                actionIcon={
+                                                actionIcon={ i &&
                                                     <IconButton style={{color: "#fff"}} onClick={() => {this.props.on_pixel_art_delete(id)}} aria-label={`Delete`}>
                                                         <DeleteIcon />
                                                     </IconButton>

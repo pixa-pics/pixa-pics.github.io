@@ -14,13 +14,14 @@ At the horizon of matrix and vectorial, discover an unprecedented industrial and
 # Technology
 
  * Multi-threading (Web Worker)
- * GPU optimisation (CSS Transform)
+ * GPU optimisation (CSS3 Transform+will-change)
  * Fast Compression (LZP3)
  * Offline Cache & Auto Save (PouchDB)
- * AI Processing (Deepai.org, remotely)
+ * AI Processing (Deepai.org, remote!)
  * Up-Scaling (xBRZ)
  * Vectorizer (ImageTracerJS)
  * Color Quantization (RGBQuant + Custom)
+ * Encodig of Portable Network Graphics in type of palette (PNGQuant)
 
 # Features
 

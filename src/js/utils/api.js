@@ -190,30 +190,47 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
 
                         let pixa_settings = _merge_object(JSON.parse(settings_docs[0].info), info);
 
-                        let blobs_to_add = Object.keys(attachment_array).length;
+                        let attachments_to_process = Object.keys(attachment_array).length;
                         Object.entries(attachment_array).forEach(([name_id, data]) => {
 
-                            const {id, kb, preview, timestamp } = data;
-                            pixa_settings.attachment_previews = pixa_settings.attachment_previews || {};
-                            pixa_settings.attachment_previews[name_id] = {id, kb, preview, timestamp};
+                            if(data !== "delete") {
 
+                                const {id, kb, preview, timestamp } = data;
+                                pixa_settings.attachment_previews = pixa_settings.attachment_previews || {};
+                                pixa_settings.attachment_previews[name_id] = {id, kb, preview, timestamp};
 
-                            console.log(blobs_to_add);
-                            LZP3(data, "COMPRESS_OBJECT", (uint8a) => {
+                                LZP3(data, "COMPRESS_OBJECT", (uint8a) => {
 
-                                settings_docs[0]._attachments = settings_docs[0]._attachments || {};
-                                settings_docs[0]._attachments[name_id] = {
-                                    content_type: "application/octet-stream",
-                                    data: new Blob([uint8a], {type : "application/octet-stream"})
-                                };
-                                blobs_to_add--;
-                                console.log(settings_docs[0]._attachments)
-                                if(blobs_to_add === 0) {
+                                    settings_docs[0]._attachments = settings_docs[0]._attachments || {};
+                                    settings_docs[0]._attachments[name_id] = {
+                                        content_type: "application/octet-stream",
+                                        data: new Blob([uint8a], {type : "application/octet-stream"})
+                                    };
+                                    attachments_to_process--;
+                                    if(attachments_to_process === 0) {
 
-                                    continue_push_in_db(settings_docs, pixa_settings);
-                                }
+                                        continue_push_in_db(settings_docs, pixa_settings);
+                                    }
 
-                            }, pool);
+                                }, pool);
+
+                            }else {
+
+                                pixa_settings.attachment_previews = pixa_settings.attachment_previews  || {};
+
+                                window.settings_db.removeAttachment(settings_docs[0]._id, name_id, settings_docs[0]._rev).then((result) => {
+
+                                    delete window._pixa_settings.attachment_previews[name_id];
+                                    delete pixa_settings.attachment_previews[name_id];
+                                    delete settings_docs[0]._attachments[name_id];
+                                    attachments_to_process--;
+
+                                    if(attachments_to_process === 0) {
+
+                                        continue_push_in_db(settings_docs, pixa_settings);
+                                    }
+                                });
+                            }
                         });
 
                         const continue_push_in_db = (settings_docs, pixa_settings ) => {

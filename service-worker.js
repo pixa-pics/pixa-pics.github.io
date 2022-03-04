@@ -1,6 +1,6 @@
-var REQUIRED_CACHE = "network-or-cache-v35-required";
-var USEFUL_CACHE = "network-or-cache-v35-useful";
-var STATIC_CACHE = "network-or-cache-v35-static";
+var REQUIRED_CACHE = "network-or-cache-v36-required";
+var USEFUL_CACHE = "network-or-cache-v36-useful";
+var STATIC_CACHE = "network-or-cache-v36-static";
 
 // On install, cache some resource.
 self.addEventListener("install", function(evt) {
@@ -19,9 +19,9 @@ self.addEventListener("install", function(evt) {
                     "/src/images/manifest/icon-white.png",
                 ]);
           })
-    ]).then(function() {
+    ]).then(() => {
 
-        Promise.allSettled([
+        let all_settled = Promise.allSettled([
             caches.open(REQUIRED_CACHE).then(function (cache) {
                 return cache.addAll([
                     "/chunk.0.min.js",
@@ -61,7 +61,12 @@ self.addEventListener("install", function(evt) {
             ))
         ]);
 
-        return self.skipWaiting();
+        if(navigator.onLine){
+
+            self.skipWaiting();
+        }else {
+            return all_settled;
+        }
     }));
 });
 
@@ -254,5 +259,27 @@ self.addEventListener("fetch", function(event) {
 
 self.addEventListener("activate", function(evt) {
 
-    return self.clients.claim();
+    if(navigator.onLine){
+
+        return self.clients.claim();
+    }else {
+        return Promise.allSettled([
+            caches.open(REQUIRED_CACHE).then(function (cache) {
+                return cache.addAll([]);
+            }),
+            caches.open(USEFUL_CACHE).then(function (cache) {
+                return cache.addAll([]);
+            }),
+            caches.open(STATIC_CACHE).then(function (cache) {
+                return cache.addAll([]);
+            }),
+            caches.keys().then(keys => Promise.allSettled(
+                keys.map(key => {
+                    if (key !== REQUIRED_CACHE && key !== STATIC_CACHE && key !== USEFUL_CACHE) {
+                        return caches.delete(key);
+                    }
+                })
+            ))
+        ]);
+    }
 });

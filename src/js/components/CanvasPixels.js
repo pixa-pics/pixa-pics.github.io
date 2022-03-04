@@ -7815,7 +7815,7 @@ class CanvasPixels extends React.Component {
             let original_pxl_colors = Array.from(pxl_colors);
             let is_bucket_threshold_auto = bucket_threshold === "auto";
             let is_bucket_threshold_auto_goal_reached = !is_bucket_threshold_auto;
-            let bucket_threshold_auto_goal_target = 5;
+            let bucket_threshold_auto_goal_target = 15;
             let bucket_threshold_auto_goal_attempt = new Set();
             best_color_number = best_color_number !== null ? best_color_number: Math.max(Math.sqrt(original_pxl_colors.length) + color_number_bonus, 64);
 
@@ -7912,7 +7912,6 @@ class CanvasPixels extends React.Component {
 
                 if((original_pxl_colors.length + 2 > best_color_number && original_pxl_colors.length - 2 < best_color_number) || !is_bucket_threshold_auto || bucket_threshold_auto_goal_attempt.has(bucket_threshold_auto_goal_target)) {
 
-                    console.log(bucket_threshold_auto_goal_target)
                     return this_remove_duplicate_pxl_colors(new_pxls, original_pxl_colors);
                 }else if(original_pxl_colors.length > best_color_number){
 
@@ -7946,7 +7945,7 @@ class CanvasPixels extends React.Component {
             let original_pxl_colors = Array.from(pxl_colors);
             let is_bucket_threshold_auto = bucket_threshold === "auto";
             let is_bucket_threshold_auto_goal_reached = !is_bucket_threshold_auto;
-            let bucket_threshold_auto_goal_target = 5;
+            let bucket_threshold_auto_goal_target = 15;
             let bucket_threshold_auto_goal_attempt = new Set();
             best_color_number = best_color_number !== null ? best_color_number: Math.max(Math.sqrt(original_pxl_colors.length) + color_number_bonus, 64);
 
@@ -8043,7 +8042,6 @@ class CanvasPixels extends React.Component {
 
                 if((original_pxl_colors.length + 2 > best_color_number && original_pxl_colors.length - 2 < best_color_number) || !is_bucket_threshold_auto || bucket_threshold_auto_goal_attempt.has(bucket_threshold_auto_goal_target)) {
 
-                    console.log(bucket_threshold_auto_goal_target);
                     return this._remove_duplicate_pxl_colors(new_pxls, original_pxl_colors);
                 }else if(original_pxl_colors.length > best_color_number){
 
