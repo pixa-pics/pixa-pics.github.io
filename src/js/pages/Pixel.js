@@ -862,18 +862,18 @@ class Pixel extends React.Component {
         this._handle_load("image_preload");
         this.get_base64(file).then((b) => {
 
-            const max_original_size = Math.sqrt(4096 * 2160);
+            const max_original_size = is_mobile_or_tablet ? Math.sqrt(1920 * 1080): Math.sqrt(4096 * 2160);
             const max_original_color = 1/0;
             const max_size = is_mobile_or_tablet ? Math.sqrt(1280 * 720): Math.sqrt(1920 * 1280);
             const max_color = is_mobile_or_tablet ? 1024: 2048;
 
             let ratio_l_l2 = is_mobile_or_tablet ? 2/3: 5/3;
-            let min_size = is_mobile_or_tablet ? 256: 512;
+            let min_size = is_mobile_or_tablet ? 128: 256;
             let min_color = is_mobile_or_tablet ? 128: 256;
 
             const resize_original_to = max_original_size * max_original_size;
-            const resize_to = Math.min(max_size * max_size, Math.max(_import_size * _import_size, min_size * min_size));
-            const limit_color_number = Math.min(max_color * ratio_l_l2, Math.max(_import_size * ratio_l_l2, min_color * ratio_l_l2));
+            const resize_to = Math.min(max_size * max_size, Math.max(parseInt(_import_size) * parseInt(_import_size), min_size * min_size));
+            const limit_color_number = Math.min(max_color * ratio_l_l2, Math.max(parseInt(_import_size) * ratio_l_l2, min_color * ratio_l_l2));
 
             rgb_quant(b, max_original_color, resize_original_to, (data) => {
 
@@ -889,12 +889,12 @@ class Pixel extends React.Component {
 
                             img.addEventListener("load", () => {
 
-                                _canvas.set_canvas_from_image(img, b, {}, true);
+                                _canvas.set_canvas_from_image(img, data, {}, true);
                                 document.body.removeChild(input);
                                 this._handle_menu_close();
                             });
                             img.src = res2;
-                        });
+                        }, pool);
 
                     }, "application/text");
 
@@ -909,12 +909,12 @@ class Pixel extends React.Component {
 
                             img.addEventListener("load", () => {
 
-                                _canvas.set_canvas_from_image(img, b, {}, true);
+                                _canvas.set_canvas_from_image(img, data, {}, true);
                                 document.body.removeChild(input);
                                 this._handle_menu_close();
                             });
                             img.src = res2;
-                        });
+                        }, pool);
 
                     }, "application/text");
                 }else if(_import_colorize === "3") {
@@ -930,12 +930,12 @@ class Pixel extends React.Component {
 
                                 img.addEventListener("load", () => {
 
-                                    _canvas.set_canvas_from_image(img, b, {}, true);
+                                    _canvas.set_canvas_from_image(img, data, {}, true);
                                     document.body.removeChild(input);
                                     this._handle_menu_close();
                                 });
                                 img.src = res3;
-                            });
+                            }, pool);
 
                         }, "application/text");
 
@@ -946,12 +946,12 @@ class Pixel extends React.Component {
 
                         img.addEventListener("load", () => {
 
-                            _canvas.set_canvas_from_image(img, b);
+                            _canvas.set_canvas_from_image(img, data, {}, false);
                             document.body.removeChild(input);
                             this._handle_menu_close();
                         });
                         img.src = res;
-                    });
+                    }, pool);
                 }
             }, pool);
         });

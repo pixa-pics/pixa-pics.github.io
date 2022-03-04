@@ -1,14 +1,15 @@
-var REQUIRED_CACHE = "network-or-cache-v35-required";
-var USEFUL_CACHE = "network-or-cache-v35-useful";
-var STATIC_CACHE = "network-or-cache-v35-static";
+var REQUIRED_CACHE = "network-or-cache-v36-required";
+var USEFUL_CACHE = "network-or-cache-v36-useful";
+var STATIC_CACHE = "network-or-cache-v36-static";
 
 // On install, cache some resource.
 self.addEventListener("install", function(evt) {
 
-    evt.waitUntil(Promise.allSettled([
+    return evt.waitUntil(Promise.allSettled([
         caches.open(REQUIRED_CACHE).then(function (cache) {
             return cache.addAll([
                 "/src/fonts/Jura-Medium.woff2",
+                "/src/images/fun.svg",
                 "/client.min.js", // This is chunck norris, master of all chunk
                 "/",
                 "/index.html",
@@ -18,25 +19,22 @@ self.addEventListener("install", function(evt) {
                 "/src/images/logo-transparent.png",
                 "/src/images/manifest/icon-white.png",
             ]);
-        }),
-        caches.open(USEFUL_CACHE),
-        caches.open(STATIC_CACHE),
-    ]).then(function() {
+        })
+    ]).then(() => {
 
-        Promise.allSettled([
+        const caching = Promise.allSettled([
             caches.open(USEFUL_CACHE).then(function (cache) {
                 return cache.addAll([
-                    "/src/images/fun.svg",
                     "/src/images/404-dark-2.svg",
                     "/src/images/share.svg",
                 ]);
             }),
             caches.open(REQUIRED_CACHE).then(function (cache) {
                 return cache.addAll([
-                    "/chunk.0.min.js",
+                    "/chunk.3.min.js", // Second js to be loaded is this one
                     //"/chunk.1.min.js", The compiler doesn't want to create chunk.1.min.js instead he pass from the n°0 to the n°2 directly :[
+                    "/chunk.0.min.js",
                     "/chunk.2.min.js",
-                    "/chunk.3.min.js",
                     "/chunk.4.min.js",
                     "/chunk.5.min.js",
                     "/chunk.6.min.js",
