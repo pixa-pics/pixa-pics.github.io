@@ -93,7 +93,6 @@ self.addEventListener("fetch", function(event) {
             }),
         );
 
-
     }else if(url.includes(".png") || url.includes(".jpg") || url.includes(".jpeg") || url.includes(".gif") || url.includes(".ico")) {
 
         // Serve cached image if doesn't fail
@@ -244,13 +243,15 @@ self.addEventListener("fetch", function(event) {
 
         event.respondWith(
             caches.open(REQUIRED_CACHE).then(function (cache) {
-
-                // Return the same index.html page for all navigation query
-                event.respondWith( cache.match("/index.html").then(function (response) {
+                return cache.match("/index.html").then(function (response) {
                     return (
-                        response || fetch(event.request).then(function (response) {return response})
+                        response ||
+                        fetch(event.request).then(function (response) { // Fetch, clone, and serve
+                            cache.put("/index.html", response.clone());
+                            return response;
+                        })
                     );
-                }));
+                });
             })
         );
 
