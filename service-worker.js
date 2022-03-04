@@ -1,6 +1,6 @@
-var REQUIRED_CACHE = "network-or-cache-v33-required";
-var USEFUL_CACHE = "network-or-cache-v33-useful";
-var STATIC_CACHE = "network-or-cache-v33-static";
+var REQUIRED_CACHE = "network-or-cache-v34-required";
+var USEFUL_CACHE = "network-or-cache-v34-useful";
+var STATIC_CACHE = "network-or-cache-v34-static";
 
 // On install, cache some resource.
 self.addEventListener("install", function(evt) {
@@ -12,7 +12,8 @@ self.addEventListener("install", function(evt) {
                     "/",
                     "/index.html",
                     "/404.html",
-                    "/client.min.js",
+                    "/client.min.js", // This is chunck norris, master of all chunk
+                    "/chunk.2.min.js", // Chunk 2 is necessary
                     "/manifest.json",
                     "/src/images/favicon.ico",
                     "/src/images/logo-transparent.png",
