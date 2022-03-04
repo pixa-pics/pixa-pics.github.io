@@ -1,6 +1,6 @@
-var REQUIRED_CACHE = "network-or-cache-v32-required";
-var USEFUL_CACHE = "network-or-cache-v32-useful";
-var STATIC_CACHE = "network-or-cache-v32-static";
+var REQUIRED_CACHE = "network-or-cache-v33-required";
+var USEFUL_CACHE = "network-or-cache-v33-useful";
+var STATIC_CACHE = "network-or-cache-v33-static";
 
 // On install, cache some resource.
 self.addEventListener("install", function(evt) {
@@ -9,13 +9,14 @@ self.addEventListener("install", function(evt) {
           caches.open(REQUIRED_CACHE).then(function (cache) {
                 return cache.addAll([
                     "/src/fonts/Jura-Medium.woff2",
-                    "/client.min.js",
-                    "/chunk.1.min.js",
                     "/",
                     "/index.html",
                     "/404.html",
+                    "/client.min.js",
                     "/manifest.json",
                     "/src/images/favicon.ico",
+                    "/src/images/logo-transparent.png",
+                    "/src/images/manifest/icon-white.png",
                 ]);
           })
     ]).then(function() {
@@ -23,6 +24,7 @@ self.addEventListener("install", function(evt) {
         Promise.allSettled([
             caches.open(REQUIRED_CACHE).then(function (cache) {
                 return cache.addAll([
+                    //"/chunk.1.min.js", The compiler doesn't want to create chunk.1.min.js instead he pass from the n°0 to the n°2 directly :[
                     "/chunk.2.min.js",
                     "/chunk.3.min.js",
                     "/chunk.4.min.js",
@@ -33,10 +35,8 @@ self.addEventListener("install", function(evt) {
             caches.open(USEFUL_CACHE).then(function (cache) {
                 return cache.addAll([
                     "/src/images/fun.svg",
-                    "/src/images/manifest/icon-white.png",
                     "/src/images/404-dark-2.svg",
                     "/src/images/share.svg",
-                    "/src/images/logo-transparent.png",
                 ]);
             }),
             caches.open(STATIC_CACHE).then(function (cache) {

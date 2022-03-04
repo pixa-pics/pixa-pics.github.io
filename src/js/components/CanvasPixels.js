@@ -7890,6 +7890,7 @@ class CanvasPixels extends React.Component {
 
                 if((original_pxl_colors.length + 2 > best_color_number && original_pxl_colors.length - 2 < best_color_number) || !is_bucket_threshold_auto || bucket_threshold_auto_goal_attempt.has(bucket_threshold_auto_goal_target)) {
 
+                    console.log(bucket_threshold_auto_goal_target)
                     return this_remove_duplicate_pxl_colors(new_pxls, original_pxl_colors);
                 }else if(original_pxl_colors.length > best_color_number){
 
@@ -8020,6 +8021,7 @@ class CanvasPixels extends React.Component {
 
                 if((original_pxl_colors.length + 2 > best_color_number && original_pxl_colors.length - 2 < best_color_number) || !is_bucket_threshold_auto || bucket_threshold_auto_goal_attempt.has(bucket_threshold_auto_goal_target)) {
 
+                    console.log(bucket_threshold_auto_goal_target);
                     return this._remove_duplicate_pxl_colors(new_pxls, original_pxl_colors);
                 }else if(original_pxl_colors.length > best_color_number){
 

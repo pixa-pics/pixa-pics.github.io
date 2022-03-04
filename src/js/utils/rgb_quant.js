@@ -929,7 +929,6 @@ const process_function_string = `return async function(img, limit, resize_to) {
         
         // img = base64_string
         var img_type_png = img.includes("image/png;base64");
-        var img_smaller_768 = false;
         var img_data = null; // Create image data
         
         let scale = 1;
@@ -940,7 +939,6 @@ const process_function_string = `return async function(img, limit, resize_to) {
             var resA0 = await fetch(img); // Response
             var blbA0 = await resA0.blob(); // Blob     
             var bmpA0 = await createImageBitmap(blbA0);
-            img_smaller_768 = Boolean(bmpA0.width * bmpA0.height < 768*768);
             
             while (bmpA0.width * scale * bmpA0.height * scale > resize_to) { scale -= 0.01; }
             
@@ -960,7 +958,6 @@ const process_function_string = `return async function(img, limit, resize_to) {
             };
     
             var img_htmlA0 = await to_image(img); // HTMLImageElement
-            img_smaller_768 = Boolean(img_htmlA0.width * img_htmlA0.height < 768*768);
             
             while (img_htmlA0.width * scale * img_htmlA0.height * scale > resize_to) { scale -= 0.01; }
             
@@ -972,21 +969,24 @@ const process_function_string = `return async function(img, limit, resize_to) {
             img_data = ctxA0.getImageData(0, 0, canvasA0.width, canvasA0.height); // ImageData
         }
         
-        // options
-        var q = new RgbQuant({
-            colors: limit,
-            method: 2,
-            minHueCols: 0,
-            dithKern: null,
-            dithSerp: false,
-        });
-
-        // Analyze histograms
-        q.sample(img_data);
- 
-        var pal = q.palette(true);
-        var out = q.reduce(img_data);
-        img_data.data.set(out);
+        if(limit !== 1/0) {
+        
+            // options
+            var q = new RgbQuant({
+                colors: limit,
+                method: 2,
+                minHueCols: 0,
+                dithKern: null,
+                dithSerp: false,
+            });
+    
+            // Analyze histograms
+            q.sample(img_data);
+     
+            var pal = q.palette(true);
+            var out = q.reduce(img_data);
+            img_data.data.set(out);
+        }
         
         // Build base64 response
         try {
@@ -1009,7 +1009,7 @@ const process_function_string = `return async function(img, limit, resize_to) {
             ctxB0.transferFromImageBitmap(bmpB0);
             var blbB0 = null;
             
-            if(img_smaller_768 && img_type_png) {
+            if(img_type_png) {
             
                 blbB0 = await canvasB0.convertToBlob({type: "image/png"});
             
@@ -1034,7 +1034,7 @@ const process_function_string = `return async function(img, limit, resize_to) {
             var ctxB0 = canvasB0.getContext("2d");
             ctxB0.putImageData(img_data, 0, 0);
             
-            if(img_smaller_768 && img_type_png) {
+            if(img_type_png) {
             
                 return ctxB0.canvas.toDataURL("image/png");
             

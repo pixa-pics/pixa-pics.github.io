@@ -55,7 +55,6 @@ import ChangeHistoryIcon from "@material-ui/icons/ChangeHistory";
 import SelectColorIcon from "../icons/SelectColor";
 import SelectRemoveDifferenceIcon from "../icons/SelectRemoveDifference";
 
-import FUIalien from "../icons/FUIalien";
 import FUIatom from "../icons/FUIatom";
 import FUIlab from "../icons/FUIlab";
 import FUIufo from "../icons/FUIufo";
@@ -766,7 +765,7 @@ class Pixel extends React.Component {
                         base64png_to_xbrz_svg(png_base64_in, (image_base64) => {
 
                             let a = document.createElement("a"); //Create <a>
-                            a.download = `Painting_IMG_18x_${using.toUpperCase()}_N${Date.now()}_PIXAPICS.jpeg`; //File name Here
+                            a.download = `Painting_IMG_18x_${using.toUpperCase()}_N${Date.now()}_PIXAPICS.png`; //File name Here
                             a.href = "" + image_base64;
                             a.click();
 
@@ -882,22 +881,20 @@ class Pixel extends React.Component {
         this._handle_load("image_preload");
         this.get_base64(file).then((b) => {
 
-            const max_size = Math.sqrt(1920*1280);
+            const max_original_size = Math.sqrt(4096 * 2160);
+            const max_original_color = 1/0;
+            const max_size = Math.sqrt(1920 * 1280);
             const max_color = 2024;
 
-            let ratio_l_l2 = 4/3;
+            let ratio_l_l2 = 5/3;
             let min_size = 512;
             let min_color = 256;
-            if(["1", "3"].includes(_import_colorize)) {
 
-                min_size = 1280;
-                min_color = 960;
-            }
-
+            const resize_original_to = max_original_size * max_original_size;
             const resize_to = Math.min(max_size * max_size, Math.max(_import_size * _import_size, min_size * min_size));
             const limit_color_number = Math.min(max_color * ratio_l_l2, Math.max(_import_size * ratio_l_l2, min_color * ratio_l_l2));
 
-            rgb_quant(b, limit_color_number, resize_to, (data) => {
+            rgb_quant(b, max_original_color, resize_original_to, (data) => {
 
                 this._handle_load_complete("image_preload", {});
 
@@ -907,15 +904,19 @@ class Pixel extends React.Component {
                     actions.jamy_update("angry");
                     postJSON("https://deepai.pixa-pics.workers.dev/colorizer", data, (err, res) => {
 
-                        img.addEventListener("load", () => {
+                        rgb_quant(res, limit_color_number, resize_to, (res2) => {
 
-                            _canvas.set_canvas_from_image(img, b, {}, true);
-                            document.body.removeChild(input);
-                            this._handle_menu_close();
+                            img.addEventListener("load", () => {
+
+                                _canvas.set_canvas_from_image(img, b, {}, true);
+                                document.body.removeChild(input);
+                                this._handle_menu_close();
+                            });
+                            img.src = res2;
                         });
-                        img.src = res;
 
                     }, "application/text");
+
                 }else if(_import_colorize === "2") {
 
                     actions.trigger_snackbar("Getting impaired with DeepAI systems", 5700);
@@ -923,13 +924,16 @@ class Pixel extends React.Component {
 
                     postJSON("https://deepai.pixa-pics.workers.dev/waifu2x", data, (err, res) => {
 
-                        img.addEventListener("load", () => {
+                        rgb_quant(res, limit_color_number, resize_to, (res2) => {
 
-                            _canvas.set_canvas_from_image(img, b, {}, true);
-                            document.body.removeChild(input);
-                            this._handle_menu_close();
+                            img.addEventListener("load", () => {
+
+                                _canvas.set_canvas_from_image(img, b, {}, true);
+                                document.body.removeChild(input);
+                                this._handle_menu_close();
+                            });
+                            img.src = res2;
                         });
-                        img.src = res;
 
                     }, "application/text");
                 }else if(_import_colorize === "3") {
@@ -941,28 +945,33 @@ class Pixel extends React.Component {
 
                         postJSON("https://deepai.pixa-pics.workers.dev/waifu2x",  res, (err2, res2) => {
 
-                            img.addEventListener("load", () => {
+                            rgb_quant(res2, limit_color_number, resize_to, (res3) => {
 
-                                _canvas.set_canvas_from_image(img, b, {}, true);
-                                document.body.removeChild(input);
-                                this._handle_menu_close();
+                                img.addEventListener("load", () => {
+
+                                    _canvas.set_canvas_from_image(img, b, {}, true);
+                                    document.body.removeChild(input);
+                                    this._handle_menu_close();
+                                });
+                                img.src = res3;
                             });
-                            img.src = res2;
 
                         }, "application/text");
 
                     }, "application/text");
                 }else {
 
-                    img.addEventListener("load", () => {
+                    rgb_quant(data, limit_color_number, resize_to, (res) => {
 
-                        _canvas.set_canvas_from_image(img, b);
-                        document.body.removeChild(input);
-                        this._handle_menu_close();
+                        img.addEventListener("load", () => {
+
+                            _canvas.set_canvas_from_image(img, b);
+                            document.body.removeChild(input);
+                            this._handle_menu_close();
+                        });
+                        img.src = res;
                     });
-                    img.src = data;
                 }
-
             }, pool);
         });
     };
@@ -1829,8 +1838,8 @@ class Pixel extends React.Component {
                 <Backdrop className={classes.backdrop} open={_loading} keepMounted={false}>
                     <div className={classes.backdropTextContent} style={{fontFamily: `"Jura"`}}>
                         {_loading && <h1><ShufflingSpanText text={"Laboratory processing..."} animation_delay_ms={0} animation_duration_ms={250}/></h1>}
-                        {_loading && _loading_process === "image_preload" && <h4><ShufflingSpanText text={"Preparing scripts execution"} animation_delay_ms={300} animation_duration_ms={500}/></h4>}
-                        {_loading && _loading_process === "image_preload" && <div><FUIalien style={{width: 72}}/></div>}
+                        {_loading && _loading_process === "image_preload" && <h4><ShufflingSpanText text={"Preparing laboratory"} animation_delay_ms={300} animation_duration_ms={500}/></h4>}
+                        {_loading && _loading_process === "image_preload" && <div><FUIlab style={{width: 72}}/></div>}
                         {_loading && _loading_process === "image_preload" && <h5><ShufflingSpanText text={"It can take a while, please wait ~5sec."} animation_delay_ms={5000} animation_duration_ms={500}/></h5>}
                         {_loading && _loading_process === "image_load" && <h4><ShufflingSpanText text={"Abducting your image"} animation_delay_ms={300} animation_duration_ms={500}/></h4>}
                         {_loading && _loading_process === "image_load" && <div><FUIufo style={{width: 72}}/></div>}
