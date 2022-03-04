@@ -1,6 +1,6 @@
-var REQUIRED_CACHE = "network-or-cache-v34-required";
-var USEFUL_CACHE = "network-or-cache-v34-useful";
-var STATIC_CACHE = "network-or-cache-v34-static";
+var REQUIRED_CACHE = "network-or-cache-v35-required";
+var USEFUL_CACHE = "network-or-cache-v35-useful";
+var STATIC_CACHE = "network-or-cache-v35-static";
 
 // On install, cache some resource.
 self.addEventListener("install", function(evt) {
@@ -13,7 +13,7 @@ self.addEventListener("install", function(evt) {
                     "/index.html",
                     "/404.html",
                     "/client.min.js", // This is chunck norris, master of all chunk
-                    "/chunk.2.min.js", // Chunk 2 is necessary
+                    "/chunk.0.min.js", // Chunk 0 is necessary
                     "/manifest.json",
                     "/src/images/favicon.ico",
                     "/src/images/logo-transparent.png",
@@ -96,6 +96,22 @@ self.addEventListener("fetch", function(event) {
                 response ||
                 fetch(event.request).then(function (response) { // Fetch, clone, and serve
                   cache.put("/client.min.js", response.clone());
+                  return response;
+                })
+            );
+          });
+        })
+    );
+
+  }else if(url.includes("chunk.0.min.js") && event.request.mode === "same-origin") {
+
+    event.respondWith(
+        caches.open(REQUIRED_CACHE).then(function (cache) {
+          return cache.match("/chunk.0.min.js").then(function (response) {
+            return (
+                response ||
+                fetch(event.request).then(function (response) { // Fetch, clone, and serve
+                  cache.put("/chunk.0.min.js", response.clone());
                   return response;
                 })
             );

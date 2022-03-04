@@ -360,7 +360,11 @@ class CanvasPixels extends React.Component {
             this.set_move_speed_average_now();
         }, 31);
 
-        _intervals[5] = fps_interval;
+        _intervals[5] = setInterval(() => {
+
+            this._notify_estimate_size();
+        }, 1000 * 15);
+        _intervals[6] = fps_interval;
 
         const body_css =
             "body {" +
@@ -571,6 +575,7 @@ class CanvasPixels extends React.Component {
                 _moves_speed_average_now: 8,
                 _hidden: true,
                 has_shown_canvas_once: false,
+                _is_there_new_dimension: true,
             }, () => {
 
                 if(this.props.on_elevation_change) {
@@ -5295,16 +5300,24 @@ class CanvasPixels extends React.Component {
 
     import_JSON_state = (json) => {
 
-        const { _base64_original_images, _json_state_history } = JSON.parse(json);
-        const {state_history, history_position} = JSON.parse(_json_state_history);
+        this.import_JS_state(JSON.parse(json));
+    };
+
+    import_JS_state = (js) => {
+
+        const { _base64_original_images, _json_state_history } = js;
+        const {state_history, previous_history_position, history_position} = JSON.parse(_json_state_history);
         const { _original_image_index, pxl_width, pxl_height, _pxl_indexes_of_selection, _s_pxl_colors, _s_pxls, _layers, _layer_index, _pencil_mirror_index, _id } = state_history[history_position];
 
+        const has_new_dimension = Boolean(pxl_width !== this.state.pxl_width || pxl_height !== this.state.pxl_height);
         this.setState({
             _id,
             _original_image_index: - 1,
             _pencil_mirror_index,
             pxl_width,
+            _old_pxl_width: this.state.pxl_width,
             pxl_height,
+            _old_pxl_height: this.state.pxl_height,
             _s_pxls,
             _s_pxl_colors,
             _pxl_indexes_of_selection_drawn: this.state._pxl_indexes_of_selection,
@@ -5314,16 +5327,25 @@ class CanvasPixels extends React.Component {
             _layer_index,
             _base64_original_images,
             _json_state_history,
-            _is_there_new_dimension: true,
+            _is_there_new_dimension: has_new_dimension,
         }, () => {
 
             this.setState({_original_image_index});
+            if(has_new_dimension) {
 
-            this._notify_layers_and_compute_thumbnails_change();
-            this._notify_can_undo_redo_change();
-            this._notify_is_something_selected();
-            this._notify_size_change();
-            this._update_screen_zoom_ratio();
+                this._request_force_update(false, false, () => {
+
+                    this._notify_size_change();
+                    this._notify_layers_change();
+                    this._update_screen_zoom_ratio(true);
+                    this._notify_image_load_complete();
+                    this.nothing_happened_undo(1000);
+                });
+            }else {
+
+                this._notify_layers_and_compute_thumbnails_change();
+                this._request_force_update();
+            }
         });
 
     };

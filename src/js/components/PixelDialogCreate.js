@@ -21,7 +21,7 @@ class PixelDialogCreate extends React.Component {
             keepMounted: props.keepMounted || false,
             open: props.open,
             size: props.size,
-            pixel_art_entries: Object.entries(props.pixel_arts).reverse(),
+            pixel_arts: props.pixel_arts,
         };
     };
 
@@ -32,17 +32,15 @@ class PixelDialogCreate extends React.Component {
 
     componentWillReceiveProps(new_props) {
 
-        const new_pixel_art_entries = Object.entries(new_props.pixel_arts).reverse();
-
         if(
             this.state.open !== new_props.open ||
             this.state.size !== new_props.size ||
-            this.state.pixel_art_entries.length !== new_pixel_art_entries.length
+            Object.keys(this.state.pixel_arts).length !== Object.keys(new_props.pixel_arts).length
         ) {
 
 
 
-            this.setState({...new_props, pixel_art_entries: new_pixel_art_entries}, () => {
+            this.setState({...new_props}, () => {
 
                 this.forceUpdate();
             });
@@ -69,7 +67,7 @@ class PixelDialogCreate extends React.Component {
             size,
             open,
             keepMounted,
-            pixel_art_entries,
+            pixel_arts,
         } = this.state;
 
         return (
@@ -87,14 +85,12 @@ class PixelDialogCreate extends React.Component {
                     <div style={{padding: "8px 24px", position: "relative", display: "flex", flexWrap: "wrap", justifyContent: "space-around", overflow: "hidden",}}>
                         <ImageList rowHeight={200} cols={2.5} style={{minWidth: 508, flexWrap: "nowrap", transform: "translateZ(0)", contains: "strict"}}>
                             {
-                                pixel_art_entries.map(([k, v]) => {
+                                Object.values(pixel_arts).sort((a, b) => b.timestamp - a.timestamp).map((v) => {
 
-                                    if(!v){return}
-
-                                    const {id, kb, preview, timestamp} = JSON.parse(v);
+                                    const {id, kb, preview, timestamp} = v;
                                     return (
                                         <ImageListItem className={"pixelated"} key={id}>
-                                            <img src={preview} alt={id} style={{cursor: "pointer"}} onClick={() => {this.props.import_JSON_state(v)}}/>
+                                            <img src={preview} alt={id} style={{cursor: "pointer"}} onClick={() => {this.props.import_JSON_state(id)}}/>
                                             <ImageListItemBar
                                                 title={new TimeAgo(document.documentElement.lang).format(timestamp)}
                                                 subtitle={<span>{kb.toFixed(2)} Kb</span>}

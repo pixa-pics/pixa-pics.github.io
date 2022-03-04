@@ -124,7 +124,6 @@ class Index extends React.Component {
             _onboarding_showed_once_in_session: false,
             _selected_locales_code: null,
             _selected_currency: null,
-            _panic_mode: false,
             _know_if_logged: false,
             _loaded_progress_percent: 100,
             _know_the_settings: false,
@@ -264,8 +263,7 @@ class Index extends React.Component {
 
     _process_settings_query_result = (error, settings) => {
 
-        console.log(error, settings);
-        if(!error && settings) {
+        if(!error && typeof settings !== "undefined") {
 
             // Set new settings from query result
             const _sfx_enabled = typeof settings.sfx_enabled !== "undefined" ? settings.sfx_enabled: true;
@@ -273,11 +271,10 @@ class Index extends React.Component {
             const _selected_locales_code =  typeof settings.locales !== "undefined" ? settings.locales: "en-US";
             const _language = _selected_locales_code.split("-")[0];
             const _selected_currency = typeof settings.currency !== "undefined" ? settings.currency: "USD";
-            const _panic_mode = typeof settings.panic !== "undefined" ? settings.panic: false;
             const _onboarding_enabled = typeof settings.onboarding !== "undefined" ? settings.onboarding: true;
 
             document.documentElement.lang = _language;
-            this.setState({ _onboarding_enabled, _sfx_enabled, _jamy_enabled, _selected_locales_code, _language, _selected_currency, _panic_mode, _know_the_settings: true });
+            this.setState({ _onboarding_enabled, _sfx_enabled, _jamy_enabled, _selected_locales_code, _language, _selected_currency, _know_the_settings: true });
         }else {
 
             if(this.state._database_attempt > 3) {
@@ -302,7 +299,7 @@ class Index extends React.Component {
     _update_settings = () => {
 
         // Call the api to get results of current settings and send it to a callback function
-        api.get_settings(this._process_settings_query_result, null);
+        api.get_settings(this._process_settings_query_result);
     };
 
     _set_new_pathname_or_redirect = (new_pathname) => {
@@ -425,7 +422,7 @@ class Index extends React.Component {
         const { pathname, classes } = this.state;
         const { _snackbar_open, _snackbar_message, _snackbar_auto_hide_duration } = this.state;
         const { _language, _is_share_dialog_open } = this.state;
-        const { _logged_account, _panic_mode, _know_if_logged, _loaded_progress_percent, _know_the_settings, _jamy_state_of_mind, _jamy_enabled } = this.state;
+        const { _logged_account, _know_if_logged, _loaded_progress_percent, _know_the_settings, _jamy_state_of_mind, _jamy_enabled } = this.state;
 
         const JAMY = {
             angry: <JamyAngry className={classes.jamy} />,
@@ -499,7 +496,6 @@ class Index extends React.Component {
                         know_the_settings={_know_the_settings}
                         logged_account={_logged_account}
                         pathname={pathname}
-                        panic_mode={_panic_mode}
                         jamy_enabled={_jamy_enabled}
                         jamy_state_of_mind={_jamy_state_of_mind}/>
                         <div style={{display: "inline", height: "100%"}}>

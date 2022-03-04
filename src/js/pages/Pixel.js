@@ -337,9 +337,10 @@ class Pixel extends React.Component {
             _logged_account: {},
             _less_than_1280w: false,
             _is_pixel_dialog_create_open: true,
-            pixel_arts: [],
+            _saved_json_state: null,
             _is_manual_warning_open: false,
             _settings_set: false,
+            _attachment_previews: {},
         };
     };
 
@@ -378,47 +379,25 @@ class Pixel extends React.Component {
 
         if(this.state._canvas) {
 
-            this.state._canvas.export_JSON_state((state) => {
+            this.state._canvas.export_JSON_state((current_json_state) => {
 
-                let states = this.state.pixel_arts;
+                const { _saved_json_state } = this.state;
+                const current_state = JSON.parse(current_json_state);
+                const {state_history} = JSON.parse(current_state._json_state_history);
 
-                if(typeof states[JSON.parse(state).id] !== "undefined") {
+                if(state_history.length >= 1) {
 
-                    if(states[JSON.parse(state).id].length - state.length === 0) { return; }
+                    if(_saved_json_state !== current_json_state) {
+
+                        let attachment_array = {};
+                        attachment_array["json_state-ID" + current_state.id + ".json.lzp3"] = current_state;
+
+                        this.setState({_saved_json_state: current_json_state}, () => {
+
+                            api.set_settings({}, () => {}, attachment_array);
+                        });
+                    }
                 }
-                states[JSON.parse(state).id] = state;
-                let new_states = {};
-                let new_states_id_and_ts = [];
-
-                Object.entries(states).forEach((e, i) => {
-
-                    const [k, s] = e;
-                    if(s){
-
-                        const {timestamp, id, _json_state_history} = JSON.parse(s);
-                        const {state_history} = JSON.parse(_json_state_history);
-
-                        if(state_history.length > 1) {
-
-                            new_states[k] = s;
-                            new_states_id_and_ts.push({
-                                id,
-                                timestamp,
-                            });
-                        }
-                    }
-                });
-                new_states_id_and_ts.sort((a, b) => a.timestamp < b.timestamp);
-                let new_states_filtered = {};
-                new_states_id_and_ts.forEach((s, i) => {
-
-                    if(i < 10) {
-
-                        new_states_filtered[s.id] = new_states[s.id];
-                    }
-                });
-
-                api.set_settings({}, {pixel_arts: new_states_filtered}, () => {},this._process_settings_data_result);
             });
         }
 
@@ -426,10 +405,7 @@ class Pixel extends React.Component {
 
     _delete_unsaved_pixel_art = (id) => {
 
-        let { pixel_arts } = this.state;
-        delete pixel_arts[id];
 
-        api.set_settings({}, {pixel_arts: {...pixel_arts}}, () => {},  this._process_settings_data_result);
     };
 
     _updated_dimensions = () => {
@@ -476,35 +452,39 @@ class Pixel extends React.Component {
 
     };
 
-    _process_settings_query_result = (error, settings) => {
+    _process_settings_info_result = (error, settings) => {
 
-        // Set new settings from query result
-        const _sfx_enabled = typeof settings.sfx_enabled !== "undefined" ? settings.sfx_enabled: false;
-        const _is_manual_warning_open = typeof settings.manual_warning_enabled !== "undefined" ? settings.manual_warning_enabled: true;
+        if(!error && typeof settings !== "undefined") {
 
-        if(_is_manual_warning_open) {
+            console.log(settings);
+            // Set new settings from query result
+            const _sfx_enabled = typeof settings.sfx_enabled !== "undefined" ? settings.sfx_enabled: false;
+            const _is_manual_warning_open = typeof settings.manual_warning_enabled !== "undefined" ? settings.manual_warning_enabled: true;
+            const _attachment_previews = typeof settings.attachment_previews !== "undefined" ? settings.attachment_previews: {};
 
-            actions.trigger_sfx("state-change_confirm-down");
+            if(_is_manual_warning_open) {
+
+                actions.trigger_sfx("state-change_confirm-down");
+            }
+
+            this.setState({ _sfx_enabled, _is_manual_warning_open, _attachment_previews, _settings_set: true }, () => {
+
+                this.forceUpdate();
+            });
         }
-
-        this.setState({ _sfx_enabled, _is_manual_warning_open, _settings_set: true }, () => {
-
-            this.forceUpdate();
-        });
     };
 
-    _process_settings_data_result = (error, data) => {
+    _process_settings_attachment_result = (error, data) => {
 
-        this.setState({ pixel_arts: data.pixel_arts }, () => {
-
-            this.forceUpdate();
-        });
+        const { _canvas } = this.state;
+        _canvas.import_JS_state(data);
+        this.setState({ _is_pixel_dialog_create_open: false, _saved_json_state: JSON.stringify(data) });
     };
 
-    _update_settings(callback_function = null) {
+    _update_settings() {
 
         // Call the api to get results of current settings and send it to a callback function
-        api.get_settings(this._process_settings_query_result, this._process_settings_data_result);
+        api.get_settings(this._process_settings_info_result);
     }
 
     _handle_view_name_change = (view_name_index, previous_name_index = null) => {
@@ -976,11 +956,9 @@ class Pixel extends React.Component {
         });
     };
 
-    _handle_import_json_state = (data) => {
+    _handle_import_json_state_id = (id) => {
 
-        const { _canvas } = this.state;
-        _canvas.import_JSON_state(data);
-
+        api.get_settings(() => {}, ["json_state-ID" + id + ".json.lzp3"], this._process_settings_attachment_result);
     };
 
     _handle_file_import = (event) => {
@@ -1330,7 +1308,7 @@ class Pixel extends React.Component {
     _handle_manual_warning_dialog_close = () => {
 
 
-        api.set_settings({manual_warning_enabled: false}, null, () => {
+        api.set_settings({manual_warning_enabled: false},  () => {
 
             this.setState({_is_manual_warning_open: false, _is_pixel_dialog_create_open: true}, () => {
 
@@ -1386,9 +1364,9 @@ class Pixel extends React.Component {
             _less_than_1280w,
             _is_pixel_dialog_create_open,
             _settings_set,
-            pixel_arts,
             _h_svg,
             _is_manual_warning_open,
+            _attachment_previews,
         } = this.state;
 
         let x = _x === -1 ? "out": _x + 1;
@@ -1865,11 +1843,11 @@ class Pixel extends React.Component {
 
 
                 <PixelDialogCreate open={_is_pixel_dialog_create_open && !_is_manual_warning_open && _settings_set}
-                                   pixel_arts={pixel_arts}
+                                   pixel_arts={_attachment_previews}
                                    size={_import_size}
                                    on_import_size_change={this._set_import_size}
                                    on_pixel_art_delete={(id) => {this._delete_unsaved_pixel_art(id)}}
-                                   import_JSON_state={(s) => {this._handle_import_json_state(s)}}
+                                   import_JSON_state={(id) => {this._handle_import_json_state_id(id)}}
                                    on_upload={() => {this._upload_image()}}
                                    onClose={this._handle_pixel_dialog_create_close}/>
 

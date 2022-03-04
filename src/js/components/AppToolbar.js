@@ -139,7 +139,6 @@ class AppToolbar extends React.Component {
         this.state = {
             classes: props.classes,
             pathname: props.pathname,
-            panic_mode: props.panic_mode,
             logged_account: props.logged_account,
             loaded_progress_percent: props.loaded_progress_percent,
             know_the_settings: props.know_the_settings,
