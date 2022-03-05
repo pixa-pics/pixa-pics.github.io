@@ -1,6 +1,6 @@
 import {xbrz} from "../utils/xBRZ";
 import {omniscale} from "../utils/omniscale";
-import {imagedataToSVG} from "../utils/imagetracer";
+import {image_tracer} from "../utils/image_tracer";
 import { optimize } from "svgo/dist/svgo.browser";
 import pool from "../utils/worker-pool";
 
@@ -23,7 +23,7 @@ function base64png_to_xbrz_svg (base64png, callback_function_for_image, callback
 
             const process_svg = (image_data, scale) => {
 
-                imagedataToSVG( image_data, {
+                image_tracer( image_data, {
 
                     // Palette
                     pal: pal.map((c) => {
@@ -118,7 +118,7 @@ function base64png_to_xbrz_svg (base64png, callback_function_for_image, callback
                     const base64_out = third_canvas_ctx.canvas.toDataURL("image/png");
                     import("../utils/png_quant").then(({png_quant}) => {
 
-                        png_quant(base64_out, 50, 70, 6, (base64_out_second) => {
+                        png_quant(base64_out, 40, 60, 5, (base64_out_second) => {
 
                             callback_function_for_image(base64_out_second);
                         }, pool);

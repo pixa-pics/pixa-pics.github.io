@@ -343,7 +343,7 @@ Public License instead of this License.
 
 // 97% SOURCE: https://github.com/eladkarako/compressjs-flattened/blob/master/Lzp3_joined_.js
 
-const process_function_string = `return async function(uint8a_or_obj, mode) {
+window.lzp3_json_process_function_string = `return async function(uint8a_or_obj, mode) {
         
         var RangeCoder          //no dependencies
             ,Stream              //no dependencies
@@ -2443,16 +2443,14 @@ const process_function_string = `return async function(uint8a_or_obj, mode) {
 
 const LZP3 = (uint8a_or_obj, mode = "COMPRESS_OBJECT", callback_function = () => {}, pool = null) => {
 
-    let process_function = new Function(process_function_string)();
-
     if(Boolean(pool)) {
 
-        pool.exec(process_function, [
+        pool.exec( window.lzp3_json_process_function_string, [
             uint8a_or_obj,
             mode,
         ]).catch((e) => {
 
-            return process_function(uint8a_or_obj, mode);
+            return new Function(window.lzp3_json_process_function_string)()(uint8a_or_obj, mode);
         }).then((result) => {
 
             callback_function(result);
@@ -2461,7 +2459,7 @@ const LZP3 = (uint8a_or_obj, mode = "COMPRESS_OBJECT", callback_function = () =>
 
     }else {
 
-        process_function(uint8a_or_obj, mode).then((result) => {
+        new Function(window.lzp3_json_process_function_string)()(uint8a_or_obj, mode).then((result) => {
 
             callback_function(result);
         });

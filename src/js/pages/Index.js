@@ -70,7 +70,7 @@ const styles = theme => ({
     snackbar: {
         "& .MuiSnackbarContent-root	": {
             backgroundColor: theme.palette.primary.actionDarker,
-            zIndex: "2000 important"
+            zIndex: "9630 important"
         }
     },
     snackbarSuccess: {
@@ -454,13 +454,6 @@ class Index extends React.Component {
                 page_component = PAGE_COMPONENTS(page_name, pathname);
             }
         }
-
-        const snack_bar_msg_lwc = _snackbar_message.toString().toLowerCase();
-        let snackbar_class =
-            snack_bar_msg_lwc.includes("error") ? classes.snackbarError:
-                snack_bar_msg_lwc.includes("waring") ? classes.snackbarWarning:
-                    snack_bar_msg_lwc.includes("success") ? classes.snackbarSuccess:
-                    classes.snackbar;
 
         if(!_language) {
 

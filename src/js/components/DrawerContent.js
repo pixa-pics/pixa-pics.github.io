@@ -3,11 +3,7 @@ import { withStyles } from "@material-ui/core";
 
 import { t } from "../utils/t";
 
-import LabGlassesEmojiSvg from "../twemoji/react/1F97C";
-import DnaEmojiSvg from "../twemoji/react/1F9Ec";
-import ChemistryEmojiSvg from "../twemoji/react/1F9Ea";
-
-const MenuSVG = [LabGlassesEmojiSvg, DnaEmojiSvg, ChemistryEmojiSvg][Math.ceil(Math.random()*3)-1];
+import DnaIcon from "../icons/Dna";
 
 import {Fade, Divider, List, ListItem, ListItemIcon, ListItemText, Badge} from "@material-ui/core";
 
@@ -137,9 +133,9 @@ class DrawerContent extends React.Component {
                         <List>
                             <ListItem style={{backgroundColor: "#ffffff33"}} button onClick={this._open_pixel_page}>
                                 <ListItemIcon>
-                                    <MenuSVG className={classes.iconLeft}/>
+                                    <DnaIcon className={classes.iconLeft}/>
                                 </ListItemIcon>
-                                <ListItemText className={classes.boldListItemText} primary={"PIXA PICS LABORATORY"} />
+                                <ListItemText className={classes.boldListItemText} primary={"PIXEL ART LABORATORY"} />
                             </ListItem>
                             <Divider />
                             <ListItem button className={classes.listItemGrey} onClick={(event) => this._open_link(event, "https://github.com/pixa-pics/pixa-pics.github.io/graphs/contributors")}>

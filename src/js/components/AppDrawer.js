@@ -4,9 +4,6 @@ import {Toolbar, Drawer, Box} from "@material-ui/core";
 import DrawerContent from "../components/DrawerContent";
 
 import actions from "../actions/utils";
-import get_svg_in_base64 from "../utils/svgToBase64";
-import SendToAFriend from "../icons/SendToAFriend";
-const SENDTOAFRIEND = get_svg_in_base64(<SendToAFriend />)
 
 const styles = theme => ({
     [theme.breakpoints.down("md")]: {
@@ -26,14 +23,6 @@ const styles = theme => ({
             transition: "opacity cubic-bezier(0.4, 0, 0.2, 1) 175ms",
             opacity: 1,
         },
-        "& > div .drawershare": {
-            opacity: ".33",
-            transition: "opacity cubic-bezier(0.4, 0, 0.2, 1) 300ms",
-        },
-        "& > div:hover .drawershare": {
-            opacity: "1",
-            transition: "opacity cubic-bezier(0.4, 0, 0.2, 1) 300ms",
-        }
     },
     drawerHome: {
         width: 256,
@@ -45,13 +34,6 @@ const styles = theme => ({
             transition: "opacity cubic-bezier(0.4, 0, 0.2, 1) 175ms",
             opacity: 1,
         },
-        "& > div .drawershare": {
-            opacity: ".66",
-            transition: "opacity cubic-bezier(0.4, 0, 0.2, 1) 300ms",
-        },
-        "& > div:hover .drawershare": {
-            opacity: "1"
-        }
     },
     drawerPaper: {
         width: 256,
@@ -98,7 +80,6 @@ class AppDrawer extends React.Component {
                     <div className={classes.drawerContainer}>
                         <DrawerContent pathname={pathname} onClose={() => {}}/>
                     </div>
-                    <img onClick={this.trigger_share} className={"drawershare"} src={SENDTOAFRIEND} style={{position: "absolute", left: 16, bottom: 16, width: 220, cursor: "pointer"}}/>
                 </Drawer>
             </Box>
         );

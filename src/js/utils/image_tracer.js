@@ -1,5 +1,5 @@
 /*
-	imagetracer.js version 1.2.6
+	image_tracer.js version 1.2.6
 	Simple raster image tracer and vectorizer written in JavaScript.
 	andras@jankovics.net
 */
@@ -36,7 +36,7 @@ For more information, please refer to http://unlicense.org/
 */
 import pool from "../utils/worker-pool";
 
-const process_function_string = `return function(image_data, options){
+window.image_tracer_process_function_string = `return function(image_data, options){
 
 	function ImageTracer(){
 		var _this = this;
@@ -985,7 +985,7 @@ const process_function_string = `return function(image_data, options){
 
 			// SVG start
 			var svgstr = '<svg ' + (options.viewbox ? ('viewBox="0 0 '+w+' '+h+'" ') : ('width="'+w+'" height="'+h+'" ')) +
-				'version="1.1" xmlns="http://www.w3.org/2000/svg" desc="Created with imagetracer.js version '+_this.versionnumber+'" >';
+				'version="1.1" xmlns="http://www.w3.org/2000/svg" desc="Created with image_tracer.js version '+_this.versionnumber+'" >';
 
 			// Drawing: Layers and Paths loops
 			for(var lcnt=0; lcnt < tracedata.layers.length; lcnt++){
@@ -1179,24 +1179,21 @@ const process_function_string = `return function(image_data, options){
 		return imgtrc.imagedataToSVG(image_data, options);
 }`;
 
-const imagedataToSVG = (image_data, options, callback_function) => {
+const image_tracer = (image_data, options, callback_function) => {
 
-	const process_function = new Function(process_function_string)();
-
-	pool.exec(process_function, [
+	pool.exec(window.image_tracer_process_function_string, [
 		image_data,
 		options,
 	]).catch((e) => {
 
-		return process_function(image_data, options);
+		return new Function(window.image_tracer_process_function_string)()(image_data, options);
 	})
 	.then((result) => {
 
 		callback_function(result);
 	}).timeout(72 * 1000);
-
 }
 
 module.exports = {
-	imagedataToSVG
+	image_tracer
 };

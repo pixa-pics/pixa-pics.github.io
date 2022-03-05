@@ -30,65 +30,65 @@ const styles = theme => ({
     },
     shareIconButtonWhatsApp: {
         color: "#3fd366",
-        backgroundColor: "#3fd36633",
+        backgroundImage: "radial-gradient(#3fd36633 100%, transparent), radial-gradient(white 100%, transparent)",
         "&:hover": {
-            backgroundColor: "#3fd3664d",
+            backgroundImage: "radial-gradient(#3fd3664d 100%, transparent), radial-gradient(white 100%, transparent)",
         },
         margin: theme.spacing(1),
     },
     shareIconButtonFacebook: {
         color: "#3b5998",
-        backgroundColor: "#3b599833",
+        backgroundImage: "radial-gradient(#3b599833 100%, transparent), radial-gradient(white 100%, transparent)",
         "&:hover": {
-            backgroundColor: "#3b59984d",
+            backgroundImage: "radial-gradient(#3b59984d 100%, transparent), radial-gradient(white 100%, transparent)",
         },
         margin: theme.spacing(1),
     },
     shareIconButtonTwitter: {
         color: "#49a1f2",
-        backgroundColor: "#49a1f233",
+        backgroundImage: "radial-gradient(#49a1f233 100%, transparent), radial-gradient(white 100%, transparent)",
         "&:hover": {
-            backgroundColor: "#49a1f24d",
+            backgroundImage: "radial-gradient(#49a1f24d 100%, transparent), radial-gradient(white 100%, transparent)",
         },
         margin: theme.spacing(1),
     },
     shareIconButtonEmail: {
         color: "#888888",
-        backgroundColor: "#88888833",
+        backgroundImage: "radial-gradient(#88888833 100%, transparent), radial-gradient(white 100%, transparent)",
         "&:hover": {
-            backgroundColor: "#8888884d",
+            backgroundImage: "radial-gradient(#8888884d 100%, transparent), radial-gradient(white 100%, transparent)",
         },
         margin: theme.spacing(1),
     },
     shareIconButtonReddit: {
         color: "#f24401",
-        backgroundColor: "#f2440133",
+        backgroundImage: "radial-gradient(#f2440133 100%, transparent), radial-gradient(white 100%, transparent)",
         "&:hover": {
-            backgroundColor: "#f244014d",
+            backgroundImage: "radial-gradient(#f244014d 100%, transparent), radial-gradient(white 100%, transparent)",
         },
         margin: theme.spacing(1),
     },
     shareIconButtonPinterest: {
         color: "#bd161c",
-        backgroundColor: "#bd161c33",
+        backgroundImage: "radial-gradient(#bd161c33 100%, transparent), radial-gradient(white 100%, transparent)",
         "&:hover": {
-            backgroundColor: "#bd161c4d",
+            backgroundImage: "radial-gradient(#bd161c4d 100%, transparent), radial-gradient(white 100%, transparent)",
         },
         margin: theme.spacing(1),
     },
     shareIconButtonBlogger: {
         color: "#f37d00",
-        backgroundColor: "#f37d0033",
+        backgroundImage: "radial-gradient(#f37d0033 100%, transparent), radial-gradient(white 100%, transparent)",
         "&:hover": {
-            backgroundColor: "#f37d004d",
+            backgroundImage: "radial-gradient(#f37d004d 100%, transparent), radial-gradient(white 100%, transparent)",
         },
         margin: theme.spacing(1),
     },
     shareIconButtonLinkedIn: {
         color: "#3478b5",
-        backgroundColor: "#3478b533",
+        backgroundImage: "radial-gradient(#3478b533 100%, transparent), radial-gradient(white 100%, transparent)",
         "&:hover": {
-            backgroundColor: "#3478b54d",
+            backgroundImage: "radial-gradient(#3478b54d 100%, transparent), radial-gradient(white 100%, transparent)",
         },
         margin: theme.spacing(1),
     },
@@ -106,7 +106,7 @@ const styles = theme => ({
     },
     dialogContent: {
         display: "inline-block",
-        backgroundImage: "radial-gradient(farthest-corner at 0px 0px, #fff 15%, #43e0 75%), radial-gradient(farthest-corner at 0% 100%, #ffffff44 25%, #43e0 75%)",
+        backgroundImage: "radial-gradient(farthest-corner at 0px 0px, #ffffffaa 25%, #43e0 75%), radial-gradient(farthest-corner at 0% 100%, #ffffffaa 25%, #43e0 75%)",
     },
     dialogInner: {
         display: "inherit",

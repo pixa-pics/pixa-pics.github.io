@@ -3,7 +3,7 @@ import ManualWarning from "../icons/ManualWarning";
 import { withStyles } from "@material-ui/core";
 
 import {Backdrop} from "@material-ui/core";
-import get_svg_in_b64 from "../utils/svgToBase64Worker";
+import get_svg_in_b64 from "../utils/svgToBase64";
 import TimeAgo from "javascript-time-ago";
 
 const styles = theme => ({
@@ -55,10 +55,7 @@ class ManualDialogWarning extends React.Component {
 
     componentDidMount() {
 
-        get_svg_in_b64(<ManualWarning ago={new TimeAgo(document.documentElement.lang).format(Date.now())}/>, (svg) => {
-
-            this.setState({_svg: svg});
-        });
+        this.setState({_svg: get_svg_in_b64(<ManualWarning ago={new TimeAgo(document.documentElement.lang).format(Date.now())}/>)});
     }
 
     _on_request_close = () => {

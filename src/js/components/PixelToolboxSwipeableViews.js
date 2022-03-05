@@ -140,6 +140,12 @@ const styles = theme => ({
         alignContent: "stretch",
         flexDirection: "row",
         justifyContent: "flex-start",
+        width: "100%",
+        maxWidth: "100%",
+        "& .MuiFormGroup-root": {
+            flexWrap: "nowrap",
+            overflowX: "scroll",
+        },
         "& .MuiListItem-root": {
             display: "block",
             flexGrow: 1,
@@ -162,8 +168,10 @@ const styles = theme => ({
             display: "flex",
             justifyContent: "flex-start",
             flexDirection: "row",
+            flexWrap: "wrap",
             overflow: "overlay",
             width: "100%",
+            maxWidth: "100%",
             flexFlow: "row",
             "& .MuiListItem-root": {
                 display: "block",
@@ -672,7 +680,7 @@ class PixelToolboxSwipeableViews extends React.Component {
                 },
                 {
                     icon: <DownloadIcon/>,
-                    text: "Download",
+                    text: "Download MATRIX",
                     tools: [
                         {
                             icon: <FileDownloadIcon/>, text: "Download (1x size)", sub: "[CTRL + Q]", on_click: () => {
@@ -699,7 +707,13 @@ class PixelToolboxSwipeableViews extends React.Component {
                             on_click: () => {
                                 this._download_png(32)
                             }
-                        },
+                        }
+                    ]
+                },
+                {
+                    icon: <DownloadIcon/>,
+                    text: "Download VECTOR",
+                    tools: [
                         {
                             icon: <FileDownloadIcon/>,
                             text: "Download OMNI :|",

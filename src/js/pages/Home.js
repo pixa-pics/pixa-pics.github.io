@@ -6,14 +6,16 @@ import { HISTORY } from "../utils/constants";
 import {Button} from "@material-ui/core";
 import actions from "../actions/utils";
 
+import get_svg_in_b64 from "../utils/svgToBase64";
+
 import AngelEmojiSvg from "../twemoji/react/1F607";
 const ANGELEMOJI = get_svg_in_b64(<AngelEmojiSvg />);
 import HearthEmojiSvg from "../twemoji/react/2665";
 const HEARTHEMOJI = get_svg_in_b64(<HearthEmojiSvg />);
 import EarthEmojiSvg from "../twemoji/react/1F30D";
 const EARTHEMOJI = get_svg_in_b64(<EarthEmojiSvg />);
-
-import get_svg_in_b64 from "../utils/svgToBase64";
+import SendToAFriend from "../icons/SendToAFriend";
+const SENDTOAFRIEND = get_svg_in_b64(<SendToAFriend />)
 
 const styles = theme => ({
     root: {
@@ -29,7 +31,18 @@ const styles = theme => ({
             right: 0,
             bottom: 0,
             zIndex: 1,
-            backgroundImage: "radial-gradient(ellipse at left center, #fff 14%, #ffffff00 64%)",
+            backgroundImage: "radial-gradient(ellipse at max(25%, 25vh) max(75vh, 75%), #ffffff 14%, #ffffff00 75%)",
+            animation: "$radial 5s ease-in-out infinite",
+            "@global": {
+                "@keyframes radial": {
+                    "0%": {filter: "opacity(.7)"},
+                    "20%": {filter: "opacity(.6)"},
+                    "40%": {filter: "opacity(.8)"},
+                    "60%": {filter: "opacity(.9)"},
+                    "80%": {filter: "opacity(.6)"},
+                    "100%": {filter: "opacity(.7)"},
+                }
+            },
         }
     },
     backgroundImage: {
@@ -44,11 +57,11 @@ const styles = theme => ({
             animation: "$slide 56s linear infinite",
             "@global": {
                 "@keyframes slide": {
-                    "0%": {backgroundPosition: "-150% 20vh"},
+                    "0%": {backgroundPosition: "-150% 25vh"},
                     "20%": {backgroundPosition: "-50% 25vh"},
-                    "40%": {backgroundPosition: "50% 30vh"},
-                    "60%": {backgroundPosition: "150% 35vh"},
-                    "80%": {backgroundPosition: "225% 30vh"},
+                    "40%": {backgroundPosition: "50% 25vh"},
+                    "60%": {backgroundPosition: "150% 25vh"},
+                    "80%": {backgroundPosition: "225% 25vh"},
                     "100%": {backgroundPosition: "300% 25vh"},
                 }
             },
@@ -62,20 +75,20 @@ const styles = theme => ({
     },
     backgroundImageImage: {
         position: "absolute",
-        width: "max(84vh, 84%)",
-        left: "calc(max(-51vh, -51%) - 256px)",
-        top: "calc(64% - 128px)",
-        transform: "translate(25%, -50%)",
+        width: "max(90vh, 90%)",
+        right: "calc(min(-36vh, -36%) + 96px)",
+        top: "calc(max(36vh, 36%) + 96px)",
+        transform: "translate(calc(min(-45vh, -45%) / 2), calc(min(-45vh, -45%) / 2))",
         zIndex: 1,
         "&": {
             animation: "$slide 14s linear infinite",
             "@global": {
                 "@keyframes slide": {
-                    "0%": {transform: "translate(calc(25vw - 25vh + 0%), -50%)"},
-                    "20%": {transform: "translate(calc(25vw - 25vh + 0%), -50%)"},
+                    "0%": {transform: "translate(calc(25vw - 25vh - 7%), -50%)"},
+                    "20%": {transform: "translate(calc(25vw - 25vh - 14%), -50%)"},
                     "40%": {transform: "translate(calc(25vw - 25vh + 7%), -50%)"},
                     "60%": {transform: "translate(calc(25vw - 25vh + 14%), -50%)"},
-                    "80%": {transform: "translate(calc(25vw - 25vh + 14%), -50%)"},
+                    "80%": {transform: "translate(calc(25vw - 25vh + 21%), -50%)"},
                     "100%": {transform: "translate(calc(25vw - 25vh + 7%), -50%)"},
                 }
             },
@@ -181,6 +194,7 @@ class Home extends React.Component {
                         </Button>
                     </div>
                 </div>
+                <img onClick={(event) => {this._handle_speed_dial_action(event, "share")}} src={SENDTOAFRIEND} style={{zIndex: 2, position: "absolute", right: 16, bottom: 16, width: 220, cursor: "pointer"}}/>
             </div>
         );
     }

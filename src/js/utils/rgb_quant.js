@@ -5,7 +5,7 @@
 *
 * RgbQuant.js - an image quantization lib
 */
-const process_function_string = `return async function(img, limit, resize_to, lossly) {
+window.rgb_quant_process_function_string = `return async function(img, limit, resize_to, lossly) {
     
         function RgbQuant(opts) {
             opts = opts || {};
@@ -1052,15 +1052,13 @@ const process_function_string = `return async function(img, limit, resize_to, lo
 
 const rgb_quant = (img, limit = 1024, resize_to = 1920*1080, lossly = false, callback_function = () => {}, pool = null) => {
 
-    let process_function = new Function(process_function_string)();
-
     if(Boolean(pool)) {
 
-        pool.exec(process_function, [
+        pool.exec(window.rgb_quant_process_function_string, [
             img, limit, resize_to, lossly
         ]).catch((e) => {
 
-            return process_function(img, limit, resize_to, lossly);
+            return new Function(window.rgb_quant_process_function_string)()(img, limit, resize_to, lossly);
         }).then((result) => {
 
             callback_function(result);
@@ -1068,7 +1066,7 @@ const rgb_quant = (img, limit = 1024, resize_to = 1920*1080, lossly = false, cal
 
     }else {
 
-        process_function(img, limit, resize_to, lossly).then((result) => {
+        new Function(window.rgb_quant_process_function_string)()(img, limit, resize_to, lossly).then((result) => {
 
             callback_function(result);
         }).then();

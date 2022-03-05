@@ -23,6 +23,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
 
+import actions from "../actions/utils";
+
 let raf =
     window.requestAnimationFrame       ||
     window.oRequestAnimationFrame      ||
@@ -1515,7 +1517,7 @@ class CanvasPixels extends React.Component {
                 return [data_url, Array.from(all_colors)];
             }else {
             
-                return data_url;
+                return [data_url];
             }
         }`;
 
@@ -1524,9 +1526,7 @@ class CanvasPixels extends React.Component {
 
         const { pxl_width, pxl_height, _s_pxls, _s_pxl_colors, _layers, _layer_index } = this.state;
 
-        (async () => {
-
-            let result = await pool.exec(process_function, [
+            pool.exec(process_function, [
                 pxl_width,
                 pxl_height,
                 _s_pxls,
@@ -1584,13 +1584,20 @@ class CanvasPixels extends React.Component {
                     return [canvas.toDataURL(), [...all_colors]];
                 }else {
 
-                    return canvas.toDataURL();
+                    return [canvas.toDataURL()];
                 }
 
-            }).timeout(120000);
+            }).then((data_in) => {
 
-            callback_function(result);
-        })();
+                import("../utils/png_quant").then(({png_quant}) => {
+
+                    png_quant(data_in[0], 95, 100, 2, (base_64_out) => {
+
+                        data_in[0] = base_64_out;
+                        callback_function(data_in);
+                    }, pool);
+                });
+            }).timeout(24 * 1000);
     };
 
     _format_color = (color) => {
@@ -4643,16 +4650,16 @@ class CanvasPixels extends React.Component {
 
     _notify_estimate_size = () => {
 
-        this.get_base64_png_data_url(1, (base64) => {
+        this.get_base64_png_data_url(1, ([base64]) => {
 
-            const bytes = 3 * Math.ceil((base64.length/4));
+            const bytes = 3 * Math.ceil(base64.length/4);
             this.setState({_kb: bytes / 1000});
 
             if(this.props.on_kb_change) {
 
                 this.props.on_kb_change(bytes / 1000);
             }
-        }, true);
+        }, false);
     };
 
     _update_canvas = (force_update = false, do_not_cancel_animation = false) => {
@@ -5354,13 +5361,13 @@ class CanvasPixels extends React.Component {
 
         const {_base64_original_images, _json_state_history, _id} = this.state;
 
-        this.get_base64_png_data_url(1, (base64) => {
+        this.get_base64_png_data_url(1, ([base_64]) => {
 
-            const bytes = 3 * Math.ceil((base64.length/4));
+            const bytes = 3 * Math.ceil((base_64.length/4));
             callback_function(JSON.stringify({
                 id: _id,
                 kb: bytes / 1000,
-                preview: base64,
+                preview: base_64,
                 timestamp: Date.now(),
                 _base64_original_images,
                 _json_state_history,
@@ -7557,7 +7564,7 @@ class CanvasPixels extends React.Component {
 
         };
 
-        this.get_base64_png_data_url(1, (url) => {
+        this.get_base64_png_data_url(1, ([url]) => {
 
             img.src = url;
         });

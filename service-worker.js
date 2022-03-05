@@ -25,9 +25,10 @@ self.addEventListener("install", function(evt) {
                     "/src/images/favicon.ico",
                     "/src/images/fun.svg",
                     "/src/images/background.svg",
+                    "/src/images/office.svg",
                     "/src/images/logo-transparent.png",
                     "/src/images/manifest/icon-white.png",
-                    "/src/images/404-dark-2.svg",
+                    "/src/images/404.svg",
                     "/src/images/share.svg",
                 ]);
             }),
