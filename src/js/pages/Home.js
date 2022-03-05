@@ -21,6 +21,16 @@ const styles = theme => ({
         height: "100%",
         overflow: "hidden",
         position: "relative",
+        "&::after": {
+            content: `""`,
+            position: "absolute",
+            width: "100%;",
+            height: "100%",
+            right: 0,
+            bottom: 0,
+            backgroundImage: "radial-gradient(#ffffffa2 14%, transparent 66%)",
+            zIndex: 1,
+        }
     },
     backgroundImage: {
         width: "100%",
@@ -167,7 +177,7 @@ class Home extends React.Component {
                             discover an unprecedented industrial and educative purpose.<br />
                             Made with <img className={"emoji pulse"} src={HEARTHEMOJI}/>, it is designed to be - forever open-source & for everyone. <img src={EARTHEMOJI} className={"emoji"}/>.<br />
                         </h2>
-                        <Button variant={"contained"} color="primary" onClick={(event) => this._go_to_url(event, "/pixel")}>
+                        <Button variant={"contained"} size={"large"} color="primary" onClick={(event) => this._go_to_url(event, "/pixel")}>
                             Start using it
                         </Button>
                     </div>
