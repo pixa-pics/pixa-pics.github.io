@@ -199,6 +199,7 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
                                 pixa_settings.attachment_previews = pixa_settings.attachment_previews || {};
                                 pixa_settings.attachment_previews[name_id] = {id, kb, preview, timestamp};
 
+                                console.log(pixa_settings.attachment_previews)
                                 LZP3(data, "COMPRESS_OBJECT", (uint8a) => {
 
                                     settings_docs[0]._attachments = settings_docs[0]._attachments || {};

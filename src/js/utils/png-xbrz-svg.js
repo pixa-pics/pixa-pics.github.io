@@ -98,7 +98,7 @@ function base64png_to_xbrz_svg (base64png, callback_function_for_image, callback
                         png_quant(base64_out, 50, 70, 6, (base64_out_second) => {
 
                             callback_function_for_image(base64_out_second);
-                        }, pool);
+                        }, pool, true);
                     });
 
                     process_svg(second_image_data, first_scale_size);
@@ -121,7 +121,7 @@ function base64png_to_xbrz_svg (base64png, callback_function_for_image, callback
                         png_quant(base64_out, 40, 60, 5, (base64_out_second) => {
 
                             callback_function_for_image(base64_out_second);
-                        }, pool);
+                        }, pool, true);
                     });
 
 

@@ -326,7 +326,7 @@ class Pixel extends React.Component {
             _logged_account: {},
             _less_than_1280w: false,
             _is_pixel_dialog_create_open: true,
-            _saved_json_state: null,
+            _previous_state: {},
             _is_manual_warning_open: false,
             _settings_set: false,
             _attachment_previews: {},
@@ -336,10 +336,6 @@ class Pixel extends React.Component {
     componentDidMount() {
 
         this._update_settings();
-        setInterval(() => {
-
-            this._maybe_save_unsaved_pixel_art();
-        }, 15 * 1000);
         actions.trigger_snackbar(`This is PIXAAAAAA! Enjoy ;)`, 5000);
         window.addEventListener("resize", this._updated_dimensions);
         this._updated_dimensions();
@@ -360,33 +356,23 @@ class Pixel extends React.Component {
         });
     }
 
-    _maybe_save_unsaved_pixel_art = () => {
+    _handle_canvas_state_export = (current_state) => {
 
-        if(this.state._canvas) {
+        console.log(current_state)
+        const { _previous_state } = this.state;
 
-            this.state._canvas.export_JSON_state((current_json_state) => {
+        const {id, kb, preview, _json_state_history} = current_state;
 
-                const { _saved_json_state } = this.state;
-                const current_state = JSON.parse(current_json_state);
-                const {id, kb, preview, timestamp, _json_state_history} = current_state;
-                const {state_history} = JSON.parse(_json_state_history);
+        if((_previous_state.preview !== preview) && kb > 1) {
 
-                if(state_history.length >= 5) {
+            let attachment_array = {};
+            attachment_array["json_state-ID" + id + ".json.lzp3"] = current_state;
 
-                    if(_saved_json_state !== current_json_state) {
+            this.setState({_previous_state: current_state, _kb: kb}, () => {
 
-                        let attachment_array = {};
-                        attachment_array["json_state-ID" + current_state.id + ".json.lzp3"] = current_state;
-
-                        this.setState({_saved_json_state: current_json_state}, () => {
-
-                            api.set_settings({}, () => {}, attachment_array);
-                        });
-                    }
-                }
+                api.set_settings({}, () => {}, attachment_array);
             });
         }
-
     };
 
     _delete_unsaved_pixel_art = (id) => {
@@ -466,7 +452,7 @@ class Pixel extends React.Component {
 
         const { _canvas } = this.state;
         _canvas.import_JS_state(data);
-        this.setState({ _is_pixel_dialog_create_open: false, _saved_json_state: JSON.stringify(data) });
+        this.setState({ _is_pixel_dialog_create_open: false, _previous_state: data });
     };
 
     _update_settings() {
@@ -696,7 +682,7 @@ class Pixel extends React.Component {
                 actions.trigger_snackbar("Fantastic! Share? Yes or No", 7500);
                 actions.jamy_update("happy");
             }, 2000);
-        });
+        }, false, 0);
     };
 
     _download_svg = (using = "xbrz") => {
@@ -749,7 +735,7 @@ class Pixel extends React.Component {
 
                     });
 
-                }, true);
+                }, true, 0);
 
             }, 500);
 
@@ -852,7 +838,7 @@ class Pixel extends React.Component {
             const resize_to = Math.min(max_size * max_size, Math.max(parseInt(_import_size) * parseInt(_import_size), min_size * min_size));
             const limit_color_number = Math.min(max_color * ratio_l_l2, Math.max(parseInt(_import_size) * ratio_l_l2, min_color * ratio_l_l2));
 
-            rgb_quant(b, max_original_color, resize_original_to, true, (data) => {
+            rgb_quant(b, max_original_color, resize_original_to, ["1", "2", "3"].includes(_import_colorize), (data) => {
 
                 this._handle_load_complete("image_preload", {});
 
@@ -1003,8 +989,6 @@ class Pixel extends React.Component {
             actions.trigger_sfx("PrometheusVertical2");
             actions.jamy_update("happy");
             this._handle_edit_drawer_close();
-
-            this._maybe_save_unsaved_pixel_art();
         }
     };
 
@@ -1029,11 +1013,6 @@ class Pixel extends React.Component {
 
         this.setState({_can_undo, _can_redo})
     }
-
-    _handle_kb_change = (kb) => {
-
-        this.setState({_kb: kb});
-    };
 
     _handle_fps_change = (fps) => {
 
@@ -1574,6 +1553,8 @@ class Pixel extends React.Component {
                             imageRendering: "optimizespeed",
                         }}>
                             <CanvasPixels
+                                on_export_state={this._handle_canvas_state_export}
+                                export_state_every_ms={is_mobile_or_tablet ? 30 * 1000: 15 * 1000}
                                 onContextMenu={(e) => {e.preventDefault()}}
                                 key={"canvas"}
                                 className={classes.contentCanvas}
