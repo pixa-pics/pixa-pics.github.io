@@ -80,15 +80,15 @@ class PixelDialogCreate extends React.Component {
                     </div>
                     <Button fullWidth variant="contained" color="primary" autoFocus onClick={this.props.on_upload}>UPLOAD</Button>
                     <Typography component={"h2"} variant={"h6"} style={{marginTop: 16}}>Unsaved work</Typography>
-                    <div style={{padding: "8px 24px", position: "relative", display: "flex", flexWrap: "wrap", justifyContent: "space-around", overflow: "hidden",}}>
-                        <ImageList rowHeight={200} cols={2.5} style={{minWidth: 508, flexWrap: "nowrap", transform: "translateZ(0)", contains: "strict"}}>
+                    <div style={{padding: "8px 24px", position: "relative", display: "flex", flexWrap: "wrap", justifyContent: "space-around", overflow: "hidden", boxSizing: "border-box", width: "100%"}}>
+                        <ImageList rowHeight={192} cols={2.5} style={{flexWrap: "nowrap", transform: "translateZ(0)", contains: "strict"}}>
                             {
                                 Object.values(pixel_arts).sort((a, b) => b.timestamp - a.timestamp).map((v, i) => {
 
                                     const {id, kb, preview, timestamp} = v;
                                     return (
-                                        <ImageListItem className={"pixelated"} key={id}>
-                                            <img src={preview} alt={id} style={{cursor: "pointer"}} onClick={() => {this.props.import_JSON_state(id)}}/>
+                                        <ImageListItem style={{}} className={"pixelated"} key={id}>
+                                            <img src={preview} alt={id} style={{}} onClick={() => {this.props.import_JSON_state(id)}}/>
                                             <ImageListItemBar
                                                 title={new TimeAgo(document.documentElement.lang).format(timestamp)}
                                                 subtitle={<span>{kb.toFixed(2)} Kb</span>}

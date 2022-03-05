@@ -14,13 +14,11 @@ import HearthEmojiSvg from "../twemoji/react/2665";
 const HEARTHEMOJI = get_svg_in_b64(<HearthEmojiSvg />);
 import EarthEmojiSvg from "../twemoji/react/1F30D";
 const EARTHEMOJI = get_svg_in_b64(<EarthEmojiSvg />);
-import SendToAFriend from "../icons/SendToAFriend";
-const SENDTOAFRIEND = get_svg_in_b64(<SendToAFriend />)
 
 const styles = theme => ({
     root: {
         maxHeight: "calc(100% - 64px)",
-        backgroundImage: "radial-gradient(circle at 0% 0%, #fdffbf, #ffffff)",
+        backgroundImage: "linear-gradient(to bottom, #4c56e057 60%, #fff28859 90%), radial-gradient(farthest-corner at 75% 75%, rgb(255 234 63) 5%, rgb(73 247 255) 50%, rgb(5 11 60) 90%)",
         height: "100%",
         overflow: "hidden",
         position: "relative",
@@ -32,29 +30,44 @@ const styles = theme => ({
             right: 0,
             bottom: 0,
             zIndex: 1,
-            backgroundImage: "radial-gradient(ellipse at max(25%, 25vh) max(75vh, 75%), #ffffff 14%, #ffffff00 75%)",
+            filter: "opacity(.5)",
+            backgroundImage: "radial-gradient(ellipse at max(25%, 25vh) max(75vh, 75%), #ffffff 14%, #ffffff57 75%)",
             animation: "$radial 5s ease-in-out infinite",
             "@global": {
                 "@keyframes radial": {
-                    "0%": {filter: "opacity(.7)"},
-                    "20%": {filter: "opacity(.6)"},
-                    "40%": {filter: "opacity(.8)"},
-                    "60%": {filter: "opacity(.9)"},
-                    "80%": {filter: "opacity(.6)"},
-                    "100%": {filter: "opacity(.7)"},
+                    "0%": {filter: "opacity(.5)"},
+                    "20%": {filter: "opacity(.4)"},
+                    "40%": {filter: "opacity(.6)"},
+                    "60%": {filter: "opacity(.7)"},
+                    "80%": {filter: "opacity(.4)"},
+                    "100%": {filter: "opacity(.5)"},
                 }
             },
         }
     },
-    homeCTA: {
-        color: "#ffffff",
-        backgroundColor: "#e9d95a",
+    homeCTAuseit: {
+        color: "#000000",
+        backgroundImage: "linear-gradient(45deg, goldenrod, blanchedalmond, gold, darkgoldenrod, blanchedalmond, goldenrod, blanchedalmond)",
         fontWeight: "bold",
-        minWidth: "min(384px, calc(100% - 32px))",
+        filter: "sepia(.75) saturate(1.5) grayscale(0.9)",
+        minWidth: "min(320px, calc(100% - 32px))",
         marginTop: "64px",
         "&:hover": {
-            color: "#ffffff",
-            backgroundColor: "#4caf50",
+            color: "#000",
+        }
+    },
+    homeCTAsendit: {
+        color: "#000000",
+        backgroundImage: "linear-gradient(45deg, goldenrod, blanchedalmond, gold, darkgoldenrod, blanchedalmond, goldenrod, blanchedalmond)",
+        filter: "sepia(.75) saturate(1.5) grayscale(0.1)",
+        fontWeight: "bold",
+        position: "fixed",
+        minWidth: 128,
+        zIndex: 2,
+        bottom: 32,
+        right: 32,
+        "&:hover": {
+            color: "#000",
         }
     },
     backgroundImage: {
@@ -114,7 +127,7 @@ const styles = theme => ({
         fontFamily: `"Jura"`,
         position: "absolute",
         marginTop: theme.spacing(-2),
-        color: "#000000",
+        color: "#000000dd",
         [theme.breakpoints.down("sm")]: {
             marginTop: theme.spacing(-4)
         },
@@ -138,7 +151,7 @@ const styles = theme => ({
     },
     blue: {
         //color: theme.palette.primary.actionLighter,
-        color: "#0f177f",
+        color: "#061482",
         fontWeight: 600,
     },
 });
@@ -194,20 +207,22 @@ class Home extends React.Component {
                     <img src="/src/images/fun.svg" className={classes.backgroundImageImage}/>
                     <div className={classes.headerContainer}>
                         <h1 className={classes.title}>
-                            <span style={{fontSize: "1.314em"}}><span className={classes.blue}>PIXA.PICS</span> - To pixel art matrix.<br /> Then, draw & vecterize.</span><br />
+                            <span style={{fontSize: "1.314em"}}><span style={{color: "white", textShadow: "white 0px 0px 5px, lightblue 0px 0px 3px"}}>PIXA.PICS</span>, to edit a matrix of pixels.<br /> Then, draw & vectorize it.</span><br />
                             <span style={{fontSize: ".618em"}}>Make potential (un)limited everywhere <img src={ANGELEMOJI} className="emoji"/>.</span>
                         </h1>
                         <h2 className={classes.subtitle}>
-                            AEON'S of the <span className={classes.blue}>raster/matrix</span> and <span className={classes.blue}>vector</span> universe of art, <br/>
-                            You can draw on (size-)limited pixel art and create infinite paintings.<br />
-                            Made with <img className={"emoji pulse"} src={HEARTHEMOJI}/>, designed to be : forever open-source - forever free - for everyone. <img src={EARTHEMOJI} className={"emoji"}/>.<br />
+                            AEON'S of the <span className={classes.blue}>raster/matrix</span> and <span className={classes.blue}>vector</span> regarding the universes of graphics, <br/>
+                            You can draw and edit on (size) limited pixel art and use it to generate infinite paintings.<br />
+                            Made with <img className={"emoji pulse"} src={HEARTHEMOJI}/>, it has been designed to be : For Everyone - For Free - Forever Open-Source <img src={EARTHEMOJI} className={"emoji"}/>.<br />
                         </h2>
-                        <Button className={classes.homeCTA} variant={"contained"} size={"large"} color="primary" onClick={(event) => this._go_to_url(event, "/pixel")}>
-                            Start using it
+                        <Button className={classes.homeCTAuseit} variant={"contained"} size={"large"} color="primary" onClick={(event) => this._go_to_url(event, "/pixel")}>
+                            OPEN EDITOR NOW
                         </Button>
                     </div>
                 </div>
-                <img onClick={(event) => {this._handle_speed_dial_action(event, "share")}} src={SENDTOAFRIEND} style={{zIndex: 2, position: "absolute", right: 16, bottom: 16, width: 220, cursor: "pointer"}}/>
+                <Button className={classes.homeCTAsendit} variant={"contained"} size={"large"} color="primary"onClick={(event) => {this._handle_speed_dial_action(event, "share")}}>
+                    SHARE
+                </Button>
             </div>
         );
     }

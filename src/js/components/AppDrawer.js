@@ -41,10 +41,10 @@ const styles = theme => ({
         color: theme.palette.secondary.contrastText,
         boxShadow: "0px 2px 4px -1px rgb(0 0 0 / 20%), 0px 4px 5px 0px rgb(0 0 0 / 14%), 0px 1px 10px 0px rgb(0 0 0 / 12%)",
         border: 0,
-        backgroundImage: "linear-gradient(95deg, #01031057 50%, #010310ff calc(100% - 32px)), url(/src/images/heroes.svg)",
+        backgroundImage: `linear-gradient(95deg, #00020f66 40%, #67698033 60%, #010310ff 85% calc(100% - 32px)), url(/src/images/hero_${Date.now()%2 ? "female": "male"}.svg)`,
         backgroundRepeat: "no-repeat",
-        backgroundPosition: "calc(50% + 16px) calc(100% - 32px)",
-        backgroundSize: "calc(100% + 64px)",
+        backgroundPosition: "calc(50% + 16px) calc(100% - 0px)",
+        backgroundSize: "calc(100% + 96px)",
     },
     drawerContainer: {
         overflow: "auto"
@@ -83,11 +83,11 @@ class AppDrawer extends React.Component {
                         <DrawerContent pathname={pathname} onClose={() => {}} />
                         <div style={{
                             position: "fixed",
-                            bottom: 288,
+                            bottom: 12,
                             left: 12,
-                            color: "#44426e",
+                            color: "#48488B",
                             userSelect: "none"
-                        }}><span>{"Be the privacy"}<br />{"hero you need to..."}</span></div>
+                        }}><span>Awaiting the privacy...<br />hero you are within.</span></div>
                     </div>
                 </Drawer>
             </Box>

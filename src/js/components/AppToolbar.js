@@ -38,7 +38,11 @@ const styles = theme => ({
     drawerPaper: {
         background: theme.palette.primary.dark,
         color: theme.palette.primary.contrastText,
-        width: 256
+        width: 256,
+        backgroundImage: "linear-gradient(95deg, #00020f66 40%, #67698033 60%, #010310ff 85% calc(100% - 32px)), url(/src/images/heroes.svg)",
+        backgroundRepeat: "no-repeat",
+        backgroundPosition: "calc(50% + 16px) calc(100% - 0px)",
+        backgroundSize: "calc(100% + 96px)",
     },
     drawerButton: {
         marginRight: theme.spacing(1),
@@ -301,6 +305,13 @@ class AppToolbar extends React.Component {
                             </div>
                         </Toolbar>
                         <DrawerContent logged_account={logged_account} pathname={pathname} onClose={this._handle_close_swipeable_app_drawer}/>
+                        <div style={{
+                            position: "fixed",
+                            bottom: 12,
+                            left: 12,
+                            color: "#48488b",
+                            userSelect: "none"
+                        }}><span>Awaiting the privacy...<br />hero you are within.</span></div>
                 </SwipeableDrawer>
                 <AppBar position="fixed" className={classes.appBar}>
                     <Toolbar>
