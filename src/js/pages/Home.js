@@ -20,7 +20,7 @@ const SENDTOAFRIEND = get_svg_in_b64(<SendToAFriend />)
 const styles = theme => ({
     root: {
         maxHeight: "calc(100% - 64px)",
-        backgroundImage: "radial-gradient(circle at 0% 0%, #242e9454, #ffffff)",
+        backgroundImage: "radial-gradient(circle at 0% 0%, #fdffbf, #ffffff)",
         height: "100%",
         overflow: "hidden",
         position: "relative",
@@ -44,6 +44,17 @@ const styles = theme => ({
                     "100%": {filter: "opacity(.7)"},
                 }
             },
+        }
+    },
+    homeCTA: {
+        color: "#ffffff",
+        backgroundColor: "#e9d95a",
+        fontWeight: "bold",
+        minWidth: "min(384px, calc(100% - 32px))",
+        marginTop: "64px",
+        "&:hover": {
+            color: "#ffffff",
+            backgroundColor: "#4caf50",
         }
     },
     backgroundImage: {
@@ -76,6 +87,7 @@ const styles = theme => ({
     },
     backgroundImageImage: {
         position: "absolute",
+        filter: "contrast(0.8) brightness(1.2)",
         width: "max(90vh, 90%)",
         right: "calc(min(-36vh, -36%) + 128px)",
         top: "calc(max(36vh, 36%) + 128px)",
@@ -109,17 +121,18 @@ const styles = theme => ({
         zIndex: 2,
     },
     title: {
-        fontSize: 56,
+        fontSize: 48,
         fontWeight: "normal",
         [theme.breakpoints.down("sm")]: {
-            fontSize: 36,
+            fontSize: 32,
+            lineHeight: "normal",
         },
     },
     subtitle: {
-        fontSize: 32,
+        fontSize: 24,
         fontWeight: "normal",
         [theme.breakpoints.down("sm")]: {
-            fontSize: 24,
+            fontSize: 16,
             display: "none",
         },
     },
@@ -181,16 +194,15 @@ class Home extends React.Component {
                     <img src="/src/images/fun.svg" className={classes.backgroundImageImage}/>
                     <div className={classes.headerContainer}>
                         <h1 className={classes.title}>
-                            <span><span className={classes.blue}>PIXA.PICS</span> - to pixel art matrix, then draw, then vectorize.</span><br />
-                            <span>Make potential (un)limited</span><br />
-                            <span><img src={ANGELEMOJI} className="emoji"/> everywhere.</span>
+                            <span style={{fontSize: "1.314em"}}><span className={classes.blue}>PIXA.PICS</span> - To pixel art matrix.<br /> Then, draw & vecterize.</span><br />
+                            <span style={{fontSize: ".618em"}}>Make potential (un)limited everywhere <img src={ANGELEMOJI} className="emoji"/>.</span>
                         </h1>
                         <h2 className={classes.subtitle}>
-                            AEONS of the <span className={classes.blue}>raster/matrix</span> and <span className={classes.blue}>vector</span> universe, <br/>
-                            You can do limited pixel art and infinite paintings.<br />
+                            AEON'S of the <span className={classes.blue}>raster/matrix</span> and <span className={classes.blue}>vector</span> universe of art, <br/>
+                            You can draw on (size-)limited pixel art and create infinite paintings.<br />
                             Made with <img className={"emoji pulse"} src={HEARTHEMOJI}/>, designed to be : forever open-source - forever free - for everyone. <img src={EARTHEMOJI} className={"emoji"}/>.<br />
                         </h2>
-                        <Button variant={"contained"} size={"large"} color="primary" onClick={(event) => this._go_to_url(event, "/pixel")}>
+                        <Button className={classes.homeCTA} variant={"contained"} size={"large"} color="primary" onClick={(event) => this._go_to_url(event, "/pixel")}>
                             Start using it
                         </Button>
                     </div>

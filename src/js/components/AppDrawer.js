@@ -41,10 +41,10 @@ const styles = theme => ({
         color: theme.palette.secondary.contrastText,
         boxShadow: "0px 2px 4px -1px rgb(0 0 0 / 20%), 0px 4px 5px 0px rgb(0 0 0 / 14%), 0px 1px 10px 0px rgb(0 0 0 / 12%)",
         border: 0,
-        backgroundImage: "radial-gradient(#01030f75, #060e2357), url(/src/images/hero.svg)",
+        backgroundImage: "linear-gradient(95deg, #01031057 50%, #010310ff calc(100% - 32px)), url(/src/images/heroes.svg)",
         backgroundRepeat: "no-repeat",
-        backgroundPosition: "50% calc(100% - 16px)",
-        backgroundSize: "calc(100% - 32px)",
+        backgroundPosition: "calc(50% + 16px) calc(100% - 32px)",
+        backgroundSize: "calc(100% + 64px)",
     },
     drawerContainer: {
         overflow: "auto"
@@ -80,7 +80,14 @@ class AppDrawer extends React.Component {
                 <Drawer keepMounted={true} className={pathname === "/" ? classes.drawerHome: classes.drawer} variant="permanent" classes={{paper: classes.drawerPaper}}>
                     <Toolbar />
                     <div className={classes.drawerContainer}>
-                        <DrawerContent pathname={pathname} onClose={() => {}}/>
+                        <DrawerContent pathname={pathname} onClose={() => {}} />
+                        <div style={{
+                            position: "fixed",
+                            bottom: 288,
+                            left: 12,
+                            color: "#44426e",
+                            userSelect: "none"
+                        }}><span>{"Be the privacy"}<br />{"hero you need to..."}</span></div>
                     </div>
                 </Drawer>
             </Box>
