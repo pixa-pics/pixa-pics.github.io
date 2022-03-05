@@ -1,6 +1,6 @@
-var REQUIRED_CACHE = "unless-update-cache-v2-required";
-var USEFUL_CACHE = "unless-update-cache-v2-useful";
-var STATIC_CACHE = "unless-update-cache-v2-static";
+var REQUIRED_CACHE = "unless-update-cache-v3-required";
+var USEFUL_CACHE = "unless-update-cache-v3-useful";
+var STATIC_CACHE = "unless-update-cache-v3-static";
 
 // On install, cache some resource.
 self.addEventListener("install", function(evt) {
@@ -26,6 +26,7 @@ self.addEventListener("install", function(evt) {
                     "/src/images/fun.svg",
                     "/src/images/background.svg",
                     "/src/images/office.svg",
+                    "/src/images/hero.svg",
                     "/src/images/logo-transparent.png",
                     "/src/images/manifest/icon-white.png",
                     "/src/images/404.svg",

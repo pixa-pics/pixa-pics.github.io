@@ -20,6 +20,7 @@ const SENDTOAFRIEND = get_svg_in_b64(<SendToAFriend />)
 const styles = theme => ({
     root: {
         maxHeight: "calc(100% - 64px)",
+        backgroundImage: "radial-gradient(circle at 0% 0%, #242e9454, #ffffff)",
         height: "100%",
         overflow: "hidden",
         position: "relative",
@@ -76,8 +77,8 @@ const styles = theme => ({
     backgroundImageImage: {
         position: "absolute",
         width: "max(90vh, 90%)",
-        right: "calc(min(-36vh, -36%) + 96px)",
-        top: "calc(max(36vh, 36%) + 96px)",
+        right: "calc(min(-36vh, -36%) + 128px)",
+        top: "calc(max(36vh, 36%) + 128px)",
         transform: "translate(calc(min(-45vh, -45%) / 2), calc(min(-45vh, -45%) / 2))",
         zIndex: 1,
         "&": {
@@ -180,14 +181,14 @@ class Home extends React.Component {
                     <img src="/src/images/fun.svg" className={classes.backgroundImageImage}/>
                     <div className={classes.headerContainer}>
                         <h1 className={classes.title}>
-                            <span><span className={classes.blue}>PIXA.PICS</span> - to pixel art, then draw.</span><br />
+                            <span><span className={classes.blue}>PIXA.PICS</span> - to pixel art matrix, then draw, then vectorize.</span><br />
                             <span>Make potential (un)limited</span><br />
                             <span><img src={ANGELEMOJI} className="emoji"/> everywhere.</span>
                         </h1>
                         <h2 className={classes.subtitle}>
-                            At the horizon of both <span className={classes.blue}>raster/matrix</span> and <span className={classes.blue}>vector</span> universe, <br/>
-                            discover an unprecedented industrial and educative purpose.<br />
-                            Made with <img className={"emoji pulse"} src={HEARTHEMOJI}/>, it is designed to be - forever open-source & for everyone. <img src={EARTHEMOJI} className={"emoji"}/>.<br />
+                            AEONS of the <span className={classes.blue}>raster/matrix</span> and <span className={classes.blue}>vector</span> universe, <br/>
+                            You can do limited pixel art and infinite paintings.<br />
+                            Made with <img className={"emoji pulse"} src={HEARTHEMOJI}/>, designed to be : forever open-source - forever free - for everyone. <img src={EARTHEMOJI} className={"emoji"}/>.<br />
                         </h2>
                         <Button variant={"contained"} size={"large"} color="primary" onClick={(event) => this._go_to_url(event, "/pixel")}>
                             Start using it

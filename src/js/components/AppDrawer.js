@@ -38,11 +38,13 @@ const styles = theme => ({
     drawerPaper: {
         width: 256,
         backgroundColor: theme.palette.secondary.dark,
-        backgroundSize: "100%",
-        backgroundPosition: "center",
         color: theme.palette.secondary.contrastText,
         boxShadow: "0px 2px 4px -1px rgb(0 0 0 / 20%), 0px 4px 5px 0px rgb(0 0 0 / 14%), 0px 1px 10px 0px rgb(0 0 0 / 12%)",
         border: 0,
+        backgroundImage: "radial-gradient(#01030f75, #060e2357), url(/src/images/hero.svg)",
+        backgroundRepeat: "no-repeat",
+        backgroundPosition: "50% calc(100% - 16px)",
+        backgroundSize: "calc(100% - 32px)",
     },
     drawerContainer: {
         overflow: "auto"
