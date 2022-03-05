@@ -28,15 +28,15 @@ const styles = theme => ({
             height: "100%",
             right: 0,
             bottom: 0,
-            backgroundImage: "radial-gradient(#ffffffa2 14%, transparent 66%)",
             zIndex: 1,
+            backgroundImage: "radial-gradient(ellipse at left center, #fff 14%, #ffffff00 64%)",
         }
     },
     backgroundImage: {
         width: "100%",
         height: "100%",
         overflow: "hidden",
-        backgroundImage: "radial-gradient(ellipse, #f0f8ffee, #ffffff00 100%), url(/src/images/background.svg)",
+        backgroundImage: "url(/src/images/background.svg)",
         position: "relative",
         backgroundSize: "150%",
         backgroundPosition: "0% 25vh",
@@ -62,8 +62,8 @@ const styles = theme => ({
     },
     backgroundImageImage: {
         position: "absolute",
-        width: "max(100vh, 100%)",
-        left: "calc(max(-42vh, -42%) - 256px)",
+        width: "max(84vh, 84%)",
+        left: "calc(max(-51vh, -51%) - 256px)",
         top: "calc(64% - 128px)",
         transform: "translate(25%, -50%)",
         zIndex: 1,
@@ -89,7 +89,6 @@ const styles = theme => ({
         position: "absolute",
         marginTop: theme.spacing(-2),
         color: "#000000",
-        textShadow: "3px 6px 9px azure",
         [theme.breakpoints.down("sm")]: {
             marginTop: theme.spacing(-4)
         },
@@ -173,7 +172,7 @@ class Home extends React.Component {
                             <span><img src={ANGELEMOJI} className="emoji"/> everywhere.</span>
                         </h1>
                         <h2 className={classes.subtitle}>
-                            At the horizon of both <span className={classes.blue}>matrix</span> and <span className={classes.blue}>vectorial</span> universe, <br/>
+                            At the horizon of both <span className={classes.blue}>raster/matrix</span> and <span className={classes.blue}>vector</span> universe, <br/>
                             discover an unprecedented industrial and educative purpose.<br />
                             Made with <img className={"emoji pulse"} src={HEARTHEMOJI}/>, it is designed to be - forever open-source & for everyone. <img src={EARTHEMOJI} className={"emoji"}/>.<br />
                         </h2>

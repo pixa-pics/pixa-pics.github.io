@@ -93,28 +93,26 @@ const styles = theme => ({
         margin: theme.spacing(1),
     },
     fontWeightBold: {
-        fontWeight: "bold"
+        fontWeight: "bold",
+        color: "#000",
     },
     dialogImage: {
         display: "inline-block",
         padding: theme.spacing(2),
-        backgroundRepeat: "no-repeat",
-        backgroundPosition: "center center",
-        backgroundSize: "300% auto",
         width: 320,
-        transition: "background-size 300ms ease-in-out 0ms",
         [theme.breakpoints.down("sm")]: {
             display: "none"
         }
     },
     dialogContent: {
-        display: "inline-block"
+        display: "inline-block",
+        backgroundImage: "radial-gradient(farthest-corner at 0px 0px, #fff 15%, #43e0 75%), radial-gradient(farthest-corner at 0% 100%, #ffffff44 25%, #43e0 75%)",
     },
     dialogInner: {
         display: "inherit",
-        "& div:first-child": {
-            backgroundSize: "90% auto"
-        }
+        backgroundSize: "calc(100% - 64px)",
+        backgroundRepeat: "no-repeat",
+        backgroundPosition: "center",
     },
 });
 
@@ -171,8 +169,7 @@ class ShareDialog extends React.Component {
                     open={open}
                     onClose={(event) => {this.props.onClose(event)}}
                 >
-                    <div className={classes.dialogInner}>
-                        <div className={classes.dialogImage} style={{backgroundImage: `url(/src/images/share.svg)`}}/>
+                    <div className={classes.dialogInner} style={{backgroundImage: `url(/src/images/office.svg)`}}>
                         <div className={classes.dialogContent}>
                             <DialogTitle>
                                 {t( "components.share_dialog.title")}
@@ -241,10 +238,11 @@ class ShareDialog extends React.Component {
                                     />
                                 </FormControl>
                                 <DialogContentText className={classes.fontWeightBold}>
-                                    <p>{t( "components.share_dialog.thanks_for_sharing")} <img src={get_svg_in_b64(<BeerCheckEmojiSvg/>)} className="emoji"/></p>
+                                    <p>{t( "components.share_dialog.thanks_for_sharing")}</p>
                                 </DialogContentText>
                             </DialogContent>
                         </div>
+                        <div className={classes.dialogImage}/>
                     </div>
                 </Dialog>
             </div>

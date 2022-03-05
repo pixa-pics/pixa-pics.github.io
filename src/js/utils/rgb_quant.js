@@ -5,7 +5,7 @@
 *
 * RgbQuant.js - an image quantization lib
 */
-const process_function_string = `return async function(img, limit, resize_to) {
+const process_function_string = `return async function(img, limit, resize_to, lossly) {
     
         function RgbQuant(opts) {
             opts = opts || {};
@@ -928,7 +928,6 @@ const process_function_string = `return async function(img, limit, resize_to) {
         }
         
         // img = base64_string
-        var img_type_png = img.includes("image/png;base64");
         var img_data = null; // Create image data
         
         let scale = 1;
@@ -1009,7 +1008,7 @@ const process_function_string = `return async function(img, limit, resize_to) {
             ctxB0.transferFromImageBitmap(bmpB0);
             var blbB0 = null;
             
-            if(img_type_png) {
+            if(!lossly) {
             
                 blbB0 = await canvasB0.convertToBlob({type: "image/png"});
             
@@ -1020,7 +1019,7 @@ const process_function_string = `return async function(img, limit, resize_to) {
                     blbB0 = await canvasB0.convertToBlob({type: "image/webp", quality: 0.75});
                 }catch(e) {
                 
-                    blbB0 = await canvasB0.convertToBlob({type: "image/jpeg", quality: 0.85});
+                    blbB0 = await canvasB0.convertToBlob({type: "image/jpeg", quality: 0.75});
                 } 
             }
            
@@ -1034,7 +1033,7 @@ const process_function_string = `return async function(img, limit, resize_to) {
             var ctxB0 = canvasB0.getContext("2d");
             ctxB0.putImageData(img_data, 0, 0);
             
-            if(img_type_png) {
+            if(!lossly) {
             
                 return ctxB0.canvas.toDataURL("image/png");
             
@@ -1045,34 +1044,34 @@ const process_function_string = `return async function(img, limit, resize_to) {
                      return ctxB0.canvas.toDataURL("image/webp", 0.75);
                  }catch(e2) {
                     
-                     return ctxB0.canvas.toDataURL("image/jpeg", 0.85);
+                     return ctxB0.canvas.toDataURL("image/jpeg", 0.75);
                  }
             }
         }
     }`;
 
-const rgb_quant = (img, limit = 1024, resize_to = 1920*1080, callback_function = () => {}, pool = null) => {
+const rgb_quant = (img, limit = 1024, resize_to = 1920*1080, lossly = false, callback_function = () => {}, pool = null) => {
 
     let process_function = new Function(process_function_string)();
 
     if(Boolean(pool)) {
 
         pool.exec(process_function, [
-            img, limit, resize_to
+            img, limit, resize_to, lossly
         ]).catch((e) => {
 
-            return process_function(img, limit, resize_to);
+            return process_function(img, limit, resize_to, lossly);
         }).then((result) => {
 
             callback_function(result);
-        }).then(() => { return;}).timeout(36 * 1000);
+        }).then().timeout(36 * 1000);
 
     }else {
 
-        process_function(img, limit, resize_to).then((result) => {
+        process_function(img, limit, resize_to, lossly).then((result) => {
 
             callback_function(result);
-        }).then(() => { return;});
+        }).then();
     }
 };
 

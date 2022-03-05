@@ -3,9 +3,7 @@ import React from "react";
 import svg64 from "svg64";
 import pool from "../utils/worker-pool";
 
-const get_svg_in_b64_async = (Component, callback_function) => {
-
-    const process_function_string = `return async function(
+const process_function_string = `return async function(
            svg_string 
         ) {
 
@@ -107,6 +105,8 @@ const get_svg_in_b64_async = (Component, callback_function) => {
                     return svg;
             }
         }`;
+
+const get_svg_in_b64_async = (Component, callback_function) => {
 
     let svg_string = ReactDOMServer.renderToString(Component);
 

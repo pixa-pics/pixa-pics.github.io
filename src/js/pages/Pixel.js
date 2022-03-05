@@ -863,11 +863,11 @@ class Pixel extends React.Component {
         this.get_base64(file).then((b) => {
 
             const max_original_size = is_mobile_or_tablet ? Math.sqrt(1920 * 1080): Math.sqrt(4096 * 2160);
-            const max_original_color = is_mobile_or_tablet ? 1536: 3096;
+            const max_original_color = 1/0;
             const max_size = is_mobile_or_tablet ? Math.sqrt(1280 * 720): Math.sqrt(1920 * 1280);
             const max_color = is_mobile_or_tablet ? 1024: 2048;
 
-            let ratio_l_l2 = is_mobile_or_tablet ? 2/3: 5/3;
+            let ratio_l_l2 = is_mobile_or_tablet ? 3/3: 5/3;
             let min_size = is_mobile_or_tablet ? 0: 0;
             let min_color = is_mobile_or_tablet ? 0: 0;
 
@@ -875,7 +875,7 @@ class Pixel extends React.Component {
             const resize_to = Math.min(max_size * max_size, Math.max(parseInt(_import_size) * parseInt(_import_size), min_size * min_size));
             const limit_color_number = Math.min(max_color * ratio_l_l2, Math.max(parseInt(_import_size) * ratio_l_l2, min_color * ratio_l_l2));
 
-            rgb_quant(b, max_original_color, resize_original_to, (data) => {
+            rgb_quant(b, max_original_color, resize_original_to, true, (data) => {
 
                 this._handle_load_complete("image_preload", {});
 
@@ -885,7 +885,7 @@ class Pixel extends React.Component {
                     actions.jamy_update("angry");
                     postJSON("https://deepai.pixa-pics.workers.dev/colorizer", data, (err, res) => {
 
-                        rgb_quant(res, limit_color_number, resize_to, (res2) => {
+                        rgb_quant(res, limit_color_number, resize_to, false,(res2) => {
 
                             img.addEventListener("load", () => {
 
@@ -905,7 +905,7 @@ class Pixel extends React.Component {
 
                     postJSON("https://deepai.pixa-pics.workers.dev/waifu2x", data, (err, res) => {
 
-                        rgb_quant(res, limit_color_number, resize_to, (res2) => {
+                        rgb_quant(res, limit_color_number, resize_to, false,(res2) => {
 
                             img.addEventListener("load", () => {
 
@@ -926,7 +926,7 @@ class Pixel extends React.Component {
 
                         postJSON("https://deepai.pixa-pics.workers.dev/waifu2x",  res, (err2, res2) => {
 
-                            rgb_quant(res2, limit_color_number, resize_to, (res3) => {
+                            rgb_quant(res2, limit_color_number, resize_to, false, (res3) => {
 
                                 img.addEventListener("load", () => {
 
@@ -942,7 +942,7 @@ class Pixel extends React.Component {
                     }, "application/text");
                 }else {
 
-                    rgb_quant(data, limit_color_number, resize_to, (res) => {
+                    rgb_quant(data, limit_color_number, resize_to, false,(res) => {
 
                         img.addEventListener("load", () => {
 

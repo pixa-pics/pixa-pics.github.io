@@ -34,11 +34,9 @@ OTHER DEALINGS IN THE SOFTWARE.
 For more information, please refer to http://unlicense.org/
 
 */
-
 import pool from "../utils/worker-pool";
-function imagedataToSVG(image_data, options, callback_function) {
 
-	const getImageTracerImagedataToSVG = `return function(image_data, options){
+const process_function_string = `return function(image_data, options){
 
 	function ImageTracer(){
 		var _this = this;
@@ -1178,25 +1176,24 @@ function imagedataToSVG(image_data, options, callback_function) {
 
 	
 		var imgtrc = new ImageTracer();
-		var svg_source = imgtrc.imagedataToSVG(image_data, options);
-		return svg_source;
+		return imgtrc.imagedataToSVG(image_data, options);
 }`;
 
-	const process_function = new Function(getImageTracerImagedataToSVG)();
+const imagedataToSVG = (image_data, options, callback_function) => {
+
+	const process_function = new Function(process_function_string)();
 
 	pool.exec(process_function, [
 		image_data,
 		options,
 	]).catch((e) => {
 
-		console.log(e);
 		return process_function(image_data, options);
-
 	})
 	.then((result) => {
 
 		callback_function(result);
-	}).timeout(360 * 1000);
+	}).timeout(72 * 1000);
 
 }
 

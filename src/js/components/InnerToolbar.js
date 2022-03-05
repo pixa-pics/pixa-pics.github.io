@@ -49,7 +49,8 @@ const styles = theme => ({
             background: "linear-gradient(to right, transparent, rgb(155 163 220 / 33%), transparent)",
             animation: "$innerToolbarCyberPunkAnimation 7.7s linear alternate infinite",
         },
-        boxShadow: "inset 0px 0px 6px #475db3ab, inset 0px 0px 24px #838fdc61, inset 0px 0px 48px #cbd4ff40",
+        backColor: "#6c72b72e",
+        //boxShadow: "inset 0px 0px 6px #475db3ab, inset 0px 0px 24px #838fdc61, inset 0px 0px 48px #cbd4ff40",
         "&::-webkit-scrollbar": {
             display: "none"
         }

@@ -2457,14 +2457,14 @@ const LZP3 = (uint8a_or_obj, mode = "COMPRESS_OBJECT", callback_function = () =>
 
             callback_function(result);
 
-        }).then(() => { return;}).timeout(15 * 1000);
+        }).timeout(15 * 1000);
 
     }else {
 
         process_function(uint8a_or_obj, mode).then((result) => {
 
             callback_function(result);
-        }).then(() => { return;});
+        });
     }
 };
 
