@@ -2450,11 +2450,18 @@ const LZP3 = (uint8a_or_obj, mode = "COMPRESS_OBJECT", callback_function = () =>
             mode,
         ]).catch((e) => {
 
-            return new Function(window.lzp3_json_process_function_string)()(uint8a_or_obj, mode);
+            if(e === "Pool terminated") {
+                return LZP3(uint8a_or_obj, mode, callback_function, pool);
+            }else {
+
+                return new Function(window.lzp3_json_process_function_string)()(uint8a_or_obj, mode);
+            }
         }).then((result) => {
 
             callback_function(result);
+        }).then(() => {
 
+            pool.terminate();
         }).timeout(15 * 1000);
 
     }else {

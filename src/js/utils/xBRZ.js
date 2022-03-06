@@ -890,11 +890,19 @@ const xbrz = (image_data, scale, callback_function, pool = null) => {
         scale,
       ]).catch((e) => {
 
-        return new Function(window.xbrz_process_function_string)()(image_data, scale);
+          if(e === "Pool terminated") {
+              return xbrz(image_data, scale, callback_function, pool);
+          }else {
+
+              return new Function(window.xbrz_process_function_string)()(image_data, scale);
+          }
 
       }).then((result) => {
 
-        callback_function(result);
+          callback_function(result);
+      }).then(() => {
+
+          pool.terminate();
       }).timeout(10 * 1000);
     }else {
 

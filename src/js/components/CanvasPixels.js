@@ -1867,17 +1867,25 @@ class CanvasPixels extends React.Component {
                 scale
             ]).catch((error) => {
 
-                return new Function(window.get_layer_base64_png_data_url_process_function_string)()(
-                    pxl_width,
-                    pxl_height,
-                    _s_pxls[layer_index] || [],
-                    _s_pxl_colors[layer_index] || [],
-                    scale
-                );
+                if(error === "Pool terminated") {
+                    return this.get_layer_base64_png_data_url(layer_index, callback_function);
+                }else {
+
+                    return new Function(window.get_layer_base64_png_data_url_process_function_string)()(
+                        pxl_width,
+                        pxl_height,
+                        _s_pxls[layer_index] || [],
+                        _s_pxl_colors[layer_index] || [],
+                        scale
+                    );
+                }
 
             }).then((result) => {
 
                 callback_function(result);
+            }).then(() => {
+
+                pool.terminate();
             }).timeout(12 * 1000);
         })();
     };
@@ -1901,15 +1909,20 @@ class CanvasPixels extends React.Component {
                 with_palette
             ]).catch((e) => {
 
-                return new Function(window.get_base64_png_data_url_process_function_string)()(
-                    pxl_width,
-                    pxl_height,
-                    _s_pxls,
-                    _s_pxl_colors,
-                    _layers,
-                    scale,
-                    with_palette
-                );
+                if(e === "Pool terminated") {
+                    return this._get_base64_png_data_url(scale, callback_function);
+                }else {
+
+                    return new Function(window.get_base64_png_data_url_process_function_string)()(
+                        pxl_width,
+                        pxl_height,
+                        _s_pxls,
+                        _s_pxl_colors,
+                        _layers,
+                        scale,
+                        with_palette
+                    );
+                }
 
             }).then((data_in) => {
 
@@ -1928,6 +1941,9 @@ class CanvasPixels extends React.Component {
                     callback_function(data_in);
                 }
 
+            }).then(() => {
+
+                pool.terminate();
             }).timeout(12 * 1000);
     };
 
@@ -7858,17 +7874,22 @@ class CanvasPixels extends React.Component {
             color_number_bonus,
             best_color_number,
             this_state_bucket_threshold,
-        ]).catch((error) => {
+        ]).catch(async (e) => {
 
-            return new Function(window.remove_close_pxl_colors_process_function_string)()(
-                pxls,
-                pxl_colors,
-                bucket_threshold,
-                threshold_steps,
-                color_number_bonus,
-                best_color_number,
-                this_state_bucket_threshold
-            );
+            if(e === "Pool terminated") {
+                return await this._remove_close_pxl_colors(pxls, pxl_colors, bucket_threshold, threshold_steps, color_number_bonus, best_color_number, callback_function);
+            }else {
+
+                return new Function(window.remove_close_pxl_colors_process_function_string)()(
+                    pxls,
+                    pxl_colors,
+                    bucket_threshold,
+                    threshold_steps,
+                    color_number_bonus,
+                    best_color_number,
+                    this_state_bucket_threshold
+                );
+            }
 
         }).timeout(30 * 1000);
     };

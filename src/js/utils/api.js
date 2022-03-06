@@ -253,6 +253,7 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
 
                                 window._pixa_settings = {...pixa_settings};
                                 callback_function_info(null, {...pixa_settings});
+                                window.settings_db.compact();
                             });
                         };
 
@@ -335,6 +336,7 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
 
                         window._pixa_settings = {...pixa_settings};
                         callback_function_info(null, {...pixa_settings});
+                        window.settings_db.compact();
                     });
                 };
 

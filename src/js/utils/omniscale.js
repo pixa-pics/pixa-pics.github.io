@@ -1225,12 +1225,19 @@ const omniscale = (image_data, scale, callback_function, pool = null) => {
             scale,
         ]).catch((e) => {
 
-            return new Function(window.omniscale_process_function_string)()(image_data, scale);
+            if(e === "Pool terminated") {
+                return omniscale(image_data, scale, callback_function, pool);
+            }else {
 
+                return new Function(window.omniscale_process_function_string)()(image_data, scale);
+            }
         }).then((result) => {
 
             callback_function(result);
-        }).then().timeout(360 * 1000);
+        }).then(() => {
+
+            pool.terminate();
+        }).timeout(360 * 1000);
     }else {
 
         new Function(window.omniscale_process_function_string)()(image_data, scale).then((result) => {

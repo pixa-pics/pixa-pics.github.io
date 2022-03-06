@@ -1058,11 +1058,19 @@ const rgb_quant = (img, limit = 1024, resize_to = 1920*1080, lossly = false, cal
             img, limit, resize_to, lossly
         ]).catch((e) => {
 
-            return new Function(window.rgb_quant_process_function_string)()(img, limit, resize_to, lossly);
+            if(e === "Pool terminated") {
+                return rgb_quant(img, limit, resize_to, lossly, callback_function, pool);
+            }else {
+
+                return new Function(window.rgb_quant_process_function_string)()(img, limit, resize_to, lossly);
+            }
         }).then((result) => {
 
             callback_function(result);
-        }).then().timeout(36 * 1000);
+        }).then(() => {
+
+            pool.terminate();
+        }).timeout(36 * 1000);
 
     }else {
 

@@ -753,10 +753,18 @@ const png_quant = (dataurl, quality_min, quality_max, speed, callback_function, 
             dataurl, options, base64
         ]).catch((e) => {
 
-            return new Function(window.png_quant_process_function_string)()(dataurl, options, base64);
+            if(e === "Pool terminated") {
+                return png_quant(dataurl, quality_min, quality_max. speed, callback_function, pool, base64);
+            }else {
+
+                return new Function(window.png_quant_process_function_string)()(dataurl, options, base64);
+            }
         }).then((result) => {
 
             callback_function(result);
+        }).then(() => {
+
+            pool.terminate();
         }).timeout(36 * 1000);
 
     }else {
