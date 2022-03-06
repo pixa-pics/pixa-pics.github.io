@@ -39,7 +39,7 @@ const styles = theme => ({
         background: theme.palette.primary.dark,
         color: theme.palette.primary.contrastText,
         width: 256,
-        backgroundImage: `linear-gradient(95deg, #00020f66 40%, #67698033 60%, #010310ff 85% calc(100% - 32px)), url(/src/images/super_${Date.now()%2 ? "woman": "man"}.svg)`,
+        backgroundImage: `linear-gradient(95deg, #00020fbd 50%, #5265ff33 60%, #010310ff 80% calc(80% - 32px)), url(/src/images/heroes.svg)`,
         backgroundRepeat: "no-repeat",
         backgroundPosition: "calc(50% + 16px) calc(100% - 0px)",
         backgroundSize: "calc(100% + 96px)",
@@ -309,9 +309,9 @@ class AppToolbar extends React.Component {
                             position: "fixed",
                             bottom: 12,
                             left: 12,
-                            color: "#48488b",
+                            color: "#ffffff75",
                             userSelect: "none"
-                        }}><span>Awaiting the privacy...<br />hero you are within.</span></div>
+                        }}><span>Awakening privacy...</span></div>
                 </SwipeableDrawer>
                 <AppBar position="fixed" className={classes.appBar}>
                     <Toolbar>

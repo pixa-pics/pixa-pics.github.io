@@ -1,6 +1,6 @@
-var REQUIRED_CACHE = "unless-update-cache-v5-required";
-var USEFUL_CACHE = "unless-update-cache-v5-useful";
-var STATIC_CACHE = "unless-update-cache-v5-static";
+var REQUIRED_CACHE = "unless-update-cache-v6-required";
+var USEFUL_CACHE = "unless-update-cache-v6-useful";
+var STATIC_CACHE = "unless-update-cache-v6-static";
 
 // On install, cache some resource.
 self.addEventListener("install", function(evt) {
@@ -29,8 +29,7 @@ self.addEventListener("install", function(evt) {
                     "/src/images/manifest/icon-white.png",
                     "/src/images/404.svg",
                     "/src/images/office.svg",
-                    "/src/images/super_woman.svg",
-                    "/src/images/super_man.svg",
+                    "/src/images/heroes.svg",
                 ]);
             }),
             caches.open(REQUIRED_CACHE).then(function (cache) {
