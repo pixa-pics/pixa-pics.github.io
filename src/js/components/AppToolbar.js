@@ -39,7 +39,7 @@ const styles = theme => ({
         background: theme.palette.primary.dark,
         color: theme.palette.primary.contrastText,
         width: 256,
-        backgroundImage: "linear-gradient(95deg, #00020f66 40%, #67698033 60%, #010310ff 85% calc(100% - 32px)), url(/src/images/heroes.svg)",
+        backgroundImage: `linear-gradient(95deg, #00020f66 40%, #67698033 60%, #010310ff 85% calc(100% - 32px)), url(/src/images/super_${Date.now()%2 ? "woman": "man"}.svg)`,
         backgroundRepeat: "no-repeat",
         backgroundPosition: "calc(50% + 16px) calc(100% - 0px)",
         backgroundSize: "calc(100% + 96px)",
