@@ -5,11 +5,10 @@ Make potential (un)limited.
 
 At the horizon of matrix and vectorial, discover an unprecedented industrial and educative purpose. Our software is for everyone and forever open-source.
 
-![Image of the homescreen, decorated](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/og-image-logo.jpg)
+![Image of the editor, homepage](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/doc/screenshots/Screenshot.png)
 
 ![Image of the editor, decorated](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/og-image-logo-2.jpg)
 
-![Image of the editor, raw](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/doc/screenshots/Screenshot.png?raw=true)
 
 # Technology
 
