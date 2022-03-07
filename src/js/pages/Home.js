@@ -22,6 +22,9 @@ const styles = theme => ({
             height: "1.5em",
         },
         maxHeight: "calc(100% - 64px)",
+        [theme.breakpoints.down("xs")]: {
+            maxHeight: "calc(100% - 56px)",
+        },
         backgroundImage: "linear-gradient(to bottom, #4c56e057 60%, #e2cc18ab 90%), radial-gradient(farthest-corner at 75% 75%, rgb(255 234 63) 5%, rgb(73 247 255) 50%, rgb(5 11 60) 90%)",
         height: "100%",
         overflow: "hidden",
@@ -44,12 +47,16 @@ const styles = theme => ({
         fontWeight: "bold",
         minWidth: "min(320px, calc(100% - 32px))",
         lineHeight: "1.25em",
-        marginTop: "64px",
+        marginTop: "48x",
         borderRadius: "4px",
         "&:hover": {
             color: "#000",
         },
         zIndex: 7,
+        filter: "invert(1)",
+        [theme.breakpoints.down("sm")]: {
+            marginTop: "0px"
+        },
     },
     homeCTAsendit: {
         color: "#000",
@@ -130,11 +137,17 @@ const styles = theme => ({
         zIndex: 5,
     },
     title: {
+        whiteSpace: "break-spaces",
         fontSize: 48,
         fontWeight: "normal",
         [theme.breakpoints.down("sm")]: {
             fontSize: 32,
             lineHeight: "normal",
+        },
+    },
+    titleSubTitle: {
+        [theme.breakpoints.down("sm")]: {
+            display: "none",
         },
     },
     subtitle: {
@@ -204,7 +217,7 @@ class Home extends React.Component {
                     <div className={classes.headerContainer}>
                         <h1 className={classes.title}>
                             <span style={{fontSize: "1.314em"}}><span style={{color: "white", fontWeight: "bold"}}>PIXA.PICS : </span>Load a matrix of pixels.<br />Then, draw, and vectorize art.</span><br />
-                            <span style={{fontSize: ".618em"}}>Make potential (un)limited everywhere <img src={ANGELEMOJI} className="emoji"/>.</span>
+                            <span className={classes.titleSubTitle} style={{fontSize: ".618em"}}>Make potential (un)limited everywhere <img src={ANGELEMOJI} className="emoji"/>.</span>
                         </h1>
                         <h2 className={classes.subtitle}>
                             AEON'S of the <span className={classes.blue}>raster/matrix</span> and <span className={classes.blue}>vector</span> regarding the universes of graphics, <br/>
@@ -212,12 +225,12 @@ class Home extends React.Component {
                             Made with <img className={"emoji pulse"} src={HEARTHEMOJI}/>, it has been designed to be : For Everyone - For Free - Forever Open-Source <img src={EARTHEMOJI} className={"emoji"}/>.<br />
                         </h2>
                         <Button className={classes.homeCTAuseit} variant={"contained"} size={"large"} color="primary" onClick={(event) => this._go_to_url(event, "/pixel")}>
-                            OPEN WEB EDITOR NOW
+                            OPEN PIXEL LAB.
                         </Button>
                     </div>
                 </div>
                 <Button className={classes.homeCTAsendit} variant={"contained"} size={"large"} color="primary"onClick={(event) => {this._handle_speed_dial_action(event, "share")}}>
-                    SHARE ON THE NET
+                    SHARE IT
                 </Button>
             </div>
         );

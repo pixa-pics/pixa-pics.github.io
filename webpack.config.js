@@ -71,8 +71,8 @@ module.exports = {
     },
     output: {
         path: path.join(__dirname),
-        filename: "client.min.js",
-        chunkFilename: "chunk.[id].min.js"
+        filename: "client.main.min.js",
+        chunkFilename: "client.[id].min.js"
     },
     resolve: {
         alias: {
