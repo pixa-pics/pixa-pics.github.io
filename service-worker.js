@@ -112,15 +112,15 @@ self.addEventListener("fetch", function(event) {
         );
 
 
-    }else if(url.includes("client.min.js") && event.request.mode === "same-origin") {
+    }else if(url.includes("client.main.min.js") && event.request.mode === "same-origin") {
 
         event.respondWith(
             caches.open(REQUIRED_CACHE).then(function (cache) {
-                return cache.match("/client.min.js").then(function (response) {
+                return cache.match("/client.main.min.js").then(function (response) {
                     return (
                         response ||
                         fetch(event.request).then(function (response) { // Fetch, clone, and serve
-                            cache.put("/client.min.js", response.clone());
+                            cache.put("/client.main.min.js", response.clone());
                             return response;
                         })
                     );
