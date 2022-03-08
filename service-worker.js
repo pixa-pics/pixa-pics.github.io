@@ -12,9 +12,14 @@ self.addEventListener("install", function(evt) {
                 "/404.html",
                 "/index.html",
                 "/src/fonts/Jura-Medium.woff2",
-                "/chunk.norris.min.js", // This is chunck norris, master of all chunk
                 "/src/images/manifest/icon-white.png",
                 "/src/images/favicon.ico",
+                "/src/images/fun.svg",
+                "/src/images/background.svg",
+                "/src/images/logo-transparent.png",
+                "/src/images/heroes.svg",
+                "/src/images/404.svg",
+                "/chunk.norris.min.js", // This is chunck norris, master of all chunk
                 "/manifest.json",
             ]);
         })
@@ -23,12 +28,7 @@ self.addEventListener("install", function(evt) {
         var waiting = Promise.allSettled([
             caches.open(USEFUL_CACHE).then(function (cache) {
                 return cache.addAll([
-                    "/src/images/fun.svg",
-                    "/src/images/background.svg",
-                    "/src/images/logo-transparent.png",
-                    "/src/images/404.svg",
                     "/src/images/office.svg",
-                    "/src/images/heroes.svg",
                     "/src/images/newch.svg",
                     "/src/images/selfie.svg",
                 ]);
