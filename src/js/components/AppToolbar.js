@@ -26,7 +26,9 @@ import JamySuspicious from "../icons/JamySuspicious";
 
 const styles = theme => ({
     appBar: {
-        zIndex: theme.zIndex.drawer + 1
+        zIndex: theme.zIndex.drawer + 1,
+        contain: "layout paint style",
+        transform: "translateZ(0px)",
     },
     swipeableDrawer: {
         width: 256,
@@ -43,6 +45,7 @@ const styles = theme => ({
         backgroundRepeat: "no-repeat",
         backgroundPosition: "calc(50% + 16px) calc(100% - 0px)",
         backgroundSize: "calc(100% + 96px)",
+        contain: "layout paint size style",
     },
     drawerButton: {
         marginRight: theme.spacing(1),

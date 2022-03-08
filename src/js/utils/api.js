@@ -2,7 +2,7 @@ import { CURRENCY_COUNTRIES } from "../utils/constants";
 
 import PouchDB from "pouchdb";
 import get_browser_locales from "../utils/locales";
-window.settings_db = new PouchDB("settings_db", {deterministic_revs: false, revs_limit: 2});
+window.settings_db = new PouchDB("settings_db", {deterministic_revs: false, revs_limit: 0});
 import pool from "../utils/worker-pool";
 import { LZP3 } from "./lzp3_json";
 
@@ -201,6 +201,9 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
                                 pixa_settings.attachment_previews = pixa_settings.attachment_previews || {};
                                 pixa_settings.attachment_previews[name_id] = {id, kb, preview, timestamp};
 
+                                window._pixa_settings = {...pixa_settings};
+                                callback_function_info(null, {...pixa_settings});
+
                                 LZP3(data, "COMPRESS_OBJECT", (uint8a) => {
 
                                     settings_docs[0]._attachments = settings_docs[0]._attachments || {};
@@ -221,10 +224,12 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
                                 pixa_settings.attachment_previews = pixa_settings.attachment_previews  || {};
                                 delete pixa_settings.attachment_previews[name_id];
 
+                                window._pixa_settings = {...pixa_settings};
+                                callback_function_info(null, {...pixa_settings});
+
                                 window.settings_db.removeAttachment(settings_docs[0]._id, name_id, settings_docs[0]._rev).then((result) => {
 
                                     attachments_to_process--;
-
                                     if(attachments_to_process === 0) {
 
                                         continue_push_in_db(settings_docs, pixa_settings);
@@ -250,9 +255,8 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
                                     window.settings_db.bulkDocs(settings_docs.map((sd) => {return {_id: sd._id, _rev: sd._rev, _deleted: true, timestamp: 0, data: null, info: null, _attachments: {}}}), {force: true});
                                 }
 
-                                window._pixa_settings = {...pixa_settings};
-                                callback_function_info(null, {...pixa_settings});
                                 window.settings_db.compact();
+                                window.settings_db.viewCleanup();
                             });
                         };
 
@@ -336,6 +340,7 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
                         window._pixa_settings = {...pixa_settings};
                         callback_function_info(null, {...pixa_settings});
                         window.settings_db.compact();
+                        window.settings_db.viewCleanup();
                     });
                 };
 

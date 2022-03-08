@@ -13,9 +13,9 @@ import dispatcher from "../dispatcher";
 import actions from "../actions/utils";
 
 import Home from "./Home";
+import Settings from "./Settings";
+import Unknown from "./Unknown";
 const Pixel = React.lazy(() => import("../pages/Pixel"));
-const Settings = React.lazy(() => import("../pages/Settings"));
-const Unknown = React.lazy(() => import("../pages/Unknown"));
 
 
 const PAGE_COMPONENTS = (name, pathname) => {
@@ -26,9 +26,9 @@ const PAGE_COMPONENTS = (name, pathname) => {
         case "pixel":
             return <Suspense fallback={<div/>}><Pixel /></Suspense>;
         case "unknown":
-            return <Suspense fallback={<div/>}><Unknown /></Suspense>;
+            return <Unknown />;
         case "settings":
-            return <Suspense fallback={<div/>}><Settings /></Suspense>;
+            return <Settings />;
     }
 };
 

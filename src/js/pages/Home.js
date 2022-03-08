@@ -3,7 +3,7 @@ import { withStyles } from "@material-ui/core";
 
 import { HISTORY } from "../utils/constants";
 
-import {Button} from "@material-ui/core";
+import {Button, Fade, Grow} from "@material-ui/core";
 import actions from "../actions/utils";
 
 import get_svg_in_b64 from "../utils/svgToBase64";
@@ -42,38 +42,47 @@ const styles = theme => ({
         }
     },
     homeCTAuseit: {
-        color: "#000",
-        backgroundImage: "linear-gradient(64deg, goldenrod, blanchedalmond, gold, darkgoldenrod, blanchedalmond, goldenrod, blanchedalmond)",
-        fontWeight: "bold",
+        color: "#6f440d",
+        backgroundImage: "linear-gradient(-32deg, goldenrod, #fff9f0, gold, darkgoldenrod, #fff8aa, goldenrod, blanchedalmond)",
+        fontWeight: "inherit",
         minWidth: "min(320px, calc(100% - 32px))",
+        transform: "translateY(0px) scale(1)  !important",
         lineHeight: "1.25em",
         marginTop: "48x",
         borderRadius: "4px",
         "&:hover": {
-            color: "#000",
+            color: "#402303",
+            filter: "drop-shadow(0px 0px 16px goldenrod) brightness(1.1)",
+            transform: "translateY(-3.4px) scale(1.1)  !important",
         },
         zIndex: 7,
-        filter: "invert(1) drop-shadow(0px 0px 3px skyblue)",
+        filter: "drop-shadow(0px 0px 3px darkgoldenrod)",
+        transition: "all .25s ease-in-out 0s !important",
         [theme.breakpoints.down("sm")]: {
             marginTop: "0px",
-            filter: "invert(1) drop-shadow(0px 0px 6px skyblue)",
         },
     },
     homeCTAsendit: {
-        color: "#000",
-        backgroundImage: "linear-gradient(64deg, goldenrod, blanchedalmond, gold, darkgoldenrod, blanchedalmond, goldenrod, blanchedalmond)",
-        filter: "drop-shadow(0px 0px 3px goldenrod)",
+        color: "#fff",
+        backgroundImage: "url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4iICJodHRwOi8vd3d3LnczLm9yZy9HcmFwaGljcy9TVkcvMS4xL0RURC9zdmcxMS5kdGQiPjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTcsN0gxMVY5SDdBMywzIDAgMCwwIDQsMTJBMywzIDAgMCwwIDcsMTVIMTFWMTdIN0E1LDUgMCAwLDEgMiwxMkE1LDUgMCAwLDEgNyw3TTE3LDdBNSw1IDAgMCwxIDIyLDEySDIwQTMsMyAwIDAsMCAxNyw5SDEzVjdIMTdNOCwxMUgxNlYxM0g4VjExTTE3LDEySDE5VjE1SDIyVjE3SDE5VjIwSDE3VjE3SDE0VjE1SDE3VjEyWiIgZmlsbD0iI2ZmZmZmZjMzIi8+PC9zdmc+Cg==), linear-gradient(32deg, #6100fd, #5dbff3, #7be2f1, #f4fdff, #32c4ff, #6d5bff, #020562)",
+        filter: "drop-shadow(0px 0px 3px skyblue) brightness(1)",
+        transform: "translateY(0px) scale(1) !important",
+        transformOrigin: "center",
+        transition: "all .25s ease-in-out 0s !important",
         fontWeight: "bold",
-        borderRadius: "12px",
+        fontSize: "26px",
+        borderRadius: "64px",
         lineHeight: "3em",
         position: "fixed",
-        minWidth: 128,
+        width: 128,
+        height: 128,
         zIndex: 7,
         bottom: 32,
         right: 32,
         "&:hover": {
-            color: "#000",
-            filter: "drop-shadow(0px 0px 6px goldenrod)",
+            color: "#fff",
+            filter: "drop-shadow(0px 0px 16px lightskyblue) brightness(1.1)",
+            transform: "translateY(-12.8px) scale(1.1)  !important",
         }
     },
     backgroundImage: {
@@ -215,25 +224,31 @@ class Home extends React.Component {
         return (
             <div className={classes.root}>
                 <div className={classes.backgroundImage}>
-                    <img src="/src/images/fun.svg" className={classes.backgroundImageImage}/>
+                    <Fade in={true} timeout={100}><img src="/src/images/fun.svg" className={classes.backgroundImageImage}/></Fade>
                     <div className={classes.headerContainer}>
                         <h1 className={classes.title}>
-                            <span style={{fontSize: "1.314em"}}><span style={{color: "white", fontWeight: "bold"}}>PIXA.PICS : </span>Load a matrix of pixels.<br />Then, draw, and vectorize art.</span><br />
-                            <span className={classes.titleSubTitle} style={{fontSize: ".618em"}}>Make potential (un)limited everywhere <img src={ANGELEMOJI} className="emoji"/>.</span>
+                            <Fade in={true} timeout={200}><span style={{fontSize: "1.314em"}}><span style={{color: "white", fontWeight: "bold"}}>PIXA.PICS : </span>Load a matrix of pixels.<br />Then, draw, and vectorize art.</span></Fade><br />
+                            <Fade in={true} timeout={350}><span className={classes.titleSubTitle} style={{fontSize: ".618em"}}>Make potential (un)limited everywhere <img src={ANGELEMOJI} className="emoji"/>.</span></Fade>
                         </h1>
-                        <h2 className={classes.subtitle}>
-                            AEON'S of the <span className={classes.blue}>raster/matrix</span> and <span className={classes.blue}>vector</span> regarding the universes of graphics, <br/>
-                            You can draw and edit on (size) limited pixel art and use it to generate infinite paintings.<br />
-                            Made with <img className={"emoji pulse"} src={HEARTHEMOJI}/>, it has been designed to be : For Everyone - For Free - Forever Open-Source <img src={EARTHEMOJI} className={"emoji"}/>.<br />
-                        </h2>
-                        <Button className={classes.homeCTAuseit} variant={"contained"} size={"large"} color="primary" onClick={(event) => this._go_to_url(event, "/pixel")}>
+                        <Fade in={true} timeout={700}>
+                            <h2 className={classes.subtitle}>
+                                AEON'S of the <span className={classes.blue}>raster/matrix</span> and <span className={classes.blue}>vector</span> regarding the universes of graphics, <br/>
+                                You can draw and edit on (size) limited pixel art and use it to generate infinite paintings.<br />
+                                Made with <img className={"emoji pulse"} src={HEARTHEMOJI}/>, it has been designed to be : For Everyone - For Free - Forever Open-Source <img src={EARTHEMOJI} className={"emoji"}/>.<br />
+                            </h2>
+                        </Fade>
+                        <Fade in={true} timeout={1050}>
+                            <Button className={classes.homeCTAuseit} variant={"contained"} size={"large"} color="primary" onClick={(event) => this._go_to_url(event, "/pixel")}>
                             OPEN PIXEL LAB.
-                        </Button>
+                            </Button>
+                        </Fade>
                     </div>
                 </div>
-                <Button className={classes.homeCTAsendit} variant={"contained"} size={"large"} color="primary"onClick={(event) => {this._handle_speed_dial_action(event, "share")}}>
-                    SHARE IT
-                </Button>
+                <Grow in={true} timeout={1400}>
+                    <Button className={classes.homeCTAsendit} variant={"contained"} size={"large"} color="primary"onClick={(event) => {this._handle_speed_dial_action(event, "share")}}>
+                        SHARE
+                    </Button>
+                </Grow>
             </div>
         );
     }

@@ -101,7 +101,6 @@ const styles = theme => ({
         height: "100%",
         maxHeight: "100%",
         display: "flex",
-        transform: "translateZ(0px)",
         contain: "paint style size"
     },
     contentDrawer: {
@@ -148,6 +147,7 @@ const styles = theme => ({
         width: 480,
         overscrollBehavior: "none",
         display: "flex",
+        contain: "layout paint size style",
     },
     drawerPaper: {
         boxShadow: "0px 2px 4px -1px rgb(0 0 0 / 20%), 0px 4px 5px 0px rgb(0 0 0 / 14%), 0px 1px 10px 0px rgb(0 0 0 / 12%)",
@@ -155,6 +155,7 @@ const styles = theme => ({
         width: 480,
         overflowX: "overlay",
         background: "#fafafa",
+        contain: "layout paint size style",
     },
     swipeableDrawerPaper: {
         maxWidth: "100%",
@@ -222,17 +223,19 @@ const styles = theme => ({
         textAlign: "center",
     },
     fatabs: {
+        contain: "layout paint style sze",
         [theme.breakpoints.up("lg")]: {
             display: "none",
         },
         [theme.breakpoints.up("md")]: {
-            width: "calc(100% - 256px)",
+            width: "calc(100vw - 256px)",
         },
         zIndex: 100,
         position: "fixed",
         bottom: 0,
         right: 0,
-        width: "100%",
+        width: "100vw",
+        height: 48,
     },
     listOfTools: {
         paddingTop: 0,
@@ -1448,7 +1451,6 @@ class Pixel extends React.Component {
                         paper: classes.drawerPaper,
                     }}
                 >
-                    <Toolbar />
                     <div style={{display: "contents"}}>
                         <div style={{boxShadow: "rgb(0 0 0 / 20%) 0px 2px 4px -1px, rgb(0 0 0 / 14%) 0px 4px 5px 0px, rgb(0 0 0 / 12%) 0px 1px 10px 0px", zIndex: 1}}>
                             <div className={classes.drawerHeader}>
@@ -1556,7 +1558,7 @@ class Pixel extends React.Component {
                         }}>
                             <CanvasPixels
                                 on_export_state={this._handle_canvas_state_export}
-                                export_state_every_ms={is_mobile_or_tablet ? 30 * 1000: 15 * 1000}
+                                export_state_every_ms={is_mobile_or_tablet ? 60 * 1000: 40 * 1000}
                                 onContextMenu={(e) => {e.preventDefault()}}
                                 key={"canvas"}
                                 className={classes.contentCanvas}

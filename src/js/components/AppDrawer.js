@@ -1,6 +1,6 @@
 import React from "react";
 import { withStyles } from "@material-ui/core";
-import {Toolbar, Drawer, Box} from "@material-ui/core";
+import {Toolbar, Drawer, Box, Fade} from "@material-ui/core";
 import DrawerContent from "../components/DrawerContent";
 
 import actions from "../actions/utils";
@@ -45,6 +45,7 @@ const styles = theme => ({
         backgroundRepeat: "no-repeat",
         backgroundPosition: "calc(50% + 16px) calc(100% - 0px)",
         backgroundSize: "calc(100% + 96px)",
+        contain: "layout paint size style",
     },
     drawerContainer: {
         overflow: "auto"
@@ -81,13 +82,15 @@ class AppDrawer extends React.Component {
                     <Toolbar />
                     <div className={classes.drawerContainer}>
                         <DrawerContent pathname={pathname} onClose={() => {}} />
-                        <div style={{
-                            position: "fixed",
-                            bottom: 12,
-                            left: 12,
-                            color: "#ffffff75",
-                            userSelect: "none"
-                        }}><span>Awakening privacy...</span></div>
+                        <Fade in={true} timeout={400}>
+                            <div style={{
+                                position: "fixed",
+                                bottom: 12,
+                                left: 12,
+                                color: "#ffffff75",
+                                userSelect: "none"
+                            }}><span>Awakening privacy...</span></div>
+                        </Fade>
                     </div>
                 </Drawer>
             </Box>
