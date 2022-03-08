@@ -40,7 +40,6 @@ import { lightTheme } from "./theme/index";
 
 let element = document.getElementById("app") || document.createElement('div');
 element.setAttribute("id", "app");
-document.body.setAttribute("style", "");
 document.body.appendChild(element);
 const app = document.getElementById('app');
 

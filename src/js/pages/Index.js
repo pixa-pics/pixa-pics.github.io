@@ -14,8 +14,8 @@ import actions from "../actions/utils";
 
 import Home from "./Home";
 const Pixel = React.lazy(() => import("../pages/Pixel"));
-import Settings from "./Settings";
-import Unknown from "./Unknown";
+const Settings = React.lazy(() => import("../pages/Settings"));
+const Unknown = React.lazy(() => import("../pages/Unknown"));
 
 
 const PAGE_COMPONENTS = (name, pathname) => {
@@ -26,9 +26,9 @@ const PAGE_COMPONENTS = (name, pathname) => {
         case "pixel":
             return <Suspense fallback={<div/>}><Pixel /></Suspense>;
         case "unknown":
-            return <Unknown />;
+            return <Suspense fallback={<div/>}><Unknown /></Suspense>;
         case "settings":
-            return <Settings />;
+            return <Suspense fallback={<div/>}><Settings /></Suspense>;
     }
 };
 
@@ -274,6 +274,7 @@ class Index extends React.Component {
             const _onboarding_enabled = typeof settings.onboarding !== "undefined" ? settings.onboarding: true;
 
             document.documentElement.lang = _language;
+            document.body.setAttribute("style", "");
             this.setState({ _onboarding_enabled, _sfx_enabled, _jamy_enabled, _selected_locales_code, _language, _selected_currency, _know_the_settings: true });
         }else {
 

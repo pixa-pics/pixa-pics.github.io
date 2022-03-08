@@ -1,6 +1,6 @@
-var REQUIRED_CACHE = "unless-update-cache-v8-required";
-var USEFUL_CACHE = "unless-update-cache-v8-useful";
-var STATIC_CACHE = "unless-update-cache-v8-static";
+var REQUIRED_CACHE = "unless-update-cache-v9-required";
+var USEFUL_CACHE = "unless-update-cache-v9-useful";
+var STATIC_CACHE = "unless-update-cache-v9-static";
 
 // On install, cache some resource.
 self.addEventListener("install", function(evt) {
@@ -30,6 +30,8 @@ self.addEventListener("install", function(evt) {
                     "/src/images/404.svg",
                     "/src/images/office.svg",
                     "/src/images/heroes.svg",
+                    "/src/images/newch.svg",
+                    "/src/images/selfie.svg",
                 ]);
             }),
             caches.open(REQUIRED_CACHE).then(function (cache) {
@@ -41,6 +43,9 @@ self.addEventListener("install", function(evt) {
                     "/client.4.min.js",
                     "/client.5.min.js",
                     "/client.6.min.js",
+                    "/client.7.min.js",
+                    "/client.8.min.js",
+                    "/client.9.min.js",
                 ]);
             }),
             caches.open(STATIC_CACHE).then(function (cache) {
@@ -233,6 +238,54 @@ self.addEventListener("fetch", function(event) {
                         response ||
                         fetch(event.request).then(function (response) { // Fetch, clone, and serve
                             cache.put("/client.6.min.js", response.clone());
+                            return response;
+                        })
+                    );
+                });
+            })
+        );
+
+    }else if(url.includes("client.7.min.js") && event.request.mode === "same-origin") {
+
+        event.respondWith(
+            caches.open(REQUIRED_CACHE).then(function (cache) {
+                return cache.match("/client.7.min.js").then(function (response) {
+                    return (
+                        response ||
+                        fetch(event.request).then(function (response) { // Fetch, clone, and serve
+                            cache.put("/client.7.min.js", response.clone());
+                            return response;
+                        })
+                    );
+                });
+            })
+        );
+
+    }else if(url.includes("client.8.min.js") && event.request.mode === "same-origin") {
+
+        event.respondWith(
+            caches.open(REQUIRED_CACHE).then(function (cache) {
+                return cache.match("/client.8.min.js").then(function (response) {
+                    return (
+                        response ||
+                        fetch(event.request).then(function (response) { // Fetch, clone, and serve
+                            cache.put("/client.8.min.js", response.clone());
+                            return response;
+                        })
+                    );
+                });
+            })
+        );
+
+    }else if(url.includes("client.9.min.js") && event.request.mode === "same-origin") {
+
+        event.respondWith(
+            caches.open(REQUIRED_CACHE).then(function (cache) {
+                return cache.match("/client.9.min.js").then(function (response) {
+                    return (
+                        response ||
+                        fetch(event.request).then(function (response) { // Fetch, clone, and serve
+                            cache.put("/client.9.min.js", response.clone());
                             return response;
                         })
                     );

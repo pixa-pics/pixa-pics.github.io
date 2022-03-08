@@ -896,6 +896,7 @@ const anim_loop = ( render, do_not_cancel_animation = false, force_update = fals
 
 import React from "react";
 import pool from "../utils/worker-pool";
+import structuredClone from "@ungap/structured-clone";
 
 class CanvasPixels extends React.Component {
 
@@ -972,7 +973,7 @@ class CanvasPixels extends React.Component {
             _old_pxl_colors: ["#00000000"],
             _s_pxls: [new Array((props.pxl_width || 32) * (props.pxl_height || 32)).fill(0)],
             _old_pxls: new Array((props.pxl_width || 32) * (props.pxl_height || 32)).fill(0),
-            _json_state_history: `{"previous_history_position": 0, "history_position": 0, "state_history": []}`,
+            _json_state_history: {previous_history_position: 0, history_position: 0, state_history: []},
             _saved_json_state_history_timestamp_from_drawing: 0,
             _old_pxl_width: 0,
             _old_pxl_height: 0,
@@ -1634,7 +1635,7 @@ class CanvasPixels extends React.Component {
 
         let { _layers } = this.state;
 
-        let layer = {..._layers[at_index]};
+        let layer = structuredClone(_layers[at_index]);
         layer.hidden = !layer.hidden;
 
         _layers[at_index] = layer;
@@ -1652,7 +1653,7 @@ class CanvasPixels extends React.Component {
 
         let { _layers } = this.state;
 
-        let layer = {..._layers[at_index]};
+        let layer = structuredClone(_layers[at_index]);
         layer.opacity = opacity;
 
         _layers[at_index] = layer;
@@ -1759,7 +1760,7 @@ class CanvasPixels extends React.Component {
 
             const { _layer_index, _layers, _s_pxl_colors } = this.state;
 
-            this.props.onLayersChange(_layer_index, JSON.stringify(_layers.map((layer, index) => {
+            this.props.onLayersChange(_layer_index, structuredClone(_layers.map((layer, index) => {
 
                 layer.colors = _s_pxl_colors[index].slice(0, 128);
                 return layer;
@@ -1770,7 +1771,7 @@ class CanvasPixels extends React.Component {
     _notify_layers_and_compute_thumbnails_change = () => {
 
         const { _json_state_history } = this.state;
-        const { previous_history_position, history_position, state_history } = JSON.parse(_json_state_history);
+        const { previous_history_position, history_position, state_history } = structuredClone(_json_state_history);
 
         let { _layers, _s_pxls, _s_pxl_colors } = this.state;
         let all_layers = [];
@@ -1792,7 +1793,7 @@ class CanvasPixels extends React.Component {
 
                 state_history[history_position]._layers.forEach((layer, index) => {
 
-                    layer = {...(state_history[history_position]._layers[index] || {})};
+                    layer = (state_history[history_position]._layers[index] || {});
 
                     if(history_position) {
 
@@ -5473,7 +5474,7 @@ class CanvasPixels extends React.Component {
 
         const { _id, pxl_width, pxl_height, _s_pxls, _original_image_index, _s_pxl_colors, _layers, _layer_index, _pxl_indexes_of_selection, _last_action_timestamp, _json_state_history, _state_history_length, _undo_buffer_time_ms, _pencil_mirror_index } = this.state;
 
-        let {state_history, history_position, previous_history_position} = JSON.parse(_json_state_history);
+        let {state_history, history_position, previous_history_position} = structuredClone(_json_state_history);
 
         const current_state = {
             _id,
@@ -5500,7 +5501,7 @@ class CanvasPixels extends React.Component {
             const [ array ] = this._array_push_fixed_length(state_history, _state_history_length, current_state);
             state_history = array;
 
-            const new_json_state_history = JSON.stringify({previous_history_position, history_position, state_history});
+            const new_json_state_history = {previous_history_position, history_position, state_history};
 
             this.setState({_json_state_history: new_json_state_history, _saved_json_state_history_timestamp_from_drawing: Date.now()});
             return new_json_state_history;
@@ -5512,7 +5513,7 @@ class CanvasPixels extends React.Component {
             const previous_state_index = current_state_size - back_in_history_of;
             const previous_state = state_history[previous_state_index];
 
-            if(JSON.stringify(previous_state) !== JSON.stringify(current_state) && (_last_action_timestamp + _undo_buffer_time_ms < Date.now() || save_pending_data)) {
+            if(structuredClone(previous_state) !== structuredClone(current_state) && (_last_action_timestamp + _undo_buffer_time_ms < Date.now() || save_pending_data)) {
 
                 // An action must have been performed and the last action must be older of 1 sec
                 if(back_in_history_of) {
@@ -5525,7 +5526,7 @@ class CanvasPixels extends React.Component {
                 previous_history_position = history_position;
                 history_position = has_new_length ? history_position + 1: history_position;
 
-                const new_json_state_history = JSON.stringify({previous_history_position, history_position, state_history});
+                const new_json_state_history = {previous_history_position, history_position, state_history};
 
                 this.setState({_json_state_history: new_json_state_history, _saved_json_state_history_timestamp_from_drawing: Date.now()}, () => {
 
@@ -5608,6 +5609,8 @@ class CanvasPixels extends React.Component {
 
         const { _s_pxl_colors, pxl_width, pxl_height } = this.state;
 
+        this._notify_export_state();
+
         let image_details = {
             width: pxl_width,
             height: pxl_height,
@@ -5643,14 +5646,13 @@ class CanvasPixels extends React.Component {
 
     import_JS_state = (js) => {
 
-        const { _base64_original_images, _json_state_history } = js;
-        const {state_history, previous_history_position, history_position} = JSON.parse(_json_state_history);
+        const { _base64_original_images, _json_state_history } = structuredClone(js);
+        const {state_history, previous_history_position, history_position} = _json_state_history;
         const { _original_image_index, pxl_width, pxl_height, _pxl_indexes_of_selection, _s_pxl_colors, _s_pxls, _layers, _layer_index, _pencil_mirror_index, _id } = state_history[history_position];
 
         const has_new_dimension = Boolean(pxl_width !== this.state.pxl_width || pxl_height !== this.state.pxl_height);
         this.setState({
             _id,
-            _original_image_index: - 1,
             _pencil_mirror_index,
             pxl_width,
             _old_pxl_width: this.state.pxl_width,
@@ -5664,21 +5666,18 @@ class CanvasPixels extends React.Component {
             _old_layers: [...this.state._layers],
             _layer_index,
             _base64_original_images,
-            _json_state_history,
+            _original_image_index: _original_image_index,
+            _json_state_history: _json_state_history,
             _is_there_new_dimension: has_new_dimension,
         }, () => {
 
-            this.setState({_original_image_index});
             if(has_new_dimension) {
 
-                this._request_force_update(false, false, () => {
+                this._notify_size_change();
+                this._notify_image_load_complete();
+                this._notify_layers_and_compute_thumbnails_change();
+                this._update_screen_zoom_ratio(true);
 
-                    this._notify_size_change();
-                    this._notify_layers_change();
-                    this._update_screen_zoom_ratio(true);
-                    this._notify_image_load_complete();
-                    this.nothing_happened_undo(1000);
-                });
             }else {
 
                 this._notify_layers_and_compute_thumbnails_change();
@@ -5690,7 +5689,9 @@ class CanvasPixels extends React.Component {
 
     export_JS_state = (callback_function) => {
 
-        const {_base64_original_images, _json_state_history, _id} = this.state;
+        const is_pending_save_data = this._maybe_save_state(true);
+        const _json_state_history = structuredClone(is_pending_save_data === null ? this.state._json_state_history: is_pending_save_data);
+        const {_base64_original_images, _id} = this.state;
 
         this.get_base64_png_data_url(1, ([base_64]) => {
 
@@ -5700,21 +5701,16 @@ class CanvasPixels extends React.Component {
                 kb: bytes / 1000,
                 preview: base_64,
                 timestamp: Date.now(),
-                _base64_original_images,
-                _json_state_history,
+                _base64_original_images: structuredClone(_base64_original_images),
+                _json_state_history: structuredClone(_json_state_history)
             });
         }, false, 1);
-    };
-
-    export_JSON_state = (callback_function) => {
-
-        this.export_JS_state((obj) => {callback_function(JSON.stringify(obj))})
     };
 
     _can_undo = () => {
 
         const { _json_state_history } = this.state;
-        const {state_history, history_position} = JSON.parse(_json_state_history);
+        const {state_history, history_position} = structuredClone(_json_state_history);
         const current_state_size = state_history.length - 1;
         const back_in_history_of = current_state_size - history_position;
 
@@ -5724,9 +5720,9 @@ class CanvasPixels extends React.Component {
     nothing_happened_undo = (if_more_recent_than_ms) => {
 
         const is_pending_save_data = this._maybe_save_state(true);
-        const _json_state_history = is_pending_save_data === null ? this.state._json_state_history: is_pending_save_data;
+        const _json_state_history = structuredClone(is_pending_save_data === null ? this.state._json_state_history: is_pending_save_data);
 
-        let {state_history, history_position, previous_history_position} = JSON.parse(_json_state_history);
+        let {state_history, history_position, previous_history_position} = _json_state_history;
 
         if(this._can_undo() & !is_pending_save_data && this.state._saved_json_state_history_timestamp_from_drawing + if_more_recent_than_ms > Date.now()){
 
@@ -5734,7 +5730,7 @@ class CanvasPixels extends React.Component {
             history_position--;
             const { _original_image_index, pxl_width, pxl_height, _pxl_indexes_of_selection, _s_pxl_colors, _s_pxls, _layers, _layer_index, _pencil_mirror_index, _id } = state_history[history_position];
             state_history.splice(previous_history_position, 1);
-            const new_json_state_history = JSON.stringify({state_history, history_position, previous_history_position});
+            const new_json_state_history = {state_history, history_position, previous_history_position};
             const has_new_dimension = Boolean(pxl_width !== this.state.pxl_width || pxl_height !== this.state.pxl_height);
 
             this.setState({
@@ -5780,15 +5776,15 @@ class CanvasPixels extends React.Component {
     undo = () => {
 
         const is_pending_save_data = this._maybe_save_state(true);
-        const _json_state_history = is_pending_save_data === null ? this.state._json_state_history: is_pending_save_data;
-        let {state_history, history_position, previous_history_position} = JSON.parse(_json_state_history);
+        const _json_state_history = structuredClone(is_pending_save_data === null ? this.state._json_state_history: is_pending_save_data);
+        let {state_history, history_position, previous_history_position} = _json_state_history;
 
         if(this._can_undo() & !is_pending_save_data){
 
             previous_history_position = history_position;
             history_position--;
             const { _original_image_index, pxl_width, pxl_height, _pxl_indexes_of_selection, _s_pxl_colors, _s_pxls, _layers, _layer_index, _pencil_mirror_index, _id } = state_history[history_position];
-            const new_json_state_history = JSON.stringify({state_history, history_position, previous_history_position});
+            const new_json_state_history = {state_history, history_position, previous_history_position};
             const has_new_dimension = Boolean(pxl_width !== this.state.pxl_width || pxl_height !== this.state.pxl_height);
 
             this.setState({
@@ -5828,7 +5824,7 @@ class CanvasPixels extends React.Component {
     _can_redo = () => {
 
         const { _json_state_history } = this.state;
-        const {state_history, history_position} = JSON.parse(_json_state_history);
+        const {state_history, history_position} = structuredClone(_json_state_history);
 
         return state_history.length - 1 > history_position;
     }
@@ -5836,9 +5832,9 @@ class CanvasPixels extends React.Component {
     redo = () => {
 
         const is_pending_save_data = this._maybe_save_state(true);
-        const _json_state_history = is_pending_save_data === null ? this.state._json_state_history: is_pending_save_data;
+        const _json_state_history =  structuredClone(is_pending_save_data === null ? this.state._json_state_history: is_pending_save_data);
 
-        let {state_history, history_position, previous_history_position} = JSON.parse(_json_state_history);
+        let {state_history, history_position, previous_history_position} = _json_state_history;
 
         if (this._can_redo() && !is_pending_save_data) {
 
@@ -5846,7 +5842,7 @@ class CanvasPixels extends React.Component {
             history_position++;
             const { _original_image_index, pxl_width, pxl_height, _pxl_indexes_of_selection, _s_pxl_colors, _s_pxls, _layers, _layer_index, _pencil_mirror_index, _id } = state_history[history_position];
 
-            const new_json_state_history = JSON.stringify({state_history, history_position, previous_history_position});
+            const new_json_state_history = {state_history, history_position, previous_history_position};
             const has_new_dimension = Boolean(pxl_width !== this.state.pxl_width || pxl_height !== this.state.pxl_height);
 
             this.setState({

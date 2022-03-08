@@ -225,6 +225,9 @@ const styles = theme => ({
         [theme.breakpoints.up("lg")]: {
             display: "none",
         },
+        [theme.breakpoints.up("md")]: {
+            width: "calc(100% - 256px)",
+        },
         zIndex: 100,
         position: "fixed",
         bottom: 0,
@@ -358,10 +361,9 @@ class Pixel extends React.Component {
 
     _handle_canvas_state_export = (current_state) => {
 
-        console.log(current_state)
         const { _previous_state } = this.state;
 
-        const {id, kb, preview, _json_state_history} = current_state;
+        const {id, kb, preview} = current_state;
 
         if((_previous_state.preview !== preview) && kb > 1) {
 
@@ -1138,7 +1140,7 @@ class Pixel extends React.Component {
 
         const { _layer_index } = this.state;
 
-        this.setState({_previous_layer_index: _layer_index, _layer_index: layer_index, _layers: JSON.parse(layers)});
+        this.setState({_previous_layer_index: _layer_index, _layer_index: layer_index, _layers: layers});
     };
 
     _handle_game_end = () => {

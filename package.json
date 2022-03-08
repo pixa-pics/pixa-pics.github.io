@@ -9,6 +9,7 @@
     "@material-ui/icons": "^4.11.2",
     "@material-ui/lab": "~4.0.0-alpha.57",
     "@material-ui/pickers": "^3.3.10",
+    "@ungap/structured-clone": "^0.3.4",
     "bn.js": "^5.2.0",
     "clipboard-polyfill": "^3.0.3",
     "date-fns": "^2.27.0",

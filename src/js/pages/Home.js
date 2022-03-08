@@ -53,14 +53,16 @@ const styles = theme => ({
             color: "#000",
         },
         zIndex: 7,
-        filter: "invert(1)",
+        filter: "invert(1) drop-shadow(0px 0px 3px skyblue)",
         [theme.breakpoints.down("sm")]: {
-            marginTop: "0px"
+            marginTop: "0px",
+            filter: "invert(1) drop-shadow(0px 0px 6px skyblue)",
         },
     },
     homeCTAsendit: {
         color: "#000",
         backgroundImage: "linear-gradient(64deg, goldenrod, blanchedalmond, gold, darkgoldenrod, blanchedalmond, goldenrod, blanchedalmond)",
+        filter: "drop-shadow(0px 0px 3px goldenrod)",
         fontWeight: "bold",
         borderRadius: "12px",
         lineHeight: "3em",
@@ -71,6 +73,7 @@ const styles = theme => ({
         right: 32,
         "&:hover": {
             color: "#000",
+            filter: "drop-shadow(0px 0px 6px goldenrod)",
         }
     },
     backgroundImage: {
@@ -102,23 +105,22 @@ const styles = theme => ({
         },
     },
     backgroundImageImage: {
-        position: "absolute",
-        filter: "contrast(0.8) brightness(1.2)",
-        width: "max(90vh, 90%)",
-        right: "calc(min(-36vh, -36%) + 128px)",
-        top: "calc(max(36vh, 36%) + 128px)",
-        transform: "translate(calc(min(-45vh, -45%) / 2), calc(min(-45vh, -45%) / 2))",
+        right: "max(33%, 33vh)",
+        bottom: "min(33%, 33vh)",
+        width: "max(75%, 66vh)",
         zIndex: 3,
+        position: "absolute",
+        transform: "translate(min(50vh, 50%), min(50vh, 50%))",
         "&": {
             animation: "$slide 14s linear infinite",
             "@global": {
                 "@keyframes slide": {
-                    "0%": {transform: "translate(calc(25vw - 25vh - 7%), -50%)"},
-                    "20%": {transform: "translate(calc(25vw - 25vh - 14%), -50%)"},
-                    "40%": {transform: "translate(calc(25vw - 25vh + 7%), -50%)"},
-                    "60%": {transform: "translate(calc(25vw - 25vh + 14%), -50%)"},
-                    "80%": {transform: "translate(calc(25vw - 25vh + 21%), -50%)"},
-                    "100%": {transform: "translate(calc(25vw - 25vh + 7%), -50%)"},
+                    "0%": {transform: "translate(calc(-70px + min(50vh, 50%)), calc(-50px + min(50vh, 50%)))"},
+                    "20%": {transform: "translate(calc(+30px + min(50vh, 50%)), calc(-10px + min(50vh, 50%)))"},
+                    "40%": {transform: "translate(calc(+50px + min(50vh, 50%)), calc(50px + min(50vh, 50%)))"},
+                    "60%": {transform: "translate(calc(+90px + min(50vh, 50%)), calc(30px + min(50vh, 50%)))"},
+                    "80%": {transform: "translate(calc(00px + min(50vh, 50%)), calc(-30px + min(50vh, 50%)))"},
+                    "100%": {transform: "translate(calc(-70px + min(50vh, 50%)), calc(-50px + min(50vh, 50%)))"},
                 }
             },
         },

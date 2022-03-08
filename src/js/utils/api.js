@@ -2,7 +2,7 @@ import { CURRENCY_COUNTRIES } from "../utils/constants";
 
 import PouchDB from "pouchdb";
 import get_browser_locales from "../utils/locales";
-window.settings_db = new PouchDB("settings_db", {deterministic_revs: false, revs_limit: 1});
+window.settings_db = new PouchDB("settings_db", {deterministic_revs: false, revs_limit: 2});
 import pool from "../utils/worker-pool";
 import { LZP3 } from "./lzp3_json";
 
@@ -67,6 +67,7 @@ const get_settings = (callback_function_info = null, attachment_ids = [], callba
 
     window.settings_db.allDocs({
         include_docs: true,
+        descending: false,
     }, (error, response) => {
 
         let settings_docs_undefined = false;
@@ -168,6 +169,7 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
 
     window.settings_db.allDocs({
         include_docs: true,
+        descending: false,
         attachments: Boolean(Object.keys(attachment_array).length),
         binary: Boolean(Object.keys(attachment_array).length)
     }, (error, response) => {
@@ -199,7 +201,6 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
                                 pixa_settings.attachment_previews = pixa_settings.attachment_previews || {};
                                 pixa_settings.attachment_previews[name_id] = {id, kb, preview, timestamp};
 
-                                console.log(pixa_settings.attachment_previews)
                                 LZP3(data, "COMPRESS_OBJECT", (uint8a) => {
 
                                     settings_docs[0]._attachments = settings_docs[0]._attachments || {};
@@ -218,12 +219,10 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
                             }else {
 
                                 pixa_settings.attachment_previews = pixa_settings.attachment_previews  || {};
+                                delete pixa_settings.attachment_previews[name_id];
 
                                 window.settings_db.removeAttachment(settings_docs[0]._id, name_id, settings_docs[0]._rev).then((result) => {
 
-                                    delete window._pixa_settings.attachment_previews[name_id];
-                                    delete pixa_settings.attachment_previews[name_id];
-                                    delete settings_docs[0]._attachments[name_id];
                                     attachments_to_process--;
 
                                     if(attachments_to_process === 0) {
@@ -244,11 +243,11 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
                                 _attachments: settings_docs[0]._attachments,
                             }, {force: true}).then((response) => {
 
-                                if(settings_docs.length > 1) {
+                                if(settings_docs.length > 0) {
 
                                     // Delete all others
                                     settings_docs.splice(0, 1);
-                                    window.settings_db.bulkDocs(settings_docs.map((sd) => {return {_id: sd._id, _rev: sd._rev, _deleted: true, timestamp: 0, data: null, info: null}}), {force: true});
+                                    window.settings_db.bulkDocs(settings_docs.map((sd) => {return {_id: sd._id, _rev: sd._rev, _deleted: true, timestamp: 0, data: null, info: null, _attachments: {}}}), {force: true});
                                 }
 
                                 window._pixa_settings = {...pixa_settings};
@@ -272,11 +271,11 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
                                 timestamp: Date.now(),
                             }, {force: true}).then((response) => {
 
-                                if(settings_docs.length > 1) {
+                                if(settings_docs.length > 0) {
 
                                     // Delete all others
                                     settings_docs.splice(0, 1);
-                                    window.settings_db.bulkDocs(settings_docs.map((sd) => {return {_id: sd._id, _rev: sd._rev, _deleted: true, timestamp: 0, data: null, info: null}}), {force: true});
+                                    window.settings_db.bulkDocs(settings_docs.map((sd) => {return {_id: sd._id, _rev: sd._rev, _deleted: true, timestamp: 0, data: null, info: null, _attachments: {}}}), {force: true});
                                 }
 
                                 window._pixa_settings = {...pixa_settings};
