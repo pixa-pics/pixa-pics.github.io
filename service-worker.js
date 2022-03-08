@@ -1,6 +1,6 @@
-var REQUIRED_CACHE = "unless-update-cache-v9-required";
-var USEFUL_CACHE = "unless-update-cache-v9-useful";
-var STATIC_CACHE = "unless-update-cache-v9-static";
+var REQUIRED_CACHE = "unless-update-cache-v10-required";
+var USEFUL_CACHE = "unless-update-cache-v10-useful";
+var STATIC_CACHE = "unless-update-cache-v10-static";
 
 // On install, cache some resource.
 self.addEventListener("install", function(evt) {
@@ -11,10 +11,10 @@ self.addEventListener("install", function(evt) {
                 "/",
                 "/404.html",
                 "/index.html",
-                "/client.min.js", // This is chunck norris, master of all chunk
-                "/client.2.min.js",
+                "/src/images/favicon.ico",
                 "/src/fonts/Jura-Medium.woff2",
                 "/manifest.json",
+                "/client.min.js", // This is chunck norris, master of all chunk
             ]);
         })
     ]).then(() => {
@@ -22,7 +22,6 @@ self.addEventListener("install", function(evt) {
         var waiting = Promise.allSettled([
             caches.open(USEFUL_CACHE).then(function (cache) {
                 return cache.addAll([
-                    "/src/images/favicon.ico",
                     "/src/images/fun.svg",
                     "/src/images/background.svg",
                     "/src/images/logo-transparent.png",
