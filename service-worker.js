@@ -1,6 +1,7 @@
 var REQUIRED_CACHE = "unless-update-cache-v17-required";
 var USEFUL_CACHE = "unless-update-cache-v17-useful";
 var STATIC_CACHE = "unless-update-cache-v17-static";
+var CHILD_CHUNK_REGEX = /child\-chunk\.(main\~[a-z0-9]+|[0-9]+)\.min.js/i;
 
 // On install, cache some resource.
 self.addEventListener("install", function(evt) {
@@ -142,16 +143,16 @@ self.addEventListener("fetch", function(event) {
             })
         );
 
-    }else if(url.includes("child-chunk") && url.includes("min.js") && event.request.mode === "same-origin") {
+    }else if(url.match(CHILD_CHUNK_REGEX).length >= 2 && event.request.mode === "same-origin") {
 
-        const chunk_n = url.replace("/", "").replace("child-chunk.", "").replace(".min.js", "");
+        const middle_name = url.match(CHILD_CHUNK_REGEX)[1];
         event.respondWith(
             caches.open(REQUIRED_CACHE).then(function (cache) {
-                return cache.match(`/child-chunk.${chunk_n}.min.js`).then(function (response) {
+                return cache.match(`/child-chunk.${middle_name}.min.js`).then(function (response) {
                     return (
                         response ||
                         fetch(event.request).then(function (response) { // Fetch, clone, and serve
-                            cache.put(`/child-chunk.${chunk_n}.min.js`, response.clone());
+                            cache.put(`/child-chunk.${middle_name}.min.js`, response.clone());
                             return response;
                         })
                     );
