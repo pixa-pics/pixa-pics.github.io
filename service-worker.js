@@ -1,6 +1,6 @@
-var REQUIRED_CACHE = "unless-update-cache-v16-required";
-var USEFUL_CACHE = "unless-update-cache-v16-useful";
-var STATIC_CACHE = "unless-update-cache-v16-static";
+var REQUIRED_CACHE = "unless-update-cache-v17-required";
+var USEFUL_CACHE = "unless-update-cache-v17-useful";
+var STATIC_CACHE = "unless-update-cache-v17-static";
 
 // On install, cache some resource.
 self.addEventListener("install", function(evt) {
@@ -14,10 +14,10 @@ self.addEventListener("install", function(evt) {
                 "/index.html",
                 "/src/fonts/Jura-Medium.woff2",
                 "/father-chunk.norris.min.js", // This is chunk norris, master of all chunk
-                "/child-chunk.0.min.js",
-                "/child-chunk.1.min.js",
-                "/child-chunk.2.min.js",
-                "/child-chunk.3.min.js",
+                "/child-chunk.main~1f20a385.min.js",
+                "/child-chunk.main~253ae210.min.js",
+                "/child-chunk.main~748942c6.min.js",
+                "/child-chunk.main~d939e436.min.js",
             ]);
         }),
         caches.open(USEFUL_CACHE).then(function (cache) {
@@ -48,14 +48,13 @@ self.addEventListener("install", function(evt) {
             }),
             caches.open(REQUIRED_CACHE).then(function (cache) {
                 return cache.addAll([
+                    "/child-chunk.0.min.js",
+                    "/child-chunk.1.min.js",
+                    "/child-chunk.2.min.js",
+                    "/child-chunk.3.min.js",
                     "/child-chunk.4.min.js",
                     "/child-chunk.5.min.js",
                     "/child-chunk.6.min.js",
-                    "/child-chunk.7.min.js",
-                    "/child-chunk.8.min.js",
-                    "/child-chunk.9.min.js",
-                    "/child-chunk.10.min.js",
-                    "/child-chunk.11.min.js",
                 ]);
             }),
             caches.open(STATIC_CACHE).then(function (cache) {

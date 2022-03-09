@@ -42,7 +42,7 @@ module.exports = {
                 }
             })
         ],
-        chunkIds: 'natural',
+        chunkIds: 'named',
         splitChunks: {
             chunks: 'async',
             minSize: 128 * 1024,
