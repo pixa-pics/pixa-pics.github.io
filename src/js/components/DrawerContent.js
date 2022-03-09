@@ -3,7 +3,7 @@ import { withStyles } from "@material-ui/core";
 
 import { t } from "../utils/t";
 
-import DnaIcon from "../icons/Dna";
+import ChemIcon from "../twemoji/react/1F97C";
 
 import {Fade, Divider, List, ListItem, ListItemIcon, ListItemText, Badge} from "@material-ui/core";
 
@@ -132,7 +132,7 @@ class DrawerContent extends React.Component {
                     <List>
                         <ListItem style={{backgroundColor: "#ffffff33"}} button onClick={this._open_pixel_page}>
                             <ListItemIcon>
-                                <DnaIcon className={classes.iconLeft}/>
+                                <ChemIcon className={classes.iconLeft}/>
                             </ListItemIcon>
                             <ListItemText className={classes.boldListItemText} primary={"PIXEL ART LABORATORY"} />
                         </ListItem>

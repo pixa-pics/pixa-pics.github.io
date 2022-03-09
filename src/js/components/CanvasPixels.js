@@ -897,6 +897,7 @@ const anim_loop = ( render, do_not_cancel_animation = false, force_update = fals
 import React from "react";
 import pool from "../utils/worker-pool";
 import structuredClone from "@ungap/structured-clone";
+import {xxHash32} from "js-xxhash";
 
 class CanvasPixels extends React.Component {
 
@@ -906,7 +907,7 @@ class CanvasPixels extends React.Component {
             _id: Date.now(),
             className: props.className || null,
             perspective: props.perspective || 0,
-            shadow_size: props.shadow_size || 4,
+            shadow_size: props.shadow_size || 0,
             shadow_color: props.shadow_color || "#575757",
             light: props.light || 1,
             perspective_coordinate: [0, 0],
@@ -984,11 +985,11 @@ class CanvasPixels extends React.Component {
             _canvas_wrapper: null,
             _canvas_wrapper_overflow: null,
             _mouse_down: false,
-            _state_history_length: !(props.no_actions || false) ? 51: 0,
+            _state_history_length: 51,
             _last_action_timestamp: Date.now(),
             _last_paint_timestamp: Date.now(),
             _lazy_lazy_compute_time_ms: 10 * 1000,
-            _undo_buffer_time_ms: 500,
+            _undo_buffer_time_ms: 2000,
             _mouse_inside: false,
             _paint_hover_old_pxls_snapshot: new Array((props.pxl_width || 32) * (props.pxl_height || 32)).fill(0),
             _select_hover_old_pxls_snapshot: [],
@@ -1084,7 +1085,7 @@ class CanvasPixels extends React.Component {
                 this._maybe_save_state();
             }
             this._update_canvas(true, true);
-        }, is_mobile_or_tablet ? 666: 369);
+        }, this.state._undo_buffer_time_ms * 0.9);
 
         _intervals[1] = setInterval(() => {
             this._notify_fps();
@@ -1101,7 +1102,7 @@ class CanvasPixels extends React.Component {
         _intervals[4] = setInterval(() => {
 
             this.set_move_speed_average_now();
-        }, is_mobile_or_tablet ? 1/0: 31);
+        }, is_mobile_or_tablet ? 47: 31);
 
         _intervals[5] = setInterval(() => {
 
@@ -1400,9 +1401,9 @@ class CanvasPixels extends React.Component {
 
             this.setState({_device_motion: true, perspective_coordinate: [x, y], perspective_coordinate_last_change: Date.now()}, () => {
 
-                if(this.state._moves_speed_average_now <= -24) {
+                if(this.state._moves_speed_average_now === -24) {
 
-                    this._request_force_update(true, false, () => {
+                    this._request_force_update(true, true, () => {
 
                         //this._notify_perspective_coordinate_changes([x, y, this.state.scale]);
                     });
@@ -1417,7 +1418,7 @@ class CanvasPixels extends React.Component {
 
             this.setState({perspective_coordinate: array, perspective_coordinate_last_change: Date.now()}, () => {
 
-                this._request_force_update(true, false, () => {
+                this._request_force_update(true, true, () => {
 
                     if(!is_mobile_or_tablet) {
 
@@ -2949,7 +2950,13 @@ class CanvasPixels extends React.Component {
 
                 if(_mouse_down !== true) {
 
-                    this._request_force_update();
+                    if(this.state._moves_speed_average_now === -24) {
+
+                        this._request_force_update(true, false);
+                    }else {
+
+                        this._request_force_update(true, true);
+                    }
                 }
             });
         }else if(event_which === 3) {
@@ -4091,10 +4098,7 @@ class CanvasPixels extends React.Component {
 
         if(this.state._canvas_event_target !== canvas_event_target) {
 
-            this.setState({_canvas_event_target: canvas_event_target}, () => {
-
-                this._request_force_update();
-            });
+            this.setState({_canvas_event_target: canvas_event_target});
         }
 
         let { _pointer_events } = this.state;
@@ -4829,7 +4833,13 @@ class CanvasPixels extends React.Component {
 
         this.setState({_mouse_inside: false, _pxls_hovered: -1}, () => {
 
-            this._request_force_update();
+            if(this.state._moves_speed_average_now === -24) {
+
+                this._request_force_update(true, false);
+            }else {
+
+                this._request_force_update(true, true);
+            }
         });
 
         this._notify_position_change(null, {x:-1, y: -1});
@@ -4844,9 +4854,12 @@ class CanvasPixels extends React.Component {
             _mouse_down: false,
         }, () => {
 
-            if(_mouse_down !== false) {
+            if(this.state._moves_speed_average_now === -24) {
 
-                this._request_force_update();
+                this._request_force_update(true, false);
+            }else {
+
+                this._request_force_update(true, true);
             }
         });
 
@@ -5440,14 +5453,11 @@ class CanvasPixels extends React.Component {
 
     _array_push_fixed_length = (array, max_length, element) => {
 
-        array = [...(array || [])];
-
         let has_new_length = false;
-
         if(array.length >= max_length) {
 
-            array.push(element);
             array.shift();
+            array.push(element);
         }else {
 
             array.push(element);
@@ -5476,6 +5486,8 @@ class CanvasPixels extends React.Component {
         let {_json_state_history} = this.state;
 
         let {state_history, history_position, previous_history_position} = _json_state_history;
+        state_history = [...(state_history || [])];
+
         const current_state = {
             _id,
             pxl_width,
@@ -5499,7 +5511,7 @@ class CanvasPixels extends React.Component {
         if((state_history || []).length === 0) { // Fist state
 
             const [ array ] = this._array_push_fixed_length(state_history, _state_history_length, current_state);
-            state_history = array;
+            state_history = structuredClone(array);
             const new_json_state_history = {previous_history_position, history_position, state_history};
 
             this.setState({_json_state_history: new_json_state_history, _saved_json_state_history_timestamp_from_drawing: Date.now()});
@@ -5512,7 +5524,22 @@ class CanvasPixels extends React.Component {
             const previous_state_index = current_state_size - back_in_history_of;
             const previous_state = state_history[previous_state_index];
 
-            if((save_pending_data || _last_action_timestamp + _undo_buffer_time_ms < Date.now()) && structuredClone(previous_state) !== structuredClone(current_state)) {
+            function sum_array_array(main) {
+
+                let sum = "";
+                main.forEach((sub) => {
+
+                    const parsing_function = typeof sub[0] === "number" ? (o) => {return o.toString()}: (o) => {return String(o)};
+                    sub.forEach((value) => {
+
+                        sum += parsing_function(value);
+                    });
+                });
+
+                return xxHash32(Buffer.from(sum, "utf8"), 0).toString(16);
+            }
+
+            if((save_pending_data || _last_action_timestamp + _undo_buffer_time_ms < Date.now()) && (sum_array_array(previous_state._s_pxls) !== sum_array_array(current_state._s_pxls) || sum_array_array(previous_state._s_pxl_colors) !== sum_array_array(current_state._s_pxl_colors))) {
 
                 // An action must have been performed and the last action must be older of 1 sec
                 if(back_in_history_of) {
@@ -5521,7 +5548,7 @@ class CanvasPixels extends React.Component {
                 }
 
                 const [ array, has_new_length ] = this._array_push_fixed_length(state_history, _state_history_length, current_state);
-                state_history = array;
+                state_history = structuredClone(array);
                 previous_history_position = history_position;
                 history_position = has_new_length ? history_position + 1: history_position;
                 const new_json_state_history = {previous_history_position, history_position, state_history};
@@ -5687,30 +5714,23 @@ class CanvasPixels extends React.Component {
 
     export_JS_state = (callback_function) => {
 
-        const _json_state_history = structuredClone(this._maybe_save_state(true));
+        const is_pending_save_data = this._maybe_save_state(true);
+        const _json_state_history = structuredClone(is_pending_save_data === null ? this.state._json_state_history: is_pending_save_data);
 
-        if(_json_state_history === null) {
+        const {_base64_original_images, _id} = this.state;
 
-            setTimeout(() => {
-                this.export_JS_state(callback_function);
-            }, 100);
-        }else {
+        this.get_base64_png_data_url(1, ([base_64]) => {
 
-            const {_base64_original_images, _id} = this.state;
-
-            this.get_base64_png_data_url(1, ([base_64]) => {
-
-                const bytes = 3 * Math.ceil((base_64.length/4));
-                callback_function({
-                    id: _id,
-                    kb: bytes / 1000,
-                    preview: base_64,
-                    timestamp: Date.now(),
-                    _base64_original_images: structuredClone(_base64_original_images),
-                    _json_state_history
-                });
-            }, false, 1);
-        }
+            const bytes = 3 * Math.ceil((base_64.length/4));
+            callback_function({
+                id: _id,
+                kb: bytes / 1000,
+                preview: base_64,
+                timestamp: Date.now(),
+                _base64_original_images: structuredClone(_base64_original_images),
+                _json_state_history
+            });
+        }, false, 1);
     };
 
     _can_undo = () => {
@@ -5725,58 +5745,60 @@ class CanvasPixels extends React.Component {
 
     nothing_happened_undo = (if_more_recent_than_ms) => {
 
-        const is_pending_save_data = this._maybe_save_state(true);
-        const _json_state_history = structuredClone(is_pending_save_data === null ? this.state._json_state_history: is_pending_save_data);
+        if(this.state._saved_json_state_history_timestamp_from_drawing + if_more_recent_than_ms > Date.now()) {
 
-        let {state_history, history_position, previous_history_position} = _json_state_history;
+            const is_pending_save_data = this._maybe_save_state(true);
+            const _json_state_history = structuredClone(is_pending_save_data === null ? this.state._json_state_history: is_pending_save_data);
 
-        if(this._can_undo() & !is_pending_save_data && this.state._saved_json_state_history_timestamp_from_drawing + if_more_recent_than_ms > Date.now()){
+            let {state_history, history_position, previous_history_position} = _json_state_history;
 
-            previous_history_position = history_position;
-            history_position--;
-            const { _original_image_index, pxl_width, pxl_height, _pxl_indexes_of_selection, _s_pxl_colors, _s_pxls, _layers, _layer_index, _pencil_mirror_index, _id } = state_history[history_position];
-            state_history.splice(previous_history_position, 1);
-            const new_json_state_history = {state_history, history_position, previous_history_position};
-            const has_new_dimension = Boolean(pxl_width !== this.state.pxl_width || pxl_height !== this.state.pxl_height);
+            if(this._can_undo() & !is_pending_save_data){
 
-            this.setState({
-                _id,
-                _original_image_index: - 1,
-                _pencil_mirror_index,
-                pxl_width,
-                pxl_height,
-                _s_pxls,
-                _s_pxl_colors,
-                _pxl_indexes_of_selection_drawn: this.state._pxl_indexes_of_selection,
-                _pxl_indexes_of_selection: new Set([..._pxl_indexes_of_selection]),
-                _layers,
-                _old_layers: structuredClone(this.state._layers),
-                _layer_index,
-                _json_state_history: new_json_state_history,
-                _is_there_new_dimension: has_new_dimension,
-            }, () => {
+                previous_history_position = history_position;
+                history_position--;
+                const { _original_image_index, pxl_width, pxl_height, _pxl_indexes_of_selection, _s_pxl_colors, _s_pxls, _layers, _layer_index, _pencil_mirror_index, _id } = state_history[history_position];
+                state_history.splice(previous_history_position, 1);
+                const new_json_state_history = {state_history, history_position, previous_history_position};
+                const has_new_dimension = Boolean(pxl_width !== this.state.pxl_width || pxl_height !== this.state.pxl_height);
 
-                this.setState({_original_image_index});
+                this.setState({
+                    _id,
+                    _original_image_index: - 1,
+                    _pencil_mirror_index,
+                    pxl_width,
+                    pxl_height,
+                    _s_pxls,
+                    _s_pxl_colors,
+                    _pxl_indexes_of_selection_drawn: this.state._pxl_indexes_of_selection,
+                    _pxl_indexes_of_selection: new Set([..._pxl_indexes_of_selection]),
+                    _layers,
+                    _old_layers: structuredClone(this.state._layers),
+                    _layer_index,
+                    _json_state_history: new_json_state_history,
+                    _is_there_new_dimension: has_new_dimension,
+                }, () => {
 
-                this._notify_layers_and_compute_thumbnails_change();
-                this._notify_can_undo_redo_change();
-                this._notify_is_something_selected();
-                if(has_new_dimension) {
+                    this.setState({_original_image_index});
 
-                    this._notify_size_change();
-                    this._update_screen_zoom_ratio();
-                }else {
+                    this._notify_layers_and_compute_thumbnails_change();
+                    this._notify_can_undo_redo_change();
+                    this._notify_is_something_selected();
+                    if(has_new_dimension) {
 
-                    this._request_force_update();
-                }
-            });
-        }else if(is_pending_save_data) {
-            
-            setTimeout(() => {
-                this.nothing_happened_undo(if_more_recent_than_ms + 75)
-            }, 75);
+                        this._notify_size_change();
+                        this._update_screen_zoom_ratio();
+                    }else {
+
+                        this._update_canvas();
+                    }
+                });
+            }else if(is_pending_save_data) {
+
+                setTimeout(() => {
+                    this.nothing_happened_undo(if_more_recent_than_ms + 75)
+                }, 75);
+            }
         }
-        
     }
 
     undo = () => {
@@ -8155,24 +8177,31 @@ class CanvasPixels extends React.Component {
 
     _request_force_update = (can_be_cancelable = false, especially_dont_force = false, callback_function = () => {}) => {
 
-        const {_force_updated_timestamp  } = this.state;
+        const {_force_updated_timestamp } = this.state;
         const now = Date.now();
 
-        const ago = can_be_cancelable ? is_mobile_or_tablet ? 1000 / 15: 1000 / 30: 1000 / 0.1;
-        const do_not_cancel_animation = (_force_updated_timestamp < now - ago || !can_be_cancelable);
+        const min_fps = is_mobile_or_tablet ? 45: 75;
+        const nevertheless_force = Boolean((_force_updated_timestamp + 1000 / min_fps) < now);
+        const nevertheless_for_sure_force = Boolean((_force_updated_timestamp + 1000 / (min_fps / 10)) < now);
+
+        if(can_be_cancelable && !nevertheless_force && !nevertheless_for_sure_force) {
+
+            return;
+        }
 
         anim_loop(() => {
 
             this.forceUpdate(() => {
 
+                this.setState({_force_updated_timestamp: now});
                 callback_function();
             });
-        }, !can_be_cancelable, !especially_dont_force);
+        }, Boolean(!can_be_cancelable || nevertheless_force), Boolean(!especially_dont_force || nevertheless_force));
     }
 
     set_move_speed_average_now = () => {
 
-        let { _moves_speed_average_now, _scale_move_speed_timestamp } = this.state
+        let { _moves_speed_average_now, _scale_move_speed_timestamp, shadow_size } = this.state
         const now = Date.now();
 
         if(now - _scale_move_speed_timestamp >= 30 && _moves_speed_average_now !== -24)  {
@@ -8189,9 +8218,9 @@ class CanvasPixels extends React.Component {
                     this.props.on_elevation_change(this.state._moves_speed_average_now);
                 }
 
-                if(new_moves_speed_average_now !== _moves_speed_average_now && this.state._scale_move_speed_timestamp === now) {
+                if(new_moves_speed_average_now !== _moves_speed_average_now && this.state._scale_move_speed_timestamp === now && shadow_size > 0) {
 
-                    this._request_force_update(false, true);
+                    this._request_force_update(true, true);
                 }
             });
         }
@@ -8315,8 +8344,6 @@ class CanvasPixels extends React.Component {
         background_image_style_props = (show_image_only_before_canvas_set && !has_shown_canvas_once) || !show_image_only_before_canvas_set ?
             background_image_style_props: {};
 
-        const cursor = this._get_cursor(_is_on_resize_element, _is_image_import_mode, _mouse_down, tool, select_mode, _canvas_event_target);
-
         const canvas_wrapper_width = Math.round(pxl_width * _screen_zoom_ratio * scale);
         const canvas_wrapper_height = Math.round(pxl_height * _screen_zoom_ratio * scale);
 
@@ -8335,30 +8362,43 @@ class CanvasPixels extends React.Component {
 
         const shadow_depth = _moves_speed_average_now < 0 ? Math.abs(_moves_speed_average_now) / 4: _moves_speed_average_now / 2;
 
+        const cursor = this._get_cursor(_is_on_resize_element, _is_image_import_mode, _mouse_down, tool, select_mode, _canvas_event_target);
+
+
         return (
-            <div ref={this._set_canvas_container_ref} draggable={"false"} style={{zIndex: 1, contain: "layout paint size style", boxSizing: "border-box", position: "relative", overflow: "visible", touchAction: "none", userSelect: "none"}} className={className}>
+            <div ref={this._set_canvas_container_ref} draggable={"false"} style={{zIndex: 1, boxSizing: "border-box", position: "relative", overflow: "visible", touchAction: "none", userSelect: "none"}} className={className}>
                 <div ref={this._set_canvas_wrapper_overflow_ref}
                      className={"Canvas-Wrapper-Overflow" + (has_shown_canvas_once && !_hidden ? " Shown ": " Not-Shown ")}
                      draggable={"false"}
                      style={{
                          height: "100%",
                          width: "100%",
-                         overflow: "visible",
+                         contain: "layout paint size style",
                          position: "relative",
                          boxSizing: "border-box",
                          touchAction: "none",
                          pointerEvents: "auto",
                          userSelect: "none",
-                         cursor: cursor,
-                         willChange: (_moves_speed_average_now !== -24 && perspective && (perspective_coordinate_last_change + 500 > Date.now())) ? "perspective": "contents",
+                         willChange: "contents",
                          perspective: `${Math.round(Math.max(canvas_wrapper_width, canvas_wrapper_height))}px`,
-                         zIndex: 1,
+                         zIndex: 10,
+
                      }}>
+                    <div style={{
+                        position: "absolute",
+                        cursor: cursor,
+                        height: "100%",
+                        width: "100%",
+                        boxSizing: "border-box",
+                        touchAction: "none",
+                        pointerEvents: "auto",
+                        userSelect: "none",
+                    }}></div>
                     <div className={"Canvas-Wrapper " + (_mouse_inside ? " Canvas-Focused ": " " + (tool))}
                          draggable={"false"}
                          style={{
-                             willChange: (_moves_speed_average_now !== -24 || (perspective && (perspective_coordinate_last_change + 500 > Date.now()))) ? "transform filter": "",
-                             mixBlendMode: "hard-light",
+                             willChange: "transform",
+                             position: "fixed",
                              borderWidth: canvas_wrapper_border_width,
                              borderStyle: "solid",
                              borderColor: "#fff",
@@ -8366,15 +8406,12 @@ class CanvasPixels extends React.Component {
                              //backgroundImage: `linear-gradient(to top, ${canvas_wrapper_background_color} ${padding/2.5}px, ${this._blend_colors(canvas_wrapper_background_color, "#00000000", .6)} ${padding/2.5}px, #ffffff00 150%)`, //, repeating-linear-gradient(-45deg, rgba(255, 255, 255, .75) 0px, rgba(255, 255, 255, .75) ${padding}px, rgba(255, 255, 255, 0.5) ${padding}px, rgba(255, 255, 255, 0.5) ${padding*2}px)`,*/
                              borderRadius: canvas_wrapper_border_radius,
                              padding: padding,
-                             position: "absolute",
-                             //clipPath: `polygon(calc(100% - 10%) 0%, 100% 0%, 100% 200%, ${padding}px 100%, 0% calc(100% - ${padding}px), 0% -100%, calc(100% - 25%) 0%, calc(100% - 25%) ${padding / 1.5}px, calc(100% - 15%) ${padding / 1.5}px)`,
                              width: Math.floor(canvas_wrapper_width),
                              height: Math.floor(canvas_wrapper_height),
                              filter: `drop-shadow(0 0 ${shadow_depth*shadow_size}px ${shadow_color}) opacity(${has_shown_canvas_once && !_hidden ? "1": "0"})`,
-                             transform: `translate3d(${Math.round(scale_move_x * 1000) / 1000}px, ${Math.round(scale_move_y * 1000) / 1000}px, 0px) rotateX(${rotate_x}deg) rotateY(${rotate_y}deg) rotateZ(0deg)`,
+                             transform: `translate3d(${Math.round(scale_move_x * 100) / 100}px, ${Math.round(scale_move_y * 100) / 100}px, 0px) rotateX(${rotate_x}deg) rotateY(${rotate_y}deg) rotateZ(0deg)`,
                              transformOrigin: "center middle",
                              boxSizing: "content-box",
-                             overflow: "visible",
                              touchAction: "none",
                              pointerEvents: "none",
                              userSelect: "none",
@@ -8385,7 +8422,6 @@ class CanvasPixels extends React.Component {
                             draggable={"false"}
                             style={{
                                 zIndex: 2,
-                                position: "absolute",
                                 touchAction: "none",
                                 pointerEvents: "none",
                                 userSelect: "none",
@@ -8394,10 +8430,7 @@ class CanvasPixels extends React.Component {
                                 transform: `scale(${(_screen_zoom_ratio * scale).toFixed(3)})`,
                                 transformOrigin: "left top",
                                 boxSizing: "content-box",
-                                filter: "drop-shadow(0 0 0px #fff)",
-                                backgroundBlendMode: "color",
                                 borderWidth: 0,
-                                clipPath: "polygon(.05% .05%, 99.95% .05%, 99.95% 99.95%, .05% 99.95%)",
                                 ...background_image_style_props,
                             }}
                             className={"Canvas-Pixels"}
@@ -8407,31 +8440,31 @@ class CanvasPixels extends React.Component {
                         {
                             Boolean(p) &&
                             <div className={"Canvas-Pixels-Cover"}
-                                datatexttop={`D[${pxl_width}, ${pxl_height}]px // S[${_kb.toFixed(2)}]Kb`}
-                                datatextbottom={`ΔZ[${_screen_zoom_ratio.toFixed(2)}, ${scale.toFixed(2)}]x // ΔR[${(perspective_coordinate[1] * p / scale).toFixed(2)}, ${(perspective_coordinate[0] * p / scale).toFixed(2)}]°`}
+                                 datatexttop={`D[${pxl_width}, ${pxl_height}]px // S[${_kb.toFixed(2)}]Kb`}
+                                 datatextbottom={`ΔZ[${_screen_zoom_ratio.toFixed(2)}, ${scale.toFixed(2)}]x // ΔR[${(perspective_coordinate[1] * p / scale).toFixed(2)}, ${(perspective_coordinate[0] * p / scale).toFixed(2)}]°`}
                                  draggable={"false"}
                                  style={{
                                      backgroundImage: p ? `linear-gradient(to left, rgba(
-                                ${255 - Math.floor((perspective_coordinate[0]+p) / (p*2) * 255)},
-                                ${255 - Math.floor((perspective_coordinate[0]+p) / (p*2) * 255)},
-                                ${255 - Math.floor((perspective_coordinate[0]+p) / (p*2) * 255)}, 
-                                ${(Math.abs(perspective_coordinate[0]) / p / 6 * 0.3 * (p*l/100)).toFixed(2)}
-                                ), rgba(
-                                ${255 - Math.floor((perspective_coordinate[0]+p) / (p*2) * 255)},
-                                ${255 - Math.floor((perspective_coordinate[0]+p) / (p*2) * 255)},
-                                ${255 - Math.floor((perspective_coordinate[0]+p) / (p*2) * 255)}, 
-                                ${(Math.abs(perspective_coordinate[0]) / p / 6 * 3 * (p*l/100)).toFixed(2)}
-                                )), linear-gradient(to top, rgba(
-                                ${Math.floor((perspective_coordinate[1]+p) / (p*2) * 255)},
-                                ${Math.floor((perspective_coordinate[1]+p) / (p*2) * 255)},
-                                ${Math.floor((perspective_coordinate[1]+p) / (p*2) * 255)}, 
-                                ${(Math.abs(perspective_coordinate[1]) / p / 6 * 2 * (p*l/100)).toFixed(2)}
-                                ), rgba(
-                                ${Math.floor((perspective_coordinate[1]+p) / (p*2) * 255)},
-                                ${Math.floor((perspective_coordinate[1]+p) / (p*2) * 255)},
-                                ${Math.floor((perspective_coordinate[1]+p) / (p*2) * 255)}, 
-                                ${(Math.abs(perspective_coordinate[1]) / p / 6 * 1 * (p*l/100)).toFixed(2)}
-                                ))`: "none",
+                            ${255 - Math.floor((perspective_coordinate[0]+p) / (p*2) * 255)},
+                            ${255 - Math.floor((perspective_coordinate[0]+p) / (p*2) * 255)},
+                            ${255 - Math.floor((perspective_coordinate[0]+p) / (p*2) * 255)}, 
+                            ${(Math.abs(perspective_coordinate[0]) / p / 6 * 0.3 * (p*l/100)).toFixed(2)}
+                            ), rgba(
+                            ${255 - Math.floor((perspective_coordinate[0]+p) / (p*2) * 255)},
+                            ${255 - Math.floor((perspective_coordinate[0]+p) / (p*2) * 255)},
+                            ${255 - Math.floor((perspective_coordinate[0]+p) / (p*2) * 255)}, 
+                            ${(Math.abs(perspective_coordinate[0]) / p / 6 * 3 * (p*l/100)).toFixed(2)}
+                            )), linear-gradient(to top, rgba(
+                            ${Math.floor((perspective_coordinate[1]+p) / (p*2) * 255)},
+                            ${Math.floor((perspective_coordinate[1]+p) / (p*2) * 255)},
+                            ${Math.floor((perspective_coordinate[1]+p) / (p*2) * 255)}, 
+                            ${(Math.abs(perspective_coordinate[1]) / p / 6 * 2 * (p*l/100)).toFixed(2)}
+                            ), rgba(
+                            ${Math.floor((perspective_coordinate[1]+p) / (p*2) * 255)},
+                            ${Math.floor((perspective_coordinate[1]+p) / (p*2) * 255)},
+                            ${Math.floor((perspective_coordinate[1]+p) / (p*2) * 255)}, 
+                            ${(Math.abs(perspective_coordinate[1]) / p / 6 * 1 * (p*l/100)).toFixed(2)}
+                            ))`: "none",
                                      zIndex: 3,
                                      borderRadius: canvas_wrapper_border_radius,
                                      padding: 0,

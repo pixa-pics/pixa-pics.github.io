@@ -1475,6 +1475,18 @@ class PixelToolboxSwipeableViews extends React.Component {
                                                 </Button>
                                             </div>
 
+                                            <PixelColorPalette
+                                                transparent={true}
+                                                padding="12px 24px 24px 24px"
+                                                gap="8px"
+                                                align="left"
+                                                colors={colors}
+                                                selected_colors={[current_color]}
+                                                onColorClick={(event, color) => {
+                                                    this._handle_current_color_change(color)
+                                                }}
+                                            />
+
                                             <div style={{
                                                 padding: "8px 24px",
                                                 position: "relative",
@@ -1507,18 +1519,6 @@ class PixelToolboxSwipeableViews extends React.Component {
                                                             aria-labelledby="strength-slider"/>
                                                 </div>
                                             </div>
-
-                                            <PixelColorPalette
-                                                transparent={true}
-                                                padding="12px 24px 24px 24px"
-                                                gap="8px"
-                                                align="left"
-                                                colors={colors}
-                                                selected_colors={[current_color]}
-                                                onColorClick={(event, color) => {
-                                                    this._handle_current_color_change(color)
-                                                }}
-                                            />
 
                                         </div> : null
                                 }

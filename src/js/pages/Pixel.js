@@ -139,11 +139,9 @@ const styles = theme => ({
         width: 480,
         overscrollBehavior: "none",
         display: "flex",
-        contain: "layout paint size style",
     },
     drawerPaper: {
         boxShadow: "0px 2px 4px -1px rgb(0 0 0 / 20%), 0px 4px 5px 0px rgb(0 0 0 / 14%), 0px 1px 10px 0px rgb(0 0 0 / 12%)",
-        border: "none",
         width: 480,
         overflowX: "overlay",
         background: "#fafafa",
@@ -1453,6 +1451,7 @@ class Pixel extends React.Component {
                         paper: classes.drawerPaper,
                     }}
                 >
+                    <Toolbar />
                     <div style={{display: "contents"}}>
                         <div style={{boxShadow: "rgb(0 0 0 / 20%) 0px 2px 4px -1px, rgb(0 0 0 / 14%) 0px 4px 5px 0px, rgb(0 0 0 / 12%) 0px 1px 10px 0px", zIndex: 1}}>
                             <div className={classes.drawerHeader}>
@@ -1560,8 +1559,10 @@ class Pixel extends React.Component {
                         }}>
                             <Suspense fallback={<div/>}>
                                 <CanvasPixels
+                                    perspective={0}
                                     on_export_state={this._handle_canvas_state_export}
-                                    export_state_every_ms={is_mobile_or_tablet ? 60 * 1000: 40 * 1000}
+                                    export_state_every_ms={is_mobile_or_tablet ? 51 * 1000: 33 * 1000}
+                                    shadow_size={is_mobile_or_tablet ? 0: 1.5}
                                     onContextMenu={(e) => {e.preventDefault()}}
                                     key={"canvas"}
                                     className={classes.contentCanvas}
@@ -1580,7 +1581,6 @@ class Pixel extends React.Component {
                                     bucket_threshold={_slider_value}
                                     color_loss={_slider_value}
                                     pxl_current_opacity={1}
-                                    shadow_size={1}
                                     onLoadComplete={this._handle_load_complete}
                                     onLoad={this._handle_load}
                                     onCanUndoRedoChange={this._handle_can_undo_redo_change}

@@ -58,6 +58,7 @@ const styles = theme => ({
     },
     content: {
         position: "relative",
+        contain: "paint size layout",
         overflow: "overlay",
         width: "calc(100vw - 256px)",
         height: "100%",

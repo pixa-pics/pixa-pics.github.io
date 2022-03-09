@@ -67,6 +67,20 @@ const overrides = {
                             "100%": {transform: "scale(.9)"},
                         }
                     }
+                },
+                "&.pulse2": {
+                    animation: "$pulse2 1.8s cubic-bezier(0.280, 0.840, 0.420, 1) infinite 1s",
+                    "@global": {
+                        "@keyframes pulse2": {
+                            "0%": {transform: "scale(1.9)"},
+                            "10%": {transform: "scale(2)"},
+                            "30%": {transform: "scale(1.9)"},
+                            "50%": {transform: "scale(2)"},
+                            "57%": {transform: "scale(1.9)"},
+                            "64%": {transform: "scale(2)"},
+                            "100%": {transform: "scale(1.9)"},
+                        }
+                    }
                 }
             },
             ".highlighted": {
