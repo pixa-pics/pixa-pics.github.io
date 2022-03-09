@@ -38,18 +38,32 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 
 import { lightTheme } from "./theme/index";
 
-let element = document.getElementById("app") || document.createElement('div');
-element.setAttribute("id", "app");
-document.body.appendChild(element);
-const app = document.getElementById('app');
 
-if(app) {
-    document.body.removeAttribute("style");
-    ReactDOM.render(
-        <ThemeProvider theme={lightTheme}>
-            <CssBaseline>
-                <Index history={HISTORY}/>
-            </CssBaseline>
-        </ThemeProvider>,
-        app);
+let element = document.getElementById("app") || null;
+if(element === null) {
+
+    element = document.createElement("div");
+    element.setAttribute("id", "app");
+    document.body.appendChild(element);
 }
+
+const main_void_main = () => {
+
+    const app = document.getElementById("app");
+
+    if(app) {
+        ReactDOM.render(
+            <ThemeProvider theme={lightTheme}>
+                <CssBaseline>
+                    <Index history={HISTORY}/>
+                </CssBaseline>
+            </ThemeProvider>,
+            app);
+        document.body.removeAttribute("style");
+    }else {
+
+        main_void_main();
+    }
+}
+
+main_void_main();
