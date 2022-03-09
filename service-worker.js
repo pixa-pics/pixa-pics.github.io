@@ -143,7 +143,7 @@ self.addEventListener("fetch", function(event) {
             })
         );
 
-    }else if(url.match(CHILD_CHUNK_REGEX).length >= 2 && event.request.mode === "same-origin") {
+    }else if((url.match(CHILD_CHUNK_REGEX) || []).length >= 2 && event.request.mode === "same-origin") {
 
         const middle_name = url.match(CHILD_CHUNK_REGEX)[1];
         event.respondWith(
