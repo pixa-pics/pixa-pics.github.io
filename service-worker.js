@@ -1,6 +1,6 @@
-var REQUIRED_CACHE = "unless-update-cache-v15-required";
-var USEFUL_CACHE = "unless-update-cache-v15-useful";
-var STATIC_CACHE = "unless-update-cache-v15-static";
+var REQUIRED_CACHE = "unless-update-cache-v16-required";
+var USEFUL_CACHE = "unless-update-cache-v16-useful";
+var STATIC_CACHE = "unless-update-cache-v16-static";
 
 // On install, cache some resource.
 self.addEventListener("install", function(evt) {
