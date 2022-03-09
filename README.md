@@ -1,9 +1,6 @@
 # This is PIXA!
 
 PIXA.pics - Pixel art editor.
-Make potential (un)limited.
-
-At the horizon of matrix and vectorial, discover an unprecedented industrial and educative purpose. Our software is for everyone and forever open-source.
 
 ![Image of the editor, homepage](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/doc/screenshots/Screenshot.png)
 
@@ -21,6 +18,7 @@ At the horizon of matrix and vectorial, discover an unprecedented industrial and
  * Vectorizer (ImageTracerJS)
  * Color Quantization (RGBQuant + Custom)
  * Encodig of Portable Network Graphics in type of palette (PNGQuant)
+ * Chunk ("norris") system for droping script evaluation cost within CPU
 
 # Features
 
