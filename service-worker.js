@@ -1,10 +1,15 @@
-var REQUIRED_CACHE = "unless-update-cache-v18-required";
-var USEFUL_CACHE = "unless-update-cache-v18-useful";
-var STATIC_CACHE = "unless-update-cache-v18-static";
+var REQUIRED_CACHE = "unless-update-cache-v19-required";
+var USEFUL_CACHE = "unless-update-cache-v19-useful";
+var STATIC_CACHE = "unless-update-cache-v19-static";
 var CHILD_CHUNK_REGEX = /child\-chunk\.(main\~[a-z0-9]+|[0-9]+)\.min.js/i;
 
 // On install, cache some resource.
 self.addEventListener("install", function(evt) {
+
+    if(!navigator.onLine) {
+
+        return self.skipWaiting();
+    }
 
     return evt.waitUntil(Promise.allSettled([
         caches.open(REQUIRED_CACHE).then(function (cache) {
@@ -39,11 +44,12 @@ self.addEventListener("install", function(evt) {
                 return cache.addAll([
                     "/src/images/office.svg",
                     "/src/images/travelers.svg",
-                    "/src/images/newch.svg",
-                    "/src/images/selfie.svg",
+                    "/src/images/painting.svg",
+                    "/src/images/sane-healthy-memories.svg",
                     "/src/images/abduction.svg",
                     "/src/images/AI.svg",
                     "/src/images/DNA.svg",
+                    "/src/images/CPU.svg",
                     "/src/images/laboratory.svg",
                 ]);
             }),
@@ -79,12 +85,7 @@ self.addEventListener("install", function(evt) {
             ))
         ]);
 
-        if(navigator.onLine) {
-
-            waiting = self.skipWaiting();
-        }
-
-        return waiting;
+        return self.skipWaiting();
     }));
 });
 
@@ -164,11 +165,11 @@ self.addEventListener("fetch", function(event) {
 
         event.respondWith(
             caches.open(REQUIRED_CACHE).then(function (cache) {
-                return cache.match("/index.html").then(function (response) {
+                return cache.match("/").then(function (response) {
                     return (
                         response ||
                         fetch(event.request).then(function (response) { // Fetch, clone, and serve
-                            cache.put("/index.html", response.clone());
+                            cache.put("/", response.clone());
                             return response;
                         })
                     );

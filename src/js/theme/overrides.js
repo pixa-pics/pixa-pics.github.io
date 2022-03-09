@@ -104,30 +104,10 @@ const overrides = {
                 }
             },
             ".MuiDialog-paper": {
-                clipPath: "polygon(0 0, 100% 0, 100% 100%, calc(100% - 0px) 100%, calc(100% - 0px) calc(100% - 0px), calc(100% - 48px) calc(100% - 0px), calc(100% - 64px) 100%, 16px 100%, 0px calc(100% - 16px))",
-                "& .MuiDialogActions-root": {
-                    clipPath: "polygon(0 0, 100% 0, 100% 100%, calc(100% - 8px) 100%, calc(100% - 8px) calc(100% - 8px), calc(100% - 48px) calc(100% - 8px), calc(100% - 64px) 100%, 16px 100%, 0px calc(100% - 16px))",
-                },
-                "&::before": {
-                    zIndex: -1,
-                    content: "''",
-                    background: "#100d4e",
-                    transform: "translate(-8px, 0)",
-                    width: 64,
-                    height: 8,
-                    position: "absolute",
-                    right: -4,
-                    bottom: 0,
-                }
+                margin: "0 !important",
+                minWidth: "min(100%, 736px)",
             },
             ".MuiDialog-paperFullScreen": {
-                clipPath: "none",
-                "& .MuiDialogActions-root": {
-                    clipPath: "none",
-                },
-                "&::before": {
-                    content: "none",
-                }
             },
             ".MuiDrawer-paperAnchorBottom": {
                 clipPath: "polygon(calc(32px) 0, calc(200px) 0, calc(200px) calc(16px), calc(100% - 100px) calc(16px), calc(100% - 76px) 0, 100% 0, 100% 100%, 0 100%, 0 calc(16px))",

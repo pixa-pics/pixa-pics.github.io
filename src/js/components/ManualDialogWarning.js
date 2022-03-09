@@ -71,17 +71,19 @@ class ManualDialogWarning extends React.Component {
 
     componentWillReceiveProps(new_props) {
 
+        if(new_props.open && !this.state.open) {
+            const { timeout, open } = this.state;
+
+            if(timeout && open) {
+
+                setTimeout(() => {this._on_request_close()}, timeout);
+            }
+        }
         this.setState({...new_props});
     }
 
     componentDidMount() {
 
-        const { timeout } = this.state;
-
-        if(timeout) {
-
-            setTimeout(() => {this._on_request_close()}, timeout);
-        }
     }
 
     _on_request_close = () => {

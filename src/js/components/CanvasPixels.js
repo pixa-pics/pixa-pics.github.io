@@ -1084,11 +1084,11 @@ class CanvasPixels extends React.Component {
                 this._maybe_save_state();
             }
             this._update_canvas(true, true);
-        }, is_mobile_or_tablet ? 1314: 666);
+        }, is_mobile_or_tablet ? 666: 369);
 
         _intervals[1] = setInterval(() => {
             this._notify_fps();
-        }, 1000 / 4);
+        }, is_mobile_or_tablet ? 1/0: 1000 / 4);
 
         _intervals[2] = setInterval(() => {
             this._maybe_update_mine_player();
@@ -1096,12 +1096,12 @@ class CanvasPixels extends React.Component {
 
         _intervals[3] = setInterval(() => {
             this._maybe_update_selection_highlight();
-        }, 1000 * 2 / 5);
+        }, is_mobile_or_tablet ? 1000: 1000 * 2 / 5);
 
         _intervals[4] = setInterval(() => {
 
             this.set_move_speed_average_now();
-        }, 31);
+        }, is_mobile_or_tablet ? 1/0: 31);
 
         _intervals[5] = setInterval(() => {
 
@@ -5512,7 +5512,7 @@ class CanvasPixels extends React.Component {
             const previous_state_index = current_state_size - back_in_history_of;
             const previous_state = state_history[previous_state_index];
 
-            if(JSON.stringify(previous_state) !== JSON.stringify(current_state) && (_last_action_timestamp + _undo_buffer_time_ms < Date.now() || save_pending_data)) {
+            if((save_pending_data || _last_action_timestamp + _undo_buffer_time_ms < Date.now()) && structuredClone(previous_state) !== structuredClone(current_state)) {
 
                 // An action must have been performed and the last action must be older of 1 sec
                 if(back_in_history_of) {
@@ -8158,7 +8158,7 @@ class CanvasPixels extends React.Component {
         const {_force_updated_timestamp  } = this.state;
         const now = Date.now();
 
-        const ago = can_be_cancelable ? !is_mobile_or_tablet ? 1000 / 60: 1000 / 1: 1000 / 1;
+        const ago = can_be_cancelable ? is_mobile_or_tablet ? 1000 / 15: 1000 / 30: 1000 / 0.1;
         const do_not_cancel_animation = (_force_updated_timestamp < now - ago || !can_be_cancelable);
 
         anim_loop(() => {
