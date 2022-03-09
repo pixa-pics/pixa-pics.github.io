@@ -44,6 +44,7 @@ document.body.appendChild(element);
 const app = document.getElementById('app');
 
 if(app) {
+    document.body.removeAttribute("style");
     ReactDOM.render(
         <ThemeProvider theme={lightTheme}>
             <CssBaseline>

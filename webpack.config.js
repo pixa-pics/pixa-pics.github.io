@@ -41,7 +41,30 @@ module.exports = {
                     },
                 }
             })
-        ]
+        ],
+        chunkIds: 'natural',
+        splitChunks: {
+            chunks: 'async',
+            minSize: 128 * 1024,
+            maxSize: 1024 * 1024,
+            minChunks: 3,
+            maxAsyncRequests: 7,
+            maxInitialRequests: 5,
+            automaticNameDelimiter: '~',
+            automaticNameMaxLength: 30,
+            name: true,
+            cacheGroups: {
+                vendors: {
+                    test: /[\\/]node_modules[\\/]/,
+                    priority: -10
+                },
+                default: {
+                    minChunks: 5,
+                    priority: -20,
+                    reuseExistingChunk: true
+                }
+            }
+        }
     }: {minimize: false, minimizer: []},
     node: {
         fs: 'empty'
@@ -71,8 +94,8 @@ module.exports = {
     },
     output: {
         path: path.join(__dirname),
-        filename: "fatherchunk.norris.min.js",
-        chunkFilename: "childchunk.[id].min.js",
+        filename: "father-chunk.norris.min.js",
+        chunkFilename: "child-chunk.[id].min.js",
     },
     resolve: {
         alias: {
