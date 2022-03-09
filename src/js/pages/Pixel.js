@@ -1,5 +1,3 @@
-import ManualDialogWarning from "../components/ManualDialogWarning";
-
 window.mobileAndTabletCheck = function() {
     let check = false;
     (function(a){if(/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino|android|ipad|playbook|silk/i.test(a)||/1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(a.substr(0,4))) check = true;})(navigator.userAgent||navigator.vendor||window.opera);
@@ -7,13 +5,12 @@ window.mobileAndTabletCheck = function() {
 };
 
 let is_mobile_or_tablet = window.mobileAndTabletCheck();
-
-import React from "react";
-import CanvasPixels from "../components/CanvasPixels";
+import React, { Suspense } from "react";
+const CanvasPixels = React.lazy(() => import("../components/CanvasPixels"));
 import { withStyles } from "@material-ui/core";
 import pool from "../utils/worker-pool";
-import { rgb_quant } from "../utils/rgb_quant";
 
+import ManualDialogWarning from "../components/ManualDialogWarning";
 import {Fade, ListItem, Typography, Backdrop, Slider, SwipeableDrawer, Drawer, Toolbar, Tabs, Tab, Menu, ListSubheader, ListItemText, ListItemIcon} from "@material-ui/core";
 import TouchRipple from "@material-ui/core/ButtonBase/TouchRipple";
 
@@ -843,85 +840,95 @@ class Pixel extends React.Component {
             const resize_to = Math.min(max_size * max_size, Math.max(parseInt(_import_size) * parseInt(_import_size), min_size * min_size));
             const limit_color_number = Math.min(max_color * ratio_l_l2, Math.max(parseInt(_import_size) * ratio_l_l2, min_color * ratio_l_l2));
 
-            rgb_quant(b, max_original_color, resize_original_to, ["1", "2", "3"].includes(_import_colorize), (data) => {
+            import("../utils/rgb_quant").then(({rgb_quant}) => {
 
-                this._handle_load_complete("image_preload", {});
+                rgb_quant(b, max_original_color, resize_original_to, ["1", "2", "3"].includes(_import_colorize), (data) => {
 
-                if(_import_colorize === "1") {
+                    this._handle_load_complete("image_preload", {});
 
-                    actions.trigger_snackbar("Getting impaired with DeepAI systems", 5700);
-                    actions.jamy_update("angry");
-                    postJSON("https://deepai.pixa-pics.workers.dev/colorizer", data, (err, res) => {
+                    if(_import_colorize === "1") {
 
-                        rgb_quant(res, limit_color_number, resize_to, false,(res2) => {
+                        this._handle_load("image_ai");
+                        actions.trigger_snackbar("Getting impaired with DeepAI systems", 5700);
+                        actions.jamy_update("angry");
+                        postJSON("https://deepai.pixa-pics.workers.dev/colorizer", data, (err, res) => {
 
-                            img.addEventListener("load", () => {
-
-                                _canvas.set_canvas_from_image(img, data, {}, true);
-                                document.body.removeChild(input);
-                                this._handle_menu_close();
-                            });
-                            img.src = res2;
-                        }, pool);
-
-                    }, "application/text");
-
-                }else if(_import_colorize === "2") {
-
-                    actions.trigger_snackbar("Getting impaired with DeepAI systems", 5700);
-                    actions.jamy_update("angry");
-
-                    postJSON("https://deepai.pixa-pics.workers.dev/waifu2x", data, (err, res) => {
-
-                        rgb_quant(res, limit_color_number, resize_to, false,(res2) => {
-
-                            img.addEventListener("load", () => {
-
-                                _canvas.set_canvas_from_image(img, data, {}, true);
-                                document.body.removeChild(input);
-                                this._handle_menu_close();
-                            });
-                            img.src = res2;
-                        }, pool);
-
-                    }, "application/text");
-                }else if(_import_colorize === "3") {
-
-                    actions.trigger_snackbar("Getting impaired with DeepAI systems", 7500);
-                    actions.jamy_update("angry");
-
-                    postJSON("https://deepai.pixa-pics.workers.dev/colorizer", data, (err, res) => {
-
-                        postJSON("https://deepai.pixa-pics.workers.dev/waifu2x",  res, (err2, res2) => {
-
-                            rgb_quant(res2, limit_color_number, resize_to, false, (res3) => {
+                            rgb_quant(res, limit_color_number, resize_to, false,(res2) => {
 
                                 img.addEventListener("load", () => {
 
+                                    this._handle_load_complete("image_ai", {});
                                     _canvas.set_canvas_from_image(img, data, {}, true);
                                     document.body.removeChild(input);
                                     this._handle_menu_close();
                                 });
-                                img.src = res3;
+                                img.src = res2;
                             }, pool);
 
                         }, "application/text");
 
-                    }, "application/text");
-                }else {
+                    }else if(_import_colorize === "2") {
 
-                    rgb_quant(data, limit_color_number, resize_to, false,(res) => {
+                        this._handle_load("image_ai");
+                        actions.trigger_snackbar("Getting impaired with DeepAI systems", 5700);
+                        actions.jamy_update("angry");
 
-                        img.addEventListener("load", () => {
+                        postJSON("https://deepai.pixa-pics.workers.dev/waifu2x", data, (err, res) => {
 
-                            _canvas.set_canvas_from_image(img, data, {}, false);
-                            document.body.removeChild(input);
-                            this._handle_menu_close();
-                        });
-                        img.src = res;
-                    }, pool);
-                }
-            }, pool);
+                            rgb_quant(res, limit_color_number, resize_to, false,(res2) => {
+
+                                img.addEventListener("load", () => {
+
+                                    this._handle_load_complete("image_ai", {});
+                                    _canvas.set_canvas_from_image(img, data, {}, true);
+                                    document.body.removeChild(input);
+                                    this._handle_menu_close();
+                                });
+                                img.src = res2;
+                            }, pool);
+
+                        }, "application/text");
+                    }else if(_import_colorize === "3") {
+
+                        this._handle_load("image_ai");
+                        actions.trigger_snackbar("Getting impaired with DeepAI systems", 7500);
+                        actions.jamy_update("angry");
+
+                        postJSON("https://deepai.pixa-pics.workers.dev/colorizer", data, (err, res) => {
+
+                            postJSON("https://deepai.pixa-pics.workers.dev/waifu2x",  res, (err2, res2) => {
+
+                                rgb_quant(res2, limit_color_number, resize_to, false, (res3) => {
+
+                                    img.addEventListener("load", () => {
+
+                                        this._handle_load_complete("image_ai", {});
+                                        _canvas.set_canvas_from_image(img, data, {}, true);
+                                        document.body.removeChild(input);
+                                        this._handle_menu_close();
+                                    });
+                                    img.src = res3;
+                                }, pool);
+
+                            }, "application/text");
+
+                        }, "application/text");
+                    }else {
+
+                        rgb_quant(data, limit_color_number, resize_to, false,(res) => {
+
+                            img.addEventListener("load", () => {
+
+                                _canvas.set_canvas_from_image(img, data, {}, false);
+                                document.body.removeChild(input);
+                                this._handle_menu_close();
+                            });
+                            img.src = res;
+                        }, pool);
+                    }
+                }, pool);
+
+            });
         });
     };
 
@@ -1556,53 +1563,55 @@ class Pixel extends React.Component {
                             textRendering: "optimizespeed",
                             imageRendering: "optimizespeed",
                         }}>
-                            <CanvasPixels
-                                on_export_state={this._handle_canvas_state_export}
-                                export_state_every_ms={is_mobile_or_tablet ? 60 * 1000: 40 * 1000}
-                                onContextMenu={(e) => {e.preventDefault()}}
-                                key={"canvas"}
-                                className={classes.contentCanvas}
-                                ref={this._set_canvas_ref}
-                                no_actions={_is_pixel_dialog_post_edit_open}
-                                dont_show_canvas_until_img_set={_is_pixel_dialog_post_edit_open}
-                                dont_show_canvas={_is_pixel_dialog_post_edit_open}
-                                tool={_tool}
-                                canvas_wrapper_padding={32}
-                                hide_canvas_content={_hide_canvas_content}
-                                show_original_image_in_background={_show_original_image_in_background}
-                                show_transparent_image_in_background={_show_transparent_image_in_background}
-                                select_mode={_select_mode}
-                                pencil_mirror_mode={_pencil_mirror_mode}
-                                hue={_hue}
-                                bucket_threshold={_slider_value}
-                                color_loss={_slider_value}
-                                pxl_current_opacity={1}
-                                shadow_size={1}
-                                onLoadComplete={this._handle_load_complete}
-                                onLoad={this._handle_load}
-                                onCanUndoRedoChange={this._handle_can_undo_redo_change}
-                                onSizeChange={this._handle_size_change}
-                                onCurrentColorChange={this._handle_current_color_change}
-                                onSomethingSelectedChange={this._handle_something_selected_change}
-                                onImageImportModeChange={this._handle_image_import_mode_change}
-                                on_kb_change={this._handle_kb_change}
-                                on_fps_change={this._handle_fps_change}
-                                on_elevation_change={this._handle_elevation_change}
-                                onPositionChange={this._handle_position_change}
-                                onLayersChange={this._handle_layers_change}
-                                onGameEnd={this._handle_game_end}
-                                onRelevantActionEvent={this._handle_relevant_action_event}
-                                onRightClick={this._handle_right_click}
-                                mine_player_direction={_mine_player_direction}
-                                pxl_width={_width}
-                                pxl_height={_height}
-                                pxl_current_color={_current_color}
-                                convert_scale={1}
-                                default_size={_import_size}
-                                ideal_size={_import_size}
-                                max_size={_import_size}
-                                fast_drawing={true}
-                                px_per_px={1}/>
+                            <Suspense fallback={<div/>}>
+                                <CanvasPixels
+                                    on_export_state={this._handle_canvas_state_export}
+                                    export_state_every_ms={is_mobile_or_tablet ? 60 * 1000: 40 * 1000}
+                                    onContextMenu={(e) => {e.preventDefault()}}
+                                    key={"canvas"}
+                                    className={classes.contentCanvas}
+                                    ref={this._set_canvas_ref}
+                                    no_actions={_is_pixel_dialog_post_edit_open}
+                                    dont_show_canvas_until_img_set={_is_pixel_dialog_post_edit_open}
+                                    dont_show_canvas={_is_pixel_dialog_post_edit_open}
+                                    tool={_tool}
+                                    canvas_wrapper_padding={32}
+                                    hide_canvas_content={_hide_canvas_content}
+                                    show_original_image_in_background={_show_original_image_in_background}
+                                    show_transparent_image_in_background={_show_transparent_image_in_background}
+                                    select_mode={_select_mode}
+                                    pencil_mirror_mode={_pencil_mirror_mode}
+                                    hue={_hue}
+                                    bucket_threshold={_slider_value}
+                                    color_loss={_slider_value}
+                                    pxl_current_opacity={1}
+                                    shadow_size={1}
+                                    onLoadComplete={this._handle_load_complete}
+                                    onLoad={this._handle_load}
+                                    onCanUndoRedoChange={this._handle_can_undo_redo_change}
+                                    onSizeChange={this._handle_size_change}
+                                    onCurrentColorChange={this._handle_current_color_change}
+                                    onSomethingSelectedChange={this._handle_something_selected_change}
+                                    onImageImportModeChange={this._handle_image_import_mode_change}
+                                    on_kb_change={this._handle_kb_change}
+                                    on_fps_change={this._handle_fps_change}
+                                    on_elevation_change={this._handle_elevation_change}
+                                    onPositionChange={this._handle_position_change}
+                                    onLayersChange={this._handle_layers_change}
+                                    onGameEnd={this._handle_game_end}
+                                    onRelevantActionEvent={this._handle_relevant_action_event}
+                                    onRightClick={this._handle_right_click}
+                                    mine_player_direction={_mine_player_direction}
+                                    pxl_width={_width}
+                                    pxl_height={_height}
+                                    pxl_current_color={_current_color}
+                                    convert_scale={1}
+                                    default_size={_import_size}
+                                    ideal_size={_import_size}
+                                    max_size={_import_size}
+                                    fast_drawing={true}
+                                    px_per_px={1}/>
+                            </Suspense>
                             {drawer}
                         </div>
                     </div>
@@ -1789,20 +1798,23 @@ class Pixel extends React.Component {
                 <Backdrop className={classes.backdrop} open={_loading} keepMounted={false}>
                     <div className={classes.backdropTextContent} style={{fontFamily: `"Jura"`}}>
                         {_loading && <h1><ShufflingSpanText text={"Laboratory processing..."} animation_delay_ms={0} animation_duration_ms={250}/></h1>}
+                        {_loading && _loading_process === "image_ai" && <h4><ShufflingSpanText text={"AI processing your image"} animation_delay_ms={300} animation_duration_ms={500}/></h4>}
+                        {_loading && _loading_process === "image_ai" && <div><img src="/src/images/AI.svg" style={{width: "50vw"}}/></div>}
+                        {_loading && _loading_process === "image_ai" && <h5><ShufflingSpanText text={"It can take a while, please wait ~5sec."} animation_delay_ms={5000} animation_duration_ms={500}/></h5>}
                         {_loading && _loading_process === "image_preload" && <h4><ShufflingSpanText text={"Preparing laboratory"} animation_delay_ms={300} animation_duration_ms={500}/></h4>}
-                        {_loading && _loading_process === "image_preload" && <div><FUIlab style={{width: 72}}/></div>}
+                        {_loading && _loading_process === "image_preload" && <div><img src="/src/images/laboratory.svg" style={{width: "50vw"}}/></div>}
                         {_loading && _loading_process === "image_preload" && <h5><ShufflingSpanText text={"It can take a while, please wait ~5sec."} animation_delay_ms={5000} animation_duration_ms={500}/></h5>}
                         {_loading && _loading_process === "image_load" && <h4><ShufflingSpanText text={"Abducting your image"} animation_delay_ms={300} animation_duration_ms={500}/></h4>}
-                        {_loading && _loading_process === "image_load" && <div><FUIufo style={{width: 72}}/></div>}
+                        {_loading && _loading_process === "image_load" && <div><img src="/src/images/abduction.svg" style={{width: "50vw"}}/></div>}
                         {_loading && _loading_process === "image_load" && <h5><ShufflingSpanText text={"It can take a while, please wait ~7sec."} animation_delay_ms={5000} animation_duration_ms={500}/></h5>}
                         {_loading && _loading_process === "image_render" && <div><FUIatom style={{width: 72}}/></div>}
                         {_loading && _loading_process === "image_render" && <h4><ShufflingSpanText text={"Atomic rendering working"} animation_delay_ms={300} animation_duration_ms={500}/></h4>}
                         {_loading && _loading_process === "image_render" && <h5><ShufflingSpanText text={"It can take a while, please wait ~14sec."} animation_delay_ms={5000} animation_duration_ms={500}/></h5>}
                         {_loading && _loading_process === "less_color" && <h4><ShufflingSpanText text={"Coupling few color DNA"} animation_delay_ms={300} animation_duration_ms={500}/></h4>}
-                        {_loading && _loading_process === "less_color" && <div><FUIdna style={{width: 72}}/></div>}
+                        {_loading && _loading_process === "less_color" && <div><img src="/src/images/DNA.svg" style={{width: "50vw"}}/></div>}
                         {_loading && _loading_process === "less_color" && <h5><ShufflingSpanText text={"It can take a while, please wait ~5sec."} animation_delay_ms={5000} animation_duration_ms={500}/></h5>}
                         {_loading && _loading_process === "less_color_auto" && <h4><ShufflingSpanText text={"Coupling the DNA of many color"} animation_delay_ms={500} animation_duration_ms={500}/></h4>}
-                        {_loading && _loading_process === "less_color_auto" && <div><FUIdna style={{width: 72}}/></div>}
+                        {_loading && _loading_process === "less_color_auto" && <div><img src="/src/images/DNA.svg" style={{width: "50vw"}}/></div>}
                         {_loading && _loading_process === "less_color_auto" && <h5><ShufflingSpanText text={"It can take a while, please wait ~7sec."} animation_delay_ms={5000} animation_duration_ms={500}/></h5>}
                     </div>
                 </Backdrop>
@@ -1833,7 +1845,10 @@ class Pixel extends React.Component {
                 <ManualDialogWarning
                     onClose={this._handle_manual_warning_dialog_close}
                     open={_is_manual_warning_open}
-                    ago={Date.now()}/>
+                    src={"/src/images/travelers.svg"}
+                    text={"Feeling lost?"}
+                    secondary={"Check the HELP section at the top on left of the editor zone."}
+                    timeout={25000}/>
             </div>
         );
     }

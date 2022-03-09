@@ -71,8 +71,8 @@ module.exports = {
     },
     output: {
         path: path.join(__dirname),
-        filename: "chunk.norris.min.js",
-        chunkFilename: "chunk.[id].min.js"
+        filename: "fatherchunk.norris.min.js",
+        chunkFilename: "childchunk.[id].min.js",
     },
     resolve: {
         alias: {

@@ -1,16 +1,14 @@
 import React from "react";
-import ManualWarning from "../icons/ManualWarning";
 import { withStyles } from "@material-ui/core";
 
 import {Backdrop} from "@material-ui/core";
-import get_svg_in_b64 from "../utils/svgToBase64";
-import TimeAgo from "javascript-time-ago";
 
 const styles = theme => ({
     backdrop: {
         zIndex: 3000,
-        color: "#fff",
-        contain: "contents",
+        color: "#2f2e41",
+        contain: "paint size style layout",
+        backgroundColor: "#f0ffff66",
     },
     backdropContent: {
         display: "block",
@@ -20,19 +18,40 @@ const styles = theme => ({
     },
     backdropContentImage: {
         width: "100%",
-        maxWidth: 900,
-        animation: "$enter 800ms linear 0ms",
+        maxWidth: "min(900px, 75%)",
+        animation: "$warn-dialog-image-enter 1600ms ease-out 0ms",
+        animationFillMode: "both",
         userSelect: "none",
         cursor: "pointer",
         "@global": {
-            "@keyframes enter": {
+            "@keyframes $warn-dialog-image-enter": {
                 "0%": {transform: "scale(6)", filter: "opacity(0)"},
                 "50%": {transform: "scale(6)", filter: "opacity(0)"},
                 "75%": {transform: "scale(3)", filter: "opacity(.25)"},
                 "100%": {transform: "scale(1)", filter: "opacity(1)"},
             }
         }
-    }
+    },
+    backdropContentHelper: {
+        animation: "$warn-dialog-helper-enter 2000ms ease-out 200ms",
+        animationFillMode: "both",
+        "@global": {
+            "@keyframes warn-dialog-helper-enter": {
+                "0%": {filter: "opacity(0)"},
+                "100%": {filter: "opacity(1)"},
+            }
+        }
+    },
+    backdropContentHint: {
+        animation: "$warn-dialog-hint-enter 2500ms ease-out 500ms",
+        animationFillMode: "both",
+        "@global": {
+            "@keyframes warn-dialog-hint-enter": {
+                "0%": {filter: "opacity(0)"},
+                "100%": {filter: "opacity(1)"},
+            }
+        }
+    },
 });
 
 
@@ -43,8 +62,10 @@ class ManualDialogWarning extends React.Component {
         this.state = {
             classes: props.classes,
             open: props.open,
-            updated: props.updated || Date.now(),
-            _svg: null,
+            src: props.src,
+            text: props.text,
+            secondary: props.secondary,
+            timeout: props.timeout || 0,
         };
     };
 
@@ -55,7 +76,12 @@ class ManualDialogWarning extends React.Component {
 
     componentDidMount() {
 
-        this.setState({_svg: get_svg_in_b64(<ManualWarning ago={new TimeAgo(document.documentElement.lang).format(Date.now())}/>)});
+        const { timeout } = this.state;
+
+        if(timeout) {
+
+            setTimeout(() => {this._on_request_close()}, timeout);
+        }
     }
 
     _on_request_close = () => {
@@ -74,13 +100,22 @@ class ManualDialogWarning extends React.Component {
         const {
             classes,
             open,
-            _svg
+            src,
+            text,
+            secondary
         } = this.state;
 
         return (
-            <Backdrop className={classes.backdrop} transitionDuration={0} open={open} onClick={() => {this._on_request_close()}}>
+            <Backdrop className={classes.backdrop} open={open} transitionDuration={0} onClick={() => {this._on_request_close()}}>
                 <div className={classes.backdropContent}>
-                    {_svg && <img src={_svg} className={classes.backdropContentImage}/>}
+                    <div className={classes.backdropContentHelper}>
+                        <h1>{text}</h1>
+                        <h2>{secondary}</h2>
+                    </div>
+                    <img src={src} className={classes.backdropContentImage}/>
+                    <div>
+                        <span className={classes.backdropContentHint}>Click anywhere to exit</span>
+                    </div>
                 </div>
             </Backdrop>
         );
