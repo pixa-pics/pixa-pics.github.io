@@ -991,7 +991,7 @@ class CanvasPixels extends React.Component {
             _last_action_timestamp: Date.now(),
             _last_paint_timestamp: Date.now(),
             _lazy_lazy_compute_time_ms: 10 * 1000,
-            _undo_buffer_time_ms: 2500,
+            _undo_buffer_time_ms: 500,
             _mouse_inside: false,
             _paint_hover_old_pxls_snapshot: new Array((props.pxl_width || 32) * (props.pxl_height || 32)).fill(0),
             _select_hover_old_pxls_snapshot: [],
@@ -1082,12 +1082,9 @@ class CanvasPixels extends React.Component {
         let _intervals = [];
 
         _intervals[0] = setInterval(() => {
-            if(!Boolean(this.state.dont_show_canvas && this.state.but_show_canvas_once)) {
-
-                this._maybe_save_state();
-            }
+            this._maybe_save_state();
             this._update_canvas();
-        }, this.state._undo_buffer_time_ms * 1.01);
+        }, this.state._undo_buffer_time_ms * 0.95);
 
         _intervals[1] = setInterval(() => {
             this._notify_fps();
@@ -5459,20 +5456,6 @@ class CanvasPixels extends React.Component {
         }
     };
 
-    _array_push_fixed_length = (array, max_length, element) => {
-
-        if(array.length >= max_length) {
-
-            array.shift();
-            array.push(element);
-        }else {
-
-            array.push(element);
-        }
-
-        return array;
-    };
-
     _notify_fps = () => {
 
         if(this.props.on_fps_change) {
@@ -5484,11 +5467,9 @@ class CanvasPixels extends React.Component {
 
     _maybe_save_state = (set_anyway_if_changes_callback = null) => {
 
-        const { _id, pxl_width, pxl_height, _s_pxls, _original_image_index, _s_pxl_colors, _layers, _layer_index, _pxl_indexes_of_selection, _last_action_timestamp, _state_history_length, _undo_buffer_time_ms, _pencil_mirror_index } = this.state;
-        let {_json_state_history} = this.state;
-        _json_state_history = structuredClone(_json_state_history);
+        let { _json_state_history, _id, pxl_width, pxl_height, _s_pxls, _original_image_index, _s_pxl_colors, _layers, _layer_index, _pxl_indexes_of_selection, _last_action_timestamp, _state_history_length, _undo_buffer_time_ms, _pencil_mirror_index } = this.state;
 
-        const current_state = {
+        const current_state = structuredClone({
             _id,
             pxl_width,
             pxl_height,
@@ -5506,9 +5487,9 @@ class CanvasPixels extends React.Component {
             _s_pxl_colors: _s_pxl_colors,
             _pxl_indexes_of_selection: new Set([..._pxl_indexes_of_selection]),
             _pencil_mirror_index,
-        };
+        });
 
-        if(_json_state_history.state_history.length === 0 && _s_pxls.length > 0) { // Fist state
+        if(_json_state_history.state_history.length === 0 && current_state._s_pxls.length > 0) { // Fist state
 
             _json_state_history.state_history = [current_state];
             _json_state_history.previous_history_position = 0;
@@ -5528,7 +5509,7 @@ class CanvasPixels extends React.Component {
 
             const current_state_length = parseInt(_json_state_history.state_history.length);
             const back_in_history_of = parseInt(current_state_length - _json_state_history.history_position);
-            const previous_state = _json_state_history.history_position - 1 === 0 ? {_s_pxls: [], _s_pxl_colors: []} : _json_state_history.state_history[_json_state_history.history_position-1];
+            const previous_state = structuredClone(_json_state_history.state_history[_json_state_history.history_position-1]) || {_s_pxls: [], _s_pxl_colors: []};
 
             function sum_array_array(main) {
 
@@ -5541,7 +5522,7 @@ class CanvasPixels extends React.Component {
                 return sum;
             }
 
-            if((set_anyway_if_changes_callback !== null || (_last_action_timestamp + _undo_buffer_time_ms < Date.now())) && (sum_array_array(previous_state._s_pxls) !== sum_array_array(current_state._s_pxls) || sum_array_array(previous_state._s_pxl_colors) !== sum_array_array(current_state._s_pxl_colors))) {
+            if((set_anyway_if_changes_callback !== null || (parseInt(_last_action_timestamp + _undo_buffer_time_ms) < Date.now())) && (sum_array_array(previous_state._s_pxls) !== sum_array_array(current_state._s_pxls) || sum_array_array(previous_state._s_pxl_colors) !== sum_array_array(current_state._s_pxl_colors))) {
 
                 // An action must have been performed and the last action must be older of 1 sec
                 if(back_in_history_of) {
@@ -5549,15 +5530,24 @@ class CanvasPixels extends React.Component {
                     _json_state_history.state_history.splice(parseInt(_json_state_history.history_position));
                 }
 
-                _json_state_history.state_history = this._array_push_fixed_length(structuredClone(_json_state_history.state_history), _state_history_length, current_state);
                 _json_state_history.previous_history_position = parseInt(_json_state_history.history_position);
-                _json_state_history.history_position = parseInt(_json_state_history.state_history.length);
+                if(_json_state_history.state_history.length >= _state_history_length) {
 
+                    _json_state_history.state_history.shift();
+                    _json_state_history.state_history.push(current_state);
+                }else {
+
+                    _json_state_history.state_history.push(current_state);
+                    _json_state_history.history_position = parseInt(_json_state_history.state_history.length);
+                }
+
+                console.log(_json_state_history);
                 this.setState({_json_state_history, _saved_json_state_history_timestamp_from_drawing: Date.now()}, () => {
 
                     this._notify_can_undo_redo_change();
                     this._notify_layers_and_compute_thumbnails_change();
                 });
+
                 if(set_anyway_if_changes_callback !== null) {
 
                     set_anyway_if_changes_callback(structuredClone(_json_state_history));
