@@ -1142,7 +1142,10 @@ class Pixel extends React.Component {
 
         const { _layer_index } = this.state;
 
-        this.setState({_previous_layer_index: _layer_index, _layer_index: layer_index, _layers: layers});
+        this.setState({_previous_layer_index: _layer_index, _layer_index: layer_index, _layers: layers}, () => {
+
+            this.forceUpdate();
+        });
     };
 
     _handle_game_end = () => {
@@ -1559,7 +1562,7 @@ class Pixel extends React.Component {
                                 <CanvasPixels
                                     perspective={0}
                                     on_export_state={this._handle_canvas_state_export}
-                                    export_state_every_ms={is_mobile_or_tablet ? 51 * 1000: 33 * 1000}
+                                    export_state_every_ms={is_mobile_or_tablet ? 21 * 1000: 14 * 1000}
                                     shadow_size={is_mobile_or_tablet ? 0: 1.5}
                                     onContextMenu={(e) => {e.preventDefault()}}
                                     key={"canvas"}
