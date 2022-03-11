@@ -1,6 +1,6 @@
-var REQUIRED_CACHE = "unless-update-cache-v20-required";
-var USEFUL_CACHE = "unless-update-cache-v20-useful";
-var STATIC_CACHE = "unless-update-cache-v20-static";
+var REQUIRED_CACHE = "unless-update-cache-v21-required";
+var USEFUL_CACHE = "unless-update-cache-v21-useful";
+var STATIC_CACHE = "unless-update-cache-v21-static";
 var CHILD_CHUNK_REGEX = /child\-chunk\.(main\~[a-z0-9]+|[0-9]+)\.min.js/i;
 
 // On install, cache some resource.
@@ -31,6 +31,7 @@ self.addEventListener("install", function(evt) {
                 "/src/images/manifest/icon-white.png",
                 "/src/images/favicon.ico",
                 "/src/images/fun.svg",
+                "/src/images/rocket_boy.svg",
                 "/src/images/background.svg",
                 "/src/images/logo-transparent.png",
                 "/src/images/heroes.svg",

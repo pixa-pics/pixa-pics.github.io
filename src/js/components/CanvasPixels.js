@@ -23,6 +23,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
 
+import {parse} from "@ungap/structured-clone/cjs/json";
+
 window.get_base64_png_data_url_process_function_string = `return async function(
             pxl_width, 
             pxl_height,
@@ -989,7 +991,7 @@ class CanvasPixels extends React.Component {
             _last_action_timestamp: Date.now(),
             _last_paint_timestamp: Date.now(),
             _lazy_lazy_compute_time_ms: 10 * 1000,
-            _undo_buffer_time_ms: 2000,
+            _undo_buffer_time_ms: 2500,
             _mouse_inside: false,
             _paint_hover_old_pxls_snapshot: new Array((props.pxl_width || 32) * (props.pxl_height || 32)).fill(0),
             _select_hover_old_pxls_snapshot: [],
@@ -1084,8 +1086,8 @@ class CanvasPixels extends React.Component {
 
                 this._maybe_save_state();
             }
-            this._update_canvas(true, true);
-        }, this.state._undo_buffer_time_ms * 0.9);
+            this._update_canvas();
+        }, this.state._undo_buffer_time_ms * 1.01);
 
         _intervals[1] = setInterval(() => {
             this._notify_fps();
@@ -1772,7 +1774,7 @@ class CanvasPixels extends React.Component {
     _notify_layers_and_compute_thumbnails_change = () => {
 
         const { _json_state_history } = this.state;
-        const { previous_history_position, history_position, state_history } = _json_state_history;
+        const { history_position, state_history } = _json_state_history;
 
         let { _layers, _s_pxls, _s_pxl_colors } = this.state;
         let all_layers = [];
@@ -1790,22 +1792,22 @@ class CanvasPixels extends React.Component {
                 }
             }
 
-            if(typeof (state_history || [])[history_position] !== "undefined") {
+            if(typeof (state_history || [])[history_position-1] !== "undefined") {
 
-                state_history[history_position]._layers.forEach((layer, index) => {
+                state_history[history_position-1]._layers.forEach((layer, index) => {
 
-                    layer = (state_history[history_position]._layers[index] || {});
+                    layer = (state_history[history_position-1]._layers[index] || {});
 
-                    if(history_position) {
+                    if(history_position-1) {
 
-                        if(typeof state_history[previous_history_position]._layers[index] !== "undefined" && typeof state_history[history_position]._layers[index] !== "undefined") {
+                        if(typeof state_history[history_position-1]._layers[index] !== "undefined") {
 
                             if(
-                                _s_pxls[index] !== state_history[history_position]._s_pxls[index] ||
-                                _s_pxl_colors[index] !== state_history[history_position]._s_pxl_colors[index] ||
-                                _layers[index].opacity !== state_history[history_position]._layers[index].opacity ||
-                                _layers[index].hidden !== state_history[history_position]._layers[index].hidden ||
-                                _layers[index].id !== state_history[history_position]._layers[index].id
+                                _s_pxls[index] !== state_history[history_position-1]._s_pxls[index] ||
+                                _s_pxl_colors[index] !== state_history[history_position-1]._s_pxl_colors[index] ||
+                                _layers[index].opacity !== state_history[history_position-1]._layers[index].opacity ||
+                                _layers[index].hidden !== state_history[history_position-1]._layers[index].hidden ||
+                                _layers[index].id !== state_history[history_position-1]._layers[index].id
                             ) {
 
 
@@ -2375,9 +2377,10 @@ class CanvasPixels extends React.Component {
             }, () => {
 
                 this._notify_size_change();
-                this._notify_layers_change();
+                this._notify_layers_and_compute_thumbnails_change();
                 this._update_screen_zoom_ratio(true);
                 this._notify_image_load_complete();
+                this._notify_export_state();
             });
 
         }else {
@@ -2656,6 +2659,8 @@ class CanvasPixels extends React.Component {
                     _pxl_indexes_of_selection: new Set(),
                     _base64_original_images: dont_compute_base64_original_image ? []: new_base64_original_images,
                     _layers: [{id: Date.now(), name: "Layer 0", hidden: false, opacity: 1, data: {}}],
+                    _json_state_history: {previous_history_position: 0, history_position: 0, state_history: []},
+                    _saved_json_state_history_timestamp_from_drawing: 0,
                     _s_pxl_colors: ns_pxl_colors,
                     _s_pxls: ns_pxls,
                     _layer_index,
@@ -2670,24 +2675,27 @@ class CanvasPixels extends React.Component {
                 }, () => {
 
                     this._notify_size_change();
-                    this._notify_layers_change();
+                    this._notify_layers_and_compute_thumbnails_change();
                     this._update_screen_zoom_ratio(true);
 
                     if(full_new_pxl_colors.length >= 5000){
                         this._to_less_color(1/32, () => {
 
                             this._notify_image_load_complete();
+                            this._notify_export_state();
                         });
                     }else if(full_new_pxl_colors.length >= 2500){
                         this._to_less_color(1/64, () => {
 
                             this._notify_image_load_complete();
+                            this._notify_export_state();
                         });
                     }else {
 
                         this._to_less_color(1/128, () => {
 
                             this._notify_image_load_complete();
+                            this._notify_export_state();
                         });
                     }
                 });
@@ -5453,7 +5461,6 @@ class CanvasPixels extends React.Component {
 
     _array_push_fixed_length = (array, max_length, element) => {
 
-        let has_new_length = false;
         if(array.length >= max_length) {
 
             array.shift();
@@ -5461,13 +5468,9 @@ class CanvasPixels extends React.Component {
         }else {
 
             array.push(element);
-            has_new_length = true;
         }
 
-        return [
-            array,
-            has_new_length
-        ];
+        return array;
     };
 
     _notify_fps = () => {
@@ -5479,14 +5482,11 @@ class CanvasPixels extends React.Component {
         }
     };
 
-    _maybe_save_state = (save_pending_data) => {
+    _maybe_save_state = (set_anyway_if_changes_callback = null) => {
 
         const { _id, pxl_width, pxl_height, _s_pxls, _original_image_index, _s_pxl_colors, _layers, _layer_index, _pxl_indexes_of_selection, _last_action_timestamp, _state_history_length, _undo_buffer_time_ms, _pencil_mirror_index } = this.state;
-
         let {_json_state_history} = this.state;
-
-        let {state_history, history_position, previous_history_position} = _json_state_history;
-        state_history = [...(state_history || [])];
+        _json_state_history = structuredClone(_json_state_history);
 
         const current_state = {
             _id,
@@ -5502,68 +5502,77 @@ class CanvasPixels extends React.Component {
                 }
             }),
             _layer_index,
-            _s_pxls: [..._s_pxls],
-            _s_pxl_colors: [..._s_pxl_colors],
+            _s_pxls: _s_pxls,
+            _s_pxl_colors: _s_pxl_colors,
             _pxl_indexes_of_selection: new Set([..._pxl_indexes_of_selection]),
             _pencil_mirror_index,
         };
 
-        if((state_history || []).length === 0) { // Fist state
+        if(_json_state_history.state_history.length === 0 && _s_pxls.length > 0) { // Fist state
 
-            const [ array ] = this._array_push_fixed_length(state_history, _state_history_length, current_state);
-            state_history = structuredClone(array);
-            const new_json_state_history = {previous_history_position, history_position, state_history};
+            _json_state_history.state_history = [current_state];
+            _json_state_history.previous_history_position = 0;
+            _json_state_history.history_position = 1;
 
-            this.setState({_json_state_history: new_json_state_history, _saved_json_state_history_timestamp_from_drawing: Date.now()});
-            return new_json_state_history;
+            this.setState({_json_state_history, _saved_json_state_history_timestamp_from_drawing: Date.now()}, () => {
+
+                this._notify_can_undo_redo_change();
+            });
+            if(set_anyway_if_changes_callback !== null) {
+
+                set_anyway_if_changes_callback(structuredClone(_json_state_history));
+            }
+            return true;
 
         }else {
 
-            const current_state_size = state_history.length - 1;
-            const back_in_history_of = current_state_size - history_position;
-            const previous_state_index = current_state_size - back_in_history_of;
-            const previous_state = state_history[previous_state_index];
+            const current_state_length = parseInt(_json_state_history.state_history.length);
+            const back_in_history_of = parseInt(current_state_length - _json_state_history.history_position);
+            const previous_state = _json_state_history.history_position - 1 === 0 ? {_s_pxls: [], _s_pxl_colors: []} : _json_state_history.state_history[_json_state_history.history_position-1];
 
             function sum_array_array(main) {
 
                 let sum = "";
-                main.forEach((sub) => {
+                main.forEach((array) => {
 
-                    const parsing_function = typeof sub[0] === "number" ? (o) => {return o.toString()}: (o) => {return String(o)};
-                    sub.forEach((value) => {
-
-                        sum += parsing_function(value);
-                    });
+                    sum += xxHash32(Buffer.from(array), 0).toString(16);
                 });
 
-                return xxHash32(Buffer.from(sum, "utf8"), 0).toString(16);
+                return sum;
             }
 
-            if((save_pending_data || _last_action_timestamp + _undo_buffer_time_ms < Date.now()) && (sum_array_array(previous_state._s_pxls) !== sum_array_array(current_state._s_pxls) || sum_array_array(previous_state._s_pxl_colors) !== sum_array_array(current_state._s_pxl_colors))) {
+            if((set_anyway_if_changes_callback !== null || (_last_action_timestamp + _undo_buffer_time_ms < Date.now())) && (sum_array_array(previous_state._s_pxls) !== sum_array_array(current_state._s_pxls) || sum_array_array(previous_state._s_pxl_colors) !== sum_array_array(current_state._s_pxl_colors))) {
 
                 // An action must have been performed and the last action must be older of 1 sec
                 if(back_in_history_of) {
 
-                    state_history = state_history.slice(0, history_position + 1);
+                    _json_state_history.state_history.splice(parseInt(_json_state_history.history_position));
                 }
 
-                const [ array, has_new_length ] = this._array_push_fixed_length(state_history, _state_history_length, current_state);
-                state_history = structuredClone(array);
-                previous_history_position = history_position;
-                history_position = has_new_length ? history_position + 1: history_position;
-                const new_json_state_history = {previous_history_position, history_position, state_history};
+                _json_state_history.state_history = this._array_push_fixed_length(structuredClone(_json_state_history.state_history), _state_history_length, current_state);
+                _json_state_history.previous_history_position = parseInt(_json_state_history.history_position);
+                _json_state_history.history_position = parseInt(_json_state_history.state_history.length);
 
-                this.setState({_json_state_history: new_json_state_history, _saved_json_state_history_timestamp_from_drawing: Date.now()}, () => {
+                this.setState({_json_state_history, _saved_json_state_history_timestamp_from_drawing: Date.now()}, () => {
 
                     this._notify_can_undo_redo_change();
+                    this._notify_layers_and_compute_thumbnails_change();
                 });
-                return new_json_state_history;
+                if(set_anyway_if_changes_callback !== null) {
+
+                    set_anyway_if_changes_callback(structuredClone(_json_state_history));
+                }
+
+                return true;
+            }else  {
+
+                if(set_anyway_if_changes_callback !== null) {
+
+                    set_anyway_if_changes_callback(null);
+                }
+                return false;
             }
-
-            return null;
         }
-
-        return null;
     };
     
     _notify_relevant_action_event = (event, color = "#ffffffff", opacity = 1) => {
@@ -5634,8 +5643,6 @@ class CanvasPixels extends React.Component {
 
         const { _s_pxl_colors, pxl_width, pxl_height } = this.state;
 
-        this._notify_export_state();
-
         let image_details = {
             width: pxl_width,
             height: pxl_height,
@@ -5672,8 +5679,7 @@ class CanvasPixels extends React.Component {
     import_JS_state = (js) => {
 
         const { _base64_original_images, _json_state_history } = structuredClone(js);
-        const {state_history, previous_history_position, history_position} = _json_state_history;
-        const { _original_image_index, pxl_width, pxl_height, _pxl_indexes_of_selection, _s_pxl_colors, _s_pxls, _layers, _layer_index, _pencil_mirror_index, _id } = state_history[history_position];
+        const { _original_image_index, pxl_width, pxl_height, _pxl_indexes_of_selection, _s_pxl_colors, _s_pxls, _layers, _layer_index, _pencil_mirror_index, _id } = structuredClone(_json_state_history.state_history[_json_state_history.history_position-1]);
 
         const has_new_dimension = Boolean(pxl_width !== this.state.pxl_width || pxl_height !== this.state.pxl_height);
         this.setState({
@@ -5683,30 +5689,33 @@ class CanvasPixels extends React.Component {
             _old_pxl_width: this.state.pxl_width,
             pxl_height,
             _old_pxl_height: this.state.pxl_height,
-            _s_pxls,
-            _s_pxl_colors,
+            _s_pxls: [..._s_pxls].map((a) => Uint32Array.from(a)),
+            _s_pxl_colors: [..._s_pxl_colors],
             _pxl_indexes_of_selection_drawn: structuredClone(this.state._pxl_indexes_of_selection),
             _pxl_indexes_of_selection: new Set([..._pxl_indexes_of_selection]),
             _layers,
             _old_layers: structuredClone(this.state._layers),
             _layer_index,
             _base64_original_images,
-            _original_image_index: _original_image_index,
+            _original_image_index: -1,
             _json_state_history: _json_state_history,
             _is_there_new_dimension: has_new_dimension,
         }, () => {
 
+            this.setState({_original_image_index});
+
             if(has_new_dimension) {
 
                 this._notify_size_change();
-                this._notify_image_load_complete();
                 this._notify_layers_and_compute_thumbnails_change();
                 this._update_screen_zoom_ratio(true);
-
+                this._notify_can_undo_redo_change();
+                this._notify_is_something_selected();
             }else {
 
                 this._notify_layers_and_compute_thumbnails_change();
-                this._request_force_update();
+                this._notify_can_undo_redo_change();
+                this._notify_is_something_selected();
             }
         });
 
@@ -5714,56 +5723,70 @@ class CanvasPixels extends React.Component {
 
     export_JS_state = (callback_function) => {
 
-        const is_pending_save_data = this._maybe_save_state(true);
-        const _json_state_history = structuredClone(is_pending_save_data === null ? this.state._json_state_history: is_pending_save_data);
+        this._maybe_save_state((data) => {
 
-        const {_base64_original_images, _id} = this.state;
+            const _json_state_history = data !== null ? data: structuredClone(this.state._json_state_history);
 
-        this.get_base64_png_data_url(1, ([base_64]) => {
+            if(!_json_state_history.state_history.length){
+                setTimeout(() => {
 
-            const bytes = 3 * Math.ceil((base_64.length/4));
-            callback_function({
-                id: _id,
-                kb: bytes / 1000,
-                preview: base_64,
-                timestamp: Date.now(),
-                _base64_original_images: structuredClone(_base64_original_images),
-                _json_state_history
-            });
-        }, false, 1);
+                    this.export_JS_state(callback_function);
+                }, this.state._undo_buffer_time_ms)
+            } else {
+
+                const {_base64_original_images, _id} = this.state;
+
+                this.get_base64_png_data_url(1, ([base_64]) => {
+
+                    const bytes = 3 * Math.ceil((base_64.length/4));
+                    callback_function({
+                        id: _id,
+                        kb: bytes / 1000,
+                        preview: base_64,
+                        timestamp: Date.now(),
+                        _base64_original_images: structuredClone(_base64_original_images),
+                        _json_state_history
+                    });
+                }, false, 1);
+            }
+        });
     };
 
     _can_undo = () => {
 
         const { _json_state_history } = this.state;
-        const {state_history, history_position} = _json_state_history;
-        const current_state_size = state_history.length - 1;
-        const back_in_history_of = current_state_size - history_position;
 
-        return current_state_size - back_in_history_of > 0;
+        return _json_state_history.history_position > 1;
     };
 
-    nothing_happened_undo = (if_more_recent_than_ms) => {
+    nothing_happened_undo = () => {
 
-        if(this.state._saved_json_state_history_timestamp_from_drawing + if_more_recent_than_ms > Date.now()) {
+        this._maybe_save_state((data) => {
 
-            const is_pending_save_data = this._maybe_save_state(true);
-            const _json_state_history = structuredClone(is_pending_save_data === null ? this.state._json_state_history: is_pending_save_data);
+            if(data) {
 
-            let {state_history, history_position, previous_history_position} = _json_state_history;
+                this.undo();
+            }
+        });
+    }
 
-            if(this._can_undo() & !is_pending_save_data){
+    undo = () => {
 
-                previous_history_position = history_position;
-                history_position--;
-                const { _original_image_index, pxl_width, pxl_height, _pxl_indexes_of_selection, _s_pxl_colors, _s_pxls, _layers, _layer_index, _pencil_mirror_index, _id } = state_history[history_position];
-                state_history.splice(previous_history_position, 1);
-                const new_json_state_history = {state_history, history_position, previous_history_position};
+        this._maybe_save_state((data) => {
+
+            let _json_state_history = !data ? structuredClone(this.state._json_state_history): data;
+
+            if(this._can_undo()){
+
+                _json_state_history.previous_history_position = parseInt(_json_state_history.history_position);
+                _json_state_history.history_position -= 1;
+
+                const { _original_image_index, pxl_width, pxl_height, _pxl_indexes_of_selection, _s_pxl_colors, _s_pxls, _layers, _layer_index, _pencil_mirror_index, _id } = structuredClone(_json_state_history.state_history[_json_state_history.history_position-1]);
                 const has_new_dimension = Boolean(pxl_width !== this.state.pxl_width || pxl_height !== this.state.pxl_height);
 
                 this.setState({
                     _id,
-                    _original_image_index: - 1,
+                    _original_image_index: _original_image_index,
                     _pencil_mirror_index,
                     pxl_width,
                     pxl_height,
@@ -5774,138 +5797,90 @@ class CanvasPixels extends React.Component {
                     _layers,
                     _old_layers: structuredClone(this.state._layers),
                     _layer_index,
-                    _json_state_history: new_json_state_history,
+                    _json_state_history: structuredClone(_json_state_history),
                     _is_there_new_dimension: has_new_dimension,
                 }, () => {
 
-                    this.setState({_original_image_index});
+                    this._request_force_update(false, true,() => {
 
-                    this._notify_layers_and_compute_thumbnails_change();
-                    this._notify_can_undo_redo_change();
-                    this._notify_is_something_selected();
-                    if(has_new_dimension) {
+                        this.setState({_original_image_index});
 
-                        this._notify_size_change();
-                        this._update_screen_zoom_ratio();
-                    }else {
+                        if(has_new_dimension) {
 
-                        this._update_canvas();
-                    }
+                            this._notify_size_change();
+                            this._notify_layers_and_compute_thumbnails_change();
+                            this._update_screen_zoom_ratio(true);
+                            this._notify_can_undo_redo_change();
+                            this._notify_is_something_selected();
+                        }else {
+
+                            this._notify_layers_and_compute_thumbnails_change();
+                            this._notify_can_undo_redo_change();
+                            this._notify_is_something_selected();
+                        }
+                    });
                 });
-            }else if(is_pending_save_data) {
-
-                setTimeout(() => {
-                    this.nothing_happened_undo(if_more_recent_than_ms + 75)
-                }, 75);
             }
-        }
-    }
-
-    undo = () => {
-
-        const is_pending_save_data = this._maybe_save_state(true);
-        const _json_state_history = structuredClone(is_pending_save_data === null ? this.state._json_state_history: is_pending_save_data);
-        let {state_history, history_position, previous_history_position} = _json_state_history;
-
-        if(this._can_undo() & !is_pending_save_data){
-
-            previous_history_position = history_position;
-            history_position--;
-            const { _original_image_index, pxl_width, pxl_height, _pxl_indexes_of_selection, _s_pxl_colors, _s_pxls, _layers, _layer_index, _pencil_mirror_index, _id } = state_history[history_position];
-            const new_json_state_history = {state_history, history_position, previous_history_position};
-            const has_new_dimension = Boolean(pxl_width !== this.state.pxl_width || pxl_height !== this.state.pxl_height);
-
-            this.setState({
-                _id,
-                _original_image_index: - 1,
-                _pencil_mirror_index,
-                pxl_width,
-                pxl_height,
-                _s_pxls,
-                _s_pxl_colors,
-                _pxl_indexes_of_selection_drawn: this.state._pxl_indexes_of_selection,
-                _pxl_indexes_of_selection: new Set([..._pxl_indexes_of_selection]),
-                _layers,
-                _old_layers: structuredClone(this.state._layers),
-                _layer_index,
-                _json_state_history: new_json_state_history,
-                _is_there_new_dimension: has_new_dimension,
-            }, () => {
-
-                this.setState({_original_image_index});
-
-                this._notify_layers_and_compute_thumbnails_change();
-                this._notify_can_undo_redo_change();
-                this._notify_is_something_selected();
-                if(has_new_dimension) {
-
-                    this._notify_size_change();
-                    this._update_screen_zoom_ratio();
-                }else {
-
-                    this._request_force_update();
-                }
-            });
-        }
+        });
     };
 
     _can_redo = () => {
 
         const { _json_state_history } = this.state;
-        const {state_history, history_position} = _json_state_history;
 
-        return state_history.length - 1 > history_position;
+        return _json_state_history.state_history.length > _json_state_history.history_position;
     }
 
     redo = () => {
 
-        const is_pending_save_data = this._maybe_save_state(true);
-        const _json_state_history = structuredClone(is_pending_save_data === null ? this.state._json_state_history: is_pending_save_data);
+        this._maybe_save_state((data) => {
 
-        let {state_history, history_position, previous_history_position} = _json_state_history;
+            const _json_state_history = !data ? structuredClone(this.state._json_state_history) : data;
 
-        if (this._can_redo() && !is_pending_save_data) {
+            if (this._can_redo()) {
 
-            previous_history_position = history_position;
-            history_position++;
-            const { _original_image_index, pxl_width, pxl_height, _pxl_indexes_of_selection, _s_pxl_colors, _s_pxls, _layers, _layer_index, _pencil_mirror_index, _id } = state_history[history_position];
+                _json_state_history.previous_history_position = parseInt(_json_state_history.history_position);
+                _json_state_history.history_position += 1;
+                const { _original_image_index, pxl_width, pxl_height, _pxl_indexes_of_selection, _s_pxl_colors, _s_pxls, _layers, _layer_index, _pencil_mirror_index, _id } = _json_state_history.state_history[_json_state_history.history_position-1];
 
-            const new_json_state_history = {state_history, history_position, previous_history_position};
-            const has_new_dimension = Boolean(pxl_width !== this.state.pxl_width || pxl_height !== this.state.pxl_height);
+                const has_new_dimension = Boolean(pxl_width !== this.state.pxl_width || pxl_height !== this.state.pxl_height);
 
-            this.setState({
-                _id,
-                _original_image_index: - 1,
-                _pencil_mirror_index,
-                pxl_width,
-                pxl_height,
-                _s_pxls,
-                _s_pxl_colors,
-                _pxl_indexes_of_selection_drawn: this.state._pxl_indexes_of_selection,
-                _pxl_indexes_of_selection: new Set([..._pxl_indexes_of_selection]),
-                _layers,
-                _old_layers: structuredClone(this.state._layers),
-                _layer_index,
-                _json_state_history: new_json_state_history,
-                _is_there_new_dimension: has_new_dimension,
-            }, () => {
+                this.setState({
+                    _id,
+                    _original_image_index: _original_image_index,
+                    _pencil_mirror_index,
+                    pxl_width,
+                    pxl_height,
+                    _s_pxls,
+                    _s_pxl_colors,
+                    _pxl_indexes_of_selection_drawn: this.state._pxl_indexes_of_selection,
+                    _pxl_indexes_of_selection: new Set([..._pxl_indexes_of_selection]),
+                    _layers,
+                    _old_layers: structuredClone(this.state._layers),
+                    _layer_index,
+                    _json_state_history: structuredClone(_json_state_history),
+                    _is_there_new_dimension: has_new_dimension,
+                }, () => {
 
-                this.setState({_original_image_index});
+                    this._request_force_update(false, true, () => {
 
-                this._notify_layers_and_compute_thumbnails_change();
-                this._notify_can_undo_redo_change();
-                this._notify_is_something_selected();
-                if(has_new_dimension) {
+                        if(has_new_dimension) {
 
-                    this._notify_size_change();
-                    this._update_screen_zoom_ratio();
-                }else {
+                            this._notify_size_change();
+                            this._notify_layers_and_compute_thumbnails_change();
+                            this._update_screen_zoom_ratio(true);
+                            this._notify_can_undo_redo_change();
+                            this._notify_is_something_selected();
+                        }else {
 
-                    this._request_force_update();
-                }
-            });
-
-        }
+                            this._notify_layers_and_compute_thumbnails_change();
+                            this._notify_can_undo_redo_change();
+                            this._notify_is_something_selected();
+                        }
+                    });
+                });
+            }
+        });
     }
 
     to_selection_border = () => {

@@ -10,9 +10,10 @@ const overrides = {
                 height: "100%",
             },
             body: {
+                position: "fixed",
+                overflow: "hidden",
                 backgroundColor: "#FAFAFA",
                 height: "100%",
-                overflow: "overlay",
                 overscrollBehavior: "none",
             },
             "body > #app": {

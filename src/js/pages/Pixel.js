@@ -67,14 +67,10 @@ const styles = theme => ({
         color: red[500],
     },
     root: {
-        height: "100%",
-        maxHeight: "100%",
+        contain: "strict",
         width: "100%",
+        height: "100%",
         position: "relative",
-        [theme.breakpoints.down("md")]: {
-            position: "fixed",
-        },
-        overflow: "hidden",
     },
     content: {
         height: "100%",
@@ -87,13 +83,14 @@ const styles = theme => ({
         maxHeight: "100%",
         position: "relative",
         display: "flex",
+        contain: "paint style size layout",
     },
     contentCanvas: {
         width: "100%",
         height: "100%",
         maxHeight: "100%",
         display: "flex",
-        contain: "paint style size"
+        contain: "paint style size layout",
     },
     contentDrawer: {
         overscrollBehavior: "none",
@@ -131,6 +128,7 @@ const styles = theme => ({
         transform: "translateY(96px)"
     },
     contentDrawerFixed: {
+        contain: "style size layout",
         maxHeight: "100%",
         height: "100%",
         [theme.breakpoints.down("md")]: {
@@ -213,6 +211,7 @@ const styles = theme => ({
         textAlign: "center",
     },
     fatabs: {
+        boxShadow: "0px 2px 4px -1px rgb(0 0 0 / 20%), 0px 4px 5px 0px rgb(0 0 0 / 14%), 0px 1px 10px 0px rgb(0 0 0 / 12%)",
         contain: "layout paint style sze",
         [theme.breakpoints.up("lg")]: {
             display: "none",
@@ -1451,7 +1450,6 @@ class Pixel extends React.Component {
                         paper: classes.drawerPaper,
                     }}
                 >
-                    <Toolbar />
                     <div style={{display: "contents"}}>
                         <div style={{boxShadow: "rgb(0 0 0 / 20%) 0px 2px 4px -1px, rgb(0 0 0 / 14%) 0px 4px 5px 0px, rgb(0 0 0 / 12%) 0px 1px 10px 0px", zIndex: 1}}>
                             <div className={classes.drawerHeader}>
@@ -1557,7 +1555,7 @@ class Pixel extends React.Component {
                             textRendering: "optimizespeed",
                             imageRendering: "optimizespeed",
                         }}>
-                            <Suspense fallback={<div/>}>
+                            <Suspense fallback={<div className={classes.contentCanvas}/>}>
                                 <CanvasPixels
                                     perspective={0}
                                     on_export_state={this._handle_canvas_state_export}

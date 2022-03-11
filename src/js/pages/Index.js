@@ -58,11 +58,13 @@ const styles = theme => ({
     },
     content: {
         position: "relative",
-        contain: "paint size layout",
-        overflow: "overlay",
+        contain: "size paint style layout",
         width: "calc(100vw - 256px)",
-        height: "100%",
         marginLeft: 256,
+        height: "calc(100vh - 64px)",
+        [theme.breakpoints.down("xs")]: {
+            height: "calc(100vh - 56px)",
+        },
         [theme.breakpoints.down("sm")]: {
             width: "100vw",
             marginLeft: 0,
@@ -439,8 +441,6 @@ class Index extends React.Component {
         // This is the custom router
         let page_component = null;
         let page_name = "";
-        let page_tabs = "";
-        let page_tabs_component = null;
 
         for(let i = 0; i < PAGE_ROUTES.length; i++) {
 
@@ -449,10 +449,6 @@ class Index extends React.Component {
             if(pathname.match(page_route.page_regex)){
 
                 page_name = page_route.page_name;
-                page_tabs = page_route.tabs;
-                page_tabs_component = page_tabs !== "" ?
-                    <AppTabs pathname={pathname} tabs={page_tabs}/>:
-                    null;
                 page_component = PAGE_COMPONENTS(page_name, pathname);
             }
         }
@@ -493,16 +489,13 @@ class Index extends React.Component {
                         pathname={pathname}
                         jamy_enabled={_jamy_enabled}
                         jamy_state_of_mind={_jamy_state_of_mind}/>
-                        <div style={{display: "inline", height: "100%"}}>
-                            <AppDrawer
-                                pathname={pathname}
-                                logged_account={_logged_account}/>
-                            <main className={classes.content}>
-                                <Toolbar />
-                                {page_tabs_component}
-                                {page_component}
-                            </main>
-                        </div>
+                    <AppDrawer
+                        pathname={pathname}
+                        logged_account={_logged_account}/>
+                    <Toolbar />
+                    <main className={classes.content}>
+                        {page_component}
+                    </main>
                 </div>
                 <ShareDialog
                     open={_is_share_dialog_open}
