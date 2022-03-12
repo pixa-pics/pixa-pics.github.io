@@ -267,9 +267,10 @@ class Home extends React.Component {
                     </h1>
                     <Fade in={true} timeout={700}>
                         <h2 className={classes.subtitle}>
-                            IN NOW AEONS of the <span className={classes.blue}>matrix</span> and <span className={classes.blue}>vector</span> universes of ART, <br/>
-                            CREATE, <img className={"emoji"} style={{width: "2em"}} src={DRAWEMOJI}/>DRAW and <img className={"emoji"} style={{width: "2em"}} src={MAGICKEMOJI}/>EDIT pixel art that generate ∞ SVGs paintings.<br />
-                            WITH <img style={{width: "3em"}} className={"emoji pulse2"} src={HEARTHEMOJI}/>, it has been designed to be : <br />
+                            In a new AEON of the <span className={classes.blue}>matrix</span> and <span className={classes.blue}>vector</span> universes of PICS : <br/>
+                            CONVERT them and then, DRAW <img className={"emoji"} style={{width: "2em"}} src={DRAWEMOJI}/> and <img className={"emoji"} style={{width: "2em"}} src={MAGICKEMOJI}/> EDIT it.<br />
+                            ANY pixel art can generate ∞ SVGs paintings.<br />
+                            MADE with <img style={{width: "3em"}} className={"emoji pulse2"} src={HEARTHEMOJI}/>, just designed to be : <br />
                             <br />
                         </h2>
                     </Fade>

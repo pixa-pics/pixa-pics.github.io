@@ -1,6 +1,6 @@
-var REQUIRED_CACHE = "unless-update-cache-v23-required";
-var USEFUL_CACHE = "unless-update-cache-v23-useful";
-var STATIC_CACHE = "unless-update-cache-v23-static";
+var REQUIRED_CACHE = "unless-update-cache-v24-required";
+var USEFUL_CACHE = "unless-update-cache-v24-useful";
+var STATIC_CACHE = "unless-update-cache-v24-static";
 var CHILD_CHUNK_REGEX = /child\-chunk\.(main\~[a-z0-9]+|[0-9]+)\.min.js/i;
 
 // On install, cache some resource.
@@ -217,17 +217,17 @@ self.addEventListener("activate", function(evt) {
     if(navigator.onLine) {
 
         return self.clients.claim();
-    }else {
-
-        return event.waitUntil(Promise.allSettled([
-                caches.keys().then(keys => Promise.allSettled(
-                    keys.map(key => {
-                        if (key !== REQUIRED_CACHE && key !== STATIC_CACHE && key !== USEFUL_CACHE) {
-                            return caches.delete(key);
-                        }
-                    })
-                ))
-            ])
-        ).then(function(response){return response});
     }
+
+    return event.waitUntil(Promise.allSettled([
+            caches.keys().then(keys => Promise.allSettled(
+                keys.map(key => {
+                    if (key !== REQUIRED_CACHE && key !== STATIC_CACHE && key !== USEFUL_CACHE) {
+                        return caches.delete(key);
+                    }
+                })
+            ))
+        ])
+    ).then(function(response){return response});
+
 });
