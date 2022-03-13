@@ -21,14 +21,6 @@ PIXA.PICS - Pixel art editor.
  * Encodig of Portable Network Graphics in type of palette (PNGQuant)
  * Chunk ("norris") system for droping script evaluation cost within CPU
 
-# Features
-
-PixaPics benefit a algorithm converting in any of your photo imported from thaousands of color to only a few using a blazing new algorithm which is very costly for any modern CPUs yet it doesn't take more than 15sec in average for it to be done. The powerful selections tools and layer systems constitute a real advantage to manipulate with ease some portion of your pixel art, and while drawing tools doesn't stop to pencil filters and effects will also be an ally for modifying the arts you can create with it.
-
-> You can do pixel art which transforms itself into SVG.
-
-Through this example we used a small thumbnail in JP(e)G format of 500 by 500 which was of a size of 45.5Kb to then through our own color quantization and classical size reduction we transformed it into a pixel art of 3.7Kb which can be stored cost-efficiently on a blockchain for example, then when it is needed to display it on a support that should be printed the pixel art can after be passed through xBRZ algorithms which increase its size by 6x without any annoying transformation except a kind of stylized transformation which is by then, "shaped humanly" enough to pass it inside a transformation that recreate a infinite SVG from it which is optimized on the fly but weight 51.3Kb when we don't store it in pixel art but since we can as it has been produced from it this infinite digital painting weights less than 4Kb. #blockchain #transformation #algorithms https://github.com/pixa-pics/pixa-pics.github.io/blob/68d89f3c73e209aa964d73c3a4062eb16d11e89a/src/js/components/CanvasPixels.js#L7777
-
 # Example of picture's conversion
 
 **Lana Del Rey with US flag** 45.5 Kb (JPEG) -> 3.7 Kb (PNG) -> X.X Kb (SVG)
@@ -47,3 +39,9 @@ Passionate about stars, cryptography, and computer, I began following a particul
 Philosophy is the science of estimating value, but technology is the value of estimating science. All that we perform in IT is described for humans and encoded for a machine, compassion, and vigilance are required to code along with knowledge.
 -Affolter Matias
 
+# Credit
+
+ * All emoji (Tweemoji) by Twitter
+ * Illustrations by Undraw and Manypixels
+ * Sound effects by Google
+ * Music on home page by Red Eclipse (video game) and in the editor by Nikola Tesla (inventor)
