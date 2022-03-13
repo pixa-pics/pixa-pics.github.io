@@ -321,7 +321,6 @@ class Pixel extends React.Component {
             _logged_account: {},
             _less_than_1280w: false,
             _is_pixel_dialog_create_open: true,
-            _previous_state: {},
             _is_manual_warning_open: false,
             _settings_set: false,
             _attachment_previews: {},
@@ -355,16 +354,12 @@ class Pixel extends React.Component {
 
     _handle_canvas_state_export = (current_state) => {
 
-        const { _previous_state } = this.state;
-
-        const {id, kb, preview} = current_state;
-
-        if((_previous_state.preview !== preview) && kb > 1) {
+        if(current_state.kb > 1) {
 
             let attachment_array = {};
-            attachment_array["json_state-ID" + id + ".json.lzp3"] = current_state;
+            attachment_array["json_state-ID" + current_state.id + ".json.lzp3"] = current_state;
 
-            this.setState({_previous_state: current_state, _kb: kb}, () => {
+            this.setState({_kb: current_state.kb}, () => {
 
                 api.set_settings({}, () => {}, attachment_array);
             });
@@ -449,7 +444,7 @@ class Pixel extends React.Component {
 
         const { _canvas } = this.state;
         _canvas.import_JS_state(data);
-        this.setState({ _is_pixel_dialog_create_open: false, _previous_state: data });
+        this.setState({ _is_pixel_dialog_create_open: false});
     };
 
     _update_settings() {
@@ -1028,7 +1023,7 @@ class Pixel extends React.Component {
 
     _handle_size_change = (_width, _height) => {
 
-        this.setState({_width, _height})
+        this.setState({_width, _height});
     }
 
     _handle_current_color_change = (color, event) => {
@@ -1592,7 +1587,6 @@ class Pixel extends React.Component {
                                     onCurrentColorChange={this._handle_current_color_change}
                                     onSomethingSelectedChange={this._handle_something_selected_change}
                                     onImageImportModeChange={this._handle_image_import_mode_change}
-                                    on_kb_change={this._handle_kb_change}
                                     on_fps_change={this._handle_fps_change}
                                     on_elevation_change={this._handle_elevation_change}
                                     onPositionChange={this._handle_position_change}

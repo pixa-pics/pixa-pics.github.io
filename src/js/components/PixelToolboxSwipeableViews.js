@@ -1706,12 +1706,12 @@ class PixelToolboxSwipeableViews extends React.Component {
                                             }}>
                                                 <Typography id="width-slider" gutterBottom>Width</Typography>
                                                 <Slider value={width} step={8} valueLabelDisplay="auto" min={0}
-                                                        max={width > 256 ? width : 256}
+                                                        max={width > 512 ? width : 512}
                                                         onChangeCommitted={this._set_width_from_slider}
                                                         aria-labelledby="width-slider"/>
                                                 <Typography id="height-slider" gutterBottom>Height</Typography>
                                                 <Slider value={height} step={8} valueLabelDisplay="auto" min={0}
-                                                        max={height > 256 ? height : 256}
+                                                        max={height > 512 ? height : 512}
                                                         onChangeCommitted={this._set_height_from_slider}
                                                         aria-labelledby="height-slider"/>
                                             </div>
