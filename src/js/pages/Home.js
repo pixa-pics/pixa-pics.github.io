@@ -227,7 +227,7 @@ class Home extends React.Component {
             actions.trigger_loading_update(100);
         }, 250);
 
-        actions.trigger_music(`track_${Math.ceil(Math.random() * 12).toString(10).padStart(2, "0")}`);
+        actions.trigger_music(`track_${navigator.onLine ? Math.ceil(Math.random() * 12).toString(10).padStart(2, "0"): "12"}`);
     }
 
     componentWillUnmount() {
