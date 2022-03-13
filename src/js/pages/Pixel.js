@@ -344,6 +344,8 @@ class Pixel extends React.Component {
             actions.trigger_loading_update(100);
         }, 350);
 
+        actions.trigger_music(`Tesla_Numbers_30m_session`, 0.75, "tesla");
+
         this.setState({_h_svg: get_svg_in_b64(<HexGrid color={"#e5e5e5"}/>)});
         import("../utils/ressource_pixel").then((RESSOURCE_PIXELS) => {
 
@@ -391,6 +393,7 @@ class Pixel extends React.Component {
 
     componentWillUnmount() {
 
+        actions.stop_sound();
         window.removeEventListener("resize", this._updated_dimensions);
         document.removeEventListener("keydown", this._handle_keydown);
         document.removeEventListener("keyup", this._handle_keyup);

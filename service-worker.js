@@ -1,6 +1,6 @@
-var REQUIRED_CACHE = "unless-update-cache-v25-required";
-var USEFUL_CACHE = "unless-update-cache-v25-useful";
-var STATIC_CACHE = "unless-update-cache-v25-static";
+var REQUIRED_CACHE = "unless-update-cache-v26-required";
+var USEFUL_CACHE = "unless-update-cache-v26-useful";
+var STATIC_CACHE = "unless-update-cache-v26-static";
 var CHILD_CHUNK_REGEX = /child\-chunk\.(main\~[a-z0-9]+|[0-9]+)\.min.js/i;
 
 // On install, cache some resource.
@@ -81,6 +81,7 @@ self.addEventListener("install", function(evt) {
                     "/src/sounds/sfx/md/state-change_confirm-down.mp3",
                     "/src/sounds/sfx/md/ui_lock.mp3",
                     "/src/sounds/sfx/md/ui_unlock.mp3",
+                    "/src/sounds/music/redeclipse/track_12.mp3",
                 ]);
             }),
             caches.keys().then(keys => Promise.allSettled(
@@ -134,6 +135,23 @@ self.addEventListener("fetch", function(event) {
             }),
         );
 
+
+    }else if((url.includes(".wav") || url.includes(".mp3")) && event.request.mode === "same-origin") {
+
+        // Serve cached sound if doesn't fail
+        event.respondWith(
+            caches.open(STATIC_CACHE).then(function (cache) {
+                return cache.match(event.request).then(function (response) {
+                    return (
+                        response ||
+                        fetch(event.request).then(function (response) { // Fetch, clone, and serve
+                            cache.put(event.request, response.clone());
+                            return response;
+                        })
+                    );
+                });
+            }),
+        );
 
     }else if(url.includes("father-chunk.norris.min.js") && event.request.mode === "same-origin") {
 
