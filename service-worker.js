@@ -1,6 +1,6 @@
-var REQUIRED_CACHE = "unless-update-cache-v24-required";
-var USEFUL_CACHE = "unless-update-cache-v24-useful";
-var STATIC_CACHE = "unless-update-cache-v24-static";
+var REQUIRED_CACHE = "unless-update-cache-v25-required";
+var USEFUL_CACHE = "unless-update-cache-v25-useful";
+var STATIC_CACHE = "unless-update-cache-v25-static";
 var CHILD_CHUNK_REGEX = /child\-chunk\.(main\~[a-z0-9]+|[0-9]+)\.min.js/i;
 
 // On install, cache some resource.
@@ -22,7 +22,7 @@ self.addEventListener("install", function(evt) {
                 "/father-chunk.norris.min.js", // This is chunk norris, master of all chunk
                 "/child-chunk.main~1f20a385.min.js",
                 "/child-chunk.main~5a2dc592.min.js",
-                "/child-chunk.main~7a2ee6b6.min.js",
+                "/child-chunk.main~9acc357d.min.js",
                 "/child-chunk.main~253ae210.min.js",
                 "/child-chunk.main~748942c6.min.js",
                 "/child-chunk.main~af9f4ef7.min.js",

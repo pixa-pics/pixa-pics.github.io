@@ -7,7 +7,6 @@ import CloseIcon from "@material-ui/icons/Close";
 
 import AppToolbar from "../components/AppToolbar";
 import AppDrawer from "../components/AppDrawer";
-import AppTabs from "../components/AppTabs";
 
 import dispatcher from "../dispatcher";
 import actions from "../actions/utils";
@@ -120,6 +119,7 @@ class Index extends React.Component {
             _snackbar_message: "",
             _snackbar_auto_hide_duration: 1975,
             _sfx_enabled: true,
+            _music_enabled: false,
             _jamy_enabled: true,
             _vocal_enabled: false,
             _onboarding_enabled: false,
@@ -226,20 +226,37 @@ class Index extends React.Component {
         window.removeEventListener("resize", this._update_dimensions);
     }
 
-    _trigger_sound = (category, pack, name, volume) => {
+    _trigger_sound = (category, pack, name, volume, global) => {
 
-        sound_api.play_sound(category, pack, name, volume);
+        sound_api.play_sound(category, pack, name, volume, global);
+    };
+
+
+    _stop_sound = () => {
+
+        sound_api.stop_sound();
     };
 
     _handle_events(event) {
 
-        const { _sfx_enabled } = this.state;
+        const { _sfx_enabled, _music_enabled } = this.state;
+        let global = null;
 
         // Make different actions send from a dispatcher bounded to this function
         switch(event.type) {
 
             case "TRIGGER_SFX":
-                if(_sfx_enabled) { this._trigger_sound("sfx", event.data.pack, event.data.name, event.data.volume); }
+                global = false;
+                if(_sfx_enabled) { this._trigger_sound("sfx", event.data.pack, event.data.name, event.data.volume, global); }
+                break;
+
+            case "TRIGGER_MUSIC":
+                global = true;
+                if(_music_enabled) { this._trigger_sound("music", event.data.pack, event.data.name, event.data.volume, global); }
+                break;
+
+            case "STOP_SOUND":
+                this._stop_sound();
                 break;
 
             case "TRIGGER_SHARE":
@@ -270,6 +287,7 @@ class Index extends React.Component {
 
             // Set new settings from query result
             const _sfx_enabled = typeof settings.sfx_enabled !== "undefined" ? settings.sfx_enabled: true;
+            const _music_enabled = typeof settings.music_enabled !== "undefined" ? settings.music_enabled: false;
             const _jamy_enabled = typeof settings.jamy_enabled !== "undefined" ? settings.jamy_enabled: true;
             const _selected_locales_code =  typeof settings.locales !== "undefined" ? settings.locales: "en-US";
             const _language = _selected_locales_code.split("-")[0];
@@ -278,7 +296,7 @@ class Index extends React.Component {
 
             document.documentElement.lang = _language;
             document.body.setAttribute("style", "");
-            this.setState({ _onboarding_enabled, _sfx_enabled, _jamy_enabled, _selected_locales_code, _language, _selected_currency, _know_the_settings: true });
+            this.setState({ _onboarding_enabled, _sfx_enabled, _music_enabled, _jamy_enabled, _selected_locales_code, _language, _selected_currency, _know_the_settings: true });
         }else {
 
             if(this.state._database_attempt > 3) {
@@ -383,23 +401,6 @@ class Index extends React.Component {
         }
 
         this.setState({_snackbar_open: false});
-    };
-
-    _accept_close_carousel = () => {
-
-        this.setState({_onboarding_enabled: false, _onboarding_showed_once_in_session: true});
-        api.set_settings({onboarding: false});
-        actions.trigger_settings_update();
-    };
-
-    _close_carousel = () => {
-
-        this.setState({_onboarding_enabled: false, _onboarding_showed_once_in_session: true});
-    };
-
-    _stop_carousel_autoplay = () => {
-
-        this.setState({_onboarding_autoplay_enabled: false});
     };
 
     shouldComponentUpdate() {

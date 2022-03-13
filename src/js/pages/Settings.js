@@ -39,6 +39,7 @@ class Settings extends React.Component {
             _selected_currency: null,
             _fees: 1,
             _sfx_enabled: true,
+            _music_enabled: false,
             _jamy_enabled: true,
             _panic_mode: false
         };
@@ -60,6 +61,7 @@ class Settings extends React.Component {
         // Set new settings from query result
         const _fees = typeof settings.fees !== "undefined" ? settings.fees: 1;
         const _sfx_enabled = typeof settings.sfx_enabled !== "undefined" ? settings.sfx_enabled: true;
+        const _music_enabled = typeof settings.music_enabled !== "undefined" ? settings.music_enabled: false;
         const _jamy_enabled = typeof settings.jamy_enabled !== "undefined" ? settings.jamy_enabled: true;
         const _selected_locales_code =  typeof settings.locales !== "undefined" ? settings.locales: "en-US";
         const _language = _selected_locales_code.split("-")[0];
@@ -69,7 +71,7 @@ class Settings extends React.Component {
         actions.trigger_loading_update(0);
         actions.trigger_loading_update(100);
 
-        this.setState({ _fees, _sfx_enabled, _jamy_enabled, _selected_locales_code, _language, _selected_currency, _panic_mode });
+        this.setState({ _fees, _sfx_enabled, _jamy_enabled, _selected_locales_code, _language, _selected_currency, _panic_mode, _music_enabled });
     };
 
     _update_settings() {
@@ -104,37 +106,6 @@ class Settings extends React.Component {
         }
     }
 
-    _handle_currency_changed = (event, value) => {
-
-        if(value.original) {
-
-            const settings = { currency: value.original.toUpperCase() };
-            this.setState({_selected_currency: value.original.toUpperCase()});
-            api.set_settings(settings,  this._on_settings_changed);
-            actions.trigger_sfx("ui_lock");
-            actions.jamy_update("happy");
-        }
-    }
-
-    _handle_panic_switch_change = (event) => {
-
-        const checked = Boolean(this.state._panic_mode);
-
-        if(checked){
-
-            actions.trigger_sfx("ui_lock");
-            actions.jamy_update("shocked");
-        }else {
-
-            actions.trigger_sfx("ui_unlock");
-            actions.jamy_update("suspicious");
-        }
-
-        const settings = { panic: !checked };
-        this.setState({_panic_mode: !checked});
-        api.set_settings(settings,  this._on_settings_changed);
-    };
-
     _handle_sfx_enabled_switch_change = (event) => {
 
         const checked = Boolean(this.state._sfx_enabled);
@@ -151,6 +122,26 @@ class Settings extends React.Component {
 
         const settings = { sfx_enabled: !checked };
         this.setState({_sfx_enabled: !checked});
+        api.set_settings(settings,  this._on_settings_changed);
+    };
+
+    _handle_music_enabled_switch_change = (event) => {
+
+        const checked = Boolean(this.state._music_enabled);
+
+        if(checked){
+
+            actions.trigger_sfx("ui_lock");
+            actions.jamy_update("happy");
+            actions.stop_sound();
+        }else {
+
+            actions.trigger_sfx("ui_unlock");
+            actions.jamy_update("happy");
+        }
+
+        const settings = { music_enabled: !checked };
+        this.setState({_music_enabled: !checked});
         api.set_settings(settings,  this._on_settings_changed);
     };
 
@@ -173,26 +164,6 @@ class Settings extends React.Component {
         api.set_settings(settings,  this._on_settings_changed);
     };
 
-    _handle_input_fees_change = (event, _fees) => {
-
-        this.setState({_fees});
-    };
-
-    _handle_fees_change_committing = (event) => {
-
-        actions.trigger_sfx("ui_lock");
-    };
-
-    _handle_fees_change_committed = (event, _fees) => {
-
-        actions.trigger_sfx("ui_unlock");
-        actions.jamy_update("happy");
-
-        const settings = { fees: _fees };
-        this.setState({_fees});
-        api.set_settings(settings,  this._on_settings_changed);
-    };
-
     _fuzzy_filter_locales = (list, input_value) => {
 
         const options = {
@@ -204,20 +175,9 @@ class Settings extends React.Component {
         return fuzzy.filter(input_value.inputValue, list, options);
     };
 
-    _fuzzy_filter_currency = (list, input_value) => {
-
-        const options = {
-            pre: "<b style=\"color: #000244;\">"
-            , post: "</b>"
-            , extract: function(element) { return element; }
-        };
-
-        return fuzzy.filter(input_value.inputValue, list, options);
-    };
-
     render() {
 
-        const { _locales, _language, _fees, _sfx_enabled, _jamy_enabled, _selected_currency, _currency_countries, _selected_locales_code, _panic_mode, classes } = this.state;
+        const { _locales,  _sfx_enabled, _music_enabled, _jamy_enabled, _currency_countries, _selected_locales_code, classes } = this.state;
 
         let locales = _locales[0];
 
@@ -270,6 +230,12 @@ class Settings extends React.Component {
                                     value={t( "pages.settings.enable_sound_effects")}
                                     control={<Switch checked={_sfx_enabled} onChange={this._handle_sfx_enabled_switch_change} color="primary" />}
                                     label={t( "pages.settings.enable_sound_effects")}
+                                    labelPlacement="end"
+                                /> <br />
+                                <FormControlLabel
+                                    value={"Enable music effects"}
+                                    control={<Switch checked={_music_enabled} onChange={this._handle_music_enabled_switch_change} color="primary" />}
+                                    label={ "Enable music effects"}
                                     labelPlacement="end"
                                 />
                             </CardContent>

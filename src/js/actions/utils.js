@@ -26,6 +26,26 @@ function trigger_sfx(name, volume = 1, pack = "md") {
     });
 }
 
+function trigger_music(name, volume = 0.75, pack = "redeclipse") {
+
+    dispatcher.dispatch({
+        type: 'TRIGGER_MUSIC',
+        data: {
+            pack,
+            name,
+            volume
+        }
+    });
+}
+
+function stop_sound() {
+
+    dispatcher.dispatch({
+        type: 'STOP_SOUND',
+        data: {}
+    });
+}
+
 function trigger_share() {
 
     dispatcher.dispatch({
@@ -45,6 +65,7 @@ function trigger_vocal(name, volume = 1, pack = "gg") {
         }
     });
 }
+
 function trigger_snackbar(message = "", auto_hide_duration = 3500) {
 
     dispatcher.dispatch({
@@ -81,8 +102,10 @@ function trigger_loading_update(percent) {
 }
 
 module.exports = {
+    stop_sound: stop_sound,
     jamy_update: jamy_update,
     trigger_sfx: trigger_sfx,
+    trigger_music: trigger_music,
     trigger_share: trigger_share,
     trigger_snackbar: trigger_snackbar,
     trigger_login_update: trigger_login_update,

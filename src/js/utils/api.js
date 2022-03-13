@@ -22,6 +22,7 @@ const _get_default_settings = () => {
         sfx_enabled: true,
         jamy_enabled: true,
         enable_3d: false,
+        music_enabled: false,
         onboarding: true,
         attachment_previews: {},
     };
