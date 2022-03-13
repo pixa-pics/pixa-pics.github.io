@@ -1,6 +1,6 @@
-var REQUIRED_CACHE = "unless-update-cache-v29-required";
-var USEFUL_CACHE = "unless-update-cache-v29-useful";
-var STATIC_CACHE = "unless-update-cache-v29-static";
+var REQUIRED_CACHE = "unless-update-cache-v30-required";
+var USEFUL_CACHE = "unless-update-cache-v30-useful";
+var STATIC_CACHE = "unless-update-cache-v30-static";
 var CHILD_CHUNK_REGEX = /child\-chunk\.(main\~[a-z0-9]+|[0-9]+)\.min.js/i;
 
 // On install, cache some resource.
@@ -200,12 +200,12 @@ self.addEventListener("fetch", function(event) {
         Promise.race([
             caches.open(REQUIRED_CACHE).then(function (cache) {
                 return cache.match(event.request).then(function (response) {
-                    if(response) { return response.clone() }
+                    if(response) { return response}
                 });
             }),
             caches.open(USEFUL_CACHE).then(function (cache) {
                 return cache.match(event.request).then(function (response) {
-                    if(response) { return response.clone() }
+                    if(response) { return response }
                 });
             }),
             caches.open(STATIC_CACHE).then(function (cache) {
@@ -214,13 +214,14 @@ self.addEventListener("fetch", function(event) {
                     return (
                         response ||
                         fetch(event.request).then(function (response) { // Fetch and serve
-                            return response.clone();
+
+                            if(response) { return response }
                         })
                     );
 
                 })
             })
-        ]).then(function(response){return response.clone()})
+        ]).then(function(response){return response})
     }
 });
 
