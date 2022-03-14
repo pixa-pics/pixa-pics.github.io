@@ -799,7 +799,7 @@ function _loop(render, do_not_cancel_animation, force_update) {
 
     try {
 
-        let skip_frame_rate = w_canvas_pixels._is_mobile_or_tablet ? 10: 20;
+        let skip_frame_rate = w_canvas_pixels._is_mobile_or_tablet ? 15: 25;
 
         let now = Date.now();
         let running_smoothly = true;
@@ -1084,7 +1084,7 @@ class CanvasPixels extends React.Component {
 
         window.addEventListener("resize", this._updated_dimensions);
         this._updated_dimensions();
-        if(w_canvas_pixels._is_mobile_or_tablet && this.state._device_motion){
+        if(w_canvas_pixels._is_mobile_or_tablet && this.state._device_motion === true){
             window.addEventListener("devicemotion", this._handle_motion_changes);
         }
 
@@ -1095,8 +1095,12 @@ class CanvasPixels extends React.Component {
         }, this.state._undo_buffer_time_ms * 0.95);
 
         _intervals[1] = setInterval(() => {
-            this._notify_fps();
-        }, w_canvas_pixels._is_mobile_or_tablet ? 1000: 1000 / 4);
+
+            if(!w_canvas_pixels._is_mobile_or_tablet) {
+
+                this._notify_fps();
+            }
+        },  1000 / 4);
 
         _intervals[2] = setInterval(() => {
             this._maybe_update_mine_player();
@@ -1108,13 +1112,17 @@ class CanvasPixels extends React.Component {
 
         _intervals[4] = setInterval(() => {
 
-            this.set_move_speed_average_now();
-        }, w_canvas_pixels._is_mobile_or_tablet ? 93: 31);
+            if(!w_canvas_pixels._is_mobile_or_tablet) {
+
+                this.set_move_speed_average_now();
+            }
+        },  62);
 
         _intervals[5] = setInterval(() => {
 
             this._notify_export_state();
         }, this.state.export_state_every_ms);
+
         _intervals[6] = window._fps_interval;
 
         const body_css =
@@ -2745,8 +2753,8 @@ class CanvasPixels extends React.Component {
         try {
 
             window.removeEventListener("resize", this._updated_dimensions);
-            if(w_canvas_pixels._is_mobile_or_tablet && this.state._device_motion){
-                window.addEventListener("devicemotion", this._handle_motion_changes);
+            if(w_canvas_pixels._is_mobile_or_tablet && this.state._device_motion === true){
+                window.removeEventListener("devicemotion", this._handle_motion_changes);
             }
             _canvas_wrapper_overflow.removeEventListener("wheel", this.handle_canvas_wrapper_overflow_wheel);
             _canvas_wrapper_overflow.removeEventListener("pointerdown", this._handle_canvas_wrapper_overflow_pointer_down);
@@ -8148,7 +8156,7 @@ class CanvasPixels extends React.Component {
         const {_force_updated_timestamp } = this.state;
         const now = Date.now();
 
-        const min_fps = w_canvas_pixels._is_mobile_or_tablet ? 45: 75;
+        const min_fps = w_canvas_pixels._is_mobile_or_tablet ? 25: 75;
         const nevertheless_force = Boolean((_force_updated_timestamp + 1000 / min_fps) < now);
         const nevertheless_for_sure_force = Boolean((_force_updated_timestamp + 1000 / (min_fps / 10)) < now);
 
@@ -8288,7 +8296,7 @@ class CanvasPixels extends React.Component {
 
         let { perspective_coordinate } = this.state;
 
-        const p = w_canvas_pixels._is_mobile_or_tablet ? perspective * 1.5 / 4: perspective / 4;
+        const p = w_canvas_pixels._is_mobile_or_tablet ? perspective / 6: perspective / 4;
 
         let background_image_style_props = show_original_image_in_background && typeof _base64_original_images[_original_image_index] !== "undefined" ?
             {
@@ -8329,52 +8337,55 @@ class CanvasPixels extends React.Component {
 
 
         return (
-            <div ref={this._set_canvas_container_ref} draggable={"false"} style={{zIndex: 1, boxSizing: "border-box", position: "relative", overflow: "visible", touchAction: "none", userSelect: "none"}} className={className}>
+            <div ref={this._set_canvas_container_ref} draggable={"false"} style={{zIndex: 11, boxSizing: "border-box", position: "relative", overflow: "visible", touchAction: "none", userSelect: "none", contain: "paint"}} className={className}>
                 <div ref={this._set_canvas_wrapper_overflow_ref}
                      className={"Canvas-Wrapper-Overflow" + (has_shown_canvas_once && !_hidden ? " Shown ": " Not-Shown ")}
                      draggable={"false"}
                      style={{
                          height: "100%",
                          width: "100%",
-                         contain: "layout paint size style",
+                         contain: "layout style size paint",
                          position: "absolute",
                          boxSizing: "border-box",
                          touchAction: "none",
                          pointerEvents: "auto",
                          userSelect: "none",
-                         willChange: "contents",
                          perspective: `${Math.round(Math.max(canvas_wrapper_width, canvas_wrapper_height))}px`,
-                         zIndex: 10,
+                         zIndex: 9,
 
                      }}>
                     <div ref={this._set_canvas_wrapper_ref}
                          className={"Canvas-Wrapper " + (_mouse_inside ? " Canvas-Focused ": " " + (tool))}
                          draggable={"false"}
                          style={{
-                             willChange: "transform",
-                             position: "fixed",
+                             contain: "layout style size paint",
+                             left: 0,
+                             top: 0,
                              borderWidth: canvas_wrapper_border_width,
                              borderStyle: "solid",
                              borderColor: "#fff",
                              backgroundColor: canvas_wrapper_background_color,
                              //backgroundImage: `linear-gradient(to top, ${canvas_wrapper_background_color} ${padding/2.5}px, ${this._blend_colors(canvas_wrapper_background_color, "#00000000", .6)} ${padding/2.5}px, #ffffff00 150%)`, //, repeating-linear-gradient(-45deg, rgba(255, 255, 255, .75) 0px, rgba(255, 255, 255, .75) ${padding}px, rgba(255, 255, 255, 0.5) ${padding}px, rgba(255, 255, 255, 0.5) ${padding*2}px)`,*/
+                             margin: 0,
                              borderRadius: canvas_wrapper_border_radius,
                              padding: padding,
                              width: Math.floor(canvas_wrapper_width),
                              height: Math.floor(canvas_wrapper_height),
                              filter: `drop-shadow(0 0 ${shadow_depth*shadow_size}px ${shadow_color}) opacity(${has_shown_canvas_once && !_hidden ? "1": "0"})`,
-                             transform: `translate3d(${Math.round(scale_move_x * 100) / 100}px, ${Math.round(scale_move_y * 100) / 100}px, 0px) rotateX(${rotate_x}deg) rotateY(${rotate_y}deg) rotateZ(0deg)`,
+                             transform: `translate3d(${Math.round(scale_move_x * 100) / 100}px, ${Math.round(scale_move_y * 100) / 100}px, 0px) ${(rotate_x || rotate_y) ? `rotateX(${rotate_x}deg) rotateY(${rotate_y}deg) rotateZ(0deg)`: ``}`,
                              transformOrigin: "center middle",
                              boxSizing: "content-box",
                              touchAction: "none",
                              pointerEvents: "none",
                              userSelect: "none",
-                             zIndex: 2,
+                             zIndex: 4,
                          }}>
                         <canvas
                             draggable={"false"}
                             style={{
                                 zIndex: 2,
+                                position: "absolute",
+                                contain: "layout style size paint",
                                 touchAction: "none",
                                 pointerEvents: "none",
                                 userSelect: "none",
@@ -8437,6 +8448,8 @@ class CanvasPixels extends React.Component {
                         }
                     </div>
                     <div style={{
+                        left: 0,
+                        top: 0,
                         position: "absolute",
                         cursor: cursor,
                         height: "100%",
@@ -8445,9 +8458,10 @@ class CanvasPixels extends React.Component {
                         touchAction: "none",
                         pointerEvents: "auto",
                         userSelect: "none",
-                        zIndex: 3,
+                        contain: "layout size style paint",
+                        zIndex: 10,
                     }}></div>
-                    <div style={{
+                    {!w_canvas_pixels._is_mobile_or_tablet && <div style={{
                         zIndex: 1,
                         color: canvas_wrapper_background_color,
                         textAlign: "center",
@@ -8462,7 +8476,7 @@ class CanvasPixels extends React.Component {
                         backgroundSize: `${Math.round(scale * _screen_zoom_ratio * 5 * 5)}px`,
                         pointerEvents: "none",
                         touchAction: "none",
-                    }}><span>[{parseFloat(scale * _screen_zoom_ratio).toFixed(2)}x]</span></div>
+                    }}><span>[{parseFloat(scale * _screen_zoom_ratio).toFixed(2)}x]</span></div>}
                 </div>
             </div>
         );

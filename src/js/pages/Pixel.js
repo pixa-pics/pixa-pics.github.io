@@ -67,15 +67,15 @@ const styles = theme => ({
         color: red[500],
     },
     root: {
-        contain: "strict",
+        contain: "layout size style paint",
         width: "100%",
         height: "100%",
         position: "relative",
-    },
-    content: {
-        height: "100%",
-        width: "100%",
-        maxHeight: "100%",
+        paddingBottom: 48,
+        [theme.breakpoints.up("lg")]: {
+            paddingBottom: 0,
+        },
+        background: "border-box",
     },
     contentInner: {
         height: "100%",
@@ -150,7 +150,8 @@ const styles = theme => ({
         overscrollBehavior: "none",
         touchAction: "none",
         overflow: "hidden",
-        paddingBottom: "96px",
+        paddingBottom: "48px",
+        borderBox: "content-box",
         height: "100%",
         contain: "layout paint size style",
     },
@@ -216,7 +217,7 @@ const styles = theme => ({
     },
     fatabs: {
         boxShadow: "0px 2px 4px -1px rgb(0 0 0 / 20%), 0px 4px 5px 0px rgb(0 0 0 / 14%), 0px 1px 10px 0px rgb(0 0 0 / 12%)",
-        contain: "layout paint style sze",
+        contain: "paint size",
         [theme.breakpoints.up("lg")]: {
             display: "none",
         },
@@ -224,7 +225,7 @@ const styles = theme => ({
             width: "calc(100vw - 256px)",
         },
         zIndex: 100,
-        position: "fixed",
+        position: "absolute",
         bottom: 0,
         right: 0,
         width: "100vw",
@@ -1344,12 +1345,13 @@ class Pixel extends React.Component {
 
         const rgb = 245 // - Math.floor(Math.abs(_canvas_elevation) / 2);
 
-        const drawer = _less_than_1280w ?
+        const drawer_mobile =
             (
                 <SwipeableDrawer
                     className={classes.contentDrawer}
                     disableBackdropTransition={true}
-                    keepMounted={false}
+                    disableSwipeToOpen={true}
+                    keepMounted={true}
                     open={_is_edit_drawer_open}
                     onOpen={this._handle_edit_drawer_open}
                     onClose={this._handle_edit_drawer_close}
@@ -1447,8 +1449,8 @@ class Pixel extends React.Component {
                         </div>
                     </div>
                 </SwipeableDrawer>
-            ):
-            (
+            );
+            const drawer_desktop = (
                 <Drawer
                     className={classes.contentDrawerFixed}
                     variant="permanent"
@@ -1548,68 +1550,66 @@ class Pixel extends React.Component {
                 </Drawer>
             );
 
-
         return (
             <div style={{height: "100%"}}>
+                {_less_than_1280w && drawer_mobile}
                 <div className={classes.root}>
-                    <div className={classes.content}>
-                        <div className={classes.contentInner} style={{
-                            backgroundColor: "#f7f7f7",
-                            backgroundImage: `url("${_h_svg}")`,
-                            backgroundRepeat: "repeat",
-                            backgroundSize: `${Math.ceil(.5*200)}px ${Math.ceil(.5*229.3)}px`,
-                            textRendering: "optimizespeed",
-                            imageRendering: "optimizespeed",
-                        }}>
-                            <Suspense fallback={<div className={classes.contentCanvas}/>}>
-                                <CanvasPixels
-                                    perspective={0}
-                                    on_export_state={this._handle_canvas_state_export}
-                                    export_state_every_ms={is_mobile_or_tablet ? 28 * 1000: 14 * 1000}
-                                    shadow_size={is_mobile_or_tablet ? 0: 1.5}
-                                    onContextMenu={(e) => {e.preventDefault()}}
-                                    key={"canvas"}
-                                    className={classes.contentCanvas}
-                                    ref={this._set_canvas_ref}
-                                    no_actions={_is_pixel_dialog_post_edit_open}
-                                    tool={_tool}
-                                    canvas_wrapper_padding={32}
-                                    hide_canvas_content={_hide_canvas_content}
-                                    show_original_image_in_background={_show_original_image_in_background}
-                                    show_transparent_image_in_background={_show_transparent_image_in_background}
-                                    select_mode={_select_mode}
-                                    pencil_mirror_mode={_pencil_mirror_mode}
-                                    hue={_hue}
-                                    bucket_threshold={_slider_value}
-                                    color_loss={_slider_value}
-                                    pxl_current_opacity={1}
-                                    onLoadComplete={this._handle_load_complete}
-                                    onLoad={this._handle_load}
-                                    onCanUndoRedoChange={this._handle_can_undo_redo_change}
-                                    onSizeChange={this._handle_size_change}
-                                    onCurrentColorChange={this._handle_current_color_change}
-                                    onSomethingSelectedChange={this._handle_something_selected_change}
-                                    onImageImportModeChange={this._handle_image_import_mode_change}
-                                    on_fps_change={!is_mobile_or_tablet ? this._handle_fps_change: null}
-                                    on_elevation_change={!is_mobile_or_tablet ? this._handle_elevation_change: null}
-                                    onPositionChange={!is_mobile_or_tablet ? this._handle_position_change: null}
-                                    onLayersChange={this._handle_layers_change}
-                                    onGameEnd={this._handle_game_end}
-                                    onRelevantActionEvent={this._handle_relevant_action_event}
-                                    onRightClick={this._handle_right_click}
-                                    mine_player_direction={_mine_player_direction}
-                                    pxl_width={_width}
-                                    pxl_height={_height}
-                                    pxl_current_color={_current_color}
-                                    convert_scale={1}
-                                    default_size={_import_size}
-                                    ideal_size={_import_size}
-                                    max_size={_import_size}
-                                    fast_drawing={true}
-                                    px_per_px={1}/>
-                            </Suspense>
-                            {drawer}
-                        </div>
+                    <div className={classes.contentInner} style={{
+                        backgroundColor: "#f7f7f7",
+                        backgroundImage: `url("${_h_svg}")`,
+                        backgroundRepeat: "repeat",
+                        backgroundSize: `${Math.ceil(.5*200)}px ${Math.ceil(.5*229.3)}px`,
+                        textRendering: "optimizespeed",
+                        imageRendering: "optimizespeed",
+                    }}>
+                        <Suspense fallback={<div className={classes.contentCanvas}/>}>
+                            <CanvasPixels
+                                perspective={0}
+                                on_export_state={this._handle_canvas_state_export}
+                                export_state_every_ms={is_mobile_or_tablet ? 28 * 1000: 14 * 1000}
+                                shadow_size={is_mobile_or_tablet ? 0: 1.5}
+                                onContextMenu={(e) => {e.preventDefault()}}
+                                key={"canvas"}
+                                className={classes.contentCanvas}
+                                ref={this._set_canvas_ref}
+                                no_actions={_is_pixel_dialog_post_edit_open}
+                                tool={_tool}
+                                canvas_wrapper_padding={32}
+                                hide_canvas_content={_hide_canvas_content}
+                                show_original_image_in_background={_show_original_image_in_background}
+                                show_transparent_image_in_background={_show_transparent_image_in_background}
+                                select_mode={_select_mode}
+                                pencil_mirror_mode={_pencil_mirror_mode}
+                                hue={_hue}
+                                bucket_threshold={_slider_value}
+                                color_loss={_slider_value}
+                                pxl_current_opacity={1}
+                                onLoadComplete={this._handle_load_complete}
+                                onLoad={this._handle_load}
+                                onCanUndoRedoChange={this._handle_can_undo_redo_change}
+                                onSizeChange={this._handle_size_change}
+                                onCurrentColorChange={this._handle_current_color_change}
+                                onSomethingSelectedChange={this._handle_something_selected_change}
+                                onImageImportModeChange={this._handle_image_import_mode_change}
+                                on_fps_change={!is_mobile_or_tablet ? this._handle_fps_change: null}
+                                on_elevation_change={!is_mobile_or_tablet ? this._handle_elevation_change: null}
+                                onPositionChange={!is_mobile_or_tablet ? this._handle_position_change: null}
+                                onLayersChange={this._handle_layers_change}
+                                onGameEnd={this._handle_game_end}
+                                onRelevantActionEvent={this._handle_relevant_action_event}
+                                onRightClick={this._handle_right_click}
+                                mine_player_direction={_mine_player_direction}
+                                pxl_width={_width}
+                                pxl_height={_height}
+                                pxl_current_color={_current_color}
+                                convert_scale={1}
+                                default_size={_import_size}
+                                ideal_size={_import_size}
+                                max_size={_import_size}
+                                fast_drawing={true}
+                                px_per_px={1}/>
+                        </Suspense>
+                        {!_less_than_1280w && drawer_desktop}
                     </div>
                 </div>
                 <Menu
