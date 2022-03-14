@@ -82,7 +82,7 @@ const SENSITIVE_DATA = svg_to_base64(<SensitiveData />);
 
 const styles = theme => ({
     listSubHeader: {
-        width: "100%",
+        width: "calc(100% - 8px)",
         alignSelf: "flex-start",
         color: theme.palette.secondary.light,
         backgroundColor: "#e5e5e5",

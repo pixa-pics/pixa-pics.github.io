@@ -151,10 +151,13 @@ const styles = theme => ({
         touchAction: "none",
         overflow: "hidden",
         paddingBottom: "96px",
+        height: "100%",
+        contain: "layout paint size style",
     },
     drawerContainer: {
+        contain: "layout paint size style",
+        height: "calc(100vh - 96px) !important",
         overflow: "overlay",
-        willChange: "scroll-position",
         [theme.breakpoints.up("lg")]: {
             overflowX: "hidden",
         },
@@ -205,6 +208,7 @@ const styles = theme => ({
     backdrop: {
         zIndex: 2000,
         color: "#fff",
+        contain: "layout paint size style",
     },
     backdropTextContent: {
         display: "block",
@@ -1018,12 +1022,15 @@ class Pixel extends React.Component {
 
     _handle_fps_change = (fps) => {
 
-        this.setState({_fps: fps, _prev_fps: this.state._fps});
+        this.setState({_fps: parseInt(fps), _prev_fps: parseInt(this.state._fps)});
     };
 
     _handle_size_change = (_width, _height) => {
 
-        this.setState({_width, _height});
+        this.setState({_width, _height}, () => {
+
+            this.forceUpdate();
+        });
     }
 
     _handle_current_color_change = (color, event) => {
@@ -1389,7 +1396,6 @@ class Pixel extends React.Component {
                         <div className={classes.drawerContainer} onGotPointerCapture={(event) => {event.stopPropagation(); event.preventDefault();}}>
                             <PixelToolboxSwipeableViews
                                 should_update={true}
-                                is_connected_to_hive={false}
                                 onActionClose={this._handle_edit_drawer_close}
                                 canvas={_canvas}
                                 view_class={classes.listOfTools}
@@ -1490,7 +1496,6 @@ class Pixel extends React.Component {
                         <div className={classes.drawerContainer}>
                             <PixelToolboxSwipeableViews
                                 should_update={true}
-                                is_connected_to_hive={false}
                                 canvas={_canvas}
                                 view_class={classes.listOfTools}
                                 view_name_index={_view_name_index}
@@ -1509,8 +1514,8 @@ class Pixel extends React.Component {
                                 second_color={_second_color}
                                 slider_value={_slider_value}
                                 tool={_tool}
-                                width={_width}
-                                height={_height}
+                                width={parseInt(_width)}
+                                height={parseInt(_height)}
                                 filters={_filters}
                                 select_mode={_select_mode}
                                 pencil_mirror_mode={_pencil_mirror_mode}
@@ -1560,15 +1565,13 @@ class Pixel extends React.Component {
                                 <CanvasPixels
                                     perspective={0}
                                     on_export_state={this._handle_canvas_state_export}
-                                    export_state_every_ms={is_mobile_or_tablet ? 21 * 1000: 14 * 1000}
+                                    export_state_every_ms={is_mobile_or_tablet ? 28 * 1000: 14 * 1000}
                                     shadow_size={is_mobile_or_tablet ? 0: 1.5}
                                     onContextMenu={(e) => {e.preventDefault()}}
                                     key={"canvas"}
                                     className={classes.contentCanvas}
                                     ref={this._set_canvas_ref}
                                     no_actions={_is_pixel_dialog_post_edit_open}
-                                    dont_show_canvas_until_img_set={_is_pixel_dialog_post_edit_open}
-                                    dont_show_canvas={_is_pixel_dialog_post_edit_open}
                                     tool={_tool}
                                     canvas_wrapper_padding={32}
                                     hide_canvas_content={_hide_canvas_content}
@@ -1587,9 +1590,9 @@ class Pixel extends React.Component {
                                     onCurrentColorChange={this._handle_current_color_change}
                                     onSomethingSelectedChange={this._handle_something_selected_change}
                                     onImageImportModeChange={this._handle_image_import_mode_change}
-                                    on_fps_change={this._handle_fps_change}
-                                    on_elevation_change={this._handle_elevation_change}
-                                    onPositionChange={this._handle_position_change}
+                                    on_fps_change={!is_mobile_or_tablet ? this._handle_fps_change: null}
+                                    on_elevation_change={!is_mobile_or_tablet ? this._handle_elevation_change: null}
+                                    onPositionChange={!is_mobile_or_tablet ? this._handle_position_change: null}
                                     onLayersChange={this._handle_layers_change}
                                     onGameEnd={this._handle_game_end}
                                     onRelevantActionEvent={this._handle_relevant_action_event}
