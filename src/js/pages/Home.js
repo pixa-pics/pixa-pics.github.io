@@ -8,7 +8,6 @@ import actions from "../actions/utils";
 
 import get_svg_in_b64 from "../utils/svgToBase64";
 
-
 import DrawEmojiSvg from "../twemoji/react/270F";
 const DRAWEMOJI = get_svg_in_b64(<DrawEmojiSvg />);
 import MagickEmojiSvg from "../twemoji/react/1Fa84";
@@ -19,6 +18,7 @@ import HearthEmojiSvg from "../twemoji/react/2665";
 const HEARTHEMOJI = get_svg_in_b64(<HearthEmojiSvg />);
 
 const THEME_DESERT = Boolean(Date.now() % 2 === 1);
+const SUBTITLE_STILL = Boolean(Date.now() % 14 > 2);
 
 const styles = theme => ({
     root: {
@@ -273,13 +273,21 @@ class Home extends React.Component {
                         <Fade in={true} timeout={350}><span className={classes.titleSubTitle} style={{fontSize: ".618em"}}>Make potential (un)limited everywhere <img src={ANGELEMOJI} className="emoji"/>.</span></Fade>
                     </h1>
                     <Fade in={true} timeout={700}>
-                        <h2 className={classes.subtitle}>
-                            In a new AEON of the <span className={classes.blue}>matrix</span> and <span className={classes.blue}>vector</span> universes of PICS : <br/>
-                            CONVERT them and then, DRAW <img className={"emoji"} style={{width: "2em"}} src={DRAWEMOJI}/> and <img className={"emoji"} style={{width: "2em"}} src={MAGICKEMOJI}/> EDIT it.<br />
-                            ANY pixel art can generate ∞ SVGs paintings.<br />
-                            MADE with <img style={{width: "3em"}} className={"emoji pulse2"} src={HEARTHEMOJI}/>, just designed to be : <br />
-                            <br />
-                        </h2>
+                        {
+                            SUBTITLE_STILL ?
+                                <h2 className={classes.subtitle}>
+                                    <span className={classes.blue}>In your images,</span> a plethora of too many harmful details without a <b>useless simplicity</b>? <br />
+                                    <b>Guess what?</b> the lull of difficult <span className={classes.blue}>pixel art is not difficult.</span> <br />
+                                    – Easy and useful simplicity of color range reduction and vectorization of size, clear, crisp,<br/> and in line with powerful advanced tools.
+                                </h2> :
+                                <h2 className={classes.subtitle}>
+                                    In a new AEON of the <span className={classes.blue}>matrix</span> and <span className={classes.blue}>vector</span> universes of PICS : <br/>
+                                    CONVERT them and then, DRAW <img className={"emoji"} style={{width: "2em"}} src={DRAWEMOJI}/> and <img className={"emoji"} style={{width: "2em"}} src={MAGICKEMOJI}/> EDIT it.<br />
+                                    ANY pixel art can generate ∞ SVGs paintings.<br />
+                                    MADE with <img style={{width: "3em"}} className={"emoji pulse2"} src={HEARTHEMOJI}/>, just designed to be : <br />
+                                    <br />
+                                </h2>
+                        }
                     </Fade>
                     <Fade in={true} timeout={1000}>
                         <Button className={classes.homeCTAuseit} variant={"contained"} size={"large"} color="primary" onClick={(event) => this._go_to_url(event, "/pixel")}>
@@ -287,7 +295,7 @@ class Home extends React.Component {
                         </Button>
                     </Fade>
                     <Fade in={true} timeout={1500}>
-                        <p style={{color: THEME_DESERT ? "#d8ab06": "#ffe66b", fontWeight: "bold", fontSize: "16px"}}>For Everyone - For Free - Forever Open-Source!</p>
+                        <p style={{color: THEME_DESERT ? "#d8ab06": "#ffe66b", fontWeight: "bold", fontSize: "16px"}}>For Everyone – For Free – Forever Open-Source!</p>
                     </Fade>
                     <Grow in={true} timeout={1400}>
                         <Button className={classes.homeCTAsendit} variant={"contained"} size={"large"} color="primary" onClick={(event) => {this._handle_speed_dial_action(event, "share")}}>
