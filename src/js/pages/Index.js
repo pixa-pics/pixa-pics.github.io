@@ -17,11 +17,11 @@ import Unknown from "./Unknown";
 const Pixel = React.lazy(() => import("../pages/Pixel"));
 
 
-const PAGE_COMPONENTS = (name, pathname) => {
+const PAGE_COMPONENTS = (name, pathname, lc = "en_US") => {
 
     switch (name) {
         case "home":
-            return <Home />;
+            return <Home lc={lc} />;
         case "pixel":
             return <Suspense fallback={<div/>}><Pixel /></Suspense>;
         case "unknown":
@@ -424,7 +424,7 @@ class Index extends React.Component {
 
     render() {
 
-        const { pathname, classes } = this.state;
+        const { pathname, classes, _selected_locales_code } = this.state;
         const { _snackbar_open, _snackbar_message, _snackbar_auto_hide_duration } = this.state;
         const { _language, _is_share_dialog_open } = this.state;
         const { _logged_account, _know_if_logged, _loaded_progress_percent, _know_the_settings, _jamy_state_of_mind, _jamy_enabled } = this.state;
@@ -450,7 +450,7 @@ class Index extends React.Component {
             if(pathname.match(page_route.page_regex)){
 
                 page_name = page_route.page_name;
-                page_component = PAGE_COMPONENTS(page_name, pathname);
+                page_component = PAGE_COMPONENTS(page_name, pathname, (_selected_locales_code || "en-US").split("-")[1]);
             }
         }
 
