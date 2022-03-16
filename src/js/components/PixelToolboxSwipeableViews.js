@@ -283,7 +283,7 @@ class PixelToolboxSwipeableViews extends React.Component {
             view_name_index !== new_props.view_name_index ||
             previous_view_name_index !== new_props.previous_view_name_index ||
             view_names !== new_props.view_names ||
-            layers !== new_props.layers ||
+            layers.map((l) => l.hash).join("") !== new_props.layers.map((l) => l.hash).join("") ||
             layer_index !== new_props.layer_index ||
             is_image_import_mode !== new_props.is_image_import_mode ||
             hide_canvas_content !== new_props.hide_canvas_content ||
@@ -1341,13 +1341,10 @@ class PixelToolboxSwipeableViews extends React.Component {
                                                 <span>All layers</span>
                                             </ListSubheader>
                                             <div>
-                                                {[...layers].reverse().map((layer, index, array) => {
+                                                {Array.from(layers).reverse().map((layer, index, array) => {
 
                                                     const index_reverse_order = (array.length - 1) - index;
-                                                    layer = layer || {};
-                                                    layer.colors = layer.colors || [];
-                                                    layer.data = layer.data || {};
-                                                    layer.hidden = layer.hidden || false;
+                                                    if(typeof layer.colors === "undefined") { return null;}
 
                                                     return (
                                                         <div key={index_reverse_order}>
@@ -1372,7 +1369,7 @@ class PixelToolboxSwipeableViews extends React.Component {
                                                                           in={_layer_opened && layer_index === index_reverse_order}
                                                                           className={classes.layerSelected}>
                                                                     <div style={{padding: "12px 0px 12px 32px"}}>
-                                                                        <span>Colours: ({layer.colors.length}/{layer.data.number_of_color})</span>
+                                                                        <span>Colours: ({layer.colors.length}/{layer.number_of_colors})</span>
                                                                         <PixelColorPalette
                                                                             transparent={true}
                                                                             padding="12px 0px"

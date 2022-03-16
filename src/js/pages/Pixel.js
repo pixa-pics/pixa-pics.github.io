@@ -305,7 +305,7 @@ class Pixel extends React.Component {
             _show_original_image_in_background: false,
             _show_transparent_image_in_background: true,
             _is_image_import_mode: false,
-            _layers: [{name: "Layer 0", hidden: false}],
+            _layers: [],
             _layer_index: 0,
             _previous_layer_index: 0,
             _mine_player_direction: "UP",
@@ -671,6 +671,7 @@ class Pixel extends React.Component {
 
         _canvas.get_base64_png_data_url(size, ([base_64]) => {
 
+            console.log(base_64)
             a.href = "" + base_64;
             a.click();
 
@@ -1144,11 +1145,9 @@ class Pixel extends React.Component {
         this.setState({_is_image_import_mode: is_image_import_mode});
     };
 
-    _handle_layers_change = (layer_index, layers) => {
+    _handle_layers_change = (_layer_index, _layers) => {
 
-        const { _layer_index } = this.state;
-
-        this.setState({_previous_layer_index: _layer_index, _layer_index: layer_index, _layers: layers}, () => {
+        this.setState({_previous_layer_index: this.state._layer_index, _layer_index, _layers}, () => {
 
             this.forceUpdate();
         });
