@@ -177,7 +177,7 @@ const styles = theme => ({
         },
         '& div .react-swipeable-view-container > div[aria-hidden=false] > ul': {
             [theme.breakpoints.down("md")]: {
-                paddingBottom: 96 + 16,
+                paddingBottom: 144 + 16,
             }
         },
         '& > div > .react-swipeable-view-container': {
@@ -361,6 +361,7 @@ class Pixel extends React.Component {
 
         if(current_state.kb > 1) {
 
+            actions.trigger_snackbar("Automatically saving your artwork...", 5000)
             let attachment_array = {};
             attachment_array["json_state-ID" + current_state.id + ".json.lzp3"] = current_state;
 
@@ -707,7 +708,7 @@ class Pixel extends React.Component {
                         base64png_to_xbrz_svg(png_base64_in, (image_base64) => {
 
                             let a = document.createElement("a"); //Create <a>
-                            a.download = `Painting_IMG_18x_${using.toUpperCase()}_N${Date.now()}_PIXAPICS.png`; //File name Here
+                            a.download = `Painting_IMG_6x_${using.toUpperCase()}_N${Date.now()}_PIXAPICS.png`; //File name Here
                             a.href = "" + image_base64;
                             a.click();
 
@@ -1565,7 +1566,7 @@ class Pixel extends React.Component {
                             <CanvasPixels
                                 perspective={0}
                                 on_export_state={this._handle_canvas_state_export}
-                                export_state_every_ms={is_mobile_or_tablet ? 28 * 1000: 14 * 1000}
+                                export_state_every_ms={is_mobile_or_tablet ? 33 * 2 * 1000: 14 * 2 * 1000}
                                 shadow_size={is_mobile_or_tablet ? 0: 1.5}
                                 onContextMenu={(e) => {e.preventDefault()}}
                                 key={"canvas"}
@@ -1803,7 +1804,7 @@ class Pixel extends React.Component {
                         {_loading && _loading_process === "image_load" && <div><img src="/src/images/abduction.svg" style={{width: "min(75vw, 75vh)"}}/></div>}
                         {_loading && _loading_process === "image_load" && <h5><ShufflingSpanText text={"It can take a while, please wait ~7sec."} animation_delay_ms={5000} animation_duration_ms={500}/></h5>}
                         {_loading && _loading_process === "image_render" && <div><img src="/src/images/CPU.svg" style={{width: "min(75vw, 75vh)"}}/></div>}
-                        {_loading && _loading_process === "image_render" && <h4><ShufflingSpanText text={"Atomic rendering working"} animation_delay_ms={300} animation_duration_ms={500}/></h4>}
+                        {_loading && _loading_process === "image_render" && <h4><ShufflingSpanText text={"Atomic rendering in process ~10-20sec"} animation_delay_ms={300} animation_duration_ms={500}/></h4>}
                         {_loading && _loading_process === "image_render" && <h5><ShufflingSpanText text={"It can take a while, please wait ~14sec."} animation_delay_ms={5000} animation_duration_ms={500}/></h5>}
                         {_loading && _loading_process === "less_color" && <h4><ShufflingSpanText text={"Coupling few color DNA"} animation_delay_ms={300} animation_duration_ms={500}/></h4>}
                         {_loading && _loading_process === "less_color" && <div><img src="/src/images/DNA.svg" style={{width: "min(75vw, 75vh)"}}/></div>}

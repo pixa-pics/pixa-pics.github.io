@@ -248,11 +248,6 @@ class PixelToolboxSwipeableViews extends React.Component {
 
     componentWillReceiveProps(new_props) {
 
-        this.setState(new_props);
-    }
-
-    shouldComponentUpdate(new_props) {
-
         const {
             view_name_index,
             previous_view_name_index,
@@ -283,7 +278,7 @@ class PixelToolboxSwipeableViews extends React.Component {
             view_name_index !== new_props.view_name_index ||
             previous_view_name_index !== new_props.previous_view_name_index ||
             view_names !== new_props.view_names ||
-            layers.map((l) => l.hash).join("") !== new_props.layers.map((l) => l.hash).join("") ||
+            layers.map((l) => l.hash + l.hidden + l.opacity + l.name).join("") !== new_props.layers.map((l) => l.hash + l.hidden + l.opacity + l.name).join("") ||
             layer_index !== new_props.layer_index ||
             is_image_import_mode !== new_props.is_image_import_mode ||
             hide_canvas_content !== new_props.hide_canvas_content ||
@@ -305,12 +300,19 @@ class PixelToolboxSwipeableViews extends React.Component {
             import_colorize !== new_props.import_colorize
         ) {
 
-            return new_props.should_update;
+            this.setState(new_props, () => {
+
+                this.forceUpdate();
+            });
         }else {
 
             return false;
         }
+    }
 
+    shouldComponentUpdate(new_props) {
+
+        return false;
     }
 
     _hsla_to_hex = (h, s, l, a) => {
@@ -593,19 +595,6 @@ class PixelToolboxSwipeableViews extends React.Component {
 
             this.props.onActionClose();
         }
-    };
-
-    _publish = () => {
-
-        if(this.props.on_request_publish) {
-
-            this.props.on_request_publish();
-        }
-    };
-
-    _to_account = () => {
-
-        this.state._history.push("/accounts");
     };
 
     render() {
