@@ -122,11 +122,6 @@ const overrides = {
                 margin: "0 !important",
                 minWidth: "min(100%, 736px)",
             },
-            ".MuiDialog-paperFullScreen": {
-            },
-            ".MuiDrawer-paperAnchorBottom": {
-                clipPath: "polygon(calc(32px) 0, calc(200px) 0, calc(200px) calc(16px), calc(100% - 100px) calc(16px), calc(100% - 76px) 0, 100% 0, 100% 100%, 0 100%, 0 calc(16px))",
-            },
             ".MuiFab-root.MuiFab-extended": {
                 borderRadius: 4,
                 background: "#020529",

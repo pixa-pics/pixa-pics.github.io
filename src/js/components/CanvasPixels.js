@@ -968,8 +968,8 @@ class CanvasPixels extends React.Component {
             select_mode: props.select_mode || "REPLACE",
             pencil_mirror_mode: props.pencil_mirror_mode || "NONE",
             hue: props.hue || 0,
-            pxl_width: props.pxl_width || 32,
-            pxl_height: props.pxl_height || 32,
+            pxl_width: 32,
+            pxl_height: 32,
             pxl_current_color: props.pxl_current_color || "#00000000",
             pxl_current_opacity: props.pxl_current_opacity || 1,
             bucket_threshold: props.bucket_threshold || 0,
@@ -1116,6 +1116,7 @@ class CanvasPixels extends React.Component {
 
     componentDidMount() {
 
+        this._notify_size_change();
         window.addEventListener("resize", this._updated_dimensions);
         this._updated_dimensions();
         if(w_canvas_pixels._is_mobile_or_tablet && this.state._device_motion === true){
@@ -1242,6 +1243,32 @@ class CanvasPixels extends React.Component {
         this.setState({_intervals});
     }
 
+    _set_size = (width = null, height = null) => {
+
+        width = width || this.state.pxl_width;
+        height = height || this.state.pxl_height;
+
+        this.setState({
+            id: Date.now(),
+            pxl_width: width,
+            pxl_height: height,
+            _pxl_indexes_of_selection: new Set(),
+            _layers: [{id: Date.now(), name: "Layer 0", hidden: false, opacity: 1}],
+            _layer_index: 0,
+            _s_pxls: Array.of(new Uint16Array((width || 32) * (height || 32)).fill(0)),
+            _old_pxls: new Uint16Array((width || 32) * (height || 32)).fill(0),
+            _s_pxl_colors: Array.of(["#00000000"]),
+            _old_pxl_colors: ["#00000000"],
+            _moves_speed_average_now: 8,
+            _hidden: true,
+            has_shown_canvas_once: false,
+            _is_there_new_dimension: true,
+        }, () => {
+
+            this._update_screen_zoom_ratio(true);
+        });
+    }
+
     _notify_export_state = () => {
 
         if(this.props.on_export_state) {
@@ -1359,27 +1386,7 @@ class CanvasPixels extends React.Component {
             });
         }
 
-        if(Boolean(parseInt(this.state.pxl_width) * parseInt(new_props.pxl_height) !== this.state._s_pxls[0].length)) {
-
-            this.setState({
-                ...new_props,
-                id: Date.now(),
-                _pxl_indexes_of_selection: new Set(),
-                _layers: [{id: Date.now(), name: "Layer 0", hidden: false, opacity: 1}],
-                _layer_index: 0,
-                _s_pxls: Array.of(new Uint16Array((new_props.pxl_width || 32) * (new_props.pxl_height || 32)).fill(0)),
-                _old_pxls: new Uint16Array((new_props.pxl_width || 32) * (new_props.pxl_height || 32)).fill(0),
-                _s_pxl_colors: Array.of(["#00000000"]),
-                _old_pxl_colors: ["#00000000"],
-                _moves_speed_average_now: 8,
-                _hidden: true,
-                has_shown_canvas_once: false,
-                _is_there_new_dimension: true,
-            }, () => {
-
-                this._update_screen_zoom_ratio(true);
-            });
-        } else if(
+        if(
             this.state.hide_canvas_content !== new_props.hide_canvas_content ||
             this.state.show_original_image_in_background !== new_props.show_original_image_in_background ||
             this.state.show_transparent_image_in_background !== new_props.show_transparent_image_in_background ||
@@ -1856,7 +1863,7 @@ class CanvasPixels extends React.Component {
             pxls,
             pxl_colors,
             scale
-        ]).catch((error) => {
+        ]).catch((e) => {
 
             return new Function(window.get_layer_base64_png_data_url_process_function_string)()(
                 pxl_width,
@@ -1869,9 +1876,9 @@ class CanvasPixels extends React.Component {
         }).then((result) => {
 
             callback_function(result);
-            //pool.terminate()
+            pool.terminate()
 
-        }).timeout(5 * 1000);
+        }).timeout(1 * 1000);
     };
 
     get_base64_png_data_url(scale = 1, callback_function = () => {}, with_palette = false, with_compression_speed = 0) {
@@ -1923,8 +1930,7 @@ class CanvasPixels extends React.Component {
                 }
             }
 
-            //pool.terminate()
-
+            pool.terminate();
         }).timeout(5 * 1000);
     };
 
@@ -2707,6 +2713,7 @@ class CanvasPixels extends React.Component {
                         this._request_force_update(false, true, () => {
 
                             this._update_canvas();
+                            this._notify_size_change();
                             callback_function();
                         });
                     });
@@ -4905,17 +4912,6 @@ class CanvasPixels extends React.Component {
 
             const v1 = this._get_rgba_from_hex(color_a);
             let [ h, s, l ] = this._rgb_to_hsl(...v1);
-
-            /*if(a < 20 || (s + Math.abs(50 - l)) < 30) {
-
-                const value_for_rgb = a < 20 ? 128: l > 50 ? 0: 255;
-
-                color_b = "#" + this._get_hex_value_from_rgb_value(value_for_rgb) + this._get_hex_value_from_rgb_value(value_for_rgb) + this._get_hex_value_from_rgb_value(value_for_rgb) + this._get_hex_value_from_rgb_value(255);
-            }else {
-
-                color_b = "#" + this._get_hex_value_from_rgb_value(255 - r) + this._get_hex_value_from_rgb_value(255 - g) + this._get_hex_value_from_rgb_value(255 - b) + this._get_hex_value_from_rgb_value(255);
-            }*/
-
             const v2 = this._hsl_to_rgb((h) % 360, (s) % 100, (l + 50) % 100);
             color_b = this._get_hex_color_from_rgba_values(...v2, 255);
         }else {
@@ -4957,24 +4953,24 @@ class CanvasPixels extends React.Component {
     _update_canvas = (force_update = false, do_not_cancel_animation = false) => {
 
         // Potentially cancel the latest animation frame (Clear old) and then request a new one that will maybe be rendered
-        let { _layers } = this.state;
+        const { _loading_base64_img, dont_show_canvas_until_img_set, dont_show_canvas, but_show_canvas_once, has_shown_canvas_once } = this.state;
+        if((_loading_base64_img.length === 0 && dont_show_canvas_until_img_set) || (dont_show_canvas && !(but_show_canvas_once && !has_shown_canvas_once))){return;}
 
+        let { _layers } = this.state;
         _layers.forEach((l) => {
 
             if(!Boolean(l.hash)) {
                 this._notify_layers_and_compute_thumbnails_change(() => {
 
                     this._update_canvas(force_update, do_not_cancel_animation);
-                })
+                });
                 return;
             }
         });
-        const { _hidden, _loading_base64_img, dont_show_canvas_until_img_set, dont_show_canvas, but_show_canvas_once, has_shown_canvas_once } = this.state;
-        if(_hidden || (_loading_base64_img.length === 0 && dont_show_canvas_until_img_set) || (dont_show_canvas && !(but_show_canvas_once && !has_shown_canvas_once))){return;}
+        if(this.state._hidden){ return; }
 
         // Importing state variables
         let { _canvas } = this.state;
-
         const {
             select_mode,
             pencil_mirror_mode,
@@ -5269,7 +5265,7 @@ class CanvasPixels extends React.Component {
                 const pixel_hover_exception = tool === "ELLIPSE" && pxl_indexes_of_current_shape.size > 0;
 
                 if (
-                    !hide_canvas_content &&
+                    !(hide_canvas_content && !_was_canvas_content_hidden) &&
                     ((is_there_new_dimension || !has_shown_canvas_once || has_canvas_been_hidden) ||
                     is_in_pencil_mirror_axes_hover_indexes ||
                     is_in_pencil_mirror_axes_indexes ||
@@ -5428,7 +5424,7 @@ class CanvasPixels extends React.Component {
             return false;
         }
 
-        this._notify_layers_and_compute_thumbnails_change(() => {
+        this._notify_layers_and_compute_thumbnails_change((layers) => {
 
             let { _json_state_history, _id, pxl_width, pxl_height, _s_pxls, _original_image_index, _s_pxl_colors, _layer_index, _pxl_indexes_of_selection, _state_history_length, _undo_buffer_time_ms, _pencil_mirror_index } = this.state;
 
@@ -5437,7 +5433,7 @@ class CanvasPixels extends React.Component {
                 pxl_width: parseInt(pxl_width),
                 pxl_height: parseInt(pxl_height),
                 _original_image_index: parseInt(_original_image_index),
-                _layers: Array.from(_layers).map((l) => {
+                _layers: Array.from(layers).map((l) => {
                     return {
                         id: l.id,
                         hash: l.hash,
@@ -5636,7 +5632,7 @@ class CanvasPixels extends React.Component {
 
         _json_state_history.state_history = Array.from(_json_state_history.state_history).map((state) => {
 
-            state._s_pxls = Array.from(state._s_pxls).map((a) => Uint16Array.from(a));
+            state._s_pxls = Array.for(state._s_pxls).map((a) => Uint16Array.from(a));
             state._s_pxl_colors = Array.from(state._s_pxl_colors).map((a) => Array.from(a));
             state._layers = Array.from(state._layers);
 
@@ -5644,8 +5640,6 @@ class CanvasPixels extends React.Component {
         });
 
         const { _original_image_index, pxl_width, pxl_height, _pxl_indexes_of_selection, _s_pxl_colors, _s_pxls, _layers, _layer_index, _pencil_mirror_index, _id } = _json_state_history.state_history[_json_state_history.history_position-1];
-
-        const has_new_dimension = Boolean(pxl_width !== this.state.pxl_width || pxl_height !== this.state.pxl_height);
 
         this.setState({
             _id: parseInt(_id),
@@ -5663,36 +5657,25 @@ class CanvasPixels extends React.Component {
                 }
             }),
             _layer_index: parseInt(_layer_index),
-            _s_pxls: Array.from(_s_pxls).map((a) => Uint16Array.from(a)),
-            _s_pxl_colors: Array.from(_s_pxl_colors).map((a) => Array.from(a)),
-            _old_pxls_hovered: -1,
-            _pxls_hovered: -1,
+            _s_pxls: _s_pxls,
+            _s_pxl_colors: _s_pxl_colors,
             _pxl_indexes_of_selection: new Set([..._pxl_indexes_of_selection]),
             _pencil_mirror_index: parseInt(_pencil_mirror_index),
-            _json_state_history: Object.assign({}, _json_state_history),
-            _is_there_new_dimension: has_new_dimension,
-            _hidden: has_new_dimension,
-            _saved_json_state_history_timestamp_from_drawing: 0,
-            _last_action_timestamp: Date.now(),
+            _json_state_history: _json_state_history,
+            _is_there_new_dimension: true,
+            _hidden: true,
             has_shown_canvas_once: false,
         }, () => {
 
-            if (has_new_dimension) {
+            this._notify_layers_and_compute_thumbnails_change( () => {
 
                 this._update_screen_zoom_ratio(true, () => {
 
-                    this._notify_layers_and_compute_thumbnails_change(() => {
-
-                        this._notify_image_load_complete();
-                        this._notify_is_something_selected();
-                        this._notify_can_undo_redo_change();
-                    });
+                    this._notify_is_something_selected();
+                    this._notify_can_undo_redo_change();
+                    this._notify_image_load_complete();
                 });
-            }else {
-
-               this._update_canvas();
-               this._notify_is_something_selected();
-            }
+            });
         });
     };
 
@@ -5786,9 +5769,9 @@ class CanvasPixels extends React.Component {
 
                     if (has_new_dimension) {
 
-                        this._update_screen_zoom_ratio(true, () => {
+                        this._notify_layers_and_compute_thumbnails_change( () => {
 
-                            this._notify_layers_and_compute_thumbnails_change(() => {
+                            this._update_screen_zoom_ratio(true,() => {
 
                                 this._notify_image_load_complete();
                                 this._notify_is_something_selected();
@@ -5866,9 +5849,9 @@ class CanvasPixels extends React.Component {
 
                     if (has_new_dimension) {
 
-                        this._update_screen_zoom_ratio(true, () => {
+                        this._notify_layers_and_compute_thumbnails_change(() => {
 
-                            this._notify_layers_and_compute_thumbnails_change(() => {
+                            this._update_screen_zoom_ratio(true,() => {
 
                                 this._notify_image_load_complete();
                                 this._notify_is_something_selected();
@@ -7920,6 +7903,7 @@ class CanvasPixels extends React.Component {
             }
 
         }).timeout(30 * 1000);
+        pool.terminate();
 
         if(callback_function !== null) {
 
@@ -8252,7 +8236,6 @@ class CanvasPixels extends React.Component {
 
     _update_screen_zoom_ratio = (align_center_middle, callback_function = () => {}) => {
 
-        this._notify_size_change();
         const { _canvas_container_width, _canvas_container_height, pxl_width, pxl_height } = this.state;
 
         const _screen_zoom_ratio = _canvas_container_width > _canvas_container_height ?

@@ -1082,12 +1082,20 @@ class Pixel extends React.Component {
 
     _set_width_from_slider = (event, value) => {
 
-        this.setState({_width: value});
+        const { _canvas } = this.state;
+        if(Boolean(_canvas))  {
+
+            _canvas._set_size(value, null);
+        }
     };
 
     _set_height_from_slider = (event, value) => {
 
-        this.setState({_height: value});
+        const { _canvas } = this.state;
+        if(Boolean(_canvas)) {
+
+            _canvas._set_size(null, value);
+        }
     };
 
     _set_import_size = (event, value) => {
@@ -1351,6 +1359,7 @@ class Pixel extends React.Component {
                     className={classes.contentDrawer}
                     disableBackdropTransition={true}
                     disableSwipeToOpen={true}
+                    disableDiscovery={true}
                     keepMounted={true}
                     open={_is_edit_drawer_open}
                     onOpen={this._handle_edit_drawer_open}
@@ -1397,7 +1406,7 @@ class Pixel extends React.Component {
                         </div>
                         <div className={classes.drawerContainer} onGotPointerCapture={(event) => {event.stopPropagation(); event.preventDefault();}}>
                             <PixelToolboxSwipeableViews
-                                should_update={true}
+                                should_update={_is_edit_drawer_open}
                                 onActionClose={this._handle_edit_drawer_close}
                                 canvas={_canvas}
                                 view_class={classes.listOfTools}
@@ -1566,7 +1575,7 @@ class Pixel extends React.Component {
                             <CanvasPixels
                                 perspective={0}
                                 on_export_state={this._handle_canvas_state_export}
-                                export_state_every_ms={is_mobile_or_tablet ? 33 * 2 * 1000: 14 * 2 * 1000}
+                                export_state_every_ms={is_mobile_or_tablet ? 33 * 3 * 1000: 14 * 3 * 1000}
                                 shadow_size={is_mobile_or_tablet ? 0: 1.5}
                                 onContextMenu={(e) => {e.preventDefault()}}
                                 key={"canvas"}
@@ -1599,8 +1608,6 @@ class Pixel extends React.Component {
                                 onRelevantActionEvent={this._handle_relevant_action_event}
                                 onRightClick={this._handle_right_click}
                                 mine_player_direction={_mine_player_direction}
-                                pxl_width={_width}
-                                pxl_height={_height}
                                 pxl_current_color={_current_color}
                                 convert_scale={1}
                                 default_size={_import_size}

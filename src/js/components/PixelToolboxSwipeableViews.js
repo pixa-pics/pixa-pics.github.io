@@ -249,6 +249,7 @@ class PixelToolboxSwipeableViews extends React.Component {
     componentWillReceiveProps(new_props) {
 
         const {
+            should_update,
             view_name_index,
             previous_view_name_index,
             view_names,
@@ -274,7 +275,7 @@ class PixelToolboxSwipeableViews extends React.Component {
             import_colorize
         } = this.state;
 
-        if (
+        if (should_update && (
             view_name_index !== new_props.view_name_index ||
             previous_view_name_index !== new_props.previous_view_name_index ||
             view_names !== new_props.view_names ||
@@ -298,7 +299,7 @@ class PixelToolboxSwipeableViews extends React.Component {
             is_something_selected !== new_props.is_something_selected ||
             import_size !== new_props.import_size ||
             import_colorize !== new_props.import_colorize
-        ) {
+        )) {
 
             this.setState(new_props, () => {
 
