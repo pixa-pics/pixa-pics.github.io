@@ -15,27 +15,25 @@ Created with passion, for free, for everyone, and forever, also, designed for al
 # Technology
 
  * Multi-threading (Web Worker)
- * GPU optimisation (CSS3 Transform+will-change)
+ * GPU's optimisation (CSS3 Transform+will-change)
  * Fast Compression (LZP3)
  * Offline Cache & Auto Save (PouchDB)
- * AI Processing (Deepai.org, remote!)
+ * AI Processing (Deepai.org, !remote!)
  * Up-Scaling (xBRZ)
- * Vectorizer (ImageTracerJS)
+ * Vectorized (ImageTracerJS)
  * Color Quantization (RGBQuant + Custom)
- * Encodig of Portable Network Graphics in type of palette (PNGQuant)
- * Chunk ("norris") system for droping script evaluation cost within CPU
+ * Encoding of Portable Network Graphics in type of palette (PNGQuant)
+ * Chunk ("norris") system for dropping script evaluation cost within CPU
 
 # Example of picture's conversion
 
-**Lana Del Rey with US flag** 45.5 Kb (JPEG) -> 3.7 Kb (PNG) -> X.X Kb (SVG)
+**Replicant poster fan-art** 667.0 Kb (JPEG) [Limited ~blurred] -> 86.6 Kb (PNG) [Limited +sharp] -> X.X Kb (SVG) [Infinity ~smooth] -> 
 
-![](https://steemitimages.com/265x265/https://github.com/pixa-pics/pixa-pics.github.io/blob/main/doc/test/LDR%20JPG.jpg?raw=true)
-![](https://steemitimages.com/265x265/https://github.com/pixa-pics/pixa-pics.github.io/blob/main/doc/test/LDR%20PNG.png?raw=true)
-![](https://steemitimages.com/265x265/https://github.com/pixa-pics/pixa-pics.github.io/blob/main/doc/test/LDR%20SVG.png?raw=true)
+![Any of y'all got some frustration scale level upgrade](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/images/markechicks.jpeg)
 
 # Computer’s art, Crypto, and Surveillance.
 
-[Computer’s art, Crypto, and Surveillance.pdf](https://github.com/pixa-pics/pixa-pics.github.io/raw/main/src/files/Computer%E2%80%99s%20art%2C%20Crypto%2C%20and%20Surveillance.pdf)
+Perfect for sharing one private's life on-chain (Thinking just like better than initial APE/PUNK related NFT tests for douchbuyers).
 
 # About Me
 
@@ -43,9 +41,10 @@ Passionate about stars, cryptography, and computer, I began following a particul
 Philosophy is the science of estimating value, but technology is the value of estimating science. All that we perform in IT is described for humans and encoded for a machine, compassion, and vigilance are required to code along with knowledge.
 -Affolter Matias
 
-# Credit
+# Licence
 
- * All emoji (Tweemoji) by Twitter
- * Illustrations by Undraw and Manypixels
- * Sound effects by Google
- * Music on home page by Red Eclipse (video game) and in the editor by Nikola Tesla (inventor)
+ * All splendid emoji (Tweemoji) by Twitter.
+ * Illustrations magically found on Undraw and ManyPixels.
+ * Awesome sound effects by Google.
+ * Great music on home page arrival by Red Eclipse (video game) and piano melody in the editor by Nikola Tesla (inventor).
+ * Read the licence we legally adopted in our repository!
