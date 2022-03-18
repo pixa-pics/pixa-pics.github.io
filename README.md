@@ -29,7 +29,7 @@ Created with passion, for free, for everyone, and forever, also, designed for al
 
 **Replicant poster fan-art** 667.0 Kb (JPEG) [Limited ~blurred] -> 86.6 Kb (PNG) [Limited +sharp] -> X.X Kb (SVG) [Infinity ~smooth] -> 
 
-![Any of y'all got some frustration scale level upgrade](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/images/markechicks.jpeg)
+![Any of y'all got some frustration scale level upgrade](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/images/Markethinkingogogo.jpeg)
 
 # Computer’s art, Crypto, and Surveillance.
 
