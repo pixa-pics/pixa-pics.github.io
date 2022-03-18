@@ -217,7 +217,7 @@ const styles = theme => ({
     },
     fatabs: {
         boxShadow: "0px 2px 4px -1px rgb(0 0 0 / 20%), 0px 4px 5px 0px rgb(0 0 0 / 14%), 0px 1px 10px 0px rgb(0 0 0 / 12%)",
-        contain: "paint size",
+        contain: "paint size size layout",
         [theme.breakpoints.up("lg")]: {
             display: "none",
         },
@@ -1561,7 +1561,6 @@ class Pixel extends React.Component {
 
         return (
             <div style={{height: "100%"}}>
-                {_less_than_1280w && drawer_mobile}
                 <div className={classes.root}>
                     <div className={classes.contentInner} style={{
                         backgroundColor: "#f7f7f7",
@@ -1642,7 +1641,7 @@ class Pixel extends React.Component {
                 >
                     <span style={{textAlign: "left", padding: "12px 8px", color: "#666"}}>X: {_menu_data.pos_x}, Y: {_menu_data.pos_y}</span>
                     {
-                        _tool === "SET PENCIL MIRROR" || _pencil_mirror_mode !== "NONE" ?
+                        (_tool === "SET PENCIL MIRROR" || _pencil_mirror_mode !== "NONE") &&
                             <div>
                                 <ListSubheader className={classes.contextMenuSubheader}>Tools</ListSubheader>
                                 <ListItem button divider disabled={_tool === "PENCIL"} onClick={() => {this._set_tool("PENCIL")}}>
@@ -1679,10 +1678,9 @@ class Pixel extends React.Component {
                                     })
                                 }
                             </div>
-                            : null
                     }
                     {
-                        _is_something_selected ?
+                        _is_something_selected &&
                             <div>
                                 <ListSubheader className={classes.contextMenuSubheader}>Apply to selection</ListSubheader>
                                 {
@@ -1712,7 +1710,6 @@ class Pixel extends React.Component {
                                     })
                                 }
                             </div>
-                            : null
                     }
                     <ListSubheader style={_menu_data.pxl_color === null ? {display: "none"}: {}} className={classes.contextMenuSubheader}>Color</ListSubheader>
                     <ListItem button divider style={_menu_data.pxl_color === null ? {display: "none"}: {}} disabled={_menu_data.pxl_color === _current_color || _menu_data.pxl_color === null} onClick={(event) => {this._set_current_color(_menu_data.pxl_color); this._handle_relevant_action_event(_menu_event, _menu_data.pxl_color, 1);}}>
@@ -1798,6 +1795,7 @@ class Pixel extends React.Component {
                         </Tabs>
                     </div>
                 </Fade>
+                {_less_than_1280w && drawer_mobile}
                 <Backdrop className={classes.backdrop} open={_loading} keepMounted={false}>
                     <div className={classes.backdropTextContent} style={{fontFamily: `"Jura"`}}>
                         {_loading && <h1><ShufflingSpanText text={"Laboratory processing..."} animation_delay_ms={0} animation_duration_ms={250}/></h1>}
@@ -1852,6 +1850,7 @@ class Pixel extends React.Component {
                     text={"Feeling lost?"}
                     secondary={"Check the HELP section at the top on left of the editor zone."}
                     timeout={25000}/>
+
             </div>
         );
     }

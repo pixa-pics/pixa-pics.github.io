@@ -5227,7 +5227,7 @@ class CanvasPixels extends React.Component {
                 _ctx.getImageData(0, 0, pxl_width, pxl_height);
 
             // This is a list of color index that we explore
-            Uint16Array.from(_s_pxls[_layer_index] || []).forEach((pxl, index) => {
+            _s_pxls[_layer_index].forEach((pxl, index) => {
 
                 const is_in_image_imported = has_an_image_imported && typeof imported_image_pxls_positioned[index] !== "undefined";
                 const was_in_image_imported = typeof _previous_imported_image_pxls_positioned[index] !== "undefined";
@@ -5399,7 +5399,7 @@ class CanvasPixels extends React.Component {
                         has_shown_canvas_once: true,
                     });
 
-                }, false, true); // Enable to cancel in order to know that a frame has not been drawn
+                }, false, false); // Enable to cancel in order to know that a frame has not been drawn
             }
         }
     };
@@ -8297,7 +8297,7 @@ class CanvasPixels extends React.Component {
 
         let { perspective_coordinate } = this.state;
 
-        const p = w_canvas_pixels._is_mobile_or_tablet ? perspective / 6: perspective / 4;
+        const p = w_canvas_pixels._is_mobile_or_tablet ? 0: perspective / 4;
 
         let background_image_style_props = show_original_image_in_background && typeof _base64_original_images[_original_image_index] !== "undefined" ?
             {
@@ -8319,7 +8319,7 @@ class CanvasPixels extends React.Component {
         const canvas_wrapper_width = Math.round(pxl_width * _screen_zoom_ratio * scale);
         const canvas_wrapper_height = Math.round(pxl_height * _screen_zoom_ratio * scale);
 
-        const l = w_canvas_pixels._is_mobile_or_tablet ? light * p * 0.5 * 2: light * p * 2;
+        const l = w_canvas_pixels._is_mobile_or_tablet ? 0: light * p * 2;
 
         const filter_force = (1 - (p/200) * l) + (
                                     (
@@ -8373,7 +8373,8 @@ class CanvasPixels extends React.Component {
                              width: Math.floor(canvas_wrapper_width),
                              height: Math.floor(canvas_wrapper_height),
                              filter: `drop-shadow(0 0 ${shadow_depth*shadow_size}px ${shadow_color}) opacity(${has_shown_canvas_once && !_hidden ? "1": "0"})`,
-                             transform: `translate3d(${Math.round(scale_move_x * 100) / 100}px, ${Math.round(scale_move_y * 100) / 100}px, 0px) ${(rotate_x || rotate_y) ? `rotateX(${rotate_x}deg) rotateY(${rotate_y}deg) rotateZ(0deg)`: ``}`,
+                             transform: `translate(${Math.round(scale_move_x * 100) / 100}px, ${Math.round(scale_move_y * 100) / 100}px) ${(rotate_x || rotate_y) ? `rotateX(${rotate_x}deg) rotateY(${rotate_y}deg)`: ``}`,
+                             willChange: "transform",
                              transformOrigin: "center middle",
                              boxSizing: "content-box",
                              touchAction: "none",

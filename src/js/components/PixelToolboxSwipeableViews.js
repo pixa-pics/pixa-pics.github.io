@@ -275,7 +275,7 @@ class PixelToolboxSwipeableViews extends React.Component {
             import_colorize
         } = this.state;
 
-        if ((new_props.should_update || new_props.should_update !== should_update) && (
+        if ((new_props.should_update) && (
             view_name_index !== new_props.view_name_index ||
             previous_view_name_index !== new_props.previous_view_name_index ||
             view_names !== new_props.view_names ||
