@@ -1,6 +1,10 @@
 # This is PIXA!
 
-PIXA.PICS - Pixel art editor.
+PIXA.PICS - Pixel art editor
+
+![Image of the editor](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/images/markechicks.jpeg)
+
+Created with passion, for free, for everyone, and forever, also, designed for all little and bigger little immature people too.
 
 ![Image of the editor, homepage night](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/doc/screenshots/ScreenshotHomeTwo.png)
 
