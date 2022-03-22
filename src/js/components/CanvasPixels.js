@@ -1127,7 +1127,7 @@ class CanvasPixels extends React.Component {
 
         _intervals[0] = setInterval(() => {
             this._maybe_save_state();
-        }, this.state._undo_buffer_time_ms * 0.95);
+        }, this.state._undo_buffer_time_ms * 1.05);
 
         if(!w_canvas_pixels._is_mobile_or_tablet) {
 
@@ -1825,7 +1825,7 @@ class CanvasPixels extends React.Component {
             const pc = Array.from(s_pxl_colors[index]);
             const hash = Array.of(p, pc).map((array) => xxHash32(Buffer.from(array), 0).toString(16)).join("");
 
-            if(hash !== all_layers[index].hash  || Boolean(all_layers[index].thumbnail)) {
+            if(hash !== all_layers[index].hash  || !Boolean(all_layers[index].thumbnail)) {
 
                 this.get_layer_base64_png_data_url(pxl_w, pxl_h, p, pc, (result) => {
 
