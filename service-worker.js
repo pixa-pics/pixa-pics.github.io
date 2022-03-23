@@ -1,6 +1,6 @@
-var REQUIRED_CACHE = "unless-update-cache-v47-required";
-var USEFUL_CACHE = "unless-update-cache-v47-useful";
-var STATIC_CACHE = "unless-update-cache-v47-static";
+var REQUIRED_CACHE = "unless-update-cache-v48-required";
+var USEFUL_CACHE = "unless-update-cache-v48-useful";
+var STATIC_CACHE = "unless-update-cache-v48-static";
 var CHILD_CHUNK_REGEX = /child\-chunk\.(main\~[a-z0-9]+|[0-9]+)\.min.js/i;
 
 // On install, cache some resource.
@@ -16,8 +16,6 @@ self.addEventListener("install", function(evt) {
             return cache.addAll([
                 "/manifest.json",
                 "/",
-                "/404.html",
-                "/index.html",
                 "/src/fonts/Jura-Medium.woff2",
                 "/father-chunk.norris.min.js", // This is chunk norris, master of all chunk
                 "/child-chunk.main~1f20a385.min.js",
@@ -102,7 +100,16 @@ self.addEventListener("fetch", function(event) {
 
     const url = event.request.url;
 
-    if((url.includes(".png") || url.includes(".jpg") || url.includes(".jpeg") || url.includes(".gif") || url.includes(".ico")) && event.request.mode === "same-origin") {
+    if(event.request.mode === "navigate") {
+
+        event.respondWith(
+            caches.open(REQUIRED_CACHE).then(function (cache) {
+
+                return cache.match("/");
+            })
+        );
+
+    }else if((url.includes(".png") || url.includes(".jpg") || url.includes(".jpeg") || url.includes(".gif") || url.includes(".ico")) && event.request.mode === "same-origin") {
 
         // Serve cached image if doesn't fail
         event.respondWith(
@@ -111,7 +118,7 @@ self.addEventListener("fetch", function(event) {
                     return (
                         response ||
                         fetch(event.request).then(function (response) { // Fetch, clone, and serve
-                            cache.put(event.request, response.clone()).then(() => {return response.clone()});
+                            cache.put(event.request, response).then(() => {return response.clone()});
                         })
                     );
                 });
@@ -127,7 +134,7 @@ self.addEventListener("fetch", function(event) {
                     return (
                         response ||
                         fetch(event.request).then(function (response) { // Fetch, clone, and serve
-                            cache.put(event.request, response.clone()).then(() => {return response.clone()});
+                            cache.put(event.request, response).then(() => {return response.clone()});
                         })
                     );
                 });
@@ -144,7 +151,7 @@ self.addEventListener("fetch", function(event) {
                     return (
                         response ||
                         fetch(event.request).then(function (response) { // Fetch, clone, and serve
-                            cache.put(event.request, response.clone()).then(() => {return response.clone()});
+                            cache.put(event.request, response).then(() => {return response.clone()});
                         })
                     );
                 });
@@ -159,7 +166,7 @@ self.addEventListener("fetch", function(event) {
                     return (
                         response ||
                         fetch(event.request).then(function (response) { // Fetch, clone, and serve
-                            cache.put("/father-chunk.norris.min.js", response.clone()).then(() => {return response.clone()});
+                            cache.put("/father-chunk.norris.min.js", response).then(() => {return response.clone()});
                         })
                     );
                 });
@@ -175,22 +182,7 @@ self.addEventListener("fetch", function(event) {
                     return (
                         response ||
                         fetch(event.request).then(function (response) { // Fetch, clone, and serve
-                            cache.put(`/child-chunk.${middle_name}.min.js`, response.clone()).then(() => {return response.clone()});
-                        })
-                    );
-                });
-            })
-        );
-
-    }else if(event.request.mode === "navigate") {
-
-        event.respondWith(
-            caches.open(REQUIRED_CACHE).then(function (cache) {
-                return cache.match("/index.html").then(function (response) {
-                    return (
-                        response ||
-                        fetch(event.request).then(function (response) { // Fetch, clone, and serve
-                            cache.put("/index.html", response.clone()).then(() => {return response.clone()});
+                            cache.put(`/child-chunk.${middle_name}.min.js`, response).then(() => {return response.clone()});
                         })
                     );
                 });
@@ -230,17 +222,18 @@ self.addEventListener("activate", function(evt) {
 
     if(navigator.onLine) {
 
+        return event.waitUntil(Promise.allSettled([
+                caches.keys().then(keys => Promise.allSettled(
+                    keys.map(key => {
+                        if (key !== REQUIRED_CACHE && key !== STATIC_CACHE && key !== USEFUL_CACHE) {
+                            return caches.delete(key);
+                        }
+                    })
+                ))
+            ])
+        ).then(function(response){return response});
+    }else {
+
         return self.clients.claim();
     }
-
-    return event.waitUntil(Promise.allSettled([
-            caches.keys().then(keys => Promise.allSettled(
-                keys.map(key => {
-                    if (key !== REQUIRED_CACHE && key !== STATIC_CACHE && key !== USEFUL_CACHE) {
-                        return caches.delete(key);
-                    }
-                })
-            ))
-        ])
-    ).then(function(response){return response});
 });
