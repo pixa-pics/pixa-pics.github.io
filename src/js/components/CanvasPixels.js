@@ -936,7 +936,7 @@ function _anim_loop ( render, do_not_cancel_animation = false, force_update = fa
 
 import React from "react";
 import pool from "../utils/worker-pool";
-import {xxHash32} from "js-xxhash";
+import xxhash from "xxhash-wasm";
 
 class CanvasPixels extends React.Component {
 
@@ -1028,7 +1028,7 @@ class CanvasPixels extends React.Component {
             _last_action_timestamp: Date.now(),
             _last_paint_timestamp: Date.now(),
             _lazy_lazy_compute_time_ms: 10 * 1000,
-            _undo_buffer_time_ms: w_canvas_pixels._is_mobile_or_tablet ? 1200: 600,
+            _undo_buffer_time_ms: w_canvas_pixels._is_mobile_or_tablet ? 2400: 1200,
             _mouse_inside: false,
             _paint_hover_old_pxls_snapshot: new Array((props.pxl_width || 32) * (props.pxl_height || 32)).fill(0),
             _select_hover_old_pxls_snapshot: [],
@@ -1111,10 +1111,16 @@ class CanvasPixels extends React.Component {
             _kb: 0,
             _device_motion: false,
             export_state_every_ms: props.export_state_every_ms || 20 * 1000,
+            xxhash32: null,
         };
     };
 
     componentDidMount() {
+
+        xxhash().then((hasher) => {
+
+            this.setState({xxhash32: hasher.h32});
+        });
 
         this._notify_size_change();
         window.addEventListener("resize", this._updated_dimensions);
@@ -1807,7 +1813,15 @@ class CanvasPixels extends React.Component {
             });
         }
 
-        const { _layers, pxl_width, pxl_height, _s_pxls, _s_pxl_colors } = this.state;
+        const { _layers, pxl_width, pxl_height, _s_pxls, _s_pxl_colors, xxhash32 } = this.state;
+
+        if(xxhash32 === null) {
+
+            setTimeout(() => {
+
+                this._notify_layers_and_compute_thumbnails_change(callback_function);
+            }, 100);
+        }
 
         const layers = Array.from(_layers);
         const pxl_w = parseInt(pxl_width);
@@ -1823,7 +1837,7 @@ class CanvasPixels extends React.Component {
             all_layers[index] = Object.assign({}, layers[index]);
             const p = Uint16Array.from(s_pxls[index]);
             const pc = Array.from(s_pxl_colors[index]);
-            const hash = Array.of(p, pc).map((array) => xxHash32(Buffer.from(array), 0).toString(16)).join("");
+            const hash = Array.of(p, pc).map((array) => xxhash32(array)).join("-");
 
             if(hash !== all_layers[index].hash  || !Boolean(all_layers[index].thumbnail)) {
 
@@ -4953,21 +4967,24 @@ class CanvasPixels extends React.Component {
     _update_canvas = (force_update = false, do_not_cancel_animation = false) => {
 
         // Potentially cancel the latest animation frame (Clear old) and then request a new one that will maybe be rendered
-        const { _loading_base64_img, dont_show_canvas_until_img_set, dont_show_canvas, but_show_canvas_once, has_shown_canvas_once } = this.state;
-        if((_loading_base64_img.length === 0 && dont_show_canvas_until_img_set) || (dont_show_canvas && !(but_show_canvas_once && !has_shown_canvas_once))){return;}
+        const { _loading_base64_img, dont_show_canvas_until_img_set, dont_show_canvas, but_show_canvas_once, has_shown_canvas_once, _last_paint_timestamp, _hidden } = this.state;
+        if((_loading_base64_img.length === 0 && dont_show_canvas_until_img_set) || (dont_show_canvas && !(but_show_canvas_once && !has_shown_canvas_once)) || _hidden){return;}
+
+        if(_last_paint_timestamp + 1000 / 30 > Date.now()) {
+
+            return;
+        }
 
         let { _layers } = this.state;
         _layers.forEach((l) => {
-
             if(!Boolean(l.hash)) {
-                this._notify_layers_and_compute_thumbnails_change(() => {
 
+                this._notify_layers_and_compute_thumbnails_change(() => {
                     this._update_canvas(force_update, do_not_cancel_animation);
                 });
                 return;
             }
         });
-        if(this.state._hidden){ return; }
 
         // Importing state variables
         let { _canvas } = this.state;
@@ -5426,7 +5443,7 @@ class CanvasPixels extends React.Component {
 
         this._notify_layers_and_compute_thumbnails_change((layers) => {
 
-            let { _json_state_history, _id, pxl_width, pxl_height, _s_pxls, _original_image_index, _s_pxl_colors, _layer_index, _pxl_indexes_of_selection, _state_history_length, _undo_buffer_time_ms, _pencil_mirror_index } = this.state;
+            let { xxhash32, _json_state_history, _id, pxl_width, pxl_height, _s_pxls, _original_image_index, _s_pxl_colors, _layer_index, _pxl_indexes_of_selection, _state_history_length, _undo_buffer_time_ms, _pencil_mirror_index } = this.state;
 
             const current_state = {
                 _id: parseInt(_id),
@@ -5467,22 +5484,17 @@ class CanvasPixels extends React.Component {
 
             }else {
 
+                const sum_array_array = (...mains) => {
+
+                    return mains.map((array) => xxhash32(array)).join("-");
+                };
+
+
                 const current_state_length = parseInt(_json_state_history.state_history.length);
                 const back_in_history_of = parseInt(current_state_length - _json_state_history.history_position);
                 const previous_state = _json_state_history.state_history[_json_state_history.history_position-1] || _json_state_history.state_history[0];
 
-                function sum_array_array(main) {
-
-                    let sum = "";
-                    main.forEach((array) => {
-
-                        sum += xxHash32(Buffer.from(array), 0).toString(16);
-                    });
-
-                    return sum;
-                }
-
-                if((set_anyway_if_changes_callback !== null || Boolean(parseInt(this.state._last_action_timestamp + _undo_buffer_time_ms) < Date.now())) && (previous_state._layer_index !== current_state._layer_index || sum_array_array(previous_state._s_pxls) !== sum_array_array(current_state._s_pxls) || sum_array_array(previous_state._s_pxl_colors) !== sum_array_array(current_state._s_pxl_colors))) {
+                if((set_anyway_if_changes_callback !== null || Boolean(parseInt(this.state._last_action_timestamp + _undo_buffer_time_ms) < Date.now())) && (previous_state._layer_index !== current_state._layer_index || sum_array_array(previous_state._s_pxls, previous_state._s_pxl_colors) !== sum_array_array(current_state._s_pxls, current_state._s_pxl_colors))) {
 
                     // An action must have been performed and the last action must be older of 1 sec
                     if(back_in_history_of) {

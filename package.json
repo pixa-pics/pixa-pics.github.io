@@ -23,7 +23,6 @@
     "material-auto-rotating-carousel": "~3.0.2",
     "material-ui-chip-input": "~2.0.0-beta.2",
     "material-ui-toggle-icon": "~1.1.2",
-    "node-sumbasic": "^0.1.7",
     "pouchdb": "^7.2.2",
     "raf": "^3.4.1",
     "react": "^16.14.0",
@@ -37,7 +36,8 @@
     "sanitize-html": "~2.6.1",
     "svg64": "^1.1.0",
     "svgo": "^2.8.0",
-    "workerpool": "^6.1.5"
+    "workerpool": "^6.1.5",
+    "xxhash-wasm": "^1.0.1"
   },
   "devDependencies": {
     "@svgr/cli": "^5.5.0",
@@ -52,7 +52,6 @@
     "electron-packager": "^15.2.0",
     "file-loader": "^6.2.0",
     "html-webpack-plugin": "^3.2.0",
-    "js-xxhash": "^1.0.4",
     "nwjs-builder-phoenix": "^1.15.0",
     "svgo": "^2.7.0",
     "uglifyjs-webpack-plugin": "^2.2.0",

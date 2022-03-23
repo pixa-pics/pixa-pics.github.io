@@ -1574,7 +1574,7 @@ class Pixel extends React.Component {
                             <CanvasPixels
                                 perspective={0}
                                 on_export_state={this._handle_canvas_state_export}
-                                export_state_every_ms={is_mobile_or_tablet ? 33 * 3 * 1000: 14 * 3 * 1000}
+                                export_state_every_ms={is_mobile_or_tablet ? 60 * 1000: 40 * 1000}
                                 shadow_size={is_mobile_or_tablet ? 0: 1.5}
                                 onContextMenu={(e) => {e.preventDefault()}}
                                 key={"canvas"}
