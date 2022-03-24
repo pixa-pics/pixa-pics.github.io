@@ -434,6 +434,7 @@ class Pixel extends React.Component {
     _set_cursor_fuck_you = (is_active) => {
 
         this.setState({_is_cursor_fuck_you_active: is_active});
+        actions.jamy_update("happy", 2500);
     }
 
 
