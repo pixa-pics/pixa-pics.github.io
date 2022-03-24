@@ -1132,6 +1132,7 @@ class CanvasPixels extends React.Component {
         let _intervals = [];
 
         _intervals[0] = setInterval(() => {
+            this._update_canvas();
             this._maybe_save_state();
         }, this.state._undo_buffer_time_ms * 1.05);
 
