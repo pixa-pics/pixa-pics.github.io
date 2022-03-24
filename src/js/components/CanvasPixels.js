@@ -4128,6 +4128,8 @@ class CanvasPixels extends React.Component {
                     const pxl_index = (pos_y * pxl_width) + pos_x;
                     const pxl_color_index = pxl_index >= 0 ? _s_pxls[_layer_index][pxl_index] : null;
 
+                    this._set_cursor_fuck_you();
+
                     if (this.props.onRightClick) {
 
                         this.props.onRightClick(event, {
@@ -4157,6 +4159,19 @@ class CanvasPixels extends React.Component {
             });
         }
     };
+
+    _set_cursor_fuck_you = () => {
+
+        if(this.props.setCursorFuckYou) {
+
+            this.props.setCursorFuckYou(true);
+            setTimeout(() => {
+
+                this.props.setCursorFuckYou(false);
+
+            }, 2500);
+        }
+    }
 
     _get_canvas_event_target = (event) => {
 
@@ -8269,8 +8284,6 @@ class CanvasPixels extends React.Component {
     render() {
 
         const {
-            animation,
-            animation_duration,
             pxl_width,
             pxl_height,
             show_original_image_in_background,
@@ -8282,7 +8295,6 @@ class CanvasPixels extends React.Component {
             scale_move_x,
             scale_move_y,
             canvas_wrapper_background_color,
-            canvas_border_radius,
             canvas_wrapper_border_radius,
             canvas_wrapper_padding,
             canvas_wrapper_border_width,
@@ -8296,7 +8308,6 @@ class CanvasPixels extends React.Component {
             _mouse_inside,
             _canvas_event_target,
             _loading_base64_img,
-            _loading_base64_img_changed,
             _hidden,
             show_image_only_before_canvas_set,
             has_shown_canvas_once,

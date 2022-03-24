@@ -243,7 +243,13 @@ const styles = theme => ({
         backgroundColor: "#eee",
         color: theme.palette.secondary.light,
     },
-    contextMenu: {
+    contextMenuFuckYouActive: {
+        cursor: 'url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAApCAYAAAAiT5m3AAABXklEQVRYR+2XSxKCMAyGYSXqCdiJev8TqbjjBCqucMJMnDSk6QOKM0hXzPTxNemfB3n2o5GP4Z4OVYf7r/c66KygxfSSCL3Ut+xcHfupEPgoMEBxAHwFa/pZXe0dXaDqVVzLCyeaIkEMs7wxTZEAhUyVHMyhs4KpdTYwj0VNbF6Za7cpukf7Ms7lruaXcVWsZGC8iM3qHszVyhfHWIxg6qamabLnu+2ZXzC+IbqIFvZYsOb+AZgWdviGW5ZlaYSOLaG73p263wqWlEuBEkS6kC3eVbAG97FOi/fkYO4F7M0MVfMkQd/bNucq4KqrYbOk3NnAoF5edbjKYy2n50CeGGQu3tK4XBk6b7wx3ZwSTPO3aLHN3aHW8fX7YmumTL4gldX/A5YKj1iPaZkcGz62uqw2AlO9tfQLmxQsuRiF7ARjTeY9l09oaT/r0T3XssEgMmiBQgcUHbXLDD1wivUfqwJ8Oe4e4FEAAAAASUVORK5CYII=") 17 28, auto',
+        "& .MuiList-padding": {
+            padding: 0,
+        },
+    },
+    contextMenuFuckYouDisable: {
         "& .MuiList-padding": {
             padding: 0,
         },
@@ -421,9 +427,15 @@ class Pixel extends React.Component {
             data.pxl_color = _canvas.get_pixel_color_from_pos(data.pos_x, data.pos_y);
             this.setState({_menu_data: data});
 
-        }, 1000);
+        }, 100);
 
     };
+
+    _set_cursor_fuck_you = (is_active) => {
+
+        this.setState({_is_cursor_fuck_you_active: is_active});
+    }
+
 
     _process_settings_info_result = (error, settings) => {
 
@@ -1343,6 +1355,7 @@ class Pixel extends React.Component {
             _h_svg,
             _is_manual_warning_open,
             _attachment_previews,
+            _is_cursor_fuck_you_active,
         } = this.state;
 
         let x = _x === -1 ? "out": _x + 1;
@@ -1605,6 +1618,7 @@ class Pixel extends React.Component {
                                 onLayersChange={this._handle_layers_change}
                                 onGameEnd={this._handle_game_end}
                                 onRelevantActionEvent={this._handle_relevant_action_event}
+                                setCursorFuckYou={this._set_cursor_fuck_you}
                                 onRightClick={this._handle_right_click}
                                 mine_player_direction={_mine_player_direction}
                                 pxl_current_color={_current_color}
@@ -1619,7 +1633,7 @@ class Pixel extends React.Component {
                     </div>
                 </div>
                 <Menu
-                    className={classes.contextMenu}
+                    className={_is_cursor_fuck_you_active ? classes.contextMenuFuckYouActive: classes.contextMenuFuckYouDisable}
                     PaperProps={{
                         style: {
                             maxHeight: 350,
@@ -1627,7 +1641,7 @@ class Pixel extends React.Component {
                             overflowY: "overlay"
                         },
                     }}
-                    onContextMenu={(e) => {e.preventDefault()}}
+                    onContextMenu={(e) => {e.preventDefault(); e.stopImmediatePropagation();}}
                     dense={true}
                     keepMounted
                     open={_menu_mouse_y !== null}
