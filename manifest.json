@@ -10,7 +10,7 @@
   },
   "short_name": "PixaPics",
   "description": "Pixel art editor. Make potential (un)limited.",
-  "display": "standalone",
+  "display": "fullscreen",
   "theme_color": "#060f23",
   "background_color": "#ffffff",
   "browser_action": {
