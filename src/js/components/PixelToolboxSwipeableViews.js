@@ -1530,43 +1530,6 @@ class PixelToolboxSwipeableViews extends React.Component {
                                 }
 
                                 {
-                                    view.map((action_set, index) => {
-                                        return (
-                                            <div key={index}>
-                                                <ListSubheader className={classes.listSubHeader}>
-                                                    <span>{action_set.icon}</span>
-                                                    <span>{action_set.text}</span>
-                                                </ListSubheader>
-                                                <div className={classes.listItems}
-                                                     style={
-                                                         action_set.text.toLowerCase().includes("effects") || action_set.text.toLowerCase().includes("download") || action_set.text.toLowerCase().includes("filter") ?
-                                                             {
-                                                                 flexWrap: "wrap",
-                                                                 alignContent: "stretch",
-                                                                 flexDirection: "row",
-                                                                 justifyContent: "flex-start"
-                                                             }
-                                                             : {}
-                                                     }>
-                                                    {action_set.tools.map((tool) => {
-                                                        return (
-                                                            <ListItem button disabled={tool.disabled || false}
-                                                                      onClick={tool.on_click}>
-                                                                <ListItemIcon className={classes.listItemIcon}>
-                                                                    {tool.icon}
-                                                                </ListItemIcon>
-                                                                <ListItemText className={classes.ListItemText}
-                                                                              primary={tool.text} secondary={tool.sub}/>
-                                                            </ListItem>
-                                                        );
-                                                    })}
-                                                </div>
-                                            </div>
-                                        );
-                                    })
-                                }
-
-                                {
                                     view_names[index] === "image" ?
                                         <div>
                                             <ListSubheader className={classes.listSubHeader}>
@@ -1724,6 +1687,44 @@ class PixelToolboxSwipeableViews extends React.Component {
                                         </div>
                                         : null
                                 }
+
+                                {
+                                    view.map((action_set, index) => {
+                                        return (
+                                            <div key={index}>
+                                                <ListSubheader className={classes.listSubHeader}>
+                                                    <span>{action_set.icon}</span>
+                                                    <span>{action_set.text}</span>
+                                                </ListSubheader>
+                                                <div className={classes.listItems}
+                                                     style={
+                                                         action_set.text.toLowerCase().includes("effects") || action_set.text.toLowerCase().includes("download") || action_set.text.toLowerCase().includes("filter") ?
+                                                             {
+                                                                 flexWrap: "wrap",
+                                                                 alignContent: "stretch",
+                                                                 flexDirection: "row",
+                                                                 justifyContent: "flex-start"
+                                                             }
+                                                             : {}
+                                                     }>
+                                                    {action_set.tools.map((tool) => {
+                                                        return (
+                                                            <ListItem button disabled={tool.disabled || false}
+                                                                      onClick={tool.on_click}>
+                                                                <ListItemIcon className={classes.listItemIcon}>
+                                                                    {tool.icon}
+                                                                </ListItemIcon>
+                                                                <ListItemText className={classes.ListItemText}
+                                                                              primary={tool.text} secondary={tool.sub}/>
+                                                            </ListItem>
+                                                        );
+                                                    })}
+                                                </div>
+                                            </div>
+                                        );
+                                    })
+                                }
+
                             </List>
                         );
                     })

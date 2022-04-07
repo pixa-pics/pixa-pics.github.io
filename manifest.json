@@ -1,14 +1,15 @@
 {
   "manifest_version": 2,
-  "version": "2",
-  "name": "PixaPics",
+  "version": "1.0.1.0",
+  "author": "Affolter Matias",
+  "name": "Pixa.Pics",
   "start_url": "/",
   "scope": "/",
   "serviceworker": {
     "src": "/service-worker.js",
     "scope": "/"
   },
-  "short_name": "PixaPics",
+  "short_name": "Pixa.Pics",
   "description": "Pixel art editor. Make potential (un)limited.",
   "display": "fullscreen",
   "theme_color": "#060f23",
@@ -26,8 +27,8 @@
   ],
   "shortcuts": [
     {
-      "name": "Pixa Pics",
-      "short_name": "Pixa.",
+      "name": "Pixa.Pics",
+      "short_name": "Pixa.Pics",
       "description": "Pixel art editor. Make potential (un)limited.",
       "url": "/",
       "icons": [{ "src": "/src/images/logo-transparent.png", "sizes": "640x640" }]

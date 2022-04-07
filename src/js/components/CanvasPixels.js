@@ -108,7 +108,7 @@ window.get_base64_png_data_url_process_function_string = `return function(
                 var b = parseInt(color.substring(5, 7), 16);
                 var a = parseInt(color.substring(7, 9), 16);
 
-                return new Array(r, g, b, a);
+                return Uint8ClampedArray.of(r, g, b, a);;
             }
 
             function this_reduce_color(rgba_component, color_gain ) {
@@ -528,7 +528,7 @@ window.remove_close_pxl_colors_process_function_string = `return async function(
                 var b = parseInt(color.substring(5, 7), 16);
                 var a = parseInt(color.substring(7, 9), 16);
 
-                return new Array(r, g, b, a);
+                return Uint8ClampedArray.of(r, g, b, a);
             }
 
             function this_reduce_color(rgba_component, color_gain ) {
@@ -1807,7 +1807,7 @@ class CanvasPixels extends React.Component {
 
             Array.from(this.get_filter_names()).forEach((name, index, array) => {
 
-                const [p2, pc2] = this._filter_pixels(name, force, p, pc, true);
+                const [p2, pc2] = this._filter_pixels(name, force, p, pc, false);
 
                 this.get_layer_base64_png_data_url(pxl_width, pxl_height, p2, pc2, (result) => {
 
@@ -4978,32 +4978,42 @@ class CanvasPixels extends React.Component {
         if(color_b === "#00000000" && amount === 1 && should_return_transparent) { return "#00000000"; }
 
         // Extract RGBA from both colors
-        let base = this._get_rgba_from_hex(color_a);
-        base[3] /= 255;
+        let [base0, base1, base2, base3] = this._get_rgba_from_hex(color_a);
+        base3 /= 255;
 
-        let added = this._get_rgba_from_hex(color_b);
-        added[3] /= 255;
-        added[3] *= amount;
+        let [added0, added1, added2, added3] = this._get_rgba_from_hex(color_b);
+        added3 /= 255;
+        added3 *= amount;
 
-        let mix = [];
-        if (base[3] !== 0 && added[3] !== 0) {
+        let mix0 = 0;
+        let mix1 = 0;
+        let mix2 = 0;
+        let mix3 = 0;
 
-            mix[3] = !alpha_addition ? 1 - (1 - added[3]) * (1 - base[3]): (added[3] + base[3]); // alpha
-            mix[0] = Math.round((added[0] * added[3] / mix[3]) + (base[0] * base[3] * (1 - added[3]) / mix[3])); // red
-            mix[1] = Math.round((added[1] * added[3] / mix[3]) + (base[1] * base[3] * (1 - added[3]) / mix[3])); // green
-            mix[2] = Math.round((added[2] * added[3] / mix[3]) + (base[2] * base[3] * (1 - added[3]) / mix[3])); // blue
-        }else if(added[3] !== 0) {
+        if (base3 !== 0 && added3 !== 0) {
 
-            mix = added;
+            mix3 = !alpha_addition ? 1 - (1 - added3) * (1 - base3): (added3 + base3); // alpha
+            mix0 = Math.round((added0 * added3 / mix3) + (base0 * base3 * (1 - added3) / mix3)); // red
+            mix1 = Math.round((added1 * added3 / mix3) + (base1 * base3 * (1 - added3) / mix3)); // green
+            mix2 = Math.round((added2 * added3 / mix3) + (base2 * base3 * (1 - added3) / mix3)); // blue
+        }else if(added3 !== 0) {
+
+            mix0 = added0;
+            mix1 = added1;
+            mix2 = added2;
+            mix3 = added3;
         }else {
 
-            mix = base;
+            mix0 = base0;
+            mix1 = base1;
+            mix2 = base2;
+            mix3 = base3;
         }
 
-        mix[3] = !alpha_addition ? mix[3]: mix[3] / 2;
-        mix[3] = Math.round(mix[3] * 255);
+        mix3 = !alpha_addition ? mix3: mix3 / 2;
+        mix3 = Math.round(mix3 * 255);
 
-        return this._get_hex_color_from_rgba_values(...mix);
+        return this._get_hex_color_from_rgba_values(mix0, mix1, mix2, mix3);
     }
 
     _update_canvas = (force_update = false, do_not_cancel_animation = false) => {
@@ -6658,7 +6668,7 @@ class CanvasPixels extends React.Component {
             b = hue_to_rgb(p, q, h - 1 / 3);
         }
 
-        return [r * 255, g * 255,b * 255];
+        return Uint8ClampedArray.of(parseInt(r * 255), parseInt(g * 255), parseInt(b * 255));
     };
 
     get_rgba_from_hex = (color) => {
@@ -6675,7 +6685,7 @@ class CanvasPixels extends React.Component {
         const b = parseInt(color.slice(5, 7), 16);
         const a = parseInt(color.slice(7, 9), 16);
 
-        return [r, g, b, a];
+        return Uint8ClampedArray.of(r, g, b, a);
     };
 
     _get_hex_value_from_rgb_value = (value) => {
@@ -7340,8 +7350,8 @@ class CanvasPixels extends React.Component {
 
     _filter_pixels = (name, intensity = 1, pxls, pxl_colors, remove_duplicate_pxl_colors = true) => {
 
-        pxls = [...pxls];
-        pxl_colors = [...pxl_colors];
+        pxls = Uint16Array.from(pxls);
+        pxl_colors = Array.from(pxl_colors);
 
         const filters = this._get_filters();
         const filter = filters[name] || filters["1997"];
@@ -7352,25 +7362,13 @@ class CanvasPixels extends React.Component {
             pxl_colors = pxl_colors.map((hex, index) => {
 
                 const [r, g, b, a] = this._get_rgba_from_hex(hex);
-
-                const new_r_hex = this._get_hex_value_from_rgb_value(filter["r"][r]);
-                const new_g_hex = this._get_hex_value_from_rgb_value(filter["g"][g]);
-                const new_b_hex = this._get_hex_value_from_rgb_value(filter["b"][b]);
-                const new_a_hex = this._get_hex_value_from_rgb_value(a);
-
-                return "#" + new_r_hex + new_g_hex + new_b_hex + new_a_hex;
+                return this._get_hex_color_from_rgba_values(filter["r"][r], filter["g"][g], filter["b"][b], a);
             });
 
             pxl_colors = pxl_colors.map((hex) => {
 
                 const [r, g, b, a] = this._get_rgba_from_hex(hex);
-
-                const new_r_hex = this._get_hex_value_from_rgb_value(filter["a"][r]);
-                const new_g_hex = this._get_hex_value_from_rgb_value(filter["a"][g]);
-                const new_b_hex = this._get_hex_value_from_rgb_value(filter["a"][b]);
-                const new_a_hex = this._get_hex_value_from_rgb_value(a);
-
-                return "#" + new_r_hex + new_g_hex + new_b_hex + new_a_hex;
+                return this._get_hex_color_from_rgba_values(filter["a"][r], filter["a"][g], filter["a"][b], a);
             });
 
 
@@ -7942,7 +7940,7 @@ class CanvasPixels extends React.Component {
         ]).catch((e) => {
 
             if(e === "Pool terminated") {
-                return this._remove_close_pxl_colors(pxls, pxl_colors, bucket_threshold, threshold_steps, color_number_bonus, best_color_number, callback_function);
+                this._remove_close_pxl_colors(pxls, pxl_colors, bucket_threshold, threshold_steps, color_number_bonus, best_color_number, callback_function);
             }else {
 
                 return new Function(window.remove_close_pxl_colors_process_function_string)()(
