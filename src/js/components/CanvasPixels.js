@@ -1028,7 +1028,7 @@ class CanvasPixels extends React.Component {
             _last_action_timestamp: Date.now(),
             _last_paint_timestamp: Date.now(),
             _lazy_lazy_compute_time_ms: 10 * 1000,
-            _undo_buffer_time_ms: w_canvas_pixels._is_mobile_or_tablet ? 2400: 1200,
+            _undo_buffer_time_ms: w_canvas_pixels._is_mobile_or_tablet ? 5000: 2500,
             _mouse_inside: false,
             _paint_hover_old_pxls_snapshot: new Array((props.pxl_width || 32) * (props.pxl_height || 32)).fill(0),
             _select_hover_old_pxls_snapshot: [],
@@ -1112,6 +1112,7 @@ class CanvasPixels extends React.Component {
             _device_motion: false,
             export_state_every_ms: props.export_state_every_ms || 20 * 1000,
             xxhash32: null,
+            _last_filters_hash: "",
         };
     };
 
@@ -1131,42 +1132,27 @@ class CanvasPixels extends React.Component {
 
         let _intervals = [];
 
-        _intervals[0] = setInterval(() => {
-            this._update_canvas();
-            this._maybe_save_state();
-        }, this.state._undo_buffer_time_ms * 1.05);
+        _intervals[0] = setInterval(this._maybe_save_state, parseInt(this.state._undo_buffer_time_ms * 1.05));
 
         if(!w_canvas_pixels._is_mobile_or_tablet) {
 
-            _intervals[1] = setInterval(() => {
-
-                this._notify_fps();
-            },  1500);
+            _intervals[1] = setInterval(this._notify_fps,  1500);
         }
 
-        _intervals[2] = setInterval(() => {
-            this._maybe_update_mine_player();
-        }, 1000 / 30);
+        _intervals[2] = setInterval(this._maybe_update_mine_player, 1000 / 30);
 
-        _intervals[3] = setInterval(() => {
-            this._maybe_update_selection_highlight();
-        }, w_canvas_pixels._is_mobile_or_tablet ? 1000: 1000 * 2 / 5);
+        _intervals[3] = setInterval(this._maybe_update_selection_highlight, w_canvas_pixels._is_mobile_or_tablet ? 1000: parseInt(1000 * 2 / 5));
 
         if(!w_canvas_pixels._is_mobile_or_tablet) {
 
-            _intervals[4] = setInterval(() => {
-
-                this.set_move_speed_average_now();
-
-            },  62);
+            _intervals[4] = setInterval(this.set_move_speed_average_now,  62);
         }
 
-        _intervals[5] = setInterval(() => {
-
-            this._notify_export_state();
-        }, this.state.export_state_every_ms);
+        _intervals[5] = setInterval(this._notify_export_state, this.state.export_state_every_ms);
 
         _intervals[6] = window._fps_interval;
+
+        _intervals[7] = setInterval(this._update_canvas, parseInt(this.state._undo_buffer_time_ms * 1));
 
         const body_css =
             "body {" +
@@ -1797,6 +1783,46 @@ class CanvasPixels extends React.Component {
         if(this.props.onBackdropClick) {
 
             this.props.onBackdropClick(event);
+        }
+    };
+
+    compute_filters_preview = () => {
+
+        this._notify_filters_change(1);
+    };
+
+    _notify_filters_change = (force = 1) => {
+
+        if(this.props.onFiltersThumbnailChange) {
+
+            const { _layer_index, pxl_width, pxl_height, _s_pxls, _s_pxl_colors, _last_filters_hash, xxhash32 } = this.state;
+            const p = Uint16Array.from(_s_pxls[_layer_index]);
+            const pc = Array.from(_s_pxl_colors[_layer_index]);
+            const hash = Array.of(p, pc).map((array) => xxhash32(array)).join("-");
+
+            if(_last_filters_hash === hash) { return; }
+
+            let thumbnails = [];
+            let thumbnail_count = 0;
+
+            Array.from(this.get_filter_names()).forEach((name, index, array) => {
+
+                const [p2, pc2] = this._filter_pixels(name, force, p, pc, true);
+
+                this.get_layer_base64_png_data_url(pxl_width, pxl_height, p2, pc2, (result) => {
+
+                    thumbnails[name] = result;
+                    thumbnail_count++;
+
+                    if(array.length === thumbnail_count) {
+
+                        this.setState({_last_filters_hash: hash}, () => {
+
+                            this.props.onFiltersThumbnailChange(Object.assign({}, thumbnails), hash);
+                        });
+                    }
+                });
+            });
         }
     };
 

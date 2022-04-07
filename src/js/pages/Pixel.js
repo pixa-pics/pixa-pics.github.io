@@ -109,6 +109,12 @@ const styles = theme => ({
         zIndex: -1,
         background: "#fff",
     },
+    effectSlider: {
+
+        "& > .MuiSlider-track": {
+            height: 4,
+        }
+    },
     coordinate: {
         padding: "6px 8px 6px 8px",
         display: "block",
@@ -335,6 +341,8 @@ class Pixel extends React.Component {
             _is_manual_warning_open: false,
             _settings_set: false,
             _attachment_previews: {},
+            _filters_thumbnail: {},
+            _last_filters_hash: "",
         };
     };
 
@@ -1175,6 +1183,14 @@ class Pixel extends React.Component {
         });
     };
 
+    _handle_filters_thumbnail_change = (_filters_thumbnail, _last_filters_hash) => {
+
+        this.setState({_filters_thumbnail, _last_filters_hash}, () => {
+
+            this.forceUpdate();
+        });
+    };
+
     _handle_game_end = () => {
 
         this.setState({_game_ended: true}, () => {
@@ -1357,6 +1373,8 @@ class Pixel extends React.Component {
             _is_manual_warning_open,
             _attachment_previews,
             _is_cursor_fuck_you_active,
+            _filters_thumbnail,
+            _last_filters_hash,
         } = this.state;
 
         let x = _x === -1 ? "out": _x + 1;
@@ -1394,6 +1412,7 @@ class Pixel extends React.Component {
                                     Effect strength:
                                 </Typography>
                                 <Slider
+                                    className={classes.effectSlider}
                                     defaultValue={_slider_value}
                                     step={1/32}
                                     min={0}
@@ -1448,6 +1467,8 @@ class Pixel extends React.Component {
                                 is_something_selected={_is_something_selected}
                                 import_size={_import_size}
                                 import_colorize={_import_colorize}
+                                filters_thumbnail={_filters_thumbnail}
+                                last_filters_hash={_last_filters_hash}
 
                                 set_tool={this._set_tool}
                                 set_select_mode={this._set_select_mode}
@@ -1495,6 +1516,7 @@ class Pixel extends React.Component {
                                 </Typography>
                                 <Slider
                                     defaultValue={_slider_value}
+                                    className={classes.effectSlider}
                                     step={1/32}
                                     min={0}
                                     max={1}
@@ -1547,6 +1569,8 @@ class Pixel extends React.Component {
                                 is_something_selected={_is_something_selected}
                                 import_size={_import_size}
                                 import_colorize={_import_colorize}
+                                filters_thumbnail={_filters_thumbnail}
+                                last_filters_hash={_last_filters_hash}
 
                                 set_tool={this._set_tool}
                                 set_select_mode={this._set_select_mode}
@@ -1588,7 +1612,7 @@ class Pixel extends React.Component {
                             <CanvasPixels
                                 perspective={0}
                                 on_export_state={this._handle_canvas_state_export}
-                                export_state_every_ms={is_mobile_or_tablet ? 90000: 60000}
+                                export_state_every_ms={is_mobile_or_tablet ? 3 * 60 * 1000: 2 * 60 * 1000}
                                 shadow_size={is_mobile_or_tablet ? 0: 1.5}
                                 onContextMenu={(e) => {e.preventDefault()}}
                                 key={"canvas"}
@@ -1617,6 +1641,7 @@ class Pixel extends React.Component {
                                 on_elevation_change={!is_mobile_or_tablet ? this._handle_elevation_change: null}
                                 onPositionChange={!is_mobile_or_tablet ? this._handle_position_change: null}
                                 onLayersChange={this._handle_layers_change}
+                                onFiltersThumbnailChange={this._handle_filters_thumbnail_change}
                                 onGameEnd={this._handle_game_end}
                                 onRelevantActionEvent={this._handle_relevant_action_event}
                                 setCursorFuckYou={this._set_cursor_fuck_you}

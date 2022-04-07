@@ -243,6 +243,8 @@ class PixelToolboxSwipeableViews extends React.Component {
             _history: HISTORY,
             import_size: props.import_size,
             import_colorize: props.import_colorize,
+            filters_thumbnail: props.filters_thumbnail,
+            last_filters_hash: props.last_filters_hash,
         };
     };
 
@@ -268,6 +270,7 @@ class PixelToolboxSwipeableViews extends React.Component {
             width,
             height,
             filters,
+            last_filters_hash,
             select_mode,
             pencil_mirror_mode,
             is_something_selected,
@@ -294,6 +297,7 @@ class PixelToolboxSwipeableViews extends React.Component {
             width !== new_props.width ||
             height !== new_props.height ||
             filters !== new_props.filters ||
+            last_filters_hash !== new_props.last_filters_hash ||
             select_mode !== new_props.select_mode ||
             pencil_mirror_mode !== new_props.pencil_mirror_mode ||
             is_something_selected !== new_props.is_something_selected ||
@@ -303,7 +307,18 @@ class PixelToolboxSwipeableViews extends React.Component {
 
             this.setState(new_props, () => {
 
-                this.forceUpdate();
+                this.forceUpdate(() => {
+
+                    if(
+                        (view_name_index !== new_props.view_name_index ||
+                        layer_index !== new_props.layer_index) && new_props.view_name_index === 6
+                    ) {
+
+                        const { canvas } = this.state;
+                        if(!canvas) { return; }
+                        canvas.compute_filters_preview();
+                    }
+                });
             });
         }else {
 
@@ -606,6 +621,8 @@ class PixelToolboxSwipeableViews extends React.Component {
             _anchor_el,
             view_name_index,
             previous_view_name_index,
+            filters_thumbnail,
+            last_filters_hash,
             view_names,
             layers,
             layer_index,
@@ -1268,21 +1285,23 @@ class PixelToolboxSwipeableViews extends React.Component {
                     text: `Filters (Strength: ${slider_value * 100}%)`,
                     tools: filters.map((name) => {
                         return {
-                            icon: <Jdenticon value={name} size={"24"}/>, text: name, on_click: () => {
-                                canvas.to_filter(name, slider_value);
-                                this._handle_action_close();
-                            }
+                            icon: (filters_thumbnail[name] || "").length >= 1 ?
+                                <Avatar style={{height: "100%", width: "100%"}} key={name + "" + last_filters_hash} variant={"rounded"} src={filters_thumbnail[name]} sizes="24" />:
+                                <Jdenticon key={name} value={name} size={"24"}/>, text: name, on_click: () => {
+                                    canvas.to_filter(name, slider_value);
+                                    this._handle_action_close();
+                                }
                         }
                     }).concat([
                         {
-                            icon: <Jdenticon value={"Black & White"} size={"24"}/>,
+                            icon: <Jdenticon key={name} value={"Black & White"} size={"24"}/>,
                             text: "Black & White",
                             on_click: () => {
                                 canvas.to_greyscale()
                             }
                         },
                         {
-                            icon: <Jdenticon value={"Sepia"} size={"24"}/>, text: "Sepia", on_click: () => {
+                            icon: <Jdenticon key={name} value={"Sepia"} size={"24"}/>, text: "Sepia", on_click: () => {
                                 canvas.to_sepia()
                             }
                         },
