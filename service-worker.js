@@ -1,6 +1,6 @@
-var REQUIRED_CACHE = "unless-update-cache-v53-required";
-var USEFUL_CACHE = "unless-update-cache-v53-useful";
-var STATIC_CACHE = "unless-update-cache-v53-static";
+var REQUIRED_CACHE = "unless-update-cache-v54-required";
+var USEFUL_CACHE = "unless-update-cache-v54-useful";
+var STATIC_CACHE = "unless-update-cache-v54-static";
 var CHILD_CHUNK_REGEX = /child\-chunk\.(main\~[a-z0-9]+|[0-9]+)\.min.js/i;
 
 // On install, cache some resource.
@@ -43,7 +43,7 @@ self.addEventListener("install", function(evt) {
         })
     ]).then(() => {
 
-        var waiting = Promise.allSettled([
+        Promise.allSettled([
             caches.open(USEFUL_CACHE).then(function (cache) {
                 return cache.addAll([
                     "/src/images/office.svg",
@@ -82,17 +82,10 @@ self.addEventListener("install", function(evt) {
                     "/src/sounds/sfx/md/ui_unlock.mp3",
                     "/src/sounds/music/redeclipse/track_12.mp3",
                 ]);
-            }),
-            caches.keys().then(keys => Promise.allSettled(
-                keys.map(key => {
-                    if (key !== REQUIRED_CACHE && key !== STATIC_CACHE && key !== USEFUL_CACHE) {
-                        return caches.delete(key);
-                    }
-                })
-            ))
+            })
         ]);
 
-        return self.skipWaiting();
+        return true;
     }));
 });
 
