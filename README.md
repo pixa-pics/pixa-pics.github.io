@@ -21,6 +21,12 @@ PIXA.PICS - Pixel art editor
  * Encoding of Portable Network Graphics in type of palette (PNGQuant)
  * Chunk ("norris") system for dropping script evaluation cost within CPU
 
+![Any of y'all got some 80s warfare level upgrade](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/images/80.jpeg)
+
+And let's say in the years 1980s a computer to play video games wasn't that much as cheap as my android smartphone of an old series.
+The phone to which it has been tested is nowadays sold at $100 unused it was dozen of times that price to do the same graphics that time.
+You can easily multiply that it doesn't cost anyone much to share a simple details-less pictures on the fly even on a blockchain.
+
 # Example of picture's conversion
 
 Random image - 963.1 Kb (JPEG) **[Limited ~blurred]** -> 86.6 Kb (PNG) **[Limited +sharp]** -> X.X Kb (SVG) **[Infinity ~smooth]** ->
