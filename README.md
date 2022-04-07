@@ -4,14 +4,6 @@ PIXA.PICS - Pixel art editor
 
 ![Image of the editor](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/images/markechicks.jpeg)
 
-Created with passion, for free, for everyone, and forever, also, designed for all little and bigger little immature people too.
-
-![Image of the editor, homepage night](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/doc/screenshots/ScreenshotHomeTwo.png)
-
-![Image of the editor, editor](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/doc/screenshots/ScreenshotEditor.png)
-
-![Image of the editor, homepage day](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/doc/screenshots/ScreenshotHomeOne.png)
-
 # Technology
 
  * Multi-threading (Web Worker)
@@ -27,13 +19,13 @@ Created with passion, for free, for everyone, and forever, also, designed for al
 
 # Example of picture's conversion
 
-**Replicant poster fan-art** 667.0 Kb (JPEG) [Limited ~blurred] -> 86.6 Kb (PNG) [Limited +sharp] -> X.X Kb (SVG) [Infinity ~smooth] -> 
+Random image - 667.0 Kb (JPEG) **[Limited ~blurred]** -> 86.6 Kb (PNG) **[Limited +sharp]** -> X.X Kb (SVG) **[Infinity ~smooth]** -> 
 
 ![Any of y'all got some frustration scale level upgrade](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/images/Markethinkingogogo.jpeg)
 
 # Computer’s art, Crypto, and Surveillance.
 
-Perfect for sharing one private's life on-chain (Thinking just like better than initial APE/PUNK related NFT tests for douchbuyers).
+Perfect for sharing one private's life fragment on-chain in form of a 10Kb NFT or to restore 1000Kb WW2 images or even small and random profile pictures from matrix (raster) and grayscale to colours and vectors.
 
 # About Me
 

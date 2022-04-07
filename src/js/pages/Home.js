@@ -215,7 +215,7 @@ class Home extends React.Component {
             const offset = UTC_OFFSET_PER_COUNTRIES[lc];
             const d = new Date(Date.now());
             const utc = d.getTime() - (d.getTimezoneOffset() * 60 * 1000);
-            const d2 = new Date(utc + (60 * 1000 * offset));
+            const d2 = new Date(utc + (60 * 60 * 1000 * offset));
 
             return d2.getHours();
         }
@@ -308,21 +308,11 @@ class Home extends React.Component {
                         <Fade in={true} timeout={850}><span className={classes.titleSubTitle} style={{fontSize: ".618em"}}>Make potential (un)limited everywhere <img src={ANGELEMOJI} className="emoji"/>.</span></Fade>
                     </h1>
                     <Fade in={true} timeout={1200}>
-                        {
-                            SUBTITLE_STILL ?
-                                <h2 className={classes.subtitle}>
-                                    <span  style={{color: THEME_DAY ? "#0d1fac": "#6396ff"}}>In your images,</span> a plethora of too many harmful details without a <b>useless simplicity</b>? <br />
-                                    <b>Guess what?</b> The lull of difficult <span  style={{color: THEME_DAY ? "#0d1fac": "#6396ff"}}>pixel art is not difficult.</span> <br />
-                                    – Easy and useful simplicity of color range reduction and vectorization of size, clear, crisp,<br/> and in line with powerful advanced tools.
-                                </h2> :
-                                <h2 className={classes.subtitle}>
-                                    In a new AEON of the <span  style={{color: THEME_DAY ? "#0d1fac": "#6396ff"}}>matrix</span> and <span  style={{color: THEME_DAY ? "#0d1fac": "#6396ff"}}>vector</span> universes of PICS : <br/>
-                                    CONVERT them and then, DRAW <img className={"emoji"} style={{width: "2em"}} src={DRAWEMOJI}/> and <img className={"emoji"} style={{width: "2em"}} src={MAGICKEMOJI}/> EDIT it.<br />
-                                    ANY pixel art can generate ∞ SVGs paintings.<br />
-                                    MADE with <img style={{width: "3em"}} className={"emoji pulse2"} src={HEARTHEMOJI}/>, just designed to be : <br />
-                                    <br />
-                                </h2>
-                        }
+                            <h2 className={classes.subtitle}>
+                                <span  style={{color: THEME_DAY ? "#0d1fac": "#ffd910", fontWeight: "bold"}}>From your images,</span> is there many harmful details lacking a <b>great simplicity</b>? <br />
+                                <b>Guess what?</b> The lull of difficult <span  style={{color: THEME_DAY ? "#0d1fac": "#ffd910", fontWeight: "bold"}}>[NFTs <img className={"emoji"} style={{width: "2em"}} src={MAGICKEMOJI}/>, Paintings <img className={"emoji"} style={{width: "2em"}} src={DRAWEMOJI}/>, + Pixel Art<img style={{width: "3em"}} className={"emoji pulse2"} src={HEARTHEMOJI}/>] is not difficult.</span> <br />
+                                – Remove colors and upscale it to vectors passing through a clarity of editing,<br/> since it is in line with powerful and advanced tools.
+                            </h2>
                     </Fade>
                     <Fade in={true} timeout={1500}>
                         <Button className={classes.homeCTAuseit} variant={"contained"} size={"large"} color="primary" onClick={(event) => this._go_to_url(event, "/pixel")}>

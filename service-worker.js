@@ -1,6 +1,6 @@
-var REQUIRED_CACHE = "unless-update-cache-v52-required";
-var USEFUL_CACHE = "unless-update-cache-v52-useful";
-var STATIC_CACHE = "unless-update-cache-v52-static";
+var REQUIRED_CACHE = "unless-update-cache-v53-required";
+var USEFUL_CACHE = "unless-update-cache-v53-useful";
+var STATIC_CACHE = "unless-update-cache-v53-static";
 var CHILD_CHUNK_REGEX = /child\-chunk\.(main\~[a-z0-9]+|[0-9]+)\.min.js/i;
 
 // On install, cache some resource.
