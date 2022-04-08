@@ -144,7 +144,7 @@ self.addEventListener("fetch", function(event) {
                     return (
                         response ||
                         fetch(event.request).then(function (response) { // Fetch, clone, and serve
-                            cache.put(event.request, response.clone()).then(() => {return response.clone()});
+                            cache.put(event.request, response.clone()).then(() => {return response});
                         })
                     );
                 });
@@ -159,7 +159,7 @@ self.addEventListener("fetch", function(event) {
                     return (
                         response ||
                         fetch(event.request).then(function (response) { // Fetch, clone, and serve
-                            cache.put("/father-chunk.norris.min.js", response.clone()).then(() => {return response.clone()});
+                            cache.put("/father-chunk.norris.min.js", response.clone()).then(() => {return response});
                         })
                     );
                 });
@@ -175,7 +175,7 @@ self.addEventListener("fetch", function(event) {
                     return (
                         response ||
                         fetch(event.request).then(function (response) { // Fetch, clone, and serve
-                            cache.put(`/child-chunk.${middle_name}.min.js`, response.clone()).then(() => {return response.clone()});
+                            cache.put(`/child-chunk.${middle_name}.min.js`, response.clone()).then(() => {return response});
                         })
                     );
                 });
