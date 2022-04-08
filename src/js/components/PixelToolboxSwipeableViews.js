@@ -1286,7 +1286,7 @@ class PixelToolboxSwipeableViews extends React.Component {
                     tools: filters.map((name) => {
                         return {
                             icon: (filters_thumbnail[name] || "").length >= 1 ?
-                                <Avatar style={{height: "100%", width: "100%"}} key={name + "" + last_filters_hash} variant={"rounded"} src={filters_thumbnail[name]} sizes="24" />:
+                                <Avatar style={{height: "100%", width: "100%", border: "4px solid #020529"}} key={name + "" + last_filters_hash} variant={"rounded"} src={filters_thumbnail[name]} sizes="24" />:
                                 <Jdenticon key={name} value={name} size={"24"}/>, text: name, on_click: () => {
                                     canvas.to_filter(name, slider_value);
                                     this._handle_action_close();

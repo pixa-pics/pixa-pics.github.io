@@ -700,7 +700,7 @@ window.remove_close_pxl_colors_process_function_string = `return async function(
                 // Work with Hashtables and Typed Array so it is fast
                 var new_pxl_colors_object = {};
                 var new_pxl_colors_object_length = 0;
-                var new_pxls = new Uint32Array(_pxls.length);
+                var new_pxls = new Uint32Array(_pxls.length).fill(0);
 
                 Uint32Array.from(_pxls).forEach((pxl, iteration) => {
 
@@ -1759,7 +1759,7 @@ class CanvasPixels extends React.Component {
                 opacity: 1
             };
 
-            let new_layer_pxls = new Uint16Array(pxl_width * pxl_height);
+            let new_layer_pxls = new Uint16Array(pxl_width * pxl_height).fill(0);
             let new_layer_pxl_colors = [];
 
             const top_layer_pxls = Uint16Array.from(_s_pxls[at_index]);
@@ -1845,23 +1845,20 @@ class CanvasPixels extends React.Component {
             let thumbnails = [];
             let thumbnail_count = 0;
 
-            Array.from(this.get_filter_names()).forEach((name, index, array) => {
+            this.setState({_last_filters_hash: hash}, () => {
 
-                const [p2, pc2] = this._filter_pixels(name, force, p, pc, false);
+                Array.from(this.get_filter_names()).forEach((name, index, array) => {
 
-                this.get_layer_base64_png_data_url(pxl_width, pxl_height, p2, pc2, (result) => {
+                    const [p2, pc2] = this._filter_pixels(name, force, p, pc, false);
 
-                    thumbnails[name] = result;
-                    thumbnail_count++;
+                    this.get_layer_base64_png_data_url(pxl_width, pxl_height, p2, pc2, (result) => {
 
-                    if(array.length === thumbnail_count) {
-
-                        this.setState({_last_filters_hash: hash}, () => {
-
-                            this.props.onFiltersThumbnailChange(Object.assign({}, thumbnails), hash);
-                        });
-                    }
+                        thumbnails[name] = result;
+                        thumbnail_count++;
+                        this.props.onFiltersThumbnailChange(Object.assign({}, thumbnails), hash + "-done-" + thumbnail_count.toString());
+                    });
                 });
+
             });
         }
     };
@@ -2017,19 +2014,24 @@ class CanvasPixels extends React.Component {
 
     _format_color = (color) => {
 
-        color = typeof color === "undefined" ? "#00000000": color.toString();
+        color = color || "#00000000";
 
-        // if color equals #fff -> #ffffff
-        color = color.length === 4 ? "#" + color.charAt(1) + color.charAt(1) + color.charAt(2) + color.charAt(2) + color.charAt(3) + color.charAt(3): color;
+        switch (color.length) {
 
-        // if color equals #3333 -> #33333333
-        color = color.length === 5 ? "#" + color.charAt(1) + color.charAt(1) + color.charAt(2) + color.charAt(2) + color.charAt(3) + color.charAt(3) + color.charAt(4) + color.charAt(4): color;
+            case 4:
+                color = "#" + color.charAt(1) + color.charAt(1) + color.charAt(2) + color.charAt(2) + color.charAt(3) + color.charAt(3);
+                break;
+            case 5:
+                color = "#" + color.charAt(1) + color.charAt(1) + color.charAt(2) + color.charAt(2) + color.charAt(3) + color.charAt(3) + color.charAt(4) + color.charAt(4);
+                break;
+        }
 
-        // if color equals #000000 -> #000000ff (Alpha)
-        color = color.length === 7 ? color + "ff": color;
+        if(color.length === 7) {
+
+            color = color + "ff";
+        }
 
         return color;
-
     }
 
     _reduce_color = (rgba_component, color_gain ) => {
@@ -2084,7 +2086,7 @@ class CanvasPixels extends React.Component {
 
         if(!too_much_pixel_cpu_would_go_brrrrr || force_full_compute) { // We can parse all pixel
 
-            new_pxls = new Uint32Array(image_data.width * image_data.height);
+            new_pxls = new Uint32Array(image_data.width * image_data.height).fill(0);
             for (let i = 0; i < image_data.data.length; i += 4) {
 
                 const color_hex = _get_color_hex_from_image_data_r_index(image_data.data, i, color_gain, color_loss_bw);
@@ -2729,6 +2731,7 @@ class CanvasPixels extends React.Component {
 
         element.context2d = element.getContext("2d");
         element.context2d.globalCompositeOperation = "source-over";
+        element.context2d.imageSmoothingEnabled = false;
 
         this.setState({_canvas: element}, () => {
 
@@ -5016,6 +5019,7 @@ class CanvasPixels extends React.Component {
         }
         // If the second color is transparent, return transparent
         if(color_b === "#00000000" && amount === 1 && should_return_transparent) { return "#00000000"; }
+        if(amount === 1) { return color_b; }
 
         // Extract RGBA from both colors
         let [base0, base1, base2, base3] = this._get_rgba_from_hex(color_a);
@@ -5254,8 +5258,7 @@ class CanvasPixels extends React.Component {
         const has_new_mine_player_index = _previous_mine_player_index !== _mine_player_index;
 
         // Only operate on canvas context if existing
-        let _ctx = _canvas ? _canvas.context2d : null;
-        if (_ctx) {
+        if (_canvas.context2d) {
 
             let pxl_indexes_of_old_shape = this.state._pxl_indexes_of_old_shape;
             let pxl_indexes_of_current_shape = new Set();
@@ -5333,7 +5336,7 @@ class CanvasPixels extends React.Component {
 
             let image_data = Boolean(hide_canvas_content || is_there_new_dimension || !has_shown_canvas_once || has_canvas_been_hidden) ?
                 new ImageData(pxl_width, pxl_height):
-                _ctx.getImageData(0, 0, pxl_width, pxl_height);
+                _canvas.context2d.getImageData(0, 0, pxl_width, pxl_height);
 
             // This is a list of color index that we explore
             _s_pxls[_layer_index].forEach((pxl, index) => {
@@ -5481,7 +5484,6 @@ class CanvasPixels extends React.Component {
 
                 _anim_loop(() => {
 
-                    _ctx.putImageData(image_data, 0, 0);
                     this.setState({
                         _pxl_indexes_of_selection_drawn: new Set([..._pxl_indexes_of_selection]),
                         _pxl_indexes_of_old_shape: new Set([...pxl_indexes_of_current_shape]),
@@ -5506,6 +5508,9 @@ class CanvasPixels extends React.Component {
                         _was_canvas_content_hidden: Boolean(hide_canvas_content),
                         _last_paint_timestamp: Date.now(),
                         has_shown_canvas_once: true,
+                    }, () => {
+
+                        _canvas.context2d.putImageData(image_data, 0, 0);
                     });
 
                 }, false, false); // Enable to cancel in order to know that a frame has not been drawn
@@ -6309,7 +6314,7 @@ class CanvasPixels extends React.Component {
             for (let l = 0; l < _s_pxls.length; l++) {
 
                 let pxls = _s_pxls[l];
-                let new_pxls = new Uint16Array(new_width * new_height);
+                let new_pxls = new Uint16Array(new_width * new_height).fill(0);
                 let new_pxl_colors = [];
 
                 for (let i = 0; i < new_width * new_height; i++) {
@@ -6728,9 +6733,9 @@ class CanvasPixels extends React.Component {
         return Uint8ClampedArray.of(r, g, b, a);
     };
 
-    _get_hex_value_from_rgb_value = (value) => {
+    _get_hex_value_from_rgb_value = (v) => {
 
-        return parseInt(value).toString(16).padStart(2, "0");
+        return parseInt(v).toString(16).padStart(2, "0");
     };
 
     _hsl_to_hex = (h, s, l) => {
@@ -6747,12 +6752,12 @@ class CanvasPixels extends React.Component {
 
     _get_hex_values_from_rgba_values = (r, g, b, a) => {
 
-        return [
+        return Array.of(
             this._get_hex_value_from_rgb_value(r),
             this._get_hex_value_from_rgb_value(g),
             this._get_hex_value_from_rgb_value(b),
             this._get_hex_value_from_rgb_value(a)
-        ];
+        );
     };
 
     _get_hex_color_from_rgba_values = (r, g, b, a) => {
@@ -7487,7 +7492,7 @@ class CanvasPixels extends React.Component {
 
             for (let i = 0; i < _s_pxls.length; i++) {
 
-                let new_pxls = new Uint16Array(new_pxl_width * new_pxl_height);
+                let new_pxls = new Uint16Array(new_pxl_width * new_pxl_height).fill(0);
 
                 _s_pxls[i].forEach((pxl, index) => {
 
@@ -8325,8 +8330,8 @@ class CanvasPixels extends React.Component {
         const { _canvas_container_width, _canvas_container_height, pxl_width, pxl_height } = this.state;
 
         const _screen_zoom_ratio = _canvas_container_width > _canvas_container_height ?
-            (_canvas_container_height - this.state.canvas_wrapper_padding / window.devicePixelRatio * 2) / pxl_height:
-            (_canvas_container_width - this.state.canvas_wrapper_padding / window.devicePixelRatio * 2) / pxl_width;
+            parseFloat((_canvas_container_height - this.state.canvas_wrapper_padding / window.devicePixelRatio * 2) / pxl_height).toFixed(2):
+            parseFloat((_canvas_container_width - this.state.canvas_wrapper_padding / window.devicePixelRatio * 2) / pxl_width).toFixed(2);
 
         this.setState({_screen_zoom_ratio}, () => {
 

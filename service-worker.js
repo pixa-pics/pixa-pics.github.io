@@ -1,6 +1,6 @@
-var REQUIRED_CACHE = "unless-update-cache-v58-required";
-var USEFUL_CACHE = "unless-update-cache-v58-useful";
-var STATIC_CACHE = "unless-update-cache-v58-static";
+var REQUIRED_CACHE = "unless-update-cache-v59-required";
+var USEFUL_CACHE = "unless-update-cache-v59-useful";
+var STATIC_CACHE = "unless-update-cache-v59-static";
 var CHILD_CHUNK_REGEX = /child\-chunk\.(main\~[a-z0-9]+|[0-9]+)\.min.js/i;
 
 // On install, cache some resource.
@@ -10,6 +10,48 @@ self.addEventListener("install", function(evt) {
 
         return self.skipWaiting();
     }
+
+    var not_urgent = Promise.allSettled([
+        caches.open(USEFUL_CACHE).then(function (cache) {
+            return cache.addAll([
+                "/src/images/office.svg",
+                "/src/images/travelers.svg",
+                "/src/images/painting.svg",
+                "/src/images/sane-healthy-memories.svg",
+                "/src/images/abduction.svg",
+                "/src/images/AI.svg",
+                "/src/images/DNA.svg",
+                "/src/images/CPU.svg",
+                "/src/images/laboratory.svg",
+            ]);
+        }),
+        caches.open(REQUIRED_CACHE).then(function (cache) {
+            return cache.addAll([
+                "/child-chunk.0.min.js",
+                "/child-chunk.1.min.js",
+                "/child-chunk.2.min.js",
+                "/child-chunk.3.min.js",
+                "/child-chunk.4.min.js",
+                "/child-chunk.5.min.js",
+                "/child-chunk.6.min.js",
+                "/child-chunk.7.min.js",
+                "/child-chunk.8.min.js",
+            ]);
+        }),
+        caches.open(STATIC_CACHE).then(function (cache) {
+            return cache.addAll([
+                "/src/sounds/sfx/md/FullHorizonThrow.mp3",
+                "/src/sounds/sfx/md/hero_decorative-celebration-02.mp3",
+                "/src/sounds/sfx/md/navigation_selection-complete-celebration.mp3",
+                "/src/sounds/sfx/md/navigation_transition-left.mp3",
+                "/src/sounds/sfx/md/navigation_transition-right.mp3",
+                "/src/sounds/sfx/md/state-change_confirm-down.mp3",
+                "/src/sounds/sfx/md/ui_lock.mp3",
+                "/src/sounds/sfx/md/ui_unlock.mp3",
+                "/src/sounds/music/redeclipse/track_12.mp3",
+            ]);
+        })
+    ]);
 
     return evt.waitUntil(Promise.allSettled([
         caches.open(REQUIRED_CACHE).then(function (cache) {
@@ -41,52 +83,7 @@ self.addEventListener("install", function(evt) {
                 "/src/images/404.svg",
             ]);
         })
-    ]).then(() => {
-
-        Promise.allSettled([
-            caches.open(USEFUL_CACHE).then(function (cache) {
-                return cache.addAll([
-                    "/src/images/office.svg",
-                    "/src/images/travelers.svg",
-                    "/src/images/painting.svg",
-                    "/src/images/sane-healthy-memories.svg",
-                    "/src/images/abduction.svg",
-                    "/src/images/AI.svg",
-                    "/src/images/DNA.svg",
-                    "/src/images/CPU.svg",
-                    "/src/images/laboratory.svg",
-                ]);
-            }),
-            caches.open(REQUIRED_CACHE).then(function (cache) {
-                return cache.addAll([
-                    "/child-chunk.0.min.js",
-                    "/child-chunk.1.min.js",
-                    "/child-chunk.2.min.js",
-                    "/child-chunk.3.min.js",
-                    "/child-chunk.4.min.js",
-                    "/child-chunk.5.min.js",
-                    "/child-chunk.6.min.js",
-                    "/child-chunk.7.min.js",
-                    "/child-chunk.8.min.js",
-                ]);
-            }),
-            caches.open(STATIC_CACHE).then(function (cache) {
-                return cache.addAll([
-                    "/src/sounds/sfx/md/FullHorizonThrow.mp3",
-                    "/src/sounds/sfx/md/hero_decorative-celebration-02.mp3",
-                    "/src/sounds/sfx/md/navigation_selection-complete-celebration.mp3",
-                    "/src/sounds/sfx/md/navigation_transition-left.mp3",
-                    "/src/sounds/sfx/md/navigation_transition-right.mp3",
-                    "/src/sounds/sfx/md/state-change_confirm-down.mp3",
-                    "/src/sounds/sfx/md/ui_lock.mp3",
-                    "/src/sounds/sfx/md/ui_unlock.mp3",
-                    "/src/sounds/music/redeclipse/track_12.mp3",
-                ]);
-            })
-        ]);
-
-        return true;
-    }));
+    ]));
 });
 
 self.addEventListener("fetch", function(event) {
