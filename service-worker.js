@@ -222,5 +222,5 @@ self.addEventListener("activate", function(event) {
                 })
             ))
         ])
-    ).then(function(response){return response});
+    );
 });
