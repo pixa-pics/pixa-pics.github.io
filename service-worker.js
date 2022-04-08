@@ -111,7 +111,7 @@ self.addEventListener("fetch", function(event) {
                     return (
                         response ||
                         fetch(event.request).then(function (response) { // Fetch, clone, and serve
-                            cache.put(event.request, response.clone()).then(() => {return response)});
+                            cache.put(event.request, response.clone()).then(() => {return response});
                         })
                     );
                 });
