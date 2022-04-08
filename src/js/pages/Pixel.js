@@ -1667,7 +1667,7 @@ class Pixel extends React.Component {
                             overflowY: "overlay"
                         },
                     }}
-                    onContextMenu={(e) => {e.preventDefault(); e.stopImmediatePropagation();}}
+                    onContextMenu={(e) => {e.preventDefault()}}
                     dense={true}
                     keepMounted
                     open={_menu_mouse_y !== null}
