@@ -211,7 +211,7 @@ self.addEventListener("fetch", function(event) {
     }
 });
 
-self.addEventListener("activate", function(evt) {
+self.addEventListener("activate", function(event) {
 
     return event.waitUntil(Promise.allSettled([
             caches.keys().then(keys => Promise.allSettled(
