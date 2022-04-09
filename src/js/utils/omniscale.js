@@ -1220,7 +1220,7 @@ const omniscale = (image_data, scale, callback_function, pool = null) => {
 
     if(pool) {
 
-        pool.exec(window.omniscale_process_function_string , [
+        pool.exec(new Function(window.omniscale_process_function_string)(), [
             image_data,
             scale,
         ]).catch((e) => {

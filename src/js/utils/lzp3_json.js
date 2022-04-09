@@ -2445,7 +2445,7 @@ const LZP3 = (uint8a_or_obj, mode = "COMPRESS_OBJECT", callback_function = () =>
 
     if(Boolean(pool)) {
 
-        pool.exec( window.lzp3_json_process_function_string, [
+        pool.exec( new Function(window.lzp3_json_process_function_string)(), [
             uint8a_or_obj,
             mode,
         ]).catch((e) => {

@@ -885,13 +885,13 @@ const xbrz = (image_data, scale, callback_function, pool = null) => {
 
     if(pool) {
 
-      pool.exec(window.xbrz_process_function_string, [
+      pool.exec(new Function(window.xbrz_process_function_string)(), [
         image_data,
         scale,
       ]).catch((e) => {
 
           if(e === "Pool terminated") {
-              return xbrz(image_data, scale, callback_function, pool);
+              xbrz(image_data, scale, callback_function, pool);
           }else {
 
               return new Function(window.xbrz_process_function_string)()(image_data, scale);

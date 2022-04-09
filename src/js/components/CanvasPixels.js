@@ -5019,7 +5019,6 @@ class CanvasPixels extends React.Component {
         }
         // If the second color is transparent, return transparent
         if(color_b === "#00000000" && amount === 1 && should_return_transparent) { return "#00000000"; }
-        if(amount === 1) { return color_b; }
 
         // Extract RGBA from both colors
         let [base0, base1, base2, base3] = this._get_rgba_from_hex(color_a);
@@ -5037,9 +5036,13 @@ class CanvasPixels extends React.Component {
         if (base3 !== 0 && added3 !== 0) {
 
             mix3 = !alpha_addition ? 1 - (1 - added3) * (1 - base3): (added3 + base3); // alpha
-            mix0 = Math.round((added0 * added3 / mix3) + (base0 * base3 * (1 - added3) / mix3)); // red
-            mix1 = Math.round((added1 * added3 / mix3) + (base1 * base3 * (1 - added3) / mix3)); // green
-            mix2 = Math.round((added2 * added3 / mix3) + (base2 * base3 * (1 - added3) / mix3)); // blue
+
+            const aonm = parseFloat(added3 / mix3);
+            const bonam = parseFloat(base3 * (1 - added3) / mix3);
+
+            mix0 = parseInt(added0 * aonm + base0 * bonam); // red
+            mix1 = parseInt(added1 * aonm + base1 * bonam); // green
+            mix2 = parseInt(added2 * aonm + base2 * bonam); // blue
         }else if(added3 !== 0) {
 
             mix0 = added0;
@@ -5055,7 +5058,7 @@ class CanvasPixels extends React.Component {
         }
 
         mix3 = !alpha_addition ? mix3: mix3 / 2;
-        mix3 = Math.round(mix3 * 255);
+        mix3 = parseInt(mix3 * 255);
 
         return this._get_hex_color_from_rgba_values(mix0, mix1, mix2, mix3);
     }
@@ -5816,7 +5819,7 @@ class CanvasPixels extends React.Component {
                         _base64_original_images: _base64_original_images,
                         _json_state_history
                     });
-                }, false, 1);
+                }, false, 0);
             }
         });
     };
@@ -6762,8 +6765,7 @@ class CanvasPixels extends React.Component {
 
     _get_hex_color_from_rgba_values = (r, g, b, a) => {
 
-        const v = this._get_hex_values_from_rgba_values(r, g, b, a);
-        return "#" + v.map((ce) => ce.toString(16)).join("").toLowerCase();
+        return "#" + this._get_hex_values_from_rgba_values(r, g, b, a).map((ce) => ce.toString(16)).join("").toLowerCase();
     };
 
     _invert_hex_color = (color) => {

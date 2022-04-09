@@ -172,7 +172,7 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
         include_docs: true,
         descending: false,
         attachments: Boolean(Object.keys(attachment_array).length),
-        binary: Boolean(Object.keys(attachment_array).length)
+        binary: false
     }, (error, response) => {
 
         let settings_docs_undefined = false;
