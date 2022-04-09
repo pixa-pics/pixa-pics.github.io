@@ -112,11 +112,13 @@ const get_settings = (callback_function_info = null, attachment_ids = [], callba
                                 blob.arrayBuffer().then((array_buffer) => {
 
                                     const uint8a = new Uint8Array(array_buffer);
-                                    LZP3(uint8a, "DECOMPRESS_UINT8A", (obj) => {
+                                    import("../utils/lzp3_json").then(({LZP3}) => {
 
-                                        callback_function_attachment(null, obj);
-                                    }, pool);
+                                        LZP3(uint8a, "DECOMPRESS_UINT8A", (obj) => {
 
+                                            callback_function_attachment(null, obj);
+                                        }, pool);
+                                    });
                                 });
                             });
 
@@ -205,20 +207,23 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
                                 window._pixa_settings = {...pixa_settings};
                                 callback_function_info(null, {...pixa_settings});
 
-                                LZP3(data, "COMPRESS_OBJECT", (uint8a) => {
+                                import("../utils/lzp3_json").then(({LZP3}) => {
 
-                                    settings_docs[0]._attachments = settings_docs[0]._attachments || {};
-                                    settings_docs[0]._attachments[name_id] = {
-                                        content_type: "application/octet-stream",
-                                        data: new Blob([uint8a], {type : "application/octet-stream"})
-                                    };
-                                    attachments_to_process--;
-                                    if(attachments_to_process === 0) {
+                                    LZP3(data, "COMPRESS_OBJECT", (uint8a) => {
 
-                                        continue_push_in_db(settings_docs, pixa_settings);
-                                    }
+                                        settings_docs[0]._attachments = settings_docs[0]._attachments || {};
+                                        settings_docs[0]._attachments[name_id] = {
+                                            content_type: "application/octet-stream",
+                                            data: new Blob([uint8a], {type : "application/octet-stream"})
+                                        };
+                                        attachments_to_process--;
+                                        if(attachments_to_process === 0) {
 
-                                }, pool);
+                                            continue_push_in_db(settings_docs, pixa_settings);
+                                        }
+
+                                    }, pool);
+                                });
 
                             }else {
 
@@ -314,20 +319,23 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
                     pixa_settings.attachment_previews = pixa_settings.attachment_previews  || {};
                     pixa_settings.attachment_previews[name_id] = {id, kb, preview, timestamp};
 
-                    LZP3(data, "COMPRESS_OBJECT", (uint8a) => {
+                    import("../utils/lzp3_json").then(({LZP3}) => {
 
-                        attachments[name_id] = {
-                            content_type: "application/octet-stream",
-                            data: new Blob([uint8a], {type : "application/octet-stream"})
-                        };
-                        blobs_to_add--;
+                        LZP3(data, "COMPRESS_OBJECT", (uint8a) => {
 
-                        if(blobs_to_add === 0) {
+                            attachments[name_id] = {
+                                content_type: "application/octet-stream",
+                                data: new Blob([uint8a], {type : "application/octet-stream"})
+                            };
+                            blobs_to_add--;
 
-                            continue_push_in_db(attachments, pixa_settings);
-                        }
+                            if(blobs_to_add === 0) {
 
-                    }, pool);
+                                continue_push_in_db(attachments, pixa_settings);
+                            }
+
+                        }, pool);
+                    });
                 });
 
                 const continue_push_in_db = (attachments, pixa_settings) => {

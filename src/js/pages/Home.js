@@ -75,26 +75,24 @@ const styles = theme => ({
     homeCTAsendit: {
         color: "#fff",
         filters: "drop-shadow(0px 0px 8px lightskyblue)",
-        backgroundImage: "url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4iICJodHRwOi8vd3d3LnczLm9yZy9HcmFwaGljcy9TVkcvMS4xL0RURC9zdmcxMS5kdGQiPjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTcsN0gxMVY5SDdBMywzIDAgMCwwIDQsMTJBMywzIDAgMCwwIDcsMTVIMTFWMTdIN0E1LDUgMCAwLDEgMiwxMkE1LDUgMCAwLDEgNyw3TTE3LDdBNSw1IDAgMCwxIDIyLDEySDIwQTMsMyAwIDAsMCAxNyw5SDEzVjdIMTdNOCwxMUgxNlYxM0g4VjExTTE3LDEySDE5VjE1SDIyVjE3SDE5VjIwSDE3VjE3SDE0VjE1SDE3VjEyWiIgZmlsbD0iI2ZmZmZmZjMzIi8+PC9zdmc+Cg==), linear-gradient(32deg, #6100fd, #5dbff3, #7be2f1, #f4fdff, #32c4ff, #6d5bff, #020562)",        filter: "drop-shadow(0px 0px 3px skyblue) brightness(1)",
+        backgroundImage: "url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4iICJodHRwOi8vd3d3LnczLm9yZy9HcmFwaGljcy9TVkcvMS4xL0RURC9zdmcxMS5kdGQiPjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTcsN0gxMVY5SDdBMywzIDAgMCwwIDQsMTJBMywzIDAgMCwwIDcsMTVIMTFWMTdIN0E1LDUgMCAwLDEgMiwxMkE1LDUgMCAwLDEgNyw3TTE3LDdBNSw1IDAgMCwxIDIyLDEySDIwQTMsMyAwIDAsMCAxNyw5SDEzVjdIMTdNOCwxMUgxNlYxM0g4VjExTTE3LDEySDE5VjE1SDIyVjE3SDE5VjIwSDE3VjE3SDE0VjE1SDE3VjEyWiIgZmlsbD0iI2ZmZmZmZjMzIi8+PC9zdmc+Cg==), linear-gradient(32deg, #6100fd, #5dbff3, #7be2f1, #98ecff, #32c4ff, #6d5bff, #020562)",        filter: "drop-shadow(0px 0px 3px skyblue) brightness(1)",
         transform: "translateY(0px) scale(1) !important",
         transformOrigin: "center",
         transition: "all .25s ease-in-out 0s !important",
         fontWeight: "bold",
-        fontSize: "26px",
-        borderRadius: "64px",
+        fontSize: "21px",
+        borderRadius: "16px",
         lineHeight: "3em",
         position: "fixed",
         width: 128,
-        height: 128,
         zIndex: 7,
         bottom: 32,
         right: 32,
         [theme.breakpoints.down("sm")]: {
-            fontSize: "14px",
-            borderRadius: "32px",
+            fontSize: "12px",
+            borderRadius: "8px",
             lineHeight: "1.5em",
             width: 64,
-            height: 64,
             bottom: 24,
             right: 24,
         },
@@ -167,6 +165,7 @@ const styles = theme => ({
         whiteSpace: "break-spaces",
         fontSize: 48,
         fontWeight: "normal",
+        color: "#181063",
         [theme.breakpoints.down("sm")]: {
             fontSize: 32,
             lineHeight: "normal",
@@ -304,14 +303,12 @@ class Home extends React.Component {
                 </div>
                 <div className={classes.headerContainer} style={{color: THEME_DAY ? "#000000dd": "#ffffffdd"}}>
                     <h1 className={classes.title}>
-                        <Fade in={true} timeout={700}><span style={{fontSize: "1.314em"}}><span style={{color: "white", fontWeight: "bold"}}>PIXA.PICS : </span>Load a matrix of pixels.<br />Then, draw, and vectorize art.</span></Fade><br />
+                        <Fade in={true} timeout={700}><span style={{fontSize: "1.314em"}}><span style={{color: "white", fontWeight: "bold"}}>PIXA.PICS : </span>Load any matrix of pixels.<br />Then, draw, and vectorize art.</span></Fade><br />
                         <Fade in={true} timeout={850}><span className={classes.titleSubTitle} style={{fontSize: ".618em"}}>Make potential (un)limited everywhere <img src={ANGELEMOJI} className="emoji"/>.</span></Fade>
                     </h1>
                     <Fade in={true} timeout={1200}>
                             <h2 className={classes.subtitle}>
                                 <span  style={{color: THEME_DAY ? "#0d1fac": "#ffd910", fontWeight: "bold"}}>From your images,</span> is there many harmful details lacking a <b>great simplicity</b>? <br />
-                                <b>Guess what?</b> The lull of difficult <span  style={{color: THEME_DAY ? "#0d1fac": "#ffd910", fontWeight: "bold"}}>[NFTs <img className={"emoji"} style={{width: "2em"}} src={MAGICKEMOJI}/>, Paintings <img className={"emoji"} style={{width: "2em"}} src={DRAWEMOJI}/>, + Pixel Art<img style={{width: "3em"}} className={"emoji pulse2"} src={HEARTHEMOJI}/>] is not difficult.</span> <br />
-                                – Remove colors and upscale it to vectors passing through a clarity of editing,<br/> since it is in line with powerful and advanced tools.
                             </h2>
                     </Fade>
                     <Fade in={true} timeout={1500}>

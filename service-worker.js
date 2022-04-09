@@ -1,6 +1,6 @@
-var REQUIRED_CACHE = "unless-update-cache-v60-required";
-var USEFUL_CACHE = "unless-update-cache-v60-useful";
-var STATIC_CACHE = "unless-update-cache-v60-static";
+var REQUIRED_CACHE = "unless-update-cache-v61-required";
+var USEFUL_CACHE = "unless-update-cache-v61-useful";
+var STATIC_CACHE = "unless-update-cache-v61-static";
 var CHILD_CHUNK_REGEX = /child\-chunk\.(main\~[a-z0-9]+|[0-9]+)\.min.js/i;
 
 // On install, cache some resource.
@@ -36,6 +36,8 @@ self.addEventListener("install", function(evt) {
                 "/child-chunk.6.min.js",
                 "/child-chunk.7.min.js",
                 "/child-chunk.8.min.js",
+                "/child-chunk.9.min.js",
+                "/child-chunk.10.min.js",
             ]);
         }),
         caches.open(STATIC_CACHE).then(function (cache) {

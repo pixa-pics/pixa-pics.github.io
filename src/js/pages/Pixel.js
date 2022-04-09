@@ -54,6 +54,8 @@ import SelectRemoveDifferenceIcon from "../icons/SelectRemoveDifference";
 import ShufflingSpanText from "../components/ShufflingSpanText";
 import ImageFileDialog from "../components/ImageFileDialog";
 
+import {base64png_to_xbrz_svg} from "../utils/png-xbrz-svg";
+
 import {postJSON} from "../utils/load-json";
 
 import HexGrid from "../icons/HexGrid";
@@ -724,36 +726,32 @@ class Pixel extends React.Component {
                     a.href = "" + png_base64_in;
                     a.click();
 
-                    import("../utils/png-xbrz-svg").then(({base64png_to_xbrz_svg}) => {
+                    base64png_to_xbrz_svg(png_base64_in, (image_base64) => {
 
-                        base64png_to_xbrz_svg(png_base64_in, (image_base64) => {
+                        let a = document.createElement("a"); //Create <a>
+                        a.download = `Painting_IMG_6x_${using.toUpperCase()}_N${Date.now()}_PIXAPICS.png`; //File name Here
+                        a.href = "" + image_base64;
+                        a.click();
 
-                            let a = document.createElement("a"); //Create <a>
-                            a.download = `Painting_IMG_6x_${using.toUpperCase()}_N${Date.now()}_PIXAPICS.png`; //File name Here
-                            a.href = "" + image_base64;
-                            a.click();
+                    }, (svg_base64) => {
 
-                        }, (svg_base64) => {
+                        let a = document.createElement("a"); //Create <a>
+                        a.download = `Painting_VECT_6x_${using.toUpperCase()}_N${Date.now()}_PIXAPICS.svg`; //File name Here
+                        a.href = "" + svg_base64;
+                        a.click();
 
-                            let a = document.createElement("a"); //Create <a>
-                            a.download = `Painting_VECT_6x_${using.toUpperCase()}_N${Date.now()}_PIXAPICS.svg`; //File name Here
-                            a.href = "" + svg_base64;
-                            a.click();
+                        this.setState({_loading: false, _loading_process: ""}, () => {
 
-                            this.setState({_loading: false, _loading_process: ""}, () => {
+                            actions.trigger_sfx("hero_decorative-celebration-02");
+                            setTimeout(() => {
+                                actions.trigger_snackbar("Fantastic! Share? Yes or No", 7500);
+                                actions.jamy_update("happy");
 
-                                actions.trigger_sfx("hero_decorative-celebration-02");
-                                setTimeout(() => {
-                                    actions.trigger_snackbar("Fantastic! Share? Yes or No", 7500);
-                                    actions.jamy_update("happy");
+                            }, 2000);
 
-                                }, 2000);
+                        });
 
-                            });
-
-                        }, palette, using);
-
-                    });
+                    }, palette, using);
 
                 }, true, 0);
 
