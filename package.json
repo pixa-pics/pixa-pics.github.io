@@ -69,7 +69,6 @@
     "files": [
       "/index.html",
       "/404.html",
-      "/client.min.js",
       "/src/fonts/Jura-Medium.woff2",
       "/manifest.json",
       "/father-chunk.norris.min.js",
