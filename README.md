@@ -27,6 +27,10 @@ You can easily multiply that it doesn't cost anyone much to share a simple detai
 
 # Tools
 
+All the screenshot has been captured using a "Samsung Galaxy J3 (2017)" having 2gb of ram.
+Thus, the project aims to make some advance for the domain of artistic intellect and in it.
+With the power that it should be accessible for all, a smartphone for 100$ fits for creating crazy things!
+
 ![Any of y'all got some art](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/images/screenshots/1.jpeg)
 ![Any of y'all got some art](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/images/screenshots/2.jpeg)
 ![Any of y'all got some art](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/images/screenshots/3.jpeg)
