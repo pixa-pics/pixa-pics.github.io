@@ -218,6 +218,7 @@ const styles = theme => ({
         zIndex: 2000,
         color: "#fff",
         contain: "layout paint size style",
+        userSelect: "none",
     },
     backdropTextContent: {
         display: "block",
@@ -848,7 +849,7 @@ class Pixel extends React.Component {
             const max_size = is_mobile_or_tablet ? Math.sqrt(1280 * 720): Math.sqrt(1920 * 1280);
             const max_color = is_mobile_or_tablet ? 1024: 2048;
 
-            let ratio_l_l2 = is_mobile_or_tablet ? 3/3: 5/3;
+            let ratio_l_l2 = is_mobile_or_tablet ? 7/3: 9/3;
             let min_size = is_mobile_or_tablet ? 0: 0;
             let min_color = is_mobile_or_tablet ? 0: 0;
 
@@ -990,7 +991,7 @@ class Pixel extends React.Component {
 
         this.setState({_loading: true, _loading_process: process});
 
-        if(process === "image_load"){
+        if(process === "image_preload"){
 
             actions.trigger_sfx("FullHorizonThrow");
             this._handle_edit_drawer_close();
@@ -1834,29 +1835,6 @@ class Pixel extends React.Component {
                     </div>
                 </Fade>
                 {_less_than_1280w && drawer_mobile}
-                <Backdrop className={classes.backdrop} open={_loading} keepMounted={false}>
-                    <div className={classes.backdropTextContent} style={{fontFamily: `"Jura"`}}>
-                        {_loading && <h1><ShufflingSpanText text={"Laboratory processing..."} animation_delay_ms={0} animation_duration_ms={250}/></h1>}
-                        {_loading && _loading_process === "image_ai" && <h4><ShufflingSpanText text={"AI processing your image"} animation_delay_ms={300} animation_duration_ms={500}/></h4>}
-                        {_loading && _loading_process === "image_ai" && <div><img src="/src/images/AI.svg" style={{width: "min(75vw, 75vh)"}}/></div>}
-                        {_loading && _loading_process === "image_ai" && <h5><ShufflingSpanText text={"It can take a while, please wait ~5sec."} animation_delay_ms={5000} animation_duration_ms={500}/></h5>}
-                        {_loading && _loading_process === "image_preload" && <h4><ShufflingSpanText text={"Preparing laboratory"} animation_delay_ms={300} animation_duration_ms={500}/></h4>}
-                        {_loading && _loading_process === "image_preload" && <div><img src="/src/images/laboratory.svg" style={{width: "min(75vw, 75vh)"}}/></div>}
-                        {_loading && _loading_process === "image_preload" && <h5><ShufflingSpanText text={"It can take a while, please wait ~5sec."} animation_delay_ms={5000} animation_duration_ms={500}/></h5>}
-                        {_loading && _loading_process === "image_load" && <h4><ShufflingSpanText text={"Abducting your image"} animation_delay_ms={300} animation_duration_ms={500}/></h4>}
-                        {_loading && _loading_process === "image_load" && <div><img src="/src/images/abduction.svg" style={{width: "min(75vw, 75vh)"}}/></div>}
-                        {_loading && _loading_process === "image_load" && <h5><ShufflingSpanText text={"It can take a while, please wait ~7sec."} animation_delay_ms={5000} animation_duration_ms={500}/></h5>}
-                        {_loading && _loading_process === "image_render" && <div><img src="/src/images/CPU.svg" style={{width: "min(75vw, 75vh)"}}/></div>}
-                        {_loading && _loading_process === "image_render" && <h4><ShufflingSpanText text={"Atomic rendering in process ~10-20sec"} animation_delay_ms={300} animation_duration_ms={500}/></h4>}
-                        {_loading && _loading_process === "image_render" && <h5><ShufflingSpanText text={"It can take a while, please wait ~14sec."} animation_delay_ms={5000} animation_duration_ms={500}/></h5>}
-                        {_loading && _loading_process === "less_color" && <h4><ShufflingSpanText text={"Coupling few color DNA"} animation_delay_ms={300} animation_duration_ms={500}/></h4>}
-                        {_loading && _loading_process === "less_color" && <div><img src="/src/images/DNA.svg" style={{width: "min(75vw, 75vh)"}}/></div>}
-                        {_loading && _loading_process === "less_color" && <h5><ShufflingSpanText text={"It can take a while, please wait ~5sec."} animation_delay_ms={5000} animation_duration_ms={500}/></h5>}
-                        {_loading && _loading_process === "less_color_auto" && <h4><ShufflingSpanText text={"Coupling the DNA of many color"} animation_delay_ms={500} animation_duration_ms={500}/></h4>}
-                        {_loading && _loading_process === "less_color_auto" && <div><img src="/src/images/DNA.svg" style={{width: "min(75vw, 75vh)"}}/></div>}
-                        {_loading && _loading_process === "less_color_auto" && <h5><ShufflingSpanText text={"It can take a while, please wait ~7sec."} animation_delay_ms={5000} animation_duration_ms={500}/></h5>}
-                    </div>
-                </Backdrop>
 
                 <ImageFileDialog
                     open={_library_dialog_open}
@@ -1880,6 +1858,30 @@ class Pixel extends React.Component {
                     ref={this._set_ripple_ref}
                     center={false}
                     style={{color: _ripple_color, opacity: _ripple_opacity, position: "fixed", width: "100vw", height: "100vh", zIndex: 2000}}/>
+
+                <Backdrop className={classes.backdrop} open={_loading} keepMounted={false}>
+                    <div className={classes.backdropTextContent} style={{fontFamily: `"Jura"`}}>
+                        {_loading && <h1><ShufflingSpanText text={"Laboratory processing..."} animation_delay_ms={0} animation_duration_ms={250}/></h1>}
+                        {_loading && _loading_process === "image_ai" && <h4><ShufflingSpanText text={"AI processing your image"} animation_delay_ms={300} animation_duration_ms={500}/></h4>}
+                        {_loading && _loading_process === "image_ai" && <div><img src="/src/images/AI.svg" style={{width: "min(75vw, 75vh)"}}/></div>}
+                        {_loading && _loading_process === "image_ai" && <h5><ShufflingSpanText text={"It can take a while, please wait ~5sec."} animation_delay_ms={5000} animation_duration_ms={500}/></h5>}
+                        {_loading && _loading_process === "image_preload" && <h4><ShufflingSpanText text={"Preparing laboratory"} animation_delay_ms={300} animation_duration_ms={500}/></h4>}
+                        {_loading && _loading_process === "image_preload" && <div><img src="/src/images/laboratory.svg" style={{width: "min(75vw, 75vh)"}}/></div>}
+                        {_loading && _loading_process === "image_preload" && <h5><ShufflingSpanText text={"It can take a while, please wait ~5sec."} animation_delay_ms={5000} animation_duration_ms={500}/></h5>}
+                        {_loading && _loading_process === "image_load" && <h4><ShufflingSpanText text={"Abducting your image"} animation_delay_ms={300} animation_duration_ms={500}/></h4>}
+                        {_loading && _loading_process === "image_load" && <div><img src="/src/images/abduction.svg" style={{width: "min(75vw, 75vh)"}}/></div>}
+                        {_loading && _loading_process === "image_load" && <h5><ShufflingSpanText text={"It can take a while, please wait ~7sec."} animation_delay_ms={5000} animation_duration_ms={500}/></h5>}
+                        {_loading && _loading_process === "image_render" && <div><img src="/src/images/CPU.svg" style={{width: "min(75vw, 75vh)"}}/></div>}
+                        {_loading && _loading_process === "image_render" && <h4><ShufflingSpanText text={"Atomic rendering in process ~10-20sec"} animation_delay_ms={300} animation_duration_ms={500}/></h4>}
+                        {_loading && _loading_process === "image_render" && <h5><ShufflingSpanText text={"It can take a while, please wait ~14sec."} animation_delay_ms={5000} animation_duration_ms={500}/></h5>}
+                        {_loading && _loading_process === "less_color" && <h4><ShufflingSpanText text={"Coupling few color DNA"} animation_delay_ms={300} animation_duration_ms={500}/></h4>}
+                        {_loading && _loading_process === "less_color" && <div><img src="/src/images/DNA.svg" style={{width: "min(75vw, 75vh)"}}/></div>}
+                        {_loading && _loading_process === "less_color" && <h5><ShufflingSpanText text={"It can take a while, please wait ~5sec."} animation_delay_ms={5000} animation_duration_ms={500}/></h5>}
+                        {_loading && _loading_process === "less_color_auto" && <h4><ShufflingSpanText text={"Coupling the DNA of many color"} animation_delay_ms={500} animation_duration_ms={500}/></h4>}
+                        {_loading && _loading_process === "less_color_auto" && <div><img src="/src/images/DNA.svg" style={{width: "min(75vw, 75vh)"}}/></div>}
+                        {_loading && _loading_process === "less_color_auto" && <h5><ShufflingSpanText text={"It can take a while, please wait ~7sec."} animation_delay_ms={5000} animation_duration_ms={500}/></h5>}
+                    </div>
+                </Backdrop>
 
                 <ManualDialogWarning
                     onClose={this._handle_manual_warning_dialog_close}
