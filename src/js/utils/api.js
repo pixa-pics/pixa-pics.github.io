@@ -69,6 +69,8 @@ const get_settings = (callback_function_info = null, attachment_ids = [], callba
     window.settings_db.allDocs({
         include_docs: true,
         descending: false,
+        attachments: Boolean(attachment_ids.length > 0),
+        binary: Boolean(attachment_ids.length > 0)
     }, (error, response) => {
 
         let settings_docs_undefined = false;
@@ -174,7 +176,7 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
         include_docs: true,
         descending: false,
         attachments: Boolean(Object.keys(attachment_array).length),
-        binary: false
+        binary: Boolean(Object.keys(attachment_array).length)
     }, (error, response) => {
 
         let settings_docs_undefined = false;

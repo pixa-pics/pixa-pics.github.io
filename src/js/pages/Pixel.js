@@ -708,7 +708,7 @@ class Pixel extends React.Component {
         }, false, 0);
     };
 
-    _download_svg = (using = "xbrz") => {
+    _download_svg = (using = "xbrz", optimize_render_size = false) => {
 
         const { _canvas } = this.state;
         if(_canvas === null) {return}
@@ -752,7 +752,7 @@ class Pixel extends React.Component {
 
                         });
 
-                    }, palette, using);
+                    }, palette, using, optimize_render_size);
 
                 }, true, 0);
 

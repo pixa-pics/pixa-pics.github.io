@@ -357,11 +357,11 @@ class PixelToolboxSwipeableViews extends React.Component {
         }
     };
 
-    _download_svg = (using = "xbrz") => {
+    _download_svg = (using = "xbrz", optimize_render_size = false) => {
 
         if(this.props.on_download_svg) {
 
-            this.props.on_download_svg(using);
+            this.props.on_download_svg(using, optimize_render_size);
         }
     };
 
@@ -687,29 +687,31 @@ class PixelToolboxSwipeableViews extends React.Component {
                 },
                 {
                     icon: <DownloadIcon/>,
-                    text: "Download MATRIX",
+                    text: "Download (raster / matrix)",
                     tools: [
                         {
-                            icon: <FileDownloadIcon/>, text: "Download (1x size)", sub: "[CTRL + Q]", on_click: () => {
+                            icon: <FileDownloadIcon/>, text: "Render (1x size)", sub: "[CTRL + Q]", on_click: () => {
                                 this._download_png(1)
                             }
                         },
                         {
                             icon: <FileDownloadIcon/>,
-                            text: "Download (16x size)",
+                            text: "Render (16x size)",
                             sub: "Upscale 16x",
                             on_click: () => {
                                 this._download_png(16)
                             }
                         },
                         {
-                            icon: <FileDownloadIcon/>, text: "Download (32x size)", sub: "[CTRL + S]", on_click: () => {
+                            icon: <FileDownloadIcon/>,
+                            text: "Render (32x size)",
+                            sub: "[CTRL + S]", on_click: () => {
                                 this._download_png(32)
                             }
                         },
                         {
                             icon: <FileDownloadIcon/>,
-                            text: "Download (48x size)",
+                            text: "Render (48x size)",
                             sub: "Upscale 48x",
                             on_click: () => {
                                 this._download_png(32)
@@ -719,22 +721,38 @@ class PixelToolboxSwipeableViews extends React.Component {
                 },
                 {
                     icon: <DownloadIcon/>,
-                    text: "Download VECTOR",
+                    text: "Download (painting / vector)",
                     tools: [
                         {
                             icon: <FileDownloadIcon/>,
-                            text: "Download OMNI :|",
+                            text: "Fast Render OMNI :|",
                             sub: "Upscale by 6x using Omniscale",
                             on_click: () => {
-                                this._download_svg("omniscale")
+                                this._download_svg("omniscale", false)
                             }
                         },
                         {
                             icon: <FileDownloadIcon/>,
-                            text: "Download xBRZ :]",
+                            text: "Opt. Render OMNI :|",
+                            sub: "Upscale by 6x using Omniscale +compress",
+                            on_click: () => {
+                                this._download_svg("omniscale", true)
+                            }
+                        },
+                        {
+                            icon: <FileDownloadIcon/>,
+                            text: "Fast Render xBRZ :]",
                             sub: "Upscale by 6x using xBRZ",
                             on_click: () => {
-                                this._download_svg("xbrz")
+                                this._download_svg("xbrz", false)
+                            }
+                        },
+                        {
+                            icon: <FileDownloadIcon/>,
+                            text: "Opt. Render xBRZ :]",
+                            sub: "Upscale by 6x using xBRZ +compress",
+                            on_click: () => {
+                                this._download_svg("xbrz", true)
                             }
                         },
                     ]

@@ -23,6 +23,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
 
+"use strict";
 window.get_base64_png_data_url_process_function_string = `return function(
             pxl_width, 
             pxl_height,
