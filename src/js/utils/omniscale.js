@@ -1234,9 +1234,6 @@ const omniscale = (image_data, scale, callback_function, pool = null) => {
         }).then((result) => {
 
             callback_function(result);
-        }).then(() => {
-
-            pool.terminate();
         }).timeout(360 * 1000);
     }else {
 

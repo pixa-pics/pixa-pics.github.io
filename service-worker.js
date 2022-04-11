@@ -1,14 +1,14 @@
-var REQUIRED_CACHE = "unless-update-cache-v63-required";
-var USEFUL_CACHE = "unless-update-cache-v63-useful";
-var STATIC_CACHE = "unless-update-cache-v63-static";
+var REQUIRED_CACHE = "unless-update-cache-v64-required";
+var USEFUL_CACHE = "unless-update-cache-v64-useful";
+var STATIC_CACHE = "unless-update-cache-v64-static";
 var CHILD_CHUNK_REGEX = /child\-chunk\.(main\~[a-z0-9]+|[0-9]+)\.min.js/i;
 
 // On install, cache some resource.
 self.addEventListener("install", function(evt) {
 
-    if(navigator.onLine) {
+    if(!navigator.onLine) {
 
-        return self.skipWaiting();
+        return true;
     }
 
     var not_urgent = Promise.allSettled([

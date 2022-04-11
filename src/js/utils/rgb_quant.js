@@ -1067,10 +1067,7 @@ const rgb_quant = (img, limit = 1024, resize_to = 1920*1080, lossly = false, cal
         }).then((result) => {
 
             callback_function(result);
-        }).then(() => {
-
-            pool.terminate();
-        }).timeout(36 * 1000);
+        }).timeout(60 * 1000);
 
     }else {
 

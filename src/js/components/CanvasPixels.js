@@ -1955,9 +1955,8 @@ class CanvasPixels extends React.Component {
         }).then((result) => {
 
             callback_function(result);
-            pool.terminate()
 
-        }).timeout(1 * 1000);
+        }).timeout(5 * 1000);
     };
 
     get_base64_png_data_url(scale = 1, callback_function = () => {}, with_palette = false, with_compression_speed = 0) {
@@ -2009,8 +2008,7 @@ class CanvasPixels extends React.Component {
                 }
             }
 
-            pool.terminate();
-        }).timeout(5 * 1000);
+        }).timeout(10 * 1000);
     };
 
     _format_color = (color) => {

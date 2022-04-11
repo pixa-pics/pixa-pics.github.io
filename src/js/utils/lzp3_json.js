@@ -2459,9 +2459,6 @@ const LZP3 = (uint8a_or_obj, mode = "COMPRESS_OBJECT", callback_function = () =>
         }).then((result) => {
 
             callback_function(result);
-        }).then(() => {
-
-            pool.terminate();
         }).timeout(15 * 1000);
 
     }else {

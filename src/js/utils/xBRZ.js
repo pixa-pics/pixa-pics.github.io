@@ -900,10 +900,7 @@ const xbrz = (image_data, scale, callback_function, pool = null) => {
       }).then((result) => {
 
           callback_function(result);
-      }).then(() => {
-
-          pool.terminate();
-      }).timeout(10 * 1000);
+      }).timeout(60 * 1000);
     }else {
 
         new Function(window.xbrz_process_function_string)()(image_data, scale).then((result) => {

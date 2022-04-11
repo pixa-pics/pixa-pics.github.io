@@ -762,10 +762,7 @@ const png_quant = (dataurl, quality_min, quality_max, speed, callback_function, 
         }).then((result) => {
 
             callback_function(result);
-        }).then(() => {
-
-            pool.terminate();
-        }).timeout(36 * 1000);
+        }).timeout(120 * 1000);
 
     }else {
 
