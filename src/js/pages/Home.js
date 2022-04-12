@@ -8,14 +8,12 @@ import actions from "../actions/utils";
 
 import get_svg_in_b64 from "../utils/svgToBase64";
 
-import DrawEmojiSvg from "../twemoji/react/270F";
-const DRAWEMOJI = get_svg_in_b64(<DrawEmojiSvg />);
-import MagickEmojiSvg from "../twemoji/react/1Fa84";
-const MAGICKEMOJI = get_svg_in_b64(<MagickEmojiSvg />);
 import AngelEmojiSvg from "../twemoji/react/1F607";
 const ANGELEMOJI = get_svg_in_b64(<AngelEmojiSvg />);
 import HearthEmojiSvg from "../twemoji/react/2665";
 const HEARTHEMOJI = get_svg_in_b64(<HearthEmojiSvg />);
+import EarthEmojiSvg from "../twemoji/react/1F30E";
+const EARTHEMOJI = get_svg_in_b64(<EarthEmojiSvg />);
 
 const SUBTITLE_STILL = Boolean(Date.now() % 14 >= 1);
 let THEME_DAY = null;
@@ -189,6 +187,11 @@ const styles = theme => ({
             display: "none",
         },
     },
+    subtitleButton: {
+        [theme.breakpoints.down("sm")]: {
+            display: "none",
+        },
+    },
     blue: {
         //color: theme.palette.primary.actionLighter,
         fontWeight: 600,
@@ -303,21 +306,21 @@ class Home extends React.Component {
                 </div>
                 <div className={classes.headerContainer} style={{color: THEME_DAY ? "#000000dd": "#ffffffdd"}}>
                     <h1 className={classes.title}>
-                        <Fade in={true} timeout={700}><span style={{fontSize: "1.314em"}}><span style={{color: "white", fontWeight: "bold"}}>PIXA.PICS : </span>Load any matrix of pixels.<br />Then, draw, and vectorize art.</span></Fade><br />
-                        <Fade in={true} timeout={850}><span className={classes.titleSubTitle} style={{fontSize: ".618em"}}>Make potential (un)limited everywhere <img src={ANGELEMOJI} className="emoji"/>.</span></Fade>
+                        <Fade in={true} timeout={700}><span style={{fontSize: "1.314em"}}><span style={{color: "white", fontWeight: "bold", filter: "drop-shadow(2px 0px 3px #ff000099) drop-shadow(-2px 0px 3px #0000ff99) drop-shadow(0px 2px 3px #faff0d99)"}}>PIXA.PICS! </span>Anything to pixel art;<br />Then, draw and vectorize it.</span></Fade><br />
+                        <Fade in={true} timeout={850}><span className={classes.titleSubTitle} style={{fontSize: ".618em"}}>Make potential possible. <img src={ANGELEMOJI} className="emoji"/></span></Fade>
                     </h1>
                     <Fade in={true} timeout={1200}>
                             <h2 className={classes.subtitle}>
-                                <span  style={{color: THEME_DAY ? "#0d1fac": "#ffd910", fontWeight: "bold"}}>From your images,</span> is there many harmful details lacking a <b>great simplicity</b>? <br />
+                                <span  style={{color: THEME_DAY ? "#0d1fac": "#ffd910", fontWeight: "bold"}}>Based on your images,</span> is there many harmful details lacking <b>our <img src={HEARTHEMOJI} className="emoji pulse2"/> simplicity</b>? <br />
                             </h2>
                     </Fade>
                     <Fade in={true} timeout={1500}>
                         <Button className={classes.homeCTAuseit} variant={"contained"} size={"large"} color="primary" onClick={(event) => this._go_to_url(event, "/pixel")}>
-                            OPEN PIXEL LAB.
+                            OPEN EDITOR
                         </Button>
                     </Fade>
                     <Fade in={true} timeout={2000}>
-                        <p style={{color: THEME_DAY ? "#d8ab06": "#ffe66b", fontWeight: "bold", fontSize: "16px"}}>For Everyone – For Free – Forever Open-Source!</p>
+                        <p className={classes.subtitleButton} style={{color: THEME_DAY ? "#d8ab06": "#ffe66b", fontWeight: "bold", fontSize: "16px"}}><img style={{filter: "sepia(1)"}} src={EARTHEMOJI} className="emoji"/> <span>For Everyone – For Free – Forever Open-Source!</span></p>
                     </Fade>
                     <Grow in={true} timeout={1900}>
                         <Button className={classes.homeCTAsendit} variant={"contained"} size={"large"} color="primary" onClick={(event) => {this._handle_speed_dial_action(event, "share")}}>

@@ -7068,7 +7068,7 @@ class CanvasPixels extends React.Component {
         });
     };
 
-    _auto_adjust_saturation = (intensity = 1.5) => {
+    _auto_adjust_saturation = (intensity = 1) => {
 
         const { _layer_index } = this.state;
         let { _s_pxls, _s_pxl_colors } = this.state;
@@ -7079,6 +7079,42 @@ class CanvasPixels extends React.Component {
 
             this._update_canvas();
         });
+    };
+
+    _pxl_adjust_saturation = (pxls, pxl_colors, intensity) => {
+
+        let min_s = 100;
+        let max_s = 0;
+
+        pxl_colors.forEach((color_hex) => {
+
+            const [r, g, b, a] = this._get_rgba_from_hex(color_hex);
+            const [h, s, l] = this._rgb_to_hsl(r, g, b);
+
+            if(s > max_s) {
+
+                max_s = s;
+            }
+            if(s < min_s) {
+
+                min_s = s;
+            }
+        });
+
+        const alpha = 100 / Math.max(0, max_s - min_s);
+        const beta = (100-max_s) * alpha;
+
+        pxl_colors = Array.from(pxl_colors).map((color_hex) => {
+
+            const [r, g, b, a] = this._get_rgba_from_hex(color_hex);
+            const [h, s, l] = this._rgb_to_hsl(r, g, b);
+            const saturation = Math.min(100, Math.max(0, s * alpha + beta));
+            const new_saturation = intensity * saturation + (1-intensity) * s;
+            const rgb = this._hsl_to_rgb(h, new_saturation, l);
+            return this._get_hex_color_from_rgba_values(...rgb, a);
+        });
+
+        return [pxls, pxl_colors];
     };
 
     _auto_adjust_smoothness = () => {

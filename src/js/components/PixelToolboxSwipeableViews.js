@@ -1221,6 +1221,14 @@ class PixelToolboxSwipeableViews extends React.Component {
                             }
                         },
                         {
+                            icon: <ContrastCircleIcon/>,
+                            text: "To auto saturation",
+                            sub: "Effect strength have an impact",
+                            on_click: () => {
+                                canvas.auto_adjust_saturation(slider_value)
+                            }
+                        },
+                        {
                             icon: <ImageVignetteIcon/>,
                             text: "To vignette",
                             sub: "Current color and effect strength have an impact",

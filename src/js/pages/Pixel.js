@@ -1243,6 +1243,12 @@ class Pixel extends React.Component {
         _canvas.auto_adjust_contrast(1/3);
     };
 
+    _to_auto_medium_more_saturation = () => {
+
+        const { _canvas } = this.state;
+        _canvas.auto_adjust_saturation(1/3);
+    };
+
     _less_colors_stepped = (increase = 1) => {
 
         const { _canvas } = this.state;
@@ -1782,6 +1788,12 @@ class Pixel extends React.Component {
                             <ContrastCircleIcon />
                         </ListItemIcon>
                         <ListItemText primary="Increase contrast" />
+                    </ListItem>
+                    <ListItem button divider onClick={(event) => this._to_auto_medium_more_saturation()}>
+                        <ListItemIcon>
+                            <ContrastCircleIcon />
+                        </ListItemIcon>
+                        <ListItemText primary="Increase saturation" />
                     </ListItem>
                     <ListItem button divider onClick={(event) => this._handle_edit_drawer_open(null,6)}>
                         <ListItemIcon>
