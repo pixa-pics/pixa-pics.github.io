@@ -7,6 +7,7 @@
 */
 window.rgb_quant_process_function_string = `return async function(img, limit, resize_to, lossly) {
     
+        "use strict";
         function RgbQuant(opts) {
             opts = opts || {};
 

@@ -25,6 +25,7 @@ SOFTWARE.
 
 window.xbrz_process_function_string = `return async function(image_data, scale) {
 
+    "use strict";
     const redMask = 0xff0000
     const greenMask = 0x00ff00
     const blueMask = 0x0000ff

@@ -26,6 +26,7 @@ SOFTWARE.
 // Lior Halphon's Omniscale (Modified: Uses Maxim Stepin's Color comparison routine)
 window.omniscale_process_function_string = `return async function(image_data, scale) {
 
+        "use strict";
         // static class methods for common filter operations
         class Common {
     

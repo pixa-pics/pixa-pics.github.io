@@ -345,6 +345,7 @@ Public License instead of this License.
 
 window.lzp3_json_process_function_string = `return async function(uint8a_or_obj, mode) {
         
+        "use strict";
         var RangeCoder          //no dependencies
             ,Stream              //no dependencies
             ,BitStream           //depands on [Stream]

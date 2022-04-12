@@ -24,6 +24,8 @@ SOFTWARE.
  */
 
 "use strict";
+import {stringify} from "@ungap/structured-clone/cjs/json";
+
 window.get_base64_png_data_url_process_function_string = `return function(
             pxl_width, 
             pxl_height,
@@ -34,6 +36,7 @@ window.get_base64_png_data_url_process_function_string = `return function(
             with_palette
         ) {
         
+            "use strict";
             function this_rgb_to_hsl(r, g, b) {
 
                 r /= 255, g /= 255, b /= 255;
@@ -53,7 +56,7 @@ window.get_base64_png_data_url_process_function_string = `return function(
                     h /= 6;
                 }
 
-                return new Array(Math.round(h * 360), Math.round(s * 100), Math.round(l * 100));
+                return new Array(parseInt(h * 360), parseInt(s * 100), parseInt(l * 100));
             }
 
             function this_hsl_to_rgb(h, s, l) {
@@ -81,7 +84,7 @@ window.get_base64_png_data_url_process_function_string = `return function(
                     b = hue_to_rgb(p, q, h - 1 / 3);
                 }
 
-                return new Array(r * 255, g * 255, b * 255);
+                return Uint8ClampedArray.of(parseInt(r * 255), parseInt(g * 255), parseInt(b * 255));
             }
 
             function this_get_hex_values_from_rgba_values(r, g, b, a) {
@@ -102,14 +105,12 @@ window.get_base64_png_data_url_process_function_string = `return function(
 
             function this_get_rgba_from_hex(color) {
 
-                color = color || "#00000000";
-
-                var r = parseInt(color.substring(1, 3), 16);
-                var g = parseInt(color.substring(3, 5), 16);
-                var b = parseInt(color.substring(5, 7), 16);
-                var a = parseInt(color.substring(7, 9), 16);
-
-                return Uint8ClampedArray.of(r, g, b, a);;
+                return Uint8ClampedArray.of(
+                    parseInt(color.slice(1, 3), 16),
+                    parseInt(color.slice(3, 5), 16),
+                    parseInt(color.slice(5, 7), 16),
+                    parseInt(color.slice(7, 9), 16),
+                );
             }
 
             function this_reduce_color(rgba_component, color_gain ) {
@@ -120,16 +121,16 @@ window.get_base64_png_data_url_process_function_string = `return function(
                 }else {
 
                     rgba_component++;
-                    var comp_by_gain = Math.round(rgba_component * color_gain) - 1;
+                    var comp_by_gain = parseInt(rgba_component * color_gain) - 1;
                     comp_by_gain = comp_by_gain < 0 ? 0: comp_by_gain;
 
-                    return Math.round(comp_by_gain / color_gain);
+                    return parseInt(comp_by_gain / color_gain);
                 }
             }
 
             function this_get_hex_value_from_rgb_value(value) {
 
-                return Math.round(value).toString(16).padStart(2, "0");
+                return parseInt(value).toString(16).padStart(2, "0");
             }
 
             function this_format_color(color) {
@@ -156,7 +157,7 @@ window.get_base64_png_data_url_process_function_string = `return function(
                     return color_a === color_b;
                 }else {
 
-                    var threshold_256 = Math.round(threshold * 255);
+                    var threshold_256 = parseInt(threshold * 255);
 
                     color_a = this_format_color(color_a);
                     color_b = this_format_color(color_b);
@@ -183,7 +184,6 @@ window.get_base64_png_data_url_process_function_string = `return function(
 
             function this_blend_colors (color_a, color_b, amount = 1, should_return_transparent = false, blend_alpha = true) {
 
-                amount = Math.min(Math.max(amount, 0), 1);
                 color_a = this_format_color(color_a);
                 // If we blend the first color with the second with 0 "force", return transparent
                 if(amount === 0 && color_b !== "hover" && should_return_transparent) {
@@ -208,28 +208,42 @@ window.get_base64_png_data_url_process_function_string = `return function(
 
                 // Extract RGBA from both colors
                 var base = this_get_rgba_from_hex(color_a);
-                base[3] /= 255;
-
                 var added = this_get_rgba_from_hex(color_b);
-                added[3] /= 255;
-                added[3] *= amount;
-
-                var mix = [];
-                if (base[3] !== 0 && added[3] !== 0) {
-
-                    mix[3] = 1 - (1 - added[3]) * (1 - base[3]); // alpha
-                    mix[0] = Math.round((added[0] * added[3] / mix[3]) + (base[0] * base[3] * (1 - added[3]) / mix[3])); // red
-                    mix[1] = Math.round((added[1] * added[3] / mix[3]) + (base[1] * base[3] * (1 - added[3]) / mix[3])); // green
-                    mix[2] = Math.round((added[2] * added[3] / mix[3]) + (base[2] * base[3] * (1 - added[3]) / mix[3])); // blue
-                }else if(added[3] !== 0) {
-
-                    mix = added;
+        
+                var ba3 = parseFloat(base[3] / 255);
+                var ad3 = parseFloat((added[3] / 255) * amount);
+        
+                var mix = new Uint8ClampedArray(4);
+                var mi3 = 0;
+        
+                if (ba3 > 0 && ad3 > 0) {
+        
+                    mi3 = parseFloat(1 - ((1 - ad3) * (1 - ba3)));
+        
+                    var ao = parseFloat(ad3 / mi3);
+                    var bo = parseFloat(ba3 * (1 - ad3) / mi3);
+        
+                    mix[0] = parseInt(added[0] * ao + base[0] * bo); // red
+                    mix[1] = parseInt(added[1] * ao + base[1] * bo); // green
+                    mix[2] = parseInt(added[2] * ao + base[2] * bo); // blue
+                }else if(ad3 > 0) {
+        
+                    mi3 = parseFloat(added[3] / 255);
+        
+                    mix[0] = added[0];
+                    mix[1] = added[1];
+                    mix[2] = added[2];
                 }else {
-                    mix = base;
+        
+                    mi3 = parseFloat(base[3] / 255);
+        
+                    mix[0] = base[0];
+                    mix[1] = base[1];
+                    mix[2] = base[2];
                 }
-
-                mix[3] *= 255;
-
+        
+                mix[3] = parseInt(mi3 * 255);
+        
                 return this_get_hex_color_from_rgba_values(mix[0], mix[1], mix[2], mix[3]);
             }
 
@@ -360,10 +374,10 @@ window.get_base64_png_data_url_process_function_string = `return function(
 
                 if(with_palette) {
 
-                    return [canvas.toDataURL(), [...all_colors]];
+                    return Array.from(canvas.toDataURL(), Array.from(all_colors));
                 }else {
 
-                    return [canvas.toDataURL()];
+                    return Array.from(canvas.toDataURL());
                 }
             }
         }`;
@@ -376,6 +390,7 @@ window.get_layer_base64_png_data_url_process_function_string = `return function(
             scale
         ) {
             
+            "use strict";
             try {
                 
                 var imgd = null;
@@ -494,6 +509,7 @@ window.remove_close_pxl_colors_process_function_string = `return async function(
             this_state_bucket_threshold 
         ) {
 
+            "use strict";
             function this_rgb_to_hsl(r, g, b) {
 
                 r /= 255, g /= 255, b /= 255;
@@ -513,7 +529,7 @@ window.remove_close_pxl_colors_process_function_string = `return async function(
                     h /= 6;
                 }
 
-                return new Array(Math.round(h * 360), Math.round(s * 100), Math.round(l * 100));
+                return new Uint16Array.of(parseInt(h * 360), parseInt(s * 100), parseInt(l * 100));
             }
 
             function this_hsl_to_rgb(h, s, l) {
@@ -541,7 +557,7 @@ window.remove_close_pxl_colors_process_function_string = `return async function(
                     b = hue_to_rgb(p, q, h - 1 / 3);
                 }
 
-                return new Array(r * 255, g * 255, b * 255);
+                return Uint8ClampedArray.of(parseInt(r * 255), parseInt(g * 255), parseInt(b * 255));
             }
 
             function this_get_hex_values_from_rgba_values(r, g, b, a) {
@@ -562,14 +578,12 @@ window.remove_close_pxl_colors_process_function_string = `return async function(
 
             function this_get_rgba_from_hex(color) {
 
-                color = color || "#00000000";
-
-                var r = parseInt(color.substring(1, 3), 16);
-                var g = parseInt(color.substring(3, 5), 16);
-                var b = parseInt(color.substring(5, 7), 16);
-                var a = parseInt(color.substring(7, 9), 16);
-
-                return Uint8ClampedArray.of(r, g, b, a);
+                return Uint8ClampedArray.of(
+                    parseInt(color.slice(1, 3), 16),
+                    parseInt(color.slice(3, 5), 16),
+                    parseInt(color.slice(5, 7), 16),
+                    parseInt(color.slice(7, 9), 16),
+                );
             }
 
             function this_reduce_color(rgba_component, color_gain ) {
@@ -580,16 +594,16 @@ window.remove_close_pxl_colors_process_function_string = `return async function(
                 }else {
 
                     rgba_component++;
-                    var comp_by_gain = Math.round(rgba_component * color_gain) - 1;
+                    var comp_by_gain = parseInt(rgba_component * color_gain) - 1;
                     comp_by_gain = comp_by_gain < 0 ? 0: comp_by_gain;
 
-                    return Math.round(comp_by_gain / color_gain);
+                    return parseInt(comp_by_gain / color_gain);
                 }
             }
 
             function this_get_hex_value_from_rgb_value(value) {
 
-                return Math.round(value).toString(16).padStart(2, "0");
+                return parseInt(value).toString(16).padStart(2, "0");
             }
 
             function this_format_color(color) {
@@ -616,7 +630,7 @@ window.remove_close_pxl_colors_process_function_string = `return async function(
                     return color_a === color_b;
                 }else {
 
-                    var threshold_256 = Math.round(threshold * 255);
+                    var threshold_256 = parseInt(threshold * 255);
 
                     color_a = this_format_color(color_a);
                     color_b = this_format_color(color_b);
@@ -643,7 +657,6 @@ window.remove_close_pxl_colors_process_function_string = `return async function(
 
             function this_blend_colors (color_a, color_b, amount = 1, should_return_transparent = false, blend_alpha = true) {
 
-                amount = Math.min(Math.max(amount, 0), 1);
                 color_a = this_format_color(color_a);
                 // If we blend the first color with the second with 0 "force", return transparent
                 if(amount === 0 && color_b !== "hover" && should_return_transparent) {
@@ -668,28 +681,42 @@ window.remove_close_pxl_colors_process_function_string = `return async function(
 
                 // Extract RGBA from both colors
                 var base = this_get_rgba_from_hex(color_a);
-                base[3] /= 255;
-
                 var added = this_get_rgba_from_hex(color_b);
-                added[3] /= 255;
-                added[3] *= amount;
-
-                var mix = [];
-                if (base[3] !== 0 && added[3] !== 0) {
-
-                    mix[3] = 1 - (1 - added[3]) * (1 - base[3]); // alpha
-                    mix[0] = Math.round((added[0] * added[3] / mix[3]) + (base[0] * base[3] * (1 - added[3]) / mix[3])); // red
-                    mix[1] = Math.round((added[1] * added[3] / mix[3]) + (base[1] * base[3] * (1 - added[3]) / mix[3])); // green
-                    mix[2] = Math.round((added[2] * added[3] / mix[3]) + (base[2] * base[3] * (1 - added[3]) / mix[3])); // blue
-                }else if(added[3] !== 0) {
-
-                    mix = added;
+        
+                var ba3 = parseFloat(base[3] / 255);
+                var ad3 = parseFloat((added[3] / 255) * amount);
+        
+                var mix = new Uint8ClampedArray(4);
+                var mi3 = 0;
+        
+                if (ba3 > 0 && ad3 > 0) {
+        
+                    mi3 = parseFloat(1 - ((1 - ad3) * (1 - ba3)));
+                    
+                    var ao = parseFloat(ad3 / mi3);
+                    var bo = parseFloat(ba3 * (1 - ad3) / mi3);
+        
+                    mix[0] = parseInt(added[0] * ao + base[0] * bo); // red
+                    mix[1] = parseInt(added[1] * ao + base[1] * bo); // green
+                    mix[2] = parseInt(added[2] * ao + base[2] * bo); // blue
+                }else if(ad3 > 0) {
+        
+                    mi3 = parseFloat(added[3] / 255);
+        
+                    mix[0] = added[0];
+                    mix[1] = added[1];
+                    mix[2] = added[2];
                 }else {
-                    mix = base;
+        
+                    mi3 = parseFloat(base[3] / 255);
+        
+                    mix[0] = base[0];
+                    mix[1] = base[1];
+                    mix[2] = base[2];
                 }
-
-                mix[3] *= 255;
-
+        
+                mix[3] = parseInt(mi3 * 255);
+        
                 return this_get_hex_color_from_rgba_values(mix[0], mix[1], mix[2], mix[3]);
             }
 
@@ -749,7 +776,7 @@ window.remove_close_pxl_colors_process_function_string = `return async function(
                 bucket_threshold = is_bucket_threshold_auto ?
                     1/(bucket_threshold_auto_goal_target - 2):
                     bucket_threshold || this_state_bucket_threshold;
-                threshold_steps = threshold_steps || Math.round(bucket_threshold * 255);
+                threshold_steps = threshold_steps || parseInt(bucket_threshold * 255);
                 var color_loss = (255 - (255 / (bucket_threshold * 255))) / 255;
 
                 original_pxls = Uint32Array.from(pxls);
@@ -759,10 +786,10 @@ window.remove_close_pxl_colors_process_function_string = `return async function(
 
                     var c = this_get_rgba_from_hex(color_hex);
                     
-                    r = c[0],
-                    g = c[1],
-                    b = c[2],
-                    a = c[3],
+                    var r = c[0];
+                    var g = c[1];
+                    var b = c[2];
+                    var a = c[3];
 
                     r = this_reduce_color(r, 1 - color_loss);
                     g = this_reduce_color(g, 1 - color_loss);
@@ -2828,12 +2855,12 @@ class CanvasPixels extends React.Component {
             _canvas_wrapper_overflow.removeEventListener("pointerout", this._handle_canvas_wrapper_overflow_pointer_up);
             _canvas_wrapper_overflow.removeEventListener("pointerleave", this._handle_canvas_wrapper_overflow_pointer_up);
         }catch(e) {}
-        
+
         _intervals.forEach((i) => {
 
             clearInterval(i);
         });
-        
+
     }
 
     _get_canvas_pos_from_event = (event) => {
@@ -5627,11 +5654,11 @@ class CanvasPixels extends React.Component {
             }
         });
     };
-    
+
     _notify_relevant_action_event = (event, color = "#ffffffff", opacity = 1) => {
-      
+
         if(this.props.onRelevantActionEvent) {
-            
+
             this.props.onRelevantActionEvent(event, color, opacity);
         }
     };
@@ -6699,7 +6726,7 @@ class CanvasPixels extends React.Component {
             h /= 6;
         }
 
-        return [Math.round(h * 360), Math.round(s * 100), Math.round(l * 100)];
+        return Uint16Array.of(parseInt(h * 360), parseInt(s * 100), parseInt(l * 100));
     }
 
 
@@ -6748,7 +6775,7 @@ class CanvasPixels extends React.Component {
 
     _get_hex_value_from_rgb_value = (v) => {
 
-        return parseInt(v).toString(16).padStart(2, "0");
+        return parseInt(v).toString(16).padStart(2, "0").toString(16);
     };
 
     _hsl_to_hex = (h, s, l) => {
@@ -6763,19 +6790,14 @@ class CanvasPixels extends React.Component {
         return this._get_hex_color_from_rgba_values(...v, 255 * (a / 100));
     };
 
-    _get_hex_values_from_rgba_values = (r, g, b, a) => {
+    _get_hex_values_from_rgba_values = (...rgba) => {
 
-        return Array.of(
-            this._get_hex_value_from_rgb_value(r),
-            this._get_hex_value_from_rgb_value(g),
-            this._get_hex_value_from_rgb_value(b),
-            this._get_hex_value_from_rgb_value(a)
-        );
+        return rgba.map((v) => this._get_hex_value_from_rgb_value(v));
     };
 
     _get_hex_color_from_rgba_values = (r, g, b, a) => {
 
-        return "#" + this._get_hex_values_from_rgba_values(r, g, b, a).map((ce) => ce.toString(16)).join("").toLowerCase();
+        return "#" + this._get_hex_values_from_rgba_values(r, g, b, a).join("").toLowerCase();
     };
 
     _invert_hex_color = (color) => {

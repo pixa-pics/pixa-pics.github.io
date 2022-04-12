@@ -38,6 +38,7 @@ import pool from "../utils/worker-pool";
 
 window.image_tracer_process_function_string = `return function(image_data, options){
 
+    "use strict";
 	function ImageTracer(){
 		var _this = this;
 
@@ -1141,13 +1142,13 @@ window.image_tracer_process_function_string = `return function(image_data, optio
 			img.onload = function(){
 				var canvas = null;
 				try {
-				    canvas = new OffscreenCanvas();
+				    canvas = new OffscreenCanvas(img.width, img.height);
 				} catch(e) {
 				    
 				    canvas = document.createElement('canvas');
+				    canvas.width = img.width;
+					canvas.height = img.height;
 				}
-				canvas.width = img.width;
-				canvas.height = img.height;
 				var context = canvas.getContext('2d');
 				context.drawImage(img,0,0);
 				callback(canvas);
