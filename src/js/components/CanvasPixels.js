@@ -1986,12 +1986,12 @@ class CanvasPixels extends React.Component {
         }).timeout(5 * 1000);
     };
 
-    get_base64_png_data_url(scale = 1, callback_function = () => {}, with_palette = false, with_compression_speed = 0) {
+    get_base64_png_data_url(scale = 1, callback_function = () => {}, with_palette = false, with_compression_speed = 0, with_compression_quality_min = 30, with_compression_quality_max = 35) {
 
-        this._get_base64_png_data_url(scale, callback_function, with_palette, with_compression_speed);
+        this._get_base64_png_data_url(scale, callback_function, with_palette, with_compression_speed, with_compression_quality_min, with_compression_quality_max);
     }
 
-    _get_base64_png_data_url = (scale = 1, callback_function = () => {}, with_palette = false, with_compression_speed = 0) => {
+    _get_base64_png_data_url = (scale = 1, callback_function = () => {}, with_palette = false, with_compression_speed = 0, with_compression_quality_min = 30, with_compression_quality_max = 35) => {
 
         const { pxl_width, pxl_height, _s_pxls, _s_pxl_colors, _layers } = this.state;
 
@@ -2019,15 +2019,16 @@ class CanvasPixels extends React.Component {
 
             if(typeof result !== "undefined") {
 
-                if(with_compression_speed > 0) {
+                if(with_compression_speed !== 0) {
 
+                    const base64_in = result[0];
+                    const palette = result[1] || null;
                     import("../utils/png_quant").then(({png_quant}) => {
 
-                        png_quant(result[0], 100, 100, with_compression_speed, (base_64_out) => {
+                        png_quant(base64_in, with_compression_quality_min, with_compression_quality_max, with_compression_speed, (base_64_out) => {
 
-                            result[0] = base_64_out;
-                            callback_function(result);
-                        }, pool, true);
+                            callback_function([base_64_out, palette]);
+                        }, pool);
                     });
                 }else {
 
@@ -5858,7 +5859,7 @@ class CanvasPixels extends React.Component {
                         _base64_original_images: _base64_original_images,
                         _json_state_history
                     });
-                }, false, 0);
+                }, false, 2, 60, 75);
             }
         });
     };

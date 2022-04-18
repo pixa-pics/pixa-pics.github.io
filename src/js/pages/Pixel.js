@@ -754,7 +754,7 @@ class Pixel extends React.Component {
 
                     }, palette, using, optimize_render_size);
 
-                }, true, 0);
+                }, true, optimize_render_size ? 2: 0, 60, 75);
 
             }, 500);
 
