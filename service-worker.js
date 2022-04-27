@@ -98,9 +98,19 @@ self.addEventListener("fetch", function(event) {
     if(event.request.mode === "navigate") {
 
         event.respondWith(
-            caches.open(REQUIRED_CACHE).then(function (cache) {
 
-                return cache.match("/");
+            fetch("/").then(function (response) { // Fetch, clone, and serve
+
+                caches.open(REQUIRED_CACHE).then(function (cache) {
+
+                    if(response.ok) {
+
+                        return cache.put("/", response.clone()).then(() => {return response.clone()});
+                    }else {
+
+                        return cache.match("/");
+                    }
+                })
             })
         );
 
@@ -198,16 +208,12 @@ self.addEventListener("fetch", function(event) {
             }),
             caches.open(STATIC_CACHE).then(function (cache) {
                 return cache.match(event.request).then(function (response) {
+                    if(response) { return response }
+                });
+            }),
+            fetch(event.request).then(function (response) { // Fetch and serve
 
-                    return (
-                        response ||
-                        fetch(event.request).then(function (response) { // Fetch and serve
-
-                            if(response) { return response }
-                        })
-                    );
-
-                })
+                if(response.ok) { return response }
             })
         ]).then(function(response){return response})
     }
