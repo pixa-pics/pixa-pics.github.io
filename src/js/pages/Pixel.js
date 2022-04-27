@@ -845,17 +845,17 @@ class Pixel extends React.Component {
         this.get_base64(file).then((b) => {
 
             const max_original_size = is_mobile_or_tablet ? Math.sqrt(1920 * 1080): Math.sqrt(4096 * 2160);
-            const max_original_color = 1/0;
+            const max_original_color = 10 * 1024;
             const max_size = is_mobile_or_tablet ? Math.sqrt(1280 * 720): Math.sqrt(1920 * 1280);
-            const max_color = is_mobile_or_tablet ? 1024: 2048;
+            const max_color = is_mobile_or_tablet ? 3072: 4096;
 
-            let ratio_l_l2 = is_mobile_or_tablet ? 7/3: 9/3;
+            let ratio_l_l2 = is_mobile_or_tablet ? 7: 9;
             let min_size = is_mobile_or_tablet ? 0: 0;
-            let min_color = is_mobile_or_tablet ? 0: 0;
+            let min_color = is_mobile_or_tablet ? 1024: 1536;
 
             const resize_original_to = max_original_size * max_original_size;
             const resize_to = Math.min(max_size * max_size, Math.max(parseInt(_import_size) * parseInt(_import_size), min_size * min_size));
-            const limit_color_number = Math.min(max_color * ratio_l_l2, Math.max(parseInt(_import_size) * ratio_l_l2, min_color * ratio_l_l2));
+            const limit_color_number = Math.min(max_color, Math.max(parseInt(_import_size) * ratio_l_l2, min_color));
 
             import("../utils/rgb_quant").then(({rgb_quant}) => {
 
@@ -1656,7 +1656,7 @@ class Pixel extends React.Component {
                                 convert_scale={1}
                                 default_size={_import_size}
                                 ideal_size={_import_size}
-                                max_size={_import_size}
+                                max_size={_import_size * 1.5}
                                 fast_drawing={true}
                                 px_per_px={1}/>
                         </Suspense>

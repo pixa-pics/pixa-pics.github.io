@@ -9,7 +9,6 @@ import {Fade, Divider, List, ListItem, ListItemIcon, ListItemText, Badge} from "
 
 import PersonIcon from "@material-ui/icons/Person";
 import CodeIcon from "@material-ui/icons/Code";
-import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
 import ForumIcon from "@material-ui/icons/Forum";
 
 import { HISTORY } from "../utils/constants";
@@ -150,12 +149,6 @@ class DrawerContent extends React.Component {
                             </ListItem>
                         </Fade>
                         <Fade in timeout={200}>
-                            <ListItem button  className={classes.listItemGrey} onClick={(event) => this._open_link(event, "https://github.com/pixa-pics/pixa-pics.github.io/releases")}>
-                                <ListItemIcon><CloudDownloadIcon className={classes.iconColor} /></ListItemIcon>
-                                <ListItemText primary={t( "components.drawer_content.menu.more.download")} />
-                            </ListItem>
-                        </Fade>
-                        <Fade in timeout={250}>
                             <ListItem button className={classes.listItemGrey} onClick={(event) => this._open_link(event, "https://t.me/pixapics")}>
                                 <Badge className={classes.styledBadgeConnected} overlap="circular" badgeContent=" " variant="dot">
                                     <ListItemIcon><ForumIcon className={classes.iconColor} /></ListItemIcon>

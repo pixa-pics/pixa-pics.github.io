@@ -24,7 +24,6 @@ SOFTWARE.
  */
 
 "use strict";
-import {stringify} from "@ungap/structured-clone/cjs/json";
 
 window.get_base64_png_data_url_process_function_string = `return function(
             pxl_width, 
@@ -2755,9 +2754,23 @@ class CanvasPixels extends React.Component {
     _set_canvas_ref = (element) => {
 
         if(element === null) {return}
+        const { pxl_width, pxl_height } = this.state;
 
         element.context2d = element.getContext("2d");
-        element.context2d.globalCompositeOperation = "source-over";
+
+        try {
+
+            element.offscreenCanvas = new OffscreenCanvas(pxl_width, pxl_height);
+        }catch (e) {
+
+            element.offscreenCanvas = document.createElement("canvas");
+            element.offscreenCanvas.width = pxl_width;
+            element.offscreenCanvas.height = pxl_height;
+        }
+
+        element.offscreenCanvas.context2d = element.offscreenCanvas.getContext("2d");
+        element.offscreenCanvas.context2d.globalCompositeOperation = "source-over";
+        element.context2d.globalCompositeOperation = "copy";
         element.context2d.imageSmoothingEnabled = false;
 
         this.setState({_canvas: element}, () => {
@@ -2787,13 +2800,13 @@ class CanvasPixels extends React.Component {
 
         if(element === null) {return}
 
-        element.addEventListener("wheel", this.handle_canvas_wrapper_overflow_wheel, {capture: true});
-        element.addEventListener("pointerdown", this._handle_canvas_wrapper_overflow_pointer_down, {capture: true});
-        element.addEventListener("pointermove", this._handle_canvas_wrapper_overflow_pointer_move, {capture: true});
-        element.addEventListener("pointerup", this._handle_canvas_wrapper_overflow_pointer_up, {capture: true});
-        element.addEventListener("pointercancel", this._handle_canvas_wrapper_overflow_pointer_up, {capture: true});
-        element.addEventListener("pointerout", this._handle_canvas_wrapper_overflow_pointer_up, {capture: true});
-        element.addEventListener("pointerleave", this._handle_canvas_wrapper_overflow_pointer_up, {capture: true});
+        element.addEventListener("wheel", this.handle_canvas_wrapper_overflow_wheel, {capture: true, passive: true});
+        element.addEventListener("pointerdown", this._handle_canvas_wrapper_overflow_pointer_down, {capture: true, passive: true});
+        element.addEventListener("pointermove", this._handle_canvas_wrapper_overflow_pointer_move, {capture: true, passive: true});
+        element.addEventListener("pointerup", this._handle_canvas_wrapper_overflow_pointer_up, {capture: true, passive: true});
+        element.addEventListener("pointercancel", this._handle_canvas_wrapper_overflow_pointer_up, {capture: true, passive: true});
+        element.addEventListener("pointerout", this._handle_canvas_wrapper_overflow_pointer_up, {capture: true, passive: true});
+        element.addEventListener("pointerleave", this._handle_canvas_wrapper_overflow_pointer_up, {capture: true, passive: true});
 
         this.setState({_canvas_wrapper_overflow: element});
     };
@@ -3975,7 +3988,7 @@ class CanvasPixels extends React.Component {
 
         let { scale, scale_move_x, scale_move_y, _canvas_container } = this.state;
 
-        event.preventDefault();
+        
         let delta = Math.max(Math.min(0.125, Math.abs(event.deltaY * -0.01)), 0.25);
         delta = event.deltaY * -0.01 > 0 ? delta: -delta;
 
@@ -4074,8 +4087,7 @@ class CanvasPixels extends React.Component {
 
     _handle_canvas_pointer_move = (event, canvas_event_target, _pointer_events) => {
 
-        const { _latest_pointers_client_x_center, _latest_pointers_client_y_center, _previous_double_pointer_down_timestamp, _previous_double_pointer_move_timestamp } = this.state;
-        let { _latest_pointers_distance } = this.state;
+        const { _latest_pointers_distance, _latest_pointers_client_x_center, _latest_pointers_client_y_center, _previous_double_pointer_down_timestamp, _previous_double_pointer_move_timestamp } = this.state;
 
         if (_pointer_events.length === 2) {
 
@@ -4088,8 +4100,6 @@ class CanvasPixels extends React.Component {
             const client_y_center = (_pointer_events[0].clientY + _pointer_events[1].clientY) / 2;
             const move_x = _latest_pointers_client_x_center > 0 ? _latest_pointers_client_x_center - client_x_center: 0;
             const move_y = _latest_pointers_client_y_center > 0 ? _latest_pointers_client_y_center - client_y_center: 0;
-            const move_diff = Math.sqrt((move_x * move_x) + (move_y * move_y));
-            const anchor_diff_diff = Math.abs(_latest_pointers_distance - anchor_diff);
 
             const of = _latest_pointers_distance > 0 ? anchor_diff / _latest_pointers_distance : 1;
 
@@ -4149,9 +4159,6 @@ class CanvasPixels extends React.Component {
 
     _handle_canvas_wrapper_overflow_pointer_move = (event) => {
 
-        event.preventDefault();
-        event.stopPropagation();
-
         if(this.state._hidden) {
 
             this._handle_canvas_wrapper_overflow_pointer_up(event);
@@ -4188,8 +4195,8 @@ class CanvasPixels extends React.Component {
 
     _handle_canvas_wrapper_overflow_pointer_down = (event) => {
 
-        event.preventDefault();
-        event.stopPropagation();
+        
+        
 
         const canvas_event_target = this._get_canvas_event_target(event);
         let { _pointer_events, _mouse_down } = this.state;
@@ -4286,8 +4293,8 @@ class CanvasPixels extends React.Component {
 
     _handle_canvas_wrapper_overflow_pointer_up = (event) => {
 
-        event.preventDefault();
-        event.stopPropagation();
+        
+        
 
         const canvas_event_target = this._get_canvas_event_target(event);
 
@@ -5095,10 +5102,6 @@ class CanvasPixels extends React.Component {
         const { _loading_base64_img, dont_show_canvas_until_img_set, dont_show_canvas, but_show_canvas_once, has_shown_canvas_once, _last_paint_timestamp, _hidden } = this.state;
         if((_loading_base64_img.length === 0 && dont_show_canvas_until_img_set) || (dont_show_canvas && !(but_show_canvas_once && !has_shown_canvas_once)) || _hidden){return;}
 
-        if(_last_paint_timestamp + 1000 / 45 > Date.now()) {
-
-            return;
-        }
 
         const { _layers } = this.state;
         _layers.forEach((l) => {
@@ -5280,7 +5283,7 @@ class CanvasPixels extends React.Component {
         const has_new_mine_player_index = _previous_mine_player_index !== _mine_player_index;
 
         // Only operate on canvas context if existing
-        if (_canvas.context2d) {
+        if (_canvas.offscreenCanvas.context2d) {
 
             let pxl_indexes_of_current_shape = new Set();
 
@@ -5357,16 +5360,17 @@ class CanvasPixels extends React.Component {
 
             let image_data = Boolean(hide_canvas_content || is_there_new_dimension || !has_shown_canvas_once || has_canvas_been_hidden) ?
                 new ImageData(pxl_width, pxl_height):
-                _canvas.context2d.getImageData(0, 0, pxl_width, pxl_height);
+                _canvas.offscreenCanvas.context2d.getImageData(0, 0, pxl_width, pxl_height);
 
             const imported_image_pxls_positioned_keyset = new Set(Object.keys(imported_image_pxls_positioned).map(s => parseInt(s)));
             const explosion_pxls_positioned_keyset = new Set(Object.keys(explosion_pxls_positioned).map(s => parseInt(s)));
 
             // This is a list of color index that we explore
-            const length = _s_pxls[_layer_index].length;
+            const _s_pxls_layer_index = _s_pxls[_layer_index];
+            const length = _s_pxls_layer_index.length;
             for(let index = 0; index < length; index++){
 
-                const pxl = _s_pxls[_layer_index][index];
+                const pxl = _s_pxls_layer_index[index];
                 const is_in_image_imported = has_an_image_imported && imported_image_pxls_positioned_keyset.has(index);
                 const was_in_image_imported = _previous_imported_image_pxls_positioned_keyset.has(index);
 
@@ -5375,9 +5379,6 @@ class CanvasPixels extends React.Component {
 
                 const is_in_explosion = explosion_pxls_positioned_keyset.has(index);
                 const was_in_explosion = _previous_explosion_pxls_positioned_keyset.has(index);
-
-                const pos_x = index % pxl_width;
-                const pos_y = (index - pos_x) / pxl_width;
 
                 const is_pixel_hovered = _pxls_hovered === index && index !== -1;
                 const is_the_old_pixel_hovered_to_paint = (index === _old_pxls_hovered && has_new_pixel_hovered && index !== -1) || (index === _pxls_hovered && index !== -1);
@@ -5478,18 +5479,24 @@ class CanvasPixels extends React.Component {
                         color = pixel_color_hex;
                     }
 
-                    if(is_in_image_imported_resizer) {
+                    if(is_in_image_imported_resizer || (is_in_the_current_selection && !is_in_the_current_shape && !is_pixel_hovered)) {
 
-                        const opacity = is_pixel_hovered ?
-                            2/3 + (0 + ((pos_x + pos_y + (_selection_pair_highlight ? 1: 0)) % 2)) / 3:
-                            1/3 + (0 + ((pos_x + pos_y + (_selection_pair_highlight ? 1: 0)) % 2)) / 3;
-                        color = this._blend_colors(pixel_color_hex, "hover", opacity, false);
-                    }
+                        const pos_x = index % pxl_width;
+                        const pos_y = (index - pos_x) / pxl_width;
 
-                    if(is_in_the_current_selection && !is_in_the_current_shape && !is_pixel_hovered) {
+                        if(is_in_image_imported_resizer) {
 
-                        const opacity = 0 + (0 + ((pos_x + pos_y + (_selection_pair_highlight ? 1: 0)) % 2)) / 5;
-                        color = this._blend_colors(pixel_color_hex, "hover", opacity, false);
+                            const opacity = is_pixel_hovered ?
+                                2/3 + (0 + ((pos_x + pos_y + (_selection_pair_highlight ? 1: 0)) % 2)) / 3:
+                                1/3 + (0 + ((pos_x + pos_y + (_selection_pair_highlight ? 1: 0)) % 2)) / 3;
+                            color = this._blend_colors(pixel_color_hex, "hover", opacity, false);
+                        }
+
+                        if(is_in_the_current_selection && !is_in_the_current_shape && !is_pixel_hovered) {
+
+                            const opacity = 0 + (0 + ((pos_x + pos_y + (_selection_pair_highlight ? 1: 0)) % 2)) / 5;
+                            color = this._blend_colors(pixel_color_hex, "hover", opacity, false);
+                        }
                     }
 
                     // We need to clear the pixel that won't totally be opaque because it can merge colors accidentally
@@ -5508,7 +5515,8 @@ class CanvasPixels extends React.Component {
 
                 _anim_loop(() => {
 
-                    _canvas.context2d.putImageData(image_data, 0, 0);
+                    _canvas.offscreenCanvas.context2d.putImageData(image_data, 0, 0);
+                    _canvas.context2d.drawImage(_canvas.offscreenCanvas, 0, 0);
                     this.setState({
                         _pxl_indexes_of_selection_drawn: new Set(_pxl_indexes_of_selection),
                         _pxl_indexes_of_old_shape: new Set(pxl_indexes_of_current_shape),
@@ -5524,7 +5532,7 @@ class CanvasPixels extends React.Component {
                         _previous_image_imported_resizer_index: parseInt(image_imported_resizer_index),
                         _old_selection_pair_highlight: Boolean(_selection_pair_highlight),
                         _old_layers: Array.from(_layers),
-                        _old_pxls: Uint16Array.from(_s_pxls[_layer_index]),
+                        _old_pxls: Uint16Array.from(_s_pxls_layer_index),
                         _old_pxl_colors: Array.from(_s_pxl_colors[_layer_index]),
                         _old_pxl_width: parseInt(pxl_width),
                         _old_pxl_height: parseInt(pxl_height),
@@ -5534,8 +5542,7 @@ class CanvasPixels extends React.Component {
                         _last_paint_timestamp: Date.now(),
                         has_shown_canvas_once: true,
                     });
-
-                }, false, true); // Enable to cancel in order to know that a frame has not been drawn
+                }, false, false); // Enable to cancel in order to know that a frame has not been drawn
             }
         }
     };
@@ -5671,7 +5678,7 @@ class CanvasPixels extends React.Component {
             const { _notified_position_at } = this.state;
             const now = Date.now();
 
-            if((now - _notified_position_at >= 100 && date === null) || date > _notified_position_at && now - date >= 100) {
+            if((now - _notified_position_at >= 300 && date === null) || date > _notified_position_at && now - date >= 300) {
 
                 position = {
                     x: typeof position.x === "undefined" ? -1: position.x,
@@ -5680,12 +5687,12 @@ class CanvasPixels extends React.Component {
 
                 this.props.onPositionChange(position);
                 this.setState({_notified_position_at: now});
-            }else if(now < date + 101){
+            }else if(now < date + 301){
 
                 setTimeout(() => {
 
                     this._notify_position_change(null, {x: position.x, y: position.y}, now);
-                }, 25);
+                }, 125);
             }
         }
     };
@@ -5748,7 +5755,8 @@ class CanvasPixels extends React.Component {
 
     _notify_size_change = () => {
 
-        const { pxl_width, pxl_height } = this.state;
+        const { pxl_width, pxl_height, _canvas } = this.state;
+        this._set_canvas_ref(_canvas);
         if(this.props.onSizeChange) { this.props.onSizeChange(pxl_width, pxl_height); }
     };
 
