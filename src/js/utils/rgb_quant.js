@@ -938,7 +938,10 @@ window.rgb_quant_process_function_string = `return async function(img, limit, re
             // Worker based on BLOB  
             var resA0 = await fetch(img); // Response
             var blbA0 = await resA0.blob(); // Blob     
-            var bmpA0 = await createImageBitmap(blbA0);
+            var bmpA0 = await createImageBitmap(blbA0, {
+                premultiplyAlpha: 'none',
+                colorSpaceConversion: 'none',
+            });
             
             while (bmpA0.width * scale * bmpA0.height * scale > resize_to) { scale -= 0.01; }
             
@@ -990,41 +993,34 @@ window.rgb_quant_process_function_string = `return async function(img, limit, re
         
         // Build base64 response
         try {
-
-            const to_data_URL = async (data) => {
-                return new Promise(ok => {
-                    const reader = new FileReader();
-                    reader.addEventListener("loadend", () => ok(reader.result));
-                    reader.readAsDataURL(data);
-                });
-            };
-
+            
             var canvasB0 = new OffscreenCanvas(img_data.width, img_data.height);
             var ctxB0 = canvasB0.getContext("bitmaprenderer");
-            var bmpB0 = await createImageBitmap(img_data, {
+            
+            return createImageBitmap(img_data, {
                 premultiplyAlpha: 'none',
                 colorSpaceConversion: 'none',
-            });
+            }).then((bmpB0) => {
             
-            ctxB0.transferFromImageBitmap(bmpB0);
-            var blbB0 = null;
-            
-            if(!lossly) {
-            
-                blbB0 = await canvasB0.convertToBlob({type: "image/png"});
-            
-            }else {
-           
-                try { 
-                    
-                    blbB0 = await canvasB0.convertToBlob({type: "image/webp", quality: 0.75});
-                }catch(e) {
+                ctxB0.transferFromImageBitmap(bmpB0);
+
+                var params = !lossly ? {type: "image/png"}: {type: "image/jpeg", quality: 0.75};
+                return ctxB0.canvas.convertToBlob(params).then((blbB0) => {
                 
-                    blbB0 = await canvasB0.convertToBlob({type: "image/jpeg", quality: 0.75});
-                } 
-            }
-           
-            return await to_data_URL(blbB0);
+                    function blob_to_base64(blob) {
+                      return new Promise((resolve, _) => {
+                        var reader = new FileReader();
+                        reader.onloadend = () => resolve(reader.result);
+                        reader.readAsDataURL(blob);
+                      })
+                    }
+                    
+                    return blob_to_base64(blbB0).then((data_url) => {
+                    
+                         return data_url;
+                    });
+                });
+            });
            
         }catch(e) {
         
@@ -1040,13 +1036,7 @@ window.rgb_quant_process_function_string = `return async function(img, limit, re
             
             }else {
            
-                 try {
-            
-                     return ctxB0.canvas.toDataURL("image/webp", 0.75);
-                 }catch(e2) {
-                    
-                     return ctxB0.canvas.toDataURL("image/jpeg", 0.75);
-                 }
+                return ctxB0.canvas.toDataURL("image/jpeg", 0.75);
             }
         }
     }`;
@@ -1059,12 +1049,8 @@ const rgb_quant = (img, limit = 1024, resize_to = 1920*1080, lossly = false, cal
             img, limit, resize_to, lossly
         ]).catch((e) => {
 
-            if(e === "Pool terminated") {
-                return rgb_quant(img, limit, resize_to, lossly, callback_function, pool);
-            }else {
+            return new Function(window.rgb_quant_process_function_string)()(img, limit, resize_to, lossly);
 
-                return new Function(window.rgb_quant_process_function_string)()(img, limit, resize_to, lossly);
-            }
         }).then((result) => {
 
             callback_function(result);
@@ -1075,7 +1061,7 @@ const rgb_quant = (img, limit = 1024, resize_to = 1920*1080, lossly = false, cal
         new Function(window.rgb_quant_process_function_string)()(img, limit, resize_to, lossly).then((result) => {
 
             callback_function(result);
-        }).then();
+        });
     }
 };
 

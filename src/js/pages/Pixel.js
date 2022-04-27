@@ -845,7 +845,7 @@ class Pixel extends React.Component {
         this.get_base64(file).then((b) => {
 
             const max_original_size = is_mobile_or_tablet ? Math.sqrt(1920 * 1080): Math.sqrt(4096 * 2160);
-            const max_original_color = 10 * 1024;
+            const max_original_color = 1/0;
             const max_size = is_mobile_or_tablet ? Math.sqrt(1280 * 720): Math.sqrt(1920 * 1280);
             const max_color = is_mobile_or_tablet ? 3072: 4096;
 
