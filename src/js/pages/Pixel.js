@@ -24,7 +24,7 @@ import AllLayersIcon from "../icons/AllLayers";
 import ToolsIcon from "../icons/Tools";
 import SelectIcon from "../icons/Select";
 import ImageEffectIcon from "../icons/ImageEffect";
-import ImageFilterIcon from "../icons/ImageFilter";
+import ImageFilterMagicIcon from "../icons/ImageFilterMagic";
 import SquareIcon from "../icons/Square";
 
 import DialogCloseButton from "../components/DialogCloseButton";
@@ -359,12 +359,6 @@ class Pixel extends React.Component {
         document.addEventListener("keyup", this._handle_keyup);
         actions.trigger_loading_update(0);
 
-        actions.trigger_loading_update(0);
-        setTimeout(() => {
-
-            actions.trigger_loading_update(100);
-        }, 350);
-
         actions.trigger_music(`Tesla_Numbers_30m_session`, 0.75, "tesla");
 
         this.setState({_h_svg: get_svg_in_b64(<HexGrid color={"#e5e5e5"}/>)});
@@ -465,6 +459,7 @@ class Pixel extends React.Component {
 
             this.setState({ _sfx_enabled, _is_manual_warning_open, _attachment_previews, _settings_set: true }, () => {
 
+                actions.trigger_loading_update(100);
                 this.forceUpdate();
             });
         }
@@ -789,9 +784,11 @@ class Pixel extends React.Component {
 
         let input = document.createElement("input");
         input.setAttribute("style", "pointer-events: none; touch-actions: none; position: absolute; opacity: 0;");
-        input.setAttribute("type", "file");
         document.body.appendChild(input);
-        input.addEventListener("change", (event) => {this._handle_file_upload(event, input)});
+        input.addEventListener("change", (event) => {this._handle_file_upload(event)});
+        document.body.removeChild(input);
+        input.setAttribute("type", "file");
+        input.setAttribute("accept", "image/*");
         input.click();
     };
 
@@ -835,7 +832,7 @@ class Pixel extends React.Component {
         });
     };
 
-    _handle_file_upload = (event, input) => {
+    _handle_file_upload = (event) => {
 
         const { _canvas, _import_colorize, _import_size } = this.state;
         let img = new Image;
@@ -875,7 +872,6 @@ class Pixel extends React.Component {
 
                                     this._handle_load_complete("image_ai", {});
                                     _canvas.set_canvas_from_image(img, data, {}, true);
-                                    document.body.removeChild(input);
                                     this._handle_menu_close();
                                 });
                                 img.src = res2;
@@ -898,7 +894,6 @@ class Pixel extends React.Component {
 
                                     this._handle_load_complete("image_ai", {});
                                     _canvas.set_canvas_from_image(img, data, {}, true);
-                                    document.body.removeChild(input);
                                     this._handle_menu_close();
                                 });
                                 img.src = res2;
@@ -922,7 +917,6 @@ class Pixel extends React.Component {
 
                                         this._handle_load_complete("image_ai", {});
                                         _canvas.set_canvas_from_image(img, data, {}, true);
-                                        document.body.removeChild(input);
                                         this._handle_menu_close();
                                     });
                                     img.src = res3;
@@ -939,7 +933,6 @@ class Pixel extends React.Component {
 
                                 this._handle_load_complete("image_preload", {});
                                 _canvas.set_canvas_from_image(img, data, {}, false);
-                                document.body.removeChild(input);
                                 this._handle_menu_close();
                             });
                             img.src = res;
@@ -992,6 +985,7 @@ class Pixel extends React.Component {
 
     _handle_load = (process) => {
 
+        actions.trigger_loading_update(0);
         this.setState({_loading: true, _loading_process: process});
 
         if(process === "image_preload"){
@@ -1005,6 +999,7 @@ class Pixel extends React.Component {
 
     _handle_load_complete = (process, data) => {
 
+        actions.trigger_loading_update(100);
         this.setState({_loading: false, _loading_process: process});
 
         if(process === "less_color" || process === "less_color_auto") {
@@ -1442,7 +1437,7 @@ class Pixel extends React.Component {
                                 <Tab className={classes.tab} icon={<ToolsIcon />} />
                                 <Tab className={classes.tab} icon={<SelectIcon />} />
                                 <Tab className={classes.tab} icon={<ImageEffectIcon />} />
-                                <Tab className={classes.tab} icon={<ImageFilterIcon />} />
+                                <Tab className={classes.tab} icon={<ImageFilterMagicIcon />} />
                             </Tabs>
                         </div>
                         <div className={classes.drawerContainer} onGotPointerCapture={(event) => {event.stopPropagation(); event.preventDefault();}}>
@@ -1545,7 +1540,7 @@ class Pixel extends React.Component {
                                 <Tab className={classes.tab} icon={<ToolsIcon />} />
                                 <Tab className={classes.tab} icon={<SelectIcon />} />
                                 <Tab className={classes.tab} icon={<ImageEffectIcon />} />
-                                <Tab className={classes.tab} icon={<ImageFilterIcon />} />
+                                <Tab className={classes.tab} icon={<ImageFilterMagicIcon />} />
                             </Tabs>
                         </div>
                         <div className={classes.drawerContainer}>
@@ -1800,7 +1795,7 @@ class Pixel extends React.Component {
                     </ListItem>
                     <ListItem button divider onClick={(event) => this._handle_edit_drawer_open(null,6)}>
                         <ListItemIcon>
-                            <ImageFilterIcon />
+                            <ImageFilterMagicIcon />
                         </ListItemIcon>
                         <ListItemText primary="Add a filter" />
                     </ListItem>
@@ -1845,7 +1840,7 @@ class Pixel extends React.Component {
                             <Tab className={classes.tab} icon={<ToolsIcon />} />
                             <Tab className={classes.tab} icon={<SelectIcon />} />
                             <Tab className={classes.tab} icon={<ImageEffectIcon />} />
-                            <Tab className={classes.tab} icon={<ImageFilterIcon />} />
+                            <Tab className={classes.tab} icon={<ImageFilterMagicIcon />} />
                         </Tabs>
                     </div>
                 </Fade>

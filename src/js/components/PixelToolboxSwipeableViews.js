@@ -8,7 +8,7 @@ import {HISTORY} from "../utils/constants";
 import AllLayersIcon from "../icons/AllLayers";
 import SelectIcon from "../icons/Select";
 import ImageEffectIcon from "../icons/ImageEffect";
-import ImageFilterIcon from "../icons/ImageFilter";
+import ImageFilterMagicIcon from "../icons/ImageFilterMagic";
 import SwipeableViews from "react-swipeable-views";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import PixelColorPalette from "./PixelColorPalette";
@@ -86,6 +86,7 @@ const styles = theme => ({
         alignSelf: "flex-start",
         color: theme.palette.secondary.light,
         backgroundColor: "#e5e5e5",
+        textTransform: "uppercase",
         "& span svg": {
             verticalAlign: "sub",
             marginRight: theme.spacing(1),
@@ -653,6 +654,17 @@ class PixelToolboxSwipeableViews extends React.Component {
             import_colorize,
         } = this.state;
 
+        let layers_colors_max = 0;
+
+        layers.forEach((layer) => {
+
+            if(layers_colors_max < layer.number_of_colors) {
+
+                layers_colors_max = layer.number_of_colors;
+            }
+        });
+
+        const too_much_colors_no_vector = layers_colors_max >= 256;
         const actions = {
             "palette": [],
             "image": [
@@ -721,12 +733,13 @@ class PixelToolboxSwipeableViews extends React.Component {
                 },
                 {
                     icon: <DownloadIcon/>,
-                    text: "Download (painting / vector)",
+                    text: too_much_colors_no_vector ? "Download (painting / vector) [Unavailable - too much colors (>=256)]" : "Download (painting / vector)",
                     tools: [
                         {
                             icon: <FileDownloadIcon/>,
                             text: "Fast Render OMNI :|",
                             sub: "Upscale by 6x using Omniscale",
+                            disabled: too_much_colors_no_vector,
                             on_click: () => {
                                 this._download_svg("omniscale", false)
                             }
@@ -735,6 +748,7 @@ class PixelToolboxSwipeableViews extends React.Component {
                             icon: <FileDownloadIcon/>,
                             text: "Opt. Render OMNI :|",
                             sub: "Upscale by 6x using Omniscale +compress",
+                            disabled: too_much_colors_no_vector,
                             on_click: () => {
                                 this._download_svg("omniscale", true)
                             }
@@ -743,6 +757,7 @@ class PixelToolboxSwipeableViews extends React.Component {
                             icon: <FileDownloadIcon/>,
                             text: "Fast Render xBRZ :]",
                             sub: "Upscale by 6x using xBRZ",
+                            disabled: too_much_colors_no_vector,
                             on_click: () => {
                                 this._download_svg("xbrz", false)
                             }
@@ -751,6 +766,7 @@ class PixelToolboxSwipeableViews extends React.Component {
                             icon: <FileDownloadIcon/>,
                             text: "Opt. Render xBRZ :]",
                             sub: "Upscale by 6x using xBRZ +compress",
+                            disabled: too_much_colors_no_vector,
                             on_click: () => {
                                 this._download_svg("xbrz", true)
                             }
@@ -1307,7 +1323,7 @@ class PixelToolboxSwipeableViews extends React.Component {
             ],
             "filters": [
                 {
-                    icon: <ImageFilterIcon/>,
+                    icon: <ImageFilterMagicIcon/>,
                     text: `Filters (Strength: ${slider_value * 100}%)`,
                     tools: filters.map((name) => {
                         return {
@@ -1373,7 +1389,7 @@ class PixelToolboxSwipeableViews extends React.Component {
                                         <div>
                                             <ListSubheader className={classes.listSubHeader}>
                                                 <span><AllLayersIcon/></span>
-                                                <span>All layers</span>
+                                                <span>►►► All layers</span>
                                             </ListSubheader>
                                             <div>
                                                 {Array.from(layers).reverse().map((layer, index, array) => {
@@ -1560,7 +1576,7 @@ class PixelToolboxSwipeableViews extends React.Component {
                                         <div>
                                             <ListSubheader className={classes.listSubHeader}>
                                                 <span><ImportIcon/></span>
-                                                <span>Upload</span>
+                                                <span>►►► Upload</span>
                                             </ListSubheader>
                                             <div className={classes.listItems}>
                                                 <ListItem button onClick={() => {
@@ -1690,7 +1706,7 @@ class PixelToolboxSwipeableViews extends React.Component {
                                             </p>
                                             <ListSubheader className={classes.listSubHeader}>
                                                 <span><ImagePlusIcon/></span>
-                                                <span>Create new</span>
+                                                <span>►►► Create new</span>
                                             </ListSubheader>
                                             <div style={{
                                                 padding: "8px 24px",
@@ -1720,7 +1736,7 @@ class PixelToolboxSwipeableViews extends React.Component {
                                             <div key={index}>
                                                 <ListSubheader className={classes.listSubHeader}>
                                                     <span>{action_set.icon}</span>
-                                                    <span>{action_set.text}</span>
+                                                    <span>►►► {action_set.text}</span>
                                                 </ListSubheader>
                                                 <div className={classes.listItems}
                                                      style={
