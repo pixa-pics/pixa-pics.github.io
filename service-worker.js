@@ -99,17 +99,20 @@ self.addEventListener("fetch", function(event) {
 
         event.respondWith(
 
-            fetch(event.request).then(function (response) { // Fetch, clone, and serve
+            caches.open(REQUIRED_CACHE).then(function (cache) {
 
-                caches.open(REQUIRED_CACHE).then(function (cache) {
+                return fetch(event.request).then(function (response) { // Fetch, clone, and serve
 
-                    if(response) {
+                    if(response.status === 200) {
 
                         return cache.put("/", response.clone()).then(() => {return response.clone()});
                     }else {
 
                         return cache.match("/");
                     }
+                }).catch(function(error){
+
+                    return cache.match("/");
                 })
             })
         );
