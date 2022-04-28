@@ -1045,7 +1045,7 @@ const rgb_quant = (img, limit = 1024, resize_to = 1920*1080, lossly = false, cal
 
     if(Boolean(pool)) {
 
-        pool.exec(window.rgb_quant_process_function_string, [
+        pool.exec(new Function(window.rgb_quant_process_function_string)(), [
             img, limit, resize_to, lossly
         ]).catch((e) => {
 

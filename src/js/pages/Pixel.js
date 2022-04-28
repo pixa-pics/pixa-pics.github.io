@@ -861,10 +861,9 @@ class Pixel extends React.Component {
 
                 rgb_quant(b, max_original_color, resize_original_to, ["1", "2", "3"].includes(_import_colorize), (data) => {
 
-                    this._handle_load_complete("image_preload", {});
-
                     if(_import_colorize === "1") {
 
+                        this._handle_load_complete("image_preload", {});
                         this._handle_load("image_ai");
                         actions.trigger_snackbar("Getting impaired with DeepAI systems", 5700);
                         actions.jamy_update("angry");
@@ -886,6 +885,7 @@ class Pixel extends React.Component {
 
                     }else if(_import_colorize === "2") {
 
+                        this._handle_load_complete("image_preload", {});
                         this._handle_load("image_ai");
                         actions.trigger_snackbar("Getting impaired with DeepAI systems", 5700);
                         actions.jamy_update("angry");
@@ -907,6 +907,7 @@ class Pixel extends React.Component {
                         }, "application/text");
                     }else if(_import_colorize === "3") {
 
+                        this._handle_load_complete("image_preload", {});
                         this._handle_load("image_ai");
                         actions.trigger_snackbar("Getting impaired with DeepAI systems", 7500);
                         actions.jamy_update("angry");
@@ -936,6 +937,7 @@ class Pixel extends React.Component {
 
                             img.addEventListener("load", () => {
 
+                                this._handle_load_complete("image_preload", {});
                                 _canvas.set_canvas_from_image(img, data, {}, false);
                                 document.body.removeChild(input);
                                 this._handle_menu_close();
@@ -979,6 +981,7 @@ class Pixel extends React.Component {
         input.addEventListener("change", (event) => {this._handle_file_import(event)});
         document.body.removeChild(input);
         input.setAttribute("type", "file");
+        input.setAttribute("accept", "image/*");
         input.click();
     };
 
@@ -1875,22 +1878,22 @@ class Pixel extends React.Component {
                     <div className={classes.backdropTextContent} style={{fontFamily: `"Jura"`}}>
                         {_loading && <h1><ShufflingSpanText text={"Laboratory processing..."} animation_delay_ms={0} animation_duration_ms={250}/></h1>}
                         {_loading && _loading_process === "image_ai" && <h4><ShufflingSpanText text={"AI processing your image"} animation_delay_ms={300} animation_duration_ms={500}/></h4>}
-                        {_loading && _loading_process === "image_ai" && <div><img src="/src/images/AI.svg" style={{width: "min(75vw, 75vh)"}}/></div>}
+                        {_loading && _loading_process === "image_ai" && <div><img src="/src/images/AI.svg" style={{width: "min(75vw, 75vh)", filter: "grayscale(0.33)"}}/></div>}
                         {_loading && _loading_process === "image_ai" && <h5><ShufflingSpanText text={"It can take a while, please wait ~5sec."} animation_delay_ms={5000} animation_duration_ms={500}/></h5>}
                         {_loading && _loading_process === "image_preload" && <h4><ShufflingSpanText text={"Preparing laboratory"} animation_delay_ms={300} animation_duration_ms={500}/></h4>}
-                        {_loading && _loading_process === "image_preload" && <div><img src="/src/images/laboratory.svg" style={{width: "min(75vw, 75vh)"}}/></div>}
+                        {_loading && _loading_process === "image_preload" && <div><img src="/src/images/laboratory.svg" style={{width: "min(75vw, 75vh)", filter: "grayscale(0.33)"}}/></div>}
                         {_loading && _loading_process === "image_preload" && <h5><ShufflingSpanText text={"It can take a while, please wait ~5sec."} animation_delay_ms={5000} animation_duration_ms={500}/></h5>}
                         {_loading && _loading_process === "image_load" && <h4><ShufflingSpanText text={"Abducting your image"} animation_delay_ms={300} animation_duration_ms={500}/></h4>}
-                        {_loading && _loading_process === "image_load" && <div><img src="/src/images/abduction.svg" style={{width: "min(75vw, 75vh)"}}/></div>}
+                        {_loading && _loading_process === "image_load" && <div><img src="/src/images/abduction.svg" style={{width: "min(75vw, 75vh)", filter: "grayscale(0.33)"}}/></div>}
                         {_loading && _loading_process === "image_load" && <h5><ShufflingSpanText text={"It can take a while, please wait ~7sec."} animation_delay_ms={5000} animation_duration_ms={500}/></h5>}
-                        {_loading && _loading_process === "image_render" && <div><img src="/src/images/CPU.svg" style={{width: "min(75vw, 75vh)"}}/></div>}
+                        {_loading && _loading_process === "image_render" && <div><img src="/src/images/CPU.svg" style={{width: "min(75vw, 75vh)", filter: "grayscale(0.33)"}}/></div>}
                         {_loading && _loading_process === "image_render" && <h4><ShufflingSpanText text={"Atomic rendering in process ~10-20sec"} animation_delay_ms={300} animation_duration_ms={500}/></h4>}
                         {_loading && _loading_process === "image_render" && <h5><ShufflingSpanText text={"It can take a while, please wait ~14sec."} animation_delay_ms={5000} animation_duration_ms={500}/></h5>}
                         {_loading && _loading_process === "less_color" && <h4><ShufflingSpanText text={"Coupling few color DNA"} animation_delay_ms={300} animation_duration_ms={500}/></h4>}
-                        {_loading && _loading_process === "less_color" && <div><img src="/src/images/DNA.svg" style={{width: "min(75vw, 75vh)"}}/></div>}
+                        {_loading && _loading_process === "less_color" && <div><img src="/src/images/DNA.svg" style={{width: "min(75vw, 75vh)", filter: "grayscale(0.33)"}}/></div>}
                         {_loading && _loading_process === "less_color" && <h5><ShufflingSpanText text={"It can take a while, please wait ~5sec."} animation_delay_ms={5000} animation_duration_ms={500}/></h5>}
                         {_loading && _loading_process === "less_color_auto" && <h4><ShufflingSpanText text={"Coupling the DNA of many color"} animation_delay_ms={500} animation_duration_ms={500}/></h4>}
-                        {_loading && _loading_process === "less_color_auto" && <div><img src="/src/images/DNA.svg" style={{width: "min(75vw, 75vh)"}}/></div>}
+                        {_loading && _loading_process === "less_color_auto" && <div><img src="/src/images/DNA.svg" style={{width: "min(75vw, 75vh)", filter: "grayscale(0.33)"}}/></div>}
                         {_loading && _loading_process === "less_color_auto" && <h5><ShufflingSpanText text={"It can take a while, please wait ~7sec."} animation_delay_ms={5000} animation_duration_ms={500}/></h5>}
                     </div>
                 </Backdrop>
