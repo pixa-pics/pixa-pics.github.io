@@ -1212,7 +1212,7 @@ class CanvasPixels extends React.Component {
 
         if(!w_canvas_pixels._is_mobile_or_tablet) {
 
-            _intervals[4] = setInterval(this.set_move_speed_average_now,  62);
+            _intervals[4] = setInterval(this.set_move_speed_average_now,  31);
         }
 
         _intervals[5] = setInterval(this._notify_export_state, this.state.export_state_every_ms);
@@ -1228,7 +1228,6 @@ class CanvasPixels extends React.Component {
 
         const pixelated_css =
             ".Canvas-Pixels, .Canvas-Wrapper-Overflow, .Canvas-Wrapper, .Canvas-Pixels-Cover {" +
-                "image-rendering: optimizequality;" +
                 "image-rendering: optimizespeed;" +
                 "image-rendering: crisp-edges;" +
                 "image-rendering: pixelated;" +
@@ -5566,7 +5565,7 @@ class CanvasPixels extends React.Component {
     _maybe_save_state = (set_anyway_if_changes_callback = null) => {
 
         let {  pxl_width, pxl_height, _s_pxls, _layers } = this.state;
-        if(_layers.length !== _s_pxls.length || pxl_width * pxl_height !== (_s_pxls[0] || []).length || (_s_pxls[0] || []).length === 0) {
+        if(_layers.length !== _s_pxls.length || pxl_width * pxl_height !== (_s_pxls[0] || []).length || (_s_pxls[0] || []).length === 0 || parseInt(this.state._last_action_timestamp + this.state._undo_buffer_time_ms) > Date.now()) {
 
             if(set_anyway_if_changes_callback) {
 
