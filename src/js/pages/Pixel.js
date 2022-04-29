@@ -844,9 +844,9 @@ class Pixel extends React.Component {
             const max_original_size = is_mobile_or_tablet ? Math.sqrt(1920 * 1080): Math.sqrt(4096 * 2160);
             const max_original_color = 1/0;
             const max_size = is_mobile_or_tablet ? Math.sqrt(1280 * 720): Math.sqrt(1920 * 1280);
-            const max_color = is_mobile_or_tablet ? 3072: 4096;
+            const max_color = is_mobile_or_tablet ? 2024: 3072;
 
-            let ratio_l_l2 = is_mobile_or_tablet ? 7: 9;
+            let ratio_l_l2 = is_mobile_or_tablet ? 4: 5;
             let min_size = is_mobile_or_tablet ? 0: 0;
             let min_color = is_mobile_or_tablet ? 1024: 1536;
 
