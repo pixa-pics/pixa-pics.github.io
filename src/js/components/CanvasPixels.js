@@ -903,7 +903,7 @@ function _loop(render, do_not_cancel_animation, force_update) {
 
     try {
 
-        let skip_frame_rate = w_canvas_pixels._is_mobile_or_tablet ? 30: 60;
+        let skip_frame_rate = w_canvas_pixels._is_mobile_or_tablet ? 25: 45;
 
         let now = Date.now();
         let running_smoothly = true;
@@ -5547,7 +5547,7 @@ class CanvasPixels extends React.Component {
                     _anim_loop(() => {
 
                         _canvas.context2d.drawImage(_canvas.offscreenCanvas, 0, 0);
-                    }, false, true); // Enable to cancel in order to know that a frame has not been drawn
+                    }, true, false); // Enable to cancel in order to know that a frame has not been drawn
                 });
             }
         }

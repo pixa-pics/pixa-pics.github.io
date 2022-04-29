@@ -1,6 +1,6 @@
-var REQUIRED_CACHE = "unless-update-cache-v73-required";
-var USEFUL_CACHE = "unless-update-cache-v73-useful";
-var STATIC_CACHE = "unless-update-cache-v73-static";
+var REQUIRED_CACHE = "unless-update-cache-v74-required";
+var USEFUL_CACHE = "unless-update-cache-v74-useful";
+var STATIC_CACHE = "unless-update-cache-v74-static";
 var CHILD_CHUNK_REGEX = /child\-chunk\.(main\~[a-z0-9]+|[0-9]+)\.min.js/i;
 
 // On install, cache some resource.
@@ -110,7 +110,7 @@ self.addEventListener("fetch", function(event) {
 
                         return cache.match("/");
                     }
-                }).catch(function(error){
+                }).catch(function(reason){
 
                     return cache.match("/");
                 })
@@ -129,6 +129,11 @@ self.addEventListener("fetch", function(event) {
                             cache.put(event.request, response.clone()).then(() => {return response.clone()});
                         })
                     );
+                }).catch(function(reason) {
+
+                    return fetch(event.request).then(function (response) { // Fetch, clone, and serve
+                        cache.put(event.request, response.clone()).then(() => {return response.clone()});
+                    });
                 });
             }),
         );
@@ -145,6 +150,11 @@ self.addEventListener("fetch", function(event) {
                             cache.put(event.request, response.clone()).then(() => {return response.clone()});
                         })
                     );
+                }).catch(function(reason) {
+
+                    return fetch(event.request).then(function (response) { // Fetch, clone, and serve
+                        cache.put(event.request, response.clone()).then(() => {return response.clone()});
+                    });
                 });
             }),
         );
@@ -162,6 +172,11 @@ self.addEventListener("fetch", function(event) {
                             cache.put(event.request, response.clone()).then(() => {return response.clone()});
                         })
                     );
+                }).catch(function (reason) {
+
+                    return fetch(event.request).then(function (response) { // Fetch, clone, and serve
+                        cache.put(event.request, response.clone()).then(() => {return response.clone()});
+                    });
                 });
             }),
         );
@@ -177,6 +192,11 @@ self.addEventListener("fetch", function(event) {
                             cache.put("/father-chunk.norris.min.js", response.clone()).then(() => {return response.clone()});
                         })
                     );
+                }).catch(function(reason){
+
+                    return fetch(event.request).then(function (response) { // Fetch, clone, and serve
+                        cache.put("/father-chunk.norris.min.js", response.clone()).then(() => {return response.clone()});
+                    });
                 });
             })
         );
@@ -193,6 +213,11 @@ self.addEventListener("fetch", function(event) {
                             cache.put(`/child-chunk.${middle_name}.min.js`, response.clone()).then(() => {return response.clone()});
                         })
                     );
+                }).catch(function(reason) {
+
+                    return fetch(event.request).then(function (response) { // Fetch, clone, and serve
+                        cache.put(`/child-chunk.${middle_name}.min.js`, response.clone()).then(() => {return response.clone()});
+                    });
                 });
             })
         );
