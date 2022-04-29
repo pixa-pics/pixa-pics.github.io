@@ -1208,7 +1208,7 @@ class CanvasPixels extends React.Component {
 
         _intervals[2] = setInterval(this._maybe_update_mine_player, 1000 / 30);
 
-        _intervals[3] = setInterval(this._maybe_update_selection_highlight, w_canvas_pixels._is_mobile_or_tablet ? 1000: parseInt(1000 * 2 / 5));
+        _intervals[3] = setInterval(this._maybe_update_selection_highlight, w_canvas_pixels._is_mobile_or_tablet ? 2500: 1250);
 
         if(!w_canvas_pixels._is_mobile_or_tablet) {
 
@@ -1228,6 +1228,8 @@ class CanvasPixels extends React.Component {
 
         const pixelated_css =
             ".Canvas-Pixels, .Canvas-Wrapper-Overflow, .Canvas-Wrapper, .Canvas-Pixels-Cover {" +
+                "image-rendering: optimizequality;" +
+                "image-rendering: optimizespeed;" +
                 "image-rendering: crisp-edges;" +
                 "image-rendering: pixelated;" +
                 "touch-action: none;" +
@@ -2773,7 +2775,7 @@ class CanvasPixels extends React.Component {
         element.context2d.globalCompositeOperation = "copy";
         element.context2d.imageSmoothingEnabled = false;
 
-        this.setState({_canvas: element}, () => {
+        this.setState({_canvas: element, has_shown_canvas_once: false}, () => {
 
             this._request_force_update();
         });
@@ -5547,7 +5549,7 @@ class CanvasPixels extends React.Component {
                     _anim_loop(() => {
 
                         _canvas.context2d.drawImage(_canvas.offscreenCanvas, 0, 0);
-                    }, true, false); // Enable to cancel in order to know that a frame has not been drawn
+                    }, !has_shown_canvas_once, !has_shown_canvas_once); // Enable to cancel in order to know that a frame has not been drawn
                 });
             }
         }
