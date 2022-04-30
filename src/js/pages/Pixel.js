@@ -844,15 +844,15 @@ class Pixel extends React.Component {
             const max_original_size = is_mobile_or_tablet ? Math.sqrt(1920 * 1080): Math.sqrt(4096 * 2160);
             const max_original_color = 1/0;
             const max_size = is_mobile_or_tablet ? Math.sqrt(1280 * 720): Math.sqrt(1920 * 1280);
-            const max_color = is_mobile_or_tablet ? 1024: 1536;
+            const max_color = is_mobile_or_tablet ? 768: 1536;
 
-            let ratio_l_l2 = is_mobile_or_tablet ? 2: 3;
+            let ratio_l_l2 = is_mobile_or_tablet ? 1.5: 3;
             let min_size = is_mobile_or_tablet ? 0: 0;
-            let min_color = is_mobile_or_tablet ? 512: 768;
+            let min_color = is_mobile_or_tablet ? 384: 768;
 
             const resize_original_to = max_original_size * max_original_size;
-            const resize_to = Math.min(max_size * max_size, Math.max(parseInt(_import_size) * parseInt(_import_size), min_size * min_size));
-            const limit_color_number = Math.min(max_color, Math.max(parseInt(_import_size) * ratio_l_l2, min_color));
+            const resize_to = Math.min(max_size * max_size, Math.max(parseInt(_import_size * _import_size), min_size * min_size));
+            const limit_color_number = Math.min(max_color, Math.max(parseInt(_import_size * ratio_l_l2), min_color));
 
             import("../utils/rgb_quant").then(({rgb_quant}) => {
 
