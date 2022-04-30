@@ -2531,7 +2531,7 @@ class CanvasPixels extends React.Component {
                 if(dont_change_img_size_onload === false) {
 
                     // From the result in colors and pixels color index find if the image is resized bigger but from a pixelart image
-                    let { new_pxl_colors, new_pxls, ratio_pixel_per_color, too_much_pixel_cpu_would_go_brrrrr } = this._get_pixels_palette_and_list_from_image_data(image_data, false, (256 - 256 / (merge_color_threshold * 256)) / 256);
+                    let { new_pxl_colors, new_pxls, ratio_pixel_per_color, too_much_pixel_cpu_would_go_brrrrr } = this._get_pixels_palette_and_list_from_image_data(image_data, false, (255 - 255 / (merge_color_threshold * 255)) / 255);
                     let cleaned = await this._remove_close_pxl_colors(new_pxls, new_pxl_colors, 4/16, null, 0);
                     new_pxls = Uint32Array.from(cleaned[0]);
                     new_pxl_colors = Array.from(cleaned[1]);
@@ -6871,7 +6871,7 @@ class CanvasPixels extends React.Component {
     _hsla_to_hex = (h, s, l, a) => {
 
         const v = this._hsl_to_rgb(h, s, l);
-        return this._get_hex_color_from_rgba_values(...v, 255 * (a / 100));
+        return this._get_hex_color_from_rgba_values(...v, parseInt(255 * (a / 100)));
     };
 
     _get_hex_values_from_rgba_values = (...rgba) => {
@@ -7194,8 +7194,8 @@ class CanvasPixels extends React.Component {
             const [h, s, l] = this._rgb_to_hsl(r, g, b);
             const saturation = Math.min(100, Math.max(0, s * alpha + beta));
             const new_saturation = intensity * saturation + (1-intensity) * s;
-            const rgb = this._hsl_to_rgb(h, new_saturation, l);
-            return this._get_hex_color_from_rgba_values(...rgb, a);
+            const [r1, g1, b1] = this._hsl_to_rgb(h, new_saturation, l);
+            return this._get_hex_color_from_rgba_values(r1, g1, b1, a);
         });
 
         return [pxls, pxl_colors];
@@ -7329,7 +7329,7 @@ class CanvasPixels extends React.Component {
                 const s_g = limit_to((r * .349) + (g *.686) + (b * .168), 255);
                 const s_b = limit_to((r * .272) + (g *.534) + (b * .131), 255);
 
-                color = this._get_hex_color_from_rgba_values(s_r, s_g, s_b, a * opacity);
+                color = this._get_hex_color_from_rgba_values(s_r, s_g, s_b, parseInt(a * opacity));
             }else if(mode === "hue") {
 
                 const [r, g, b, a] = this._get_rgba_from_hex(color);
@@ -7545,25 +7545,25 @@ class CanvasPixels extends React.Component {
     _filter_pixels = (name, intensity = 1, pxls, pxl_colors, remove_duplicate_pxl_colors = true) => {
 
         pxls = Uint16Array.from(pxls);
-        pxl_colors = Array.from(pxl_colors);
+        pxl_colors = Array.from(pxl_colors).map((c) => { return this._format_color(c)});
 
         const filters = this._get_filters();
         const filter = filters[name] || filters["1997"];
-        const pxl_colors_copy = [...pxl_colors];
+        const pxl_colors_copy = Array.from(pxl_colors);
 
         if(intensity !== 0) {
 
             pxl_colors = pxl_colors.map((hex, index) => {
 
-                const [r, g, b, a] = this._get_rgba_from_hex(hex);
+                const rgba = this._get_rgba_from_hex(hex);
                 return this._get_hex_color_from_rgba_values(
                     filter["a"][
-                        filter["r"][r]],
+                        filter["r"][rgba[0]]],
                     filter["a"][
-                        filter["g"][g]],
+                        filter["g"][rgba[1]]],
                     filter["a"][
-                        filter["b"][b]],
-                    a);
+                        filter["b"][rgba[2]]],
+                    rgba[3]);
             });
 
             pxl_colors = pxl_colors.map((hex, index) => {
@@ -7773,6 +7773,7 @@ class CanvasPixels extends React.Component {
         let min_grey = 255;
         let max_grey = 0;
 
+        pxl_colors = pxl_colors.map((c) => {return this._format_color(c)})
         pxl_colors.forEach((pxl_color, index) => {
 
             if(pxls.includes(index)) {
@@ -7805,9 +7806,9 @@ class CanvasPixels extends React.Component {
             g = g * alpha + beta;
             b = b * alpha + beta;
 
-            r = Math.min(255, Math.max(0, r));
-            g = Math.min(255, Math.max(0, g));
-            b = Math.min(255, Math.max(0, b));
+            r = parseInt(Math.min(255, Math.max(0, r)));
+            g = parseInt(Math.min(255, Math.max(0, g)));
+            b = parseInt(Math.min(255, Math.max(0, b)));
 
             return this._blend_colors(pxl_color, this._get_hex_color_from_rgba_values(r, g, b, a), intensity);
 
