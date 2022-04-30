@@ -103,7 +103,7 @@ window.get_base64_png_data_url_process_function_string = `return function(
 
             function this_get_rgba_from_hex(color) {
 
-                return new Uint8ClampedArray(Uint32Array.of(typeof color === "number" ? color: parseInt(color.slice(1), 16)).buffer).reverse();
+                return new Uint8ClampedArray(Uint32Array.of(parseInt(color.slice(1), 16)).buffer).reverse();
             }
 
             function this_reduce_color(rgba_component, color_gain ) {
@@ -266,7 +266,7 @@ window.get_base64_png_data_url_process_function_string = `return function(
         
                         var layer_pixel_color = _s_pxl_colors[i][_s_pxls[i][index]];
                         layer_pixel_colors[i] = layer_pixel_color;
-                        var rgba = layer_pixel_color;
+                        var rgba = this_get_rgba_from_hex(layer_pixel_color);
         
                         if(rgba[3] === 255) {
         
@@ -322,10 +322,10 @@ window.get_base64_png_data_url_process_function_string = `return function(
                       
                             if(with_palette) {
                         
-                                return Object.assign({}, {0: data_url, 1: Array.from(all_colors)});
+                                return Array.of(data_url, Array.from(all_colors));
                             }else {
                             
-                                return Object.assign({}, {0: data_url});
+                                return Array.of(data_url);
                             }
                         });
                     });
@@ -349,7 +349,7 @@ window.get_base64_png_data_url_process_function_string = `return function(
 
                         var layer_pixel_color = _s_pxl_colors[i][_s_pxls[i][index]];
                         layer_pixel_colors[i] = layer_pixel_color;
-                        var rgba = layer_pixel_color;
+                        var rgba = this_get_rgba_from_hex(layer_pixel_color);
 
                         if(rgba[3] === 255) {
 
@@ -377,11 +377,11 @@ window.get_base64_png_data_url_process_function_string = `return function(
                 });
 
                 if(with_palette) {
-
-                    return Object.assign({}, {0: canvas.toDataURL(), 1: Array.from(all_colors)});
+                        
+                    return Array.of(canvas.toDataURL(), Array.from(all_colors));
                 }else {
-
-                    return Object.assign({}, {0: canvas.toDataURL()});
+                
+                    return Array.of(canvas.toDataURL());
                 }
             }
         }`;
@@ -398,7 +398,7 @@ window.get_layer_base64_png_data_url_process_function_string = `return function(
             
             function this_get_rgba_from_hex(color) {
 
-                return new Uint8ClampedArray(Uint32Array.of(typeof color === "number" ? color: parseInt(color.slice(1), 16)).buffer).reverse();
+                return new Uint8ClampedArray(Uint32Array.of(parseInt(color.slice(1), 16)).buffer).reverse();
             }
 
             function this_format_color(color) {
@@ -499,7 +499,7 @@ window.get_layer_base64_png_data_url_process_function_string = `return function(
                 
                 function this_get_rgba_from_hex(color) {
     
-                    return new Uint8ClampedArray(Uint32Array.of(typeof color === "number" ? color: parseInt(color.slice(1), 16)).buffer).reverse();
+                    return new Uint8ClampedArray(Uint32Array.of(parseInt(color.slice(1), 16)).buffer).reverse();
                 }
     
                 function this_format_color(color) {
@@ -643,7 +643,7 @@ window.remove_close_pxl_colors_process_function_string = `return async function(
 
             function this_get_rgba_from_hex(color) {
 
-                return new Uint8ClampedArray(Uint32Array.of(typeof color === "number" ? color: parseInt(color.slice(1), 16)).buffer).reverse();
+                return new Uint8ClampedArray(Uint32Array.of(parseInt(color.slice(1), 16)).buffer).reverse();
             }
 
             function this_reduce_color(rgba_component, color_gain ) {
