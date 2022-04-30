@@ -103,7 +103,7 @@ window.get_base64_png_data_url_process_function_string = `return function(
 
             function this_get_rgba_from_hex(color) {
 
-                return new Uint8ClampedArray(Uint32Array.of(parseInt(color.slice(1), 16)).buffer).reverse();
+                return new Uint8ClampedArray(Uint32Array.of(typeof color === "number" ? color: parseInt(color.slice(1), 16)).buffer).reverse();
             }
 
             function this_reduce_color(rgba_component, color_gain ) {
@@ -398,7 +398,7 @@ window.get_layer_base64_png_data_url_process_function_string = `return function(
             
             function this_get_rgba_from_hex(color) {
 
-                return new Uint8ClampedArray(Uint32Array.of(parseInt(color.slice(1), 16)).buffer).reverse();
+                return new Uint8ClampedArray(Uint32Array.of(typeof color === "number" ? color: parseInt(color.slice(1), 16)).buffer).reverse();
             }
 
             function this_format_color(color) {
@@ -432,19 +432,16 @@ window.get_layer_base64_png_data_url_process_function_string = `return function(
                 if(parseInt(scale) === 1){
                 
                     imgd = new ImageData(pxl_width, pxl_height);
-                    var imgdd = imgd.data;
                     
                     pxls.forEach((pxl, index) => {
             
                         var color = this_get_rgba_from_hex(pxl_colors[pxl]);
-                        var index_by_4 = index * 4;
-                    
-                        imgdd[index_by_4 + 0] = color[0];
-                        imgdd[index_by_4 + 1] = color[1];
-                        imgdd[index_by_4 + 2] = color[2];
-                        imgdd[index_by_4 + 3] = color[3];
+                        
+                        imgd.data[index * 4 + 0] = color[0];
+                        imgd.data[index * 4 + 1] = color[1];
+                        imgd.data[index * 4 + 2] = color[2];
+                        imgd.data[index * 4 + 3] = color[3];
                     });
-                    imgd.data = imgdd;
                 } else {
                 
                     var canvas = new OffscreenCanvas(pxl_width * scale, pxl_height * scale);
@@ -502,7 +499,7 @@ window.get_layer_base64_png_data_url_process_function_string = `return function(
                 
                 function this_get_rgba_from_hex(color) {
     
-                    return new Uint8ClampedArray(Uint32Array.of(parseInt(color.slice(1), 16)).buffer).reverse();
+                    return new Uint8ClampedArray(Uint32Array.of(typeof color === "number" ? color: parseInt(color.slice(1), 16)).buffer).reverse();
                 }
     
                 function this_format_color(color) {
@@ -534,19 +531,17 @@ window.get_layer_base64_png_data_url_process_function_string = `return function(
                 if(parseInt(scale) === 1){
                 
                     imgd = new ImageData(pxl_width, pxl_height);
-                    var imgdd = imgd.data;
                     
                     pxls.forEach((pxl, index) => {
             
                         var color = this_get_rgba_from_hex(pxl_colors[pxl]);
                         var index_by_4 = index * 4;
                     
-                        imgdd[index_by_4 + 0] = color[0];
-                        imgdd[index_by_4 + 1] = color[1];
-                        imgdd[index_by_4 + 2] = color[2];
-                        imgdd[index_by_4 + 3] = color[3];
+                        imgd.data[index_by_4 + 0] = color[0];
+                        imgd.data[index_by_4 + 1] = color[1];
+                        imgd.data[index_by_4 + 2] = color[2];
+                        imgd.data[index_by_4 + 3] = color[3];
                     });
-                    imgd.data = imgdd;
                     
                     ctx.putImageData(image_data, 0, 0);
                 } else {
@@ -648,7 +643,7 @@ window.remove_close_pxl_colors_process_function_string = `return async function(
 
             function this_get_rgba_from_hex(color) {
 
-                return new Uint8ClampedArray(Uint32Array.of(parseInt(color.slice(1), 16)).buffer).reverse();
+                return new Uint8ClampedArray(Uint32Array.of(typeof color === "number" ? color: parseInt(color.slice(1), 16)).buffer).reverse();
             }
 
             function this_reduce_color(rgba_component, color_gain ) {
@@ -5355,7 +5350,6 @@ class CanvasPixels extends React.Component {
             // This is a list of color index that we explore
             const _s_pxls_layer_index = _s_pxls[_layer_index];
             const length = _s_pxls_layer_index.length;
-            let image_data_data = image_data.data;
             for(let index = 0; index < length; index++){
 
                 const pxl = _s_pxls_layer_index[index];
@@ -5495,10 +5489,10 @@ class CanvasPixels extends React.Component {
                     const rgba = this._get_rgba_from_hex(color);
                     const index_by_4 = index * 4;
 
-                    image_data_data[index_by_4 + 0] = rgba[0];
-                    image_data_data[index_by_4 + 1] = rgba[1];
-                    image_data_data[index_by_4 + 2] = rgba[2];
-                    image_data_data[index_by_4 + 3] = rgba[3];
+                    image_data.data[index_by_4 + 0] = rgba[0];
+                    image_data.data[index_by_4 + 1] = rgba[1];
+                    image_data.data[index_by_4 + 2] = rgba[2];
+                    image_data.data[index_by_4 + 3] = rgba[3];
 
                     pixel_updated++;
                 }
@@ -5506,7 +5500,6 @@ class CanvasPixels extends React.Component {
 
             if(pixel_updated > 0 || (hide_canvas_content && !_was_canvas_content_hidden)) {
 
-                image_data.data = image_data_data;
                 this.setState({
                     _pxl_indexes_of_selection_drawn: new Set(_pxl_indexes_of_selection),
                     _pxl_indexes_of_old_shape: new Set(pxl_indexes_of_current_shape),
