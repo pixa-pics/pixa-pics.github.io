@@ -1749,9 +1749,9 @@ class PixelToolboxSwipeableViews extends React.Component {
                                                              }
                                                              : {}
                                                      }>
-                                                    {action_set.tools.map((tool) => {
+                                                    {action_set.tools.map((tool, index) => {
                                                         return (
-                                                            <ListItem button disabled={tool.disabled || false}
+                                                            <ListItem key={index} button disabled={tool.disabled || false}
                                                                       onClick={tool.on_click}>
                                                                 <ListItemIcon className={classes.listItemIcon}>
                                                                     {tool.icon}
