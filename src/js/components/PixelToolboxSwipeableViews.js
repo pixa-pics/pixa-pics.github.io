@@ -138,7 +138,7 @@ const styles = theme => ({
         }
     },
     listItems: {
-        display: "flex",
+        display: "inline-flex",
         flexWrap: "wrap",
         alignContent: "stretch",
         flexDirection: "row",
@@ -168,7 +168,7 @@ const styles = theme => ({
             }
         },
         [theme.breakpoints.down("md")]: {
-            display: "flex",
+            display: "inline-flex",
             justifyContent: "flex-start",
             flexDirection: "row",
             flexWrap: "wrap",
@@ -1382,9 +1382,9 @@ class PixelToolboxSwipeableViews extends React.Component {
         return (
             <SwipeableViews
                 containerStyle={{overflow: "visible"}}
-                animateHeight={false}
-                animateTransitions={false}
-                disableLazyLoading={true}
+                animateHeight={true}
+                animateTransitions={true}
+                disableLazyLoading={false}
                 index={view_name_index}
                 onChangeIndex={this._handle_view_name_change}
                 disabled={false}

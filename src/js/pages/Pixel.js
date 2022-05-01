@@ -185,7 +185,7 @@ const styles = theme => ({
         },
         '& div .react-swipeable-view-container > div[aria-hidden=false] > ul': {
             [theme.breakpoints.down("md")]: {
-                paddingBottom: 144 + 16,
+                paddingBottom: 168 + 16,
             }
         },
         '& > div > .react-swipeable-view-container': {
@@ -198,21 +198,37 @@ const styles = theme => ({
         },
     },
     tabs: {
+        contain: "paint size style layout",
+        height: 72,
+        display: "grid",
         "& .MuiTab-root": {
             minWidth: "auto",
             flex: "auto",
         },
         "& .MuiTabs-indicator": {
-            backgroundColor: "#0d1771",
+            backgroundColor: "#050c4c",
         }
     },
     tab: {
         color: theme.palette.secondary.main,
         backgroundColor: "#fff",
         "&.Mui-selected": {
-            color: "#0d1771",
+            fontWeight: "bold",
             backgroundColor: "#e5e5e5",
+            "& .MuiTab-wrapper": {
+                color: "#050c4c",
+            },
+            "& .MuiTab-wrapper svg": {
+                color: "#050c4c",
+            }
         },
+        "& .MuiTab-wrapper": {
+            fontSize: "11px",
+            color: "#7175a0",
+        },
+        "& .MuiTab-wrapper svg": {
+            color: "#474a6b",
+        }
     },
     backdrop: {
         zIndex: 2000,
@@ -226,7 +242,7 @@ const styles = theme => ({
     },
     fatabs: {
         boxShadow: "0px 2px 4px -1px rgb(0 0 0 / 20%), 0px 4px 5px 0px rgb(0 0 0 / 14%), 0px 1px 10px 0px rgb(0 0 0 / 12%)",
-        contain: "paint size size layout",
+        contain: "paint size style layout",
         [theme.breakpoints.up("lg")]: {
             display: "none",
         },
@@ -238,7 +254,7 @@ const styles = theme => ({
         bottom: 0,
         right: 0,
         width: "100vw",
-        height: 48,
+        height: 72,
     },
     listOfTools: {
         paddingTop: 0,
@@ -1426,18 +1442,19 @@ class Pixel extends React.Component {
                             </div>
                             <Tabs className={classes.tabs}
                                   indicatorColor="primary"
+                                  variant="scrollable"
+                                  scrollButtons="auto"
                                   textColor="primary"
-                                  variant="fullWidth"
                                   selectionFollowsFocus={false}
                                   value={_view_name_index}
                                   onChange={(event, index) => {this._handle_view_name_change(index)}}>
-                                <Tab className={classes.tab} icon={<PaletteIcon />} />
-                                <Tab className={classes.tab} icon={<ImageIcon />} />
-                                <Tab className={classes.tab} icon={<AllLayersIcon />} />
-                                <Tab className={classes.tab} icon={<ToolsIcon />} />
-                                <Tab className={classes.tab} icon={<SelectIcon />} />
-                                <Tab className={classes.tab} icon={<ImageEffectIcon />} />
-                                <Tab className={classes.tab} icon={<ImageFilterMagicIcon />} />
+                                <Tab className={classes.tab} label={"colors"} icon={<PaletteIcon />} />
+                                <Tab className={classes.tab} label={"image"} icon={<ImageIcon />} />
+                                <Tab className={classes.tab} label={"layers"} icon={<AllLayersIcon />} />
+                                <Tab className={classes.tab} label={"tools"} icon={<ToolsIcon />} />
+                                <Tab className={classes.tab} label={"select"} icon={<SelectIcon />} />
+                                <Tab className={classes.tab} label={"effects"} icon={<ImageEffectIcon />} />
+                                <Tab className={classes.tab} label={"filters"} icon={<ImageFilterMagicIcon />} />
                             </Tabs>
                         </div>
                         <div className={classes.drawerContainer} onGotPointerCapture={(event) => {event.stopPropagation(); event.preventDefault();}}>
@@ -1528,19 +1545,20 @@ class Pixel extends React.Component {
                                 />
                             </div>
                             <Tabs className={classes.tabs}
+                                  variant="scrollable"
+                                  scrollButtons="auto"
                                   indicatorColor="primary"
                                   textColor="primary"
-                                  variant="fullWidth"
                                   selectionFollowsFocus={false}
                                   value={_view_name_index}
                                   onChange={(event, index) => {this._handle_view_name_change(index)}}>
-                                <Tab className={classes.tab} icon={<PaletteIcon />} />
-                                <Tab className={classes.tab} icon={<ImageIcon />} />
-                                <Tab className={classes.tab} icon={<AllLayersIcon />} />
-                                <Tab className={classes.tab} icon={<ToolsIcon />} />
-                                <Tab className={classes.tab} icon={<SelectIcon />} />
-                                <Tab className={classes.tab} icon={<ImageEffectIcon />} />
-                                <Tab className={classes.tab} icon={<ImageFilterMagicIcon />} />
+                                <Tab className={classes.tab} label={"colors"} icon={<PaletteIcon />} />
+                                <Tab className={classes.tab} label={"image"} icon={<ImageIcon />} />
+                                <Tab className={classes.tab} label={"layers"} icon={<AllLayersIcon />} />
+                                <Tab className={classes.tab} label={"tools"} icon={<ToolsIcon />} />
+                                <Tab className={classes.tab} label={"select"} icon={<SelectIcon />} />
+                                <Tab className={classes.tab} label={"effects"} icon={<ImageEffectIcon />} />
+                                <Tab className={classes.tab} label={"filters"} icon={<ImageFilterMagicIcon />} />
                             </Tabs>
                         </div>
                         <div className={classes.drawerContainer}>
@@ -1828,19 +1846,20 @@ class Pixel extends React.Component {
                 <Fade in={!_is_edit_drawer_open} key={_is_edit_drawer_open ? "ok": "nok"} timeout={{ enter: 350, exit: 175}}>
                     <div className={classes.fatabs}>
                         <Tabs className={classes.tabs}
+                              variant="scrollable"
+                              scrollButtons="auto"
                               indicatorColor="primary"
                               textColor="primary"
-                              variant="fullWidth"
                               selectionFollowsFocus={false}
                               value={_view_name_index}
                               onChange={(event, index) => {this._handle_edit_drawer_open(event, index)}}>
-                            <Tab className={classes.tab} icon={<PaletteIcon />} />
-                            <Tab className={classes.tab} icon={<ImageIcon />} />
-                            <Tab className={classes.tab} icon={<AllLayersIcon />} />
-                            <Tab className={classes.tab} icon={<ToolsIcon />} />
-                            <Tab className={classes.tab} icon={<SelectIcon />} />
-                            <Tab className={classes.tab} icon={<ImageEffectIcon />} />
-                            <Tab className={classes.tab} icon={<ImageFilterMagicIcon />} />
+                            <Tab className={classes.tab} label={"colors"} icon={<PaletteIcon />} />
+                            <Tab className={classes.tab} label={"image"} icon={<ImageIcon />} />
+                            <Tab className={classes.tab} label={"layers"} icon={<AllLayersIcon />} />
+                            <Tab className={classes.tab} label={"tools"} icon={<ToolsIcon />} />
+                            <Tab className={classes.tab} label={"select"} icon={<SelectIcon />} />
+                            <Tab className={classes.tab} label={"effects"} icon={<ImageEffectIcon />} />
+                            <Tab className={classes.tab} label={"filters"} icon={<ImageFilterMagicIcon />} />
                         </Tabs>
                     </div>
                 </Fade>
