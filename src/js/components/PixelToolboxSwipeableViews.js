@@ -84,13 +84,15 @@ const styles = theme => ({
     listSubHeader: {
         width: "calc(100% - 8px)",
         alignSelf: "flex-start",
-        color: theme.palette.secondary.light,
+        color: "#0d1771",
+        fontWeight: "bold",
         backgroundColor: "#e5e5e5",
         textTransform: "uppercase",
         "& span svg": {
-            verticalAlign: "sub",
+            verticalAlign: "middle",
+            color: "#0d1771",
             marginRight: theme.spacing(1),
-            display: "none",
+            //display: "none",
         }
     },
     listItemIcon: {
@@ -664,13 +666,14 @@ class PixelToolboxSwipeableViews extends React.Component {
             }
         });
 
-        const too_much_colors_no_vector = layers_colors_max >= 256;
+        const too_much_colors_no_vector = layers_colors_max >= 128;
         const actions = {
             "palette": [],
             "image": [
                 {
                     icon: <NavigationIcon/>,
                     text: "Navigation",
+                    sub: "History of editing have memory of around 50 grouped operations.",
                     tools: [
                         {
                             icon: <MoveIcon/>, disabled: tool === "MOVE", text: "Move", on_click: () => {
@@ -700,6 +703,7 @@ class PixelToolboxSwipeableViews extends React.Component {
                 {
                     icon: <DownloadIcon/>,
                     text: "Download (raster / matrix)",
+                    sub: "This is the classical way to scale pixel art, it creates hard edges and bigger square area for each pixels",
                     tools: [
                         {
                             icon: <FileDownloadIcon/>, text: "Render (1x size)", sub: "[CTRL + Q]", on_click: () => {
@@ -733,7 +737,8 @@ class PixelToolboxSwipeableViews extends React.Component {
                 },
                 {
                     icon: <DownloadIcon/>,
-                    text: too_much_colors_no_vector ? "Download (painting / vector) [Unavailable - too much colors (>=256)]" : "Download (painting / vector)",
+                    text: "Download (vector / painting)",
+                    sub: too_much_colors_no_vector ? "Please ensure to have less than 128 colors in your image because it needs to create paths for each colors when it will render the SVG (vectorial) file.": "With this method of rendering our image will be upscaled and available in both HD PNG (useful to post on social media) and neat SVG which means that it has an infinite resolutions for printers and displays as it uses shapes instead of pixels.",
                     tools: [
                         {
                             icon: <FileDownloadIcon/>,
@@ -778,6 +783,7 @@ class PixelToolboxSwipeableViews extends React.Component {
                 {
                     icon: <LayerSearchIcon/>,
                     text: `Layer tools`,
+                    sub: "You can choose to draw above the non-modified image you imported if you need to or to display a chessboard below all layers as well as editing on different layer to preserve any other layers from those edits.",
                     tools: [
                         {
                             icon: hide_canvas_content ? <LayerOutlineIcon/> : <LayerOffOutlineIcon/>,
@@ -1254,10 +1260,18 @@ class PixelToolboxSwipeableViews extends React.Component {
                         },
                         {
                             icon: <LessColorIcon/>,
-                            text: "To less colors",
-                            sub: "Effect strength have an impact",
+                            text: "Less colors by strength",
+                            sub: "Effect strength have an impact.",
                             on_click: () => {
-                                canvas.to_less_color(slider_value)
+                                canvas.to_less_color(slider_value / 5)
+                            }
+                        },
+                        {
+                            icon: <LessColorIcon/>,
+                            text: "Less colors by small steps",
+                            sub: "It will replace some colors by their result of blending together if they are very close of each other.",
+                            on_click: () => {
+                                this._less_colors_stepped()
                             }
                         },
                         {
@@ -1324,7 +1338,8 @@ class PixelToolboxSwipeableViews extends React.Component {
             "filters": [
                 {
                     icon: <ImageFilterMagicIcon/>,
-                    text: `Filters (Strength: ${slider_value * 100}%)`,
+                    text: "Filters",
+                    sub: "The strength selected with the slider above has an impact on the intensity applied to the current layer while preview are shown at 100% intensity. To cancel the operation, you can use the undo functionality since choosing another filter will add it to the previous one.",
                     tools: filters.map((name) => {
                         return {
                             icon: (filters_thumbnail[name] || "").length >= 1 ?
@@ -1389,7 +1404,7 @@ class PixelToolboxSwipeableViews extends React.Component {
                                         <div>
                                             <ListSubheader className={classes.listSubHeader}>
                                                 <span><AllLayersIcon/></span>
-                                                <span>►►► All layers</span>
+                                                <span>All layers</span>
                                             </ListSubheader>
                                             <div>
                                                 {Array.from(layers).reverse().map((layer, index, array) => {
@@ -1576,7 +1591,7 @@ class PixelToolboxSwipeableViews extends React.Component {
                                         <div>
                                             <ListSubheader className={classes.listSubHeader}>
                                                 <span><ImportIcon/></span>
-                                                <span>►►► Upload</span>
+                                                <span>Upload</span>
                                             </ListSubheader>
                                             <div className={classes.listItems}>
                                                 <ListItem button onClick={() => {
@@ -1598,8 +1613,17 @@ class PixelToolboxSwipeableViews extends React.Component {
                                                                   primary={"Library to new"} secondary={""}/>
                                                 </ListItem>
                                             </div>
-                                            <FormLabel style={{padding: "24px 0px 12px 24px"}} component="legend">CHOOSE
-                                                FINAL SIZE</FormLabel>
+                                            <div style={{
+                                                padding: "8px 24px",
+                                                position: "relative",
+                                                overflow: "visible",
+                                                boxSizing: "border-box",
+                                                width: "100%",
+                                                color: "#9e9e9e",
+                                                fontStyle: "italic",
+                                            }}>
+                                                <span>Setting the image size it will be reduced to needs to be done before importing your image, meanwhile on devices lacking computation power we recommend to not surpass 384px because the editing experience may be lacking performances.</span>
+                                            </div>
                                             <div className={classes.listItems}>
                                                 <RadioGroup row name="Import size" onChange={this._set_import_size}
                                                             value={import_size} style={{margin: "12px 11px"}}>
@@ -1704,28 +1728,6 @@ class PixelToolboxSwipeableViews extends React.Component {
                                             <p style={{padding: "0px 16px"}}>
                                                 <img style={{filter: "drop-shadow(1px 2px 3px grey)"}} src={SENSITIVE_DATA}/>
                                             </p>
-                                            <ListSubheader className={classes.listSubHeader}>
-                                                <span><ImagePlusIcon/></span>
-                                                <span>►►► Create new</span>
-                                            </ListSubheader>
-                                            <div style={{
-                                                padding: "8px 24px",
-                                                position: "relative",
-                                                overflow: "hidden",
-                                                boxSizing: "border-box",
-                                                width: "100%"
-                                            }}>
-                                                <Typography id="width-slider" gutterBottom>Width</Typography>
-                                                <Slider value={width} step={8} valueLabelDisplay="auto" min={0}
-                                                        max={width > 512 ? width : 512}
-                                                        onChangeCommitted={this._set_width_from_slider}
-                                                        aria-labelledby="width-slider"/>
-                                                <Typography id="height-slider" gutterBottom>Height</Typography>
-                                                <Slider value={height} step={8} valueLabelDisplay="auto" min={0}
-                                                        max={height > 512 ? height : 512}
-                                                        onChangeCommitted={this._set_height_from_slider}
-                                                        aria-labelledby="height-slider"/>
-                                            </div>
                                         </div>
                                         : null
                                 }
@@ -1736,8 +1738,22 @@ class PixelToolboxSwipeableViews extends React.Component {
                                             <div key={index}>
                                                 <ListSubheader className={classes.listSubHeader}>
                                                     <span>{action_set.icon}</span>
-                                                    <span>►►► {action_set.text}</span>
+                                                    <span>{action_set.text}</span>
                                                 </ListSubheader>
+                                                {
+                                                    action_set.sub &&
+                                                    <div style={{
+                                                        padding: "8px 24px",
+                                                        position: "relative",
+                                                        overflow: "visible",
+                                                        boxSizing: "border-box",
+                                                        width: "100%",
+                                                        color: "#9e9e9e",
+                                                        fontStyle: "italic",
+                                                    }}>
+                                                        <span>{action_set.sub}</span>
+                                                    </div>
+                                                }
                                                 <div className={classes.listItems}
                                                      style={
                                                          action_set.text.toLowerCase().includes("effects") || action_set.text.toLowerCase().includes("download") || action_set.text.toLowerCase().includes("filter") ?
@@ -1765,6 +1781,35 @@ class PixelToolboxSwipeableViews extends React.Component {
                                             </div>
                                         );
                                     })
+                                }
+
+                                {
+                                    view_names[index] === "image" ?
+                                        <div>
+                                            <ListSubheader className={classes.listSubHeader}>
+                                                <span><ImagePlusIcon/></span>
+                                                <span>Create new</span>
+                                            </ListSubheader>
+                                            <div style={{
+                                                padding: "8px 24px",
+                                                position: "relative",
+                                                overflow: "hidden",
+                                                boxSizing: "border-box",
+                                                width: "100%"
+                                            }}>
+                                                <Typography id="width-slider" gutterBottom>Width</Typography>
+                                                <Slider value={width} step={8} valueLabelDisplay="auto" min={0}
+                                                        max={width > 512 ? width : 512}
+                                                        onChangeCommitted={this._set_width_from_slider}
+                                                        aria-labelledby="width-slider"/>
+                                                <Typography id="height-slider" gutterBottom>Height</Typography>
+                                                <Slider value={height} step={8} valueLabelDisplay="auto" min={0}
+                                                        max={height > 512 ? height : 512}
+                                                        onChangeCommitted={this._set_height_from_slider}
+                                                        aria-labelledby="height-slider"/>
+                                            </div>
+                                        </div>
+                                        : null
                                 }
 
                             </List>

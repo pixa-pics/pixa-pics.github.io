@@ -3127,7 +3127,7 @@ class CanvasPixels extends React.Component {
 
                 this.setState({_imported_image_move_from: [pos_x, pos_y]});
 
-            }else if((event_which === 2) || (tool === "MOVE" && (event_which === 1 || event_which === -1))){
+            }else if((event_which === 2) || (tool === "MOVE" && _imported_image_pxls.length <= 0 && (event_which === 1 || event_which === -1))){
 
                 this.setState({_image_move_from: [event.x, event.y]});
 
@@ -4579,9 +4579,11 @@ class CanvasPixels extends React.Component {
     _handle_canvas_mouse_move = (event, canvas_event_target) => {
 
         const { tool, pxl_width, pxl_height, _pxls_hovered, pxl_current_color, hide_canvas_content, _mouse_down, _event_button, no_actions } = this.state;
+        let { _pxl_indexes_of_selection, _imported_image_pxls } = this.state;
+
         const event_which = _event_button+1;
 
-        if((event_which === 2 && _mouse_down) || (tool === "MOVE" && event_which === 1 && _mouse_down) || (_mouse_down && canvas_event_target === "CANVAS_WRAPPER_OVERFLOW")) {
+        if((event_which === 2 && _mouse_down) || (tool === "MOVE" && _imported_image_pxls.length <= 0 && event_which === 1 && _mouse_down) || (_mouse_down && canvas_event_target === "CANVAS_WRAPPER_OVERFLOW")) {
 
             this._handle_canvas_move(event, canvas_event_target);
             return;
@@ -4599,7 +4601,6 @@ class CanvasPixels extends React.Component {
             return;
         }
 
-        let { _pxl_indexes_of_selection, _imported_image_pxls } = this.state;
         const pxl_index = (pos_y * pxl_width) + pos_x;
 
         if(pxl_index !== _pxls_hovered && !hide_canvas_content) {

@@ -203,14 +203,14 @@ const styles = theme => ({
             flex: "auto",
         },
         "& .MuiTabs-indicator": {
-            backgroundColor: theme.palette.secondary.main
+            backgroundColor: "#0d1771",
         }
     },
     tab: {
         color: theme.palette.secondary.main,
         backgroundColor: "#fff",
         "&.Mui-selected": {
-            color: theme.palette.secondary.dark,
+            color: "#0d1771",
             backgroundColor: "#e5e5e5",
         },
     },
