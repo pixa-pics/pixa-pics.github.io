@@ -1265,32 +1265,27 @@ class Pixel extends React.Component {
         _canvas.auto_adjust_saturation(1/3);
     };
 
-    _less_colors_stepped = (increase = 1) => {
+    _less_colors_stepped = (increase = 1, callback_function = () => {}) => {
 
         const { _canvas } = this.state;
-
-        let colors_removed = 0;
-        let less_color_step = increase;
-        const try_another = () => {
-
-            _canvas.to_less_color(less_color_step / 64, (result) => {
-
-                colors_removed = result.colors_removed;
-                less_color_step += increase;
-                increase -= colors_removed > 0 ? 1: 0;
-                if(colors_removed < 1) {
-                    try_another();
-                }
-            });
-        };
-
-        try_another();
+        _canvas.less_colors_stepped(increase, callback_function);
     };
 
     _less_colors_auto = ( ) => {
 
-        const { _canvas } = this.state;
-        _canvas.to_less_color("auto");
+        const { _canvas, _layers, _layer_index } = this.state;
+
+        if(parseInt((_layers[_layer_index] || {}).number_of_colors || 0) >= 384) {
+
+            actions.trigger_snackbar("Ho! There is more than 384 colors, let's scan and remove the closest ones.")
+            this._less_colors_stepped(1, () => {
+
+                _canvas.to_less_color("auto");
+            });
+        }else {
+
+            _canvas.to_less_color("auto");
+        }
     };
 
     _get_average_color_of_selection = () => {

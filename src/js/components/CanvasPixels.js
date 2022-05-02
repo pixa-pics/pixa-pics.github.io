@@ -823,26 +823,8 @@ window.remove_close_pxl_colors_process_function_string = `return async function(
                 original_pxls = Uint32Array.from(pxls);
                 original_pxl_colors = Array.from(pxl_colors);
 
-                var reduced_pxl_colors = Array.from(pxl_colors).map((color_hex) => {
-
-                    var c = this_get_rgba_from_hex(color_hex);
-                    
-                    var r = c[0];
-                    var g = c[1];
-                    var b = c[2];
-                    var a = c[3];
-
-                    r = this_reduce_color(r, 1 - color_loss);
-                    g = this_reduce_color(g, 1 - color_loss);
-                    b = this_reduce_color(b, 1 - color_loss);
-                    a = this_reduce_color(a, 1 - color_loss);
-
-                    return this_get_hex_color_from_rgba_values(r, g, b, a);
-
-                });
-
                 var new_pxls = Uint32Array.from(original_pxls);
-                var new_pxl_colors = Array.from(reduced_pxl_colors);
+                var new_pxl_colors = Array.from(original_pxl_colors);
 
                 for (var i = 1; i <= threshold_steps; i += 1) {
                 
@@ -6598,6 +6580,29 @@ class CanvasPixels extends React.Component {
         this._to_vignette(color, intensity);
     }
 
+    less_colors_stepped = (increase = 1, callback_function = () => {}) => {
+
+        let colors_removed = 0;
+        let less_color_step = increase;
+        const try_another = () => {
+
+            this.to_less_color(less_color_step / 64, (result) => {
+
+                colors_removed = result.colors_removed;
+                less_color_step += increase;
+                increase -= colors_removed > 0 ? 1: 0;
+                if(colors_removed < 1) {
+                    try_another();
+                }else {
+
+                    callback_function(result);
+                }
+            });
+        };
+
+        try_another();
+    };
+
     to_less_color = (threshold = 1/16, callback_function = () => {}) => {
 
 
@@ -6614,7 +6619,6 @@ class CanvasPixels extends React.Component {
 
         this._to_less_color(threshold, (results) => {
 
-            callback_function(results);
             if(this.props.onLoadComplete) {
 
                 if(threshold === "auto") {
@@ -6625,6 +6629,7 @@ class CanvasPixels extends React.Component {
                     if(this.props.onLoadComplete) { this.props.onLoadComplete("less_color_auto", results); }
                 }
             }
+            callback_function(results);
         });
     }
 
