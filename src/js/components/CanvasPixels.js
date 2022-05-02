@@ -86,16 +86,6 @@ window.get_base64_png_data_url_process_function_string = `return function(
                 return Uint8ClampedArray.of(parseInt(r * 255), parseInt(g * 255), parseInt(b * 255));
             }
 
-            function this_get_hex_values_from_rgba_values(r, g, b, a) {
-
-                return Array.of(
-                    this_get_hex_value_from_rgb_value(r),
-                    this_get_hex_value_from_rgb_value(g),
-                    this_get_hex_value_from_rgb_value(b),
-                    this_get_hex_value_from_rgb_value(a)
-                );
-            }
-
             function this_get_hex_color_from_rgba_values(r, g, b, a) {
 
                 return "#".concat("00000000".concat(new Uint32Array(Uint8ClampedArray.of(a, b, g, r).buffer)[0].toString(16)).slice(-8));
@@ -119,11 +109,6 @@ window.get_base64_png_data_url_process_function_string = `return function(
 
                     return parseInt(comp_by_gain / color_gain);
                 }
-            }
-
-            function this_get_hex_value_from_rgb_value(value) {
-
-                return parseInt(value).toString(16).padStart(2, "0");
             }
 
             function this_format_color(color) {
@@ -623,17 +608,7 @@ window.remove_close_pxl_colors_process_function_string = `return async function(
                     b = hue_to_rgb(p, q, h - 1 / 3);
                 }
 
-                return Uint8ClampedArray.of(parseInt(r * 255), parseInt(g * 255), parseInt(b * 255));
-            }
-
-            function this_get_hex_values_from_rgba_values(r, g, b, a) {
-
-                return Array.of(
-                    this_get_hex_value_from_rgb_value(r),
-                    this_get_hex_value_from_rgb_value(g),
-                    this_get_hex_value_from_rgb_value(b),
-                    this_get_hex_value_from_rgb_value(a)
-                );
+                return Uint8ClampedArray.of(r * 255, g * 255, b * 255);
             }
 
             function this_get_hex_color_from_rgba_values(r, g, b, a) {
@@ -659,11 +634,6 @@ window.remove_close_pxl_colors_process_function_string = `return async function(
 
                     return parseInt(comp_by_gain / color_gain);
                 }
-            }
-
-            function this_get_hex_value_from_rgb_value(value) {
-
-                return parseInt(value).toString(16).padStart(2, "0");
             }
 
             function this_format_color(color) {
@@ -867,7 +837,7 @@ window.remove_close_pxl_colors_process_function_string = `return async function(
                     b = this_reduce_color(b, 1 - color_loss);
                     a = this_reduce_color(a, 1 - color_loss);
 
-                    return "#" + this_get_hex_value_from_rgb_value(r) + this_get_hex_value_from_rgb_value(g) + this_get_hex_value_from_rgb_value(b) + this_get_hex_value_from_rgb_value(a);
+                    return this_get_hex_color_from_rgba_values(r, g, b, a);
 
                 });
 
@@ -971,7 +941,9 @@ const _caf =
     window.webkitCancelAnimationFrame ||
     window.msCancelAnimationFrame;
 
-function _loop(render, do_not_cancel_animation, force_update) {
+function _loop(render, do_not_cancel_animation, force_update, requested_at_t = Date.now()) {
+
+    if(requested_at_t < w_canvas_pixels._last_raf_time && !do_not_cancel_animation) { return }
 
     try {
 
@@ -1057,10 +1029,10 @@ function _loop(render, do_not_cancel_animation, force_update) {
 
         }else if(deltaT < 1000 / (skip_frame_rate * 2)){
 
-            setTimeout(() => {_loop(render, do_not_cancel_animation, force_update)}, 1000 / (skip_frame_rate * 8));
+            setTimeout(() => {_loop(render, do_not_cancel_animation, force_update, requested_at_t)}, 1000 / (skip_frame_rate * 8));
         }else if(force_update || do_not_cancel_animation) {
 
-            setTimeout(() => {_loop(render, do_not_cancel_animation, force_update)}, 1000 / (skip_frame_rate * 8));
+            setTimeout(() => {_loop(render, do_not_cancel_animation, force_update, requested_at_t)}, 1000 / (skip_frame_rate * 8));
         }else {
 
             //caf(caf_id);
@@ -5481,7 +5453,7 @@ class CanvasPixels extends React.Component {
 
                         if(is_in_the_current_selection && !is_in_the_current_shape && !is_pixel_hovered) {
 
-                            const opacity = 0 + (0 + ((pos_x + pos_y + (_selection_pair_highlight ? 1: 0)) % 2)) / 5;
+                            const opacity = 1/3 + (0 + ((pos_x + pos_y + (_selection_pair_highlight ? 1: 0)) % 2)) / 3;
                             color = this._blend_colors(pixel_color_hex, "hover", opacity, false);
                         }
                     }
