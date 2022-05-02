@@ -92,7 +92,7 @@ const styles = theme => ({
         height: "100%",
         maxHeight: "100%",
         display: "flex",
-        contain: "paint style size layout",
+        contain: "paint style size layout !important",
     },
     contentDrawer: {
         overscrollBehavior: "none",
@@ -179,9 +179,11 @@ const styles = theme => ({
         '& div .react-swipeable-view-container > div': {
             overflow: "visible !important",
             alignItems: "normal",
+            contain: "size style",
         },
         '& div .react-swipeable-view-container > div[aria-hidden=true]': {
             overflow: "hidden !important",
+            contentVisibility: "hidden",
         },
         '& div .react-swipeable-view-container > div[aria-hidden=false] > ul': {
             [theme.breakpoints.down("md")]: {

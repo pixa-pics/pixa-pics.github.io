@@ -1,6 +1,6 @@
-var REQUIRED_CACHE = "unless-update-cache-v88-required";
-var USEFUL_CACHE = "unless-update-cache-v88-useful";
-var STATIC_CACHE = "unless-update-cache-v88-static";
+var REQUIRED_CACHE = "unless-update-cache-v89-required";
+var USEFUL_CACHE = "unless-update-cache-v89-useful";
+var STATIC_CACHE = "unless-update-cache-v89-static";
 var MAIN_CHILD_CHUNK_REGEX = /child\-chunk\.(main\~[a-z0-9]+)\.min.js/i;
 var CHILD_CHUNK_REGEX = /child\-chunk\.([0-9]+)\.min.js/i;
 
@@ -96,29 +96,7 @@ self.addEventListener("fetch", function(event) {
 
     const url = event.request.url;
 
-    if(event.request.mode === "navigate") {
-
-        event.respondWith(
-
-            caches.open(REQUIRED_CACHE).then(function (cache) {
-
-                return fetch(event.request).then(function (response) { // Fetch, clone, and serve
-
-                    if(response.status === 200) {
-
-                        return cache.put("/", response.clone()).then(function () {return response.clone()});
-                    }else {
-
-                        return cache.match("/");
-                    }
-                }).catch(function(reason){
-
-                    return cache.match("/");
-                })
-            })
-        );
-
-    }else if((url.includes(".png") || url.includes(".jpg") || url.includes(".jpeg") || url.includes(".gif") || url.includes(".ico")) && event.request.mode === "same-origin") {
+    if((url.includes(".png") || url.includes(".jpg") || url.includes(".jpeg") || url.includes(".gif") || url.includes(".ico")) && event.request.mode === "same-origin") {
 
         // Serve cached image if doesn't fail
         event.respondWith(
@@ -244,7 +222,29 @@ self.addEventListener("fetch", function(event) {
             })
         );
 
-    }else {
+    }else if(event.request.mode === "navigate") {
+
+        event.respondWith(
+
+            caches.open(REQUIRED_CACHE).then(function (cache) {
+
+                return fetch(event.request).then(function (response) { // Fetch, clone, and serve
+
+                    if(response.status === 200) {
+
+                        return cache.put("/", response.clone()).then(function () {return response.clone()});
+                    }else {
+
+                        return cache.match("/");
+                    }
+                }).catch(function(reason){
+
+                    return cache.match("/");
+                })
+            })
+        );
+
+    } else {
         Promise.race([
             caches.open(REQUIRED_CACHE).then(function (cache) {
                 return cache.match(event.request).then(function (response) {
