@@ -102,6 +102,7 @@ const overrides = {
             },
             "*::-webkit-scrollbar-thumb": {
                 backgroundColor: "rgba(124,124,124,.3)",
+                zIndex: "1",
                 borderRadius: 8
             },
             ".MuiAvatar-root": {

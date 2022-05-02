@@ -82,15 +82,15 @@ const SENSITIVE_DATA = svg_to_base64(<SensitiveData />);
 
 const styles = theme => ({
     listSubHeader: {
-        width: "calc(100% - 8px)",
+        width: "100%",
         alignSelf: "flex-start",
-        color: "#0d1771",
+        color: "#3729c1",
         fontWeight: "bold",
-        backgroundColor: "#e5e5e5",
+        backgroundColor: "#eee",
         textTransform: "uppercase",
         "& span svg": {
             verticalAlign: "middle",
-            color: "#0d1771",
+            color: "#050c4c",
             marginRight: theme.spacing(1),
             //display: "none",
         }
@@ -371,23 +371,7 @@ class PixelToolboxSwipeableViews extends React.Component {
     _less_colors_stepped = (increase = 1) => {
 
         const { canvas } = this.state;
-
-        let colors_removed = 0;
-        let less_color_step = increase;
-        const try_another = () => {
-
-            canvas.to_less_color(less_color_step / 64, (result) => {
-
-                colors_removed = result.colors_removed;
-                less_color_step += increase;
-                increase -= colors_removed > 0 ? 1: 0;
-                if(colors_removed < 1) {
-                    try_another();
-                }
-            });
-        };
-
-        try_another();
+        canvas._less_colors_stepped(increase)
     };
 
     _colorize = () => {
@@ -1261,7 +1245,7 @@ class PixelToolboxSwipeableViews extends React.Component {
                         {
                             icon: <LessColorIcon/>,
                             text: "Less colors by strength",
-                            sub: "Effect strength have an impact.",
+                            sub: "Effect strength have an impact",
                             on_click: () => {
                                 canvas.to_less_color(slider_value / 5)
                             }
@@ -1269,7 +1253,7 @@ class PixelToolboxSwipeableViews extends React.Component {
                         {
                             icon: <LessColorIcon/>,
                             text: "Less colors by small steps",
-                            sub: "It will replace some colors by their result of blending together if they are very close of each other.",
+                            sub: "Remove colors slowly",
                             on_click: () => {
                                 this._less_colors_stepped()
                             }
@@ -1381,10 +1365,10 @@ class PixelToolboxSwipeableViews extends React.Component {
 
         return (
             <SwipeableViews
-                containerStyle={{overflow: "visible"}}
+                containerStyle={{overflow: "visible", contain: "style size"}}
                 animateHeight={true}
                 animateTransitions={true}
-                disableLazyLoading={false}
+                disableLazyLoading={true}
                 index={view_name_index}
                 onChangeIndex={this._handle_view_name_change}
                 disabled={false}
@@ -1392,9 +1376,7 @@ class PixelToolboxSwipeableViews extends React.Component {
                 {
                     Object.entries(actions).map(a => a[1]).map((view, index) => {
 
-                        if (view_name_index !== index) {
-                            return <List style={{overflow: "visible"}}/>;
-                        }
+                        //if (view_name_index !== index) {return <List style={{overflow: "visible"}}/>;}
 
                         return (
                             <List key={index} style={{overflow: "visible", paddingTop: 0}}>
@@ -1626,7 +1608,7 @@ class PixelToolboxSwipeableViews extends React.Component {
                                             </div>
                                             <div className={classes.listItems}>
                                                 <RadioGroup row name="Import size" onChange={this._set_import_size}
-                                                            value={import_size} style={{margin: "12px 11px"}}>
+                                                            value={import_size} style={{padding: "12px 0px", margin: "0px 11px"}}>
                                                     <FormControlLabel
                                                         value={"32"}
                                                         control={<Radio color="primary"/>}
@@ -1698,11 +1680,11 @@ class PixelToolboxSwipeableViews extends React.Component {
                                             <FormLabel style={{padding: "24px 0px 12px 24px"}} component="legend">AI TUNING BEFORE IMPORT</FormLabel>
                                             <div className={classes.listItems}>
                                                 <RadioGroup row name="Colorize" onChange={this._set_import_colorize}
-                                                            value={import_colorize} style={{margin: "12px 11px"}}>
+                                                            value={import_colorize} style={{padding: "12px 0px", margin: "0px 11px"}}>
                                                     <FormControlLabel
                                                         value={"0"}
                                                         control={<Radio color="primary"/>}
-                                                        label="KEEP ORIGINAL"
+                                                        label="ORIGINAL"
                                                         labelPlacement="bottom"
                                                     />
                                                     <FormControlLabel
@@ -1714,13 +1696,13 @@ class PixelToolboxSwipeableViews extends React.Component {
                                                     <FormControlLabel
                                                         value={"2"}
                                                         control={<Radio color="primary"/>}
-                                                        label="REMOVE NOISE"
+                                                        label="SCALE 2X"
                                                         labelPlacement="bottom"
                                                     />
                                                     <FormControlLabel
                                                         value={"3"}
                                                         control={<Radio color="primary"/>}
-                                                        label="+COLOR & -NOISE"
+                                                        label="BOTH"
                                                         labelPlacement="bottom"
                                                     />
                                                 </RadioGroup>

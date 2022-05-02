@@ -411,6 +411,7 @@ window.get_layer_base64_png_data_url_process_function_string = `return async fun
             }
             
             var pxl_colors_rgba = pxl_colors.map(function(c) { return this_format_color(c)}).map(function(c){return this_get_rgba_from_hex(c)});
+            var no_transparent = true;
             
             try {
                 
@@ -427,6 +428,11 @@ window.get_layer_base64_png_data_url_process_function_string = `return async fun
                         imgd.data[index * 4 + 1] = color[1];
                         imgd.data[index * 4 + 2] = color[2];
                         imgd.data[index * 4 + 3] = color[3];
+                        
+                        if(no_transparent && color[3] !== 255) {
+                        
+                            no_transparent = false;
+                        }
                     });
                 } else {
                 
@@ -436,6 +442,11 @@ window.get_layer_base64_png_data_url_process_function_string = `return async fun
                     pxls.forEach((pxl, index) => {
             
                         var pixel_color_hex = pxl_colors[pxl];
+                        
+                        if(no_transparent && pixel_color_hex.slice(-2) !== "ff"){
+                        
+                            no_transparent = false;
+                        }
             
                         var pos_x = index % pxl_width;
                         var pos_y = (index - pos_x) / pxl_width;
@@ -464,7 +475,8 @@ window.get_layer_base64_png_data_url_process_function_string = `return async fun
                 
                     ctx2.transferFromImageBitmap(btmp_i);
     
-                    return ctx2.canvas.convertToBlob({type: "image/jpeg", quality: 0.3}).then((blob) => {
+                    var blob_params = no_transparent ? {type: "image/jpeg", quality: 0.3}: {type: "image/png"};
+                    return ctx2.canvas.convertToBlob(blob_params).then((blob) => {
                     
                         function blob_to_base64(blob) {
                           return new Promise((resolve, _) => {
@@ -503,6 +515,12 @@ window.get_layer_base64_png_data_url_process_function_string = `return async fun
                         imgd.data[index_by_4 + 1] = color[1];
                         imgd.data[index_by_4 + 2] = color[2];
                         imgd.data[index_by_4 + 3] = color[3];
+                        
+                        if(no_transparent && color[3] !== 255) {
+                        
+                            no_transparent = false;
+                        }
+                        
                     });
                     
                     ctx.putImageData(image_data, 0, 0);
@@ -514,6 +532,11 @@ window.get_layer_base64_png_data_url_process_function_string = `return async fun
                     pxls.forEach((pxl, index) => {
             
                         var pixel_color_hex = pxl_colors[pxl];
+                        
+                        if(no_transparent && pixel_color_hex.slice(-2) !== "ff"){
+                        
+                            no_transparent = false;
+                        }
             
                         var pos_x = index % pxl_width;
                         var pos_y = (index - pos_x) / pxl_width;
@@ -533,7 +556,13 @@ window.get_layer_base64_png_data_url_process_function_string = `return async fun
                 var ctx2 = canvas2.getContext("2d");
                 ctx2.drawImage(canvas, 0, 0, resizeWidth, resizeHeight);
                 
-                return canvas2.toDataURL("image/jpeg", 0.3);
+                if(no_transparent){
+                    
+                    return canvas2.toDataURL("image/jpeg", 0.3);
+                }else {
+                
+                    return canvas2.toDataURL("image/png");
+                }
             }
         }`;
 

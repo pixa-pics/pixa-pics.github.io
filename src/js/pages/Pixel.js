@@ -18,12 +18,6 @@ import { HISTORY } from "../utils/constants";
 
 import actions from "../actions/utils";
 
-import PaletteIcon from "../icons/Palette";
-import ImageIcon from "@material-ui/icons/Image";
-import AllLayersIcon from "../icons/AllLayers";
-import ToolsIcon from "../icons/Tools";
-import SelectIcon from "../icons/Select";
-import ImageEffectIcon from "../icons/ImageEffect";
 import ImageFilterMagicIcon from "../icons/ImageFilterMagic";
 import SquareIcon from "../icons/Square";
 
@@ -57,6 +51,14 @@ import ImageFileDialog from "../components/ImageFileDialog";
 import {base64png_to_xbrz_svg} from "../utils/png-xbrz-svg";
 
 import {postJSON} from "../utils/load-json";
+
+import ColorsTweemoji from "../twemoji/react/1F3A8";
+import ImageTweemoji from "../twemoji/react/1F5Bc";
+import LayersTweemoji from "../twemoji/react/1F5C3";
+import ToolsTweemoji from "../twemoji/react/1F58C";
+import SelectTweemoji from "../twemoji/react/1Fa84";
+import EffectsTweemoji from "../twemoji/react/2B50";
+import FiltersTweemoji from "../twemoji/react/1F984";
 
 import HexGrid from "../icons/HexGrid";
 import get_svg_in_b64 from "../utils/svgToBase64";
@@ -111,8 +113,13 @@ const styles = theme => ({
         zIndex: -1,
         background: "#fff",
     },
+    effectSliderText:{
+        color: "#050c4c",
+        fontWeight: "bold",
+        textTransform: "uppercase",
+    },
     effectSlider: {
-
+        color: "#3729c1",
         "& > .MuiSlider-track": {
             height: 4,
         }
@@ -164,7 +171,7 @@ const styles = theme => ({
         contain: "layout paint size style",
     },
     drawerContainer: {
-        contain: "layout paint size style",
+        contain: "size style",
         height: "calc(100vh - 96px) !important",
         overflow: "overlay",
         [theme.breakpoints.up("lg")]: {
@@ -179,11 +186,16 @@ const styles = theme => ({
         '& div .react-swipeable-view-container > div': {
             overflow: "visible !important",
             alignItems: "normal",
-            contain: "size style",
+            contain: "style size paint layout",
+        },
+        [theme.breakpoints.down("md")]: {
+            '& div .react-swipeable-view-container > div': {
+                contain: "size style"
+            }
         },
         '& div .react-swipeable-view-container > div[aria-hidden=true]': {
             overflow: "hidden !important",
-            contentVisibility: "hidden",
+            contentVisibility: "auto",
         },
         '& div .react-swipeable-view-container > div[aria-hidden=false] > ul': {
             [theme.breakpoints.down("md")]: {
@@ -208,28 +220,29 @@ const styles = theme => ({
             flex: "auto",
         },
         "& .MuiTabs-indicator": {
-            backgroundColor: "#050c4c",
+            backgroundColor: "#3729c1",
         }
     },
     tab: {
-        color: theme.palette.secondary.main,
         backgroundColor: "#fff",
+        color: "#050c4c",
+        transition: "color, background-color ease-in .225s",
         "&.Mui-selected": {
             fontWeight: "bold",
-            backgroundColor: "#e5e5e5",
+            backgroundColor: "#050c4c",
+            color: "#fff",
+            borderRadius: "4px",
             "& .MuiTab-wrapper": {
-                color: "#050c4c",
-            },
-            "& .MuiTab-wrapper svg": {
-                color: "#050c4c",
+                filter: "opacity(1)",
             }
         },
         "& .MuiTab-wrapper": {
             fontSize: "11px",
-            color: "#7175a0",
+            filter: "opacity(.66)",
         },
         "& .MuiTab-wrapper svg": {
-            color: "#474a6b",
+            width: 32,
+            height: 32,
         }
     },
     backdrop: {
@@ -1407,7 +1420,7 @@ class Pixel extends React.Component {
             (
                 <SwipeableDrawer
                     className={classes.contentDrawer}
-                    disableBackdropTransition={true}
+                    disableBackdropTransition={false}
                     disableSwipeToOpen={true}
                     disableDiscovery={true}
                     keepMounted={true}
@@ -1426,8 +1439,8 @@ class Pixel extends React.Component {
                     <div style={{display: "grid"}}>
                         <div style={{boxShadow: "rgb(0 0 0 / 20%) 0px 2px 4px -1px, rgb(0 0 0 / 14%) 0px 4px 5px 0px, rgb(0 0 0 / 12%) 0px 1px 10px 0px", zIndex: 1}}>
                             <div className={classes.drawerHeader}>
-                                <Typography id="strength-slider" gutterBottom>
-                                    Effect strength:
+                                <Typography className={classes.effectSliderText} id="strength-slider" gutterBottom>
+                                    Effect strength :
                                 </Typography>
                                 <Slider
                                     className={classes.effectSlider}
@@ -1441,19 +1454,18 @@ class Pixel extends React.Component {
                             </div>
                             <Tabs className={classes.tabs}
                                   indicatorColor="primary"
-                                  variant="scrollable"
-                                  scrollButtons="auto"
+                                  variant="fullWidth"
                                   textColor="primary"
                                   selectionFollowsFocus={false}
                                   value={_view_name_index}
                                   onChange={(event, index) => {this._handle_view_name_change(index)}}>
-                                <Tab className={classes.tab} label={"colors"} icon={<PaletteIcon />} />
-                                <Tab className={classes.tab} label={"image"} icon={<ImageIcon />} />
-                                <Tab className={classes.tab} label={"layers"} icon={<AllLayersIcon />} />
-                                <Tab className={classes.tab} label={"tools"} icon={<ToolsIcon />} />
-                                <Tab className={classes.tab} label={"select"} icon={<SelectIcon />} />
-                                <Tab className={classes.tab} label={"effects"} icon={<ImageEffectIcon />} />
-                                <Tab className={classes.tab} label={"filters"} icon={<ImageFilterMagicIcon />} />
+                                <Tab className={classes.tab} label={"colors"} icon={<ColorsTweemoji />} />
+                                <Tab className={classes.tab} label={"image"} icon={<ImageTweemoji />} />
+                                <Tab className={classes.tab} label={"layers"} icon={<LayersTweemoji />} />
+                                <Tab className={classes.tab} label={"tools"} icon={<ToolsTweemoji />} />
+                                <Tab className={classes.tab} label={"select"} icon={<SelectTweemoji />} />
+                                <Tab className={classes.tab} label={"effects"} icon={<EffectsTweemoji />} />
+                                <Tab className={classes.tab} label={"filters"} icon={<FiltersTweemoji />} />
                             </Tabs>
                         </div>
                         <div className={classes.drawerContainer} onGotPointerCapture={(event) => {event.stopPropagation(); event.preventDefault();}}>
@@ -1530,8 +1542,8 @@ class Pixel extends React.Component {
                                                 <span>{` | X: ${x}, Y: ${y} | `}</span>
                                                 <span className={_kb < 64 ? classes.green: classes.red}>{`[~${Math.round(_kb * 100) / 100} kB]`}</span>
                                             </span>
-                                <Typography id="strength-slider" gutterBottom>
-                                    Effect strength:
+                                <Typography className={classes.effectSliderText} id="strength-slider" gutterBottom>
+                                    Effect strength :
                                 </Typography>
                                 <Slider
                                     defaultValue={_slider_value}
@@ -1544,20 +1556,19 @@ class Pixel extends React.Component {
                                 />
                             </div>
                             <Tabs className={classes.tabs}
-                                  variant="scrollable"
-                                  scrollButtons="auto"
+                                  variant="fullWidth"
                                   indicatorColor="primary"
                                   textColor="primary"
                                   selectionFollowsFocus={false}
                                   value={_view_name_index}
                                   onChange={(event, index) => {this._handle_view_name_change(index)}}>
-                                <Tab className={classes.tab} label={"colors"} icon={<PaletteIcon />} />
-                                <Tab className={classes.tab} label={"image"} icon={<ImageIcon />} />
-                                <Tab className={classes.tab} label={"layers"} icon={<AllLayersIcon />} />
-                                <Tab className={classes.tab} label={"tools"} icon={<ToolsIcon />} />
-                                <Tab className={classes.tab} label={"select"} icon={<SelectIcon />} />
-                                <Tab className={classes.tab} label={"effects"} icon={<ImageEffectIcon />} />
-                                <Tab className={classes.tab} label={"filters"} icon={<ImageFilterMagicIcon />} />
+                                <Tab className={classes.tab} label={"colors"} icon={<ColorsTweemoji />} />
+                                <Tab className={classes.tab} label={"image"} icon={<ImageTweemoji />} />
+                                <Tab className={classes.tab} label={"layers"} icon={<LayersTweemoji />} />
+                                <Tab className={classes.tab} label={"tools"} icon={<ToolsTweemoji />} />
+                                <Tab className={classes.tab} label={"select"} icon={<SelectTweemoji />} />
+                                <Tab className={classes.tab} label={"effects"} icon={<EffectsTweemoji />} />
+                                <Tab className={classes.tab} label={"filters"} icon={<FiltersTweemoji />} />
                             </Tabs>
                         </div>
                         <div className={classes.drawerContainer}>
@@ -1852,13 +1863,13 @@ class Pixel extends React.Component {
                               selectionFollowsFocus={false}
                               value={_view_name_index}
                               onChange={(event, index) => {this._handle_edit_drawer_open(event, index)}}>
-                            <Tab className={classes.tab} label={"colors"} icon={<PaletteIcon />} />
-                            <Tab className={classes.tab} label={"image"} icon={<ImageIcon />} />
-                            <Tab className={classes.tab} label={"layers"} icon={<AllLayersIcon />} />
-                            <Tab className={classes.tab} label={"tools"} icon={<ToolsIcon />} />
-                            <Tab className={classes.tab} label={"select"} icon={<SelectIcon />} />
-                            <Tab className={classes.tab} label={"effects"} icon={<ImageEffectIcon />} />
-                            <Tab className={classes.tab} label={"filters"} icon={<ImageFilterMagicIcon />} />
+                            <Tab className={classes.tab} label={"colors"} icon={<ColorsTweemoji />} />
+                            <Tab className={classes.tab} label={"image"} icon={<ImageTweemoji />} />
+                            <Tab className={classes.tab} label={"layers"} icon={<LayersTweemoji />} />
+                            <Tab className={classes.tab} label={"tools"} icon={<ToolsTweemoji />} />
+                            <Tab className={classes.tab} label={"select"} icon={<SelectTweemoji />} />
+                            <Tab className={classes.tab} label={"effects"} icon={<EffectsTweemoji />} />
+                            <Tab className={classes.tab} label={"filters"} icon={<FiltersTweemoji />} />
                         </Tabs>
                     </div>
                 </Fade>
