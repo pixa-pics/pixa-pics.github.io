@@ -1249,7 +1249,7 @@ class CanvasPixels extends React.Component {
             _intervals: [],
             _kb: 0,
             _device_motion: false,
-            export_state_every_ms: props.export_state_every_ms || 20 * 1000,
+            export_state_every_ms: props.export_state_every_ms || 60 * 1000,
             xxhash32: null,
             _last_filters_hash: "",
         };
@@ -5755,30 +5755,34 @@ class CanvasPixels extends React.Component {
         this.import_JS_state(JSON.parse(json));
     };
 
-    import_JS_state = (js) => {
+    import_JS_state = async(js, callback_function) => {
 
+        console.log(js);
+        let _json_state_history = Object.assign({}, {
+            history_position: parseInt(js._json_state_history.history_position),
+            previous_history_position: parseInt(js._json_state_history.previous_history_position),
+            state_history: Array.from(js._json_state_history.state_history).map((state) => Object.assign({}, {
+                _original_image_index: parseInt(state._original_image_index),
+                pxl_width: parseInt(state.pxl_width),
+                pxl_height: parseInt(state.pxl_height),
+                _pxl_indexes_of_selection: new Set(Boolean(state._pxl_indexes_of_selection.length) ? state._pxl_indexes_of_selection : []),
+                _s_pxl_colors: Array.from(state._s_pxl_colors).map((a) => Array.from(Object.values(a).map((i) => String(i)))),
+                _s_pxls: Array.from(state._s_pxls).map((a) => Uint16Array.from(Object.values(a).map((i) => parseInt(i)))),
+                _layers: Array.from(state._layers),
+                _layer_index: parseInt(state._layer_index),
+                _pencil_mirror_index: parseInt(state._pencil_mirror_index),
+                _id: parseInt(state._pencil_mirror_index)
+            }))
+        });
 
-        const _json_state_history = {
-            history_position: js._json_state_history.history_position,
-            previous_history_position: js._json_state_history.previous_history_position,
-            state_history: Array.from(js._json_state_history.state_history).map((state) => {
-
-                state = Object.assign({}, state);
-                state._s_pxls = Array.from(state._s_pxls).map((a) => Uint16Array.of(...a));
-                state._s_pxl_colors = Array.from(state._s_pxl_colors).map((a) => Array.from(a));
-                state._layers = Array.from(state._layers);
-
-                return state;
-            })
-        };
-
-        const { _original_image_index, pxl_width, pxl_height, _pxl_indexes_of_selection, _s_pxl_colors, _s_pxls, _layers, _layer_index, _pencil_mirror_index, _id } = _json_state_history.state_history[_json_state_history.history_position-1];
-        const has_new_dimension = Boolean(pxl_width !== this.state.pxl_width || pxl_height !== this.state.pxl_height);
+        console.log("before setstate")
+        let { _original_image_index, pxl_width, pxl_height, _pxl_indexes_of_selection, _s_pxl_colors, _s_pxls, _layers, _layer_index, _pencil_mirror_index, _id } = _json_state_history.state_history[_json_state_history.history_position-1];
 
         this.setState({
             _id: parseInt(_id),
             pxl_width: parseInt(pxl_width),
             pxl_height: parseInt(pxl_height),
+            _base64_original_images: Array.from(js._base64_original_images),
             _original_image_index: parseInt(_original_image_index),
             _saved_json_state_history_timestamp_from_drawing: 0,
             _layers: Array.from(_layers).map((l) => {
@@ -5791,41 +5795,29 @@ class CanvasPixels extends React.Component {
                 }
             }),
             _layer_index: parseInt(_layer_index),
-            _s_pxls: Array.from(_s_pxls).map((a) => Uint16Array.of(...a)),
-            _s_pxl_colors: Array.from(_s_pxl_colors).map((a) => Array.from(a)),
+            _s_pxls: Array.from(_s_pxls).map((a) => Uint16Array.from(Object.values(a).map((i) => parseInt(i)))),
+            _s_pxl_colors: Array.from(_s_pxl_colors).map((a) => Array.from(Object.values(a).map((i) => String(i)))),
             _pxl_indexes_of_selection: new Set(_pxl_indexes_of_selection),
             _pencil_mirror_index: parseInt(_pencil_mirror_index),
             _json_state_history: _json_state_history,
-            _is_there_new_dimension: has_new_dimension,
-            _old_pxls_hovered: -1,
-            _pxls_hovered: -1,
-            _old_pxl_colors: [],
-            _old_pxls: new Uint16Array(_s_pxls[0].length).fill(0),
-            _hidden: true,
-            has_shown_canvas_once: false,
-            _last_action_timestamp: Date.now(),
+            _is_there_new_dimension: true,
         }, () => {
 
-            if (has_new_dimension) {
+            console.log("setstate");
+            this._notify_layers_and_compute_thumbnails_change( () => {
 
-                this._notify_layers_and_compute_thumbnails_change( () => {
+                console.log("thumbnail");
 
-                    this._update_screen_zoom_ratio(true,() => {
+                this._update_screen_zoom_ratio(true, () => {
 
-                        this._notify_image_load_complete();
-                        this._notify_is_something_selected();
-                        this._notify_can_undo_redo_change();
-                    });
-                });
-            }else {
+                    console.log("zoom");
 
-                this._notify_layers_and_compute_thumbnails_change(() => {
-
-                    this._update_canvas();
+                    this._notify_image_load_complete();
                     this._notify_is_something_selected();
                     this._notify_can_undo_redo_change();
+                    callback_function();
                 });
-            }
+            });
         });
     };
 
@@ -5851,13 +5843,13 @@ class CanvasPixels extends React.Component {
                     const bytes = 3 * Math.ceil((base_64.length/4));
                     callback_function({
                         id: _id,
-                        kb: bytes / 1000,
+                        kb: bytes / 1024,
                         preview: base_64,
                         timestamp: Date.now(),
                         _base64_original_images: _base64_original_images,
                         _json_state_history
                     });
-                }, false, 2, 60, 75);
+                }, false, 0, 60, 75);
             }
         });
     };

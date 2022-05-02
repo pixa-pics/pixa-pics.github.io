@@ -484,8 +484,10 @@ class Pixel extends React.Component {
     _process_settings_attachment_result = (error, data) => {
 
         const { _canvas } = this.state;
-        _canvas.import_JS_state(data);
-        this.setState({ _is_pixel_dialog_create_open: false});
+        _canvas.import_JS_state(data, () => {
+
+            this.setState({ _is_pixel_dialog_create_open: false});
+        });
     };
 
     _update_settings() {
@@ -1874,7 +1876,7 @@ class Pixel extends React.Component {
 
 
                 <PixelDialogCreate open={_is_pixel_dialog_create_open && !_is_manual_warning_open && _settings_set}
-                                   pixel_arts={{..._attachment_previews}}
+                                   pixel_arts={_attachment_previews}
                                    size={_import_size}
                                    on_import_size_change={this._set_import_size}
                                    on_pixel_art_delete={(id) => {this._delete_unsaved_pixel_art(id)}}
