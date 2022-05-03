@@ -5326,6 +5326,8 @@ class CanvasPixels extends React.Component {
             // This is a list of color index that we explore
             const _s_pxls_layer_index = _s_pxls[_layer_index];
             const length = _s_pxls_layer_index.length;
+            const _s_pxl_colors_uint32 = Array.from(_s_pxl_colors).map((pxl_colors) => {return pxl_colors.map((c) => {return this._format_color(c, true)})});
+
             for(let index = 0; index < length; index++){
 
                 const pxl = _s_pxls_layer_index[index];
@@ -5390,10 +5392,10 @@ class CanvasPixels extends React.Component {
 
                     for (let i = _layers.length - 1; i >= 0; i--) {
 
-                        const layer_pixel_color = _s_pxl_colors[i][_s_pxls[i][index]];
+                        const layer_pixel_color = _s_pxl_colors_uint32[i][_s_pxls[i][index]];
                         layer_pixel_colors[i] = layer_pixel_color;
 
-                        if(this._get_rgba_from_hex(layer_pixel_color)[3] === 255 && _layers[i].opacity === 1 && !_layers[i].hidden) {
+                        if(this._get_rgba_from_Uint32(layer_pixel_color)[3] === 255 && _layers[i].opacity === 1 && !_layers[i].hidden) {
 
                             start_i = i;
                             break;
@@ -5401,7 +5403,7 @@ class CanvasPixels extends React.Component {
 
                     }
 
-                    let pixel_color_hex = "#00000000";
+                    let pixel_color_Uint32 = 0;
 
                     for (let i = start_i; i < _layers.length; i++) {
 
@@ -5409,17 +5411,17 @@ class CanvasPixels extends React.Component {
 
                             const layer_pixel_color = layer_pixel_colors[i];
 
-                            pixel_color_hex = this._blend_colors(pixel_color_hex, layer_pixel_color, _layers[i].opacity, false);
+                            pixel_color_Uint32 = this._blend_colors(pixel_color_Uint32, layer_pixel_color, _layers[i].opacity, false, false, true);
 
                             if(is_in_image_imported && i === _layer_index) {
 
-                                pixel_color_hex = this._blend_colors(pixel_color_hex, _imported_image_pxl_colors[imported_image_pxls_positioned[index]], 1, false);
+                                pixel_color_Uint32 = this._blend_colors(pixel_color_Uint32, _imported_image_pxl_colors[imported_image_pxls_positioned[index]], 1, false, false, true);
                             }
                         }
 
                         if(is_in_explosion && i === _layers.length -1) {
 
-                            pixel_color_hex = this._blend_colors(pixel_color_hex, _pxl_colors_explosion[mine_explosion_frame][explosion_pxls_positioned[index]], 1, false);
+                            pixel_color_Uint32 = this._blend_colors(pixel_color_Uint32, _pxl_colors_explosion[mine_explosion_frame][explosion_pxls_positioned[index]], 1, false, false, true);
                         }
                     }
 
@@ -5432,13 +5434,13 @@ class CanvasPixels extends React.Component {
                         (is_a_new_pixel_to_paint && is_in_the_current_selection) ||
                         is_selected_and_hovered_recently ?
                             is_pixel_hovered || is_mine_player_index || is_in_pencil_mirror_axes_indexes ?
-                                this._blend_colors(pixel_color_hex, "hover", 2/3, false):
-                                this._blend_colors(pixel_color_hex, "hover", 1/3, false)
-                            : pixel_color_hex;
+                                this._blend_colors(pixel_color_Uint32, "hover", 2/3, false, false, true):
+                                this._blend_colors(pixel_color_Uint32, "hover", 1/3, false, false, true)
+                            : pixel_color_Uint32;
 
                     if(is_the_old_mine_player_index_to_paint || is_ancient_selected_pixel_waiting_to_update || (is_a_new_pixel_to_paint && !is_in_the_current_selection && !is_pixel_hovered && !is_in_pencil_mirror_axes_indexes)) {
 
-                        color = pixel_color_hex;
+                        color = pixel_color_Uint32;
                     }
 
                     if(is_in_image_imported_resizer || (is_in_the_current_selection && !is_in_the_current_shape && !is_pixel_hovered)) {
@@ -5451,18 +5453,18 @@ class CanvasPixels extends React.Component {
                             const opacity = is_pixel_hovered ?
                                 2/3 + (0 + ((pos_x + pos_y + (_selection_pair_highlight ? 1: 0)) % 2)) / 3:
                                 1/3 + (0 + ((pos_x + pos_y + (_selection_pair_highlight ? 1: 0)) % 2)) / 3;
-                            color = this._blend_colors(pixel_color_hex, "hover", opacity, false);
+                            color = this._blend_colors(pixel_color_Uint32, "hover", opacity, false, false, true);
                         }
 
                         if(is_in_the_current_selection && !is_in_the_current_shape && !is_pixel_hovered) {
 
                             const opacity = 1/3 + (0 + ((pos_x + pos_y + (_selection_pair_highlight ? 1: 0)) % 2)) / 3;
-                            color = this._blend_colors(pixel_color_hex, "hover", opacity, false);
+                            color = this._blend_colors(pixel_color_Uint32, "hover", opacity, false, false, true);
                         }
                     }
 
                     // We need to clear the pixel that won't totally be opaque because it can merge colors accidentally
-                    const rgba = this._get_rgba_from_hex(color);
+                    const rgba = this._get_rgba_from_Uint32(color);
                     const index_by_4 = index * 4;
 
                     image_data.data[index_by_4 + 0] = rgba[0];
@@ -6723,26 +6725,48 @@ class CanvasPixels extends React.Component {
         return rgba.map((v) => this._get_hex_value_from_rgb_value(v));
     };
 
-    _format_color = (color) => { // Supports #fff (short rgb), #fff0 (short rgba), #e2e2e2 (full rgb) and #e2e2e2ff (full rgba)
+    _format_color = (color, getUint32 = false) => { // Supports #fff (short rgb), #fff0 (short rgba), #e2e2e2 (full rgb) and #e2e2e2ff (full rgba)
 
-        const hex = color || "#00000000";
-        const hex_length = hex.length;
+        color = typeof color === "undefined" ? 0: color;
 
-        if(hex_length === 9) {
+        if(getUint32 && typeof color === "number"){
 
-            return hex;
+            return color;
+        }else {
 
-        } else if (hex_length === 7) {
+            if(!getUint32 && typeof color === "number"){
 
-            return hex.concat("ff");
-        } else if (hex_length === 5) {
+                return this._get_hex_from_Uint32(color);
+            }
 
-            const a = hex.charAt(1), b = hex.charAt(2), c = hex.charAt(3), d = hex.charAt(4);
-            return "#".concat(a, a, b, b, c, c, d, d);
-        } else if (hex_length === 4) {
+            let formatted = "";
+            const hex = color;
+            const hex_length = hex.length;
 
-            const a = hex.charAt(1), b = hex.charAt(2), c = hex.charAt(3);
-            return "#".concat(a, a, b, b, c, c, "ff");
+            if(hex_length === 9) {
+
+                formatted = hex;
+
+            } else if (hex_length === 7) {
+
+                formatted = hex.concat("ff");
+            } else if (hex_length === 5) {
+
+                const a = hex.charAt(1), b = hex.charAt(2), c = hex.charAt(3), d = hex.charAt(4);
+                formatted =  "#".concat(a, a, b, b, c, c, d, d);
+            } else if (hex_length === 4) {
+
+                const a = hex.charAt(1), b = hex.charAt(2), c = hex.charAt(3);
+                formatted = "#".concat(a, a, b, b, c, c, "ff");
+            }
+
+            if(getUint32){
+
+                return this._get_uint32_from_hex(formatted);
+            }else {
+
+                return formatted;
+            }
         }
     };
 
@@ -6756,7 +6780,27 @@ class CanvasPixels extends React.Component {
         return "#".concat("00000000".concat(new Uint32Array(Uint8ClampedArray.of(a, b, g, r).buffer)[0].toString(16)).slice(-8));
     };
 
-    _rgb_to_hsl = (r, g, b) => {
+    _get_rgba_from_Uint32 = (num) => {
+
+        return new Uint8ClampedArray(Uint32Array.of(num).buffer).reverse();
+    };
+
+    _get_Uint32_color_from_rgba_values = (r, g , b, a) => {
+
+        return new Uint32Array(Uint8ClampedArray.of(a, b, g, r).buffer)[0];
+    };
+
+    _get_uint32_from_hex = (hex) => {
+
+        return parseInt(hex.slice(1), 16);
+    };
+
+    _get_hex_from_Uint32 = (num) => {
+
+        return "#".concat("00000000".concat(Uint32Array.of(num)[0].toString(16)).slice(-8));
+    };
+
+    _rgb_to_hsl = (r = 0, g = 0, b = 0) => {
 
         r /= 255, g /= 255, b /= 255;
         const max = Math.max(r, g, b), min = Math.min(r, g, b);
@@ -6805,35 +6849,35 @@ class CanvasPixels extends React.Component {
         return Uint8ClampedArray.of(r * 255, g * 255, b * 255);
     };
 
-    _blend_colors = (color_a, color_b, amount = 1, should_return_transparent = false, alpha_addition = false) => {
+    _blend_colors = (color_a, color_b, amount = 1, should_return_transparent = false, alpha_addition = false, in_uint_32 = false) => {
 
-        color_a = this._format_color(color_a);
+        color_a = this._format_color(color_a, true);
         // If we blend the first color with the second with 0 "force", return transparent
         if(amount === 0 && color_b !== "hover" && should_return_transparent) {
 
-            return "#00000000";
+            return in_uint_32 ? 0: "#00000000";
         }
 
         // Make sure we have a color based on the 4*2 hex char format
 
         if(color_b === "hover") {
 
-            const rgba = this._get_rgba_from_hex(color_a);
+            const rgba = this._get_rgba_from_Uint32(color_a);
             const hsl = this._rgb_to_hsl(rgba[0], rgba[1], rgba[2], rgba[3]);
             const rgb = this._hsl_to_rgb(hsl[0], hsl[1], parseInt(hsl[2] >= 50 ? hsl[2]/2: hsl[2]*2));
-            color_b = this._get_hex_color_from_rgba_values(rgb[0], rgb[1], rgb[2], 255);
+            color_b = this._get_Uint32_color_from_rgba_values(rgb[0], rgb[1], rgb[2], 255);
         }else {
 
-            color_b = this._format_color(color_b);
+            color_b = this._format_color(color_b, true);
         }
         // If the second color is transparent, return transparent
-        if(should_return_transparent && color_b === "#00000000" && amount === 1) { return "#00000000"; }
+        if(should_return_transparent && color_b === 0 && amount === 1) { return in_uint_32 ? 0: "#00000000"; }
 
         // Extract RGBA from both colors
-        const base = this._get_rgba_from_hex(color_a);
-        const added = this._get_rgba_from_hex(color_b);
+        const base = this._get_rgba_from_Uint32(color_a);
+        const added = this._get_rgba_from_Uint32(color_b);
 
-        if(added[3] === 255 && amount === 1) { return color_b; }
+        if(added[3] === 255 && amount === 1) { return in_uint_32 ? color_b: this._get_hex_from_Uint32(color_b); }
 
         const ba3 = base[3] / 255;
         const ad3 = (added[3] / 255) * amount;
@@ -6879,7 +6923,13 @@ class CanvasPixels extends React.Component {
 
         mix[3] = parseInt(mi3 * 255);
 
-        return this._get_hex_color_from_rgba_values(mix[0], mix[1], mix[2], mix[3]);
+        if(in_uint_32){
+
+            return this._get_Uint32_color_from_rgba_values(mix[0], mix[1], mix[2], mix[3]);
+        }else {
+
+            return this._get_hex_color_from_rgba_values(mix[0], mix[1], mix[2], mix[3]);
+        }
     }
 
     _invert_hex_color = (color) => {

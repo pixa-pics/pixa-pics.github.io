@@ -655,36 +655,6 @@ class PixelToolboxSwipeableViews extends React.Component {
             "palette": [],
             "image": [
                 {
-                    icon: <NavigationIcon/>,
-                    text: "Navigation",
-                    sub: "History of editing have memory of around 50 grouped operations.",
-                    tools: [
-                        {
-                            icon: <MoveIcon/>, disabled: tool === "MOVE", text: "Move", on_click: () => {
-                                this._set_tool("MOVE")
-                            }
-                        },
-                        {
-                            icon: <ArrowBackIcon/>,
-                            disabled: !can_undo,
-                            text: "Undo",
-                            sub: "[CTRL + Z]",
-                            on_click: () => {
-                                canvas.undo()
-                            }
-                        },
-                        {
-                            icon: <ArrowForwardIcon/>,
-                            disabled: !can_redo,
-                            text: "Redo",
-                            sub: "[CTRL + Y]",
-                            on_click: () => {
-                                canvas.redo()
-                            }
-                        },
-                    ]
-                },
-                {
                     icon: <DownloadIcon/>,
                     text: "Download (raster / matrix)",
                     sub: "This is the classical way to scale pixel art, it creates hard edges and bigger square area for each pixels",
@@ -845,6 +815,36 @@ class PixelToolboxSwipeableViews extends React.Component {
                 },
             ],
             "tools": [
+                {
+                    icon: <NavigationIcon/>,
+                    text: "Navigation",
+                    sub: "History of editing have memory of around 50 grouped operations.",
+                    tools: [
+                        {
+                            icon: <MoveIcon/>, disabled: tool === "MOVE", text: "Move", on_click: () => {
+                                this._set_tool("MOVE")
+                            }
+                        },
+                        {
+                            icon: <ArrowBackIcon/>,
+                            disabled: !can_undo,
+                            text: "Undo",
+                            sub: "[CTRL + Z]",
+                            on_click: () => {
+                                canvas.undo()
+                            }
+                        },
+                        {
+                            icon: <ArrowForwardIcon/>,
+                            disabled: !can_redo,
+                            text: "Redo",
+                            sub: "[CTRL + Y]",
+                            on_click: () => {
+                                canvas.redo()
+                            }
+                        },
+                    ]
+                },
                 {
                     icon: <DrawIcon/>,
                     text: "Drawing tools",

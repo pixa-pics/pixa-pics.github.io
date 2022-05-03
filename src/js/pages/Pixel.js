@@ -186,12 +186,7 @@ const styles = theme => ({
         '& div .react-swipeable-view-container > div': {
             overflow: "visible !important",
             alignItems: "normal",
-            contain: "style size paint layout",
-        },
-        [theme.breakpoints.down("md")]: {
-            '& div .react-swipeable-view-container > div': {
-                contain: "size style"
-            }
+            contain: "size style"
         },
         '& div .react-swipeable-view-container > div[aria-hidden=true]': {
             overflow: "hidden !important",
