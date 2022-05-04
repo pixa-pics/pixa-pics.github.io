@@ -7481,8 +7481,8 @@ class CanvasPixels extends React.Component {
             }
         });
 
-        const alpha = 100 / Math.max(0, max_s - min_s);
-        const beta = (100-max_s) * alpha;
+        const alpha = 100 / Math.max(1, max_s - min_s);
+        const beta = -min_s * alpha;
 
         pxl_colors = Array.from(pxl_colors).map((color_hex) => {
 

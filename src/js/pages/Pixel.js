@@ -75,7 +75,7 @@ const styles = theme => ({
         width: "100%",
         height: "100%",
         position: "relative",
-        paddingBottom: 48,
+        paddingBottom: 72,
         [theme.breakpoints.up("lg")]: {
             paddingBottom: 0,
         },
@@ -143,7 +143,7 @@ const styles = theme => ({
         transform: "translateY(96px)"
     },
     contentDrawerFixed: {
-        contain: "style size layout",
+        contain: "style size paint layout",
         maxHeight: "100%",
         height: "100%",
         [theme.breakpoints.down("md")]: {
@@ -215,25 +215,21 @@ const styles = theme => ({
             flex: "auto",
         },
         "& .MuiTabs-indicator": {
-            backgroundColor: "#3729c1",
+            backgroundColor: "#050c4c",
         }
     },
     tab: {
-        backgroundColor: "#fff",
+        backgroundColor: "transparent",
         color: "#050c4c",
-        transition: "color, background-color ease-in .225s",
+        transition: "color, background-color ease-in .175s",
         "&.Mui-selected": {
             fontWeight: "bold",
-            backgroundColor: "#050c4c",
-            color: "#fff",
-            borderRadius: "4px",
-            "& .MuiTab-wrapper": {
-                filter: "opacity(1)",
-            }
+            backgroundColor: "#3729c122",
+            color: "#050c4c",
+            borderRadius: "4px 4px 0px 0px",
         },
         "& .MuiTab-wrapper": {
             fontSize: "11px",
-            filter: "opacity(.66)",
         },
         "& .MuiTab-wrapper svg": {
             width: 32,
