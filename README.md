@@ -27,9 +27,12 @@ PIXA.PICS - Pixel art editor! *100% being visionarily reigning over privacy crit
 
 # 94 / 100 of performance (Lighthouse desktop metrics)
 
+![Running smooth web software, for now, but blazing fast already](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/doc/test/VITALS/METRICS-PREVIEW.png)
+> 1.0-2.0 seconds in average, is the necessary time to get the content displayed on desktop (Chrome) for the first website's visit after an update of the application which is automatically done within those small 1690ms and prolongated in background for about 8 seconds, then it is more than twice as fast and doesn't require any form of connection to the Internet since assets are stored in the browser cache until the need to update them is hapenning.
+
 ![Came out being atop of the codechain perfs more quickly than a true jaguar](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/doc/test/VITALS/LIGHTHOUSE.png)
 
-> Difference with Facebook.com (Web application) and Photoshop.com (Just their website) -> https://github.com/pixa-pics/pixa-pics.github.io/tree/main/doc/test/VITALS
+> FULL Difference compaired to Facebook.com (Web application) and Photoshop.com (Just their website) -> https://github.com/pixa-pics/pixa-pics.github.io/tree/main/doc/test/VITALS
 
 And let's say in the years 1980s a computer to play video games wasn't that much as cheap as my android smartphone of an old series.
 The phone to which it has been tested is nowadays sold at $100 unused it was dozen of times that price to do the same graphics that time.
