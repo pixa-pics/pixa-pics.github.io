@@ -1,6 +1,10 @@
 # This is PIXA!
 
-PIXA.PICS - Pixel art editor
+PIXA.PICS - Pixel art editor! *100% being visionarily reigning over privacy critics and detractors.*
+
+> The use of social networking sites should be governed by the same principles as use of the Internet in general. As little personal information as possible should be divulged. The information should be well protected and only made accessible to clearly defined persons. Ultimately, the responsibility lies with each individual Internet user. Prior to publication, everyone should think and decide for themselves which personal data to publish on the Internet, thereby making it available to the public for an indeterminate time period.  — Semi-annual report of 2008, *Federal Strategic Unit for IT (FSUIT) - Federal Office of Police fedpol (Swiss Confederation). 🇨🇭*
+
+
 
 # Features
 
