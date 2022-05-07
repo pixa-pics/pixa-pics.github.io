@@ -53,10 +53,11 @@ With the power that it should be accessible for all, a smartphone for 100$ fits 
 ![Any of y'all got some art](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/images/screenshots/5.jpeg)
 ![Any of y'all got some art](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/images/screenshots/6.jpeg)
 
-# Licence
+# Legal concerns and acknowledgment
 
- * All splendid emoji (Tweemoji) by Twitter.
- * Illustrations magically found on Undraw and ManyPixels.
- * Awesome sound effects by Google.
- * Great music on home page arrival by Red Eclipse (video game) and piano melody in the editor by Nikola Tesla (inventor).
- * Read the licence we legally adopted in our repository!
+ * All splendid emoji named Tweemoji by Twitter.
+ * Illustrations magically found on Undraw and ManyPixels to shine in those passionate forms and functions.
+ * Most awesome sound effects by Google, simply not evil.
+ * Great music on home page arrival by Red Eclipse (video game) and piano melody in the editor by long time dead Tesla Nikola (inventor).
+
+ > Please dare to care and read the [privacy policy](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/privacypolicy.md) architecture we've chosen to, deploy our application with, to keep a vigilant eye working towards its positive development and sane evolution along with the [licence](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/COPYING) that matters the same for our intent that support what we legally adopted at first before the publishing of our source code (due to our true will, naturally) to stay secure and stable, simply in the root folder! One you should better read it for your own understanding whenever you wish to, and the other one you must for legal concerns simply before using it against its pre-described purpose which is mostly to not be denied as what it should be keepin' rolling forward, meticulously, obviously in pleasant directions with those directives.
