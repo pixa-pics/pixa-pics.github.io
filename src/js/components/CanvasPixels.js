@@ -1480,7 +1480,7 @@ class CanvasPixels extends React.Component {
             _kb: 0,
             _device_motion: false,
             export_state_every_ms: props.export_state_every_ms || 60 * 1000,
-            xxhash32: null,
+            xxhash: null,
             _last_filters_hash: "",
         };
     };
@@ -1489,7 +1489,7 @@ class CanvasPixels extends React.Component {
 
         xxhash().then((hasher) => {
 
-            this.setState({xxhash32: hasher.h32});
+            this.setState({xxhash: hasher});
         });
 
         this._notify_size_change();
@@ -2171,10 +2171,19 @@ class CanvasPixels extends React.Component {
 
         if(this.props.onFiltersThumbnailChange) {
 
-            const { _layer_index, pxl_width, pxl_height, _s_pxls, _s_pxl_colors, _last_filters_hash, xxhash32 } = this.state;
+            const { _layer_index, pxl_width, pxl_height, _s_pxls, _s_pxl_colors, _last_filters_hash, xxhash } = this.state;
+
+            if(xxhash === null) {
+
+                setTimeout(() => {
+
+                    return this._notify_filters_change(force);
+                }, 100);
+            }
+
             const p = Uint16Array.from(_s_pxls[_layer_index]);
             const pc = Uint32Array.from(_s_pxl_colors[_layer_index]);
-            const hash = Array.of(p, pc).map((array) => xxhash32(array)).join("-");
+            const hash = Array.of(p, pc).map((array) => xxhash.h32(array)).join("-");
 
             if(_last_filters_hash === hash) { return; }
 
@@ -2213,9 +2222,9 @@ class CanvasPixels extends React.Component {
             });
         }
 
-        const { _layers, pxl_width, pxl_height, _s_pxls, _s_pxl_colors, xxhash32 } = this.state;
+        const { _layers, pxl_width, pxl_height, _s_pxls, _s_pxl_colors, xxhash } = this.state;
 
-        if(xxhash32 === null) {
+        if(xxhash === null) {
 
             setTimeout(() => {
 
@@ -2237,7 +2246,7 @@ class CanvasPixels extends React.Component {
             all_layers[index] = Object.assign({}, layers[index]);
             const p = Uint16Array.from(s_pxls[index]);
             const pc = Uint32Array.from(s_pxl_colors[index]);
-            const hash = Array.of(p, pc).map((array) => xxhash32(array)).join("-");
+            const hash = Array.of(p, pc).map((array) => xxhash.h32(array)).join("-");
 
             if(hash !== all_layers[index].hash  || !Boolean(all_layers[index].thumbnail)) {
 
@@ -5781,7 +5790,15 @@ class CanvasPixels extends React.Component {
 
         this._notify_layers_and_compute_thumbnails_change((layers) => {
 
-            let { xxhash32, _json_state_history, _id, pxl_width, pxl_height, _s_pxls, _original_image_index, _s_pxl_colors, _layer_index, _pxl_indexes_of_selection, _state_history_length, _undo_buffer_time_ms, _pencil_mirror_index } = this.state;
+            let { xxhash, _json_state_history, _id, pxl_width, pxl_height, _s_pxls, _original_image_index, _s_pxl_colors, _layer_index, _pxl_indexes_of_selection, _state_history_length, _undo_buffer_time_ms, _pencil_mirror_index } = this.state;
+
+            if(xxhash === null) {
+
+                setTimeout(() => {
+
+                    return this._notify_layers_and_compute_thumbnails_change();
+                }, 100);
+            }
 
             const current_state = {
                 _id: parseInt(_id),
@@ -5824,7 +5841,7 @@ class CanvasPixels extends React.Component {
 
                 const sum_array_array = (...mains) => {
 
-                    return mains.map((array) => xxhash32(array)).join("-");
+                    return mains.map((array) => xxhash.h32(array)).join("-");
                 };
 
 

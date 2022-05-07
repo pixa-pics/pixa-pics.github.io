@@ -809,8 +809,7 @@ class Pixel extends React.Component {
         let input = document.createElement("input");
         input.setAttribute("style", "pointer-events: none; touch-actions: none; position: absolute; opacity: 0;");
         document.body.appendChild(input);
-        input.addEventListener("change", (event) => {this._handle_file_upload(event)});
-        document.body.removeChild(input);
+        input.addEventListener("change", (event) => {this._handle_file_upload(event, input)});
         input.setAttribute("type", "file");
         input.setAttribute("accept", "image/*");
         input.click();
@@ -856,11 +855,12 @@ class Pixel extends React.Component {
         });
     };
 
-    _handle_file_upload = (event) => {
+    _handle_file_upload = (event, input) => {
 
         const { _canvas, _import_colorize, _import_size } = this.state;
         let img = new Image;
         let file = event.target.files[0] || event.path[0].files[0];
+        document.body.removeChild(input);
 
         this._handle_load("image_preload");
         this.get_base64(file).then((b) => {
