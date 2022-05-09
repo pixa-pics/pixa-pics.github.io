@@ -254,14 +254,17 @@ class Settings extends React.Component {
                                 />
                                 <p>{t( "pages.settings.description_of_jamy")}</p>
                                 <p>
-                                    <blockquote>
-                                        The use of social networking sites should be governed by the same principles as use of the Internet in general. As little personal information as possible should be divulged. The information should be well protected and only made accessible to clearly defined persons. Ultimately, the responsibility lies with each individual Internet user. Prior to publication, everyone should think and decide for themselves which personal data to publish on the Internet, thereby making it available to the public for an indeterminate time period.
-                                    </blockquote>
+                                    <div style={{position: "relative"}}>
+                                        <div style={{backgroundImage: "url(/src/images/swiss-security.svg)", backgroundSize: "contain", backgroundPosition:"center", backgroundRepeat: "no-repeat", padding: 0, margin: 0, position: "absolute", width: "100%", height: "100%", filter: "opacity(0.20)"}}></div>
+                                        <blockquote style={{color: "#8793ef"}}>
+                                            The use of social networking sites should be governed by the same principles as use of the Internet in general. As little personal information as possible should be divulged. The information should be well protected and only made accessible to clearly defined persons. Ultimately, the responsibility lies with each individual Internet user. Prior to publication, everyone should think and decide for themselves which personal data to publish on the Internet, thereby making it available to the public for an indeterminate time period.
+                                        </blockquote>
+                                    </div>
                                     <br/>
                                     <i>— Semi-annual report of 2008, Federal Strategic Unit for IT (FSUIT) - Federal Office of Police fedpol (Swiss Confederation).</i>
                                 </p>
                                 <p>
-                                    <b>Prevention is better than cure. </b><span>- Jamy, the lively and quiet emoji not showing why it is best to not be in trouble, knowing still doing his commentary and intervening while your actions performs in pixa.pics.</span>
+                                    <b>Prevention is better than cure. </b><span style={{color: "darkblue"}}>- Jamy, the lively and friendly emoji not showing why it is best to not be in trouble, knowing still doing his commentary and intervening while your actions are performing in pixa.pics quietly for him to support you from within at glance.</span>
                                 </p>
                             </CardContent>
                         </Card>
