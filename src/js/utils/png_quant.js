@@ -755,7 +755,7 @@ const png_quant = (dataurl, quality_min, quality_max, speed, callback_function, 
                 dataurl, options
             ]).catch((e) => {
 
-                return new Function(window.png_quant_process_function_string)()(dataurl, options);
+                return Promise.resolve(new Function(window.png_quant_process_function_string)()(dataurl, options));
             }).timeout(120 * 1000);
 
             callback_function(r);

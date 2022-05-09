@@ -17,7 +17,7 @@ function play_sound(category, pack, name, volume_optional, global_optional) {
                 volume
             });
             window._sound_object_music.play();
-        } catch(e) {}
+        } catch (e) {}
     }else {
 
         const sound = new Howl({
@@ -34,7 +34,7 @@ function stop_sound() {
     try {
 
         window._sound_object_music.stop();
-    } catch(e) {}
+    } catch (e) {}
 }
 
 module.exports = {

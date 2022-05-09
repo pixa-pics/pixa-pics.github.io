@@ -79,7 +79,7 @@ class ImageFileDialog extends React.Component {
 
                 try {
                     current_object = current_object[p];
-                } catch(e){}
+                } catch (e) {}
             }
         });
 

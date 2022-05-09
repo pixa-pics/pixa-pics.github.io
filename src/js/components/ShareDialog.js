@@ -140,7 +140,7 @@ class ShareDialog extends React.Component {
                         url: window.location.href,
                     })
                         .then(() => {this.props.onClose(null)})
-                        .catch((error) => {});
+                        .catch((e) => {});
                 }
 
             }

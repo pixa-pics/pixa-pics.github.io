@@ -1142,8 +1142,13 @@ window.image_tracer_process_function_string = `return function(image_data, optio
 			img.onload = function(){
 				var canvas = null;
 				try {
+				
+					if (typeof OffscreenCanvas === "undefined") {
+						throw new Error("Impossible to create OffscreenCanvas in this web environment.");
+					}
+                
 				    canvas = new OffscreenCanvas(img.width, img.height);
-				} catch(e) {
+				} catch (e) {
 				    
 				    canvas = document.createElement('canvas');
 				    canvas.width = img.width;

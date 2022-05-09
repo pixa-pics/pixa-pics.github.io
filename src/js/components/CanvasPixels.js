@@ -282,6 +282,11 @@ window.get_base64_png_data_url_process_function_string = `return async function(
             }
 
             try {
+            
+                if (typeof OffscreenCanvas === "undefined") {
+                    throw new Error("Impossible to create OffscreenCanvas in this web environment.");
+                }
+            
                 var canvas = new OffscreenCanvas(pxl_width * scale, pxl_height * scale);
                 var ctx = canvas.getContext('2d');
                 var all_colors = new Set();
@@ -329,9 +334,9 @@ window.get_base64_png_data_url_process_function_string = `return async function(
                 var canvas2 = new OffscreenCanvas(pxl_width * scale, pxl_height * scale);
                 var ctx2 = canvas2.getContext("bitmaprenderer");
                 
-                var imgd = ctx.getImageData(0, 0, pxl_width * scale, pxl_height * scale);
+                var image_data = ctx.getImageData(0, 0, pxl_width * scale, pxl_height * scale);
                
-                return createImageBitmap(imgd, {
+                return createImageBitmap(image_data, {
                     premultiplyAlpha: 'none',
                     colorSpaceConversion: 'none',
                 }).then((btmp_i) => {
@@ -361,7 +366,7 @@ window.get_base64_png_data_url_process_function_string = `return async function(
                     });
                 });
                 
-            }catch(e) {
+            }catch (e) {
             
                 var all_colors = new Set();
                 var canvas = document.createElement("canvas");
@@ -625,21 +630,25 @@ window.get_layer_base64_png_data_url_process_function_string = `return async fun
             var no_transparent = true;
             
             try {
+            
+                if (typeof OffscreenCanvas === "undefined") {
+                   throw new Error("Impossible to create OffscreenCanvas in this web environment.");
+                }
                 
-                var imgd = null;
+                var image_data = null;
                 if(parseInt(scale) === 1){
                 
                     var pxl_colors_uint32 = pxl_colors.map(function(c) { return this_format_color(c, true)});
-                    imgd = new ImageData(pxl_width, pxl_height);
+                    image_data = new ImageData(pxl_width, pxl_height);
                     
                     pxls.forEach((pxl, index) => {
             
                         var color = this_get_rgba_from_Uint32(pxl_colors_uint32[pxl]);
                         
-                        imgd.data[index * 4 + 0] = color[0];
-                        imgd.data[index * 4 + 1] = color[1];
-                        imgd.data[index * 4 + 2] = color[2];
-                        imgd.data[index * 4 + 3] = color[3];
+                        image_data.data[index * 4 + 0] = color[0];
+                        image_data.data[index * 4 + 1] = color[1];
+                        image_data.data[index * 4 + 2] = color[2];
+                        image_data.data[index * 4 + 3] = color[3];
                         
                         if(no_transparent && color[3] !== 255) {
                         
@@ -668,7 +677,7 @@ window.get_layer_base64_png_data_url_process_function_string = `return async fun
                         ctx.fillRect(pos_x * scale, pos_y * scale, 1 * scale, 1 * scale);
                     });
                     
-                    imgd = ctx.getImageData(0, 0, pxl_width * scale, pxl_height * scale);
+                    image_data = ctx.getImageData(0, 0, pxl_width * scale, pxl_height * scale);
                 }
                 
                 var resize_ratio = resize_width / (pxl_width * scale);
@@ -678,7 +687,7 @@ window.get_layer_base64_png_data_url_process_function_string = `return async fun
                 var canvas2 = new OffscreenCanvas(resizeWidth, resizeHeight);
                 var ctx2 = canvas2.getContext("bitmaprenderer");
                 
-                return createImageBitmap(imgd, {
+                return createImageBitmap(image_data, {
                     premultiplyAlpha: 'none',
                     colorSpaceConversion: 'none',
                     resizeWidth: resizeWidth,
@@ -706,29 +715,28 @@ window.get_layer_base64_png_data_url_process_function_string = `return async fun
                     });
                 });
                 
-            }catch(e) {
+            }catch (e) {
             
-                console.log(e);
                 var canvas = document.createElement("canvas");
                 canvas.width = pxl_width * scale;
                 canvas.height = pxl_height * scale;
                 var ctx = canvas.getContext('2d');
                 
-                var imgd = null;
+                var image_data = null;
                 if(parseInt(scale) === 1){
                 
                     var pxl_colors_uint32 = pxl_colors.map(function(c) { return this_format_color(c, true)});
-                    imgd = new ImageData(pxl_width, pxl_height);
+                    image_data = new ImageData(pxl_width, pxl_height);
                     
                     pxls.forEach((pxl, index) => {
             
                         var color = this_get_rgba_from_Uint32(pxl_colors_uint32[pxl]);
                         var index_by_4 = index * 4;
                     
-                        imgd.data[index_by_4 + 0] = color[0];
-                        imgd.data[index_by_4 + 1] = color[1];
-                        imgd.data[index_by_4 + 2] = color[2];
-                        imgd.data[index_by_4 + 3] = color[3];
+                        image_data.data[index_by_4 + 0] = color[0];
+                        image_data.data[index_by_4 + 1] = color[1];
+                        image_data.data[index_by_4 + 2] = color[2];
+                        image_data.data[index_by_4 + 3] = color[3];
                         
                         if(no_transparent && color[3] !== 255) {
                         
@@ -741,7 +749,9 @@ window.get_layer_base64_png_data_url_process_function_string = `return async fun
                 } else {
                 
                     var pxl_colors_hex = pxl_colors.map(function(c) { return this_format_color(c)});
-                    var canvas = new OffscreenCanvas(pxl_width * scale, pxl_height * scale);
+                    var canvas = document.createElement("canvas");
+                    canvas.width = pxl_width * scale;
+                    canvas.height = pxl_height * scale;
                     var ctx = canvas.getContext('2d');
                 
                     pxls.forEach((pxl, index) => {
@@ -1295,7 +1305,7 @@ function _loop(render, do_not_cancel_animation, force_update, requested_at_t = D
 
             //caf(caf_id);
         }
-    }catch(e){}
+    }catch (e) {}
 };
 
 function _anim_loop ( render, do_not_cancel_animation = false, force_update = false ) {
@@ -2315,14 +2325,14 @@ class CanvasPixels extends React.Component {
                 resize_width
             ]).catch((e) => {
 
-                return new Function(window.get_layer_base64_png_data_url_process_function_string)()(
+                return Promise.resolve(new Function(window.get_layer_base64_png_data_url_process_function_string)()(
                     pxl_width,
                     pxl_height,
                     pxls,
                     pxl_colors,
                     scale,
                     resize_width
-                );
+                ));
 
             }).timeout(5 * 1000);
 
@@ -3063,15 +3073,22 @@ class CanvasPixels extends React.Component {
 
         try {
 
+            if (typeof OffscreenCanvas === "undefined") {
+                throw new Error("Impossible to create OffscreenCanvas in this web environment.");
+            }
+
             element.offscreenCanvas = new OffscreenCanvas(pxl_width, pxl_height);
-        }catch (e) {
+            element.offscreenCanvas.context2d = element.offscreenCanvas.getContext("2d");
+
+        } catch (e) {
 
             element.offscreenCanvas = document.createElement("canvas");
             element.offscreenCanvas.width = pxl_width;
             element.offscreenCanvas.height = pxl_height;
+            element.offscreenCanvas.context2d = element.offscreenCanvas.getContext("2d");
         }
 
-        element.offscreenCanvas.context2d = element.offscreenCanvas.getContext("2d");
+
         element.offscreenCanvas.context2d.globalCompositeOperation = "source-over";
         element.context2d.globalCompositeOperation = "copy";
         element.context2d.imageSmoothingEnabled = false;
@@ -3171,7 +3188,7 @@ class CanvasPixels extends React.Component {
             _canvas_wrapper_overflow.removeEventListener("pointercancel", this._handle_canvas_wrapper_overflow_pointer_up);
             _canvas_wrapper_overflow.removeEventListener("pointerout", this._handle_canvas_wrapper_overflow_pointer_up);
             _canvas_wrapper_overflow.removeEventListener("pointerleave", this._handle_canvas_wrapper_overflow_pointer_up);
-        }catch(e) {}
+        }catch (e) {}
 
         _intervals.forEach((i) => {
 

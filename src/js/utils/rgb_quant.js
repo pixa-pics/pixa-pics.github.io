@@ -934,6 +934,10 @@ window.rgb_quant_process_function_string = `return async function(img, limit, re
         let scale = 1;
         
         try {
+        
+            if (typeof OffscreenCanvas === "undefined") {
+                throw new Error("Impossible to create OffscreenCanvas in this web environment.");
+            }
             
             // Worker based on BLOB  
             var resA0 = await fetch(img); // Response
@@ -950,7 +954,7 @@ window.rgb_quant_process_function_string = `return async function(img, limit, re
             ctxA0.drawImage(bmpA0, 0, 0, canvasA0.width, canvasA0.height);
             img_data = ctxA0.getImageData(0, 0, canvasA0.width, canvasA0.height);
       
-        }catch (e) {
+        } catch (e) {
             
             const to_image = async (img) => {
                 return new Promise(ok => {
@@ -993,6 +997,10 @@ window.rgb_quant_process_function_string = `return async function(img, limit, re
         
         // Build base64 response
         try {
+        
+            if (typeof OffscreenCanvas === "undefined") {
+                throw new Error("Impossible to create OffscreenCanvas in this web environment.");
+            }
             
             var canvasB0 = new OffscreenCanvas(img_data.width, img_data.height);
             var ctxB0 = canvasB0.getContext("bitmaprenderer");
@@ -1022,7 +1030,7 @@ window.rgb_quant_process_function_string = `return async function(img, limit, re
                 });
             });
            
-        }catch(e) {
+        }catch (e) {
         
             var canvasB0 = document.createElement("canvas");
             canvasB0.width = img_data.width;
@@ -1049,7 +1057,7 @@ const rgb_quant = (img, limit = 1024, resize_to = 1920*1080, lossly = false, cal
             img, limit, resize_to, lossly
         ]).catch((e) => {
 
-            return new Function(window.rgb_quant_process_function_string)()(img, limit, resize_to, lossly);
+            return Promise.resolve(new Function(window.rgb_quant_process_function_string)()(img, limit, resize_to, lossly));
 
         }).then((result) => {
 

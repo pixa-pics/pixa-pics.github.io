@@ -895,7 +895,7 @@ const xbrz = (image_data, scale, callback_function, pool = null) => {
               xbrz(image_data, scale, callback_function, pool);
           }else {
 
-              return new Function(window.xbrz_process_function_string)()(image_data, scale);
+              return Promise.resolve(new Function(window.xbrz_process_function_string)()(image_data, scale));
           }
 
       }).then((result) => {

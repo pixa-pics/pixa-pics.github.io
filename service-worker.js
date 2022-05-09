@@ -1,6 +1,6 @@
-var REQUIRED_CACHE = "unless-update-cache-v96-required";
-var USEFUL_CACHE = "unless-update-cache-v96-useful";
-var STATIC_CACHE = "unless-update-cache-v96-static";
+var REQUIRED_CACHE = "unless-update-cache-v97-required";
+var USEFUL_CACHE = "unless-update-cache-v97-useful";
+var STATIC_CACHE = "unless-update-cache-v97-static";
 var MAIN_CHILD_CHUNK_REGEX = /child\-chunk\.(main\~[a-z0-9]+)\.min.js/i;
 var CHILD_CHUNK_REGEX = /child\-chunk\.([0-9]+)\.min.js/i;
 
@@ -109,7 +109,7 @@ self.addEventListener("fetch", function(event) {
                             return cache.put(event.request, response.clone()).then(function () {return response.clone()});
                         })
                     );
-                }).catch(function(reason) {
+                }).catch(function() {
 
                     return fetch(event.request.url).then(function (response) { // Fetch, clone, and serve
                         return cache.put(event.request, response.clone()).then(function () {return response.clone()});
