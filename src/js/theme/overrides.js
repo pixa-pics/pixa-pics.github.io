@@ -146,6 +146,10 @@ const overrides = {
             ".MuiTooltip-popper .MuiTooltip-tooltip": {
                 backgroundColor: "#100d4e",
             },
+            ".MuiTooltip-popper.green .MuiTooltip-tooltip": {
+                backgroundColor: '#98ff7c88',
+                color: '#98ff7c)',
+            },
             "svg": {
                 fontFamily: "Open Sans !important"
             },

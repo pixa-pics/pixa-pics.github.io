@@ -1,6 +1,6 @@
 import React from "react";
 import { withStyles } from "@material-ui/core";
-import {Toolbar, Drawer, Box, Fade} from "@material-ui/core";
+import {Tooltip, Toolbar, Drawer, Box, Fade} from "@material-ui/core";
 import DrawerContent from "../components/DrawerContent";
 
 import actions from "../actions/utils";
@@ -49,7 +49,7 @@ const styles = theme => ({
     },
     drawerContainer: {
         overflow: "auto"
-    },
+    }
 });
 
 
@@ -83,13 +83,16 @@ class AppDrawer extends React.Component {
                     <div className={classes.drawerContainer}>
                         <DrawerContent pathname={pathname} onClose={() => {}} />
                         <Fade in={true} timeout={400}>
-                            <div style={{
-                                position: "fixed",
-                                bottom: 12,
-                                left: 12,
-                                color: "#ffffff75",
-                                userSelect: "none"
-                            }}><span>Awakening privacy...</span></div>
+                            <Tooltip classes={{popper: "green"}}
+                                     title={"Using companies for analytics only with providers headquartered in Switzerland or the EU and by experts on privacy such as ours in strict regulations like FADP (CH) and GDPR (EU), we're also committed to not killcode what it intended with logical code that needs to tells any host anything, it just runs well locally without connection, why try harder?"}>
+                                <div style={{
+                                    position: "fixed",
+                                    bottom: 12,
+                                    left: 12,
+                                    color: "#ffffff75",
+                                    userSelect: "none"
+                                }}><span>Awakening privacy...</span></div>
+                            </Tooltip>
                         </Fade>
                     </div>
                 </Drawer>
