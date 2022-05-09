@@ -1,10 +1,29 @@
 # This is PIXA!
 
-PIXA.PICS - Pixel art editor! *100% being visionarily reigning over privacy critics and detractors.*
+PIXA.PICS - Pixel art editor! *100% being visionary and reigning over privacy concerns/critics and detractors with its force that stands bold against them.*
 
+# The challenges of first-class active protection for the preservation of identity
+**What was foreseen by the agent of public order and general justice in 2008 in Switzerland against chaos and negativity regarding Internet potential about one's image.** 
 > The use of social networking sites should be governed by the same principles as use of the Internet in general. As little personal information as possible should be divulged. The information should be well protected and only made accessible to clearly defined persons. Ultimately, the responsibility lies with each individual Internet user. Prior to publication, everyone should think and decide for themselves which personal data to publish on the Internet, thereby making it available to the public for an indeterminate time period.  — Semi-annual report of 2008, *Federal Strategic Unit for IT (FSUIT) - Federal Office of Police fedpol (Swiss Confederation). 🇨🇭*
 
+**Very interesting for pixa.pics as truth forcefully let it being so representing it again, one hating crime before any will to show supports of any laws without fair questioning doing unrighteousness changes on other people's life and true will.**
 
+# The benefits of transparency and integrity of shared knowledge
+
+**Protect images :**
+> As the core idea is to protect your own image, hero, and star which is maybe a diligent response in front of new challenges regarding the foremost difficult art of the digital age, to say it further - for just "being".
+
+**Staying in line with what's simply not so evil :**
+> Meanwhile, for the true will to stays, and in order to not be standing against your own will, as change absorbs change, a matter of evidence suggest that taking tools and tips as an advantage in an era of evaluative and connected object which require fast adaptation enables one to stay resilient in positive show of intelligence and harmony, this project aims to bring good points pointing out becoming more proficient with the very idea of "privacy" not showing the least good way the worst fear we don't need to spend energy on, fighting it.
+
+**Introducing neutral changes to absorbs any uneasier change's potential :**
+> We need to mention regarding our core guidelines and identity theft to good thinker, that we also think, there is no logic without harmony, and it requires to always be open to greatness in the idea of others.
+
+**Staying on the front-line with a mind without few tactics :**
+> So we've chosen to use Web Analytics (Friendly.ch) and Artificial Intelligence (DeepAI.org, only just passing trough privately managed Cloudflare.com systems each time) nonetheless. These two "things" are in a big majority misunderstand and yet still misused too, we may think we're smart to develop things that go away to be able to performs but instead we thought we very are this idea, the movement of not delegating the task of the user interface to any unnecessary agent of change in the computer output means we prevent the flee-and-fly of your own luck when it comes to change.
+
+**Getting to openly fight what lacks to be great, instead being just boring good.**
+> And supporting the brought-up of getting balanced with everything is to use what correspond to any rightly weighted set of actions done the right way, in terms of dangerous code we use, it is mostly analytics, yet in case of good functioning we don't need any legal disclaimer nor negative disclosure of any of the data stored mostly in Switzerland for the few they represent to support the main direction of this software. Web analytics software is commonplace nowadays. Unfortunately, data protection is not and we will thought forward to especially secure script which asks one to look for to many things to assert it looks good as much or as few one's intent is to go far with it, **there are ideas helping it and some not doing that. Trust can be good, certainty is ever just and great against it, trust.**
 
 # Features
 
