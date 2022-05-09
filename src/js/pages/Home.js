@@ -51,7 +51,7 @@ const styles = theme => ({
     homeCTAuseit: {
         color: "#6f440d",
         backgroundImage: "linear-gradient(-32deg, goldenrod, #fff9f0, gold, darkgoldenrod, #fff8aa, goldenrod, blanchedalmond)",
-        fontWeight: "inherit",
+        fontWeight: "bold",
         minWidth: "min(320px, calc(100% - 32px))",
         transform: "translateY(0px) scale(1)  !important",
         fontSize: "1.314rem",
@@ -167,10 +167,10 @@ const styles = theme => ({
     title: {
         whiteSpace: "break-spaces",
         fontSize: 48,
-        fontWeight: "normal",
+        fontWeight: "bold",
         [theme.breakpoints.down("sm")]: {
             fontSize: 32,
-            lineHeight: "normal",
+            lineHeight: "bold",
         },
     },
     titleSubTitle: {

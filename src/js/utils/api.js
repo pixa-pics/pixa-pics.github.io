@@ -4,7 +4,6 @@ import PouchDB from "pouchdb";
 import get_browser_locales from "../utils/locales";
 window.settings_db = new PouchDB("settings_db", {deterministic_revs: false, revs_limit: 0});
 import pool from "../utils/worker-pool";
-import { LZP3 } from "./lzp3_json";
 
 const _merge_object = (obj1, obj2) => {
 
@@ -55,7 +54,7 @@ const reset_all_databases = (callback_function) => {
     });
 }
 
-const get_settings = (callback_function_info = null, attachment_ids = [], callback_function_attachment = null) => {
+const get_settings = (callback_function_info = null, attachment_ids = [], callback_function_attachment = null, LZP3 = null ) => {
 
     if(typeof window._pixa_settings !== "undefined" && window._pixa_settings !== null) {
 
@@ -114,13 +113,19 @@ const get_settings = (callback_function_info = null, attachment_ids = [], callba
                                 blob.arrayBuffer().then((array_buffer) => {
 
                                     const uint8a = new Uint8Array(array_buffer);
-                                    import("../utils/lzp3_json").then(({LZP3}) => {
+
+                                    try {
 
                                         LZP3(uint8a, "DECOMPRESS_UINT8A", (obj) => {
 
                                             callback_function_attachment(null, obj);
                                         }, pool);
-                                    });
+
+                                    } catch (e) {
+
+                                        callback_function_info("LZP3 not working", null);
+                                        return false;
+                                    }
                                 });
                             });
 
@@ -170,7 +175,7 @@ const get_settings = (callback_function_info = null, attachment_ids = [], callba
     });
 }
 
-const set_settings = (info = {}, callback_function_info = () => {}, attachment_array = {}) => {
+const set_settings = (info = {}, callback_function_info = () => {}, attachment_array = {}, LZP3 = null) => {
 
     window.settings_db.allDocs({
         include_docs: true,
@@ -209,7 +214,7 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
                                 window._pixa_settings = {...pixa_settings};
                                 callback_function_info(null, {...pixa_settings});
 
-                                import("../utils/lzp3_json").then(({LZP3}) => {
+                                try {
 
                                     LZP3(data, "COMPRESS_OBJECT", (uint8a) => {
 
@@ -225,7 +230,12 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
                                         }
 
                                     }, pool);
-                                });
+                                } catch (e) {
+
+                                    callback_function_info("LZP3 not working", null);
+                                    return false;
+                                }
+
 
                             }else {
 
@@ -321,7 +331,7 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
                     pixa_settings.attachment_previews = pixa_settings.attachment_previews  || {};
                     pixa_settings.attachment_previews[name_id] = {id, kb, preview, timestamp};
 
-                    import("../utils/lzp3_json").then(({LZP3}) => {
+                   try {
 
                         LZP3(data, "COMPRESS_OBJECT", (uint8a) => {
 
@@ -337,7 +347,12 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
                             }
 
                         }, pool);
-                    });
+                    } catch (e) {
+
+                        callback_function_info("LZP3 not working", null);
+                        return false;
+                    }
+
                 });
 
                 const continue_push_in_db = (attachments, pixa_settings) => {

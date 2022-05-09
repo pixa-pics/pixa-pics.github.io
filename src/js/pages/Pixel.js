@@ -400,7 +400,10 @@ class Pixel extends React.Component {
 
             this.setState({_kb: current_state.kb}, () => {
 
-                api.set_settings({}, () => {}, attachment_array);
+                import("../utils/lzp3_json").then(({LZP3}) => {
+
+                    api.set_settings({}, () => {}, attachment_array, LZP3);
+                });
             });
         }
     };
@@ -994,7 +997,10 @@ class Pixel extends React.Component {
 
     _handle_import_json_state_id = (id) => {
 
-        api.get_settings(() => {}, ["json_state-ID" + id + ".json.lzp3"], this._process_settings_attachment_result);
+        import("../utils/lzp3_json").then(({LZP3}) => {
+
+            api.get_settings(() => {}, ["json_state-ID" + id + ".json.lzp3"], this._process_settings_attachment_result, LZP3);
+        });
     };
 
     _handle_file_import = (event) => {

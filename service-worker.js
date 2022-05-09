@@ -1,6 +1,6 @@
-var REQUIRED_CACHE = "unless-update-cache-v103-required";
-var USEFUL_CACHE = "unless-update-cache-v103-useful";
-var STATIC_CACHE = "unless-update-cache-v103-static";
+var REQUIRED_CACHE = "unless-update-cache-v104-required";
+var USEFUL_CACHE = "unless-update-cache-v104-useful";
+var STATIC_CACHE = "unless-update-cache-v104-static";
 var MAIN_CHILD_CHUNK_REGEX = /child\-chunk\.(main\~[a-z0-9]+)\.min.js/i;
 var CHILD_CHUNK_REGEX = /child\-chunk\.([0-9]+)\.min.js/i;
 
@@ -45,6 +45,7 @@ self.addEventListener("install", function(evt) {
                 "/child-chunk.9.min.js",
                 "/child-chunk.10.min.js",
                 "/child-chunk.11.min.js",
+                "/child-chunk.12.min.js",
             ]);
         }),
         caches.open(STATIC_CACHE).then(function (cache) {
@@ -76,7 +77,6 @@ self.addEventListener("install", function(evt) {
                 "/child-chunk.main~9acc357d.min.js",
                 "/child-chunk.main~253ae210.min.js",
                 "/child-chunk.main~748942c6.min.js",
-                "/child-chunk.main~c3be6df1.min.js",
                 "/child-chunk.main~af9f4ef7.min.js",
                 "/child-chunk.main~c1dd23ef.min.js",
                 "/child-chunk.main~d939e436.min.js",
