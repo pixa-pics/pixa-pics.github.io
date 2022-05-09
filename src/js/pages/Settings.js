@@ -15,6 +15,7 @@ import fuzzy from "fuzzy";
 
 const styles = theme => ({
     container: {
+        overflow: "overlay",
         padding: theme.spacing(2),
         [theme.breakpoints.down("sm")]: {
             padding: theme.spacing(2, 0)
@@ -194,7 +195,7 @@ class Settings extends React.Component {
         });
 
         return (
-            <div>
+            <div style={{overflow: "overlay", maxHeight: "100%"}}>
                 <Container maxWidth="sm" className={classes.container}>
                     <Fade in timeout={300*1}>
                         <Card>
