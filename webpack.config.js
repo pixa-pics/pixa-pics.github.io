@@ -19,6 +19,8 @@ module.exports = {
                         toplevel: true,
                         eval: true,
                         reserved: [
+                            'tempI64',
+                            'tempDouble',
                             'Buffer',
                             'BigInteger',
                             'Point',
