@@ -55,13 +55,12 @@
         <meta name="msapplication-tap-highlight" content="no">
 
         <!-- PASSIONATE, SAFE, COMPLIANT, ANALYTICS using friendly.ch, the best chosen legal and most counter-annoying system. Everything thanks to Swiss-based laws and its designated norms of diligent privacy for all! -->
-        <script>
+        <script defer>
             var _paq = window._paq = window._paq || [];
             _paq.push(["setDoNotTrack", true]);
             _paq.push(["disableCookies"]);
             _paq.push(['trackPageView']);
             _paq.push(['enableLinkTracking']);
-
             (function() {
                 var u="https://app.friendlyanalytics.ch/";
                 _paq.push(['setTrackerUrl', u+'matomo.php']);
@@ -81,6 +80,11 @@
                     _paq.push(['trackPageView']);
                 });
             })();
+
+            var _mtm = window._mtm = window._mtm || [];
+            _mtm.push({'mtm.startTime': (new Date().getTime()), 'event': 'mtm.Start'});
+            var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+            g.async=true; g.src='https://app.friendlyanalytics.ch/js/container_jRxgodNd.js'; s.parentNode.insertBefore(g,s);
         </script>
     </head>
     <body style="
