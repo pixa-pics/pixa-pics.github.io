@@ -252,6 +252,16 @@ class Settings extends React.Component {
                                     labelPlacement="end"
                                 />
                                 <p>{t( "pages.settings.description_of_jamy")}</p>
+                                <p>
+                                    <blockquote>
+                                        The use of social networking sites should be governed by the same principles as use of the Internet in general. As little personal information as possible should be divulged. The information should be well protected and only made accessible to clearly defined persons. Ultimately, the responsibility lies with each individual Internet user. Prior to publication, everyone should think and decide for themselves which personal data to publish on the Internet, thereby making it available to the public for an indeterminate time period.
+                                    </blockquote>
+                                    <br/>
+                                    <i>— Semi-annual report of 2008, Federal Strategic Unit for IT (FSUIT) - Federal Office of Police fedpol (Swiss Confederation).</i>
+                                </p>
+                                <p>
+                                    <b>Prevention is better than cure. </b><span>- Jamy, the lively and quiet emoji not showing why it is best to not be in trouble, knowing still doing his commentary and intervening while your actions performs in pixa.pics.</span>
+                                </p>
                             </CardContent>
                         </Card>
                     </Fade>
