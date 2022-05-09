@@ -56,15 +56,32 @@
 
         <!-- PASSIONATE, SAFE, COMPLIANT, ANALYTICS using friendly.ch, the best chosen legal and most counter-annoying system. Everything thanks to Swiss-based laws and its designated norms of diligent privacy for all! -->
         <script>
-            // Let it "BE EVER JUST!" we thought, it should also simply "RESPECTS NO WEAKNESSES" by essence ^^, we also must say thanks to the diligent tendency of Switzerland's laws to apply in without 55573297529 lines of acknowledgement...
-            var _mtm = window._mtm = window._mtm || [];
-            _mtm.push({'mtm.startTime': (new Date().getTime()), 'event': 'mtm.Start'});
-            var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-            g.async=true; g.src='https://app.friendlyanalytics.ch/js/container_jRxgodNd.js'; s.parentNode.insertBefore(g,s);
-            // YES "donottrack" is set to TRUE on friendly.ch (Powered by Matomo) and "usecookie" is set to FALSE also...
-            // It also doesn't ignore client configuration on our partner for analytics and shouldn't in any way in an copy of this software respecting intent of original development...
-        </script>
+            var _paq = window._paq = window._paq || [];
+            _paq.push(["setDoNotTrack", true]);
+            _paq.push(["disableCookies"]);
+            _paq.push(['trackPageView']);
+            _paq.push(['enableLinkTracking']);
 
+            (function() {
+                var u="https://app.friendlyanalytics.ch/";
+                _paq.push(['setTrackerUrl', u+'matomo.php']);
+                _paq.push(['setSiteId', '77']);
+                var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+                g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+
+                var currentUrl = location.href;
+                window.addEventListener('hashchange', function() {
+                    _paq.push(['setReferrerUrl', currentUrl]);
+                    currentUrl = '/' + window.location.hash.substr(1);
+                    _paq.push(['setCustomUrl', currentUrl]);
+                    _paq.push(['setDocumentTitle', currentUrl]);
+
+                    // remove all previously assigned custom variables, requires Matomo (formerly Piwik) 3.0.2
+                    _paq.push(['deleteCustomVariables', 'page']);
+                    _paq.push(['trackPageView']);
+                });
+            })();
+        </script>
     </head>
     <body style="
         margin: 0;
