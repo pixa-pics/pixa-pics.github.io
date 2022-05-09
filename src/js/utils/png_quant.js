@@ -755,13 +755,13 @@ const png_quant = (dataurl, quality_min, quality_max, speed, callback_function, 
                 dataurl, options, "WORKER"
             ]).catch((e) => {
 
-                return Promise.resolve(new Function(window.png_quant_process_function_string, "BROWSER")()(dataurl, options));
+                return Promise.resolve(new Function(window.png_quant_process_function_string, "WEB")()(dataurl, options));
             }).timeout(120 * 1000);
 
             callback_function(r);
         }else {
 
-            const r = await new Function(window.png_quant_process_function_string, "BROWSER")()(dataurl, options);
+            const r = await new Function(window.png_quant_process_function_string, "WEB")()(dataurl, options);
             callback_function(r);
         }
     })();
