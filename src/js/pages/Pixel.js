@@ -721,8 +721,21 @@ class Pixel extends React.Component {
 
             actions.trigger_sfx("hero_decorative-celebration-02");
             setTimeout(() => {
-                actions.trigger_snackbar("Fantastic! Share? Yes or No", 7500);
+
                 actions.jamy_update("happy");
+                actions.trigger_snackbar("AWESOME! Share, Yes/No?", 5500);
+
+                setTimeout(() => {
+
+
+                    actions.trigger_snackbar("SHARING greatly helps PIXA.PICS! Happy means happy.", 7000);
+                    actions.trigger_sfx("alert_high-intensity");
+
+                    setTimeout(() => {
+
+                        actions.jamy_update("happy");
+                    }, 4500);
+                }, 6500);
             }, 2000);
         }, false, 0);
     };
@@ -733,7 +746,7 @@ class Pixel extends React.Component {
         if(_canvas === null) {return}
 
         actions.trigger_snackbar("Please wait... Files will download in a few seconds.", 5700);
-        actions.jamy_update("happy");
+        actions.jamy_update("angry");
 
         this.setState({_loading: true, _loading_process: "image_render"}, () => {
 
@@ -764,9 +777,21 @@ class Pixel extends React.Component {
 
                             actions.trigger_sfx("hero_decorative-celebration-02");
                             setTimeout(() => {
-                                actions.trigger_snackbar("Fantastic! Share? Yes or No", 7500);
-                                actions.jamy_update("happy");
 
+                                actions.jamy_update("happy");
+                                actions.trigger_snackbar("AWESOME! Share, Yes/No?", 5500);
+
+                                setTimeout(() => {
+
+
+                                    actions.trigger_snackbar("SHARING IT greatly helps PIXA.PICS! Happy means happy.", 7000);
+                                    actions.trigger_sfx("alert_high-intensity");
+
+                                    setTimeout(() => {
+
+                                        actions.jamy_update("happy");
+                                    }, 4500);
+                                }, 6500);
                             }, 2000);
 
                         });
@@ -808,8 +833,8 @@ class Pixel extends React.Component {
 
         let input = document.createElement("input");
         input.setAttribute("style", "pointer-events: none; touch-actions: none; position: absolute; opacity: 0;");
-        document.body.appendChild(input);
         input.addEventListener("change", (event) => {this._handle_file_upload(event, input)});
+        document.body.appendChild(input);
         input.setAttribute("type", "file");
         input.setAttribute("accept", "image/*");
         input.click();
@@ -826,7 +851,6 @@ class Pixel extends React.Component {
     };
 
     _from_library = (base64) => {
-
 
         const { _canvas, _library_type } = this.state;
         let img = new Image;
@@ -886,7 +910,7 @@ class Pixel extends React.Component {
 
                         this._handle_load_complete("image_preload", {});
                         this._handle_load("image_ai");
-                        actions.trigger_snackbar("Getting impaired with DeepAI systems", 5700);
+                        actions.trigger_snackbar("Getting associated with DeepAI.org systems", 5700);
                         actions.jamy_update("angry");
                         postJSON("https://deepai.pixa-pics.workers.dev/colorizer", data, (err, res) => {
 
@@ -907,7 +931,7 @@ class Pixel extends React.Component {
 
                         this._handle_load_complete("image_preload", {});
                         this._handle_load("image_ai");
-                        actions.trigger_snackbar("Getting impaired with DeepAI systems", 5700);
+                        actions.trigger_snackbar("Getting associated with DeepAI.org systems", 5700);
                         actions.jamy_update("angry");
 
                         postJSON("https://deepai.pixa-pics.workers.dev/waifu2x", data, (err, res) => {
@@ -928,7 +952,7 @@ class Pixel extends React.Component {
 
                         this._handle_load_complete("image_preload", {});
                         this._handle_load("image_ai");
-                        actions.trigger_snackbar("Getting impaired with DeepAI systems", 7500);
+                        actions.trigger_snackbar("Getting associated with DeepAI.org systems", 7500);
                         actions.jamy_update("angry");
 
                         postJSON("https://deepai.pixa-pics.workers.dev/colorizer", data, (err, res) => {
@@ -1634,7 +1658,7 @@ class Pixel extends React.Component {
                             <CanvasPixels
                                 perspective={0}
                                 on_export_state={this._handle_canvas_state_export}
-                                export_state_every_ms={is_mobile_or_tablet ? 3 * 60 * 1000: 2 * 60 * 1000}
+                                export_state_every_ms={is_mobile_or_tablet ? 5 * 60 * 1000: 3.5 * 60 * 1000}
                                 shadow_size={is_mobile_or_tablet ? 0: 1.5}
                                 onContextMenu={(e) => {e.preventDefault()}}
                                 key={"canvas"}

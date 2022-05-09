@@ -72,8 +72,13 @@ const styles = theme => ({
     },
     homeCTAsendit: {
         color: "#fff",
-        filters: "drop-shadow(0px 0px 8px lightskyblue)",
-        backgroundImage: "url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4iICJodHRwOi8vd3d3LnczLm9yZy9HcmFwaGljcy9TVkcvMS4xL0RURC9zdmcxMS5kdGQiPjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTcsN0gxMVY5SDdBMywzIDAgMCwwIDQsMTJBMywzIDAgMCwwIDcsMTVIMTFWMTdIN0E1LDUgMCAwLDEgMiwxMkE1LDUgMCAwLDEgNyw3TTE3LDdBNSw1IDAgMCwxIDIyLDEySDIwQTMsMyAwIDAsMCAxNyw5SDEzVjdIMTdNOCwxMUgxNlYxM0g4VjExTTE3LDEySDE5VjE1SDIyVjE3SDE5VjIwSDE3VjE3SDE0VjE1SDE3VjEyWiIgZmlsbD0iI2ZmZmZmZjMzIi8+PC9zdmc+Cg==), linear-gradient(32deg, #6100fd, #5dbff3, #7be2f1, #98ecff, #32c4ff, #6d5bff, #020562)",        filter: "drop-shadow(0px 0px 3px skyblue) brightness(1)",
+        textShadow: "0px 0px 6px white",
+        "&:hover": {
+
+            filters: "drop-shadow(0px 0px 8px lightskyblue)",
+        },
+        backgroundImage: "linear-gradient(32deg, #6100fd, #5dbff3, #7be2f1, #98ecff, #32c4ff, #6d5bff, #020562)",
+        filter: "drop-shadow(0px 0px 3px skyblue) brightness(1)",
         transform: "translateY(0px) scale(1) !important",
         transformOrigin: "center",
         transition: "all .25s ease-in-out 0s !important",
@@ -88,7 +93,7 @@ const styles = theme => ({
         right: 32,
         [theme.breakpoints.down("sm")]: {
             fontSize: "12px",
-            borderRadius: "50%",
+            borderRadius: ".5em",
             lineHeight: "1.5em",
             width: 64,
             bottom: 24,
@@ -265,11 +270,9 @@ class Home extends React.Component {
 
     _handle_speed_dial_action = (event, action) => {
 
-        switch (action) {
+        if(action === "share") {
 
-            case "share":
-                actions.trigger_share();
-                break;
+            actions.trigger_share();
         }
     };
 

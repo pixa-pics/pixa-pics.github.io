@@ -129,7 +129,22 @@ class ShareDialog extends React.Component {
 
     componentWillReceiveProps(new_props) {
 
-        this.setState(new_props);
+        const just_being_open = new_props.open && !this.state.open;
+
+        this.setState(new_props, () => {
+
+            if(just_being_open) {
+
+                if (navigator.share) {
+                    navigator.share({
+                        url: window.location.href,
+                    })
+                        .then(() => {this.props.onClose(null)})
+                        .catch((error) => {});
+                }
+
+            }
+        });
     }
 
     _copy_url = (event, url) => {
