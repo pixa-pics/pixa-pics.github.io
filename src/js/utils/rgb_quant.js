@@ -944,12 +944,14 @@ window.rgb_quant_process_function_string = `var f = async function(img, limit, r
             var bmpA0 = await createImageBitmap(blbA0, {
                 premultiplyAlpha: 'none',
                 colorSpaceConversion: 'none',
+                resizeQuality: 'pixelated'
             });
             
             while (bmpA0.width * scale * bmpA0.height * scale > resize_to) { scale -= 0.01; }
             
             var canvasA0 = new OffscreenCanvas(Math.floor(bmpA0.width * scale), Math.floor(bmpA0.height * scale));
             var ctxA0 = canvasA0.getContext("2d");
+            ctxA0.imageSmoothingEnabled = false;
             ctxA0.drawImage(bmpA0, 0, 0, canvasA0.width, canvasA0.height);
             img_data = ctxA0.getImageData(0, 0, canvasA0.width, canvasA0.height);
             return do_export_thing(do_quantization_step(img_data, limit), lossy);
@@ -966,6 +968,7 @@ window.rgb_quant_process_function_string = `var f = async function(img, limit, r
                     return createImageBitmap(image_data, {
                         premultiplyAlpha: 'none',
                         colorSpaceConversion: 'none',
+                        resizeQuality: 'pixelated'
                     }).then((btmp_i) => {
                     
                         while (image.width * scale * image.height * scale > resize_to) { scale -= 0.01; }
@@ -974,6 +977,7 @@ window.rgb_quant_process_function_string = `var f = async function(img, limit, r
                         canvasA0.width = Math.floor(image.width * scale);
                         canvasA0.height = Math.floor(image.height * scale);
                         var ctxA0 = canvasA0.getContext("2d");
+                        ctxA0.imageSmoothingEnabled = false;
                         ctxA0.drawImage(btmp_i, 0, 0, Math.floor(image.width * scale), Math.floor(image.height * scale));
                         img_data = ctxA0.getImageData(0, 0, Math.floor(image.width * scale), Math.floor(image.height * scale)); // ImageData
                         
@@ -994,6 +998,7 @@ window.rgb_quant_process_function_string = `var f = async function(img, limit, r
                     canvasA0.width = Math.floor(image.width * scale);
                     canvasA0.height = Math.floor(image.height * scale);
                     var ctxA0 = canvasA0.getContext("2d");
+                    ctxA0.imageSmoothingEnabled = false;
                     ctxA0.drawImage(image, 0, 0, Math.floor(image.width * scale), Math.floor(image.height * scale));
                     img_data = ctxA0.getImageData(0, 0, Math.floor(image.width * scale), Math.floor(image.height * scale)); // ImageData
                     
@@ -1006,7 +1011,9 @@ window.rgb_quant_process_function_string = `var f = async function(img, limit, r
         
         function do_quantization_step(img_data, limit) {
        
-            if(limit !== 1/0) {
+            if(limit > 0 && limit < 1/0) {
+            
+            lossy = false;
        
                 // options
                 var q = new RgbQuant({
@@ -1043,12 +1050,13 @@ window.rgb_quant_process_function_string = `var f = async function(img, limit, r
                 return createImageBitmap(img_data, {
                     premultiplyAlpha: 'none',
                     colorSpaceConversion: 'none',
+                    resizeQuality: 'pixelated'
                 }).then((bmpB0) => {
                 
                     ctxB0.transferFromImageBitmap(bmpB0);
     
                     var params = !lossy ? {type: "image/png"}: {type: "image/jpeg", quality: 0.75};
-                    return ctxB0.canvas.convertToBlob(params).then((blbB0) => {
+                    return canvasB0.convertToBlob(params).then((blbB0) => {
                     
                         function blob_to_base64(blob) {
                           return new Promise((resolve, _) => {
@@ -1071,6 +1079,7 @@ window.rgb_quant_process_function_string = `var f = async function(img, limit, r
                 canvasB0.width = img_data.width;
                 canvasB0.height = img_data.height;
                 var ctxB0 = canvasB0.getContext("2d");
+                ctxB0.imageSmoothingEnabled = false;
                 ctxB0.putImageData(img_data, 0, 0);
                 
                 if(!lossy) {

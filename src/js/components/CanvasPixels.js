@@ -339,6 +339,7 @@ window.get_base64_png_data_url_process_function_string = `var f = async function
                 return createImageBitmap(image_data, {
                     premultiplyAlpha: 'none',
                     colorSpaceConversion: 'none',
+                    resizeQuality: "pixelated",
                 }).then((btmp_i) => {
                 
                     ctx2.transferFromImageBitmap(btmp_i);

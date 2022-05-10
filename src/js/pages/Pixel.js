@@ -325,7 +325,7 @@ class Pixel extends React.Component {
             _pxl_current_opacity: 1,
             _width: 32,
             _height: 32,
-            _import_size: "96",
+            _import_size: "128",
             _import_colorize: "0",
             _hue: 360,
             _slider_value: 8/32,
@@ -901,13 +901,13 @@ class Pixel extends React.Component {
             this.get_base64(smart_file).then((b) => {
 
                 const max_original_size = is_mobile_or_tablet ? Math.sqrt(1920 * 1080): Math.sqrt(4096 * 2160);
-                const max_original_color = 1/0;
+                const max_original_color = -1;
                 const max_size = is_mobile_or_tablet ? Math.sqrt(1280 * 720): Math.sqrt(1920 * 1280);
-                const max_color = is_mobile_or_tablet ? 768: 1536;
+                const max_color = is_mobile_or_tablet ? 3000: 4000;
 
-                let ratio_l_l2 = is_mobile_or_tablet ? 1.5: 3;
+                let ratio_l_l2 = is_mobile_or_tablet ? 6: 8;
                 let min_size = is_mobile_or_tablet ? 0: 0;
-                let min_color = is_mobile_or_tablet ? 384: 768;
+                let min_color = is_mobile_or_tablet ? 1250: 2500;
 
                 const resize_original_to = max_original_size * max_original_size;
                 const resize_to = Math.min(max_size * max_size, Math.max(parseInt(_import_size * _import_size), min_size * min_size));
@@ -915,7 +915,7 @@ class Pixel extends React.Component {
 
                 import("../utils/rgb_quant").then(({rgb_quant}) => {
 
-                    rgb_quant(b, max_original_color, resize_original_to, ["1", "2", "3"].includes(_import_colorize), (data) => {
+                    rgb_quant(b, ["1", "2", "3"].includes(_import_colorize) ? limit_color_number * 2: max_original_color, resize_original_to, ["1", "2", "3"].includes(_import_colorize), (data) => {
 
                         data = data || null;
                         if(data === null) {
