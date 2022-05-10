@@ -956,24 +956,20 @@ window.rgb_quant_process_function_string = `return async function(img, limit, re
       
         } catch (e) {
             
-            const to_image = async (img) => {
-                return new Promise(ok => {
-                    const image = new Image();
-                    image.addEventListener("loadend", () => ok(image));
-                    image.src = img;
-                });
-            };
-    
-            var img_htmlA0 = await to_image(img); // HTMLImageElement
+            var image = new Image();
+            image.onload = function() {
             
-            while (img_htmlA0.width * scale * img_htmlA0.height * scale > resize_to) { scale -= 0.01; }
-            
-            var canvasA0 = document.createElement("canvas");
-            canvasA0.width = Math.floor(img_htmlA0.width * scale);
-            canvasA0.height = Math.floor(img_htmlA0.height * scale);
-            var ctxA0 = canvasA0.getContext("2d");
-            ctxA0.drawImage(img_htmlA0, 0, 0, canvasA0.width, canvasA0.height);
-            img_data = ctxA0.getImageData(0, 0, canvasA0.width, canvasA0.height); // ImageData
+                var img_htmlA0 = image; // HTMLImageElement
+                while (img_htmlA0.width * scale * img_htmlA0.height * scale > resize_to) { scale -= 0.01; }
+                
+                var canvasA0 = document.createElement("canvas");
+                canvasA0.width = Math.floor(img_htmlA0.width * scale);
+                canvasA0.height = Math.floor(img_htmlA0.height * scale);
+                var ctxA0 = canvasA0.getContext("2d");
+                ctxA0.drawImage(img_htmlA0, 0, 0, canvasA0.width, canvasA0.height);
+                img_data = ctxA0.getImageData(0, 0, canvasA0.width, canvasA0.height); // ImageData
+            }
+            image.src = img;
         }
         
         if(limit !== 1/0) {
@@ -1018,7 +1014,7 @@ window.rgb_quant_process_function_string = `return async function(img, limit, re
                     function blob_to_base64(blob) {
                       return new Promise((resolve, _) => {
                         var reader = new FileReader();
-                        reader.onloadend = () => resolve(reader.result);
+                        reader.onload = () => resolve(reader.result);
                         reader.readAsDataURL(blob);
                       })
                     }
@@ -1040,37 +1036,36 @@ window.rgb_quant_process_function_string = `return async function(img, limit, re
             
             if(!lossly) {
             
-                return ctxB0.canvas.toDataURL("image/png");
+                return canvasB0.toDataURL("image/png");
             
             }else {
            
-                return ctxB0.canvas.toDataURL("image/jpeg", 0.75);
+                return canvasB0.toDataURL("image/jpeg", 0.75);
             }
         }
     }`;
 
 const rgb_quant = (img, limit = 1024, resize_to = 1920*1080, lossly = false, callback_function = () => {}, pool = null) => {
 
-    if(Boolean(pool)) {
+    (async () => {
 
-        pool.exec(new Function(window.rgb_quant_process_function_string)(), [
-            img, limit, resize_to, lossly
-        ]).catch((e) => {
+        if(Boolean(pool)) {
 
-            return Promise.resolve(new Function(window.rgb_quant_process_function_string)()(img, limit, resize_to, lossly));
+            const result = await pool.exec(new Function(window.rgb_quant_process_function_string)(), [
+                img, limit, resize_to, lossly
+            ]).catch((e) => {
 
-        }).then((result) => {
-
-            callback_function(result);
-        }).timeout(60 * 1000);
-
-    }else {
-
-        new Function(window.rgb_quant_process_function_string)()(img, limit, resize_to, lossly).then((result) => {
+                return Promise.resolve(new Function(window.rgb_quant_process_function_string)()(img, limit, resize_to, lossly));
+            }).timeout(60 * 1000);
 
             callback_function(result);
-        });
-    }
+
+        }else {
+
+            const result = await new Function(window.rgb_quant_process_function_string)()(img, limit, resize_to, lossly);
+            callback_function(result);
+        }
+    })();
 };
 
 module.exports = { rgb_quant }

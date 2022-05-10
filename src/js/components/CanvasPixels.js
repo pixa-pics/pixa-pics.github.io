@@ -348,7 +348,7 @@ window.get_base64_png_data_url_process_function_string = `return async function(
                         function blob_to_base64(blob) {
                           return new Promise((resolve, _) => {
                             var reader = new FileReader();
-                            reader.onloadend = () => resolve(reader.result);
+                            reader.onload = () => resolve(reader.result);
                             reader.readAsDataURL(blob);
                           })
                         }
@@ -703,7 +703,7 @@ window.get_layer_base64_png_data_url_process_function_string = `return async fun
                         function blob_to_base64(blob) {
                           return new Promise((resolve, _) => {
                             var reader = new FileReader();
-                            reader.onloadend = () => resolve(reader.result);
+                            reader.onload = () => resolve(reader.result);
                             reader.readAsDataURL(blob);
                           })
                         }

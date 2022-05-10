@@ -887,10 +887,11 @@ class Pixel extends React.Component {
         const { _canvas, _import_colorize, _import_size } = this.state;
         let img = new Image;
         let file = event.target.files[0] || event.path[0].files[0];
-        document.body.removeChild(input);
 
         this._handle_load("image_preload");
         this.get_base64(file).then((b) => {
+
+            document.body.removeChild(input);
 
             const max_original_size = is_mobile_or_tablet ? Math.sqrt(1920 * 1080): Math.sqrt(4096 * 2160);
             const max_original_color = 1/0;
@@ -990,6 +991,12 @@ class Pixel extends React.Component {
                         }, pool);
                     }
                 }, pool);
+
+            }).catch((e) => {
+
+                this._handle_load_complete("image_preload", {});
+                actions.trigger_snackbar("Be sure to have a recent browser or install Google Chrome for using it.", 5700);
+                actions.jamy_update("angry");
 
             });
         });
