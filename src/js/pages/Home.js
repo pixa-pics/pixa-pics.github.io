@@ -252,6 +252,38 @@ class Home extends React.Component {
         setTimeout(() => {
 
             actions.trigger_loading_update(100);
+            actions.trigger_snackbar(`AWESOME, thanks! Choosing https://pixa.pics/ PASSIONATELY means KEEP enjoying it on PC 4x GREATER than on mobile NEVERTHELESS!`, 10000);
+            setTimeout(() => {
+
+                actions.jamy_update("happy", 2500);
+
+                setTimeout(() => {
+
+                    actions.trigger_snackbar(`Looking good seeing you on PIXA.PICS & Good looking at being very happy with ART <3!`, 6000);
+                    setTimeout(() => {
+
+                        actions.jamy_update("suspicious", 2500);
+
+                        setTimeout(() => {
+
+                            actions.trigger_snackbar(`Why don't we go right to the laboratory testing any powerful functionalities we have?`, 6000);
+
+                            setTimeout(() => {
+
+                                actions.jamy_update("happy", 1500);
+                            }, 3000);
+
+                        }, 6000);
+
+
+                    }, 6000);
+
+
+                }, 10000);
+
+            }, 1250);
+
+
         }, 250);
 
         actions.trigger_music(`track_${navigator.onLine ? Math.ceil(Math.random() * 12).toString(10).padStart(2, "0"): "12"}`);
@@ -287,6 +319,7 @@ class Home extends React.Component {
 
         return (
             <div className={classes.root} style={{
+                filter: "revert",
                 backgroundImage: THEME_DAY ?
                                     IS_EVENING ?
                                         "linear-gradient(rgb(186 151 255 / 47%) 10%, transparent 33%), radial-gradient(at 10% 10%, rgb(164 82 191 / 68%) 14%, rgb(170 97 255 / 64%) 28%, rgba(0, 72, 255, 0.1) 50%, rgb(191 49 49 / 97%)), url(/src/images/illustrations/Tropical-sunset.svg)" :
@@ -313,12 +346,12 @@ class Home extends React.Component {
                     </h1>
                     <Fade in={true} timeout={1200}>
                             <h2 className={classes.subtitle}>
-                                <span  style={{color: THEME_DAY ? "#0d1fac": "#ffd910", fontWeight: "bold"}}>Based on your images,</span> is there many harmful details lacking <b>our <img src={HEARTHEMOJI} className="emoji pulse2"/> simplicity</b>? <br />
+                                <span  style={{color: THEME_DAY ? "#0d1fac": "#ffd910", fontWeight: "bold"}}>Based on your images,</span> is there many details lacking <b>our <img src={HEARTHEMOJI} className="emoji pulse2"/> post-simplifying</b>? <br />
                             </h2>
                     </Fade>
                     <Fade in={true} timeout={1500}>
                         <Button className={classes.homeCTAuseit} variant={"contained"} size={"large"} color="primary" onClick={(event) => this._go_to_url(event, "/pixel")}>
-                            OPEN EDITOR
+                            Let's go! -> Lab.
                         </Button>
                     </Fade>
                     <Fade in={true} timeout={2000}>
