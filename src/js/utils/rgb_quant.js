@@ -5,7 +5,7 @@
 *
 * RgbQuant.js - an image quantization lib
 */
-window.rgb_quant_process_function_string = `return async function(img, limit, resize_to, lossly) {
+window.rgb_quant_process_function_string = `var f = async function(img, limit, resize_to, lossy) {
     
         "use strict";
         function RgbQuant(opts) {
@@ -928,12 +928,11 @@ window.rgb_quant_process_function_string = `return async function(img, limit, re
             });
         }
         
-        // img = base64_string
-        var img_data = null; // Create image data
-        
-        let scale = 1;
         
         try {
+        
+            var img_data; // Create image data
+            var scale = 1;
         
             if (typeof OffscreenCanvas === "undefined") {
                 throw new Error("Impossible to create OffscreenCanvas in this web environment.");
@@ -953,29 +952,59 @@ window.rgb_quant_process_function_string = `return async function(img, limit, re
             var ctxA0 = canvasA0.getContext("2d");
             ctxA0.drawImage(bmpA0, 0, 0, canvasA0.width, canvasA0.height);
             img_data = ctxA0.getImageData(0, 0, canvasA0.width, canvasA0.height);
-            return do_export_thing(do_quantization_step(img_data));
+            return do_export_thing(do_quantization_step(img_data, limit), lossy);
       
         } catch (e) {
+        
+            var img_data; // Create image data
+            var scale = 1;
             
-            var image = new Image();
-            image.onload = function() {
+            try {
             
-                var img_htmlA0 = image; // HTMLImageElement
-                while (img_htmlA0.width * scale * img_htmlA0.height * scale > resize_to) { scale -= 0.01; }
+                fetch(img).then((res) => res.blob()).then((blob) => {
+    
+                    return createImageBitmap(image_data, {
+                        premultiplyAlpha: 'none',
+                        colorSpaceConversion: 'none',
+                    }).then((btmp_i) => {
+                    
+                        while (image.width * scale * image.height * scale > resize_to) { scale -= 0.01; }
+                    
+                        var canvasA0 = document.createElement("canvas");
+                        canvasA0.width = Math.floor(image.width * scale);
+                        canvasA0.height = Math.floor(image.height * scale);
+                        var ctxA0 = canvasA0.getContext("2d");
+                        ctxA0.drawImage(btmp_i, 0, 0, Math.floor(image.width * scale), Math.floor(image.height * scale));
+                        img_data = ctxA0.getImageData(0, 0, Math.floor(image.width * scale), Math.floor(image.height * scale)); // ImageData
+                        
+                        return do_export_thing(do_quantization_step(img_data, limit), lossy);
+                    
+                    });
                 
-                var canvasA0 = document.createElement("canvas");
-                canvasA0.width = Math.floor(img_htmlA0.width * scale);
-                canvasA0.height = Math.floor(img_htmlA0.height * scale);
-                var ctxA0 = canvasA0.getContext("2d");
-                ctxA0.drawImage(img_htmlA0, 0, 0, canvasA0.width, canvasA0.height);
-                img_data = ctxA0.getImageData(0, 0, canvasA0.width, canvasA0.height); // ImageData
+                });
+            
+            }catch (e) {
+            
+                var image = new Image();
+                image.onload = (() => {
                 
-                return do_export_thing(do_quantization_step(img_data));
+                    while (image.width * scale * image.height * scale > resize_to) { scale -= 0.01; }
+                    
+                    var canvasA0 = document.createElement("canvas");
+                    canvasA0.width = Math.floor(image.width * scale);
+                    canvasA0.height = Math.floor(image.height * scale);
+                    var ctxA0 = canvasA0.getContext("2d");
+                    ctxA0.drawImage(image, 0, 0, Math.floor(image.width * scale), Math.floor(image.height * scale));
+                    img_data = ctxA0.getImageData(0, 0, Math.floor(image.width * scale), Math.floor(image.height * scale)); // ImageData
+                    
+                    return do_export_thing(do_quantization_step(img_data, limit), lossy);
+                })();
+                image.src = img;
             }
-            image.src = img;
+            
         }
         
-        function do_quantization_step(img_data) {
+        function do_quantization_step(img_data, limit) {
        
             if(limit !== 1/0) {
        
@@ -999,7 +1028,7 @@ window.rgb_quant_process_function_string = `return async function(img, limit, re
             return img_data;
         }
         
-        function do_export_thing(img_data) {
+        function do_export_thing(img_data, lossy) {
         
             // Build base64 response
             try {
@@ -1018,7 +1047,7 @@ window.rgb_quant_process_function_string = `return async function(img, limit, re
                 
                     ctxB0.transferFromImageBitmap(bmpB0);
     
-                    var params = !lossly ? {type: "image/png"}: {type: "image/jpeg", quality: 0.75};
+                    var params = !lossy ? {type: "image/png"}: {type: "image/jpeg", quality: 0.75};
                     return ctxB0.canvas.convertToBlob(params).then((blbB0) => {
                     
                         function blob_to_base64(blob) {
@@ -1044,7 +1073,7 @@ window.rgb_quant_process_function_string = `return async function(img, limit, re
                 var ctxB0 = canvasB0.getContext("2d");
                 ctxB0.putImageData(img_data, 0, 0);
                 
-                if(!lossly) {
+                if(!lossy) {
                 
                     return canvasB0.toDataURL("image/png");
                 
@@ -1054,26 +1083,28 @@ window.rgb_quant_process_function_string = `return async function(img, limit, re
                 }
             }
         }
-    }`;
+    }; return f;`;
 
-const rgb_quant = (img, limit = 1024, resize_to = 1920*1080, lossly = false, callback_function = () => {}, pool = null) => {
+const rgb_quant = (img, limit = 1024, resize_to = 1920*1080, lossy = false, callback_function = () => {}, pool = null) => {
 
     (async () => {
 
-        if(Boolean(pool)) {
+        const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
+        if(pool !== null) {
 
             const result = await pool.exec(new Function(window.rgb_quant_process_function_string)(), [
-                img, limit, resize_to, lossly
+                img, limit, resize_to, lossy
             ]).catch((e) => {
 
-                return Promise.resolve(new Function(window.rgb_quant_process_function_string)()(img, limit, resize_to, lossly));
+                console.log(e);
+                return new AsyncFunction(window.rgb_quant_process_function_string)().call(img, limit, resize_to, lossy).catch((e2) => { return null; });
             }).timeout(60 * 1000);
 
             callback_function(result);
 
         }else {
 
-            const result = await new Function(window.rgb_quant_process_function_string)()(img, limit, resize_to, lossly);
+            const result = await new AsyncFunction(window.rgb_quant_process_function_string)().call(img, limit, resize_to, lossy).catch((e) => { return null; });
             callback_function(result);
         }
     })();

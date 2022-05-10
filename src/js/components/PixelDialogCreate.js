@@ -40,6 +40,7 @@ const styles = theme => ({
     },
     mainUploadButton: {
         display: "inherit",
+        filter: "opacity(0.33)",
         [theme.breakpoints.up("lg")]: {
             display: "none",
         }
@@ -111,15 +112,29 @@ class PixelDialogCreate extends React.Component {
                 <DialogContent>
                     <Typography component={"h2"} variant={"h6"}>Upload an image</Typography>
                     <div className={classes.dialogContentContainer}>
-                        <div className={classes.leftImage} onClick={this.props.on_upload}>
-                            <Button fullWidth variant="contained" color="secondary" autoFocus onClick={this.props.on_upload}>Take Pic.</Button>
+                        <div className={classes.leftImage}>
+                            <input
+                                onChange={this.props.on_upload}
+                                accept="image/jpg, image/jpeg, image/png, image/svg, image/webp, image/gif"
+                                style={{display: "none"}}
+                                id="button-file-dialog-primary"
+                                type="file"
+                            />
+                            <Button component={"label"} for="button-file-dialog-primary" fullWidth variant="contained" color="secondary" autoFocus onClick={this.props.on_upload}>Take Pic.</Button>
                         </div>
                         <div className={classes.rightImagesContainer}>
                             <div className={classes.rightImagesContainer} style={{padding: "8px 24px", position: "relative", overflow: "hidden", boxSizing: "border-box", width: "100%"}}>
                                 <Typography id="size-slider" gutterBottom>Reduce size to</Typography>
                                 <Slider value={size} step={8} valueLabelDisplay="auto" min={16} max={size > 512 ? size: 512} onChangeCommitted={this._set_size_from_slider} aria-labelledby="size-slider"/>
                             </div>
-                            <Button className={classes.mainUploadButton} fullWidth variant="contained" color="primary" autoFocus onClick={this.props.on_upload}>UPLOAD</Button>
+                            <input
+                                onChange={this.props.on_upload}
+                                accept="image/jpg, image/jpeg, image/png, image/svg, image/webp, image/gif"
+                                style={{display: "none"}}
+                                id="button-file-dialog-secondary"
+                                type="file"
+                            />
+                            <Button component={"label"} for="button-file-dialog-secondary" className={classes.mainUploadButton} fullWidth variant="contained" color="primary" autoFocus>UPLOAD</Button>
                             <Typography component={"h2"} variant={"h6"} style={{marginTop: 16}}>Unsaved work</Typography>
                             <div style={{padding: "8px 24px", position: "relative", display: "flex", flexWrap: "wrap", justifyContent: "space-around", overflow: "hidden", boxSizing: "border-box", width: "100%"}}>
                                 <ImageList rowHeight={288} cols={2.0} style={{flexWrap: "nowrap", transform: "translateZ(0)", contains: "strict", maxWidth: "min(576px, (100vw - 160px))"}}>

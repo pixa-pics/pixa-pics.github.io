@@ -384,14 +384,6 @@ class PixelToolboxSwipeableViews extends React.Component {
         canvas.to_color(h, slider_value, s === 0 ? null: s, l === 0 ? null: l);
     }
 
-    _import_image = () => {
-
-        if(this.props.on_import_image) {
-
-            this.props.on_import_image();
-        }
-    };
-
     _import_image_from_libary = () => {
 
         if(this.props.on_import_image_library) {
@@ -400,11 +392,11 @@ class PixelToolboxSwipeableViews extends React.Component {
         }
     };
 
-    _upload_image = () => {
+    _upload_image = (event) => {
 
         if(this.props.on_upload_image) {
 
-            this.props.on_upload_image();
+            this.props.on_upload_image(event);
         }
     };
 
@@ -798,9 +790,7 @@ class PixelToolboxSwipeableViews extends React.Component {
                             }
                         },
                         {
-                            icon: <FileImportIcon/>, text: "Import image", sub: "[CTRL + I]", on_click: () => {
-                                this._import_image()
-                            }
+                            icon: <FileImportIcon/>, text: "Import image", sub: "[CTRL + I]", for: "button-file-dialog-main", on_click: this.props.on_import_image
                         },
                         {
                             icon: <FileImportIcon/>,
@@ -1578,9 +1568,14 @@ class PixelToolboxSwipeableViews extends React.Component {
                                                 <span>Upload</span>
                                             </ListSubheader>
                                             <div className={classes.listItems}>
-                                                <ListItem button onClick={() => {
-                                                    this._upload_image()
-                                                }}>
+                                                <input
+                                                    accept="image/jpg, image/jpeg, image/png, image/svg, image/webp, image/gif"
+                                                    style={{display: "none"}}
+                                                    id="button-file-drawer-upload"
+                                                    type="file"
+                                                    onChange={this._upload_image}
+                                                />
+                                                <ListItem component="label" button for="button-file-drawer-upload" >
                                                     <ListItemIcon className={classes.listItemIcon}>
                                                         <ImagePlusIcon/>
                                                     </ListItemIcon>
@@ -1750,7 +1745,25 @@ class PixelToolboxSwipeableViews extends React.Component {
                                                              : {}
                                                      }>
                                                     {action_set.tools.map((tool, index) => {
-                                                        return (
+                                                        return tool.for ? (
+                                                            <div>
+                                                                <input
+                                                                    accept="image/jpg, image/jpeg, image/png, image/svg, image/webp, image/gif"
+                                                                    style={{display: "none"}}
+                                                                    id={tool.for}
+                                                                    type="file"
+                                                                    onChange={tool.on_click}
+                                                                />
+                                                                <ListItem component="label" key={index} for={tool.for} button disabled={tool.disabled || false}>
+                                                                    <ListItemIcon className={classes.listItemIcon}>
+                                                                        {tool.icon}
+                                                                    </ListItemIcon>
+                                                                    <ListItemText className={classes.ListItemText}
+                                                                                  primary={tool.text} secondary={tool.sub}/>
+                                                                </ListItem>
+                                                            </div>
+                                                        ):
+                                                        (
                                                             <ListItem key={index} button disabled={tool.disabled || false}
                                                                       onClick={tool.on_click}>
                                                                 <ListItemIcon className={classes.listItemIcon}>

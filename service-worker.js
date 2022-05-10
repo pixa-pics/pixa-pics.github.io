@@ -1,6 +1,6 @@
-var REQUIRED_CACHE = "unless-update-cache-v109-required";
-var USEFUL_CACHE = "unless-update-cache-v109-useful";
-var STATIC_CACHE = "unless-update-cache-v109-static";
+var REQUIRED_CACHE = "unless-update-cache-v110-required";
+var USEFUL_CACHE = "unless-update-cache-v110-useful";
+var STATIC_CACHE = "unless-update-cache-v110-static";
 var MAIN_CHILD_CHUNK_REGEX = /child\-chunk\.(main\~[a-z0-9]+)\.min.js/i;
 var CHILD_CHUNK_REGEX = /child\-chunk\.([0-9]+)\.min.js/i;
 
@@ -23,6 +23,7 @@ self.addEventListener("install", function(evt) {
                 "/src/images/AI.svg",
                 "/src/images/DNA.svg",
                 "/src/images/CPU.svg",
+                "/src/images/BROWSER.svg",
                 "/src/images/laboratory.svg",
                 "/src/images/swiss-security.svg",
                 "/src/images/illustrations/China-night.svg",

@@ -234,7 +234,7 @@ class ShareDialog extends React.Component {
                                     </Tooltip>
                                 </div>
                                 <FormControl fullWidth>
-                                    <InputLabel htmlFor="share-dialog-url-input">{t( "components.share_dialog.url")}</InputLabel>
+                                    <InputLabel for="share-dialog-url-input">{t( "components.share_dialog.url")}</InputLabel>
                                     <Input
                                         value={url}
                                         id="share-dialog-url-input"

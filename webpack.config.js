@@ -84,13 +84,17 @@ module.exports = {
                                 'react',
                                 ["env", {
                                     targets: {
-                                        edge: "17",
-                                        firefox: "60",
-                                        chrome: "67",
-                                        safari: "11.1"
+                                        android: "77",
+                                        chrome: "77",
+                                        edge: "44",
+                                        firefox: "66",
+                                        ios_saf: "12",
+                                        safari: "12",
                                     },
-                                    useBuiltIns: "usage",
                                     forceAllTransforms: true,
+                                    shippedProposals: true,
+                                    bugfixes: true,
+                                    useBuiltIns: "entry"
                                 }],
                                 'stage-0'
                             ]

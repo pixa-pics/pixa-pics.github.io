@@ -606,7 +606,7 @@ class Pixel extends React.Component {
                 this._upload_image();
             }else if(event.ctrlKey && event.key === "i") {
 
-                this._import_image();
+                this._handle_file_import();
             }else if(!event.ctrlKey && event.key === "o") {
 
                 this._set_tool("PICKER");
@@ -832,15 +832,9 @@ class Pixel extends React.Component {
         }
     }
 
-    _upload_image = () => {
+    _upload_image = (event) => {
 
-        let input = document.createElement("input");
-        input.setAttribute("style", "pointer-events: none; touch-actions: none; position: absolute; opacity: 0;");
-        input.addEventListener("change", (event) => {this._handle_file_upload(event, input)});
-        document.body.appendChild(input);
-        input.setAttribute("type", "file");
-        input.setAttribute("accept", "image/*");
-        input.click();
+        this._handle_file_upload(event);
     };
 
     _upload_image_library = () => {
@@ -874,132 +868,209 @@ class Pixel extends React.Component {
     };
 
     get_base64 = (file) => {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.addEventListener("load", () => resolve(reader.result));
-            reader.addEventListener("error", () => reject(error));
+
+        return new Promise((resolve, _) => {
+            let reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = () => resolve(URL.createObjectURL(file));
             reader.readAsDataURL(file);
         });
     };
 
-    _handle_file_upload = (event, input) => {
+    _handle_file_upload = (event) => {
 
-        const { _canvas, _import_colorize, _import_size } = this.state;
-        let img = new Image;
-        let file = event.target.files[0] || event.path[0].files[0];
+        const files = (event.target || {}).files || (event.srcElement || {}).files || (event.currentTarget || {}).files || ((event.path || [])[0] || {}).files || [];
+        const dumb_file = files[0] || null;
+        let smart_file = null;
+        for (let i = 0; i < files.length; i++) {
+            const f = files[i];
+            if(f.type.startsWith('image/')) {
+                smart_file = f;
+            }
+        };
 
-        this._handle_load("image_preload");
-        this.get_base64(file).then((b) => {
+        if(smart_file === null && dumb_file === null) {
 
-            document.body.removeChild(input);
+            actions.trigger_snackbar("Looks like I can't get your file as something is erroneous.", 5700);
+            actions.jamy_update("angry");
+        }else if(smart_file !== null) {
 
-            const max_original_size = is_mobile_or_tablet ? Math.sqrt(1920 * 1080): Math.sqrt(4096 * 2160);
-            const max_original_color = 1/0;
-            const max_size = is_mobile_or_tablet ? Math.sqrt(1280 * 720): Math.sqrt(1920 * 1280);
-            const max_color = is_mobile_or_tablet ? 768: 1536;
+            const { _canvas, _import_colorize, _import_size } = this.state;
 
-            let ratio_l_l2 = is_mobile_or_tablet ? 1.5: 3;
-            let min_size = is_mobile_or_tablet ? 0: 0;
-            let min_color = is_mobile_or_tablet ? 384: 768;
+            this._handle_load("image_preload");
+            this.get_base64(smart_file).then((b) => {
 
-            const resize_original_to = max_original_size * max_original_size;
-            const resize_to = Math.min(max_size * max_size, Math.max(parseInt(_import_size * _import_size), min_size * min_size));
-            const limit_color_number = Math.min(max_color, Math.max(parseInt(_import_size * ratio_l_l2), min_color));
+                const max_original_size = is_mobile_or_tablet ? Math.sqrt(1920 * 1080): Math.sqrt(4096 * 2160);
+                const max_original_color = 1/0;
+                const max_size = is_mobile_or_tablet ? Math.sqrt(1280 * 720): Math.sqrt(1920 * 1280);
+                const max_color = is_mobile_or_tablet ? 768: 1536;
 
-            import("../utils/rgb_quant").then(({rgb_quant}) => {
+                let ratio_l_l2 = is_mobile_or_tablet ? 1.5: 3;
+                let min_size = is_mobile_or_tablet ? 0: 0;
+                let min_color = is_mobile_or_tablet ? 384: 768;
 
-                rgb_quant(b, max_original_color, resize_original_to, ["1", "2", "3"].includes(_import_colorize), (data) => {
+                const resize_original_to = max_original_size * max_original_size;
+                const resize_to = Math.min(max_size * max_size, Math.max(parseInt(_import_size * _import_size), min_size * min_size));
+                const limit_color_number = Math.min(max_color, Math.max(parseInt(_import_size * ratio_l_l2), min_color));
 
-                    if(_import_colorize === "1") {
+                import("../utils/rgb_quant").then(({rgb_quant}) => {
 
-                        this._handle_load_complete("image_preload", {});
-                        this._handle_load("image_ai");
-                        actions.trigger_snackbar("Getting associated with DeepAI.org systems", 5700);
-                        actions.jamy_update("angry");
-                        postJSON("https://deepai.pixa-pics.workers.dev/colorizer", data, (err, res) => {
+                    rgb_quant(b, max_original_color, resize_original_to, ["1", "2", "3"].includes(_import_colorize), (data) => {
 
-                            rgb_quant(res, limit_color_number, resize_to, false,(res2) => {
+                        data = data || null;
+                        if(data === null) {
 
-                                img.addEventListener("load", () => {
+                            data = b;
+                            actions.trigger_snackbar("My home browser is strict or erroneous, I will try to skip some adjustments...", 5700);
+                            actions.jamy_update("sad");
+                        }
 
-                                    this._handle_load_complete("image_ai", {});
-                                    _canvas.set_canvas_from_image(img, data, {}, true);
-                                    this._handle_menu_close();
-                                });
-                                img.src = res2;
-                            }, pool);
+                        if(_import_colorize === "1") {
 
-                        }, "application/text");
+                            this._handle_load_complete("image_preload", {});
+                            this._handle_load("image_ai");
+                            actions.trigger_snackbar("Getting associated with DeepAI.org systems", 5700);
+                            actions.jamy_update("angry");
+                            postJSON("https://deepai.pixa-pics.workers.dev/colorizer", data, (err, res) => {
 
-                    }else if(_import_colorize === "2") {
+                                rgb_quant(res, limit_color_number, resize_to, false,(res2) => {
 
-                        this._handle_load_complete("image_preload", {});
-                        this._handle_load("image_ai");
-                        actions.trigger_snackbar("Getting associated with DeepAI.org systems", 5700);
-                        actions.jamy_update("angry");
-
-                        postJSON("https://deepai.pixa-pics.workers.dev/waifu2x", data, (err, res) => {
-
-                            rgb_quant(res, limit_color_number, resize_to, false,(res2) => {
-
-                                img.addEventListener("load", () => {
-
-                                    this._handle_load_complete("image_ai", {});
-                                    _canvas.set_canvas_from_image(img, data, {}, true);
-                                    this._handle_menu_close();
-                                });
-                                img.src = res2;
-                            }, pool);
-
-                        }, "application/text");
-                    }else if(_import_colorize === "3") {
-
-                        this._handle_load_complete("image_preload", {});
-                        this._handle_load("image_ai");
-                        actions.trigger_snackbar("Getting associated with DeepAI.org systems", 7500);
-                        actions.jamy_update("angry");
-
-                        postJSON("https://deepai.pixa-pics.workers.dev/colorizer", data, (err, res) => {
-
-                            postJSON("https://deepai.pixa-pics.workers.dev/waifu2x",  res, (err2, res2) => {
-
-                                rgb_quant(res2, limit_color_number, resize_to, false, (res3) => {
-
+                                    let img = new Image();
                                     img.addEventListener("load", () => {
 
                                         this._handle_load_complete("image_ai", {});
                                         _canvas.set_canvas_from_image(img, data, {}, true);
                                         this._handle_menu_close();
                                     });
-                                    img.src = res3;
+                                    img.src = res2;
                                 }, pool);
 
                             }, "application/text");
 
-                        }, "application/text");
-                    }else {
+                        }else if(_import_colorize === "2") {
 
-                        rgb_quant(data, limit_color_number, resize_to, false,(res) => {
+                            this._handle_load_complete("image_preload", {});
+                            this._handle_load("image_ai");
+                            actions.trigger_snackbar("Getting associated with DeepAI.org systems", 5700);
+                            actions.jamy_update("angry");
 
-                            img.addEventListener("load", () => {
+                            postJSON("https://deepai.pixa-pics.workers.dev/waifu2x", data, (err, res) => {
 
-                                this._handle_load_complete("image_preload", {});
-                                _canvas.set_canvas_from_image(img, data, {}, false);
-                                this._handle_menu_close();
-                            });
-                            img.src = res;
-                        }, pool);
-                    }
-                }, pool);
+                                rgb_quant(res, limit_color_number, resize_to, false,(res2) => {
 
-            }).catch((e) => {
+                                    let img = new Image();
+                                    img.addEventListener("load", () => {
 
-                this._handle_load_complete("image_preload", {});
-                actions.trigger_snackbar("Be sure to have a recent browser or install Google Chrome for using it.", 5700);
-                actions.jamy_update("angry");
+                                        this._handle_load_complete("image_ai", {});
+                                        _canvas.set_canvas_from_image(img, data, {}, true);
+                                        this._handle_menu_close();
+                                    });
+                                    img.src = res2;
+                                }, pool);
 
+                            }, "application/text");
+                        }else if(_import_colorize === "3") {
+
+                            this._handle_load_complete("image_preload", {});
+                            this._handle_load("image_ai");
+                            actions.trigger_snackbar("Getting associated with DeepAI.org systems", 7500);
+                            actions.jamy_update("angry");
+
+                            postJSON("https://deepai.pixa-pics.workers.dev/colorizer", data, (err, res) => {
+
+                                postJSON("https://deepai.pixa-pics.workers.dev/waifu2x",  res, (err2, res2) => {
+
+                                    rgb_quant(res2, limit_color_number, resize_to, false, (res3) => {
+
+                                        let img = new Image();
+                                        img.addEventListener("load", () => {
+
+                                            this._handle_load_complete("image_ai", {});
+                                            _canvas.set_canvas_from_image(img, data, {}, true);
+                                            this._handle_menu_close();
+                                        });
+                                        img.src = res3;
+                                    }, pool);
+
+                                }, "application/text");
+
+                            }, "application/text");
+                        }else {
+
+                            rgb_quant(data, limit_color_number, resize_to, false,(res) => {
+
+                                res = res || null;
+
+                                if(res === null) {
+
+                                    this._handle_load_complete("image_preload", {});
+                                    this._handle_load("browser");
+                                    actions.trigger_sfx("alert_high-intensity", 0.6);
+                                    actions.jamy_update("flirty");
+                                    actions.trigger_snackbar("That's our end my little diddy! My instinctive dwelling require a browser I am supporting.", 6000);
+
+                                    setTimeout(() => {
+
+                                        actions.trigger_sfx("alert_high-intensity", 0.7);
+                                        actions.jamy_update("sad");
+                                        actions.trigger_snackbar("Abandon, misfortune, sadness... I can't live in this strange place.", 7000);
+
+                                        setTimeout(() => {
+
+                                            actions.trigger_sfx("alert_high-intensity", 0.8);
+                                            actions.jamy_update("suspicious");
+                                            actions.trigger_snackbar("Ho no! I just can't, but someone needs to give me back my usual laboratory environment!", 7000);
+
+                                            setTimeout(() => {
+
+                                                actions.trigger_sfx("alert_high-intensity", 0.9);
+                                                actions.jamy_update("shocked");
+                                                actions.trigger_snackbar("Yes my enjoyable smartness, gladly you hear me now! Everything gonna be alright to look at me!", 9000);
+
+                                                setTimeout(() => {
+
+                                                    actions.jamy_update("happy");
+                                                    actions.trigger_sfx("alert_high-intensity", 1);
+
+                                                    setTimeout(() => {
+
+                                                        actions.trigger_sfx("alert_high-intensity", 1);
+
+                                                    }, 750);
+
+                                                }, 4000);
+
+                                            }, 8000);
+
+                                        }, 8000);
+
+                                    }, 7000);
+
+                                    return;
+                                }
+
+                                let img = new Image();
+                                img.addEventListener("load", () => {
+
+                                    this._handle_load_complete("image_preload", {});
+                                    _canvas.set_canvas_from_image(img, data, {}, false);
+                                    this._handle_menu_close();
+                                });
+                                img.src = res;
+                            }, pool);
+                        }
+                    }, pool);
+
+                }).catch((e) => {
+
+                    this._handle_load_complete("image_preload", {});
+                    actions.trigger_snackbar("Be sure to have a recent browser or install Google Chrome for using it.", 5700);
+                    actions.jamy_update("angry");
+
+                });
             });
-        });
+
+        }
     };
 
     _handle_import_json_state_id = (id) => {
@@ -1012,31 +1083,31 @@ class Pixel extends React.Component {
 
     _handle_file_import = (event) => {
 
-        const { _canvas } = this.state;
-        let img = new Image;
-        let file = event.target.files[0] || event.path[0].files[0];
+        const files = (event.target || {}).files || (event.srcElement || {}).files || (event.currentTarget || {}).files || ((event.path || [])[0] || {}).files || [];
+        const dumb_file = files[0] || null;
+        let smart_file = null;
+        for (let i = 0; i < files.length; i++) {
+            const f = files[i];
+            if(f.type.startsWith('image/')) {
+                smart_file = f;
+            }
+        };
 
-        this.get_base64(file).then((data) => {
+        if(smart_file !== null) {
 
-            img.src = data;
-            img.onload = () => {
+            let img = new Image();
+            const { _canvas } = this.state;
 
-                _canvas.import_image_on_canvas(img, data);
-                this._handle_menu_close();
-            };
-        });
-    };
+            this.get_base64(smart_file).then((data) => {
 
-    _import_image = () => {
+                img.src = data;
+                img.onload = () => {
 
-        let input = document.createElement("input");
-        input.setAttribute("style", "pointer-events: none; touch-actions: none; position: absolute; opacity: 0;");
-        document.body.appendChild(input);
-        input.addEventListener("change", (event) => {this._handle_file_import(event)});
-        document.body.removeChild(input);
-        input.setAttribute("type", "file");
-        input.setAttribute("accept", "image/*");
-        input.click();
+                    _canvas.import_image_on_canvas(img, data);
+                    this._handle_menu_close();
+                };
+            });
+        }
     };
 
     _import_image_library = () => {
@@ -1380,6 +1451,59 @@ class Pixel extends React.Component {
                 this.forceUpdate();
             });
         });
+    };
+
+    _get_advanced_browser = () => {
+
+        function get_OS() {
+            let userAgent = window.navigator.userAgent,
+                platform = ((window.navigator || {}).userAgentData || {}).platform || window.navigator.platform,
+                macosPlatforms = ["Macintosh", "MacIntel", "MacPPC", "Mac68K"],
+                windowsPlatforms = ["Win32", "Win64", "Windows", "WinCE"],
+                iosPlatforms = ["iPhone", "iPad", "iPod"],
+                os = null;
+
+            if (macosPlatforms.indexOf(platform) !== -1) {
+                os = "Mac OS";
+            } else if (iosPlatforms.indexOf(platform) !== -1) {
+                os = "iOS";
+            } else if (windowsPlatforms.indexOf(platform) !== -1) {
+                os = "Windows";
+            } else if (/Android/.test(userAgent)) {
+                os = "Android";
+            } else if (!os && /Linux/.test(platform)) {
+                os = "Linux";
+            }
+
+            return os;
+        }
+
+        actions.jamy_update("suspicious");
+        actions.trigger_snackbar("Ho great, the lab will be safe there...", 5000)
+
+        setTimeout(() => {
+
+            actions.trigger_sfx("hero_decorative-celebration-02");
+            actions.jamy_update("happy");
+
+            setTimeout(() => {
+
+                this._handle_load_complete("browser", {});
+                const { _history } = this.state;
+                _history.push("/");
+
+                const os = get_OS();
+                if(["Linux", "Windows"].includes(os)) {
+
+                    window.open("https://www.microsoft.com/edge");
+                }else {
+
+                    window.open("https://www.google.com/chrome/");
+                }
+
+            }, 1750);
+
+        }, 1250);
     }
 
     render() {
@@ -1544,7 +1668,7 @@ class Pixel extends React.Component {
                                 on_view_name_change={this._handle_view_name_change}
                                 on_upload_image={this._upload_image}
                                 on_upload_image_library={this._upload_image_library}
-                                on_import_image={this._import_image}
+                                on_import_image={this._handle_file_import}
                                 on_import_image_library={this._import_image_library}
                                 on_download_image={this._download_image}
                                 on_download_svg={this._download_svg}
@@ -1646,7 +1770,7 @@ class Pixel extends React.Component {
                                 on_view_name_change={this._handle_view_name_change}
                                 on_upload_image={this._upload_image}
                                 on_upload_image_library={this._upload_image_library}
-                                on_import_image={this._import_image}
+                                on_import_image={this._handle_file_import}
                                 on_import_image_library={this._import_image_library}
                                 on_download_image={this._download_image}
                                 on_download_svg={this._download_svg}
@@ -1874,7 +1998,13 @@ class Pixel extends React.Component {
                         <ListItemText primary="Smooth a bit" />
                     </ListItem>
                     <ListSubheader className={classes.contextMenuSubheader}>Load</ListSubheader>
-                    <ListItem button divider onClick={this._upload_image}>
+                    <input
+                        accept="image/*"
+                        style={{display: "none"}}
+                        id="button-file-context-menu"
+                        type="file"
+                    />
+                    <ListItem button  divider onChange={this._upload_image} for="button-file-context-menu" >
                         <ListItemIcon>
                             <FileImportIcon />
                         </ListItemIcon>
@@ -1917,7 +2047,7 @@ class Pixel extends React.Component {
                                    on_import_size_change={this._set_import_size}
                                    on_pixel_art_delete={(id) => {this._delete_unsaved_pixel_art(id)}}
                                    import_JSON_state={(id) => {this._handle_import_json_state_id(id)}}
-                                   on_upload={() => {this._upload_image()}}
+                                   on_upload={this._upload_image}
                                    onClose={this._handle_pixel_dialog_create_close}/>
 
                 <TouchRipple
@@ -1928,7 +2058,10 @@ class Pixel extends React.Component {
 
                 <Backdrop className={classes.backdrop} open={_loading} keepMounted={false}>
                     <div className={classes.backdropTextContent} style={{fontFamily: `"Jura"`}}>
-                        {_loading && <h1><ShufflingSpanText text={"Laboratory processing..."} animation_delay_ms={0} animation_duration_ms={250}/></h1>}
+                        {_loading && <h1><ShufflingSpanText text={_loading_process === "browser" ? "Laboratory in DANGER!": "Laboratory processing..."} animation_delay_ms={0} animation_duration_ms={250}/></h1>}
+                        {_loading && _loading_process === "browser" && <h4><ShufflingSpanText text={"Doesn't feel like home for our dear code here."} animation_delay_ms={300} animation_duration_ms={500}/></h4>}
+                        {_loading && _loading_process === "browser" && <div onClick={this._get_advanced_browser}><img src="/src/images/BROWSER.svg" style={{width: "min(75vw, 75vh)"}}/></div>}
+                        {_loading && _loading_process === "browser" && <h5><ShufflingSpanText text={"It can take a while, please download an advanced browser."} animation_delay_ms={is_mobile_or_tablet ? 5000: 2500} animation_duration_ms={500}/></h5>}
                         {_loading && _loading_process === "image_ai" && <h4><ShufflingSpanText text={"AI processing your image"} animation_delay_ms={300} animation_duration_ms={500}/></h4>}
                         {_loading && _loading_process === "image_ai" && <div><img src="/src/images/AI.svg" style={{width: "min(75vw, 75vh)", filter: "grayscale(0.33)"}}/></div>}
                         {_loading && _loading_process === "image_ai" && <h5><ShufflingSpanText text={"It can take a while, please wait ~10sec."} animation_delay_ms={is_mobile_or_tablet ? 5000: 2500} animation_duration_ms={500}/></h5>}

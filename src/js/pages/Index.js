@@ -72,7 +72,7 @@ const styles = theme => ({
     snackbar: {
         "& .MuiSnackbarContent-root	": {
             backgroundColor: theme.palette.primary.actionDarker,
-            zIndex: "9630 important"
+            zIndex: "9630 !important"
         }
     },
     snackbarSuccess: {

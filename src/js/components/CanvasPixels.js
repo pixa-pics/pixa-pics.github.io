@@ -25,7 +25,7 @@ SOFTWARE.
 
 "use strict";
 
-window.get_base64_png_data_url_process_function_string = `return async function(
+window.get_base64_png_data_url_process_function_string = `var f = async function(
             pxl_width, 
             pxl_height,
             _s_pxls, 
@@ -419,9 +419,9 @@ window.get_base64_png_data_url_process_function_string = `return async function(
                     return Object.values(Object.assign({}, {0: canvas.toDataURL()}));
                 }
             }
-        }`;
+        }; return f;`;
 
-window.get_layer_base64_png_data_url_process_function_string = `return async function(
+window.get_layer_base64_png_data_url_process_function_string = `var f = async function(
             pxl_width, 
             pxl_height,
             pxls, 
@@ -789,9 +789,9 @@ window.get_layer_base64_png_data_url_process_function_string = `return async fun
                     return canvas2.toDataURL("image/png");
                 }
             }
-        }`;
+        }; return f;`;
 
-window.remove_close_pxl_colors_process_function_string = `return async function(
+window.remove_close_pxl_colors_process_function_string = `var f = async function(
             pxls,
             pxl_colors,
             bucket_threshold,
@@ -1180,7 +1180,7 @@ window.remove_close_pxl_colors_process_function_string = `return async function(
             var fr = this_remove_duplicate_pxl_colors(pxls, pxl_colors);
             fr[0] = Uint16Array.from(fr[0]);
             return fr;
-        }`;
+        }; return f;`;
 
 let w_canvas_pixels = {
     _caf_id: null,
@@ -2316,7 +2316,9 @@ class CanvasPixels extends React.Component {
 
         (async() => {
 
-            const result = await pool.exec(new Function(window.get_layer_base64_png_data_url_process_function_string)(), [
+            const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
+
+            const result = await pool.exec(new AsyncFunction(window.get_layer_base64_png_data_url_process_function_string)(), [
                 pxl_width,
                 pxl_height,
                 pxls,
@@ -2325,14 +2327,14 @@ class CanvasPixels extends React.Component {
                 resize_width
             ]).catch((e) => {
 
-                return Promise.resolve(new Function(window.get_layer_base64_png_data_url_process_function_string)()(
+                return new AsyncFunction(window.get_layer_base64_png_data_url_process_function_string)()(
                     pxl_width,
                     pxl_height,
                     pxls,
                     pxl_colors,
                     scale,
                     resize_width
-                ));
+                );
 
             }).timeout(5 * 1000);
 
@@ -2351,7 +2353,9 @@ class CanvasPixels extends React.Component {
 
         (async() => {
 
-            const result = await pool.exec(new Function(window.get_base64_png_data_url_process_function_string)(), [
+            const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
+
+            const result = await pool.exec(new AsyncFunction(window.get_base64_png_data_url_process_function_string)(), [
                 pxl_width,
                 pxl_height,
                 _s_pxls,
@@ -2361,7 +2365,7 @@ class CanvasPixels extends React.Component {
                 with_palette
             ]).catch((e) => {
 
-                return Promise.resolve(new Function(window.get_base64_png_data_url_process_function_string)()(
+                return new AsyncFunction(window.get_base64_png_data_url_process_function_string)()(
                     pxl_width,
                     pxl_height,
                     _s_pxls,
@@ -2369,7 +2373,7 @@ class CanvasPixels extends React.Component {
                     _layers,
                     scale,
                     with_palette
-                ));
+                );
 
             }).timeout(10 * 1000);
 
@@ -8261,7 +8265,8 @@ class CanvasPixels extends React.Component {
     _remove_close_pxl_colors = async(pxls = [], pxl_colors  = [], bucket_threshold = null, threshold_steps = null, color_number_bonus = 16, best_color_number = null, callback_function = null) => {
 
         const this_state_bucket_threshold = this.state.bucket_threshold;
-        let response = pool.exec(new Function(window.remove_close_pxl_colors_process_function_string)(), [
+        const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
+        let response = pool.exec(new AsyncFunction(window.remove_close_pxl_colors_process_function_string)(), [
             pxls,
             pxl_colors,
             bucket_threshold,
@@ -8271,7 +8276,7 @@ class CanvasPixels extends React.Component {
             this_state_bucket_threshold,
         ]).catch((e) => {
 
-            return Promise.resolve(new Function(window.remove_close_pxl_colors_process_function_string)()(
+            return new AsyncFunction(window.remove_close_pxl_colors_process_function_string)()(
                 pxls,
                 pxl_colors,
                 bucket_threshold,
@@ -8279,7 +8284,7 @@ class CanvasPixels extends React.Component {
                 color_number_bonus,
                 best_color_number,
                 this_state_bucket_threshold
-            ));
+            );
 
         }).timeout(120 * 1000);
 
@@ -8334,11 +8339,11 @@ class CanvasPixels extends React.Component {
                 `${px[0]}px ${px[3]}px ${px[6]}px ${px[9]}px rgba(0,0,0,${shadow_key_umbra_opacity})`,
             ].join(',');
 
-            return [
+            /*return [
                 `${px[0]}px ${px[1]}px ${px[2]}px ${px[3]}px rgba(126,126,126,${shadow_key_umbra_opacity})`,
                 `${px[4]}px ${px[5]}px ${px[6]}px ${px[7]}px rgba(126,126,126,${shadow_key_penumbra_opacity})`,
                 `${px[8]}px ${px[9]}px ${px[10]}px ${px[11]}px rgba(126,126,126,${shadow_ambient_shadow_opacity})`,
-            ].join(',');
+            ].join(',');*/
         }
 
         const shadow_key_umbra_opacity = 0.2;
