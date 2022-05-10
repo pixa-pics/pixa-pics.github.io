@@ -953,6 +953,7 @@ window.rgb_quant_process_function_string = `return async function(img, limit, re
             var ctxA0 = canvasA0.getContext("2d");
             ctxA0.drawImage(bmpA0, 0, 0, canvasA0.width, canvasA0.height);
             img_data = ctxA0.getImageData(0, 0, canvasA0.width, canvasA0.height);
+            return do_export_thing(do_quantization_step(img_data));
       
         } catch (e) {
             
@@ -968,79 +969,89 @@ window.rgb_quant_process_function_string = `return async function(img, limit, re
                 var ctxA0 = canvasA0.getContext("2d");
                 ctxA0.drawImage(img_htmlA0, 0, 0, canvasA0.width, canvasA0.height);
                 img_data = ctxA0.getImageData(0, 0, canvasA0.width, canvasA0.height); // ImageData
+                
+                return do_export_thing(do_quantization_step(img_data));
             }
             image.src = img;
         }
         
-        if(limit !== 1/0) {
+        function do_quantization_step(img_data) {
+       
+            if(limit !== 1/0) {
+       
+                // options
+                var q = new RgbQuant({
+                    colors: limit,
+                    method: 2,
+                    minHueCols: 0,
+                    dithKern: null,
+                    dithSerp: false,
+                });
         
-            // options
-            var q = new RgbQuant({
-                colors: limit,
-                method: 2,
-                minHueCols: 0,
-                dithKern: null,
-                dithSerp: false,
-            });
-    
-            // Analyze histograms
-            q.sample(img_data);
-     
-            var pal = q.palette(true);
-            var out = q.reduce(img_data);
-            img_data.data.set(out);
+                // Analyze histograms
+                q.sample(img_data);
+         
+                var pal = q.palette(true);
+                var out = q.reduce(img_data);
+                img_data.data.set(out);
+            } 
+            
+            return img_data;
         }
         
-        // Build base64 response
-        try {
+        function do_export_thing(img_data) {
         
-            if (typeof OffscreenCanvas === "undefined") {
-                throw new Error("Impossible to create OffscreenCanvas in this web environment.");
-            }
+            // Build base64 response
+            try {
             
-            var canvasB0 = new OffscreenCanvas(img_data.width, img_data.height);
-            var ctxB0 = canvasB0.getContext("bitmaprenderer");
-            
-            return createImageBitmap(img_data, {
-                premultiplyAlpha: 'none',
-                colorSpaceConversion: 'none',
-            }).then((bmpB0) => {
-            
-                ctxB0.transferFromImageBitmap(bmpB0);
-
-                var params = !lossly ? {type: "image/png"}: {type: "image/jpeg", quality: 0.75};
-                return ctxB0.canvas.convertToBlob(params).then((blbB0) => {
+                if (typeof OffscreenCanvas === "undefined") {
+                    throw new Error("Impossible to create OffscreenCanvas in this web environment.");
+                }
                 
-                    function blob_to_base64(blob) {
-                      return new Promise((resolve, _) => {
-                        var reader = new FileReader();
-                        reader.onload = () => resolve(reader.result);
-                        reader.readAsDataURL(blob);
-                      })
-                    }
+                var canvasB0 = new OffscreenCanvas(img_data.width, img_data.height);
+                var ctxB0 = canvasB0.getContext("bitmaprenderer");
+                
+                return createImageBitmap(img_data, {
+                    premultiplyAlpha: 'none',
+                    colorSpaceConversion: 'none',
+                }).then((bmpB0) => {
+                
+                    ctxB0.transferFromImageBitmap(bmpB0);
+    
+                    var params = !lossly ? {type: "image/png"}: {type: "image/jpeg", quality: 0.75};
+                    return ctxB0.canvas.convertToBlob(params).then((blbB0) => {
                     
-                    return blob_to_base64(blbB0).then((data_url) => {
-                    
-                         return data_url;
+                        function blob_to_base64(blob) {
+                          return new Promise((resolve, _) => {
+                            var reader = new FileReader();
+                            reader.onload = () => resolve(reader.result);
+                            reader.readAsDataURL(blob);
+                          })
+                        }
+                        
+                        return blob_to_base64(blbB0).then((data_url) => {
+                        
+                             return data_url;
+                        });
                     });
                 });
-            });
-           
-        }catch (e) {
-        
-            var canvasB0 = document.createElement("canvas");
-            canvasB0.width = img_data.width;
-            canvasB0.height = img_data.height;
-            var ctxB0 = canvasB0.getContext("2d");
-            ctxB0.putImageData(img_data, 0, 0);
+               
+            }catch (e) {
             
-            if(!lossly) {
-            
-                return canvasB0.toDataURL("image/png");
-            
-            }else {
-           
-                return canvasB0.toDataURL("image/jpeg", 0.75);
+                var canvasB0 = document.createElement("canvas");
+                canvasB0.width = img_data.width;
+                canvasB0.height = img_data.height;
+                var ctxB0 = canvasB0.getContext("2d");
+                ctxB0.putImageData(img_data, 0, 0);
+                
+                if(!lossly) {
+                
+                    return canvasB0.toDataURL("image/png");
+                
+                }else {
+               
+                    return canvasB0.toDataURL("image/jpeg", 0.75);
+                }
             }
         }
     }`;
