@@ -89,17 +89,17 @@ const styles = theme => ({
         fontWeight: "bold",
         fontSize: "21px",
         borderRadius: "12px",
-        lineHeight: "3em",
+        lineHeight: "2em",
         position: "fixed",
-        width: 128,
+        width: 224,
         zIndex: 7,
         bottom: 32,
         right: 32,
         [theme.breakpoints.down("sm")]: {
             fontSize: "12px",
             borderRadius: ".5em",
-            lineHeight: "1.5em",
-            width: 64,
+            lineHeight: "1.25em",
+            width: 152,
             bottom: 24,
             right: 24,
         },
@@ -342,28 +342,31 @@ class Home extends React.Component {
                 </div>
                 <div className={classes.headerContainer} style={{color: THEME_DAY ? "#000000dd": "#ffffffdd"}}>
                     <h1 className={classes.title} style={{color: THEME_DAY ? "#000": "#fff"}}>
-                        <Fade in={true} timeout={700}><span style={{fontSize: "1.314em"}}><span style={{color: "white", fontWeight: "bold", filter: "drop-shadow(0px 0px 7px white)"}}>PIXA.PICS! </span>Anything to pixel art ;<br />Then, draw and vectorize it.</span></Fade><br />
-                        <Fade in={true} timeout={850}><span className={classes.titleSubTitle} style={{fontSize: ".618em"}}>Make potential possible. <img src={ANGELEMOJI} className="emoji"/></span></Fade>
+                        <Fade in={true} timeout={700}><span style={{fontSize: "1.314em"}}><span style={{color: "white", fontWeight: "bold", filter: "drop-shadow(0px 0px 7px white)"}}>PIXA.PICS! </span>Anything to pixel art in 7sec.<br />Then, draw and vectorize it freely.</span></Fade><br />
+                        <Fade in={true} timeout={850}><span className={classes.titleSubTitle} style={{fontSize: ".618em"}}>Individuals just enable possible potential. <img src={ANGELEMOJI} className="emoji"/></span></Fade>
                     </h1>
                     <Fade in={true} timeout={1200}>
                             <h2 className={classes.subtitle}>
-                                <span style={{color: THEME_DAY ? "#0d1fac": "#ffd910", fontWeight: "bold"}}>Based on your favourite images <img src={STAREMOJI} className="emoji"/></span>
+                                ♥&nbsp;&nbsp;&nbsp;&nbsp;<span style={{color: THEME_DAY ? "#0d1fac": "#ffd910", fontWeight: "bold"}}>Imagine great performing pixel art based on your images. <img src={STAREMOJI} className="emoji"/></span>
                                 <br />
-                                <span>Is a lot of detail lacking in <b>advanced <img src={HEARTHEMOJI} className="emoji pulse2"/> ultra-simplification?</b></span>
+                                ♦&nbsp;&nbsp;&nbsp;&nbsp;<span>A few trivia thoroughly be lacking in your online self, can it pays off?</span>
+                                <br />
+                                ♣&nbsp;&nbsp;&nbsp;&nbsp;<span><b>This FREE, elaborate app enforce <img src={HEARTHEMOJI} className="emoji pulse2"/> pixel-perfect ultra-simplifications!</b></span>
                                 <br />
                             </h2>
                     </Fade>
                     <Fade in={true} timeout={1500}>
                         <Button className={classes.homeCTAuseit} variant={"contained"} size={"large"} color="primary" onClick={(event) => this._go_to_url(event, "/pixel")}>
-                            [ ENTER NOW / EDIT ]
+                            HERE AND NOW ♠ RUN THE LAB
                         </Button>
                     </Fade>
                     <Fade in={true} timeout={2000}>
-                        <p className={classes.subtitleButton} style={{color: THEME_DAY ? "#d8ab06": "#ffe66b", fontWeight: "bold", fontSize: "12px"}}><img style={{filter: "sepia(1)"}} src={EARTHEMOJI} className="emoji"/> <span>For Everyone – For Free – Forever Open-Source!</span></p>
+                        <p className={classes.subtitleButton} style={{color: THEME_DAY ? "#d8ab06": "#ffe66b", fontWeight: "bold", fontSize: "12px"}}><span>For Everyone – For Free – Forever Open-Source!</span></p>
                     </Fade>
                     <Grow in={true} timeout={1900}>
                         <Button className={classes.homeCTAsendit} variant={"contained"} size={"large"} color="primary" onClick={(event) => {this._handle_speed_dial_action(event, "share")}}>
-                            SHARE
+                            DARE LATER<br/>
+                            SHARE NOW
                         </Button>
                     </Grow>
                 </div>
