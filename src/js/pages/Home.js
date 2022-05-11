@@ -256,14 +256,14 @@ class Home extends React.Component {
         setTimeout(() => {
 
             actions.trigger_loading_update(100);
-            actions.trigger_snackbar(`AWESOME, thanks! Choosing https://pixa.pics/ PASSIONATELY means KEEP enjoying it on PC 4x GREATER than on mobile NEVERTHELESS!`, 10000);
+            actions.trigger_snackbar(`AWESOME, thanks! ALSO KEEP passionately using it with PC at glance!`, 10000);
             setTimeout(() => {
 
                 actions.jamy_update("happy", 2500);
 
                 setTimeout(() => {
 
-                    actions.trigger_snackbar(`Looking good seeing you on PIXA.PICS & Good looking at being very happy with ART <3!`, 6000);
+                    actions.trigger_snackbar(`Looking good seeing you on https://PIXA.PICS/ & Good looking at being very happy with ART <3!`, 6000);
                     setTimeout(() => {
 
                         actions.jamy_update("suspicious", 2500);
@@ -342,7 +342,7 @@ class Home extends React.Component {
                 </div>
                 <div className={classes.headerContainer} style={{color: THEME_DAY ? "#000000dd": "#ffffffdd"}}>
                     <h1 className={classes.title} style={{color: THEME_DAY ? "#000": "#fff"}}>
-                        <Fade in={true} timeout={700}><span style={{fontSize: "1.314em"}}><span style={{color: "white", fontWeight: "bold", filter: "drop-shadow(0px 0px 7px white)"}}>PIXA.PICS! </span>Anything to pixel art;<br />Then, draw and vectorize it.</span></Fade><br />
+                        <Fade in={true} timeout={700}><span style={{fontSize: "1.314em"}}><span style={{color: "white", fontWeight: "bold", filter: "drop-shadow(0px 0px 7px white)"}}>PIXA.PICS! </span>Anything to pixel art ;<br />Then, draw and vectorize it.</span></Fade><br />
                         <Fade in={true} timeout={850}><span className={classes.titleSubTitle} style={{fontSize: ".618em"}}>Make potential possible. <img src={ANGELEMOJI} className="emoji"/></span></Fade>
                     </h1>
                     <Fade in={true} timeout={1200}>
