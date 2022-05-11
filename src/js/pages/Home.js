@@ -14,6 +14,10 @@ import HearthEmojiSvg from "../twemoji/react/2665";
 const HEARTHEMOJI = get_svg_in_b64(<HearthEmojiSvg />);
 import EarthEmojiSvg from "../twemoji/react/1F30E";
 const EARTHEMOJI = get_svg_in_b64(<EarthEmojiSvg />);
+import LightningEmojiSvg from "../twemoji/react/26A1";
+const LIGHTNINGEMOJI = get_svg_in_b64(<LightningEmojiSvg />);
+import StarEmojiSvg from "../twemoji/react/2B50";
+const STAREMOJI = get_svg_in_b64(<StarEmojiSvg />);
 
 const SUBTITLE_STILL = Boolean(Date.now() % 14 >= 1);
 let THEME_DAY = null;
@@ -22,7 +26,7 @@ let IS_LATE_EVENING = null;
 
 const styles = theme => ({
     root: {
-        contain: "strict",
+        contain: "size style paint layout",
         backgroundSize: "cover",
         imageRendering: "pixelated",
         "&:not(br)": {
@@ -111,7 +115,7 @@ const styles = theme => ({
             left: 0,
             top: 0,
             position: "absolute",
-            backdropFilter: "contrast(1.2) brightness(1.4) saturate(0.6)",
+            backdropFilter: "contrast(1.2) brightness(1.4) saturate(0.6) blur(4px)",
         },
         position: "relative",
         backgroundPosition: "0% 25vh",
@@ -331,11 +335,8 @@ class Home extends React.Component {
                 <div className={classes.insideRoot}>
                     <div className={classes.backgroundImage} style={{
                         backgroundSize: THEME_DAY ? "175%": "50%",
-                        backgroundColor: THEME_DAY ? IS_EVENING ? "#15151526": "#ff880033": "#353b693b",
-                        backgroundImage: THEME_DAY ?
-                            "url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5MTYgNDI2IiB3aWR0aD0iMTIyMS4zMzMiIGhlaWdodD0iNTY4IiB4bWxuczp2PSJodHRwczovL3ZlY3RhLmlvL25hbm8iPjxkZWZzPjxjbGlwUGF0aCBpZD0iQSI+PHBhdGggZD0iTTAgMGg5MTZ2NDI2SDB6Ii8+PC9jbGlwUGF0aD48L2RlZnM+PGcgY2xpcC1wYXRoPSJ1cmwoI0EpIj48ZyBmaWxsPSIjZmZlNzdjIj48cGF0aCBkPSJNNjM2LjgwNyA0MjUuOTZINDAuOTU3bDIxNC4xNy0zMDYuMjJMMzM4Ljg3NyAwbDYzLjc1IDkxLjE0IDIzNC4xOCAzMzQuODJoMHoiLz48cGF0aCBkPSJNNjEwLjc3OSAxMTUuOTZsLTIxNi44MjMgMzEwaDQzMy42NDZsLTIxNi44MjMtMzEwLTIxNi44MjMgMzEwaDQzMy42NDZsLTIxNi44MjMtMzEwaDB6Ii8+PC9nPjxnIGZpbGw9IiNmZmZlYjciPjxwYXRoIGQ9Ik0zMzguODc3IDBsNC45MyA4NS45Ni0xNi4yOTEgMTIzLjY5NXMxMzQuNTY3IDcwLjg0OCAxMzQuOTI5IDc0LjA3NmwtMjguMzQ3IDk0LjA2NSAyMDIuNzA5IDQ4LjE2NEwzMzguODc3IDB6bTI3MS45MDIgMTE1Ljk2bDM1LjM1MSA4My4xNzggNjIuNjc3IDEyNS44MjIgMzcuMTAyIDE4Ljk2OS0yLjI2NyAzMy4yNDcgODMuOTYgNDguNzg0LTIxNi44MjMtMzEweiIvPjwvZz48cGF0aCBkPSJNOTE1IDQyNS45NkgxYTEgMSAwIDEgMSAwLTJoOTE0YTEgMSAwIDEgMSAwIDJ6IiBmaWxsPSIjY2NjIi8+PGcgZmlsbD0iIzFmMWE1OSI+PHBhdGggZD0iTTUzOC43NjMgMTE2LjU4N2wxMi43OTUtMTAuMjMzYy05Ljk0LTEuMDk3LTE0LjAyNCA0LjMyNC0xNS42OTYgOC42MTUtNy43NjUtMy4yMjQtMTYuMjE4IDEuMDAxLTE2LjIxOCAxLjAwMWwyNS42IDkuMjk0Yy0xLjI5Mi0zLjQ0OS0zLjU0LTYuNDU5LTYuNDgxLTguNjc3em0xNi41ODMtNzkuNzU4bDEyLjc5NS0xMC4yMzRjLTkuOTM5LTEuMDk2LTE0LjAyNCA0LjMyNS0xNS42OTUgOC42MTUtNy43NjUtMy4yMjQtMTYuMjE5IDEuMDAyLTE2LjIxOSAxLjAwMmwyNS42IDkuMjkzYy0xLjI5MS0zLjQ0OS0zLjUzOS02LjQ1OS02LjQ4MS04LjY3Nmgwem0yOTEuMzc1IDE3MC41MDhsMTIuNzk1LTEwLjIzNGMtOS45NC0xLjA5Ni0xNC4wMjQgNC4zMjUtMTUuNjk2IDguNjE1LTcuNzY1LTMuMjI0LTE2LjIxOCAxLjAwMi0xNi4yMTggMS4wMDJsMjUuNiA5LjI5M2MtMS4yOTItMy40NDktMy41NC02LjQ1OS02LjQ4MS04LjY3Nmgwem0tMTUuOTU3IDMzLjA0bDEyLjc5NS0xMC4yMzRjLTkuOTQtMS4wOTYtMTQuMDI0IDQuMzI1LTE1LjY5NSA4LjYxNS03Ljc2Ni0zLjIyNC0xNi4yMTkgMS4wMDItMTYuMjE5IDEuMDAybDI1LjYgOS4yOTNhMTkuMzcgMTkuMzcgMCAwIDAtNi40ODEtOC42NzZoMHpNMTI0LjExOSAzNi44MjlsMTIuNzk1LTEwLjIzNGMtOS45NC0xLjA5Ni0xNC4wMjQgNC4zMjUtMTUuNjk1IDguNjE1QzExMy40NTMgMzEuOTg2IDEwNSAzNi4yMTIgMTA1IDM2LjIxMmwyNS42IDkuMjkzYTE5LjM3IDE5LjM3IDAgMCAwLTYuNDgxLTguNjc2aDB6bS01NSA5Ny41MDhsMTIuNzk1LTEwLjIzNGMtOS45NC0xLjA5Ni0xNC4wMjQgNC4zMjUtMTUuNjk1IDguNjE1QzU4LjQ1MyAxMjkuNDk0IDUwIDEzMy43MiA1MCAxMzMuNzJsMjUuNiA5LjI5M2ExOS4zNyAxOS4zNyAwIDAgMC02LjQ4MS04LjY3Nmgwem01NzguMzU1LTEzLjU1NmwxMi43OTUtMTAuMjMzYy05Ljk0LTEuMDk3LTE0LjAyNCA0LjMyNC0xNS42OTUgOC42MTUtNy43NjYtMy4yMjUtMTYuMjE5IDEuMDAxLTE2LjIxOSAxLjAwMWwyNS42IDkuMjk0YTE5LjM4IDE5LjM4IDAgMCAwLTYuNDgxLTguNjc3aDB6Ii8+PC9nPjwvZz48L3N2Zz4=)":
-                            "url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1OTAgNTc1IiB3aWR0aD0iNzg2LjY2NyIgaGVpZ2h0PSI3NjYuNjY3IiB4bWxuczp2PSJodHRwczovL3ZlY3RhLmlvL25hbm8iPjxkZWZzPjxjbGlwUGF0aCBpZD0iQSI+PHBhdGggZD0iTTAgMGg1OTB2NTc1SDB6Ii8+PC9jbGlwUGF0aD48L2RlZnM+PGcgY2xpcC1wYXRoPSJ1cmwoI0EpIj48Y2lyY2xlIHZlY3Rvci1lZmZlY3Q9Im5vbi1zY2FsaW5nLXN0cm9rZSIgY3g9IjQzMS40MTgiIGN5PSI4OC43MjMiIHI9Ijg4LjIwMSIgZmlsbD0iI2MxYmRmZiIvPjxwYXRoIGQ9Ik01ODguNTMgMzMwLjk0MXEtMS4xNDUtNS45MTMtMi4zNTgtMTEuNjY2bC0uMDEyLS4wMTF2LS4wMDFjLTEwLjIzMS00OC41NDctMjQuMDE3LTg4LjM1Ni00MC4zNDQtMTIwLjgyN2wtNDMuMjYtMTQuODggMzIuNjA4LTQuNjZjMy4yNTctMzcuNDg2IDMuMTEyLTY5LjAzNC00My4xNDctNTUuNTU0bC03OS40NTggOS4wODEgNTkuOTc1LTI1LjcwNGMtMTY4Ljc3NS0xODAuNjU1LTI4Ni45NjEtNzAuMTMxLTI5NC4wOTggNC42MTQtNS40MDEgMi44Ni04LjgxOSA0Ljg3Ny05LjkxMyA1LjUyNi0uMDExIDAtLjAxMSAwLS4wMjIuMDEybC0uMzU0LjIxNiAyMi4zNTQgMTEuNjFoLjAxMmwzOTYuOTkyIDIwNi4yMDkgMS4wMjUtMy45NjV6IiBmaWxsPSIjNmM2M2ZmIi8+PGcgZmlsbD0iIzNmM2Q1NiI+PHBhdGggZD0iTTU4OC41MyAzMzAuOTQxcS43NjktMy4wNTkgMS40Ny02LjEyOWwtMy44MjgtNS41MzctLjAxMi0uMDExdi0uMDAxQzQ4Ny4yNzYgMjk4LjA0OCA0MTEuODU1IDQxLjU0NCAxNzkuMjkgMTEyLjUzaC0uMDExcS01LjM2NyAyLjAxNi0xMC43NTYgNC4zMjljLS4wMTEgMC0uMDExIDAtLjAyMi4wMTJxLTQuOTA1IDIuMTAyLTkuODIyIDQuNDY2bC00Ljk3OSAyLjQzOC00LjMyOSAyLjIzM3MtOC4yMjYgMi4wNjItMTcuNDQzIDkuODMzYy0xOC4xMDUgMTUuMjktNDAuMDQ4IDUyLjY0OS0xMC45NzIgMTM5Ljg3NyAwIDAgMjUuODE3IDcyLjI2OCAxMi45MDggMTA1LjgzMy0xMi45MDggMzMuNTQyIDY3LjEzIDcyLjI1NyA5MC4zMzkgMC0xOC4wMTYtODQuODc1IDE5LjgxNS0xNDUuMzg2IDMwLjk5LTE0MS45NzMgNDUuNzI3LTEzLjI4NiA1OC45NDQgNDYuOTA1IDI0LjA3NCAxMTIuNzAzIDMyLjgxNyAxMC45MDIgNTIuNjk2IDI3LjYyNiA3LjIxMiA2OC41NTVsMi4wMjggNy4wNDFjMjkuNjM2IDYuNTE0IDY2LjE2OCAxOC44NjkgNDAuOCA5OS41NTUgMjQuMTAxIDIuNTM1IDMzLjE4NyAxOS43ODEgMzEuMzc4IDQ3LjU2OCAxNS40NDItNS4wMTggNzUuNDY4LTE0My40MTcgOTAuMDM1LTE1MC41OSA4OS44MDgtNDQuMTYyIDExMS4xMzEgNy4yMzIgMTM2Ljc4NS04OS41MDRsMS4wMjUtMy45NjV6Ii8+PHBhdGggZD0iTTE1Ny4xMDQgMTUxLjgyMWwtMTAuMzI1LTg1LjE3OCA0My44OCA2MS45NDctMzMuNTU1IDIzLjIzMWgweiIvPjxwYXRoIGQ9Ik0xMzQuNjA1IDE1Ny45NTdMMTI0LjI4IDcyLjc3OWw0My44OCA2MS45NDctMzMuNTU1IDIzLjIzMWgweiIvPjwvZz48cGF0aCBkPSJNMTEyLjEzIDIzNy4zMjhMMS44ODMgOTQuMDI3YzU1LjE1NyAxNi4zMjUgMTA3LjM5MiAzNS40MzUgMTExLjY1NiAxMDAuMjYybC0xLjQwOSA0My4wMzl6IiBmaWxsPSIjNmM2M2ZmIi8+PC9nPjwvc3ZnPg==)",
-                    }}>
+                        backgroundColor: THEME_DAY ? IS_EVENING ? "#4800493b": "#FF89003b": "#1f25563b",
+                        }}>
                         <Fade in={true} timeout={600}><img src={THEME_DAY ? "/src/images/fun.svg": "/src/images/rocket_boy.svg"} className={classes.backgroundImageImage}/></Fade>
                     </div>
                 </div>
@@ -346,12 +347,15 @@ class Home extends React.Component {
                     </h1>
                     <Fade in={true} timeout={1200}>
                             <h2 className={classes.subtitle}>
-                                <span  style={{color: THEME_DAY ? "#0d1fac": "#ffd910", fontWeight: "bold"}}>Based on your images,</span> is there many details lacking <b>our <img src={HEARTHEMOJI} className="emoji pulse2"/> post-simplifying</b>? <br />
+                                <span style={{color: THEME_DAY ? "#0d1fac": "#ffd910", fontWeight: "bold"}}>Based on your favourite images <img src={STAREMOJI} className="emoji"/></span>
+                                <br />
+                                <span>Is a lot of detail lacking in <b>advanced <img src={HEARTHEMOJI} className="emoji pulse2"/> ultra-simplification?</b></span>
+                                <br />
                             </h2>
                     </Fade>
                     <Fade in={true} timeout={1500}>
                         <Button className={classes.homeCTAuseit} variant={"contained"} size={"large"} color="primary" onClick={(event) => this._go_to_url(event, "/pixel")}>
-                            Let's go! -> Lab.
+                            [ ENTER NOW / EDIT ]
                         </Button>
                     </Fade>
                     <Fade in={true} timeout={2000}>

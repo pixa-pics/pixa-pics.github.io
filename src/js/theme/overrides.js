@@ -38,7 +38,7 @@ const overrides = {
                 }
             },
             ".emoji": {
-                verticalAlign: "text-bottom",
+                verticalAlign: "inherit",
                 height: "1em",
                 width: "1em",
                 "&.bounce": {
