@@ -67,7 +67,7 @@
                 _paq.push({'event': 'mtm.PageView'});
             });
             window.addEventListener('download', function() {
-                _paq.push(['trackLink', 'https://pixa.pics/download', 'link']);
+                _paq.push({'event': 'mtm.Downloads'});
             });
 
             (function() {
