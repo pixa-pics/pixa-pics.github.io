@@ -348,22 +348,22 @@ class Home extends React.Component {
                 </div>
                 <div className={classes.headerContainer} style={{color: THEME_DAY ? "#000000dd": "#ffffffdd"}}>
                     <h1 className={classes.title} style={{color: THEME_DAY ? "#000": "#fff"}}>
-                        <Fade in={true} timeout={700}><span style={{fontSize: "1.314em"}}><span style={{color: "white", fontWeight: "bold", filter: "drop-shadow(0px 0px 7px white)"}}>PIXA.PICS! </span>♥ Anything to pixel art in 7sec.<br />Then, draw and vectorize it freely.</span></Fade><br />
+                        <Fade in={true} timeout={700}><span style={{fontSize: "1.314em"}}><span style={{color: "white", fontWeight: "bold", filter: "drop-shadow(0px 0px 7px white)"}}>PIXA.PICS! </span>♥ Anything to pixel art.<br />Then, draw and vectorize it freely.</span></Fade><br />
                         <Fade in={true} timeout={850}><span className={classes.titleSubTitle} style={{fontSize: ".33em"}}>“There is geometry in the humming of the strings, there is music in the spacing of the spheres" — Pythagoras <img src={ANGELEMOJI} className="emoji"/></span></Fade>
                     </h1>
                     <Fade in={true} timeout={1200}>
                             <h2 className={classes.subtitle}>
-                                ♦&nbsp;&nbsp;<span style={{color: THEME_DAY ? "#0d1fac": "#ffd910", fontWeight: "bold"}}>Imagine great performing <span style={{textDecoration: "underline"}}>PIXEL ART</span> based on your images. <img src={STAREMOJI} className="emoji pulse2"/></span>
+                                ♦&nbsp;&nbsp;<span style={{color: THEME_DAY ? "#0d1fac": "#ffd910", fontWeight: "bold"}}>Imagine popular <span style={{textDecoration: "underline"}}>PIXEL ART</span> based on your favourite images. <img src={STAREMOJI} className="emoji pulse2"/></span>
                                 <br />
-                                ♣&nbsp;&nbsp;<span>A few trivia thoroughly be lacking in your online self, can it pays off?</span>
+                                ♣&nbsp;&nbsp;<span>A few details thoroughly be missing in your online self, can it pays off?</span>
                                 <br />
-                                ♠&nbsp;&nbsp;<span><b>This <span style={{textDecoration: "underline"}}>100% FREE</span>, elaborate app enforce <img src={TOOLSEMOJI} className="emoji"/> pixel-perfect ultra-simplifications!</b></span>
+                                ♠&nbsp;&nbsp;<span><b>This <span style={{textDecoration: "underline"}}>ZERO-COST</span> elaborate app enforce <img src={TOOLSEMOJI} className="emoji"/> pixel-perfect ultra-simplifications!</b></span>
                                 <br />
                             </h2>
                     </Fade>
                     <Fade in={true} timeout={1500}>
                         <Button className={classes.homeCTAuseit} variant={"contained"} size={"large"} color="primary" onClick={(event) => this._go_to_url(event, "/pixel")}>
-                            Join our laboratory
+                            Join your laboratory
                         </Button>
                     </Fade>
                     <Fade in={true} timeout={2000}>

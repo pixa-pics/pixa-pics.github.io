@@ -712,6 +712,7 @@ class Pixel extends React.Component {
 
         const { _canvas } = this.state;
         if(_canvas === null) {return}
+        window.dispatchEvent(new Event("download"));
 
         let a = document.createElement("a"); //Create <a>
         a.download = `Pixelart_N${Date.now()}_PIXAPICS_x${size}.png`; //File name Here
@@ -747,6 +748,7 @@ class Pixel extends React.Component {
 
         const { _canvas } = this.state;
         if(_canvas === null) {return}
+        window.dispatchEvent(new Event("download"));
 
         actions.trigger_snackbar("Please wait... Files will download in a few seconds.", 5700);
         actions.jamy_update("angry");
