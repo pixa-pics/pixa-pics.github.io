@@ -712,14 +712,17 @@ class Pixel extends React.Component {
 
         const { _canvas } = this.state;
         if(_canvas === null) {return}
-        window.dispatchEvent(new Event("download"));
 
         let a = document.createElement("a"); //Create <a>
         a.download = `Pixelart_N${Date.now()}_PIXAPICS_x${size}.png`; //File name Here
 
         _canvas.get_base64_png_data_url(size, ([base_64]) => {
 
-            console.log(base_64)
+            if(parseInt(size) === 1) {
+
+                window.dispatchEvent(new Event("art-download-raster-1"));
+            }
+
             a.href = "" + base_64;
             a.click();
 
@@ -748,7 +751,6 @@ class Pixel extends React.Component {
 
         const { _canvas } = this.state;
         if(_canvas === null) {return}
-        window.dispatchEvent(new Event("download"));
 
         actions.trigger_snackbar("Please wait... Files will download in a few seconds.", 5700);
         actions.jamy_update("angry");
