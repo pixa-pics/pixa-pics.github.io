@@ -14,10 +14,16 @@ import HearthEmojiSvg from "../twemoji/react/2665";
 const HEARTHEMOJI = get_svg_in_b64(<HearthEmojiSvg />);
 import EarthEmojiSvg from "../twemoji/react/1F30E";
 const EARTHEMOJI = get_svg_in_b64(<EarthEmojiSvg />);
-import LightningEmojiSvg from "../twemoji/react/26A1";
-const LIGHTNINGEMOJI = get_svg_in_b64(<LightningEmojiSvg />);
 import StarEmojiSvg from "../twemoji/react/2B50";
 const STAREMOJI = get_svg_in_b64(<StarEmojiSvg />);
+import CrownEmojiSvg from "../twemoji/react/1F451";
+const CROWNEMOJI = get_svg_in_b64(<CrownEmojiSvg />);
+import LightingEmojiSvg from "../twemoji/react/26A1";
+const LIGHTINGEMOJI = get_svg_in_b64(<LightingEmojiSvg />);
+import CashBagEmojiSvg from "../twemoji/react/1F4B0";
+const CASHBAGEMOJI = get_svg_in_b64(<CashBagEmojiSvg />);
+import ToolsEmojiSvg from "../twemoji/react/1F527";
+const TOOLSEMOJI = get_svg_in_b64(<ToolsEmojiSvg />);
 
 const SUBTITLE_STILL = Boolean(Date.now() % 14 >= 1);
 let THEME_DAY = null;
@@ -342,26 +348,26 @@ class Home extends React.Component {
                 </div>
                 <div className={classes.headerContainer} style={{color: THEME_DAY ? "#000000dd": "#ffffffdd"}}>
                     <h1 className={classes.title} style={{color: THEME_DAY ? "#000": "#fff"}}>
-                        <Fade in={true} timeout={700}><span style={{fontSize: "1.314em"}}><span style={{color: "white", fontWeight: "bold", filter: "drop-shadow(0px 0px 7px white)"}}>PIXA.PICS! </span>Anything to pixel art in 7sec.<br />Then, draw and vectorize it freely.</span></Fade><br />
-                        <Fade in={true} timeout={850}><span className={classes.titleSubTitle} style={{fontSize: ".618em"}}>Individuals just enable possible potential. <img src={ANGELEMOJI} className="emoji"/></span></Fade>
+                        <Fade in={true} timeout={700}><span style={{fontSize: "1.314em"}}><span style={{color: "white", fontWeight: "bold", filter: "drop-shadow(0px 0px 7px white)"}}>PIXA.PICS! </span>♥ Anything to pixel art in 7sec.<br />Then, draw and vectorize it freely.</span></Fade><br />
+                        <Fade in={true} timeout={850}><span className={classes.titleSubTitle} style={{fontSize: ".33em"}}>“There is geometry in the humming of the strings, there is music in the spacing of the spheres" — Pythagoras <img src={ANGELEMOJI} className="emoji"/></span></Fade>
                     </h1>
                     <Fade in={true} timeout={1200}>
                             <h2 className={classes.subtitle}>
-                                ♥&nbsp;&nbsp;&nbsp;&nbsp;<span style={{color: THEME_DAY ? "#0d1fac": "#ffd910", fontWeight: "bold"}}>Imagine great performing pixel art based on your images. <img src={STAREMOJI} className="emoji"/></span>
+                                ♦&nbsp;&nbsp;<span style={{color: THEME_DAY ? "#0d1fac": "#ffd910", fontWeight: "bold"}}>Imagine great performing <span style={{textDecoration: "underline"}}>PIXEL ART</span> based on your images. <img src={STAREMOJI} className="emoji pulse2"/></span>
                                 <br />
-                                ♦&nbsp;&nbsp;&nbsp;&nbsp;<span>A few trivia thoroughly be lacking in your online self, can it pays off?</span>
+                                ♣&nbsp;&nbsp;<span>A few trivia thoroughly be lacking in your online self, can it pays off?</span>
                                 <br />
-                                ♣&nbsp;&nbsp;&nbsp;&nbsp;<span><b>This FREE, elaborate app enforce <img src={HEARTHEMOJI} className="emoji pulse2"/> pixel-perfect ultra-simplifications!</b></span>
+                                ♠&nbsp;&nbsp;<span><b>This <span style={{textDecoration: "underline"}}>100% FREE</span>, elaborate app enforce <img src={TOOLSEMOJI} className="emoji"/> pixel-perfect ultra-simplifications!</b></span>
                                 <br />
                             </h2>
                     </Fade>
                     <Fade in={true} timeout={1500}>
                         <Button className={classes.homeCTAuseit} variant={"contained"} size={"large"} color="primary" onClick={(event) => this._go_to_url(event, "/pixel")}>
-                            HERE AND NOW ♠ RUN THE LAB
+                            Join our laboratory
                         </Button>
                     </Fade>
                     <Fade in={true} timeout={2000}>
-                        <p className={classes.subtitleButton} style={{color: THEME_DAY ? "#d8ab06": "#ffe66b", fontWeight: "bold", fontSize: "12px"}}><span>For Everyone – For Free – Forever Open-Source!</span></p>
+                        <p className={classes.subtitleButton} style={{color: THEME_DAY && !IS_EVENING ? "#0c9004": "#1ae80e", fontWeight: "bold", fontSize: "11px"}}><span><img src={CROWNEMOJI} className="emoji"/> For Everyone <img src={CASHBAGEMOJI} className="emoji"/> For Free <img src={LIGHTINGEMOJI} className="emoji"/> Forever Open-Source</span></p>
                     </Fade>
                     <Grow in={true} timeout={1900}>
                         <Button className={classes.homeCTAsendit} variant={"contained"} size={"large"} color="primary" onClick={(event) => {this._handle_speed_dial_action(event, "share")}}>
