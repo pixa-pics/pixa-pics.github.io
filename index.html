@@ -55,53 +55,42 @@
         <meta name="msapplication-tap-highlight" content="no">
 
         <!-- PASSIONATE, SAFE, COMPLIANT, ANALYTICS using friendly.ch -->
-        <script defer>
-            (function() {
+        <script>
+            var _mtm = window._mtm = window._mtm || [];
 
-                /* MATOMO/PIWIK ANALYTICS (CORE) */
-                var _paq = window._paq = window._paq || [];
-                _paq.push(["setDoNotTrack", true]);
-                _paq.push(["disableCookies"]);
-                _paq.push(['trackPageView']);
-                _paq.push(['enableLinkTracking']);
+            _mtm.push(["setDoNotTrack", true]);
+            _mtm.push(["disableCookies"]);
+            _mtm.push(['trackPageView']);
+            _mtm.push(['enableLinkTracking']);
 
-                var u="https://app.friendlyanalytics.ch/";
-                _paq.push(['setTrackerUrl', u+'piwik.php']);
-                _paq.push(['setSiteId', '77']);
-                var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-                g.async=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+            _mtm.push({'mtm.startTime': (new Date().getTime()), 'event': 'mtm.Start'});
 
-                /* MATOMO TAG MANAGER (ADDON) */
-                var _mtm = window._mtm = window._mtm || [];
-                _mtm.push({'mtm.startTime': (new Date().getTime()), 'event': 'mtm.Start'});
+            // Used to get data on pages navigation rate and so on
+            window.addEventListener('hashchange', function() { _mtm.push({'event': 'mtm.PageView'});});
 
-                window.addEventListener('hashchange', function() {
-                    _mtm.push({'event': 'mtm.PageView'});
-                });
+            // Just for us to count download by type just sending "+1"
+            window.addEventListener('art-download-raster1', function() { _mtm.push({'event': 'art-download-raster1'}); });
+            window.addEventListener('art-download-raster16', function() { _mtm.push({'event': 'art-download-raster16'}); });
+            window.addEventListener('art-download-raster32', function() { _mtm.push({'event': 'art-download-raster32'}); });
+            window.addEventListener('art-download-raster48', function() { _mtm.push({'event': 'art-download-raster48'}); });
+            window.addEventListener('art-download-vectoromni', function() { _mtm.push({'event': 'art-download-vectoromni'}); });
+            window.addEventListener('art-download-vectorxbrz', function() { _mtm.push({'event': 'art-download-vectorxbrz'}); });
 
-                // Just for us to count download by type just sending "+1"
-                window.addEventListener('art-download-raster1', function() { _mtm.push({'event': 'art-download-raster1'}); });
-                window.addEventListener('art-download-raster16', function() { _mtm.push({'event': 'art-download-raster16'}); });
-                window.addEventListener('art-download-raster32', function() { _mtm.push({'event': 'art-download-raster32'}); });
-                window.addEventListener('art-download-raster48', function() { _mtm.push({'event': 'art-download-raster48'}); });
-                window.addEventListener('art-download-vectoromni', function() { _mtm.push({'event': 'art-download-vectoromni'}); });
-                window.addEventListener('art-download-vectorxbrz', function() { _mtm.push({'event': 'art-download-vectorxbrz'}); });
+            // Error on upload and button type leading upload
+            window.addEventListener('art-upload-browsererror', function() { _mtm.push({'event': 'art-upload-browsererror'}); });
+            window.addEventListener('art-upload-dialog', function() { _mtm.push({'event': 'art-upload-dialog'}); });
+            window.addEventListener('art-upload-drawer', function() { _mtm.push({'event': 'art-upload-drawer'}); });
+            window.addEventListener('art-import-drawer', function() { _mtm.push({'event': 'art-import-drawer'}); });
 
-                // Error on upload and button type leading upload
-                window.addEventListener('art-upload-browsererror', function() { _mtm.push({'event': 'art-upload-browsererror'}); });
-                window.addEventListener('art-upload-dialog', function() { _mtm.push({'event': 'art-upload-dialog'}); });
-                window.addEventListener('art-upload-drawer', function() { _mtm.push({'event': 'art-upload-drawer'}); });
-                window.addEventListener('art-import-drawer', function() { _mtm.push({'event': 'art-import-drawer'}); });
+            // Actions (Button accessed, only a few...)
+            window.addEventListener('home-action-tryeditor', function() { _mtm.push({'event': 'home-action-tryeditor'}); });
+            window.addEventListener('home-action-tryshare', function() { _mtm.push({'event': 'home-action-tryshare'}); });
+            window.addEventListener('menu-action-tryeditor', function() { _mtm.push({'event': 'menu-action-tryeditor'}); });
 
-                // Actions (Button accessed, only a few...)
-                window.addEventListener('home-action-tryeditor', function() { _mtm.push({'event': 'home-action-tryeditor'}); });
-                window.addEventListener('home-action-tryshare', function() { _mtm.push({'event': 'home-action-tryshare'}); });
-                window.addEventListener('menu-action-tryeditor', function() { _mtm.push({'event': 'menu-action-tryeditor'}); });
-
-                var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-                g.async=true; g.src='https://app.friendlyanalytics.ch/js/container_jRxgodNd.js'; s.parentNode.insertBefore(g,s);
-            })();
+            var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+            g.async=true; g.src='https://app.friendlyanalytics.ch/js/container_jRxgodNd.js'; s.parentNode.insertBefore(g,s);
         </script>
+
     </head>
     <body style="
         margin: 0;
