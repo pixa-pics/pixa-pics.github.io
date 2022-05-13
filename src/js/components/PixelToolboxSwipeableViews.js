@@ -684,7 +684,7 @@ class PixelToolboxSwipeableViews extends React.Component {
                 {
                     icon: <DownloadIcon/>,
                     text: "Download (vector / painting)",
-                    sub: too_much_colors_no_vector ? "Please ensure to have less than 128 colors in your image because it needs to create paths for each colors when it will render the SVG (vectorial) file.": "With this method of rendering our image will be upscaled and available in both HD PNG (useful to post on social media) and neat SVG which means that it has an infinite resolutions for printers and displays as it uses shapes instead of pixels.",
+                    sub: too_much_colors_no_vector ? "Please ensure the artwork to get a good colors-diet (less than 128) to scale it bigger in nice shapes! Buttons to heal a artwork's colors overdose need using double-tap or right-click on the laboratory area.": "It renders your image source and up-scales it in both an HD PNG and a infinite color-limited SVG illustration.",
                     tools: [
                         {
                             icon: <FileDownloadIcon/>,
@@ -729,7 +729,7 @@ class PixelToolboxSwipeableViews extends React.Component {
                 {
                     icon: <LayerSearchIcon/>,
                     text: `Layer tools`,
-                    sub: "You can choose to draw above the non-modified image you imported if you need to or to display a chessboard below all layers as well as editing on different layer to preserve any other layers from those edits.",
+                    sub: "You can choose to draw above the image loaded (easier on PC in the WEB-APP) if you want to, just show background image. Displaying a chessboard below all layers is optional but recommended.",
                     tools: [
                         {
                             icon: hide_canvas_content ? <LayerOutlineIcon/> : <LayerOffOutlineIcon/>,
@@ -783,6 +783,7 @@ class PixelToolboxSwipeableViews extends React.Component {
                 {
                     icon: <ImportIcon/>,
                     text: "Import image",
+                    sub: "Source needs to be another artwork source since it will add it onto current artwork. To start a new artwork, simply change and navigate to 'Image > Upload'.",
                     tools: [
                         {
                             icon: <FileImportIcon/>, text: "Library to import", sub: "", on_click: () => {
@@ -918,6 +919,7 @@ class PixelToolboxSwipeableViews extends React.Component {
                 {
                     icon: <PaintIcon/>,
                     text: "Paint tools",
+                    sub: "On our progressive WEB-APP (https://pixa.pics/), accessing it (at the same perfect-zero costs) with desktop equipments is a very pro experience instead, great to notice smartphones could not access drawing good shapes or make fine selection with gestures.",
                     tools: [
                         {
                             icon: <BucketIcon/>,
@@ -1313,7 +1315,7 @@ class PixelToolboxSwipeableViews extends React.Component {
                 {
                     icon: <ImageFilterMagicIcon/>,
                     text: "Filters",
-                    sub: "The strength selected with the slider above has an impact on the intensity applied to the current layer while preview are shown at 100% intensity. To cancel the operation, you can use the undo functionality since choosing another filter will add it to the previous one.",
+                    sub: "The strength selected matters meanwhile preview are only shown at 100% intensity. To cancel any operation, use 'undo'.",
                     tools: filters.map((name) => {
                         return {
                             icon: (filters_thumbnail[name] || "").length >= 1 ?
@@ -1601,7 +1603,7 @@ class PixelToolboxSwipeableViews extends React.Component {
                                                 color: "#9e9e9e",
                                                 fontStyle: "italic",
                                             }}>
-                                                <span>Setting the image size it will be reduced to needs to be done before importing your image, meanwhile on devices lacking computation power we recommend to not surpass 384px because the editing experience may be lacking performances.</span>
+                                                <span>Select a favourite (On phone, 128...224 works great) dimension for any artwork getting resized from any bigger source image uploaded and processed (on device therefore sometimes being slowly) to give you a slightly lighter color palette much easier to manipulate.</span>
                                             </div>
                                             <div className={classes.listItems}>
                                                 <RadioGroup row name="Import size" onChange={this._set_import_size}
@@ -1705,7 +1707,7 @@ class PixelToolboxSwipeableViews extends React.Component {
                                                 </RadioGroup>
                                             </div>
                                             <p style={{padding: "0px 16px"}}>
-                                                <img style={{filter: "drop-shadow(1px 2px 3px grey)"}} src={SENSITIVE_DATA}/>
+                                                Using deepAI.org services is costing us a very few peanuts and some dust, nevertheless currently being given for free to our users with diligence, some data obviously needs to access the network to reach AI services when you not keep it original, yet sensibly, neither sensible information or media content is available to pixa.pics, it belongs to you only and legally should be a norm and common everywhere.
                                             </p>
                                         </div>
                                         : null

@@ -2399,27 +2399,11 @@ class CanvasPixels extends React.Component {
         })();
     };
 
-    _reduce_color = (rgba_component, color_gain ) => {
-
-        if(color_gain === 1) {
-
-            return rgba_component;
-        }else {
-
-            rgba_component++;
-            let comp_by_gain = Math.round(rgba_component * color_gain) - 1;
-            comp_by_gain = comp_by_gain < 0 ? 0: comp_by_gain;
-
-            return Math.round(comp_by_gain / color_gain);
-        }
-    }
-
-    _get_pixels_palette_and_list_from_image_data = (image_data, force_full_compute = false, color_loss = 0, color_loss_bw = true) => {
+    _get_pixels_palette_and_list_from_image_data = (image_data, force_full_compute = false) => {
 
         const { max_size, _lazy_lazy_compute_time_ms } = this.state;
 
         const too_much_pixel_cpu_would_go_brrrrr = image_data.data.length / 4 > (max_size * max_size); // Can be three time bigger than the default max convert size
-        const color_gain = 1 - color_loss;
 
         let new_pxl_colors = [];
         let new_pxl_colors_set = new Set();
@@ -2483,7 +2467,7 @@ class CanvasPixels extends React.Component {
         };
     }
 
-    _get_new_ctx_from_canvas = (width, height, pixelated = true, image_smoothing = "") => {
+    _get_new_ctx_from_canvas = (width, height, pixelated = true, image_smoothing = "high") => {
 
         let canvas = document.createElement("canvas");
         canvas.width = width;
@@ -2677,7 +2661,7 @@ class CanvasPixels extends React.Component {
 
         if(_imported_image_pxls.length) {
 
-            let [canvas_ctx, canvas] = this._get_new_ctx_from_canvas(_imported_image_width, _imported_image_height, true);
+            let [canvas_ctx, canvas] = this._get_new_ctx_from_canvas(_imported_image_width, _imported_image_height, false);
 
 
             _imported_image_pxls.forEach((pxl, index) => {
@@ -2693,7 +2677,7 @@ class CanvasPixels extends React.Component {
             const scaled_width = _imported_image_width + _imported_image_scale_delta_x;
             const scaled_height = _imported_image_height + _imported_image_scale_delta_y;
 
-            let [canvas_resized_ctx] = this._get_new_ctx_from_canvas(scaled_width, scaled_height, true);
+            let [canvas_resized_ctx] = this._get_new_ctx_from_canvas(scaled_width, scaled_height, false);
             canvas_resized_ctx.drawImage(canvas, 0, 0, _imported_image_width, _imported_image_height, 0, 0, scaled_width, scaled_height);
             const resized_image_data = canvas_resized_ctx.getImageData(0, 0, scaled_width, scaled_height);
             const { new_pxls, new_pxl_colors } = this._get_pixels_palette_and_list_from_image_data(resized_image_data, true);
@@ -2775,12 +2759,11 @@ class CanvasPixels extends React.Component {
                 if(dont_change_img_size_onload === false) {
 
                     // From the result in colors and pixels color index find if the image is resized bigger but from a pixelart image
-                    let { new_pxl_colors, new_pxls, ratio_pixel_per_color, too_much_pixel_cpu_would_go_brrrrr } = this._get_pixels_palette_and_list_from_image_data(image_data, false, (255 - 255 / (merge_color_threshold * 255)) / 255);
-                    let cleaned = await this._remove_close_pxl_colors(new_pxls, new_pxl_colors, 4/16, null, 0);
-                    new_pxls = Uint32Array.from(cleaned[0]);
-                    new_pxl_colors = Uint32Array.from(cleaned[1]);
+                    let colorandpixelbag = this._get_pixels_palette_and_list_from_image_data(image_data, false);
+                    let new_pxls = Uint32Array.from(colorandpixelbag.new_pxls);
+                    let new_pxl_colors = Uint32Array.from(colorandpixelbag.new_pxl_colors);
 
-                    ratio_pixel_per_color = new_pxls.length / new_pxl_colors.length;
+                    let ratio_pixel_per_color = new_pxls.length / new_pxl_colors.length;
 
                     let enough_sure = max_size * max_size > height * width;
 
@@ -2984,7 +2967,7 @@ class CanvasPixels extends React.Component {
                     width = Math.floor(cropped_width);
                     height = Math.floor(cropped_height);
 
-                    [canvas_resized_ctx] = this._get_new_ctx_from_canvas(width, height, true);
+                    [canvas_resized_ctx] = this._get_new_ctx_from_canvas(width, height, false);
                     canvas_resized_ctx.drawImage(image_obj, sx, sy, sw, sh, 0, 0, width, height);
                     canvas_resized_image_data = canvas_resized_ctx.getImageData(0, 0, width, height);
 
@@ -2993,7 +2976,7 @@ class CanvasPixels extends React.Component {
                     width = Math.floor(width);
                     height = Math.floor(height);
 
-                    [canvas_resized_ctx] = this._get_new_ctx_from_canvas(width, height, true);
+                    [canvas_resized_ctx] = this._get_new_ctx_from_canvas(width, height, false);
                     canvas_resized_ctx.drawImage(image_obj, 0, 0, width, height);
                     canvas_resized_image_data = canvas_resized_ctx.getImageData(0, 0, width, height);
 
@@ -3002,7 +2985,7 @@ class CanvasPixels extends React.Component {
                     canvas_resized_image_data = image_data;
                 }
 
-                const new_pxl_data = this._get_pixels_palette_and_list_from_image_data(canvas_resized_image_data, true, 0);
+                const new_pxl_data = this._get_pixels_palette_and_list_from_image_data(canvas_resized_image_data, true);
 
                 let new_base64_original_images = _base64_original_images;
 
@@ -3037,32 +3020,11 @@ class CanvasPixels extends React.Component {
                     _last_action_timestamp: Date.now(),
                 }, () => {
 
-                    if(ns_pxl_colors[0].length >= 5000){
-                        this._to_less_color(1/32, () => {
+                    this._update_screen_zoom_ratio(true, () => {
 
-                            this._update_screen_zoom_ratio(true, () => {
-
-                                this._notify_image_load_complete();
-                                this._notify_export_state();
-                            });
-                        });
-                    }else if(ns_pxl_colors[0].length >= 2500){
-                        this._to_less_color(1/64, () => {
-
-                            this._update_screen_zoom_ratio(true, () => {
-
-                                this._notify_image_load_complete();
-                                this._notify_export_state();
-                            });
-                        });
-                    }else {
-
-                        this._update_screen_zoom_ratio(true, () => {
-
-                            this._notify_image_load_complete();
-                            this._notify_export_state();
-                        });
-                    }
+                        this._notify_image_load_complete();
+                        this._notify_export_state();
+                    });
                 });
 
             }, 50);
@@ -7477,9 +7439,9 @@ class CanvasPixels extends React.Component {
         const color_number = _s_pxl_colors[_layer_index].length;
 
         (async () => {
-            let cleaned = await this._remove_close_pxl_colors(Uint32Array.from(_s_pxls[_layer_index]), _s_pxl_colors[_layer_index], threshold);
+            let cleaned = await this._remove_close_pxl_colors(Uint32Array.from(_s_pxls[_layer_index]), Uint32Array.from(_s_pxl_colors[_layer_index]), threshold);
             _s_pxls[_layer_index] = Uint16Array.from(cleaned[0]);
-            _s_pxl_colors[_layer_index] = cleaned[1];
+            _s_pxl_colors[_layer_index] = Uint32Array.from(cleaned[1]);
 
             const color_remaining_number = _s_pxl_colors[_layer_index].length;
             let results = {

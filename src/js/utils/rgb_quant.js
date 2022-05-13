@@ -8,7 +8,10 @@
 window.rgb_quant_process_function_string = `var f = async function(img, limit, resize_to, lossy) {
     
         "use strict";
+        limit = limit || 0;
+       
         function RgbQuant(opts) {
+       
             opts = opts || {};
 
             // 1 = by global population, 2 = subregion population threshold
@@ -942,9 +945,9 @@ window.rgb_quant_process_function_string = `var f = async function(img, limit, r
             var resA0 = await fetch(img); // Response
             var blbA0 = await resA0.blob(); // Blob     
             var bmpA0 = await createImageBitmap(blbA0, {
-                premultiplyAlpha: 'none',
-                colorSpaceConversion: 'none',
-                resizeQuality: 'pixelated'
+                premultiplyAlpha: 'premultiply',
+                colorSpaceConversion: 'default',
+                resizeQuality: 'high'
             });
             
             while (bmpA0.width * scale * bmpA0.height * scale > resize_to) { scale -= 0.01; }
@@ -952,6 +955,7 @@ window.rgb_quant_process_function_string = `var f = async function(img, limit, r
             var canvasA0 = new OffscreenCanvas(Math.floor(bmpA0.width * scale), Math.floor(bmpA0.height * scale));
             var ctxA0 = canvasA0.getContext("2d");
             ctxA0.imageSmoothingEnabled = false;
+            ctxA0.globalCompositeOperation = "source-over";
             ctxA0.drawImage(bmpA0, 0, 0, canvasA0.width, canvasA0.height);
             img_data = ctxA0.getImageData(0, 0, canvasA0.width, canvasA0.height);
             return do_export_thing(do_quantization_step(img_data, limit), lossy);
@@ -966,9 +970,9 @@ window.rgb_quant_process_function_string = `var f = async function(img, limit, r
                 fetch(img).then((res) => res.blob()).then((blob) => {
     
                     return createImageBitmap(image_data, {
-                        premultiplyAlpha: 'none',
-                        colorSpaceConversion: 'none',
-                        resizeQuality: 'pixelated'
+                        premultiplyAlpha: 'premultiply',
+                        colorSpaceConversion: 'default',
+                        resizeQuality: 'high'
                     }).then((btmp_i) => {
                     
                         while (image.width * scale * image.height * scale > resize_to) { scale -= 0.01; }
@@ -978,6 +982,7 @@ window.rgb_quant_process_function_string = `var f = async function(img, limit, r
                         canvasA0.height = Math.floor(image.height * scale);
                         var ctxA0 = canvasA0.getContext("2d");
                         ctxA0.imageSmoothingEnabled = false;
+                        ctxA0.globalCompositeOperation = "source-over";
                         ctxA0.drawImage(btmp_i, 0, 0, Math.floor(image.width * scale), Math.floor(image.height * scale));
                         img_data = ctxA0.getImageData(0, 0, Math.floor(image.width * scale), Math.floor(image.height * scale)); // ImageData
                         
@@ -999,6 +1004,7 @@ window.rgb_quant_process_function_string = `var f = async function(img, limit, r
                     canvasA0.height = Math.floor(image.height * scale);
                     var ctxA0 = canvasA0.getContext("2d");
                     ctxA0.imageSmoothingEnabled = false;
+                    ctxA0.globalCompositeOperation = "source-over";
                     ctxA0.drawImage(image, 0, 0, Math.floor(image.width * scale), Math.floor(image.height * scale));
                     img_data = ctxA0.getImageData(0, 0, Math.floor(image.width * scale), Math.floor(image.height * scale)); // ImageData
                     
@@ -1009,11 +1015,11 @@ window.rgb_quant_process_function_string = `var f = async function(img, limit, r
             
         }
         
-        function do_quantization_step(img_data, limit) {
+        function do_quantization_step(img_data, limit = 0) {
        
-            if(limit > 0 && limit < 1/0) {
+            if(limit >= 1 && limit < 99999999) {
             
-            lossy = false;
+                lossy = false;
        
                 // options
                 var q = new RgbQuant({
@@ -1046,11 +1052,12 @@ window.rgb_quant_process_function_string = `var f = async function(img, limit, r
                 
                 var canvasB0 = new OffscreenCanvas(img_data.width, img_data.height);
                 var ctxB0 = canvasB0.getContext("bitmaprenderer");
+                ctxB0.imageSmoothingEnabled = false;
                 
                 return createImageBitmap(img_data, {
-                    premultiplyAlpha: 'none',
-                    colorSpaceConversion: 'none',
-                    resizeQuality: 'pixelated'
+                    premultiplyAlpha: 'premultiply',
+                    colorSpaceConversion: 'default',
+                    resizeQuality: 'high'
                 }).then((bmpB0) => {
                 
                     ctxB0.transferFromImageBitmap(bmpB0);
@@ -1080,6 +1087,7 @@ window.rgb_quant_process_function_string = `var f = async function(img, limit, r
                 canvasB0.height = img_data.height;
                 var ctxB0 = canvasB0.getContext("2d");
                 ctxB0.imageSmoothingEnabled = false;
+                ctxB0.globalCompositeOperation = "source-over";
                 ctxB0.putImageData(img_data, 0, 0);
                 
                 if(!lossy) {
@@ -1094,7 +1102,7 @@ window.rgb_quant_process_function_string = `var f = async function(img, limit, r
         }
     }; return f;`;
 
-const rgb_quant = (img, limit = 1024, resize_to = 1920*1080, lossy = false, callback_function = () => {}, pool = null) => {
+const rgb_quant = (img, limit = 0, resize_to = 1920*1080, lossy = false, callback_function = () => {}, pool = null) => {
 
     (async () => {
 

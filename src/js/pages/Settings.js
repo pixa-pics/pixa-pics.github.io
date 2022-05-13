@@ -264,8 +264,12 @@ class Settings extends React.Component {
                                     <i>— Semi-annual report of 2008, Federal Strategic Unit for IT (FSUIT) - Federal Office of Police fedpol (Swiss Confederation).</i>
                                 </p>
                                 <p>
-                                    <b>Prevention is better than cure. </b><span style={{color: "darkblue"}}>- Jamy, the lively and friendly emoji not showing why it is best to not be in trouble, knowing still doing his commentary and intervening while your actions are performing in pixa.pics quietly for him to support you from within at glance.</span>
+                                    <b>Fair prevention is better than fair cure. </b><span style={{color: "darkblue"}}>- Jamy, the lively and friendly emoji not showing why it is best to not be in trouble, knowing still doing his commentary and intervening while your actions are performing in pixa.pics quietly for him to support you from within at glance.</span>
                                 </p>
+                                <ol>
+                                    <li><b>TRASH :) </b> Network-dust, Data-peanuts, Money-burning-mindset.</li>
+                                    <li><b>OPPORTUNITY :) </b> Low-data-obesity, Weakened-bad-intent, Sorting-crime-telling.</li>
+                                </ol>
                             </CardContent>
                         </Card>
                     </Fade>

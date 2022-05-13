@@ -309,7 +309,7 @@ class AppToolbar extends React.Component {
                         </Toolbar>
                         <DrawerContent logged_account={logged_account} pathname={pathname} onClose={this._handle_close_swipeable_app_drawer}/>
                     <Tooltip classes={{popper: "green"}}
-                             title={"Using companies for analytics only with providers headquartered in Switzerland or the EU and by experts on privacy such as ours in strict regulations like FADP (CH) and GDPR (EU), we're also committed to not killcode what it intended with logical code that needs to tells any host anything, it just runs well locally without connection, why try harder?"}>
+                             title={"Using companies for analytics only with providers headquartered in Switzerland or the EU and by strict compliance in regulations like FADP (CH) and GDPR (EU), we're also committed to just provide algorithms that just works well on the device executing it all-alone. We're the alpha (at sourcecode sending nothing online) and the omega (having any means of monitoring any activities), it just not our wants."}>
                         <div style={{
                             position: "fixed",
                             bottom: 12,
