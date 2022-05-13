@@ -179,7 +179,7 @@ const styles = theme => ({
         fontSize: 48,
         fontWeight: "bold",
         [theme.breakpoints.down("sm")]: {
-            fontSize: 32,
+            fontSize: 24,
         },
     },
     titleSubTitle: {
@@ -263,21 +263,21 @@ class Home extends React.Component {
         setTimeout(() => {
 
             actions.trigger_loading_update(100);
-            actions.trigger_snackbar(`AWESOME, thanks! ALSO KEEP passionately using it with PC at glance!`, 10000);
+            actions.trigger_snackbar(`WELCOME, thanks visiting! ALSO KEEP in mind using it from a PC is 5x SMOOTHER!`, 10000);
             setTimeout(() => {
 
                 actions.jamy_update("happy", 2500);
 
                 setTimeout(() => {
 
-                    actions.trigger_snackbar(`On HTTPS://PIXA.PICS/, Its looking good seeing you and all passions must get beautiful with art <3`, 6000);
+                    actions.trigger_snackbar(`USING HTTPS://PIXA.PICS/ is also looking good seeing you with all your good passions looking at art.`, 6000);
                     setTimeout(() => {
 
                         actions.jamy_update("suspicious", 2500);
 
                         setTimeout(() => {
 
-                            actions.trigger_snackbar(`Why don't we go right to the laboratory testing any powerful functionalities we have?`, 6000);
+                            actions.trigger_snackbar(`Should we go to the laboratory testing functionalities and trying edit some pictures?`, 6000);
 
                             setTimeout(() => {
 
