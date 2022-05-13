@@ -8,7 +8,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 
         <!-- Title + Description meta data -->
-        <title id="meta-title">PIXA.pics - Pixel art editor. Make potential (un)limited.</title>
+        <title id="meta-title">PIXA.PICS - Pixel art editor. Make potential (un)limited.</title>
         <meta name="description" content="At the horizon of matrix and vectorial, discover an unprecedented industrial and educative purpose. Our software is for everyone and forever open-source.">
         <meta name="keywords" content="Pixel, Art, Anonymous, NFT, Crypto, Red, Free, Secure">
 
@@ -57,27 +57,51 @@
 
         <!-- PASSIONATE, SAFE, COMPLIANT, ANALYTICS using friendly.ch -->
         <script defer>
-
-            var _paq = window._paq = window._paq || [];
-            _paq.push(["setDoNotTrack", true]);
-            _paq.push(["disableCookies"]);
-            _paq.push(['trackPageView']);
-            _paq.push(['enableLinkTracking']);
-            window.addEventListener('hashchange', function() {
-                _paq.push({'event': 'mtm.PageView'});
-            });
-            window.addEventListener('art-download-raster-1', function() {
-                _paq.push({'event': 'art-download-raster-1'});
-            });
-
             (function() {
+
+                /* MATOMO/PIWIK ANALYTICS (CORE) */
+                var _paq = window._paq = window._paq || [];
+                _paq.push(["setDoNotTrack", true]);
+                _paq.push(["disableCookies"]);
+                _paq.push(['trackPageView']);
+                _paq.push(['enableLinkTracking']);
+
                 var u="https://app.friendlyanalytics.ch/";
-                _paq.push(['setTrackerUrl', u+'matomo.php']);
+                _paq.push(['setTrackerUrl', u+'piwik.php']);
                 _paq.push(['setSiteId', '77']);
                 var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-                g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
-            })();
+                g.async=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
 
+                /* MATOMO TAG MANAGER (ADDON) */
+                var _mtm = window._mtm = window._mtm || [];
+                _mtm.push({'mtm.startTime': (new Date().getTime()), 'event': 'mtm.Start'});
+
+                window.addEventListener('hashchange', function() {
+                    _mtm.push({'event': 'mtm.PageView'});
+                });
+
+                // Just for us to count download by type just sending "+1"
+                window.addEventListener('art-download-raster1', function() { _mtm.push({'event': 'art-download-raster1'}); });
+                window.addEventListener('art-download-raster16', function() { _mtm.push({'event': 'art-download-raster16'}); });
+                window.addEventListener('art-download-raster32', function() { _mtm.push({'event': 'art-download-raster32'}); });
+                window.addEventListener('art-download-raster48', function() { _mtm.push({'event': 'art-download-raster48'}); });
+                window.addEventListener('art-download-vectoromni', function() { _mtm.push({'event': 'art-download-vectoromni'}); });
+                window.addEventListener('art-download-vectorxbrz', function() { _mtm.push({'event': 'art-download-vectorxbrz'}); });
+
+                // Error on upload and button type leading upload
+                window.addEventListener('art-upload-browsererror', function() { _mtm.push({'event': 'art-upload-browsererror'}); });
+                window.addEventListener('art-upload-dialog', function() { _mtm.push({'event': 'art-upload-dialog'}); });
+                window.addEventListener('art-upload-drawer', function() { _mtm.push({'event': 'art-upload-drawer'}); });
+                window.addEventListener('art-import-drawer', function() { _mtm.push({'event': 'art-import-drawer'}); });
+
+                // Actions (Button accessed, only a few...)
+                window.addEventListener('home-action-tryeditor', function() { _mtm.push({'event': 'home-action-tryeditor'}); });
+                window.addEventListener('home-action-tryshare', function() { _mtm.push({'event': 'home-action-tryshare'}); });
+                window.addEventListener('menu-action-tryeditor', function() { _mtm.push({'event': 'menu-action-tryeditor'}); });
+
+                var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+                g.async=true; g.src='https://app.friendlyanalytics.ch/js/container_jRxgodNd.js'; s.parentNode.insertBefore(g,s);
+            })();
         </script>
     </head>
     <body style="

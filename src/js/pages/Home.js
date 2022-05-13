@@ -180,7 +180,6 @@ const styles = theme => ({
         fontWeight: "bold",
         [theme.breakpoints.down("sm")]: {
             fontSize: 32,
-            lineHeight: "bold",
         },
     },
     titleSubTitle: {
@@ -190,7 +189,8 @@ const styles = theme => ({
     },
     subtitle: {
         fontSize: 24,
-        lineHeight: "1.5em",
+        lineHeight: "2em",
+        marginBottom: "56px",
         "& .emoji": {
             width: "2em",
             transform: "scale(1.5)"
@@ -199,6 +199,7 @@ const styles = theme => ({
         [theme.breakpoints.down("sm")]: {
             fontSize: 16,
             display: "none",
+            lineHeight: "1.5em",
         },
     },
     subtitleButton: {
@@ -269,7 +270,7 @@ class Home extends React.Component {
 
                 setTimeout(() => {
 
-                    actions.trigger_snackbar(`Looking good seeing you on https://PIXA.PICS/ & Good looking at being very happy with ART <3!`, 6000);
+                    actions.trigger_snackbar(`On HTTPS://PIXA.PICS/, Its looking good seeing you and all passions must get beautiful with art <3`, 6000);
                     setTimeout(() => {
 
                         actions.jamy_update("suspicious", 2500);
@@ -291,7 +292,7 @@ class Home extends React.Component {
 
                 }, 10000);
 
-            }, 1250);
+            }, 12500);
 
 
         }, 250);
@@ -304,16 +305,18 @@ class Home extends React.Component {
         actions.stop_sound();
     }
 
-    _go_to_url = (event, url) => {
+    _go_to_editor = () => {
 
+        window.dispatchEvent(new Event("home-action-tryeditor"));
         const { _history } = this.state;
-        _history.push(url);
+        _history.push("/pixel");
     };
 
     _handle_speed_dial_action = (event, action) => {
 
         if(action === "share") {
 
+            window.dispatchEvent(new Event("home-action-tryshare"));
             actions.trigger_share();
         }
     };
@@ -348,26 +351,26 @@ class Home extends React.Component {
                 </div>
                 <div className={classes.headerContainer} style={{color: THEME_DAY ? "#000000dd": "#ffffffdd"}}>
                     <h1 className={classes.title} style={{color: THEME_DAY ? "#000": "#fff"}}>
-                        <Fade in={true} timeout={700}><span style={{fontSize: "1.314em"}}><span style={{color: "white", fontWeight: "bold", filter: "drop-shadow(0px 0px 7px white)"}}>PIXA.PICS! </span>♥ Anything to pixel art.<br />Then, draw and vectorize it freely.</span></Fade><br />
-                        <Fade in={true} timeout={850}><span className={classes.titleSubTitle} style={{fontSize: ".33em"}}>“There is geometry in the humming of the strings, there is music in the spacing of the spheres" — Pythagoras <img src={ANGELEMOJI} className="emoji"/></span></Fade>
+                        <Fade in={true} timeout={700}><span style={{fontSize: "1.117em"}}><span style={{color: "white", fontWeight: "bold", filter: "drop-shadow(0px 0px 7px white)"}}>♥ FROM PIXA.PICS! </span>Now get everything in pixel art easily. <br />So yes; draw, edit, modify and vectorize it freely...</span></Fade><br />
+                        <Fade in={true} timeout={850}><span className={classes.titleSubTitle} style={{fontSize: ".33em"}}>Make potential (un)limited. <img src={ANGELEMOJI} className="emoji"/></span></Fade>
                     </h1>
                     <Fade in={true} timeout={1200}>
                             <h2 className={classes.subtitle}>
-                                ♦&nbsp;&nbsp;<span style={{color: THEME_DAY ? "#0d1fac": "#ffd910", fontWeight: "bold"}}>Imagine popular <span style={{textDecoration: "underline"}}>PIXEL ART</span> based on your favourite images. <img src={STAREMOJI} className="emoji pulse2"/></span>
+                                ♦&nbsp;&nbsp;<span style={{color: THEME_DAY ? "#0d1fac": "#ffd910", fontWeight: "bold"}}>IMAGINE tremendous <span>PIXEL ART</span> based on your <img src={STAREMOJI} className="emoji pulse2"/> images.</span>
                                 <br />
-                                ♣&nbsp;&nbsp;<span>A few details thoroughly be missing in your online self, can it pays off?</span>
+                                ♣&nbsp;&nbsp;<span>A few aspects just missing from your online-self for NFTs, <img src={CASHBAGEMOJI} className="emoji"/> CAN IT PAY OFF?</span>
                                 <br />
-                                ♠&nbsp;&nbsp;<span><b>This <span style={{textDecoration: "underline"}}>ZERO-COST</span> elaborate app enforce <img src={TOOLSEMOJI} className="emoji"/> pixel-perfect ultra-simplifications!</b></span>
+                                ♠&nbsp;&nbsp;<span><b>Your own <span>FREELY GIVEN</span> elaborate WEB-APP makes <img src={TOOLSEMOJI} className="emoji"/> pixel-perfect ultra-simplifications!</b></span>
                                 <br />
                             </h2>
                     </Fade>
                     <Fade in={true} timeout={1500}>
-                        <Button className={classes.homeCTAuseit} variant={"contained"} size={"large"} color="primary" onClick={(event) => this._go_to_url(event, "/pixel")}>
-                            Join your laboratory
+                        <Button className={classes.homeCTAuseit} variant={"contained"} size={"large"} color="primary" onClick={this._go_to_editor}>
+                            Let's do this
                         </Button>
                     </Fade>
                     <Fade in={true} timeout={2000}>
-                        <p className={classes.subtitleButton} style={{color: THEME_DAY && !IS_EVENING ? "#0c9004": "#1ae80e", fontWeight: "bold", fontSize: "11px"}}><span><img src={CROWNEMOJI} className="emoji"/> For Everyone <img src={CASHBAGEMOJI} className="emoji"/> For Free <img src={LIGHTINGEMOJI} className="emoji"/> Forever Open-Source</span></p>
+                        <p className={classes.subtitleButton} style={{color: THEME_DAY && !IS_EVENING ? "#0c9004": "#1ae80e", fontWeight: "bold", fontSize: "11px"}}><span><img src={EARTHEMOJI} className="emoji"/> For Everyone <img src={CROWNEMOJI} className="emoji"/> For Free <img src={LIGHTINGEMOJI} className="emoji"/> Forever Open-Source</span></p>
                     </Fade>
                     <Grow in={true} timeout={1900}>
                         <Button className={classes.homeCTAsendit} variant={"contained"} size={"large"} color="primary" onClick={(event) => {this._handle_speed_dial_action(event, "share")}}>

@@ -3,7 +3,7 @@ import { withStyles } from "@material-ui/core";
 
 import { t } from "../utils/t";
 
-import ScienceClothesIcon from "../twemoji/react/1F97C";
+import LightingEmojiSvg from "../twemoji/react/26A1";
 
 import {Fade, Divider, List, ListItem, ListItemIcon, ListItemText, Badge} from "@material-ui/core";
 
@@ -105,8 +105,8 @@ class DrawerContent extends React.Component {
 
     _open_pixel_page = () => {
 
+        window.dispatchEvent(new Event("menu-action-tryeditor"));
         const { _history } = this.state;
-
         _history.push("/pixel");
         this.props.onClose();
     };
@@ -131,7 +131,7 @@ class DrawerContent extends React.Component {
                     <List>
                         <ListItem style={{backgroundColor: "#ffffff33"}} button onClick={this._open_pixel_page}>
                             <ListItemIcon>
-                                <ScienceClothesIcon className={classes.iconLeft}/>
+                                <LightingEmojiSvg className={classes.iconLeft}/>
                             </ListItemIcon>
                             <ListItemText className={classes.boldListItemText} primary={"PIXEL ART LABORATORY"} />
                         </ListItem>

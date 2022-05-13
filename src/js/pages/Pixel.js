@@ -363,7 +363,6 @@ class Pixel extends React.Component {
             _logged_account: {},
             _less_than_1280w: false,
             _is_pixel_dialog_create_open: true,
-            _is_manual_warning_open: false,
             _settings_set: false,
             _attachment_previews: {},
             _filters_thumbnail: {},
@@ -374,14 +373,19 @@ class Pixel extends React.Component {
     componentDidMount() {
 
         this._update_settings();
-        actions.trigger_snackbar(`This is PIXAAAAAA! Easily find your new sunshine!`, 5000);
+        actions.trigger_snackbar(`This is PIXAAAAAA! Easily find a new sunshine, doing pixel art!`, 5000);
         window.addEventListener("resize", this._updated_dimensions);
         this._updated_dimensions();
         document.addEventListener("keydown", this._handle_keydown);
         document.addEventListener("keyup", this._handle_keyup);
         actions.trigger_loading_update(0);
-
         actions.trigger_music(`Tesla_Numbers_30m_session`, 0.75, "tesla");
+
+        this.setState({_is_pixel_dialog_create_open: true}, () => {
+
+            actions.trigger_sfx("hero_decorative-celebration-02");
+            this.forceUpdate();
+        });
 
         this.setState({_h_svg: get_svg_in_b64(<HexGrid color={"#e5e5e5"}/>)});
         import("../utils/ressource_pixel").then((RESSOURCE_PIXELS) => {
@@ -473,16 +477,10 @@ class Pixel extends React.Component {
         if(!error && typeof settings !== "undefined") {
 
             // Set new settings from query result
-            const _sfx_enabled = typeof settings.sfx_enabled !== "undefined" ? settings.sfx_enabled: false;
-            const _is_manual_warning_open = typeof settings.manual_warning_enabled !== "undefined" ? settings.manual_warning_enabled: true;
+            const _sfx_enabled = typeof settings.sfx_enabled !== "undefined" ? settings.sfx_enabled: false
             const _attachment_previews = typeof settings.attachment_previews !== "undefined" ? settings.attachment_previews: {};
 
-            if(_is_manual_warning_open) {
-
-                actions.trigger_sfx("state-change_confirm-down");
-            }
-
-            this.setState({ _sfx_enabled, _is_manual_warning_open, _attachment_previews, _settings_set: true }, () => {
+            this.setState({ _sfx_enabled, _attachment_previews, _settings_set: true }, () => {
 
                 actions.trigger_loading_update(100);
                 this.forceUpdate();
@@ -712,16 +710,12 @@ class Pixel extends React.Component {
 
         const { _canvas } = this.state;
         if(_canvas === null) {return}
+        window.dispatchEvent(new Event(`art-download-raster${size}`));
 
         let a = document.createElement("a"); //Create <a>
         a.download = `Pixelart_N${Date.now()}_PIXAPICS_x${size}.png`; //File name Here
 
         _canvas.get_base64_png_data_url(size, ([base_64]) => {
-
-            if(parseInt(size) === 1) {
-
-                window.dispatchEvent(new Event("art-download-raster-1"));
-            }
 
             a.href = "" + base_64;
             a.click();
@@ -751,6 +745,8 @@ class Pixel extends React.Component {
 
         const { _canvas } = this.state;
         if(_canvas === null) {return}
+
+        using === "xbrz" ? window.dispatchEvent(new Event("art-download-vectorxbrz")): window.dispatchEvent(new Event("art-download-vectoromni"));
 
         actions.trigger_snackbar("Please wait... Files will download in a few seconds.", 5700);
         actions.jamy_update("angry");
@@ -1007,6 +1003,7 @@ class Pixel extends React.Component {
 
                                 if(res === null) {
 
+                                    window.dispatchEvent(new Event("art-upload-browsererror"));
                                     this._handle_load_complete("image_preload", {});
                                     this._handle_load("browser");
                                     actions.trigger_sfx("alert_high-intensity", 0.6);
@@ -1414,24 +1411,9 @@ class Pixel extends React.Component {
         this._handle_current_color_change(color);
     };
 
-    _handle_pixel_dialog_post_edit_close = () => {
-
-        this.setState({_is_pixel_dialog_post_edit_open: false});
-    };
-
     _handle_elevation_change = (elevation) => {
 
         this.setState({_canvas_elevation: elevation});
-    };
-
-    _handle_dialog_info_close = () => {
-
-        this.setState({_is_dialog_info_open: false});
-    };
-
-    _handle_dialog_info_open = () => {
-
-        this.setState({_is_dialog_info_open: true});
     };
 
     _handle_pixel_dialog_create_close = () => {
@@ -1442,19 +1424,6 @@ class Pixel extends React.Component {
     _handle_pixel_dialog_create_open = () => {
 
         this.setState({_is_pixel_dialog_create_open: true});
-    };
-
-    _handle_manual_warning_dialog_close = () => {
-
-
-        api.set_settings({manual_warning_enabled: false},  () => {
-
-            this.setState({_is_manual_warning_open: false, _is_pixel_dialog_create_open: true}, () => {
-
-                actions.trigger_sfx("hero_decorative-celebration-02");
-                this.forceUpdate();
-            });
-        });
     };
 
     _get_advanced_browser = () => {
@@ -1557,7 +1526,6 @@ class Pixel extends React.Component {
             _is_pixel_dialog_create_open,
             _settings_set,
             _h_svg,
-            _is_manual_warning_open,
             _attachment_previews,
             _is_cursor_fuck_you_active,
             _filters_thumbnail,
@@ -1670,9 +1638,9 @@ class Pixel extends React.Component {
                                 show_hide_transparent_image={this._show_hide_transparent_image}
                                 on_current_color_change={this._handle_current_color_change}
                                 on_view_name_change={this._handle_view_name_change}
-                                on_upload_image={this._upload_image}
+                                on_upload_image={(e) => {window.dispatchEvent(new Event("art-upload-drawer")); this._upload_image(e);}}
                                 on_upload_image_library={this._upload_image_library}
-                                on_import_image={this._handle_file_import}
+                                on_import_image={(e) => {window.dispatchEvent(new Event("art-import-drawer")); this._handle_file_import(e);}}
                                 on_import_image_library={this._import_image_library}
                                 on_download_image={this._download_image}
                                 on_download_svg={this._download_svg}
@@ -1772,7 +1740,7 @@ class Pixel extends React.Component {
                                 show_hide_transparent_image={this._show_hide_transparent_image}
                                 on_current_color_change={this._handle_current_color_change}
                                 on_view_name_change={this._handle_view_name_change}
-                                on_upload_image={this._upload_image}
+                                on_upload_image={(e) => {window.dispatchEvent(new Event("art-upload-drawer")); this._upload_image(e);}}
                                 on_upload_image_library={this._upload_image_library}
                                 on_import_image={this._handle_file_import}
                                 on_import_image_library={this._import_image_library}
@@ -2001,19 +1969,6 @@ class Pixel extends React.Component {
                         </ListItemIcon>
                         <ListItemText primary="Smooth a bit" />
                     </ListItem>
-                    <ListSubheader className={classes.contextMenuSubheader}>Load</ListSubheader>
-                    <input
-                        accept="image/*"
-                        style={{display: "none"}}
-                        id="button-file-context-menu"
-                        type="file"
-                    />
-                    <ListItem button  divider onChange={this._upload_image} for="button-file-context-menu" >
-                        <ListItemIcon>
-                            <FileImportIcon />
-                        </ListItemIcon>
-                        <ListItemText primary="Open image" />
-                    </ListItem>
                 </Menu>
                 <Fade in={!_is_edit_drawer_open} key={_is_edit_drawer_open ? "ok": "nok"} timeout={{ enter: 350, exit: 175}}>
                     <div className={classes.fatabs}>
@@ -2045,13 +2000,13 @@ class Pixel extends React.Component {
                 />
 
 
-                <PixelDialogCreate open={_is_pixel_dialog_create_open && !_is_manual_warning_open && _settings_set}
+                <PixelDialogCreate open={_is_pixel_dialog_create_open && _settings_set}
                                    pixel_arts={_attachment_previews}
                                    size={_import_size}
                                    on_import_size_change={this._set_import_size}
                                    on_pixel_art_delete={(id) => {this._delete_unsaved_pixel_art(id)}}
                                    import_JSON_state={(id) => {this._handle_import_json_state_id(id)}}
-                                   on_upload={this._upload_image}
+                                   on_upload={(e) => {window.dispatchEvent(new Event("art-upload-dialog")); this._upload_image(e);}}
                                    onClose={this._handle_pixel_dialog_create_close}/>
 
                 <TouchRipple
@@ -2086,15 +2041,6 @@ class Pixel extends React.Component {
                         {_loading && _loading_process === "less_color_auto" && <h5><ShufflingSpanText text={"It can take a while, please wait ~7sec."} animation_delay_ms={is_mobile_or_tablet ? 5000: 2500} animation_duration_ms={500}/></h5>}
                     </div>
                 </Backdrop>
-
-                <ManualDialogWarning
-                    onClose={this._handle_manual_warning_dialog_close}
-                    open={_is_manual_warning_open}
-                    src={"/src/images/travelers.svg"}
-                    text={"Feeling lost?"}
-                    secondary={"Check the HELP section at the top on left of the editor zone."}
-                    timeout={25000}/>
-
             </div>
         );
     }
