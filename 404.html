@@ -55,19 +55,12 @@
         <meta name="msapplication-TileColor" content="#ffffff">
         <meta name="msapplication-tap-highlight" content="no">
 
-        <!-- PASSIONATE, SAFE, COMPLIANT, SWISS ANALYTICS using friendly.ch -->
+        <!-- PASSIONATE ANONYMOUS SWISS ANALYTICS since using friendly.ch -->
         <script>
+
+            /* MATOMO TAG MANAGER (ADDON) */
             var _mtm = window._mtm = window._mtm || [];
-
-            _mtm.push(["setDoNotTrack", true]);
-            _mtm.push(["disableCookies"]);
-            _mtm.push(['trackPageView']);
-            _mtm.push(['enableLinkTracking']);
-
             _mtm.push({'mtm.startTime': (new Date().getTime()), 'event': 'mtm.Start'});
-
-            // Used to get data on pages navigation rate and so on
-            window.addEventListener('hashchange', function() { _mtm.push({'event': 'mtm.PageView'});});
 
             // Just for us to count download by type just sending "+1"
             window.addEventListener('art-download-raster1', function() { _mtm.push({'event': 'art-download-raster1'}); });
@@ -88,8 +81,29 @@
             window.addEventListener('home-action-tryshare', function() { _mtm.push({'event': 'home-action-tryshare'}); });
             window.addEventListener('menu-action-tryeditor', function() { _mtm.push({'event': 'menu-action-tryeditor'}); });
 
-            var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-            g.async=true; g.src='https://app.friendlyanalytics.ch/js/container_jRxgodNd.js'; s.parentNode.insertBefore(g,s);
+            (function() {
+                var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+                g.async=true; g.src='https://app.friendlyanalytics.ch/js/container_jRxgodNd.js'; s.parentNode.insertBefore(g,s);
+            })();
+
+        </script>
+        <script>
+
+            /* MATOMO / PIWIK ANALYTICS (CORE) */
+            var _paq = window._paq = window._paq || [];
+            _paq.push(["setDoNotTrack", true]);
+            _paq.push(["disableCookies"]);
+            _paq.push(['trackPageView']);
+            _paq.push(['enableLinkTracking']);
+
+            (function() {
+                var u="https://app.friendlyanalytics.ch/";
+                _paq.push(['setTrackerUrl', u+'piwik.php']);
+                _paq.push(['setSiteId', '77']);
+                var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+                g.async=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+            })();
+
         </script>
     </head>
     <body style="
