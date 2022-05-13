@@ -81,29 +81,8 @@
             window.addEventListener('home-action-tryshare', function() { _mtm.push({'event': 'home-action-tryshare'}); });
             window.addEventListener('menu-action-tryeditor', function() { _mtm.push({'event': 'menu-action-tryeditor'}); });
 
-            (function() {
-                var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-                g.async=true; g.src='https://app.friendlyanalytics.ch/js/container_jRxgodNd.js'; s.parentNode.insertBefore(g,s);
-            })();
-
-        </script>
-        <script>
-
-            /* MATOMO / PIWIK ANALYTICS (CORE) */
-            var _paq = window._paq = window._paq || [];
-            _paq.push(["setDoNotTrack", true]);
-            _paq.push(["disableCookies"]);
-            _paq.push(['trackPageView']);
-            _paq.push(['enableLinkTracking']);
-
-            (function() {
-                var u="https://app.friendlyanalytics.ch/";
-                _paq.push(['setTrackerUrl', u+'piwik.php']);
-                _paq.push(['setSiteId', '77']);
-                var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-                g.async=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
-            })();
-
+            var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+            g.async=true; g.src='https://app.friendlyanalytics.ch/js/container_jRxgodNd.js'; s.parentNode.insertBefore(g,s);
         </script>
     </head>
     <body style="
