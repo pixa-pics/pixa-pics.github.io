@@ -21,7 +21,7 @@ const styles = theme => ({
             cursor: "pointer",
             float: "left",
             width: "384px",
-            backgroundImage: "url(/src/images/sane-healthy-memories.svg)",
+            backgroundImage: "url(/src/images/Onboarding.svg)",
             backgroundSize: "100%",
             backgroundPosition: "center",
             backgroundRepeat: "no-repeat",
@@ -120,7 +120,7 @@ class PixelDialogCreate extends React.Component {
                                 id="button-file-dialog-primary"
                                 type="file"
                             />
-                            <Button component={"label"} for="button-file-dialog-primary" fullWidth variant="contained" color="secondary" autoFocus onClick={this.props.on_upload}>Take Pic.</Button>
+                            <Button component={"label"} for="button-file-dialog-primary" fullWidth variant="contained" color="secondary" style={{background: "#ffffff82", boxShadow: "none", color: "black", fontWeight: "bold"}} autoFocus onClick={this.props.on_upload}>Upload / Take a new pictures</Button>
                         </div>
                         <div className={classes.rightImagesContainer}>
                             <div className={classes.rightImagesContainer} style={{padding: "8px 24px", position: "relative", overflow: "hidden", boxSizing: "border-box", width: "100%"}}>

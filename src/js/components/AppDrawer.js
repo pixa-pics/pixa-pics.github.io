@@ -41,7 +41,7 @@ const styles = theme => ({
         color: theme.palette.secondary.contrastText,
         boxShadow: "0px 2px 4px -1px rgb(0 0 0 / 20%), 0px 4px 5px 0px rgb(0 0 0 / 14%), 0px 1px 10px 0px rgb(0 0 0 / 12%)",
         border: 0,
-        backgroundImage: `linear-gradient(95deg, #00020fde 50%, #0a0e2fd4 60%, #010310ff 80% calc(80% - 32px)), url(/src/images/heroes.svg)`,
+        backgroundImage: `linear-gradient(95deg, rgb(0 2 15 / 86%) 50%, rgb(73 66 109 / 66%) 60%, hsl(232deg 88% 3%) 80% calc(80% - 32px)), url(/src/images/Self.svg)`,
         backgroundRepeat: "no-repeat",
         backgroundPosition: "calc(50% + 16px) calc(100% - 0px)",
         backgroundSize: "calc(100% + 96px)",
@@ -91,7 +91,7 @@ class AppDrawer extends React.Component {
                                     left: 12,
                                     color: "#ffffff75",
                                     userSelect: "none"
-                                }}><span>Awakening privacy...</span></div>
+                                }}><span>Giving my online-self privacy...</span></div>
                             </Tooltip>
                         </Fade>
                     </div>

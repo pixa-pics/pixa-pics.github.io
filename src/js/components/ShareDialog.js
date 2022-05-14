@@ -184,7 +184,7 @@ class ShareDialog extends React.Component {
                     open={open}
                     onClose={(event) => {this.props.onClose(event)}}
                 >
-                    <div className={classes.dialogInner} style={{backgroundImage: `url(/src/images/office.svg)`}}>
+                    <div className={classes.dialogInner} style={{backgroundImage: `url(/src/images/Share.svg)`}}>
                         <div className={classes.dialogContent}>
                             <DialogTitle>
                                 {t( "components.share_dialog.title")}

@@ -1,6 +1,6 @@
-var REQUIRED_CACHE = "unless-update-cache-v128-required";
-var USEFUL_CACHE = "unless-update-cache-v128-useful";
-var STATIC_CACHE = "unless-update-cache-v128-static";
+var REQUIRED_CACHE = "unless-update-cache-v129-required";
+var USEFUL_CACHE = "unless-update-cache-v129-useful";
+var STATIC_CACHE = "unless-update-cache-v129-static";
 var MAIN_CHILD_CHUNK_REGEX = /child\-chunk\.(main\~[a-z0-9]+)\.min.js/i;
 var CHILD_CHUNK_REGEX = /child\-chunk\.([0-9]+)\.min.js/i;
 
@@ -15,17 +15,17 @@ self.addEventListener("install", function(evt) {
     var not_urgent = Promise.allSettled([
         caches.open(USEFUL_CACHE).then(function (cache) {
             return cache.addAll([
-                "/src/images/office.svg",
+                "/src/images/Share.svg",
                 "/src/images/travelers.svg",
                 "/src/images/painting.svg",
-                "/src/images/sane-healthy-memories.svg",
+                "/src/images/Onboarding.svg",
                 "/src/images/abduction.svg",
                 "/src/images/AI.svg",
                 "/src/images/DNA.svg",
                 "/src/images/CPU.svg",
                 "/src/images/BROWSER.svg",
                 "/src/images/laboratory.svg",
-                "/src/images/swiss-security.svg",
+                "/src/images/Security.svg",
                 "/src/images/illustrations/China-night.svg",
                 "/src/images/illustrations/Egypt-day.svg",
                 "/src/images/illustrations/Fuji-sunset.svg",
@@ -92,7 +92,7 @@ self.addEventListener("install", function(evt) {
                 "/src/images/rocket_boy.svg",
                 "/src/images/background.svg",
                 "/src/images/logo-transparent.png",
-                "/src/images/heroes.svg",
+                "/src/images/Self.svg",
                 "/src/images/404.svg",
             ]);
         })
