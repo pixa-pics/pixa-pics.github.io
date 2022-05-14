@@ -254,13 +254,6 @@ class Settings extends React.Component {
                                     labelPlacement="end"
                                 />
                                 <p>{t( "pages.settings.description_of_jamy")}</p>
-                                <ol>
-                                    <li><b>TRASH :) </b> Network-dust, Data-peanuts, Money-burning-mindset.</li>
-                                    <li><b>OPPORTUNITY :) </b> Low-data-obesity, Weakened-bad-intent, Sorting-crime-telling.</li>
-                                </ol>
-                                <p>
-                                    <b>Fair preventions is better than a fair cure. </b><span style={{color: "royalblue"}}>- Inside its emoji world, Jamy, the lively and friendly emoji not showing why it is best to not be in trouble, knowing still doing his commentary and intervening while your actions are performing in pixa.pics quietly for him to support you from within at glance. Meanwhile Jamy being healthy, we searched for the right angle to help with online-self perceived health which mirrors sometimes penalties of leaving details to Mister Apathy or Miss Nefarious instead of having smarter mind-game which is keeping personally identifiable data for you enabling any further cards to be that joker of being still kind while less "unreal" visually to them.</span>
-                                </p>
                                 <p>
                                     <div style={{position: "relative"}}>
                                         <blockquote style={{color: "darkblue"}}>

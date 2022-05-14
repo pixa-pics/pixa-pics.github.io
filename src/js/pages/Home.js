@@ -121,7 +121,7 @@ const styles = theme => ({
             left: 0,
             top: 0,
             position: "absolute",
-            backdropFilter: "contrast(1.2) brightness(1.4) saturate(0.6) blur(4px)",
+            backdropFilter: "brightness(1.0) contrast(1.1) saturate(1.2) blur(1.5px)",
         },
         position: "relative",
         backgroundPosition: "0% 25vh",
@@ -145,22 +145,12 @@ const styles = theme => ({
     },
     backgroundImageImage: {
         right: "max(25vw, 25vh)",
-        bottom: "min(25vw, 25vh)",
-        width: "max(50vw, 50vh)",
+        bottom: "max(25vw, 25vh)",
+        width: "max(47.5vw, 47.5vh)",
+        filter: "opacity(0.75)",
         zIndex: 3,
         position: "fixed",
         transform: "translate(min(50vh, 50%), min(50vh, 50%))",
-        animation: "$fun 56s linear infinite",
-        "@global": {
-            "@keyframes fun": {
-                "0%": {transform: "translate(calc(-70px + min(50vh, 50%)), calc(-50px + min(50vh, 50%)))"},
-                "20%": {transform: "translate(calc(+30px + min(50vh, 50%)), calc(-10px + min(50vh, 50%)))"},
-                "40%": {transform: "translate(calc(+50px + min(50vh, 50%)), calc(50px + min(50vh, 50%)))"},
-                "60%": {transform: "translate(calc(+90px + min(50vh, 50%)), calc(30px + min(50vh, 50%)))"},
-                "80%": {transform: "translate(calc(00px + min(50vh, 50%)), calc(-30px + min(50vh, 50%)))"},
-                "100%": {transform: "translate(calc(-70px + min(50vh, 50%)), calc(-50px + min(50vh, 50%)))"},
-            }
-        },
     },
     card: {
         margin: theme.spacing(1, 2)
@@ -240,19 +230,19 @@ class Home extends React.Component {
         function is_day(lc) {
 
             const h = get_now_hours24_with_locale(lc);
-            return Boolean(h < 20 && h > 8);
+            return Boolean(h < 22 && h > 6);
         }
 
         function is_evening(lc) {
 
             const h = get_now_hours24_with_locale(lc);
-            return Boolean(h < 20 && h > 17.5);
+            return Boolean(h < 22 && h > 21);
         }
 
         function is_late_evening(lc) {
 
             const h = get_now_hours24_with_locale(lc);
-            return Boolean(h < 22.5 && h > 20);
+            return Boolean(h < 23 && h > 22);
         }
 
         THEME_DAY = is_day(this.state.lc);
@@ -263,7 +253,7 @@ class Home extends React.Component {
         setTimeout(() => {
 
             actions.trigger_loading_update(100);
-            actions.trigger_snackbar(`HEY^^ WELCOME, thanks visiting it! Happy to be "Jamy" your guide and emoji here and now.`, 10000);
+            actions.trigger_snackbar(`WELCOME, thanks visiting it! Happy to be "Jamy" your guide and emoji here and now.`, 10000);
             setTimeout(() => {
 
                 actions.jamy_update("happy", 2500);
@@ -335,32 +325,31 @@ class Home extends React.Component {
                 filter: "revert",
                 backgroundImage: THEME_DAY ?
                                     IS_EVENING ?
-                                        "linear-gradient(rgb(186 151 255 / 47%) 10%, transparent 33%), radial-gradient(at 10% 10%, rgb(164 82 191 / 68%) 14%, rgb(170 97 255 / 64%) 28%, rgba(0, 72, 255, 0.1) 50%, rgb(191 49 49 / 97%)), url(/src/images/illustrations/Tropical-sunset.svg)" :
-                                        "linear-gradient(to bottom, #2367ffcc 10%, transparent 33%), radial-gradient(farthest-corner at 10% 10%, rgb(109 215 232) 14%, rgb(97 197 255) 28%, rgb(0 72 255 / 10%) 50%, rgb(210 92 23 / 97%)), url(/src/images/illustrations/Egypt-day.svg)" :
+                                        "url(/src/images/illustrations/Itsukishima.svg)" :
+                                        "url(/src/images/illustrations/Egypt-day.svg)" :
                                     IS_LATE_EVENING ?
-                                        "linear-gradient(to bottom, #020082a3 10%, #04020200 33%), radial-gradient(farthest-corner at 10% 10%, #00000077 14%, rgb(158 170 255 / 44%) 28%, rgb(0 0 0 / 10%) 50%, rgb(0 0 0 / 88%)), url(/src/images/illustrations/Fuji-sunset.svg)":
-                                        "linear-gradient(to bottom, #020082a3 10%, #04020200 33%), radial-gradient(farthest-corner at 10% 10%, #00000077 14%, rgb(158 170 255 / 44%) 28%, rgb(0 0 0 / 10%) 50%, rgb(0 0 0 / 88%)), url(/src/images/illustrations/China-night.svg)",
+                                        "url(/src/images/illustrations/USA-night.svg)":
+                                        "url(/src/images/illustrations/China-night.svg)",
             }}>
                 <div className={classes.insideRoot}>
                     <div className={classes.backgroundImage} style={{
                         backgroundSize: THEME_DAY ? "175%": "50%",
-                        backgroundColor: THEME_DAY ? IS_EVENING ? "#4800493b": "#FF89003b": "#1f25563b",
+                        backgroundColor: THEME_DAY ? IS_EVENING ? "#48004954": "#FF890027": "#1f255654",
                         }}>
-                        <Fade in={true} timeout={600}><img src={THEME_DAY ? "/src/images/fun.svg": "/src/images/rocket_boy.svg"} className={classes.backgroundImageImage}/></Fade>
+                        <Fade in={true} timeout={600}><img src={"/src/images/Pixagrail.svg"} className={classes.backgroundImageImage}/></Fade>
                     </div>
                 </div>
-                <div className={classes.headerContainer} style={{color: THEME_DAY ? "#000000dd": "#ffffffdd"}}>
-                    <h1 className={classes.title} style={{color: THEME_DAY ? "#000": "#fff"}}>
-                        <Fade in={true} timeout={700}><span style={{fontSize: "1.117em"}}><span style={{color: "white", fontWeight: "bold", filter: "drop-shadow(0px 0px 7px white)"}}>♥ FROM PIXA.PICS! </span>Now get pics in pixel art on-the-fly. <br /><span style={{fontWeight: "normal"}}>Then yes; draw, edit, modify it offline saving full HD 32x PNG, 6x ∞ SVG with it freely...</span></span></Fade><br />
-                        <Fade in={true} timeout={850}><span className={classes.titleSubTitle} style={{fontSize: ".33em"}}>Make potential (un)limited. <img src={ANGELEMOJI} className="emoji"/></span></Fade>
+                <div className={classes.headerContainer} style={{color: THEME_DAY && !IS_EVENING? "#000000dd": "#ffffffdd"}}>
+                    <h1 className={classes.title} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff"}}>
+                        <Fade in={true} timeout={700}><span style={{fontSize: "1.117em"}}><span style={{color: "white", fontWeight: "bold", filter: "drop-shadow(0px 0px 7px white)"}}>FROM <img src={ANGELEMOJI} className="emoji"/> PIXA.PICS! </span>Now get pics in just pixel art. <span style={{fontWeight: "normal"}}>So yes; draw and edit offline getting HD 32xPNG and ∞ 6xSVG.</span></span></Fade>
                     </h1>
                     <Fade in={true} timeout={1200}>
                             <h2 className={classes.subtitle}>
-                                ♦&nbsp;&nbsp;<span style={{color: THEME_DAY ? "#0d1fac": "#ffd910", fontWeight: "bold"}}>IMAGINE tremendous <span>PIXEL ART</span> based on your <img src={STAREMOJI} className="emoji pulse2"/> images.</span>
+                                <span style={{color: THEME_DAY && !IS_EVENING ? "#0d1fac": "#ffd910", fontWeight: "bold"}}>IMAGINE tremendous <span>PIXEL ART</span> based on your <img src={STAREMOJI} className="emoji pulse2"/> images.</span>
                                 <br />
-                                ♣&nbsp;&nbsp;<span><b>A few aspects just missing from your online-self for NFTs, <img src={CASHBAGEMOJI} className="emoji"/> CAN IT PAY OFF?</b></span>
+                                <span><b>A few aspects just missing from your online-self for NFTs, <img src={CASHBAGEMOJI} className="emoji"/> CAN IT PAY OFF?</b></span>
                                 <br />
-                                ♠&nbsp;&nbsp;<span><b>Your own <span>FREELY GIVEN</span> elaborate WEB-APP makes <img src={TOOLSEMOJI} className="emoji"/> pixel-perfect ultra-simplifications!</b></span>
+                                <span><b>Your own <span>FREELY GIVEN</span> elaborate WEB-APP makes <img src={TOOLSEMOJI} className="emoji"/> pixel-perfect ultra-simplifications!</b></span>
                                 <br />
                             </h2>
                     </Fade>

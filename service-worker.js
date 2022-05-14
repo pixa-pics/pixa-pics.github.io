@@ -1,6 +1,6 @@
-var REQUIRED_CACHE = "unless-update-cache-v131-required";
-var USEFUL_CACHE = "unless-update-cache-v131-useful";
-var STATIC_CACHE = "unless-update-cache-v131-static";
+var REQUIRED_CACHE = "unless-update-cache-v132-required";
+var USEFUL_CACHE = "unless-update-cache-v132-useful";
+var STATIC_CACHE = "unless-update-cache-v132-static";
 var MAIN_CHILD_CHUNK_REGEX = /child\-chunk\.(main\~[a-z0-9]+)\.min.js/i;
 var CHILD_CHUNK_REGEX = /child\-chunk\.([0-9]+)\.min.js/i;
 
@@ -27,8 +27,8 @@ self.addEventListener("install", function(evt) {
                 "/src/images/Security.svg",
                 "/src/images/illustrations/China-night.svg",
                 "/src/images/illustrations/Egypt-day.svg",
-                "/src/images/illustrations/Fuji-sunset.svg",
-                "/src/images/illustrations/Tropical-sunset.svg",
+                "/src/images/illustrations/USA-night.svg",
+                "/src/images/illustrations/Itsukishima.svg",
             ]);
         }),
         caches.open(REQUIRED_CACHE).then(function (cache) {
@@ -87,8 +87,7 @@ self.addEventListener("install", function(evt) {
             return cache.addAll([
                 "/src/images/manifest/icon-white.png",
                 "/src/images/favicon.ico",
-                "/src/images/fun.svg",
-                "/src/images/rocket_boy.svg",
+                "/src/images/Pixagrail.svg",
                 "/src/images/background.svg",
                 "/src/images/logo-transparent.png",
                 "/src/images/Self.svg",
