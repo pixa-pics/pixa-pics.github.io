@@ -197,6 +197,7 @@ class AppToolbar extends React.Component {
 
     _open_settings = () => {
 
+        window.dispatchEvent(new Event("menu-action-settings"));
         const { _history } = this.state;
         _history.push("/settings");
     };

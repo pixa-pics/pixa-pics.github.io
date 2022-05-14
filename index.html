@@ -79,12 +79,31 @@
             window.addEventListener('home-action-tryeditor', function() { _mtm.push({'event': 'home-action-tryeditor'}); });
             window.addEventListener('home-action-tryshare', function() { _mtm.push({'event': 'home-action-tryshare'}); });
             window.addEventListener('menu-action-tryeditor', function() { _mtm.push({'event': 'menu-action-tryeditor'}); });
+            window.addEventListener('menu-action-settings', function() { _mtm.push({'event': 'menu-action-settings'}); });
+
+            // Editor, few key interactions
+            window.addEventListener('art-action-gethelp', function() { _mtm.push({'event': 'art-action-gethelp'}); });
 
 
             var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
             g.async=true; g.src='https://app.friendlyanalytics.ch/js/container_jRxgodNd.js'; s.parentNode.insertBefore(g,s);
         </script>
 
+        <script>
+            var _paq = window._paq = window._paq || [];
+
+            _paq.push(["setDoNotTrack", true]);
+            _paq.push(["disableCookies"]);
+            _paq.push(['trackPageView']);
+            _paq.push(['enableLinkTracking']);
+            (function() {
+                var u="https://app.friendlyanalytics.ch/";
+                _paq.push(['setTrackerUrl', u+'matomo.php']);
+                _paq.push(['setSiteId', '77']);
+                var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+                g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+            })();
+        </script>
     </head>
     <body style="
         margin: 0;
