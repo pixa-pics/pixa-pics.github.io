@@ -173,7 +173,8 @@ class InnerToolbar extends React.Component {
     componentWillReceiveProps(new_props) {
 
         const state = {
-            ...new_props
+            ...new_props,
+            _is_info_bar_active: new_props.pathname.includes("pixel") ? this.state._is_info_bar_active: false
         };
 
         this.setState(state);

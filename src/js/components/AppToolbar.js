@@ -41,7 +41,7 @@ const styles = theme => ({
         background: theme.palette.primary.dark,
         color: theme.palette.primary.contrastText,
         width: 256,
-        backgroundImage: `linear-gradient(95deg, #00020fbd 50%, #5265ff33 60%, #010310ff 80% calc(80% - 32px)), url(/src/images/heroes.svg)`,
+        backgroundImage: `linear-gradient(95deg, rgb(0 2 15 / 86%) 50%, rgb(73 66 109 / 66%) 60%, hsl(232deg 88% 3%) 80% calc(80% - 32px)), url(/src/images/Self.svg)`,
         backgroundRepeat: "no-repeat",
         backgroundPosition: "calc(50% + 16px) calc(100% - 0px)",
         backgroundSize: "calc(100% + 96px)",
@@ -304,7 +304,7 @@ class AppToolbar extends React.Component {
                     onClose={this._handle_close_swipeable_app_drawer}>
                         <Toolbar className={classes.appBar}>
                             <div className={classes.swipeableDrawerToolbar} onClick={this._open_home}>
-                                <span className={classes.swipeableDrawerAppTitle}>HTTPS://PIXA.PICS/</span>
+                                <span className={classes.swipeableDrawerAppTitle}>HTTPS://PIXA.PICS/ -> PC OK!</span>
                             </div>
                         </Toolbar>
                         <DrawerContent logged_account={logged_account} pathname={pathname} onClose={this._handle_close_swipeable_app_drawer}/>
@@ -316,7 +316,7 @@ class AppToolbar extends React.Component {
                             left: 12,
                             color: "#ffffff75",
                             userSelect: "none"
-                        }}><span>Awakening privacy...</span></div>
+                        }}><span>Online-self privacy heroes...</span></div>
                     </Tooltip>
                 </SwipeableDrawer>
                 <AppBar position="fixed" className={classes.appBar}>

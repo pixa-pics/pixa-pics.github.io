@@ -91,7 +91,7 @@ class AppDrawer extends React.Component {
                                     left: 12,
                                     color: "#ffffff75",
                                     userSelect: "none"
-                                }}><span>Giving my online-self privacy...</span></div>
+                                }}><span>Online-self privacy heroes...</span></div>
                             </Tooltip>
                         </Fade>
                     </div>

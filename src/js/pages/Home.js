@@ -263,14 +263,14 @@ class Home extends React.Component {
         setTimeout(() => {
 
             actions.trigger_loading_update(100);
-            actions.trigger_snackbar(`WELCOME, thanks visiting! ALSO KEEP in mind using it from a PC is 5x SMOOTHER!`, 10000);
+            actions.trigger_snackbar(`HEY^^ WELCOME, thanks visiting it! Happy to be "Jamy" your guide and emoji here and now.`, 10000);
             setTimeout(() => {
 
                 actions.jamy_update("happy", 2500);
 
                 setTimeout(() => {
 
-                    actions.trigger_snackbar(`USING HTTPS://PIXA.PICS/ is also looking good seeing you with all your good passions looking at art.`, 6000);
+                    actions.trigger_snackbar(`It's looking good seeing you with all your passions looking at art, pixel art.`, 6000);
                     setTimeout(() => {
 
                         actions.jamy_update("suspicious", 2500);
@@ -351,14 +351,14 @@ class Home extends React.Component {
                 </div>
                 <div className={classes.headerContainer} style={{color: THEME_DAY ? "#000000dd": "#ffffffdd"}}>
                     <h1 className={classes.title} style={{color: THEME_DAY ? "#000": "#fff"}}>
-                        <Fade in={true} timeout={700}><span style={{fontSize: "1.117em"}}><span style={{color: "white", fontWeight: "bold", filter: "drop-shadow(0px 0px 7px white)"}}>♥ FROM PIXA.PICS! </span>Now get everything in pixel art easily. <br />So yes; draw, edit, modify and vectorize it freely...</span></Fade><br />
+                        <Fade in={true} timeout={700}><span style={{fontSize: "1.117em"}}><span style={{color: "white", fontWeight: "bold", filter: "drop-shadow(0px 0px 7px white)"}}>♥ FROM PIXA.PICS! </span>Now get pics in pixel art on-the-fly. <br /><span style={{fontWeight: "normal"}}>Then yes; draw, edit, modify it offline saving full HD 32x PNG, 6x ∞ SVG with it freely...</span></span></Fade><br />
                         <Fade in={true} timeout={850}><span className={classes.titleSubTitle} style={{fontSize: ".33em"}}>Make potential (un)limited. <img src={ANGELEMOJI} className="emoji"/></span></Fade>
                     </h1>
                     <Fade in={true} timeout={1200}>
                             <h2 className={classes.subtitle}>
                                 ♦&nbsp;&nbsp;<span style={{color: THEME_DAY ? "#0d1fac": "#ffd910", fontWeight: "bold"}}>IMAGINE tremendous <span>PIXEL ART</span> based on your <img src={STAREMOJI} className="emoji pulse2"/> images.</span>
                                 <br />
-                                ♣&nbsp;&nbsp;<span>A few aspects just missing from your online-self for NFTs, <img src={CASHBAGEMOJI} className="emoji"/> CAN IT PAY OFF?</span>
+                                ♣&nbsp;&nbsp;<span><b>A few aspects just missing from your online-self for NFTs, <img src={CASHBAGEMOJI} className="emoji"/> CAN IT PAY OFF?</b></span>
                                 <br />
                                 ♠&nbsp;&nbsp;<span><b>Your own <span>FREELY GIVEN</span> elaborate WEB-APP makes <img src={TOOLSEMOJI} className="emoji"/> pixel-perfect ultra-simplifications!</b></span>
                                 <br />
