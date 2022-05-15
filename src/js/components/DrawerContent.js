@@ -3,7 +3,7 @@ import { withStyles } from "@material-ui/core";
 
 import { t } from "../utils/t";
 
-import LightingEmojiSvg from "../twemoji/react/26A1";
+import LabEmojiSvg from "../twemoji/react/1F9Ea";
 
 import {Fade, Divider, List, ListItem, ListItemIcon, ListItemText, Badge} from "@material-ui/core";
 
@@ -131,7 +131,7 @@ class DrawerContent extends React.Component {
                     <List>
                         <ListItem style={{backgroundColor: "#ffffff33"}} button onClick={this._open_pixel_page}>
                             <ListItemIcon>
-                                <LightingEmojiSvg className={classes.iconLeft}/>
+                                <LabEmojiSvg className={classes.iconLeft}/>
                             </ListItemIcon>
                             <ListItemText className={classes.boldListItemText} primary={"PIXEL ART LABORATORY"} />
                         </ListItem>

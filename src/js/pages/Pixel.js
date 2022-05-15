@@ -373,7 +373,7 @@ class Pixel extends React.Component {
     componentDidMount() {
 
         this._update_settings();
-        actions.trigger_snackbar(`This is PIXAAAAAA! Easily find a new sunshine!`, 5000);
+        actions.trigger_snackbar(`This is PIXAAAAAA and beyond! Here, ideas easily find a new sunshine!`, 5000);
         window.addEventListener("resize", this._updated_dimensions);
         this._updated_dimensions();
         document.addEventListener("keydown", this._handle_keydown);
@@ -723,20 +723,9 @@ class Pixel extends React.Component {
             actions.trigger_sfx("hero_decorative-celebration-02");
             setTimeout(() => {
 
-                actions.jamy_update("happy");
-                actions.trigger_snackbar("AWESOME! Share, Yes/No?", 5500);
+                actions.trigger_snackbar("SHARING greatly helps PIXA.PICS! Happy means happy.", 7000);
+                actions.trigger_sfx("alert_high-intensity");
 
-                setTimeout(() => {
-
-
-                    actions.trigger_snackbar("SHARING greatly helps PIXA.PICS! Happy means happy.", 7000);
-                    actions.trigger_sfx("alert_high-intensity");
-
-                    setTimeout(() => {
-
-                        actions.jamy_update("happy");
-                    }, 4500);
-                }, 6500);
             }, 2000);
         }, false, 0);
     };
@@ -781,20 +770,9 @@ class Pixel extends React.Component {
                             actions.trigger_sfx("hero_decorative-celebration-02");
                             setTimeout(() => {
 
-                                actions.jamy_update("happy");
-                                actions.trigger_snackbar("AWESOME! Share, Yes/No?", 5500);
+                                actions.trigger_snackbar("SHARING IT greatly helps PIXA.PICS! Happy means happy.", 7000);
+                                actions.trigger_sfx("alert_high-intensity");
 
-                                setTimeout(() => {
-
-
-                                    actions.trigger_snackbar("SHARING IT greatly helps PIXA.PICS! Happy means happy.", 7000);
-                                    actions.trigger_sfx("alert_high-intensity");
-
-                                    setTimeout(() => {
-
-                                        actions.jamy_update("happy");
-                                    }, 4500);
-                                }, 6500);
                             }, 2000);
 
                         });

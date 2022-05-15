@@ -6,7 +6,7 @@ import actions from "../actions/utils";
 const styles = theme => ({
     backgroundImage: {
         minHeight: "calc(100vh - 64px)",
-        backgroundImage: "url(/src/images/404.svg)",
+        backgroundImage: "url(/src/images/Error.svg)",
         position: "relative",
         backgroundSize: "contain",
         backgroundPosition: "center center",

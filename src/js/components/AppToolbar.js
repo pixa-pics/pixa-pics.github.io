@@ -41,7 +41,7 @@ const styles = theme => ({
         background: theme.palette.primary.dark,
         color: theme.palette.primary.contrastText,
         width: 256,
-        backgroundImage: `linear-gradient(95deg, rgb(0 2 15 / 86%) 50%, rgb(73 66 109 / 66%) 60%, hsl(232deg 88% 3%) 80% calc(80% - 32px)), url(/src/images/Self.svg)`,
+        backgroundImage: `linear-gradient(90deg, #ffffff05 40%, #00020e 90%, black 100%), linear-gradient(0deg, rgb(32 144 22 / 75%) 32px, rgb(16 41 4 / 50%) 128px, rgb(1 14 0) 384px, #01030e 100%), url(/src/images/Spy.svg)`,
         backgroundRepeat: "no-repeat",
         backgroundPosition: "calc(50% + 16px) calc(100% - 0px)",
         backgroundSize: "calc(100% + 96px)",
@@ -158,7 +158,8 @@ class AppToolbar extends React.Component {
             _look_very_much_jamy: false,
             _jamy_mouse_hover: false,
             _jamy_mouse_hover_click: 0,
-            _click_much_jamy: false
+            _click_much_jamy: false,
+            _is_pre_reset: false,
         };
     };
 
@@ -186,7 +187,7 @@ class AppToolbar extends React.Component {
 
     _close_account_menu = () => {
 
-        this.setState({_account_menu_anchor_element: null});
+        this.setState({_account_menu_anchor_element: null, _is_pre_reset: false});
     };
 
     _open_home = () => {
@@ -278,9 +279,15 @@ class AppToolbar extends React.Component {
         }
     };
 
+    _pre_reset_toggle = () => {
+
+        const {_is_pre_reset} = this.state;
+        this.setState({_is_pre_reset: !_is_pre_reset});
+    }
+
     render() {
 
-        const { classes, pathname, loaded_progress_percent, know_the_settings, _swipeable_app_drawer_open, _account_menu_anchor_element, logged_account, jamy_state_of_mind, jamy_enabled } = this.state;
+        const { classes, _is_pre_reset, pathname, loaded_progress_percent, know_the_settings, _swipeable_app_drawer_open, _account_menu_anchor_element, logged_account, jamy_state_of_mind, jamy_enabled } = this.state;
 
         const JAMY = {
             angry: <JamyAngry className={classes.jamy} />,
@@ -305,7 +312,7 @@ class AppToolbar extends React.Component {
                     onClose={this._handle_close_swipeable_app_drawer}>
                         <Toolbar className={classes.appBar}>
                             <div className={classes.swipeableDrawerToolbar} onClick={this._open_home}>
-                                <span className={classes.swipeableDrawerAppTitle}>HTTPS://PIXA.PICS/ -> PC OK!</span>
+                                <span className={classes.swipeableDrawerAppTitle}>HTTPS://PIXA.PICS/ -> OK!</span>
                             </div>
                         </Toolbar>
                         <DrawerContent logged_account={logged_account} pathname={pathname} onClose={this._handle_close_swipeable_app_drawer}/>
@@ -317,7 +324,7 @@ class AppToolbar extends React.Component {
                             left: 12,
                             color: "#ffffff75",
                             userSelect: "none"
-                        }}><span>Online-self privacy heroes...</span></div>
+                        }}><span>Minding leg. online-self honor.</span></div>
                     </Tooltip>
                 </SwipeableDrawer>
                 <AppBar position="fixed" className={classes.appBar}>
@@ -372,12 +379,15 @@ class AppToolbar extends React.Component {
                             </MenuItem>
                             <div>
                                 <Divider />
-                                <MenuItem onClick={this._exit_to_app}>
+                                <MenuItem onClick={this._pre_reset_toggle}>
                                     <ListItemIcon>
                                         <SecurityIcon fontSize="small" />
                                     </ListItemIcon>
                                     <ListItemText primary={t( "words.reset", {TUC: true})}/>
                                 </MenuItem>
+                                {
+                                    _is_pre_reset && <img onClick={this._exit_to_app} src={"/src/images/Click.svg"} />
+                                }
                             </div>
                         </Menu>
                     </Toolbar>

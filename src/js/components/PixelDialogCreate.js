@@ -141,7 +141,7 @@ class PixelDialogCreate extends React.Component {
                                     {!Object.keys(pixel_arts).length && <ImageListItem style={{display: "inline-block", width: "auto", userSelect: "none"}}
                                                     className={"pixelated"} key={"new"}>
                                         <img
-                                            src={"/src/images/painting.svg"}
+                                            src={"/src/images/Idea.svg"}
                                             alt={"Create new"}
                                             style={{width: "auto", height: "100%", cursor: "pointer"}}
                                             onClick={this.props.onClose}/>

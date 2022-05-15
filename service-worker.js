@@ -16,9 +16,10 @@ self.addEventListener("install", function(evt) {
         caches.open(USEFUL_CACHE).then(function (cache) {
             return cache.addAll([
                 "/src/images/Share.svg",
-                "/src/images/painting.svg",
                 "/src/images/Onboarding.svg",
+                "/src/images/Error.svg",
                 "/src/images/abduction.svg",
+                "/src/images/Idea.svg",
                 "/src/images/AI.svg",
                 "/src/images/DNA.svg",
                 "/src/images/CPU.svg",
@@ -90,8 +91,8 @@ self.addEventListener("install", function(evt) {
                 "/src/images/Pixagrail.svg",
                 "/src/images/background.svg",
                 "/src/images/logo-transparent.png",
-                "/src/images/Self.svg",
-                "/src/images/404.svg",
+                "/src/images/Spy.svg",
+                "/src/images/Click.svg",
             ]);
         })
     ]));

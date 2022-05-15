@@ -147,7 +147,7 @@ const styles = theme => ({
         right: "max(25vw, 25vh)",
         bottom: "max(25vw, 25vh)",
         width: "max(47.5vw, 47.5vh)",
-        filter: "opacity(0.75)",
+        filter: "opacity(0.33)",
         zIndex: 3,
         position: "fixed",
         transform: "translate(min(50vh, 50%), min(50vh, 50%))",
@@ -253,28 +253,17 @@ class Home extends React.Component {
         setTimeout(() => {
 
             actions.trigger_loading_update(100);
-            actions.trigger_snackbar(`WELCOME, thanks visiting it! Happy to be "Jamy" your guide and emoji here and now.`, 10000);
+            actions.trigger_snackbar(`Hello, "Jamy" is my name here, many calls me an emoji, while some also hate letting me keys showing you hints.`, 10000);
             setTimeout(() => {
 
                 actions.jamy_update("happy", 2500);
 
                 setTimeout(() => {
 
-                    actions.trigger_snackbar(`It's looking good seeing you with all your passions looking at art, pixel art.`, 6000);
+                    actions.trigger_snackbar(`It's looking good seeing you on https://pixa.pics/ with all your passions able to being visually-enhanced looking at art, anonymize pixel art!`, 6000);
                     setTimeout(() => {
 
                         actions.jamy_update("suspicious", 2500);
-
-                        setTimeout(() => {
-
-                            actions.trigger_snackbar(`Should we go to the laboratory testing functionalities and trying edit some pictures?`, 6000);
-
-                            setTimeout(() => {
-
-                                actions.jamy_update("happy", 1500);
-                            }, 3000);
-
-                        }, 6000);
 
 
                     }, 6000);
@@ -341,7 +330,7 @@ class Home extends React.Component {
                 </div>
                 <div className={classes.headerContainer} style={{color: THEME_DAY && !IS_EVENING? "#000000dd": "#ffffffdd"}}>
                     <h1 className={classes.title} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff"}}>
-                        <Fade in={true} timeout={700}><span style={{fontSize: "1.117em"}}><span style={{color: "white", fontWeight: "bold", filter: "drop-shadow(0px 0px 7px white)"}}>FROM <img src={ANGELEMOJI} className="emoji"/> PIXA.PICS! </span>Now get pics in just pixel art. <span style={{fontWeight: "normal"}}>So yes; draw and edit offline getting HD 32xPNG and ∞ 6xSVG.</span></span></Fade>
+                        <Fade in={true} timeout={700}><span style={{fontSize: "1.117em"}}><span style={{color: "white", fontWeight: "bold", filter: "drop-shadow(0px 0px 7px white)"}}>FROM PIXA.PICS! </span><img src={ANGELEMOJI} className="emoji"/> Now get pics in just pixel art. <span style={{fontWeight: "normal"}}>So yes; draw and edit offline getting HD 32xPNG and ∞ 6xSVG.</span></span></Fade>
                     </h1>
                     <Fade in={true} timeout={1200}>
                             <h2 className={classes.subtitle}>

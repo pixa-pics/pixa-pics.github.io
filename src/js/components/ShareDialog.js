@@ -257,7 +257,10 @@ class ShareDialog extends React.Component {
                                 </DialogContentText>
                             </DialogContent>
                         </div>
-                        <div className={classes.dialogImage}/>
+                        <div className={classes.dialogImage} style={{background: "#ffffff80"}}>
+                            <p>Happy means happy, getting to shares it for fun, brings easier means and support that follow positivity in our objectives from our side.</p>
+                            <p>Involvements being of any good intent and will is very appreciated. Wants To Share? Yes Or No...</p>
+                        </div>
                     </div>
                 </Dialog>
             </div>
