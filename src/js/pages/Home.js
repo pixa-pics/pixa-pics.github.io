@@ -20,10 +20,10 @@ import CrownEmojiSvg from "../twemoji/react/1F451";
 const CROWNEMOJI = get_svg_in_b64(<CrownEmojiSvg />);
 import LightingEmojiSvg from "../twemoji/react/26A1";
 const LIGHTINGEMOJI = get_svg_in_b64(<LightingEmojiSvg />);
-import CashBagEmojiSvg from "../twemoji/react/1F4B0";
-const CASHBAGEMOJI = get_svg_in_b64(<CashBagEmojiSvg />);
-import ToolsEmojiSvg from "../twemoji/react/1F527";
-const TOOLSEMOJI = get_svg_in_b64(<ToolsEmojiSvg />);
+import LuckEmojiSvg from "../twemoji/react/2618";
+const LUCKTWEMOJI = get_svg_in_b64(<LuckEmojiSvg />);
+import DNAEmojiSvg from "../twemoji/react/1F9Ec";
+const DNAEMOJI = get_svg_in_b64(<DNAEmojiSvg />);
 
 const SUBTITLE_STILL = Boolean(Date.now() % 14 >= 1);
 let THEME_DAY = null;
@@ -183,7 +183,7 @@ const styles = theme => ({
         marginBottom: "56px",
         "& .emoji": {
             width: "2em",
-            transform: "scale(1.5)"
+            transform: "scale(1.25)"
         },
         fontWeight: "normal",
         [theme.breakpoints.down("sm")]: {
@@ -330,15 +330,15 @@ class Home extends React.Component {
                 </div>
                 <div className={classes.headerContainer} style={{color: THEME_DAY && !IS_EVENING? "#000000dd": "#ffffffdd"}}>
                     <h1 className={classes.title} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff"}}>
-                        <Fade in={true} timeout={700}><span style={{fontSize: "1.117em"}}><span style={{color: "white", fontWeight: "bold", filter: "drop-shadow(0px 0px 7px white)"}}>FROM PIXA.PICS! </span><img src={ANGELEMOJI} className="emoji"/> Now get pics in just pixel art. <span style={{fontWeight: "normal"}}>So yes; draw and edit offline getting HD 32xPNG and ∞ 6xSVG.</span></span></Fade>
+                        <Fade in={true} timeout={700}><span style={{fontSize: "1.117em"}}><span style={{color: "white", fontWeight: "bold", filter: "drop-shadow(0px 0px 7px white)"}}>FROM PIXA.PICS! </span><img src={ANGELEMOJI} className="emoji"/> Now get pics in just pixel art editing. <span style={{fontWeight: "normal"}}>-> Render HD 32xPNG & 6xSVG.</span></span></Fade>
                     </h1>
                     <Fade in={true} timeout={1200}>
-                            <h2 className={classes.subtitle}>
-                                <span style={{color: THEME_DAY && !IS_EVENING ? "#0d1fac": "#ffd910", fontWeight: "bold"}}>IMAGINE tremendous <span>PIXEL ART</span> based on your <img src={STAREMOJI} className="emoji pulse2"/> images.</span>
+                            <h2 className={classes.subtitle} style={THEME_DAY && !IS_EVENING ? {textShadow: "0px 0px 1px #ffe842, 0px 0px 2px #f7ff9a", color: "white"}: {textShadow: "0px 0px 1px #3bb4ff, 0px 0px 2px #5548dc", color: "white"}}>
+                                <img src={STAREMOJI} className="emoji"/> <span style={{fontWeight: "bold"}}>IMAGINE tremendous <span>PIXEL ART</span> based on your images.</span>
                                 <br />
-                                <span><b>A few aspects just missing from your online-self for NFTs, <img src={CASHBAGEMOJI} className="emoji"/> CAN IT PAY OFF?</b></span>
+                                <img src={LUCKTWEMOJI} className="emoji"/> <span><b>A few aspects just missing from your online-self for NFTs, CAN IT PAY OFF?</b></span>
                                 <br />
-                                <span><b>Your own <span>FREELY GIVEN</span> elaborate WEB-APP makes <img src={TOOLSEMOJI} className="emoji"/> pixel-perfect ultra-simplifications!</b></span>
+                                <img src={DNAEMOJI} className="emoji"/> <span><b>Your own <span>FREELY GIVEN</span> elaborate WEB-APP makes pixel-perfect ultra-simplifications!</b></span>
                                 <br />
                             </h2>
                     </Fade>
@@ -348,7 +348,7 @@ class Home extends React.Component {
                         </Button>
                     </Fade>
                     <Fade in={true} timeout={2000}>
-                        <p className={classes.subtitleButton} style={{color: THEME_DAY && !IS_EVENING ? "#0c9004": "#1ae80e", fontWeight: "bold", fontSize: "11px"}}><span><img src={EARTHEMOJI} className="emoji"/> For Everyone <img src={CROWNEMOJI} className="emoji"/> For Free <img src={LIGHTINGEMOJI} className="emoji"/> Forever Open-Source</span></p>
+                        <p className={classes.subtitleButton} style={{color: THEME_DAY && !IS_EVENING ? "#c29209": "#c29209", fontWeight: "bold", fontSize: "11px"}}><span><img src={EARTHEMOJI} className="emoji"/> For Everyone <img src={CROWNEMOJI} className="emoji"/> For Free <img src={LIGHTINGEMOJI} className="emoji"/> Forever Open-Source</span></p>
                     </Fade>
                     <Grow in={true} timeout={1900}>
                         <Button className={classes.homeCTAsendit} variant={"contained"} size={"large"} color="primary" onClick={(event) => {this._handle_speed_dial_action(event, "share")}}>
