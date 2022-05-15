@@ -1405,30 +1405,32 @@ class Pixel extends React.Component {
         this.setState({_is_pixel_dialog_create_open: true});
     };
 
+    _get_OS = () => {
+        let userAgent = window.navigator.userAgent,
+            platform = ((window.navigator || {}).userAgentData || {}).platform || window.navigator.platform,
+            macosPlatforms = ["Macintosh", "MacIntel", "MacPPC", "Mac68K"],
+            windowsPlatforms = ["Win32", "Win64", "Windows", "WinCE"],
+            iosPlatforms = ["iPhone", "iPad", "iPod"],
+            os = null;
+
+        if (macosPlatforms.indexOf(platform) !== -1) {
+            os = "Mac OS";
+        } else if (iosPlatforms.indexOf(platform) !== -1) {
+            os = "iOS";
+        } else if (windowsPlatforms.indexOf(platform) !== -1) {
+            os = "Windows";
+        } else if (/Android/.test(userAgent)) {
+            os = "Android";
+        } else if (!os && /Linux/.test(platform)) {
+            os = "Linux";
+        }
+
+        return os;
+    };
+
     _get_advanced_browser = () => {
 
-        function get_OS() {
-            let userAgent = window.navigator.userAgent,
-                platform = ((window.navigator || {}).userAgentData || {}).platform || window.navigator.platform,
-                macosPlatforms = ["Macintosh", "MacIntel", "MacPPC", "Mac68K"],
-                windowsPlatforms = ["Win32", "Win64", "Windows", "WinCE"],
-                iosPlatforms = ["iPhone", "iPad", "iPod"],
-                os = null;
 
-            if (macosPlatforms.indexOf(platform) !== -1) {
-                os = "Mac OS";
-            } else if (iosPlatforms.indexOf(platform) !== -1) {
-                os = "iOS";
-            } else if (windowsPlatforms.indexOf(platform) !== -1) {
-                os = "Windows";
-            } else if (/Android/.test(userAgent)) {
-                os = "Android";
-            } else if (!os && /Linux/.test(platform)) {
-                os = "Linux";
-            }
-
-            return os;
-        }
 
         actions.jamy_update("suspicious");
         actions.trigger_snackbar("Ho great, the lab will be safe there...", 5000)
@@ -1444,7 +1446,7 @@ class Pixel extends React.Component {
                 const { _history } = this.state;
                 _history.push("/");
 
-                const os = get_OS();
+                const os = this._get_OS();
                 if(["Linux", "Windows"].includes(os)) {
 
                     window.open("https://www.microsoft.com/edge");
@@ -1518,6 +1520,7 @@ class Pixel extends React.Component {
         _menu_data.pos_y = _menu_data.pos_y === -1 ? "out": _menu_data.pos_y;
 
         const rgb = 245 // - Math.floor(Math.abs(_canvas_elevation) / 2);
+        const os = this._get_OS();
 
         const drawer_mobile =
             (
@@ -1998,7 +2001,7 @@ class Pixel extends React.Component {
                     <div className={classes.backdropTextContent} style={{fontFamily: `"Jura"`}}>
                         {_loading && <h1><ShufflingSpanText text={_loading_process === "browser" ? "Laboratory in DANGER!": "Laboratory processing..."} animation_delay_ms={0} animation_duration_ms={250}/></h1>}
                         {_loading && _loading_process === "browser" && <h4><ShufflingSpanText text={"Doesn't feel like home for our dear code here."} animation_delay_ms={300} animation_duration_ms={500}/></h4>}
-                        {_loading && _loading_process === "browser" && <div onClick={this._get_advanced_browser}><img src="/src/images/BROWSER.svg" style={{width: "min(75vw, 75vh)"}}/></div>}
+                        {_loading && _loading_process === "browser" && <div onClick={this._get_advanced_browser}><img src={["Linux", "Windows"].includes(os) ? "/src/images/EDGE.svg": "/src/images/CHROME.svg"} style={{width: "min(75vw, 75vh)"}}/></div>}
                         {_loading && _loading_process === "browser" && <h5><ShufflingSpanText text={"It can take a while, please download an advanced browser."} animation_delay_ms={is_mobile_or_tablet ? 5000: 2500} animation_duration_ms={500}/></h5>}
                         {_loading && _loading_process === "image_ai" && <h4><ShufflingSpanText text={"AI processing your image"} animation_delay_ms={300} animation_duration_ms={500}/></h4>}
                         {_loading && _loading_process === "image_ai" && <div><img src="/src/images/AI.svg" style={{width: "min(75vw, 75vh)", filter: "grayscale(0.33)"}}/></div>}
