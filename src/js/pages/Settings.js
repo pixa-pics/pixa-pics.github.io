@@ -247,8 +247,8 @@ class Settings extends React.Component {
                         </Card>
                     </Fade>
                     <Fade in timeout={300*4}>
-                        <Card style={{position: "relative"}} className={classes.marginTop}>
-                            <div style={{backgroundImage: "url(/src/images/Team.svg)", backgroundSize: "cover", backgroundPosition:"center", backgroundRepeat: "no-repeat", padding: 0, margin: 0, position: "absolute", width: "100%", height: "100%", filter: "opacity(0.1)"}}></div>
+                        <Card style={{position: "relative", zIndex: 1}} className={classes.marginTop}>
+                            <div style={{backgroundImage: "url(/src/images/Team.svg)", backgroundSize: "cover", backgroundPosition:"center", backgroundRepeat: "no-repeat", padding: 0, margin: 0, position: "absolute", width: "100%", height: "100%", filter: "contrast(0.4) brightness(2.1) saturate(0.8) grayscale(.8)", zIndex: "-1"}}></div>
                             <CardHeader title={t( "pages.settings.superintendent")} />
                             <CardContent>
                                 <FormControlLabel
@@ -261,14 +261,15 @@ class Settings extends React.Component {
                                 <Divider />
                                 <p>
                                     <div style={{position: "relative"}}>
-                                        <b>Semi-annual report of 2008 <img style={{verticalAlign: "sub", width: "1.25em"}} src={get_svg_in_b64(<DangerTweemoji/>)}/> (<i style={{textDecoration: "underline"}} onClick={() => {window.open("http://www.news-service.admin.ch/NSBSubscriber/message/attachments/15579.pdf")}}>source</i>)</b><br/>
+                                        <h2>In a semi-annual report of 2008, one chapter (3.2) tells <img style={{verticalAlign: "sub", width: "1.25em"}} src={get_svg_in_b64(<DangerTweemoji/>)}/></h2>
                                         <blockquote style={{color: "navy"}}>
                                             "The use of social networking sites should be governed by the same principles as use of the Internet in general. As little personal information as possible should be divulged. The information should be well protected and only made accessible to clearly defined persons. Ultimately, the responsibility lies with each individual Internet user. Prior to publication, everyone should think and decide for themselves which personal data to publish on the Internet, thereby making it available to the public for an indeterminate time period."
                                         </blockquote><br/>
-                                        <span>Social networks are often thought of as a sort of parallel world. Many users divulge personal information on the Internet that they would keep for themselves in the "real" world. This perceived "community" may however be deceiving. Users are often unaware that personal information such as photos and films published on the Internet often stay on the Internet. Personal information on the Internet can also be analyzed for targeted advertising and marketing.</span>
+                                        <span><b>Social networks are often thought of as a sort of parallel world.</b> Many users divulge personal information on the Internet that they would keep for themselves in the "real" world. <b>This perceived "community" may however be deceiving.</b> Users are often unaware that personal information such as photos and films published on the Internet often stay on the Internet. Personal information on the Internet can also be analyzed for targeted advertising and marketing.</span><br/>
+                                        <span><b>Social networking sites can serve cybercriminals as a welcome supplier of information.</b></span>
                                     </div>
                                     <br/>
-                                    <b style={{color: "midnightblue"}}>— Federal Strategic Unit for IT (FSUIT) + Federal Police <img style={{verticalAlign: "sub", width: "1.25em"}} src={get_svg_in_b64(<ShieldTweemoji/>)}/> for Swiss Confederation <img style={{verticalAlign: "sub", width: "1.25em"}} src={get_svg_in_b64(<SwissTweemoji/>)}/>.</b>
+                                    <b style={{color: "midnightblue"}}>— Federal Strategic Unit for IT (FSUIT) + Federal Police <img style={{verticalAlign: "sub", width: "1.25em"}} src={get_svg_in_b64(<ShieldTweemoji/>)}/> for Swiss Confederation <img style={{verticalAlign: "sub", width: "1.25em"}} src={get_svg_in_b64(<SwissTweemoji/>)}/>. (<i style={{textDecoration: "underline"}} onClick={() => {window.open("https://www.ncsc.admin.ch/ncsc/en/home/dokumentation/berichte/lageberichte/semi-annual-report-2008-1.html")}}>source ncsc.admin.ch [DE FR IT EN]</i>)</b>
                                 </p>
                             </CardContent>
                         </Card>
