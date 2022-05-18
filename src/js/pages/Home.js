@@ -85,24 +85,26 @@ const styles = theme => ({
         },
         zIndex: 7,
         filter: "drop-shadow(0px 0px 4px darkgoldenrod)",
-        transition: "all .25s ease-in-out 0s !important",
+        transition: "color, filter, transform cubic-bezier(0.4, 0, 0.2, 1) 175ms !important",
         [theme.breakpoints.down("sm")]: {
-            marginTop: "0px",
             minWidth: "auto",
+            position: "fixed",
+            bottom: 72,
         },
     },
     homeCTAsendit: {
-        color: "#fff",
-        textShadow: "0px 0px 6px white",
+        color: "#ffffff",
+        transform: "translateY(0px) scale(1)  !important",
+        textShadow: "0px 0px 4px white",
+        filter: "drop-shadow(0px 0px 4px skyblue) brightness(1)",
         "&:hover": {
-
-            filters: "drop-shadow(0px 0px 8px lightskyblue)",
+            color: "#ffffff",
+            filter: "drop-shadow(0px 0px 16px lightskyblue) brightness(1.1)",
+            transform: "translateY(-7px) scale(1.2)  !important",
         },
         backgroundImage: "linear-gradient(32deg, #6100fd, #5dbff3, #7be2f1, #98ecff, #32c4ff, #6d5bff, #020562)",
-        filter: "drop-shadow(0px 0px 3px skyblue) brightness(1)",
-        transform: "translateY(0px) scale(1) !important",
         transformOrigin: "center",
-        transition: "all .25s ease-in-out 0s !important",
+        transition: "color, filter, transform cubic-bezier(0.4, 0, 0.2, 1) 175ms !important",
         fontWeight: "bold",
         fontSize: "21px",
         borderRadius: "12px",
@@ -170,6 +172,7 @@ const styles = theme => ({
         fontFamily: `"Jura"`,
         position: "absolute",
         margin: "0px 48px",
+        height: "100%",
         [theme.breakpoints.down("sm")]: {
             margin: "8px 24px"
         },
@@ -178,15 +181,18 @@ const styles = theme => ({
     titleh1: {
         whiteSpace: "break-spaces",
         fontWeight: "bold",
-        fontSize: "48px",
+        fontSize: "38px",
         filter: "drop-shadow(0px 0px 3px #4dceff) drop-shadow(0px 0px 9px #262297)  drop-shadow(0px 0px 21px #1a1885)",
         "& sup": {
             fontSize: "0.33em",
             opacity: "0.66",
             fontWeight: "bold",
         },
+        [theme.breakpoints.down("md")]: {
+            fontSize: "27px",
+        },
         [theme.breakpoints.down("sm")]: {
-            fontSize: "26px",
+            fontSize: "21px",
             "& sup": {
                 fontSize: "0.5em",
                 opacity: "0.77",
@@ -197,15 +203,18 @@ const styles = theme => ({
     titleh2: {
         whiteSpace: "break-spaces",
         fontWeight: "bold",
-        fontSize: "32px",
+        fontSize: "28px",
         filter: "drop-shadow(0px 0px 3px #4dceff) drop-shadow(0px 0px 9px #262297)  drop-shadow(0px 0px 21px #1a1885)",
         "& sup": {
             fontSize: "0.33em",
             opacity: "0.66",
             fontWeight: "bold",
         },
+        [theme.breakpoints.down("md")]: {
+            fontSize: "16px",
+        },
         [theme.breakpoints.down("sm")]: {
-            fontSize: "19px",
+            fontSize: "12px",
             "& sup": {
                 fontSize: "0.66em",
                 opacity: "1",
@@ -215,7 +224,7 @@ const styles = theme => ({
     },
     titleSubTitle: {
         position: "fixed",
-        bottom: 32,
+        bottom: 28,
         color: "white",
     },
     subtitle: {
@@ -223,7 +232,7 @@ const styles = theme => ({
             color: "white",
             filter: "drop-shadow(rgba(0, 0, 0, .14) 0px 0px 7px) drop-shadow(rgba(0, 0, 0, .7) 0px 0px 14px)",
             opacity: "1",
-            fontSize: 24,
+            fontSize: 21,
             lineHeight: "1.75em",
             marginBottom: "56px",
             "& .emoji": {
@@ -234,7 +243,7 @@ const styles = theme => ({
             [theme.breakpoints.down("sm")]: {
                 fontSize: 16,
                 display: "none",
-                lineHeight: "1.5em",
+                lineHeight: "1.75em",
             },
         }
     },
@@ -381,7 +390,7 @@ class Home extends React.Component {
                                 <span style={{color: "white", fontWeight: "bold", filter: "drop-shadow(0px 0px 2px white)"}}>«PIXA.PICS»? </span>
                             </span></Fade>
                             <Fade in={true} timeout={125}><span>
-                                <span><img src={CEMOJI} className="emoji-150"/> 1) Get pics that <span style={{textDecoration: "underline"}}>shift into a (minima)</span> pixel art <img src={DANGEREMOJI} className="emoji-150"/> </span><br/>
+                                <span><img src={CEMOJI} className="emoji-150"/> 1) <span style={{textDecoration: "underline"}}>Getting images that shift into a minima using it.</span> (Create NFTs <img src={DANGEREMOJI} className="emoji-150"/> and be cautious using your images).</span><br/>
                             </span></Fade>
                         </span>
                     </h1>
@@ -389,8 +398,8 @@ class Home extends React.Component {
                         <span>
                             <Fade in={true} timeout={337.5}><span>
                                 <span>
-                                    <b>2) While <span style={{textDecoration: "underline"}}>modifying</span> <img src={JACKETEMOJI} className="emoji-150"/> visionarily easily, a sanitized minima should progress logically.</b><br/>
-                                    <span>3) Any minima can <span style={{textDecoration: "underline"}}>render</span> in <img style={{verticalAlign: "middle"}} src={GLASSESEMOJI} className="emoji-150"/> 4K<sup> Ultra HD</sup> images or in humanized ∞<sup> Scalable</sup> shapes of vectors from its <img src={LABOPSEMOJI} style={{verticalAlign: "bottom"}} className="emoji-150"/> dot-matrix legitimate one-click-download lab operations.</span>
+                                    <b>2) <span style={{textDecoration: "underline"}}>While modifying</span> <img src={JACKETEMOJI} className="emoji-150"/> "visionarily" easily, a sanitized minima should progress logically using a few out of 55+ tools, options in layers, filters, selections, shapes, effects,... to get cool!</b><br/>
+                                    <span>3) <span style={{textDecoration: "underline"}}>Any minima just render</span> in <img style={{verticalAlign: "middle"}} src={GLASSESEMOJI} className="emoji-150"/> 4K<sup> Ultra HD</sup> images or in humanized ∞<sup> Scalable</sup> shapes of vectors using its <img src={LABOPSEMOJI} style={{verticalAlign: "bottom"}} className="emoji-150"/> (dot-matrix-based legitimate) one-click-download intelligent laboratory operations.</span>
                                 </span>
                             </span></Fade>
                         </span>
@@ -403,13 +412,13 @@ class Home extends React.Component {
                                 <br />
                                 <img src={DNAEMOJI} className="emoji-150"/> <span><b>Your own <span>FREELY GIVEN</span> elaborate WEB-APP makes pixel-perfect ultra-simplifications!</b></span>
                                 <br />
-                                <span style={{fontSize: "0.618em"}}><b><span>FUNCTIONAL</span> powerful lists containing 44+ TOOLS make drawing, selection, layers, crop, colorizing, very perfect locally running secure on your CPUs offline.</b></span>
+                                <span style={{fontSize: "0.618em"}}><b><span>FUNCTIONAL</span> and powerful lists containing 44+ TOOLS make drawing, selection, layers, crop, colorizing, very perfect locally running secure on your CPUs offline too with ease.</b></span>
                                 <br />
                             </h3>
                     </Fade>
                     <Fade in={true} timeout={450}>
                         <Button className={classes.homeCTAuseit} variant={"contained"} size={"large"} color="primary" onClick={this._go_to_editor}>
-                            IN LAB OPS? <LabEmojiSvg className="emoji-150" /> UPLOAD!
+                            Open lab ops <LabEmojiSvg className="emoji-150" /> for fun!
                         </Button>
                     </Fade>
                     <Fade in={true} timeout={575}>
