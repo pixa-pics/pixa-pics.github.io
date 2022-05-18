@@ -285,6 +285,7 @@ class Index extends React.Component {
 
         if(!error && typeof settings !== "undefined") {
 
+            const was_music_enabled = Boolean(this.state._music_enabled);
             // Set new settings from query result
             const _sfx_enabled = typeof settings.sfx_enabled !== "undefined" ? settings.sfx_enabled: true;
             const _music_enabled = typeof settings.music_enabled !== "undefined" ? settings.music_enabled: false;
@@ -297,6 +298,15 @@ class Index extends React.Component {
             document.documentElement.lang = _language;
             document.body.setAttribute("style", "");
             this.setState({ _onboarding_enabled, _sfx_enabled, _music_enabled, _jamy_enabled, _selected_locales_code, _language, _selected_currency, _know_the_settings: true });
+
+            setTimeout(async() => {
+
+                if(_music_enabled === true && was_music_enabled === false) {
+
+                    this._should_play_music_pathname(this.state.pathname);
+                }
+            }, 125);
+
         }else {
 
             if(this.state._database_attempt > 3) {
@@ -336,10 +346,30 @@ class Index extends React.Component {
             // Set pathname
             this.setState({pathname: new_pathname});
 
+            setTimeout(async() => {
+
+                this._should_play_music_pathname(this.state.pathname);
+            }, 125);
+
             // set meta title
             this._set_meta_title(new_pathname);
             actions.trigger_sfx("navigation_transition-right", .25);
         }
+    };
+
+    _should_play_music_pathname = (pathname = "") => {
+
+        if(pathname.match(/\/$/)) {
+
+            actions.trigger_music(`track_${navigator.onLine ? Math.ceil(Math.random() * 12).toString(10).padStart(2, "0"): "12"}`);
+        }else if(pathname.match(/\/(pixel)$/)) {
+
+            actions.trigger_music(`Tesla_Numbers_15m_session`, 1, "tesla");
+        }else {
+
+            actions.stop_sound();
+        }
+
     };
 
     _set_meta_title = (pathname) => {
@@ -427,7 +457,7 @@ class Index extends React.Component {
         const { pathname, classes, _selected_locales_code } = this.state;
         const { _snackbar_open, _snackbar_message, _snackbar_auto_hide_duration } = this.state;
         const { _language, _is_share_dialog_open } = this.state;
-        const { _logged_account, _know_if_logged, _loaded_progress_percent, _know_the_settings, _jamy_state_of_mind, _jamy_enabled } = this.state;
+        const { _logged_account, _know_if_logged, _loaded_progress_percent, _know_the_settings, _jamy_state_of_mind, _jamy_enabled, _music_enabled } = this.state;
 
         const JAMY = {
             angry: <JamyAngry className={classes.jamy} />,
@@ -488,6 +518,7 @@ class Index extends React.Component {
                         know_the_settings={_know_the_settings}
                         logged_account={_logged_account}
                         pathname={pathname}
+                        music_enabled={_music_enabled}
                         jamy_enabled={_jamy_enabled}
                         jamy_state_of_mind={_jamy_state_of_mind}/>
                     <AppDrawer

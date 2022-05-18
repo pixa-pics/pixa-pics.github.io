@@ -294,8 +294,6 @@ class Home extends React.Component {
 
 
         }, 250);
-
-        actions.trigger_music(`track_${navigator.onLine ? Math.ceil(Math.random() * 12).toString(10).padStart(2, "0"): "12"}`);
     }
 
     componentWillUnmount() {
@@ -378,7 +376,7 @@ class Home extends React.Component {
                         </Button>
                     </Fade>
                     <Fade in={true} timeout={575}>
-                        <p className={classes.subtitleButton} style={{color: THEME_DAY && !IS_EVENING ? "#c29209": "#c29209", fontWeight: "bold", fontSize: "11px"}}><span><img src={EARTHEMOJI} className="emoji"/> For Everyone <img src={CROWNEMOJI} className="emoji"/> For Free <img src={LIGHTINGEMOJI} className="emoji"/> Forever Open-Source...</span></p>
+                        <p className={classes.subtitleButton} style={{color: THEME_DAY && !IS_EVENING ? "#fff": "#fff", fontWeight: "bold", fontSize: "11px"}}><span><img src={EARTHEMOJI} className="emoji"/> For Everyone <img src={CROWNEMOJI} className="emoji"/> For Free <img src={LIGHTINGEMOJI} className="emoji"/> Forever Open-Source...</span></p>
                     </Fade>
                     <Grow in={true} timeout={337.5}>
                         <Button className={classes.homeCTAsendit} variant={"contained"} size={"large"} color="primary" onClick={(event) => {this._handle_speed_dial_action(event, "share")}}>

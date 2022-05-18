@@ -379,7 +379,6 @@ class Pixel extends React.Component {
         document.addEventListener("keydown", this._handle_keydown);
         document.addEventListener("keyup", this._handle_keyup);
         actions.trigger_loading_update(0);
-        actions.trigger_music(`Tesla_Numbers_30m_session`, 0.75, "tesla");
 
         this.setState({_is_pixel_dialog_create_open: true}, () => {
 

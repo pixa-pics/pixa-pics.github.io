@@ -6,8 +6,11 @@ import { HISTORY } from "../utils/constants";
 
 import {Fade, Button, LinearProgress, IconButton} from "@material-ui/core";
 
+import MuteIcon from "@material-ui/icons/VolumeMuteOutlined";
+import VolumeIcon from "@material-ui/icons/VolumeUpOutlined";
 import CloseIcon from "@material-ui/icons/Close";
 import InfoIcon from "@material-ui/icons/InfoOutlined";
+import api from "../utils/api";
 import actions from "../actions/utils";
 
 const styles = theme => ({
@@ -156,6 +159,7 @@ class InnerToolbar extends React.Component {
             logged_account: props.logged_account,
             know_if_logged: props.know_if_logged,
             loaded_progress_percent: props.loaded_progress_percent,
+            music_enabled: props.music_enabled,
             classes: props.classes,
             _is_info_bar_active: false,
             _history: HISTORY,
@@ -202,9 +206,38 @@ class InnerToolbar extends React.Component {
         _history.push(url);
     };
 
+    _on_settings_changed = () => {
+
+        actions.trigger_loading_update(0);
+        setTimeout(() => {
+
+            actions.trigger_loading_update(100);
+        }, 250);
+
+        actions.trigger_settings_update();
+    }
+
+    _handle_music_enabled_switch_change = () => {
+
+        const checked = Boolean(this.state.music_enabled);
+
+        if(checked){
+
+            actions.trigger_sfx("ui_lock");
+            actions.stop_sound();
+        }else {
+
+            actions.trigger_sfx("ui_unlock");
+        }
+
+        const settings = { music_enabled: !checked };
+        this.setState({music_enabled: !checked});
+        api.set_settings(settings,  this._on_settings_changed);
+    };
+
     render() {
 
-        const { classes, pathname, logged_account, know_if_logged, loaded_progress_percent, _is_info_bar_active } = this.state;
+        const { classes, pathname, logged_account, know_if_logged, loaded_progress_percent, _is_info_bar_active, music_enabled } = this.state;
 
         let pathname_splitted = pathname.split("/");
         pathname_splitted.shift();
@@ -257,8 +290,11 @@ class InnerToolbar extends React.Component {
                         </span>
                     </span>
                 </Button>
-                <IconButton style={pathname.includes("pixel") ? {}: {display: "none"}} className={classes.infoIcon} onClick={this._toggle_info_bar_activation}>
+                <IconButton style={pathname.includes("/pixel") ? {}: {display: "none"}} className={classes.infoIcon} onClick={this._toggle_info_bar_activation}>
                     {_is_info_bar_active ? <CloseIcon />: <InfoIcon />}
+                </IconButton>
+                <IconButton style={pathname === "/" ? {}: {display: "none"}} className={classes.infoIcon} onClick={this._handle_music_enabled_switch_change}>
+                    {music_enabled ? <MuteIcon />: <VolumeIcon />}
                 </IconButton>
             </div>
         );
