@@ -1,6 +1,6 @@
-var REQUIRED_CACHE = "unless-update-cache-v143-required";
-var USEFUL_CACHE = "unless-update-cache-v143-useful";
-var STATIC_CACHE = "unless-update-cache-v143-static";
+var REQUIRED_CACHE = "unless-update-cache-v144-required";
+var USEFUL_CACHE = "unless-update-cache-v144-useful";
+var STATIC_CACHE = "unless-update-cache-v144-static";
 var MAIN_CHILD_CHUNK_REGEX = /child\-chunk\.(main\~[a-z0-9]+)\.min.js/i;
 var CHILD_CHUNK_REGEX = /child\-chunk\.([0-9]+)\.min.js/i;
 
@@ -61,7 +61,7 @@ self.addEventListener("install", function(evt) {
                 "/src/sounds/sfx/md/ui_lock.mp3",
                 "/src/sounds/sfx/md/ui_unlock.mp3",
                 "/src/sounds/sfx/md/alert_high-intensity.mp3",
-                "/src/sounds/music/redeclipse/track_12.mp3",
+                "/src/sounds/music/redeclipse/track_09.mp3",
             ]);
         })
     ]);

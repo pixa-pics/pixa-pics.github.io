@@ -136,6 +136,7 @@ class Index extends React.Component {
             _height: 0,
             _database_attempt: 0,
             _is_share_dialog_open: false,
+            _has_played_index_music_counter: 0,
         };
     };
     
@@ -297,7 +298,7 @@ class Index extends React.Component {
 
             document.documentElement.lang = _language;
             document.body.setAttribute("style", "");
-            this.setState({ _onboarding_enabled, _sfx_enabled, _music_enabled, _jamy_enabled, _selected_locales_code, _language, _selected_currency, _know_the_settings: true });
+            this.setState({ _onboarding_enabled, _sfx_enabled, _music_enabled, _jamy_enabled, _selected_locales_code, _language, _selected_currency, _know_the_settings: true, _has_played_index_music_counter: parseInt(!this.state._know_the_settings && _music_enabled ? 1: this._has_played_index_music_counter )});
 
             setTimeout(async() => {
 
@@ -361,7 +362,9 @@ class Index extends React.Component {
 
         if(pathname.match(/\/$/)) {
 
-            actions.trigger_music(`track_${navigator.onLine ? Math.ceil(Math.random() * 12).toString(10).padStart(2, "0"): "12"}`);
+            const { _has_played_index_music_counter } = this.state;
+            actions.trigger_music(`track_${Boolean(navigator.onLine && _has_played_index_music_counter > 0) ? Math.ceil(Math.random() * 12).toString(10).padStart(2, "0"): "09"}`);
+            this.setState({_has_played_index_music_counter: _has_played_index_music_counter+1})
         }else if(pathname.match(/\/(pixel)$/)) {
 
             actions.trigger_music(`Tesla_Numbers_15m_session`, 1, "tesla");

@@ -175,17 +175,32 @@ const styles = theme => ({
         },
         zIndex: 5,
     },
-    title: {
+    titleh1: {
         whiteSpace: "break-spaces",
-        fontSize: 48,
         fontWeight: "bold",
+        fontSize: "48px",
+        filter: "drop-shadow(0px 0px 3px #4dceff66) drop-shadow(0px 0px 9px #26229799)  drop-shadow(0px 0px 27px #00000033)",
         "& sup": {
             fontSize: "0.33em",
             opacity: "0.66",
             fontWeight: "bold",
         },
         [theme.breakpoints.down("sm")]: {
-            fontSize: 24,
+            fontSize: "24px",
+        },
+    },
+    titleh2: {
+        whiteSpace: "break-spaces",
+        fontWeight: "normal",
+        fontSize: "32px",
+        filter: "drop-shadow(0px 0px 3px #4dceff66) drop-shadow(0px 0px 9px #26229799)  drop-shadow(0px 0px 27px #00000033)",
+        "& sup": {
+            fontSize: "0.33em",
+            opacity: "0.66",
+            fontWeight: "bold",
+        },
+        [theme.breakpoints.down("sm")]: {
+            fontSize: "16px",
         },
     },
     titleSubTitle: {
@@ -344,31 +359,37 @@ class Home extends React.Component {
                     </div>
                 </div>
                 <div className={classes.headerContainer} style={{color: THEME_DAY && !IS_EVENING? "#ffffffdd": "#ffffffdd"}}>
-                    <h1 className={classes.title} style={{color: THEME_DAY && !IS_EVENING ? "#ffffffe9": "#ffffffe9"}}>
+                    <h1 className={classes.titleh1} style={{color: THEME_DAY && !IS_EVENING ? "#ffffffe9": "#ffffffe9"}}>
                         <span style={{fontSize: "1.117em"}}>
                             <Fade in={true} timeout={112.5}><span>
-                                <span style={{color: "white", fontWeight: "bold", filter: "drop-shadow(0px 0px 7px white)"}}>PIXA.PICS! </span>
+                                <span style={{color: "white", fontWeight: "bold", filter: "drop-shadow(0px 0px 7px white)"}}>PIXA.PICS? </span>
                             </span></Fade>
                             <Fade in={true} timeout={125}><span>
-                                <span><img src={CEMOJI} className="emoji"/> Get pics into pixel art's <img src={DANGEREMOJI} className="emoji"/> adventures...</span><br/>
-                            </span></Fade>
-                            <Fade in={true} timeout={337.5}><span>
-                                <span style={{fontWeight: "normal"}}>
-                                    <b>Edit <img src={JACKETEMOJI} className="emoji"/> wished? </b>
-                                    <span>Amazing! Render <img style={{verticalAlign: "middle"}}  src={GLASSESEMOJI} className="emoji"/> sharp 4K<sup>Ultra HD</sup> or humanized ∞<sup>scalable</sup> shapes from <img src={LABOPSEMOJI} style={{verticalAlign: "bottom"}} className="emoji"/> lab ops.</span>
-                                </span>
+                                <span><img src={CEMOJI} className="emoji"/> 1) Get pics tricked into pixel art. <img src={DANGEREMOJI} className="emoji"/> Adventures!</span><br/>
                             </span></Fade>
                         </span>
                     </h1>
+                    <h2 className={classes.titleh2} style={{color: THEME_DAY && !IS_EVENING ? "#ffffffe9": "#ffffffe9"}}>
+                        <span style={{fontSize: "1.117em", fontStyle: "italic"}}>
+                            <Fade in={true} timeout={337.5}><span>
+                                <span>
+                                    <b>2) Progress logically, modifying <img src={JACKETEMOJI} className="emoji"/> visionarily easily, a sanitized pic's minima?! </b><br/>
+                                    <span>3) Looks trendy? Render <img style={{verticalAlign: "middle"}}  src={GLASSESEMOJI} className="emoji"/> 4K<sup> HD Images</sup> or humanized ∞<sup> Scalable</sup> shapes from <img src={LABOPSEMOJI} style={{verticalAlign: "bottom"}} className="emoji"/> pixels in lab ops.</span>
+                                </span>
+                            </span></Fade>
+                        </span>
+                    </h2>
                     <Fade in={true} timeout={225}>
-                            <h2 className={classes.subtitle} style={THEME_DAY && !IS_EVENING ? {textShadow: "#8bc34acc 0px 0px 3px, #ffeb3bd1 0px 0px 5px", color: "white"}: {textShadow: "0px 0px 3px #3bb4ff, 0px 0px 5px #5548dc", color: "white"}}>
+                            <h3 className={classes.subtitle} style={THEME_DAY && !IS_EVENING ? {textShadow: "#cddc39c4 0px 0px 3px, #ffc107 0px 0px 5px", color: "white"}: {textShadow: "0px 0px 3px #3bb4ff, 0px 0px 5px #5548dc", color: "white"}}>
                                 <img src={STAREMOJI} className="emoji"/> <span style={{fontWeight: "bold"}}>IMAGINE tremendous (x6 svg, x32 png) <span>PIXEL ART</span> based on your images.</span>
                                 <br />
                                 <img src={LUCKTWEMOJI} className="emoji"/> <span><b>A few aspects just missing from your online-self for NFTs, CAN IT PAY OFF?</b></span>
                                 <br />
                                 <img src={DNAEMOJI} className="emoji"/> <span><b>Your own <span>FREELY GIVEN</span> elaborate WEB-APP makes pixel-perfect ultra-simplifications!</b></span>
                                 <br />
-                            </h2>
+                                <span style={{fontSize: "0.618em"}}><b><span>FUNCTIONAL</span> powerful lists containing 44+ TOOLS make drawing, selection, layers, crop, colorizing, very perfect locally running secure on your CPUs offline.</b></span>
+                                <br />
+                            </h3>
                     </Fade>
                     <Fade in={true} timeout={450}>
                         <Button className={classes.homeCTAuseit} variant={"contained"} size={"large"} color="primary" onClick={this._go_to_editor}>

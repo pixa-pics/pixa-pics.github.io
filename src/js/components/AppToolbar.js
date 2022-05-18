@@ -136,6 +136,34 @@ const styles = theme => ({
         height: "calc(100% - 18px)",
         marginRight: theme.spacing(1),
         verticalAlign: "middle",
+    },
+    drawerPrivacyHint: {
+        position: "fixed",
+        bottom: 0,
+        left: 0,
+        padding: 8,
+        color: "#fff",
+        userSelect: "none",
+        transition: "opacity cubic-bezier(0.4, 0, 0.2, 1) 700ms",
+        opacity: .777,
+        "& > p": {
+            opacity: .777,
+            transition: "opacity cubic-bezier(0.4, 0, 0.2, 1) 1750ms",
+        },
+    },
+    drawerPrivacyHintHidden: {
+        position: "fixed",
+        bottom: 0,
+        left: 0,
+        padding: 8,
+        color: "#fff",
+        userSelect: "none",
+        transition: "opacity cubic-bezier(0.4, 0, 0.2, 1) 700ms",
+        opacity: 0,
+        "& > p": {
+            opacity: 0,
+            transition: "opacity cubic-bezier(0.4, 0, 0.2, 1) 1750ms",
+        },
     }
 });
 
@@ -317,19 +345,10 @@ class AppToolbar extends React.Component {
                             </div>
                         </Toolbar>
                         <DrawerContent logged_account={logged_account} pathname={pathname} onClose={this._handle_close_swipeable_app_drawer}/>
-                    <Tooltip classes={{popper: "green"}}
-                             title={"Using companies for analytics only with providers headquartered in Switzerland or the EU and by strict compliance in regulations like FADP (CH) and GDPR (EU), we're also committed to just provide algorithms that just works well on the device executing it all-alone. We're the alpha (at sourcecode sending nothing online) and the omega (having any means of monitoring any activities), it just not our wants."}>
-                        <div style={{
-                            position: "fixed",
-                            bottom: 12,
-                            left: 12,
-                            color: "#ffffff91",
-                            userSelect: "none"
-                        }}>
-                            <p>Cutting off annoying details is free while on the journey! Easily becoming a lighter adventure, using a sanitized online-self's image tends to honor one's real beauty stronger.</p>
-                            <h4>Minding that privacy matters...</h4>
-                        </div>
-                    </Tooltip>
+                    <div className={_swipeable_app_drawer_open ? classes.drawerPrivacyHint: classes.drawerPrivacyHintHidden}>
+                        <p>Cutting off annoying details is free while on the journey! Easily becoming a lighter adventure, using a sanitized online-self's image tends to honor one's real beauty stronger.</p>
+                        <h4 style={{color: "#fff"}}>Minding that privacy matters...</h4>
+                    </div>
                 </SwipeableDrawer>
                 <AppBar position="fixed" className={classes.appBar}>
                     <Toolbar>

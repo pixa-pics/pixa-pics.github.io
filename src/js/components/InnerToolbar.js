@@ -6,8 +6,8 @@ import { HISTORY } from "../utils/constants";
 
 import {Fade, Button, LinearProgress, IconButton} from "@material-ui/core";
 
-import MuteIcon from "@material-ui/icons/VolumeMuteOutlined";
-import VolumeIcon from "@material-ui/icons/VolumeUpOutlined";
+import VolumeOffIcon from "@material-ui/icons/VolumeOff";
+import VolumeUpIcon from "@material-ui/icons/VolumeUp";
 import CloseIcon from "@material-ui/icons/Close";
 import InfoIcon from "@material-ui/icons/InfoOutlined";
 import api from "../utils/api";
@@ -294,7 +294,7 @@ class InnerToolbar extends React.Component {
                     {_is_info_bar_active ? <CloseIcon />: <InfoIcon />}
                 </IconButton>
                 <IconButton style={pathname === "/" ? {}: {display: "none"}} className={classes.infoIcon} onClick={this._handle_music_enabled_switch_change}>
-                    {music_enabled ? <MuteIcon />: <VolumeIcon />}
+                    {music_enabled ? <VolumeOffIcon />: <VolumeUpIcon />}
                 </IconButton>
             </div>
         );
