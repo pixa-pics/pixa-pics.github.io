@@ -919,7 +919,7 @@ class PixelToolboxSwipeableViews extends React.Component {
                 {
                     icon: <PaintIcon/>,
                     text: "Paint tools",
-                    sub: "On our progressive WEB-APP (https://pixa.pics/), accessing it (at the same perfect-zero costs) with desktop equipments is a very pro experience instead, great to notice smartphones could not access drawing good shapes or make fine selection with gestures.",
+                    sub: "On our progressive WEB-APP (https://pixa.pics/), accessing it with desktop is a very professional experience instead, finest selection and editing with mouse.",
                     tools: [
                         {
                             icon: <BucketIcon/>,
@@ -1603,7 +1603,7 @@ class PixelToolboxSwipeableViews extends React.Component {
                                                 color: "#9e9e9e",
                                                 fontStyle: "italic",
                                             }}>
-                                                <span>Select a favourite (On phone, 128...224 works great) dimension for any artwork getting resized from any bigger source image uploaded and processed (on device therefore sometimes being slowly) to give you a slightly lighter color palette much easier to manipulate.</span>
+                                                <span>Select a favourite (On phone, 128...224 works great) dimension maxima.</span>
                                             </div>
                                             <div className={classes.listItems}>
                                                 <RadioGroup row name="Import size" onChange={this._set_import_size}
@@ -1707,7 +1707,7 @@ class PixelToolboxSwipeableViews extends React.Component {
                                                 </RadioGroup>
                                             </div>
                                             <p style={{padding: "0px 16px"}}>
-                                                Using deepAI.org services is costing us a very few peanuts and some dust, nevertheless currently being given for free to our users with diligence, some data obviously needs to access the network to reach AI services when you not keep it original, yet sensibly, neither sensible information or media content is available to pixa.pics, it belongs to you only and legally should be a norm and common everywhere.
+                                                Using deepAI.org services is costing us a very few peanuts, but here you have it all for free online without us storing anything, sponsors funds us.
                                             </p>
                                         </div>
                                         : null
