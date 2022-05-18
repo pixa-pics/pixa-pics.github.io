@@ -110,7 +110,7 @@ class PixelDialogCreate extends React.Component {
                     onClose={this.props.onClose}
                     keepMounted={keepMounted}>
                 <DialogContent>
-                    <Typography component={"h2"} variant={"h6"}>Upload an image</Typography>
+                    <Typography component={"h2"} variant={"h6"}>Create a new pixel art lab ops (Requires an image)</Typography>
                     <div className={classes.dialogContentContainer}>
                         <div className={classes.leftImage}>
                             <input
@@ -120,7 +120,7 @@ class PixelDialogCreate extends React.Component {
                                 id="button-file-dialog-primary"
                                 type="file"
                             />
-                            <Button component={"label"} for="button-file-dialog-primary" fullWidth variant="contained" color="secondary" style={{background: "#ffffff82", boxShadow: "none", color: "black", fontWeight: "bold"}} autoFocus onClick={this.props.on_upload}>Upload / Take a new pictures</Button>
+                            <Button component={"label"} for="button-file-dialog-primary" fullWidth variant="contained" color="secondary" style={{background: "#ffffff82", boxShadow: "none", color: "black", fontWeight: "bold"}} autoFocus onClick={this.props.on_upload}>Insert a picture (Into laboratory of pixels)</Button>
                         </div>
                         <div className={classes.rightImagesContainer}>
                             <div className={classes.rightImagesContainer} style={{padding: "8px 24px", position: "relative", overflow: "hidden", boxSizing: "border-box", width: "100%"}}>
@@ -135,7 +135,7 @@ class PixelDialogCreate extends React.Component {
                                 type="file"
                             />
                             <Button component={"label"} for="button-file-dialog-secondary" className={classes.mainUploadButton} fullWidth variant="contained" color="primary" autoFocus>UPLOAD</Button>
-                            <Typography component={"h2"} variant={"h6"} style={{marginTop: 16}}>Unsaved work</Typography>
+                            <Typography component={"h2"} variant={"h6"} style={{marginTop: 16}}>Unsaved adventures / lab ops...</Typography>
                             <div style={{padding: "8px 24px", position: "relative", display: "flex", flexWrap: "wrap", justifyContent: "space-around", overflow: "hidden", boxSizing: "border-box", width: "100%"}}>
                                 <ImageList rowHeight={288} cols={2.0} style={{flexWrap: "nowrap", transform: "translateZ(0)", contains: "strict", maxWidth: "min(576px, (100vw - 160px))"}}>
                                     {!Object.keys(pixel_arts).length && <ImageListItem style={{display: "inline-block", width: "auto", userSelect: "none"}}

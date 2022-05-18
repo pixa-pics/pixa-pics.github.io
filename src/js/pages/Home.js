@@ -24,8 +24,14 @@ import LuckEmojiSvg from "../twemoji/react/2618";
 const LUCKTWEMOJI = get_svg_in_b64(<LuckEmojiSvg />);
 import DNAEmojiSvg from "../twemoji/react/1F9Ec";
 const DNAEMOJI = get_svg_in_b64(<DNAEmojiSvg />);
+import LabopsEmojiSvg from "../twemoji/react/1F9Eb";
+const LABOPSEMOJI = get_svg_in_b64(<LabopsEmojiSvg />);
 import GlassesEmojiSvg from "../twemoji/react/1F97D";
 const GLASSESEMOJI = get_svg_in_b64(<GlassesEmojiSvg />);
+import JacketEmojiSvg from "../twemoji/react/1F97C";
+const JACKETEMOJI = get_svg_in_b64(<JacketEmojiSvg />);
+import DangerEmoji from "../twemoji/react/26A0";
+const DANGEREMOJI = get_svg_in_b64(<DangerEmoji />);
 import CEmojiSvg from "../twemoji/react/1F4681F3Fb200D1F52C";
 const CEMOJI = get_svg_in_b64(<CEmojiSvg />);
 import LabEmojiSvg from "../twemoji/react/1F9Ea";
@@ -152,7 +158,7 @@ const styles = theme => ({
         right: "max(25vw, 25vh)",
         bottom: "max(25vw, 25vh)",
         width: "max(47.5vw, 47.5vh)",
-        filter: "opacity(.6) blur(5px)",
+        filter: "opacity(.6) contrast(1.2)",
         zIndex: 3,
         position: "fixed",
         transform: "translate(min(50vh, 50%), min(50vh, 50%))",
@@ -173,6 +179,11 @@ const styles = theme => ({
         whiteSpace: "break-spaces",
         fontSize: 48,
         fontWeight: "bold",
+        "& sup": {
+            fontSize: "0.33em",
+            opacity: "0.66",
+            fontWeight: "bold",
+        },
         [theme.breakpoints.down("sm")]: {
             fontSize: 24,
         },
@@ -183,19 +194,22 @@ const styles = theme => ({
         color: "white",
     },
     subtitle: {
-        fontSize: 24,
-        lineHeight: "2em",
-        marginBottom: "56px",
-        "& .emoji": {
-            width: "2em",
-            transform: "scale(1.25)"
-        },
-        fontWeight: "normal",
-        [theme.breakpoints.down("sm")]: {
-            fontSize: 16,
-            display: "none",
-            lineHeight: "1.5em",
-        },
+        "&, & > span": {
+            opacity: "0.88",
+            fontSize: 24,
+            lineHeight: "1.75em",
+            marginBottom: "56px",
+            "& .emoji": {
+                width: "2em",
+                transform: "scale(1.25)"
+            },
+            fontWeight: "normal",
+            [theme.breakpoints.down("sm")]: {
+                fontSize: 16,
+                display: "none",
+                lineHeight: "1.5em",
+            },
+        }
     },
     subtitleButton: {
         [theme.breakpoints.down("sm")]: {
@@ -321,24 +335,35 @@ class Home extends React.Component {
                                     IS_EVENING ?
                                         "url(/src/images/illustrations/Itsukishima.svg)" :
                                         "url(/src/images/illustrations/Egypt-day.svg)" :
-                                    IS_LATE_EVENING ?
-                                        "url(/src/images/illustrations/USA-night.svg)":
                                         "url(/src/images/illustrations/China-night.svg)",
             }}>
                 <div className={classes.insideRoot}>
                     <div className={classes.backgroundImage} style={{
                         backgroundSize: THEME_DAY ? "175%": "50%",
-                        backgroundColor: THEME_DAY ? IS_EVENING ? "#48004991": "#84670066": "#21214280",
+                        backgroundColor: THEME_DAY ? IS_EVENING ? "#48004966": "#4c4c2666": "#21214280",
                         }}>
-                        <Fade in={true} timeout={675}><img src={"/src/images/Pixagrail.svg"} className={classes.backgroundImageImage}/></Fade>
+                        <Fade in={true} timeout={337.5}><img src={"/src/images/Pixagrail.svg"} className={classes.backgroundImageImage}/></Fade>
                     </div>
                 </div>
-                <div className={classes.headerContainer} style={{color: THEME_DAY && !IS_EVENING? "#000000dd": "#ffffffdd"}}>
-                    <h1 className={classes.title} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff"}}>
-                        <Fade in={true} timeout={225}><span style={{fontSize: "1.117em"}}><span style={{color: "white", fontWeight: "bold", filter: "drop-shadow(0px 0px 7px white)"}}>FROM PIXA.PICS! </span><img src={CEMOJI} className="emoji"/> Get pics in pixel art edition.<br/><span style={{fontWeight: "normal"}}><b>Edit now? <img src={GLASSESEMOJI} className="emoji"/> Then,</b> download them computerized in HD or humanized beyond upscale.</span></span></Fade>
+                <div className={classes.headerContainer} style={{color: THEME_DAY && !IS_EVENING? "#ffffffdd": "#ffffffdd"}}>
+                    <h1 className={classes.title} style={{color: THEME_DAY && !IS_EVENING ? "#ffffffe9": "#ffffffe9"}}>
+                        <span style={{fontSize: "1.117em"}}>
+                            <Fade in={true} timeout={112.5}><span>
+                                <span style={{color: "white", fontWeight: "bold", filter: "drop-shadow(0px 0px 7px white)"}}>PIXA.PICS! </span>
+                            </span></Fade>
+                            <Fade in={true} timeout={125}><span>
+                                <span><img src={CEMOJI} className="emoji"/> Get pics into pixel art's <img src={DANGEREMOJI} className="emoji"/> adventures...</span><br/>
+                            </span></Fade>
+                            <Fade in={true} timeout={337.5}><span>
+                                <span style={{fontWeight: "normal"}}>
+                                    <b>Edit <img src={JACKETEMOJI} className="emoji"/> wished? </b>
+                                    <span>Amazing! Render <img style={{verticalAlign: "middle"}}  src={GLASSESEMOJI} className="emoji"/> sharp 4K<sup>Ultra HD</sup> or humanized ∞<sup>scalable</sup> shapes from <img src={LABOPSEMOJI} style={{verticalAlign: "bottom"}} className="emoji"/> lab ops.</span>
+                                </span>
+                            </span></Fade>
+                        </span>
                     </h1>
-                    <Fade in={true} timeout={450}>
-                            <h2 className={classes.subtitle} style={THEME_DAY && !IS_EVENING ? {textShadow: "0px 0px 1px #ffe842, 0px 0px 2px #f7ff9a", color: "white"}: {textShadow: "0px 0px 1px #3bb4ff, 0px 0px 2px #5548dc", color: "white"}}>
+                    <Fade in={true} timeout={225}>
+                            <h2 className={classes.subtitle} style={THEME_DAY && !IS_EVENING ? {textShadow: "#8bc34acc 0px 0px 3px, #ffeb3bd1 0px 0px 5px", color: "white"}: {textShadow: "0px 0px 3px #3bb4ff, 0px 0px 5px #5548dc", color: "white"}}>
                                 <img src={STAREMOJI} className="emoji"/> <span style={{fontWeight: "bold"}}>IMAGINE tremendous (x6 svg, x32 png) <span>PIXEL ART</span> based on your images.</span>
                                 <br />
                                 <img src={LUCKTWEMOJI} className="emoji"/> <span><b>A few aspects just missing from your online-self for NFTs, CAN IT PAY OFF?</b></span>
@@ -347,15 +372,15 @@ class Home extends React.Component {
                                 <br />
                             </h2>
                     </Fade>
-                    <Fade in={true} timeout={900}>
+                    <Fade in={true} timeout={450}>
                         <Button className={classes.homeCTAuseit} variant={"contained"} size={"large"} color="primary" onClick={this._go_to_editor}>
-                            Let's pixelate -> <LabEmojiSvg style={{width: "2em", height: "1.6em"}} /> GO!
+                            IN LAB? <LabEmojiSvg style={{width: "2em", height: "1.6em"}} /> YES PIXELATE!
                         </Button>
                     </Fade>
-                    <Fade in={true} timeout={1125}>
+                    <Fade in={true} timeout={575}>
                         <p className={classes.subtitleButton} style={{color: THEME_DAY && !IS_EVENING ? "#c29209": "#c29209", fontWeight: "bold", fontSize: "11px"}}><span><img src={EARTHEMOJI} className="emoji"/> For Everyone <img src={CROWNEMOJI} className="emoji"/> For Free <img src={LIGHTINGEMOJI} className="emoji"/> Forever Open-Source...</span></p>
                     </Fade>
-                    <Grow in={true} timeout={1375}>
+                    <Grow in={true} timeout={337.5}>
                         <Button className={classes.homeCTAsendit} variant={"contained"} size={"large"} color="primary" onClick={(event) => {this._handle_speed_dial_action(event, "share")}}>
                             DARE LATER<br/>
                             SHARE NOW
