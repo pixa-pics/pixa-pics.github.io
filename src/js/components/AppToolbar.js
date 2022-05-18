@@ -322,9 +322,12 @@ class AppToolbar extends React.Component {
                             position: "fixed",
                             bottom: 12,
                             left: 12,
-                            color: "#ffffff75",
+                            color: "#ffffff91",
                             userSelect: "none"
-                        }}><span>Minding leg. online-self honor.</span></div>
+                        }}>
+                            <p>Cutting off annoying details is free while on the journey! Easily becoming a lighter adventure, using a sanitized online-self's image tends to honor one's real beauty stronger.</p>
+                            <h4>Minding that privacy matters...</h4>
+                        </div>
                     </Tooltip>
                 </SwipeableDrawer>
                 <AppBar position="fixed" className={classes.appBar}>

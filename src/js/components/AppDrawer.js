@@ -87,11 +87,15 @@ class AppDrawer extends React.Component {
                                      title={"Using companies for analytics only with providers headquartered in Switzerland or the EU and by experts on privacy such as ours in strict regulations like FADP (CH) and GDPR (EU), we're also committed to not killcode what it intended with logical code that needs to tells any host anything, it just runs well locally without connection, why try harder?"}>
                                 <div style={{
                                     position: "fixed",
-                                    bottom: 12,
-                                    left: 12,
-                                    color: "#ffffff75",
+                                    bottom: 0,
+                                    left: 0,
+                                    padding: 8,
+                                    color: "#ffffff91",
                                     userSelect: "none"
-                                }}><span>Minding leg. online-self honor.</span></div>
+                                }}>
+                                    <p>Cutting off annoying details is free while on the journey! Easily becoming a lighter adventure, using a sanitized online-self's image tends to honor one's real beauty stronger.</p>
+                                    <h4 style={{color: "#fff"}}>Minding that privacy matters...</h4>
+                                </div>
                             </Tooltip>
                         </Fade>
                     </div>

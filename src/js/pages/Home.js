@@ -24,6 +24,10 @@ import LuckEmojiSvg from "../twemoji/react/2618";
 const LUCKTWEMOJI = get_svg_in_b64(<LuckEmojiSvg />);
 import DNAEmojiSvg from "../twemoji/react/1F9Ec";
 const DNAEMOJI = get_svg_in_b64(<DNAEmojiSvg />);
+import GlassesEmojiSvg from "../twemoji/react/1F97D";
+const GLASSESEMOJI = get_svg_in_b64(<GlassesEmojiSvg />);
+import CEmojiSvg from "../twemoji/react/1F4681F3Fb200D1F52C";
+const CEMOJI = get_svg_in_b64(<CEmojiSvg />);
 
 const SUBTITLE_STILL = Boolean(Date.now() % 14 >= 1);
 let THEME_DAY = null;
@@ -147,7 +151,7 @@ const styles = theme => ({
         right: "max(25vw, 25vh)",
         bottom: "max(25vw, 25vh)",
         width: "max(47.5vw, 47.5vh)",
-        filter: "opacity(0.33)",
+        filter: "opacity(1)",
         zIndex: 3,
         position: "fixed",
         transform: "translate(min(50vh, 50%), min(50vh, 50%))",
@@ -323,18 +327,18 @@ class Home extends React.Component {
                 <div className={classes.insideRoot}>
                     <div className={classes.backgroundImage} style={{
                         backgroundSize: THEME_DAY ? "175%": "50%",
-                        backgroundColor: THEME_DAY ? IS_EVENING ? "#48004954": "#FF890027": "#1f255654",
+                        backgroundColor: THEME_DAY ? IS_EVENING ? "#48004991": "#84670066": "#21214280",
                         }}>
                         <Fade in={true} timeout={600}><img src={"/src/images/Pixagrail.svg"} className={classes.backgroundImageImage}/></Fade>
                     </div>
                 </div>
                 <div className={classes.headerContainer} style={{color: THEME_DAY && !IS_EVENING? "#000000dd": "#ffffffdd"}}>
                     <h1 className={classes.title} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff"}}>
-                        <Fade in={true} timeout={700}><span style={{fontSize: "1.117em"}}><span style={{color: "white", fontWeight: "bold", filter: "drop-shadow(0px 0px 7px white)"}}>FROM PIXA.PICS! </span><img src={ANGELEMOJI} className="emoji"/> Now get pics in just pixel art editing. <span style={{fontWeight: "normal"}}>-> Render HD 32xPNG & 6xSVG.</span></span></Fade>
+                        <Fade in={true} timeout={700}><span style={{fontSize: "1.117em"}}><span style={{color: "white", fontWeight: "bold", filter: "drop-shadow(0px 0px 7px white)"}}>FROM PIXA.PICS! </span><img src={CEMOJI} className="emoji"/> Get pics in pixel art edition.<br/><span style={{fontWeight: "normal"}}><b>Edit now? <img src={GLASSESEMOJI} className="emoji"/> Then,</b> download them pixelated HD+ or humanized right into the browser...</span></span></Fade>
                     </h1>
                     <Fade in={true} timeout={1200}>
                             <h2 className={classes.subtitle} style={THEME_DAY && !IS_EVENING ? {textShadow: "0px 0px 1px #ffe842, 0px 0px 2px #f7ff9a", color: "white"}: {textShadow: "0px 0px 1px #3bb4ff, 0px 0px 2px #5548dc", color: "white"}}>
-                                <img src={STAREMOJI} className="emoji"/> <span style={{fontWeight: "bold"}}>IMAGINE tremendous <span>PIXEL ART</span> based on your images.</span>
+                                <img src={STAREMOJI} className="emoji"/> <span style={{fontWeight: "bold"}}>IMAGINE tremendous (x6 svg, x32 png) <span>PIXEL ART</span> based on your images.</span>
                                 <br />
                                 <img src={LUCKTWEMOJI} className="emoji"/> <span><b>A few aspects just missing from your online-self for NFTs, CAN IT PAY OFF?</b></span>
                                 <br />
@@ -344,7 +348,7 @@ class Home extends React.Component {
                     </Fade>
                     <Fade in={true} timeout={1500}>
                         <Button className={classes.homeCTAuseit} variant={"contained"} size={"large"} color="primary" onClick={this._go_to_editor}>
-                            Let's do this
+                            Let's pixelate -> lab.
                         </Button>
                     </Fade>
                     <Fade in={true} timeout={2000}>

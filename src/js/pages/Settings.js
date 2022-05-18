@@ -261,15 +261,14 @@ class Settings extends React.Component {
                                 <Divider />
                                 <p>
                                     <div style={{position: "relative"}}>
-                                        <h2>In a semi-annual report of 2008, one chapter (3.2) tells <img style={{verticalAlign: "sub", width: "1.25em"}} src={get_svg_in_b64(<DangerTweemoji/>)}/></h2>
+                                        <h2>Old semi-annual report, tells: <img style={{verticalAlign: "sub", width: "1.25em"}} src={get_svg_in_b64(<DangerTweemoji/>)}/></h2>
+                                        <p><b>Social networks are often thought of as a sort of parallel world yet they offer the possibility of creating one's own profile with relatively little effort and presenting oneself on the Internet, they can serve cybercriminals as a welcome supplier of information. This perceived "community" may however be deceiving.</b></p>
                                         <blockquote style={{color: "navy"}}>
                                             "The use of social networking sites should be governed by the same principles as use of the Internet in general. As little personal information as possible should be divulged. The information should be well protected and only made accessible to clearly defined persons. Ultimately, the responsibility lies with each individual Internet user. Prior to publication, everyone should think and decide for themselves which personal data to publish on the Internet, thereby making it available to the public for an indeterminate time period."
                                         </blockquote><br/>
-                                        <span><b>Social networks are often thought of as a sort of parallel world.</b> Many users divulge personal information on the Internet that they would keep for themselves in the "real" world. <b>This perceived "community" may however be deceiving.</b> Users are often unaware that personal information such as photos and films published on the Internet often stay on the Internet. Personal information on the Internet can also be analyzed for targeted advertising and marketing.</span><br/>
-                                        <span><b>Social networking sites can serve cybercriminals as a welcome supplier of information.</b></span>
                                     </div>
                                     <br/>
-                                    <b style={{color: "midnightblue"}}>— Federal Strategic Unit for IT (FSUIT) + Federal Police <img style={{verticalAlign: "sub", width: "1.25em"}} src={get_svg_in_b64(<ShieldTweemoji/>)}/> for Swiss Confederation <img style={{verticalAlign: "sub", width: "1.25em"}} src={get_svg_in_b64(<SwissTweemoji/>)}/>. (<i style={{textDecoration: "underline"}} onClick={() => {window.open("https://www.ncsc.admin.ch/ncsc/en/home/dokumentation/berichte/lageberichte/semi-annual-report-2008-1.html")}}>source ncsc.admin.ch [DE FR IT EN]</i>)</b>
+                                    <b style={{color: "midnightblue"}}>— FSUIT + Federal Police <img style={{verticalAlign: "sub", width: "1.25em"}} src={get_svg_in_b64(<ShieldTweemoji/>)}/> for Swiss Confederation <img style={{verticalAlign: "sub", width: "1.25em"}} src={get_svg_in_b64(<SwissTweemoji/>)}/> around 2008. <i style={{textDecoration: "underline", cursor: "pointer"}} onClick={() => {window.open("https://www.ncsc.admin.ch/ncsc/en/home/dokumentation/berichte/lageberichte/semi-annual-report-2008-1.html")}}>See ncsc.admin.ch...</i></b>
                                 </p>
                             </CardContent>
                         </Card>
