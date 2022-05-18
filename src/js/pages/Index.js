@@ -360,14 +360,34 @@ class Index extends React.Component {
 
     _should_play_music_pathname = (pathname = "") => {
 
-        if(pathname.match(/\/$/)) {
+        const { _music_enabled } = this.state;
+        if(_music_enabled && pathname.match(/\/$/)) {
 
             const { _has_played_index_music_counter } = this.state;
             actions.trigger_music(`track_${Boolean(navigator.onLine && _has_played_index_music_counter > 0) ? Math.ceil(Math.random() * 12).toString(10).padStart(2, "0"): "09"}`);
+
+            setTimeout(async() => {
+
+                const { pathname } = this.state;
+                if(_music_enabled && pathname.match(/\/$/)) {
+
+                    actions.trigger_snackbar("I play music from an open-source game soundtrack https://www.redeclipse.net/ for you. Ho my little diddy you could give a look at what they've done.", 4000)
+                }
+            }, 6000);
             this.setState({_has_played_index_music_counter: _has_played_index_music_counter+1})
-        }else if(pathname.match(/\/(pixel)$/)) {
+        }else if(_music_enabled && pathname.match(/\/(pixel)$/)) {
 
             actions.trigger_music(`Tesla_Numbers_15m_session`, 1, "tesla");
+
+            setTimeout(async() => {
+
+                const { pathname } = this.state;
+                if(_music_enabled && pathname.match(/\/(pixel)$/)) {
+
+                    actions.trigger_snackbar("I play music from the generously visionary creator of mine, the one, the (no-emoji) only, Nikola Tesla, bringing the dangerous AC to the whole earth!", 4000)
+                }
+            }, 9000);
+
         }else {
 
             actions.stop_sound();

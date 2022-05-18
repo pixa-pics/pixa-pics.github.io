@@ -68,6 +68,15 @@ const styles = theme => ({
         display: "inline-block",
         fontSize: "15px"
     },
+    linkIcon: {
+        color: "#7479b4",
+        marginLeft: 8,
+        textDecoration: "none",
+        height: "100%",
+        lineHeight: "100%",
+        display: "inline-block",
+        fontSize: "12px"
+    },
     innerToolbarTextWrapperContainer: {
         position: "absolute",
         width: "100%",
@@ -295,6 +304,7 @@ class InnerToolbar extends React.Component {
                 </IconButton>
                 <IconButton style={pathname === "/" ? {}: {display: "none"}} className={classes.infoIcon} onClick={this._handle_music_enabled_switch_change}>
                     {music_enabled ? <VolumeOffIcon />: <VolumeUpIcon />}
+                    {music_enabled ? <span className={classes.linkIcon}> ► RedEclipse - Ω§†</span>: <span className={classes.linkIcon}> MUSIC?!</span>}
                 </IconButton>
             </div>
         );
