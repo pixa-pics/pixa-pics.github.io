@@ -1,8 +1,8 @@
 # This is PIXA!
 
-PIXA.PICS - Pixel art editor! *100% being visionary and reigning over privacy concerns/critics and detractors with its force that stands bold against them.*
+PIXA.PICS - Pixel art editor! *100% visionary in privacy concerns/critics and detractors with its force that stands bold against them.*
 
-![](	http://ForTheBadge.com/images/badges/built-by-developers.svg)
+![](http://ForTheBadge.com/images/badges/built-by-developers.svg)
 ![](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
 ![](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
 ![](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
@@ -10,7 +10,7 @@ PIXA.PICS - Pixel art editor! *100% being visionary and reigning over privacy co
 ![](https://img.shields.io/badge/Material--UI-0081CB?style=for-the-badge&logo=material-ui&logoColor=white)
 
 ![](https://img.shields.io/badge/Maintained%3F-yes-green.svg)
-![](https://img.shields.io/website-up-down-green-red/http/pixa.pics)
+![](https://img.shields.io/website-up-down-green-red/http/pixa.pics) https://pixa.pics/
 
 # The challenges of first-class active protection for the preservation of identity
 **What was foreseen by the agent of public order and general justice in 2008 in Switzerland against chaos and negativity regarding Internet potential about one's image.** 
