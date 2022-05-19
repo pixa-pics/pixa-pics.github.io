@@ -2,6 +2,16 @@
 
 PIXA.PICS - Pixel art editor! *100% being visionary and reigning over privacy concerns/critics and detractors with its force that stands bold against them.*
 
+![](	http://ForTheBadge.com/images/badges/built-by-developers.svg)
+![](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
+![](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
+![](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
+![](https://img.shields.io/badge/Material--UI-0081CB?style=for-the-badge&logo=material-ui&logoColor=white)
+
+![](https://img.shields.io/badge/Maintained%3F-yes-green.svg)
+![](https://img.shields.io/website-up-down-green-red/http/pixa.pics)
+
 # The challenges of first-class active protection for the preservation of identity
 **What was foreseen by the agent of public order and general justice in 2008 in Switzerland against chaos and negativity regarding Internet potential about one's image.** 
 > The use of social networking sites should be governed by the same principles as use of the Internet in general. As little personal information as possible should be divulged. The information should be well protected and only made accessible to clearly defined persons. Ultimately, the responsibility lies with each individual Internet user. Prior to publication, everyone should think and decide for themselves which personal data to publish on the Internet, thereby making it available to the public for an indeterminate time period.  — Semi-annual report of 2008, *Federal Strategic Unit for IT (FSUIT) - Federal Office of Police fedpol (Swiss Confederation). 🇨🇭*
@@ -53,8 +63,6 @@ You can easily multiply that it doesn't cost anyone much to share a simple detai
 All the screenshot has been captured using a "Samsung Galaxy J3 (2017)" having 2gb of ram.
 Thus, the project aims to make some advance for the domain of artistic intellect and in it.
 With the power that it should be accessible for all, a smartphone for 100$ fits for creating crazy things!
-
-![Any of y'all got some art](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/images/screenshots/desktop.jpeg)
 
 ![Any of y'all got some art](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/images/screenshots/1.jpeg)
 ![Any of y'all got some art](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/images/screenshots/2.jpeg)
