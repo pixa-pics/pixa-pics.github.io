@@ -89,6 +89,7 @@ const styles = theme => ({
         [theme.breakpoints.down("sm")]: {
             minWidth: "auto",
             position: "fixed",
+            fontSize: "1rem",
             bottom: 72,
         },
     },
@@ -117,7 +118,7 @@ const styles = theme => ({
         [theme.breakpoints.down("sm")]: {
             fontSize: "12px",
             borderRadius: ".5em",
-            lineHeight: "1.25em",
+            lineHeight: "1.75em",
             width: 152,
             bottom: 24,
             right: 24,
@@ -134,7 +135,7 @@ const styles = theme => ({
             left: 0,
             top: 0,
             position: "absolute",
-            backdropFilter: "brightness(1.0) contrast(1.1) saturate(1.2) blur(1.5px)",
+            backdropFilter: "brightness(0.555) contrast(1.222) saturate(1.222) brightness(1.777)",
         },
         position: "relative",
         backgroundPosition: "0% 25vh",
@@ -160,7 +161,7 @@ const styles = theme => ({
         right: "max(25vw, 25vh)",
         bottom: "max(25vw, 25vh)",
         width: "max(47.5vw, 47.5vh)",
-        filter: "opacity(.8) contrast(1.2)",
+        filter: "saturate(.777) contrast(1.4)",
         zIndex: 3,
         position: "fixed",
         transform: "translate(min(50vh, 50%), min(50vh, 50%))",
@@ -181,7 +182,7 @@ const styles = theme => ({
     titleh1: {
         whiteSpace: "break-spaces",
         fontWeight: "bold",
-        fontSize: "38px",
+        fontSize: "48px",
         filter: "drop-shadow(0px 0px 3px #4dceff) drop-shadow(0px 0px 9px #262297)  drop-shadow(0px 0px 21px #1a1885)",
         "& sup": {
             fontSize: "0.33em",
@@ -203,7 +204,7 @@ const styles = theme => ({
     titleh2: {
         whiteSpace: "break-spaces",
         fontWeight: "bold",
-        fontSize: "28px",
+        fontSize: "24px",
         filter: "drop-shadow(0px 0px 3px #4dceff) drop-shadow(0px 0px 9px #262297)  drop-shadow(0px 0px 21px #1a1885)",
         "& sup": {
             fontSize: "0.33em",
@@ -232,7 +233,7 @@ const styles = theme => ({
             color: "white",
             filter: "drop-shadow(rgba(0, 0, 0, .14) 0px 0px 7px) drop-shadow(rgba(0, 0, 0, .7) 0px 0px 14px)",
             opacity: "1",
-            fontSize: 21,
+            fontSize: 16,
             lineHeight: "1.75em",
             marginBottom: "56px",
             "& .emoji": {
@@ -241,7 +242,7 @@ const styles = theme => ({
             },
             fontWeight: "normal",
             [theme.breakpoints.down("sm")]: {
-                fontSize: 16,
+                fontSize: 12,
                 display: "none",
                 lineHeight: "1.75em",
             },
@@ -250,7 +251,7 @@ const styles = theme => ({
     subtitleButton: {
         color: "#0b8207",
         fontWeight: "bold",
-        fontSize: "11px",
+        fontSize: "10px",
         filter: "drop-shadow(0px 0px 2px #ffffff) drop-shadow(0px 0px 3px #ffffff) drop-shadow(0px 0px 6px #ffffff) drop-shadow(0px 0px 12px #ffffff)",
         [theme.breakpoints.down("sm")]: {
             display: "none",
@@ -390,19 +391,22 @@ class Home extends React.Component {
                                 <span style={{color: "white", fontWeight: "bold", filter: "drop-shadow(0px 0px 2px white)"}}>«PIXA.PICS»? </span>
                             </span></Fade>
                             <Fade in={true} timeout={125}><span>
-                                <span><img src={CEMOJI} className="emoji-150"/> 1) <span style={{textDecoration: "underline"}}>Getting images that shift into a minima using it.</span> (Create NFTs <img src={DANGEREMOJI} className="emoji-150"/> and be cautious using your images).</span><br/>
+                                <span><img src={CEMOJI} className="emoji-150"/> 1) Getting <span style={{textDecoration: "underline"}}>pics shifting into their (pixel art) minima!</span> It stands for essential privacy and causes for concerns.</span><br/>
                             </span></Fade>
                         </span>
                     </h1>
-                    <h2 className={classes.titleh2} style={{color: THEME_DAY && !IS_EVENING ? "#ffffffe9": "#ffffffe9"}}>
-                        <span>
-                            <Fade in={true} timeout={337.5}><span>
-                                <span>
-                                    <b>2) <span style={{textDecoration: "underline"}}>While modifying</span> <img src={JACKETEMOJI} className="emoji-150"/> "visionarily" easily, a sanitized minima should progress logically using a few out of 55+ tools, options in layers, filters, selections, shapes, effects,... to get cool!</b><br/>
-                                    <span>3) <span style={{textDecoration: "underline"}}>Any minima just render</span> in <img style={{verticalAlign: "middle"}} src={GLASSESEMOJI} className="emoji-150"/> 4K<sup> Ultra HD</sup> images or in humanized ∞<sup> Scalable</sup> shapes of vectors using its <img src={LABOPSEMOJI} style={{verticalAlign: "bottom"}} className="emoji-150"/> (dot-matrix-based legitimate) one-click-download intelligent laboratory operations.</span>
-                                </span>
-                            </span></Fade>
-                        </span>
+                    <h2 className={classes.titleh2} style={{color: "#ffffff"}}>
+                        <blockquote style={{fontStyle: "italic", color: "#ffffff", marginRight: 8, marginLeft: 16}}> Pixel art <img style={{verticalAlign: "middle"}} src={DANGEREMOJI} className="emoji-150"/> takes two eyes to be born yet NFTs doesn't ask madders to be aware that our app only says it diligently! The lab ops, your files, here nevertheless, still yours to manage.</blockquote>
+                    </h2>
+                    <h2 className={classes.titleh2} style={{color: "#ffffff"}}>
+                        <Fade in={true} timeout={337.5}>
+                            <b>2) <span style={{textDecoration: "underline"}}>While modifying</span> <img src={JACKETEMOJI} className="emoji-150"/> "visionarily" easily, a sanitized minima should progress logically using a few out of 55+ tools, options in layers, filters, selections, shapes, effects,... to get cool!</b>
+                        </Fade>
+                    </h2>
+                    <h2 className={classes.titleh2} style={{color: "#ffffff"}}>
+                        <Fade in={true} timeout={450}>
+                            <span>3) <span style={{textDecoration: "underline"}}>Any minima just render</span> in <img style={{verticalAlign: "middle"}} src={GLASSESEMOJI} className="emoji-150"/> 4K<sup> Ultra HD</sup> images or in humanized ∞<sup> Scalable</sup> shapes of vectors using its <img src={LABOPSEMOJI} style={{verticalAlign: "bottom"}} className="emoji-150"/> (dot-matrix-based legitimate) one-click-download intelligent laboratory operations (like xBRZ up-scaling).</span>
+                        </Fade>
                     </h2>
                     <Fade in={true} timeout={225}>
                             <h3 className={classes.subtitle}>
@@ -412,7 +416,7 @@ class Home extends React.Component {
                                 <br />
                                 <img src={DNAEMOJI} className="emoji-150"/> <span><b>Your own <span>FREELY GIVEN</span> elaborate WEB-APP makes pixel-perfect ultra-simplifications!</b></span>
                                 <br />
-                                <span style={{fontSize: "0.618em"}}><b><span>FUNCTIONAL</span> and powerful lists containing 44+ TOOLS make drawing, selection, layers, crop, colorizing, very perfect locally running secure on your CPUs offline too with ease.</b></span>
+                                <span style={{fontSize: "0.618em"}}><b><span>FUNCTIONAL</span> and powerful lists containing 55+ TOOLS make drawing, selection, layers, crop, colorizing, very perfect locally running secure on your CPUs offline too with ease.</b></span>
                                 <br />
                             </h3>
                     </Fade>
