@@ -88,7 +88,7 @@ const overrides = {
                 verticalAlign: "inherit",
                 height: "1.25em",
                 width: "3em",
-                transform: "scale(2)",
+                transform: "scale(1.5)",
             },
             ".highlighted": {
                 backgroundColor: "#e8ecfe",

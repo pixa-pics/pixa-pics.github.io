@@ -78,6 +78,9 @@ const styles = theme => ({
         fontSize: "1.314rem",
         marginTop: "48x",
         borderRadius: "8px",
+        "& svg": {
+            filter: "sepia(1)"
+        },
         "&:hover": {
             color: "#402303",
             filter: "drop-shadow(0px 0px 16px goldenrod) brightness(1.1)",
@@ -135,7 +138,7 @@ const styles = theme => ({
             left: 0,
             top: 0,
             position: "absolute",
-            backdropFilter: "brightness(0.777) saturate(1.10) contrast(1.15) brightness(1.2)",
+            backdropFilter: "brightness(0.777) saturate(0.9) contrast(1.2) brightness(1.5)",
         },
         position: "relative",
         backgroundPosition: "0% 25vh",
@@ -161,7 +164,6 @@ const styles = theme => ({
         right: "max(25vw, 25vh)",
         bottom: "max(25vw, 25vh)",
         width: "max(47.5vw, 47.5vh)",
-        filter: "saturate(.777) contrast(1.4)",
         zIndex: 3,
         position: "fixed",
         transform: "translate(min(50vh, 50%), min(50vh, 50%))",
@@ -191,7 +193,7 @@ const styles = theme => ({
         maxWidth: "1000px",
         fontWeight: "normal",
         fontSize: "32px",
-        filter: "drop-shadow(0px 0px 9px #00000099) contrast(1.25)",
+        filter: "saturate(2.25)",
         "& sup": {
             fontSize: "0.33em",
             opacity: "0.66",
@@ -214,7 +216,7 @@ const styles = theme => ({
         fontWeight: "normal",
         fontSize: "21px",
         maxWidth: "600px",
-        filter: "drop-shadow(0px 0px 6px #00000066) contrast(1.25)",
+        filter: "saturate(2.25)",
         "& sup": {
             fontSize: "0.33em",
             opacity: "0.66",
@@ -261,7 +263,7 @@ const styles = theme => ({
         color: "#44cb16",
         fontWeight: "bold",
         fontSize: "10px",
-        filter: "drop-shadow(0px 0px 2px #4caf5033) drop-shadow(0px 0px 6px #03840899) drop-shadow(0px 0px 21px #03840833)",
+        filter: "drop-shadow(0px 0px 2px #4caf5033) sepia(1)",
         [theme.breakpoints.down("sm")]: {
             display: "none",
         },
@@ -272,8 +274,8 @@ const styles = theme => ({
     },
     stepPoints: {
         color: "#fad101",
-        textShadow: "0px 0px 12px #fdf4a3",
-        filter: "drop-shadow(0px 0px 6px #fcd30033) hue-rotate(57deg) drop-shadow(2px 4px 8px black)",
+        textShadow: "0px 0px 3px darkgoldenrod, 0px 0px 6px darkgoldenrod, 0px 0px 12px black",
+        filter: "hue-rotate(37deg)",
         display: "inline-block",
         transform: "scale(2.1)",
         fontWeight: "bold",
@@ -282,8 +284,8 @@ const styles = theme => ({
     },
     revelantText: {
         color: "#eeb319",
-        textShadow: "0px 0px 12px palegoldenrod",
-        filter: "drop-shadow(0px 0px 6px #fcd30033) hue-rotate(37deg) drop-shadow(2px 4px 8px black)",
+        textShadow: "0px 0px 3px darkgoldenrod, 0px 0px 6px darkgoldenrod, 0px 0px 12px black",
+        filter: "hue-rotate(37deg)",
     }
 });
 
@@ -395,61 +397,53 @@ class Home extends React.Component {
             <div className={classes.root} style={{
                 filter: "revert",
                 backgroundImage: THEME_DAY ?
-                                    IS_EVENING ?
-                                        "url(/src/images/illustrations/Itsukishima.svg)" :
-                                        "url(/src/images/illustrations/Egypt-day.svg)" :
-                                        "url(/src/images/illustrations/China-night.svg)",
+                                    "url(/src/images/illustrations/Egypt-day.svg)" :
+                                    "url(/src/images/illustrations/China-night.svg)",
             }}>
                 <div className={classes.insideRoot}>
                     <div className={classes.backgroundImage} style={{
                         backgroundSize: THEME_DAY ? "175%": "50%",
                         backgroundColor: THEME_DAY ? IS_EVENING ? "#48004900": "#4c4c2600": "#21214200",
                         }}>
-                        <Fade in={true} timeout={337.5}><img src={"/src/images/Pixagrail.svg"} className={classes.backgroundImageImage}/></Fade>
+                        <Fade in={true} timeout={1500}><img src={"/src/images/Pixagrail.svg"} className={classes.backgroundImageImage}/></Fade>
                     </div>
                 </div>
                 <div className={classes.headerContainer} style={{color: THEME_DAY && !IS_EVENING? "#000": "#fff"}}>
                     <h1 className={classes.titleh1} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff"}}>
                         <span className={classes.stepPoints} style={{transform: "scale(1.6)"}}>1 )</span>
-                        <span><b><span className={classes.revelantText}>«PIXA.PICS» gets great pics in pixel art, it state-shifts those to the MINIMA.</span></b></span><br/>
-                        <span>It stands for <b style={{color: "#d3e824"}}>the essential privacy MAXIMA</b> <img src={CEMOJI} className="emoji-150"/> and causes for concerns...</span>
+                        <span><img src={CEMOJI} className="emoji-150"/> <b><span className={classes.revelantText}>«PIXA.PICS» lovely pixel arts</span><span> (called a picture's minima) are created with your images getting smaller by state-shifts with LAB-OPS "effects/filters".</span></b></span><br/>
+                        <span>It stands for <b >the essential of the <span className={classes.revelantText}>MAXIMA of PRIVACY</span></b> and saner causes for concerns...</span>
                     </h1>
                     <p>
                         <blockquote style={{fontStyle: "italic", color: THEME_DAY && !IS_EVENING ? "#222": "#ccc", marginRight: 8, marginLeft: 16}}><img style={{verticalAlign: "middle"}} src={DANGEREMOJI} className="emoji"/> MINIMA-ART being pixel art mainly takes two focused eyes to create it however beware, NFTs may be harmful if the lab ops with your files are still yours a danger to manage outside a blockchain.</blockquote>
                     </p>
                     <h2 className={classes.titleh2} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff"}}>
-                        <Fade in={true} timeout={337.5}>
-                            <span><span className={classes.stepPoints}>2 )</span><b><span className={classes.revelantText}> WHILE MODIFYING</span></b> <img src={JACKETEMOJI} className="emoji-150"/> a <b style={{color: "#d3e824"}}>SANITIZED MINIMA-ART</b>, anyone may use <b style={{color: "#d3e824"}}>55+ tools in 7 panels for pixel art</b>, options in layers, filters, selections, shapes, effects,... <img src={DNAEMOJI} className="emoji-150"/> to get cool LAB-OPS!</span>
-                        </Fade>
+                        <span><span className={classes.stepPoints}>2 )</span> <img src={JACKETEMOJI} className="emoji-150"/> <b><span className={classes.revelantText}> WHILE EDITING</span></b> a <b >SANITIZED MINIMA-ART</b>, anyone may use <b >55+ tools in 7 panels for pixel art</b>, options in layers, filters, selections, shapes, effects,... <img src={DNAEMOJI} className="emoji-150"/> to activate cool LAB-OPS!</span>
                     </h2>
                     <h2 className={classes.titleh2} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff"}}>
-                        <Fade in={true} timeout={450}>
-                            <span><span className={classes.stepPoints}>3 )</span><b><span className={classes.revelantText}> RENDER UNLIMITED MINIMA-ART</span></b> in <img style={{verticalAlign: "middle"}} src={GLASSESEMOJI} className="emoji-150"/> <b style={{color: "#d3e824"}}>4K<sup> Ultra HD</sup> images</b> or in <b style={{color: "#d3e824"}}>humanized ∞%<sup> Scalable</sup> shapes</b> of vectors using its <img src={LABOPSEMOJI} style={{verticalAlign: "bottom"}} className="emoji-150"/> DOT-MATRIX.</span>
-                        </Fade>
+                        <span><span className={classes.stepPoints}>3 ) </span> <img style={{verticalAlign: "middle"}} src={GLASSESEMOJI} className="emoji-150"/> <b><span className={classes.revelantText}> RENDER UNLIMITED MINIMA-ART</span></b> in <b >4K<sup> Ultra HD</sup> images</b> or in <b >humanized ∞%<sup> Scalable</sup> ninja shapes</b> of vectors using <img src={LABOPSEMOJI} style={{verticalAlign: "bottom"}} className="emoji-150"/>its DOT-MATRIX to get it majestic.</span>
                     </h2>
-                    <Fade in={true} timeout={225}>
-                            <h3 className={classes.subtitle} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff"}}>
-                                <img src={STAREMOJI} className="emoji"/> <span>IMAGINE tremendous (x6 svg, x32 png) <span>PIXEL ART</span> based on your images.</span>
-                                <br />
-                                <img src={LUCKTWEMOJI} className="emoji"/> <span>A few aspects just missing from your online-self for NFTs, CAN IT PAY OFF?</span>
-                                <br />
-                                <img src={DNAEMOJI} className="emoji"/> <span>Your own <span>FREELY GIVEN</span> elaborate WEB-APP makes pixel-perfect ultra-simplifications!</span>
-                                <br />
-                            </h3>
-                    </Fade>
-                    <Fade in={true} timeout={450}>
+                    <h3 className={classes.subtitle} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff"}}>
+                        <img src={STAREMOJI} className="emoji"/> <span>IMAGINE tremendous (x6 svg, x32 png) <span>PIXEL ART</span> based on your images.</span>
+                        <br />
+                        <img src={LUCKTWEMOJI} className="emoji"/> <span>A few aspects just missing from your online-self for NFTs, CAN IT PAY OFF?</span>
+                        <br />
+                        <img src={DNAEMOJI} className="emoji"/> <span>Your own <span>FREELY GIVEN</span> elaborate WEB-APP makes pixel-perfect ultra-simplifications!</span>
+                        <br />
+                    </h3>
+                    <Fade in={true} timeout={750}>
                         <Button className={classes.homeCTAuseit} variant={"contained"} size={"large"} color="primary" onClick={this._go_to_editor}>
                             Join lab-ops <LabEmojiSvg style={{transform: "scale(2.5)"}} className="emoji-150" /> for free!
                         </Button>
                     </Fade>
-                    <Fade in={true} timeout={575}>
+                    <Fade in={true} timeout={1000}>
                         <p className={classes.subtitleButton}><span><img src={EARTHEMOJI} className="emoji"/> For Everyone <img src={CROWNEMOJI} className="emoji"/> For Free <img src={LIGHTINGEMOJI} className="emoji"/> Forever Open-Source...</span></p>
                     </Fade>
-                    <Grow in={true} timeout={337.5}>
+                    <Fade in={true} timeout={1250}>
                         <Button className={classes.homeCTAsendit} variant={"contained"} size={"large"} color="primary" onClick={(event) => {this._handle_speed_dial_action(event, "share")}}>
                             SHARE NOW
                         </Button>
-                    </Grow>
+                    </Fade>
                 </div>
             </div>
         );

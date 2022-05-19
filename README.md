@@ -1,16 +1,23 @@
-# This is PIXA!
+# This is PIXAAAAA!
 
-PIXA.PICS - Pixel art editor! *100% visionary in privacy concerns/critics and detractors with its force that stands bold against them.*
+PIXA.PICS - Pixel art editor! *100% visionary in privacy concerns/critics and detractors with its force that stands bold against neglects of privacy.*
+
+
 
 ![](http://ForTheBadge.com/images/badges/built-by-developers.svg)
+
+**Does it is made out of supernovas or instead much more with...**
+
 ![](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
 ![](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
 ![](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
 ![](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
 ![](https://img.shields.io/badge/Material--UI-0081CB?style=for-the-badge&logo=material-ui&logoColor=white)
 
+**Does https://pixa.pics/ get?**
+
 ![](https://img.shields.io/badge/Maintained%3F-yes-green.svg)
-![](https://img.shields.io/website-up-down-green-red/http/pixa.pics) https://pixa.pics/
+![](https://img.shields.io/website-up-down-green-red/http/pixa.pics)
 
 # The challenges of first-class active protection for the preservation of identity
 **What was foreseen by the agent of public order and general justice in 2008 in Switzerland against chaos and negativity regarding Internet potential about one's image.** 
@@ -47,12 +54,11 @@ PIXA.PICS - Pixel art editor! *100% visionary in privacy concerns/critics and de
 
 # 94 / 100 of performance (Lighthouse desktop metrics)
 
-![Running smooth web software, for now, but blazing fast already](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/doc/test/VITALS/METRICS-PREVIEW.png)
 > 1.0-2.0 seconds in average, is the necessary time to get the content displayed on desktop (Chrome) for the first website's visit after an update of the application which is automatically done within those small 1690ms and prolongated in background for about 8 seconds, then it is more than twice as fast and doesn't require any form of connection to the Internet since assets are stored in the browser cache until the need to update them is hapenning.
 
 ![Came out being atop of the codechain perfs more quickly than a true jaguar](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/doc/test/VITALS/LIGHTHOUSE.png)
 
-> FULL Difference compaired to Facebook.com (Web application) and Photoshop.com (Just their website) -> https://github.com/pixa-pics/pixa-pics.github.io/tree/main/doc/test/VITALS
+> FULL Difference compared to Facebook.com (Web application) and Photoshop.com (Just their website) -> https://github.com/pixa-pics/pixa-pics.github.io/tree/main/doc/test/VITALS
 
 And let's say in the years 1980s a computer to play video games wasn't that much as cheap as my android smartphone of an old series.
 The phone to which it has been tested is nowadays sold at $100 unused it was dozen of times that price to do the same graphics that time.
