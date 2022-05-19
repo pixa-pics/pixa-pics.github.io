@@ -2,10 +2,6 @@
 
 PIXA.PICS - Pixel art editor! *100% visionary in privacy concerns/critics and detractors with its force that stands bold against neglects of privacy.*
 
-
-
-![](http://ForTheBadge.com/images/badges/built-by-developers.svg)
-
 **Does it is made out of supernovas or instead much more with...**
 
 ![](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
@@ -19,8 +15,19 @@ PIXA.PICS - Pixel art editor! *100% visionary in privacy concerns/critics and de
 ![](https://img.shields.io/badge/Maintained%3F-yes-green.svg)
 ![](https://img.shields.io/website-up-down-green-red/http/pixa.pics)
 
+# Tools
+
+All the screenshots were captured using a "Samsung Galaxy J3 (2017)" having 2gb of ram, a smartphone for 100$ fits for creating crazy things!
+
+#### Zebrapplin' wide a pixel art being large when things come down the line, don't you use this saying often, don't you?
+![Any of y'all got some art](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/images/screenshots/zebrapplinapromo.png)
+
+![](http://ForTheBadge.com/images/badges/built-by-developers.svg) [![forthebadge](https://forthebadge.com/images/badges/powered-by-coffee.svg)](https://forthebadge.com) [![forthebadge](https://forthebadge.com/images/badges/as-seen-on-tv.svg)](https://forthebadge.com) [![forthebadge](https://forthebadge.com/images/badges/its-not-a-lie-if-you-believe-it.svg)](https://forthebadge.com)
+
 # The challenges of first-class active protection for the preservation of identity
+
 **What was foreseen by the agent of public order and general justice in 2008 in Switzerland against chaos and negativity regarding Internet potential about one's image.** 
+
 > The use of social networking sites should be governed by the same principles as use of the Internet in general. As little personal information as possible should be divulged. The information should be well protected and only made accessible to clearly defined persons. Ultimately, the responsibility lies with each individual Internet user. Prior to publication, everyone should think and decide for themselves which personal data to publish on the Internet, thereby making it available to the public for an indeterminate time period.  — Semi-annual report of 2008, *Federal Strategic Unit for IT (FSUIT) - Federal Office of Police fedpol (Swiss Confederation). 🇨🇭*
 
 **Very interesting for pixa.pics as truth forcefully let it being so representing it again, one hating crime before any will to show supports of any laws without fair questioning doing unrighteousness changes on other people's life and true will.**
@@ -33,7 +40,7 @@ PIXA.PICS - Pixel art editor! *100% visionary in privacy concerns/critics and de
  * **Getting to openly fight what misses to be just great, while boring good exists.** 
  * **Staying modern without paying anything for useless and toxic ultra-simplification tools.**
 
-# Features
+# Special features
 
  * Create pixel art from your pictures and draw, cut, select, do anything.
  * Have fun with NFTs weighting as low as ~10-100Kb.
@@ -63,19 +70,6 @@ PIXA.PICS - Pixel art editor! *100% visionary in privacy concerns/critics and de
 And let's say in the years 1980s a computer to play video games wasn't that much as cheap as my android smartphone of an old series.
 The phone to which it has been tested is nowadays sold at $100 unused it was dozen of times that price to do the same graphics that time.
 You can easily multiply that it doesn't cost anyone much to share a simple details-less pictures on the fly even on a blockchain.
-
-# Tools
-
-All the screenshot has been captured using a "Samsung Galaxy J3 (2017)" having 2gb of ram.
-Thus, the project aims to make some advance for the domain of artistic intellect and in it.
-With the power that it should be accessible for all, a smartphone for 100$ fits for creating crazy things!
-
-![Any of y'all got some art](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/images/screenshots/1.jpeg)
-![Any of y'all got some art](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/images/screenshots/2.jpeg)
-![Any of y'all got some art](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/images/screenshots/3.jpeg)
-![Any of y'all got some art](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/images/screenshots/4.jpeg)
-![Any of y'all got some art](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/images/screenshots/5.jpeg)
-![Any of y'all got some art](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/images/screenshots/6.jpeg)
 
 # Legal concerns and acknowledgment
 
