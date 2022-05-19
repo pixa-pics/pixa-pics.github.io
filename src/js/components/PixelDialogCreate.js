@@ -120,7 +120,7 @@ class PixelDialogCreate extends React.Component {
                                 id="button-file-dialog-primary"
                                 type="file"
                             />
-                            <Button component={"label"} for="button-file-dialog-primary" fullWidth variant="contained" color="secondary" style={{background: "#ffffff82", boxShadow: "none", color: "black", fontWeight: "bold", fontSize: "2.5em"}} autoFocus onClick={this.props.on_upload}>Catch a new pic to make a sanitized minima within the laboratory.</Button>
+                            <Button component={"label"} for="button-file-dialog-primary" fullWidth variant="contained" color="secondary" style={{background: "#ffffff82", boxShadow: "none", color: "#00148569", fontWeight: "bold", fontSize: "2.5em"}} autoFocus onClick={this.props.on_upload}>Upload a new image to make a sanitized minima within the laboratory.</Button>
                         </div>
                         <div className={classes.rightImagesContainer}>
                             <div className={classes.rightImagesContainer} style={{padding: "8px 24px", position: "relative", overflow: "hidden", boxSizing: "border-box", width: "100%"}}>

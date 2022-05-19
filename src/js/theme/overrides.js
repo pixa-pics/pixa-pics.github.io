@@ -86,9 +86,9 @@ const overrides = {
             },
             ".emoji-150": {
                 verticalAlign: "inherit",
-                height: "1em",
-                width: "2em",
-                transform: "scale(1.5)",
+                height: "1.25em",
+                width: "3em",
+                transform: "scale(2)",
             },
             ".highlighted": {
                 backgroundColor: "#e8ecfe",
