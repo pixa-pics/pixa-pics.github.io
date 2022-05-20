@@ -20,7 +20,9 @@ PIXA.PICS - Pixel art editor! *100% visionary in privacy concerns/critics and de
 All the screenshots were captured using a "Samsung Galaxy J3 (2017)" having 2gb of ram, a smartphone for 100$ fits for creating crazy things with a bit f magic in mind!
 
 #### Zebrapplin' wide a pixel art being large when things come down the line, don't you use this saying often, don't you?
+
 ![Any of y'all got some art](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/images/screenshots/zebrapplinapromo.png)
+
 
 ![](http://ForTheBadge.com/images/badges/built-by-developers.svg) [![forthebadge](https://forthebadge.com/images/badges/powered-by-coffee.svg)](https://forthebadge.com) [![forthebadge](https://forthebadge.com/images/badges/its-not-a-lie-if-you-believe-it.svg)](https://forthebadge.com)
 
@@ -41,6 +43,9 @@ All the screenshots were captured using a "Samsung Galaxy J3 (2017)" having 2gb 
  * **Staying on the front line of dropping cost as it is a FOSS.**
  * **Getting to openly fight what misses to be just great, while boring good exists.** 
  * **Staying modern without paying anything for useless and toxic ultra-simplification tools.**
+
+
+![Any of y'all got some art](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/images/screenshots/pixa.pics.schema.jpeg)
 
 # Special features
 
