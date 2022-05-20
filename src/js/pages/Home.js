@@ -114,7 +114,7 @@ const styles = theme => ({
         borderRadius: "12px",
         lineHeight: "2em",
         position: "fixed",
-        width: 224,
+        maxWidth: 274,
         zIndex: 7,
         bottom: 32,
         right: 32,
@@ -122,7 +122,7 @@ const styles = theme => ({
             fontSize: "12px",
             borderRadius: ".5em",
             lineHeight: "1.75em",
-            width: 152,
+            maxWidth: 188,
             bottom: 24,
             right: 24,
         },
@@ -275,7 +275,7 @@ const styles = theme => ({
     stepPoints: {
         color: "#fad101",
         textShadow: "0px 0px 3px darkgoldenrod, 0px 0px 6px darkgoldenrod, 0px 0px 12px black",
-        filter: "hue-rotate(37deg)",
+        filter: "hue-rotate(75deg)",
         display: "inline-block",
         transform: "scale(2.1)",
         fontWeight: "bold",
@@ -284,8 +284,8 @@ const styles = theme => ({
     },
     revelantText: {
         color: "#eeb319",
-        textShadow: "0px 0px 3px darkgoldenrod, 0px 0px 6px darkgoldenrod, 0px 0px 12px black",
-        filter: "sepia(1) hue-rotate(37deg)",
+        textShadow: "0px 0px 2px #ffb500, 0px 0px 4px #bd8909, 0px 0px 8px #6b4000, 0px 0px 12px #000000",
+        filter: "sepia(1) hue-rotate(180deg) saturate(2) contrast(1.5)",
     }
 });
 
@@ -410,18 +410,20 @@ class Home extends React.Component {
                 </div>
                 <div className={classes.headerContainer} style={{color: THEME_DAY && !IS_EVENING? "#000": "#fff"}}>
                     <h1 className={classes.titleh1} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff"}}>
-                        <span className={classes.stepPoints} style={{transform: "scale(1.6)"}}>1 )</span>
-                        <span><img alt="scientist-tweemoji" src={CEMOJI} className="emoji-150"/> <b><span className={classes.revelantText}>«PIXA.PICS» lovely pixel arts</span><span> (called a picture's minima) are created with your images getting smaller by state-shifts with LAB-OPS "effects/filters".</span></b></span><br/>
-                        <span>It stands for <b >the essential of the <span className={classes.revelantText}>MAXIMA of PRIVACY</span></b> and saner causes for concerns...</span>
+                        <span className={classes.stepPoints} style={{transform: "scale(1.6)"}}>1 ></span>
+                        <span><img alt="scientist-tweemoji" src={CEMOJI} className="emoji-150"/> <b><span className={classes.revelantText}>«PIXA.PICS» lovely pixel arts</span><span> (the picture's minima) just got ultra-light by state-shifting their colors and size.</span></b></span><br/>
                     </h1>
+                    <h2 className={classes.titleh2} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff"}}>
+                        <span><b>Apply effects in laboratory? Yes or No?</b> Essential lab operations gives the <b><span className={classes.revelantText}>MAXIMA of PRIVACY</span></b> in a fashion not only looking great for the online-self...</span>
+                    </h2>
                     <p>
                         <blockquote style={{fontStyle: "italic", color: THEME_DAY && !IS_EVENING ? "#222": "#ccc", marginRight: 8, marginLeft: 16}}><img alt="scientific-danger-tweemoji" style={{verticalAlign: "middle"}} src={DANGEREMOJI} className="emoji"/> MINIMA-ART being pixel art mainly takes two focused eyes to create it however beware, NFTs may be harmful if the lab ops with your files are still yours a danger to manage outside a blockchain.</blockquote>
                     </p>
                     <h2 className={classes.titleh2} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff"}}>
-                        <span><span className={classes.stepPoints}>2 )</span> <img alt="scientist-jacket-tweemoji" src={JACKETEMOJI} className="emoji-150"/> <b><span className={classes.revelantText}> WHILE EDITING</span></b> a <b >SANITIZED MINIMA-ART</b>, anyone may use <b >55+ tools in 7 panels for pixel art</b>, options in layers, filters, selections, shapes, effects,... <img alt="scientific-DNA-tweemoji" src={DNAEMOJI} className="emoji-150"/> to activate cool LAB-OPS!</span>
+                        <span><span className={classes.stepPoints}>2 >></span> <img alt="scientist-jacket-tweemoji" src={JACKETEMOJI} className="emoji-150"/> <b><span className={classes.revelantText}> WHILE EDITING</span></b> a <b >SANITIZED MINIMA-ART</b>, anyone may use <b >55+ tools in 7 panels for pixel art</b>, options in layers, filters, selections, shapes, effects,... <img alt="scientific-DNA-tweemoji" src={DNAEMOJI} className="emoji-150"/> to activate cool "NINJA" LAB-OPS!</span>
                     </h2>
                     <h2 className={classes.titleh2} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff"}}>
-                        <span><span className={classes.stepPoints}>3 ) </span> <img alt="scientist-jacket-tweemoji" style={{verticalAlign: "middle"}} src={GLASSESEMOJI} className="emoji-150"/> <b><span className={classes.revelantText}> RENDER UNLIMITED MINIMA-ART</span></b> in <b >4K<sup> Ultra HD</sup> images</b> or in <b >humanized ∞%<sup> Scalable</sup> ninja shapes</b> of vectors using <img alt="laboratory-noidea-tweemoji" src={LABOPSEMOJI} style={{verticalAlign: "bottom"}} className="emoji-150"/>its DOT-MATRIX to get it majestic.</span>
+                        <span><span className={classes.stepPoints}>3 >>></span> <img alt="scientist-jacket-tweemoji" style={{verticalAlign: "middle"}} src={GLASSESEMOJI} className="emoji-150"/> <b><span className={classes.revelantText}> RENDER UNLIMITED MINIMA-ART</span></b> in <b >4K<sup> Ultra HD</sup> images</b> or in <b >humanized ∞%<sup> Scalable</sup> shapes</b> of vectors using <img alt="laboratory-noidea-tweemoji" src={LABOPSEMOJI} style={{verticalAlign: "bottom"}} className="emoji-150"/>its DOT-MATRIX to get it majestically and visionary for you.</span>
                     </h2>
                     <h3 className={classes.subtitle} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff"}}>
                         <img alt="space-star-tweemoji" src={STAREMOJI} className="emoji"/> <span>IMAGINE tremendous (x6 svg, x32 png) <span>PIXEL ART</span> based on your images.</span>
@@ -433,7 +435,7 @@ class Home extends React.Component {
                     </h3>
                     <Fade in={true} timeout={750}>
                         <Button className={classes.homeCTAuseit} variant={"contained"} size={"large"} color="primary" onClick={this._go_to_editor}>
-                            Join lab-ops <LabEmojiSvg style={{transform: "scale(2.5)"}} className="emoji-150" /> for free!
+                            Join lab-ops <LabEmojiSvg style={{transform: "scale(2.5)", filter: "sepia(1) saturate(1.3) contrast(1.2) brightness(1.1) drop-shadow(0px 0px 4px darkgoldenrod)"}} className="emoji-150" /> for free!
                         </Button>
                     </Fade>
                     <Fade in={true} timeout={1000}>
@@ -441,7 +443,7 @@ class Home extends React.Component {
                     </Fade>
                     <Fade in={true} timeout={1250}>
                         <Button className={classes.homeCTAsendit} variant={"contained"} size={"large"} color="primary" onClick={(event) => {this._handle_speed_dial_action(event, "share")}}>
-                            SHARE NOW
+                            SHARE NOW <StarEmojiSvg style={{marginLeft: 12, transform: "scale(1.75)", filter: "saturate(.5) contrast(1) brightness(2) drop-shadow(white 0px 0px 6px) hue-rotate(144deg)"}} className="emoji-150" />
                         </Button>
                     </Fade>
                 </div>
