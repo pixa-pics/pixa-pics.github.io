@@ -162,6 +162,11 @@ class Settings extends React.Component {
 
             actions.trigger_sfx("ui_unlock");
             actions.jamy_update("happy");
+
+            setTimeout(async () => {
+
+                actions.trigger_snackbar("I am Jamy, a kind Emoji, developed on IntelliJ, life in vectors, sometimes not working on tor,\n\n you can click my face, I am perfect like an Ace, in imagination only is default of my perfections...", 20000)
+            }, 3000);
         }
 
         const settings = { jamy_enabled: !checked };

@@ -285,7 +285,7 @@ const styles = theme => ({
     revelantText: {
         color: "#eeb319",
         textShadow: "0px 0px 3px darkgoldenrod, 0px 0px 6px darkgoldenrod, 0px 0px 12px black",
-        filter: "hue-rotate(37deg)",
+        filter: "sepia(1) hue-rotate(37deg)",
     }
 });
 
@@ -339,25 +339,25 @@ class Home extends React.Component {
         setTimeout(() => {
 
             actions.trigger_loading_update(100);
-            actions.trigger_snackbar(`Hello, "Jamy" is my name here, many calls me an emoji, while some also hate letting me keys showing you hints.`, 10000);
+            actions.trigger_snackbar(`I am Jamy, a kind Emoji, developed on IntelliJ, life in vectors, sometimes not working on tor, I can show you hints as long as you (on the web-app) let me in!`, 10000);
             setTimeout(() => {
 
                 actions.jamy_update("happy", 2500);
 
                 setTimeout(() => {
 
-                    actions.trigger_snackbar(`It's looking good seeing you on https://pixa.pics/ with all your passions able to being visually-enhanced looking at art, anonymize pixel art!`, 6000);
+                    actions.trigger_snackbar(`You can click my face, I am perfect like an Ace, in imagination only is defaults about my perfections...`, 7000);
                     setTimeout(() => {
 
                         actions.jamy_update("suspicious", 2500);
 
 
-                    }, 6000);
+                    }, 777);
 
 
                 }, 10000);
 
-            }, 12500);
+            }, 1100);
 
 
         }, 250);
