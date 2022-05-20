@@ -58,7 +58,7 @@ const get_settings = (callback_function_info = null, attachment_ids = [], callba
 
     if(typeof window._pixa_settings !== "undefined" && window._pixa_settings !== null) {
 
-        if(typeof window._pixa_settings.locales !== "undefined" && window._pixa_settings.locales !== null && !attachment_ids.length) {
+        if(typeof window._pixa_settings.locales !== "undefined" && window._pixa_settings.locales !== null && callback_function_attachment === null && Boolean(attachment_ids === "all" || attachment_ids.length > 0) === false) {
 
             callback_function_info(null, {...window._pixa_settings});
             return;
@@ -68,11 +68,9 @@ const get_settings = (callback_function_info = null, attachment_ids = [], callba
     window.settings_db.allDocs({
         include_docs: true,
         descending: false,
-        attachments: Boolean(attachment_ids.length > 0),
-        binary: Boolean(attachment_ids.length > 0)
+        attachments: false,
+        binary: false
     }, (error, response) => {
-
-        let settings_docs_undefined = false;
 
         if(!error) {
 
@@ -86,13 +84,13 @@ const get_settings = (callback_function_info = null, attachment_ids = [], callba
 
                 try {
 
-                    if(callback_function_attachment !== null) {
+                    if(Boolean(callback_function_attachment) &&  Boolean(attachment_ids.length > 0) || Boolean(attachment_ids === "all")) {
 
                         // retrieve a data attachment
                         window.settings_db.get(settings_docs[0]._id, {
                             rev: settings_docs[0]._rev,
-                            attachments: Boolean(attachment_ids.length || attachment_ids === "all"),
-                            binary: Boolean(attachment_ids.length || attachment_ids === "all")
+                            attachments: Boolean(attachment_ids.length > 0) || Boolean(attachment_ids === "all"),
+                            binary: Boolean(attachment_ids.length > 0) || Boolean( attachment_ids === "all")
                         }).then((doc) => {
 
                             const pixa_settings = JSON.parse(doc.info);
@@ -102,7 +100,7 @@ const get_settings = (callback_function_info = null, attachment_ids = [], callba
                             let blobs = [];
                             Object.entries(doc._attachments).forEach(([name_id, value]) => {
 
-                                if(attachment_ids === "all" || attachment_ids.includes(name_id)) {
+                                if(Boolean( attachment_ids === "all") || attachment_ids.includes(name_id)) {
 
                                     blobs[name_id] = value.data;
                                 }
@@ -123,15 +121,20 @@ const get_settings = (callback_function_info = null, attachment_ids = [], callba
 
                                     } catch (e) {
 
-                                        callback_function_info("LZP3 not working", null);
+                                        callback_function_attachment("LZP3 not working", null);
                                         return false;
                                     }
+                                }).catch((e) => {
+
+                                    callback_function_attachment("DB not working", null);
+                                    return false;
                                 });
                             });
 
                         }).catch((e) => {
 
-                            error = e;
+                            callback_function_attachment("Missing in our database, unholy PouchDB when you don't get your files...", null);
+                            return false;
                         });
 
                     }else {
@@ -148,29 +151,36 @@ const get_settings = (callback_function_info = null, attachment_ids = [], callba
                 }
             }else {
 
-                settings_docs_undefined = true;
+                const pixa_settings = _get_default_settings();
+
+                window.settings_db.post({
+                    info: JSON.stringify(pixa_settings),
+                    timestamp: Date.now(),
+                }).then((response) => {
+
+                    window._pixa_settings = {...pixa_settings};
+
+                    if(callback_function_info !== null) {
+
+                        callback_function_info(null, {...pixa_settings});
+                    }
+                });
             }
         }
 
-        if(settings_docs_undefined){
 
-            const pixa_settings = _get_default_settings();
+        if (error){
 
-            window.settings_db.post({
-                info: JSON.stringify(pixa_settings),
-                timestamp: Date.now(),
-            }).then((response) => {
+            if(callback_function_info !== null) {
 
-                window._pixa_settings = {...pixa_settings};
+                callback_function_info(error, null);
+            }
 
-                if(callback_function_info !== null) {
+            if(callback_function_attachment !== null) {
 
-                    callback_function_info(null, {...pixa_settings});
-                }
-            });
-        }else if(error) {
-
-            callback_function_info(error, null);
+                callback_function_attachment("DB Error", null);
+                return false;
+            }
         }
     });
 }
@@ -180,8 +190,8 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
     window.settings_db.allDocs({
         include_docs: true,
         descending: false,
-        attachments: Boolean(Object.keys(attachment_array).length),
-        binary: Boolean(Object.keys(attachment_array).length)
+        attachments: true,
+        binary: true
     }, (error, response) => {
 
         let settings_docs_undefined = false;
@@ -242,9 +252,6 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
                                 pixa_settings.attachment_previews = pixa_settings.attachment_previews  || {};
                                 delete pixa_settings.attachment_previews[name_id];
 
-                                window._pixa_settings = {...pixa_settings};
-                                callback_function_info(null, {...pixa_settings});
-
                                 window.settings_db.removeAttachment(settings_docs[0]._id, name_id, settings_docs[0]._rev).then((result) => {
 
                                     attachments_to_process--;
@@ -266,12 +273,15 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
                                 _attachments: settings_docs[0]._attachments,
                             }, {force: true}).then((response) => {
 
-                                if(settings_docs.length > 0) {
+                                if(settings_docs.length > 1) {
 
                                     // Delete all others
                                     settings_docs.splice(0, 1);
                                     window.settings_db.bulkDocs(settings_docs.map((sd) => {return {_id: sd._id, _rev: sd._rev, _deleted: true, timestamp: 0, data: null, info: null, _attachments: {}}}), {force: true});
                                 }
+
+                                window._pixa_settings = {...pixa_settings};
+                                callback_function_info(null, {...pixa_settings});
 
                                 window.settings_db.compact();
                                 window.settings_db.viewCleanup();
@@ -282,30 +292,24 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
 
                         let pixa_settings = _merge_object(JSON.parse(settings_docs[0].info), info);
 
-                        window.settings_db.get(settings_docs[0]._id, {
-                            rev: settings_docs[0]._rev,
-                        }).then((doc) => {
+                        window.settings_db.put({
+                            _id: settings_docs[0]._id,
+                            _rev: settings_docs[0]._rev,
+                            info: JSON.stringify(pixa_settings),
+                            _attachments: settings_docs[0]._attachments,
+                            timestamp: Date.now(),
+                        }, {force: true}).then((response) => {
 
-                            window.settings_db.put({
-                                _id: doc._id,
-                                _rev: doc._rev,
-                                info: JSON.stringify(pixa_settings),
-                                timestamp: Date.now(),
-                            }, {force: true}).then((response) => {
+                            if(settings_docs.length > 1) {
 
-                                if(settings_docs.length > 0) {
+                                // Delete all others
+                                settings_docs.splice(0, 1);
+                                window.settings_db.bulkDocs(settings_docs.map((sd) => {return {_id: sd._id, _rev: sd._rev, _deleted: true, timestamp: 0, data: null, info: null, _attachments: {}}}), {force: true});
+                            }
 
-                                    // Delete all others
-                                    settings_docs.splice(0, 1);
-                                    window.settings_db.bulkDocs(settings_docs.map((sd) => {return {_id: sd._id, _rev: sd._rev, _deleted: true, timestamp: 0, data: null, info: null, _attachments: {}}}), {force: true});
-                                }
-
-                                window._pixa_settings = {...pixa_settings};
-                                callback_function_info(null, {...pixa_settings});
-                            });
-
+                            window._pixa_settings = {...pixa_settings};
+                            callback_function_info(null, {...pixa_settings});
                         });
-
                     }
 
                 } catch (err) {

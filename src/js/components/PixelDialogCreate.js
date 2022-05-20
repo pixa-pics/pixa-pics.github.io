@@ -74,7 +74,13 @@ class PixelDialogCreate extends React.Component {
             Object.keys(this.state.pixel_arts).length !== Object.keys(new_props.pixel_arts).length
         ) {
 
-            this.setState({...new_props}, () => {
+            this.setState({
+                classes: new_props.classes,
+                keepMounted: new_props.keepMounted || false,
+                open: new_props.open,
+                size: new_props.size,
+                pixel_arts: new_props.pixel_arts
+            }, () => {
 
                 this.forceUpdate();
             });

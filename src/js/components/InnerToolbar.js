@@ -282,12 +282,14 @@ class InnerToolbar extends React.Component {
                                 <LinearProgress
                                     color="primary"
                                     variant="determinate"
+                                    aria-progressbar-name={"main-progressbar-left"}
                                     className={navigator.onLine ? classes.linearProgressVisible: classes.linearProgressVisibleOffline}
                                     value={100 - loaded_progress_percent}
                                     style={{transform: "rotate(-180deg)", webkitTransform: "rotate(-180deg)"}}/>
                                 <LinearProgress
                                     color="primary"
                                     variant="determinate"
+                                    aria-progressbar-name={"main-progressbar-right"}
                                     className={navigator.onLine ? classes.linearProgressVisible: classes.linearProgressVisibleOffline}
                                     value={100 - loaded_progress_percent} />
                             </div>
@@ -299,10 +301,10 @@ class InnerToolbar extends React.Component {
                         </span>
                     </span>
                 </Button>
-                <IconButton style={pathname.includes("/pixel") ? {}: {display: "none"}} className={classes.infoIcon} onClick={this._toggle_info_bar_activation}>
+                <IconButton aria-label="main-account-button" style={pathname.includes("/pixel") ? {}: {display: "none"}} className={classes.infoIcon} onClick={this._toggle_info_bar_activation}>
                     {_is_info_bar_active ? <CloseIcon />: <InfoIcon />}
                 </IconButton>
-                <IconButton style={pathname === "/" ? {}: {display: "none"}} className={classes.infoIcon} onClick={this._handle_music_enabled_switch_change}>
+                <IconButton aria-label="current-page-options-button" style={pathname === "/" ? {}: {display: "none"}} className={classes.infoIcon} onClick={this._handle_music_enabled_switch_change}>
                     {music_enabled ? <VolumeOffIcon />: <VolumeUpIcon />}
                     {music_enabled ? <span className={classes.linkIcon}> RedEclipse - Ωst</span>: <span className={classes.linkIcon}> MUSIC?!</span>}
                 </IconButton>

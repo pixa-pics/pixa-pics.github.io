@@ -405,30 +405,30 @@ class Home extends React.Component {
                         backgroundSize: THEME_DAY ? "175%": "50%",
                         backgroundColor: THEME_DAY ? IS_EVENING ? "#48004900": "#4c4c2600": "#21214200",
                         }}>
-                        <Fade in={true} timeout={1500}><img src={"/src/images/Pixagrail.svg"} className={classes.backgroundImageImage}/></Fade>
+                        <Fade in={true} timeout={1500}><img alt="Men discovering the pixa.pics holygrail in nature." src={"/src/images/Pixagrail.svg"} className={classes.backgroundImageImage}/></Fade>
                     </div>
                 </div>
                 <div className={classes.headerContainer} style={{color: THEME_DAY && !IS_EVENING? "#000": "#fff"}}>
                     <h1 className={classes.titleh1} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff"}}>
                         <span className={classes.stepPoints} style={{transform: "scale(1.6)"}}>1 )</span>
-                        <span><img src={CEMOJI} className="emoji-150"/> <b><span className={classes.revelantText}>«PIXA.PICS» lovely pixel arts</span><span> (called a picture's minima) are created with your images getting smaller by state-shifts with LAB-OPS "effects/filters".</span></b></span><br/>
+                        <span><img alt="scientist-tweemoji" src={CEMOJI} className="emoji-150"/> <b><span className={classes.revelantText}>«PIXA.PICS» lovely pixel arts</span><span> (called a picture's minima) are created with your images getting smaller by state-shifts with LAB-OPS "effects/filters".</span></b></span><br/>
                         <span>It stands for <b >the essential of the <span className={classes.revelantText}>MAXIMA of PRIVACY</span></b> and saner causes for concerns...</span>
                     </h1>
                     <p>
-                        <blockquote style={{fontStyle: "italic", color: THEME_DAY && !IS_EVENING ? "#222": "#ccc", marginRight: 8, marginLeft: 16}}><img style={{verticalAlign: "middle"}} src={DANGEREMOJI} className="emoji"/> MINIMA-ART being pixel art mainly takes two focused eyes to create it however beware, NFTs may be harmful if the lab ops with your files are still yours a danger to manage outside a blockchain.</blockquote>
+                        <blockquote style={{fontStyle: "italic", color: THEME_DAY && !IS_EVENING ? "#222": "#ccc", marginRight: 8, marginLeft: 16}}><img alt="scientific-danger-tweemoji" style={{verticalAlign: "middle"}} src={DANGEREMOJI} className="emoji"/> MINIMA-ART being pixel art mainly takes two focused eyes to create it however beware, NFTs may be harmful if the lab ops with your files are still yours a danger to manage outside a blockchain.</blockquote>
                     </p>
                     <h2 className={classes.titleh2} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff"}}>
-                        <span><span className={classes.stepPoints}>2 )</span> <img src={JACKETEMOJI} className="emoji-150"/> <b><span className={classes.revelantText}> WHILE EDITING</span></b> a <b >SANITIZED MINIMA-ART</b>, anyone may use <b >55+ tools in 7 panels for pixel art</b>, options in layers, filters, selections, shapes, effects,... <img src={DNAEMOJI} className="emoji-150"/> to activate cool LAB-OPS!</span>
+                        <span><span className={classes.stepPoints}>2 )</span> <img alt="scientist-jacket-tweemoji" src={JACKETEMOJI} className="emoji-150"/> <b><span className={classes.revelantText}> WHILE EDITING</span></b> a <b >SANITIZED MINIMA-ART</b>, anyone may use <b >55+ tools in 7 panels for pixel art</b>, options in layers, filters, selections, shapes, effects,... <img alt="scientific-DNA-tweemoji" src={DNAEMOJI} className="emoji-150"/> to activate cool LAB-OPS!</span>
                     </h2>
                     <h2 className={classes.titleh2} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff"}}>
-                        <span><span className={classes.stepPoints}>3 ) </span> <img style={{verticalAlign: "middle"}} src={GLASSESEMOJI} className="emoji-150"/> <b><span className={classes.revelantText}> RENDER UNLIMITED MINIMA-ART</span></b> in <b >4K<sup> Ultra HD</sup> images</b> or in <b >humanized ∞%<sup> Scalable</sup> ninja shapes</b> of vectors using <img src={LABOPSEMOJI} style={{verticalAlign: "bottom"}} className="emoji-150"/>its DOT-MATRIX to get it majestic.</span>
+                        <span><span className={classes.stepPoints}>3 ) </span> <img alt="scientist-jacket-tweemoji" style={{verticalAlign: "middle"}} src={GLASSESEMOJI} className="emoji-150"/> <b><span className={classes.revelantText}> RENDER UNLIMITED MINIMA-ART</span></b> in <b >4K<sup> Ultra HD</sup> images</b> or in <b >humanized ∞%<sup> Scalable</sup> ninja shapes</b> of vectors using <img alt="laboratory-noidea-tweemoji" src={LABOPSEMOJI} style={{verticalAlign: "bottom"}} className="emoji-150"/>its DOT-MATRIX to get it majestic.</span>
                     </h2>
                     <h3 className={classes.subtitle} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff"}}>
-                        <img src={STAREMOJI} className="emoji"/> <span>IMAGINE tremendous (x6 svg, x32 png) <span>PIXEL ART</span> based on your images.</span>
+                        <img alt="space-star-tweemoji" src={STAREMOJI} className="emoji"/> <span>IMAGINE tremendous (x6 svg, x32 png) <span>PIXEL ART</span> based on your images.</span>
                         <br />
-                        <img src={LUCKTWEMOJI} className="emoji"/> <span>A few aspects just missing from your online-self for NFTs, CAN IT PAY OFF?</span>
+                        <img alt="nature-luck-tweemoji" src={LUCKTWEMOJI} className="emoji"/> <span>A few aspects just missing from your online-self for NFTs, CAN IT PAY OFF?</span>
                         <br />
-                        <img src={DNAEMOJI} className="emoji"/> <span>Your own <span>FREELY GIVEN</span> elaborate WEB-APP makes pixel-perfect ultra-simplifications!</span>
+                        <img alt="scientific-dna-tweemoji" src={DNAEMOJI} className="emoji"/> <span>Your own <span>FREELY GIVEN</span> elaborate WEB-APP makes pixel-perfect ultra-simplifications!</span>
                         <br />
                     </h3>
                     <Fade in={true} timeout={750}>
@@ -437,7 +437,7 @@ class Home extends React.Component {
                         </Button>
                     </Fade>
                     <Fade in={true} timeout={1000}>
-                        <p className={classes.subtitleButton}><span><img src={EARTHEMOJI} className="emoji"/> For Everyone <img src={CROWNEMOJI} className="emoji"/> For Free <img src={LIGHTINGEMOJI} className="emoji"/> Forever Open-Source...</span></p>
+                        <p className={classes.subtitleButton}><span><img alt="whole-earth-tweemoji" src={EARTHEMOJI} className="emoji"/> For Everyone <img alt="king-crown-tweemoji" src={CROWNEMOJI} className="emoji"/> For Free <img alt="sky-lightning-tweemoji" src={LIGHTINGEMOJI} className="emoji"/> Forever Open-Source...</span></p>
                     </Fade>
                     <Fade in={true} timeout={1250}>
                         <Button className={classes.homeCTAsendit} variant={"contained"} size={"large"} color="primary" onClick={(event) => {this._handle_speed_dial_action(event, "share")}}>

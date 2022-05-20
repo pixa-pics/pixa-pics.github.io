@@ -1,6 +1,6 @@
-var REQUIRED_CACHE = "unless-update-cache-v153-required";
-var USEFUL_CACHE = "unless-update-cache-v153-useful";
-var STATIC_CACHE = "unless-update-cache-v153-static";
+var REQUIRED_CACHE = "unless-update-cache-v154-required";
+var USEFUL_CACHE = "unless-update-cache-v154-useful";
+var STATIC_CACHE = "unless-update-cache-v154-static";
 var MAIN_CHILD_CHUNK_REGEX = /child\-chunk\.(main\~[a-z0-9]+)\.min.js/i;
 var CHILD_CHUNK_REGEX = /child\-chunk\.([0-9]+)\.min.js/i;
 
@@ -12,7 +12,7 @@ self.addEventListener("install", function(evt) {
         return true;
     }
 
-    var not_urgent = Promise.allSettled([
+    Promise.allSettled([
         caches.open(USEFUL_CACHE).then(function (cache) {
             return cache.addAll([
                 "/src/images/Share.svg",

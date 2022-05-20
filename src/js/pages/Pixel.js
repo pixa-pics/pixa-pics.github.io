@@ -405,7 +405,18 @@ class Pixel extends React.Component {
 
                 import("../utils/lzp3_json").then(({LZP3}) => {
 
-                    api.set_settings({}, () => {}, attachment_array, LZP3);
+                    api.set_settings({}, (err, res) => {
+
+                        if(err) {
+
+                            actions.trigger_snackbar("Looks like I can't save your file as our compression module can't load.", 5700);
+                            actions.jamy_update("angry");
+                        }
+                    }, attachment_array, LZP3);
+                }).catch(() => {
+
+                    actions.trigger_snackbar("Looks like I can't save your file as our compression module can't load.", 5700);
+                    actions.jamy_update("angry");
                 });
             });
         }
@@ -490,10 +501,25 @@ class Pixel extends React.Component {
     _process_settings_attachment_result = (error, data) => {
 
         const { _canvas } = this.state;
-        _canvas.import_JS_state(data, () => {
+        this._handle_load_complete("image_preload", {});
 
-            this.setState({ _is_pixel_dialog_create_open: false});
-        });
+        if(Boolean(error) || !Boolean(_canvas)) {
+
+            console.log(error);
+            actions.trigger_snackbar("Looks like I can't get your file as something was erroneous.", 5700);
+            actions.jamy_update("angry");
+            this._handle_pixel_dialog_create_open();
+
+        }else {
+
+            this.setState({_kb: data.kb});
+
+            _canvas.import_JS_state(data, () => {
+
+                this.setState({ _is_pixel_dialog_create_open: false});
+            });
+
+        }
     };
 
     _update_settings() {
@@ -1056,7 +1082,13 @@ class Pixel extends React.Component {
 
         import("../utils/lzp3_json").then(({LZP3}) => {
 
+            this._handle_pixel_dialog_create_close();
+            this._handle_load("image_preload");
             api.get_settings(() => {}, ["json_state-ID" + id + ".json.lzp3"], this._process_settings_attachment_result, LZP3);
+        }).catch(() => {
+
+            actions.trigger_snackbar("Looks like I can't get your file as our compression module can't load.", 5700);
+            actions.jamy_update("angry");
         });
     };
 
