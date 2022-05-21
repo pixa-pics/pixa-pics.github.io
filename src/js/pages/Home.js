@@ -8,10 +8,7 @@ import actions from "../actions/utils";
 
 import get_svg_in_b64 from "../utils/svgToBase64";
 
-import AngelEmojiSvg from "../twemoji/react/1F607";
-const ANGELEMOJI = get_svg_in_b64(<AngelEmojiSvg />);
-import HearthEmojiSvg from "../twemoji/react/2665";
-const HEARTHEMOJI = get_svg_in_b64(<HearthEmojiSvg />);
+import ScopeEarth from "../icons/ScopeEarth";
 import EarthEmojiSvg from "../twemoji/react/1F30E";
 const EARTHEMOJI = get_svg_in_b64(<EarthEmojiSvg />);
 import StarEmojiSvg from "../twemoji/react/2B50";
@@ -277,10 +274,11 @@ const styles = theme => ({
         textShadow: "0px 0px 3px darkgoldenrod, 0px 0px 6px darkgoldenrod, 0px 0px 12px black",
         filter: "hue-rotate(75deg)",
         display: "inline-block",
+        transformOrigin: "left",
         transform: "scale(2.1)",
         fontWeight: "bold",
-        marginLeft: "8px",
-        marginRight: "16px"
+        marginLeft: "-24px",
+        marginRight: "48px"
     },
     revelantText: {
         color: "#eeb319",
@@ -410,8 +408,8 @@ class Home extends React.Component {
                 </div>
                 <div className={classes.headerContainer} style={{color: THEME_DAY && !IS_EVENING? "#000": "#fff"}}>
                     <h1 className={classes.titleh1} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff"}}>
-                        <span className={classes.stepPoints} style={{transform: "scale(1.6)"}}>1 ></span>
-                        <span><img alt="scientist-tweemoji" src={CEMOJI} className="emoji-150"/> <b><span className={classes.revelantText}>«PIXA.PICS» lovely pixel arts</span><span> (the picture's minima) just got ultra-light by state-shifting their colors and size.</span></b></span><br/>
+                        <span className={classes.stepPoints} style={{transform: "scale(1.6)"}}>1 >></span><img alt="scientist-tweemoji" src={CEMOJI} className="emoji-150"/>
+                        <span className={classes.revelantText}>«PIXA.PICS» lovely pixel arts</span><span> (the picture's minima) just got ultra-light by state-shifting their colors and size.</span><br/>
                     </h1>
                     <h2 className={classes.titleh2} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff"}}>
                         <span><b>Apply effects in laboratory? Yes or No?</b> Essential lab operations gives the <b><span className={classes.revelantText}>MAXIMA of PRIVACY</span></b> in a fashion not only looking great for the online-self...</span>
@@ -423,7 +421,7 @@ class Home extends React.Component {
                         <span><span className={classes.stepPoints}>2 >></span> <img alt="scientist-jacket-tweemoji" src={JACKETEMOJI} className="emoji-150"/> <b><span className={classes.revelantText}> WHILE EDITING</span></b> a <b >SANITIZED MINIMA-ART</b>, anyone may use <b >55+ tools in 7 panels for pixel art</b>, options in layers, filters, selections, shapes, effects,... <img alt="scientific-DNA-tweemoji" src={DNAEMOJI} className="emoji-150"/> to activate cool "NINJA" LAB-OPS!</span>
                     </h2>
                     <h2 className={classes.titleh2} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff"}}>
-                        <span><span className={classes.stepPoints}>3 >>></span> <img alt="scientist-jacket-tweemoji" style={{verticalAlign: "middle"}} src={GLASSESEMOJI} className="emoji-150"/> <b><span className={classes.revelantText}> RENDER UNLIMITED MINIMA-ART</span></b> in <b >4K<sup> Ultra HD</sup> images</b> or in <b >humanized ∞%<sup> Scalable</sup> shapes</b> of vectors using <img alt="laboratory-noidea-tweemoji" src={LABOPSEMOJI} style={{verticalAlign: "bottom"}} className="emoji-150"/>its DOT-MATRIX to get it majestically and visionary for you.</span>
+                        <span><span className={classes.stepPoints}>3 >></span> <img alt="scientist-jacket-tweemoji" style={{verticalAlign: "middle"}} src={GLASSESEMOJI} className="emoji-150"/> <b><span className={classes.revelantText}> RENDER UNLIMITED MINIMA-ART</span></b> in <b >4K<sup> Ultra HD</sup> images</b> or in <b >humanized ∞%<sup> Scalable</sup> shapes</b> of vectors using <img alt="laboratory-noidea-tweemoji" src={LABOPSEMOJI} style={{verticalAlign: "bottom"}} className="emoji-150"/>its DOT-MATRIX to get it majestically and visionary for you.</span>
                     </h2>
                     <h3 className={classes.subtitle} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff"}}>
                         <img alt="space-star-tweemoji" src={STAREMOJI} className="emoji"/> <span>IMAGINE tremendous (x6 svg, x32 png) <span>PIXEL ART</span> based on your images.</span>
@@ -443,7 +441,7 @@ class Home extends React.Component {
                     </Fade>
                     <Fade in={true} timeout={1250}>
                         <Button className={classes.homeCTAsendit} variant={"contained"} size={"large"} color="primary" onClick={(event) => {this._handle_speed_dial_action(event, "share")}}>
-                            SHARE NOW <StarEmojiSvg style={{marginLeft: 12, transform: "scale(1.75)", filter: "saturate(.5) contrast(1) brightness(2) drop-shadow(white 0px 0px 6px) hue-rotate(144deg)"}} className="emoji-150" />
+                            SHARE NOW <ScopeEarth style={{marginLeft: -12, transform: "translate(50%, 0px) scale(3)", filter: "drop-shadow(white 0px 0px 6px)"}} className="emoji-150" />
                         </Button>
                     </Fade>
                 </div>
