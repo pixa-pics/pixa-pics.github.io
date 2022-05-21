@@ -160,7 +160,8 @@ const styles = theme => ({
     backgroundImageImage: {
         right: "max(25vw, 25vh)",
         bottom: "max(25vw, 25vh)",
-        width: "max(47.5vw, 47.5vh)",
+        width: "min(47.5vw, 47.5vh)",
+        filter: "drop-shadow(0px 0px 12px white)",
         zIndex: 3,
         position: "fixed",
         transform: "translate(min(50vh, 50%), min(50vh, 50%))",
@@ -296,6 +297,7 @@ class Home extends React.Component {
             classes: props.classes,
             lc: props.lc,
             _history: HISTORY,
+            _image_name_infographics: null,
         };
     };
 
@@ -359,11 +361,26 @@ class Home extends React.Component {
 
 
         }, 250);
+
+        const all_image_name_infographics = ["HandMedal", "BrainGrenada", "Lucky", "Lips", "Pharaon", "NoBombs"];
+
+        let _image_index = 0;
+        let _image_name_infographics = all_image_name_infographics[_image_index];
+        let _image_auto_interval = setInterval(() => {
+
+            _image_index++;
+            _image_name_infographics = all_image_name_infographics[_image_index % parseInt(all_image_name_infographics.length - 1)];
+            this.setState({_image_name_infographics});
+
+        }, 777 * 10)
+
+        this.setState({_image_auto_interval});
     }
 
     componentWillUnmount() {
 
         actions.stop_sound();
+        clearInterval(this.state._image_auto_interval);
     }
 
     _go_to_editor = () => {
@@ -389,7 +406,7 @@ class Home extends React.Component {
 
     render() {
 
-        const { classes, _quote } = this.state;
+        const { classes, _quote, _image_name_infographics } = this.state;
 
         return (
             <div className={classes.root} style={{
@@ -403,7 +420,7 @@ class Home extends React.Component {
                         backgroundSize: THEME_DAY ? "175%": "50%",
                         backgroundColor: THEME_DAY ? IS_EVENING ? "#48004900": "#4c4c2600": "#21214200",
                         }}>
-                        <Fade in={true} timeout={1500}><img alt="Men discovering the pixa.pics holygrail in nature." src={"/src/images/Pixagrail.svg"} className={classes.backgroundImageImage}/></Fade>
+                        <Fade in={true} key={_image_name_infographics} timeout={500}><img alt="Image demo." src={`/src/images/infographics/${(_image_name_infographics || (THEME_DAY && !IS_EVENING ? "Pharaon": "Lucky").toString())}.svg`} className={classes.backgroundImageImage}/></Fade>
                     </div>
                 </div>
                 <div className={classes.headerContainer} style={{color: THEME_DAY && !IS_EVENING? "#000": "#fff"}}>
