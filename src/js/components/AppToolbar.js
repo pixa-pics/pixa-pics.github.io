@@ -190,6 +190,8 @@ class AppToolbar extends React.Component {
         this.state = {
             classes: props.classes,
             pathname: props.pathname,
+            camo: props.camo,
+            ret: props.ret,
             logged_account: props.logged_account,
             loaded_progress_percent: props.loaded_progress_percent,
             know_the_settings: props.know_the_settings,
@@ -332,7 +334,7 @@ class AppToolbar extends React.Component {
 
     render() {
 
-        const { classes, _is_pre_reset, pathname, loaded_progress_percent, know_the_settings, _swipeable_app_drawer_open, _account_menu_anchor_element, logged_account, jamy_state_of_mind, jamy_enabled, music_enabled } = this.state;
+        const { classes, ret, camo, _is_pre_reset, pathname, loaded_progress_percent, know_the_settings, _swipeable_app_drawer_open, _account_menu_anchor_element, logged_account, jamy_state_of_mind, jamy_enabled, music_enabled } = this.state;
 
         const JAMY = {
             angry: <JamyAngry className={classes.jamy} />,
@@ -394,7 +396,7 @@ class AppToolbar extends React.Component {
                                 <span className={classes.appTitle}>PIXA.PICS</span>
                             </div>
                         </Fade>
-                        <InnerToolbar know_if_logged={true} music_enabled={music_enabled} logged_account={logged_account} pathname={pathname} loaded_progress_percent={loaded_progress_percent}/>
+                        <InnerToolbar ret={ret} camo={camo} know_if_logged={true} music_enabled={music_enabled} logged_account={logged_account} pathname={pathname} loaded_progress_percent={loaded_progress_percent}/>
                         <Fade in>
                             <IconButton className={classes.accountButton}
                                         edge="end"

@@ -1,5 +1,5 @@
 import React from "react";
-import {withStyles} from "@material-ui/core";
+import {Slider, Typography, withStyles} from "@material-ui/core";
 
 import { t } from "../utils/t";
 
@@ -29,6 +29,13 @@ const styles = theme => ({
     },
     marginTop: {
         marginTop: theme.spacing(2)
+    },
+    sliderContainer: {
+        display: "flex",
+        overflow: "visible",
+    },
+    sliderLabel: {
+        marginRight: theme.spacing(2),
     }
 });
 
@@ -48,6 +55,8 @@ class Settings extends React.Component {
             _sfx_enabled: true,
             _music_enabled: false,
             _jamy_enabled: true,
+            _ret: 0,
+            _camo: 0,
             _panic_mode: false
         };
     };
@@ -74,11 +83,13 @@ class Settings extends React.Component {
         const _language = _selected_locales_code.split("-")[0];
         const _selected_currency = typeof settings.currency !== "undefined" ? settings.currency: "USD";
         const _panic_mode = typeof settings.panic !== "undefined" ? settings.panic: false;
+        const _ret = typeof settings.ret !== "undefined" ? settings.ret: 0;
+        const _camo = typeof settings.camo !== "undefined" ? settings.camo: 0;
 
         actions.trigger_loading_update(0);
         actions.trigger_loading_update(100);
 
-        this.setState({ _fees, _sfx_enabled, _jamy_enabled, _selected_locales_code, _language, _selected_currency, _panic_mode, _music_enabled });
+        this.setState({ _fees, _sfx_enabled, _jamy_enabled, _selected_locales_code, _language, _selected_currency, _panic_mode, _music_enabled, _ret, _camo});
     };
 
     _update_settings() {
@@ -187,9 +198,25 @@ class Settings extends React.Component {
         return fuzzy.filter(input_value.inputValue, list, options);
     };
 
+    _set_camo_from_slider = (event, value) => {
+
+        this.setState({_camo: value}, () => {
+
+            api.set_settings({camo: value + 0, ret: 0 + this.state._ret},  this._on_settings_changed);
+        });
+    };
+
+    _set_ret_from_slider = (event, value) => {
+
+        this.setState({_ret: value}, () => {
+
+            api.set_settings({ret: value + 0, camo: 0 + this.state._camo},  this._on_settings_changed);
+        });
+    };
+
     render() {
 
-        const { _locales,  _sfx_enabled, _music_enabled, _jamy_enabled, _currency_countries, _selected_locales_code, classes } = this.state;
+        const { _locales,  _sfx_enabled, _music_enabled, _jamy_enabled, _currency_countries, _selected_locales_code, classes, _camo, _ret } = this.state;
 
         let locales = _locales[0];
 
@@ -266,6 +293,29 @@ class Settings extends React.Component {
                         </Card>
                     </Fade>
                     <Fade in timeout={225*3}>
+                        <Card>
+                            <CardHeader title={"Visuals"} />
+                            <CardContent>
+                                <div className={classes.sliderContainer}>
+                                    <Typography className={classes.sliderLabel} id="ret-slider"
+                                                gutterBottom>Symbol</Typography>
+                                    <Slider value={_ret} step={1}
+                                            valueLabelDisplay="auto" min={0} max={6}
+                                            onChangeCommitted={this._set_ret_from_slider}
+                                            aria-labelledby="ret-slider"/>
+                                </div>
+                                <div className={classes.sliderContainer}>
+                                    <Typography className={classes.sliderLabel} id="camo-slider"
+                                                gutterBottom>Toolbar</Typography>
+                                    <Slider value={_camo} step={1}
+                                            valueLabelDisplay="auto" min={0} max={6}
+                                            onChangeCommitted={this._set_camo_from_slider}
+                                            aria-labelledby="camo-slider"/>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </Fade>
+                    <Fade in timeout={225*4}>
                         <Card className={classes.marginTop}>
                             <CardHeader title={t( "pages.settings.sound")} />
                             <CardContent>
@@ -284,7 +334,7 @@ class Settings extends React.Component {
                             </CardContent>
                         </Card>
                     </Fade>
-                    <Fade in timeout={225*4}>
+                    <Fade in timeout={225*5}>
                         <Card style={{position: "relative", zIndex: 1}} className={classes.marginTop}>
                             <div style={{backgroundImage: "url(/src/images/Team.svg)", backgroundSize: "cover", backgroundPosition:"center", backgroundRepeat: "no-repeat", padding: 0, margin: 0, position: "absolute", width: "100%", height: "100%", filter: "contrast(0.777) saturate(1.314) opacity(0.369)", zIndex: "-1"}}></div>
                             <CardHeader title={t( "pages.settings.superintendent")} />

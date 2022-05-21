@@ -118,6 +118,8 @@ class Index extends React.Component {
             _snackbar_open: false,
             _snackbar_message: "",
             _snackbar_auto_hide_duration: 1975,
+            _ret: 0,
+            _camo: 0,
             _sfx_enabled: true,
             _music_enabled: false,
             _jamy_enabled: true,
@@ -296,10 +298,12 @@ class Index extends React.Component {
             const _language = _selected_locales_code.split("-")[0];
             const _selected_currency = typeof settings.currency !== "undefined" ? settings.currency: "USD";
             const _onboarding_enabled = typeof settings.onboarding !== "undefined" ? settings.onboarding: true;
+            const _ret = typeof settings.ret !== "undefined" ? settings.ret: 0;
+            const _camo = typeof settings.camo !== "undefined" ? settings.camo: 0;
 
             document.documentElement.lang = _language;
             document.body.setAttribute("style", "");
-            this.setState({ _onboarding_enabled, _sfx_enabled, _music_enabled, _jamy_enabled, _selected_locales_code, _language, _selected_currency, _know_the_settings: true, _has_played_index_music_counter: parseInt((!this.state._know_the_settings && _music_enabled) ? 1: this.state._has_played_index_music_counter )});
+            this.setState({ _ret, _camo, _onboarding_enabled, _sfx_enabled, _music_enabled, _jamy_enabled, _selected_locales_code, _language, _selected_currency, _know_the_settings: true, _has_played_index_music_counter: parseInt((!this.state._know_the_settings && _music_enabled) ? 1: this.state._has_played_index_music_counter )});
 
             setTimeout(async() => {
 
@@ -557,7 +561,7 @@ class Index extends React.Component {
         const { pathname, classes, _selected_locales_code } = this.state;
         const { _snackbar_open, _snackbar_message, _snackbar_auto_hide_duration } = this.state;
         const { _language, _is_share_dialog_open } = this.state;
-        const { _logged_account, _know_if_logged, _loaded_progress_percent, _know_the_settings, _jamy_state_of_mind, _jamy_enabled, _music_enabled } = this.state;
+        const { _logged_account, _know_if_logged, _loaded_progress_percent, _know_the_settings, _jamy_state_of_mind, _jamy_enabled, _music_enabled, _ret, _camo } = this.state;
 
         const JAMY = {
             angry: <JamyAngry className={classes.jamy} />,
@@ -613,6 +617,8 @@ class Index extends React.Component {
                         onClose={this._close_snackbar}
                     />
                     <AppToolbar
+                        ret={_ret}
+                        camo={_camo}
                         loaded_progress_percent={_loaded_progress_percent}
                         know_if_logged={_know_if_logged}
                         know_the_settings={_know_the_settings}
