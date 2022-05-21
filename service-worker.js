@@ -1,6 +1,6 @@
-var REQUIRED_CACHE = "unless-update-cache-v157-required";
-var USEFUL_CACHE = "unless-update-cache-v157-useful";
-var STATIC_CACHE = "unless-update-cache-v157-static";
+var REQUIRED_CACHE = "unless-update-cache-v158-required";
+var USEFUL_CACHE = "unless-update-cache-v158-useful";
+var STATIC_CACHE = "unless-update-cache-v158-static";
 var MAIN_CHILD_CHUNK_REGEX = /child\-chunk\.(main\~[a-z0-9]+)\.min.js/i;
 var CHILD_CHUNK_REGEX = /child\-chunk\.([0-9]+)\.min.js/i;
 
@@ -31,6 +31,10 @@ self.addEventListener("install", function(evt) {
                 "/src/images/illustrations/Egypt-day.svg",
                 "/src/images/illustrations/USA-night.svg",
                 "/src/images/illustrations/Itsukishima.svg",
+                "/src/images/illustrations/Bronze.svg",
+                "/src/images/illustrations/Diamond.svg",
+                "/src/images/illustrations/Gold.svg",
+                "/src/images/illustrations/Silver.svg",
             ]);
         }),
         caches.open(REQUIRED_CACHE).then(function (cache) {

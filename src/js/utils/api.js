@@ -265,6 +265,9 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
 
                         const continue_push_in_db = (settings_docs, pixa_settings ) => {
 
+                            window._pixa_settings = {...pixa_settings};
+                            callback_function_info(null, {...pixa_settings});
+
                             window.settings_db.put({
                                 _id: settings_docs[0]._id,
                                 _rev: settings_docs[0]._rev,
@@ -280,9 +283,6 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
                                     window.settings_db.bulkDocs(settings_docs.map((sd) => {return {_id: sd._id, _rev: sd._rev, _deleted: true, timestamp: 0, data: null, info: null, _attachments: {}}}), {force: true});
                                 }
 
-                                window._pixa_settings = {...pixa_settings};
-                                callback_function_info(null, {...pixa_settings});
-
                                 window.settings_db.compact();
                                 window.settings_db.viewCleanup();
                             });
@@ -291,6 +291,9 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
                     }else {
 
                         let pixa_settings = _merge_object(JSON.parse(settings_docs[0].info), info);
+
+                        window._pixa_settings = {...pixa_settings};
+                        callback_function_info(null, {...pixa_settings});
 
                         window.settings_db.put({
                             _id: settings_docs[0]._id,
@@ -306,9 +309,6 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
                                 settings_docs.splice(0, 1);
                                 window.settings_db.bulkDocs(settings_docs.map((sd) => {return {_id: sd._id, _rev: sd._rev, _deleted: true, timestamp: 0, data: null, info: null, _attachments: {}}}), {force: true});
                             }
-
-                            window._pixa_settings = {...pixa_settings};
-                            callback_function_info(null, {...pixa_settings});
                         });
                     }
 
@@ -361,14 +361,15 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
 
                 const continue_push_in_db = (attachments, pixa_settings) => {
 
+                    window._pixa_settings = {...pixa_settings};
+                    callback_function_info(null, {...pixa_settings});
+
                     window.settings_db.post({
                         info: JSON.stringify(pixa_settings),
                         timestamp: Date.now(),
                         _attachments: attachments
                     }).then((response) => {
 
-                        window._pixa_settings = {...pixa_settings};
-                        callback_function_info(null, {...pixa_settings});
                         window.settings_db.compact();
                         window.settings_db.viewCleanup();
                     });
