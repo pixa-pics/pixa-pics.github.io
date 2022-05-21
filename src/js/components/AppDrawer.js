@@ -41,7 +41,7 @@ const styles = theme => ({
         color: theme.palette.secondary.contrastText,
         boxShadow: "0px 2px 4px -1px rgb(0 0 0 / 20%), 0px 4px 5px 0px rgb(0 0 0 / 14%), 0px 1px 10px 0px rgb(0 0 0 / 12%)",
         border: 0,
-        backgroundImage: `linear-gradient(90deg, #ffffff05 40%, #00020e 90%, black 100%), linear-gradient(0deg, rgb(0 5 10 / 75%) 32px, rgb(16 41 4 / 50%) 128px, rgb(1 14 0) 384px, #01030e 100%), url(/src/images/Spy.svg)`,
+        backgroundImage: `linear-gradient(90deg, #0517318c 40%, #00020e 90%, black 100%), linear-gradient(0deg, rgb(0 5 10) 32px, rgb(4 45 7 / 33%) 128px, rgb(0 0 0) 384px, #01030e 100%), url(/src/images/Spy.svg)`,
         backgroundRepeat: "no-repeat",
         backgroundPosition: "calc(50% + 16px) calc(100% - 0px)",
         backgroundSize: "calc(100% + 96px)",

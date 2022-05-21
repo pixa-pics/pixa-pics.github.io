@@ -1,6 +1,6 @@
-var REQUIRED_CACHE = "unless-update-cache-v159-required";
-var USEFUL_CACHE = "unless-update-cache-v159-useful";
-var STATIC_CACHE = "unless-update-cache-v159-static";
+var REQUIRED_CACHE = "unless-update-cache-v160-required";
+var USEFUL_CACHE = "unless-update-cache-v160-useful";
+var STATIC_CACHE = "unless-update-cache-v160-static";
 var MAIN_CHILD_CHUNK_REGEX = /child\-chunk\.(main\~[a-z0-9]+)\.min.js/i;
 var CHILD_CHUNK_REGEX = /child\-chunk\.([0-9]+)\.min.js/i;
 
@@ -85,15 +85,14 @@ self.addEventListener("install", function(evt) {
                 "/father-chunk.norris.min.js", // This is chunk norris, master of all chunk
                 "/child-chunk.main~0d5ee630.min.js",
                 "/child-chunk.main~1f20a385.min.js",
+                "/child-chunk.main~2a42e354.min.js",
                 "/child-chunk.main~5a2dc592.min.js",
                 "/child-chunk.main~9acc357d.min.js",
-                "/child-chunk.main~253ae210.min.js",
+                "/child-chunk.main~41a6ab2c.min.js",
                 "/child-chunk.main~748942c6.min.js",
                 "/child-chunk.main~8084949c.min.js",
                 "/child-chunk.main~af9f4ef7.min.js",
                 "/child-chunk.main~c1dd23ef.min.js",
-                "/child-chunk.main~c3be6df1.min.js",
-                "/child-chunk.main~d939e436.min.js",
                 "/child-chunk.main~f9ca8911.min.js",
             ]);
         }),
