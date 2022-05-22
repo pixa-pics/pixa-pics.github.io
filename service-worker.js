@@ -1,6 +1,6 @@
-var REQUIRED_CACHE = "unless-update-cache-v164-required";
-var USEFUL_CACHE = "unless-update-cache-v164-useful";
-var STATIC_CACHE = "unless-update-cache-v164-static";
+var REQUIRED_CACHE = "unless-update-cache-v165-required";
+var USEFUL_CACHE = "unless-update-cache-v165-useful";
+var STATIC_CACHE = "unless-update-cache-v165-static";
 var MAIN_CHILD_CHUNK_REGEX = /child\-chunk\.(main\~[a-z0-9]+)\.min.js/i;
 var CHILD_CHUNK_REGEX = /child\-chunk\.([0-9]+)\.min.js/i;
 
@@ -15,6 +15,7 @@ self.addEventListener("install", function(evt) {
     Promise.allSettled([
         caches.open(USEFUL_CACHE).then(function (cache) {
             return cache.addAll([
+                "/src/images/infographics/Buckets.svg",
                 "/src/images/infographics/Lips.svg",
                 "/src/images/infographics/Lucky.svg",
                 "/src/images/infographics/NoBombs.svg",
@@ -102,7 +103,8 @@ self.addEventListener("install", function(evt) {
                 "/src/images/manifest/icon-white.png",
                 "/src/images/favicon.ico",
                 "/src/images/logo-transparent.png",
-                "/src/images/Spartan.svg",
+                "/src/images/infographics/HelmetSpart.svg",
+                "/src/images/infographics/Wardenclyffe.svg",
                 "/src/images/Click.svg",
             ]);
         })

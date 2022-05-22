@@ -157,11 +157,13 @@ const styles = theme => ({
             top: 0,
             left: 0,
             content: `' '`,
-            backgroundPosition: "10% 100%",
-            opacity: ".777",
+            backgroundPosition: "25% 100%",
             backgroundRepeat: "no-repeat",
-            backgroundSize: "250%",
-            background: `linear-gradient(to top, transparent -64px, #060e23 172px),  url(/src/images/illustrations/Spartan.svg)`
+            backgroundSize: "100%",
+            opacity: ".777",
+            backgroundImage: `linear-gradient(353deg, #060e23 10%, #060e235e, #060e236e 60%, #060e235c, #060e23 90%), linear-gradient(353deg, #060e23 0%, #060e235e, #00000000 60%, #060e235c, #060e23 100%),  url(/src/images/infographics/HelmetSpart.svg)`,
+            transition: "all cubic-bezier(0.4, 0, 0.2, 1) 750ms",
+            zIndex: -1
         }
     },
     drawerPrivacyHintHidden: {
@@ -185,12 +187,13 @@ const styles = theme => ({
             top: 0,
             left: 0,
             content: `' '`,
-            backgroundPosition: "10% 100%",
+            backgroundPosition: "25% 100%",
             backgroundRepeat: "no-repeat",
-            animation: "all cubic-bezier(0.4, 0, 0.2, 1) 700ms",
             backgroundSize: "100%",
-            opacity: "1",
-            backgroundImage: `linear-gradient(to top, transparent -16px, #060e23 72px),  url(/src/images/illustrations/Spartan.svg)`
+            opacity: "0",
+            backgroundImage: `linear-gradient(353deg, #060e23 10%, #060e235e, #060e236e 60%, #060e235c, #060e23 90%), linear-gradient(353deg, #060e23 0%, #060e235e, #00000000 60%, #060e235c, #060e23 100%),  url(/src/images/infographics/HelmetSpart.svg)`,
+            transition: "all cubic-bezier(0.4, 0, 0.2, 1) 2500ms",
+            zIndex: -1,
         }
     }
 });
@@ -376,8 +379,8 @@ class AppToolbar extends React.Component {
                         </Toolbar>
                         <DrawerContent logged_account={logged_account} pathname={pathname} onClose={this._handle_close_swipeable_app_drawer}/>
                     <div className={_swipeable_app_drawer_open ? classes.drawerPrivacyHint: classes.drawerPrivacyHintHidden}>
-                        <p>Cutting off annoying details is free while on the journey! Easily becoming a lighter adventure, using a sanitized online-self's image tends to honor one's real beauty stronger.<br/><br/>THIS APP: Is in your hands only, doesn't sniff network requests, and is neutral just like Switzerland.</p>
-                        <h4 style={{color: "#ffffffff", marginBottom: 0}}>Minding that privacy matters?!<br/>This is Pixa! Join us now ^^</h4>
+                        <p style={{fontSize: "0.777em"}}>Cutting off annoying details is free while on the journey! Easily becoming a lighter adventure, using a sanitized online-self's image tends to honor one's real beauty stronger.<br/><br/>THIS APP: Is in your hands only, doesn't sniff network requests, and is neutral just like Switzerland.</p>
+                        <h4 style={{color: "#ffffffff", marginBottom: 0}}>Privacy doesn't matters?! This is madness; This is Pixaaaaa! ... Pics</h4>
                     </div>
                 </SwipeableDrawer>
                 <AppBar position="fixed" className={classes.appBar}>

@@ -3,8 +3,6 @@ import { withStyles } from "@material-ui/core";
 
 import { t } from "../utils/t";
 
-import LabEmojiSvg from "../twemoji/react/1F9Ea";
-
 import {Fade, Divider, List, ListItem, ListItemIcon, ListItemText, Badge} from "@material-ui/core";
 
 import PersonIcon from "@material-ui/icons/Person";
@@ -33,9 +31,16 @@ const styles = theme => ({
     },
     iconLeft: {
         color: theme.palette.secondary.contrastText,
-        margin: "0px 12px",
-        width: "48px",
-        height: "48px",
+        margin: "0px 16px 0px 8px",
+        transform: "scale(1.1)",
+        filter: "opacity(0.777)",
+        width: "56px",
+        height: "56px",
+        transition: "all cubic-bezier(0.4, 0, 0.2, 1) 225ms",
+        "&:hover": {
+            filter: "opacity(1)",
+            transform: "scale(1)",
+        },
     },
     iconRight: {
         color: theme.palette.secondary.contrastText,
@@ -131,7 +136,7 @@ class DrawerContent extends React.Component {
                     <List>
                         <ListItem style={{backgroundColor: "#ffffff33"}} button onClick={this._open_pixel_page}>
                             <ListItemIcon>
-                                <LabEmojiSvg className={classes.iconLeft}/>
+                                <img alt="Laboratory" src={"/src/images/infographics/Wardenclyffe.svg"} className={classes.iconLeft}/>
                             </ListItemIcon>
                             <ListItemText className={classes.boldListItemText} primary={"PIXEL ART LABORATORY"} />
                         </ListItem>

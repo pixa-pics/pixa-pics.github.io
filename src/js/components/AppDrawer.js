@@ -72,18 +72,17 @@ const styles = theme => ({
             top: 0,
             left: 0,
             content: `' '`,
-            backgroundPosition: "10% 100%",
+            backgroundPosition: "25% 100%",
             backgroundRepeat: "no-repeat",
             backgroundSize: "100%",
-            opacity: "1",
-            backgroundImage: `linear-gradient(to top, transparent -16px, #010310 72px),  url(/src/images/illustrations/Spartan.svg)`,
-            animation: "all cubic-bezier(0.4, 0, 0.2, 1) 700ms",
+            opacity: "0.5",
+            backgroundImage: `linear-gradient(353deg, #010310 10%, #0103105e, #0103106e 60%, #0103105c, #010310 90%), linear-gradient(353deg, #010310 0%, #0103105e, #00000000 60%, #0103105c, #010310 100%),  url(/src/images/infographics/HelmetSpart.svg)`,
+            transition: "all cubic-bezier(0.4, 0, 0.2, 1) 777ms",
             zIndex: -1,
         },
         "&:hover::before": {
-            backgroundSize: "250%",
-            backgroundImage: `linear-gradient(to top, transparent -64px, #010310 172px),  url(/src/images/illustrations/Spartan.svg)`,
-            opacity: ".777",
+            opacity: "0",
+            transition: "all cubic-bezier(0.4, 0, 0.2, 1) 1111ms",
         }
     }
 });
@@ -120,8 +119,8 @@ class AppDrawer extends React.Component {
                         <DrawerContent pathname={pathname} onClose={() => {}} />
                         <Fade in={true} timeout={400}>
                             <div className={classes.drawerPrivacyHint}>
-                                <p>Cutting off annoying details is free while on the journey! Easily becoming a lighter adventure, using a sanitized online-self's image tends to honor one's real beauty stronger.<br/><br/>THIS APP: Is in your hands only, doesn't sniff network requests, and is neutral just like Switzerland.</p>
-                                <h4 style={{color: "#ffffffff", marginBottom: 0}}>Minding that privacy matters?!<br/>This is Pixa! Join us now ^^</h4>
+                                <p style={{fontSize: "0.777em"}}>Cutting off annoying details is free while on the journey! Easily becoming a lighter adventure, using a sanitized online-self's image tends to honor one's real beauty stronger.<br/><br/>THIS APP: Is in your hands only, doesn't sniff network requests, and is neutral just like Switzerland.</p>
+                                <h4 style={{color: "#ffffffff", marginBottom: 0}}>Privacy doesn't matters?! This is madness; This is Pixaaaaa! ... Pics.</h4>
                             </div>
                         </Fade>
                     </div>

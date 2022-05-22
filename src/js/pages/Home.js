@@ -165,6 +165,23 @@ const styles = theme => ({
         zIndex: 3,
         position: "fixed",
         transform: "translate(min(50vh, 50%), min(50vh, 50%))",
+        "h3&": {
+            display: "none",
+        },
+        [theme.breakpoints.down("md")]: {
+            "& ": {
+                fontSize: 12,
+                right: "max(20vw, 20vh)",
+                bottom: "max(30vw, 30vh)",
+                width: "min(40vw, 40vh)",
+            },
+            "h2&": {
+                display: "none",
+            },
+            "h3&": {
+                display: "inherit",
+            },
+        },
     },
     card: {
         margin: theme.spacing(1, 2)
@@ -179,6 +196,12 @@ const styles = theme => ({
             display: "none",
         },
         [theme.breakpoints.down("sm")]: {
+            margin: "8px 24px",
+            "& blockquote": {
+                fontSize: "8px",
+            }
+        },
+        [theme.breakpoints.down("md")]: {
             margin: "8px 24px",
             "& blockquote": {
                 fontSize: "10px",
@@ -198,10 +221,10 @@ const styles = theme => ({
             fontWeight: "bold",
         },
         [theme.breakpoints.down("md")]: {
-            fontSize: "24px",
+            fontSize: "22px",
         },
         [theme.breakpoints.down("sm")]: {
-            fontSize: "18px",
+            fontSize: "16px",
             "& sup": {
                 fontSize: "0.5em",
                 opacity: "0.77",
@@ -224,7 +247,7 @@ const styles = theme => ({
             fontSize: "16px",
         },
         [theme.breakpoints.down("sm")]: {
-            fontSize: "12px",
+            fontSize: "10px",
             "& sup": {
                 fontSize: "0.66em",
                 opacity: "1",
@@ -251,7 +274,7 @@ const styles = theme => ({
             },
             fontWeight: "normal",
             [theme.breakpoints.down("sm")]: {
-                fontSize: 12,
+                fontSize: 10,
                 display: "none",
                 lineHeight: "1.75em",
             },
@@ -278,8 +301,13 @@ const styles = theme => ({
         transformOrigin: "left",
         transform: "scale(2.1)",
         fontWeight: "bold",
-        marginLeft: "-24px",
-        marginRight: "48px"
+        marginRight: "36px",
+        [theme.breakpoints.down("sm")]: {
+            marginRight: "24px",
+        },
+        [theme.breakpoints.down("sm")]: {
+            marginRight: "16px",
+        },
     },
     revelantText: {
         color: "#eeb319",
@@ -362,7 +390,7 @@ class Home extends React.Component {
 
         }, 250);
 
-        const all_image_name_infographics = ["Lucky", "Lips", "Pyrawoman", "Pharaon", "NoBombs"];
+        const all_image_name_infographics = ["Lucky", "Buckets", "Lips", "NoBombs", "Pyrawoman", "Pharaon"];
 
         let _image_index = 1;
         let _image_name_infographics = all_image_name_infographics[_image_index];
@@ -421,7 +449,8 @@ class Home extends React.Component {
                         backgroundColor: THEME_DAY ? IS_EVENING ? "#48004900": "#4c4c2600": "#21214200",
                         }}>
                         <Fade in={true} key={_image_name_infographics} timeout={500}><img alt="Image demo." src={`/src/images/infographics/${(_image_name_infographics || (THEME_DAY && !IS_EVENING ? "Pharaon": "Lucky").toString())}.svg`} className={classes.backgroundImageImage}/></Fade>
-                        <h2 className={classes.backgroundImageImage} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff", backgroundColor: THEME_DAY && !IS_EVENING ? "#ffffff99": "#00000099", padding: 16, textAlign: "center"}}>RENDER NOW IN <b>humanized ∞% (SVG) shapes!</b> (from pixel art).</h2>
+                        <h2 className={classes.backgroundImageImage} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff", backgroundColor: THEME_DAY && !IS_EVENING ? "#ffffff99": "#00000099", padding: 16, textAlign: "center"}}>RENDER NOW in <b> ∞ SHAPES!</b> (YES, SVG from pixel art).</h2>
+                        <h3 className={classes.backgroundImageImage} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff", backgroundColor: THEME_DAY && !IS_EVENING ? "#ffffff99": "#00000099", padding: 16, textAlign: "center"}}>REAL RENDER!</h3>
                     </div>
                 </div>
                 <div className={classes.headerContainer} style={{color: THEME_DAY && !IS_EVENING? "#000": "#fff"}}>
