@@ -1,6 +1,6 @@
-var REQUIRED_CACHE = "unless-update-cache-v163-required";
-var USEFUL_CACHE = "unless-update-cache-v163-useful";
-var STATIC_CACHE = "unless-update-cache-v163-static";
+var REQUIRED_CACHE = "unless-update-cache-v164-required";
+var USEFUL_CACHE = "unless-update-cache-v164-useful";
+var STATIC_CACHE = "unless-update-cache-v164-static";
 var MAIN_CHILD_CHUNK_REGEX = /child\-chunk\.(main\~[a-z0-9]+)\.min.js/i;
 var CHILD_CHUNK_REGEX = /child\-chunk\.([0-9]+)\.min.js/i;
 
@@ -15,12 +15,11 @@ self.addEventListener("install", function(evt) {
     Promise.allSettled([
         caches.open(USEFUL_CACHE).then(function (cache) {
             return cache.addAll([
-                "/src/images/infographics/BrainGrenada.svg",
-                "/src/images/infographics/HandMedal.svg",
                 "/src/images/infographics/Lips.svg",
                 "/src/images/infographics/Lucky.svg",
                 "/src/images/infographics/NoBombs.svg",
                 "/src/images/infographics/Pharaon.svg",
+                "/src/images/infographics/Pyrawoman.svg",
                 "/src/images/REMINDER.svg",
                 "/src/images/Share.svg",
                 "/src/images/Onboarding.svg",
@@ -86,13 +85,14 @@ self.addEventListener("install", function(evt) {
                 "/father-chunk.norris.min.js", // This is chunk norris, master of all chunk
                 "/child-chunk.main~0d5ee630.min.js",
                 "/child-chunk.main~1f20a385.min.js",
+                "/child-chunk.main~3e0e6f33.min.js",
                 "/child-chunk.main~5a2dc592.min.js",
                 "/child-chunk.main~9acc357d.min.js",
                 "/child-chunk.main~253ae210.min.js",
                 "/child-chunk.main~748942c6.min.js",
-                "/child-chunk.main~8084949c.min.js",
                 "/child-chunk.main~af9f4ef7.min.js",
                 "/child-chunk.main~c1dd23ef.min.js",
+                "/child-chunk.main~c3be6df1.min.js",
                 "/child-chunk.main~d939e436.min.js",
                 "/child-chunk.main~f9ca8911.min.js",
             ]);
@@ -102,7 +102,7 @@ self.addEventListener("install", function(evt) {
                 "/src/images/manifest/icon-white.png",
                 "/src/images/favicon.ico",
                 "/src/images/logo-transparent.png",
-                "/src/images/Spy.svg",
+                "/src/images/Spartan.svg",
                 "/src/images/Click.svg",
             ]);
         })

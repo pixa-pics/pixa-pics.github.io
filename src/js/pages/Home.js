@@ -161,7 +161,7 @@ const styles = theme => ({
         right: "max(25vw, 25vh)",
         bottom: "max(25vw, 25vh)",
         width: "min(47.5vw, 47.5vh)",
-        filter: "drop-shadow(0px 0px 12px white)",
+        filter: "drop-shadow(0px 0px 12px #00000066)",
         zIndex: 3,
         position: "fixed",
         transform: "translate(min(50vh, 50%), min(50vh, 50%))",
@@ -362,14 +362,14 @@ class Home extends React.Component {
 
         }, 250);
 
-        const all_image_name_infographics = ["HandMedal", "BrainGrenada", "Lucky", "Lips", "Pharaon", "NoBombs"];
+        const all_image_name_infographics = ["Lucky", "Lips", "Pyrawoman", "Pharaon", "NoBombs"];
 
-        let _image_index = 0;
+        let _image_index = 1;
         let _image_name_infographics = all_image_name_infographics[_image_index];
         let _image_auto_interval = setInterval(() => {
 
+            _image_name_infographics = all_image_name_infographics[_image_index % parseInt(all_image_name_infographics.length + 1)];
             _image_index++;
-            _image_name_infographics = all_image_name_infographics[_image_index % parseInt(all_image_name_infographics.length - 1)];
             this.setState({_image_name_infographics});
 
         }, 777 * 10)
@@ -421,6 +421,7 @@ class Home extends React.Component {
                         backgroundColor: THEME_DAY ? IS_EVENING ? "#48004900": "#4c4c2600": "#21214200",
                         }}>
                         <Fade in={true} key={_image_name_infographics} timeout={500}><img alt="Image demo." src={`/src/images/infographics/${(_image_name_infographics || (THEME_DAY && !IS_EVENING ? "Pharaon": "Lucky").toString())}.svg`} className={classes.backgroundImageImage}/></Fade>
+                        <h2 className={classes.backgroundImageImage} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff", backgroundColor: THEME_DAY && !IS_EVENING ? "#ffffff99": "#00000099", padding: 16, textAlign: "center"}}>RENDER NOW IN <b>humanized ∞% (SVG) shapes!</b> (from pixel art).</h2>
                     </div>
                 </div>
                 <div className={classes.headerContainer} style={{color: THEME_DAY && !IS_EVENING? "#000": "#fff"}}>
