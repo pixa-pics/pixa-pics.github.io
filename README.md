@@ -21,12 +21,12 @@ All the screenshots were captured using a "Samsung Galaxy J3 (2017)" having 2gb 
 
 #### Zebrapplin' wide a pixel art being large when things come down the line, don't you use this saying often, don't you?
 
-![Any of y'all got some art](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/images/screenshots/zebrapplinapromo.png)
+![Any of y'all got some art](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/646d4de1a4bc3758a0b8ce433f724245e10e9543/doc/screenshots/home_screenshot_2205.png)
 
 
 ![](http://ForTheBadge.com/images/badges/built-by-developers.svg) [![forthebadge](https://forthebadge.com/images/badges/powered-by-coffee.svg)](https://forthebadge.com) [![forthebadge](https://forthebadge.com/images/badges/its-not-a-lie-if-you-believe-it.svg)](https://forthebadge.com)
 
-[![forthebadge](https://forthebadge.com/images/badges/as-seen-on-tv.svg)](https://forthebadge.com) [![forthebadge](https://forthebadge.com/images/badges/open-source.svg)](https://forthebadge.com)  [![forthebadge](https://forthebadge.com/images/badges/powered-by-black-magic.svg)](https://forthebadge.com) 
+[![forthebadge](https://forthebadge.com/images/badges/as-seen-on-tv.svg)](https://forthebadge.com)  [![forthebadge](https://forthebadge.com/images/badges/powered-by-black-magic.svg)](https://forthebadge.com)  [![forthebadge](https://forthebadge.com/images/badges/open-source.svg)](https://forthebadge.com)
 
 # The challenges of first-class active protection for the preservation of identity
 
