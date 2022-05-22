@@ -292,6 +292,11 @@ class Settings extends React.Component {
                             </CardContent>
                         </Card>
                     </Fade>
+                    <Fade in timeout={225*2}>
+                        <div style={{textAlign: "right"}}>
+                            <img src="/src/images/REMINDER.svg" className={classes.marginTop} style={{padding: 0, margin: 0, width: "50%", height: "100%"}}></img>
+                        </div>
+                    </Fade>
                     <Fade in timeout={225*3}>
                         <Card>
                             <CardHeader title={"Visuals"} />
@@ -300,7 +305,7 @@ class Settings extends React.Component {
                                     <Typography className={classes.sliderLabel} id="ret-slider"
                                                 gutterBottom>Symbol</Typography>
                                     <Slider value={_ret} step={1}
-                                            valueLabelDisplay="auto" min={0} max={6}
+                                            valueLabelDisplay="auto" min={0} max={8}
                                             onChangeCommitted={this._set_ret_from_slider}
                                             aria-labelledby="ret-slider"/>
                                 </div>
@@ -308,7 +313,7 @@ class Settings extends React.Component {
                                     <Typography className={classes.sliderLabel} id="camo-slider"
                                                 gutterBottom>Toolbar</Typography>
                                     <Slider value={_camo} step={1}
-                                            valueLabelDisplay="auto" min={0} max={6}
+                                            valueLabelDisplay="auto" min={0} max={8}
                                             onChangeCommitted={this._set_camo_from_slider}
                                             aria-labelledby="camo-slider"/>
                                 </div>
@@ -336,7 +341,7 @@ class Settings extends React.Component {
                     </Fade>
                     <Fade in timeout={225*5}>
                         <Card style={{position: "relative", zIndex: 1}} className={classes.marginTop}>
-                            <div style={{backgroundImage: "url(/src/images/Team.svg)", backgroundSize: "cover", backgroundPosition:"center", backgroundRepeat: "no-repeat", padding: 0, margin: 0, position: "absolute", width: "100%", height: "100%", filter: "contrast(0.777) saturate(1.314) opacity(0.369)", zIndex: "-1"}}></div>
+                            <div style={{backgroundImage: "url(/src/images/Team.svg)", backgroundSize: "cover", backgroundPosition:"center", backgroundRepeat: "no-repeat", padding: 0, margin: 0, position: "absolute", width: "100%", height: "100%", filter: "contrast(1.618) saturate(0.777) opacity(0.314) sepia(1)", zIndex: "-1"}}></div>
                             <CardHeader title={t( "pages.settings.superintendent")} />
                             <CardContent>
                                 <FormControlLabel
