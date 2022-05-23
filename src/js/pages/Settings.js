@@ -290,12 +290,12 @@ class Settings extends React.Component {
                                 <h2><img src={"/src/images/league/Diamond.svg"} style={{verticalAlign: "middle", height: "2em"}}/> 0) Diamond Supporters <sup style={{fontSize: "0.5em"}}>(Businesses that involve our own)</sup></h2>
                                 <p>Coming soon!</p>
                             </CardContent>
+                            <CardContent>
+                                <div style={{textAlign: "right"}}>
+                                    <img src="/src/images/REMINDER.svg" className={classes.marginTop} style={{padding: 0, margin: 0, width: "50%", height: "100%"}}></img>
+                                </div>
+                            </CardContent>
                         </Card>
-                    </Fade>
-                    <Fade in timeout={225*2}>
-                        <div style={{textAlign: "right"}}>
-                            <img src="/src/images/REMINDER.svg" className={classes.marginTop} style={{padding: 0, margin: 0, width: "50%", height: "100%"}}></img>
-                        </div>
                     </Fade>
                     <Fade in timeout={225*3}>
                         <Card>
@@ -305,7 +305,7 @@ class Settings extends React.Component {
                                     <Typography className={classes.sliderLabel} id="ret-slider"
                                                 gutterBottom>Symbol</Typography>
                                     <Slider value={_ret} step={1}
-                                            valueLabelDisplay="auto" min={0} max={8}
+                                            valueLabelDisplay="auto" min={0} max={9}
                                             onChangeCommitted={this._set_ret_from_slider}
                                             aria-labelledby="ret-slider"/>
                                 </div>
@@ -363,6 +363,16 @@ class Settings extends React.Component {
                                     <br/>
                                     <b style={{color: "midnightblue"}}>— Federal Strategy Unit for IT & Federal Office of Police fedpol  <img style={{verticalAlign: "sub", width: "1.25em"}} src={get_svg_in_b64(<ShieldTweemoji/>)}/> | Swiss Confederation <img style={{verticalAlign: "sub", width: "1.25em"}} src={get_svg_in_b64(<SwissTweemoji/>)}/> around 2008. <i style={{textDecoration: "underline", cursor: "pointer"}} onClick={() => {window.open("https://www.ncsc.admin.ch/ncsc/en/home/dokumentation/berichte/lageberichte/semi-annual-report-2008-1.html")}}>See ncsc.admin.ch...</i></b>
                                 </p>
+                            </CardContent>
+                        </Card>
+                    </Fade>
+                    <Fade in timeout={225*6}>
+                        <Card style={{position: "relative", zIndex: 1, minHeight: "250px"}} className={classes.marginTop}>
+                            <div style={{backgroundImage: "url(/src/images/infographics/TestBag.svg)", backgroundSize: "contain", backgroundPosition:"center", backgroundRepeat: "no-repeat", padding: 0, margin: 0, position: "absolute", width: "100%", height: "100%", filter: "contrast(1.5) opacity(0.5)", zIndex: "-1"}}></div>
+                            <CardHeader title={"Issues / Feedback / sugg."} />
+                            <CardContent>
+                                <h4>Please email-us at: <a href={"mailto:pixa.pics@protonmail.com"}>pixa.pics@protonmail.com</a>.</h4>
+                                <h3>Thanks for support!</h3>
                             </CardContent>
                         </Card>
                     </Fade>
