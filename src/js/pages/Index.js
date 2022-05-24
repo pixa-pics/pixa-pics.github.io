@@ -303,7 +303,15 @@ class Index extends React.Component {
 
             document.documentElement.lang = _language;
             document.body.setAttribute("style", "");
-            this.setState({ _ret, _camo, _onboarding_enabled, _sfx_enabled, _music_enabled, _jamy_enabled, _selected_locales_code, _language, _selected_currency, _know_the_settings: true, _has_played_index_music_counter: parseInt((!this.state._know_the_settings && _music_enabled) ? 1: this.state._has_played_index_music_counter )});
+            this.setState({ _ret, _camo, _onboarding_enabled, _sfx_enabled, _music_enabled, _jamy_enabled, _selected_locales_code, _language, _selected_currency, _know_the_settings: true, _has_played_index_music_counter: parseInt((!this.state._know_the_settings && _music_enabled) ? 1: this.state._has_played_index_music_counter )}, () => {
+
+                if(!was_the_settings_known) {
+
+                    document.body.removeAttribute("style");
+                    this._set_analytics(125);
+                }
+
+            });
 
             setTimeout(async() => {
 
@@ -312,11 +320,6 @@ class Index extends React.Component {
                     this._should_play_music_pathname(this.state.pathname);
                 }
             }, 75);
-
-            if(!was_the_settings_known) {
-
-                this._set_analytics(125);
-            }
 
         }else {
 

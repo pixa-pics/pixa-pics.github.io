@@ -39,9 +39,10 @@ const styles = theme => ({
         filter: "drop-shadow(0px 0px 6px #00000099) drop-shadow(0px 0px 6px #00000099)",
         background: `url("/src/images/illustrations/Gold.svg") 100% 100%`,
         backgroundColor: `#03020d`,
-        backgroundSize: "cover",
-        backgroundPosition: "middle",
-        contains: "paint",
+        backgroundSize: "125%",
+        backgroundPosition: "center",
+        contain: "style paint layout",
+        overflow: "hidden",
         "&::before": {
             position: "absolute",
             width: "100%",
@@ -49,7 +50,7 @@ const styles = theme => ({
             content: "''",
             backdropFilter: "blur(4px) brightness(0.25)",
             zIndex: -1,
-            contains: "style size paint layout"
+            contain: "style size paint layout"
         }
     },
     sliderContainer: {

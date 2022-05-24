@@ -698,7 +698,7 @@ window.get_layer_base64_png_data_url_process_function_string = `var f = async fu
                 
                     ctx2.transferFromImageBitmap(btmp_i);
     
-                    var blob_params = no_transparent ? {type: "image/jpeg", quality: 0.3}: {type: "image/png"};
+                    var blob_params = no_transparent ? {type: "image/jpeg", quality: 0.7}: {type: "image/png"};
                     return ctx2.canvas.convertToBlob(blob_params).then((blob) => {
                     
                         function blob_to_base64(blob) {
@@ -784,7 +784,7 @@ window.get_layer_base64_png_data_url_process_function_string = `var f = async fu
                 
                 if(no_transparent){
                     
-                    return canvas2.toDataURL("image/jpeg", 0.3);
+                    return canvas2.toDataURL("image/jpeg", 0.7);
                 }else {
                 
                     return canvas2.toDataURL("image/png");

@@ -60,7 +60,6 @@ const main_void_main = () => {
                 </CssBaseline>
             </ThemeProvider>,
             app);
-        document.body.removeAttribute("style");
     }else {
 
         main_void_main();
