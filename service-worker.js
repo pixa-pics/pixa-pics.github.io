@@ -1,6 +1,6 @@
-var REQUIRED_CACHE = "unless-update-cache-v169-required";
-var USEFUL_CACHE = "unless-update-cache-v169-useful";
-var STATIC_CACHE = "unless-update-cache-v169-static";
+var REQUIRED_CACHE = "unless-update-cache-v170-required";
+var USEFUL_CACHE = "unless-update-cache-v170-useful";
+var STATIC_CACHE = "unless-update-cache-v170-static";
 var MAIN_CHILD_CHUNK_REGEX = /child\-chunk\.(main\~[a-z0-9]+)\.min.js/i;
 var CHILD_CHUNK_REGEX = /child\-chunk\.([0-9]+)\.min.js/i;
 
@@ -12,74 +12,78 @@ self.addEventListener("install", function(evt) {
         return true;
     }
 
-    Promise.allSettled([
-        caches.open(USEFUL_CACHE).then(function (cache) {
-            return cache.addAll([
-                "/src/images/infographics/HelmetSpart.svg",
-                "/src/images/infographics/Lips.svg",
-                "/src/images/infographics/Lucky.svg",
-                "/src/images/infographics/NoBombs.svg",
-                "/src/images/infographics/Pharaon.svg",
-                "/src/images/infographics/Pyrawoman.svg",
-                "/src/images/infographics/Rambo.svg",
-                "/src/images/infographics/TestBag.svg",
-                "/src/images/infographics/Explosion.svg",
-                "/src/images/REMINDER.svg",
-                "/src/images/Share.svg",
-                "/src/images/Onboarding.svg",
-                "/src/images/Error.svg",
-                "/src/images/abduction.svg",
-                "/src/images/Idea.svg",
-                "/src/images/AI.svg",
-                "/src/images/DNA.svg",
-                "/src/images/CPU.svg",
-                "/src/images/ChromeGreatDownload.svg",
-                "/src/images/EdgeGreatDownload.svg",
-                "/src/images/laboratory.svg",
-                "/src/images/Team.svg",
-                "/src/images/illustrations/China-night.svg",
-                "/src/images/illustrations/Egypt-day.svg",
-                "/src/images/illustrations/USA-night.svg",
-                "/src/images/illustrations/Itsukishima.svg",
-                "/src/images/illustrations/Gold.svg",
-                "/src/images/league/Bronze.svg",
-                "/src/images/league/Diamond.svg",
-                "/src/images/league/Gold.svg",
-                "/src/images/league/Silver.svg",
-            ]);
-        }),
-        caches.open(REQUIRED_CACHE).then(function (cache) {
-            return cache.addAll([
-                "/child-chunk.0.min.js",
-                "/child-chunk.1.min.js",
-                "/child-chunk.2.min.js",
-                "/child-chunk.3.min.js",
-                "/child-chunk.4.min.js",
-                "/child-chunk.5.min.js",
-                "/child-chunk.6.min.js",
-                "/child-chunk.7.min.js",
-                "/child-chunk.8.min.js",
-                "/child-chunk.9.min.js",
-                "/child-chunk.10.min.js",
-                "/child-chunk.11.min.js",
-                "/child-chunk.12.min.js",
-            ]);
-        }),
-        caches.open(STATIC_CACHE).then(function (cache) {
-            return cache.addAll([
-                "/src/sounds/sfx/md/FullHorizonThrow.mp3",
-                "/src/sounds/sfx/md/hero_decorative-celebration-02.mp3",
-                "/src/sounds/sfx/md/navigation_selection-complete-celebration.mp3",
-                "/src/sounds/sfx/md/navigation_transition-left.mp3",
-                "/src/sounds/sfx/md/navigation_transition-right.mp3",
-                "/src/sounds/sfx/md/state-change_confirm-down.mp3",
-                "/src/sounds/sfx/md/ui_lock.mp3",
-                "/src/sounds/sfx/md/ui_unlock.mp3",
-                "/src/sounds/sfx/md/alert_high-intensity.mp3",
-                "/src/sounds/music/redeclipse/track_09.mp3",
-            ]);
-        })
-    ]);
+    setTimeout(function async(){
+
+        Promise.allSettled([
+            caches.open(USEFUL_CACHE).then(function (cache) {
+                return cache.addAll([
+                    "/src/images/infographics/HelmetSpart.svg",
+                    "/src/images/infographics/Lips.svg",
+                    "/src/images/infographics/Lucky.svg",
+                    "/src/images/infographics/NoBombs.svg",
+                    "/src/images/infographics/Pharaon.svg",
+                    "/src/images/infographics/Pyrawoman.svg",
+                    "/src/images/infographics/Rambo.svg",
+                    "/src/images/infographics/TestBag.svg",
+                    "/src/images/infographics/Explosion.svg",
+                    "/src/images/REMINDER.svg",
+                    "/src/images/Share.svg",
+                    "/src/images/Onboarding.svg",
+                    "/src/images/Error.svg",
+                    "/src/images/abduction.svg",
+                    "/src/images/Idea.svg",
+                    "/src/images/AI.svg",
+                    "/src/images/DNA.svg",
+                    "/src/images/CPU.svg",
+                    "/src/images/ChromeGreatDownload.svg",
+                    "/src/images/EdgeGreatDownload.svg",
+                    "/src/images/laboratory.svg",
+                    "/src/images/Team.svg",
+                    "/src/images/illustrations/China-night.svg",
+                    "/src/images/illustrations/Egypt-day.svg",
+                    "/src/images/illustrations/USA-night.svg",
+                    "/src/images/illustrations/Itsukishima.svg",
+                    "/src/images/illustrations/Gold.svg",
+                    "/src/images/league/Bronze.svg",
+                    "/src/images/league/Diamond.svg",
+                    "/src/images/league/Gold.svg",
+                    "/src/images/league/Silver.svg",
+                ]);
+            }),
+            caches.open(REQUIRED_CACHE).then(function (cache) {
+                return cache.addAll([
+                    "/child-chunk.0.min.js",
+                    "/child-chunk.1.min.js",
+                    "/child-chunk.2.min.js",
+                    "/child-chunk.3.min.js",
+                    "/child-chunk.4.min.js",
+                    "/child-chunk.5.min.js",
+                    "/child-chunk.6.min.js",
+                    "/child-chunk.7.min.js",
+                    "/child-chunk.8.min.js",
+                    "/child-chunk.9.min.js",
+                    "/child-chunk.10.min.js",
+                    "/child-chunk.11.min.js",
+                    "/child-chunk.12.min.js",
+                ]);
+            }),
+            caches.open(STATIC_CACHE).then(function (cache) {
+                return cache.addAll([
+                    "/src/sounds/sfx/md/FullHorizonThrow.mp3",
+                    "/src/sounds/sfx/md/hero_decorative-celebration-02.mp3",
+                    "/src/sounds/sfx/md/navigation_selection-complete-celebration.mp3",
+                    "/src/sounds/sfx/md/navigation_transition-left.mp3",
+                    "/src/sounds/sfx/md/navigation_transition-right.mp3",
+                    "/src/sounds/sfx/md/state-change_confirm-down.mp3",
+                    "/src/sounds/sfx/md/ui_lock.mp3",
+                    "/src/sounds/sfx/md/ui_unlock.mp3",
+                    "/src/sounds/sfx/md/alert_high-intensity.mp3",
+                    "/src/sounds/music/redeclipse/track_09.mp3",
+                ]);
+            })
+        ]);
+
+    }, 667 * 9);
 
     return evt.waitUntil(Promise.allSettled([
         caches.open(REQUIRED_CACHE).then(function (cache) {
@@ -103,8 +107,8 @@ self.addEventListener("install", function(evt) {
         }),
         caches.open(USEFUL_CACHE).then(function (cache) {
             return cache.addAll([
-                "/src/images/manifest/icon-white.png",
                 "/src/images/favicon.ico",
+                "/src/images/manifest/icon-white.png",
                 "/src/images/logo-transparent.png",
                 "/src/images/infographics/Wardenclyffe.svg"
             ]);
