@@ -1,6 +1,6 @@
-var REQUIRED_CACHE = "unless-update-cache-v167-required";
-var USEFUL_CACHE = "unless-update-cache-v167-useful";
-var STATIC_CACHE = "unless-update-cache-v167-static";
+var REQUIRED_CACHE = "unless-update-cache-v168-required";
+var USEFUL_CACHE = "unless-update-cache-v168-useful";
+var STATIC_CACHE = "unless-update-cache-v168-static";
 var MAIN_CHILD_CHUNK_REGEX = /child\-chunk\.(main\~[a-z0-9]+)\.min.js/i;
 var CHILD_CHUNK_REGEX = /child\-chunk\.([0-9]+)\.min.js/i;
 
@@ -21,7 +21,7 @@ self.addEventListener("install", function(evt) {
                 "/src/images/infographics/NoBombs.svg",
                 "/src/images/infographics/Pharaon.svg",
                 "/src/images/infographics/Pyrawoman.svg",
-                "/src/images/infographics/BlueHorse.svg",
+                "/src/images/infographics/Rambo.svg",
                 "/src/images/infographics/TestBag.svg",
                 "/src/images/REMINDER.svg",
                 "/src/images/Share.svg",
@@ -40,10 +40,11 @@ self.addEventListener("install", function(evt) {
                 "/src/images/illustrations/Egypt-day.svg",
                 "/src/images/illustrations/USA-night.svg",
                 "/src/images/illustrations/Itsukishima.svg",
-                "/src/images/illustrations/Bronze.svg",
-                "/src/images/illustrations/Diamond.svg",
                 "/src/images/illustrations/Gold.svg",
-                "/src/images/illustrations/Silver.svg",
+                "/src/images/league/Bronze.svg",
+                "/src/images/league/Diamond.svg",
+                "/src/images/league/Gold.svg",
+                "/src/images/league/Silver.svg",
             ]);
         }),
         caches.open(REQUIRED_CACHE).then(function (cache) {
@@ -88,12 +89,10 @@ self.addEventListener("install", function(evt) {
                 "/father-chunk.norris.min.js", // This is chunk norris, master of all chunk
                 "/child-chunk.main~0d5ee630.min.js",
                 "/child-chunk.main~1f20a385.min.js",
-                "/child-chunk.main~3e0e6f33.min.js",
                 "/child-chunk.main~5a2dc592.min.js",
                 "/child-chunk.main~9acc357d.min.js",
                 "/child-chunk.main~253ae210.min.js",
                 "/child-chunk.main~748942c6.min.js",
-                "/child-chunk.main~8084949c.min.js",
                 "/child-chunk.main~af9f4ef7.min.js",
                 "/child-chunk.main~c1dd23ef.min.js",
                 "/child-chunk.main~c3be6df1.min.js",
