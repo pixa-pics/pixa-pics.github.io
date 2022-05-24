@@ -47,7 +47,7 @@ const styles = theme => ({
             width: "100%",
             height: "100%",
             content: "''",
-            backdropFilter: "blur(1.5px) brightness(0.33)",
+            backdropFilter: "blur(4px) brightness(0.25)",
             zIndex: -1,
             contains: "style size paint layout"
         }
@@ -285,9 +285,9 @@ class Settings extends React.Component {
                     </Fade>
                     <Fade in timeout={225*2}>
                         <Card className={classes.marginTopSponsors}>
-                            <CardHeader style={{textAlign: "center"}} title={
+                            <CardHeader style={{textAlign: "center", marginTop: "36px"}} title={
                                 <span>
-                                    <span style={{fontWeight: "bold"}}>∞ AWESOME SUPPORTERS</span>
+                                    <span style={{fontWeight: "bold", fontSize: "36px"}}>∞ WISE SUPPORTERS</span>
                                 </span>
                             }/>
                             <CardContent>
@@ -311,9 +311,9 @@ class Settings extends React.Component {
                                 <p>Coming soon!</p>
                             </CardContent>
                             <CardContent>
-                                <div style={{textAlign: "right", display: "flex"}}>
-                                    <p style={{float: "left", padding: 16, margin: 0, width: "50%", height: "100%"}}> Thank you everyone, we do not ally very often, but when we do, we ally just greatness not goodness.</p>
-                                    <img src="/src/images/infographics/Rambo.svg" style={{float: "right", padding: 16, margin: 0, width: "50%", height: "100%"}}></img>
+                                <div style={{textAlign: "left", display: "flex", alignItems: "center"}}>
+                                    <img src="/src/images/infographics/Rambo.svg" style={{float: "left", padding: 16, margin: 0, width: "50%", height: "100%"}}></img>
+                                    <p style={{float: "right", padding: 16, margin: 0, width: "50%", height: "100%"}}> Thank you, we do not have allies very often, but when we do, we ally worthy of reasons with greatness instead of good.<br/>— The Pixelables</p>
                                 </div>
                             </CardContent>
                         </Card>
@@ -326,7 +326,7 @@ class Settings extends React.Component {
                                     <Typography className={classes.sliderLabel} id="ret-slider"
                                                 gutterBottom>Symbol</Typography>
                                     <Slider value={_ret} step={1}
-                                            valueLabelDisplay="auto" min={0} max={9}
+                                            valueLabelDisplay="auto" min={0} max={10}
                                             onChangeCommitted={this._set_ret_from_slider}
                                             aria-labelledby="ret-slider"/>
                                 </div>
@@ -389,11 +389,15 @@ class Settings extends React.Component {
                     </Fade>
                     <Fade in timeout={225*6}>
                         <Card style={{position: "relative", zIndex: 1, minHeight: "250px"}} className={classes.marginTop}>
-                            <div style={{backgroundImage: "url(/src/images/infographics/TestBag.svg)", backgroundSize: "contain", backgroundPosition:"center", backgroundRepeat: "no-repeat", padding: 0, margin: 0, position: "absolute", width: "100%", height: "100%", filter: "contrast(1.66) saturate(1.33) opacity(0.33) sepia(1) hue-rotate(160deg)", zIndex: "-1"}}></div>
                             <CardHeader title={"Issues / Feedback / sugg."} />
                             <CardContent>
-                                <h4>Please email-us at: <a href={"mailto:pixa.pics@protonmail.com"}>pixa.pics@protonmail.com</a>.</h4>
-                                <h3>Thanks for support!</h3>
+                                <div style={{textAlign: "left", display: "flex", alignItems: "center"}}>
+                                    <img src="/src/images/infographics/TestBag.svg" style={{float: "left", padding: 16, margin: 0, width: "50%", height: "100%"}}></img>
+                                    <div style={{float: "right", padding: 16, margin: 0, width: "50%", height: "100%"}}>
+                                        <h4>Please email-us at: <a href={"mailto:pixa.pics@protonmail.com"}>pixa.pics@protonmail.com</a>.</h4>
+                                        <h3>Thanks for support!</h3>
+                                    </div>
+                                </div>
                             </CardContent>
                         </Card>
                     </Fade>

@@ -435,15 +435,15 @@ class AppToolbar extends React.Component {
                             </MenuItem>
                             <div>
                                 <Divider />
+                                {
+                                    _is_pre_reset && <img style={{width: "150px", cursor: "pointer"}} onClick={this._exit_to_app} src={"/src/images/infographics/Explosion.svg"} />
+                                }
                                 <MenuItem onClick={this._pre_reset_toggle}>
                                     <ListItemIcon>
                                         <SecurityIcon fontSize="small" />
                                     </ListItemIcon>
                                     <ListItemText primary={t( "words.reset", {TUC: true})}/>
                                 </MenuItem>
-                                {
-                                    _is_pre_reset && <img onClick={this._exit_to_app} src={"/src/images/Click.svg"} />
-                                }
                             </div>
                         </Menu>
                     </Toolbar>

@@ -1,6 +1,6 @@
-var REQUIRED_CACHE = "unless-update-cache-v168-required";
-var USEFUL_CACHE = "unless-update-cache-v168-useful";
-var STATIC_CACHE = "unless-update-cache-v168-static";
+var REQUIRED_CACHE = "unless-update-cache-v169-required";
+var USEFUL_CACHE = "unless-update-cache-v169-useful";
+var STATIC_CACHE = "unless-update-cache-v169-static";
 var MAIN_CHILD_CHUNK_REGEX = /child\-chunk\.(main\~[a-z0-9]+)\.min.js/i;
 var CHILD_CHUNK_REGEX = /child\-chunk\.([0-9]+)\.min.js/i;
 
@@ -15,7 +15,7 @@ self.addEventListener("install", function(evt) {
     Promise.allSettled([
         caches.open(USEFUL_CACHE).then(function (cache) {
             return cache.addAll([
-                "/src/images/infographics/Buckets.svg",
+                "/src/images/infographics/HelmetSpart.svg",
                 "/src/images/infographics/Lips.svg",
                 "/src/images/infographics/Lucky.svg",
                 "/src/images/infographics/NoBombs.svg",
@@ -23,6 +23,7 @@ self.addEventListener("install", function(evt) {
                 "/src/images/infographics/Pyrawoman.svg",
                 "/src/images/infographics/Rambo.svg",
                 "/src/images/infographics/TestBag.svg",
+                "/src/images/infographics/Explosion.svg",
                 "/src/images/REMINDER.svg",
                 "/src/images/Share.svg",
                 "/src/images/Onboarding.svg",
@@ -105,9 +106,7 @@ self.addEventListener("install", function(evt) {
                 "/src/images/manifest/icon-white.png",
                 "/src/images/favicon.ico",
                 "/src/images/logo-transparent.png",
-                "/src/images/infographics/HelmetSpart.svg",
-                "/src/images/infographics/Wardenclyffe.svg",
-                "/src/images/Click.svg",
+                "/src/images/infographics/Wardenclyffe.svg"
             ]);
         })
     ]));

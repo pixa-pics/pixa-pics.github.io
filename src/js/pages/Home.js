@@ -212,8 +212,8 @@ const styles = theme => ({
     titleh1: {
         whiteSpace: "break-spaces",
         maxWidth: "1000px",
-        fontWeight: "normal",
-        fontSize: "32px",
+        fontWeight: "bold",
+        fontSize: "36px",
         filter: "saturate(2.25)",
         "& sup": {
             fontSize: "0.33em",
@@ -221,10 +221,10 @@ const styles = theme => ({
             fontWeight: "bold",
         },
         [theme.breakpoints.down("md")]: {
-            fontSize: "22px",
+            fontSize: "24px",
         },
         [theme.breakpoints.down("sm")]: {
-            fontSize: "16px",
+            fontSize: "18px",
             "& sup": {
                 fontSize: "0.5em",
                 opacity: "0.77",
@@ -294,7 +294,7 @@ const styles = theme => ({
         fontWeight: 600,
     },
     stepPoints: {
-        color: "#fad101",
+        color: "#ffb800",
         textShadow: "0px 0px 3px darkgoldenrod, 0px 0px 6px darkgoldenrod, 0px 0px 12px black",
         filter: "hue-rotate(75deg)",
         display: "inline-block",
@@ -310,7 +310,7 @@ const styles = theme => ({
         },
     },
     revelantText: {
-        color: "#eeb319",
+        color: "#ffb800",
         textShadow: "0px 0px 2px #ffb500, 0px 0px 4px #bd8909, 0px 0px 8px #6b4000, 0px 0px 12px #000000",
         filter: "sepia(1) hue-rotate(180deg) saturate(2) contrast(1.5)",
     }
@@ -390,7 +390,7 @@ class Home extends React.Component {
 
         }, 250);
 
-        const all_image_name_infographics = ["Lucky", "Buckets", "Lips", "NoBombs", "Pyrawoman", "Pharaon"];
+        const all_image_name_infographics = ["Lucky", "Pyrawoman", "NoBombs", "Lips", "Pharaon"];
 
         let _image_index = 1;
         let _image_name_infographics = all_image_name_infographics[_image_index];

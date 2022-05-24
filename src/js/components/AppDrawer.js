@@ -43,6 +43,20 @@ const styles = theme => ({
         border: 0,
         backgroundSize: "calc(100% + 96px)",
         contain: "layout paint size style",
+        "&::before": {
+            position: "absolute",
+            opacity: 0.1,
+            width: "100%",
+            height: "100%",
+            top: 0,
+            left: 0,
+            content: `' '`,
+            backgroundPosition: "25% 100%",
+            backgroundRepeat: "no-repeat",
+            backgroundSize: "100%",
+            backgroundImage: `url()`,
+            zIndex: -1,
+        },
     },
     drawerContainer: {
         overflow: "auto"
