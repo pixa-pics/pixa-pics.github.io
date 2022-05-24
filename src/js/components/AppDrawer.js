@@ -75,7 +75,7 @@ const styles = theme => ({
             backgroundPosition: "25% 100%",
             backgroundRepeat: "no-repeat",
             backgroundSize: "100%",
-            opacity: "0.5",
+            opacity: "0.777",
             backgroundImage: `linear-gradient(353deg, #010310 10%, #0103105e, #0103106e 60%, #0103105c, #010310 90%), linear-gradient(353deg, #010310 0%, #0103105e, #00000000 60%, #0103105c, #010310 100%),  url(/src/images/infographics/HelmetSpart.svg)`,
             transition: "all cubic-bezier(0.4, 0, 0.2, 1) 777ms",
             zIndex: -1,

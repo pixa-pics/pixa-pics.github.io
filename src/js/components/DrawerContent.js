@@ -134,7 +134,7 @@ class DrawerContent extends React.Component {
             <div>
                 <div>
                     <List>
-                        <ListItem style={{backgroundColor: "#ffffff33"}} button onClick={this._open_pixel_page}>
+                        <ListItem style={{backgroundColor: "#ffffff33", background: "linear-gradient(45deg, #010310, #0000005c), url(/src/images/infographics/Wardenclyffe.svg)", backgroundSize: "cover", backgroundPosition: "center"}} button onClick={this._open_pixel_page}>
                             <ListItemIcon>
                                 <img alt="Laboratory" src={"/src/images/infographics/Wardenclyffe.svg"} className={classes.iconLeft}/>
                             </ListItemIcon>
