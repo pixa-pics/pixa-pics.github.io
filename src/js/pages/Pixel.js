@@ -10,7 +10,6 @@ const CanvasPixels = React.lazy(() => import("../components/CanvasPixels"));
 import { withStyles } from "@material-ui/core";
 import pool from "../utils/worker-pool";
 
-import ManualDialogWarning from "../components/ManualDialogWarning";
 import {Fade, ListItem, Typography, Backdrop, Slider, SwipeableDrawer, Drawer, Toolbar, Tabs, Tab, Menu, ListSubheader, ListItemText, ListItemIcon} from "@material-ui/core";
 import TouchRipple from "@material-ui/core/ButtonBase/TouchRipple";
 
@@ -172,7 +171,7 @@ const styles = theme => ({
     },
     drawerContainer: {
         contain: "size style",
-        height: "calc(100vh - 96px) !important",
+        height: "calc(100vh - 224px) !important",
         overflow: "overlay",
         [theme.breakpoints.up("lg")]: {
             overflowX: "hidden",
@@ -194,7 +193,7 @@ const styles = theme => ({
         },
         '& div .react-swipeable-view-container > div[aria-hidden=false] > ul': {
             [theme.breakpoints.down("md")]: {
-                paddingBottom: 168 + 16,
+                paddingBottom: 64,
             }
         },
         '& > div > .react-swipeable-view-container': {
@@ -236,6 +235,28 @@ const styles = theme => ({
             height: 32,
         }
     },
+    tabNoIcon: {
+        backgroundColor: "transparent",
+        color: "#050c4c",
+        transition: "color, background-color ease-in .175s",
+        "&.Mui-selected": {
+            fontWeight: "bold",
+            backgroundColor: "#3729c122",
+            color: "#050c4c",
+            borderRadius: "4px 4px 0px 0px",
+        },
+        "&.MuiTab-labelIcon": {
+            minHeight: 36,
+        },
+        "& .MuiTab-wrapper": {
+            fontSize: "11px",
+        },
+        "& .MuiTab-wrapper svg": {
+            width: 32,
+            height: 32,
+            display: "none",
+        }
+    },
     backdrop: {
         zIndex: 2000,
         color: "#fff",
@@ -255,8 +276,8 @@ const styles = theme => ({
         [theme.breakpoints.up("md")]: {
             width: "calc(100vw - 256px)",
         },
-        zIndex: 100,
-        position: "absolute",
+        zIndex: 1350,
+        position: "fixed",
         bottom: 0,
         right: 0,
         width: "100vw",
@@ -1351,8 +1372,9 @@ class Pixel extends React.Component {
     _handle_edit_drawer_open = (event, _view_name_index) => {
 
         _view_name_index = typeof _view_name_index !== "undefined" ? _view_name_index: this.state._view_name_index;
+        const close_dialog = Boolean(this.state._view_name_index === _view_name_index) && this.state._is_edit_drawer_open;
 
-        this.setState({_is_edit_drawer_open: true, _view_name_index});
+        this.setState({_is_edit_drawer_open: !close_dialog, _view_name_index});
     };
 
     _handle_edit_drawer_close = () => {
@@ -1568,7 +1590,8 @@ class Pixel extends React.Component {
                         paper: classes.swipeableDrawerPaper,
                         modal: classes.drawerModal,
                     }}
-                    ModalProps={{BackdropProps:{classes: {root: classes.drawerModalBackdropRoot}}}}
+                    transitionDuration={{enter: 125, exit: 75}}
+                    ModalProps={{disablePortal: true, BackdropProps:{classes: {root: classes.drawerModalBackdropRoot}}}}
                     variant="temporary"
                     anchor="bottom"
                 >
@@ -1589,21 +1612,6 @@ class Pixel extends React.Component {
                                     aria-labelledby="strength-slider"
                                 />
                             </div>
-                            <Tabs className={classes.tabs}
-                                  indicatorColor="primary"
-                                  variant="fullWidth"
-                                  textColor="primary"
-                                  selectionFollowsFocus={false}
-                                  value={_view_name_index}
-                                  onChange={(event, index) => {this._handle_view_name_change(index)}}>
-                                <Tab className={classes.tab} label={"colors"} icon={<ColorsTweemoji />} />
-                                <Tab className={classes.tab} label={"image"} icon={<ImageTweemoji />} />
-                                <Tab className={classes.tab} label={"layers"} icon={<LayersTweemoji />} />
-                                <Tab className={classes.tab} label={"tools"} icon={<ToolsTweemoji />} />
-                                <Tab className={classes.tab} label={"select"} icon={<SelectTweemoji />} />
-                                <Tab className={classes.tab} label={"effects"} icon={<EffectsTweemoji />} />
-                                <Tab className={classes.tab} label={"filters"} icon={<FiltersTweemoji />} />
-                            </Tabs>
                         </div>
                         <div className={classes.drawerContainer} onGotPointerCapture={(event) => {event.stopPropagation(); event.preventDefault();}}>
                             <PixelToolboxSwipeableViews
@@ -1766,7 +1774,7 @@ class Pixel extends React.Component {
             );
 
         return (
-            <div style={{height: "100%"}}>
+            <div style={{height: "100%", position: "relative"}}>
                 <div className={classes.root}>
                     <div className={classes.contentInner} style={{
                         backgroundColor: "#f7f7f7",
@@ -1983,26 +1991,26 @@ class Pixel extends React.Component {
                         <ListItemText primary="Smooth a bit" />
                     </ListItem>
                 </Menu>
-                <Fade in={!_is_edit_drawer_open} key={_is_edit_drawer_open ? "ok": "nok"} timeout={{ enter: 350, exit: 175}}>
-                    <div className={classes.fatabs}>
-                        <Tabs className={classes.tabs}
-                              variant="scrollable"
-                              scrollButtons="auto"
-                              indicatorColor="primary"
-                              textColor="primary"
-                              selectionFollowsFocus={false}
-                              value={_view_name_index}
-                              onChange={(event, index) => {this._handle_edit_drawer_open(event, index)}}>
-                            <Tab className={classes.tab} label={"colors"} icon={<ColorsTweemoji />} />
-                            <Tab className={classes.tab} label={"image"} icon={<ImageTweemoji />} />
-                            <Tab className={classes.tab} label={"layers"} icon={<LayersTweemoji />} />
-                            <Tab className={classes.tab} label={"tools"} icon={<ToolsTweemoji />} />
-                            <Tab className={classes.tab} label={"select"} icon={<SelectTweemoji />} />
-                            <Tab className={classes.tab} label={"effects"} icon={<EffectsTweemoji />} />
-                            <Tab className={classes.tab} label={"filters"} icon={<FiltersTweemoji />} />
-                        </Tabs>
-                    </div>
-                </Fade>
+
+                <div className={classes.fatabs} style={_is_edit_drawer_open && _less_than_1280w ? {minHeight: 36, height: 36, backgroundColor: "#fff"}: {}}>
+                    <Tabs className={classes.tabs} style={_is_edit_drawer_open && _less_than_1280w ? {minHeight: 36, height: 36}: {}}
+                          variant="scrollable"
+                          scrollButtons="auto"
+                          indicatorColor="primary"
+                          textColor="primary"
+                          selectionFollowsFocus={false}
+                          value={_view_name_index}
+                          onChange={(event, index) => {this._handle_edit_drawer_open(event, index)}}>
+                        <Tab className={_is_edit_drawer_open && _less_than_1280w ? classes.tabNoIcon: classes.tab} label={"colors"} icon={<ColorsTweemoji />} />
+                        <Tab className={_is_edit_drawer_open && _less_than_1280w ? classes.tabNoIcon: classes.tab} label={"image"} icon={<ImageTweemoji />} />
+                        <Tab className={_is_edit_drawer_open && _less_than_1280w ? classes.tabNoIcon: classes.tab} label={"layers"} icon={<LayersTweemoji />} />
+                        <Tab className={_is_edit_drawer_open && _less_than_1280w ? classes.tabNoIcon: classes.tab} label={"tools"} icon={<ToolsTweemoji />} />
+                        <Tab className={_is_edit_drawer_open && _less_than_1280w ? classes.tabNoIcon: classes.tab} label={"select"} icon={<SelectTweemoji />} />
+                        <Tab className={_is_edit_drawer_open && _less_than_1280w ? classes.tabNoIcon: classes.tab} label={"effects"} icon={<EffectsTweemoji />} />
+                        <Tab className={_is_edit_drawer_open && _less_than_1280w ? classes.tabNoIcon: classes.tab} label={"filters"} icon={<FiltersTweemoji />} />
+                    </Tabs>
+                </div>
+
                 {_less_than_1280w && drawer_mobile}
 
                 <ImageFileDialog

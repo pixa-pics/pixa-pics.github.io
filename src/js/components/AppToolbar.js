@@ -366,6 +366,7 @@ class AppToolbar extends React.Component {
 
                 <SwipeableDrawer
                     keepMounted={true}
+                    transitionDuration={{enter: 125, exit: 75}}
                     anchor="left"
                     className={classes.swipeableDrawer}
                     classes={{paper: classes.drawerPaper}}
@@ -374,7 +375,7 @@ class AppToolbar extends React.Component {
                     onClose={this._handle_close_swipeable_app_drawer}>
                         <Toolbar className={classes.appBar}>
                             <div className={classes.swipeableDrawerToolbar} onClick={this._open_home}>
-                                <span className={classes.swipeableDrawerAppTitle}>HTTPS://PIXA.PICS/ -> OK!</span>
+                                <span className={classes.swipeableDrawerAppTitle}>HTTPS://PIXA.PICS/</span>
                             </div>
                         </Toolbar>
                         <DrawerContent logged_account={logged_account} pathname={pathname} onClose={this._handle_close_swipeable_app_drawer}/>
