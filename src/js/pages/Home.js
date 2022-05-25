@@ -392,11 +392,11 @@ class Home extends React.Component {
 
         const all_image_name_infographics = ["Lucky", "Pyrawoman", "NoBombs", "Lips", "Pharaon"];
 
-        let _image_index = 1;
+        let _image_index = 0;
         let _image_name_infographics = all_image_name_infographics[_image_index];
         let _image_auto_interval = setInterval(() => {
 
-            _image_name_infographics = all_image_name_infographics[_image_index % parseInt(all_image_name_infographics.length + 1)];
+            _image_name_infographics = all_image_name_infographics[parseInt(parseInt(_image_index+1) % parseInt(all_image_name_infographics.length + 1))-1];
             _image_index++;
             this.setState({_image_name_infographics});
 
