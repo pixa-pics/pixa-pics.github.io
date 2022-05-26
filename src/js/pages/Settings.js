@@ -237,6 +237,11 @@ class Settings extends React.Component {
         });
     };
 
+    _page_render_complete = () => {
+
+        actions.trigger_page_render_complete();
+    }
+
     render() {
 
         const { _locales,  _sfx_enabled, _music_enabled, _jamy_enabled, _currency_countries, _selected_locales_code, classes, _camo, _ret } = this.state;
@@ -313,7 +318,7 @@ class Settings extends React.Component {
                             </CardContent>
                             <CardContent>
                                 <div style={{textAlign: "left", display: "flex", alignItems: "center"}}>
-                                    <img src="/src/images/infographics/Rambo.svg" style={{float: "left", padding: 16, margin: 0, width: "50%", height: "100%"}}></img>
+                                    <img onLoad={this._page_render_complete} src="/src/images/infographics/Rambo.svg" style={{float: "left", padding: 16, margin: 0, width: "50%", height: "100%"}}></img>
                                     <p style={{float: "right", padding: 16, margin: 0, width: "50%", height: "100%"}}> Thank you, we do not have allies very often, but when we do, we ally worthy of reasons with greatness instead of good.<br/>— The Pixelables</p>
                                 </div>
                             </CardContent>

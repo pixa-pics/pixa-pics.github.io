@@ -439,6 +439,11 @@ class Home extends React.Component {
         this.setState({_bii3_opacity: this.state._bii3_opacity === 0 ? 1 : 0});
     };
 
+    _page_render_complete = () => {
+
+        actions.trigger_page_render_complete();
+    }
+
     render() {
 
         const { classes, _bii3_opacity, _image_name_infographics } = this.state;
@@ -455,7 +460,7 @@ class Home extends React.Component {
                         backgroundSize: THEME_DAY ? "175%": "50%",
                         backgroundColor: THEME_DAY ? IS_EVENING ? "#48004900": "#4c4c2600": "#21214200",
                         }}>
-                        <Fade in={true} key={_image_name_infographics} timeout={_image_name_infographics !== "nothing" ? 500: 0}><img alt="Image demo." src={`/src/images/infographics/${_image_name_infographics !== "nothing" ? _image_name_infographics: "Lucky"}.svg`} className={classes.backgroundImageImage}/></Fade>
+                        <Fade in={true} key={_image_name_infographics} timeout={_image_name_infographics !== "nothing" ? 500: 0}><img alt="Image demo." onLoad={this._page_render_complete} src={`/src/images/infographics/${_image_name_infographics !== "nothing" ? _image_name_infographics: "Lucky"}.svg`} className={classes.backgroundImageImage}/></Fade>
                         <h2 className={classes.backgroundImageImage} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff", backgroundColor: THEME_DAY && !IS_EVENING ? "#ffffff99": "#b9ffc499", padding: 16, textAlign: "center", border: "8px solid #00ff0052"}}>REAL "SVG" SHAPES RENDER!<br/><span style={{fontSize: "0.75em"}}>Use "xBRZ" instead of default crisp-edge rendering.</span></h2>
                         <h3 className={classes.backgroundImageImage} onClick={this._toggle_bii3_opacity} style={{borderRadius: "16px", zIndex: 90, opacity: _bii3_opacity, color: THEME_DAY && !IS_EVENING ? "#000": "#fff", border: "4px solid #980000", backgroundColor: THEME_DAY && !IS_EVENING ? "#ffffffcc": "#000000cc", padding: 16, textAlign: "center"}}>REAL "SVG" SHAPES RENDER!<br/><span style={{fontSize: "0.75em"}}>Use "xBRZ" instead of default crisp-edge rendering.</span> <span style={{fontSize: "0.5em"}}>CLICK TO CLOSE</span></h3>
                     </div>

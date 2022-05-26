@@ -101,6 +101,14 @@ function trigger_loading_update(percent) {
     });
 }
 
+function trigger_page_render_complete() {
+
+    dispatcher.dispatch({
+        type: "PAGE_RENDER_COMPLETE",
+        data: {}
+    });
+}
+
 module.exports = {
     stop_sound: stop_sound,
     jamy_update: jamy_update,
@@ -111,4 +119,5 @@ module.exports = {
     trigger_login_update: trigger_login_update,
     trigger_settings_update: trigger_settings_update,
     trigger_loading_update: trigger_loading_update,
+    trigger_page_render_complete: trigger_page_render_complete,
 };

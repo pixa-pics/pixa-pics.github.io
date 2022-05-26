@@ -167,6 +167,7 @@ class Index extends React.Component {
 
     componentDidMount() {
 
+        document.body.setAttribute("datainitiated", "true");
         this.state._history.listen((location, action) => {
             // location is an object like window.location
             this._set_new_pathname_or_redirect(location.location.pathname);
@@ -281,6 +282,11 @@ class Index extends React.Component {
             case "LOADING_UPDATE":
                 this.setState({_loaded_progress_percent: event.data.percent});
                 break;
+
+            case "PAGE_RENDER_COMPLETE":
+                document.body.setAttribute("class", "loaded");
+                fetch("data:sync");
+                break;
         }
     }
 
@@ -306,7 +312,6 @@ class Index extends React.Component {
 
                 if(!was_the_settings_known) {
 
-                    document.body.setAttribute("style", "");
                     this._set_analytics(1500);
                 }
 

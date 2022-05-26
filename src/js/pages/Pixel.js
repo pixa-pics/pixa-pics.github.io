@@ -513,6 +513,7 @@ class Pixel extends React.Component {
 
             this.setState({ _sfx_enabled, _attachment_previews, _settings_set: true }, () => {
 
+                actions.trigger_page_render_complete();
                 actions.trigger_loading_update(100);
                 this.forceUpdate();
             });
