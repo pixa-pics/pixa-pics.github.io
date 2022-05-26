@@ -327,7 +327,7 @@ class Settings extends React.Component {
                                     <Typography className={classes.sliderLabel} id="ret-slider"
                                                 gutterBottom>Symbol</Typography>
                                     <Slider value={_ret} step={1}
-                                            valueLabelDisplay="auto" min={0} max={10}
+                                            valueLabelDisplay="auto" min={0} max={12}
                                             onChangeCommitted={this._set_ret_from_slider}
                                             aria-labelledby="ret-slider"/>
                                 </div>

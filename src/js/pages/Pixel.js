@@ -236,7 +236,7 @@ const styles = theme => ({
         }
     },
     tabNoIcon: {
-        backgroundColor: "transparent",
+        backgroundColor: "white",
         color: "#050c4c",
         transition: "color, background-color ease-in .175s",
         "&.Mui-selected": {

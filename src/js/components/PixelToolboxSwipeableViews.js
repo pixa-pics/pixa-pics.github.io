@@ -1362,7 +1362,7 @@ class PixelToolboxSwipeableViews extends React.Component {
                 animateTransitions={true}
                 disableLazyLoading={true}
                 resistance={true}
-                springConfig={{duration: '0.175s', easeFunction: 'ease-in', delay: '0s'}}
+                springConfig={{tension: 450, friction: 60, duration: '75ms', easeFunction: 'ease-in', delay: '0ms'}}
                 index={view_name_index}
                 onChangeIndex={this._handle_view_name_change}
                 disabled={false}

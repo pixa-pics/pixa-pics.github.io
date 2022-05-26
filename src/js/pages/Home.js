@@ -3,12 +3,11 @@ import { withStyles } from "@material-ui/core";
 
 import { HISTORY, UTC_OFFSET_PER_COUNTRIES } from "../utils/constants";
 
-import {Button, Fade, Grow} from "@material-ui/core";
+import {Button, Fade} from "@material-ui/core";
 import actions from "../actions/utils";
 
 import get_svg_in_b64 from "../utils/svgToBase64";
 
-import ScopeEarth from "../icons/ScopeEarth";
 import EarthEmojiSvg from "../twemoji/react/1F30E";
 const EARTHEMOJI = get_svg_in_b64(<EarthEmojiSvg />);
 import StarEmojiSvg from "../twemoji/react/2B50";
@@ -67,24 +66,22 @@ const styles = theme => ({
         bottom: 0
     },
     homeCTAuseit: {
-        color: "#6f440d",
-        backgroundImage: "linear-gradient(-32deg, goldenrod, #fff9f0, gold, darkgoldenrod, #fff8aa, goldenrod, blanchedalmond)",
         fontWeight: "bold",
-        minWidth: "min(320px, calc(100% - 32px))",
         transform: "translateY(0px) scale(1)  !important",
         fontSize: "1.314rem",
-        marginTop: "48x",
+        minWidth: "min(320px, calc(100% - 32px))",
         borderRadius: "8px",
-        "& svg": {
-            filter: "sepia(1)"
-        },
+        marginTop: "48x",
+        color: "#ffffff",
+        textShadow: "0px 0px 4px white",
+        filter: "drop-shadow(0px 0px 4px skyblue) brightness(1)",
+        backgroundImage: "linear-gradient(32deg, #6100fd, #5dbff3, #7be2f1, #98ecff, #32c4ff, #6d5bff, #020562)",
         "&:hover": {
-            color: "#402303",
-            filter: "drop-shadow(0px 0px 16px goldenrod) brightness(1.1)",
+            color: "#ffffff",
+            filter: "drop-shadow(0px 0px 16px lightskyblue) brightness(1.1)",
             transform: "translateY(-3.4px) scale(1.1)  !important",
         },
         zIndex: 7,
-        filter: "drop-shadow(0px 0px 4px darkgoldenrod)",
         transition: "color, filter, transform cubic-bezier(0.4, 0, 0.2, 1) 175ms !important",
         [theme.breakpoints.down("sm")]: {
             minWidth: "auto",
@@ -94,16 +91,18 @@ const styles = theme => ({
         },
     },
     homeCTAsendit: {
-        color: "#ffffff",
         transform: "translateY(0px) scale(1)  !important",
-        textShadow: "0px 0px 4px white",
-        filter: "drop-shadow(0px 0px 4px skyblue) brightness(1)",
-        "&:hover": {
-            color: "#ffffff",
-            filter: "drop-shadow(0px 0px 16px lightskyblue) brightness(1.1)",
-            transform: "translateY(-7px) scale(1.2)  !important",
+        color: "#6f440d",
+        backgroundImage: "linear-gradient(-32deg, goldenrod, #fff9f0, gold, darkgoldenrod, #fff8aa, goldenrod, blanchedalmond)",
+        filter: "drop-shadow(0px 0px 4px darkgoldenrod)",
+        "& svg": {
+            filter: "sepia(1)"
         },
-        backgroundImage: "linear-gradient(32deg, #6100fd, #5dbff3, #7be2f1, #98ecff, #32c4ff, #6d5bff, #020562)",
+        "&:hover": {
+            color: "#402303",
+            filter: "drop-shadow(0px 0px 16px goldenrod) brightness(1.1)",
+            transform: "translateY(-3.4px) scale(1.1)  !important",
+        },
         transformOrigin: "center",
         transition: "color, filter, transform cubic-bezier(0.4, 0, 0.2, 1) 175ms !important",
         fontWeight: "bold",
@@ -173,7 +172,7 @@ const styles = theme => ({
                 fontSize: 12,
                 right: "max(20vw, 20vh)",
                 bottom: "max(30vw, 30vh)",
-                width: "min(40vw, 40vh)",
+                width: "min(60vw, 40vh)",
             },
             "h2&": {
                 display: "none",
@@ -325,7 +324,8 @@ class Home extends React.Component {
             classes: props.classes,
             lc: props.lc,
             _history: HISTORY,
-            _image_name_infographics: null,
+            _image_name_infographics: "nothing",
+            _bii3_opacity: 1,
         };
     };
 
@@ -396,8 +396,10 @@ class Home extends React.Component {
         let _image_name_infographics = all_image_name_infographics[_image_index];
         let _image_auto_interval = setInterval(() => {
 
-            _image_name_infographics = all_image_name_infographics[parseInt(parseInt(_image_index+1) % parseInt(all_image_name_infographics.length + 1))-1];
+            _image_index = _image_index % all_image_name_infographics.length;
             _image_index++;
+            _image_name_infographics = all_image_name_infographics[_image_index] || all_image_name_infographics[0];
+
             this.setState({_image_name_infographics});
 
         }, 777 * 10)
@@ -432,9 +434,14 @@ class Home extends React.Component {
         window.open(url);
     };
 
+    _toggle_bii3_opacity = () => {
+
+        this.setState({_bii3_opacity: this.state._bii3_opacity === 0 ? 1 : 0});
+    };
+
     render() {
 
-        const { classes, _quote, _image_name_infographics } = this.state;
+        const { classes, _bii3_opacity, _image_name_infographics } = this.state;
 
         return (
             <div className={classes.root} style={{
@@ -448,9 +455,9 @@ class Home extends React.Component {
                         backgroundSize: THEME_DAY ? "175%": "50%",
                         backgroundColor: THEME_DAY ? IS_EVENING ? "#48004900": "#4c4c2600": "#21214200",
                         }}>
-                        <Fade in={true} key={_image_name_infographics} timeout={500}><img alt="Image demo." src={`/src/images/infographics/${(_image_name_infographics || (THEME_DAY && !IS_EVENING ? "Pharaon": "Lucky").toString())}.svg`} className={classes.backgroundImageImage}/></Fade>
-                        <h2 className={classes.backgroundImageImage} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff", backgroundColor: THEME_DAY && !IS_EVENING ? "#ffffff99": "#00000099", padding: 16, textAlign: "center"}}>RENDER NOW in <b> ∞ SHAPES!</b> (YES, SVG from pixel art).</h2>
-                        <h3 className={classes.backgroundImageImage} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff", backgroundColor: THEME_DAY && !IS_EVENING ? "#ffffff99": "#00000099", padding: 16, textAlign: "center"}}>REAL RENDER!</h3>
+                        <Fade in={true} key={_image_name_infographics} timeout={_image_name_infographics !== "nothing" ? 500: 0}><img alt="Image demo." src={`/src/images/infographics/${_image_name_infographics !== "nothing" ? _image_name_infographics: "Lucky"}.svg`} className={classes.backgroundImageImage}/></Fade>
+                        <h2 className={classes.backgroundImageImage} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff", backgroundColor: THEME_DAY && !IS_EVENING ? "#ffffff99": "#b9ffc499", padding: 16, textAlign: "center", border: "8px solid #00ff0052"}}>REAL "SVG" SHAPES RENDER!<br/><span style={{fontSize: "0.75em"}}>Use "xBRZ" instead of default crisp-edge rendering.</span></h2>
+                        <h3 className={classes.backgroundImageImage} onClick={this._toggle_bii3_opacity} style={{borderRadius: "16px", zIndex: 90, opacity: _bii3_opacity, color: THEME_DAY && !IS_EVENING ? "#000": "#fff", border: "4px solid #980000", backgroundColor: THEME_DAY && !IS_EVENING ? "#ffffffcc": "#000000cc", padding: 16, textAlign: "center"}}>REAL "SVG" SHAPES RENDER!<br/><span style={{fontSize: "0.75em"}}>Use "xBRZ" instead of default crisp-edge rendering.</span> <span style={{fontSize: "0.5em"}}>CLICK TO CLOSE</span></h3>
                     </div>
                 </div>
                 <div className={classes.headerContainer} style={{color: THEME_DAY && !IS_EVENING? "#000": "#fff"}}>
@@ -478,17 +485,17 @@ class Home extends React.Component {
                         <img alt="scientific-dna-tweemoji" src={DNAEMOJI} className="emoji"/> <span>Your own <span>FREELY GIVEN</span> elaborate WEB-APP makes pixel-perfect ultra-simplifications!</span>
                         <br />
                     </h3>
-                    <Fade in={true} timeout={750}>
+                    <Fade in={true} timeout={0}>
                         <Button className={classes.homeCTAuseit} variant={"contained"} size={"large"} color="primary" onClick={this._go_to_editor}>
-                            Join lab-ops <LabEmojiSvg style={{transform: "scale(2.5)", filter: "sepia(1) saturate(1.3) contrast(1.2) brightness(1.1) drop-shadow(0px 0px 4px darkgoldenrod)"}} className="emoji-150" /> for free!
+                            USE IT <LabEmojiSvg style={{transform: "scale(2.5)", filter: "drop-shadow(white 0px 0px 6px)"}} className="emoji-150" /> NOW! (free)
                         </Button>
                     </Fade>
-                    <Fade in={true} timeout={1000}>
+                    <Fade in={true} timeout={0}>
                         <p className={classes.subtitleButton}><span><img alt="whole-earth-tweemoji" src={EARTHEMOJI} className="emoji"/> For Everyone <img alt="king-crown-tweemoji" src={CROWNEMOJI} className="emoji"/> For Free <img alt="sky-lightning-tweemoji" src={LIGHTINGEMOJI} className="emoji"/> Forever Open-Source...</span></p>
                     </Fade>
-                    <Fade in={true} timeout={1250}>
+                    <Fade in={true} timeout={0}>
                         <Button className={classes.homeCTAsendit} variant={"contained"} size={"large"} color="primary" onClick={(event) => {this._handle_speed_dial_action(event, "share")}}>
-                            SHARE NOW <ScopeEarth style={{marginLeft: -12, transform: "translate(50%, 0px) scale(3)", filter: "drop-shadow(white 0px 0px 6px)"}} className="emoji-150" />
+                            SHARE NOW? <img src="/src/images/infographics/HappyLucky.svg" style={{width: "1em", height: "1em", marginLeft: 32, transform: "translate(50%, 0px) scale(4)"}} />
                         </Button>
                     </Fade>
                 </div>
