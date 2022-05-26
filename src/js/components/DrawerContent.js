@@ -1,5 +1,5 @@
 import React from "react";
-import { withStyles } from "@material-ui/core";
+import {Tooltip, withStyles} from "@material-ui/core";
 
 import { t } from "../utils/t";
 
@@ -31,16 +31,9 @@ const styles = theme => ({
     },
     iconLeft: {
         color: theme.palette.secondary.contrastText,
-        margin: "0px 16px 0px 8px",
-        transform: "scale(1.1)",
-        filter: "opacity(0.777)",
-        width: "56px",
-        height: "56px",
-        transition: "all cubic-bezier(0.4, 0, 0.2, 1) 225ms",
-        "&:hover": {
-            filter: "opacity(1)",
-            transform: "scale(1)",
-        },
+        margin: "0px 16px -8px 0px",
+        width: "72px",
+        height: "72px",
     },
     iconRight: {
         color: theme.palette.secondary.contrastText,
@@ -86,6 +79,18 @@ const styles = theme => ({
             }
         }
     },
+    labListItem: {
+        backgroundColor: "transparent",
+        background: "linear-gradient(45deg, #010310, #0000005c), url(/src/images/infographics/Wardenclyffe.svg)",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        textShadow: "0 0px 6px white",
+        filter: "brightness(1)",
+        transition: "all cubic-bezier(0.4, 0, 0.2, 1) 125ms",
+        "&:hover": {
+            filter: "brightness(1.1) contrast(1.1)",
+        },
+    }
 });
 
 class DrawerContent extends React.Component {
@@ -134,9 +139,11 @@ class DrawerContent extends React.Component {
             <div>
                 <div>
                     <List>
-                        <ListItem style={{backgroundColor: "#ffffff33", background: "linear-gradient(45deg, #010310, #0000005c), url(/src/images/infographics/Wardenclyffe.svg)", backgroundSize: "cover", backgroundPosition: "center"}} button onClick={this._open_pixel_page}>
+                        <ListItem className={classes.labListItem} button onClick={this._open_pixel_page}>
                             <ListItemIcon>
-                                <img alt="Laboratory" src={"/src/images/infographics/Wardenclyffe.svg"} className={classes.iconLeft}/>
+                                <Tooltip aria-label="Leana advertising lab" title={"Hello, I am Leana, let me advertise the laboratory of Jamy."}>
+                                    <img alt="Laboratory Leana" src={"/src/images/infographics/Leana.svg"} className={classes.iconLeft}/>
+                                </Tooltip>
                             </ListItemIcon>
                             <ListItemText className={classes.boldListItemText} primary={"PIXEL ART LABORATORY"} />
                         </ListItem>

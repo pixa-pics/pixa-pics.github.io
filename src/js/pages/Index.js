@@ -302,13 +302,12 @@ class Index extends React.Component {
             const _camo = typeof settings.camo !== "undefined" ? settings.camo: 0;
 
             document.documentElement.lang = _language;
-            document.body.setAttribute("style", "");
             this.setState({ _ret, _camo, _onboarding_enabled, _sfx_enabled, _music_enabled, _jamy_enabled, _selected_locales_code, _language, _selected_currency, _know_the_settings: true, _has_played_index_music_counter: parseInt((!this.state._know_the_settings && _music_enabled) ? 1: this.state._has_played_index_music_counter )}, () => {
 
                 if(!was_the_settings_known) {
 
-                    document.body.removeAttribute("style");
-                    this._set_analytics(125);
+                    document.body.setAttribute("style", "");
+                    this._set_analytics(1500);
                 }
 
             });
