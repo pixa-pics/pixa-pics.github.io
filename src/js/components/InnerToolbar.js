@@ -57,6 +57,7 @@ const styles = theme => ({
         width: "100%",
     },
     innerToolbar: {
+        contain: "size style layout paint",
         cursor: "pointer",
         height: 40,
         lineHeight: "40px",

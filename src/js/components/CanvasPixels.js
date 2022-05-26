@@ -2294,7 +2294,7 @@ class CanvasPixels extends React.Component {
                         const has_changed = Boolean(all_old_layers_hash !== all_new_layers_hash);
                         maybe_set_layers(all_layers, all_layers_length, has_changed, all_new_layers_hash);
                     }
-                }, 42);
+                }, 64 / (pxl_height / pxl_width));
 
             }else {
 
