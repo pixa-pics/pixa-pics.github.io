@@ -60,7 +60,7 @@ const get_settings = (callback_function_info = null, attachment_ids = [], callba
 
     if(typeof window._pixa_settings !== "undefined" && window._pixa_settings !== null) {
 
-        if(typeof window._pixa_settings.locales !== "undefined" && window._pixa_settings.locales !== null && callback_function_attachment === null && Boolean(attachment_ids === "all" || attachment_ids.length > 0) === false) {
+        if(typeof window._pixa_settings.locales !== "undefined" && window._pixa_settings.locales !== null && callback_function_attachment === null && !Boolean(Boolean(attachment_ids === "all" || attachment_ids.length > 0))) {
 
             callback_function_info(null, Object.assign({}, window._pixa_settings));
             return;
@@ -86,7 +86,7 @@ const get_settings = (callback_function_info = null, attachment_ids = [], callba
 
                 try {
 
-                    if(Boolean(callback_function_attachment) &&  Boolean(attachment_ids.length > 0) || Boolean(attachment_ids === "all")) {
+                    if(Boolean(callback_function_attachment) &&  Boolean(Boolean(attachment_ids.length > 0) || Boolean(attachment_ids === "all"))) {
 
                         // retrieve a data attachment
                         window.settings_db.get(settings_docs[0]._id, {
@@ -159,13 +159,12 @@ const get_settings = (callback_function_info = null, attachment_ids = [], callba
                 window.settings_db.post({
                     info: JSON.stringify(pixa_settings),
                     timestamp: Date.now(),
-                }).then((response) => {
-
-                    if(callback_function_info !== null) {
-
-                        callback_function_info(null, Object.assign({}, window._pixa_settings));
-                    }
                 });
+
+                if(callback_function_info !== null) {
+
+                    callback_function_info(null, Object.assign({}, window._pixa_settings));
+                }
             }
         }
 

@@ -71,54 +71,18 @@ class Settings extends React.Component {
             classes: props.classes,
             _locales: LOCALES,
             _currency_countries: CURRENCY_COUNTRIES,
-            _selected_locales_code: null,
             _language: document.documentElement.lang,
-            _selected_currency: null,
-            _fees: 1,
-            _sfx_enabled: true,
-            _music_enabled: false,
-            _jamy_enabled: true,
-            _ret: 0,
-            _camo: 0,
-            _panic_mode: false
+            ...JSON.parse(props.settings)
         };
     };
 
     componentDidMount() {
-
-        this._update_settings();
 
         actions.trigger_loading_update(0);
         setTimeout(() => {
 
             actions.trigger_loading_update(100);
         }, 250);
-    }
-
-    _process_settings_query_result = (error, settings) => {
-
-        // Set new settings from query result
-        const _fees = typeof settings.fees !== "undefined" ? settings.fees: 1;
-        const _sfx_enabled = typeof settings.sfx_enabled !== "undefined" ? settings.sfx_enabled: true;
-        const _music_enabled = typeof settings.music_enabled !== "undefined" ? settings.music_enabled: false;
-        const _jamy_enabled = typeof settings.jamy_enabled !== "undefined" ? settings.jamy_enabled: true;
-        const _selected_locales_code =  typeof settings.locales !== "undefined" ? settings.locales: "en-US";
-        const _language = _selected_locales_code.split("-")[0];
-        const _selected_currency = typeof settings.currency !== "undefined" ? settings.currency: "USD";
-        const _panic_mode = typeof settings.panic !== "undefined" ? settings.panic: false;
-        const _ret = typeof settings.ret !== "undefined" ? settings.ret: 0;
-        const _camo = typeof settings.camo !== "undefined" ? settings.camo: 0;
-
-        actions.trigger_loading_update(0);
-        actions.trigger_loading_update(100);
-
-        this.setState({ _fees, _sfx_enabled, _jamy_enabled, _selected_locales_code, _language, _selected_currency, _panic_mode, _music_enabled, _ret, _camo});
-    };
-
-    _update_settings() {
-
-        // Call the api to get results of current settings and send it to a callback function
-        api.get_settings(this._process_settings_query_result);
     }
 
     _on_settings_changed = () => {
@@ -140,7 +104,7 @@ class Settings extends React.Component {
         if(value) {
 
             const settings = { locales: value.original.code };
-            this.setState({_selected_locales_code: value.original.code, _language: value.original.code.split("-")[0]});
+            this.setState({_selected_locales_code: value.original.code || "en-US", _language: value.original.code.split("-")[0] || "en-US"});
             api.set_settings(settings, this._on_settings_changed);
             actions.trigger_sfx("ui_lock");
             actions.jamy_update("happy");

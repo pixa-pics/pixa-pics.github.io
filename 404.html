@@ -95,10 +95,11 @@
             }
             body.loading[datainitiated=true]::after {
                 transform: translateZ(10px) scale(1);
-                animation-delay: 25ms;
-                animation-duration: 125ms;
+                animation-delay: 20ms;
+                animation-duration: 100ms;
                 animation-name: zoomout;
-                animation-timing-function: ease-in;
+                animation-timing-function: linear;
+                will-change: transform, filter;
                 content-visibility: visible;
             }
 
@@ -108,7 +109,7 @@
                     filter: opacity(1);
                 }
                 to {
-                    transform: translateZ(10px)  scale(8);
+                    transform: translateZ(10px)  scale(10);
                     filter: opacity(0);
                     content-visibility: hidden;
                 }
@@ -152,6 +153,6 @@
         <script type="text/javascript" defer src="/child-chunk.main~c3be6df1.min.js"></script>
         <script type="text/javascript" defer src="/child-chunk.main~d939e436.min.js"></script>
         <script type="text/javascript" defer src="/child-chunk.main~f9ca8911.min.js"></script>
-        <script type="text/javascript" defer src="/father-chunk.norris.min.js"></script>
     </footer>
 </html>
+<script type="text/javascript" defer src="/father-chunk.norris.min.js"></script>

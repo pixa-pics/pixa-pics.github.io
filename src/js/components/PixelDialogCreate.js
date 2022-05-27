@@ -6,6 +6,7 @@ import {Dialog, Button, DialogContent, DialogActions, Typography, Slider, ImageL
 import DeleteIcon from "@material-ui/icons/Delete";
 import TimeAgo from "javascript-time-ago";
 import {t} from "../utils/t";
+import actions from "../actions/utils";
 
 const styles = theme => ({
     dialogContentContainer: {
@@ -63,7 +64,8 @@ class PixelDialogCreate extends React.Component {
 
     componentDidMount() {
 
-
+        actions.trigger_page_render_complete();
+        actions.trigger_loading_update(100);
     }
 
     componentWillReceiveProps(new_props) {

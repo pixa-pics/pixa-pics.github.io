@@ -1,6 +1,6 @@
-var REQUIRED_CACHE = "unless-update-cache-v178-required";
-var USEFUL_CACHE = "unless-update-cache-v178-useful";
-var STATIC_CACHE = "unless-update-cache-v178-static";
+var REQUIRED_CACHE = "unless-update-cache-v179-required";
+var USEFUL_CACHE = "unless-update-cache-v179-useful";
+var STATIC_CACHE = "unless-update-cache-v179-static";
 var MAIN_CHILD_CHUNK_REGEX = /child\-chunk\.(main\~[a-z0-9]+)\.min.js/i;
 var CHILD_CHUNK_REGEX = /child\-chunk\.([0-9]+)\.min.js/i;
 
@@ -18,12 +18,13 @@ self.addEventListener("install", function(evt) {
                 "/src/images/favicon.ico",
                 "/src/images/manifest/icon-white.png",
                 "/src/images/logo-transparent.png",
-                "/src/images/infographics/Wardenclyffe.svg",
                 "/src/images/infographics/HelmetSpart.svg",
                 "/src/images/infographics/Leana.svg",
+                "/src/images/illustrations/ChemicalScientist.svg",
                 "/src/images/illustrations/China-night.svg",
                 "/src/images/illustrations/Egypt-day.svg",
                 "/src/images/infographics/Lucky.svg",
+                "/src/images/infographics/Wardenclyffe.svg",
                 "/src/images/infographics/HappyLucky.svg",
             ]);
         }),
@@ -106,6 +107,7 @@ self.addEventListener("fetch", function(event) {
                         "/child-chunk.10.min.js",
                         "/child-chunk.11.min.js",
                         "/child-chunk.12.min.js",
+                        "/child-chunk.13.min.js",
                     ]);
                 }),
                 caches.open(STATIC_CACHE).then(function (cache) {

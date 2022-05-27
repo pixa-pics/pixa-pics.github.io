@@ -83,9 +83,9 @@ const styles = theme => ({
     },
     labListItem: {
         backgroundColor: "transparent",
-        background: "linear-gradient(45deg, #010310 33%, #033aff66 ), url(/src/images/infographics/Wardenclyffe.svg)",
+        background: "linear-gradient(45deg, #010310 33%, #033aff66 ), url(/src/images/illustrations/ChemicalScientist.svg)",
         backgroundSize: "cover",
-        backgroundPosition: "center",
+        backgroundPosition: "right",
         textShadow: "0 0px 6px white",
         filter: "brightness(1)",
         transition: "all cubic-bezier(0.4, 0, 0.2, 1) 125ms",

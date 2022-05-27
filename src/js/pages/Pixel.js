@@ -384,16 +384,17 @@ class Pixel extends React.Component {
             _logged_account: {},
             _less_than_1280w: false,
             _is_pixel_dialog_create_open: true,
-            _settings_set: false,
+            _know_the_settings: false,
             _attachment_previews: {},
             _filters_thumbnail: {},
             _last_filters_hash: "",
+            settings: props.settings,
+            ...JSON.parse(props.settings)
         };
     };
 
     componentDidMount() {
 
-        this._update_settings();
         actions.trigger_snackbar(`This is PIXAAAAAA and beyond! Here, ideas easily find a new sunshine!`, 5000);
         window.addEventListener("resize", this._updated_dimensions);
         this._updated_dimensions();
@@ -412,6 +413,17 @@ class Pixel extends React.Component {
 
             this.setState({_library: RESSOURCE_PIXELS});
         });
+    }
+
+    componentWillReceiveProps(new_props) {
+
+        if(new_props.settings !== this.state.settings) {
+
+            this.setState({settings: props.settings, ...JSON.parse(new_props.settings)}, ()  => {
+
+                this.forceUpdate();
+            });
+        }
     }
 
     _handle_canvas_state_export = (current_state) => {
@@ -511,10 +523,8 @@ class Pixel extends React.Component {
             const _sfx_enabled = typeof settings.sfx_enabled !== "undefined" ? settings.sfx_enabled: false
             const _attachment_previews = typeof settings.attachment_previews !== "undefined" ? settings.attachment_previews: {};
 
-            this.setState({ _sfx_enabled, _attachment_previews, _settings_set: true }, () => {
+            this.setState({ _sfx_enabled, _attachment_previews, _know_the_settings: true }, () => {
 
-                actions.trigger_page_render_complete();
-                actions.trigger_loading_update(100);
                 this.forceUpdate();
             });
         }
@@ -543,12 +553,6 @@ class Pixel extends React.Component {
 
         }
     };
-
-    _update_settings() {
-
-        // Call the api to get results of current settings and send it to a callback function
-        api.get_settings(this._process_settings_info_result);
-    }
 
     _handle_view_name_change = (view_name_index, previous_name_index = null) => {
 
@@ -1559,7 +1563,7 @@ class Pixel extends React.Component {
             _library,
             _less_than_1280w,
             _is_pixel_dialog_create_open,
-            _settings_set,
+            _know_the_settings,
             _h_svg,
             _attachment_previews,
             _is_cursor_fuck_you_active,
@@ -2022,7 +2026,7 @@ class Pixel extends React.Component {
                 />
 
 
-                <PixelDialogCreate open={_is_pixel_dialog_create_open && _settings_set}
+                <PixelDialogCreate open={_is_pixel_dialog_create_open && _know_the_settings}
                                    pixel_arts={_attachment_previews}
                                    size={_import_size}
                                    on_import_size_change={this._set_import_size}

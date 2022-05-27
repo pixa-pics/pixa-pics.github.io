@@ -301,7 +301,7 @@ const styles = theme => ({
     stepPoints: {
         color: "#ffb800",
         textShadow: "0px 0px 3px darkgoldenrod, 0px 0px 6px darkgoldenrod, 0px 0px 12px black",
-        filter: "hue-rotate(75deg)",
+        filter: "hue-rotate(186deg) brightness(0.5)",
         display: "inline-block",
         transformOrigin: "left",
         transform: "scale(2.1)",
@@ -328,7 +328,8 @@ class Home extends React.Component {
         super(props);
         this.state = {
             classes: props.classes,
-            lc: props.lc,
+            settings: props.settings,
+            ...JSON.parse(props.settings),
             _history: HISTORY,
             _image_name_infographics: "",
             _infographics_fadein_time: 125,
@@ -366,9 +367,10 @@ class Home extends React.Component {
             return Boolean(h < 23 && h > 22);
         }
 
-        THEME_DAY = is_day(this.state.lc);
-        IS_EVENING = is_evening(this.state.lc);
-        IS_LATE_EVENING = is_late_evening(this.state.lc);
+        const cc = (this.state._selected_locales_code || "en_US").split("-")[1];
+        THEME_DAY = is_day(cc);
+        IS_EVENING = is_evening(cc);
+        IS_LATE_EVENING = is_late_evening(cc);
 
         actions.trigger_loading_update(0);
         setTimeout(() => {
@@ -404,9 +406,11 @@ class Home extends React.Component {
         const img = new Image();
         img.onload = () => {
             // image  has been loaded
-            this.setState({_image_name_infographics, _infographics_fadein_time: 225}, () => {
+            this.setState({_image_name_infographics, _infographics_fadein_time: 50}, () => {
 
-                actions.trigger_page_render_complete();
+                this.forceUpdate(() => {
+                    actions.trigger_page_render_complete();
+                });
                 actions.trigger_loading_update(100);
             });
             this._page_render_complete();
@@ -422,13 +426,32 @@ class Home extends React.Component {
             const img = new Image();
             img.onload = () => {
                 // image  has been loaded
-                this.setState({_image_name_infographics, _infographics_fadein_time: 675});
+                this.setState({_image_name_infographics, _infographics_fadein_time: 675}, () => {
+
+                    this.forceUpdate();
+                });
             };
             img.src = `/src/images/infographics/${_image_name_infographics}.svg`;
 
         }, 777 * 10)
 
         this.setState({_image_auto_interval});
+    }
+
+    componentWillReceiveProps(new_props){
+
+        if(new_props.settings !== this.state.settings) {
+
+            this.setState({settings: props.settings, ...JSON.parse(new_props.settings)}, ()  => {
+
+                this.forceUpdate();
+            });
+        }
+    }
+
+    shouldComponentUpdate() {
+
+        return false;
     }
 
     componentWillUnmount() {
@@ -460,7 +483,10 @@ class Home extends React.Component {
 
     _toggle_bii3_opacity = () => {
 
-        this.setState({_bii3_opacity: this.state._bii3_opacity === 0 ? 1 : 0});
+        this.setState({_bii3_opacity: this.state._bii3_opacity === 0 ? 1 : 0}, () => {
+
+            this.forceUpdate();
+        });
     };
 
     render() {
@@ -480,8 +506,8 @@ class Home extends React.Component {
                         backgroundColor: THEME_DAY ? IS_EVENING ? "#48004900": "#4c4c2600": "#21214200",
                         }}>
                         {_image_name_infographics.length >= 1 && <Grow in={true} exit={true} key={_image_name_infographics} timeout={{ enter: _infographics_fadein_time, exit: _infographics_fadein_time }}><img src={`/src/images/infographics/${_image_name_infographics}.svg`} alt="Image demo." className={classes.backgroundImageImage}/></Grow>}
-                        <h2 className={classes.backgroundImageImage} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff", backgroundColor: THEME_DAY && !IS_EVENING ? "#ffffff99": "#b9ffc499", padding: 16, textAlign: "center", border: "8px solid #00ff0052"}}>REAL "SVG" SHAPES RENDER!<br/><span style={{fontSize: "0.75em"}}>Use "xBRZ" instead of default crisp-edge rendering.</span></h2>
-                        <h3 className={classes.backgroundImageImage} onClick={this._toggle_bii3_opacity} style={{borderRadius: "16px", zIndex: 90, opacity: _bii3_opacity, color: THEME_DAY && !IS_EVENING ? "#000": "#fff", border: "4px solid #980000", backgroundColor: THEME_DAY && !IS_EVENING ? "#ffffffcc": "#000000cc", padding: 16, textAlign: "center"}}>REAL "SVG" SHAPES RENDER!<br/><span style={{fontSize: "0.75em"}}>Use "xBRZ" instead of default crisp-edge rendering.</span> <span style={{fontSize: "0.5em"}}>CLICK TO CLOSE</span></h3>
+                        <h2 className={classes.backgroundImageImage} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff", backgroundColor: THEME_DAY && !IS_EVENING ? "#ffffff99": "#00651080", padding: 16, textAlign: "center", border: "8px solid #00ff0054", borderRadius: "16px"}}>REAL "SVG" SHAPES RENDER!<br/><span style={{fontSize: "0.75em"}}>Use (6x) "xBRZ" instead of default pixelated rendering of (16x, 32x, 48x).</span></h2>
+                        <h3 className={classes.backgroundImageImage} onClick={this._toggle_bii3_opacity} style={{borderRadius: "16px", zIndex: 90, opacity: _bii3_opacity, color: THEME_DAY && !IS_EVENING ? "#000": "#fff", border: "4px solid #980000", backgroundColor: THEME_DAY && !IS_EVENING ? "#ffffffcc": "#000000cc", padding: 16, textAlign: "center"}}>REAL "SVG" SHAPES RENDER!<br/><span style={{fontSize: "0.75em"}}>Use (6x) "xBRZ" instead of default pixelated rendering of (16x, 32x, 48x).</span> <span style={{fontSize: "0.5em"}}>CLICK TO CLOSE</span></h3>
                     </div>
                 </div>
                 <div className={classes.headerContainer} style={{color: THEME_DAY && !IS_EVENING? "#000": "#fff"}}>
@@ -511,7 +537,7 @@ class Home extends React.Component {
                     </h3>
                     <Fade in={true} timeout={0}>
                         <Button className={classes.homeCTAuseit} variant={"contained"} size={"large"} color="primary" onClick={this._go_to_editor}>
-                            USE IT <img src="/src/images/infographics/Wardenclyffe.svg" style={{transform: "scale(3.5)", width: "5em", filter: "drop-shadow(white 0px 0px 6px)"}} className="emoji-150" /> NOW FREE
+                            USE IT <img src="/src/images/infographics/Wardenclyffe.svg" style={{transform: "scale(3.5)", width: "5em", filter: "drop-shadow(white 0px 0px 6px)"}} className="emoji-150" /> 100% FREE
                         </Button>
                     </Fade>
                     <Fade in={true} timeout={0}>
@@ -519,7 +545,7 @@ class Home extends React.Component {
                     </Fade>
                     <Fade in={true} timeout={0}>
                         <Button className={classes.homeCTAsendit} variant={"contained"} size={"large"} color="primary" onClick={(event) => {this._handle_speed_dial_action(event, "share")}}>
-                            SHARE NOW <img src="/src/images/infographics/HappyLucky.svg" style={{width: "1em", height: "1em", marginLeft: 32, transform: "translate(50%, 0px) scale(4)"}} />
+                            SHARE <img src="/src/images/infographics/HappyLucky.svg" style={{transform: "scale(3)", width: "4.5em", filter: "drop-shadow(white 0px 0px 6px)"}} className="emoji-150" /> NOW
                         </Button>
                     </Fade>
                 </div>

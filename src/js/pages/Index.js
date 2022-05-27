@@ -17,17 +17,17 @@ import Unknown from "./Unknown";
 const Pixel = React.lazy(() => import("../pages/Pixel"));
 
 
-const PAGE_COMPONENTS = (name, pathname, lc = "en_US") => {
+const PAGE_COMPONENTS = (name, pathname, settings = JSON.stringify("{}")) => {
 
     switch (name) {
         case "home":
-            return <Home lc={lc} />;
+            return <Home settings={settings} />;
         case "pixel":
-            return <Suspense fallback={<div/>}><Pixel /></Suspense>;
+            return <Suspense fallback={<div/>}><Pixel settings={settings}/></Suspense>;
         case "unknown":
             return <Unknown />;
         case "settings":
-            return <Settings />;
+            return <Settings settings={settings} />;
     }
 };
 
@@ -565,10 +565,13 @@ class Index extends React.Component {
 
     render() {
 
-        const { pathname, classes, _selected_locales_code } = this.state;
+        const { pathname, classes} = this.state;
         const { _snackbar_open, _snackbar_message, _snackbar_auto_hide_duration } = this.state;
-        const { _language, _is_share_dialog_open } = this.state;
-        const { _logged_account, _know_if_logged, _loaded_progress_percent, _know_the_settings, _jamy_state_of_mind, _jamy_enabled, _music_enabled, _ret, _camo } = this.state;
+        const {  _is_share_dialog_open } = this.state;
+        const { _logged_account, _know_if_logged, _loaded_progress_percent, _jamy_state_of_mind } = this.state;
+
+        const {_ret, _camo, _onboarding_enabled, _sfx_enabled, _music_enabled, _jamy_enabled, _selected_locales_code, _language, _selected_currency, _know_the_settings} = this.state;
+        const all_settings = {_ret, _camo, _onboarding_enabled, _sfx_enabled, _music_enabled, _jamy_enabled, _selected_locales_code, _language, _selected_currency, _know_the_settings};
 
         const JAMY = {
             angry: <JamyAngry className={classes.jamy} />,
@@ -591,7 +594,7 @@ class Index extends React.Component {
             if(pathname.match(page_route.page_regex)){
 
                 page_name = page_route.page_name;
-                page_component = PAGE_COMPONENTS(page_name, pathname, (_selected_locales_code || "en-US").split("-")[1]);
+                page_component = PAGE_COMPONENTS(page_name, pathname, JSON.stringify(all_settings));
             }
         }
 
@@ -639,7 +642,7 @@ class Index extends React.Component {
                         logged_account={_logged_account}/>
                     <Toolbar />
                     <main className={classes.content}>
-                        {page_component}
+                        {_know_the_settings && page_component}
                     </main>
                 </div>
                 <ShareDialog
