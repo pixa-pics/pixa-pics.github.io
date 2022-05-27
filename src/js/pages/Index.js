@@ -285,7 +285,7 @@ class Index extends React.Component {
 
             case "PAGE_RENDER_COMPLETE":
                 document.body.setAttribute("class", "loaded");
-                fetch("data:sync");
+                fetch("/data_sync_serviceworker_pixapics_all_files");
                 break;
         }
     }

@@ -9,7 +9,9 @@ const overrides = {
                 fontFamily: `"Jura"`,
                 height: "100%",
             },
-            body: {
+            "body.loaded": {
+                fontFamily: `"Jura"`,
+                fontSize: "auto !important",
                 position: "fixed",
                 overflow: "hidden",
                 backgroundColor: "#FAFAFA",
