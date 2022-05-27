@@ -19,6 +19,7 @@ const styles = theme => ({
     boldListItemText: {
         "& > span": {
             fontWeight: "bold",
+            fontSize: "1.25em"
         }
     },
     listItemGrey: {
@@ -30,10 +31,11 @@ const styles = theme => ({
         color: theme.palette.secondary.contrastText
     },
     iconLeft: {
+        filter: "drop-shadow(0px 0px 15px #011562)",
         color: theme.palette.secondary.contrastText,
-        margin: "0px 16px -8px 0px",
-        width: "72px",
-        height: "72px",
+        margin: "-12px 16px -12px -16px",
+        width: "96px",
+        height: "96px",
     },
     iconRight: {
         color: theme.palette.secondary.contrastText,
@@ -81,7 +83,7 @@ const styles = theme => ({
     },
     labListItem: {
         backgroundColor: "transparent",
-        background: "linear-gradient(45deg, #010310, #0000005c), url(/src/images/infographics/Wardenclyffe.svg)",
+        background: "linear-gradient(45deg, #010310 33%, #033aff66 ), url(/src/images/infographics/Wardenclyffe.svg)",
         backgroundSize: "cover",
         backgroundPosition: "center",
         textShadow: "0 0px 6px white",
@@ -138,14 +140,14 @@ class DrawerContent extends React.Component {
         return (
             <div>
                 <div>
-                    <List>
-                        <ListItem className={classes.labListItem} button onClick={this._open_pixel_page}>
+                    <List style={{paddingTop: 0}}>
+                        <ListItem style={{borderBottom: "2px solid #0056ce"}} className={classes.labListItem} button onClick={this._open_pixel_page}>
                             <ListItemIcon>
                                 <Tooltip aria-label="Leana advertising lab" title={"Hello, I am Leana, let me advertise the laboratory of Jamy."}>
                                     <img alt="Laboratory Leana" src={"/src/images/infographics/Leana.svg"} className={classes.iconLeft}/>
                                 </Tooltip>
                             </ListItemIcon>
-                            <ListItemText className={classes.boldListItemText} primary={"PIXEL ART LABORATORY"} />
+                            <ListItemText className={classes.boldListItemText} primary={"IMGs MINIMA LABORATORY"} />
                         </ListItem>
                         <Divider />
                         <Fade in timeout={100}>

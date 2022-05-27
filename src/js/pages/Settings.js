@@ -368,7 +368,6 @@ class Settings extends React.Component {
                     </Fade>
                     <Fade in timeout={225*5}>
                         <Card style={{position: "relative", zIndex: 1}} className={classes.marginTop}>
-                            <div style={{backgroundImage: "url(/src/images/Team.svg)", backgroundSize: "cover", backgroundPosition:"center", backgroundRepeat: "no-repeat", padding: 0, margin: 0, position: "absolute", width: "100%", height: "100%", filter: "contrast(1.66) saturate(1.33) opacity(0.33) sepia(1) hue-rotate(160deg)", zIndex: "-1"}}></div>
                             <CardHeader title={t( "pages.settings.superintendent")} />
                             <CardContent>
                                 <FormControlLabel

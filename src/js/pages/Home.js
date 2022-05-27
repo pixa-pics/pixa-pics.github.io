@@ -511,7 +511,7 @@ class Home extends React.Component {
                     </h3>
                     <Fade in={true} timeout={0}>
                         <Button className={classes.homeCTAuseit} variant={"contained"} size={"large"} color="primary" onClick={this._go_to_editor}>
-                            USE IT <img src="/src/images/infographics/Wardenclyffe.svg" style={{transform: "scale(2.5)", filter: "drop-shadow(white 0px 0px 6px)"}} className="emoji-150" /> NOW FREE
+                            USE IT <img src="/src/images/infographics/Wardenclyffe.svg" style={{transform: "scale(3.5)", width: "5em", filter: "drop-shadow(white 0px 0px 6px)"}} className="emoji-150" /> NOW FREE
                         </Button>
                     </Fade>
                     <Fade in={true} timeout={0}>

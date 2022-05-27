@@ -7,7 +7,7 @@ import pool from "../utils/worker-pool";
 
 const _merge_object = (obj1, obj2) => {
 
-    return {...obj1, ...obj2};
+    return Object.assign({}, {...obj1, ...obj2});
 };
 
 const _get_default_settings = () => {
@@ -62,7 +62,7 @@ const get_settings = (callback_function_info = null, attachment_ids = [], callba
 
         if(typeof window._pixa_settings.locales !== "undefined" && window._pixa_settings.locales !== null && callback_function_attachment === null && Boolean(attachment_ids === "all" || attachment_ids.length > 0) === false) {
 
-            callback_function_info(null, {...window._pixa_settings});
+            callback_function_info(null, Object.assign({}, window._pixa_settings));
             return;
         }
     }
@@ -96,8 +96,8 @@ const get_settings = (callback_function_info = null, attachment_ids = [], callba
                         }).then((doc) => {
 
                             const pixa_settings = JSON.parse(doc.info);
-                            window._pixa_settings = {...pixa_settings};
-                            if(callback_function_info){ callback_function_info(null, {...window._pixa_settings})};
+                            window._pixa_settings = Object.assign({}, pixa_settings);
+                            if(callback_function_info){ callback_function_info(null, Object.assign({}, window._pixa_settings))};
 
                             let blobs = [];
                             Object.entries(doc._attachments).forEach(([name_id, value]) => {
@@ -142,8 +142,8 @@ const get_settings = (callback_function_info = null, attachment_ids = [], callba
                     }else {
 
                         const pixa_settings = JSON.parse(settings_docs[0].info);
-                        window._pixa_settings = {...pixa_settings};
-                        if(callback_function_info){ callback_function_info(null, {...window._pixa_settings})};
+                        window._pixa_settings = Object.assign({}, pixa_settings);
+                        if(callback_function_info){ callback_function_info(null, Object.assign({}, window._pixa_settings))};
 
                     }
 
@@ -154,7 +154,7 @@ const get_settings = (callback_function_info = null, attachment_ids = [], callba
             }else {
 
                 const pixa_settings = _get_default_settings();
-                window._pixa_settings = {...pixa_settings};
+                window._pixa_settings = Object.assign({}, pixa_settings);
 
                 window.settings_db.post({
                     info: JSON.stringify(pixa_settings),
@@ -163,7 +163,7 @@ const get_settings = (callback_function_info = null, attachment_ids = [], callba
 
                     if(callback_function_info !== null) {
 
-                        callback_function_info(null, {...window._pixa_settings});
+                        callback_function_info(null, Object.assign({}, window._pixa_settings));
                     }
                 });
             }
@@ -212,7 +212,7 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
                     if(Object.keys(attachment_array).length >= 1) {
 
                         let pixa_settings = _merge_object(JSON.parse(settings_docs[0].info), info);
-                        window._pixa_settings = {...pixa_settings};
+                        window._pixa_settings = Object.assign({}, pixa_settings);
 
                         let attachments_to_process = Object.keys(attachment_array).length;
                         Object.entries(attachment_array).forEach(([name_id, data]) => {
@@ -272,7 +272,7 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
                                 _attachments: settings_docs[0]._attachments,
                             }, {force: true}).then((response) => {
 
-                                callback_function_info(null, {...window._pixa_settings});
+                                callback_function_info(null, Object.assign({}, window._pixa_settings));
 
                                 if(settings_docs.length > 1) {
 
@@ -289,7 +289,7 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
                     }else {
 
                         let pixa_settings = _merge_object(JSON.parse(settings_docs[0].info), info);
-                        window._pixa_settings = {...pixa_settings};
+                        window._pixa_settings = Object.assign({}, pixa_settings);
 
                         window.settings_db.put({
                             _id: settings_docs[0]._id,
@@ -299,7 +299,7 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
                             timestamp: Date.now(),
                         }, {force: true}).then((response) => {
 
-                            callback_function_info(null, {...window._pixa_settings});
+                            callback_function_info(null, Object.assign({}, window._pixa_settings));
 
                             if(settings_docs.length > 1) {
 
@@ -324,7 +324,7 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
 
             let pixa_settings = _merge_object(window._pixa_settings, info);
             pixa_settings = _merge_object(_get_default_settings(), pixa_settings);
-            window._pixa_settings = {...pixa_settings};
+            window._pixa_settings = Object.assign({}, pixa_settings);
 
 
             if(Object.keys(attachment_array).length > 0) {
@@ -369,7 +369,7 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
                         _attachments: attachments
                     }).then((response) => {
 
-                        callback_function_info(null, {...window._pixa_settings});
+                        callback_function_info(null, Object.assign({}, window._pixa_settings));
                         window.settings_db.compact();
                         window.settings_db.viewCleanup();
                     });
@@ -383,7 +383,7 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
                     timestamp: Date.now(),
                 }).then((response) => {
 
-                    callback_function_info(null, {...pixa_settings});
+                    callback_function_info(null, Object.assign({}, pixa_settings));
 
                 });
 
