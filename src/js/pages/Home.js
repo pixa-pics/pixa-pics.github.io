@@ -6,30 +6,17 @@ import { HISTORY, UTC_OFFSET_PER_COUNTRIES } from "../utils/constants";
 import {Button, Fade, Grow} from "@material-ui/core";
 import actions from "../actions/utils";
 
-import get_svg_in_b64 from "../utils/svgToBase64";
-
 import EarthEmojiSvg from "../twemoji/react/1F30E";
-const EARTHEMOJI = get_svg_in_b64(<EarthEmojiSvg />);
 import StarEmojiSvg from "../twemoji/react/2B50";
-const STAREMOJI = get_svg_in_b64(<StarEmojiSvg />);
 import CrownEmojiSvg from "../twemoji/react/1F451";
-const CROWNEMOJI = get_svg_in_b64(<CrownEmojiSvg />);
 import LightingEmojiSvg from "../twemoji/react/26A1";
-const LIGHTINGEMOJI = get_svg_in_b64(<LightingEmojiSvg />);
 import LuckEmojiSvg from "../twemoji/react/2618";
-const LUCKTWEMOJI = get_svg_in_b64(<LuckEmojiSvg />);
 import DNAEmojiSvg from "../twemoji/react/1F9Ec";
-const DNAEMOJI = get_svg_in_b64(<DNAEmojiSvg />);
 import LabopsEmojiSvg from "../twemoji/react/1F9Eb";
-const LABOPSEMOJI = get_svg_in_b64(<LabopsEmojiSvg />);
 import GlassesEmojiSvg from "../twemoji/react/1F97D";
-const GLASSESEMOJI = get_svg_in_b64(<GlassesEmojiSvg />);
 import JacketEmojiSvg from "../twemoji/react/1F97C";
-const JACKETEMOJI = get_svg_in_b64(<JacketEmojiSvg />);
 import DangerEmoji from "../twemoji/react/26A0";
-const DANGEREMOJI = get_svg_in_b64(<DangerEmoji />);
 import CEmojiSvg from "../twemoji/react/1F4681F3Fc200D1F52C";
-const CEMOJI = get_svg_in_b64(<CEmojiSvg />);
 
 let THEME_DAY = null;
 let IS_EVENING = null;
@@ -219,7 +206,6 @@ const styles = theme => ({
         maxWidth: "1000px",
         fontWeight: "bold",
         fontSize: "36px",
-        filter: "saturate(2.25)",
         "& sup": {
             fontSize: "0.33em",
             opacity: "0.66",
@@ -242,7 +228,6 @@ const styles = theme => ({
         fontWeight: "normal",
         fontSize: "21px",
         maxWidth: "600px",
-        filter: "saturate(2.25)",
         "& sup": {
             fontSize: "0.33em",
             opacity: "0.66",
@@ -299,25 +284,22 @@ const styles = theme => ({
         fontWeight: 600,
     },
     stepPoints: {
-        color: "#ffb800",
-        textShadow: "0px 0px 3px darkgoldenrod, 0px 0px 6px darkgoldenrod, 0px 0px 12px black",
-        filter: "hue-rotate(186deg) brightness(0.5)",
+        color: "#0062ff",
+        textShadow: "0px 0px 3px #001c48, 0px 0px 6px #98c0ff, 0px 0px 12px white",
         display: "inline-block",
         transformOrigin: "left",
-        transform: "scale(2.1)",
         fontWeight: "bold",
-        marginRight: "36px",
+        fontSize: "200%",
         [theme.breakpoints.down("sm")]: {
-            marginRight: "24px",
+            fontSize: "150%",
         },
         [theme.breakpoints.down("sm")]: {
-            marginRight: "16px",
+            fontSize: "100%",
         },
     },
     revelantText: {
-        color: "#ffb800",
-        textShadow: "0px 0px 2px #ffb500, 0px 0px 4px #bd8909, 0px 0px 8px #6b4000, 0px 0px 12px #000000",
-        filter: "sepia(1) hue-rotate(180deg) saturate(2) contrast(1.5)",
+        color: "#0062ff",
+        textShadow: "0px 0px 3px #001c48, 0px 0px 6px #98c0ff, 0px 0px 12px white"
     }
 });
 
@@ -331,8 +313,8 @@ class Home extends React.Component {
             settings: props.settings,
             ...JSON.parse(props.settings),
             _history: HISTORY,
-            _image_name_infographics: "",
-            _infographics_fadein_time: 125,
+            _image_name_infographics: "Lucky",
+            _infographics_fadein_time: 0,
             _bii3_opacity: 1,
         };
     };
@@ -373,6 +355,12 @@ class Home extends React.Component {
         IS_LATE_EVENING = is_late_evening(cc);
 
         actions.trigger_loading_update(0);
+        this.forceUpdate(() => {
+
+            actions.trigger_page_render_complete();
+            actions.trigger_loading_update(100)
+        })
+
         setTimeout(() => {
 
             actions.trigger_snackbar(`I am Jamy, a kind Emoji, developed on IntelliJ, life in vectors, sometimes not working on tor, I can show you hints as long as you (on the web-app) let me in!`, 10000);
@@ -402,20 +390,6 @@ class Home extends React.Component {
 
         let _image_index = 0;
         let _image_name_infographics = all_image_name_infographics[_image_index];
-
-        const img = new Image();
-        img.onload = () => {
-            // image  has been loaded
-            this.setState({_image_name_infographics, _infographics_fadein_time: 50}, () => {
-
-                this.forceUpdate(() => {
-                    actions.trigger_page_render_complete();
-                });
-                actions.trigger_loading_update(100);
-            });
-            this._page_render_complete();
-        };
-        img.src = `/src/images/infographics/${_image_name_infographics}.svg`;
 
         let _image_auto_interval = setInterval(() => {
 
@@ -493,6 +467,14 @@ class Home extends React.Component {
 
         const { classes, _bii3_opacity, _image_name_infographics, _infographics_fadein_time } = this.state;
 
+        if(
+            THEME_DAY === null ||
+            IS_EVENING === null ||
+            IS_LATE_EVENING === null
+        ) {
+            return null;
+        }
+
         return (
             <div className={classes.root} style={{
                 filter: "revert",
@@ -512,27 +494,27 @@ class Home extends React.Component {
                 </div>
                 <div className={classes.headerContainer} style={{color: THEME_DAY && !IS_EVENING? "#000": "#fff"}}>
                     <h1 className={classes.titleh1} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff"}}>
-                        <span className={classes.stepPoints} style={{transform: "scale(1.6)"}}>1 >></span><img alt="scientist-tweemoji" src={CEMOJI} className="emoji-150"/>
+                        <span className={classes.stepPoints}>1 >></span><CEmojiSvg alt="scientist-tweemoji" className="emoji-150"/>
                         <span className={classes.revelantText}>«PIXA.PICS» lovely pixel arts</span><span> (the picture's minima) just got ultra-light by state-shifting their colors and size.</span><br/>
                     </h1>
                     <h2 className={classes.titleh2} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff"}}>
                         <span><b>Apply effects in laboratory? Yes or No?</b> Essential lab operations gives the <b><span className={classes.revelantText}>MAXIMA of PRIVACY</span></b> in a fashion not only looking great for the online-self...</span>
                     </h2>
                     <p>
-                        <blockquote style={{fontStyle: "italic", color: THEME_DAY && !IS_EVENING ? "#222": "#ccc", marginRight: 8, marginLeft: 16}}><img alt="scientific-danger-tweemoji" style={{verticalAlign: "middle"}} src={DANGEREMOJI} className="emoji"/> MINIMA-ART being pixel art mainly takes two focused eyes to create it however beware, NFTs may be harmful if the lab ops with your files are still yours a danger to manage outside a blockchain.</blockquote>
+                        <blockquote style={{fontStyle: "italic", color: THEME_DAY && !IS_EVENING ? "#222": "#ccc", marginRight: 8, marginLeft: 16}}><DangerEmoji alt="scientific-danger-tweemoji" style={{verticalAlign: "middle"}} className="emoji"/> MINIMA-ART being pixel art mainly takes two focused eyes to create it however beware, NFTs may be harmful if the lab ops with your files are still yours a danger to manage outside a blockchain.</blockquote>
                     </p>
                     <h2 className={classes.titleh2} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff"}}>
-                        <span><span className={classes.stepPoints}>2 >></span> <img alt="scientist-jacket-tweemoji" src={JACKETEMOJI} className="emoji-150"/> <b><span className={classes.revelantText}> WHILE EDITING</span></b> a <b >SANITIZED MINIMA-ART</b>, anyone may use <b >55+ tools in 7 panels for pixel art</b>, options in layers, filters, selections, shapes, effects,... <img alt="scientific-DNA-tweemoji" src={DNAEMOJI} className="emoji-150"/> to activate cool "NINJA" LAB-OPS!</span>
+                        <span><span className={classes.stepPoints}>2 >></span> <JacketEmojiSvg alt="scientist-jacket-tweemoji" className="emoji-150"/> <b><span className={classes.revelantText}> WHILE EDITING</span></b> a <b >SANITIZED MINIMA-ART</b>, anyone may use <b >55+ tools in 7 panels for pixel art</b>, options in layers, filters, selections, shapes, effects,... <DNAEmojiSvg alt="scientific-DNA-tweemoji" className="emoji-150"/> to activate cool "NINJA" LAB-OPS!</span>
                     </h2>
                     <h2 className={classes.titleh2} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff"}}>
-                        <span><span className={classes.stepPoints}>3 >></span> <img alt="scientist-jacket-tweemoji" style={{verticalAlign: "middle"}} src={GLASSESEMOJI} className="emoji-150"/> <b><span className={classes.revelantText}> RENDER UNLIMITED MINIMA-ART</span></b> in <b >4K<sup> Ultra HD</sup> images</b> or in <b >humanized ∞%<sup> Scalable</sup> shapes</b> of vectors using <img alt="laboratory-noidea-tweemoji" src={LABOPSEMOJI} style={{verticalAlign: "bottom"}} className="emoji-150"/>its DOT-MATRIX to get it majestically and visionary for you.</span>
+                        <span><span className={classes.stepPoints}>3 >></span> <GlassesEmojiSvg alt="scientist-jacket-tweemoji" style={{verticalAlign: "middle"}} className="emoji-150"/> <b><span className={classes.revelantText}> RENDER UNLIMITED MINIMA-ART</span></b> in <b >4K<sup> Ultra HD</sup> images</b> or in <b >humanized ∞%<sup> Scalable</sup> shapes</b> of vectors using <LabopsEmojiSvg alt="laboratory-noidea-tweemoji" style={{verticalAlign: "bottom"}} className="emoji-150"/>its DOT-MATRIX to get it majestically and visionary for you.</span>
                     </h2>
                     <h3 className={classes.subtitle} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff"}}>
-                        <img alt="space-star-tweemoji" src={STAREMOJI} className="emoji"/> <span>IMAGINE tremendous (x6 svg, x32 png) <span>PIXEL ART</span> based on your images.</span>
+                        <StarEmojiSvg alt="space-star-tweemoji"className="emoji"/> <span>IMAGINE tremendous (x6 svg, x32 png) <span>PIXEL ART</span> based on your images.</span>
                         <br />
-                        <img alt="nature-luck-tweemoji" src={LUCKTWEMOJI} className="emoji"/> <span>A few aspects just missing from your online-self for NFTs, CAN IT PAY OFF?</span>
+                        <LuckEmojiSvg alt="nature-luck-tweemoji" className="emoji"/> <span>A few aspects just missing from your online-self for NFTs, CAN IT PAY OFF?</span>
                         <br />
-                        <img alt="scientific-dna-tweemoji" src={DNAEMOJI} className="emoji"/> <span>Your own <span>FREELY GIVEN</span> elaborate WEB-APP makes pixel-perfect ultra-simplifications!</span>
+                        <DNAEmojiSvg alt="scientific-dna-tweemoji" className="emoji"/> <span>Your own <span>FREELY GIVEN</span> elaborate WEB-APP makes pixel-perfect ultra-simplifications!</span>
                         <br />
                     </h3>
                     <Fade in={true} timeout={0}>
@@ -541,7 +523,7 @@ class Home extends React.Component {
                         </Button>
                     </Fade>
                     <Fade in={true} timeout={0}>
-                        <p className={classes.subtitleButton}><span><img alt="whole-earth-tweemoji" src={EARTHEMOJI} className="emoji"/> For Everyone <img alt="king-crown-tweemoji" src={CROWNEMOJI} className="emoji"/> For Free <img alt="sky-lightning-tweemoji" src={LIGHTINGEMOJI} className="emoji"/> Forever Open-Source...</span></p>
+                        <p className={classes.subtitleButton}><span><EarthEmojiSvg alt="whole-earth-tweemoji" className="emoji"/> For Everyone <CrownEmojiSvg alt="king-crown-tweemoji" className="emoji"/> For Free <LightingEmojiSvg alt="sky-lightning-tweemoji" className="emoji"/> Forever Open-Source...</span></p>
                     </Fade>
                     <Fade in={true} timeout={0}>
                         <Button className={classes.homeCTAsendit} variant={"contained"} size={"large"} color="primary" onClick={(event) => {this._handle_speed_dial_action(event, "share")}}>

@@ -12,44 +12,22 @@
         <meta name="description" content="At the horizon of matrix and vectorial, discover an unprecedented industrial and educative purpose. Our software is for everyone and forever open-source.">
         <meta name="keywords" content="Pixel, Art, Anonymous, NFT, Crypto, Red, Free, Secure">
 
-        <!-- Service worker -->
-        <script type="text/javascript">
-            if ("serviceWorker" in navigator) {
-                navigator.serviceWorker.register("/service-worker.js", {
-                    scope: "/"
-                });
-            }
-        </script>
-
-        <!-- Open graph metadata -->
-        <meta property="og:title" content="Pixa.pics - Pixel art editor. Make potential (un)limited."/>
-        <meta property="og:description" content="At the horizon of matrix and vectorial, discover an unprecedented industrial and educative purpose. Our software is for everyone and forever open-source."/>
-        <meta property="og:url" content="https://pixa.pics"/>
-        <meta property="og:type" content="website"/>
-        <meta property="og:image" content="https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/master/src/images/og-image-logo.jpg"/>
-
-        <!-- Mobile chrome toolbar color + Favicon -->
-        <link rel="icon" href="/src/images/favicon.ico">
-        <meta name="theme-color" content="#060f23" />
-
-        <!-- CSS + fonts -->
+        <!-- CSS -->
         <style>
-            @font-face {  font-family: "Jura";  src: url("/src/fonts/Jura-Medium.woff2") format('woff2'); font-style: normal;  font-weight: 500;  font-stretch: 100%;  font-display: swap; }
-
-            body {
+            body.loaded {
                 background-color: #fafafa;
                 content-visibility: visible;
             }
             body::after {
-                will-change: auto;
+                will-change: initial;
             }
-            body:not(.loading) > #app {
+            body.loaded > #app {
                 contain: paint style layout;
                 content-visibility: auto;
                 will-change: auto;
             }
             body.loading[datainitiated=true] > #app {
-                content-visibility: visible;
+                content-visibility: hidden;
                 will-change: contents;
             }
             body.loading > #app {
@@ -58,7 +36,7 @@
             }
             body.loading  {
                 font-size: 0 !important;
-                content-visibility: auto;
+                content-visibility: visible;
                 background-color: black;
                 contain: size paint style layout;
                 padding: 0;
@@ -71,6 +49,7 @@
                 min-width: 100vw;
             }
             body.loading::after {
+                content-visibility: visible;
                 contain: size paint style layout;
                 content: " ";
                 position: fixed;
@@ -93,6 +72,9 @@
                 animation-fill-mode: both;
                 will-change: auto;
             }
+            body.loading[datainitiated=false]{
+                content-visibility: hidden;
+            }
             body.loading[datainitiated=true]::after {
                 transform: translateZ(10px) scale(1);
                 animation-delay: 20ms;
@@ -100,13 +82,13 @@
                 animation-name: zoomout;
                 animation-timing-function: linear;
                 will-change: transform, filter;
-                content-visibility: visible;
             }
-
             @keyframes zoomout {
                 from {
                     transform: translateZ(10px) scale(1);
                     filter: opacity(1);
+                    content-visibility: visible;
+
                 }
                 to {
                     transform: translateZ(10px)  scale(10);
@@ -115,6 +97,59 @@
                 }
             }
         </style>
+
+        <!-- Service worker -->
+        <script type="text/javascript">
+
+            window.SCS = [
+                "/child-chunk.main~0d5ee630.min.js",
+                "/child-chunk.main~1f20a385.min.js",
+                "/child-chunk.main~5a2dc592.min.js",
+                "/child-chunk.main~9acc357d.min.js",
+                "/child-chunk.main~253ae210.min.js",
+                "/child-chunk.main~748942c6.min.js",
+                "/child-chunk.main~af9f4ef7.min.js",
+                "/child-chunk.main~c1dd23ef.min.js",
+                "/child-chunk.main~c3be6df1.min.js",
+                "/child-chunk.main~d939e436.min.js",
+                "/child-chunk.main~f9ca8911.min.js",
+                "/father-chunk.norris.min.js"
+            ];
+
+            function add_all(scs) {
+                scs.forEach(function (ss) {
+
+                    var s = document.createElement("script");
+                    s.setAttribute("src", ss);
+                    s.setAttribute("defer", "true");
+                    s.setAttribute("type", "text/javascript");
+                    document.footer.appendChild(s);
+                });
+            }
+
+            if ("serviceWorker" in navigator) {
+                navigator.serviceWorker.register("/service-worker.js", {
+                    scope: "/"
+                }).finally(function() {
+
+                    add_all(window.SCS)
+                });
+            }else {
+
+                add_all(window.SCS)
+            }
+        </script>
+
+        <!-- Open graph metadata -->
+        <meta property="og:title" content="Pixa.pics - Pixel art editor. Make potential (un)limited."/>
+        <meta property="og:description" content="At the horizon of matrix and vectorial, discover an unprecedented industrial and educative purpose. Our software is for everyone and forever open-source."/>
+        <meta property="og:url" content="https://pixa.pics"/>
+        <meta property="og:type" content="website"/>
+        <meta property="og:image" content="https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/master/src/images/og-image-logo.jpg"/>
+
+        <!-- Mobile chrome toolbar color + Favicon -->
+        <link rel="icon" href="/src/images/favicon.ico">
+        <meta name="theme-color" content="#060f23" />
 
         <!-- Add to homescreen for Chrome on Android. Fallback for manifest.json -->
         <link rel="manifest" href="/manifest.json">
@@ -142,17 +177,9 @@
         <div id="app"></div>
     </body>
     <footer>
-        <script type="text/javascript" defer src="/child-chunk.main~0d5ee630.min.js"></script>
-        <script type="text/javascript" defer src="/child-chunk.main~1f20a385.min.js"></script>
-        <script type="text/javascript" defer src="/child-chunk.main~5a2dc592.min.js"></script>
-        <script type="text/javascript" defer src="/child-chunk.main~9acc357d.min.js"></script>
-        <script type="text/javascript" defer src="/child-chunk.main~253ae210.min.js"></script>
-        <script type="text/javascript" defer src="/child-chunk.main~748942c6.min.js"></script>
-        <script type="text/javascript" defer src="/child-chunk.main~af9f4ef7.min.js"></script>
-        <script type="text/javascript" defer src="/child-chunk.main~c1dd23ef.min.js"></script>
-        <script type="text/javascript" defer src="/child-chunk.main~c3be6df1.min.js"></script>
-        <script type="text/javascript" defer src="/child-chunk.main~d939e436.min.js"></script>
-        <script type="text/javascript" defer src="/child-chunk.main~f9ca8911.min.js"></script>
+        <!-- FONTS -->
+        <style>
+            @font-face {  font-family: "Jura";  src: url("/src/fonts/Jura-Medium.woff2") format('woff2'); font-style: normal;  font-weight: 500;  font-stretch: 100%;  font-display: swap; }
+        </style>
     </footer>
 </html>
-<script type="text/javascript" defer src="/father-chunk.norris.min.js"></script>

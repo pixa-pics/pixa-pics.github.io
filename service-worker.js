@@ -1,6 +1,6 @@
-var REQUIRED_CACHE = "unless-update-cache-v179-required";
-var USEFUL_CACHE = "unless-update-cache-v179-useful";
-var STATIC_CACHE = "unless-update-cache-v179-static";
+var REQUIRED_CACHE = "unless-update-cache-v180-required";
+var USEFUL_CACHE = "unless-update-cache-v180-useful";
+var STATIC_CACHE = "unless-update-cache-v180-static";
 var MAIN_CHILD_CHUNK_REGEX = /child\-chunk\.(main\~[a-z0-9]+)\.min.js/i;
 var CHILD_CHUNK_REGEX = /child\-chunk\.([0-9]+)\.min.js/i;
 
@@ -12,7 +12,7 @@ self.addEventListener("install", function(evt) {
         return true;
     }
 
-    return evt.waitUntil(Promise.allSettled([
+    const promise = Promise.allSettled([
         caches.open(USEFUL_CACHE).then(function (cache) {
             return cache.addAll([
                 "/src/images/favicon.ico",
@@ -47,7 +47,9 @@ self.addEventListener("install", function(evt) {
                 "/child-chunk.main~f9ca8911.min.js",
             ]);
         })
-    ]));
+    ]);
+
+    return promise;
 });
 
 self.addEventListener("fetch", function(event) {
@@ -60,9 +62,9 @@ self.addEventListener("fetch", function(event) {
             return response.clone();
         }));
 
-    }else if(url.includes("data_sync_serviceworker_pixapics_all_files")) {
+    }else if(url.includes("datasyncserviceworkerallfiles")) {
 
-        event.respondWith(
+        event.waitUntil(
             Promise.allSettled([
                 caches.open(USEFUL_CACHE).then(function (cache) {
                     return cache.addAll([

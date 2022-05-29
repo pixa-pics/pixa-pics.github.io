@@ -1179,7 +1179,7 @@ window.remove_close_pxl_colors_process_function_string = `var f = async function
             }
 
             var fr = this_remove_duplicate_pxl_colors(pxls, pxl_colors);
-            fr[0] = Uint16Array.from(fr[0]);
+            fr[0] = Array.from(fr[0]);
             return fr;
         }; return f;`;
 
@@ -1392,8 +1392,8 @@ class CanvasPixels extends React.Component {
             _layer_index: 0,
             _s_pxl_colors: [Uint32Array.of(0)],
             _old_pxl_colors: Uint32Array.of(0),
-            _s_pxls: [new Uint16Array((props.pxl_width || 32) * (props.pxl_height || 32)).fill(0)],
-            _old_pxls: new Uint16Array((props.pxl_width || 32) * (props.pxl_height || 32)).fill(0),
+            _s_pxls: [new Array((props.pxl_width || 32) * (props.pxl_height || 32)).fill(0)],
+            _old_pxls: new Array((props.pxl_width || 32) * (props.pxl_height || 32)).fill(0),
             _json_state_history: {previous_history_position: 0, history_position: 0, state_history: []},
             _saved_json_state_history_timestamp_from_drawing: 0,
             _old_pxl_width: 0,
@@ -1664,8 +1664,8 @@ class CanvasPixels extends React.Component {
             _pxl_indexes_of_selection: new Set(),
             _layers: [{id: Date.now(), name: "Layer 0", hidden: false, opacity: 1}],
             _layer_index: 0,
-            _s_pxls: Array.of(new Uint16Array((width || 32) * (height || 32)).fill(0)),
-            _old_pxls: new Uint16Array((width || 32) * (height || 32)).fill(0),
+            _s_pxls: Array.of(new Array((width || 32) * (height || 32)).fill(0)),
+            _old_pxls: new Array((width || 32) * (height || 32)).fill(0),
             _s_pxl_colors: Array.of(Uint32Array.of(0)),
             _old_pxl_colors: ["#00000000"],
             _moves_speed_average_now: 8,
@@ -1990,7 +1990,7 @@ class CanvasPixels extends React.Component {
         at_index = typeof at_index === "undefined" ? _s_pxl_colors.length: at_index;
 
         _s_pxl_colors.splice(at_index+1, 0, Uint32Array.of(0));
-        _s_pxls.splice(at_index+1, 0, new Uint16Array(pxl_width * pxl_height).fill(0));
+        _s_pxls.splice(at_index+1, 0, new Array(pxl_width * pxl_height).fill(0));
         _layers.splice(at_index+1, 0, {id: Date.now(), name: `Layer ${at_index}`, hidden: false, opacity: 1});
 
         this.setState({
@@ -1999,7 +1999,7 @@ class CanvasPixels extends React.Component {
             _s_pxl_colors,
             _old_pxl_colors: Uint32Array.of(0),
             _s_pxls,
-            _old_pxls: new Uint16Array(pxl_width * pxl_height).fill(0),
+            _old_pxls: new Array(pxl_width * pxl_height).fill(0),
             _last_action_timestamp: Date.now(),
         }, () => {
 
@@ -2079,7 +2079,7 @@ class CanvasPixels extends React.Component {
         this.setState({
             _layer_index: at_index,
             _old_pxl_colors: _s_pxl_colors[at_index],
-            _old_pxls: Uint16Array.from(_s_pxls[at_index]),
+            _old_pxls: Array.from(_s_pxls[at_index]),
             _last_action_timestamp: Date.now(),
         }, () => {
 
@@ -2121,7 +2121,7 @@ class CanvasPixels extends React.Component {
         let { _layers, _s_pxls, _s_pxl_colors } = this.state;
 
         _layers = Array.from(_layers);
-        _s_pxls = _s_pxls.map((a) => Uint16Array.from(a));
+        _s_pxls = _s_pxls.map((a) => Array.from(a));
         _s_pxl_colors = _s_pxl_colors.map((a) => Uint32Array.from(a));
 
         const { pxl_width, pxl_height } = this.state;
@@ -2135,11 +2135,11 @@ class CanvasPixels extends React.Component {
                 opacity: 1
             };
 
-            let new_layer_pxls = new Uint16Array(pxl_width * pxl_height).fill(0);
+            let new_layer_pxls = new Array(pxl_width * pxl_height).fill(0);
             let new_layer_pxl_colors = [];
 
-            const top_layer_pxls = Uint16Array.from(_s_pxls[at_index]);
-            const bottom_layer_pxls = Uint16Array.from(_s_pxls[at_index - 1]);
+            const top_layer_pxls = Array.from(_s_pxls[at_index]);
+            const bottom_layer_pxls = Array.from(_s_pxls[at_index - 1]);
 
             const top_layer_pxl_colors = _s_pxl_colors[at_index];
             const top_layer_opacity = _layers[at_index].opacity;
@@ -2172,7 +2172,7 @@ class CanvasPixels extends React.Component {
                 _layer_index: at_index-1,
                 _layers,
                 _s_pxls,
-                _old_pxls: new Uint16Array(pxl_width * pxl_height).fill(0),
+                _old_pxls: new Array(pxl_width * pxl_height).fill(0),
                 _s_pxl_colors,
                 _old_pxl_colors: new Uint32Array(0),
                 _last_action_timestamp: Date.now(),
@@ -2213,7 +2213,7 @@ class CanvasPixels extends React.Component {
 
             const { _layer_index, pxl_width, pxl_height, _s_pxls, _s_pxl_colors, _last_filters_hash } = this.state;
 
-            const p = Uint16Array.from(_s_pxls[_layer_index]);
+            const p = Array.from(_s_pxls[_layer_index]);
             const pc = Uint32Array.from(_s_pxl_colors[_layer_index]);
             const hash = Array.of(p, pc).map((array) => this._xxhashthat(array)).join("-");
 
@@ -2274,7 +2274,7 @@ class CanvasPixels extends React.Component {
         for(let index = 0; index < layers.length; index++){
 
             all_layers[index] = Object.assign({}, layers[index]);
-            const p = Uint16Array.from(s_pxls[index]);
+            const p = Array.from(s_pxls[index]);
             const pc = Uint32Array.from(s_pxl_colors[index]);
             const hash = Array.of(p, pc).map((array) => this._xxhashthat(array)).join("-");
 
@@ -2706,7 +2706,7 @@ class CanvasPixels extends React.Component {
 
             const _layer_index = 0;
             const ns_pxl_colors = Array.of(Uint32Array.from(img_d.pxl_colors));
-            const ns_pxls = Array.of(Uint16Array.from(img_d.pxls));
+            const ns_pxls = Array.of(Array.from(img_d.pxls));
 
             this.setState({
                 _id: Date.now(),
@@ -2721,7 +2721,7 @@ class CanvasPixels extends React.Component {
                 _old_pxls_hovered: -1,
                 _pxls_hovered: -1,
                 _old_pxl_colors: Uint32Array.of(0),
-                _old_pxls: new Uint16Array(img_d.pxls.length).fill(0),
+                _old_pxls: new Array(img_d.pxls.length).fill(0),
                 _hidden: true,
                 has_shown_canvas_once: false,
                 _is_there_new_dimension: true,
@@ -3012,7 +3012,7 @@ class CanvasPixels extends React.Component {
                     _old_pxls_hovered: -1,
                     _pxls_hovered: -1,
                     _old_pxl_colors: Uint32Array.of(0),
-                    _old_pxls: new Uint16Array(ns_pxls[0].length).fill(0),
+                    _old_pxls: new Array(ns_pxls[0].length).fill(0),
                     _hidden: true,
                     has_shown_canvas_once: false,
                     _is_there_new_dimension: true,
@@ -3236,7 +3236,7 @@ class CanvasPixels extends React.Component {
 
 
         let pxl_colors_copy = Array.from(_s_pxl_colors[_layer_index]);
-        let pxls_copy = Uint16Array.from(_s_pxls[_layer_index]);
+        let pxls_copy = Array.from(_s_pxls[_layer_index]);
 
         const pxl_color_index = pxl_colors_copy.indexOf(old_color);
 
@@ -3339,8 +3339,8 @@ class CanvasPixels extends React.Component {
 
         if(!hide_canvas_content) {
 
-            const pxls_copy_immutable = Uint16Array.from(_s_pxls[_layer_index]);
-            let pxls_copy = Uint16Array.from(_s_pxls[_layer_index]);
+            const pxls_copy_immutable = Array.from(_s_pxls[_layer_index]);
+            let pxls_copy = Array.from(_s_pxls[_layer_index]);
             let pxl_colors_copy = Array.from(_s_pxl_colors[_layer_index]);
 
             const pxl_color = pxl_colors_copy[pxl_color_index];
@@ -3592,7 +3592,7 @@ class CanvasPixels extends React.Component {
                     _s_pxl_colors: ns_pxl_colors,
                     _paint_or_select_hover_pxl_indexes: new Set([pxl_index]),
                     _paint_or_select_hover_actions_latest_index: pxl_index,
-                    _paint_hover_old_pxls_snapshot: Uint16Array.from(this.state._s_pxls[_layer_index]),
+                    _paint_hover_old_pxls_snapshot: Array.from(this.state._s_pxls[_layer_index]),
                     _last_action_timestamp: Date.now()
                 }, () => {
 
@@ -3602,7 +3602,7 @@ class CanvasPixels extends React.Component {
             }else if ((tool === "BUCKET" || tool === "HUE BUCKET" || tool === "SELECT COLOR THRESHOLD" || tool === "BORDER") && event_which === 1) {
 
                 const { _old_pxls } = this.state;
-                const old_pxls_copy = Uint16Array.from(_old_pxls);
+                const old_pxls_copy = Array.from(_old_pxls);
 
                 const pixel_start = [pos_x, pos_y];
                 const index_color_start = old_pxls_copy[pxl_index];
@@ -3847,7 +3847,7 @@ class CanvasPixels extends React.Component {
             }else if ((tool === "SELECT COLOR") && event_which === 1) {
 
                 const { _s_pxls } = this.state;
-                const _pxls_copy = Uint16Array.from(_s_pxls[_layer_index]);
+                const _pxls_copy = Array.from(_s_pxls[_layer_index]);
                 const index_color_start = _pxls_copy[pxl_index];
 
                 if(select_mode === "REPLACE") {
@@ -3855,7 +3855,7 @@ class CanvasPixels extends React.Component {
                     _pxl_indexes_of_selection.clear();
                 }
 
-                Uint16Array.from(_pxls_copy).forEach((pxl, pxl_index) => {
+                Array.from(_pxls_copy).forEach((pxl, pxl_index) => {
 
                     if(pxl === index_color_start) {
 
@@ -3883,7 +3883,7 @@ class CanvasPixels extends React.Component {
 
         const { _s_pxl_colors, _s_pxls, _layer_index } = this.state;
         let { _pxl_indexes_of_selection } = this.state;
-        const _pxls_copy = Uint16Array.from(_s_pxls[_layer_index]);
+        const _pxls_copy = Array.from(_s_pxls[_layer_index]);
 
 
         _pxl_indexes_of_selection.clear();
@@ -3912,7 +3912,7 @@ class CanvasPixels extends React.Component {
 
     _get_pixels_palette_and_list_from_line = (pxls, index_a, index_b, pxl_colors = [], pxl_color_new = null, pxl_current_opacity = null) => {
 
-        pxls = Uint16Array.from(pxls);
+        pxls = Array.from(pxls);
         pxl_colors = Array.from(pxl_colors);
         let pxl_indexes = [];
 
@@ -3973,7 +3973,7 @@ class CanvasPixels extends React.Component {
 
     _get_pixels_palette_and_list_from_rectangle = (pxls, index_a, index_b, pxl_colors = [], pxl_color_new = null, pxl_current_opacity = null) => {
 
-        pxls = Uint16Array.from(pxls);
+        pxls = Array.from(pxls);
         pxl_colors = Array.from(pxl_colors);
         let pxl_indexes = [];
 
@@ -4024,7 +4024,7 @@ class CanvasPixels extends React.Component {
     _get_pixels_palette_and_list_from_path = (pxls, path_indexes, pxl_colors = [], pxl_color_new = null, pxl_current_opacity = null) => {
 
         const { pxl_width, pxl_height } = this.state;
-        pxls = Uint16Array.from(pxls);
+        pxls = Array.from(pxls);
         pxl_colors = Array.from(pxl_colors);
         path_indexes = new Set(path_indexes);
 
@@ -4112,13 +4112,13 @@ class CanvasPixels extends React.Component {
             });
         }
 
-        return Array.of( pxls, Uint32Array.from(pxl_colors), Uint16Array.from(pxl_indexes) );
+        return Array.of( pxls, Uint32Array.from(pxl_colors), Array.from(pxl_indexes) );
     }
 
     _get_pixels_palette_and_list_from_ellipse = (pxls, index_a, index_b, pxl_colors = [], pxl_color_new = null, pxl_current_opacity = null) => {
 
         const { pxl_width, pxl_height, px_per_px } = this.state;
-        pxls = Uint16Array.from(pxls);
+        pxls = Array.from(pxls);
         pxl_colors = Array.from(pxl_colors);
 
         let pxl_indexes = [];
@@ -4188,7 +4188,7 @@ class CanvasPixels extends React.Component {
 
         }
 
-        return [ Uint16Array.from(pxls), Uint32Array.from(pxl_colors), pxl_indexes ];
+        return [ Array.from(pxls), Uint32Array.from(pxl_colors), pxl_indexes ];
     }
 
     _should_remove_not_perfect_second_latest_pixel_from_array = (array) => {
@@ -4920,7 +4920,7 @@ class CanvasPixels extends React.Component {
                 }
 
                 const palette_and_list = this._get_pixels_palette_and_list_from_line(_s_pxls[_layer_index], _paint_or_select_hover_actions_latest_index, pxl_index, _s_pxl_colors[_layer_index], pxl_current_color, pxl_current_opacity);
-                _s_pxls[_layer_index] = Uint16Array.from(palette_and_list[0]);
+                _s_pxls[_layer_index] = Array.from(palette_and_list[0]);
                 _s_pxl_colors[_layer_index] = Uint32Array.from(palette_and_list[1]);
 
                 const { pencil_mirror_mode, _pencil_mirror_index } = this.state;
@@ -5179,7 +5179,7 @@ class CanvasPixels extends React.Component {
                     _pxls_hovered: pxl_index,
                     _mouse_inside: true,
                     _paint_or_select_hover_actions_latest_index: -1,
-                    _paint_hover_old_pxls_snapshot: Uint16Array.from(_s_pxls[_layer_index]),
+                    _paint_hover_old_pxls_snapshot: Array.from(_s_pxls[_layer_index]),
                     _select_hover_old_pxls_snapshot: Uint32Array.from(_pxl_indexes_of_selection),
                     _paint_or_select_hover_pxl_indexes: new Set(),
                 }, () => {
@@ -5754,7 +5754,7 @@ class CanvasPixels extends React.Component {
                     _previous_image_imported_resizer_index: parseInt(image_imported_resizer_index),
                     _old_selection_pair_highlight: Boolean(_selection_pair_highlight),
                     _old_layers: Array.from(_layers),
-                    _old_pxls: Uint16Array.from(_s_pxls_layer_index),
+                    _old_pxls: Array.from(_s_pxls_layer_index),
                     _old_pxl_colors: Uint32Array.from(_s_pxl_colors[_layer_index]),
                     _old_pxl_width: parseInt(pxl_width),
                     _old_pxl_height: parseInt(pxl_height),
@@ -5816,7 +5816,7 @@ class CanvasPixels extends React.Component {
                         }
                     }),
                     _layer_index: parseInt(_layer_index),
-                    _s_pxls: Array.from(_s_pxls).map((a) => Uint16Array.from(a)),
+                    _s_pxls: Array.from(_s_pxls).map((a) => Array.from(a)),
                     _s_pxl_colors: Array.from(_s_pxl_colors).map((a) => Uint32Array.from(a)),
                     _pxl_indexes_of_selection: new Set(_pxl_indexes_of_selection),
                     _pencil_mirror_index: parseInt(_pencil_mirror_index),
@@ -6013,7 +6013,7 @@ class CanvasPixels extends React.Component {
                 pxl_height: parseInt(state.pxl_height),
                 _pxl_indexes_of_selection: new Set(Boolean(state._pxl_indexes_of_selection.length) ? state._pxl_indexes_of_selection : []),
                 _s_pxl_colors: Array.from(state._s_pxl_colors).map((a) => Uint32Array.from(Object.values(a).map((i) => this._format_color(i, true)))),
-                _s_pxls: Array.from(state._s_pxls).map((a) => Uint16Array.from(Object.values(a).map((i) => parseInt(i)))),
+                _s_pxls: Array.from(state._s_pxls).map((a) => Array.from(Object.values(a).map((i) => parseInt(i)))),
                 _layers: Array.from(state._layers),
                 _layer_index: parseInt(state._layer_index),
                 _pencil_mirror_index: parseInt(state._pencil_mirror_index),
@@ -6041,7 +6041,7 @@ class CanvasPixels extends React.Component {
                 }
             }),
             _layer_index: parseInt(_layer_index),
-            _s_pxls: Array.from(_s_pxls).map((a) => Uint16Array.from(Object.values(a).map((i) => parseInt(i)))),
+            _s_pxls: Array.from(_s_pxls).map((a) => Array.from(Object.values(a).map((i) => parseInt(i)))),
             _s_pxl_colors: Array.from(_s_pxl_colors).map((a) => Uint32Array.from(Object.values(a).map((i) => this._format_color(i, true)))),
             _pxl_indexes_of_selection: new Set(_pxl_indexes_of_selection),
             _pencil_mirror_index: parseInt(_pencil_mirror_index),
@@ -6147,7 +6147,7 @@ class CanvasPixels extends React.Component {
                         }
                     }),
                     _layer_index: parseInt(_layer_index),
-                    _s_pxls: Array.from(_s_pxls).map((a) => Uint16Array.from(a)),
+                    _s_pxls: Array.from(_s_pxls).map((a) => Array.from(a)),
                     _s_pxl_colors: Array.from(_s_pxl_colors).map((a) => Uint32Array.from(a)),
                     _pxl_indexes_of_selection: new Set(_pxl_indexes_of_selection),
                     _pencil_mirror_index: parseInt(_pencil_mirror_index),
@@ -6227,7 +6227,7 @@ class CanvasPixels extends React.Component {
                         }
                     }),
                     _layer_index: parseInt(_layer_index),
-                    _s_pxls: Array.from(_s_pxls).map((a) => Uint16Array.from(a)),
+                    _s_pxls: Array.from(_s_pxls).map((a) => Array.from(a)),
                     _s_pxl_colors: Array.from(_s_pxl_colors).map((a) => Uint32Array.from(a)),
                     _pxl_indexes_of_selection: new Set(_pxl_indexes_of_selection),
                     _pencil_mirror_index: parseInt(_pencil_mirror_index),
@@ -6265,7 +6265,7 @@ class CanvasPixels extends React.Component {
         const { _s_pxls, pxl_width, pxl_height, _pxl_indexes_of_selection, _s_pxl_colors, _layer_index, pxl_current_opacity } = this.state;
         const pxl_current_color = this._format_color(this.state.pxl_current_color, true);
 
-        let pxls = Uint16Array.from(_s_pxls[_layer_index]);
+        let pxls = Array.from(_s_pxls[_layer_index]);
         let pxl_colors = Array.from(_s_pxl_colors[_layer_index]);
         let pxls_of_the_border = this._get_border_from_selection(_pxl_indexes_of_selection);
 
@@ -6301,7 +6301,7 @@ class CanvasPixels extends React.Component {
 
         const { _s_pxls, pxl_width, pxl_height, _pxl_indexes_of_selection, _s_pxl_colors, _layer_index, pxl_current_color, pxl_current_opacity } = this.state;
 
-        let pxls = Uint16Array.from(_s_pxls[_layer_index]);
+        let pxls = Array.from(_s_pxls[_layer_index]);
         let pxl_colors = Array.from(_s_pxl_colors[_layer_index])
 
         let pxl_indexes_of_selection = [..._pxl_indexes_of_selection];
@@ -6362,7 +6362,7 @@ class CanvasPixels extends React.Component {
 
         const { _s_pxls, _s_pxl_colors, _layer_index } = this.state;
 
-        pxls = pxls || Uint16Array.from(_s_pxls[_layer_index]);
+        pxls = pxls || Array.from(_s_pxls[_layer_index]);
         pxl_colors = pxl_colors || Uint32Array.from(_s_pxl_colors[_layer_index]);
 
         const colors_index = [...new Set(pxls)];
@@ -6404,7 +6404,7 @@ class CanvasPixels extends React.Component {
 
         const { _s_pxls, _pxl_indexes_of_selection, _s_pxl_colors, _layer_index } = this.state;
 
-        let pxls = Uint16Array.from(_s_pxls[_layer_index]);
+        let pxls = Array.from(_s_pxls[_layer_index]);
         let pxl_colors = Array.from(_s_pxl_colors[_layer_index]);
 
         const average_color = this._get_average_color_of_selection();
@@ -6594,7 +6594,7 @@ class CanvasPixels extends React.Component {
             for (let l = 0; l < _s_pxls.length; l++) {
 
                 let pxls = _s_pxls[l];
-                let new_pxls = new Uint16Array(new_width * new_height).fill(0);
+                let new_pxls = new Array(new_width * new_height).fill(0);
                 let new_pxl_colors = [];
 
                 for (let i = 0; i < new_width * new_height; i++) {
@@ -7225,7 +7225,7 @@ class CanvasPixels extends React.Component {
         const { _s_pxls, pxl_width, pxl_height, _base64_original_images, _original_image_index, _pxl_indexes_of_selection, _shape_index_a, _select_shape_index_a, _layer_index } = this.state;
         let {_imported_image_pxls, _imported_image_width, _imported_image_height} = this.state;
 
-        let pxls = Uint16Array.from(_s_pxls[_layer_index]);
+        let pxls = Array.from(_s_pxls[_layer_index]);
 
         let new_pxl_indexes_of_selection = new Set();
 
@@ -7440,7 +7440,7 @@ class CanvasPixels extends React.Component {
 
         (async () => {
             let cleaned = await this._remove_close_pxl_colors(Uint32Array.from(_s_pxls[_layer_index]), Uint32Array.from(_s_pxl_colors[_layer_index]), threshold);
-            _s_pxls[_layer_index] = Uint16Array.from(cleaned[0]);
+            _s_pxls[_layer_index] = Array.from(cleaned[0]);
             _s_pxl_colors[_layer_index] = Uint32Array.from(cleaned[1]);
 
             const color_remaining_number = _s_pxl_colors[_layer_index].length;
@@ -7595,7 +7595,7 @@ class CanvasPixels extends React.Component {
 
             new_pxl_colors = brand_new_pxl_colors;
 
-            callback_function(Array.of(Uint16Array.from(new_pxls), Uint32Array.from(new_pxl_colors)));
+            callback_function(Array.of(Array.from(new_pxls), Uint32Array.from(new_pxl_colors)));
 
         })();
     };
@@ -7864,7 +7864,7 @@ class CanvasPixels extends React.Component {
 
     _dutone_pixels = (contrast, color_a, color_b, pxls, pxl_colors) => {
 
-        pxls = Uint16Array.from(pxls);
+        pxls = Array.from(pxls);
         pxl_colors = Uint32Array.from(pxl_colors);
 
         pxl_colors = pxl_colors.map((pxl_color) => {
@@ -7881,7 +7881,7 @@ class CanvasPixels extends React.Component {
 
     _filter_pixels = (name, intensity = 1, pxls, pxl_colors, remove_duplicate_pxl_colors = true) => {
 
-        pxls = Uint16Array.from(pxls);
+        pxls = Array.from(pxls);
         pxl_colors = Uint32Array.from(pxl_colors).map((c) => { return this._format_color(c, true)});
 
         const filters = this._get_filters();
@@ -7981,7 +7981,7 @@ class CanvasPixels extends React.Component {
 
             for (let i = 0; i < _s_pxls.length; i++) {
 
-                let new_pxls = new Uint16Array(new_pxl_width * new_pxl_height).fill(0);
+                let new_pxls = new Array(new_pxl_width * new_pxl_height).fill(0);
 
                 _s_pxls[i].forEach((pxl, index) => {
 
@@ -8093,7 +8093,7 @@ class CanvasPixels extends React.Component {
 
     _pxl_colors_to_alpha = (pxls, pxl_colors, color, intensity) => {
 
-        pxls = Uint16Array.from(pxls);
+        pxls = Array.from(pxls);
         pxl_colors = Uint32Array.from(pxl_colors);
 
         pxl_colors = pxl_colors.map((pxl_color) => {
@@ -8267,7 +8267,7 @@ class CanvasPixels extends React.Component {
         // Work with Hashtables and Typed Array so it is fast
         let new_pxl_colors_object = {};
         let new_pxl_colors_object_length = 0;
-        let new_pxls = new Uint16Array(_pxls.length).fill(0);
+        let new_pxls = new Array(_pxls.length).fill(0);
 
         _pxls.forEach((pxl, iteration) => {
 
