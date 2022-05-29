@@ -122,7 +122,7 @@
                     s.setAttribute("src", ss);
                     s.setAttribute("defer", "true");
                     s.setAttribute("type", "text/javascript");
-                    document.appendChild(s);
+                    document.footer.appendChild(s);
                 });
             }
 
@@ -131,11 +131,11 @@
                     scope: "/"
                 }).finally(function() {
 
-                    add_all(window.SCS)
+                    (function() {add_all(window.SCS)})();
                 });
             }else {
 
-                add_all(window.SCS)
+                (function() {add_all(window.SCS)})();
             }
         </script>
 
