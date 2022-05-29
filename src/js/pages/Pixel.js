@@ -490,7 +490,7 @@ class Pixel extends React.Component {
 
     _handle_right_click = (event, data) => {
 
-        const { _canvas } = this.state;
+        const { get_pixel_color_from_pos } = this.state._canvas;
 
         this.setState({
             _menu_mouse_x: event.clientX - 2,
@@ -501,7 +501,7 @@ class Pixel extends React.Component {
 
         setTimeout(() => {
 
-            data.pxl_color = _canvas.get_pixel_color_from_pos(data.pos_x, data.pos_y);
+            data.pxl_color = get_pixel_color_from_pos(data.pos_x, data.pos_y);
             this.setState({_menu_data: data});
 
         }, 100);
@@ -532,10 +532,10 @@ class Pixel extends React.Component {
 
     _process_settings_attachment_result = (error, data) => {
 
-        const { _canvas } = this.state;
+        const { import_JS_state } = this.state._canvas;
         this._handle_load_complete("image_preload", {});
 
-        if(Boolean(error) || !Boolean(_canvas)) {
+        if(Boolean(error)) {
 
             console.log(error);
             actions.trigger_snackbar("Looks like I can't get your file as something was erroneous.", 5700);
@@ -546,7 +546,7 @@ class Pixel extends React.Component {
 
             this.setState({_kb: data.kb});
 
-            _canvas.import_JS_state(data, () => {
+            import_JS_state(data, () => {
 
                 this.setState({ _is_pixel_dialog_create_open: false});
             });
@@ -639,14 +639,14 @@ class Pixel extends React.Component {
                 this._handle_view_name_change(6);
             }else if(event.ctrlKey && event.key === "z") {
 
-                const { _canvas } = this.state;
+                const { undo } = this.state._canvas;
 
-                _canvas.undo();
+                undo();
             }else if(event.ctrlKey && event.key === "y") {
 
-                const { _canvas } = this.state;
+                const { redo } = this.state._canvas;
 
-                _canvas.redo();
+                redo();
             }else if(event.ctrlKey && event.key === "m") {
 
                 this._set_tool("MINE");
@@ -726,8 +726,8 @@ class Pixel extends React.Component {
 
             }else if(event.key === "Enter") {
 
-                const { _canvas } = this.state;
-                _canvas.confirm_import();
+                const { confirm_import } = this.state._canvas;
+                confirm_import();
             }else if(event.ctrlKey) {
 
                 if(_tool.includes("SELECT")) {
@@ -759,14 +759,14 @@ class Pixel extends React.Component {
 
     _download_image = (size) => {
 
-        const { _canvas } = this.state;
-        if(_canvas === null) {return}
+        const { get_base64_png_data_url } = this.state._canvas;
+
         window.dispatchEvent(new Event(`art-download-raster${size}`));
 
         let a = document.createElement("a"); //Create <a>
         a.download = `Pixelart_N${Date.now()}_PIXAPICS_x${size}.png`; //File name Here
 
-        _canvas.get_base64_png_data_url(size, ([base_64]) => {
+        get_base64_png_data_url(size, ([base_64]) => {
 
             a.href = "" + base_64;
             a.click();
@@ -783,8 +783,7 @@ class Pixel extends React.Component {
 
     _download_svg = (using = "xbrz", optimize_render_size = false) => {
 
-        const { _canvas } = this.state;
-        if(_canvas === null) {return}
+        const { get_base64_png_data_url } = this.state._canvas;
 
         using === "xbrz" ? window.dispatchEvent(new Event("art-download-vectorxbrz")): window.dispatchEvent(new Event("art-download-vectoromni"));
 
@@ -795,7 +794,7 @@ class Pixel extends React.Component {
 
             setTimeout(() => {
 
-                _canvas.get_base64_png_data_url(1, ([png_base64_in, palette]) => {
+                get_base64_png_data_url(1, ([png_base64_in, palette]) => {
 
                     let a = document.createElement("a"); //Create <a>
                     a.download = `Painting_SRC_1x_N${Date.now()}_PIXAPICS.png`; //File name Here
@@ -878,7 +877,8 @@ class Pixel extends React.Component {
 
     _from_library = (base64) => {
 
-        const { _canvas, _library_type } = this.state;
+        const { _library_type } = this.state;
+        const { set_canvas_from_image, import_image_on_canvas } = this.state._canvas;
         let img = new Image;
         img.src = base64;
 
@@ -886,10 +886,10 @@ class Pixel extends React.Component {
 
             if(_library_type === "open") {
 
-                _canvas.set_canvas_from_image(img);
+                set_canvas_from_image(img);
             }else if(_library_type === "import"){
 
-                _canvas.import_image_on_canvas(img, base64);
+                import_image_on_canvas(img, base64);
             }
 
             this._close_library();
@@ -924,7 +924,8 @@ class Pixel extends React.Component {
             actions.jamy_update("angry");
         }else if(smart_file !== null) {
 
-            const { _canvas, _import_colorize, _import_size } = this.state;
+            const { _import_colorize, _import_size } = this.state;
+            const { set_canvas_from_image } = this.state._canvas;
 
             this._handle_load("image_preload");
             this.get_base64(smart_file).then((b) => {
@@ -968,7 +969,7 @@ class Pixel extends React.Component {
                                     img.addEventListener("load", () => {
 
                                         this._handle_load_complete("image_ai", {});
-                                        _canvas.set_canvas_from_image(img, data, {}, true);
+                                        set_canvas_from_image(img, data, {}, true);
                                         this._handle_menu_close();
                                     });
                                     img.src = res2;
@@ -991,7 +992,7 @@ class Pixel extends React.Component {
                                     img.addEventListener("load", () => {
 
                                         this._handle_load_complete("image_ai", {});
-                                        _canvas.set_canvas_from_image(img, data, {}, true);
+                                        set_canvas_from_image(img, data, {}, true);
                                         this._handle_menu_close();
                                     });
                                     img.src = res2;
@@ -1015,7 +1016,7 @@ class Pixel extends React.Component {
                                         img.addEventListener("load", () => {
 
                                             this._handle_load_complete("image_ai", {});
-                                            _canvas.set_canvas_from_image(img, data, {}, true);
+                                            set_canvas_from_image(img, data, {}, true);
                                             this._handle_menu_close();
                                         });
                                         img.src = res3;
@@ -1084,7 +1085,7 @@ class Pixel extends React.Component {
                                 img.addEventListener("load", () => {
 
                                     this._handle_load_complete("image_preload", {});
-                                    _canvas.set_canvas_from_image(img, res, {}, false);
+                                    set_canvas_from_image(img, res, {}, false);
                                     this._handle_menu_close();
                                 });
                                 img.src = res;
@@ -1133,14 +1134,14 @@ class Pixel extends React.Component {
         if(smart_file !== null) {
 
             let img = new Image();
-            const { _canvas } = this.state;
+            const { import_image_on_canvas } = this.state._canvas;
 
             this.get_base64(smart_file).then((data) => {
 
                 img.src = data;
                 img.onload = () => {
 
-                    _canvas.import_image_on_canvas(img, data);
+                    import_image_on_canvas(img, data);
                     this._handle_menu_close();
                 };
             });
@@ -1197,7 +1198,20 @@ class Pixel extends React.Component {
     _set_canvas_ref = (element) => {
 
         if(element === null) {return}
-        this.setState({_canvas: element, _filters: element.get_filter_names()});
+
+        let new_element = {};
+
+        Object.keys(element).forEach((k) => {
+
+            const val = element[k];
+
+            if(typeof val === "function") {
+
+                new_element[k] = val;
+            }
+        });
+
+        this.setState({_canvas: new_element, _filters: new_element.get_filter_names()});
     };
 
     _handle_position_change = (position) => {
@@ -1225,15 +1239,15 @@ class Pixel extends React.Component {
 
     _handle_current_color_change = (color, event) => {
 
-        const { _canvas, _ripple } = this.state;
+        const { _get_hex_color_from_rgba_values, get_rgba_from_hex, rgb_to_hsl } = this.state._canvas;
 
         if(typeof color.rgb !== "undefined") {
 
-            color = _canvas._get_hex_color_from_rgba_values(color.rgb.r, color.rgb.g, color.rgb.b, color.rgb.a * 255);
+            color = _get_hex_color_from_rgba_values(color.rgb.r, color.rgb.g, color.rgb.b, color.rgb.a * 255);
         }
 
-        const [r, g, b, a] = _canvas.get_rgba_from_hex(color);
-        const [h, s, l] = _canvas.rgb_to_hsl(r, g, b);
+        const [r, g, b, a] = get_rgba_from_hex(color);
+        const [h, s, l] = rgb_to_hsl(r, g, b);
 
         this.setState({_current_color: color, _hue: h});
     };
@@ -1269,20 +1283,14 @@ class Pixel extends React.Component {
 
     _set_width_from_slider = (event, value) => {
 
-        const { _canvas } = this.state;
-        if(Boolean(_canvas))  {
-
-            _canvas._set_size(value, null);
-        }
+        const { _set_size } = this.state._canvas;
+        _set_size(value, null);
     };
 
     _set_height_from_slider = (event, value) => {
 
-        const { _canvas } = this.state;
-        if(Boolean(_canvas)) {
-
-            _canvas._set_size(null, value);
-        }
+        const { _set_size } = this.state._canvas;
+        _set_size(null, value);
     };
 
     _set_import_size = (event, value) => {
@@ -1395,10 +1403,10 @@ class Pixel extends React.Component {
 
     _exchange_pixel_colors = (old_pixel_color, new_pixel_color) => {
 
-        const { _canvas } = this.state;
+        const { exchange_pixel_color } = this.state._canvas;
         let { _menu_data } = this.state;
 
-        _canvas.exchange_pixel_color(old_pixel_color, new_pixel_color);
+        exchange_pixel_color(old_pixel_color, new_pixel_color);
         _menu_data.pxl_color = new_pixel_color;
 
         this._handle_menu_close();
@@ -1407,43 +1415,44 @@ class Pixel extends React.Component {
 
     _to_auto_medium_more_contrast = () => {
 
-        const { _canvas } = this.state;
-        _canvas.auto_adjust_contrast(1/3);
+        const { auto_adjust_contrast } = this.state._canvas;
+        auto_adjust_contrast(1/3);
     };
 
     _to_auto_medium_more_saturation = () => {
 
-        const { _canvas } = this.state;
-        _canvas.auto_adjust_saturation(1/3);
+        const { auto_adjust_saturation } = this.state._canvas;
+        auto_adjust_saturation(1/3);
     };
 
     _less_colors_stepped = (increase = 1, callback_function = () => {}) => {
 
-        const { _canvas } = this.state;
-        _canvas.less_colors_stepped(increase, callback_function);
+        const { less_colors_stepped } = this.state._canvas;
+        less_colors_stepped(increase, callback_function);
     };
 
     _less_colors_auto = ( ) => {
 
-        const { _canvas, _layers, _layer_index } = this.state;
+        const { _layers, _layer_index } = this.state;
+        const { to_less_color } = this.state._canvas;
 
         if(parseInt((_layers[_layer_index] || {}).number_of_colors || 0) >= 384) {
 
             actions.trigger_snackbar("Ho! There is more than 384 colors, let's scan and remove the closest ones.")
             this._less_colors_stepped(1, () => {
 
-                _canvas.to_less_color("auto");
+                to_less_color("auto");
             });
         }else {
 
-            _canvas.to_less_color("auto");
+            to_less_color("auto");
         }
     };
 
     _get_average_color_of_selection = () => {
 
-        const { _canvas } = this.state;
-        const color = _canvas.get_average_color_of_selection();
+        const { get_average_color_of_selection } = this.state._canvas;
+        const color = get_average_color_of_selection();
 
         this._handle_current_color_change(color);
     };

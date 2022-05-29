@@ -76,9 +76,6 @@ import SwapVerticalIcon from "../icons/SwapVertical";
 import NavigationIcon from "../icons/Navigation";
 
 import Jdenticon from "react-jdenticon";
-import SensitiveData from "../icons/SensitiveData";
-import svg_to_base64 from "../utils/svgToBase64";
-const SENSITIVE_DATA = svg_to_base64(<SensitiveData />);
 
 const styles = theme => ({
     listSubHeader: {
@@ -254,6 +251,7 @@ class PixelToolboxSwipeableViews extends React.Component {
     componentWillReceiveProps(new_props) {
 
         const {
+            canvas,
             should_update,
             view_name_index,
             previous_view_name_index,
@@ -282,6 +280,7 @@ class PixelToolboxSwipeableViews extends React.Component {
         } = this.state;
 
         if ((new_props.should_update) && (
+            Boolean(canvas) !== Boolean(new_props.canvas) ||
             view_name_index !== new_props.view_name_index ||
             previous_view_name_index !== new_props.previous_view_name_index ||
             view_names !== new_props.view_names ||
@@ -317,9 +316,9 @@ class PixelToolboxSwipeableViews extends React.Component {
                         layer_index !== new_props.layer_index) && new_props.view_name_index === 6
                     ) {
 
-                        const { canvas } = this.state;
-                        if(!canvas) { return; }
-                        canvas.compute_filters_preview();
+                        const { compute_filters_preview } = this.state.canvas;
+                        if(!Boolean(compute_filters_preview)) { return; }
+                        compute_filters_preview();
                     }
                 });
             });
@@ -336,20 +335,20 @@ class PixelToolboxSwipeableViews extends React.Component {
 
     _hsla_to_hex = (h, s, l, a) => {
 
-        const { canvas } = this.state;
+        const { _hsla_to_hex } = this.state.canvas;
 
-        if(!canvas) { return "#00000000" }
+        if(!Boolean(_hsla_to_hex)) { return "#00000000" }
 
-        return canvas._hsla_to_hex(h, s, l, a);
+        return _hsla_to_hex(h, s, l, a);
     };
 
     _rgba_from_hex = (hex) => {
 
-        const { canvas } = this.state;
+        const { get_rgba_from_hex } = this.state.canvas;
 
-        if(!canvas) { return [0, 0, 0, 0] }
+        if(!Boolean(get_rgba_from_hex)) { return [0, 0, 0, 0] }
 
-        return canvas.get_rgba_from_hex(hex);
+        return get_rgba_from_hex(hex);
     };
 
     _download_png = (scale) => {
@@ -370,18 +369,19 @@ class PixelToolboxSwipeableViews extends React.Component {
 
     _less_colors_stepped = (increase = 1) => {
 
-        const { canvas } = this.state;
-        canvas._less_colors_stepped(increase)
+        const { _less_colors_stepped } = this.state.canvas;
+        _less_colors_stepped(increase)
     };
 
     _colorize = () => {
 
-        const { canvas, current_color, slider_value } = this.state;
+        const { current_color, slider_value } = this.state;
+        const { get_rgba_from_hex, rgb_to_hsl, to_color } = this.state.canvas;
 
-        const [r, g, b, a] = canvas.get_rgba_from_hex(current_color);
-        const [h, s, l] = canvas.rgb_to_hsl(r, g, b);
+        const [r, g, b, a] = get_rgba_from_hex(current_color);
+        const [h, s, l] = rgb_to_hsl(r, g, b);
 
-        canvas.to_color(h, slider_value, s === 0 ? null: s, l === 0 ? null: l);
+        to_color(h, slider_value, s === 0 ? null: s, l === 0 ? null: l);
     }
 
     _import_image_from_libary = () => {
@@ -554,15 +554,16 @@ class PixelToolboxSwipeableViews extends React.Component {
 
     _get_average_color_of_selection = () => {
 
-        const { canvas } = this.state;
-        const color = canvas.get_average_color_of_selection();
+        const { get_average_color_of_selection } = this.state.canvas;
+        const color = get_average_color_of_selection();
 
         this._handle_current_color_change(color);
     };
 
     _change_active_layer = (index) => {
 
-        const { canvas, layer_index, _layer_opened } = this.state;
+        const { layer_index, _layer_opened } = this.state;
+        const { change_active_layer } = this.state.canvas;
 
         if(layer_index !== index) {
 
@@ -574,7 +575,7 @@ class PixelToolboxSwipeableViews extends React.Component {
                 });
             }
 
-            canvas.change_active_layer(index);
+            change_active_layer(index);
         }else {
 
             this.setState({_layer_opened: !_layer_opened}, () => {
@@ -631,6 +632,11 @@ class PixelToolboxSwipeableViews extends React.Component {
             import_size,
             import_colorize,
         } = this.state;
+
+        if(!Boolean(canvas)) {
+
+            return null;
+        }
 
         let layers_colors_max = 0;
 

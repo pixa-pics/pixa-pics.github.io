@@ -102,23 +102,23 @@
 
             window._FIRE_IT = function() {
 
-                var SCS = [
-                    "/src/fonts/Jura.css",
-                    "/child-chunk.main~0d5ee630.min.js",
-                    "/child-chunk.main~1f20a385.min.js",
-                    "/child-chunk.main~5a2dc592.min.js",
-                    "/child-chunk.main~9acc357d.min.js",
-                    "/child-chunk.main~253ae210.min.js",
-                    "/child-chunk.main~748942c6.min.js",
-                    "/child-chunk.main~af9f4ef7.min.js",
-                    "/child-chunk.main~c1dd23ef.min.js",
-                    "/child-chunk.main~c3be6df1.min.js",
-                    "/child-chunk.main~d939e436.min.js",
-                    "/child-chunk.main~f9ca8911.min.js",
-                    "/father-chunk.norris.min.js"
-                ];
-
                 (async function(){
+
+                    var SCS = [
+                        "/src/fonts/Jura.css",
+                        "/child-chunk.main~0d5ee630.min.js",
+                        "/child-chunk.main~1f20a385.min.js",
+                        "/child-chunk.main~5a2dc592.min.js",
+                        "/child-chunk.main~9acc357d.min.js",
+                        "/child-chunk.main~253ae210.min.js",
+                        "/child-chunk.main~748942c6.min.js",
+                        "/child-chunk.main~af9f4ef7.min.js",
+                        "/child-chunk.main~c1dd23ef.min.js",
+                        "/child-chunk.main~c3be6df1.min.js",
+                        "/child-chunk.main~d939e436.min.js",
+                        "/child-chunk.main~f9ca8911.min.js",
+                        "/father-chunk.norris.min.js"
+                    ];
 
                     var f = document.createElement("footer");
                     document.body.appendChild(f);
@@ -160,18 +160,23 @@
             };
 
             if ("serviceWorker" in navigator) {
-                navigator.serviceWorker.register("/service-worker.js", {
-                    scope: "/"
-                }).then(function() {
 
-                    window._FIRE_IT();
-                }).catch(function() {
+                try {
 
-                    window._FIRE_IT();
-                });
+                    navigator.serviceWorker.register("/service-worker.js", {
+                        scope: "/"
+                    }).finally(function() {
+
+                        (function () {window._FIRE_IT()})();
+                    });
+
+                } catch (e) {
+
+                    (function () {window._FIRE_IT()})();
+                }
             } else {
 
-                window._FIRE_IT();
+                (function () {window._FIRE_IT()})();
             }
         </script>
 
