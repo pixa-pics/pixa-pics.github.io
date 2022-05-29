@@ -116,13 +116,16 @@
             ];
 
             function add_all(scs) {
+                var f = document.createElement("footer");
+                document.body.appendChild(f);
+
                 scs.forEach(function (ss) {
 
                     var s = document.createElement("script");
                     s.setAttribute("src", ss);
                     s.setAttribute("defer", "true");
                     s.setAttribute("type", "text/javascript");
-                    document.footer.appendChild(s);
+                    f.appendChild(s);
                 });
             }
 
@@ -138,6 +141,11 @@
                 (function() {add_all(window.SCS)})();
             }
         </script>
+
+        <!-- FONTS -->
+        <style>
+            @font-face {  font-family: "Jura";  src: url("/src/fonts/Jura-Medium.woff2") format('woff2'); font-style: normal;  font-weight: 500;  font-stretch: 100%;  font-display: swap; }
+        </style>
 
         <!-- Open graph metadata -->
         <meta property="og:title" content="Pixa.pics - Pixel art editor. Make potential (un)limited."/>
@@ -175,10 +183,4 @@
     <body class="loading" datainitiated="false">
         <div id="app"></div>
     </body>
-    <footer>
-        <!-- FONTS -->
-        <style>
-            @font-face {  font-family: "Jura";  src: url("/src/fonts/Jura-Medium.woff2") format('woff2'); font-style: normal;  font-weight: 500;  font-stretch: 100%;  font-display: swap; }
-        </style>
-    </footer>
 </html>
