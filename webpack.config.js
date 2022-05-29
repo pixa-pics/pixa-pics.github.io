@@ -84,12 +84,9 @@ module.exports = {
                                 'react',
                                 ["env", {
                                     targets: {
-                                        android: "77",
-                                        chrome: "77",
-                                        edge: "44",
-                                        firefox: "66",
-                                        ios_saf: "12",
-                                        safari: "12",
+                                        android: "88",
+                                        chrome: "88",
+                                        edge: "88"
                                     },
                                     forceAllTransforms: true,
                                     shippedProposals: true,

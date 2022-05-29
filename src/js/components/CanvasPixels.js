@@ -1089,7 +1089,7 @@ window.remove_close_pxl_colors_process_function_string = `var f = async function
             var is_bucket_threshold_auto_goal_reached = !is_bucket_threshold_auto;
             var bucket_threshold_auto_goal_target = 15;
             var bucket_threshold_auto_goal_attempt = new Set();
-            best_color_number = best_color_number !== null ? best_color_number: Math.max(Math.sqrt(original_pxl_colors.length) + color_number_bonus, 64);
+            best_color_number = best_color_number !== null ? best_color_number: Math.max(Math.sqrt(original_pxl_colors.length) + color_number_bonus, 100);
 
             if(best_color_number < 2 || best_color_number > pxl_colors.length) {
 
@@ -7563,7 +7563,7 @@ class CanvasPixels extends React.Component {
             const canvas_image_data = ctx.getImageData(0, 0, pxl_width, pxl_height);
             let {new_pxls, new_pxl_colors} = this._get_pixels_palette_and_list_from_image_data(canvas_image_data, true, 0);
 
-            let cleaned = await this._remove_close_pxl_colors(new_pxls, new_pxl_colors, 255/6/255, null, 12);
+            let cleaned = await this._remove_close_pxl_colors(new_pxls, new_pxl_colors, 255/6/255, null, 18);
             new_pxls = cleaned[0];
             new_pxl_colors = cleaned[1];
             [ new_pxls, new_pxl_colors ] = this._pxl_colors_to_alpha(new_pxls, new_pxl_colors, inverted_color, 1);
@@ -8225,7 +8225,7 @@ class CanvasPixels extends React.Component {
 
     };
 
-    _remove_close_pxl_colors = async(pxls = [], pxl_colors  = [], bucket_threshold = null, threshold_steps = null, color_number_bonus = 16, best_color_number = null, callback_function = null) => {
+    _remove_close_pxl_colors = async(pxls = [], pxl_colors  = [], bucket_threshold = null, threshold_steps = null, color_number_bonus = 54, best_color_number = null, callback_function = null) => {
 
         const this_state_bucket_threshold = this.state.bucket_threshold;
         const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;

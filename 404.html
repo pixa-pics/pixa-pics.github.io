@@ -37,7 +37,7 @@
             body.loading  {
                 font-size: 0 !important;
                 content-visibility: visible;
-                background-color: black;
+                background-color: #060f23;
                 contain: size paint style layout;
                 padding: 0;
                 margin: 0;
@@ -101,53 +101,69 @@
         <!-- Service worker -->
         <script type="text/javascript">
 
-            window.SCS = [
-                "/child-chunk.main~0d5ee630.min.js",
-                "/child-chunk.main~1f20a385.min.js",
-                "/child-chunk.main~5a2dc592.min.js",
-                "/child-chunk.main~9acc357d.min.js",
-                "/child-chunk.main~253ae210.min.js",
-                "/child-chunk.main~748942c6.min.js",
-                "/child-chunk.main~af9f4ef7.min.js",
-                "/child-chunk.main~c1dd23ef.min.js",
-                "/child-chunk.main~c3be6df1.min.js",
-                "/child-chunk.main~d939e436.min.js",
-                "/child-chunk.main~f9ca8911.min.js",
-                "/father-chunk.norris.min.js"
-            ];
+            window._FIRE_IT = function() {
 
-            function add_all(scs) {
+                var SCS = [
+                    "/child-chunk.main~0d5ee630.min.js",
+                    "/child-chunk.main~1f20a385.min.js",
+                    "/child-chunk.main~5a2dc592.min.js",
+                    "/child-chunk.main~9acc357d.min.js",
+                    "/child-chunk.main~253ae210.min.js",
+                    "/child-chunk.main~748942c6.min.js",
+                    "/child-chunk.main~af9f4ef7.min.js",
+                    "/child-chunk.main~c1dd23ef.min.js",
+                    "/child-chunk.main~c3be6df1.min.js",
+                    "/child-chunk.main~d939e436.min.js",
+                    "/child-chunk.main~f9ca8911.min.js",
+                    "/father-chunk.norris.min.js"
+                ];
 
-                var f = document.createElement("footer");
-                document.body.appendChild(f);
+                (async function(){
 
-                scs.forEach(function (ss) {
+                    var f = document.createElement("footer");
+                    document.body.appendChild(f);
 
-                    var s = document.createElement("script");
-                    s.setAttribute("src", ss);
-                    s.setAttribute("defer", "true");
-                    s.setAttribute("type", "text/javascript");
-                    f.appendChild(s);
-                });
-            }
+                    return Promise.allSettled(SCS.map(function(ss){
+                        return new Promise(
+                            function(resolve, reject){
+
+                                try {
+                                    var s = document.createElement("script");
+                                    s.setAttribute("src", ss);
+                                    s.setAttribute("defer", "true");
+                                    s.setAttribute("type", "text/javascript");
+                                    f.appendChild(s);
+
+                                    resolve(true);
+                                } catch(e) {
+
+                                    reject(e);
+                                }
+                            }
+                        );
+                    }));
+                })();
+            };
 
             if ("serviceWorker" in navigator) {
                 navigator.serviceWorker.register("/service-worker.js", {
                     scope: "/"
-                }).finally(function() {
+                }).then(function() {
 
-                    (function() {add_all(window.SCS)})();
+                    window._FIRE_IT();
+                }).catch(function() {
+
+                    window._FIRE_IT();
                 });
-            }else {
+            } else {
 
-                (function() {add_all(window.SCS)})();
+                window._FIRE_IT();
             }
         </script>
 
         <!-- FONTS -->
-        <style>
-            @font-face {  font-family: "Jura";  src: url("/src/fonts/Jura-Medium.woff2") format('woff2'); font-style: normal;  font-weight: 500;  font-stretch: 100%;  font-display: swap; }
-        </style>
+        <link href="/src/fonts/Jura.css" as="style" onload="this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/src/fonts/Jura.css"></noscript>
 
         <!-- Open graph metadata -->
         <meta property="og:title" content="Pixa.pics - Pixel art editor. Make potential (un)limited."/>
