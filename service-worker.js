@@ -1,6 +1,6 @@
-var REQUIRED_CACHE = "unless-update-cache-v181-required";
-var USEFUL_CACHE = "unless-update-cache-v181-useful";
-var STATIC_CACHE = "unless-update-cache-v181-static";
+var REQUIRED_CACHE = "unless-update-cache-v182-required";
+var USEFUL_CACHE = "unless-update-cache-v182-useful";
+var STATIC_CACHE = "unless-update-cache-v182-static";
 var MAIN_CHILD_CHUNK_REGEX = /child\-chunk\.(main\~[a-z0-9]+)\.min.js/i;
 var CHILD_CHUNK_REGEX = /child\-chunk\.([0-9]+)\.min.js/i;
 
@@ -32,7 +32,7 @@ self.addEventListener("install", function(evt) {
             return cache.addAll([
                 "/manifest.json",
                 "/",
-                "/src/fonts/Jura-Medium.woff2",
+                "/src/fonts/Jura.css",
                 "/father-chunk.norris.min.js", // This is chunk norris, master of all chunk
                 "/child-chunk.main~0d5ee630.min.js",
                 "/child-chunk.main~1f20a385.min.js",

@@ -104,6 +104,7 @@
             window._FIRE_IT = function() {
 
                 var SCS = [
+                    "/src/fonts/Jura.css",
                     "/child-chunk.main~0d5ee630.min.js",
                     "/child-chunk.main~1f20a385.min.js",
                     "/child-chunk.main~5a2dc592.min.js",
@@ -128,13 +129,27 @@
                             function(resolve, reject){
 
                                 try {
-                                    var s = document.createElement("script");
-                                    s.setAttribute("src", ss);
-                                    s.setAttribute("defer", "true");
-                                    s.setAttribute("type", "text/javascript");
-                                    f.appendChild(s);
+
+                                    var js = ss.endsWith(".js");
+                                    var css = ss.endsWith(".css");
+
+                                    if(js) {
+
+                                        var e = document.createElement("script");
+                                        e.setAttribute("src", ss);
+                                        e.setAttribute("defer", "true");
+                                        e.setAttribute("type", "text/javascript");
+                                        f.appendChild(e);
+                                    }else if(css) {
+
+                                        var e = document.createElement("link");
+                                        e.setAttribute("href", ss);
+                                        e.setAttribute("rel", "stylesheet");
+                                        f.appendChild(e);
+                                    }
 
                                     resolve(true);
+
                                 } catch(e) {
 
                                     reject(e);
@@ -160,10 +175,6 @@
                 window._FIRE_IT();
             }
         </script>
-
-        <!-- FONTS -->
-        <link href="/src/fonts/Jura.css" as="style" onload="this.rel='stylesheet'">
-        <noscript><link rel="stylesheet" href="/src/fonts/Jura.css"></noscript>
 
         <!-- Open graph metadata -->
         <meta property="og:title" content="Pixa.pics - Pixel art editor. Make potential (un)limited."/>
