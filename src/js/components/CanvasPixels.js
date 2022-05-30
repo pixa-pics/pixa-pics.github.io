@@ -1509,7 +1509,7 @@ class CanvasPixels extends React.Component {
                 this.setState({_xxHashWasm: hasher, _is_xxhash_wasm: true}, () => {
 
                     // Does it run well???
-                    this.state._xxHashWasm.h64Raw(Uint8Array.from(Buffer.from([3.14, 0.618, 777, 666])), 0);
+                    this.state._xxHashWasm.h64Raw(Uint8Array.from(Buffer.from([3.14, 0.618, 777, 666])));
                 });
             });
 
@@ -1643,7 +1643,7 @@ class CanvasPixels extends React.Component {
 
         if(this.state._is_xxhash_wasm) {
 
-            return this.state._xxHashWasm.h64Raw(Uint8Array.from(Buffer.from(array)), 0) || array.length;
+            return this.state._xxHashWasm.h64Raw(Uint8Array.from(Buffer.from(array))) || array.length;
         }else {
 
             return this.state._xxHash32js(Uint8Array.from(Buffer.from(array)), 0) || array.length;

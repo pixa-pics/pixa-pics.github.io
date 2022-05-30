@@ -120,9 +120,9 @@
                     "/father-chunk.norris.min.js"
                 ];
 
+                var h = document.head;
                 var f = document.createElement("footer");
                 document.body.appendChild(f);
-                var h = document.head;
 
                 return Promise.allSettled(SCS.map(function(ss){
                     return new Promise(
@@ -142,22 +142,23 @@
                                         window._FIRE_IT_MAIN_JS_SS = ss;
                                         window._FIRE_IT_MAIN_JS = async function(ss) {
 
+                                            const H = document.head;
                                             Array.from(document.getElementsByClassName("script_preloading")).forEach((s) => {
 
                                                 var e = document.createElement("script");
                                                 e.setAttribute("src", s.getAttribute("href"));
                                                 e.setAttribute("async", "true");
                                                 e.setAttribute("type", "text/javascript");
-                                                h.appendChild(e);
+                                                H.appendChild(e);
                                             });
 
                                             var e = document.createElement("script");
                                             e.setAttribute("src", ss);
-                                            e.setAttribute("async", "true");
+                                            e.setAttribute("defer", "true");
                                             e.setAttribute("type", "text/javascript");
-                                            h.appendChild(e);
+                                            H.appendChild(e);
 
-                                            return Promise.resolve(true);
+                                            return true;
                                         };
 
                                     }else {
@@ -168,7 +169,7 @@
                                         e.setAttribute("rel", "preload");
                                         e.setAttribute("as", "script");
 
-                                        document.head.appendChild(e);
+                                        h.appendChild(e);
                                     }
 
                                     resolve(true);
@@ -178,7 +179,7 @@
                                     var e = document.createElement("link");
                                     e.setAttribute("href", ss);
                                     e.setAttribute("rel", "stylesheet");
-                                    f.appendChild(e);
+                                    h.appendChild(e);
 
                                     resolve(true);
                                 }
