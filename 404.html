@@ -167,15 +167,17 @@
 
                                                     var e = document.createElement("script");
                                                     e.setAttribute("src", ss);
-                                                    e.setAttribute("defer", "true");
+                                                    e.setAttribute("async", "true");
                                                     e.setAttribute("type", "text/javascript");
                                                     f.appendChild(e);
+
+
                                                 };
                                             }else {
 
                                                 var e = document.createElement("script");
                                                 e.setAttribute("src", ss);
-                                                e.setAttribute("defer", "true");
+                                                e.setAttribute("async", "true");
                                                 e.setAttribute("type", "text/javascript");
                                                 f.appendChild(e);
                                             }
@@ -187,7 +189,7 @@
                                             e.setAttribute("rel", "preload");
                                             e.setAttribute("as", "script");
 
-                                            f.appendChild(e);
+                                            document.head.appendChild(e);
                                         }
 
                                     }else if(css) {
