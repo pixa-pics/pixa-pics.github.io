@@ -130,7 +130,7 @@
 
                     var SCS = [
                         "/src/fonts/Jura.css",
-                        /*"/child-chunk.main~0d5ee630.min.js",
+                        "/child-chunk.main~0d5ee630.min.js",
                         "/child-chunk.main~1f20a385.min.js",
                         "/child-chunk.main~5a2dc592.min.js",
                         "/child-chunk.main~9acc357d.min.js",
@@ -140,7 +140,7 @@
                         "/child-chunk.main~c1dd23ef.min.js",
                         "/child-chunk.main~c3be6df1.min.js",
                         "/child-chunk.main~d939e436.min.js",
-                        "/child-chunk.main~f9ca8911.min.js",*/
+                        "/child-chunk.main~f9ca8911.min.js",
                         "/father-chunk.norris.min.js"
                     ];
 
@@ -160,21 +160,32 @@
 
                                         var last = ss.startsWith("/father");
 
-                                        if(last && typeof promise_of_force === "object") {
+                                        if(last) {
 
-                                            var e = document.createElement("script");
-                                            e.setAttribute("src", ss);
-                                            e.setAttribute("type", "text/javascript");
+                                            if(typeof promise_of_force === "object") {
+                                                window._FIRE_IT_MAIN_JS = function() {
 
-                                            window._FIRE_IT_MAIN_JS = function() {
+                                                    var e = document.createElement("script");
+                                                    e.setAttribute("src", ss);
+                                                    e.setAttribute("defer", "true");
+                                                    e.setAttribute("type", "text/javascript");
+                                                    f.appendChild(e);
+                                                };
+                                            }else {
+
+                                                var e = document.createElement("script");
+                                                e.setAttribute("src", ss);
+                                                e.setAttribute("defer", "true");
+                                                e.setAttribute("type", "text/javascript");
                                                 f.appendChild(e);
-                                            };
+                                            }
+
                                         }else {
 
-                                            var e = document.createElement("script");
-                                            e.setAttribute("src", ss);
-                                            e.setAttribute("defer", "true");
-                                            e.setAttribute("type", "text/javascript");
+                                            var e = document.createElement("link");
+                                            e.setAttribute("href", ss);
+                                            e.setAttribute("rel", "preload");
+                                            e.setAttribute("as", "script");
 
                                             f.appendChild(e);
                                         }
