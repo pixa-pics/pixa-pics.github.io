@@ -1495,6 +1495,7 @@ class CanvasPixels extends React.Component {
             export_state_every_ms: props.export_state_every_ms || 60 * 1000,
             _xxHash32js: null,
             _xxHashWasm: null,
+            _is_xxhash_wasm: false,
             _last_filters_hash: "",
         };
     };
@@ -1505,17 +1506,17 @@ class CanvasPixels extends React.Component {
 
             xxHash().then((hasher) => {
 
-                this.setState({_xxHashWasm: hasher}, () => {
+                this.setState({_xxHashWasm: hasher, _is_xxhash_wasm: true}, () => {
 
                     // Does it run well???
-                    this.state._xxHashWasm.h32([1.618, 3.14, 666]);
+                    this.state._xxHashWasm.h64Raw(Uint8Array.from(Buffer.from([3.14, 0.618, 777, 666])), 0);
                 });
             });
 
         } catch( e ) {
 
             console.log("xxhash is pure js can't use wasm");
-            this.setState({_xxHash32js: xxHash32, _xxHashWasm: null});
+            this.setState({_xxHash32js: xxHash32, _xxHashWasm: null, _is_xxhash_wasm: false});
         }
 
         this._notify_size_change();
@@ -1640,15 +1641,12 @@ class CanvasPixels extends React.Component {
 
     _xxhashthat = (array) => {
 
-        if(Boolean(this.state._xxHashWasm)) {
+        if(this.state._is_xxhash_wasm) {
 
-            return this.state._xxHashWasm.h32Raw(Uint8Array.from(Buffer.from(array)), 0);
-        }else if(Boolean(this.state._xxHash32js)) {
+            return this.state._xxHashWasm.h64Raw(Uint8Array.from(Buffer.from(array)), 0) || array.length;
+        }else {
 
-            return this.state._xxHash32js(Uint8Array.from(Buffer.from(array)), 0);
-        } else {
-
-            return Array.length;
+            return this.state._xxHash32js(Uint8Array.from(Buffer.from(array)), 0) || array.length;
         }
     };
 

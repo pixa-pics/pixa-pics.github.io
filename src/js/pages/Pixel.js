@@ -373,7 +373,6 @@ class Pixel extends React.Component {
             _kb: 0,
             _fps: 0,
             _prev_fps: 0,
-            _sfx_enabled: false,
             _menu_mouse_y: null,
             _menu_mouse_x: null,
             _menu_data: {},
@@ -405,11 +404,7 @@ class Pixel extends React.Component {
         document.addEventListener("keyup", this._handle_keyup);
         actions.trigger_loading_update(0);
 
-        this.setState({_is_pixel_dialog_create_open: true}, () => {
-
-            actions.trigger_sfx("hero_decorative-celebration-02");
-            this.forceUpdate();
-        });
+        api.get_settings(this._process_settings_info_result);
 
         this.setState({_h_svg: get_svg_in_b64(<HexGrid color={"#e5e5e5"}/>)});
         import("../utils/ressource_pixel").then(async(RESSOURCE_PIXELS) => {
@@ -523,11 +518,12 @@ class Pixel extends React.Component {
         if(!error && typeof settings !== "undefined") {
 
             // Set new settings from query result
-            const _sfx_enabled = typeof settings.sfx_enabled !== "undefined" ? settings.sfx_enabled: false
             const _attachment_previews = typeof settings.attachment_previews !== "undefined" ? settings.attachment_previews: {};
 
-            this.setState({ _sfx_enabled, _attachment_previews, _know_the_settings: true }, () => {
+            this.setState({ _is_pixel_dialog_create_open: true, _attachment_previews, _know_the_settings: true }, () => {
 
+                actions.trigger_loading_update(100);
+                actions.trigger_sfx("hero_decorative-celebration-02");
                 this.forceUpdate();
             });
         }
@@ -1373,11 +1369,6 @@ class Pixel extends React.Component {
     _handle_game_end = () => {
 
         this.setState({_game_ended: true}, () => {
-
-            if(this.state._sfx_enabled) {
-
-
-            }
 
             setTimeout(() => {
 

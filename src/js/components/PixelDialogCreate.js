@@ -81,7 +81,7 @@ class PixelDialogCreate extends React.Component {
                 keepMounted: new_props.keepMounted || false,
                 open: new_props.open,
                 size: new_props.size,
-                pixel_arts: new_props.pixel_arts
+                pixel_arts: Object.assign({}, new_props.pixel_arts)
             }, () => {
 
                 this.forceUpdate();

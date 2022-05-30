@@ -62,7 +62,7 @@ const get_settings = (callback_function_info = null, attachment_ids = [], callba
 
         if(typeof window._pixa_settings.locales !== "undefined" && window._pixa_settings.locales !== null && callback_function_attachment === null && !Boolean(Boolean(attachment_ids === "all" || attachment_ids.length > 0))) {
 
-            callback_function_info(null, Object.assign({}, window._pixa_settings));
+            callback_function_info(null, _merge_object({}, window._pixa_settings));
             return;
         }
     }
@@ -96,8 +96,8 @@ const get_settings = (callback_function_info = null, attachment_ids = [], callba
                         }).then((doc) => {
 
                             const pixa_settings = JSON.parse(doc.info);
-                            window._pixa_settings = Object.assign({}, pixa_settings);
-                            if(callback_function_info){ callback_function_info(null, Object.assign({}, window._pixa_settings))};
+                            window._pixa_settings = _merge_object({}, pixa_settings);
+                            if(callback_function_info){ callback_function_info(null, _merge_object({}, window._pixa_settings))};
 
                             let blobs = [];
                             Object.entries(doc._attachments).forEach(([name_id, value]) => {
@@ -142,8 +142,8 @@ const get_settings = (callback_function_info = null, attachment_ids = [], callba
                     }else {
 
                         const pixa_settings = JSON.parse(settings_docs[0].info);
-                        window._pixa_settings = Object.assign({}, pixa_settings);
-                        if(callback_function_info){ callback_function_info(null, Object.assign({}, window._pixa_settings))};
+                        window._pixa_settings = _merge_object({}, pixa_settings);
+                        if(callback_function_info){ callback_function_info(null, _merge_object({}, window._pixa_settings))};
 
                     }
 
@@ -154,17 +154,18 @@ const get_settings = (callback_function_info = null, attachment_ids = [], callba
             }else {
 
                 const pixa_settings = _get_default_settings();
-                window._pixa_settings = Object.assign({}, pixa_settings);
+                window._pixa_settings = _merge_object({}, pixa_settings);
 
                 window.settings_db.post({
                     info: JSON.stringify(pixa_settings),
                     timestamp: Date.now(),
-                });
+                }), () => {
 
-                if(callback_function_info !== null) {
+                    if(callback_function_info !== null) {
 
-                    callback_function_info(null, Object.assign({}, window._pixa_settings));
-                }
+                        callback_function_info(null, _merge_object({}, window._pixa_settings));
+                    }
+                };
             }
         }
 
@@ -206,12 +207,12 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
             // Choose the first
             if(typeof settings_docs[0] !== "undefined") {
 
+                let pixa_settings = _merge_object(JSON.parse(settings_docs[0].info), info);
+                window._pixa_settings = _merge_object({}, pixa_settings);
+
                 try {
 
                     if(Object.keys(attachment_array).length >= 1) {
-
-                        let pixa_settings = _merge_object(JSON.parse(settings_docs[0].info), info);
-                        window._pixa_settings = Object.assign({}, pixa_settings);
 
                         let attachments_to_process = Object.keys(attachment_array).length;
                         Object.entries(attachment_array).forEach(([name_id, data]) => {
@@ -261,7 +262,7 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
                             }
                         });
 
-                        const continue_push_in_db = (settings_docs, pixa_settings, callback_function_info ) => {
+                        const  continue_push_in_db = (settings_docs, pixa_settings, callback_function_info ) => {
 
                             window.settings_db.put({
                                 _id: settings_docs[0]._id,
@@ -271,7 +272,10 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
                                 _attachments: settings_docs[0]._attachments,
                             }, {force: true}).then((response) => {
 
-                                callback_function_info(null, Object.assign({}, window._pixa_settings));
+                                if(callback_function_info !== null) {
+
+                                    callback_function_info(null, _merge_object({}, window._pixa_settings));
+                                }
 
                                 if(settings_docs.length > 1) {
 
@@ -287,9 +291,6 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
 
                     }else {
 
-                        let pixa_settings = _merge_object(JSON.parse(settings_docs[0].info), info);
-                        window._pixa_settings = Object.assign({}, pixa_settings);
-
                         window.settings_db.put({
                             _id: settings_docs[0]._id,
                             _rev: settings_docs[0]._rev,
@@ -298,7 +299,10 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
                             timestamp: Date.now(),
                         }, {force: true}).then((response) => {
 
-                            callback_function_info(null, Object.assign({}, window._pixa_settings));
+                            if(callback_function_info !== null) {
+
+                                callback_function_info(null, _merge_object({}, window._pixa_settings));
+                            }
 
                             if(settings_docs.length > 1) {
 
@@ -323,7 +327,7 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
 
             let pixa_settings = _merge_object(window._pixa_settings, info);
             pixa_settings = _merge_object(_get_default_settings(), pixa_settings);
-            window._pixa_settings = Object.assign({}, pixa_settings);
+            window._pixa_settings = _merge_object({}, pixa_settings);
 
 
             if(Object.keys(attachment_array).length > 0) {
@@ -368,7 +372,7 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
                         _attachments: attachments
                     }).then((response) => {
 
-                        callback_function_info(null, Object.assign({}, window._pixa_settings));
+                        callback_function_info(null, _merge_object({}, window._pixa_settings));
                         window.settings_db.compact();
                         window.settings_db.viewCleanup();
                     });
@@ -382,7 +386,7 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
                     timestamp: Date.now(),
                 }).then((response) => {
 
-                    callback_function_info(null, Object.assign({}, pixa_settings));
+                    callback_function_info(null, _merge_object({}, pixa_settings));
 
                 });
 
