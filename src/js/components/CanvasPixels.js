@@ -2361,10 +2361,10 @@ class CanvasPixels extends React.Component {
         })();
     };
 
-    get_base64_png_data_url(scale = 1, callback_function = () => {}, with_palette = false, with_compression_speed = 0, with_compression_quality_min = 30, with_compression_quality_max = 35) {
+    get_base64_png_data_url = (scale = 1, callback_function = () => {}, with_palette = false, with_compression_speed = 0, with_compression_quality_min = 30, with_compression_quality_max = 35) => {
 
         this._get_base64_png_data_url(scale, callback_function, with_palette, with_compression_speed, with_compression_quality_min, with_compression_quality_max);
-    }
+    };
 
     _get_base64_png_data_url = (scale = 1, callback_function = () => {}, with_palette = false, with_compression_speed = 0, with_compression_quality_min = 30, with_compression_quality_max = 35) => {
 
@@ -2374,7 +2374,7 @@ class CanvasPixels extends React.Component {
 
             const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
 
-            const result = await pool.exec(new AsyncFunction(window.get_base64_png_data_url_process_function_string)(), [
+            let result = await pool.exec(new AsyncFunction(window.get_base64_png_data_url_process_function_string)(), [
                 pxl_width,
                 pxl_height,
                 _s_pxls,
@@ -2397,6 +2397,8 @@ class CanvasPixels extends React.Component {
             }).timeout(10 * 1000);
 
             if(typeof result !== "undefined") {
+
+                result = Object.values(result);
 
                 if(with_compression_speed !== 0) {
 

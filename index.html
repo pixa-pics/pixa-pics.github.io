@@ -121,8 +121,6 @@
                 ];
 
                 var h = document.head;
-                var f = document.createElement("footer");
-                document.body.appendChild(f);
 
                 return Promise.allSettled(SCS.map(function(ss){
                     return new Promise(
@@ -190,7 +188,7 @@
                             }
                         }
                     );
-                }).concat(typeof promise_of_force !== "undefined" ? [promise_of_force]: [])).then(() => {
+                }).concat(typeof promise_of_force !== "undefined" ? promise_of_force: Promise.resolve(true))).then(() => {
 
                     // For forcing main script loading in timed now+0
                     const SS = window._FIRE_IT_MAIN_JS_SS;
