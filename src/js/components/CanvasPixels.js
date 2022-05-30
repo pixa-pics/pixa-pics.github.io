@@ -2405,7 +2405,7 @@ class CanvasPixels extends React.Component {
 
                     const base64_in = result[0];
                     const palette = result[1];
-                    import("../utils/png_quant").then(({png_quant}) => {
+                    import("../utils/png_quant").then(async({png_quant}) => {
 
                         png_quant(base64_in, with_compression_quality_min, with_compression_quality_max, with_compression_speed, (base_64_out) => {
 

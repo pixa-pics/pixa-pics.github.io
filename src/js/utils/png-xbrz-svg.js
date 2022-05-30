@@ -16,7 +16,7 @@ function base64png_to_xbrz_svg (base64png, callback_function_for_image, callback
 
         const process_svg = (image_data, scale) => {
 
-            import("../utils/image_tracer").then(({image_tracer}) => {
+            import("../utils/image_tracer").then(async({image_tracer}) => {
 
                 image_tracer( image_data, {
 
@@ -65,7 +65,7 @@ function base64png_to_xbrz_svg (base64png, callback_function_for_image, callback
 
                     if(optimize_render_size) {
 
-                        import("svgo/dist/svgo.browser").then(({optimize}) => {
+                        import("svgo/dist/svgo.browser").then(async({optimize}) => {
 
                             let data = optimize(svg_source, {
                                 // optional but recommended field
@@ -90,7 +90,7 @@ function base64png_to_xbrz_svg (base64png, callback_function_for_image, callback
             const first_scale_size = 6;
             const third_canvas = document.createElement("canvas");
 
-            import("../utils/omniscale").then(({omniscale}) => {
+            import("../utils/omniscale").then(async({omniscale}) => {
 
                 omniscale(image_data, first_scale_size, (second_image_data) => {
 
@@ -102,7 +102,7 @@ function base64png_to_xbrz_svg (base64png, callback_function_for_image, callback
 
                     if(optimize_render_size) {
 
-                        import("../utils/png_quant").then(({png_quant}) => {
+                        import("../utils/png_quant").then(async({png_quant}) => {
 
                             png_quant(base64_out, 60, 70, 8, (base64_out_second) => {
 
@@ -123,7 +123,7 @@ function base64png_to_xbrz_svg (base64png, callback_function_for_image, callback
             const first_scale_size = 6;
             const third_canvas = document.createElement("canvas");
 
-            import("../utils/xBRZ").then(({xbrz}) => {
+            import("../utils/xBRZ").then(async({xbrz}) => {
 
                 xbrz(image_data, first_scale_size, (second_image_data) => {
 
@@ -135,7 +135,7 @@ function base64png_to_xbrz_svg (base64png, callback_function_for_image, callback
 
                     if(optimize_render_size) {
 
-                        import("../utils/png_quant").then(({png_quant}) => {
+                        import("../utils/png_quant").then(async({png_quant}) => {
 
                             png_quant(base64_out, 60, 70, 8, (base64_out_second) => {
 

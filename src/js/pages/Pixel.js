@@ -409,7 +409,7 @@ class Pixel extends React.Component {
         });
 
         this.setState({_h_svg: get_svg_in_b64(<HexGrid color={"#e5e5e5"}/>)});
-        import("../utils/ressource_pixel").then((RESSOURCE_PIXELS) => {
+        import("../utils/ressource_pixel").then(async(RESSOURCE_PIXELS) => {
 
             this.setState({_library: RESSOURCE_PIXELS});
         });
@@ -436,7 +436,7 @@ class Pixel extends React.Component {
 
             this.setState({_kb: current_state.kb}, () => {
 
-                import("../utils/lzp3_json").then(({LZP3}) => {
+                import("../utils/lzp3_json").then(async({LZP3}) => {
 
                     api.set_settings({}, (err, res) => {
 
@@ -943,7 +943,7 @@ class Pixel extends React.Component {
                 const resize_to = Math.min(parseInt(max_size * max_size), Math.max(parseInt(_import_size * _import_size), parseInt(min_size * min_size)));
                 const limit_color_number = Math.min(max_color, Math.max(parseInt(_import_size * ratio_l_l2), min_color));
 
-                import("../utils/rgb_quant").then(({rgb_quant}) => {
+                import("../utils/rgb_quant").then(async({rgb_quant}) => {
 
                     rgb_quant(b,  max_original_color, resize_original_to, Boolean(["1", "2", "3"].includes(_import_colorize)), (data) => {
 
@@ -1107,7 +1107,7 @@ class Pixel extends React.Component {
 
     _handle_import_json_state_id = (id) => {
 
-        import("../utils/lzp3_json").then(({LZP3}) => {
+        import("../utils/lzp3_json").then(async({LZP3}) => {
 
             this._handle_pixel_dialog_create_close();
             this._handle_load("image_preload");

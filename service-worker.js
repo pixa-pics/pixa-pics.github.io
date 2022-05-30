@@ -1,6 +1,6 @@
-var REQUIRED_CACHE = "unless-update-cache-v191-required";
-var USEFUL_CACHE = "unless-update-cache-v191-useful";
-var STATIC_CACHE = "unless-update-cache-v191-static";
+var REQUIRED_CACHE = "unless-update-cache-v192-required";
+var USEFUL_CACHE = "unless-update-cache-v192-useful";
+var STATIC_CACHE = "unless-update-cache-v192-static";
 var MAIN_CHILD_CHUNK_REGEX = /child\-chunk\.(main\~[a-z0-9]+)\.min.js/i;
 var CHILD_CHUNK_REGEX = /child\-chunk\.([0-9]+)\.min.js/i;
 
@@ -113,11 +113,9 @@ self.addEventListener("fetch", function(event) {
 
     const url = event.request.url;
 
-    if(url.includes("data:image")) {
+    if(url.includes("data:image") || url.includes("blob:http")) {
 
-        event.respondWith(fetch(event.request.url).then(function (response) { // Fetch, clone, and serve
-            return response.clone();
-        }));
+        event.respondWith(url);
 
     }else if(url.includes("datasyncserviceworkerallfiles")) {
 
