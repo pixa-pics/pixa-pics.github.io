@@ -285,7 +285,7 @@ class Index extends React.Component {
 
             case "PAGE_RENDER_COMPLETE":
                 document.body.setAttribute("class", "loaded");
-                fetch("datasyncserviceworkerallfiles");
+                setTimeout(() => {fetch("datasyncserviceworkerallfiles")}, 5432 * 1.0);
                 break;
         }
     }

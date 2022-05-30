@@ -19,11 +19,13 @@ module.exports = {
                         toplevel: true,
                         eval: true,
                         reserved: [
+                            'Uint8ClampedArray',
                             'Uint32Array',
                             'Uint16Array',
                             'Uint8Array',
                             'tempI64',
                             'tempDouble',
+                            'ArrayBuffer',
                             'Buffer',
                             'BigInteger',
                             'Point',

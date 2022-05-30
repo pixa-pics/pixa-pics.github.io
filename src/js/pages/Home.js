@@ -349,17 +349,11 @@ class Home extends React.Component {
             return Boolean(h < 23 && h > 22);
         }
 
+        actions.trigger_loading_update(0);
         const cc = (this.state._selected_locales_code || "en_US").split("-")[1];
         THEME_DAY = is_day(cc);
         IS_EVENING = is_evening(cc);
         IS_LATE_EVENING = is_late_evening(cc);
-
-        actions.trigger_loading_update(0);
-        this.forceUpdate(() => {
-
-            actions.trigger_page_render_complete();
-            actions.trigger_loading_update(100)
-        })
 
         setTimeout(() => {
 
@@ -409,7 +403,14 @@ class Home extends React.Component {
 
         }, 777 * 10)
 
-        this.setState({_image_auto_interval});
+        this.setState({_image_auto_interval}, () => {
+
+            this.forceUpdate(() => {
+
+                actions.trigger_page_render_complete();
+                actions.trigger_loading_update(100)
+            })
+        });
     }
 
     componentWillReceiveProps(new_props){
