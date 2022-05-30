@@ -124,7 +124,7 @@
         <script type="text/javascript">
 
             window._FIRE_IT_MAIN_JS = function(){};
-            window._FIRE_IT = function(promise_of_force = null) {
+            window._FIRE_IT = function(promise_of_force) {
 
                 (async function(){
 
@@ -146,6 +146,7 @@
 
                     var f = document.createElement("footer");
                     document.body.appendChild(f);
+                    var h = document.head;
 
                     return Promise.allSettled(SCS.map(function(ss){
                         return new Promise(
@@ -162,7 +163,7 @@
 
                                         if(last) {
 
-                                            if(typeof promise_of_force === "object") {
+                                            if(typeof promise_of_force !== "undefined") {
                                                 window._FIRE_IT_MAIN_JS = function() {
 
                                                     Array.from(document.getElementsByClassName("script_preloading")).forEach((s) => {
@@ -171,23 +172,32 @@
                                                         e.setAttribute("src", s.getAttribute("href"));
                                                         e.setAttribute("async", "true");
                                                         e.setAttribute("type", "text/javascript");
-                                                        f.appendChild(e);
+                                                        h.appendChild(e);
                                                     });
 
                                                     var e = document.createElement("script");
                                                     e.setAttribute("src", ss);
                                                     e.setAttribute("async", "true");
                                                     e.setAttribute("type", "text/javascript");
-                                                    f.appendChild(e);
+                                                    h.appendChild(e);
 
                                                 };
                                             }else {
+
+                                                Array.from(document.getElementsByClassName("script_preloading")).forEach((s) => {
+
+                                                    var e = document.createElement("script");
+                                                    e.setAttribute("src", s.getAttribute("href"));
+                                                    e.setAttribute("async", "true");
+                                                    e.setAttribute("type", "text/javascript");
+                                                    h.appendChild(e);
+                                                });
 
                                                 var e = document.createElement("script");
                                                 e.setAttribute("src", ss);
                                                 e.setAttribute("async", "true");
                                                 e.setAttribute("type", "text/javascript");
-                                                f.appendChild(e);
+                                                h.appendChild(e);
                                             }
 
                                         }else {
@@ -216,7 +226,7 @@
                                 }
                             }
                         );
-                    }).concat(typeof promise_of_force === "object" ? [promise_of_force]: [])).then(() => {
+                    }).concat(typeof promise_of_force !== "undefined" ? [promise_of_force]: [])).then(() => {
 
                         // For forcing main script loading in timed now+0
                         window._FIRE_IT_MAIN_JS();
