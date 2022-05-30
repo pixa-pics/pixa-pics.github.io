@@ -19,6 +19,7 @@ module.exports = {
                         toplevel: true,
                         eval: true,
                         reserved: [
+                            'Uint32Array',
                             'tempI64',
                             'tempDouble',
                             'Buffer',
