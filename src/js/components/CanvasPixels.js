@@ -1507,12 +1507,14 @@ class CanvasPixels extends React.Component {
 
                 this.setState({_xxHashWasm: hasher}, () => {
 
+                    // Does it run well???
                     this.state._xxHashWasm.h32([1.618, 3.14, 666]);
                 });
             });
 
         } catch( e ) {
 
+            console.log("xxhash is pure js can't use wasm");
             this.setState({_xxHash32js: xxHash32, _xxHashWasm: null});
         }
 
@@ -1638,19 +1640,16 @@ class CanvasPixels extends React.Component {
 
     _xxhashthat = (array) => {
 
-        const { _xxHash32js, _xxHashWasm } = this.state;
+        if(Boolean(this.state._xxHashWasm)) {
 
-        if(_xxHash32js !== null) {
+            return this.state._xxHashWasm.h32Raw(Uint8Array.from(Buffer.from(array)), 0);
+        }else if(Boolean(this.state._xxHash32js)) {
 
-            return _xxHash32js(Buffer.from(array), 0).toString(16);
-        } else if(_xxHashWasm !== null) {
-
-            return _xxHashWasm.h32(array);
-        }else {
+            return this.state._xxHash32js(Uint8Array.from(Buffer.from(array)), 0);
+        } else {
 
             return Array.length;
         }
-
     };
 
     _set_size = (width = null, height = null) => {

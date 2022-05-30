@@ -655,6 +655,8 @@ class PixelToolboxSwipeableViews extends React.Component {
                 {
                     icon: <DownloadIcon/>,
                     text: "Download (raster / matrix)",
+                    local_i: 1,
+                    label: "matrix",
                     sub: "This is the classical way to scale pixel art, it creates hard edges and bigger square area for each pixels",
                     tools: [
                         {
@@ -690,6 +692,8 @@ class PixelToolboxSwipeableViews extends React.Component {
                 {
                     icon: <DownloadIcon/>,
                     text: "Download (vector / painting)",
+                    local_i: 2,
+                    label: "vector",
                     sub: too_much_colors_no_vector ? "Please ensure the artwork to get a good colors-diet (less than 128) to scale it bigger in nice shapes! Buttons to heal a artwork's colors overdose need using double-tap or right-click on the laboratory area.": "It renders your image source and up-scales it in both an HD PNG and a infinite color-limited SVG illustration.",
                     tools: [
                         {
@@ -734,7 +738,9 @@ class PixelToolboxSwipeableViews extends React.Component {
             "layers": [
                 {
                     icon: <LayerSearchIcon/>,
+                    local_i: 1,
                     text: `Layer tools`,
+                    label: "tools",
                     sub: "You can choose to draw above the image loaded (easier on PC in the WEB-APP) if you want to, just show background image. Displaying a chessboard below all layers is optional but recommended.",
                     tools: [
                         {
@@ -763,6 +769,8 @@ class PixelToolboxSwipeableViews extends React.Component {
                 {
                     icon: <LayerEditIcon/>,
                     text: `Layer actions`,
+                    local_i: 2,
+                    label: "actions",
                     tools: [
                         {
                             icon: <LayerAddIcon/>, text: "New layer", on_click: () => {
@@ -789,6 +797,8 @@ class PixelToolboxSwipeableViews extends React.Component {
                 {
                     icon: <ImportIcon/>,
                     text: "Import image",
+                    local_i: 3,
+                    label: "importing",
                     sub: "Source needs to be another artwork source since it will add it onto current artwork. To start a new artwork, simply change and navigate to 'Image > Upload'.",
                     tools: [
                         {
@@ -815,6 +825,8 @@ class PixelToolboxSwipeableViews extends React.Component {
                 {
                     icon: <NavigationIcon/>,
                     text: "Navigation",
+                    local_i: 0,
+                    label: "navigation",
                     sub: "History of editing have memory of around 50 grouped operations.",
                     tools: [
                         {
@@ -845,6 +857,8 @@ class PixelToolboxSwipeableViews extends React.Component {
                 {
                     icon: <DrawIcon/>,
                     text: "Drawing tools",
+                    label: "drawing",
+                    local_i: 1,
                     tools: [
                         {
                             icon: <ColorPickerIcon/>,
@@ -887,6 +901,8 @@ class PixelToolboxSwipeableViews extends React.Component {
                 {
                     icon: <ShapesIcon/>,
                     text: "Shapes tools",
+                    label: "shapes",
+                    local_i: 2,
                     tools: [
                         {
                             icon: <LineIcon/>, disabled: tool === "LINE", text: "Line", sub: "[L]", on_click: () => {
@@ -925,6 +941,8 @@ class PixelToolboxSwipeableViews extends React.Component {
                 {
                     icon: <PaintIcon/>,
                     text: "Paint tools",
+                    label: "basic",
+                    local_i: 3,
                     sub: "On our progressive WEB-APP (https://pixa.pics/), accessing it with desktop is a very professional experience instead, finest selection and editing with mouse.",
                     tools: [
                         {
@@ -968,6 +986,8 @@ class PixelToolboxSwipeableViews extends React.Component {
                 {
                     icon: <MirrorIcon/>,
                     text: "Set pencil mirrors",
+                    label: "mirror",
+                    local_i: 4,
                     tools: [
                         {
                             icon: <MirrorIcon/>,
@@ -1008,6 +1028,8 @@ class PixelToolboxSwipeableViews extends React.Component {
                 {
                     icon: <SelectCompareIcon/>,
                     text: "Select mode",
+                    local_i: 0,
+                    label: "mode",
                     tools: [
                         {
                             icon: <SelectRemoveDifferenceIcon/>,
@@ -1040,6 +1062,8 @@ class PixelToolboxSwipeableViews extends React.Component {
                 {
                     icon: <SelectInImageIcon/>,
                     text: "Select tool",
+                    label: "selecting",
+                    local_i: 1,
                     tools: [
                         {
                             icon: <SelectIcon/>,
@@ -1118,6 +1142,8 @@ class PixelToolboxSwipeableViews extends React.Component {
                 {
                     icon: <ImageMoveIcon/>,
                     text: "Apply to selection",
+                    label: "applying",
+                    local_i: 2,
                     tools: [
                         {
                             icon: <SelectInImageIcon/>,
@@ -1210,6 +1236,8 @@ class PixelToolboxSwipeableViews extends React.Component {
                 {
                     icon: <ImageEffectIcon/>,
                     text: "Effects",
+                    label: "primary",
+                    local_i: 0,
                     tools: [
                         {
                             icon: <ImageSmoothIcon/>, text: "Smooth", sub: "Run smooth effect once", on_click: () => {
@@ -1321,6 +1349,8 @@ class PixelToolboxSwipeableViews extends React.Component {
                 {
                     icon: <ImageFilterMagicIcon/>,
                     text: "Filters",
+                    label: "primary",
+                    local_i: 0,
                     sub: "The strength selected matters meanwhile preview are only shown at 100% intensity. To cancel any operation, use 'undo'.",
                     tools: filters.map((name) => {
                         return {
@@ -1383,7 +1413,7 @@ class PixelToolboxSwipeableViews extends React.Component {
 
                                 {
                                     view_names[index] === "layers" ?
-                                        <div>
+                                        <div key={"layers-main"} className={`swipetoolbox_i_${index}_${0}`}>
                                             <ListSubheader className={classes.listSubHeader}>
                                                 <span><AllLayersIcon/></span>
                                                 <span>All layers</span>
@@ -1468,7 +1498,7 @@ class PixelToolboxSwipeableViews extends React.Component {
                                 {
 
                                     view_names[index] === "palette" ?
-                                        <div>
+                                        <div key={"palette-main"} className={`swipetoolbox_i_${index}_${0}`}>
                                             <Menu
                                                 className={classes.menu}
                                                 anchorEl={_anchor_el}
@@ -1538,7 +1568,7 @@ class PixelToolboxSwipeableViews extends React.Component {
                                                 overflow: "visible",
                                                 boxSizing: "border-box",
                                                 width: "100%"
-                                            }}>
+                                            }} key={"palette-secondary"} className={`swipetoolbox_i_${index}_${1}`}>
                                                 <div className={classes.sliderContainer}>
                                                     <Typography className={classes.sliderLabel} id="opacity-slider"
                                                                 gutterBottom>α</Typography>
@@ -1570,7 +1600,7 @@ class PixelToolboxSwipeableViews extends React.Component {
 
                                 {
                                     view_names[index] === "image" ?
-                                        <div>
+                                        <div key={"image-upload"} className={`swipetoolbox_i_${index}_${0}`}>
                                             <ListSubheader className={classes.listSubHeader}>
                                                 <span><ImportIcon/></span>
                                                 <span>Upload</span>
@@ -1720,9 +1750,9 @@ class PixelToolboxSwipeableViews extends React.Component {
                                 }
 
                                 {
-                                    view.map((action_set, index) => {
+                                    view.map((action_set) => {
                                         return (
-                                            <div key={index}>
+                                            <div key={view_names[index] + "-" + action_set.label} className={`swipetoolbox_i_${index}_${action_set.local_i}`}>
                                                 <ListSubheader className={classes.listSubHeader}>
                                                     <span>{action_set.icon}</span>
                                                     <span>{action_set.text}</span>
@@ -1790,7 +1820,7 @@ class PixelToolboxSwipeableViews extends React.Component {
 
                                 {
                                     view_names[index] === "image" ?
-                                        <div>
+                                        <div key={"image-create"} className={`swipetoolbox_i_${index}_${3}`}>
                                             <ListSubheader className={classes.listSubHeader}>
                                                 <span><ImagePlusIcon/></span>
                                                 <span>Create new</span>

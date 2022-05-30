@@ -170,6 +170,7 @@ const styles = theme => ({
         contain: "layout paint size style",
     },
     drawerContainer: {
+        scrollBehavior: "smooth",
         contain: "size style",
         height: "calc(100vh - 224px) !important",
         overflow: "overlay",
@@ -333,6 +334,7 @@ class Pixel extends React.Component {
             _library: {},
             _library_type: "open",
             _view_name_index: 1,
+            _view_name_sub_index: 0,
             _previous_view_name_index: 1,
             _view_names: ["palette", "image", "layers", "tools", "selection", "effects", "filters"],
             _canvas: null,
@@ -388,6 +390,7 @@ class Pixel extends React.Component {
             _attachment_previews: {},
             _filters_thumbnail: {},
             _last_filters_hash: "",
+            _toolbox_container_ref: null,
             settings: props.settings,
             ...JSON.parse(props.settings)
         };
@@ -556,7 +559,7 @@ class Pixel extends React.Component {
 
     _handle_view_name_change = (view_name_index, previous_name_index = null) => {
 
-        const { _view_names } = this.state;
+        const { _view_names, _toolbox_container_ref } = this.state;
         previous_name_index = previous_name_index === null ? this.state._view_name_index: previous_name_index;
 
         const _view_name = _view_names[view_name_index] || _view_names[0];
@@ -569,6 +572,8 @@ class Pixel extends React.Component {
 
             actions.trigger_sfx("navigation_transition-right");
         }
+
+        _toolbox_container_ref.scrollTop = 0;
 
         this.setState({_previous_view_name_index: previous_name_index || this.state._view_name_index, _view_name_index});
     };
@@ -1385,9 +1390,37 @@ class Pixel extends React.Component {
     _handle_edit_drawer_open = (event, _view_name_index) => {
 
         _view_name_index = typeof _view_name_index !== "undefined" ? _view_name_index: this.state._view_name_index;
-        const close_dialog = Boolean(this.state._view_name_index === _view_name_index) && this.state._is_edit_drawer_open;
+        const do_inner_view_next = Boolean(this.state._view_name_index === _view_name_index) && this.state._is_edit_drawer_open;
+        const { _toolbox_container_ref } = this.state;
 
-        this.setState({_is_edit_drawer_open: !close_dialog, _view_name_index});
+        let _is_edit_drawer_open = true;
+        let _view_name_sub_index = null;
+        if(do_inner_view_next && _toolbox_container_ref !== null) {
+
+            _view_name_sub_index = this.state._view_name_sub_index || 0;
+            _view_name_sub_index++;
+
+            const classname_of_panel = `swipetoolbox_i_${_view_name_index}_${_view_name_sub_index}`;
+            const panel_element = (document.getElementsByClassName(classname_of_panel) || [])[0] || null;
+
+            if(panel_element !== null) {
+
+                _toolbox_container_ref.scrollTop = panel_element.offsetTop;
+            }else {
+
+                _is_edit_drawer_open = false;
+                _view_name_sub_index = 0;
+                _toolbox_container_ref.scrollTop = 0;
+            }
+
+
+        }else {
+
+            _view_name_sub_index = 0;
+            _toolbox_container_ref.scrollTop = 0;
+        }
+
+        this.setState({_is_edit_drawer_open, _view_name_index, _view_name_sub_index});
     };
 
     _handle_edit_drawer_close = () => {
@@ -1527,6 +1560,15 @@ class Pixel extends React.Component {
         }, 1250);
     }
 
+
+    _set_toolbox_container_ref = (element) => {
+
+        if(element !== null) {
+
+            this.setState({_toolbox_container_ref: element});
+        }
+    };
+
     render() {
 
         const {
@@ -1627,7 +1669,7 @@ class Pixel extends React.Component {
                                 />
                             </div>
                         </div>
-                        <div className={classes.drawerContainer} onGotPointerCapture={(event) => {event.stopPropagation(); event.preventDefault();}}>
+                        <div className={classes.drawerContainer} ref={this._set_toolbox_container_ref}>
                             <PixelToolboxSwipeableViews
                                 should_update={_is_edit_drawer_open}
                                 onActionClose={this._handle_edit_drawer_close}
@@ -1730,7 +1772,7 @@ class Pixel extends React.Component {
                                 <Tab className={classes.tab} label={"filters"} icon={<FiltersTweemoji />} />
                             </Tabs>
                         </div>
-                        <div className={classes.drawerContainer}>
+                        <div className={classes.drawerContainer} ref={this._set_toolbox_container_ref}>
                             <PixelToolboxSwipeableViews
                                 should_update={true}
                                 canvas={_canvas}

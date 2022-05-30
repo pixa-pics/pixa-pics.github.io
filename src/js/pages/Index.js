@@ -139,6 +139,7 @@ class Index extends React.Component {
             _database_attempt: 0,
             _is_share_dialog_open: false,
             _has_played_index_music_counter: 0,
+            _datasyncserviceworkerallfiles: false,
         };
     };
     
@@ -284,8 +285,15 @@ class Index extends React.Component {
                 break;
 
             case "PAGE_RENDER_COMPLETE":
+
                 document.body.setAttribute("class", "loaded");
-                setTimeout(() => {fetch("datasyncserviceworkerallfiles")}, 5432 * 1.0);
+                if(this.state._datasyncserviceworkerallfiles === false) {
+
+                    setTimeout(async() => {fetch("datasyncserviceworkerallfiles").then(() => {
+
+                        this.setState({_datasyncserviceworkerallfiles: true});
+                    })}, 5432 * 1.0);
+                }
                 break;
         }
     }
@@ -312,7 +320,7 @@ class Index extends React.Component {
 
                 if(!was_the_settings_known) {
 
-                    this._set_analytics(1500);
+                    this._set_analytics(8000);
                 }
 
             });

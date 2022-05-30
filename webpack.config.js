@@ -28,12 +28,15 @@ module.exports = {
                             'ArrayBuffer',
                             'Array',
                             'h32',
+                            'h32Raw',
+                            'create32',
                             'buf32',
                             'buf16',
                             'buf8',
                             'Buffer',
                             'Set',
                             'BigInteger',
+                            'BigInt',
                             'Point',
                             'ECPubKey',
                             'ECKey',
@@ -42,6 +45,9 @@ module.exports = {
                             'ECPair',
                             'HDNode',
                             'SharedArrayBuffer',
+                            'UINT32',
+                            'UINT64',
+                            'UINT',
                         ]
                     },
                     compress: {
@@ -95,14 +101,15 @@ module.exports = {
                                 'react',
                                 ["env", {
                                     targets: {
-                                        android: "88",
-                                        chrome: "88",
-                                        edge: "88"
+                                        android: "66",
+                                        chrome: "66",
+                                        edge: "66"
                                     },
-                                    forceAllTransforms: true,
+                                    //ignoreBrowserslistConfig: true,
+                                    forceAllTransforms: true, //true,
                                     shippedProposals: true,
                                     bugfixes: true,
-                                    useBuiltIns: "entry"
+                                    useBuiltIns: "usage" //"entry"
                                 }],
                                 'stage-0'
                             ]
