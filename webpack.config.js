@@ -20,6 +20,8 @@ module.exports = {
                         eval: true,
                         reserved: [
                             'Uint32Array',
+                            'Uint16Array',
+                            'Uint8Array',
                             'tempI64',
                             'tempDouble',
                             'Buffer',

@@ -142,12 +142,20 @@
                                             if(typeof promise_of_force === "object") {
                                                 window._FIRE_IT_MAIN_JS = function() {
 
+                                                    Array.from(document.getElementsByClassName("script_preloading")).forEach((s) => {
+
+                                                        var e = document.createElement("script");
+                                                        e.setAttribute("src", s.getAttribute("href"));
+                                                        e.setAttribute("async", "true");
+                                                        e.setAttribute("type", "text/javascript");
+                                                        f.appendChild(e);
+                                                    });
+
                                                     var e = document.createElement("script");
                                                     e.setAttribute("src", ss);
                                                     e.setAttribute("async", "true");
                                                     e.setAttribute("type", "text/javascript");
                                                     f.appendChild(e);
-
 
                                                 };
                                             }else {
