@@ -56,7 +56,7 @@ const main_void_main = () => {
                     <Index history={HISTORY}/>
                 </CssBaseline>
             </ThemeProvider>,
-            element);
+            document.getElementById("app"));
     }else {
 
         main_void_main();

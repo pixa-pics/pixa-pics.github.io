@@ -5,7 +5,7 @@ import get_browser_locales from "../utils/locales";
 window.settings_db = new PouchDB("settings_db", {deterministic_revs: false, revs_limit: 0});
 import pool from "../utils/worker-pool";
 
-const _merge_object = (obj1, obj2) => {
+const _merge_object = (obj1 = {}, obj2 = {}) => {
 
     return Object.assign({}, {...obj1, ...obj2});
 };
@@ -74,7 +74,7 @@ const get_settings = (callback_function_info = null, attachment_ids = [], callba
         binary: false
     }, (error, response) => {
 
-        if(!error) {
+        if(!Boolean(error)) {
 
             // Get settings docs
             let settings_docs = response.rows.map((row) => {
@@ -135,7 +135,7 @@ const get_settings = (callback_function_info = null, attachment_ids = [], callba
 
                         }).catch((e) => {
 
-                            callback_function_attachment("Missing in our database, unholy PouchDB when you don't get your files...", null);
+                            callback_function_attachment("Missing in our database, holy PouchDB when you don't get your files...", null);
                             return false;
                         });
 
@@ -153,7 +153,7 @@ const get_settings = (callback_function_info = null, attachment_ids = [], callba
                 }
             }else {
 
-                const pixa_settings = _get_default_settings();
+                let pixa_settings = _merge_object(_get_default_settings(), window._pixa_settings);
                 window._pixa_settings = _merge_object({}, pixa_settings);
 
                 window.settings_db.post({
@@ -170,7 +170,7 @@ const get_settings = (callback_function_info = null, attachment_ids = [], callba
         }
 
 
-        if (error){
+        if (Boolean(error)){
 
             if(callback_function_info !== null) {
 
@@ -183,7 +183,7 @@ const get_settings = (callback_function_info = null, attachment_ids = [], callba
                 return false;
             }
         }
-    });
+    })
 }
 
 const set_settings = (info = {}, callback_function_info = () => {}, attachment_array = {}, LZP3 = null) => {

@@ -300,7 +300,7 @@ class Index extends React.Component {
 
     _process_settings_query_result = (error, settings) => {
 
-        if(!error && typeof settings !== "undefined") {
+        if(!Boolean(error) && Boolean(settings)) {
 
             const was_music_enabled = Boolean(this.state._music_enabled);
             const was_the_settings_known = this.state._know_the_settings;

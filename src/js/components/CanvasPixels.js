@@ -1210,7 +1210,7 @@ const _caf =
     window.webkitCancelAnimationFrame ||
     window.msCancelAnimationFrame;
 
-function _loop(render, do_not_cancel_animation, force_update, requested_at_t = Date.now()) {
+async function _loop(render, do_not_cancel_animation, force_update, requested_at_t = Date.now()) {
 
     if(requested_at_t < w_canvas_pixels._last_raf_time && !do_not_cancel_animation) { return }
 
@@ -1298,10 +1298,10 @@ function _loop(render, do_not_cancel_animation, force_update, requested_at_t = D
 
         }else if(deltaT < 1000 / (skip_frame_rate * 2)){
 
-            setTimeout(() => {_loop(render, do_not_cancel_animation, force_update, requested_at_t)}, 1000 / (skip_frame_rate * 8));
+            setTimeout(async() => {_loop(render, do_not_cancel_animation, force_update, requested_at_t)}, 1000 / (skip_frame_rate * 8));
         }else if(force_update || do_not_cancel_animation) {
 
-            setTimeout(() => {_loop(render, do_not_cancel_animation, force_update, requested_at_t)}, 1000 / (skip_frame_rate * 8));
+            setTimeout(async() => {_loop(render, do_not_cancel_animation, force_update, requested_at_t)}, 1000 / (skip_frame_rate * 8));
         }else {
 
             //caf(caf_id);
@@ -1309,7 +1309,7 @@ function _loop(render, do_not_cancel_animation, force_update, requested_at_t = D
     }catch (e) {}
 };
 
-function _anim_loop ( render, do_not_cancel_animation = false, force_update = false ) {
+async function _anim_loop ( render, do_not_cancel_animation = false, force_update = false ) {
 
     _loop(render, do_not_cancel_animation, force_update);
 };
@@ -1406,7 +1406,7 @@ class CanvasPixels extends React.Component {
             _canvas_wrapper: null,
             _canvas_wrapper_overflow: null,
             _mouse_down: false,
-            _state_history_length: 51,
+            _state_history_length: 61 - parseInt(0.1 * parseInt(parseInt(props.pxl_width || 32) + parseInt(props.pxl_height || 32)) / 2),
             _last_action_timestamp: Date.now(),
             _last_paint_timestamp: Date.now(),
             _lazy_lazy_compute_time_ms: 10 * 1000,
@@ -2109,7 +2109,7 @@ class CanvasPixels extends React.Component {
     change_layer_opacity = (at_index, opacity) => {
 
         let _layers = Array.from(this.state._layers);
-        _layers[at_index].opacity = opacity;
+        _layers[at_index].opacity = parseFloat(opacity);
 
         this.setState({
             _layers
@@ -2156,8 +2156,9 @@ class CanvasPixels extends React.Component {
                 const top_layer_pxl_color = top_layer_pxl_colors[top_layer_pxl_color_index];
                 const bottom_layer_pxl_color = bottom_layer_pxl_colors[pxl];
 
-                let new_layer_pxl_color = this._blend_colors(0, bottom_layer_pxl_color, bottom_layer_opacity, false, false, true);
-                new_layer_pxl_color = this._blend_colors(new_layer_pxl_color, top_layer_pxl_color, top_layer_opacity, false, false, true);
+                let new_layer_pxl_color_a = this._blend_colors(0, bottom_layer_pxl_color, bottom_layer_opacity, false, true, true);
+                let new_layer_pxl_color_b = this._blend_colors(0, top_layer_pxl_color, top_layer_opacity, false, true, true);
+                let new_layer_pxl_color = this._blend_colors(new_layer_pxl_color_a, new_layer_pxl_color_b, 1, false, true, true);
 
                 if(!new_layer_pxl_colors.includes(new_layer_pxl_color)) {
 
@@ -3254,7 +3255,7 @@ class CanvasPixels extends React.Component {
         let pxl_colors_copy = Array.from(_s_pxl_colors[_layer_index]);
         let pxls_copy = Array.from(_s_pxls[_layer_index]);
 
-        const pxl_color_index = pxl_colors_copy.indexOf(old_color);
+        const pxl_color_index = pxl_colors_copy.indexOf(this._format_color(old_color, true));
 
         const pxl_color = pxl_colors_copy[pxl_color_index];
         const pxl_color_new = this._blend_colors(pxl_color, new_color, 1, true, false, true);

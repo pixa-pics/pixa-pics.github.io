@@ -385,7 +385,7 @@ class Home extends React.Component {
         let _image_index = 0;
         let _image_name_infographics = all_image_name_infographics[_image_index];
 
-        let _image_auto_interval = setInterval(() => {
+        let _image_auto_interval = setInterval(async () => {
 
             _image_index = _image_index % all_image_name_infographics.length;
             _image_index++;
@@ -417,7 +417,7 @@ class Home extends React.Component {
 
         if(new_props.settings !== this.state.settings) {
 
-            this.setState({settings: props.settings, ...JSON.parse(new_props.settings)}, ()  => {
+            this.setState({settings: new_props.settings, ...JSON.parse(new_props.settings)}, ()  => {
 
                 this.forceUpdate();
             });

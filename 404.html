@@ -103,7 +103,7 @@
 
             window._FIRE_IT_MAIN_JS_SS = "";
             window._FIRE_IT_MAIN_JS = async function(){};
-            window._FIRE_IT = async function(promise_of_force) {
+            window._FIRE_IT = async function(promise_of_force = Promise.resolve()) {
 
                 var SCS = [
                     "/src/fonts/Jura.css",
@@ -141,21 +141,33 @@
                                         window._FIRE_IT_MAIN_JS_SS = ss;
                                         window._FIRE_IT_MAIN_JS = async function(ss) {
 
-                                            const H = document.head;
                                             Array.from(document.getElementsByClassName("script_preloading")).forEach((s) => {
 
                                                 var e = document.createElement("script");
                                                 e.setAttribute("src", s.getAttribute("href"));
                                                 e.setAttribute("async", "true");
                                                 e.setAttribute("type", "text/javascript");
-                                                H.appendChild(e);
+                                                document.head.appendChild(e);
                                             });
 
                                             var e = document.createElement("script");
                                             e.setAttribute("src", ss);
                                             e.setAttribute("async", "true");
                                             e.setAttribute("type", "text/javascript");
-                                            H.appendChild(e);
+
+                                            var footers = document.getElementsByTagName('footer');
+
+                                            if(footers.length >= 1) {
+
+                                                var f = footers[0];
+                                                f.appendChild(e);
+
+                                            }else {
+
+                                                var f = document.createElement("footer");
+                                                document.body.appendChild(f);
+                                                f.appendChild(e);
+                                            }
 
                                             return true;
                                         };
@@ -168,7 +180,7 @@
                                         e.setAttribute("rel", "preload");
                                         e.setAttribute("as", "script");
 
-                                        h.appendChild(e);
+                                        document.head.appendChild(e);
                                     }
 
                                     resolve(true);
@@ -178,7 +190,7 @@
                                     var e = document.createElement("link");
                                     e.setAttribute("href", ss);
                                     e.setAttribute("rel", "stylesheet");
-                                    h.appendChild(e);
+                                    document.head.appendChild(e);
 
                                     resolve(true);
                                 }
@@ -189,7 +201,7 @@
                             }
                         }
                     );
-                }).concat(typeof promise_of_force !== "undefined" ? promise_of_force: Promise.resolve(true))).then(() => {
+                }).concat(Array.of(promise_of_force))).finally(function(){
 
                     // For forcing main script loading in timed now+0
                     const SS = window._FIRE_IT_MAIN_JS_SS;
