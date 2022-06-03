@@ -5,7 +5,7 @@
 *
 * RgbQuant.js - an image quantization lib
 */
-window.rgb_quant_process_function_string = `var f = async function(img, limit, resize_to, lossy) {
+const rgb_quant_process_function = async function(img, limit, resize_to, lossy) {
     
         "use strict";
         limit = limit || 0;
@@ -1100,29 +1100,27 @@ window.rgb_quant_process_function_string = `var f = async function(img, limit, r
                 }
             }
         }
-    }; return f;`;
+    };
 
 const rgb_quant = (img, limit = 0, resize_to = 1920*1080, lossy = false, callback_function = () => {}, pool = null) => {
 
     (async () => {
 
-        const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
         if(pool !== null) {
 
-            const result = await pool.exec(new Function(window.rgb_quant_process_function_string)(), [
+            const r = pool.exec(rgb_quant_process_function, [
                 img, limit, resize_to, lossy
             ]).catch((e) => {
 
-                console.log(e);
-                return new AsyncFunction(window.rgb_quant_process_function_string)().call(img, limit, resize_to, lossy).catch((e2) => { return null; });
+                return rgb_quant_process_function(img, limit, resize_to, lossy);
             }).timeout(60 * 1000);
 
-            callback_function(result);
+            callback_function(await r);
 
         }else {
 
-            const result = await new AsyncFunction(window.rgb_quant_process_function_string)().call(img, limit, resize_to, lossy).catch((e) => { return null; });
-            callback_function(result);
+            const r = rgb_quant_process_function(img, limit, resize_to, lossy);
+            callback_function( await r);
         }
     })();
 };

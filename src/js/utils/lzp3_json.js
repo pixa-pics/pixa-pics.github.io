@@ -343,7 +343,7 @@ Public License instead of this License.
 
 // 97% SOURCE: https://github.com/eladkarako/compressjs-flattened/blob/master/Lzp3_joined_.js
 
-window.lzp3_json_process_function_string = `return async function(uint8a_or_obj, mode) {
+const lzp3_json_process_function = async function(uint8a_or_obj, mode) {
         
         "use strict";
         var RangeCoder          //no dependencies
@@ -2440,34 +2440,28 @@ window.lzp3_json_process_function_string = `return async function(uint8a_or_obj,
         
             return null;
         }
-    }`;
+};
 
-const LZP3 = (uint8a_or_obj, mode = "COMPRESS_OBJECT", callback_function = () => {}, pool = null) => {
+const LZP3 = async(uint8a_or_obj, mode = "COMPRESS_OBJECT", pool = null) => {
 
     if(Boolean(pool)) {
 
-        pool.exec( new Function(window.lzp3_json_process_function_string)(), [
+        return pool.exec(lzp3_json_process_function, [
             uint8a_or_obj,
             mode,
         ]).catch((e) => {
 
             if(e === "Pool terminated") {
-                return LZP3(uint8a_or_obj, mode, callback_function, pool);
+                return LZP3(uint8a_or_obj, mode, pool);
             }else {
 
-                return new Function(window.lzp3_json_process_function_string)()(uint8a_or_obj, mode);
+                return lzp3_json_process_function(uint8a_or_obj, mode);
             }
-        }).then((result) => {
-
-            callback_function(result);
-        }).timeout(15 * 1000);
+        }).timeout(60 * 1000);
 
     }else {
 
-        new Function(window.lzp3_json_process_function_string)()(uint8a_or_obj, mode).then((result) => {
-
-            callback_function(result);
-        });
+        return lzp3_json_process_function(uint8a_or_obj, mode);
     }
 };
 

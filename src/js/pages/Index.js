@@ -416,7 +416,7 @@ class Index extends React.Component {
             }
 
             element_b.setAttribute("id", "matomo-analytics");
-            element_b.setAttribute("defer", "true");
+            element_a.setAttribute("defer", "true");
             element_b.setAttribute("src", "https://app.friendlyanalytics.ch/matomo.js");
 
             if(append_b) {document.head.appendChild(element_b);}

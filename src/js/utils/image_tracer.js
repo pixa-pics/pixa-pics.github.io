@@ -34,9 +34,8 @@ OTHER DEALINGS IN THE SOFTWARE.
 For more information, please refer to http://unlicense.org/
 
 */
-import pool from "../utils/worker-pool";
 
-window.image_tracer_process_function_string = `return function(image_data, options){
+const image_tracer_process_function = async function(image_data, options){
 
     "use strict";
 	function ImageTracer(){
@@ -1183,21 +1182,24 @@ window.image_tracer_process_function_string = `return function(image_data, optio
 	
 		var imgtrc = new ImageTracer();
 		return imgtrc.imagedataToSVG(image_data, options);
-}`;
+};
 
-const image_tracer = (image_data, options, callback_function) => {
+const image_tracer = async(image_data, options, pool) => {
 
-	pool.exec(window.image_tracer_process_function_string, [
-		image_data,
-		options,
-	]).catch((e) => {
+	if(Boolean(pool)) {
 
-		return new Function(window.image_tracer_process_function_string)()(image_data, options);
-	})
-	.then((result) => {
+		return pool.exec(image_tracer_process_function, [
+			image_data,
+			options,
+		]).catch((e) => {
 
-		callback_function(result);
-	}).timeout(72 * 1000);
+			return image_tracer_process_function(image_data, options);
+		}).timeout(120 * 1000);
+
+	}else {
+
+		return image_tracer_process_function(image_data, options);
+	}
 }
 
 module.exports = {

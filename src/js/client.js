@@ -49,7 +49,7 @@ const main_void_main = () => {
         document.body.appendChild(element);
     }
 
-    if(element) {
+    if(Boolean(document.getElementById("app"))) {
         ReactDOM.render(
             <ThemeProvider theme={lightTheme}>
                 <CssBaseline>

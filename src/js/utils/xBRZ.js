@@ -23,7 +23,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
 
-window.xbrz_process_function_string = `return async function(image_data, scale) {
+const xbrz_process_function = async function(image_data, scale) {
 
     "use strict";
     const redMask = 0xff0000
@@ -880,34 +880,29 @@ window.xbrz_process_function_string = `return async function(image_data, scale) 
     const data_array_target = new Uint8ClampedArray(target_buffer);
     const final_image_data = new ImageData(data_array_target, image_data.width * scale, image_data.height * scale);
     return final_image_data;
-  }`;
+  };
 
-const xbrz = (image_data, scale, callback_function, pool = null) => {
+const xbrz = async (image_data, scale, pool = null) => {
 
     if(pool) {
 
-      pool.exec(new Function(window.xbrz_process_function_string)(), [
+      return pool.exec(xbrz_process_function, [
         image_data,
         scale,
       ]).catch((e) => {
 
           if(e === "Pool terminated") {
-              xbrz(image_data, scale, callback_function, pool);
+              return xbrz(image_data, scale, pool);
           }else {
 
-              return Promise.resolve(new Function(window.xbrz_process_function_string)()(image_data, scale));
+              return xbrz_process_function(image_data, scale);
           }
 
-      }).then((result) => {
-
-          callback_function(result);
       }).timeout(60 * 1000);
+
     }else {
 
-        new Function(window.xbrz_process_function_string)()(image_data, scale).then((result) => {
-
-        callback_function(result);
-      });
+        return xbrz_process_function(image_data, scale);
     }
 };
 

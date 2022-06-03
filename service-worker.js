@@ -1,6 +1,6 @@
-var REQUIRED_CACHE = "unless-update-cache-v196-required";
-var USEFUL_CACHE = "unless-update-cache-v196-useful";
-var STATIC_CACHE = "unless-update-cache-v196-static";
+var REQUIRED_CACHE = "unless-update-cache-v197-required";
+var USEFUL_CACHE = "unless-update-cache-v197-useful";
+var STATIC_CACHE = "unless-update-cache-v197-static";
 var MAIN_CHILD_CHUNK_REGEX = /child\-chunk\.(main\~[a-z0-9]+)\.min.js/i;
 var CHILD_CHUNK_REGEX = /child\-chunk\.([0-9]+)\.min.js/i;
 
@@ -119,7 +119,7 @@ self.addEventListener("fetch", function(event) {
 
     }else if(url.includes("datasyncserviceworkerallfiles")) {
 
-        event.respondWith(
+        event.waitUntil(
             Promise.allSettled([
                 useful_cache.then(function (cache) {
                     return cache.addAll([
@@ -165,6 +165,13 @@ self.addEventListener("fetch", function(event) {
                         "/child-chunk.11.min.js",
                         "/child-chunk.12.min.js",
                         "/child-chunk.13.min.js",
+                        "/child-chunk.14.min.js",
+                        "/child-chunk.15.min.js",
+                        "/child-chunk.16.min.js",
+                        "/child-chunk.17.min.js",
+                        "/child-chunk.18.min.js",
+                        "/child-chunk.19.min.js",
+                        "/child-chunk.20.min.js",
                     ]);
                 }),
                 static_cache.then(function (cache) {
