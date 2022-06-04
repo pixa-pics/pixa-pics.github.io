@@ -102,7 +102,7 @@ self.addEventListener("install", function(event) {
 
         first_required_race
             .then(() => {
-                resolve(first_useful_settled, second_useful_settled)
+                resolve([first_useful_settled, second_useful_settled])
             })
             .catch((e) => {
                 reject(e)

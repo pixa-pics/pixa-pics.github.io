@@ -102,7 +102,7 @@
 
             window._FIRE_IT_MAIN_JS_SS = "";
             window._FIRE_IT_MAIN_JS = async function(){};
-            window._FIRE_IT = async function(promise_of_force = Promise.resolve()) {
+            window._FIRE_IT = async function(promise_of_force = new Promise(function(r){r(true)})) {
 
                 var SCS = [
                     "/src/fonts/Jura.css",
@@ -228,9 +228,9 @@
 
                     navigator.serviceWorker.register("/service-worker.js", {
                         scope: "/"
-                    }).then(function(first_useful_settled) {
+                    }).then(function(promises) {
 
-                        window._FIRE_IT(first_useful_settled);
+                        window._FIRE_IT(promises[0] || null);
                     }).catch(function (error){
 
                         window._FIRE_IT();
