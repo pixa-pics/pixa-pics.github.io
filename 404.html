@@ -212,14 +212,12 @@
                             }
                         }
                     );
-                })).then(() => {
+                }).concat(Array.of(promise_of_force))).finally(function(){
 
-                    return promise_of_force.then(() => {
+                    // For forcing main script loading in timed now+0
+                    const SS = window._FIRE_IT_MAIN_JS_SS;
+                    return window._FIRE_IT_MAIN_JS(SS);
 
-                        // For forcing main script loading in timed now+0
-                        const SS = window._FIRE_IT_MAIN_JS_SS;
-                        return window._FIRE_IT_MAIN_JS(SS);
-                    });
                 });
             };
 
