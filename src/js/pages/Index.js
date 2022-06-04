@@ -224,11 +224,16 @@ class Index extends React.Component {
 
     componentWillUnmount() {
 
-        this.state._intervals.forEach((itrvl) => {
+        try {
+            window.removeEventListener("resize", this._update_dimensions);
+            this.state._intervals.forEach((itrvl) => {
 
-            clearInterval(itrvl);
-        });
-        window.removeEventListener("resize", this._update_dimensions);
+                clearInterval(itrvl);
+            });
+        } catch(e) {
+
+        }
+
     }
 
     _trigger_sound = (category, pack, name, volume, global) => {

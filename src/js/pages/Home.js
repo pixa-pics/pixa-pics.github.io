@@ -431,8 +431,12 @@ class Home extends React.Component {
 
     componentWillUnmount() {
 
-        actions.stop_sound();
-        clearInterval(this.state._image_auto_interval);
+        try {
+            actions.stop_sound();
+            clearInterval(this.state._image_auto_interval);
+        } catch(e) {
+
+        }
     }
 
     _go_to_editor = () => {

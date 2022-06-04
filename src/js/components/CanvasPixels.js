@@ -24,17 +24,22 @@ SOFTWARE.
  */
 
 "use strict";
+const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
 
-const get_base64_png_data_url_process_function = async function(
-            pxl_width, 
+const get_base64_png_data_url_process_function = new AsyncFunction(`var e=async function(e,r,t,a,n,i,c){"use strict";function f(e){return"#".concat("00000000".concat(e.toString(16)).slice(-8))}function o(e){return new Uint8ClampedArray(Uint32Array.of(e).buffer).reverse()}function s(e,r,t,a){return new Uint32Array(Uint8ClampedArray.of(a,t,r,e).buffer)[0]}function l(e,r=!1){if(e=void 0===e?0:e,r&&"number"==typeof e)return e;if(!r&&"number"==typeof e)return f(e);var t="",a=e,n=a.length;if(9===n)t=a;else if(7===n)t=a.concat("ff");else if(5===n){var i=a.charAt(1),c=a.charAt(2),o=a.charAt(3),s=a.charAt(4);t="#".concat(i,i,c,c,o,o,s,s)}else if(4===n){i=a.charAt(1),c=a.charAt(2),o=a.charAt(3);t="#".concat(i,i,c,c,o,o,"ff")}return r?function(e){return parseInt(e.slice(1),16)}(t):t}function u(e,r,t=1,a=!1,n=!1,i=!1){if(e=l(e,!0),0===t&&"hover"!==r&&a)return i?0:"#00000000";if("hover"===r){var c=o(e),u=function(e,r,t){e/=255,r/=255,t/=255;var a,n,i=Math.max(e,r,t),c=Math.min(e,r,t),f=(i+c)/2;if(i==c)a=n=0;else{var o=i-c;switch(n=f>.5?o/(2-i-c):o/(i+c),i){case e:a=(r-t)/o+(r<t?6:0);break;case r:a=(t-e)/o+2;break;case t:a=(e-r)/o+4}a/=6}return Array.of(parseInt(360*a),parseInt(100*n),parseInt(100*f))}(c[0],c[1],c[2],c[3]),v=function(e,r,t){var a,n,i;if(e/=360,t/=100,0==(r/=100))a=n=i=t;else{function o(e,r,t){return t<0&&(t+=1),t>1&&(t-=1),t<1/6?e+6*(r-e)*t:t<.5?r:t<2/3?e+(r-e)*(2/3-t)*6:e}var c=t<.5?t*(1+r):t+r-t*r,f=2*t-c;a=o(f,c,e+1/3),n=o(f,c,e),i=o(f,c,e-1/3)}return Uint8ClampedArray.of(parseInt(255*a),parseInt(255*n),parseInt(255*i))}(u[0],u[1],parseInt(u[2]>=50?u[2]/2:2*u[2]));r=s(v[0],v[1],v[2],255)}else r=l(r,!0);if(a&&0===r&&1===t)return i?0:"#00000000";var p=o(e),h=o(r);if(255===h[3]&&1===t)return i?r:f(r);var m,d,y,b,g=p[3]/255,A=h[3]/255*t,I=new Uint8ClampedArray(4),w=0;if(g>0&&A>0){var C=A/(w=n?A+g:1-(1-A)*(1-g)),O=g*(1-A)/w;I[0]=parseInt(h[0]*C+p[0]*O),I[1]=parseInt(h[1]*C+p[1]*O),I[2]=parseInt(h[2]*C+p[2]*O)}else A>0?(w=h[3]/255,I[0]=h[0],I[1]=h[1],I[2]=h[2]):(w=p[3]/255,I[0]=p[0],I[1]=p[1],I[2]=p[2]);return n&&(w/=2),I[3]=parseInt(255*w),i?s(I[0],I[1],I[2],I[3]):(m=I[0],d=I[1],y=I[2],b=I[3],"#".concat("00000000".concat(new Uint32Array(Uint8ClampedArray.of(b,y,d,m).buffer)[0].toString(16)).slice(-8)))}try{if("undefined"==typeof OffscreenCanvas)throw new Error("Impossible to create OffscreenCanvas in this web environment.");var v=(d=new OffscreenCanvas(e*i,r*i)).getContext("2d"),p=new Set;t[0].forEach(((r,c)=>{var s=[],l=-1;l++;for(var h=a.length-1;h>=0;h--){var m=a[h][t[h][c]];if(s[h]=m,255===o(m)[3]){l=h;break}}var d=0;for(h=l;h<a.length;h++){if(!n[h].hidden)d=u(d,m=s[h],n[h].opacity,!1,!1,!0)}var y=c%e,b=(c-y)/e;p.add(d),v.fillStyle=f(d),v.fillRect(y*i,b*i,1*i,1*i)}));var h=new OffscreenCanvas(e*i,r*i).getContext("bitmaprenderer"),m=v.getImageData(0,0,e*i,r*i);return createImageBitmap(m,{premultiplyAlpha:"none",colorSpaceConversion:"none",resizeQuality:"pixelated"}).then((e=>(h.transferFromImageBitmap(e),h.canvas.convertToBlob({type:"image/png"}).then((e=>function(e){return new Promise(((r,t)=>{var a=new FileReader;a.onload=()=>r(a.result),a.readAsDataURL(e)}))}(e).then((e=>c?Object.values(Object.assign({},{0:e,1:Array.from(p).map((e=>l(e)))})):Object.values(Object.assign({},{0:e})))))))))}catch(s){var d;p=new Set;(d=document.createElement("canvas")).width=e*i,d.height=r*i;v=d.getContext("2d");return t[0].forEach(((r,c)=>{var s=[],l=-1;l++;for(var h=a.length-1;h>=0;h--){var m=a[h][t[h][c]];if(s[h]=m,255===o(m)[3]){l=h;break}}var d=0;for(h=l;h<a.length;h++){if(!n[h].hidden)d=u(d,m=s[h],n[h].opacity,!1,!1,!0)}var y=c%e,b=(c-y)/e;p.add(d),v.fillStyle=f(d),v.fillRect(y*i,b*i,1*i,1*i)})),c?Object.values(Object.assign({},{0:d.toDataURL(),1:Array.from(p).map((e=>l(e)))})):Object.values(Object.assign({},{0:d.toDataURL()}))}};`
+    + "return e;")();
+/*
+        var fu = async function(
+
+            pxl_width,
             pxl_height,
-            _s_pxls, 
+            _s_pxls,
             _s_pxl_colors,
             _layers,
             scale,
             with_palette
         ) {
-        
+
             "use strict";
             function this_rgb_to_hsl(r, g, b) {
 
@@ -91,28 +96,23 @@ const get_base64_png_data_url_process_function = async function(
                 return "#".concat("00000000".concat(new Uint32Array(Uint8ClampedArray.of(a, b, g, r).buffer)[0].toString(16)).slice(-8));
             }
 
-            function this_get_rgba_from_hex(color) {
-
-                return new Uint8ClampedArray(Uint32Array.of(parseInt(color.slice(1), 16)).buffer).reverse();
-            }
-            
             function this_get_hex_from_Uint32(num) {
 
                 return "#".concat("00000000".concat(num.toString(16)).slice(-8));
             }
-            
+
             function this_get_uint32_from_hex(hex) {
-        
+
                 return parseInt(hex.slice(1), 16);
             }
-            
+
             function this_get_rgba_from_Uint32(num) {
 
                 return new Uint8ClampedArray(Uint32Array.of(num).buffer).reverse();
             }
-        
+
             function this_get_Uint32_color_from_rgba_values (r, g , b, a) {
-        
+
                 return new Uint32Array(Uint8ClampedArray.of(a, b, g, r).buffer)[0];
             }
 
@@ -121,79 +121,42 @@ const get_base64_png_data_url_process_function = async function(
                 color = typeof color === "undefined" ? 0: color;
 
                 if(getUint32 && typeof color === "number"){
-        
+
                     return color;
                 }else {
-        
+
                     if(!getUint32 && typeof color === "number"){
-        
+
                         return this_get_hex_from_Uint32(color);
                     }
-        
+
                     var formatted = "";
                     var hex = color;
                     var hex_length = hex.length;
-        
+
                     if(hex_length === 9) {
-        
+
                         formatted = hex;
-        
+
                     } else if (hex_length === 7) {
-        
+
                         formatted = hex.concat("ff");
                     } else if (hex_length === 5) {
-        
+
                         var a = hex.charAt(1), b = hex.charAt(2), c = hex.charAt(3), d = hex.charAt(4);
                         formatted =  "#".concat(a, a, b, b, c, c, d, d);
                     } else if (hex_length === 4) {
-        
+
                         var a = hex.charAt(1), b = hex.charAt(2), c = hex.charAt(3);
                         formatted = "#".concat(a, a, b, b, c, c, "ff");
                     }
-        
+
                     if(getUint32){
-        
+
                         return this_get_uint32_from_hex(formatted);
                     }else {
-        
+
                         return formatted;
-                    }
-                }
-            }
-
-            function this_match_color (color_a, color_b, threshold) {
-
-                threshold = typeof threshold === "undefined" ? null: threshold;
-
-                if(threshold === 1) {
-
-                    return true;
-                }else if(threshold === 0){
-
-                    return color_a === color_b;
-                }else {
-
-                    var threshold_256 = parseInt(threshold * 255);
-
-                    color_a = this_format_color(color_a, true);
-                    color_b = this_format_color(color_b, true);
-
-                    var c_a = this_get_rgba_from_Uint32(color_a);
-                    var c_b = this_get_rgba_from_Uint32(color_b);
-
-                    var a_diff = Math.abs(c_a[3] - c_b[3]);
-                    var r_diff = Math.abs(c_a[0] - c_b[0]);
-                    var g_diff = Math.abs(c_a[1] - c_b[1]);
-                    var b_diff = Math.abs(c_a[2] - c_b[2]);
-
-                    var a_diff_ratio = Math.abs(1 - a_diff / 255);
-
-                    if(threshold !== null) {
-
-                        return Boolean(r_diff < threshold_256 && g_diff < threshold_256 && b_diff < threshold_256 && a_diff < threshold_256);
-                    }else {
-
-                        return ((r_diff + g_diff + b_diff) / (255 * 3)) * a_diff_ratio;
                     }
                 }
             }
@@ -203,149 +166,149 @@ const get_base64_png_data_url_process_function = async function(
                 color_a = this_format_color(color_a, true);
                 // If we blend the first color with the second with 0 "force", return transparent
                 if(amount === 0 && color_b !== "hover" && should_return_transparent) {
-        
+
                     return in_uint_32 ? 0: "#00000000";
                 }
-        
+
                 // Make sure we have a color based on the 4*2 hex char format
-        
+
                 if(color_b === "hover") {
-        
+
                     var rgba = this_get_rgba_from_Uint32(color_a);
                     var hsl = this_rgb_to_hsl(rgba[0], rgba[1], rgba[2], rgba[3]);
                     var rgb = this_hsl_to_rgb(hsl[0], hsl[1], parseInt(hsl[2] >= 50 ? hsl[2]/2: hsl[2]*2));
                     color_b = this_get_Uint32_color_from_rgba_values(rgb[0], rgb[1], rgb[2], 255);
                 }else {
-        
+
                     color_b = this_format_color(color_b, true);
                 }
                 // If the second color is transparent, return transparent
                 if(should_return_transparent && color_b === 0 && amount === 1) { return in_uint_32 ? 0: "#00000000"; }
-        
+
                 // Extract RGBA from both colors
                 var base = this_get_rgba_from_Uint32(color_a);
                 var added = this_get_rgba_from_Uint32(color_b);
-        
+
                 if(added[3] === 255 && amount === 1) { return in_uint_32 ? color_b: this_get_hex_from_Uint32(color_b); }
-        
+
                 var ba3 = base[3] / 255;
                 var ad3 = (added[3] / 255) * amount;
-        
+
                 var mix = new Uint8ClampedArray(4);
                 var mi3 = 0;
-        
+
                 if (ba3 > 0 && ad3 > 0) {
-        
+
                     if(alpha_addition) {
-        
+
                         mi3 = ad3 + ba3;
                     }else {
-        
+
                         mi3 = 1 - (1 - ad3) * (1 - ba3);
                     }
-        
+
                     var ao = ad3 / mi3;
                     var bo = ba3 * (1 - ad3) / mi3;
-        
+
                     mix[0] = parseInt(added[0] * ao + base[0] * bo); // red
                     mix[1] = parseInt(added[1] * ao + base[1] * bo); // green
                     mix[2] = parseInt(added[2] * ao + base[2] * bo); // blue
                 }else if(ad3 > 0) {
-        
+
                     mi3 = added[3] / 255;
-        
+
                     mix[0] = added[0];
                     mix[1] = added[1];
                     mix[2] = added[2];
                 }else {
-        
+
                     mi3 = base[3] / 255;
-        
+
                     mix[0] = base[0];
                     mix[1] = base[1];
                     mix[2] = base[2];
                 }
-        
+
                 if(alpha_addition) {
                     mi3 /= 2;
                 }
-        
+
                 mix[3] = parseInt(mi3 * 255);
-        
+
                 if(in_uint_32){
-        
+
                     return this_get_Uint32_color_from_rgba_values(mix[0], mix[1], mix[2], mix[3]);
                 }else {
-        
+
                     return this_get_hex_color_from_rgba_values(mix[0], mix[1], mix[2], mix[3]);
                 }
             }
 
             try {
-            
+
                 if (typeof OffscreenCanvas === "undefined") {
                     throw new Error("Impossible to create OffscreenCanvas in this web environment.");
                 }
-            
+
                 var canvas = new OffscreenCanvas(pxl_width * scale, pxl_height * scale);
                 var ctx = canvas.getContext('2d');
                 var all_colors = new Set();
-        
+
                 _s_pxls[0].forEach((pxl, index) => {
-        
+
                     var layer_pixel_colors = [];
                     var start_i = -1;
                     start_i++;
-        
+
                     for (var i = _s_pxl_colors.length - 1; i >= 0; i--) {
-        
+
                         var layer_pixel_color = _s_pxl_colors[i][_s_pxls[i][index]];
                         layer_pixel_colors[i] = layer_pixel_color;
                         var rgba = this_get_rgba_from_Uint32(layer_pixel_color);
-        
+
                         if(rgba[3] === 255) {
-        
+
                             start_i = i;
                             break;
                         }
-        
+
                     }
-        
+
                     var pixel_color_hex = 0;
-        
+
                     for (var i = start_i; i < _s_pxl_colors.length ; i++) {
-        
+
                         if(!_layers[i].hidden) {
-        
+
                             var layer_pixel_color = layer_pixel_colors[i];
-        
+
                             pixel_color_hex = this_blend_colors(pixel_color_hex, layer_pixel_color, _layers[i].opacity, false, false, true);
                         }
                     }
-        
+
                     var pos_x = index % pxl_width;
                     var pos_y = (index - pos_x) / pxl_width;
-        
+
                     all_colors.add(pixel_color_hex);
                     ctx.fillStyle = this_get_hex_from_Uint32(pixel_color_hex);
                     ctx.fillRect(pos_x * scale, pos_y * scale, 1 * scale, 1 * scale);
                 });
-                
+
                 var canvas2 = new OffscreenCanvas(pxl_width * scale, pxl_height * scale);
                 var ctx2 = canvas2.getContext("bitmaprenderer");
-                
+
                 var image_data = ctx.getImageData(0, 0, pxl_width * scale, pxl_height * scale);
-               
+
                 return createImageBitmap(image_data, {
                     premultiplyAlpha: 'none',
                     colorSpaceConversion: 'none',
                     resizeQuality: "pixelated",
                 }).then((btmp_i) => {
-                
+
                     ctx2.transferFromImageBitmap(btmp_i);
-    
+
                     return ctx2.canvas.convertToBlob({type: "image/png"}).then((blob) => {
-                    
+
                         function blob_to_base64(blob) {
                           return new Promise((resolve, _) => {
                             var reader = new FileReader();
@@ -353,22 +316,22 @@ const get_base64_png_data_url_process_function = async function(
                             reader.readAsDataURL(blob);
                           })
                         }
-                        
+
                         return blob_to_base64(blob).then((data_url) => {
-                      
+
                             if(with_palette) {
-                        
+
                                 return Object.values(Object.assign({}, {0: data_url, 1: Array.from(all_colors).map((c) => this_format_color(c))}));
                             }else {
-                            
+
                                 return Object.values(Object.assign({}, {0: data_url}));
                             }
                         });
                     });
                 });
-                
+
             }catch (e) {
-            
+
                 var all_colors = new Set();
                 var canvas = document.createElement("canvas");
                 canvas.width = pxl_width * scale;
@@ -413,17 +376,21 @@ const get_base64_png_data_url_process_function = async function(
                 });
 
                 if(with_palette) {
-                        
+
                     return Object.values(Object.assign({}, {0: canvas.toDataURL(), 1: Array.from(all_colors).map((c) => this_format_color(c))}));
                 }else {
-                
+
                     return Object.values(Object.assign({}, {0: canvas.toDataURL()}));
                 }
             }
-        };
+        }
+ */
 
-const get_layer_base64_png_data_url_process_function = async function(
-            pxl_width, 
+const get_layer_base64_png_data_url_process_function = new AsyncFunction(`var e=async function(e,t,a,r,n,i){"use strict";function c(e){return new Uint8ClampedArray(Uint32Array.of(e).buffer).reverse()}function o(e,t=!1){if(e=void 0===e?0:e,t&&"number"==typeof e)return e;if(!t&&"number"==typeof e)return"#".concat("00000000".concat(e.toString(16)).slice(-8));var a="",r=e,n=r.length;if(9===n)a=r;else if(7===n)a=r.concat("ff");else if(5===n){var i=r.charAt(1),c=r.charAt(2),o=r.charAt(3),f=r.charAt(4);a="#".concat(i,i,c,c,o,o,f,f)}else if(4===n){i=r.charAt(1),c=r.charAt(2),o=r.charAt(3);a="#".concat(i,i,c,c,o,o,"ff")}return t?function(e){return parseInt(e.slice(1),16)}(a):a}var f=!0;try{if("undefined"==typeof OffscreenCanvas)throw new Error("Impossible to create OffscreenCanvas in this web environment.");var s=null;if(1===parseInt(n)){var l=r.map((function(e){return o(e,!0)}));s=new ImageData(e,t),a.forEach(((e,t)=>{var a=c(l[e]);s.data[4*t+0]=a[0],s.data[4*t+1]=a[1],s.data[4*t+2]=a[2],s.data[4*t+3]=a[3],f&&255!==a[3]&&(f=!1)}))}else{var u=r.map((function(e){return o(e)})),m=(g=new OffscreenCanvas(e*n,t*n)).getContext("2d");a.forEach(((t,a)=>{var r=u[t];f&&"ff"!==r.slice(-2)&&(f=!1);var i=a%e,c=(a-i)/e;m.fillStyle=r,m.fillRect(i*n,c*n,1*n,1*n)})),s=m.getImageData(0,0,e*n,t*n)}var p=i/(e*n),v=parseInt(e*n*p),h=parseInt(t*n*p),d=(I=new OffscreenCanvas(v,h)).getContext("bitmaprenderer");return createImageBitmap(s,{premultiplyAlpha:"none",colorSpaceConversion:"none",resizeWidth:v,resizeHeight:h,resizeQuality:"pixelated"}).then((e=>{d.transferFromImageBitmap(e);var t=f?{type:"image/jpeg",quality:.7}:{type:"image/png"};return d.canvas.convertToBlob(t).then((e=>function(e){return new Promise(((t,a)=>{var r=new FileReader;r.onload=()=>t(r.result),r.readAsDataURL(e)}))}(e).then((e=>e))))}))}catch(w){(g=document.createElement("canvas")).width=e*n,g.height=t*n;m=g.getContext("2d"),s=null;if(1===parseInt(n)){l=r.map((function(e){return o(e,!0)}));s=new ImageData(e,t),a.forEach(((e,t)=>{var a=c(l[e]),r=4*t;s.data[r+0]=a[0],s.data[r+1]=a[1],s.data[r+2]=a[2],s.data[r+3]=a[3],f&&255!==a[3]&&(f=!1)})),m.putImageData(s,0,0)}else{var g;u=r.map((function(e){return o(e)}));(g=document.createElement("canvas")).width=e*n,g.height=t*n;m=g.getContext("2d");a.forEach(((t,a)=>{var r=u[t];f&&"ff"!==r.slice(-2)&&(f=!1);var i=a%e,c=(a-i)/e;m.fillStyle=r,m.fillRect(i*n,c*n,1*n,1*n)}))}var I;p=i/(e*n),v=parseInt(e*n*p),h=parseInt(t*n*p);return(I=document.createElement("canvas")).width=v,I.height=h,(d=I.getContext("2d")).drawImage(g,0,0,v,h),f?I.toDataURL("image/jpeg",.7):I.toDataURL("image/png")}};`
+    + "return e;")();
+/*
+        var fu = async function(
+            pxl_width,
             pxl_height,
             pxls, 
             pxl_colors,
@@ -432,16 +399,6 @@ const get_layer_base64_png_data_url_process_function = async function(
         ) {
             
             "use strict";
-            
-            function this_get_hex_color_from_rgba_values(r, g, b, a) {
-
-                return "#".concat("00000000".concat(new Uint32Array(Uint8ClampedArray.of(a, b, g, r).buffer)[0].toString(16)).slice(-8));
-            }
-
-            function this_get_rgba_from_hex(color) {
-
-                return new Uint8ClampedArray(Uint32Array.of(parseInt(color.slice(1), 16)).buffer).reverse();
-            }
             
             function this_get_hex_from_Uint32(num) {
 
@@ -456,11 +413,6 @@ const get_layer_base64_png_data_url_process_function = async function(
             function this_get_rgba_from_Uint32(num) {
 
                 return new Uint8ClampedArray(Uint32Array.of(num).buffer).reverse();
-            }
-        
-            function this_get_Uint32_color_from_rgba_values (r, g , b, a) {
-        
-                return new Uint32Array(Uint8ClampedArray.of(a, b, g, r).buffer)[0];
             }
 
             function this_format_color(color, getUint32 = false) {
@@ -505,126 +457,6 @@ const get_layer_base64_png_data_url_process_function = async function(
         
                         return formatted;
                     }
-                }
-            }
-
-            function this_match_color (color_a, color_b, threshold) {
-
-                threshold = typeof threshold === "undefined" ? null: threshold;
-
-                if(threshold === 1) {
-
-                    return true;
-                }else if(threshold === 0){
-
-                    return color_a === color_b;
-                }else {
-
-                    var threshold_256 = parseInt(threshold * 255);
-
-                    color_a = this_format_color(color_a, true);
-                    color_b = this_format_color(color_b, true);
-
-                    var c_a = this_get_rgba_from_Uint32(color_a);
-                    var c_b = this_get_rgba_from_Uint32(color_b);
-
-                    var a_diff = Math.abs(c_a[3] - c_b[3]);
-                    var r_diff = Math.abs(c_a[0] - c_b[0]);
-                    var g_diff = Math.abs(c_a[1] - c_b[1]);
-                    var b_diff = Math.abs(c_a[2] - c_b[2]);
-
-                    var a_diff_ratio = Math.abs(1 - a_diff / 255);
-
-                    if(threshold !== null) {
-
-                        return Boolean(r_diff < threshold_256 && g_diff < threshold_256 && b_diff < threshold_256 && a_diff < threshold_256);
-                    }else {
-
-                        return ((r_diff + g_diff + b_diff) / (255 * 3)) * a_diff_ratio;
-                    }
-                }
-            }
-
-            function this_blend_colors (color_a, color_b, amount = 1, should_return_transparent = false, alpha_addition = false, in_uint_32 = false) {
-
-                color_a = this_format_color(color_a, true);
-                // If we blend the first color with the second with 0 "force", return transparent
-                if(amount === 0 && color_b !== "hover" && should_return_transparent) {
-        
-                    return in_uint_32 ? 0: "#00000000";
-                }
-        
-                // Make sure we have a color based on the 4*2 hex char format
-        
-                if(color_b === "hover") {
-        
-                    var rgba = this_get_rgba_from_Uint32(color_a);
-                    var hsl = this_rgb_to_hsl(rgba[0], rgba[1], rgba[2], rgba[3]);
-                    var rgb = this_hsl_to_rgb(hsl[0], hsl[1], parseInt(hsl[2] >= 50 ? hsl[2]/2: hsl[2]*2));
-                    color_b = this_get_Uint32_color_from_rgba_values(rgb[0], rgb[1], rgb[2], 255);
-                }else {
-        
-                    color_b = this_format_color(color_b, true);
-                }
-                // If the second color is transparent, return transparent
-                if(should_return_transparent && color_b === 0 && amount === 1) { return in_uint_32 ? 0: "#00000000"; }
-        
-                // Extract RGBA from both colors
-                var base = this_get_rgba_from_Uint32(color_a);
-                var added = this_get_rgba_from_Uint32(color_b);
-        
-                if(added[3] === 255 && amount === 1) { return in_uint_32 ? color_b: this_get_hex_from_Uint32(color_b); }
-        
-                var ba3 = base[3] / 255;
-                var ad3 = (added[3] / 255) * amount;
-        
-                var mix = new Uint8ClampedArray(4);
-                var mi3 = 0;
-        
-                if (ba3 > 0 && ad3 > 0) {
-        
-                    if(alpha_addition) {
-        
-                        mi3 = ad3 + ba3;
-                    }else {
-        
-                        mi3 = 1 - (1 - ad3) * (1 - ba3);
-                    }
-        
-                    var ao = ad3 / mi3;
-                    var bo = ba3 * (1 - ad3) / mi3;
-        
-                    mix[0] = parseInt(added[0] * ao + base[0] * bo); // red
-                    mix[1] = parseInt(added[1] * ao + base[1] * bo); // green
-                    mix[2] = parseInt(added[2] * ao + base[2] * bo); // blue
-                }else if(ad3 > 0) {
-        
-                    mi3 = added[3] / 255;
-        
-                    mix[0] = added[0];
-                    mix[1] = added[1];
-                    mix[2] = added[2];
-                }else {
-        
-                    mi3 = base[3] / 255;
-        
-                    mix[0] = base[0];
-                    mix[1] = base[1];
-                    mix[2] = base[2];
-                }
-        
-                if(alpha_addition) {
-                    mi3 /= 2;
-                }
-        
-                mix[3] = parseInt(mi3 * 255);
-        
-                if(in_uint_32){
-        
-                    return this_get_Uint32_color_from_rgba_values(mix[0], mix[1], mix[2], mix[3]);
-                }else {
-        
-                    return this_get_hex_color_from_rgba_values(mix[0], mix[1], mix[2], mix[3]);
                 }
             }
             
@@ -790,9 +622,13 @@ const get_layer_base64_png_data_url_process_function = async function(
                     return canvas2.toDataURL("image/png");
                 }
             }
-        };
+        }
+*/
 
-const remove_close_pxl_colors_process_function = async function(
+const remove_close_pxl_colors_process_function = new AsyncFunction(`var r=async function(r,a,n,t,e,f,i){"use strict";function o(r){return"#".concat("00000000".concat(r.toString(16)).slice(-8))}function c(r){return new Uint8ClampedArray(Uint32Array.of(r).buffer).reverse()}function u(r,a,n,t){return new Uint32Array(Uint8ClampedArray.of(t,n,a,r).buffer)[0]}function s(r,a=!1){if(r=void 0===r?0:r,a&&"number"==typeof r)return r;if(!a&&"number"==typeof r)return o(r);var n="",t=r,e=t.length;if(9===e)n=t;else if(7===e)n=t.concat("ff");else if(5===e){var f=t.charAt(1),i=t.charAt(2),c=t.charAt(3),u=t.charAt(4);n="#".concat(f,f,i,i,c,c,u,u)}else if(4===e){f=t.charAt(1),i=t.charAt(2),c=t.charAt(3);n="#".concat(f,f,i,i,c,c,"ff")}return a?function(r){return parseInt(r.slice(1),16)}(n):n}function l(r,a,n){if(1===(n=void 0===n?null:n))return!0;if(0===n)return r===a;var t=parseInt(255*n);r=s(r,!0),a=s(a,!0);var e=c(r),f=c(a),i=Math.abs(e[3]-f[3]),o=Math.abs(e[0]-f[0]),u=Math.abs(e[1]-f[1]),l=Math.abs(e[2]-f[2]),h=Math.abs(1-i/255);return null!==n?Boolean(o<t&&u<t&&l<t&&i<t):parseFloat(parseInt(o+u+l)/parseInt(765))*h}function h(r,a,n=1,t=!1,e=!1,f=!1){if(r=s(r,!0),0===n&&"hover"!==a&&t)return f?0:"#00000000";if("hover"===a){var i=c(r),l=function(r,a,n){r/=255,a/=255,n/=255;var t,e,f=Math.max(r,a,n),i=Math.min(r,a,n),o=(f+i)/2;if(f==i)t=e=0;else{var c=f-i;switch(e=o>.5?c/(2-f-i):c/(f+i),f){case r:t=(a-n)/c+(a<n?6:0);break;case a:t=(n-r)/c+2;break;case n:t=(r-a)/c+4}t/=6}return Array.of(parseInt(360*t),parseInt(100*e),parseInt(100*o))}(i[0],i[1],i[2],i[3]),h=function(r,a,n){var t,e,f;if(r/=360,n/=100,0==(a/=100))t=e=f=n;else{function c(r,a,n){return n<0&&(n+=1),n>1&&(n-=1),n<1/6?r+6*(a-r)*n:n<.5?a:n<2/3?r+(a-r)*(2/3-n)*6:r}var i=n<.5?n*(1+a):n+a-n*a,o=2*n-i;t=c(o,i,r+1/3),e=c(o,i,r),f=c(o,i,r-1/3)}return Uint8ClampedArray.of(255*t,255*e,255*f)}(l[0],l[1],parseInt(l[2]>=50?l[2]/2:2*l[2]));a=u(h[0],h[1],h[2],255)}else a=s(a,!0);if(t&&0===a&&1===n)return f?0:"#00000000";var A=c(r),v=c(a);if(255===v[3]&&1===n)return f?a:o(a);var y=A[3]/255,m=v[3]/255*n,U=new Uint8ClampedArray(4),p=0;if(y>0&&m>0){var d=m/(p=e?m+y:1-(1-m)*(1-y)),b=y*(1-m)/p;U[0]=parseInt(v[0]*d+A[0]*b),U[1]=parseInt(v[1]*d+A[1]*b),U[2]=parseInt(v[2]*d+A[2]*b)}else m>0?(p=v[3]/255,U[0]=v[0],U[1]=v[1],U[2]=v[2]):(p=A[3]/255,U[0]=A[0],U[1]=A[1],U[2]=A[2]);return e&&(p/=2),U[3]=parseInt(255*p),f?u(U[0],U[1],U[2],U[3]):function(r,a,n,t){return"#".concat("00000000".concat(new Uint32Array(Uint8ClampedArray.of(t,n,a,r).buffer)[0].toString(16)).slice(-8))}(U[0],U[1],U[2],U[3])}function A(r,a){r=Uint32Array.from(r),a=Uint32Array.from(a);var n={},t=0,e=new Uint32Array(r.length).fill(0);Uint32Array.from(r).forEach(((r,f)=>{var i=a[r],o=void 0===n[i]?null:n[i];null===o&&(o=t,n[i]=o,t++),e[f]=o}));var f=new Uint32Array(t);return Object.entries(n).forEach((r=>{f[r[1]]=r[0]})),Object.assign({},{0:Uint32Array.from(e),1:Uint32Array.from(f)})}var v=new Set,y=Uint32Array.from(r),m=Uint32Array.from(a),U="auto"===n,p=!U,d=15,b=new Set;((f=null!==f?f:Math.max(Math.sqrt(m.length)+e,100))<2||f>a.length)&&(p=!0);for(var I=1;!p||1===I;){I++,n=U?1/(d-2):n||i,t=t||parseInt(255*n),y=Uint32Array.from(r),m=Uint32Array.from(a);for(var g=Uint32Array.from(y),w=Uint32Array.from(m),M=1;M<=t;M+=1){var C=n*(M/t),E=M/t;v.clear();var S=new Array(w.length).fill(0);Uint32Array.from(g).forEach((r=>{S[r]++})),w.forEach(((r,a)=>{if(!v.has(a)){var n=S[a];w.forEach(((t,e)=>{if(a!==e&&!v.has(e)){var f=S[e],i=n>f,o=i?n/f:f/n;if(l(r,t,(C+C*(1-1/o)*E)/(1+E))){var c=i?h(m[a],m[e],1/o,!0,!1,!0):h(m[e],m[a],1/o,!0,!1,!0);m[a]=c,m[e]=c,v.add(a),v.add(e)}}}))}}));var j=A(g,m);g=j[0],w=j[1],m=Uint32Array.from(w)}if(m.length+2>f&&m.length-2<f||!U||b.has(d))return A(g,m);m.length>f?(b.add(d),d--):(b.add(d),d++)}var k=A(r,a);return k[0]=Array.from(k[0]),k};`
+    + "return r;")();
+/*
+var fu = async function(
             pxls,
             pxl_colors,
             bucket_threshold,
@@ -856,11 +692,6 @@ const remove_close_pxl_colors_process_function = async function(
             function this_get_hex_color_from_rgba_values(r, g, b, a) {
 
                 return "#".concat("00000000".concat(new Uint32Array(Uint8ClampedArray.of(a, b, g, r).buffer)[0].toString(16)).slice(-8));
-            }
-
-            function this_get_rgba_from_hex(color) {
-
-                return new Uint8ClampedArray(Uint32Array.of(parseInt(color.slice(1), 16)).buffer).reverse();
             }
             
             function this_get_hex_from_Uint32(num) {
@@ -960,7 +791,7 @@ const remove_close_pxl_colors_process_function = async function(
                         return Boolean(r_diff < threshold_256 && g_diff < threshold_256 && b_diff < threshold_256 && a_diff < threshold_256);
                     }else {
 
-                        return ((r_diff + g_diff + b_diff) / (255 * 3)) * a_diff_ratio;
+                        return parseFloat(parseInt(r_diff + g_diff + b_diff) / parseInt(255 * 3)) * a_diff_ratio;
                     }
                 }
             }
@@ -1105,7 +936,6 @@ const remove_close_pxl_colors_process_function = async function(
                     1/(bucket_threshold_auto_goal_target - 2):
                     bucket_threshold || this_state_bucket_threshold;
                 threshold_steps = threshold_steps || parseInt(bucket_threshold * 255);
-                var color_loss = (255 - (255 / (bucket_threshold * 255))) / 255;
 
                 original_pxls = Uint32Array.from(pxls);
                 original_pxl_colors = Uint32Array.from(pxl_colors);
@@ -1182,6 +1012,7 @@ const remove_close_pxl_colors_process_function = async function(
             fr[0] = Array.from(fr[0]);
             return fr;
         };
+*/
 
 let w_canvas_pixels = {
     _caf_id: null,
@@ -2371,7 +2202,7 @@ class CanvasPixels extends React.Component {
 
         (async() => {
 
-            let result = await pool.exec(get_base64_png_data_url_process_function, [
+            let r = pool.exec(get_base64_png_data_url_process_function, [
                 pxl_width,
                 pxl_height,
                 _s_pxls,
@@ -2393,26 +2224,23 @@ class CanvasPixels extends React.Component {
 
             }).timeout(10 * 1000);
 
-            if(typeof result !== "undefined") {
+            let result = Object.values(await r);
+            if(with_compression_speed !== 0) {
 
-                result = Object.values(result);
+                const base64_in = result[0];
+                const palette = result[1];
+                import("../utils/png_quant").then(({png_quant}) => {
 
-                if(with_compression_speed !== 0) {
+                    png_quant(base64_in, with_compression_quality_min, with_compression_quality_max, with_compression_speed,  pool).then((base_64_out) => {
 
-                    const base64_in = result[0];
-                    const palette = result[1];
-                    import("../utils/png_quant").then(({png_quant}) => {
-
-                        png_quant(base64_in, with_compression_quality_min, with_compression_quality_max, with_compression_speed,  pool).then((base_64_out) => {
-
-                            callback_function([base_64_out, palette]);
-                        });
+                        callback_function([base_64_out, palette]);
                     });
-                }else {
+                });
+            }else {
 
-                    callback_function(result);
-                }
+                callback_function(result);
             }
+
         })();
     };
 
@@ -3237,7 +3065,7 @@ class CanvasPixels extends React.Component {
                 return Boolean(r_diff < threshold_256 && g_diff < threshold_256 && b_diff < threshold_256 && a_diff < threshold_256);
             }else {
 
-                return ((r_diff + g_diff + b_diff) / (255 * 3)) * a_diff_ratio;
+                return parseFloat(parseInt(r_diff + g_diff + b_diff) / parseInt(255 * 3)) * a_diff_ratio;
             }
         }
     };

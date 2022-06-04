@@ -189,10 +189,19 @@ class InnerToolbar extends React.Component {
 
     componentDidMount() {
 
-        import("../utils/custom_toolbar").then(async({RETS, CAMS}) => {
+        this._load_accessories();
+    }
 
-            this.setState({_rets: RETS, _cams: CAMS});
-        });
+    _load_accessories = () => {
+
+        if(this.state.ret >= 1 || this.state.camo >= 1) {
+
+            import("../utils/custom_toolbar").then((_rets, _cams) => {
+
+                this.setState({_rets, _cams});
+            });
+        };
+
     }
 
     componentWillUnmount() {
@@ -206,7 +215,10 @@ class InnerToolbar extends React.Component {
             _is_info_bar_active: new_props.pathname.includes("pixel") ? this.state._is_info_bar_active: false
         };
 
-        this.setState(state);
+        this.setState(state, () => {
+
+            this._load_accessories();
+        });
     }
 
     _toggle_info_bar_activation = () => {

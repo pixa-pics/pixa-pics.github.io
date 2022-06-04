@@ -1,6 +1,6 @@
-var REQUIRED_CACHE = "unless-update-cache-v198-required";
-var USEFUL_CACHE = "unless-update-cache-v198-useful";
-var STATIC_CACHE = "unless-update-cache-v198-static";
+var REQUIRED_CACHE = "unless-update-cache-v199-required";
+var USEFUL_CACHE = "unless-update-cache-v199-useful";
+var STATIC_CACHE = "unless-update-cache-v199-static";
 var MAIN_CHILD_CHUNK_REGEX = /child\-chunk\.(main\~[a-z0-9]+)\.min.js/i;
 var CHILD_CHUNK_REGEX = /child\-chunk\.([0-9]+)\.min.js/i;
 
@@ -65,7 +65,7 @@ self.addEventListener("install", function(event) {
         })
     ]);
 
-    const first_useful_settled = Promise.allSettled([
+    const first_useful_settled =
         required_cache.then(function (cache) {
             return cache.addAll([
                 "/father-chunk.norris.min.js", // This is chunk norris, master of all chunk
@@ -81,7 +81,9 @@ self.addEventListener("install", function(event) {
                 "/child-chunk.main~d939e436.min.js",
                 "/child-chunk.main~f9ca8911.min.js",
             ]);
-        }),
+        });
+
+    const second_useful_settled =
         useful_cache.then(function (cache) {
             return cache.addAll([
                 "/src/images/logo-transparent.png",
@@ -94,14 +96,13 @@ self.addEventListener("install", function(event) {
                 "/src/images/infographics/Wardenclyffe.svg",
                 "/src/images/infographics/HappyLucky.svg",
             ]);
-        })
-    ]);
+        });
 
     event.waitUntil(new Promise((resolve, reject) => {
 
         first_required_race
             .then(() => {
-                resolve(first_useful_settled)
+                resolve(first_useful_settled, second_useful_settled)
             })
             .catch((e) => {
                 reject(e)
@@ -119,7 +120,7 @@ self.addEventListener("fetch", function(event) {
 
     }else if(url.includes("datasyncserviceworkerallfiles")) {
 
-        event.waitUntil(
+        event.respondWith(
             Promise.allSettled([
                 useful_cache.then(function (cache) {
                     return cache.addAll([
@@ -165,13 +166,6 @@ self.addEventListener("fetch", function(event) {
                         "/child-chunk.11.min.js",
                         "/child-chunk.12.min.js",
                         "/child-chunk.13.min.js",
-                        "/child-chunk.14.min.js",
-                        "/child-chunk.15.min.js",
-                        "/child-chunk.16.min.js",
-                        "/child-chunk.17.min.js",
-                        "/child-chunk.18.min.js",
-                        "/child-chunk.19.min.js",
-                        "/child-chunk.20.min.js",
                     ]);
                 }),
                 static_cache.then(function (cache) {
