@@ -2881,7 +2881,9 @@ class CanvasPixels extends React.Component {
         if(element === null) {return}
         const { pxl_width, pxl_height } = this.state;
 
-        element.context2d = element.getContext("2d");
+        element.context2d = element.getContext('2d', {
+            desynchronized: true
+        });
 
         try {
 

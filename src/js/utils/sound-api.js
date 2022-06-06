@@ -1,4 +1,4 @@
-import { Howl, Howler } from "howler";
+import { Howl } from "howler";
 window._sound_object_music = null;
 
 function play_sound(category, pack, name, volume_optional, global_optional) {
@@ -20,11 +20,13 @@ function play_sound(category, pack, name, volume_optional, global_optional) {
         } catch (e) {}
     }else {
 
-        const sound = new Howl({
-            src: [src_mp3],
-            volume
-        });
-        sound.play();
+        try {
+            const sound = new Howl({
+                src: [src_mp3],
+                volume
+            });
+            sound.play();
+        } catch(e) {}
     }
 
 }

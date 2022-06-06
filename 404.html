@@ -128,11 +128,11 @@
                     var js = ss.endsWith(".js");
                     var css = ss.endsWith(".css");
 
-                    if(js) {
+                    if(js && !window.location.href.startsWith("http://localhost")) {
 
                         var e = document.createElement("script");
                         e.setAttribute("src", ss);
-                        e.setAttribute("async", "true");
+                        e.setAttribute(String(ss.startsWith("/father") ? "defer": "async"), "true");
                         e.setAttribute("type", "text/javascript");
                         document.head.appendChild(e);
 

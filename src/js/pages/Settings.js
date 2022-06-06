@@ -48,7 +48,7 @@ const styles = theme => ({
             width: "100%",
             height: "100%",
             content: "''",
-            backdropFilter: "blur(4px) brightness(0.25)",
+            backdropFilter: "brightness(0.25)",
             zIndex: -1,
             contain: "style size paint layout"
         }

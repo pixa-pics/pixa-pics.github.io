@@ -153,7 +153,7 @@ const styles = theme => ({
         transform: "translate(min(50vh, 50%), min(50vh, 50%))",
         "h2&": {
             right: "max(24vw, 24vh)",
-            bottom: "max(12vw, 12vh)",
+            bottom: "max(24vw, 24vh)",
         },
         "h3&": {
             display: "none",
@@ -162,7 +162,7 @@ const styles = theme => ({
             "& ": {
                 fontSize: 12,
                 right: "max(6vw, 6vh)",
-                bottom: "max(9vw, 9vh)",
+                bottom: "max(18vw, 18vh)",
                 width: "min(60vw, 40vh)",
             },
             "h2&": {
@@ -170,7 +170,7 @@ const styles = theme => ({
             },
             "h3&": {
                 display: "inherit",
-                bottom: "156px",
+                bottom: "180px",
                 left: "0",
             },
         },
@@ -355,31 +355,6 @@ class Home extends React.Component {
         IS_EVENING = is_evening(cc);
         IS_LATE_EVENING = is_late_evening(cc);
 
-        setTimeout(() => {
-
-            actions.trigger_snackbar(`I am Jamy, a kind Emoji, developed on IntelliJ, life in vectors, sometimes not working on tor, I can show you hints as long as you (on the web-app) let me in!`, 10000);
-            setTimeout(() => {
-
-                actions.jamy_update("happy", 2500);
-
-                setTimeout(() => {
-
-                    actions.trigger_snackbar(`You can click my face, I am perfect like an Ace, in imagination only is defaults about my perfections...`, 7000);
-                    setTimeout(() => {
-
-                        actions.jamy_update("suspicious", 2500);
-
-
-                    }, 777);
-
-
-                }, 10000);
-
-            }, 1100);
-
-
-        }, 14000);
-
         const all_image_name_infographics = ["Lucky", "Pyrawoman", "NoBombs", "Lips", "Pharaon"];
 
         let _image_index = 0;
@@ -499,13 +474,12 @@ class Home extends React.Component {
                 </div>
                 <div className={classes.headerContainer} style={{color: THEME_DAY && !IS_EVENING? "#000": "#fff"}}>
                     <h1 className={classes.titleh1} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff"}}>
-                        <span className={classes.stepPoints}>1 >></span><CEmojiSvg alt="scientist-tweemoji" className="emoji-150"/>
-                        <span className={classes.revelantText}>«PIXA.PICS» lovely pixel arts</span><span> (the picture's minima) just got ultra-light by state-shifting! (changing colors and size)</span><br/>
+                        <span className={classes.stepPoints}>1 >></span><DangerEmoji alt="scientific-danger-tweemoji" style={{verticalAlign: "baseline"}} className="emoji-150"/>
+                        <span className={classes.revelantText}>«PIXA.PICS» lovely pixel arts</span><span> from real-life pictures.</span><br/>
                     </h1>
                     <h2 className={classes.titleh2} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff"}}>
-                        <span><b>Apply effects in laboratory? Yes or No?</b> Essential lab operations gives the <b><span className={classes.revelantText}>MAXIMA of PRIVACY</span></b> in a fashion not only looking great for the online-self...</span>
+                        <span><b>Apply effects in laboratory? Yes?</b> Essential lab operations gives the <b><span className={classes.revelantText}>MAXIMA of PRIVACY</span></b> in a fashion not only looking great for the online-self...</span>
                     </h2>
-                    <blockquote style={{fontStyle: "italic", color: THEME_DAY && !IS_EVENING ? "#222": "#ccc", marginRight: 8, marginLeft: 16}}><DangerEmoji alt="scientific-danger-tweemoji" style={{verticalAlign: "middle"}} className="emoji"/> MINIMA-ART being pixel art mainly takes two focused eyes to create it however beware, NFTs may be harmful if the lab ops with your files are still yours a danger to manage outside a blockchain.</blockquote>
                     <h2 className={classes.titleh2} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff"}}>
                         <span><span className={classes.stepPoints}>2 >></span> <JacketEmojiSvg alt="scientist-jacket-tweemoji" className="emoji-150"/> <b><span className={classes.revelantText}> WHILE EDITING</span></b> a <b >MINIMA-ART</b>, you can use <b >55+ tools in 7 panels for pixel art</b>, options in layers, filters, selections, shapes, effects,... <DNAEmojiSvg alt="scientific-DNA-tweemoji" className="emoji-150"/> to process it with LAB-OPS!</span>
                     </h2>

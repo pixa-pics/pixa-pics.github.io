@@ -158,12 +158,10 @@ class Index extends React.Component {
 
     componentDidMount() {
 
-        this._update_settings();
         const _history_unlisten = this.state._history.listen((location, action) => {
             // location is an object like window.location
             this._set_new_pathname_or_redirect(location.location.pathname);
         });
-        document.body.setAttribute("datainitiated", "true");
         this._set_new_pathname_or_redirect(this.state._history.location.pathname);
         dispatcher.register(this._handle_events.bind(this));
         window.addEventListener("resize", this._update_dimensions);
@@ -217,7 +215,10 @@ class Index extends React.Component {
         }, 1000);
 
         intervals.push(interval);
-        this.setState({_intervals: intervals, _history_unlisten: _history_unlisten});
+        this.setState({_intervals: intervals, _history_unlisten: _history_unlisten}, ( ) => {
+
+            this._update_settings();
+        });
     }
 
     componentWillUnmount() {
@@ -237,7 +238,19 @@ class Index extends React.Component {
 
     _trigger_sound = (category, pack, name, volume, global) => {
 
-        sound_api.play_sound(category, pack, name, volume, global);
+        const { _know_the_settings } = this.state;
+
+        if(_know_the_settings){
+
+            sound_api.play_sound(category, pack, name, volume, global);
+        }else {
+
+            setTimeout(() => {
+
+                this._trigger_sound(category, pack, name, volume, global);
+
+            }, 25);
+        }
     };
 
 
@@ -248,7 +261,7 @@ class Index extends React.Component {
 
     _handle_events(event) {
 
-        const { _sfx_enabled, _music_enabled } = this.state;
+        const { _sfx_enabled, _music_enabled, _know_the_settings } = this.state;
         let global = null;
 
         // Make different actions send from a dispatcher bounded to this function
@@ -282,7 +295,7 @@ class Index extends React.Component {
 
             case "SETTINGS_UPDATE":
 
-                if(this.state._know_the_settings) {
+                if(_know_the_settings) {
 
                     this._update_settings();
                 }
@@ -323,8 +336,6 @@ class Index extends React.Component {
             const _ret = typeof settings.ret !== "undefined" ? settings.ret: 0;
             const _camo = typeof settings.camo !== "undefined" ? settings.camo: 0;
 
-            document.documentElement.lang = _language;
-
             if(
                 this.state._know_the_settings === false ||
                 this.state._ret !== _ret ||
@@ -339,7 +350,12 @@ class Index extends React.Component {
             ) {
                 this.setState({ _ret, _camo, _onboarding_enabled, _sfx_enabled, _music_enabled, _jamy_enabled, _selected_locales_code, _language, _selected_currency, _know_the_settings: true, _has_played_index_music_counter: parseInt((!this.state._know_the_settings && _music_enabled) ? 1: this.state._has_played_index_music_counter )}, () => {
 
-                    this.forceUpdate();
+                    document.documentElement.lang = _language;
+                    document.body.setAttribute("datainitiated", "true");
+
+                    this.forceUpdate(() => {
+
+                    });
                 });
             }
 
@@ -356,6 +372,9 @@ class Index extends React.Component {
                 }
             }, 75);
 
+        }else {
+
+            this._update_settings();
         }
     };
 
@@ -572,7 +591,10 @@ class Index extends React.Component {
             return;
         }
 
-        this.setState({_snackbar_open: false});
+        this.setState({_snackbar_open: false}, () => {
+
+            this.forceUpdate();
+        });
     };
 
     shouldComponentUpdate() {
