@@ -1,6 +1,6 @@
-var REQUIRED_CACHE = "unless-update-cache-v205-required";
-var USEFUL_CACHE = "unless-update-cache-v205-useful";
-var STATIC_CACHE = "unless-update-cache-v205-static";
+var REQUIRED_CACHE = "unless-update-cache-v206-required";
+var USEFUL_CACHE = "unless-update-cache-v206-useful";
+var STATIC_CACHE = "unless-update-cache-v206-static";
 var MAIN_CHILD_CHUNK_REGEX = /child\-chunk\.(main\~[a-z0-9]+)\.min.js/i;
 var CHILD_CHUNK_REGEX = /child\-chunk\.([0-9]+)\.min.js/i;
 
@@ -69,7 +69,6 @@ self.addEventListener("install", function(event) {
             return cache.addAll([
                 "/",
                 "/src/fonts/Jura.css",
-                "/father-chunk.norris.min.js", // This is chunk norris, master of all chunk
                 "/child-chunk.main~0d5ee630.min.js",
                 "/child-chunk.main~1f20a385.min.js",
                 "/child-chunk.main~5a2dc592.min.js",
@@ -81,6 +80,7 @@ self.addEventListener("install", function(event) {
                 "/child-chunk.main~c3be6df1.min.js",
                 "/child-chunk.main~d939e436.min.js",
                 "/child-chunk.main~f9ca8911.min.js",
+                "/father-chunk.norris.min.js",
             ])
         })
     ]);
@@ -276,7 +276,7 @@ self.addEventListener("fetch", function(event) {
             })
         );
 
-    } else {
+    } else if(event.request.method === "GET") {
 
         event.respondWith(
             Promise.race([
@@ -301,6 +301,9 @@ self.addEventListener("fetch", function(event) {
                 })
             ])
         );
+    }else {
+
+        return;
     }
 });
 
