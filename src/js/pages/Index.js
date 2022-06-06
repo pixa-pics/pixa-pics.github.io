@@ -294,7 +294,7 @@ class Index extends React.Component {
                 document.body.setAttribute("class", "loaded");
                 if(this.state._datasyncserviceworkerallfiles === false) {
 
-                    setTimeout(async() => {fetch("datasyncserviceworkerallfiles").then(() => {
+                    setTimeout(async() => {fetch("data:,all").then(() => {
 
                         this.setState({_datasyncserviceworkerallfiles: true});
                     })}, 5432 * 1.0);

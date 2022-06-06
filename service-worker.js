@@ -1,6 +1,6 @@
-var REQUIRED_CACHE = "unless-update-cache-v201-required";
-var USEFUL_CACHE = "unless-update-cache-v201-useful";
-var STATIC_CACHE = "unless-update-cache-v201-static";
+var REQUIRED_CACHE = "unless-update-cache-v202-required";
+var USEFUL_CACHE = "unless-update-cache-v202-useful";
+var STATIC_CACHE = "unless-update-cache-v202-static";
 var MAIN_CHILD_CHUNK_REGEX = /child\-chunk\.(main\~[a-z0-9]+)\.min.js/i;
 var CHILD_CHUNK_REGEX = /child\-chunk\.([0-9]+)\.min.js/i;
 
@@ -49,7 +49,21 @@ self.addEventListener("install", function(event) {
         return true;
     }
 
-    const first_required_race = Promise.allSettled([
+    const image_useful = useful_cache.then(function (cache) {
+        return cache.addAll([
+            "/src/images/logo-transparent.png",
+            "/src/images/infographics/HelmetSpart.svg",
+            "/src/images/infographics/Leana.svg",
+            "/src/images/illustrations/ChemicalScientist.svg",
+            "/src/images/illustrations/China-night.svg",
+            "/src/images/illustrations/Egypt-day.svg",
+            "/src/images/infographics/Lucky.svg",
+            "/src/images/infographics/Wardenclyffe.svg",
+            "/src/images/infographics/HappyLucky.svg",
+        ])
+    });
+
+    const first_required = Promise.allSettled([
         useful_cache.then(function (cache) {
             return cache.addAll([
                 "/src/images/favicon.ico",
@@ -62,10 +76,7 @@ self.addEventListener("install", function(event) {
                 "/",
                 "/src/fonts/Jura.css",
             ]);
-        })
-    ]);
-
-    const first_useful_settled =
+        }),
         required_cache.then(function (cache) {
             return cache.addAll([
                 "/father-chunk.norris.min.js", // This is chunk norris, master of all chunk
@@ -80,34 +91,11 @@ self.addEventListener("install", function(event) {
                 "/child-chunk.main~c3be6df1.min.js",
                 "/child-chunk.main~d939e436.min.js",
                 "/child-chunk.main~f9ca8911.min.js",
-            ]);
-        });
+            ])
+        })
+    ]);
 
-    const second_useful_settled =
-        useful_cache.then(function (cache) {
-            return cache.addAll([
-                "/src/images/logo-transparent.png",
-                "/src/images/infographics/HelmetSpart.svg",
-                "/src/images/infographics/Leana.svg",
-                "/src/images/illustrations/ChemicalScientist.svg",
-                "/src/images/illustrations/China-night.svg",
-                "/src/images/illustrations/Egypt-day.svg",
-                "/src/images/infographics/Lucky.svg",
-                "/src/images/infographics/Wardenclyffe.svg",
-                "/src/images/infographics/HappyLucky.svg",
-            ]);
-        });
-
-    event.waitUntil(new Promise((resolve, reject) => {
-
-        first_required_race
-            .then(() => {
-                resolve([first_useful_settled, second_useful_settled])
-            })
-            .catch((e) => {
-                reject(e)
-            });
-    }));
+    event.waitUntil(first_required);
 });
 
 self.addEventListener("fetch", function(event) {
@@ -118,7 +106,7 @@ self.addEventListener("fetch", function(event) {
 
         event.respondWith(fetch(event.request));
 
-    }else if(url.includes("datasyncserviceworkerallfiles")) {
+    }else if(url.includes("data:,all")) {
 
         event.respondWith(
             Promise.allSettled([
@@ -183,6 +171,8 @@ self.addEventListener("fetch", function(event) {
                     ]);
                 })
             ])
+                .then(function(){return new Response("all",{status: 200})})
+                .catch(function(){return new Response("all", {status: 500})})
         );
 
     }else if((url.includes(".png") || url.includes(".jpg") || url.includes(".jpeg") || url.includes(".gif") || url.includes(".ico")) && event.request.mode === "same-origin") {
@@ -381,7 +371,7 @@ self.addEventListener("fetch", function(event) {
 
 self.addEventListener("activate", function(event) {
 
-    return event.waitUntil(
+    event.waitUntil(
         caches.keys().then(keys => Promise.allSettled(
             keys.map(key => {
                 if (key !== REQUIRED_CACHE && key !== STATIC_CACHE && key !== USEFUL_CACHE) {
