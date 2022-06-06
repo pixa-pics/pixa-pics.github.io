@@ -505,9 +505,7 @@ class Home extends React.Component {
                     <h2 className={classes.titleh2} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff"}}>
                         <span><b>Apply effects in laboratory? Yes or No?</b> Essential lab operations gives the <b><span className={classes.revelantText}>MAXIMA of PRIVACY</span></b> in a fashion not only looking great for the online-self...</span>
                     </h2>
-                    <p>
-                        <blockquote style={{fontStyle: "italic", color: THEME_DAY && !IS_EVENING ? "#222": "#ccc", marginRight: 8, marginLeft: 16}}><DangerEmoji alt="scientific-danger-tweemoji" style={{verticalAlign: "middle"}} className="emoji"/> MINIMA-ART being pixel art mainly takes two focused eyes to create it however beware, NFTs may be harmful if the lab ops with your files are still yours a danger to manage outside a blockchain.</blockquote>
-                    </p>
+                    <blockquote style={{fontStyle: "italic", color: THEME_DAY && !IS_EVENING ? "#222": "#ccc", marginRight: 8, marginLeft: 16}}><DangerEmoji alt="scientific-danger-tweemoji" style={{verticalAlign: "middle"}} className="emoji"/> MINIMA-ART being pixel art mainly takes two focused eyes to create it however beware, NFTs may be harmful if the lab ops with your files are still yours a danger to manage outside a blockchain.</blockquote>
                     <h2 className={classes.titleh2} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff"}}>
                         <span><span className={classes.stepPoints}>2 >></span> <JacketEmojiSvg alt="scientist-jacket-tweemoji" className="emoji-150"/> <b><span className={classes.revelantText}> WHILE EDITING</span></b> a <b >MINIMA-ART</b>, you can use <b >55+ tools in 7 panels for pixel art</b>, options in layers, filters, selections, shapes, effects,... <DNAEmojiSvg alt="scientific-DNA-tweemoji" className="emoji-150"/> to process it with LAB-OPS!</span>
                     </h2>

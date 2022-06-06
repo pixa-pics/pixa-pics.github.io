@@ -1,6 +1,6 @@
-var REQUIRED_CACHE = "unless-update-cache-v202-required";
-var USEFUL_CACHE = "unless-update-cache-v202-useful";
-var STATIC_CACHE = "unless-update-cache-v202-static";
+var REQUIRED_CACHE = "unless-update-cache-v204-required";
+var USEFUL_CACHE = "unless-update-cache-v204-useful";
+var STATIC_CACHE = "unless-update-cache-v204-static";
 var MAIN_CHILD_CHUNK_REGEX = /child\-chunk\.(main\~[a-z0-9]+)\.min.js/i;
 var CHILD_CHUNK_REGEX = /child\-chunk\.([0-9]+)\.min.js/i;
 
@@ -49,36 +49,26 @@ self.addEventListener("install", function(event) {
         return true;
     }
 
-    const image_useful = useful_cache.then(function (cache) {
-        return cache.addAll([
-            "/src/images/logo-transparent.png",
-            "/src/images/infographics/HelmetSpart.svg",
-            "/src/images/infographics/Leana.svg",
-            "/src/images/illustrations/ChemicalScientist.svg",
-            "/src/images/illustrations/China-night.svg",
-            "/src/images/illustrations/Egypt-day.svg",
-            "/src/images/infographics/Lucky.svg",
-            "/src/images/infographics/Wardenclyffe.svg",
-            "/src/images/infographics/HappyLucky.svg",
-        ])
-    });
-
-    const first_required = Promise.allSettled([
+    const first_required = Promise.all([
         useful_cache.then(function (cache) {
             return cache.addAll([
-                "/src/images/favicon.ico",
                 "/src/images/manifest/icon-white.png",
+                "/src/images/favicon.ico",
+                "/src/images/logo-transparent.png",
+                "/src/images/infographics/HelmetSpart.svg",
+                "/src/images/infographics/Leana.svg",
+                "/src/images/illustrations/ChemicalScientist.svg",
+                "/src/images/illustrations/China-night.svg",
+                "/src/images/illustrations/Egypt-day.svg",
+                "/src/images/infographics/Lucky.svg",
+                "/src/images/infographics/Wardenclyffe.svg",
+                "/src/images/infographics/HappyLucky.svg",
             ]);
         }),
         required_cache.then(function (cache) {
             return cache.addAll([
-                "/manifest.json",
                 "/",
                 "/src/fonts/Jura.css",
-            ]);
-        }),
-        required_cache.then(function (cache) {
-            return cache.addAll([
                 "/father-chunk.norris.min.js", // This is chunk norris, master of all chunk
                 "/child-chunk.main~0d5ee630.min.js",
                 "/child-chunk.main~1f20a385.min.js",
@@ -102,14 +92,14 @@ self.addEventListener("fetch", function(event) {
 
     const url = event.request.url;
 
-    if(url.includes("data:image") || url.includes("blob:http")) {
+    if(url.includes("data:image") || url.includes("blob:http") || url.includes("data:application")) {
 
         event.respondWith(fetch(event.request));
 
     }else if(url.includes("data:,all")) {
 
         event.respondWith(
-            Promise.allSettled([
+            Promise.all([
                 useful_cache.then(function (cache) {
                     return cache.addAll([
                         "/src/images/infographics/ShareWho.svg",
@@ -175,102 +165,58 @@ self.addEventListener("fetch", function(event) {
                 .catch(function(){return new Response("all", {status: 500})})
         );
 
-    }else if((url.includes(".png") || url.includes(".jpg") || url.includes(".jpeg") || url.includes(".gif") || url.includes(".ico")) && event.request.mode === "same-origin") {
+    }else if(url.includes(".png") || url.includes(".svg") || url.includes(".jpg") || url.includes(".jpeg") || url.includes(".gif") || url.includes(".ico")) {
 
         // Serve cached image if doesn't fail
         event.respondWith(
             useful_cache.then(function (cache) {
                 return cache.match(event.request.url).then(function (response) {
-                    return (
-                        response ||
-                        fetch(event.request.url).then(function (response) { // Fetch, clone, and serve
-                            return cache.put(event.request, response.clone()).then(function () {return response.clone()});
-                        })
-                    );
+                    return response.clone();
                 }).catch(function() {
 
-                    return fetch(event.request.url).then(function (response) { // Fetch, clone, and serve
+                    return fetch(event.request).then(function (response) { // Fetch, clone, and serve
                         return cache.put(event.request, response.clone()).then(function () {return response.clone()});
                     });
                 });
             }),
         );
 
-    }else if(url.includes(".png") || url.includes(".jpg") || url.includes(".jpeg") || url.includes(".gif") || url.includes(".ico")) {
+    }else if(url.includes(".wav") || url.includes(".mp3")) {
 
-        // Serve cached image if doesn't fail
         event.respondWith(
             static_cache.then(function (cache) {
                 return cache.match(event.request.url).then(function (response) {
-                    return (
-                        response ||
-                        fetch(event.request.url).then(function (response) { // Fetch, clone, and serve
-                            return cache.put(event.request, response.clone()).then(function () {return response.clone()});
-                        })
-                    );
-                }).catch(function(reason) {
-
-                    return fetch(event.request.url).then(function (response) { // Fetch, clone, and serve
-                        return cache.put(event.request, response.clone()).then(function () {return response.clone()});
-                    });
-                });
-            }),
-        );
-
-
-    }else if((url.includes(".wav") || url.includes(".mp3")) && event.request.mode === "same-origin") {
-
-        // Serve cached sound if doesn't fail
-        event.respondWith(
-            static_cache.then(function (cache) {
-                return cache.match(event.request.url).then(function (response) {
-                    return (
-                        response ||
-                        fetch(event.request.url).then(function (response) { // Fetch, clone, and serve
-                            return cache.put(event.request, response.clone()).then(function () {return response.clone()});
-                        })
-                    );
+                    return response.clone();
                 }).catch(function (reason) {
 
-                    return fetch(event.request.url).then(function (response) { // Fetch, clone, and serve
+                    return fetch(event.request).then(function (response) { // Fetch, clone, and serve
                         return cache.put(event.request, response.clone()).then(function () {return response.clone()});
                     });
                 });
             }),
         );
 
-    }else if((url.includes(".woff2") || url.includes(".ttf")) && event.request.mode === "same-origin") {
+    }else if(url.includes(".woff2") || url.includes(".ttf") || url.includes(".css") || url.includes(".json") ) {
 
-        // Serve cached sound if doesn't fail
         event.respondWith(
             required_cache.then(function (cache) {
                 return cache.match(event.request.url).then(function (response) {
-                    return (
-                        response ||
-                        fetch(event.request.url).then(function (response) { // Fetch, clone, and serve
-                            return cache.put(event.request, response.clone()).then(function () {return response.clone()});
-                        })
-                    );
+                    return response.clone();
                 }).catch(function (reason) {
 
-                    return fetch(event.request.url).then(function (response) { // Fetch, clone, and serve
+                    return fetch(event.request).then(function (response) { // Fetch, clone, and serve
                         return cache.put(event.request, response.clone()).then(function () {return response.clone()});
                     });
                 });
             }),
         );
 
-    }else if(url.includes("father-chunk.norris.min.js") && event.request.mode === "same-origin") {
+    }else if(url.includes("father-chunk.norris.min.js")) {
 
         event.respondWith(
             required_cache.then(function (cache) {
                 return cache.match("/father-chunk.norris.min.js").then(function (response) {
-                    return (
-                        response ||
-                        fetch("/father-chunk.norris.min.js").then(function (response) { // Fetch, clone, and serve
-                            return cache.put("/father-chunk.norris.min.js", response.clone()).then(function () {return response.clone()});
-                        })
-                    );
+                    return response.clone();
                 }).catch(function(reason){
 
                     return fetch("/father-chunk.norris.min.js").then(function (response) { // Fetch, clone, and serve
@@ -280,18 +226,13 @@ self.addEventListener("fetch", function(event) {
             })
         );
 
-    }else if((url.match(MAIN_CHILD_CHUNK_REGEX) || []).length >= 2 && event.request.mode === "same-origin") {
+    }else if((url.match(MAIN_CHILD_CHUNK_REGEX) || []).length >= 2) {
 
         const middle_name = url.match(MAIN_CHILD_CHUNK_REGEX)[1];
         event.respondWith(
             required_cache.then(function (cache) {
                 return cache.match(`/child-chunk.${middle_name}.min.js`).then(function (response) {
-                    return (
-                        response ||
-                        fetch(`/child-chunk.${middle_name}.min.js`).then(function (response) { // Fetch, clone, and serve
-                            return cache.put(`/child-chunk.${middle_name}.min.js`, response.clone()).then(function () {return response.clone()});
-                        })
-                    );
+                    return response.clone();
                 }).catch(function(reason) {
 
                     return fetch(`/child-chunk.${middle_name}.min.js`).then(function (response) { // Fetch, clone, and serve
@@ -301,18 +242,13 @@ self.addEventListener("fetch", function(event) {
             })
         );
 
-    }else if((url.match(CHILD_CHUNK_REGEX) || []).length >= 2 && event.request.mode === "same-origin") {
+    }else if((url.match(CHILD_CHUNK_REGEX) || []).length >= 2) {
 
         const middle_name = url.match(CHILD_CHUNK_REGEX)[1];
         event.respondWith(
             required_cache.then(function (cache) {
                 return cache.match(`/child-chunk.${middle_name}.min.js`).then(function (response) {
-                    return (
-                        response ||
-                        fetch(`/child-chunk.${middle_name}.min.js`).then(function (response) { // Fetch, clone, and serve
-                            return cache.put(`/child-chunk.${middle_name}.min.js`, response.clone()).then(function () {return response.clone()});
-                        })
-                    );
+                    return response.clone();
                 }).catch(function(reason) {
 
                     return fetch(`/child-chunk.${middle_name}.min.js`).then(function (response) { // Fetch, clone, and serve
@@ -327,52 +263,51 @@ self.addEventListener("fetch", function(event) {
         event.respondWith(
 
             required_cache.then(function (cache) {
+                return cache.match(`/`).then(function (response) {
+                    return response.clone();
+                }).catch(function (reason) {
 
-                return fetch(event.request.url).then(function (response) { // Fetch, clone, and serve
-
-                    if(response.status === 200) {
-
-                        return cache.put("/", response.clone()).then(function () {return response.clone()});
-                    }else {
-
-                        return cache.match("/");
-                    }
-                }).catch(function(reason){
-
-                    return cache.match("/");
+                    return fetch(`/`).then(function (response) { // Fetch, clone, and serve
+                        return cache.put(`/`, response.clone()).then(function () {
+                            return response.clone();
+                        });
+                    })
                 })
             })
         );
 
     } else {
-        Promise.race([
-            required_cache.then(function (cache) {
-                return cache.match(event.request.url).then(function (response) {
-                    if(response) { return response}
-                });
-            }),
-            useful_cache.then(function (cache) {
-                return cache.match(event.request.url).then(function (response) {
-                    if(response) { return response }
-                });
-            }),
-            static_cache.then(function (cache) {
-                return cache.match(event.request.url).then(function (response) {
-                    if(response) { return response }
-                });
-            }),
-            fetch(event.request.url).then(function (response) { // Fetch and serve
 
-                if(response.status === 200) { return response }
-            })
-        ]).then(function(response){return response})
+        event.respondWith(
+            Promise.race([
+                required_cache.then(function (cache) {
+                    return cache.match(event.request.url).then(function (response) {
+                        if(response) { return response.clone()}
+                    });
+                }),
+                useful_cache.then(function (cache) {
+                    return cache.match(event.request.url).then(function (response) {
+                        if(response) { return response.clone() }
+                    });
+                }),
+                static_cache.then(function (cache) {
+                    return cache.match(event.request.url).then(function (response) {
+                        if(response) { return response.clone() }
+                    });
+                }),
+                fetch(event.request.url).then(function (response) { // Fetch and serve
+
+                    return response.clone()
+                })
+            ])
+        );
     }
 });
 
 self.addEventListener("activate", function(event) {
 
     event.waitUntil(
-        caches.keys().then(keys => Promise.allSettled(
+        caches.keys().then(keys => Promise.all(
             keys.map(key => {
                 if (key !== REQUIRED_CACHE && key !== STATIC_CACHE && key !== USEFUL_CACHE) {
                     return caches.delete(key);

@@ -109,7 +109,7 @@ class Index extends React.Component {
         super(props);
         this.state = {
             _history: props.history,
-            pathname: props.history.location.pathname,
+            pathname: "",
             _intervals: [],
             _jamy_state_of_mind: "shocked",
             _unlisten: null,
@@ -140,19 +140,9 @@ class Index extends React.Component {
             _is_share_dialog_open: false,
             _has_played_index_music_counter: 0,
             _datasyncserviceworkerallfiles: false,
+            _history_unlisten: null
         };
     };
-    
-    componentWillReceiveProps(new_props) {
-
-        const new_pathname = new_props.history.location.pathname;
-        const old_pathname = this.state.pathname;
-
-        if(old_pathname !== new_pathname) {
-
-            this._set_new_pathname_or_redirect(new_pathname);
-        }
-    }
 
     _update_dimensions = () => {
 
@@ -168,12 +158,13 @@ class Index extends React.Component {
 
     componentDidMount() {
 
-        document.body.setAttribute("datainitiated", "true");
-        this.state._history.listen((location, action) => {
+        this._update_settings();
+        const _history_unlisten = this.state._history.listen((location, action) => {
             // location is an object like window.location
             this._set_new_pathname_or_redirect(location.location.pathname);
         });
-        this._update_settings();
+        document.body.setAttribute("datainitiated", "true");
+        this._set_new_pathname_or_redirect(this.state._history.location.pathname);
         dispatcher.register(this._handle_events.bind(this));
         window.addEventListener("resize", this._update_dimensions);
         this._update_dimensions();
@@ -203,14 +194,21 @@ class Index extends React.Component {
 
                 this.setState({_jamy_state_of_mind: "suspicious"}, () => {
 
-                    setTimeout(() => {
+                    this.forceUpdate(() => {
 
-                        if(this.state._jamy_state_of_mind === "suspicious") {
+                        setTimeout(() => {
 
-                            this.setState({_jamy_state_of_mind});
-                        }
+                            if(this.state._jamy_state_of_mind === "suspicious") {
 
-                    }, 75);
+                                this.setState({_jamy_state_of_mind}, () => {
+
+                                    this.forceUpdate();
+                                });
+                            }
+
+                        }, 75);
+
+                    });
 
                 });
 
@@ -219,12 +217,13 @@ class Index extends React.Component {
         }, 1000);
 
         intervals.push(interval);
-        this.setState({_intervals: intervals});
+        this.setState({_intervals: intervals, _history_unlisten: _history_unlisten});
     }
 
     componentWillUnmount() {
 
         try {
+            this.state._history_unlisten();
             window.removeEventListener("resize", this._update_dimensions);
             this.state._intervals.forEach((itrvl) => {
 
@@ -282,7 +281,11 @@ class Index extends React.Component {
                 break;
 
             case "SETTINGS_UPDATE":
-                this._update_settings();
+
+                if(this.state._know_the_settings) {
+
+                    this._update_settings();
+                }
                 break;
 
             case "LOADING_UPDATE":
@@ -321,14 +324,29 @@ class Index extends React.Component {
             const _camo = typeof settings.camo !== "undefined" ? settings.camo: 0;
 
             document.documentElement.lang = _language;
-            this.setState({ _ret, _camo, _onboarding_enabled, _sfx_enabled, _music_enabled, _jamy_enabled, _selected_locales_code, _language, _selected_currency, _know_the_settings: true, _has_played_index_music_counter: parseInt((!this.state._know_the_settings && _music_enabled) ? 1: this.state._has_played_index_music_counter )}, () => {
 
-                if(!was_the_settings_known) {
+            if(
+                this.state._know_the_settings === false ||
+                this.state._ret !== _ret ||
+                this.state._camo !== _camo ||
+                this.state._onboarding_enabled !== _onboarding_enabled ||
+                this.state._sfx_enabled !== _sfx_enabled ||
+                this.state._music_enabled !== _music_enabled ||
+                this.state._jamy_enabled !== _jamy_enabled ||
+                this.state._selected_locales_code !== _selected_locales_code ||
+                this.state._language !== _language ||
+                this.state._selected_currency !== _selected_currency
+            ) {
+                this.setState({ _ret, _camo, _onboarding_enabled, _sfx_enabled, _music_enabled, _jamy_enabled, _selected_locales_code, _language, _selected_currency, _know_the_settings: true, _has_played_index_music_counter: parseInt((!this.state._know_the_settings && _music_enabled) ? 1: this.state._has_played_index_music_counter )}, () => {
 
-                    this._set_analytics(8000);
-                }
+                    this.forceUpdate();
+                });
+            }
 
-            });
+            if(!was_the_settings_known) {
+
+                this._set_analytics(8000);
+            }
 
             setTimeout(async() => {
 
@@ -338,24 +356,6 @@ class Index extends React.Component {
                 }
             }, 75);
 
-        }else {
-
-            if(this.state._database_attempt > 3) {
-
-                api.reset_all_databases(function(){
-
-                    window.location.reload();
-                });
-            }else {
-
-                setTimeout(() => {
-
-                    this.setState({_database_attempt: this.state._database_attempt + 1}, () => {
-
-                        this._update_settings();
-                    });
-                }, 150);
-            }
         }
     };
 
@@ -436,26 +436,31 @@ class Index extends React.Component {
         api.get_settings(this._process_settings_query_result);
     };
 
-    _set_new_pathname_or_redirect = (new_pathname) => {
-        
+    _set_new_pathname_or_redirect = (neo_pathname) => {
+
         const { _history } = this.state;
 
-        if(new_pathname === "/index.html") {
+        const new_pathname = neo_pathname || _history.location.pathname;
+        const old_pathname = this.state.pathname;
 
-            _history.push("/");
-        }else {
+        if(new_pathname !== old_pathname) {
 
-            // Set pathname
-            this.setState({pathname: new_pathname});
+            if(new_pathname === "/index.html") {
 
-            setTimeout(async() => {
+                _history.push("/");
+            }else {
 
-                this._should_play_music_pathname(this.state.pathname);
-            }, 125);
+                // Set pathname
+                this.setState({pathname: new_pathname}, () => {
 
-            // set meta title
-            this._set_meta_title(new_pathname);
-            actions.trigger_sfx("navigation_transition-right", .25);
+                    this.forceUpdate(() => {
+
+                        this._should_play_music_pathname(this.state.pathname);
+                        this._set_meta_title(new_pathname);
+                        actions.trigger_sfx("navigation_transition-right", .25);
+                    });
+                });
+            }
         }
     };
 
@@ -506,26 +511,39 @@ class Index extends React.Component {
 
         this.setState({_jamy_state_of_mind: state_of_mind}, () => {
 
-            setTimeout(() => {
+            this.forceUpdate(() => {
 
-                this.setState({_jamy_state_of_mind: "shocked"}, () => {
+                setTimeout(() => {
 
-                    setTimeout(() => {
+                    this.setState({_jamy_state_of_mind: "shocked"}, () => {
 
-                        this.setState({_jamy_state_of_mind: "suspicious"}, () => {
+                        this.forceUpdate(() => {
 
                             setTimeout(() => {
 
-                                this.setState({_jamy_state_of_mind: "shocked"});
+                                this.setState({_jamy_state_of_mind: "suspicious"}, () => {
 
-                            }, 75);
+                                    this.forceUpdate(() => {
+                                        setTimeout(() => {
+
+                                            this.setState({_jamy_state_of_mind: "shocked"}, () => {
+
+                                                this.forceUpdate();
+                                            });
+
+                                        }, 75);
+                                    });
+
+                                });
+
+                            }, 750);
 
                         });
 
-                    }, 750);
+                    });
+                }, duration);
 
-                });
-            }, duration);
+            });
         });
     }
 
@@ -559,7 +577,7 @@ class Index extends React.Component {
 
     shouldComponentUpdate() {
 
-        return true;
+        return false;
     }
 
     _handle_share_dialog_close = () => {

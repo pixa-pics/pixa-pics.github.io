@@ -106,99 +106,61 @@
         <!-- Service worker -->
         <script type="text/javascript">
 
-            window._FIRE_IT_MAIN_JS_SS = "";
-            window._FIRE_IT_MAIN_JS = function(){};
-            window._FIRE_IT = function() {
+            window._FIRE_IT = async () => {
 
                 var SCS = [
                     "/src/fonts/Jura.css",
-                    "/child-chunk.main~0d5ee630.min.js",
-                    "/child-chunk.main~1f20a385.min.js",
-                    "/child-chunk.main~5a2dc592.min.js",
-                    "/child-chunk.main~9acc357d.min.js",
-                    "/child-chunk.main~253ae210.min.js",
-                    "/child-chunk.main~748942c6.min.js",
-                    "/child-chunk.main~af9f4ef7.min.js",
-                    "/child-chunk.main~c1dd23ef.min.js",
-                    "/child-chunk.main~c3be6df1.min.js",
-                    "/child-chunk.main~d939e436.min.js",
-                    "/child-chunk.main~f9ca8911.min.js",
                     "/father-chunk.norris.min.js"
                 ];
 
-                return Promise.allSettled(SCS.map(function(ss){
-                    return new Promise(
-                        function(resolve, reject){
+                SCS.map(function(ss){
+                    var js = ss.endsWith(".js");
+                    var css = ss.endsWith(".css");
 
-                            try {
+                    if(js) {
 
-                                var js = ss.endsWith(".js");
-                                var css = ss.endsWith(".css");
+                        var e = document.createElement("script");
+                        e.setAttribute("src", ss);
+                        e.setAttribute("defer", "true");
+                        e.setAttribute("type", "text/javascript");
+                        document.head.appendChild(e);
 
-                                if(js) {
+                    }else if(css) {
 
-                                    var last = ss.startsWith("/father");
-
-                                    if(last) {
-
-                                        window._FIRE_IT_MAIN_JS_SS = ss;
-                                        window._FIRE_IT_MAIN_JS = function(ss) {
-
-                                            var e = document.createElement("script");
-                                            e.setAttribute("src", ss);
-                                            e.setAttribute("async", "true");
-                                            e.setAttribute("type", "text/javascript");
-                                            document.head.appendChild(e);
-                                            return true;
-                                        };
-
-                                    }else {
-
-                                        var e = document.createElement("script");
-                                        e.setAttribute("src", ss);
-                                        e.setAttribute("async", "true");
-                                        e.setAttribute("type", "text/javascript");
-
-                                        document.head.appendChild(e);
-                                    }
-
-                                    resolve(true);
-
-                                }else if(css) {
-
-                                    var e = document.createElement("link");
-                                    e.setAttribute("href", ss);
-                                    e.setAttribute("rel", "stylesheet");
-                                    document.head.appendChild(e);
-
-                                    resolve(true);
-                                }
-
-                            } catch(e) {
-
-                                reject(e);
-                            }
-                        }
-                    );
-                }));
+                        var e = document.createElement("link");
+                        e.setAttribute("href", ss);
+                        e.setAttribute("rel", "stylesheet");
+                        document.head.appendChild(e);
+                    }
+                });
             };
 
-            if ("serviceWorker" in navigator) {
+            const registerServiceWorker = async () => {
+                if ("serviceWorker" in navigator) {
+                    try {
+                        const registration = await navigator.serviceWorker.register("/service-worker.js", {
+                            scope: "/"
+                        });
 
-                navigator.serviceWorker.register("/service-worker.js", {
-                    scope: "/"
-                }).finally(function(){
-                    window._FIRE_IT().then(function(){
-                        window._FIRE_IT_MAIN_JS(window._FIRE_IT_MAIN_JS_SS);
-                    });
-                });
+                        if (registration.installing) {
+                            console.log('Service worker installing');
+                            window._FIRE_IT();
+                        } else if (registration.waiting) {
+                            console.log('Service worker installed');
+                            window._FIRE_IT();
+                        } else if (registration.active) {
+                            console.log('Service worker active');
+                            window._FIRE_IT();
+                        }
 
-            } else {
+                    } catch (e) {
 
-                window._FIRE_IT().then(function(){
-                    window._FIRE_IT_MAIN_JS(window._FIRE_IT_MAIN_JS_SS);
-                });
-            }
+                        window._FIRE_IT();
+                    }
+                }
+            };
+
+            registerServiceWorker();
         </script>
 
         <!-- Open graph metadata -->
