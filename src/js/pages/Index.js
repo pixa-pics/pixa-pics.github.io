@@ -1,7 +1,7 @@
 import React, { Suspense } from "react";
 import { withStyles } from "@material-ui/core";
 
-import {Snackbar, CssBaseline, IconButton, Toolbar} from "@material-ui/core";
+import {Snackbar, IconButton, Toolbar} from "@material-ui/core";
 
 import CloseIcon from "@material-ui/icons/Close";
 
@@ -619,7 +619,6 @@ class Index extends React.Component {
         return (
             <div>
                 <div className={classes.root}>
-                    <CssBaseline />
                     <Snackbar
                         className={classes.snackbar}
                         open={_snackbar_open}

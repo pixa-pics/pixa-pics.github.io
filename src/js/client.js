@@ -41,6 +41,7 @@ import { lightTheme } from "./theme/index";
 
 const main_void_main = () => {
 
+
     let element = document.getElementById("app") || null;
     if(element === null) {
 
@@ -49,17 +50,20 @@ const main_void_main = () => {
         document.body.appendChild(element);
     }
 
-    if(Boolean(document.getElementById("app"))) {
+    if(Boolean(element)) {
         ReactDOM.render(
             <ThemeProvider theme={lightTheme}>
                 <CssBaseline>
                     <Index history={HISTORY}/>
                 </CssBaseline>
             </ThemeProvider>,
-            document.getElementById("app"));
+            element);
     }else {
 
-        main_void_main();
+        setTimeout(() => {
+
+            main_void_main();
+        }, 1000 / 30);
     }
 }
 

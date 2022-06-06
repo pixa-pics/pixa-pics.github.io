@@ -98,12 +98,103 @@
             }
         </style>
 
+        <!-- CSS -->
+        <style>
+            body.loaded {
+                background-color: #fafafa;
+                content-visibility: visible;
+            }
+            body::after {
+                will-change: initial;
+            }
+            body.loaded > #app {
+                contain: paint style layout;
+                content-visibility: auto;
+                will-change: auto;
+            }
+            body.loading[datainitiated=true] > #app {
+                content-visibility: hidden;
+                will-change: contents;
+            }
+            body.loading > #app {
+                contain: size paint style layout;
+                content-visibility: hidden;
+            }
+            body.loading::after {
+                content-visibility: visible;
+                contain: size paint style layout;
+                content: " ";
+                position: fixed;
+                z-index: 999999999999999;
+                image-rendering: optimizeSpeed;
+                image-rendering: -webkit-crisp-edges;
+                image-rendering: -moz-crisp-edges;
+                image-rendering: crisp-edges;
+                image-rendering: pixelated;
+                background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACYAAAAmBAMAAABaE/SdAAAAIVBMVEVHcEzu+PfCGDQGAAWFDT2XtsNc1sXroqWZXNYKQaNl1lzIuMb2AAAAAXRSTlMAQObYZgAAAOlJREFUKM/VkkFqAjEUhgM5wRMk3fp8xS5Dnw51O74LTCF6ghHaXWfjAUSR7tyIJxCP2X8iygw9gVl+fMn78yfOPenyihX7qKAR87gHZ4koGI+72rIiogFzR/Q1DQG57IhFDRJGEPWhnb7avRS4FEWEzH6/qywys8T3t/bU+cv+CNY0Agi2bZm/gP1gCCMPq2aWvc2kFJwoMT48jIBnsshz5259pBB4KGJmN+YP+5xlJabTxS2iP19b1kywz9/bKdbooEkI59z9yh+7uqL0ydbtoFim9Mqmvf7qVUpisV/91FT134M80/f5A7PVL60QaHlpAAAAAElFTkSuQmCC);
+                background-size: contain;
+                background-position: center;
+                background-repeat: no-repeat;
+                box-sizing: border-box;
+                background-clip: padding-box;
+                padding: 0;
+                margin: 0;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                right: 0;
+                height: 100vh;
+                width: 100vw;
+                transform-origin: center;
+                animation-fill-mode: both;
+                will-change: auto;
+            }
+            body.loading  {
+                font-size: 0 !important;
+                content-visibility: visible;
+                background-color: #fff;
+                contain: size paint style layout;
+                padding: 0;
+                margin: 0;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                right: 0;
+                min-height: 100vh;
+                min-width: 100vw;
+            }
+            body.loading[datainitiated=false]{
+                content-visibility: auto;
+            }
+            body.loading[datainitiated=true]::after {
+                transform: translateZ(10px) scale(1);
+                animation-delay: 20ms;
+                animation-duration: 100ms;
+                animation-name: zoomout;
+                animation-timing-function: linear;
+                will-change: transform, filter;
+            }
+            @keyframes zoomout {
+                from {
+                    transform: translateZ(10px) scale(1);
+                    filter: opacity(1);
+                    content-visibility: visible;
+
+                }
+                to {
+                    transform: translateZ(10px)  scale(10);
+                    filter: opacity(0);
+                    content-visibility: hidden;
+                }
+            }
+        </style>
+
         <!-- Service worker -->
         <script type="text/javascript">
 
             window._FIRE_IT_MAIN_JS_SS = "";
             window._FIRE_IT_MAIN_JS = async function(){};
-            window._FIRE_IT = async function(promise_of_force = new Promise(function(r){r(true)})) {
+            window._FIRE_IT = async function(promise_of_force = new Promise.resolve()) {
 
                 var SCS = [
                     "/src/fonts/Jura.css",
@@ -143,14 +234,14 @@
 
                                                 var e = document.createElement("script");
                                                 e.setAttribute("src", s.getAttribute("href"));
-                                                e.setAttribute("async", "true");
+                                                e.setAttribute("defer", "true");
                                                 e.setAttribute("type", "text/javascript");
                                                 document.head.appendChild(e);
                                             });
 
                                             var e = document.createElement("script");
                                             e.setAttribute("src", ss);
-                                            e.setAttribute("async", "true");
+                                            e.setAttribute("defer", "true");
                                             e.setAttribute("type", "text/javascript");
 
                                             var footers = document.getElementsByTagName('footer');
@@ -217,7 +308,6 @@
                     // For forcing main script loading in timed now+0
                     const SS = window._FIRE_IT_MAIN_JS_SS;
                     return window._FIRE_IT_MAIN_JS(SS);
-
                 });
             };
 
