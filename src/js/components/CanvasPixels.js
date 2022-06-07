@@ -1976,10 +1976,10 @@ class CanvasPixels extends React.Component {
             const top_layer_pxls = Array.from(_s_pxls[at_index]);
             const bottom_layer_pxls = Array.from(_s_pxls[at_index - 1]);
 
-            const top_layer_pxl_colors = _s_pxl_colors[at_index];
-            const top_layer_opacity = _layers[at_index].opacity;
-            const bottom_layer_pxl_colors = _s_pxl_colors[at_index - 1];
-            const bottom_layer_opacity = _layers[at_index - 1].opacity;
+            const top_layer_pxl_colors = _s_pxl_colors[at_index - 1];
+            const top_layer_opacity = _layers[at_index - 1].opacity;
+            const bottom_layer_pxl_colors = _s_pxl_colors[at_index];
+            const bottom_layer_opacity = _layers[at_index].opacity;
 
             bottom_layer_pxls.forEach((pxl, pxl_index) => {
 
@@ -1987,8 +1987,8 @@ class CanvasPixels extends React.Component {
                 const top_layer_pxl_color = top_layer_pxl_colors[top_layer_pxl_color_index];
                 const bottom_layer_pxl_color = bottom_layer_pxl_colors[pxl];
 
-                let new_layer_pxl_color_a = this._blend_colors(0, bottom_layer_pxl_color, bottom_layer_opacity, false, true, true);
-                let new_layer_pxl_color_b = this._blend_colors(0, top_layer_pxl_color, top_layer_opacity, false, true, true);
+                let new_layer_pxl_color_a = this._blend_colors(0, bottom_layer_pxl_color, bottom_layer_opacity, false, false, true);
+                let new_layer_pxl_color_b = this._blend_colors(0, top_layer_pxl_color, top_layer_opacity, false, false, true);
                 let new_layer_pxl_color = this._blend_colors(new_layer_pxl_color_a, new_layer_pxl_color_b, 1, false, true, true);
 
                 if(!new_layer_pxl_colors.includes(new_layer_pxl_color)) {
@@ -5429,18 +5429,14 @@ class CanvasPixels extends React.Component {
 
             for (let i = 0; i < _layers.length ; i++) {
 
-                if(!has_new_layer) {
-                    if(_layers[i].hidden !== _old_layers[i].hidden || _layers[i].opacity !== _old_layers[i].opacity || _layers[i].id !== _old_layers[i].id){
+                if (!has_new_layer) {
+                    if (_layers[i].hidden !== _old_layers[i].hidden || _layers[i].opacity !== _old_layers[i].opacity || _layers[i].id !== _old_layers[i].id) {
 
                         has_layers_visibility_or_opacity_changed = true;
                     }
                 }
 
             }
-
-            let image_data = Boolean(hide_canvas_content || is_there_new_dimension || !has_shown_canvas_once || has_canvas_been_hidden) ?
-                new ImageData(pxl_width, pxl_height):
-                offscreenCanvas.context2d.getImageData(0, 0, pxl_width, pxl_height);
 
             const imported_image_pxls_positioned_keyset = new Set(Object.keys(imported_image_pxls_positioned).map(s => parseInt(s)));
             const explosion_pxls_positioned_keyset = new Set(Object.keys(explosion_pxls_positioned).map(s => parseInt(s)));
@@ -5450,6 +5446,7 @@ class CanvasPixels extends React.Component {
             const length = _s_pxls_layer_index.length;
             const _s_pxl_colors_uint32 = _s_pxl_colors;
 
+            let indexed_changes = [];
             for(let index = 0; index < length; index++){
 
                 const pxl = _s_pxls_layer_index[index];
@@ -5586,19 +5583,45 @@ class CanvasPixels extends React.Component {
                     }
 
                     // We need to clear the pixel that won't totally be opaque because it can merge colors accidentally
-                    const rgba = this._get_rgba_from_Uint32(color);
-                    const index_by_4 = index * 4;
-
-                    image_data.data[index_by_4 + 0] = rgba[0];
-                    image_data.data[index_by_4 + 1] = rgba[1];
-                    image_data.data[index_by_4 + 2] = rgba[2];
-                    image_data.data[index_by_4 + 3] = rgba[3];
+                    indexed_changes[index] = color;
 
                     pixel_updated++;
                 }
             }
 
             if(pixel_updated > 0 || (hide_canvas_content && !_was_canvas_content_hidden)) {
+
+                let image_data = null;
+
+                if(pixel_updated > 192*192){
+
+                    image_data = Boolean(hide_canvas_content || is_there_new_dimension || !has_shown_canvas_once || has_canvas_been_hidden) ?
+                        new ImageData(pxl_width, pxl_height):
+                        offscreenCanvas.context2d.getImageData(0, 0, pxl_width, pxl_height);
+
+                    Object.entries(indexed_changes).forEach(([index, colorUint32]) => {
+
+                        const rgba = this._get_rgba_from_Uint32(colorUint32);
+                        const index_by_4 = index * 4;
+
+                        image_data.data[index_by_4 + 0] = rgba[0];
+                        image_data.data[index_by_4 + 1] = rgba[1];
+                        image_data.data[index_by_4 + 2] = rgba[2];
+                        image_data.data[index_by_4 + 3] = rgba[3];
+                    });
+
+                    offscreenCanvas.context2d.putImageData(image_data, 0, 0);
+                }else {
+
+                    Object.entries(indexed_changes).forEach(([index, colorUint32]) => {
+
+                        const x = index % pxl_width;
+                        const y = (index - x) / pxl_width;
+
+                        offscreenCanvas.context2d.fillStyle = this._get_hex_from_Uint32(colorUint32);
+                        offscreenCanvas.context2d.fillRect(x, y, 1, 1);
+                    });
+                }
 
                 this.setState({
                     _pxl_indexes_of_selection_drawn: new Set(_pxl_indexes_of_selection),
@@ -5626,7 +5649,6 @@ class CanvasPixels extends React.Component {
                     has_shown_canvas_once: true
                 }, () => {
 
-                    offscreenCanvas.context2d.putImageData(image_data, 0, 0);
                     _anim_loop(() => {
 
                         context2d.drawImage(offscreenCanvas, 0, 0);

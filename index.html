@@ -131,7 +131,7 @@
 
                         var e = document.createElement("script");
                         e.setAttribute("src", ss);
-                        e.setAttribute(String(Boolean(ss.startsWith("/father") && window.location.href.startsWith("localhost")) ? "defer": "async"), "true");
+                        e.setAttribute(String(Boolean(ss.startsWith("/father") && window.location.href.startsWith("localhost")) ? "async": "defer"), "true");
                         e.setAttribute("type", "text/javascript");
                         document.head.appendChild(e);
 

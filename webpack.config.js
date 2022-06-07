@@ -60,12 +60,17 @@ module.exports = {
                             'Stream',
                             'BufferStream',
                             'BitStream',
+                            'INT32',
                             'UINT32',
+                            'INT64',
                             'UINT64',
                             'UINT',
                         ]
                     },
                     compress: {
+                        hoist_funs: true,
+                        hoist_props: true,
+                        hoist_vars: true,
                         drop_console: true,
                         pure_getters: true,
                         join_vars: true,
@@ -80,7 +85,7 @@ module.exports = {
                         inline: true,
                         reduce_vars: true,
                         collapse_vars: true,
-                        passes: 3,
+                        passes: 5,
                     },
                     output: {
                         comments: false,
@@ -134,8 +139,8 @@ module.exports = {
                                         "edge": "17",
                                         "firefox": "61",
                                         "ie": "11",
-                                        "ios": "11.3",
-                                        "safari": "11.1"
+                                        "ios": "11",
+                                        "safari": "11"
                                     },
                                     //ignoreBrowserslistConfig: true,
                                     forceAllTransforms: true, //true,

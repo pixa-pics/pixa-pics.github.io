@@ -113,6 +113,7 @@ const bitmap_to_imagedata = (bitmap, resize_to =  1920*1080, callback_function =
         }
 
         var ctx = canvas.getContext("2d");
+        ctx.imageSmoothingEnabled = false;
         ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
         img_data = ctx.getImageData(0, 0, canvas.width, canvas.height); // This isn't available in web worker
 
