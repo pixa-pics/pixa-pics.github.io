@@ -953,30 +953,20 @@ class Pixel extends React.Component {
 
                                         base64_to_bitmap(res, (bitmap_received) => {
 
-                                            bitmap_to_imagedata(bitmap_received, resize_original_to, (imagedata_received) => {
+                                            bitmap_to_imagedata(bitmap_received, resize_to, (imagedata_received) => {
 
                                                 rgb_quant(imagedata_received, limit_color_number,(imagedata2) => {
 
                                                     imagedata_to_base64(imagedata2, (base642) => {
 
-                                                        base64_to_bitmap(base642, ( bitmap2 ) => {
+                                                        let img = new Image();
+                                                        img.addEventListener("load", () => {
 
-                                                            bitmap_to_imagedata(bitmap2, resize_to, (imagedata3) => {
-
-                                                                imagedata_to_base64(imagedata3, (base643) => {
-
-                                                                    let img = new Image();
-                                                                    img.addEventListener("load", () => {
-
-                                                                        this._handle_load_complete("image_ai", {});
-                                                                        set_canvas_from_image(img, base642, {}, true);
-                                                                        this._handle_menu_close();
-                                                                    });
-                                                                    img.src = base643;
-
-                                                                }, pool);
-                                                            });
-                                                        }, pool);
+                                                            this._handle_load_complete("image_ai", {});
+                                                            set_canvas_from_image(img, res, {}, true);
+                                                            this._handle_menu_close();
+                                                        });
+                                                        img.src = base642;
                                                     }, pool);
                                                 }, pool);
                                             });
@@ -997,30 +987,20 @@ class Pixel extends React.Component {
 
                                         base64_to_bitmap(res, (bitmap_received) => {
 
-                                            bitmap_to_imagedata(bitmap_received, resize_original_to, (imagedata_received) => {
+                                            bitmap_to_imagedata(bitmap_received, resize_to, (imagedata_received) => {
 
                                                 rgb_quant(imagedata_received, limit_color_number,(imagedata2) => {
 
                                                     imagedata_to_base64(imagedata2, (base642) => {
 
-                                                        base64_to_bitmap(base642, ( bitmap2 ) => {
+                                                        let img = new Image();
+                                                        img.addEventListener("load", () => {
 
-                                                            bitmap_to_imagedata(bitmap2, resize_to, (imagedata3) => {
-
-                                                                imagedata_to_base64(imagedata3, (base643) => {
-
-                                                                    let img = new Image();
-                                                                    img.addEventListener("load", () => {
-
-                                                                        this._handle_load_complete("image_ai", {});
-                                                                        set_canvas_from_image(img, base642, {}, true);
-                                                                        this._handle_menu_close();
-                                                                    });
-                                                                    img.src = base643;
-
-                                                                }, pool);
-                                                            });
-                                                        }, pool);
+                                                            this._handle_load_complete("image_ai", {});
+                                                            set_canvas_from_image(img, res, {}, true);
+                                                            this._handle_menu_close();
+                                                        });
+                                                        img.src = base642;
                                                     }, pool);
                                                 }, pool);
                                             });
@@ -1032,7 +1012,7 @@ class Pixel extends React.Component {
 
                                 this._handle_load_complete("image_preload", {});
                                 this._handle_load("image_ai");
-                                actions.trigger_snackbar("Getting associated with DeepAI.org systems", 7500);
+                                actions.trigger_snackbar("Getting associated with DeepAI.org systems", 5700);
                                 actions.jamy_update("angry");
 
                                 imagedata_to_base64(imagedata, (base64_resized) => {
@@ -1043,113 +1023,102 @@ class Pixel extends React.Component {
 
                                             base64_to_bitmap(res2, (bitmap_received) => {
 
-                                                bitmap_to_imagedata(bitmap_received, resize_original_to, (imagedata_received) => {
+                                                bitmap_to_imagedata(bitmap_received, resize_to, (imagedata_received) => {
 
-                                                    rgb_quant(imagedata_received, limit_color_number, (imagedata2) => {
+                                                    rgb_quant(imagedata_received, limit_color_number,(imagedata2) => {
 
                                                         imagedata_to_base64(imagedata2, (base642) => {
 
-                                                            base64_to_bitmap(base642, ( bitmap2 ) => {
+                                                            let img = new Image();
+                                                            img.addEventListener("load", () => {
 
-                                                                bitmap_to_imagedata(bitmap2, resize_to, (imagedata3) => {
-
-                                                                    imagedata_to_base64(imagedata3, (base643) => {
-
-                                                                        let img = new Image();
-                                                                        img.addEventListener("load", () => {
-
-                                                                            this._handle_load_complete("image_ai", {});
-                                                                            set_canvas_from_image(img, base642, {}, true);
-                                                                            this._handle_menu_close();
-                                                                        });
-                                                                        img.src = base643;
-
-                                                                    }, pool);
-                                                                });
-                                                            }, pool);
+                                                                this._handle_load_complete("image_ai", {});
+                                                                set_canvas_from_image(img, res2, {}, true);
+                                                                this._handle_menu_close();
+                                                            });
+                                                            img.src = base642;
                                                         }, pool);
-
                                                     }, pool);
                                                 });
                                             }, pool);
                                         }, "application/text");
                                     }, "application/text");
                                 }, pool);
+
                             }else {
 
-                                rgb_quant(imagedata, limit_color_number, (imagedata2) => {
+                                imagedata_to_base64(imagedata, (base64_resized) => {
 
-                                    imagedata2 = imagedata2 || null;
+                                    base64_to_bitmap(base64_resized, (bitmap_received) => {
 
-                                    if(imagedata2 === null) {
+                                        bitmap_to_imagedata(bitmap_received, resize_to, (imagedata_received) => {
 
-                                        window.dispatchEvent(new Event("art-upload-browsererror"));
-                                        this._handle_load_complete("image_preload", {});
-                                        this._handle_load("browser");
-                                        actions.trigger_sfx("alert_high-intensity", 0.6);
-                                        actions.jamy_update("flirty");
-                                        actions.trigger_snackbar("That's our end my little diddy! My instinctive dwelling require a browser I am supporting.", 6000);
+                                            rgb_quant(imagedata_received, limit_color_number, (imagedata2) => {
 
-                                        setTimeout(() => {
+                                                imagedata2 = imagedata2 || null;
+                                                if(imagedata2 === null) {
 
-                                            actions.trigger_sfx("alert_high-intensity", 0.7);
-                                            actions.jamy_update("sad");
-                                            actions.trigger_snackbar("Abandon, misfortune, sadness... I can't live in this strange place.", 7000);
-
-                                            setTimeout(() => {
-
-                                                actions.trigger_sfx("alert_high-intensity", 0.8);
-                                                actions.jamy_update("suspicious");
-                                                actions.trigger_snackbar("Ho no! I just can't, but someone needs to give me back my usual laboratory environment!", 7000);
-
-                                                setTimeout(() => {
-
-                                                    actions.trigger_sfx("alert_high-intensity", 0.9);
-                                                    actions.jamy_update("shocked");
-                                                    actions.trigger_snackbar("Yes my enjoyable smartness, gladly you hear me now! Everything gonna be alright to look at me!", 9000);
+                                                    window.dispatchEvent(new Event("art-upload-browsererror"));
+                                                    this._handle_load_complete("image_preload", {});
+                                                    this._handle_load("browser");
+                                                    actions.trigger_sfx("alert_high-intensity", 0.6);
+                                                    actions.jamy_update("flirty");
+                                                    actions.trigger_snackbar("That's our end my little diddy! My instinctive dwelling require a browser I am supporting.", 6000);
 
                                                     setTimeout(() => {
 
-                                                        actions.jamy_update("happy");
-                                                        actions.trigger_sfx("alert_high-intensity", 1);
+                                                        actions.trigger_sfx("alert_high-intensity", 0.7);
+                                                        actions.jamy_update("sad");
+                                                        actions.trigger_snackbar("Abandon, misfortune, sadness... I can't live in this strange place.", 7000);
 
                                                         setTimeout(() => {
 
-                                                            actions.trigger_sfx("alert_high-intensity", 1);
+                                                            actions.trigger_sfx("alert_high-intensity", 0.8);
+                                                            actions.jamy_update("suspicious");
+                                                            actions.trigger_snackbar("Ho no! I just can't, but someone needs to give me back my usual laboratory environment!", 7000);
 
-                                                        }, 750);
+                                                            setTimeout(() => {
 
-                                                    }, 4000);
+                                                                actions.trigger_sfx("alert_high-intensity", 0.9);
+                                                                actions.jamy_update("shocked");
+                                                                actions.trigger_snackbar("Yes my enjoyable smartness, gladly you hear me now! Everything gonna be alright to look at me!", 9000);
 
-                                                }, 8000);
+                                                                setTimeout(() => {
 
-                                            }, 8000);
+                                                                    actions.jamy_update("happy");
+                                                                    actions.trigger_sfx("alert_high-intensity", 1);
 
-                                        }, 7000);
+                                                                    setTimeout(() => {
 
-                                        return;
-                                    }
+                                                                        actions.trigger_sfx("alert_high-intensity", 1);
 
-                                    imagedata_to_base64(imagedata2, (base642) => {
+                                                                    }, 750);
 
-                                        base64_to_bitmap(base642, ( bitmap2 ) => {
+                                                                }, 4000);
 
-                                            bitmap_to_imagedata(bitmap2, resize_to, (imagedata3) => {
+                                                            }, 8000);
 
-                                                imagedata_to_base64(imagedata3, (base643) => {
+                                                        }, 8000);
 
-                                                    let img = new Image();
-                                                    img.addEventListener("load", () => {
+                                                    }, 7000);
 
-                                                        this._handle_load_complete("image_preload", {});
-                                                        set_canvas_from_image(img, base642, {}, false);
-                                                        this._handle_menu_close();
-                                                    });
-                                                    img.src = base643;
+                                                }else {
 
-                                                }, pool);
-                                            });
-                                        }, pool);
+                                                    imagedata_to_base64(imagedata2, (base643) => {
+
+                                                        let img = new Image();
+                                                        img.addEventListener("load", () => {
+
+                                                            this._handle_load_complete("image_preload", {});
+                                                            set_canvas_from_image(img, base64_resized, {}, false);
+                                                            this._handle_menu_close();
+                                                        });
+                                                        img.src = base643;
+
+                                                    }, pool);
+                                                }
+                                            }, pool);
+                                        });
                                     }, pool);
                                 }, pool);
                             }

@@ -162,6 +162,10 @@
                         } else if (registration.active) {
                             console.log('Service worker active');
                             window._FIRE_IT();
+                        }else {
+
+                            console.log('Service worker unknown state');
+                            window._FIRE_IT();
                         }
 
                     } catch (e) {

@@ -62,7 +62,7 @@ const styles = theme => ({
         overflow: "auto"
     },
     drawerPrivacyHint: {
-        position: "fixed",
+        position: "absolute",
         bottom: 0,
         left: 0,
         padding: 8,

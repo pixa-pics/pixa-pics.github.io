@@ -5619,6 +5619,7 @@ class CanvasPixels extends React.Component {
                         const y = (index - x) / pxl_width;
 
                         offscreenCanvas.context2d.fillStyle = this._get_hex_from_Uint32(colorUint32);
+                        offscreenCanvas.context2d.clearRect(x, y, 1, 1);
                         offscreenCanvas.context2d.fillRect(x, y, 1, 1);
                     });
                 }
