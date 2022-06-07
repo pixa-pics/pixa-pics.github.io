@@ -7,14 +7,13 @@
 */
 
 const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
-const rgb_quant_process_function = new AsyncFunction(`var t=async function(t,i,e,r){"use strict";function a(t){if(t=t||{},this.method=t.method||2,this.colors=t.colors||256,this.initColors=t.initColors||4096,this.initDist=t.initDist||.01,this.distIncr=t.distIncr||.005,this.hueGroups=t.hueGroups||10,this.satGroups=t.satGroups||10,this.lumGroups=t.lumGroups||10,this.minHueCols=t.minHueCols||0,this.hueStats=this.minHueCols?new h(this.hueGroups,this.minHueCols):null,this.boxSize=t.boxSize||[64,64],this.boxPxls=t.boxPxls||2,this.palLocked=!1,this.dithKern=t.dithKern||null,this.dithSerp=t.dithSerp||!1,this.dithDelta=t.dithDelta||0,this.histogram={},this.idxrgb=t.palette?t.palette.slice(0):[],this.idxi32=[],this.i32idx={},this.i32rgb={},this.useCache=!1!==t.useCache,this.cacheFreq=t.cacheFreq||10,this.reIndex=t.reIndex||0==this.idxrgb.length,this.colorDist="manhattan"==t.colorDist?d:c,this.idxrgb.length>0){var i=this;this.idxrgb.forEach((function(t,e){var r=(255<<24|t[2]<<16|t[1]<<8|t[0])>>>0;i.idxi32[e]=r,i.i32idx[r]=e,i.i32rgb[r]=t}))}}function h(t,i){this.numGroups=t,this.minCols=i,this.stats={};for(var e=-1;e<t;e++)this.stats[e]={num:0,cols:[]};this.groupsFull=0}i=i||0,a.prototype.sample=function(t,i){if(this.palLocked)throw"Cannot sample additional images, palette already assembled.";var e=x(t,i);switch(this.method){case 1:this.colorStats1D(e.buf32);break;case 2:this.colorStats2D(e.buf32,e.width)}},a.prototype.reduce=function(t,i,e,r){if(this.palLocked||this.buildPal(),e=e||this.dithKern,r=void 0!==r?r:this.dithSerp,i=i||1,e)var a=this.dither(t,e,r);else for(var h=x(t).buf32,n=h.length,s=(a=new Uint32Array(n),0);s<n;s++){var o=h[s];a[s]=this.nearestColor(o)}if(1==i)return new Uint8Array(a.buffer);if(2==i){var l=[];for(n=a.length,s=0;s<n;s++){o=a[s];l[s]=this.i32idx[o]}return l}},a.prototype.dither=function(t,i,e){var r={FloydSteinberg:[[7/16,1,0],[3/16,-1,1],[5/16,0,1],[1/16,1,1]],FalseFloydSteinberg:[[3/8,1,0],[3/8,0,1],[2/8,1,1]],Stucki:[[8/42,1,0],[4/42,2,0],[2/42,-2,1],[4/42,-1,1],[8/42,0,1],[4/42,1,1],[2/42,2,1],[1/42,-2,2],[2/42,-1,2],[4/42,0,2],[2/42,1,2],[1/42,2,2]],Atkinson:[[1/8,1,0],[1/8,2,0],[1/8,-1,1],[1/8,0,1],[1/8,1,1],[1/8,0,2]],Jarvis:[[7/48,1,0],[5/48,2,0],[3/48,-2,1],[5/48,-1,1],[7/48,0,1],[5/48,1,1],[3/48,2,1],[1/48,-2,2],[3/48,-1,2],[5/48,0,2],[3/48,1,2],[1/48,2,2]],Burkes:[[.25,1,0],[4/32,2,0],[2/32,-2,1],[4/32,-1,1],[.25,0,1],[4/32,1,1],[2/32,2,1]],Sierra:[[5/32,1,0],[3/32,2,0],[2/32,-2,1],[4/32,-1,1],[5/32,0,1],[4/32,1,1],[2/32,2,1],[2/32,-1,2],[3/32,0,2],[2/32,1,2]],TwoSierra:[[.25,1,0],[3/16,2,0],[1/16,-2,1],[2/16,-1,1],[3/16,0,1],[2/16,1,1],[1/16,2,1]],SierraLite:[[.5,1,0],[1/4,-1,1],[1/4,0,1]]};if(!i||!r[i])throw"Unknown dithering kernel: "+i;for(var a=r[i],h=x(t),n=h.buf32,s=h.width,o=h.height,l=(n.length,e?-1:1),u=0;u<o;u++){e&&(l*=-1);for(var c=u*s,d=1==l?0:s-1,f=1==l?s:0;d!==f;d+=l){var g=c+d,p=n[g],m=255&p,v=(65280&p)>>8,b=(16711680&p)>>16,w=this.nearestColor(p),y=255&w,C=(65280&w)>>8,S=(16711680&w)>>16;if(n[g]=255<<24|S<<16|C<<8|y,this.dithDelta)if(this.colorDist([m,v,b],[y,C,S])<this.dithDelta)continue;for(var M=m-y,I=v-C,D=b-S,k=1==l?0:a.length-1,A=1==l?a.length:0;k!==A;k+=l){var O=a[k][1]*l,P=a[k][2],E=P*s;if(O+d>=0&&O+d<s&&P+u>=0&&P+u<o){var F=a[k][0],U=g+(E+O),G=255&n[U],j=(65280&n[U])>>8,q=(16711680&n[U])>>16,z=Math.max(0,Math.min(255,G+M*F)),L=Math.max(0,Math.min(255,j+I*F)),H=Math.max(0,Math.min(255,q+D*F));n[U]=255<<24|H<<16|L<<8|z}}}}return n},a.prototype.buildPal=function(t){if(!(this.palLocked||this.idxrgb.length>0&&this.idxrgb.length<=this.colors)){var i=this.histogram,e=function(t,i){var e=[];for(var r in t)e.push(r);return v.call(e,(function(e,r){return i?t[r]-t[e]:t[e]-t[r]}))}(i,!0);if(0==e.length)throw"Nothing has been sampled, palette cannot be built.";switch(this.method){case 1:for(var r=this.initColors,a=i[e[r-1]],h=e.slice(0,r),n=r,s=e.length;n<s&&i[e[n]]==a;)h.push(e[n++]);this.hueStats&&this.hueStats.inject(h);break;case 2:h=e}h=h.map((function(t){return+t})),this.reducePal(h),!t&&this.reIndex&&this.sortPal(),this.useCache&&this.cacheHistogram(h),this.palLocked=!0}},a.prototype.palette=function(t,i){return this.buildPal(i),t?this.idxrgb:new Uint8Array(new Uint32Array(this.idxi32).buffer)},a.prototype.prunePal=function(t){for(var i,e=0;e<this.idxrgb.length;e++)t[e]||(i=this.idxi32[e],this.idxrgb[e]=null,this.idxi32[e]=null,delete this.i32idx[i]);if(this.reIndex){for(var r=[],a=[],h={},n=(e=0,0);e<this.idxrgb.length;e++)this.idxrgb[e]&&(i=this.idxi32[e],r[n]=this.idxrgb[e],h[i]=n,a[n]=i,n++);this.idxrgb=r,this.idxi32=a,this.i32idx=h}},a.prototype.reducePal=function(t){if(this.idxrgb.length>this.colors){for(var i,e=t.length,r={},a=0,h=!1,n=0;n<e;n++)a!=this.colors||h||(this.prunePal(r),h=!0),i=this.nearestIndex(t[n]),a<this.colors&&!r[i]&&(r[i]=!0,a++);h||(this.prunePal(r),h=!0)}else{var s=t.map((function(t){return[255&t,(65280&t)>>8,(16711680&t)>>16]})),o=e=s.length,l=this.initDist;if(o>this.colors){for(;o>this.colors;){var u=[];for(n=0;n<e;n++){var c=s[n];t[n];if(c)for(var d=n+1;d<e;d++){var f=s[d],g=t[d];if(f){var p=this.colorDist(c,f);p<l&&(u.push([d,f,g,p]),delete s[d],o--)}}}l+=o>3*this.colors?this.initDist:this.distIncr}if(o<this.colors){v.call(u,(function(t,i){return i[3]-t[3]}));for(var m=0;o<this.colors;)s[u[m][0]]=u[m][1],o++,m++}}for(e=s.length,n=0;n<e;n++)s[n]&&(this.idxrgb.push(s[n]),this.idxi32.push(t[n]),this.i32idx[t[n]]=this.idxi32.length-1,this.i32rgb[t[n]]=s[n])}},a.prototype.colorStats1D=function(t){for(var i,e=this.histogram,r=t.length,a=0;a<r;a++)(4278190080&(i=t[a]))>>24!=0&&(this.hueStats&&this.hueStats.check(i),i in e?e[i]++:e[i]=1)},a.prototype.colorStats2D=function(t,i){var e=this.boxSize[0],r=this.boxSize[1],a=e*r,h=function(t,i,e,r){for(var a=t%e,h=i%r,n=t-a,s=i-h,o=[],l=0;l<i;l+=r)for(var u=0;u<t;u+=e)o.push({x:u,y:l,w:u==n?a:e,h:l==s?h:r});return o}(i,t.length/i,e,r),n=this.histogram,s=this;h.forEach((function(e){var r,h=Math.max(Math.round(e.w*e.h/a)*s.boxPxls,2),o={};!function(t,i,e){var r=t,a=r.y*i+r.x,h=(r.y+r.h-1)*i+(r.x+r.w-1),n=0,s=i-r.w+1,o=a;do{e.call(this,o),o+=++n%r.w==0?s:1}while(o<=h)}(e,i,(function(i){(4278190080&(r=t[i]))>>24!=0&&(s.hueStats&&s.hueStats.check(r),r in n?n[r]++:r in o?++o[r]>=h&&(n[r]=o[r]):o[r]=1)}))})),this.hueStats&&this.hueStats.inject(n)},a.prototype.sortPal=function(){var t=this;this.idxi32.sort((function(i,e){var r=t.i32idx[i],a=t.i32idx[e],h=t.idxrgb[r],n=t.idxrgb[a],s=f(h[0],h[1],h[2]),o=f(n[0],n[1],n[2]),l=h[0]==h[1]&&h[1]==h[2]?-1:g(s.h,t.hueGroups),u=(n[0]==n[1]&&n[1]==n[2]?-1:g(o.h,t.hueGroups))-l;if(u)return-u;var c=+o.l.toFixed(2)-+s.l.toFixed(2);if(c)return-c;var d=+o.s.toFixed(2)-+s.s.toFixed(2);return d?-d:void 0})),this.idxi32.forEach((function(i,e){t.idxrgb[e]=t.i32rgb[i],t.i32idx[i]=e}))},a.prototype.nearestColor=function(t){var i=this.nearestIndex(t);return null===i?0:this.idxi32[i]},a.prototype.nearestIndex=function(t){if((4278190080&t)>>24==0)return null;if(this.useCache&&""+t in this.i32idx)return this.i32idx[t];for(var i,e=1e3,r=[255&t,(65280&t)>>8,(16711680&t)>>16],a=this.idxrgb.length,h=0;h<a;h++)if(this.idxrgb[h]){var n=this.colorDist(r,this.idxrgb[h]);n<e&&(e=n,i=h)}return i},a.prototype.cacheHistogram=function(t){for(var i=0,e=t[i];i<t.length&&this.histogram[e]>=this.cacheFreq;e=t[i++])this.i32idx[e]=this.nearestIndex(e)},h.prototype.check=function(t){this.groupsFull==this.numGroups+1&&(this.check=function(){});var i=255&t,e=(65280&t)>>8,r=(16711680&t)>>16,a=i==e&&e==r?-1:g(f(i,e,r).h,this.numGroups),h=this.stats[a],n=this.minCols;h.num++,h.num>n||(h.num==n&&this.groupsFull++,h.num<=n&&this.stats[a].cols.push(t))},h.prototype.inject=function(t){for(var i=-1;i<this.numGroups;i++)if(this.stats[i].num<=this.minCols)switch(p(t)){case"Array":this.stats[i].cols.forEach((function(i){-1==t.indexOf(i)&&t.push(i)}));break;case"Object":this.stats[i].cols.forEach((function(i){t[i]?t[i]++:t[i]=1}))}};var n=.2126,s=.7152,o=.0722;function l(t,i,e){return Math.sqrt(n*t*t+s*i*i+o*e*e)}var u=Math.sqrt(65025);function c(t,i){var e=i[0]-t[0],r=i[1]-t[1],a=i[2]-t[2];return Math.sqrt(n*e*e+s*r*r+o*a*a)/u}function d(t,i){var e=Math.abs(i[0]-t[0]),r=Math.abs(i[1]-t[1]),a=Math.abs(i[2]-t[2]);return(n*e+s*r+o*a)/254.99999999999997}function f(t,i,e){var r,a,h,n,s;if(t/=255,i/=255,e/=255,(r=Math.max(t,i,e))==(a=Math.min(t,i,e)))h=n=0;else{switch(s=r-a,n=(r+a)/2>.5?s/(2-r-a):s/(r+a),r){case t:h=(i-e)/s+(i<e?6:0);break;case i:h=(e-t)/s+2;break;case e:h=(t-i)/s+4}h/=6}return{h:h,s:n,l:l(t,i,e)}}function g(t,i){var e=1/i,r=e/2;if(t>=1-r||t<=r)return 0;for(var a=1;a<i;a++){var h=a*e;if(t>=h-r&&t<=h+r)return a}}function p(t){return Object.prototype.toString.call(t).slice(8,-1)}var m,v="xyzvwtursopqmnklhijfgdeabc"==(m="abcdefghijklmnopqrstuvwxyz").split("").sort((function(t,i){return~~(m.indexOf(i)/2.3)-~~(m.indexOf(t)/2.3)})).join("")?Array.prototype.sort:function(t){var i=p(this[0]);if("Number"==i||"String"==i){for(var e,r={},a=this.length,h=0;h<a;h++)e=this[h],r[e]||0===r[e]||(r[e]=h);return this.sort((function(i,e){return t(i,e)||r[i]-r[e]}))}r=this.map((function(t){return t}));return this.sort((function(i,e){return t(i,e)||r.indexOf(i)-r.indexOf(e)}))};function x(t,i){var e,r,a,h;switch(p(t)){case"ImageData":h=(e=e||t).height,r="CanvasPixelArray"==p(e.data)?new Uint8Array(e.data):e.data;case"Array":case"CanvasPixelArray":r=r||new Uint8Array(t);case"Uint8Array":case"Uint8ClampedArray":r=r||t,a=new Uint32Array(r.buffer);case"Uint32Array":a=a||t,r=r||new Uint8Array(a.buffer),i=i||a.length,h=a.length/i}return{can:undefined,ctx:undefined,imgd:e,buf8:r,buf32:a,width:i,height:h}}try{var b=1;if("undefined"==typeof OffscreenCanvas)throw new Error("Impossible to create OffscreenCanvas in this web environment.");for(var w=await fetch(t),y=await w.blob(),C=await createImageBitmap(y,{premultiplyAlpha:"premultiply",colorSpaceConversion:"default",resizeQuality:"high"});C.width*b*C.height*b>e;)b-=.01;var S=new OffscreenCanvas(Math.floor(C.width*b),Math.floor(C.height*b)),M=S.getContext("2d");return M.imageSmoothingEnabled=!1,M.globalCompositeOperation="source-over",M.drawImage(C,0,0,S.width,S.height),k(D(M.getImageData(0,0,S.width,S.height),i),r)}catch(a){b=1;try{fetch(t).then((t=>t.blob())).then((t=>createImageBitmap(image_data,{premultiplyAlpha:"premultiply",colorSpaceConversion:"default",resizeQuality:"high"}).then((t=>{for(;I.width*b*I.height*b>e;)b-=.01;var a=document.createElement("canvas");a.width=Math.floor(I.width*b),a.height=Math.floor(I.height*b);var h=a.getContext("2d");return h.imageSmoothingEnabled=!1,h.globalCompositeOperation="source-over",h.drawImage(t,0,0,Math.floor(I.width*b),Math.floor(I.height*b)),k(D(h.getImageData(0,0,Math.floor(I.width*b),Math.floor(I.height*b)),i),r)}))))}catch(a){var I=new Image;I.onload=(()=>{for(;I.width*b*I.height*b>e;)b-=.01;var t=document.createElement("canvas");t.width=Math.floor(I.width*b),t.height=Math.floor(I.height*b);var a=t.getContext("2d");return a.imageSmoothingEnabled=!1,a.globalCompositeOperation="source-over",a.drawImage(I,0,0,Math.floor(I.width*b),Math.floor(I.height*b)),k(D(a.getImageData(0,0,Math.floor(I.width*b),Math.floor(I.height*b)),i),r)})(),I.src=t}}function D(t,i=0){if(i>=1&&i<99999999){r=!1;var e=new a({colors:i,method:2,minHueCols:0,dithKern:null,dithSerp:!1});e.sample(t);e.palette(!0);var h=e.reduce(t);t.data.set(h)}return t}function k(t,i){try{if("undefined"==typeof OffscreenCanvas)throw new Error("Impossible to create OffscreenCanvas in this web environment.");var e=new OffscreenCanvas(t.width,t.height);return(r=e.getContext("bitmaprenderer")).imageSmoothingEnabled=!1,createImageBitmap(t,{premultiplyAlpha:"premultiply",colorSpaceConversion:"default",resizeQuality:"high"}).then((t=>{r.transferFromImageBitmap(t);var a=i?{type:"image/jpeg",quality:.75}:{type:"image/png"};return e.convertToBlob(a).then((t=>{return(i=t,new Promise(((t,e)=>{var r=new FileReader;r.onload=()=>t(r.result),r.readAsDataURL(i)}))).then((t=>t));var i}))}))}catch(a){var r;return(e=document.createElement("canvas")).width=t.width,e.height=t.height,(r=e.getContext("2d")).imageSmoothingEnabled=!1,r.globalCompositeOperation="source-over",r.putImageData(t,0,0),i?e.toDataURL("image/jpeg",.75):e.toDataURL("image/png")}}};`
+const rgb_quant_process_function = new AsyncFunction(`var t=async function(t,i){"use strict";function r(t){if(t=t||{},this.method=t.method||2,this.colors=t.colors||256,this.initColors=t.initColors||4096,this.initDist=t.initDist||.01,this.distIncr=t.distIncr||.005,this.hueGroups=t.hueGroups||10,this.satGroups=t.satGroups||10,this.lumGroups=t.lumGroups||10,this.minHueCols=t.minHueCols||0,this.hueStats=this.minHueCols?new s(this.hueGroups,this.minHueCols):null,this.boxSize=t.boxSize||[64,64],this.boxPxls=t.boxPxls||2,this.palLocked=!1,this.dithKern=t.dithKern||null,this.dithSerp=t.dithSerp||!1,this.dithDelta=t.dithDelta||0,this.histogram={},this.idxrgb=t.palette?t.palette.slice(0):[],this.idxi32=[],this.i32idx={},this.i32rgb={},this.useCache=!1!==t.useCache,this.cacheFreq=t.cacheFreq||10,this.reIndex=t.reIndex||0==this.idxrgb.length,this.colorDist="manhattan"==t.colorDist?l:u,this.idxrgb.length>0){var i=this;this.idxrgb.forEach((function(t,r){var s=(255<<24|t[2]<<16|t[1]<<8|t[0])>>>0;i.idxi32[r]=s,i.i32idx[s]=r,i.i32rgb[s]=t}))}}function s(t,i){this.numGroups=t,this.minCols=i,this.stats={};for(var r=-1;r<t;r++)this.stats[r]={num:0,cols:[]};this.groupsFull=0}r.prototype.sample=function(t,i){if(this.palLocked)throw"Cannot sample additional images, palette already assembled.";var r=g(t,i);switch(this.method){case 1:this.colorStats1D(r.buf32);break;case 2:this.colorStats2D(r.buf32,r.width)}},r.prototype.reduce=function(t,i,r,s){if(this.palLocked||this.buildPal(),r=r||this.dithKern,s=void 0!==s?s:this.dithSerp,i=i||1,r)var e=this.dither(t,r,s);else for(var h=g(t).buf32,n=h.length,o=(e=new Uint32Array(n),0);o<n;o++){var a=h[o];e[o]=this.nearestColor(a)}if(1==i)return new Uint8Array(e.buffer);if(2==i){var u=[];for(n=e.length,o=0;o<n;o++){a=e[o];u[o]=this.i32idx[a]}return u}},r.prototype.dither=function(t,i,r){var s={FloydSteinberg:[[7/16,1,0],[3/16,-1,1],[5/16,0,1],[1/16,1,1]],FalseFloydSteinberg:[[3/8,1,0],[3/8,0,1],[2/8,1,1]],Stucki:[[8/42,1,0],[4/42,2,0],[2/42,-2,1],[4/42,-1,1],[8/42,0,1],[4/42,1,1],[2/42,2,1],[1/42,-2,2],[2/42,-1,2],[4/42,0,2],[2/42,1,2],[1/42,2,2]],Atkinson:[[1/8,1,0],[1/8,2,0],[1/8,-1,1],[1/8,0,1],[1/8,1,1],[1/8,0,2]],Jarvis:[[7/48,1,0],[5/48,2,0],[3/48,-2,1],[5/48,-1,1],[7/48,0,1],[5/48,1,1],[3/48,2,1],[1/48,-2,2],[3/48,-1,2],[5/48,0,2],[3/48,1,2],[1/48,2,2]],Burkes:[[.25,1,0],[4/32,2,0],[2/32,-2,1],[4/32,-1,1],[.25,0,1],[4/32,1,1],[2/32,2,1]],Sierra:[[5/32,1,0],[3/32,2,0],[2/32,-2,1],[4/32,-1,1],[5/32,0,1],[4/32,1,1],[2/32,2,1],[2/32,-1,2],[3/32,0,2],[2/32,1,2]],TwoSierra:[[.25,1,0],[3/16,2,0],[1/16,-2,1],[2/16,-1,1],[3/16,0,1],[2/16,1,1],[1/16,2,1]],SierraLite:[[.5,1,0],[1/4,-1,1],[1/4,0,1]]};if(!i||!s[i])throw"Unknown dithering kernel: "+i;for(var e=s[i],h=g(t),n=h.buf32,o=h.width,a=h.height,u=(n.length,r?-1:1),l=0;l<a;l++){r&&(u*=-1);for(var c=l*o,d=1==u?0:o-1,f=1==u?o:0;d!==f;d+=u){var p=c+d,x=n[p],v=255&x,b=(65280&x)>>8,m=(16711680&x)>>16,y=this.nearestColor(x),w=255&y,S=(65280&y)>>8,C=(16711680&y)>>16;if(n[p]=255<<24|C<<16|S<<8|w,this.dithDelta)if(this.colorDist([v,b,m],[w,S,C])<this.dithDelta)continue;for(var k=v-w,D=b-S,A=m-C,M=1==u?0:e.length-1,P=1==u?e.length:0;M!==P;M+=u){var F=e[M][1]*u,G=e[M][2],I=G*o;if(F+d>=0&&F+d<o&&G+l>=0&&G+l<a){var U=e[M][0],j=p+(I+F),q=255&n[j],H=(65280&n[j])>>8,O=(16711680&n[j])>>16,z=Math.max(0,Math.min(255,q+k*U)),L=Math.max(0,Math.min(255,H+D*U)),E=Math.max(0,Math.min(255,O+A*U));n[j]=255<<24|E<<16|L<<8|z}}}}return n},r.prototype.buildPal=function(t){if(!(this.palLocked||this.idxrgb.length>0&&this.idxrgb.length<=this.colors)){var i=this.histogram,r=function(t,i){var r=[];for(var s in t)r.push(s);return x.call(r,(function(r,s){return i?t[s]-t[r]:t[r]-t[s]}))}(i,!0);if(0==r.length)throw"Nothing has been sampled, palette cannot be built.";switch(this.method){case 1:for(var s=this.initColors,e=i[r[s-1]],h=r.slice(0,s),n=s,o=r.length;n<o&&i[r[n]]==e;)h.push(r[n++]);this.hueStats&&this.hueStats.inject(h);break;case 2:h=r}h=h.map((function(t){return+t})),this.reducePal(h),!t&&this.reIndex&&this.sortPal(),this.useCache&&this.cacheHistogram(h),this.palLocked=!0}},r.prototype.palette=function(t,i){return this.buildPal(i),t?this.idxrgb:new Uint8Array(new Uint32Array(this.idxi32).buffer)},r.prototype.prunePal=function(t){for(var i,r=0;r<this.idxrgb.length;r++)t[r]||(i=this.idxi32[r],this.idxrgb[r]=null,this.idxi32[r]=null,delete this.i32idx[i]);if(this.reIndex){for(var s=[],e=[],h={},n=(r=0,0);r<this.idxrgb.length;r++)this.idxrgb[r]&&(i=this.idxi32[r],s[n]=this.idxrgb[r],h[i]=n,e[n]=i,n++);this.idxrgb=s,this.idxi32=e,this.i32idx=h}},r.prototype.reducePal=function(t){if(this.idxrgb.length>this.colors){for(var i,r=t.length,s={},e=0,h=!1,n=0;n<r;n++)e!=this.colors||h||(this.prunePal(s),h=!0),i=this.nearestIndex(t[n]),e<this.colors&&!s[i]&&(s[i]=!0,e++);h||(this.prunePal(s),h=!0)}else{var o=t.map((function(t){return[255&t,(65280&t)>>8,(16711680&t)>>16]})),a=r=o.length,u=this.initDist;if(a>this.colors){for(;a>this.colors;){var l=[];for(n=0;n<r;n++){var c=o[n];t[n];if(c)for(var d=n+1;d<r;d++){var f=o[d],p=t[d];if(f){var g=this.colorDist(c,f);g<u&&(l.push([d,f,p,g]),delete o[d],a--)}}}u+=a>3*this.colors?this.initDist:this.distIncr}if(a<this.colors){x.call(l,(function(t,i){return i[3]-t[3]}));for(var v=0;a<this.colors;)o[l[v][0]]=l[v][1],a++,v++}}for(r=o.length,n=0;n<r;n++)o[n]&&(this.idxrgb.push(o[n]),this.idxi32.push(t[n]),this.i32idx[t[n]]=this.idxi32.length-1,this.i32rgb[t[n]]=o[n])}},r.prototype.colorStats1D=function(t){for(var i,r=this.histogram,s=t.length,e=0;e<s;e++)(4278190080&(i=t[e]))>>24!=0&&(this.hueStats&&this.hueStats.check(i),i in r?r[i]++:r[i]=1)},r.prototype.colorStats2D=function(t,i){var r=this.boxSize[0],s=this.boxSize[1],e=r*s,h=function(t,i,r,s){for(var e=t%r,h=i%s,n=t-e,o=i-h,a=[],u=0;u<i;u+=s)for(var l=0;l<t;l+=r)a.push({x:l,y:u,w:l==n?e:r,h:u==o?h:s});return a}(i,t.length/i,r,s),n=this.histogram,o=this;h.forEach((function(r){var s,h=Math.max(Math.round(r.w*r.h/e)*o.boxPxls,2),a={};!function(t,i,r){var s=t,e=s.y*i+s.x,h=(s.y+s.h-1)*i+(s.x+s.w-1),n=0,o=i-s.w+1,a=e;do{r.call(this,a),a+=++n%s.w==0?o:1}while(a<=h)}(r,i,(function(i){(4278190080&(s=t[i]))>>24!=0&&(o.hueStats&&o.hueStats.check(s),s in n?n[s]++:s in a?++a[s]>=h&&(n[s]=a[s]):a[s]=1)}))})),this.hueStats&&this.hueStats.inject(n)},r.prototype.sortPal=function(){var t=this;this.idxi32.sort((function(i,r){var s=t.i32idx[i],e=t.i32idx[r],h=t.idxrgb[s],n=t.idxrgb[e],o=c(h[0],h[1],h[2]),a=c(n[0],n[1],n[2]),u=h[0]==h[1]&&h[1]==h[2]?-1:d(o.h,t.hueGroups),l=(n[0]==n[1]&&n[1]==n[2]?-1:d(a.h,t.hueGroups))-u;if(l)return-l;var f=+a.l.toFixed(2)-+o.l.toFixed(2);if(f)return-f;var p=+a.s.toFixed(2)-+o.s.toFixed(2);return p?-p:void 0})),this.idxi32.forEach((function(i,r){t.idxrgb[r]=t.i32rgb[i],t.i32idx[i]=r}))},r.prototype.nearestColor=function(t){var i=this.nearestIndex(t);return null===i?0:this.idxi32[i]},r.prototype.nearestIndex=function(t){if((4278190080&t)>>24==0)return null;if(this.useCache&&""+t in this.i32idx)return this.i32idx[t];for(var i,r=1e3,s=[255&t,(65280&t)>>8,(16711680&t)>>16],e=this.idxrgb.length,h=0;h<e;h++)if(this.idxrgb[h]){var n=this.colorDist(s,this.idxrgb[h]);n<r&&(r=n,i=h)}return i},r.prototype.cacheHistogram=function(t){for(var i=0,r=t[i];i<t.length&&this.histogram[r]>=this.cacheFreq;r=t[i++])this.i32idx[r]=this.nearestIndex(r)},s.prototype.check=function(t){this.groupsFull==this.numGroups+1&&(this.check=function(){});var i=255&t,r=(65280&t)>>8,s=(16711680&t)>>16,e=i==r&&r==s?-1:d(c(i,r,s).h,this.numGroups),h=this.stats[e],n=this.minCols;h.num++,h.num>n||(h.num==n&&this.groupsFull++,h.num<=n&&this.stats[e].cols.push(t))},s.prototype.inject=function(t){for(var i=-1;i<this.numGroups;i++)if(this.stats[i].num<=this.minCols)switch(f(t)){case"Array":this.stats[i].cols.forEach((function(i){-1==t.indexOf(i)&&t.push(i)}));break;case"Object":this.stats[i].cols.forEach((function(i){t[i]?t[i]++:t[i]=1}))}};var e=.2126,h=.7152,n=.0722;function o(t,i,r){return Math.sqrt(e*t*t+h*i*i+n*r*r)}var a=Math.sqrt(65025);function u(t,i){var r=i[0]-t[0],s=i[1]-t[1],o=i[2]-t[2];return Math.sqrt(e*r*r+h*s*s+n*o*o)/a}function l(t,i){var r=Math.abs(i[0]-t[0]),s=Math.abs(i[1]-t[1]),o=Math.abs(i[2]-t[2]);return(e*r+h*s+n*o)/254.99999999999997}function c(t,i,r){var s,e,h,n,a;if(t/=255,i/=255,r/=255,(s=Math.max(t,i,r))==(e=Math.min(t,i,r)))h=n=0;else{switch(a=s-e,n=(s+e)/2>.5?a/(2-s-e):a/(s+e),s){case t:h=(i-r)/a+(i<r?6:0);break;case i:h=(r-t)/a+2;break;case r:h=(t-i)/a+4}h/=6}return{h:h,s:n,l:o(t,i,r)}}function d(t,i){var r=1/i,s=r/2;if(t>=1-s||t<=s)return 0;for(var e=1;e<i;e++){var h=e*r;if(t>=h-s&&t<=h+s)return e}}function f(t){return Object.prototype.toString.call(t).slice(8,-1)}var p,x="xyzvwtursopqmnklhijfgdeabc"==(p="abcdefghijklmnopqrstuvwxyz").split("").sort((function(t,i){return~~(p.indexOf(i)/2.3)-~~(p.indexOf(t)/2.3)})).join("")?Array.prototype.sort:function(t){var i=f(this[0]);if("Number"==i||"String"==i){for(var r,s={},e=this.length,h=0;h<e;h++)r=this[h],s[r]||0===s[r]||(s[r]=h);return this.sort((function(i,r){return t(i,r)||s[i]-s[r]}))}s=this.map((function(t){return t}));return this.sort((function(i,r){return t(i,r)||s.indexOf(i)-s.indexOf(r)}))};function g(t,i){var r,s,e,h;switch(f(t)){case"ImageData":h=(r=r||t).height,s="CanvasPixelArray"==f(r.data)?new Uint8Array(r.data):r.data;case"Array":case"CanvasPixelArray":s=s||new Uint8Array(t);case"Uint8Array":case"Uint8ClampedArray":s=s||t,e=new Uint32Array(s.buffer);case"Uint32Array":e=e||t,s=s||new Uint8Array(e.buffer),i=i||e.length,h=e.length/i}return{can:undefined,ctx:undefined,imgd:r,buf8:s,buf32:e,width:i,height:h}}return new Promise((function(s){var e=new r({colors:i,method:2,minHueCols:0,dithKern:null,dithSerp:!1});e.sample(t);e.palette(!0);var h=e.reduce(t);t.data.set(h),s(t)}))};`
     + "return t;")();
 
 /*
-var fu = async function(img, limit, resize_to, lossy) {
+var fu = async function(imagedata, limit) {
     
         "use strict";
-        limit = limit || 0;
        
         function RgbQuant(opts) {
        
@@ -936,197 +935,48 @@ var fu = async function(img, limit, resize_to, lossy) {
                 return desc ? obj[b] - obj[a] : obj[a] - obj[b];
             });
         }
-        
-        
-        try {
-        
-            var img_data; // Create image data
-            var scale = 1;
-        
-            if (typeof OffscreenCanvas === "undefined") {
-                throw new Error("Impossible to create OffscreenCanvas in this web environment.");
-            }
-            
-            // Worker based on BLOB  
-            var resA0 = await fetch(img); // Response
-            var blbA0 = await resA0.blob(); // Blob     
-            var bmpA0 = await createImageBitmap(blbA0, {
-                premultiplyAlpha: 'premultiply',
-                colorSpaceConversion: 'default',
-                resizeQuality: 'high'
+
+         return new Promise(function(resolve, _) {
+
+            // options
+            var q = new RgbQuant({
+                colors: limit,
+                method: 2,
+                minHueCols: 0,
+                dithKern: null,
+                dithSerp: false,
             });
-            
-            while (bmpA0.width * scale * bmpA0.height * scale > resize_to) { scale -= 0.01; }
-            
-            var canvasA0 = new OffscreenCanvas(Math.floor(bmpA0.width * scale), Math.floor(bmpA0.height * scale));
-            var ctxA0 = canvasA0.getContext("2d");
-            ctxA0.imageSmoothingEnabled = false;
-            ctxA0.globalCompositeOperation = "source-over";
-            ctxA0.drawImage(bmpA0, 0, 0, canvasA0.width, canvasA0.height);
-            img_data = ctxA0.getImageData(0, 0, canvasA0.width, canvasA0.height);
-            return do_export_thing(do_quantization_step(img_data, limit), lossy);
-      
-        } catch (e) {
-        
-            var img_data; // Create image data
-            var scale = 1;
-            
-            try {
-            
-                fetch(img).then((res) => res.blob()).then((blob) => {
-    
-                    return createImageBitmap(image_data, {
-                        premultiplyAlpha: 'premultiply',
-                        colorSpaceConversion: 'default',
-                        resizeQuality: 'high'
-                    }).then((btmp_i) => {
-                    
-                        while (image.width * scale * image.height * scale > resize_to) { scale -= 0.01; }
-                    
-                        var canvasA0 = document.createElement("canvas");
-                        canvasA0.width = Math.floor(image.width * scale);
-                        canvasA0.height = Math.floor(image.height * scale);
-                        var ctxA0 = canvasA0.getContext("2d");
-                        ctxA0.imageSmoothingEnabled = false;
-                        ctxA0.globalCompositeOperation = "source-over";
-                        ctxA0.drawImage(btmp_i, 0, 0, Math.floor(image.width * scale), Math.floor(image.height * scale));
-                        img_data = ctxA0.getImageData(0, 0, Math.floor(image.width * scale), Math.floor(image.height * scale)); // ImageData
-                        
-                        return do_export_thing(do_quantization_step(img_data, limit), lossy);
-                    
-                    });
-                
-                });
-            
-            }catch (e) {
-            
-                var image = new Image();
-                image.onload = (() => {
-                
-                    while (image.width * scale * image.height * scale > resize_to) { scale -= 0.01; }
-                    
-                    var canvasA0 = document.createElement("canvas");
-                    canvasA0.width = Math.floor(image.width * scale);
-                    canvasA0.height = Math.floor(image.height * scale);
-                    var ctxA0 = canvasA0.getContext("2d");
-                    ctxA0.imageSmoothingEnabled = false;
-                    ctxA0.globalCompositeOperation = "source-over";
-                    ctxA0.drawImage(image, 0, 0, Math.floor(image.width * scale), Math.floor(image.height * scale));
-                    img_data = ctxA0.getImageData(0, 0, Math.floor(image.width * scale), Math.floor(image.height * scale)); // ImageData
-                    
-                    return do_export_thing(do_quantization_step(img_data, limit), lossy);
-                })();
-                image.src = img;
-            }
-            
-        }
-        
-        function do_quantization_step(img_data, limit = 0) {
-       
-            if(limit >= 1 && limit < 99999999) {
-            
-                lossy = false;
-       
-                // options
-                var q = new RgbQuant({
-                    colors: limit,
-                    method: 2,
-                    minHueCols: 0,
-                    dithKern: null,
-                    dithSerp: false,
-                });
-        
-                // Analyze histograms
-                q.sample(img_data);
-         
-                var pal = q.palette(true);
-                var out = q.reduce(img_data);
-                img_data.data.set(out);
-            } 
-            
-            return img_data;
-        }
-        
-        function do_export_thing(img_data, lossy) {
-        
-            // Build base64 response
-            try {
-            
-                if (typeof OffscreenCanvas === "undefined") {
-                    throw new Error("Impossible to create OffscreenCanvas in this web environment.");
-                }
-                
-                var canvasB0 = new OffscreenCanvas(img_data.width, img_data.height);
-                var ctxB0 = canvasB0.getContext("bitmaprenderer");
-                ctxB0.imageSmoothingEnabled = false;
-                
-                return createImageBitmap(img_data, {
-                    premultiplyAlpha: 'premultiply',
-                    colorSpaceConversion: 'default',
-                    resizeQuality: 'high'
-                }).then((bmpB0) => {
-                
-                    ctxB0.transferFromImageBitmap(bmpB0);
-    
-                    var params = !lossy ? {type: "image/png"}: {type: "image/jpeg", quality: 0.75};
-                    return canvasB0.convertToBlob(params).then((blbB0) => {
-                    
-                        function blob_to_base64(blob) {
-                          return new Promise((resolve, _) => {
-                            var reader = new FileReader();
-                            reader.onload = () => resolve(reader.result);
-                            reader.readAsDataURL(blob);
-                          })
-                        }
-                        
-                        return blob_to_base64(blbB0).then((data_url) => {
-                        
-                             return data_url;
-                        });
-                    });
-                });
-               
-            }catch (e) {
-            
-                var canvasB0 = document.createElement("canvas");
-                canvasB0.width = img_data.width;
-                canvasB0.height = img_data.height;
-                var ctxB0 = canvasB0.getContext("2d");
-                ctxB0.imageSmoothingEnabled = false;
-                ctxB0.globalCompositeOperation = "source-over";
-                ctxB0.putImageData(img_data, 0, 0);
-                
-                if(!lossy) {
-                
-                    return canvasB0.toDataURL("image/png");
-                
-                }else {
-               
-                    return canvasB0.toDataURL("image/jpeg", 0.75);
-                }
-            }
-        }
-    }
+
+            // Analyze histograms
+            q.sample(imagedata);
+
+            var pal = q.palette(true);
+            var out = q.reduce(imagedata);
+            imagedata.data.set(out);
+
+            resolve(imagedata);
+        });
+}
 */
 
-const rgb_quant = (img, limit = 0, resize_to = 1920*1080, lossy = false, callback_function = () => {}, pool = null) => {
+const rgb_quant = (imagedata, limit, callback_function = () => {}, pool = null) => {
 
     (async () => {
 
         if(pool !== null) {
 
             const r = pool.exec(rgb_quant_process_function, [
-                img, limit, resize_to, lossy
+                imagedata, limit
             ]).catch((e) => {
 
-                return rgb_quant_process_function(img, limit, resize_to, lossy);
+                return rgb_quant_process_function(imagedata, limit);
             }).timeout(60 * 1000);
 
             callback_function(await r);
 
         }else {
 
-            const r = rgb_quant_process_function(img, limit, resize_to, lossy);
+            const r = rgb_quant_process_function(imagedata, limit);
             callback_function( await r);
         }
     })();

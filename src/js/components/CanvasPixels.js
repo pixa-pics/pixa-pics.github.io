@@ -2892,14 +2892,18 @@ class CanvasPixels extends React.Component {
             }
 
             element.offscreenCanvas = new OffscreenCanvas(pxl_width, pxl_height);
-            element.offscreenCanvas.context2d = element.offscreenCanvas.getContext("2d");
+            element.offscreenCanvas.context2d = element.offscreenCanvas.getContext("2d", {
+                desynchronized: true
+            });
 
         } catch (e) {
 
             element.offscreenCanvas = document.createElement("canvas");
             element.offscreenCanvas.width = pxl_width;
             element.offscreenCanvas.height = pxl_height;
-            element.offscreenCanvas.context2d = element.offscreenCanvas.getContext("2d");
+            element.offscreenCanvas.context2d = element.offscreenCanvas.getContext("2d", {
+                desynchronized: true
+            });
         }
 
 

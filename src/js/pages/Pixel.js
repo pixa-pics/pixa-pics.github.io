@@ -10,7 +10,7 @@ const CanvasPixels = React.lazy(() => import("../components/CanvasPixels"));
 import { withStyles } from "@material-ui/core";
 import pool from "../utils/worker-pool";
 
-import {Fade, ListItem, Typography, Backdrop, Slider, SwipeableDrawer, Drawer, Toolbar, Tabs, Tab, Menu, ListSubheader, ListItemText, ListItemIcon} from "@material-ui/core";
+import {ListItem, Typography, Backdrop, Slider, SwipeableDrawer, Drawer, Tabs, Tab, Menu, ListSubheader, ListItemText, ListItemIcon} from "@material-ui/core";
 import TouchRipple from "@material-ui/core/ButtonBase/TouchRipple";
 
 import { HISTORY } from "../utils/constants";
@@ -26,7 +26,6 @@ import red from "@material-ui/core/colors/red";
 import PixelToolboxSwipeableViews from "../components/PixelToolboxSwipeableViews";
 import PixelDialogCreate from "../components/PixelDialogCreate";
 import api from "../utils/api";
-import FileImportIcon from "../icons/FileImport";
 import ContrastCircleIcon from "../icons/ContrastCircle";
 import LessColorIcon from "../icons/LessColor";
 import ImageSmoothIcon from "../icons/ImageSmooth";
@@ -48,6 +47,7 @@ import ShufflingSpanText from "../components/ShufflingSpanText";
 import ImageFileDialog from "../components/ImageFileDialog";
 
 import {base64png_to_xbrz_svg} from "../utils/png-xbrz-svg";
+import {file_to_base64, base64_to_bitmap, bitmap_to_imagedata, imagedata_to_base64} from "../utils/img_manipulation";
 
 import {postJSON} from "../utils/load-json";
 
@@ -897,16 +897,6 @@ class Pixel extends React.Component {
         };
     };
 
-    get_base64 = (file) => {
-
-        return new Promise((resolve, _) => {
-            let reader = new FileReader();
-            reader.onload = () => resolve(reader.result);
-            reader.onerror = () => resolve(URL.createObjectURL(file));
-            reader.readAsDataURL(file);
-        });
-    };
-
     _handle_file_upload = (event) => {
 
         const files = (event.target || {}).files || (event.srcElement || {}).files || (event.currentTarget || {}).files || ((event.path || [])[0] || {}).files || [];
@@ -929,12 +919,12 @@ class Pixel extends React.Component {
             const { set_canvas_from_image } = this.state._canvas;
 
             this._handle_load("image_preload");
-            this.get_base64(smart_file).then((b) => {
+            file_to_base64(smart_file, (base64) => {
 
                 const max_original_size = is_mobile_or_tablet ? Math.sqrt(1920 * 1280): Math.sqrt(4096 * 2160);
                 const max_size = is_mobile_or_tablet ? Math.sqrt(1280 * 720): Math.sqrt(1920 * 1280);
                 const max_color = is_mobile_or_tablet ? 1024: 2048;
-                const max_original_color = max_color;
+                const max_original_color = 1/0;
 
                 let ratio_l_l2 = is_mobile_or_tablet ? 2: 4;
                 let min_size = is_mobile_or_tablet ? 0: 0;
@@ -944,165 +934,239 @@ class Pixel extends React.Component {
                 const resize_to = Math.min(parseInt(max_size * max_size), Math.max(parseInt(_import_size * _import_size), parseInt(min_size * min_size)));
                 const limit_color_number = Math.min(max_color, Math.max(parseInt(_import_size * ratio_l_l2), min_color));
 
-                import("../utils/rgb_quant").then(async({rgb_quant}) => {
+                base64_to_bitmap(base64, ( bitmap ) => {
 
-                    rgb_quant(b,  max_original_color, resize_original_to, Boolean(["1", "2", "3"].includes(_import_colorize)), (data) => {
+                    bitmap_to_imagedata(bitmap, resize_original_to, (imagedata) => {
 
-                        data = data || null;
-                        if(data === null) {
+                        import("../utils/rgb_quant").then(async({rgb_quant}) => {
 
-                            data = b;
-                            actions.trigger_snackbar("My home browser is strict or erroneous, I will try to skip some adjustments...", 5700);
-                            actions.jamy_update("sad");
-                        }
+                            if(_import_colorize === "1") {
 
-                        if(_import_colorize === "1") {
+                                this._handle_load_complete("image_preload", {});
+                                this._handle_load("image_ai");
+                                actions.trigger_snackbar("Getting associated with DeepAI.org systems", 5700);
+                                actions.jamy_update("angry");
 
-                            this._handle_load_complete("image_preload", {});
-                            this._handle_load("image_ai");
-                            actions.trigger_snackbar("Getting associated with DeepAI.org systems", 5700);
-                            actions.jamy_update("angry");
-                            postJSON("https://deepai.pixa-pics.workers.dev/colorizer", data, (err, res) => {
+                                imagedata_to_base64(imagedata, (base64_resized) => {
 
-                                rgb_quant(res, limit_color_number, resize_to, false,(res2) => {
+                                    postJSON("https://deepai.pixa-pics.workers.dev/colorizer", base64_resized, (err, res) => {
 
-                                    let img = new Image();
-                                    img.addEventListener("load", () => {
+                                        base64_to_bitmap(res, (bitmap_received) => {
 
-                                        this._handle_load_complete("image_ai", {});
-                                        set_canvas_from_image(img, data, {}, true);
-                                        this._handle_menu_close();
-                                    });
-                                    img.src = res2;
+                                            bitmap_to_imagedata(bitmap_received, resize_original_to, (imagedata_received) => {
+
+                                                rgb_quant(imagedata_received, limit_color_number,(imagedata2) => {
+
+                                                    imagedata_to_base64(imagedata2, (base642) => {
+
+                                                        base64_to_bitmap(base642, ( bitmap2 ) => {
+
+                                                            bitmap_to_imagedata(bitmap2, resize_to, (imagedata3) => {
+
+                                                                imagedata_to_base64(imagedata3, (base643) => {
+
+                                                                    let img = new Image();
+                                                                    img.addEventListener("load", () => {
+
+                                                                        this._handle_load_complete("image_ai", {});
+                                                                        set_canvas_from_image(img, base642, {}, true);
+                                                                        this._handle_menu_close();
+                                                                    });
+                                                                    img.src = base643;
+
+                                                                }, pool);
+                                                            });
+                                                        }, pool);
+                                                    }, pool);
+                                                }, pool);
+                                            });
+                                        }, pool);
+                                    }, "application/text");
                                 }, pool);
 
-                            }, "application/text");
+                            }else if(_import_colorize === "2") {
 
-                        }else if(_import_colorize === "2") {
+                                this._handle_load_complete("image_preload", {});
+                                this._handle_load("image_ai");
+                                actions.trigger_snackbar("Getting associated with DeepAI.org systems", 5700);
+                                actions.jamy_update("angry");
 
-                            this._handle_load_complete("image_preload", {});
-                            this._handle_load("image_ai");
-                            actions.trigger_snackbar("Getting associated with DeepAI.org systems", 5700);
-                            actions.jamy_update("angry");
+                                imagedata_to_base64(imagedata, (base64_resized) => {
 
-                            postJSON("https://deepai.pixa-pics.workers.dev/waifu2x", data, (err, res) => {
+                                    postJSON("https://deepai.pixa-pics.workers.dev/waifu2x", base64_resized, (err, res) => {
 
-                                rgb_quant(res, limit_color_number, resize_to, false,(res2) => {
+                                        base64_to_bitmap(res, (bitmap_received) => {
 
-                                    let img = new Image();
-                                    img.addEventListener("load", () => {
+                                            bitmap_to_imagedata(bitmap_received, resize_original_to, (imagedata_received) => {
 
-                                        this._handle_load_complete("image_ai", {});
-                                        set_canvas_from_image(img, data, {}, true);
-                                        this._handle_menu_close();
-                                    });
-                                    img.src = res2;
+                                                rgb_quant(imagedata_received, limit_color_number,(imagedata2) => {
+
+                                                    imagedata_to_base64(imagedata2, (base642) => {
+
+                                                        base64_to_bitmap(base642, ( bitmap2 ) => {
+
+                                                            bitmap_to_imagedata(bitmap2, resize_to, (imagedata3) => {
+
+                                                                imagedata_to_base64(imagedata3, (base643) => {
+
+                                                                    let img = new Image();
+                                                                    img.addEventListener("load", () => {
+
+                                                                        this._handle_load_complete("image_ai", {});
+                                                                        set_canvas_from_image(img, base642, {}, true);
+                                                                        this._handle_menu_close();
+                                                                    });
+                                                                    img.src = base643;
+
+                                                                }, pool);
+                                                            });
+                                                        }, pool);
+                                                    }, pool);
+                                                }, pool);
+                                            });
+                                        }, pool);
+                                    }, "application/text");
                                 }, pool);
 
-                            }, "application/text");
-                        }else if(_import_colorize === "3") {
+                            }else if(_import_colorize === "3") {
 
-                            this._handle_load_complete("image_preload", {});
-                            this._handle_load("image_ai");
-                            actions.trigger_snackbar("Getting associated with DeepAI.org systems", 7500);
-                            actions.jamy_update("angry");
+                                this._handle_load_complete("image_preload", {});
+                                this._handle_load("image_ai");
+                                actions.trigger_snackbar("Getting associated with DeepAI.org systems", 7500);
+                                actions.jamy_update("angry");
 
-                            postJSON("https://deepai.pixa-pics.workers.dev/colorizer", data, (err, res) => {
+                                imagedata_to_base64(imagedata, (base64_resized) => {
 
-                                postJSON("https://deepai.pixa-pics.workers.dev/waifu2x",  res, (err2, res2) => {
+                                    postJSON("https://deepai.pixa-pics.workers.dev/colorizer", base64_resized, (err, res) => {
 
-                                    rgb_quant(res2, limit_color_number, resize_to, false, (res3) => {
+                                        postJSON("https://deepai.pixa-pics.workers.dev/waifu2x",  res, (err2, res2) => {
 
-                                        let img = new Image();
-                                        img.addEventListener("load", () => {
+                                            base64_to_bitmap(res2, (bitmap_received) => {
 
-                                            this._handle_load_complete("image_ai", {});
-                                            set_canvas_from_image(img, data, {}, true);
-                                            this._handle_menu_close();
-                                        });
-                                        img.src = res3;
-                                    }, pool);
+                                                bitmap_to_imagedata(bitmap_received, resize_original_to, (imagedata_received) => {
 
-                                }, "application/text");
+                                                    rgb_quant(imagedata_received, limit_color_number, (imagedata2) => {
 
-                            }, "application/text");
-                        }else {
+                                                        imagedata_to_base64(imagedata2, (base642) => {
 
-                            console.log(limit_color_number);
-                            rgb_quant(data, limit_color_number, resize_to, false,(res) => {
+                                                            base64_to_bitmap(base642, ( bitmap2 ) => {
 
-                                res = res || null;
+                                                                bitmap_to_imagedata(bitmap2, resize_to, (imagedata3) => {
 
-                                if(res === null) {
+                                                                    imagedata_to_base64(imagedata3, (base643) => {
 
-                                    window.dispatchEvent(new Event("art-upload-browsererror"));
-                                    this._handle_load_complete("image_preload", {});
-                                    this._handle_load("browser");
-                                    actions.trigger_sfx("alert_high-intensity", 0.6);
-                                    actions.jamy_update("flirty");
-                                    actions.trigger_snackbar("That's our end my little diddy! My instinctive dwelling require a browser I am supporting.", 6000);
+                                                                        let img = new Image();
+                                                                        img.addEventListener("load", () => {
 
-                                    setTimeout(() => {
+                                                                            this._handle_load_complete("image_ai", {});
+                                                                            set_canvas_from_image(img, base642, {}, true);
+                                                                            this._handle_menu_close();
+                                                                        });
+                                                                        img.src = base643;
 
-                                        actions.trigger_sfx("alert_high-intensity", 0.7);
-                                        actions.jamy_update("sad");
-                                        actions.trigger_snackbar("Abandon, misfortune, sadness... I can't live in this strange place.", 7000);
+                                                                    }, pool);
+                                                                });
+                                                            }, pool);
+                                                        }, pool);
+
+                                                    }, pool);
+                                                });
+                                            }, pool);
+                                        }, "application/text");
+                                    }, "application/text");
+                                }, pool);
+                            }else {
+
+                                rgb_quant(imagedata, limit_color_number, (imagedata2) => {
+
+                                    imagedata2 = imagedata2 || null;
+
+                                    if(imagedata2 === null) {
+
+                                        window.dispatchEvent(new Event("art-upload-browsererror"));
+                                        this._handle_load_complete("image_preload", {});
+                                        this._handle_load("browser");
+                                        actions.trigger_sfx("alert_high-intensity", 0.6);
+                                        actions.jamy_update("flirty");
+                                        actions.trigger_snackbar("That's our end my little diddy! My instinctive dwelling require a browser I am supporting.", 6000);
 
                                         setTimeout(() => {
 
-                                            actions.trigger_sfx("alert_high-intensity", 0.8);
-                                            actions.jamy_update("suspicious");
-                                            actions.trigger_snackbar("Ho no! I just can't, but someone needs to give me back my usual laboratory environment!", 7000);
+                                            actions.trigger_sfx("alert_high-intensity", 0.7);
+                                            actions.jamy_update("sad");
+                                            actions.trigger_snackbar("Abandon, misfortune, sadness... I can't live in this strange place.", 7000);
 
                                             setTimeout(() => {
 
-                                                actions.trigger_sfx("alert_high-intensity", 0.9);
-                                                actions.jamy_update("shocked");
-                                                actions.trigger_snackbar("Yes my enjoyable smartness, gladly you hear me now! Everything gonna be alright to look at me!", 9000);
+                                                actions.trigger_sfx("alert_high-intensity", 0.8);
+                                                actions.jamy_update("suspicious");
+                                                actions.trigger_snackbar("Ho no! I just can't, but someone needs to give me back my usual laboratory environment!", 7000);
 
                                                 setTimeout(() => {
 
-                                                    actions.jamy_update("happy");
-                                                    actions.trigger_sfx("alert_high-intensity", 1);
+                                                    actions.trigger_sfx("alert_high-intensity", 0.9);
+                                                    actions.jamy_update("shocked");
+                                                    actions.trigger_snackbar("Yes my enjoyable smartness, gladly you hear me now! Everything gonna be alright to look at me!", 9000);
 
                                                     setTimeout(() => {
 
+                                                        actions.jamy_update("happy");
                                                         actions.trigger_sfx("alert_high-intensity", 1);
 
-                                                    }, 750);
+                                                        setTimeout(() => {
 
-                                                }, 4000);
+                                                            actions.trigger_sfx("alert_high-intensity", 1);
+
+                                                        }, 750);
+
+                                                    }, 4000);
+
+                                                }, 8000);
 
                                             }, 8000);
 
-                                        }, 8000);
+                                        }, 7000);
 
-                                    }, 7000);
+                                        return;
+                                    }
 
-                                    return;
-                                }
+                                    imagedata_to_base64(imagedata2, (base642) => {
 
-                                let img = new Image();
-                                img.addEventListener("load", () => {
+                                        base64_to_bitmap(base642, ( bitmap2 ) => {
 
-                                    this._handle_load_complete("image_preload", {});
-                                    set_canvas_from_image(img, res, {}, false);
-                                    this._handle_menu_close();
-                                });
-                                img.src = res;
-                            }, pool);
-                        }
-                    }, pool);
+                                            bitmap_to_imagedata(bitmap2, resize_to, (imagedata3) => {
 
-                }).catch((e) => {
+                                                imagedata_to_base64(imagedata3, (base643) => {
 
-                    this._handle_load_complete("image_preload", {});
-                    actions.trigger_snackbar("Be sure to have a recent browser or install Google Chrome for using it.", 5700);
-                    actions.jamy_update("angry");
+                                                    let img = new Image();
+                                                    img.addEventListener("load", () => {
 
-                });
-            });
+                                                        this._handle_load_complete("image_preload", {});
+                                                        set_canvas_from_image(img, base642, {}, false);
+                                                        this._handle_menu_close();
+                                                    });
+                                                    img.src = base643;
 
+                                                }, pool);
+                                            });
+                                        }, pool);
+                                    }, pool);
+                                }, pool);
+                            }
+
+                        }).catch((e) => {
+
+                            this._handle_load_complete("image_preload", {});
+                            actions.trigger_snackbar("Be sure to have a recent browser or install Google Chrome for using it.", 5700);
+                            actions.jamy_update("angry");
+
+                        });
+
+                    });
+
+                }, pool);
+
+            }, pool);
         }
     };
 
@@ -1137,15 +1201,16 @@ class Pixel extends React.Component {
             let img = new Image();
             const { import_image_on_canvas } = this.state._canvas;
 
-            this.get_base64(smart_file).then((data) => {
+            file_to_base64(smart_file, (base64) => {
 
-                img.src = data;
                 img.onload = () => {
 
-                    import_image_on_canvas(img, data);
+                    import_image_on_canvas(img, base64);
                     this._handle_menu_close();
                 };
-            });
+                img.src = base64;
+
+            }, pool);
         }
     };
 
