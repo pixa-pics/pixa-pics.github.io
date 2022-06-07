@@ -547,7 +547,7 @@ class Pixel extends React.Component {
 
             import_JS_state(data, () => {
 
-                this.setState({ _is_pixel_dialog_create_open: false});
+                this.setState({ _is_pixel_dialog_create_open: false, _attachment_previews: []});
             });
 
         }
@@ -915,11 +915,14 @@ class Pixel extends React.Component {
             actions.jamy_update("angry");
         }else if(smart_file !== null) {
 
+            const is_type_png = Boolean(smart_file.type === "image/png"); //image/png
+            const mimetype = is_type_png ? "image/png": "image/jpeg";
+
             const { _import_colorize, _import_size } = this.state;
             const { set_canvas_from_image } = this.state._canvas;
 
             this._handle_load("image_preload");
-            file_to_base64(smart_file, (base64) => {
+            file_to_base64(smart_file, (base64_input) => {
 
                 const max_original_size = is_mobile_or_tablet ? Math.sqrt(1920 * 1280): Math.sqrt(4096 * 2160);
                 const max_size = is_mobile_or_tablet ? Math.sqrt(1280 * 720): Math.sqrt(1920 * 1280);
@@ -934,9 +937,9 @@ class Pixel extends React.Component {
                 const resize_to = Math.min(parseInt(max_size * max_size), Math.max(parseInt(_import_size * _import_size), parseInt(min_size * min_size)));
                 const limit_color_number = Math.min(max_color, Math.max(parseInt(_import_size * ratio_l_l2), min_color));
 
-                base64_to_bitmap(base64, ( bitmap ) => {
+                base64_to_bitmap(base64_input, ( bitmap_input ) => {
 
-                    bitmap_to_imagedata(bitmap, resize_original_to, (imagedata) => {
+                    bitmap_to_imagedata(bitmap_input, resize_original_to, (imagedata) => {
 
                         import("../utils/rgb_quant").then(async({rgb_quant}) => {
 
@@ -947,7 +950,7 @@ class Pixel extends React.Component {
                                 actions.trigger_snackbar("Getting associated with DeepAI.org systems", 5700);
                                 actions.jamy_update("angry");
 
-                                imagedata_to_base64(imagedata, (base64_resized) => {
+                                imagedata_to_base64(imagedata, mimetype,(base64_resized) => {
 
                                     postJSON("https://deepai.pixa-pics.workers.dev/colorizer", base64_resized, (err, res) => {
 
@@ -957,7 +960,7 @@ class Pixel extends React.Component {
 
                                                 rgb_quant(imagedata_received, limit_color_number,(imagedata2) => {
 
-                                                    imagedata_to_base64(imagedata2, (base642) => {
+                                                    imagedata_to_base64(imagedata2, "image/png", (base64) => {
 
                                                         let img = new Image();
                                                         img.addEventListener("load", () => {
@@ -966,7 +969,7 @@ class Pixel extends React.Component {
                                                             set_canvas_from_image(img, res, {}, true);
                                                             this._handle_menu_close();
                                                         });
-                                                        img.src = base642;
+                                                        img.src = base64;
                                                     }, pool);
                                                 }, pool);
                                             });
@@ -981,7 +984,7 @@ class Pixel extends React.Component {
                                 actions.trigger_snackbar("Getting associated with DeepAI.org systems", 5700);
                                 actions.jamy_update("angry");
 
-                                imagedata_to_base64(imagedata, (base64_resized) => {
+                                imagedata_to_base64(imagedata, mimetype, (base64_resized) => {
 
                                     postJSON("https://deepai.pixa-pics.workers.dev/waifu2x", base64_resized, (err, res) => {
 
@@ -991,7 +994,7 @@ class Pixel extends React.Component {
 
                                                 rgb_quant(imagedata_received, limit_color_number,(imagedata2) => {
 
-                                                    imagedata_to_base64(imagedata2, (base642) => {
+                                                    imagedata_to_base64(imagedata2, "image/png", (base64) => {
 
                                                         let img = new Image();
                                                         img.addEventListener("load", () => {
@@ -1000,7 +1003,7 @@ class Pixel extends React.Component {
                                                             set_canvas_from_image(img, res, {}, true);
                                                             this._handle_menu_close();
                                                         });
-                                                        img.src = base642;
+                                                        img.src = base64;
                                                     }, pool);
                                                 }, pool);
                                             });
@@ -1015,7 +1018,7 @@ class Pixel extends React.Component {
                                 actions.trigger_snackbar("Getting associated with DeepAI.org systems", 5700);
                                 actions.jamy_update("angry");
 
-                                imagedata_to_base64(imagedata, (base64_resized) => {
+                                imagedata_to_base64(imagedata, mimetype, (base64_resized) => {
 
                                     postJSON("https://deepai.pixa-pics.workers.dev/colorizer", base64_resized, (err, res) => {
 
@@ -1027,7 +1030,7 @@ class Pixel extends React.Component {
 
                                                     rgb_quant(imagedata_received, limit_color_number,(imagedata2) => {
 
-                                                        imagedata_to_base64(imagedata2, (base642) => {
+                                                        imagedata_to_base64(imagedata2, "image/png",(base64) => {
 
                                                             let img = new Image();
                                                             img.addEventListener("load", () => {
@@ -1036,7 +1039,7 @@ class Pixel extends React.Component {
                                                                 set_canvas_from_image(img, res2, {}, true);
                                                                 this._handle_menu_close();
                                                             });
-                                                            img.src = base642;
+                                                            img.src = base64;
                                                         }, pool);
                                                     }, pool);
                                                 });
@@ -1047,16 +1050,16 @@ class Pixel extends React.Component {
 
                             }else {
 
-                                imagedata_to_base64(imagedata, (base64_resized) => {
+                                imagedata_to_base64(imagedata, mimetype, (base64_resized) => {
 
-                                    base64_to_bitmap(base64_resized, (bitmap_received) => {
+                                    base64_to_bitmap(base64_resized, (bitmap) => {
 
-                                        bitmap_to_imagedata(bitmap_received, resize_to, (imagedata_received) => {
+                                        bitmap_to_imagedata(bitmap, resize_to, (imagedata_resized_final) => {
 
-                                            rgb_quant(imagedata_received, limit_color_number, (imagedata2) => {
+                                            rgb_quant(imagedata_resized_final, limit_color_number, (imagedata_quant) => {
 
-                                                imagedata2 = imagedata2 || null;
-                                                if(imagedata2 === null) {
+                                                imagedata_quant = imagedata_quant || null;
+                                                if(imagedata_quant === null) {
 
                                                     window.dispatchEvent(new Event("art-upload-browsererror"));
                                                     this._handle_load_complete("image_preload", {});
@@ -1104,7 +1107,7 @@ class Pixel extends React.Component {
 
                                                 }else {
 
-                                                    imagedata_to_base64(imagedata2, (base643) => {
+                                                    imagedata_to_base64(imagedata_quant, "image/png",(base64_quant) => {
 
                                                         let img = new Image();
                                                         img.addEventListener("load", () => {
@@ -1113,7 +1116,7 @@ class Pixel extends React.Component {
                                                             set_canvas_from_image(img, base64_resized, {}, false);
                                                             this._handle_menu_close();
                                                         });
-                                                        img.src = base643;
+                                                        img.src = base64_quant;
 
                                                     }, pool);
                                                 }
@@ -1522,7 +1525,7 @@ class Pixel extends React.Component {
 
     _handle_pixel_dialog_create_close = () => {
 
-        this.setState({_is_pixel_dialog_create_open: false});
+        this.setState({_is_pixel_dialog_create_open: false, _attachment_previews: []});
     };
 
     _handle_pixel_dialog_create_open = () => {
@@ -2102,7 +2105,8 @@ class Pixel extends React.Component {
                 />
 
 
-                <PixelDialogCreate open={_is_pixel_dialog_create_open && _know_the_settings}
+                <PixelDialogCreate keepMounted={false}
+                                   open={_is_pixel_dialog_create_open && _know_the_settings}
                                    pixel_arts={_attachment_previews}
                                    size={_import_size}
                                    on_import_size_change={this._set_import_size}

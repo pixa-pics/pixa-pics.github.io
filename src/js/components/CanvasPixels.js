@@ -1340,7 +1340,7 @@ class CanvasPixels extends React.Component {
                 this.setState({_xxHashWasm: hasher, _is_xxhash_wasm: true}, () => {
 
                     // Does it run well???
-                    this.state._xxHashWasm.h64Raw(Uint8Array.from(Buffer.from([3.14, 0.618, 777, 666])));
+                    this.state._xxHashWasm.h64Raw(Uint8Array.from(Buffer.from(Array.of(3, 69, 777, 666))));
                 });
             });
 
@@ -5669,13 +5669,13 @@ class CanvasPixels extends React.Component {
 
     _maybe_save_state = (set_anyway_if_changes_callback = null) => {
 
-        let {_layers, _last_action_timestamp, _undo_buffer_time_ms,  _json_state_history, _state_history_length, _id, pxl_width, pxl_height, _original_image_index, layers, _layer_index, _s_pxls, _s_pxl_colors, _pxl_indexes_of_selection, _pencil_mirror_index } = this.state;
+        let {_layers, _last_action_timestamp, _undo_buffer_time_ms, _state_history_length, _id, pxl_width, pxl_height, _original_image_index, layers, _layer_index, _s_pxls, _s_pxl_colors, _pxl_indexes_of_selection, _pencil_mirror_index } = this.state;
 
         if(_layers.length !== _s_pxls.length || pxl_width * pxl_height !== (_s_pxls[0] || []).length || (_s_pxls[0] || []).length === 0 || parseInt(_last_action_timestamp + _undo_buffer_time_ms) > Date.now()) {
 
             if(set_anyway_if_changes_callback) {
 
-                set_anyway_if_changes_callback(_json_state_history, false);
+                set_anyway_if_changes_callback(this.state._json_state_history, false);
             }
             return false;
         }
@@ -5706,9 +5706,10 @@ class CanvasPixels extends React.Component {
                 });
             }
 
-            if(_json_state_history.state_history.length === 0) { // Fist state
+            if(this.state._json_state_history.state_history.length === 0) { // Fist state
 
                 const current_state = _get_current_state(_id, pxl_width, pxl_height, _original_image_index, layers, _layer_index, _s_pxls, _s_pxl_colors, _pxl_indexes_of_selection, _pencil_mirror_index);
+                let { _json_state_history } = this.state;
                 _json_state_history.state_history = [current_state];
                 _json_state_history.previous_history_position = 0;
                 _json_state_history.history_position = 1;
@@ -5726,6 +5727,7 @@ class CanvasPixels extends React.Component {
             }else if(layers_changed){
 
                 const current_state = _get_current_state(_id, pxl_width, pxl_height, _original_image_index, layers, _layer_index, _s_pxls, _s_pxl_colors, _pxl_indexes_of_selection, _pencil_mirror_index);
+                let { _json_state_history } = this.state;
                 const current_state_length = parseInt(_json_state_history.state_history.length);
                 const back_in_history_of = parseInt(current_state_length - _json_state_history.history_position);
                 const previous_state = _json_state_history.state_history[_json_state_history.history_position-1] || _json_state_history.state_history[0];
@@ -5773,7 +5775,7 @@ class CanvasPixels extends React.Component {
                 this._notify_can_undo_redo_change();
                 if(set_anyway_if_changes_callback !== null) {
 
-                    set_anyway_if_changes_callback(_json_state_history, false);
+                    set_anyway_if_changes_callback(this.state._json_state_history, false);
                 }
                 return false;
             }

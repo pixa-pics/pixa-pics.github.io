@@ -121,7 +121,7 @@ const bitmap_to_imagedata = (bitmap, resize_to =  1920*1080, callback_function =
     })();
 };
 
-var imagedata_to_base64_process_function = new AsyncFunction(`var t = async function(imagedata) {
+var imagedata_to_base64_process_function = new AsyncFunction(`var t = async function(imagedata, type) {
 
     "use strict"
     
@@ -147,7 +147,7 @@ var imagedata_to_base64_process_function = new AsyncFunction(`var t = async func
                 ctx.imageSmoothingEnabled = false;
                 ctx.transferFromImageBitmap(bmp);
     
-                return canvas.convertToBlob({type: "image/png"}).then(function(blb) {
+                return canvas.convertToBlob({type: type}).then(function(blb) {
                 
                     return FileReaderSync.readAsDataURL(blb);
                 });
@@ -173,24 +173,24 @@ var imagedata_to_base64_process_function = new AsyncFunction(`var t = async func
 
 }; return t;`)();
 
-const imagedata_to_base64 = (imagedata, callback_function = () => {}, pool = null) => {
+const imagedata_to_base64 = (imagedata, type= "image/png", callback_function = () => {}, pool = null) => {
 
     (async () => {
 
         if(pool !== null) {
 
             const r = pool.exec(imagedata_to_base64_process_function, [
-                imagedata
+                imagedata, type
             ]).catch((e) => {
 
-                return imagedata_to_base64_process_function(imagedata);
+                return imagedata_to_base64_process_function(imagedata, type);
             }).timeout(60 * 1000);
 
             callback_function(await r);
 
         }else {
 
-            const r = imagedata_to_base64_process_function(imagedata);
+            const r = imagedata_to_base64_process_function(imagedata, type);
             callback_function(await r);
         }
     })();

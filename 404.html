@@ -106,7 +106,7 @@
         <!-- Service worker -->
         <script type="text/javascript">
 
-            window._FIRE_IT = async () => {
+            window._FIRE_IT = async (loading) => {
 
                 var SCS = [
                     "/src/fonts/Jura.css",
@@ -132,7 +132,7 @@
 
                         var e = document.createElement("script");
                         e.setAttribute("src", ss);
-                        e.setAttribute(String(Boolean(ss.startsWith("/father") && window.location.href.startsWith("localhost")) ? "async": "defer"), "true");
+                        e.setAttribute(String(Boolean(ss.startsWith("/father") && window.location.href.startsWith("localhost")) ? "async": loading), "true");
                         e.setAttribute("type", "text/javascript");
                         document.head.appendChild(e);
 
@@ -155,17 +155,17 @@
 
                         if (registration.installing) {
                             console.log('Service worker installing');
-                            window._FIRE_IT();
+                            window._FIRE_IT("async");
                         } else if (registration.waiting) {
                             console.log('Service worker installed');
-                            window._FIRE_IT();
+                            window._FIRE_IT("defer");
                         } else if (registration.active) {
                             console.log('Service worker active');
-                            window._FIRE_IT();
+                            window._FIRE_IT("defer");
                         }else {
 
                             console.log('Service worker unknown state');
-                            window._FIRE_IT();
+                            window._FIRE_IT("defer");
                         }
 
                     } catch (e) {
