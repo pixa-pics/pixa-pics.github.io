@@ -926,10 +926,9 @@ class Pixel extends React.Component {
 
                 const max_original_size = is_mobile_or_tablet ? Math.sqrt(1920 * 1280): Math.sqrt(4096 * 2160);
                 const max_size = is_mobile_or_tablet ? Math.sqrt(1280 * 720): Math.sqrt(1920 * 1280);
-                const max_color = is_mobile_or_tablet ? 1024: 2048;
-                const max_original_color = 1/0;
+                const max_color = is_mobile_or_tablet ? 512: 1024;
 
-                let ratio_l_l2 = is_mobile_or_tablet ? 2: 4;
+                let ratio_l_l2 = is_mobile_or_tablet ? 1: 2;
                 let min_size = is_mobile_or_tablet ? 0: 0;
                 let min_color = is_mobile_or_tablet ? 256: 512;
 
@@ -1436,7 +1435,6 @@ class Pixel extends React.Component {
                 _toolbox_container_ref.scrollTop = panel_element.offsetTop;
             }else {
 
-                _is_edit_drawer_open = false;
                 _view_name_sub_index = 0;
                 _toolbox_container_ref.scrollTop = 0;
             }

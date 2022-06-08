@@ -68,11 +68,8 @@ module.exports = {
                         ]
                     },
                     compress: {
-                        hoist_funs: true,
-                        hoist_props: true,
-                        hoist_vars: true,
+                        toplevel: true,
                         drop_console: true,
-                        pure_getters: true,
                         join_vars: true,
                         conditionals: true,
                         unused: true,
