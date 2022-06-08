@@ -182,23 +182,28 @@ const styles = theme => ({
             overflowY: "visible !important",
             display: "inline-table !important",
             width: "100% !important",
+            contain: "size layout style !important",
         },
         '& div .react-swipeable-view-container > div': {
             overflow: "visible !important",
             alignItems: "normal",
-            contain: "size style"
+            contain: "size style !important"
         },
         '& div .react-swipeable-view-container > div[aria-hidden=true]': {
             overflow: "hidden !important",
-            contentVisibility: "auto",
+            pointerEvents: "none",
+            touchAction: "none",
         },
-        '& div .react-swipeable-view-container > div[aria-hidden=false] > ul': {
+        '& div .react-swipeable-view-container > div[aria-hidden=false]  > ul': {
             [theme.breakpoints.down("md")]: {
                 paddingBottom: 64,
             }
         },
         '& > div > .react-swipeable-view-container': {
             display: "flex !important",
+            filter: "opacity(1) !important",
+            willChange: "none !important",
+            contain: "size layout style !important",
             width: 480,
             [theme.breakpoints.down("md")]: {
                 width: "100vw",
@@ -269,6 +274,7 @@ const styles = theme => ({
         textAlign: "center",
     },
     fatabs: {
+        backgroundColor: "#fafafa",
         boxShadow: "0px 2px 4px -1px rgb(0 0 0 / 20%), 0px 4px 5px 0px rgb(0 0 0 / 14%), 0px 1px 10px 0px rgb(0 0 0 / 12%)",
         contain: "paint size style layout",
         [theme.breakpoints.up("lg")]: {
@@ -1678,7 +1684,7 @@ class Pixel extends React.Component {
                     anchor="bottom"
                 >
                     <DialogCloseButton onClick={this._handle_edit_drawer_close} />
-                    <div style={{display: "grid"}}>
+                    <div style={{display: "grid", contain: "layout paint style"}}>
                         <div style={{boxShadow: "rgb(0 0 0 / 20%) 0px 2px 4px -1px, rgb(0 0 0 / 14%) 0px 4px 5px 0px, rgb(0 0 0 / 12%) 0px 1px 10px 0px", zIndex: 1}}>
                             <div className={classes.drawerHeader}>
                                 <Typography className={classes.effectSliderText} id="strength-slider" gutterBottom>

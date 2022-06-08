@@ -284,8 +284,8 @@ const styles = theme => ({
         fontWeight: 600,
     },
     stepPoints: {
-        color: "#ff0000",
-        textShadow: "0px 0px 6px #ff0000",
+        color: "#008eff",
+        textShadow: "0px 0px 6px #2196f3",
         display: "inline-block",
         transformOrigin: "left",
         fontWeight: "bold",
@@ -298,8 +298,8 @@ const styles = theme => ({
         },
     },
     revelantText: {
-        color: "#ff0000",
-        textShadow: "0px 0px 6px #ff0000",
+        color: "#008eff",
+        textShadow: "0px 0px 6px #2196f3",
     }
 });
 
@@ -460,13 +460,10 @@ class Home extends React.Component {
                 filter: "revert",
                 backgroundImage: THEME_DAY ?
                                     "url(/src/images/illustrations/Egypt-day.svg)" :
-                                    "url(/src/images/illustrations/China-night.svg)",
+                                    "url(/src/images/illustrations/China-night.svg)"
             }}>
-                <div className={classes.insideRoot}>
-                    <div className={classes.backgroundImage} style={{
-                        backgroundSize: THEME_DAY ? "175%": "50%",
-                        backgroundColor: THEME_DAY ? IS_EVENING ? "#48004900": "#4c4c2600": "#21214200",
-                        }}>
+                <div className={classes.insideRoot} style={{backgroundColor: THEME_DAY ? "#ffffff33": "#00000033"}}>
+                    <div className={classes.backgroundImage}>
                         {_image_name_infographics.length >= 1 && <Grow in={true} exit={true} key={_image_name_infographics} timeout={{ enter: _infographics_fadein_time, exit: _infographics_fadein_time }}><img src={`/src/images/infographics/${_image_name_infographics}.svg`} alt="Image demo." className={classes.backgroundImageImage}/></Grow>}
                         <h2 className={classes.backgroundImageImage} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff", backgroundColor: THEME_DAY && !IS_EVENING ? "#ffffff99": "#00651080", padding: 16, textAlign: "center", border: "8px solid #00ff0054", borderRadius: "16px"}}>REAL "SVG" SHAPES RENDER!<br/><span style={{fontSize: "0.75em"}}>Use (6x) "xBRZ" instead of default pixelated rendering of (16x, 32x, 48x).</span></h2>
                         <h3 className={classes.backgroundImageImage} onClick={this._toggle_bii3_opacity} style={{borderRadius: "16px", zIndex: 90, opacity: _bii3_opacity, color: THEME_DAY && !IS_EVENING ? "#000": "#fff", border: "4px solid #980000", backgroundColor: THEME_DAY && !IS_EVENING ? "#ffffffcc": "#000000cc", padding: 16, textAlign: "center"}}>REAL "SVG" SHAPES RENDER!<br/><span style={{fontSize: "0.75em"}}>Use (6x) "xBRZ" instead of default pixelated rendering of (16x, 32x, 48x).</span> <span style={{fontSize: "0.5em"}}>CLICK TO CLOSE</span></h3>
@@ -475,16 +472,16 @@ class Home extends React.Component {
                 <div className={classes.headerContainer} style={{color: THEME_DAY && !IS_EVENING? "#000": "#fff"}}>
                     <h1 className={classes.titleh1} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff"}}>
                         <span className={classes.stepPoints}>1 >></span><DangerEmoji alt="scientific-danger-tweemoji" style={{verticalAlign: "baseline"}} className="emoji-150"/>
-                        <span className={classes.revelantText}>«PIXA.PICS» lovely pixel arts</span><span> from real-life pictures.</span><br/>
+                        <span className={classes.revelantText}>«PIXA.PICS» lovely minima-arts</span><span> from real-life pictures to enhance privacy for NFTs.</span><br/>
                     </h1>
                     <h2 className={classes.titleh2} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff"}}>
-                        <span><b>Apply effects in laboratory? Yes?</b> Essential lab operations gives the <b><span className={classes.revelantText}>MAXIMA of PRIVACY</span></b> in a fashion not only looking great for the online-self...</span>
+                        <span><b>Apply effects in laboratory? Yes?</b> Essential lab operations gives the <b><span className={classes.revelantText}>MAXIMA of PRIVACY</span></b> in a fashion not only looking great for the <b>ONLINE SELF-IMAGE</b>...</span>
                     </h2>
                     <h2 className={classes.titleh2} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff"}}>
-                        <span><span className={classes.stepPoints}>2 >></span> <JacketEmojiSvg alt="scientist-jacket-tweemoji" className="emoji-150"/> <b><span className={classes.revelantText}> WHILE EDITING</span></b> a <b >MINIMA-ART</b>, you can use <b >55+ tools in 7 panels for pixel art</b>, options in layers, filters, selections, shapes, effects,... <DNAEmojiSvg alt="scientific-DNA-tweemoji" className="emoji-150"/> to process it with LAB-OPS!</span>
+                        <span><span className={classes.stepPoints}>2 >></span> <JacketEmojiSvg alt="scientist-jacket-tweemoji" className="emoji-150"/> <b><span className={classes.revelantText}> WHILE DRAWING/EDITING</span></b> a <b >MINIMA-ART</b>, you can use <b >55+ tools in 7 panels for pixel art</b>, options in layers, filters, selections, shapes, effects,... <DNAEmojiSvg alt="scientific-DNA-tweemoji" className="emoji-150"/> to process it with LAB-OPS!</span>
                     </h2>
                     <h2 className={classes.titleh2} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff"}}>
-                        <span><span className={classes.stepPoints}>3 >></span> <GlassesEmojiSvg alt="scientist-jacket-tweemoji" style={{verticalAlign: "middle"}} className="emoji-150"/> <b><span className={classes.revelantText}> RENDER UNLIMITED MINIMA</span></b> in <b >4K<sup> Ultra HD</sup> images</b> or in <b >humanized ∞ %<sup> Scalable</sup> shapes</b> of vectors using <LabopsEmojiSvg alt="laboratory-noidea-tweemoji" style={{verticalAlign: "bottom"}} className="emoji-150"/>its PIXEL-MATRIX to get it majestically in SVG.</span>
+                        <span><span className={classes.stepPoints}>3 >></span> <GlassesEmojiSvg alt="scientist-jacket-tweemoji" style={{verticalAlign: "middle"}} className="emoji-150"/> <b><span className={classes.revelantText}> RENDER UNLIMITED PIXEL ART</span></b> in <b >4K<sup> Ultra HD</sup> images</b> or in <b >humanized ∞ %<sup> Scalable</sup> shapes</b> of vectors using <LabopsEmojiSvg alt="laboratory-noidea-tweemoji" style={{verticalAlign: "bottom"}} className="emoji-150"/>its PIXEL-MATRIX to get it majestically in SVG.</span>
                     </h2>
                     <h3 className={classes.subtitle} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff"}}>
                         <StarEmojiSvg alt="space-star-tweemoji"className="emoji"/> <span>IMAGINE tremendous (x6 svg, x32 png) <span>PIXEL ART</span> based on your images.</span>
@@ -496,7 +493,7 @@ class Home extends React.Component {
                     </h3>
                     <Fade in={true} timeout={0}>
                         <Button className={classes.homeCTAuseit} variant={"contained"} size={"large"} color="primary" onClick={this._go_to_editor}>
-                            USE IT <img src="/src/images/infographics/Wardenclyffe.svg" style={{transform: "scale(3.5)", width: "5em", filter: "drop-shadow(white 0px 0px 6px)"}} className="emoji-150" /> 100% FREE
+                            NOW FREE <img src="/src/images/infographics/Wardenclyffe.svg" style={{transform: "scale(3.5)", width: "5em", filter: "drop-shadow(white 0px 0px 6px)"}} className="emoji-150" /> USE LAB.
                         </Button>
                     </Fade>
                     <Fade in={true} timeout={0}>
@@ -504,7 +501,7 @@ class Home extends React.Component {
                     </Fade>
                     <Fade in={true} timeout={0}>
                         <Button className={classes.homeCTAsendit} variant={"contained"} size={"large"} color="primary" onClick={(event) => {this._handle_speed_dial_action(event, "share")}}>
-                            SHARE <img src="/src/images/infographics/HappyLucky.svg" style={{transform: "scale(3)", width: "4.5em", filter: "drop-shadow(white 0px 0px 6px)"}} className="emoji-150" /> NOW
+                            SHARE NOW
                         </Button>
                     </Fade>
                 </div>

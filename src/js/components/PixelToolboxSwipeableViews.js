@@ -284,7 +284,7 @@ class PixelToolboxSwipeableViews extends React.Component {
             view_name_index !== new_props.view_name_index ||
             previous_view_name_index !== new_props.previous_view_name_index ||
             view_names !== new_props.view_names ||
-            layers.map((l) => l.hash + l.hidden + l.opacity + l.name).join("") !== new_props.layers.map((l) => l.hash + l.hidden + l.opacity + l.name).join("") ||
+            layers.map((l) => l.hash).join("") !== new_props.layers.map((l) => l.hash).join("") ||
             layer_index !== new_props.layer_index ||
             is_image_import_mode !== new_props.is_image_import_mode ||
             hide_canvas_content !== new_props.hide_canvas_content ||
@@ -657,7 +657,6 @@ class PixelToolboxSwipeableViews extends React.Component {
                     text: "Download (raster / matrix)",
                     local_i: 1,
                     label: "matrix",
-                    sub: "This is the classical way to scale pixel art, it creates hard edges and bigger square area for each pixels",
                     tools: [
                         {
                             icon: <FileDownloadIcon/>, text: "Render (1x size)", sub: "[CTRL + Q]", on_click: () => {
@@ -694,7 +693,6 @@ class PixelToolboxSwipeableViews extends React.Component {
                     text: "Download (vector / painting)",
                     local_i: 2,
                     label: "vector",
-                    sub: too_much_colors_no_vector ? "Please ensure the artwork to get a good colors-diet (less than 128) to scale it bigger in nice shapes! Buttons to heal a artwork's colors overdose need using double-tap or right-click on the laboratory area.": "It renders your image source and up-scales it in both an HD PNG and a infinite color-limited SVG illustration.",
                     tools: [
                         {
                             icon: <FileDownloadIcon/>,
@@ -741,7 +739,6 @@ class PixelToolboxSwipeableViews extends React.Component {
                     local_i: 1,
                     text: `Layer tools`,
                     label: "tools",
-                    sub: "You can choose to draw above the image loaded (easier on PC in the WEB-APP) if you want to, just show background image. Displaying a chessboard below all layers is optional but recommended.",
                     tools: [
                         {
                             icon: hide_canvas_content ? <LayerOutlineIcon/> : <LayerOffOutlineIcon/>,
@@ -799,7 +796,6 @@ class PixelToolboxSwipeableViews extends React.Component {
                     text: "Import image",
                     local_i: 3,
                     label: "importing",
-                    sub: "Source needs to be another artwork source since it will add it onto current artwork. To start a new artwork, simply change and navigate to 'Image > Upload'.",
                     tools: [
                         {
                             icon: <FileImportIcon/>, text: "Library to import", sub: "", on_click: () => {
@@ -827,7 +823,6 @@ class PixelToolboxSwipeableViews extends React.Component {
                     text: "Navigation",
                     local_i: 0,
                     label: "navigation",
-                    sub: "History of editing have memory of around 50 grouped operations.",
                     tools: [
                         {
                             icon: <MoveIcon/>, disabled: tool === "MOVE", text: "Move", on_click: () => {
@@ -943,7 +938,6 @@ class PixelToolboxSwipeableViews extends React.Component {
                     text: "Paint tools",
                     label: "basic",
                     local_i: 3,
-                    sub: "On our progressive WEB-APP (https://pixa.pics/), accessing it with desktop is a very professional experience instead, finest selection and editing with mouse.",
                     tools: [
                         {
                             icon: <BucketIcon/>,
@@ -1406,10 +1400,8 @@ class PixelToolboxSwipeableViews extends React.Component {
                 {
                     Object.entries(actions).map(a => a[1]).map((view, index) => {
 
-                        if (view_name_index !== index) {return <List style={{overflow: "visible"}}/>;}
-
                         return (
-                            <List key={index} style={{overflow: "visible", paddingTop: 0}}>
+                            <List key={index} style={{ contain: "style layout paint", overflow: String(view_name_index !== index ? "auto": "auto"), contentVisibility: String(view_name_index !== index ? "auto": "auto"), paddingTop: 0}}>
 
                                 {
                                     view_names[index] === "layers" ?

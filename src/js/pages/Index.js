@@ -134,26 +134,12 @@ class Index extends React.Component {
             _know_the_settings: false,
             /*is_online: true,*/
             classes: props.classes,
-            _width: 0,
-            _height: 0,
             _database_attempt: 0,
             _is_share_dialog_open: false,
             _has_played_index_music_counter: 0,
             _datasyncserviceworkerallfiles: false,
             _history_unlisten: null
         };
-    };
-
-    _update_dimensions = () => {
-
-        let w = window,
-            d = document,
-            documentElement = d.documentElement,
-            body = d.getElementsByTagName('body')[0],
-            _width = w.innerWidth || documentElement.clientWidth || body.clientWidth,
-            _height = w.innerHeight|| documentElement.clientHeight || body.clientHeight;
-
-        this.setState({_width, _height});
     };
 
     componentDidMount() {
@@ -164,57 +150,54 @@ class Index extends React.Component {
         });
         this._set_new_pathname_or_redirect(this.state._history.location.pathname);
         dispatcher.register(this._handle_events.bind(this));
-        window.addEventListener("resize", this._update_dimensions);
-        this._update_dimensions();
 
-        /*setInterval(() => {
-
-            const { is_online } = this.state;
-            if(navigator.onLine !== is_online){
-
-                this.setState({is_online: navigator.onLine});
-                actions.trigger_snackbar(
-            navigator.onLine ? t("sentences.online"): t("sentences.offline"),
-                    navigator.onLine ? 3500: 10500
-                );
-                actions.jamy_update(navigator.onLine ? "happy": "sad");
-            }
-        }, 1000);*/
 
         // Make Jamy blink every 32 sec in average.
-        let intervals = [];
+        const intervals = [
+            setInterval(() => {
 
-        const interval = setInterval(() => {
+                const { is_online } = this.state;
+                if(navigator.onLine !== is_online){
 
-            if(!Math.floor(Math.random() * 32)) {
+                    this.setState({is_online: navigator.onLine});
+                    actions.trigger_snackbar(
+                        navigator.onLine ? t("sentences.online"): t("sentences.offline"),
+                        navigator.onLine ? 3500: 10500
+                    );
+                    actions.jamy_update(navigator.onLine ? "happy": "sad");
+                }
+            }, 1000),
+            setInterval(() => {
 
-                const { _jamy_state_of_mind } = this.state;
+                if(!Math.floor(Math.random() * 32)) {
 
-                this.setState({_jamy_state_of_mind: "suspicious"}, () => {
+                    const { _jamy_state_of_mind } = this.state;
 
-                    this.forceUpdate(() => {
+                    this.setState({_jamy_state_of_mind: "suspicious"}, () => {
 
-                        setTimeout(() => {
+                        this.forceUpdate(() => {
 
-                            if(this.state._jamy_state_of_mind === "suspicious") {
+                            setTimeout(() => {
 
-                                this.setState({_jamy_state_of_mind}, () => {
+                                if(this.state._jamy_state_of_mind === "suspicious") {
 
-                                    this.forceUpdate();
-                                });
-                            }
+                                    this.setState({_jamy_state_of_mind}, () => {
 
-                        }, 75);
+                                        this.forceUpdate();
+                                    });
+                                }
+
+                            }, 75);
+
+                        });
 
                     });
 
-                });
+                }
 
-            }
+            }, 1000)
+        ];
 
-        }, 1000);
-
-        intervals.push(interval);
         this.setState({_intervals: intervals, _history_unlisten: _history_unlisten}, ( ) => {
 
             this._update_settings();
@@ -225,7 +208,6 @@ class Index extends React.Component {
 
         try {
             this.state._history_unlisten();
-            window.removeEventListener("resize", this._update_dimensions);
             this.state._intervals.forEach((itrvl) => {
 
                 clearInterval(itrvl);
@@ -302,7 +284,10 @@ class Index extends React.Component {
                 break;
 
             case "LOADING_UPDATE":
-                this.setState({_loaded_progress_percent: event.data.percent});
+                this.setState({_loaded_progress_percent: event.data.percent}, () => {
+
+                    this.forceUpdate();
+                });
                 break;
 
             case "PAGE_RENDER_COMPLETE":
@@ -321,7 +306,7 @@ class Index extends React.Component {
 
     _process_settings_query_result = (error, settings) => {
 
-        if(!Boolean(error) && Boolean(settings)) {
+        if(!Boolean(error) && typeof (settings || {}).locales !== "undefined") {
 
             const was_music_enabled = Boolean(this.state._music_enabled);
             const was_the_settings_known = this.state._know_the_settings;
@@ -361,7 +346,7 @@ class Index extends React.Component {
                 this._set_analytics(8000);
             }
 
-            setTimeout(async() => {
+            setTimeout(() => {
 
                 if(_music_enabled === true && was_music_enabled === false) {
 
@@ -370,8 +355,10 @@ class Index extends React.Component {
             }, 75);
 
         }else {
+            setTimeout(() => {
 
-            this._update_settings();
+                this._update_settings();
+            }, 25);
         }
     };
 

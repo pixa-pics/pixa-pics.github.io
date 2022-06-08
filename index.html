@@ -147,7 +147,6 @@
                             e.setAttribute("type", "text/javascript");
                             if(ss.endsWith("norris.min.js")){
 
-                                e.setAttribute("async", "true");
                                 document.body.appendChild(e);
 
                             }else {
@@ -161,7 +160,7 @@
                             var e = document.createElement("link");
                             e.setAttribute("href", ss);
                             e.setAttribute("rel", "stylesheet");
-                            document.body.appendChild(e);
+                            document.head.appendChild(e);
                         }
                     });
 

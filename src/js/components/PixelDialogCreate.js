@@ -143,7 +143,7 @@ class PixelDialogCreate extends React.Component {
                                 type="file"
                             />
                             <Button component={"label"} for="button-file-dialog-secondary" className={classes.mainUploadButton} fullWidth variant="contained" color="primary" autoFocus>UPLOAD</Button>
-                            <Typography component={"h2"} variant={"h6"} style={{marginTop: 16}}>Unsaved adventures / latest lab ops minima</Typography>
+                            <Typography component={"h2"} variant={"h6"} style={{marginTop: 16}}>Unsaved minima</Typography>
                             <div style={{padding: "8px 24px", position: "relative", display: "flex", flexWrap: "wrap", justifyContent: "space-around", overflow: "hidden", boxSizing: "border-box", width: "100%"}}>
                                 <ImageList rowHeight={288} cols={2.0} style={{flexWrap: "nowrap", transform: "translateZ(0)", contains: "strict", maxWidth: "min(576px, (100vw - 160px))"}}>
                                     {!Object.keys(pixel_arts).length && <ImageListItem style={{display: "inline-block", width: "auto", userSelect: "none"}}
