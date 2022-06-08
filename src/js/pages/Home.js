@@ -16,7 +16,6 @@ import LabopsEmojiSvg from "../twemoji/react/1F9Eb";
 import GlassesEmojiSvg from "../twemoji/react/1F97D";
 import JacketEmojiSvg from "../twemoji/react/1F97C";
 import DangerEmoji from "../twemoji/react/26A0";
-import CEmojiSvg from "../twemoji/react/1F4681F3Fc200D1F52C";
 
 let THEME_DAY = null;
 let IS_EVENING = null;

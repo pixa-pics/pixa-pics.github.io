@@ -1,6 +1,6 @@
-var REQUIRED_CACHE = "unless-update-cache-v216-required";
-var USEFUL_CACHE = "unless-update-cache-v216-useful";
-var STATIC_CACHE = "unless-update-cache-v216-static";
+var REQUIRED_CACHE = "unless-update-cache-v217-required";
+var USEFUL_CACHE = "unless-update-cache-v217-useful";
+var STATIC_CACHE = "unless-update-cache-v217-static";
 var MAIN_CHILD_CHUNK_REGEX = /child\-chunk\.(main\~[a-z0-9]+)\.min.js/i;
 var CHILD_CHUNK_REGEX = /child\-chunk\.([0-9]+)\.min.js/i;
 
@@ -68,16 +68,14 @@ self.addEventListener("install", function(event) {
             return cache.addAll([
                 "/",
                 "/src/fonts/Jura.css",
-                "/child-chunk.main~0d5ee630.min.js",
                 "/child-chunk.main~1f20a385.min.js",
                 "/child-chunk.main~5a2dc592.min.js",
                 "/child-chunk.main~9acc357d.min.js",
                 "/child-chunk.main~253ae210.min.js",
+                "/child-chunk.main~0436ed57.min.js",
                 "/child-chunk.main~748942c6.min.js",
                 "/child-chunk.main~af9f4ef7.min.js",
                 "/child-chunk.main~c1dd23ef.min.js",
-                "/child-chunk.main~c3be6df1.min.js",
-                "/child-chunk.main~d939e436.min.js",
                 "/child-chunk.main~f9ca8911.min.js",
                 "/father-chunk.norris.min.js",
             ])
@@ -142,7 +140,6 @@ self.addEventListener("fetch", function(event) {
                         "/child-chunk.10.min.js",
                         "/child-chunk.11.min.js",
                         "/child-chunk.12.min.js",
-                        "/child-chunk.13.min.js",
                     ]);
                 }),
                 static_cache.then(function (cache) {

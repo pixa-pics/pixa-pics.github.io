@@ -160,10 +160,6 @@ class Index extends React.Component {
                 if(navigator.onLine !== is_online){
 
                     this.setState({is_online: navigator.onLine});
-                    actions.trigger_snackbar(
-                        navigator.onLine ? t("sentences.online"): t("sentences.offline"),
-                        navigator.onLine ? 3500: 10500
-                    );
                     actions.jamy_update(navigator.onLine ? "happy": "sad");
                 }
             }, 1000),
