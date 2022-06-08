@@ -87,8 +87,6 @@ class Settings extends React.Component {
 
     _on_settings_changed = () => {
 
-        const { _language } = this.state;
-
         actions.trigger_loading_update(0);
         setTimeout(() => {
 
@@ -187,17 +185,19 @@ class Settings extends React.Component {
 
     _set_camo_from_slider = (event, value) => {
 
-        this.setState({_camo: value}, () => {
+        const index = parseInt(value);
+        this.setState({_camo: index}, () => {
 
-            api.set_settings({camo: value + 0, ret: 0 + this.state._ret},  this._on_settings_changed);
+            api.set_settings({camo: index},  this._on_settings_changed);
         });
     };
 
     _set_ret_from_slider = (event, value) => {
 
-        this.setState({_ret: value}, () => {
+        const index = parseInt(value);
+        this.setState({_ret: index}, () => {
 
-            api.set_settings({ret: value + 0, camo: 0 + this.state._camo},  this._on_settings_changed);
+            api.set_settings({ret: index},  this._on_settings_changed);
         });
     };
 

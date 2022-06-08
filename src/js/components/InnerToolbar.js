@@ -196,9 +196,9 @@ class InnerToolbar extends React.Component {
 
         if(this.state.ret >= 1 || this.state.camo >= 1) {
 
-            import("../utils/custom_toolbar").then((_rets, _cams) => {
+            import("../utils/custom_toolbar").then(({RETS, CAMS}) => {
 
-                this.setState({_rets, _cams});
+                this.setState({_rets: RETS, _cams: CAMS});
             });
         };
 
@@ -274,9 +274,15 @@ class InnerToolbar extends React.Component {
 
     render() {
 
-        const { classes, pathname, logged_account, know_if_logged, loaded_progress_percent, _is_info_bar_active, music_enabled, _cams, camo, _rets, ret } = this.state;
+        const { classes, pathname, logged_account, know_if_logged, loaded_progress_percent, _is_info_bar_active, music_enabled } = this.state;
 
-        const ret_e = Boolean(parseInt(ret) > 0 && Boolean(_rets[parseInt(ret)])) ? <img className={classes.ret} src={_rets[parseInt(ret)]}/>: null;
+        let { _cams, camo, _rets, ret } = this.state;
+        _cams = _cams || [""];
+        _rets = _rets || [""];
+        camo = camo || 0;
+        ret = ret || 0;
+
+        const ret_e = Boolean(parseInt(ret) > 0 && parseInt(ret) < _rets.length -1) ? <img className={classes.ret} src={_rets[parseInt(ret)]}/>: null;
 
 
         let pathname_splitted = pathname.split("/");
@@ -308,7 +314,7 @@ class InnerToolbar extends React.Component {
 
         return (
             <div className={classes.root}>
-                <Button className={classes.innerToolbar} style={parseInt(camo) > 0 ? {backgroundImage: `url("${_cams[parseInt(camo)] || _cams[0]}")`}: {}} disableFocusRipple>
+                <Button className={classes.innerToolbar} style={Boolean(parseInt(camo) > 0 && parseInt(camo) < _cams.length-1) ? {backgroundImage: `url("${_cams[parseInt(camo)]}")`}: {}} disableFocusRipple>
                     <span className={classes.innerToolbarTextWrapperContainer}>
                         <span className={classes.innerToolbarTextWrapper}>
                             <div className={classes.innerToolbarProgress}>

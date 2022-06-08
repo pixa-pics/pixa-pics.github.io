@@ -138,7 +138,6 @@ module.exports = {
                                         "chrome": "67",
                                         "edge": "17",
                                         "firefox": "61",
-                                        "ie": "11",
                                         "ios": "11",
                                         "safari": "11"
                                     },
@@ -146,7 +145,7 @@ module.exports = {
                                     forceAllTransforms: true, //true,
                                     shippedProposals: true,
                                     bugfixes: true,
-                                    useBuiltIns: "entry" //"entry"
+                                    useBuiltIns: "usage" //"entry"
                                 }],
                                 'stage-0'
                             ]

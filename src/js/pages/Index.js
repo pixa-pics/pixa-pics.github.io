@@ -348,14 +348,11 @@ class Index extends React.Component {
                 this.state._language !== _language ||
                 this.state._selected_currency !== _selected_currency
             ) {
+                document.documentElement.lang = _language;
+                document.body.setAttribute("datainitiated", "true");
                 this.setState({ _ret, _camo, _onboarding_enabled, _sfx_enabled, _music_enabled, _jamy_enabled, _selected_locales_code, _language, _selected_currency, _know_the_settings: true, _has_played_index_music_counter: parseInt((!this.state._know_the_settings && _music_enabled) ? 1: this.state._has_played_index_music_counter )}, () => {
 
-                    document.documentElement.lang = _language;
-                    document.body.setAttribute("datainitiated", "true");
-
-                    this.forceUpdate(() => {
-
-                    });
+                    this.forceUpdate();
                 });
             }
 

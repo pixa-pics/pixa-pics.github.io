@@ -5,7 +5,7 @@ import get_browser_locales from "../utils/locales";
 window.settings_db = new PouchDB("settings_db", {deterministic_revs: false, revs_limit: 0});
 import pool from "../utils/worker-pool";
 
-const _merge_object = (obj1 = {}, obj2 = {}) => {
+const _merge_object = (obj1, obj2) => {
 
     return Object.assign({}, {...obj1, ...obj2});
 };
@@ -74,7 +74,7 @@ const get_settings = (callback_function_info = null, attachment_ids = [], callba
         binary: false
     }, (error, response) => {
 
-        if(!Boolean(error)) {
+        if(!error) {
 
             // Get settings docs
             let settings_docs = response.rows.map((row) => {
@@ -116,10 +116,10 @@ const get_settings = (callback_function_info = null, attachment_ids = [], callba
 
                                     try {
 
-                                        LZP3(uint8a, "DECOMPRESS_UINT8A", pool).then((obj) => {
+                                        LZP3(uint8a, "DECOMPRESS_UINT8A", (obj) => {
 
                                             callback_function_attachment(null, obj);
-                                        });
+                                        }, pool);
 
                                     } catch (e) {
 
@@ -135,7 +135,7 @@ const get_settings = (callback_function_info = null, attachment_ids = [], callba
 
                         }).catch((e) => {
 
-                            callback_function_attachment("Missing in our database, holy PouchDB when you don't get your files...", null);
+                            callback_function_attachment("Missing in our database, unholy PouchDB when you don't get your files...", null);
                             return false;
                         });
 
@@ -153,7 +153,7 @@ const get_settings = (callback_function_info = null, attachment_ids = [], callba
                 }
             }else {
 
-                let pixa_settings = _merge_object(_get_default_settings(), window._pixa_settings);
+                const pixa_settings = _get_default_settings();
                 window._pixa_settings = _merge_object({}, pixa_settings);
 
                 window.settings_db.post({
@@ -170,23 +170,11 @@ const get_settings = (callback_function_info = null, attachment_ids = [], callba
         }
 
 
-        if (Boolean(error)){
+        if (error){
 
             if(callback_function_info !== null) {
 
-                if(!Boolean(window._pixa_settings)) {
-
-                    let pixa_settings = _merge_object(_get_default_settings(), window._pixa_settings);
-                    window._pixa_settings = _merge_object({}, pixa_settings);
-                    callback_function_info(null, _merge_object({}, window._pixa_settings));
-
-                    window.settings_db.post({
-                        info: JSON.stringify(pixa_settings),
-                        timestamp: Date.now(),
-                    });
-
-                }
-                    callback_function_info(error, null);
+                callback_function_info(error, null);
             }
 
             if(callback_function_attachment !== null) {
@@ -195,10 +183,10 @@ const get_settings = (callback_function_info = null, attachment_ids = [], callba
                 return false;
             }
         }
-    })
+    });
 }
 
-const set_settings = (info = {}, callback_function_info = () => {}, attachment_array = null, LZP3 = null) => {
+const set_settings = (info = {}, callback_function_info = () => {}, attachment_array = {}, LZP3 = null) => {
 
     window.settings_db.allDocs({
         include_docs: true,
@@ -229,14 +217,15 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
                         let attachments_to_process = Object.keys(attachment_array).length;
                         Object.entries(attachment_array).forEach(([name_id, data]) => {
 
-                            if(data !== "delete" && typeof data !== "undefined") {
+                            if(data !== "delete") {
+
+                                const {id, kb, preview, timestamp } = data;
+                                pixa_settings.attachment_previews = pixa_settings.attachment_previews || {};
+                                pixa_settings.attachment_previews[name_id] = {id, kb, preview, timestamp};
 
                                 try {
-                                    const {id, kb, preview, timestamp } = data;
-                                    pixa_settings.attachment_previews = pixa_settings.attachment_previews || {};
-                                    pixa_settings.attachment_previews[name_id] = {id, kb, preview, timestamp};
 
-                                    LZP3(data, "COMPRESS_OBJECT", pool).then((uint8a) => {
+                                    LZP3(data, "COMPRESS_OBJECT", (uint8a) => {
 
                                         settings_docs[0]._attachments = settings_docs[0]._attachments || {};
                                         settings_docs[0]._attachments[name_id] = {
@@ -249,7 +238,7 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
                                             continue_push_in_db(settings_docs, pixa_settings, callback_function_info);
                                         }
 
-                                    });
+                                    }, pool);
                                 } catch (e) {
 
                                     callback_function_info("LZP3 not working", null);
@@ -273,7 +262,7 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
                             }
                         });
 
-                        const continue_push_in_db = (settings_docs, pixa_settings, callback_function_info ) => {
+                        const  continue_push_in_db = (settings_docs, pixa_settings, callback_function_info ) => {
 
                             window.settings_db.put({
                                 _id: settings_docs[0]._id,
@@ -341,40 +330,38 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
             window._pixa_settings = _merge_object({}, pixa_settings);
 
 
-            if(Object.keys(attachment_array).length >= 1) {
+            if(Object.keys(attachment_array).length > 0) {
 
                 let attachments = {};
                 let blobs_to_add = attachment_array.length;
                 Object.entries(attachment_array).forEach(([name_id, data]) => {
 
-                    if(typeof data !== "undefined") {
+                    const {id, kb, preview, timestamp } = data;
+                    pixa_settings.attachment_previews = pixa_settings.attachment_previews  || {};
+                    pixa_settings.attachment_previews[name_id] = {id, kb, preview, timestamp};
 
-                        try {
+                    try {
 
-                            const {id, kb, preview, timestamp } = data;
-                            pixa_settings.attachment_previews = pixa_settings.attachment_previews  || {};
-                            pixa_settings.attachment_previews[name_id] = {id, kb, preview, timestamp};
+                        LZP3(data, "COMPRESS_OBJECT", (uint8a) => {
 
-                            LZP3(data, "COMPRESS_OBJECT", pool).then((uint8a) => {
+                            attachments[name_id] = {
+                                content_type: "application/octet-stream",
+                                data: new Blob([uint8a], {type : "application/octet-stream"})
+                            };
+                            blobs_to_add--;
 
-                                attachments[name_id] = {
-                                    content_type: "application/octet-stream",
-                                    data: new Blob([uint8a], {type : "application/octet-stream"})
-                                };
-                                blobs_to_add--;
+                            if(blobs_to_add === 0) {
 
-                                if(blobs_to_add === 0) {
+                                continue_push_in_db(attachments, pixa_settings);
+                            }
 
-                                    continue_push_in_db(attachments, pixa_settings);
-                                }
+                        }, pool);
+                    } catch (e) {
 
-                            });
-                        } catch (e) {
-
-                            callback_function_info("Cannot add attachment not working", null);
-                            return false;
-                        }
+                        callback_function_info("LZP3 not working", null);
+                        return false;
                     }
+
                 });
 
                 const continue_push_in_db = (attachments, pixa_settings) => {
