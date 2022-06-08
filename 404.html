@@ -106,63 +106,75 @@
         <!-- Service worker -->
         <script type="text/javascript">
 
-            window._FIRE_IT = function(loading) {
+            window._FIRE_IT = function() {
 
                 // Prevent this function of being executed twice or more
-                if(Boolean(window._FIRED_IT)){
+                if(window._FIRED_IT){ return false }
 
-                    return false;
-                }else {
+                if(document.readyState === "complete") {
+
+                    fire_it();
+                } else {
+
+                    document.addEventListener('readystatechange', () => {
+
+                        if(document.readyState === "complete") { fire_it() }
+                    });
+                }
+
+                function fire_it() {
+
+                    // Add those file to header once fired
+                    [
+                        "/src/fonts/Jura.css",
+                        "/child-chunk.main~0d5ee630.min.js",
+                        "/child-chunk.main~1f20a385.min.js",
+                        "/child-chunk.main~5a2dc592.min.js",
+                        "/child-chunk.main~9acc357d.min.js",
+                        "/child-chunk.main~253ae210.min.js",
+                        "/child-chunk.main~748942c6.min.js",
+                        "/child-chunk.main~af9f4ef7.min.js",
+                        "/child-chunk.main~c1dd23ef.min.js",
+                        "/child-chunk.main~c3be6df1.min.js",
+                        "/child-chunk.main~d939e436.min.js",
+                        "/child-chunk.main~f9ca8911.min.js",
+                        "/father-chunk.norris.min.js"
+                    ].forEach(function(ss){
+
+                        if(ss.endsWith(".js")) {
+
+                            var e = document.createElement("script");
+                            e.setAttribute("src", ss);
+                            e.setAttribute("type", "text/javascript");
+                            if(ss.endsWith("norris.min.js")){
+
+                                e.setAttribute("async", "true");
+                                document.body.appendChild(e);
+
+                            }else {
+
+                                e.setAttribute("async", "true");
+                                document.body.appendChild(e);
+                            }
+
+                        }else if(ss.endsWith(".css")) {
+
+                            var e = document.createElement("link");
+                            e.setAttribute("href", ss);
+                            e.setAttribute("rel", "stylesheet");
+                            document.body.appendChild(e);
+                        }
+                    });
 
                     window._FIRED_IT = true;
                 }
-
-                // Add those file to header once fired
-                [
-                    "/src/fonts/Jura.css",
-                    "/child-chunk.main~0d5ee630.min.js",
-                    "/child-chunk.main~1f20a385.min.js",
-                    "/child-chunk.main~5a2dc592.min.js",
-                    "/child-chunk.main~9acc357d.min.js",
-                    "/child-chunk.main~253ae210.min.js",
-                    "/child-chunk.main~748942c6.min.js",
-                    "/child-chunk.main~af9f4ef7.min.js",
-                    "/child-chunk.main~c1dd23ef.min.js",
-                    "/child-chunk.main~c3be6df1.min.js",
-                    "/child-chunk.main~d939e436.min.js",
-                    "/child-chunk.main~f9ca8911.min.js",
-                    "/father-chunk.norris.min.js"
-                ].map(function(ss){
-
-                    if(ss.endsWith(".js")) {
-
-                        var e = document.createElement("script");
-                        e.setAttribute("src", ss);
-                        e.setAttribute("type", "text/javascript");
-                        if(ss.endsWith("norris.min.js")){
-
-                            document.body.appendChild(e);
-                        }else {
-
-                            e.setAttribute("async", "true");
-                            document.head.appendChild(e);
-                        }
-
-                    }else if(ss.endsWith(".css")) {
-
-                        var e = document.createElement("link");
-                        e.setAttribute("href", ss);
-                        e.setAttribute("rel", "stylesheet");
-                        document.head.appendChild(e);
-                    }
-                });
             };
 
             // Try install service worker then finally fire files loading
             function rsw() {
                 if ("serviceWorker" in navigator) {
 
-                    navigator.serviceWorker.register("/service-worker.js", {
+                    return navigator.serviceWorker.register("/service-worker.js", {
                         scope: "/"
                     }).then(function(r) {
 
@@ -176,12 +188,9 @@
 
                                 if(e.target.state === "activated") { window._FIRE_IT() }
                             });
-                        }
+                        }else { window._FIRE_IT() }
                     });
-                }else {
-
-                    window._FIRE_IT();
-                }
+                }else { window._FIRE_IT() }
             }
 
             rsw();
