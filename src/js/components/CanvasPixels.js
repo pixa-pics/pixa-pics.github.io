@@ -1202,7 +1202,7 @@ class CanvasPixels extends React.Component {
             _last_action_timestamp: Date.now(),
             _last_paint_timestamp: Date.now(),
             _lazy_lazy_compute_time_ms: 10 * 1000,
-            _undo_buffer_time_ms: w_canvas_pixels._is_mobile_or_tablet ? 5000: 2500,
+            _undo_buffer_time_ms: parseInt(parseInt(props.pxl_width || 32) * 2 + parseInt(props.pxl_height || 32) * 2 + parseInt(w_canvas_pixels._is_mobile_or_tablet ? 3000: 1500)),
             _mouse_inside: false,
             _paint_hover_old_pxls_snapshot: new Array((props.pxl_width || 32) * (props.pxl_height || 32)).fill(0),
             _select_hover_old_pxls_snapshot: [],
@@ -5554,7 +5554,7 @@ class CanvasPixels extends React.Component {
 
                 let image_data = null;
 
-                if(pixel_updated > 192*192){
+                if(pixel_updated * 2 > pxl_width * pxl_height){
 
                     image_data = Boolean(hide_canvas_content || is_there_new_dimension || !has_shown_canvas_once || has_canvas_been_hidden) ?
                         new ImageData(pxl_width, pxl_height):

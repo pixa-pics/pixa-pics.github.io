@@ -136,10 +136,10 @@ const styles = theme => ({
         whiteSpace: "nowrap",
     },
     drawerModalBackdropRoot: {
-        transform: "translateY(-96px)"
+        transform: "translateY(-48px)"
     },
     drawerModal: {
-        transform: "translateY(96px)"
+        transform: "translateY(48px)"
     },
     contentDrawerFixed: {
         contain: "style size paint layout",
@@ -224,7 +224,7 @@ const styles = theme => ({
         transition: "color, background-color ease-in .175s",
         "&.Mui-selected": {
             fontWeight: "bold",
-            backgroundColor: "#3729c122",
+            backgroundColor: "#dfddf2",
             color: "#050c4c",
             borderRadius: "4px 4px 0px 0px",
         },
@@ -242,7 +242,7 @@ const styles = theme => ({
         transition: "color, background-color ease-in .175s",
         "&.Mui-selected": {
             fontWeight: "bold",
-            backgroundColor: "#3729c122",
+            backgroundColor: "#dfddf2",
             color: "#050c4c",
             borderRadius: "4px 4px 0px 0px",
         },
@@ -926,11 +926,11 @@ class Pixel extends React.Component {
 
                 const max_original_size = is_mobile_or_tablet ? Math.sqrt(1920 * 1280): Math.sqrt(4096 * 2160);
                 const max_size = is_mobile_or_tablet ? Math.sqrt(1280 * 720): Math.sqrt(1920 * 1280);
-                const max_color = is_mobile_or_tablet ? 512: 1024;
+                const max_color = is_mobile_or_tablet ? 384: 512;
 
-                let ratio_l_l2 = is_mobile_or_tablet ? 1: 2;
+                let ratio_l_l2 = is_mobile_or_tablet ? 0.75: 1;
                 let min_size = is_mobile_or_tablet ? 0: 0;
-                let min_color = is_mobile_or_tablet ? 256: 512;
+                let min_color = is_mobile_or_tablet ? 192: 256;
 
                 const resize_original_to = parseInt(max_original_size * max_original_size);
                 const resize_to = Math.min(parseInt(max_size * max_size), Math.max(parseInt(_import_size * _import_size), parseInt(min_size * min_size)));

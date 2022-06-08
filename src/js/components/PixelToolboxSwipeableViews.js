@@ -1630,17 +1630,6 @@ class PixelToolboxSwipeableViews extends React.Component {
                                                                   primary={"Library to new"} secondary={""}/>
                                                 </ListItem>
                                             </div>
-                                            <div style={{
-                                                padding: "8px 24px",
-                                                position: "relative",
-                                                overflow: "visible",
-                                                boxSizing: "border-box",
-                                                width: "100%",
-                                                color: "#9e9e9e",
-                                                fontStyle: "italic",
-                                            }}>
-                                                <span>Select a favourite (On phone, 128...224 works great) dimension maxima.</span>
-                                            </div>
                                             <div className={classes.listItems}>
                                                 <RadioGroup row name="Import size" onChange={this._set_import_size}
                                                             value={import_size} style={{padding: "12px 0px", margin: "0px 11px"}}>
@@ -1742,9 +1731,6 @@ class PixelToolboxSwipeableViews extends React.Component {
                                                     />
                                                 </RadioGroup>
                                             </div>
-                                            <p style={{padding: "0px 16px"}}>
-                                                Using deepAI.org services is costing us a very few peanuts, but here you have it all for free online without us storing anything, sponsors funds us.
-                                            </p>
                                         </div>
                                         : null
                                 }
@@ -1757,20 +1743,6 @@ class PixelToolboxSwipeableViews extends React.Component {
                                                     <span>{action_set.icon}</span>
                                                     <span>{action_set.text}</span>
                                                 </ListSubheader>
-                                                {
-                                                    action_set.sub &&
-                                                    <div style={{
-                                                        padding: "8px 24px",
-                                                        position: "relative",
-                                                        overflow: "visible",
-                                                        boxSizing: "border-box",
-                                                        width: "100%",
-                                                        color: "#9e9e9e",
-                                                        fontStyle: "italic",
-                                                    }}>
-                                                        <span>{action_set.sub}</span>
-                                                    </div>
-                                                }
                                                 <div className={classes.listItems}
                                                      style={
                                                          action_set.text.toLowerCase().includes("effects") || action_set.text.toLowerCase().includes("download") || action_set.text.toLowerCase().includes("filter") ?

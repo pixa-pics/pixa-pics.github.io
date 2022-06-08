@@ -573,12 +573,18 @@ class Index extends React.Component {
 
                 setTimeout(() => {
 
-                    this.setState({_snackbar_message, _snackbar_auto_hide_duration, _snackbar_open: true});
+                    this.setState({_snackbar_message, _snackbar_auto_hide_duration, _snackbar_open: true}, () => {
+
+                        this.forceUpdate();
+                    });
                 }, 500);
             });
         }else {
 
-            this.setState({_snackbar_message, _snackbar_auto_hide_duration, _snackbar_open: true});
+            this.setState({_snackbar_message, _snackbar_auto_hide_duration, _snackbar_open: true}, () => {
+
+                this.forceUpdate();
+            });
         }
     };
 
@@ -654,7 +660,7 @@ class Index extends React.Component {
         }
 
         return (
-            <div>
+            <React.Fragment>
                 <div className={classes.root}>
                     <Snackbar
                         className={classes.snackbar}
@@ -665,7 +671,7 @@ class Index extends React.Component {
                         }}
                         message={<div>
                             {_jamy_enabled ? <span className={classes.jamyContainer}>{JAMY[_jamy_state_of_mind]}</span>: null}
-                            <span>{_snackbar_message.toString()}</span>
+                            <span>{String(_snackbar_message)}</span>
                         </div>}
                         action={
                             <IconButton size="small" aria-label="close" color="inherit" onClick={this._close_snackbar}>
@@ -697,7 +703,7 @@ class Index extends React.Component {
                 <ShareDialog
                     open={_is_share_dialog_open}
                     onClose={this._handle_share_dialog_close}/>
-            </div>
+            </React.Fragment>
         );
     }
 }
