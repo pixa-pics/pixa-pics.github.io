@@ -106,9 +106,19 @@
         <!-- Service worker -->
         <script type="text/javascript">
 
-            window._FIRE_IT = async (loading) => {
+            window._FIRE_IT = function(loading) {
 
-                var SCS = [
+                // Prevent this function of being executed twice or more
+                if(Boolean(window._FIRED_IT)){
+
+                    return false;
+                }else {
+
+                    window._FIRED_IT = true;
+                }
+
+                // Add those file to header once fired
+                [
                     "/src/fonts/Jura.css",
                     "/child-chunk.main~0d5ee630.min.js",
                     "/child-chunk.main~1f20a385.min.js",
@@ -122,21 +132,17 @@
                     "/child-chunk.main~d939e436.min.js",
                     "/child-chunk.main~f9ca8911.min.js",
                     "/father-chunk.norris.min.js"
-                ];
+                ].map(function(ss){
 
-                SCS.map(function(ss){
-                    var js = ss.endsWith(".js");
-                    var css = ss.endsWith(".css");
-
-                    if(js) {
+                    if(ss.endsWith(".js")) {
 
                         var e = document.createElement("script");
                         e.setAttribute("src", ss);
-                        e.setAttribute(String(Boolean(ss.startsWith("/father") && window.location.href.startsWith("localhost")) ? "async": loading), "true");
+                        e.setAttribute(loading, "true");
                         e.setAttribute("type", "text/javascript");
                         document.head.appendChild(e);
 
-                    }else if(css) {
+                    }else if(ss.endsWith(".css")) {
 
                         var e = document.createElement("link");
                         e.setAttribute("href", ss);
@@ -146,36 +152,33 @@
                 });
             };
 
-            const registerServiceWorker = async () => {
+            // Try install service worker then finally fire files loading
+            function rsw() {
                 if ("serviceWorker" in navigator) {
-                    try {
-                        const registration = await navigator.serviceWorker.register("/service-worker.js", {
-                            scope: "/"
-                        });
 
-                        if (registration.installing) {
-                            console.log('Service worker installing');
-                            window._FIRE_IT("async");
-                        } else if (registration.waiting) {
-                            console.log('Service worker installed');
-                            window._FIRE_IT("defer");
-                        } else if (registration.active) {
-                            console.log('Service worker active');
-                            window._FIRE_IT("defer");
-                        }else {
+                    navigator.serviceWorker.register("/service-worker.js", {
+                        scope: "/"
+                    }).then(function(r) {
 
-                            console.log('Service worker unknown state');
-                            window._FIRE_IT("defer");
+                        var sw = r.installing || r.waiting || r.active || null;
+
+                        if (sw !== null) {
+
+                            if(sw.state === "activated") { window._FIRE_IT("defer") }
+
+                            sw.addEventListener('statechange', function(e) {
+
+                                if(e.target.state === "activated") { window._FIRE_IT("defer") }
+                            });
                         }
+                    });
+                }else {
 
-                    } catch (e) {
-
-                        window._FIRE_IT();
-                    }
+                    window._FIRE_IT("defer");
                 }
-            };
+            }
 
-            registerServiceWorker();
+            rsw();
         </script>
 
         <!-- Open graph metadata -->
