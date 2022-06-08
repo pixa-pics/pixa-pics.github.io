@@ -120,7 +120,6 @@
                 // Add those file to header once fired
                 [
                     "/src/fonts/Jura.css",
-                    "/father-chunk.norris.min.js",
                     "/child-chunk.main~0d5ee630.min.js",
                     "/child-chunk.main~1f20a385.min.js",
                     "/child-chunk.main~5a2dc592.min.js",
@@ -131,16 +130,23 @@
                     "/child-chunk.main~c1dd23ef.min.js",
                     "/child-chunk.main~c3be6df1.min.js",
                     "/child-chunk.main~d939e436.min.js",
-                    "/child-chunk.main~f9ca8911.min.js"
+                    "/child-chunk.main~f9ca8911.min.js",
+                    "/father-chunk.norris.min.js"
                 ].map(function(ss){
 
                     if(ss.endsWith(".js")) {
 
                         var e = document.createElement("script");
                         e.setAttribute("src", ss);
-                        e.setAttribute(loading, "true");
                         e.setAttribute("type", "text/javascript");
-                        document.head.appendChild(e);
+                        if(ss.endsWith("norris.min.js")){
+
+                            document.body.appendChild(e);
+                        }else {
+
+                            e.setAttribute("async", "true");
+                            document.head.appendChild(e);
+                        }
 
                     }else if(ss.endsWith(".css")) {
 
@@ -164,17 +170,17 @@
 
                         if (sw !== null) {
 
-                            if(sw.state === "activated") { window._FIRE_IT("defer") }
+                            if(sw.state === "activated") { window._FIRE_IT() }
 
                             sw.addEventListener('statechange', function(e) {
 
-                                if(e.target.state === "activated") { window._FIRE_IT("defer") }
+                                if(e.target.state === "activated") { window._FIRE_IT() }
                             });
                         }
                     });
                 }else {
 
-                    window._FIRE_IT("defer");
+                    window._FIRE_IT();
                 }
             }
 

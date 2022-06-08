@@ -282,7 +282,7 @@ class InnerToolbar extends React.Component {
         camo = camo || 0;
         ret = ret || 0;
 
-        const ret_e = Boolean(parseInt(ret) > 0 && parseInt(ret) < _rets.length -1) ? <img className={classes.ret} src={_rets[parseInt(ret)]}/>: null;
+        const ret_e = Boolean(parseInt(ret) > 0 && parseInt(ret) < _rets.length) ? <img className={classes.ret} src={_rets[parseInt(ret)]}/>: null;
 
 
         let pathname_splitted = pathname.split("/");
@@ -314,7 +314,7 @@ class InnerToolbar extends React.Component {
 
         return (
             <div className={classes.root}>
-                <Button className={classes.innerToolbar} style={Boolean(parseInt(camo) > 0 && parseInt(camo) < _cams.length-1) ? {backgroundImage: `url("${_cams[parseInt(camo)]}")`}: {}} disableFocusRipple>
+                <Button className={classes.innerToolbar} style={Boolean(parseInt(camo) > 0 && parseInt(camo) < _cams.length) ? {backgroundImage: `url("${_cams[parseInt(camo)]}")`}: {}} disableFocusRipple>
                     <span className={classes.innerToolbarTextWrapperContainer}>
                         <span className={classes.innerToolbarTextWrapper}>
                             <div className={classes.innerToolbarProgress}>

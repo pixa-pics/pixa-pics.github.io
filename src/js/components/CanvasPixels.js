@@ -386,10 +386,10 @@ const get_base64_png_data_url_process_function = new AsyncFunction(`var e=async 
         }
  */
 
-const get_layer_base64_png_data_url_process_function = new AsyncFunction(`var e=async function(e,t,a,r,n,i){"use strict";function c(e){return new Uint8ClampedArray(Uint32Array.of(e).buffer).reverse()}function o(e,t=!1){if(e=void 0===e?0:e,t&&"number"==typeof e)return e;if(!t&&"number"==typeof e)return"#".concat("00000000".concat(e.toString(16)).slice(-8));var a="",r=e,n=r.length;if(9===n)a=r;else if(7===n)a=r.concat("ff");else if(5===n){var i=r.charAt(1),c=r.charAt(2),o=r.charAt(3),f=r.charAt(4);a="#".concat(i,i,c,c,o,o,f,f)}else if(4===n){i=r.charAt(1),c=r.charAt(2),o=r.charAt(3);a="#".concat(i,i,c,c,o,o,"ff")}return t?function(e){return parseInt(e.slice(1),16)}(a):a}var f=!0;try{if("undefined"==typeof OffscreenCanvas)throw new Error("Impossible to create OffscreenCanvas in this web environment.");var s=null;if(1===parseInt(n)){var l=r.map((function(e){return o(e,!0)}));s=new ImageData(e,t),a.forEach(((e,t)=>{var a=c(l[e]);s.data[4*t+0]=a[0],s.data[4*t+1]=a[1],s.data[4*t+2]=a[2],s.data[4*t+3]=a[3],f&&255!==a[3]&&(f=!1)}))}else{var u=r.map((function(e){return o(e)})),m=(g=new OffscreenCanvas(e*n,t*n)).getContext("2d");a.forEach(((t,a)=>{var r=u[t];f&&"ff"!==r.slice(-2)&&(f=!1);var i=a%e,c=(a-i)/e;m.fillStyle=r,m.fillRect(i*n,c*n,1*n,1*n)})),s=m.getImageData(0,0,e*n,t*n)}var p=i/(e*n),v=parseInt(e*n*p),h=parseInt(t*n*p),d=(I=new OffscreenCanvas(v,h)).getContext("bitmaprenderer");return createImageBitmap(s,{premultiplyAlpha:"none",colorSpaceConversion:"none",resizeWidth:v,resizeHeight:h,resizeQuality:"pixelated"}).then((e=>{d.transferFromImageBitmap(e);var t=f?{type:"image/jpeg",quality:.7}:{type:"image/png"};return d.canvas.convertToBlob(t).then((e=>function(e){return new Promise(((t,a)=>{var r=new FileReader;r.onload=()=>t(r.result),r.readAsDataURL(e)}))}(e).then((e=>e))))}))}catch(w){(g=document.createElement("canvas")).width=e*n,g.height=t*n;m=g.getContext("2d"),s=null;if(1===parseInt(n)){l=r.map((function(e){return o(e,!0)}));s=new ImageData(e,t),a.forEach(((e,t)=>{var a=c(l[e]),r=4*t;s.data[r+0]=a[0],s.data[r+1]=a[1],s.data[r+2]=a[2],s.data[r+3]=a[3],f&&255!==a[3]&&(f=!1)})),m.putImageData(s,0,0)}else{var g;u=r.map((function(e){return o(e)}));(g=document.createElement("canvas")).width=e*n,g.height=t*n;m=g.getContext("2d");a.forEach(((t,a)=>{var r=u[t];f&&"ff"!==r.slice(-2)&&(f=!1);var i=a%e,c=(a-i)/e;m.fillStyle=r,m.fillRect(i*n,c*n,1*n,1*n)}))}var I;p=i/(e*n),v=parseInt(e*n*p),h=parseInt(t*n*p);return(I=document.createElement("canvas")).width=v,I.height=h,(d=I.getContext("2d")).drawImage(g,0,0,v,h),f?I.toDataURL("image/jpeg",.7):I.toDataURL("image/png")}};`
+const get_layer_base64_png_data_url_process_function = new AsyncFunction(`var e=async function(e,t,r,n,a,i){"use strict";function c(e,t=!1){if(e=void 0===e?0:e,t&&"number"==typeof e)return e;if(!t&&"number"==typeof e)return"#".concat("00000000".concat(e.toString(16)).slice(-8));var r="",n=e,a=n.length;if(9===a)r=n;else if(7===a)r=n.concat("ff");else if(5===a){var i=n.charAt(1),c=n.charAt(2),o=n.charAt(3),f=n.charAt(4);r="#".concat(i,i,c,c,o,o,f,f)}else if(4===a){i=n.charAt(1),c=n.charAt(2),o=n.charAt(3);r="#".concat(i,i,c,c,o,o,"ff")}return t?function(e){return parseInt(e.slice(1),16)}(r):r}try{if("undefined"==typeof OffscreenCanvas)throw new Error("Impossible to create OffscreenCanvas in this web environment.");var o=null;if(1===parseInt(a)){var f=n.map((function(e){return c(e,!0)})),s=r.map((function(e){return f[e]})),m=new Uint8ClampedArray(Uint32Array.from(s.reverse()).buffer).reverse();o=new ImageData(m,e,t)}else{var u=n.map((function(e){return c(e)})),l=new OffscreenCanvas(e*a,t*a);(v=l.getContext("2d")).imageSmoothingEnabled=!1,r.forEach(((t,r)=>{var n=u[t],i=r%e,c=(r-i)/e;v.fillStyle=n,v.fillRect(i*a,c*a,1*a,1*a)})),o=v.getImageData(0,0,e*a,t*a)}var h=i/(e*a),g=parseInt(e*a*h),d=parseInt(t*a*h),p=new OffscreenCanvas(g,d);return(w=p.getContext("bitmaprenderer")).imageSmoothingEnabled=!1,createImageBitmap(o,{resizeWidth:g,resizeHeight:d,resizeQuality:"pixelated"}).then((e=>{w.transferFromImageBitmap(e);return w.canvas.convertToBlob({type:"image/png"}).then((e=>{try{return FileReaderSync.readAsDataURL(e)}catch(t){function r(e){return new Promise((t=>{var r=new FileReader;r.onload=()=>t(r.result),r.readAsDataURL(e)}))}return r(e).then((e=>e))}}))}))}catch(y){(l=document.createElement("canvas")).width=e*a,l.height=t*a;var v=l.getContext("2d");o=null;if(1===parseInt(a)){f=n.map((function(e){return c(e,!0)})),s=r.map((function(e){return f[e]})),m=new Uint8ClampedArray(Uint32Array.from(s.reverse()).buffer).reverse();o=new ImageData(m,e,t),v.putImageData(o,0,0)}else{u=n.map((function(e){return c(e)}));(l=document.createElement("canvas")).width=e*a,l.height=t*a,(v=l.getContext("2d")).imageSmoothingEnabled=!1,r.forEach(((t,r)=>{var n=u[t],i=r%e,c=(r-i)/e;v.fillStyle=n,v.fillRect(i*a,c*a,1*a,1*a)}))}var w;h=i/(e*a),g=parseInt(e*a*h),d=parseInt(t*a*h);return(p=document.createElement("canvas")).width=g,p.height=d,(w=p.getContext("2d")).imageSmoothingEnabled=!1,w.drawImage(l,0,0,g,d),p.toDataURL("image/png")}};`
     + "return e;")();
-/*
-        var fu = async function(
+
+        /*var fu = async function(
             pxl_width,
             pxl_height,
             pxls, 
@@ -460,8 +460,6 @@ const get_layer_base64_png_data_url_process_function = new AsyncFunction(`var e=
                 }
             }
             
-            var no_transparent = true;
-            
             try {
             
                 if (typeof OffscreenCanvas === "undefined") {
@@ -472,36 +470,20 @@ const get_layer_base64_png_data_url_process_function = new AsyncFunction(`var e=
                 if(parseInt(scale) === 1){
                 
                     var pxl_colors_uint32 = pxl_colors.map(function(c) { return this_format_color(c, true)});
-                    image_data = new ImageData(pxl_width, pxl_height);
-                    
-                    pxls.forEach((pxl, index) => {
-            
-                        var color = this_get_rgba_from_Uint32(pxl_colors_uint32[pxl]);
-                        
-                        image_data.data[index * 4 + 0] = color[0];
-                        image_data.data[index * 4 + 1] = color[1];
-                        image_data.data[index * 4 + 2] = color[2];
-                        image_data.data[index * 4 + 3] = color[3];
-                        
-                        if(no_transparent && color[3] !== 255) {
-                        
-                            no_transparent = false;
-                        }
-                    });
+                    var pxl_data_uint32 = pxls.map(function(pxl){ return pxl_colors_uint32[pxl]});
+                    var ui8ca = new Uint8ClampedArray(Uint32Array.from(pxl_data_uint32.reverse()).buffer).reverse();
+                    image_data = new ImageData(ui8ca, pxl_width, pxl_height);
+
                 } else {
                 
                     var pxl_colors_hex = pxl_colors.map(function(c) { return this_format_color(c)});
                     var canvas = new OffscreenCanvas(pxl_width * scale, pxl_height * scale);
                     var ctx = canvas.getContext('2d');
+                    ctx.imageSmoothingEnabled = false;
                 
                     pxls.forEach((pxl, index) => {
             
                         var pixel_color_hex = pxl_colors_hex[pxl];
-                        
-                        if(no_transparent && pixel_color_hex.slice(-2) !== "ff"){
-                        
-                            no_transparent = false;
-                        }
             
                         var pos_x = index % pxl_width;
                         var pos_y = (index - pos_x) / pxl_width;
@@ -519,10 +501,9 @@ const get_layer_base64_png_data_url_process_function = new AsyncFunction(`var e=
                 
                 var canvas2 = new OffscreenCanvas(resizeWidth, resizeHeight);
                 var ctx2 = canvas2.getContext("bitmaprenderer");
-                
+                ctx2.imageSmoothingEnabled = false;
+
                 return createImageBitmap(image_data, {
-                    premultiplyAlpha: 'none',
-                    colorSpaceConversion: 'none',
                     resizeWidth: resizeWidth,
                     resizeHeight: resizeHeight,
                     resizeQuality: "pixelated",
@@ -530,21 +511,27 @@ const get_layer_base64_png_data_url_process_function = new AsyncFunction(`var e=
                 
                     ctx2.transferFromImageBitmap(btmp_i);
     
-                    var blob_params = no_transparent ? {type: "image/jpeg", quality: 0.7}: {type: "image/png"};
+                    var blob_params = {type: "image/png"};
                     return ctx2.canvas.convertToBlob(blob_params).then((blob) => {
-                    
-                        function blob_to_base64(blob) {
-                          return new Promise((resolve, _) => {
-                            var reader = new FileReader();
-                            reader.onload = () => resolve(reader.result);
-                            reader.readAsDataURL(blob);
-                          })
+
+                        try {
+
+                            return FileReaderSync.readAsDataURL(blob);
+                        } catch(e) {
+
+                            function blob_to_base64(blob) {
+                              return new Promise((resolve, _) => {
+                                var reader = new FileReader();
+                                reader.onload = () => resolve(reader.result);
+                                reader.readAsDataURL(blob);
+                              })
+                            }
+
+                            return blob_to_base64(blob).then((data_url) => {
+
+                                 return data_url;
+                            });
                         }
-                        
-                        return blob_to_base64(blob).then((data_url) => {
-                        
-                             return data_url;
-                        });
                     });
                 });
                 
@@ -557,26 +544,11 @@ const get_layer_base64_png_data_url_process_function = new AsyncFunction(`var e=
                 
                 var image_data = null;
                 if(parseInt(scale) === 1){
-                
+
                     var pxl_colors_uint32 = pxl_colors.map(function(c) { return this_format_color(c, true)});
-                    image_data = new ImageData(pxl_width, pxl_height);
-                    
-                    pxls.forEach((pxl, index) => {
-            
-                        var color = this_get_rgba_from_Uint32(pxl_colors_uint32[pxl]);
-                        var index_by_4 = index * 4;
-                    
-                        image_data.data[index_by_4 + 0] = color[0];
-                        image_data.data[index_by_4 + 1] = color[1];
-                        image_data.data[index_by_4 + 2] = color[2];
-                        image_data.data[index_by_4 + 3] = color[3];
-                        
-                        if(no_transparent && color[3] !== 255) {
-                        
-                            no_transparent = false;
-                        }
-                        
-                    });
+                    var pxl_data_uint32 = pxls.map(function(pxl){ return pxl_colors_uint32[pxl]});
+                    var ui8ca = new Uint8ClampedArray(Uint32Array.from(pxl_data_uint32.reverse()).buffer).reverse();
+                    image_data = new ImageData(ui8ca, pxl_width, pxl_height);
                     
                     ctx.putImageData(image_data, 0, 0);
                 } else {
@@ -586,16 +558,11 @@ const get_layer_base64_png_data_url_process_function = new AsyncFunction(`var e=
                     canvas.width = pxl_width * scale;
                     canvas.height = pxl_height * scale;
                     var ctx = canvas.getContext('2d');
+                    ctx.imageSmoothingEnabled = false;
                 
                     pxls.forEach((pxl, index) => {
             
                         var pixel_color_hex = pxl_colors_hex[pxl];
-                        
-                        if(no_transparent && pixel_color_hex.slice(-2) !== "ff"){
-                        
-                            no_transparent = false;
-                        }
-            
                         var pos_x = index % pxl_width;
                         var pos_y = (index - pos_x) / pxl_width;
             
@@ -612,20 +579,14 @@ const get_layer_base64_png_data_url_process_function = new AsyncFunction(`var e=
                 canvas2.width = resizeWidth;
                 canvas2.height = resizeHeight;
                 var ctx2 = canvas2.getContext("2d");
+                ctx2.imageSmoothingEnabled = false;
                 ctx2.drawImage(canvas, 0, 0, resizeWidth, resizeHeight);
                 
-                if(no_transparent){
-                    
-                    return canvas2.toDataURL("image/jpeg", 0.7);
-                }else {
-                
-                    return canvas2.toDataURL("image/png");
-                }
+                return canvas2.toDataURL("image/png");
             }
-        }
-*/
+        }*/
 
-const remove_close_pxl_colors_process_function = new AsyncFunction(`var r=async function(r,a,n,t,e,f,i){"use strict";function o(r){return"#".concat("00000000".concat(r.toString(16)).slice(-8))}function c(r){return new Uint8ClampedArray(Uint32Array.of(r).buffer).reverse()}function u(r,a,n,t){return new Uint32Array(Uint8ClampedArray.of(t,n,a,r).buffer)[0]}function s(r,a=!1){if(r=void 0===r?0:r,a&&"number"==typeof r)return r;if(!a&&"number"==typeof r)return o(r);var n="",t=r,e=t.length;if(9===e)n=t;else if(7===e)n=t.concat("ff");else if(5===e){var f=t.charAt(1),i=t.charAt(2),c=t.charAt(3),u=t.charAt(4);n="#".concat(f,f,i,i,c,c,u,u)}else if(4===e){f=t.charAt(1),i=t.charAt(2),c=t.charAt(3);n="#".concat(f,f,i,i,c,c,"ff")}return a?function(r){return parseInt(r.slice(1),16)}(n):n}function l(r,a,n){if(1===(n=void 0===n?null:n))return!0;if(0===n)return r===a;var t=parseInt(255*n);r=s(r,!0),a=s(a,!0);var e=c(r),f=c(a),i=Math.abs(e[3]-f[3]),o=Math.abs(e[0]-f[0]),u=Math.abs(e[1]-f[1]),l=Math.abs(e[2]-f[2]),h=Math.abs(1-i/255);return null!==n?Boolean(o<t&&u<t&&l<t&&i<t):parseFloat(parseInt(o+u+l)/parseInt(765))*h}function h(r,a,n=1,t=!1,e=!1,f=!1){if(r=s(r,!0),0===n&&"hover"!==a&&t)return f?0:"#00000000";if("hover"===a){var i=c(r),l=function(r,a,n){r/=255,a/=255,n/=255;var t,e,f=Math.max(r,a,n),i=Math.min(r,a,n),o=(f+i)/2;if(f==i)t=e=0;else{var c=f-i;switch(e=o>.5?c/(2-f-i):c/(f+i),f){case r:t=(a-n)/c+(a<n?6:0);break;case a:t=(n-r)/c+2;break;case n:t=(r-a)/c+4}t/=6}return Array.of(parseInt(360*t),parseInt(100*e),parseInt(100*o))}(i[0],i[1],i[2],i[3]),h=function(r,a,n){var t,e,f;if(r/=360,n/=100,0==(a/=100))t=e=f=n;else{function c(r,a,n){return n<0&&(n+=1),n>1&&(n-=1),n<1/6?r+6*(a-r)*n:n<.5?a:n<2/3?r+(a-r)*(2/3-n)*6:r}var i=n<.5?n*(1+a):n+a-n*a,o=2*n-i;t=c(o,i,r+1/3),e=c(o,i,r),f=c(o,i,r-1/3)}return Uint8ClampedArray.of(255*t,255*e,255*f)}(l[0],l[1],parseInt(l[2]>=50?l[2]/2:2*l[2]));a=u(h[0],h[1],h[2],255)}else a=s(a,!0);if(t&&0===a&&1===n)return f?0:"#00000000";var A=c(r),v=c(a);if(255===v[3]&&1===n)return f?a:o(a);var y=A[3]/255,m=v[3]/255*n,U=new Uint8ClampedArray(4),p=0;if(y>0&&m>0){var d=m/(p=e?m+y:1-(1-m)*(1-y)),b=y*(1-m)/p;U[0]=parseInt(v[0]*d+A[0]*b),U[1]=parseInt(v[1]*d+A[1]*b),U[2]=parseInt(v[2]*d+A[2]*b)}else m>0?(p=v[3]/255,U[0]=v[0],U[1]=v[1],U[2]=v[2]):(p=A[3]/255,U[0]=A[0],U[1]=A[1],U[2]=A[2]);return e&&(p/=2),U[3]=parseInt(255*p),f?u(U[0],U[1],U[2],U[3]):function(r,a,n,t){return"#".concat("00000000".concat(new Uint32Array(Uint8ClampedArray.of(t,n,a,r).buffer)[0].toString(16)).slice(-8))}(U[0],U[1],U[2],U[3])}function A(r,a){r=Uint32Array.from(r),a=Uint32Array.from(a);var n={},t=0,e=new Uint32Array(r.length).fill(0);Uint32Array.from(r).forEach(((r,f)=>{var i=a[r],o=void 0===n[i]?null:n[i];null===o&&(o=t,n[i]=o,t++),e[f]=o}));var f=new Uint32Array(t);return Object.entries(n).forEach((r=>{f[r[1]]=r[0]})),Object.assign({},{0:Uint32Array.from(e),1:Uint32Array.from(f)})}var v=new Set,y=Uint32Array.from(r),m=Uint32Array.from(a),U="auto"===n,p=!U,d=15,b=new Set;((f=null!==f?f:Math.max(Math.sqrt(m.length)+e,100))<2||f>a.length)&&(p=!0);for(var I=1;!p||1===I;){I++,n=U?1/(d-2):n||i,t=t||parseInt(255*n),y=Uint32Array.from(r),m=Uint32Array.from(a);for(var g=Uint32Array.from(y),w=Uint32Array.from(m),M=1;M<=t;M+=1){var C=n*(M/t),E=M/t;v.clear();var S=new Array(w.length).fill(0);Uint32Array.from(g).forEach((r=>{S[r]++})),w.forEach(((r,a)=>{if(!v.has(a)){var n=S[a];w.forEach(((t,e)=>{if(a!==e&&!v.has(e)){var f=S[e],i=n>f,o=i?n/f:f/n;if(l(r,t,(C+C*(1-1/o)*E)/(1+E))){var c=i?h(m[a],m[e],1/o,!0,!1,!0):h(m[e],m[a],1/o,!0,!1,!0);m[a]=c,m[e]=c,v.add(a),v.add(e)}}}))}}));var j=A(g,m);g=j[0],w=j[1],m=Uint32Array.from(w)}if(m.length+2>f&&m.length-2<f||!U||b.has(d))return A(g,m);m.length>f?(b.add(d),d--):(b.add(d),d++)}var k=A(r,a);return k[0]=Array.from(k[0]),k};`
+const remove_close_pxl_colors_process_function = new AsyncFunction(`var r=async function(r,a,n,t,e,f,i){"use strict";function o(r){return"#".concat("00000000".concat(r.toString(16)).slice(-8))}function c(r){return new Uint8ClampedArray(Uint32Array.of(r).buffer).reverse()}function u(r,a,n,t){return new Uint32Array(Uint8ClampedArray.of(t,n,a,r).buffer)[0]}function s(r,a=!1){if(r=void 0===r?0:r,a&&"number"==typeof r)return r;if(!a&&"number"==typeof r)return o(r);var n="",t=r,e=t.length;if(9===e)n=t;else if(7===e)n=t.concat("ff");else if(5===e){var f=t.charAt(1),i=t.charAt(2),c=t.charAt(3),u=t.charAt(4);n="#".concat(f,f,i,i,c,c,u,u)}else if(4===e){f=t.charAt(1),i=t.charAt(2),c=t.charAt(3);n="#".concat(f,f,i,i,c,c,"ff")}return a?function(r){return parseInt(r.slice(1),16)}(n):n}function l(r,a,n){if(1===(n=void 0===n?null:n))return!0;if(0===n)return r===a;var t=parseInt(255*n);r=s(r,!0),a=s(a,!0);var e=c(r),f=c(a),i=Math.abs(e[3]-f[3]),o=Math.abs(e[0]-f[0]),u=Math.abs(e[1]-f[1]),l=Math.abs(e[2]-f[2]),h=Math.abs(1-i/255);return null!==n?Boolean(o<t&&u<t&&l<t&&i<t):parseFloat(parseInt(o+u+l)/parseInt(765))*h}function h(r,a,n=1,t=!1,e=!1,f=!1){if(r=s(r,!0),0===n&&"hover"!==a&&t)return f?0:"#00000000";if("hover"===a){var i=c(r),l=function(r,a,n){r/=255,a/=255,n/=255;var t,e,f=Math.max(r,a,n),i=Math.min(r,a,n),o=(f+i)/2;if(f==i)t=e=0;else{var c=f-i;switch(e=o>.5?c/(2-f-i):c/(f+i),f){case r:t=(a-n)/c+(a<n?6:0);break;case a:t=(n-r)/c+2;break;case n:t=(r-a)/c+4}t/=6}return Array.of(parseInt(360*t),parseInt(100*e),parseInt(100*o))}(i[0],i[1],i[2],i[3]),h=function(r,a,n){var t,e,f;if(r/=360,n/=100,0==(a/=100))t=e=f=n;else{function c(r,a,n){return n<0&&(n+=1),n>1&&(n-=1),n<1/6?r+6*(a-r)*n:n<.5?a:n<2/3?r+(a-r)*(2/3-n)*6:r}var i=n<.5?n*(1+a):n+a-n*a,o=2*n-i;t=c(o,i,r+1/3),e=c(o,i,r),f=c(o,i,r-1/3)}return Uint8ClampedArray.of(255*t,255*e,255*f)}(l[0],l[1],parseInt(l[2]>=50?l[2]/2:2*l[2]));a=u(h[0],h[1],h[2],255)}else a=s(a,!0);if(t&&0===a&&1===n)return f?0:"#00000000";var A=c(r),v=c(a);if(255===v[3]&&1===n)return f?a:o(a);var y=A[3]/255,m=v[3]/255*n,p=new Uint8ClampedArray(4),d=0;if(y>0&&m>0){var U=m/(d=e?m+y:1-(1-m)*(1-y)),b=y*(1-m)/d;p[0]=parseInt(v[0]*U+A[0]*b),p[1]=parseInt(v[1]*U+A[1]*b),p[2]=parseInt(v[2]*U+A[2]*b)}else m>0?(d=v[3]/255,p[0]=v[0],p[1]=v[1],p[2]=v[2]):(d=A[3]/255,p[0]=A[0],p[1]=A[1],p[2]=A[2]);return e&&(d/=2),p[3]=parseInt(255*d),f?u(p[0],p[1],p[2],p[3]):function(r,a,n,t){return"#".concat("00000000".concat(new Uint32Array(Uint8ClampedArray.of(t,n,a,r).buffer)[0].toString(16)).slice(-8))}(p[0],p[1],p[2],p[3])}function A(r,a){r=Array.from(r),a=Uint32Array.from(a);var n={},t=0,e=new Array(r.length);Array.from(r).forEach(((r,f)=>{var i=a[r],o=void 0===n[i]?null:n[i];null===o&&(o=t,n[i]=o,t++),e[f]=o}));var f=new Uint32Array(t);return Object.entries(n).forEach((r=>{f[r[1]]=r[0]})),Object.assign({},{0:Array.from(e),1:Uint32Array.from(f)})}var v=new Set,y=Array.from(r),m=Uint32Array.from(a),p="auto"===n,d=!p,U=15,b=new Set;((f=null!==f?f:Math.max(Math.sqrt(m.length)+e,100))<2||f>a.length)&&(d=!0);for(var I=1;!d||1===I;){I++,n=p?1/(U-2):n||i,t=t||parseInt(255*n),y=Array.from(r),m=Uint32Array.from(a);for(var g=Array.from(y),w=Uint32Array.from(m),M=1;M<=t;M+=1){var C=n*(M/t),E=M/t;v.clear();var S=new Array(w.length).fill(0);Uint32Array.from(g).forEach((r=>{S[r]++})),w.forEach(((r,a)=>{if(!v.has(a)){var n=S[a];w.forEach(((t,e)=>{if(a!==e&&!v.has(e)){var f=S[e],i=n>f,o=i?n/f:f/n;if(l(r,t,(C+C*(1-1/o)*E)/(1+E))){var c=i?h(m[a],m[e],1/o,!0,!1,!0):h(m[e],m[a],1/o,!0,!1,!0);m[a]=c,m[e]=c,v.add(a),v.add(e)}}}))}}));var j=A(g,m);g=j[0],w=j[1],m=Uint32Array.from(w)}if(m.length+12>f&&m.length-12<f||!p||b.has(U))return A(g,m);m.length>f?(b.add(U),U--):(b.add(U),U++)}var k=A(r,a);return k[0]=Array.from(k[0]),k};`
     + "return r;")();
 /*
 var fu = async function(
@@ -881,15 +842,15 @@ var fu = async function(
 
             function this_remove_duplicate_pxl_colors(_pxls, _pxl_colors) {
 
-                _pxls = Uint32Array.from(_pxls);
+                _pxls = Array.from(_pxls);
                 _pxl_colors = Uint32Array.from(_pxl_colors);
 
                 // Work with Hashtables and Typed Array so it is fast
                 var new_pxl_colors_object = {};
                 var new_pxl_colors_object_length = 0;
-                var new_pxls = new Uint32Array(_pxls.length).fill(0);
+                var new_pxls = new Array(_pxls.length);
 
-                Uint32Array.from(_pxls).forEach((pxl, iteration) => {
+                Array.from(_pxls).forEach((pxl, iteration) => {
 
                     var color = _pxl_colors[pxl];
                     var index_of_color = typeof new_pxl_colors_object[color] === "undefined" ? null: new_pxl_colors_object[color];
@@ -910,11 +871,11 @@ var fu = async function(
                     new_pxl_colors[entry[1]] = entry[0];
                 })
 
-                return Object.assign({}, {0: Uint32Array.from(new_pxls), 1: Uint32Array.from(new_pxl_colors)});
+                return Object.assign({}, {0: Array.from(new_pxls), 1: Uint32Array.from(new_pxl_colors)});
             }
 
             var indexes_of_colors_proceed = new Set();
-            var original_pxls = Uint32Array.from(pxls);
+            var original_pxls = Array.from(pxls);
             var original_pxl_colors = Uint32Array.from(pxl_colors);
             var is_bucket_threshold_auto = bucket_threshold === "auto";
             var is_bucket_threshold_auto_goal_reached = !is_bucket_threshold_auto;
@@ -937,10 +898,10 @@ var fu = async function(
                     bucket_threshold || this_state_bucket_threshold;
                 threshold_steps = threshold_steps || parseInt(bucket_threshold * 255);
 
-                original_pxls = Uint32Array.from(pxls);
+                original_pxls = Array.from(pxls);
                 original_pxl_colors = Uint32Array.from(pxl_colors);
 
-                var new_pxls = Uint32Array.from(original_pxls);
+                var new_pxls = Array.from(original_pxls);
                 var new_pxl_colors = Uint32Array.from(original_pxl_colors);
 
                 for (var i = 1; i <= threshold_steps; i += 1) {
@@ -994,7 +955,7 @@ var fu = async function(
                     original_pxl_colors = Uint32Array.from(new_pxl_colors);
                 }
 
-                if((original_pxl_colors.length + 2 > best_color_number && original_pxl_colors.length - 2 < best_color_number) || !is_bucket_threshold_auto || bucket_threshold_auto_goal_attempt.has(bucket_threshold_auto_goal_target)) {
+                if((original_pxl_colors.length + 12 > best_color_number && original_pxl_colors.length - 12 < best_color_number) || !is_bucket_threshold_auto || bucket_threshold_auto_goal_attempt.has(bucket_threshold_auto_goal_target)) {
 
                     return this_remove_duplicate_pxl_colors(new_pxls, original_pxl_colors);
                 }else if(original_pxl_colors.length > best_color_number){
@@ -5706,28 +5667,27 @@ class CanvasPixels extends React.Component {
                 });
             }
 
-            if(this.state._json_state_history.state_history.length === 0) { // Fist state
+            let _json_state_history = this.state._json_state_history;
+            if(_json_state_history.state_history.length === 0) { // Fist state
 
                 const current_state = _get_current_state(_id, pxl_width, pxl_height, _original_image_index, layers, _layer_index, _s_pxls, _s_pxl_colors, _pxl_indexes_of_selection, _pencil_mirror_index);
-                let { _json_state_history } = this.state;
                 _json_state_history.state_history = [current_state];
                 _json_state_history.previous_history_position = 0;
                 _json_state_history.history_position = 1;
 
                 this.setState({_json_state_history, _saved_json_state_history_timestamp_from_drawing: Date.now()}, () => {
 
+                    this._notify_can_undo_redo_change();
                     if(set_anyway_if_changes_callback !== null) {
-
                         set_anyway_if_changes_callback(_json_state_history, true);
                     }
-                    this._notify_can_undo_redo_change();
+                    _json_state_history = null;
                 });
                 return true;
 
             }else if(layers_changed){
 
                 const current_state = _get_current_state(_id, pxl_width, pxl_height, _original_image_index, layers, _layer_index, _s_pxls, _s_pxl_colors, _pxl_indexes_of_selection, _pencil_mirror_index);
-                let { _json_state_history } = this.state;
                 const current_state_length = parseInt(_json_state_history.state_history.length);
                 const back_in_history_of = parseInt(current_state_length - _json_state_history.history_position);
                 const previous_state = _json_state_history.state_history[_json_state_history.history_position-1] || _json_state_history.state_history[0];
@@ -5753,11 +5713,11 @@ class CanvasPixels extends React.Component {
 
                     this.setState({_json_state_history, _saved_json_state_history_timestamp_from_drawing: Date.now()}, () => {
 
+                        this._notify_can_undo_redo_change();
                         if(set_anyway_if_changes_callback !== null) {
-
                             set_anyway_if_changes_callback(_json_state_history, true);
                         }
-                        this._notify_can_undo_redo_change();
+                        _json_state_history = null;
                     });
 
                     return true;
@@ -5765,9 +5725,9 @@ class CanvasPixels extends React.Component {
 
                     this._notify_can_undo_redo_change();
                     if(set_anyway_if_changes_callback !== null) {
-
                         set_anyway_if_changes_callback(_json_state_history, false);
                     }
+                    _json_state_history = null;
                     return false;
                 }
             }else {
@@ -5775,8 +5735,9 @@ class CanvasPixels extends React.Component {
                 this._notify_can_undo_redo_change();
                 if(set_anyway_if_changes_callback !== null) {
 
-                    set_anyway_if_changes_callback(this.state._json_state_history, false);
+                    set_anyway_if_changes_callback(_json_state_history, false);
                 }
+                _json_state_history = null;
                 return false;
             }
         });
@@ -5887,7 +5848,6 @@ class CanvasPixels extends React.Component {
 
     import_JS_state = async(js, callback_function) => {
 
-        console.log(js);
         let _json_state_history = Object.assign({}, {
             history_position: parseInt(js._json_state_history.history_position),
             previous_history_position: parseInt(js._json_state_history.previous_history_position),

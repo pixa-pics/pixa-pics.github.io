@@ -116,10 +116,10 @@ const get_settings = (callback_function_info = null, attachment_ids = [], callba
 
                                     try {
 
-                                        LZP3(uint8a, "DECOMPRESS_UINT8A", (obj) => {
+                                        LZP3(uint8a, "DECOMPRESS_UINT8A", pool).then((obj) => {
 
                                             callback_function_attachment(null, obj);
-                                        }, pool);
+                                        });
 
                                     } catch (e) {
 
@@ -225,7 +225,7 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
 
                                 try {
 
-                                    LZP3(data, "COMPRESS_OBJECT", (uint8a) => {
+                                    LZP3(data, "COMPRESS_OBJECT", pool).then((uint8a) => {
 
                                         settings_docs[0]._attachments = settings_docs[0]._attachments || {};
                                         settings_docs[0]._attachments[name_id] = {
@@ -238,7 +238,7 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
                                             continue_push_in_db(settings_docs, pixa_settings, callback_function_info);
                                         }
 
-                                    }, pool);
+                                    });
                                 } catch (e) {
 
                                     callback_function_info("LZP3 not working", null);
@@ -342,7 +342,7 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
 
                     try {
 
-                        LZP3(data, "COMPRESS_OBJECT", (uint8a) => {
+                        LZP3(data, "COMPRESS_OBJECT", pool).then((uint8a) => {
 
                             attachments[name_id] = {
                                 content_type: "application/octet-stream",
@@ -355,7 +355,7 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
                                 continue_push_in_db(attachments, pixa_settings);
                             }
 
-                        }, pool);
+                        });
                     } catch (e) {
 
                         callback_function_info("LZP3 not working", null);
