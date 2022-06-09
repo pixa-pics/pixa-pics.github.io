@@ -435,8 +435,8 @@ class Home extends React.Component {
         const { classes, _bii3_opacity, _image_name_infographics, _infographics_fadein_time } = this.state;
 
         let bi =  THEME_DAY ?
-            "url(/src/images/illustrations/Egypt-day.svg)":
-            "url(/src/images/illustrations/China-night.svg)";
+            "url(/src/images/illustrations/Fuji-day.svg)":
+            "url(/src/images/illustrations/Indo-night.svg)";
         if(
             THEME_DAY === null ||
             IS_EVENING === null ||
