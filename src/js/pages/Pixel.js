@@ -136,10 +136,12 @@ const styles = theme => ({
         whiteSpace: "nowrap",
     },
     drawerModalBackdropRoot: {
-        transform: "translateY(-48px)"
+        transform: "translateY(-48px)",
+        contain: "layout size style paint",
     },
     drawerModal: {
-        transform: "translateY(48px)"
+        transform: "translateY(48px)",
+        contain: "size layout style",
     },
     contentDrawerFixed: {
         contain: "style size paint layout",
@@ -182,7 +184,7 @@ const styles = theme => ({
             overflowY: "visible !important",
             display: "inline-table !important",
             width: "100% !important",
-            contain: "size layout style !important",
+            contain: "size style !important",
         },
         '& div .react-swipeable-view-container > div': {
             overflow: "visible !important",
@@ -203,7 +205,7 @@ const styles = theme => ({
             display: "flex !important",
             filter: "opacity(1) !important",
             willChange: "none !important",
-            contain: "size layout style !important",
+            contain: "size style !important",
             width: 480,
             [theme.breakpoints.down("md")]: {
                 width: "100vw",

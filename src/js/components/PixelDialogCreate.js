@@ -133,7 +133,7 @@ class PixelDialogCreate extends React.Component {
                         <div className={classes.rightImagesContainer}>
                             <div className={classes.rightImagesContainer} style={{padding: "8px 24px", position: "relative", overflow: "hidden", boxSizing: "border-box", width: "100%"}}>
                                 <Typography id="size-slider" gutterBottom>Reduce size of minima to :</Typography>
-                                <Slider value={size} step={8} valueLabelDisplay="auto" min={16} max={size > 512 ? size: 512} onChangeCommitted={this._set_size_from_slider} aria-labelledby="size-slider"/>
+                                <Slider defaultValue={size} step={8} valueLabelDisplay="auto" min={16} max={size > 512 ? size: 512} onChangeCommitted={this._set_size_from_slider} aria-labelledby="size-slider"/>
                             </div>
                             <input
                                 onChange={this.props.on_upload}

@@ -1401,7 +1401,7 @@ class PixelToolboxSwipeableViews extends React.Component {
                     Object.entries(actions).map(a => a[1]).map((view, index) => {
 
                         return (
-                            <List key={index} style={{ contain: "style layout paint", overflow: String(view_name_index !== index ? "auto": "auto"), contentVisibility: String(view_name_index !== index ? "auto": "auto"), paddingTop: 0}}>
+                            <List key={index} style={{ contain: "style layout paint", overflow: String(view_name_index !== index ? "auto": "visible"), contentVisibility: String(view_name_index !== index ? "auto": "auto"), paddingTop: 0}}>
 
                                 {
                                     view_names[index] === "layers" ?
