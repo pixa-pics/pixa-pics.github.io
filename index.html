@@ -34,7 +34,7 @@
                 content-visibility: auto;
             }
             body::after {
-                content-visibility: visible;
+                content-visibility: auto;
                 pointer-events: none;
                 contain: size paint style layout;
                 content: " ";
@@ -60,17 +60,21 @@
                 height: 100vh;
                 width: 100vw;
                 transform-origin: center;
-                animation-fill-mode: both;
                 will-change: auto;
-                animation: bounce-in .6s ease;
+                animation-fill-mode: both;
+                animation-name: bounce-in;
+                animation-duration: .6s;
+                animation-delay: 0s;
+                animation-timing-function: ease;
+                animation-iteration-count: 1;
             }
             @keyframes bounce-in {
                 0% {
-                    opacity: 0;
+                    filter: opacity(0);
                     transform: scale(.3);
                 }
                 50% {
-                    opacity: 1;
+                    filter: opacity(1);
                     transform: scale(1.05);
                 }
                 70% { transform: scale(.9); }
@@ -92,20 +96,24 @@
             }
             body[datainitiated=true]::after {
                 animation: zoom-out .3s ease !important;
-                animation-fill-mode: both;
-                filter: opacity(0);
-                content-visibility: hidden;
+                animation-fill-mode: both !important;
+                animation-delay: 0s;
+                animation-timing-function: ease;
+                animation-iteration-count: 1;
+                animation-name: zoom-out !important;
+                animation-duration: .3s !important;
+                content-visibility: hidden !important;
             }
             @keyframes zoom-out {
                 0% {
                     transform: translateZ(10px) scale(1);
                     filter: opacity(1);
-                    content-visibility: auto;
+                    content-visibility: auto !important;
                 }
                 100% {
                     transform: translateZ(10px) scale(6);
                     filter: opacity(0);
-                    content-visibility: hidden;
+                    content-visibility: hidden!important;
                 }
             }
         </style>

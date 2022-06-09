@@ -1,6 +1,6 @@
-var REQUIRED_CACHE = "unless-update-cache-v220-required";
-var USEFUL_CACHE = "unless-update-cache-v220-useful";
-var STATIC_CACHE = "unless-update-cache-v220-static";
+var REQUIRED_CACHE = "unless-update-cache-v221-required";
+var USEFUL_CACHE = "unless-update-cache-v221-useful";
+var STATIC_CACHE = "unless-update-cache-v221-static";
 var MAIN_CHILD_CHUNK_REGEX = /child\-chunk\.(main\~[a-z0-9]+)\.min.js/i;
 var CHILD_CHUNK_REGEX = /child\-chunk\.([0-9]+)\.min.js/i;
 
@@ -82,7 +82,7 @@ self.addEventListener("install", function(event) {
         }),
         static_cache.then(function (cache) {
             return cache.addAll([
-                "/src/sounds/sfx/md/navigation_transition-left.mp3",
+                "/src/sounds/sfx/md/navigation_transition-right.mp3",
             ]);
         })
     ]);
@@ -152,7 +152,7 @@ self.addEventListener("fetch", function(event) {
                         "/src/sounds/sfx/md/FullHorizonThrow.mp3",
                         "/src/sounds/sfx/md/hero_decorative-celebration-02.mp3",
                         "/src/sounds/sfx/md/navigation_selection-complete-celebration.mp3",
-                        "/src/sounds/sfx/md/navigation_transition-right.mp3",
+                        "/src/sounds/sfx/md/navigation_transition-left.mp3",
                         "/src/sounds/sfx/md/state-change_confirm-down.mp3",
                         "/src/sounds/sfx/md/ui_lock.mp3",
                         "/src/sounds/sfx/md/ui_unlock.mp3",
