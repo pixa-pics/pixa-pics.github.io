@@ -108,20 +108,6 @@
 
             window._FIRE_IT = function() {
 
-                // Prevent this function of being executed twice or more
-                if(window._FIRED_IT){ return false }
-
-                if(document.readyState === "complete") {
-
-                    fire_it();
-                } else {
-
-                    document.addEventListener('readystatechange', () => {
-
-                        if(document.readyState === "complete") { fire_it() }
-                    });
-                }
-
                 function fire_it() {
 
                     // Add those file to header once fired
@@ -146,7 +132,10 @@
                             e.setAttribute("type", "text/javascript");
                             if(ss.endsWith("norris.min.js")){
 
-                                document.body.appendChild(e);
+                                if(document.querySelectorAll(`script[src$="${"norris.min.js"}"]`).length === 0) {
+
+                                    document.body.appendChild(e);
+                                }
 
                             }else {
 
@@ -164,6 +153,20 @@
                     });
 
                     window._FIRED_IT = true;
+                }
+
+                // Prevent this function of being executed twice or more
+                if(window._FIRED_IT){ return false }
+
+                if(document.readyState === "complete") {
+
+                    fire_it();
+                } else {
+
+                    document.addEventListener('readystatechange', () => {
+
+                        if(document.readyState === "complete") { fire_it() }
+                    });
                 }
             };
 
@@ -183,6 +186,7 @@
 
                             sw.addEventListener('statechange', function(e) {
 
+                                console.log(e.target.state);
                                 if(e.target.state === "activated") { window._FIRE_IT() }
                             });
                         }else { window._FIRE_IT() }

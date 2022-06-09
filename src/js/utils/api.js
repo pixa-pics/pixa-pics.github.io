@@ -86,57 +86,58 @@ const get_settings = (callback_function_info = null, attachment_ids = [], callba
 
                 try {
 
-                    if(Boolean(callback_function_attachment) &&  Boolean(Boolean(attachment_ids.length > 0) || Boolean(attachment_ids === "all"))) {
+                    if(Boolean(callback_function_attachment !== null) &&  Boolean(Boolean(attachment_ids.length > 0) || Boolean(attachment_ids === "all"))) {
 
                         // retrieve a data attachment
                         window.settings_db.get(settings_docs[0]._id, {
                             rev: settings_docs[0]._rev,
                             attachments: Boolean(attachment_ids.length > 0) || Boolean(attachment_ids === "all"),
                             binary: Boolean(attachment_ids.length > 0) || Boolean( attachment_ids === "all")
-                        }).then((doc) => {
+                        }, (error_doc, doc) => {
 
-                            const pixa_settings = JSON.parse(doc.info);
-                            window._pixa_settings = _merge_object({}, pixa_settings);
-                            if(callback_function_info){ callback_function_info(null, _merge_object({}, window._pixa_settings))};
+                            if(!error_doc) {
 
-                            let blobs = [];
-                            Object.entries(doc._attachments).forEach(([name_id, value]) => {
+                                const pixa_settings = JSON.parse(doc.info);
+                                window._pixa_settings = _merge_object({}, pixa_settings);
+                                if(callback_function_info){ callback_function_info(null, _merge_object({}, window._pixa_settings))}
 
-                                if(Boolean( attachment_ids === "all") || attachment_ids.includes(name_id)) {
+                                let blobs = [];
+                                Object.entries(doc._attachments).forEach(([name_id, value]) => {
 
-                                    blobs[name_id] = value.data;
-                                }
-                            });
+                                    if(Boolean( attachment_ids === "all") || attachment_ids.includes(name_id)) {
 
-                            Object.entries(blobs).forEach(([name_id, blob]) => {
-
-                                blob.arrayBuffer().then((array_buffer) => {
-
-                                    const uint8a = new Uint8Array(array_buffer);
-
-                                    try {
-
-                                        LZP3(uint8a, "DECOMPRESS_UINT8A", pool).then((obj) => {
-
-                                            callback_function_attachment(null, obj);
-                                        });
-
-                                    } catch (e) {
-
-                                        callback_function_attachment("LZP3 not working", null);
-                                        return false;
+                                        blobs[name_id] = value.data;
                                     }
-                                }).catch((e) => {
-
-                                    callback_function_attachment("DB not working", null);
-                                    return false;
                                 });
-                            });
 
-                        }).catch((e) => {
+                                Object.entries(blobs).forEach(([name_id, blob]) => {
 
-                            callback_function_attachment("Missing in our database, unholy PouchDB when you don't get your files...", null);
-                            return false;
+                                    blob.arrayBuffer().then((array_buffer) => {
+
+                                        const uint8a = new Uint8Array(array_buffer);
+
+                                        try {
+
+                                            LZP3(uint8a, "DECOMPRESS_UINT8A", pool).then((obj) => {
+
+                                                callback_function_attachment(null, obj);
+                                            });
+
+                                        } catch (e) {
+
+                                            callback_function_attachment("LZP3 not working", null);
+                                        }
+                                    }).catch((e) => {
+
+                                        callback_function_attachment("DB not working", null);
+                                    });
+                                });
+                            }else {
+
+                                callback_function_attachment("DB not working", null);
+                                if(callback_function_info){ callback_function_info("DB not working", null)}
+                            }
+
                         });
 
                     }else {
@@ -159,13 +160,18 @@ const get_settings = (callback_function_info = null, attachment_ids = [], callba
                 window.settings_db.post({
                     info: JSON.stringify(pixa_settings),
                     timestamp: Date.now(),
-                }), () => {
+                }, (err, res) => {
 
-                    if(callback_function_info !== null) {
+                    if(err) {
+
+                        callback_function_info("DB post error", null);
+                    }else {
 
                         callback_function_info(null, _merge_object({}, window._pixa_settings));
+                        window.settings_db.compact();
+                        window.settings_db.viewCleanup();
                     }
-                };
+                });
             }
         }
 
@@ -251,7 +257,7 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
                                 pixa_settings.attachment_previews = pixa_settings.attachment_previews  || {};
                                 delete pixa_settings.attachment_previews[name_id];
 
-                                window.settings_db.removeAttachment(settings_docs[0]._id, name_id, settings_docs[0]._rev).then((result) => {
+                                window.settings_db.removeAttachment(settings_docs[0]._id, name_id, settings_docs[0]._rev, (err, res) => {
 
                                     attachments_to_process--;
                                     if(attachments_to_process === 0) {
@@ -270,22 +276,32 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
                                 info: JSON.stringify(pixa_settings),
                                 timestamp: Date.now(),
                                 _attachments: settings_docs[0]._attachments,
-                            }, {force: true}).then((response) => {
+                            }, {force: true}, (err, res) => {
 
-                                if(callback_function_info !== null) {
+                                if(!err) {
 
-                                    callback_function_info(null, _merge_object({}, window._pixa_settings));
+                                    if(callback_function_info !== null) {
+
+                                        callback_function_info(null, _merge_object({}, window._pixa_settings));
+                                    }
+
+                                    if(settings_docs.length > 1) {
+
+                                        // Delete all others
+                                        settings_docs.splice(0, 1);
+                                        window.settings_db.bulkDocs(settings_docs.map((sd) => {return {_id: sd._id, _rev: sd._rev, _deleted: true, timestamp: 0, data: null, info: null, _attachments: {}}}), {force: true});
+                                    }
+
+                                    window.settings_db.compact();
+                                    window.settings_db.viewCleanup();
+                                }else {
+
+                                    if(callback_function_info !== null) {
+
+                                        callback_function_info("DB error post", null);
+                                    }
                                 }
 
-                                if(settings_docs.length > 1) {
-
-                                    // Delete all others
-                                    settings_docs.splice(0, 1);
-                                    window.settings_db.bulkDocs(settings_docs.map((sd) => {return {_id: sd._id, _rev: sd._rev, _deleted: true, timestamp: 0, data: null, info: null, _attachments: {}}}), {force: true});
-                                }
-
-                                window.settings_db.compact();
-                                window.settings_db.viewCleanup();
                             });
                         };
 
@@ -297,19 +313,28 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
                             info: JSON.stringify(pixa_settings),
                             _attachments: settings_docs[0]._attachments,
                             timestamp: Date.now(),
-                        }, {force: true}).then((response) => {
+                        }, {force: true}, (err, res) => {
 
-                            if(callback_function_info !== null) {
+                            if(!err) {
+                                if(callback_function_info !== null) {
 
-                                callback_function_info(null, _merge_object({}, window._pixa_settings));
+                                    callback_function_info(null, _merge_object({}, window._pixa_settings));
+                                }
+
+                                if(settings_docs.length > 1) {
+
+                                    // Delete all others
+                                    settings_docs.splice(0, 1);
+                                    window.settings_db.bulkDocs(settings_docs.map((sd) => {return {_id: sd._id, _rev: sd._rev, _deleted: true, timestamp: 0, data: null, info: null, _attachments: {}}}), {force: true});
+                                }
+                            }else {
+
+                                if(callback_function_info !== null) {
+
+                                    callback_function_info("DB error post", null);
+                                }
                             }
 
-                            if(settings_docs.length > 1) {
-
-                                // Delete all others
-                                settings_docs.splice(0, 1);
-                                window.settings_db.bulkDocs(settings_docs.map((sd) => {return {_id: sd._id, _rev: sd._rev, _deleted: true, timestamp: 0, data: null, info: null, _attachments: {}}}), {force: true});
-                            }
                         });
                     }
 
@@ -370,11 +395,17 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
                         info: JSON.stringify(pixa_settings),
                         timestamp: Date.now(),
                         _attachments: attachments
-                    }).then((response) => {
+                    }, (err, res) => {
 
-                        callback_function_info(null, _merge_object({}, window._pixa_settings));
-                        window.settings_db.compact();
-                        window.settings_db.viewCleanup();
+                        if(err) {
+
+                            callback_function_info("DB post error", null);
+                        }else {
+
+                            callback_function_info(null, _merge_object({}, window._pixa_settings));
+                            window.settings_db.compact();
+                            window.settings_db.viewCleanup();
+                        }
                     });
                 };
 
@@ -384,16 +415,22 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
                 window.settings_db.post({
                     info: JSON.stringify(pixa_settings),
                     timestamp: Date.now(),
-                }).then((response) => {
+                }, (err, res) => {
 
-                    callback_function_info(null, _merge_object({}, pixa_settings));
+                    if(err) {
+
+                        callback_function_info("DB post error", null);
+                    }else {
+
+                        callback_function_info(null, _merge_object({}, window._pixa_settings));
+                    }
 
                 });
 
             }
         }else if(error) {
 
-            callback_function_info(error, null);
+            callback_function_info("unknown error", null);
         }
     });
 }

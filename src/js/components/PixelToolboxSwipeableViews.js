@@ -279,13 +279,13 @@ class PixelToolboxSwipeableViews extends React.Component {
             import_colorize
         } = this.state;
 
-        if ((new_props.should_update) && (
+        if (Boolean(new_props.should_update) && (
             Boolean(canvas) !== Boolean(new_props.canvas) ||
             view_name_index !== new_props.view_name_index ||
             previous_view_name_index !== new_props.previous_view_name_index ||
             view_names !== new_props.view_names ||
-            layers.map((l) => l.hash).join("") !== new_props.layers.map((l) => l.hash).join("") ||
-            layer_index !== new_props.layer_index ||
+            JSON.stringify(layers) !== JSON.stringify(new_props.layers) ||
+            parseInt(layer_index) !== parseInt(new_props.layer_index) ||
             is_image_import_mode !== new_props.is_image_import_mode ||
             hide_canvas_content !== new_props.hide_canvas_content ||
             show_original_image_in_background !== new_props.show_original_image_in_background ||
@@ -1398,14 +1398,14 @@ class PixelToolboxSwipeableViews extends React.Component {
                 disabled={false}
             >
                 {
-                    Object.entries(actions).map(a => a[1]).map((view, index) => {
+                    Object.entries(actions).map(([name, view], index) => {
 
                         return (
-                            <List key={index} style={{ contain: "style layout paint", overflow: String(view_name_index !== index ? "auto": "visible"), contentVisibility: String(view_name_index !== index ? "auto": "auto"), paddingTop: 0}}>
+                            <List key={name} style={{ contain: "style layout paint", overflow: String(view_name_index !== index ? "auto": "visible"), contentVisibility: String(view_name_index !== index ? "auto": "auto"), paddingTop: 0}}>
 
                                 {
-                                    view_names[index] === "layers" ?
-                                        <div key={"layers-main"} className={`swipetoolbox_i_${index}_${0}`}>
+                                    name === "layers" ?
+                                        <div key={"layers-layers-main"} className={`swipetoolbox_i_${index}_${0}`}>
                                             <ListSubheader className={classes.listSubHeader}>
                                                 <span><AllLayersIcon/></span>
                                                 <span>All layers</span>
@@ -1489,8 +1489,8 @@ class PixelToolboxSwipeableViews extends React.Component {
 
                                 {
 
-                                    view_names[index] === "palette" ?
-                                        <div key={"palette-main"} className={`swipetoolbox_i_${index}_${0}`}>
+                                    name === "palette" ?
+                                        <div key={"palette-palette-main"} className={`swipetoolbox_i_${index}_${0}`}>
                                             <Menu
                                                 className={classes.menu}
                                                 anchorEl={_anchor_el}
@@ -1560,7 +1560,7 @@ class PixelToolboxSwipeableViews extends React.Component {
                                                 overflow: "visible",
                                                 boxSizing: "border-box",
                                                 width: "100%"
-                                            }} key={"palette-secondary"} className={`swipetoolbox_i_${index}_${1}`}>
+                                            }} key={"palette-palette-secondary"} className={`swipetoolbox_i_${index}_${1}`}>
                                                 <div className={classes.sliderContainer}>
                                                     <Typography className={classes.sliderLabel} id="opacity-slider"
                                                                 gutterBottom>α</Typography>
@@ -1591,8 +1591,8 @@ class PixelToolboxSwipeableViews extends React.Component {
                                 }
 
                                 {
-                                    view_names[index] === "image" ?
-                                        <div key={"image-upload"} className={`swipetoolbox_i_${index}_${0}`}>
+                                    name === "image" ?
+                                        <div key={"image-image-upload"} className={`swipetoolbox_i_${index}_${0}`}>
                                             <ListSubheader className={classes.listSubHeader}>
                                                 <span><ImportIcon/></span>
                                                 <span>Upload</span>
@@ -1605,7 +1605,7 @@ class PixelToolboxSwipeableViews extends React.Component {
                                                     type="file"
                                                     onChange={this._upload_image}
                                                 />
-                                                <ListItem component="label" button for="button-file-drawer-upload" >
+                                                <ListItem component="label" button htmlFor="button-file-drawer-upload" >
                                                     <ListItemIcon className={classes.listItemIcon}>
                                                         <ImagePlusIcon/>
                                                     </ListItemIcon>
@@ -1730,7 +1730,7 @@ class PixelToolboxSwipeableViews extends React.Component {
                                 {
                                     view.map((action_set) => {
                                         return (
-                                            <div key={view_names[index] + "-" + action_set.label} className={`swipetoolbox_i_${index}_${action_set.local_i}`}>
+                                            <div key={name + "-" + action_set.label} className={`swipetoolbox_i_${index}_${action_set.local_i}`}>
                                                 <ListSubheader className={classes.listSubHeader}>
                                                     <span>{action_set.icon}</span>
                                                     <span>{action_set.text}</span>
@@ -1748,7 +1748,7 @@ class PixelToolboxSwipeableViews extends React.Component {
                                                      }>
                                                     {action_set.tools.map((tool, index) => {
                                                         return tool.for ? (
-                                                            <div>
+                                                            <div key={name + "-" + action_set.label + tool.text.toLowerCase().replaceAll(" ", "-")}>
                                                                 <input
                                                                     accept="image/jpg, image/jpeg, image/png, image/svg, image/webp, image/gif"
                                                                     style={{display: "none"}}
@@ -1756,7 +1756,7 @@ class PixelToolboxSwipeableViews extends React.Component {
                                                                     type="file"
                                                                     onChange={tool.on_click}
                                                                 />
-                                                                <ListItem component="label" key={index} for={tool.for} button disabled={tool.disabled || false}>
+                                                                <ListItem component="label" key={index} htmlFor={tool.for} button disabled={tool.disabled || false}>
                                                                     <ListItemIcon className={classes.listItemIcon}>
                                                                         {tool.icon}
                                                                     </ListItemIcon>
@@ -1766,7 +1766,7 @@ class PixelToolboxSwipeableViews extends React.Component {
                                                             </div>
                                                         ):
                                                         (
-                                                            <ListItem key={index} button disabled={tool.disabled || false}
+                                                            <ListItem key={name + "-" + action_set.label + tool.text.toLowerCase().replaceAll(" ", "-")} button disabled={tool.disabled || false}
                                                                       onClick={tool.on_click}>
                                                                 <ListItemIcon className={classes.listItemIcon}>
                                                                     {tool.icon}
@@ -1783,8 +1783,8 @@ class PixelToolboxSwipeableViews extends React.Component {
                                 }
 
                                 {
-                                    view_names[index] === "image" ?
-                                        <div key={"image-create"} className={`swipetoolbox_i_${index}_${3}`}>
+                                    name === "image" ?
+                                        <div key={"image-image-create"} className={`swipetoolbox_i_${index}_${3}`}>
                                             <ListSubheader className={classes.listSubHeader}>
                                                 <span><ImagePlusIcon/></span>
                                                 <span>Create new</span>

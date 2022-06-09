@@ -320,14 +320,16 @@ class InnerToolbar extends React.Component {
                                 <LinearProgress
                                     color="primary"
                                     variant="determinate"
-                                    aria-progressbar-name={"main-progressbar-left"}
+                                    role="progressbar" aria-valuenow={loaded_progress_percent} aria-valuemin="0" aria-valuemax="100"
+                                    aria-label={"main-progressbar-left"}
                                     className={navigator.onLine ? classes.linearProgressVisible: classes.linearProgressVisibleOffline}
                                     value={100 - loaded_progress_percent}
-                                    style={{transform: "rotate(-180deg)", webkitTransform: "rotate(-180deg)"}}/>
+                                    style={{transform: "rotate(-180deg)", WebkitTransform: "rotate(-180deg)"}}/>
                                 <LinearProgress
                                     color="primary"
                                     variant="determinate"
-                                    aria-progressbar-name={"main-progressbar-right"}
+                                    role="progressbar" aria-valuenow={loaded_progress_percent} aria-valuemin="0" aria-valuemax="100"
+                                    aria-label={"main-progressbar-right"}
                                     className={navigator.onLine ? classes.linearProgressVisible: classes.linearProgressVisibleOffline}
                                     value={100 - loaded_progress_percent} />
                             </div>

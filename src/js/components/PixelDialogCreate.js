@@ -7,6 +7,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import TimeAgo from "javascript-time-ago";
 import {t} from "../utils/t";
 import actions from "../actions/utils";
+import {parse} from "@ungap/structured-clone/cjs/json";
 
 const styles = theme => ({
     dialogContentContainer: {
@@ -128,12 +129,12 @@ class PixelDialogCreate extends React.Component {
                                 id="button-file-dialog-primary"
                                 type="file"
                             />
-                            <Button component={"label"} for="button-file-dialog-primary" fullWidth variant="contained" color="secondary" style={{background: "#ffffff82", boxShadow: "none", color: "#00148569", fontWeight: "bold", fontSize: "2.5em"}} autoFocus onClick={this.props.on_upload}>Upload a new image to make a sanitized minima within the laboratory.</Button>
+                            <Button component={"label"} htmlFor="button-file-dialog-primary" fullWidth variant="contained" color="secondary" style={{background: "#ffffff82", boxShadow: "none", color: "#00148569", fontWeight: "bold", fontSize: "2.5em"}} autoFocus onClick={this.props.on_upload}>Upload a new image.</Button>
                         </div>
                         <div className={classes.rightImagesContainer}>
                             <div className={classes.rightImagesContainer} style={{padding: "8px 24px", position: "relative", overflow: "hidden", boxSizing: "border-box", width: "100%"}}>
                                 <Typography id="size-slider" gutterBottom>Reduce size of minima to :</Typography>
-                                <Slider defaultValue={size} step={8} valueLabelDisplay="auto" min={16} max={size > 512 ? size: 512} onChangeCommitted={this._set_size_from_slider} aria-labelledby="size-slider"/>
+                                <Slider defaultValue={parseInt(size)} step={8} valueLabelDisplay="auto" min={16} max={size > 512 ? size: 512} onChangeCommitted={this._set_size_from_slider} aria-labelledby="size-slider"/>
                             </div>
                             <input
                                 onChange={this.props.on_upload}
@@ -142,7 +143,7 @@ class PixelDialogCreate extends React.Component {
                                 id="button-file-dialog-secondary"
                                 type="file"
                             />
-                            <Button component={"label"} for="button-file-dialog-secondary" className={classes.mainUploadButton} fullWidth variant="contained" color="primary" autoFocus>UPLOAD</Button>
+                            <Button component={"label"} htmlFor="button-file-dialog-secondary" className={classes.mainUploadButton} fullWidth variant="contained" color="primary" autoFocus>UPLOAD</Button>
                             <Typography component={"h2"} variant={"h6"} style={{marginTop: 16}}>Unsaved minima</Typography>
                             <div style={{padding: "8px 24px", position: "relative", display: "flex", flexWrap: "wrap", justifyContent: "space-around", overflow: "hidden", boxSizing: "border-box", width: "100%"}}>
                                 <ImageList rowHeight={288} cols={2.0} style={{flexWrap: "nowrap", transform: "translateZ(0)", contains: "strict", maxWidth: "min(576px, (100vw - 160px))"}}>

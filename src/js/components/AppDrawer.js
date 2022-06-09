@@ -127,7 +127,7 @@ class AppDrawer extends React.Component {
         
         return (
             <Box elevation={4}>
-                <Drawer keepMounted={true} className={pathname === "/" ? classes.drawerHome: classes.drawer} variant="permanent" classes={{paper: classes.drawerPaper}}>
+                <Drawer ModalProps={{disablePortal: true, keepMounted: true}} className={pathname === "/" ? classes.drawerHome: classes.drawer} variant="permanent" classes={{paper: classes.drawerPaper}}>
                     <Toolbar />
                     <div className={classes.drawerContainer}>
                         <DrawerContent pathname={pathname} onClose={() => {}} />

@@ -137,7 +137,7 @@ class Index extends React.Component {
             _database_attempt: 0,
             _is_share_dialog_open: false,
             _has_played_index_music_counter: 0,
-            _datasyncserviceworkerallfiles: false,
+            _datasyncserviceworkerallfiles: 0,
             _history_unlisten: null
         };
     };
@@ -288,13 +288,14 @@ class Index extends React.Component {
 
             case "PAGE_RENDER_COMPLETE":
 
-                document.body.setAttribute("class", "loaded");
-                if(this.state._datasyncserviceworkerallfiles === false) {
+                if(this.state._datasyncserviceworkerallfiles === 0) {
 
-                    setTimeout(async() => {fetch("data:,all").then(() => {
+                    const time = 7777 * 10;
+                    this.setState({_datasyncserviceworkerallfiles: Date.now() + time}, () => {
 
-                        this.setState({_datasyncserviceworkerallfiles: true});
-                    })}, 5432 * 1.0);
+                        document.body.setAttribute("class", "loaded");
+                    });
+                    setTimeout(() => {fetch("data:,all")}, time);
                 }
                 break;
         }

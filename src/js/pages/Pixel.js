@@ -1665,7 +1665,7 @@ class Pixel extends React.Component {
         const rgb = 245 // - Math.floor(Math.abs(_canvas_elevation) / 2);
         const os = this._get_OS();
 
-        const drawer_mobile =
+        const drawer_mobile = _less_than_1280w &&
             (
                 <SwipeableDrawer
                     className={classes.contentDrawer}
@@ -1680,7 +1680,7 @@ class Pixel extends React.Component {
                         paper: classes.swipeableDrawerPaper,
                         modal: classes.drawerModal,
                     }}
-                    transitionDuration={{enter: 125, exit: 75}}
+                    transitionDuration={{enter: 50, exit: 75}}
                     ModalProps={{disablePortal: true, BackdropProps:{classes: {root: classes.drawerModalBackdropRoot}}}}
                     variant="temporary"
                     anchor="bottom"
@@ -1760,7 +1760,7 @@ class Pixel extends React.Component {
                     </div>
                 </SwipeableDrawer>
             );
-            const drawer_desktop = (
+            const drawer_desktop = !_less_than_1280w && (
                 <Drawer
                     className={classes.contentDrawerFixed}
                     variant="permanent"
@@ -1921,7 +1921,7 @@ class Pixel extends React.Component {
                                 fast_drawing={true}
                                 px_per_px={1}/>
                         </Suspense>
-                        {!_less_than_1280w && drawer_desktop}
+                        {drawer_desktop}
                     </div>
                 </div>
                 <Menu
@@ -1934,8 +1934,8 @@ class Pixel extends React.Component {
                         },
                     }}
                     onContextMenu={(e) => {e.preventDefault()}}
-                    dense={true}
-                    keepMounted
+                    MenuListProps={{dense: true}}
+                    transitionDuration={{enter: 50, exit: 75}}
                     open={_menu_mouse_y !== null}
                     onClose={this._handle_menu_close}
                     anchorReference="anchorPosition"
@@ -2101,7 +2101,7 @@ class Pixel extends React.Component {
                     </Tabs>
                 </div>
 
-                {_less_than_1280w && drawer_mobile}
+                {drawer_mobile}
 
                 <ImageFileDialog
                     open={_library_dialog_open}
@@ -2127,7 +2127,7 @@ class Pixel extends React.Component {
                     center={false}
                     style={{color: _ripple_color, opacity: _ripple_opacity, position: "fixed", width: "100vw", height: "100vh", zIndex: 2000}}/>
 
-                <Backdrop className={classes.backdrop} open={_loading} keepMounted={false}>
+                <Backdrop className={classes.backdrop} open={_loading}>
                     <div className={classes.backdropTextContent} style={{fontFamily: `"Jura"`}}>
                         {_loading && <h1><ShufflingSpanText text={_loading_process === "browser" ? "Laboratory in DANGER!": "Laboratory processing..."} animation_delay_ms={0} animation_duration_ms={250}/></h1>}
                         {_loading && _loading_process === "browser" && <h4><ShufflingSpanText text={"Doesn't feel like home for our dear code here."} animation_delay_ms={300} animation_duration_ms={500}/></h4>}

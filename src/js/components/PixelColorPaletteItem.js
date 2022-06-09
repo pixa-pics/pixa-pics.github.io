@@ -70,7 +70,6 @@ class PixelColorPaletteItem extends React.Component {
         return (
             <Tooltip title={color}>
                 <ButtonBase
-                    fulllWidth={full_width}
                     onClick={this.props.onClick ? this.props.onClick: null}
                     style={{
                         background: color,
