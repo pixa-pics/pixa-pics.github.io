@@ -16,10 +16,6 @@
         <style>
             body.loaded {
                 background-color: #fafafa;
-                content-visibility: visible;
-            }
-            body::after {
-                will-change: initial;
             }
             body.loaded > #app {
                 contain: paint style layout;
@@ -27,14 +23,18 @@
                 will-change: auto;
             }
             body.loading[datainitiated=true] > #app {
-                content-visibility: hidden;
                 will-change: contents;
+                content-visibility: hidden;
+            }
+            body.loading[datainitiated=false] > #app {
+                will-change: auto;
+                content-visibility: hidden;
             }
             body.loading > #app {
                 contain: size paint style layout;
-                content-visibility: hidden;
+                content-visibility: auto;
             }
-            body.loading::after {
+            body::after {
                 content-visibility: visible;
                 contain: size paint style layout;
                 content: " ";
@@ -46,7 +46,7 @@
                 image-rendering: crisp-edges;
                 image-rendering: pixelated;
                 background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACYAAAAmBAMAAABaE/SdAAAAIVBMVEVHcEzu+PfCGDQGAAWFDT2XtsNc1sXroqWZXNYKQaNl1lzIuMb2AAAAAXRSTlMAQObYZgAAAOlJREFUKM/VkkFqAjEUhgM5wRMk3fp8xS5Dnw51O74LTCF6ghHaXWfjAUSR7tyIJxCP2X8iygw9gVl+fMn78yfOPenyihX7qKAR87gHZ4koGI+72rIiogFzR/Q1DQG57IhFDRJGEPWhnb7avRS4FEWEzH6/qywys8T3t/bU+cv+CNY0Agi2bZm/gP1gCCMPq2aWvc2kFJwoMT48jIBnsshz5259pBB4KGJmN+YP+5xlJabTxS2iP19b1kywz9/bKdbooEkI59z9yh+7uqL0ydbtoFim9Mqmvf7qVUpisV/91FT134M80/f5A7PVL60QaHlpAAAAAElFTkSuQmCC);
-                background-size: contain;
+                background-size: 50%;
                 background-position: center;
                 background-repeat: no-repeat;
                 box-sizing: border-box;
@@ -62,10 +62,23 @@
                 transform-origin: center;
                 animation-fill-mode: both;
                 will-change: auto;
+                animation: bounce-in .6s ease;
+            }
+            @keyframes bounce-in {
+                0% {
+                    opacity: 0;
+                    transform: scale(.3);
+                }
+                50% {
+                    opacity: 1;
+                    transform: scale(1.05);
+                }
+                70% { transform: scale(.9); }
+                100% { transform: scale(1); }
             }
             body.loading  {
                 font-size: 0 !important;
-                content-visibility: visible;
+                content-visibility: auto;
                 background-color: #fff;
                 contain: size paint style layout;
                 padding: 0;
@@ -77,26 +90,20 @@
                 min-height: 100vh;
                 min-width: 100vw;
             }
-            body.loading[datainitiated=false]{
-                content-visibility: auto;
+            body[datainitiated=true]::after {
+                animation: zoom-out .3s ease !important;
+                animation-fill-mode: both;
+                filter: opacity(0);
+                content-visibility: hidden;
             }
-            body.loading[datainitiated=true]::after {
-                transform: translateZ(10px) scale(1);
-                animation-delay: 20ms;
-                animation-duration: 100ms;
-                animation-name: zoomout;
-                animation-timing-function: linear;
-                will-change: transform, filter;
-            }
-            @keyframes zoomout {
-                from {
+            @keyframes zoom-out {
+                0% {
                     transform: translateZ(10px) scale(1);
                     filter: opacity(1);
-                    content-visibility: visible;
-
+                    content-visibility: auto;
                 }
-                to {
-                    transform: translateZ(10px)  scale(10);
+                100% {
+                    transform: translateZ(10px) scale(6);
                     filter: opacity(0);
                     content-visibility: hidden;
                 }

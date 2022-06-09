@@ -50,6 +50,7 @@ const styles = theme => ({
         bottom: 0
     },
     homeCTAuseit: {
+        contentVisibility: "auto",
         fontWeight: "bold",
         transform: "translateY(0px) scale(1)  !important",
         fontSize: "1.314rem",
@@ -79,9 +80,6 @@ const styles = theme => ({
         color: "#6f440d",
         backgroundImage: "linear-gradient(-32deg, goldenrod, #fff9f0, gold, darkgoldenrod, #fff8aa, goldenrod, blanchedalmond)",
         filter: "drop-shadow(0px 0px 4px darkgoldenrod)",
-        "& svg": {
-            filter: "sepia(1)"
-        },
         "&:hover": {
             color: "#402303",
             filter: "drop-shadow(0px 0px 16px goldenrod) brightness(1.1)",
@@ -111,15 +109,6 @@ const styles = theme => ({
         width: "100%",
         height: "100%",
         overflow: "hidden",
-        "&:after": {
-            content: "''",
-            width: "100%",
-            height: "100%",
-            left: 0,
-            top: 0,
-            position: "absolute",
-            backdropFilter: "brightness(0.777) saturate(0.9) contrast(1.2) brightness(1.5)",
-        },
         position: "relative",
         backgroundPosition: "0% 25vh",
         animation: "$slide 56s linear infinite",
@@ -141,7 +130,7 @@ const styles = theme => ({
         },
     },
     backgroundImageImage: {
-        contentVisibility: "visible",
+        contentVisibility: "auto",
         right: "max(9vw, 9vh)",
         bottom: "max(12vw, 12vh)",
         width: "min(47.5vw, 47.5vh)",
@@ -202,7 +191,7 @@ const styles = theme => ({
     },
     titleh1: {
         whiteSpace: "break-spaces",
-        maxWidth: "1000px",
+        maxWidth: "1200px",
         fontWeight: "bold",
         fontSize: "36px",
         "& sup": {
@@ -226,7 +215,7 @@ const styles = theme => ({
         whiteSpace: "break-spaces",
         fontWeight: "normal",
         fontSize: "21px",
-        maxWidth: "600px",
+        maxWidth: "900px",
         "& sup": {
             fontSize: "0.33em",
             opacity: "0.66",
@@ -272,8 +261,7 @@ const styles = theme => ({
     subtitleButton: {
         color: "#44cb16",
         fontWeight: "bold",
-        fontSize: "10px",
-        filter: "drop-shadow(0px 0px 2px #4caf5033) sepia(1)",
+        fontSize: "12px",
         [theme.breakpoints.down("sm")]: {
             display: "none",
         },
@@ -446,22 +434,23 @@ class Home extends React.Component {
 
         const { classes, _bii3_opacity, _image_name_infographics, _infographics_fadein_time } = this.state;
 
+        let bi =  THEME_DAY ?
+            "url(/src/images/illustrations/Egypt-day.svg)":
+            "url(/src/images/illustrations/China-night.svg)";
         if(
             THEME_DAY === null ||
             IS_EVENING === null ||
             IS_LATE_EVENING === null
         ) {
-            return null;
+            bi = null;
         }
 
         return (
             <div className={classes.root} style={{
-                filter: "revert",
-                backgroundImage: THEME_DAY ?
-                                    "url(/src/images/illustrations/Egypt-day.svg)" :
-                                    "url(/src/images/illustrations/China-night.svg)"
+                contentVisibility: "auto",
+                backgroundImage: bi,
             }}>
-                <div className={classes.insideRoot} style={{backgroundColor: THEME_DAY ? "#ffffff33": "#00000033"}}>
+                <div className={classes.insideRoot}>
                     <div className={classes.backgroundImage}>
                         {_image_name_infographics.length >= 1 && <Grow in={true} exit={true} key={_image_name_infographics} timeout={{ enter: _infographics_fadein_time, exit: _infographics_fadein_time }}><img src={`/src/images/infographics/${_image_name_infographics}.svg`} alt="Image demo." className={classes.backgroundImageImage}/></Grow>}
                         <h2 className={classes.backgroundImageImage} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff", backgroundColor: THEME_DAY && !IS_EVENING ? "#ffffff99": "#00651080", padding: 16, textAlign: "center", border: "8px solid #00ff0054", borderRadius: "16px"}}>REAL "SVG" SHAPES RENDER!<br/><span style={{fontSize: "0.75em"}}>Use (6x) "xBRZ" instead of default pixelated rendering of (16x, 32x, 48x).</span></h2>
