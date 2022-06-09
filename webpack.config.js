@@ -93,7 +93,7 @@ module.exports = {
         ],
         chunkIds: 'named',
         splitChunks: {
-            chunks: 'async',
+            chunks: 'all',
             minSize: 240 * 1024,
             maxSize: 384 * 1024,
             minChunks: 6,
@@ -161,8 +161,8 @@ module.exports = {
     },
     output: {
         path: path.join(__dirname),
-        filename: "father-chunk.norris.min.js",
-        chunkFilename: "child-chunk.[id].min.js",
+        filename: "chunk_norris.min.js",
+        chunkFilename: "chunk_[id].min.js",
     },
     resolve: {
         alias: {
