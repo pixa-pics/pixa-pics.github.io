@@ -2,14 +2,6 @@
 
 PIXA.PICS - Pixel art editor! *100% visionary in privacy concerns/critics and detractors with its force that stands bold against neglects of privacy.*
 
-**Does it is made out of supernovas or instead much more with...**
-
-![](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
-![](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
-![](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
-![](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
-![](https://img.shields.io/badge/Material--UI-0081CB?style=for-the-badge&logo=material-ui&logoColor=white)
-
 **Does https://pixa.pics/ get?**
 
 ![](https://img.shields.io/badge/Maintained%3F-yes-green.svg)
@@ -18,15 +10,6 @@ PIXA.PICS - Pixel art editor! *100% visionary in privacy concerns/critics and de
 # Tools
 
 All the screenshots were captured using a "Samsung Galaxy J3 (2017)" having 2gb of ram, a smartphone for 100$ fits for creating crazy things with a bit f magic in mind!
-
-#### Zebrapplin' wide a pixel art being large when things come down the line, don't you use this saying often, don't you?
-
-![Any of y'all got some art](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/646d4de1a4bc3758a0b8ce433f724245e10e9543/doc/screenshots/home_screenshot_2205.png)
-
-
-![](http://ForTheBadge.com/images/badges/built-by-developers.svg) [![forthebadge](https://forthebadge.com/images/badges/powered-by-coffee.svg)](https://forthebadge.com) [![forthebadge](https://forthebadge.com/images/badges/its-not-a-lie-if-you-believe-it.svg)](https://forthebadge.com)
-
-[![forthebadge](https://forthebadge.com/images/badges/as-seen-on-tv.svg)](https://forthebadge.com)  [![forthebadge](https://forthebadge.com/images/badges/powered-by-black-magic.svg)](https://forthebadge.com)  [![forthebadge](https://forthebadge.com/images/badges/open-source.svg)](https://forthebadge.com)
 
 # The challenges of first-class active protection for the preservation of identity
 
@@ -45,13 +28,20 @@ All the screenshots were captured using a "Samsung Galaxy J3 (2017)" having 2gb 
  * **Staying modern without paying anything for useless and toxic ultra-simplification tools.**
 
 
-![Any of y'all got some art](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/images/screenshots/pixa.pics.schema.jpeg)
-
 # Special features
 
  * Create pixel art from your pictures and draw, cut, select, do anything.
  * Have fun with NFTs weighting as low as ~10-100Kb.
  * Restore and colorize B/W while scaling up to 12x images.
+
+![](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/images/screenshots/pixa.pics_1.png)
+![](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/images/screenshots/pixa.pics_2.png)
+![](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/images/screenshots/pixa.pics_3.png)
+![](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/images/screenshots/pixa.pics_4.png)
+![](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/images/screenshots/pixa.pics_5.png)
+![](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/images/screenshots/pixa.pics_6.png)
+![](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/images/screenshots/pixa.pics_7.png)
+![](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/images/screenshots/pixa.pics_8.png)
 
 # Technology
 
