@@ -142,9 +142,12 @@ const styles = theme => ({
         justifyContent: "flex-start",
         width: "100%",
         maxWidth: "100%",
+        overflowX: "scroll",
         "& .MuiFormGroup-root": {
             flexWrap: "nowrap",
-            overflowX: "scroll",
+            padding: "16px 0px !important",
+            contain: "layout paint style",
+            display: "inline-flex",
         },
         "& .MuiListItem-root": {
             display: "block",

@@ -336,6 +336,7 @@ class Home extends React.Component {
             return Boolean(h < 23 && h > 22);
         }
 
+        actions.trigger_page_render_complete();
         actions.trigger_loading_update(0);
         const cc = (this.state._selected_locales_code || "en_US").split("-")[1];
         THEME_DAY = is_day(cc);
@@ -369,7 +370,6 @@ class Home extends React.Component {
 
             this.forceUpdate(() => {
 
-                actions.trigger_page_render_complete();
                 actions.trigger_loading_update(100)
             })
         });
@@ -437,20 +437,24 @@ class Home extends React.Component {
         let bi =  THEME_DAY ?
             "url(/src/images/illustrations/Fuji-day.svg)":
             "url(/src/images/illustrations/Indo-night.svg)";
+        let bf = THEME_DAY ? "saturate(1.25)": "brightness(0.75)";
         if(
             THEME_DAY === null ||
             IS_EVENING === null ||
             IS_LATE_EVENING === null
         ) {
             bi = null;
+            bf = null;
         }
 
         return (
             <div className={classes.root} style={{
-                contentVisibility: "auto",
+                contentVisibility: Boolean(bi)? "auto": "hidden",
                 backgroundImage: bi,
             }}>
-                <div className={classes.insideRoot}>
+                <div className={classes.insideRoot} style={{
+                    backdropFilter: bf
+                }}>
                     <div className={classes.backgroundImage}>
                         {_image_name_infographics.length >= 1 && <Grow in={true} exit={true} key={_image_name_infographics} timeout={{ enter: _infographics_fadein_time, exit: _infographics_fadein_time }}><img src={`/src/images/gallery/${_image_name_infographics}`} alt="Image demo." className={" pixelated " + classes.backgroundImageImage}/></Grow>}
                         <h2 className={classes.backgroundImageImage} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff", backgroundColor: THEME_DAY && !IS_EVENING ? "#ffffff99": "#00651080", padding: 16, textAlign: "center", border: "8px solid #00ff0054", borderRadius: "16px"}}>REAL "SVG" SHAPES RENDER!<br/><span style={{fontSize: "0.75em"}}>Use (6x) "xBRZ" instead of default pixelated rendering of (16x, 32x, 48x).</span></h2>
@@ -481,7 +485,7 @@ class Home extends React.Component {
                     </h3>
                     <Fade in={true} timeout={0}>
                         <Button className={classes.homeCTAuseit} variant={"contained"} size={"large"} color="primary" onClick={this._go_to_editor}>
-                            NOW FREE <img src="/src/images/infographics/Wardenclyffe.png" style={{transform: "scale(3.5)", width: "1em", marginRight: "1.5em", marginLeft: "1.5em", filter: "drop-shadow(white 0px 0px 6px)"}} className="emoji-150" /> USE LAB.
+                            NOW FREE. <img src="/src/images/infographics/Wardenclyffe.png" style={{transform: "scale(3.5)", width: "1em", marginRight: "1.5em", marginLeft: "1.5em", filter: "drop-shadow(white 0px 0px 6px)"}} className="emoji-150" /> RUN IT!
                         </Button>
                     </Fade>
                     <Fade in={true} timeout={0}>

@@ -241,7 +241,7 @@ const styles = theme => ({
         "& .MuiTab-wrapper svg": {
             width: 32,
             height: 32,
-            filter: "sepia(1) hue-rotate(180deg) saturate(1.5)"
+            filter: "sepia(1) hue-rotate(180deg) saturate(2) brightness(0.75) contrast(1.5) drop-shadow(0px 0px 2px skyblue)"
         }
     },
     tabNoIcon: {

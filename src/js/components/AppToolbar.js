@@ -38,8 +38,8 @@ const styles = theme => ({
         }
     },
     drawerPaper: {
-        background: theme.palette.primary.dark,
-        color: theme.palette.primary.contrastText,
+        backgroundColor: theme.palette.secondary.dark,
+        color: theme.palette.secondary.contrastText,
         width: 256,
         backgroundSize: "calc(100% + 96px)",
         contain: "layout paint size style",

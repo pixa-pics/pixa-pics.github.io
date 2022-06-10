@@ -1,6 +1,6 @@
-var REQUIRED_CACHE = "unless-update-cache-v229-required";
-var USEFUL_CACHE = "unless-update-cache-v229-useful";
-var STATIC_CACHE = "unless-update-cache-v229-static";
+var REQUIRED_CACHE = "unless-update-cache-v230-required";
+var USEFUL_CACHE = "unless-update-cache-v230-useful";
+var STATIC_CACHE = "unless-update-cache-v230-static";
 var MAIN_CHILD_CHUNK_REGEX = /chunk_(main\~[a-z0-9]+)\.min\.js/i;
 var CHILD_CHUNK_REGEX = /chunk_([0-9]+)\.min\.js/i;
 
@@ -9,7 +9,7 @@ var required_cache = new Promise(function(resolve, reject){
 
     if(typeof required_cache_object.addAll !== "undefined") {
 
-        return required_cache_object;
+        resolve(required_cache_object);
     }else {
 
         caches.open(REQUIRED_CACHE).then(function(cache){required_cache_object = cache;resolve(required_cache_object);}).catch(function(reason){reject(reason)});
@@ -21,7 +21,7 @@ var useful_cache = new Promise(function(resolve, reject){
 
     if(typeof useful_cache_object.addAll !== "undefined") {
 
-        return useful_cache_object;
+        resolve(useful_cache_object);
     }else {
 
         caches.open(USEFUL_CACHE).then(function(cache){useful_cache_object = cache;resolve(useful_cache_object);}).catch(function(reason){reject(reason)});
@@ -33,7 +33,7 @@ var static_cache = new Promise(function(resolve, reject){
 
     if(typeof static_cache_object.addAll !== "undefined") {
 
-        return static_cache_object;
+        resolve(static_cache_object);
     }else {
 
         caches.open(STATIC_CACHE).then(function(cache){static_cache_object = cache;resolve(static_cache_object);}).catch(function(reason){reject(reason)});
@@ -49,7 +49,7 @@ self.addEventListener("install", function(event) {
         return true;
     }
 
-    const first_required = Promise.all([
+    const first_required = Promise.allSettled([
         required_cache.then(function (cache) {
             return cache.addAll([
                 "/",
@@ -87,11 +87,7 @@ self.addEventListener("install", function(event) {
 
 self.addEventListener("fetch", function(event) {
 
-    const u = String(event.request.url);
-    const url = u;
-    const U = new URL(u);
-    const h = U.href;
-    const p = U.pathname.replaceAll(String(":" + U.port), "");
+    const url = String(event.request.url);
     const same_site = true //event.request.referrer.startsWith(U.hostname);
 
     if(url.startsWith("data:image") || url.startsWith("blob:http") || url.startsWith("data:application")) {
@@ -101,7 +97,7 @@ self.addEventListener("fetch", function(event) {
     }else if(url.startsWith("data:,all")) {
 
         event.respondWith(
-            Promise.all([
+            Promise.allSettled([
                 useful_cache.then(function (cache) {
                     return cache.addAll([
                         "/src/images/infographics/ShareWho.svg",

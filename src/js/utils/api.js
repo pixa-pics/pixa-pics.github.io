@@ -156,6 +156,7 @@ const get_settings = (callback_function_info = null, attachment_ids = [], callba
 
                 const pixa_settings = _get_default_settings();
                 window._pixa_settings = _merge_object({}, pixa_settings);
+                callback_function_info(null, _merge_object({}, window._pixa_settings));
 
                 window.settings_db.post({
                     info: JSON.stringify(pixa_settings),
@@ -167,7 +168,6 @@ const get_settings = (callback_function_info = null, attachment_ids = [], callba
                         callback_function_info("DB post error", null);
                     }else {
 
-                        callback_function_info(null, _merge_object({}, window._pixa_settings));
                         window.settings_db.compact();
                         window.settings_db.viewCleanup();
                     }
