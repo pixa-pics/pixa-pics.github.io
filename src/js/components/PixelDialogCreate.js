@@ -23,7 +23,7 @@ const styles = theme => ({
             cursor: "pointer",
             float: "left",
             width: "384px",
-            backgroundImage: "url(/src/images/Onboarding.svg)",
+            backgroundImage: "url(/src/images/infographics/Leana.svg)",
             backgroundSize: "100%",
             backgroundPosition: "center",
             backgroundRepeat: "no-repeat",
@@ -124,12 +124,12 @@ class PixelDialogCreate extends React.Component {
                         <div className={classes.leftImage}>
                             <input
                                 onChange={this.props.on_upload}
-                                accept="image/jpg, image/jpeg, image/png, image/svg, image/webp, image/gif"
+                                accept="image/jpg, image/svg, image/jpeg, image/png, image/svg, image/webp, image/gif"
                                 style={{display: "none"}}
                                 id="button-file-dialog-primary"
                                 type="file"
                             />
-                            <Button component={"label"} htmlFor="button-file-dialog-primary" fullWidth variant="contained" color="secondary" style={{background: "#ffffff82", boxShadow: "none", color: "#00148569", fontWeight: "bold", fontSize: "2.5em"}} autoFocus onClick={this.props.on_upload}>Upload a new image.</Button>
+                            <Button component={"label"} htmlFor="button-file-dialog-primary" fullWidth variant="contained" color="secondary" style={{background: "#ffffff00", boxShadow: "none", color: "#fff", fontWeight: "bold", fontSize: "2.5em"}} autoFocus onClick={this.props.on_upload}>Upload a<br/>picture!</Button>
                         </div>
                         <div className={classes.rightImagesContainer}>
                             <div className={classes.rightImagesContainer} style={{padding: "8px 24px", position: "relative", overflow: "hidden", boxSizing: "border-box", width: "100%"}}>
@@ -138,7 +138,7 @@ class PixelDialogCreate extends React.Component {
                             </div>
                             <input
                                 onChange={this.props.on_upload}
-                                accept="image/jpg, image/jpeg, image/png, image/svg, image/webp, image/gif"
+                                accept="image/jpg, image/svg, image/jpeg, image/png, image/svg, image/webp, image/gif"
                                 style={{display: "none"}}
                                 id="button-file-dialog-secondary"
                                 type="file"
@@ -150,7 +150,7 @@ class PixelDialogCreate extends React.Component {
                                     {!Object.keys(pixel_arts).length && <ImageListItem style={{display: "inline-block", width: "auto", userSelect: "none"}}
                                                     className={"pixelated"} key={"new"}>
                                         <img
-                                            src={"/src/images/Idea.svg"}
+                                            src={"/src/images/laboratory.svg"}
                                             alt={"Create new"}
                                             style={{width: "auto", height: "100%", cursor: "pointer"}}
                                             onClick={this.props.onClose}/>

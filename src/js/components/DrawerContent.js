@@ -83,7 +83,7 @@ const styles = theme => ({
     },
     labListItem: {
         backgroundColor: "transparent",
-        background: "linear-gradient(45deg, #010310 33%, #033aff66 ), url(/src/images/illustrations/ChemicalScientist.svg)",
+        background: `linear-gradient(45deg, #010310 33%, #033aff66 ), url("/src/images/illustrations/ITLab.png")`,
         backgroundSize: "cover",
         backgroundPosition: "right",
         textShadow: "0 0px 6px white",

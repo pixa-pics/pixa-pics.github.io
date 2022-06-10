@@ -440,8 +440,8 @@ class Index extends React.Component {
 
         const { _history } = this.state;
 
-        const new_pathname = neo_pathname || _history.location.pathname;
-        const old_pathname = this.state.pathname;
+        const new_pathname = String(neo_pathname || _history.location.pathname);
+        const old_pathname = String(this.state.pathname);
 
         if(new_pathname !== old_pathname) {
 
@@ -457,7 +457,11 @@ class Index extends React.Component {
 
                         this._should_play_music_pathname(this.state.pathname);
                         this._set_meta_title(new_pathname);
-                        actions.trigger_sfx("navigation_transition-right", .25);
+
+                        if(old_pathname !== ""){
+
+                            actions.trigger_sfx("navigation_transition-right", .33);
+                        }
                     });
                 });
             }

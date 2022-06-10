@@ -86,11 +86,11 @@ const styles = theme => ({
             top: 0,
             left: 0,
             content: `' '`,
-            backgroundPosition: "25% 85%",
+            backgroundPosition: "100% 100%",
             backgroundRepeat: "no-repeat",
-            backgroundSize: "125%",
+            backgroundSize: "auto",
             opacity: "0.777",
-            backgroundImage: `linear-gradient(353deg, #010310 10%, #0103105e, #0103106e 60%, #0103105c, #010310 90%), linear-gradient(353deg, #010310 0%, #0103105e, #00000073 60%, #010310a6, #010310 100%),  url(/src/images/infographics/HelmetSpart.svg)`,
+            backgroundImage: `linear-gradient(353deg, #010310 10%, #0103105e, #0103106e 60%, #0103105c, #010310 90%), linear-gradient(353deg, #010310 0%, #0103105e, #00000073 60%, #010310a6, #010310 100%)`,
             transition: "all cubic-bezier(0.4, 0, 0.2, 1) 777ms",
             zIndex: -1,
         },
@@ -134,7 +134,7 @@ class AppDrawer extends React.Component {
                         <Fade in={true} timeout={400}>
                             <div className={classes.drawerPrivacyHint}>
                                 <p style={{fontSize: "0.777em"}}>Cutting off annoying details is free while on the journey! Easily becoming a lighter adventure, using a sanitized online-self's image tends to honor one's real beauty stronger.<br/><br/>THIS APP: Is in your hands only, doesn't sniff network requests, and is neutral just like Switzerland.</p>
-                                <h4 style={{color: "#ffffffff", marginBottom: 0}}>Privacy doesn't matters?! This is madness; This is Pixaaaaa! ... Pics.</h4>
+                                <h4 style={{color: "#ffffffff", marginBottom: 0}}>Privacy matters! This isn't madness; This is Pixaaaaa! ... Pics.</h4>
                             </div>
                         </Fade>
                     </div>

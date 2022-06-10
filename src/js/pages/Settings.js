@@ -36,22 +36,13 @@ const styles = theme => ({
         minHeight: "500px",
         textShadow: "0px 0px 6px black",
         color: "white",
-        filter: "drop-shadow(0px 0px 6px #00000099) drop-shadow(0px 0px 6px #00000099)",
-        background: `url("/src/images/illustrations/Gold.svg") 100% 100%`,
+        background: `url("/src/images/illustrations/Camo.svg")`,
+        backgroundRepeat: "repeat",
         backgroundColor: `#03020d`,
-        backgroundSize: "125%",
+        backgroundSize: "50%",
         backgroundPosition: "center",
         contain: "style paint layout",
         overflow: "hidden",
-        "&::before": {
-            position: "absolute",
-            width: "100%",
-            height: "100%",
-            content: "''",
-            backdropFilter: "brightness(0.25)",
-            zIndex: -1,
-            contain: "style size paint layout"
-        }
     },
     sliderContainer: {
         display: "flex",
@@ -267,17 +258,17 @@ class Settings extends React.Component {
                                 </div>
                             </CardContent>
                             <CardContent>
-                                <h2><img src={"/src/images/league/Gold.svg"} style={{verticalAlign: "middle", height: "2em"}}/> 1) Gold Supporters</h2>
+                                <h2><img src={"/src/images/league/Gold.png"} style={{verticalAlign: "middle", height: "2em"}}/> 1) Gold Supporters</h2>
                             </CardContent>
                             <CardContent>
-                                <h2><img src={"/src/images/league/Silver.svg"} style={{verticalAlign: "middle", height: "2em"}}/> 2) Silver Supporters</h2>
+                                <h2><img src={"/src/images/league/Silver.png"} style={{verticalAlign: "middle", height: "2em"}}/> 2) Silver Supporters</h2>
                             </CardContent>
                             <CardContent>
-                                <h2><img src={"/src/images/league/Bronze.svg"} style={{verticalAlign: "middle", height: "2em"}}/> 3) Bronze Supporters</h2>
+                                <h2><img src={"/src/images/league/Bronze.png"} style={{verticalAlign: "middle", height: "2em"}}/> 3) Bronze Supporters</h2>
                             </CardContent>
                             <Divider />
                             <CardContent>
-                                <h2><img src={"/src/images/league/Diamond.svg"} style={{verticalAlign: "middle", height: "2em"}}/> ∞) Diamond Supporters* <sub style={{fontSize: "0.5em"}}>*Businesses involving ours.</sub></h2>
+                                <h2><img src={"/src/images/league/Diamond.png"} style={{verticalAlign: "middle", height: "2em"}}/> ∞) Diamond Supporters* <sub style={{fontSize: "0.5em"}}>*Businesses involving ours.</sub></h2>
                                 <p>Coming soon!</p>
                             </CardContent>
                             <CardContent>

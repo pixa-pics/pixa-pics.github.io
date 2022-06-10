@@ -1,6 +1,6 @@
-var REQUIRED_CACHE = "unless-update-cache-v226-required";
-var USEFUL_CACHE = "unless-update-cache-v226-useful";
-var STATIC_CACHE = "unless-update-cache-v226-static";
+var REQUIRED_CACHE = "unless-update-cache-v227-required";
+var USEFUL_CACHE = "unless-update-cache-v227-useful";
+var STATIC_CACHE = "unless-update-cache-v227-static";
 var MAIN_CHILD_CHUNK_REGEX = /chunk_(main\~[a-z0-9]+)\.min\.js/i;
 var CHILD_CHUNK_REGEX = /chunk_([0-9]+)\.min\.js/i;
 
@@ -65,28 +65,20 @@ self.addEventListener("install", function(event) {
                 "/chunk_norris.min.js",
             ])
         }),
-        Promise.race([
-            useful_cache.then(function (cache) {
-                return cache.addAll([
-                    "/src/fonts/jura/index.css",
-                    "/src/images/favicon.ico",
-                    "/src/images/manifest/logo-white.png",
-                    "/src/images/logo-transparent.png",
-                    "/src/images/illustrations/Indo-night.svg",
-                    "/src/images/illustrations/Fuji-day.svg",
-                    "/src/images/infographics/Lucky.svg",
-                    "/src/images/illustrations/ChemicalScientist.svg",
-                    "/src/images/infographics/Wardenclyffe.svg",
-                    "/src/images/infographics/Leana.svg",
-                    "/src/images/infographics/HelmetSpart.svg",
-                ]);
-            }),
-            static_cache.then(function (cache) {
-                return cache.addAll([
-                    "/src/sounds/sfx/md/navigation_transition-right.mp3",
-                ]);
-            })
-        ])
+        useful_cache.then(function (cache) {
+            return cache.addAll([
+                "/src/fonts/jura/index.css",
+                "/src/images/favicon.ico",
+                "/src/images/manifest/logo-white.png",
+                "/src/images/logo-transparent.png",
+                "/src/images/illustrations/Indo-night.svg",
+                "/src/images/illustrations/Fuji-day.svg",
+                "/src/images/illustrations/ITLab.png",
+                "/src/images/infographics/Lucky.svg",
+                "/src/images/infographics/Wardenclyffe.svg",
+                "/src/images/infographics/Leana.svg",
+            ]);
+        })
     ]);
 
     event.waitUntil(first_required);
@@ -120,21 +112,17 @@ self.addEventListener("fetch", function(event) {
                         "/src/images/infographics/TestBag.svg",
                         "/src/images/infographics/Explosion.svg",
                         "/src/images/REMINDER.svg",
-                        "/src/images/Onboarding.svg",
                         "/src/images/Error.svg",
                         "/src/images/abduction.svg",
-                        "/src/images/Idea.svg",
                         "/src/images/AI.svg",
                         "/src/images/DNA.svg",
                         "/src/images/CPU.svg",
-                        "/src/images/ChromeGreatDownload.svg",
-                        "/src/images/EdgeGreatDownload.svg",
                         "/src/images/laboratory.svg",
-                        "/src/images/illustrations/Gold.svg",
-                        "/src/images/league/Bronze.svg",
-                        "/src/images/league/Diamond.svg",
-                        "/src/images/league/Gold.svg",
-                        "/src/images/league/Silver.svg",
+                        "/src/images/illustrations/Camo.svg",
+                        "/src/images/league/Bronze.png",
+                        "/src/images/league/Diamond.png",
+                        "/src/images/league/Gold.png",
+                        "/src/images/league/Silver.png",
                     ]);
                 }),
                 required_cache.then(function (cache) {
@@ -165,6 +153,7 @@ self.addEventListener("fetch", function(event) {
                         "/src/sounds/sfx/md/ui_unlock.mp3",
                         "/src/sounds/sfx/md/alert_high-intensity.mp3",
                         "/src/sounds/music/redeclipse/track_09.mp3",
+                        "/src/sounds/sfx/md/navigation_transition-right.mp3",
                     ]);
                 })
             ])
