@@ -300,7 +300,7 @@ class Home extends React.Component {
             settings: props.settings,
             ...JSON.parse(props.settings),
             _history: HISTORY,
-            _image_name_infographics: "Lucky",
+            _image_name_infographics: "Luck.png",
             _infographics_fadein_time: 0,
             _bii3_opacity: 1,
         };
@@ -342,7 +342,7 @@ class Home extends React.Component {
         IS_EVENING = is_evening(cc);
         IS_LATE_EVENING = is_late_evening(cc);
 
-        const all_image_name_infographics = ["Lucky", "Pyrawoman", "NoBombs", "Lips", "Pharaon"];
+        const all_image_name_infographics = ["Luck.png", "Luck.svg", "Lips.png", "Lips.svg", "Nuclear.png", "Nuclear.svg", "Pyramid.png", "Pyramid.svg"];
 
         let _image_index = 0;
         let _image_name_infographics = all_image_name_infographics[_image_index];
@@ -361,9 +361,9 @@ class Home extends React.Component {
                     this.forceUpdate();
                 });
             };
-            img.src = `/src/images/infographics/${_image_name_infographics}.svg`;
+            img.src = `/src/images/gallery/${_image_name_infographics}`;
 
-        }, 777 * 10)
+        }, 333 * 10)
 
         this.setState({_image_auto_interval}, () => {
 
@@ -452,7 +452,7 @@ class Home extends React.Component {
             }}>
                 <div className={classes.insideRoot}>
                     <div className={classes.backgroundImage}>
-                        {_image_name_infographics.length >= 1 && <Grow in={true} exit={true} key={_image_name_infographics} timeout={{ enter: _infographics_fadein_time, exit: _infographics_fadein_time }}><img src={`/src/images/infographics/${_image_name_infographics}.svg`} alt="Image demo." className={classes.backgroundImageImage}/></Grow>}
+                        {_image_name_infographics.length >= 1 && <Grow in={true} exit={true} key={_image_name_infographics} timeout={{ enter: _infographics_fadein_time, exit: _infographics_fadein_time }}><img src={`/src/images/gallery/${_image_name_infographics}`} alt="Image demo." className={" pixelated " + classes.backgroundImageImage}/></Grow>}
                         <h2 className={classes.backgroundImageImage} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff", backgroundColor: THEME_DAY && !IS_EVENING ? "#ffffff99": "#00651080", padding: 16, textAlign: "center", border: "8px solid #00ff0054", borderRadius: "16px"}}>REAL "SVG" SHAPES RENDER!<br/><span style={{fontSize: "0.75em"}}>Use (6x) "xBRZ" instead of default pixelated rendering of (16x, 32x, 48x).</span></h2>
                         <h3 className={classes.backgroundImageImage} onClick={this._toggle_bii3_opacity} style={{borderRadius: "16px", zIndex: 90, opacity: _bii3_opacity, color: THEME_DAY && !IS_EVENING ? "#000": "#fff", border: "4px solid #980000", backgroundColor: THEME_DAY && !IS_EVENING ? "#ffffffcc": "#000000cc", padding: 16, textAlign: "center"}}>REAL "SVG" SHAPES RENDER!<br/><span style={{fontSize: "0.75em"}}>Use (6x) "xBRZ" instead of default pixelated rendering of (16x, 32x, 48x).</span> <span style={{fontSize: "0.5em"}}>CLICK TO CLOSE</span></h3>
                     </div>
@@ -481,7 +481,7 @@ class Home extends React.Component {
                     </h3>
                     <Fade in={true} timeout={0}>
                         <Button className={classes.homeCTAuseit} variant={"contained"} size={"large"} color="primary" onClick={this._go_to_editor}>
-                            NOW FREE <img src="/src/images/infographics/Wardenclyffe.svg" style={{transform: "scale(3.5)", width: "5em", filter: "drop-shadow(white 0px 0px 6px)"}} className="emoji-150" /> USE LAB.
+                            NOW FREE <img src="/src/images/infographics/Wardenclyffe.png" style={{transform: "scale(3.5)", width: "1em", marginRight: "1.5em", marginLeft: "1.5em", filter: "drop-shadow(white 0px 0px 6px)"}} className="emoji-150" /> USE LAB.
                         </Button>
                     </Fade>
                     <Fade in={true} timeout={0}>

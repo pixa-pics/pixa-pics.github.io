@@ -81,17 +81,20 @@ const styles = theme => ({
             }
         }
     },
-    labListItem: {
-        backgroundColor: "transparent",
-        background: `linear-gradient(45deg, #010310 33%, #033aff66 ), url("/src/images/illustrations/ITLab.png")`,
-        backgroundSize: "cover",
-        backgroundPosition: "right",
-        textShadow: "0 0px 6px white",
-        filter: "brightness(1)",
-        transition: "all cubic-bezier(0.4, 0, 0.2, 1) 125ms",
-        "&:hover": {
-            filter: "brightness(1.1) contrast(1.1)",
+    labList: {
+        "& > div:first-child": {
+            backgroundColor: "transparent",
+            background: `linear-gradient(45deg, #01031088 33%, #033aff44 ), url("/src/images/illustrations/ITLab.png")`,
+            backgroundSize: "120%",
+            backgroundPosition: "right",
+            textShadow: "0 0px 6px white",
+            filter: "brightness(1) contrast(1)",
+            transition: "filter, background-size cubic-bezier(0.4, 0, 0.2, 1) 275ms",
         },
+        "&:hover > div:first-child": {
+            filter: "brightness(1.2) contrast(1.2)",
+            backgroundSize: "100%",
+        }
     }
 });
 
@@ -140,8 +143,8 @@ class DrawerContent extends React.Component {
         return (
             <div>
                 <div>
-                    <List style={{paddingTop: 0}}>
-                        <ListItem style={{borderBottom: "2px solid #0056ce"}} className={classes.labListItem} button onClick={this._open_pixel_page}>
+                    <List style={{paddingTop: 0}} className={classes.labList}>
+                        <ListItem style={{borderBottom: "2px solid #0056ce"}} button onClick={this._open_pixel_page}>
                             <ListItemIcon>
                                 <Tooltip aria-label="Leana advertising lab" title={"Hello, I am Leana, let me advertise the laboratory of Jamy."}>
                                     <img alt="Laboratory Leana" src={"/src/images/infographics/Leana.svg"} className={classes.iconLeft}/>

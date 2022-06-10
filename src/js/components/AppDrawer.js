@@ -86,17 +86,18 @@ const styles = theme => ({
             top: 0,
             left: 0,
             content: `' '`,
-            backgroundPosition: "100% 100%",
+            backgroundPosition: "90% 100%",
             backgroundRepeat: "no-repeat",
-            backgroundSize: "auto",
+            backgroundSize: "cover",
             opacity: "0.777",
-            backgroundImage: `linear-gradient(353deg, #010310 10%, #0103105e, #0103106e 60%, #0103105c, #010310 90%), linear-gradient(353deg, #010310 0%, #0103105e, #00000073 60%, #010310a6, #010310 100%)`,
+            backgroundImage: `linear-gradient(353deg, #010310 10%, #01031044, #01031044 60%, #01031094, #010310 90%), linear-gradient(353deg, #01031000 0%, #01031078, #007bff82 60%, #010310b8, #0022ff00 100%), url("/src/images/illustrations/Operative.png")`,
             transition: "all cubic-bezier(0.4, 0, 0.2, 1) 777ms",
             zIndex: -1,
         },
         "&:hover::before": {
             opacity: "0",
             transition: "all cubic-bezier(0.4, 0, 0.2, 1) 1111ms",
+            backgroundPosition: "60% 100%",
         }
     }
 });

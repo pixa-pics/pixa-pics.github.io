@@ -1,6 +1,6 @@
-var REQUIRED_CACHE = "unless-update-cache-v227-required";
-var USEFUL_CACHE = "unless-update-cache-v227-useful";
-var STATIC_CACHE = "unless-update-cache-v227-static";
+var REQUIRED_CACHE = "unless-update-cache-v228-required";
+var USEFUL_CACHE = "unless-update-cache-v228-useful";
+var STATIC_CACHE = "unless-update-cache-v228-static";
 var MAIN_CHILD_CHUNK_REGEX = /chunk_(main\~[a-z0-9]+)\.min\.js/i;
 var CHILD_CHUNK_REGEX = /chunk_([0-9]+)\.min\.js/i;
 
@@ -74,8 +74,9 @@ self.addEventListener("install", function(event) {
                 "/src/images/illustrations/Indo-night.svg",
                 "/src/images/illustrations/Fuji-day.svg",
                 "/src/images/illustrations/ITLab.png",
-                "/src/images/infographics/Lucky.svg",
-                "/src/images/infographics/Wardenclyffe.svg",
+                "/src/images/illustrations/Operative.png",
+                "/src/images/gallery/Luck.png",
+                "/src/images/infographics/Wardenclyffe.png",
                 "/src/images/infographics/Leana.svg",
             ]);
         })
@@ -104,10 +105,13 @@ self.addEventListener("fetch", function(event) {
                 useful_cache.then(function (cache) {
                     return cache.addAll([
                         "/src/images/infographics/ShareWho.svg",
-                        "/src/images/infographics/Lips.svg",
-                        "/src/images/infographics/Pharaon.svg",
-                        "/src/images/infographics/NoBombs.svg",
-                        "/src/images/infographics/Pyrawoman.svg",
+                        "/src/images/gallery/Luck.svg",
+                        "/src/images/Gallery/Nuclear.png",
+                        "/src/images/Gallery/Nuclear.svg",
+                        "/src/images/Gallery/Pyramid.png",
+                        "/src/images/Gallery/Pyramid.svg",
+                        "/src/images/Gallery/Lips.png",
+                        "/src/images/Gallery/Lips.svg",
                         "/src/images/infographics/Rambo.svg",
                         "/src/images/infographics/TestBag.svg",
                         "/src/images/infographics/Explosion.svg",

@@ -157,11 +157,11 @@ const styles = theme => ({
             top: 0,
             left: 0,
             content: `' '`,
-            backgroundPosition: "100% 100%",
+            backgroundPosition: "90% 100%",
             backgroundRepeat: "no-repeat",
-            backgroundSize: "auto",
+            backgroundSize: "cover",
             opacity: ".777",
-            backgroundImage: `linear-gradient(353deg, #060e23 10%, #060e235e, #060e236e 60%, #060e235c, #060e23 90%), linear-gradient(353deg, #060e23 0%, #060e235e, #00000000 60%, #060e235c, #060e23 100%)`,
+            backgroundImage: `linear-gradient(353deg, #010310 10%, #01031044, #01031044 60%, #01031094, #010310 90%), linear-gradient(353deg, #01031000 0%, #01031078, #007bff82 60%, #010310b8, #0022ff00 100%), url("/src/images/illustrations/Operative.png")`,
             transition: "all cubic-bezier(0.4, 0, 0.2, 1) 750ms",
             zIndex: -1
         }
