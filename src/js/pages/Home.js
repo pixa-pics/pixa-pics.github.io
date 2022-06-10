@@ -342,7 +342,7 @@ class Home extends React.Component {
         IS_EVENING = is_evening(cc);
         IS_LATE_EVENING = is_late_evening(cc);
 
-        const all_image_name_infographics = ["Luck.png", "Luck.svg", "Lips.png", "Lips.svg", "Nuclear.png", "Nuclear.svg", "Pyramid.png", "Pyramid.svg"];
+        const all_image_name_infographics = ["Luck.png", "Luck.svg", "Mica.png", "Mica.svg", "Parrot.png", "Parrot.svg", "Mat.png", "Mat.svg", "Lips.png", "Lips.svg", "Nuclear.png", "Nuclear.svg", "Pyramid.png", "Pyramid.svg"];
 
         let _image_index = 0;
         let _image_name_infographics = all_image_name_infographics[_image_index];

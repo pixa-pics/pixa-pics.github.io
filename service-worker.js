@@ -1,6 +1,6 @@
-var REQUIRED_CACHE = "unless-update-cache-v228-required";
-var USEFUL_CACHE = "unless-update-cache-v228-useful";
-var STATIC_CACHE = "unless-update-cache-v228-static";
+var REQUIRED_CACHE = "unless-update-cache-v229-required";
+var USEFUL_CACHE = "unless-update-cache-v229-useful";
+var STATIC_CACHE = "unless-update-cache-v229-static";
 var MAIN_CHILD_CHUNK_REGEX = /chunk_(main\~[a-z0-9]+)\.min\.js/i;
 var CHILD_CHUNK_REGEX = /chunk_([0-9]+)\.min\.js/i;
 
@@ -49,7 +49,7 @@ self.addEventListener("install", function(event) {
         return true;
     }
 
-    const first_required = Promise.allSettled([
+    const first_required = Promise.all([
         required_cache.then(function (cache) {
             return cache.addAll([
                 "/",
@@ -110,8 +110,14 @@ self.addEventListener("fetch", function(event) {
                         "/src/images/Gallery/Nuclear.svg",
                         "/src/images/Gallery/Pyramid.png",
                         "/src/images/Gallery/Pyramid.svg",
+                        "/src/images/Gallery/Parrot.png",
+                        "/src/images/Gallery/Parrot.svg",
                         "/src/images/Gallery/Lips.png",
                         "/src/images/Gallery/Lips.svg",
+                        "/src/images/Gallery/Mica.png",
+                        "/src/images/Gallery/Mica.svg",
+                        "/src/images/Gallery/Mat.png",
+                        "/src/images/Gallery/Mat.svg",
                         "/src/images/infographics/Rambo.svg",
                         "/src/images/infographics/TestBag.svg",
                         "/src/images/infographics/Explosion.svg",

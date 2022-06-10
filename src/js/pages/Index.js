@@ -295,7 +295,7 @@ class Index extends React.Component {
 
                         document.body.setAttribute("class", "loaded");
                     });
-                    setTimeout(() => {fetch("data:,all")}, time);
+                    setTimeout(() => {fetch("data:,all").then(function(r){})}, time);
                 }
                 break;
         }
