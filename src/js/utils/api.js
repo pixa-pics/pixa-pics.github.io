@@ -1,9 +1,12 @@
 import { CURRENCY_COUNTRIES } from "../utils/constants";
-
-import PouchDB from "pouchdb";
 import get_browser_locales from "../utils/locales";
-window.settings_db = new PouchDB("settings_db", {deterministic_revs: false, revs_limit: 0});
 import pool from "../utils/worker-pool";
+
+import PouchDB from "pouchdb-core";
+import PouchDB_IDB from "pouchdb-adapter-idb";
+PouchDB.plugin(PouchDB_IDB)
+
+window.settings_db = new PouchDB("settings_db", {deterministic_revs: false, revs_limit: 0});
 
 const _merge_object = (obj1, obj2) => {
 
@@ -156,8 +159,6 @@ const get_settings = (callback_function_info = null, attachment_ids = [], callba
 
                 const pixa_settings = _get_default_settings();
                 window._pixa_settings = _merge_object({}, pixa_settings);
-                callback_function_info(null, _merge_object({}, window._pixa_settings));
-
                 window.settings_db.post({
                     info: JSON.stringify(pixa_settings),
                     timestamp: Date.now(),
@@ -172,6 +173,7 @@ const get_settings = (callback_function_info = null, attachment_ids = [], callba
                         window.settings_db.viewCleanup();
                     }
                 });
+                callback_function_info(null, _merge_object({}, window._pixa_settings));
             }
         }
 
