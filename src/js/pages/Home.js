@@ -73,7 +73,6 @@ const styles = theme => ({
     homeCTAuseit: {
         pointerEvents: "auto",
         contain: "style paint layout",
-        contentVisibility: "auto",
         fontWeight: "bold",
         transform: "translateY(0px) scale(1)  !important",
         fontSize: "1.314rem",
@@ -90,7 +89,7 @@ const styles = theme => ({
             transform: "translateY(-3.4px) scale(1.1)  !important",
         },
         transition: "color, filter, transform cubic-bezier(0.4, 0, 0.2, 1) 175ms !important",
-        [theme.breakpoints.down("sm")]: {
+        [theme.breakpoints.down("md")]: {
             minWidth: "auto",
             position: "fixed",
             fontSize: "1rem",
@@ -117,9 +116,9 @@ const styles = theme => ({
         lineHeight: "2em",
         position: "fixed",
         maxWidth: 274,
-        bottom: 32,
-        right: 32,
-        [theme.breakpoints.down("sm")]: {
+        bottom: 48,
+        right: 48,
+        [theme.breakpoints.down("md")]: {
             fontSize: "12px",
             borderRadius: ".5em",
             lineHeight: "1.75em",
@@ -190,24 +189,24 @@ const styles = theme => ({
     headerContainer: {
         fontFamily: `"Jura"`,
         position: "absolute",
-        margin: "0px 48px",
+        padding: "0px 48px",
         height: "100%",
+        width: "100%",
+        [theme.breakpoints.down("md")]: {
+            padding: "8px 24px",
+            "& blockquote": {
+                fontSize: "10px",
+            }
+        },
         "& blockquote": {
             fontSize: "14px",
             display: "none",
         },
         [theme.breakpoints.down("sm")]: {
-            margin: "8px 24px",
             "& blockquote": {
                 fontSize: "8px",
             }
-        },
-        [theme.breakpoints.down("md")]: {
-            margin: "8px 24px",
-            "& blockquote": {
-                fontSize: "10px",
-            }
-        },
+        }
     },
     titleh1: {
         whiteSpace: "break-spaces",
@@ -454,7 +453,7 @@ class Home extends React.Component {
         return (
             <div className={classes.root}>
                 <div className={classes.insideRoot} style={{
-                    contentVisibility: Boolean(bi)? "auto": "hidden",
+                    contentVisibility: Boolean(bi)? "visible": "hidden",
                     backgroundImage: bi,
                 }}>
                     <div className={classes.backgroundImage} style={{
@@ -465,7 +464,7 @@ class Home extends React.Component {
                         <h3 className={classes.backgroundImageImage} onClick={this._toggle_bii3_opacity} style={{borderRadius: "16px", zIndex: 90, opacity: _bii3_opacity, color: THEME_DAY && !IS_EVENING ? "#000": "#fff", border: "4px solid #980000", backgroundColor: THEME_DAY && !IS_EVENING ? "#ffffffcc": "#000000cc", padding: 16, textAlign: "center"}}>RENDER REAL "SVG" SHAPES!<br/><span style={{fontSize: "0.75em"}}>Use (6x) "xBRZ" instead of default pixelated rendering of (16x, 32x, 48x).</span> <span style={{fontSize: "0.5em"}}>CLICK TO CLOSE</span></h3>
                     </div>
                 </div>
-                <div className={classes.headerContainer} style={{color: THEME_DAY && !IS_EVENING? "#000": "#fff"}}>
+                <div className={classes.headerContainer} style={{color: THEME_DAY && !IS_EVENING? "#000": "#fff", contentVisibility: "auto"}}>
                     <h1 className={classes.titleh1} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff"}}>
                         <span className={classes.stepPoints}>1 >></span><DangerEmoji alt="scientific-danger-tweemoji" style={{verticalAlign: "baseline"}} className="emoji-150"/>
                         <span className={classes.revelantText}>«PIXA.PICS» lovely minima-arts</span><span> from real-life pictures to enhance privacy for NFTs.</span><br/>
@@ -489,7 +488,7 @@ class Home extends React.Component {
                     </h3>
                     <Fade in={true} timeout={0}>
                         <Button className={classes.homeCTAuseit} variant={"contained"} size={"large"} color="primary" onClick={this._go_to_editor}>
-                            100% FREE <img src="/src/images/infographics/Wardenclyffe.png" alt="Laboratory decoration" loading="lazy" width={24} height={24} style={{transform: "scale(3.5)", width: 24, height: 24, marginRight: "1.5em", marginLeft: "1.5em", filter: "drop-shadow(white 0px 0px 6px)"}} className="emoji-150" /> RUN NOW!
+                            100% FREE <img src="/src/images/infographics/Wardenclyffe.png" alt="Laboratory decoration" width={24} height={24} style={{transform: "scale(3.5)", width: 24, height: 24, marginRight: "1.5em", marginLeft: "1.5em", filter: "drop-shadow(white 0px 0px 6px)"}} className="emoji-150" /> RUN NOW!
                         </Button>
                     </Fade>
                     <Fade in={true} timeout={0}>

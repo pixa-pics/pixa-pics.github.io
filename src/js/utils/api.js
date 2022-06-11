@@ -1,12 +1,21 @@
 import { CURRENCY_COUNTRIES } from "../utils/constants";
 import get_browser_locales from "../utils/locales";
 import pool from "../utils/worker-pool";
-
 import PouchDB from "pouchdb-core";
 import PouchDB_IDB from "pouchdb-adapter-idb";
-PouchDB.plugin(PouchDB_IDB)
 
-window.settings_db = new PouchDB("settings_db", {deterministic_revs: false, revs_limit: 0});
+const _init = () => {
+
+    if(typeof window.settings_db === "undefined") {
+
+        PouchDB.plugin(PouchDB_IDB)
+        window.settings_db = new PouchDB("settings_db", {deterministic_revs: false, revs_limit: 0});
+        return true;
+    }else {
+
+        return false;
+    }
+};
 
 const _merge_object = (obj1, obj2) => {
 
@@ -65,9 +74,22 @@ const get_settings = (callback_function_info = null, attachment_ids = [], callba
 
         if(typeof window._pixa_settings.locales !== "undefined" && window._pixa_settings.locales !== null && callback_function_attachment === null && !Boolean(Boolean(attachment_ids === "all" || attachment_ids.length > 0))) {
 
-            callback_function_info(null, _merge_object({}, window._pixa_settings));
+            if(callback_function_info !== null) {
+
+                callback_function_info(null, _merge_object({}, window._pixa_settings));
+            }
             return;
         }
+    }else if(_init()){
+
+        const pixa_settings = _get_default_settings();
+        window._pixa_settings = _merge_object({}, pixa_settings);
+        callback_function_info(null, _merge_object({}, window._pixa_settings));
+        window.settings_db.post({
+            info: JSON.stringify(pixa_settings),
+            timestamp: Date.now(),
+        });
+        return;
     }
 
     window.settings_db.allDocs({
@@ -159,17 +181,11 @@ const get_settings = (callback_function_info = null, attachment_ids = [], callba
 
                 const pixa_settings = _get_default_settings();
                 window._pixa_settings = _merge_object({}, pixa_settings);
+                callback_function_info(null, _merge_object({}, window._pixa_settings));
                 window.settings_db.post({
                     info: JSON.stringify(pixa_settings),
                     timestamp: Date.now(),
-                }, (err, res) => {
-
-                    if(err) {
-
-                        callback_function_info("DB post error", null);
-                    }
                 });
-                callback_function_info(null, _merge_object({}, window._pixa_settings));
             }
         }
 
@@ -192,6 +208,7 @@ const get_settings = (callback_function_info = null, attachment_ids = [], callba
 
 const set_settings = (info = {}, callback_function_info = () => {}, attachment_array = {}, LZP3 = null) => {
 
+    _init();
     window.settings_db.allDocs({
         include_docs: true,
         descending: false,
@@ -433,6 +450,7 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
 }
 
 module.exports = {
+    _init: _init,
     reset_all_databases: reset_all_databases,
     get_settings: get_settings,
     set_settings: set_settings

@@ -46,16 +46,26 @@ const T = (name) => {
 };
 
 
-let t = (path = "", variables = {}, parameters = {}) => {
+/* Do not flood the read of the translate object and the document lang element, just set an interval to check it*/
+window.LANG_check = (_l = "en") => {
 
-    window.LANG = "en";
-    window.LANG_DIR = T(LANG);
+    const l = document.documentElement.lang || _l;
+    if(window.LANG !== l) {
 
-    if(window.LANG !== document.documentElement.lang) {
-
-        window.LANG = document.documentElement.lang;
-        window.LANG_DIR = T(LANG) || T("en");
+        window.LANG = l;
+        window.LANG_DIR = T(window.LANG);
     }
+};
+
+window.LANG_check();
+clearInterval(window.LANG_check_interval);
+window.LANG_check_interval = setInterval(() => {
+
+    window.LANG_check();
+}, 1000);
+
+
+const t = (path = "", variables = {}, parameters = {}) => {
 
     const t_prime = (path = "", variables = {}, parameters = {}, LANG, LANG_DIR) => {
 

@@ -15,8 +15,8 @@ import actions from "../actions/utils";
 
 const styles = theme => ({
     "@keyframes innerToolbarCyberPunkAnimation": {
-        "0%": { left: "-20%"},
-        "100%": { left: "70%"}
+        "0%": { opacity: "1", left: "-20%"},
+        "100%": { opacity: "1", left: "70%"}
     },
     root: {
         display: "flex",
@@ -47,13 +47,15 @@ const styles = theme => ({
         "&::before": {
             display: "flex",
             top: 0,
-            left: "-30%",
+            left: "-20%",
             "content": "\"\"",
             position: "absolute",
+            contain: "size style paint layout",
+            contentVisibility: "auto",
             height: 40,
             width: "60%",
             background: "linear-gradient(to right, transparent, rgb(155 163 220 / 44%), transparent)",
-            animation: "$innerToolbarCyberPunkAnimation 7.7s linear alternate infinite",
+            animation: "$innerToolbarCyberPunkAnimation 7.7s linear alternate infinite 200ms",
         },
         backColor: "rgba(108,114,183,0.18)",
         //boxShadow: "inset 0px 0px 6px #475db3ab, inset 0px 0px 24px #838fdc61, inset 0px 0px 48px #cbd4ff40",

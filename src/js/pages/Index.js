@@ -144,6 +144,8 @@ class Index extends React.Component {
 
     componentDidMount() {
 
+        this._update_settings();
+
         const _history_unlisten = this.state._history.listen((location, action) => {
             // location is an object like window.location
             this._set_new_pathname_or_redirect(location.location.pathname);
@@ -194,10 +196,7 @@ class Index extends React.Component {
             }, 1000)
         ];
 
-        this.setState({_intervals: intervals, _history_unlisten: _history_unlisten}, ( ) => {
-
-            this._update_settings();
-        });
+        this.setState({_intervals: intervals, _history_unlisten: _history_unlisten});
     }
 
     componentWillUnmount() {

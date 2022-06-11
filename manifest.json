@@ -1,16 +1,16 @@
 {
   "manifest_version": 2,
-  "version": "1.0.2.0",
+  "version": "1.0.3.0",
   "author": "Affolter Matias",
-  "name": "Pixa.Pics",
+  "name": "PIXA PICS",
   "start_url": "/",
   "scope": "/",
   "serviceworker": {
     "src": "/service-worker.js",
     "scope": "/"
   },
-  "short_name": "Pixa.Pics",
-  "description": "Pixel art editor. Make NFTs potential (un)limited.",
+  "short_name": "PIXA PICS",
+  "description": "Pixel-Art/NFTs LAB. Make potential possible while (un)limited.",
   "display": "fullscreen",
   "theme_color": "#060f23",
   "background_color": "#ffffff",

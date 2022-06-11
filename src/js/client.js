@@ -3,6 +3,7 @@ import "regenerator-runtime/runtime";
 import React from "react";
 import ReactDOM from "react-dom";
 import { HISTORY } from "./utils/constants";
+import { get_settings } from "../js/utils/api";
 
 import TimeAgo from "javascript-time-ago";
 
@@ -30,13 +31,17 @@ TimeAgo.addLocale(ko);
 TimeAgo.addLocale(ru);
 TimeAgo.addLocale(hi);
 
+(async () => {
+
+    get_settings(function(){}); // It will init the DB
+})();
+
 // Pages
 import Index from "../js/pages/Index";
 
 // Theme
 import { ThemeProvider } from "@material-ui/core"
 import CssBaseline from '@material-ui/core/CssBaseline';
-
 import { lightTheme } from "./theme/index";
 
 let element = document.getElementById("app");
@@ -47,8 +52,6 @@ if(element === null) {
     document.body.appendChild(element);
     element = document.getElementById("app");
 }
-
-
 
 ReactDOM.render(
     <ThemeProvider theme={lightTheme}>
