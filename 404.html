@@ -150,13 +150,12 @@
 
                                 if(document.querySelectorAll(`script[src$="${"norris.min.js"}"]`).length === 0) {
 
-                                    e.setAttribute("async", "true");
                                     document.body.appendChild(e);
                                 }
 
                             }else {
 
-                                e.setAttribute("async", "true");
+                                e.setAttribute("defer", "true");
                                 document.body.appendChild(e);
                             }
 
@@ -164,6 +163,8 @@
 
                             var e = document.createElement("link");
                             e.setAttribute("href", ss);
+                            e.setAttribute("media", "print");
+                            e.setAttribute("onload", "this.onload=null;this.removeAttribute('media');");
                             e.setAttribute("rel", "stylesheet");
                             document.head.appendChild(e);
                         }

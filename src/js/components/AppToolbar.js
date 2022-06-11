@@ -399,8 +399,7 @@ class AppToolbar extends React.Component {
                                                 onMouseLeave={this._handle_jamy_mouse_leave}
                                                 onClick={this._handle_jamy_mouse_click}>
                                                 <Tooltip
-                                                    title={t( "sentences.hey i am jamy")}
-                                                    aria-label="Jamy">
+                                                    title={t( "sentences.hey i am jamy")}>
                                                     <div className={classes.jamyContainer}>
                                                         {JAMY[jamy_state_of_mind]}
                                                     </div>

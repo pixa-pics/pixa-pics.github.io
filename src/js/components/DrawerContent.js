@@ -147,12 +147,11 @@ class DrawerContent extends React.Component {
                         <ListItem style={{borderBottom: "2px solid #0056ce"}} button onClick={this._open_pixel_page}>
                             <ListItemIcon>
                                 <Tooltip aria-label="Leana advertising lab" title={"Hello, I am Leana, let me advertise the laboratory of Jamy."}>
-                                    <img alt="Laboratory Leana" src={"/src/images/infographics/Leana.svg"} className={classes.iconLeft}/>
+                                    <img alt="Laboratory Leana" src={"/src/images/infographics/Leana.svg"} width={96} height={96} className={classes.iconLeft}/>
                                 </Tooltip>
                             </ListItemIcon>
                             <ListItemText className={classes.boldListItemText} primary={"IMGs MINIMA LABORATORY"} />
                         </ListItem>
-                        <Divider />
                         <Fade in timeout={100}>
                             <ListItem button className={classes.listItemGrey} onClick={(event) => this._open_link(event, "https://github.com/pixa-pics/pixa-pics.github.io/graphs/contributors")}>
                                 <ListItemIcon><PersonIcon className={classes.iconColor} /></ListItemIcon>

@@ -23,33 +23,35 @@ let IS_LATE_EVENING = null;
 
 const styles = theme => ({
     root: {
-        contain: "size style paint layout",
-        backgroundSize: "cover",
-        imageRendering: "optimizespeed",
-        "&:not(br)": {
-            imageRendering: "optimizespeed",
-        },
+        pointerEvents: "none",
         height: "100%",
         overflow: "hidden",
         position: "relative",
-        "&::after": {
-            content: `""`,
-            position: "absolute",
-            width: "100%;",
-            height: "100%",
-            right: 0,
-            bottom: 0,
-            zIndex: 1,
-        }
     },
     insideRoot: {
+        pointerEvents: "none",
+        backgroundSize: "auto 120%",
+        contain: "size style paint layout",
+        animation: "$slide 32s ease-out alternate infinite",
+        animationFillMode: "both",
+        "@global": {
+            "@keyframes slide": {
+                "0%": {backgroundPosition: "30% 0%"},
+                "100%": {backgroundPosition: "70% 0%"},
+            }
+        },
+        backgroundRepeat: "no-repeat",
+        backgroundOrigin: "border-box",
+        imageRendering: "optimizespeed",
         position: "absolute",
-        width: "100%;",
+        width: "100%",
         height: "100%",
         right: 0,
-        bottom: 0
+        bottom: 0,
     },
     homeCTAuseit: {
+        pointerEvents: "auto",
+        contain: "style paint layout",
         contentVisibility: "auto",
         fontWeight: "bold",
         transform: "translateY(0px) scale(1)  !important",
@@ -66,7 +68,6 @@ const styles = theme => ({
             filter: "drop-shadow(0px 0px 16px lightskyblue) brightness(1.1)",
             transform: "translateY(-3.4px) scale(1.1)  !important",
         },
-        zIndex: 7,
         transition: "color, filter, transform cubic-bezier(0.4, 0, 0.2, 1) 175ms !important",
         [theme.breakpoints.down("sm")]: {
             minWidth: "auto",
@@ -76,6 +77,8 @@ const styles = theme => ({
         },
     },
     homeCTAsendit: {
+        pointerEvents: "auto",
+        contain: "style paint layout",
         transform: "translateY(0px) scale(1)  !important",
         color: "#6f440d",
         backgroundImage: "linear-gradient(-32deg, goldenrod, #fff9f0, gold, darkgoldenrod, #fff8aa, goldenrod, blanchedalmond)",
@@ -93,7 +96,6 @@ const styles = theme => ({
         lineHeight: "2em",
         position: "fixed",
         maxWidth: 274,
-        zIndex: 7,
         bottom: 32,
         right: 32,
         [theme.breakpoints.down("sm")]: {
@@ -106,42 +108,35 @@ const styles = theme => ({
         },
     },
     backgroundImage: {
+        pointerEvents: "none",
+        contain: "size style paint layout",
         width: "100%",
         height: "100%",
         overflow: "hidden",
         position: "relative",
-        backgroundPosition: "0% 25vh",
-        animation: "$slide 56s linear infinite",
-        "@global": {
-            "@keyframes slide": {
-                "0%": {backgroundPosition: "-150% 25vh"},
-                "20%": {backgroundPosition: "-50% 25vh"},
-                "40%": {backgroundPosition: "50% 25vh"},
-                "60%": {backgroundPosition: "150% 25vh"},
-                "80%": {backgroundPosition: "225% 25vh"},
-                "100%": {backgroundPosition: "300% 25vh"},
-            }
+        "& > img": {
+            opacity: ".75",
+            imageRendering: "optimizespeed",
         },
-        backgroundRepeat: "no-repeat",
-        backgroundOrigin: "border-box",
         padding: 64,
         [theme.breakpoints.down("sm")]: {
             padding: theme.spacing(4)
         },
     },
     backgroundImageImage: {
-        contentVisibility: "auto",
+        contentVisibility: "visible",
         right: "max(9vw, 9vh)",
         bottom: "max(12vw, 12vh)",
         width: "min(47.5vw, 47.5vh)",
         filter: "drop-shadow(0px 0px 12px #00000066)",
-        zIndex: 3,
         position: "fixed",
         display: "relative",
         transform: "translate(min(50vh, 50%), min(50vh, 50%))",
         "h2&": {
-            right: "max(24vw, 24vh)",
-            bottom: "max(24vw, 24vh)",
+            right: "max(12vw, 12vh)",
+            bottom: "max(12vw, 12vh)",
+            transform: "scale(0.75)",
+            transformOrigin: "right bottom",
         },
         "h3&": {
             display: "none",
@@ -159,7 +154,9 @@ const styles = theme => ({
             "h3&": {
                 display: "inherit",
                 bottom: "180px",
-                left: "0",
+                right: "32px",
+                transform: "scale(0.75)",
+                transformOrigin: "right bottom",
             },
         },
     },
@@ -187,7 +184,6 @@ const styles = theme => ({
                 fontSize: "10px",
             }
         },
-        zIndex: 5,
     },
     titleh1: {
         whiteSpace: "break-spaces",
@@ -266,9 +262,8 @@ const styles = theme => ({
             display: "none",
         },
     },
-    blue: {
-        //color: theme.palette.primary.actionLighter,
-        fontWeight: 600,
+    bold: {
+        fontWeight: "bold",
     },
     stepPoints: {
         color: "#008eff",
@@ -302,6 +297,7 @@ class Home extends React.Component {
             _history: HISTORY,
             _image_name_infographics: "Luck.png",
             _infographics_fadein_time: 0,
+            _infographics_in: true,
             _bii3_opacity: 1,
         };
     };
@@ -345,26 +341,31 @@ class Home extends React.Component {
 
         const all_image_name_infographics = ["Luck.png", "Luck.svg", "Mica.png", "Mica.svg", "Parrot.png", "Parrot.svg", "Mat.png", "Mat.svg", "Lips.png", "Lips.svg", "Nuclear.png", "Nuclear.svg", "Pyramid.png", "Pyramid.svg"];
 
-        let _image_index = 0;
+        let _image_index = -1;
         let _image_name_infographics = all_image_name_infographics[_image_index];
 
         let _image_auto_interval = setInterval(async () => {
 
-            _image_index = _image_index % all_image_name_infographics.length;
             _image_index++;
+            _image_index = _image_index % parseInt(all_image_name_infographics.length-1);
             _image_name_infographics = all_image_name_infographics[_image_index] || all_image_name_infographics[0];
 
-            const img = new Image();
-            img.onload = () => {
-                // image  has been loaded
-                this.setState({_image_name_infographics, _infographics_fadein_time: 675}, () => {
+            // image  has been loaded
+            this.setState({_infographics_in: true, _image_name_infographics, _infographics_fadein_time: 500}, () => {
 
-                    this.forceUpdate();
+                this.forceUpdate(() => {
+
+                    setTimeout(() => {
+
+                        this.setState({_infographics_in: false}, () => {
+
+                            this.forceUpdate();
+                        });
+                    }, 5000);
                 });
-            };
-            img.src = `/src/images/gallery/${_image_name_infographics}`;
+            });
 
-        }, 333 * 10)
+        }, 5500)
 
         this.setState({_image_auto_interval}, () => {
 
@@ -432,7 +433,7 @@ class Home extends React.Component {
 
     render() {
 
-        const { classes, _bii3_opacity, _image_name_infographics, _infographics_fadein_time } = this.state;
+        const { classes, _bii3_opacity, _image_name_infographics, _infographics_fadein_time, _infographics_in } = this.state;
 
         let bi =  THEME_DAY ?
             "url(/src/images/illustrations/Fuji-day.svg)":
@@ -448,17 +449,17 @@ class Home extends React.Component {
         }
 
         return (
-            <div className={classes.root} style={{
-                contentVisibility: Boolean(bi)? "auto": "hidden",
-                backgroundImage: bi,
-            }}>
+            <div className={classes.root}>
                 <div className={classes.insideRoot} style={{
-                    backdropFilter: bf
+                    contentVisibility: Boolean(bi)? "auto": "hidden",
+                    backgroundImage: bi,
                 }}>
-                    <div className={classes.backgroundImage}>
-                        {_image_name_infographics.length >= 1 && <Grow in={true} exit={true} key={_image_name_infographics} timeout={{ enter: _infographics_fadein_time, exit: _infographics_fadein_time }}><img src={`/src/images/gallery/${_image_name_infographics}`} alt="Image demo." className={" pixelated " + classes.backgroundImageImage}/></Grow>}
-                        <h2 className={classes.backgroundImageImage} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff", backgroundColor: THEME_DAY && !IS_EVENING ? "#ffffff99": "#00651080", padding: 16, textAlign: "center", border: "8px solid #00ff0054", borderRadius: "16px"}}>REAL "SVG" SHAPES RENDER!<br/><span style={{fontSize: "0.75em"}}>Use (6x) "xBRZ" instead of default pixelated rendering of (16x, 32x, 48x).</span></h2>
-                        <h3 className={classes.backgroundImageImage} onClick={this._toggle_bii3_opacity} style={{borderRadius: "16px", zIndex: 90, opacity: _bii3_opacity, color: THEME_DAY && !IS_EVENING ? "#000": "#fff", border: "4px solid #980000", backgroundColor: THEME_DAY && !IS_EVENING ? "#ffffffcc": "#000000cc", padding: 16, textAlign: "center"}}>REAL "SVG" SHAPES RENDER!<br/><span style={{fontSize: "0.75em"}}>Use (6x) "xBRZ" instead of default pixelated rendering of (16x, 32x, 48x).</span> <span style={{fontSize: "0.5em"}}>CLICK TO CLOSE</span></h3>
+                    <div className={classes.backgroundImage} style={{
+                        backdropFilter: bf
+                    }}>
+                        {_image_name_infographics.length >= 1 && <Grow in={_infographics_in} exit={!_infographics_in} timeout={{ enter: _infographics_fadein_time, exit: _infographics_fadein_time }}><img src={`/src/images/gallery/${_image_name_infographics}`} alt="Image demo." className={" pixelated " + classes.backgroundImageImage}/></Grow>}
+                        <h2 className={classes.backgroundImageImage} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff", backgroundColor: THEME_DAY && !IS_EVENING ? "#ffffff99": "#00651080", padding: 16, textAlign: "center", border: "8px solid #00ff0054", borderRadius: "16px"}}>RENDER REAL "SVG" SHAPES!<br/><span style={{fontSize: "0.75em"}}>Use (6x) "xBRZ" instead of default pixelated rendering of (16x, 32x, 48x).</span></h2>
+                        <h3 className={classes.backgroundImageImage} onClick={this._toggle_bii3_opacity} style={{borderRadius: "16px", zIndex: 90, opacity: _bii3_opacity, color: THEME_DAY && !IS_EVENING ? "#000": "#fff", border: "4px solid #980000", backgroundColor: THEME_DAY && !IS_EVENING ? "#ffffffcc": "#000000cc", padding: 16, textAlign: "center"}}>RENDER REAL "SVG" SHAPES!<br/><span style={{fontSize: "0.75em"}}>Use (6x) "xBRZ" instead of default pixelated rendering of (16x, 32x, 48x).</span> <span style={{fontSize: "0.5em"}}>CLICK TO CLOSE</span></h3>
                     </div>
                 </div>
                 <div className={classes.headerContainer} style={{color: THEME_DAY && !IS_EVENING? "#000": "#fff"}}>
@@ -467,13 +468,13 @@ class Home extends React.Component {
                         <span className={classes.revelantText}>«PIXA.PICS» lovely minima-arts</span><span> from real-life pictures to enhance privacy for NFTs.</span><br/>
                     </h1>
                     <h2 className={classes.titleh2} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff"}}>
-                        <span><b>Apply effects in laboratory? Yes?</b> Essential lab operations gives the <b><span className={classes.revelantText}>MAXIMA of PRIVACY</span></b> in a fashion not only looking great for the <b>ONLINE SELF-IMAGE</b>...</span>
+                        <span><span className={classes.bold}>Apply effects in laboratory? Yes?</span> Essential lab operations gives the <span className={classes.bold}><span className={classes.revelantText}>MAXIMA of PRIVACY</span></span> in a fashion not only looking great for the <span className={classes.bold}>ONLINE SELF-IMAGE</span>...</span>
                     </h2>
                     <h2 className={classes.titleh2} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff"}}>
-                        <span><span className={classes.stepPoints}>2 >></span> <JacketEmojiSvg alt="scientist-jacket-tweemoji" className="emoji-150"/> <b><span className={classes.revelantText}> WHILE DRAWING/EDITING</span></b> a <b >MINIMA-ART</b>, you can use <b >55+ tools in 7 panels for pixel art</b>, options in layers, filters, selections, shapes, effects,... <DNAEmojiSvg alt="scientific-DNA-tweemoji" className="emoji-150"/> to process it with LAB-OPS!</span>
+                        <span><span className={classes.stepPoints}>2 >></span> <JacketEmojiSvg alt="scientist-jacket-tweemoji" className="emoji-150"/> <span className={classes.bold}><span className={classes.revelantText}> WHILE DRAWING/EDITING</span></span> a <span className={classes.bold}>MINIMA-ART</span>, you can use <span className={classes.bold}>55+ tools in 7 panels for pixel art</span>, options in layers, filters, selections, shapes, effects,... <DNAEmojiSvg alt="scientific-DNA-tweemoji" className="emoji-150"/> to process it with LAB-OPS!</span>
                     </h2>
                     <h2 className={classes.titleh2} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff"}}>
-                        <span><span className={classes.stepPoints}>3 >></span> <GlassesEmojiSvg alt="scientist-jacket-tweemoji" style={{verticalAlign: "middle"}} className="emoji-150"/> <b><span className={classes.revelantText}> RENDER UNLIMITED PIXEL ART</span></b> in <b >4K<sup> Ultra HD</sup> images</b> or in <b >humanized ∞ %<sup> Scalable</sup> shapes</b> of vectors using <LabopsEmojiSvg alt="laboratory-noidea-tweemoji" style={{verticalAlign: "bottom"}} className="emoji-150"/>its PIXEL-MATRIX to get it majestically in SVG.</span>
+                        <span><span className={classes.stepPoints}>3 >></span> <GlassesEmojiSvg alt="scientist-jacket-tweemoji" style={{verticalAlign: "middle"}} className="emoji-150"/> <span className={classes.bold}><span className={classes.revelantText}> RENDER UNLIMITED PIXEL ART</span></span> in <span className={classes.bold}>4K<sup> Ultra HD</sup> images</span> or in <span className={classes.bold}>humanized ∞ %<sup> Scalable</sup> shapes</span> of vectors using <LabopsEmojiSvg alt="laboratory-noidea-tweemoji" style={{verticalAlign: "bottom"}} className="emoji-150"/>its PIXEL-MATRIX to get it majestically in SVG.</span>
                     </h2>
                     <h3 className={classes.subtitle} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff"}}>
                         <StarEmojiSvg alt="space-star-tweemoji"className="emoji"/> <span>IMAGINE tremendous (x6 svg, x32 png) <span>PIXEL ART</span> based on your images.</span>
@@ -485,7 +486,7 @@ class Home extends React.Component {
                     </h3>
                     <Fade in={true} timeout={0}>
                         <Button className={classes.homeCTAuseit} variant={"contained"} size={"large"} color="primary" onClick={this._go_to_editor}>
-                            NOW FREE. <img src="/src/images/infographics/Wardenclyffe.png" style={{transform: "scale(3.5)", width: "1em", marginRight: "1.5em", marginLeft: "1.5em", filter: "drop-shadow(white 0px 0px 6px)"}} className="emoji-150" /> RUN IT!
+                            100% FREE <img src="/src/images/infographics/Wardenclyffe.png" alt="Laboratory decoration" loading="lazy" width={24} height={24} style={{transform: "scale(3.5)", width: 24, height: 24, marginRight: "1.5em", marginLeft: "1.5em", filter: "drop-shadow(white 0px 0px 6px)"}} className="emoji-150" /> RUN NOW!
                         </Button>
                     </Fade>
                     <Fade in={true} timeout={0}>

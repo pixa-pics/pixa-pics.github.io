@@ -93,7 +93,7 @@ module.exports = {
         ],
         chunkIds: 'named',
         splitChunks: {
-            chunks: 'async',
+            chunks: 'all',
             minSize: 240 * 1024,
             maxSize: 480 * 1024,
             minChunks: 4,
@@ -109,6 +109,8 @@ module.exports = {
                 },
                 default: {
                     minChunks: 4,
+                    maxAsyncRequests: 12,
+                    maxInitialRequests: 12,
                     priority: -20,
                     reuseExistingChunk: true
                 }
