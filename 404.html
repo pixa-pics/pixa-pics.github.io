@@ -163,13 +163,12 @@
 
                                 if(document.querySelectorAll(`script[src$="${"norris.min.js"}"]`).length === 0) {
 
-                                    e.setAttribute("async", "true");
                                     document.body.appendChild(e);
                                 }
 
                             }else {
 
-                                e.setAttribute("defer", "true");
+                                e.setAttribute("async", "true");
                                 document.body.appendChild(e);
                             }
 
