@@ -17,10 +17,6 @@ import GlassesEmojiSvg from "../twemoji/react/1F97D";
 import JacketEmojiSvg from "../twemoji/react/1F97C";
 import DangerEmoji from "../twemoji/react/26A0";
 
-let THEME_DAY = null;
-let IS_EVENING = null;
-let IS_LATE_EVENING = null;
-
 const styles = theme => ({
     root: {
         pointerEvents: "none",
@@ -306,40 +302,8 @@ class Home extends React.Component {
 
     componentDidMount() {
 
-        function get_now_hours24_with_locale(lc) {
-
-            const offset = UTC_OFFSET_PER_COUNTRIES[lc];
-            const d = new Date(Date.now());
-            const utc = d.getTime() - (d.getTimezoneOffset() * 60 * 1000);
-            const d2 = new Date(utc + (60 * 60 * 1000 * offset));
-
-            return d2.getHours();
-        }
-
-        function is_day(lc) {
-
-            const h = get_now_hours24_with_locale(lc);
-            return Boolean(h < 22 && h > 6);
-        }
-
-        function is_evening(lc) {
-
-            const h = get_now_hours24_with_locale(lc);
-            return Boolean(h < 22 && h > 21);
-        }
-
-        function is_late_evening(lc) {
-
-            const h = get_now_hours24_with_locale(lc);
-            return Boolean(h < 23 && h > 22);
-        }
-
         actions.trigger_page_render_complete();
         actions.trigger_loading_update(0);
-        const cc = (this.state._selected_locales_code || "en_US").split("-")[1];
-        THEME_DAY = is_day(cc);
-        IS_EVENING = is_evening(cc);
-        IS_LATE_EVENING = is_late_evening(cc);
 
         const all_image_name_infographics = ["Luck.png", "Luck.svg", "Mica.png", "Mica.svg", "Parrot.png", "Parrot.svg", "Mat.png", "Mat.svg", "Lips.png", "Lips.svg", "Nuclear.png", "Nuclear.svg", "Pyramid.png", "Pyramid.svg"];
 
@@ -435,7 +399,40 @@ class Home extends React.Component {
 
     render() {
 
-        const { classes, _bii3_opacity, _image_name_infographics, _infographics_fadein_time, _infographics_in } = this.state;
+        const { classes, _bii3_opacity, _image_name_infographics, _infographics_fadein_time, _infographics_in, _selected_locales_code } = this.state;
+
+        function get_now_hours24_with_locale(lc) {
+
+            const offset = UTC_OFFSET_PER_COUNTRIES[lc];
+            const d = new Date(Date.now());
+            const utc = d.getTime() - (d.getTimezoneOffset() * 60 * 1000);
+            const d2 = new Date(utc + (60 * 60 * 1000 * offset));
+
+            return d2.getHours();
+        }
+
+        function is_day(lc) {
+
+            const h = get_now_hours24_with_locale(lc);
+            return Boolean(h < 22 && h > 6);
+        }
+
+        function is_evening(lc) {
+
+            const h = get_now_hours24_with_locale(lc);
+            return Boolean(h < 22 && h > 21);
+        }
+
+        function is_late_evening(lc) {
+
+            const h = get_now_hours24_with_locale(lc);
+            return Boolean(h < 23 && h > 22);
+        }
+
+        const cc = (_selected_locales_code || "en_US").split("-")[1];
+        const THEME_DAY = is_day(cc);
+        const IS_EVENING = is_evening(cc);
+        const IS_LATE_EVENING = is_late_evening(cc);
 
         let bi =  THEME_DAY ?
             "url(/src/images/illustrations/Fuji-day.svg)":
