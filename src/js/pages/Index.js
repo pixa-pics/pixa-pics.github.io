@@ -388,18 +388,6 @@ class Index extends React.Component {
         // Editor, few key interactions
         window.addEventListener('art-action-gethelp', () => { _mtm.push({'event': 'art-action-gethelp'}); });
 
-        let element_a = document.getElementById("matomo-container") || null;
-        let append_a = false;
-
-        if(element_a === null) {
-            append_a = true;
-            element_a = document.createElement("script");
-        }
-
-        element_a.setAttribute("id", "matomo-container");
-        element_a.setAttribute("defer", "true");
-        element_a.setAttribute("src", "https://app.friendlyanalytics.ch/js/container_jRxgodNd.js");
-
         var _paq = window._paq = window._paq || [];
         _paq.push(["setDoNotTrack", true]);
         _paq.push(["disableCookies"]);
@@ -408,25 +396,36 @@ class Index extends React.Component {
         _paq.push(['setTrackerUrl', 'https://app.friendlyanalytics.ch/matomo.php']);
         _paq.push(['setSiteId', '77']);
 
-        let element_b = document.getElementById("matomo-analytics") || null;
-        let append_b = false;
-
-        if(element_b === null) {
-            append_b = true;
-            element_b = document.createElement("script");
-        }
-
-        element_b.setAttribute("id", "matomo-analytics");
-        element_a.setAttribute("defer", "true");
-        element_b.setAttribute("src", "https://app.friendlyanalytics.ch/matomo.js");
-
         setTimeout(async() => {
+
+            let element_a = document.getElementById("matomo-container") || null;
+            let append_a = false;
+
+            if(element_a === null) {
+                append_a = true;
+                element_a = document.createElement("script");
+            }
+
+            element_a.setAttribute("id", "matomo-container");
+            element_a.setAttribute("defer", "true");
+            element_a.setAttribute("src", "https://app.friendlyanalytics.ch/js/container_jRxgodNd.js");
+
+            let element_b = document.getElementById("matomo-analytics") || null;
+            let append_b = false;
+
+            if(element_b === null) {
+                append_b = true;
+                element_b = document.createElement("script");
+            }
+
+            element_b.setAttribute("id", "matomo-analytics");
+            element_a.setAttribute("defer", "true");
+            element_b.setAttribute("src", "https://app.friendlyanalytics.ch/matomo.js");
 
             if(append_a) {document.head.appendChild(element_a);}
             if(append_b) {document.head.appendChild(element_b);}
 
         }, wait);
-
     }
 
     _update_settings = () => {
