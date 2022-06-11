@@ -137,20 +137,37 @@
 
                 function fire_it(what) {
 
-                    var hrefs = Boolean(what === "pre") ? [
-                        "/chunk_main~1f20a385.min.js",
-                        "/chunk_main~5a2dc592.min.js",
-                        "/chunk_main~9acc357d.min.js",
-                        "/chunk_main~253ae210.min.js",
-                        "/chunk_main~0436ed57.min.js",
-                        "/chunk_main~748942c6.min.js",
-                        "/chunk_main~af9f4ef7.min.js",
-                        "/chunk_main~c1dd23ef.min.js",
-                        "/chunk_main~f9ca8911.min.js",
-                    ]: [
-                        "/chunk_norris.min.js",
-                        "/src/fonts/jura/index.css", // Font - Every font except latin
-                    ];
+                    var hrefs = [];
+
+                    if(
+                        Boolean(what === "pre" && Boolean(window._FIRED_IT !== "pre" && window._FIRED_IT !== "post")) ||
+                        Boolean(what === "post" && Boolean(window._FIRED_IT !== "pre" || window._FIRED_IT !== "post"))
+                    ) {
+
+                        hrefs = hrefs.concat(Array.of(
+                            "/chunk_main~1f20a385.min.js",
+                            "/chunk_main~5a2dc592.min.js",
+                            "/chunk_main~9acc357d.min.js",
+                            "/chunk_main~253ae210.min.js",
+                            "/chunk_main~0436ed57.min.js",
+                            "/chunk_main~748942c6.min.js",
+                            "/chunk_main~af9f4ef7.min.js",
+                            "/chunk_main~c1dd23ef.min.js",
+                            "/chunk_main~f9ca8911.min.js",
+                        ));
+                        window._FIRED_IT = "pre";
+                    }
+
+                    if(
+                        Boolean(what === "post" && Boolean(window._FIRED_IT !== "pre" || window._FIRED_IT !== "post"))
+                    ) {
+
+                        hrefs = hrefs.concat(Array.of(
+                            "/chunk_norris.min.js",
+                            "/src/fonts/jura/index.css", // Font - Every font except latin
+                        ));
+                        window._FIRED_IT = "post";
+                    }
 
                     hrefs.forEach(function(ss){
 
@@ -163,12 +180,13 @@
 
                                 if(document.querySelectorAll(`script[src$="${"norris.min.js"}"]`).length === 0) {
 
+                                    e.setAttribute("async", "true");
                                     document.body.appendChild(e);
                                 }
 
                             }else {
 
-                                e.setAttribute("async", "true");
+                                e.setAttribute("defer", "true");
                                 document.body.appendChild(e);
                             }
 
@@ -182,34 +200,24 @@
                             document.head.appendChild(e);
                         }
                     });
-
-                    window._FIRED_IT = what;
                 }
 
                 // Prevent this function of being executed twice or more
-                if(typeof window._FIRED_IT !== "undefined"){ return false }
-
                 if(document.readyState === "interactive") {
 
                     fire_it("pre");
-                } else {
-
-                    document.addEventListener('readystatechange', () => {
-
-                        if(document.readyState === "interactive") { fire_it("pre") }
-                    });
                 }
 
                 if(document.readyState === "complete") {
 
                     fire_it("post");
-                } else {
-
-                    document.addEventListener('readystatechange', () => {
-
-                        if(document.readyState === "complete") { fire_it("post") }
-                    });
                 }
+
+                document.addEventListener('readystatechange', () => {
+
+                    if(document.readyState === "interactive") { fire_it("pre") }
+                    if(document.readyState === "complete") { fire_it("post") }
+                });
             };
 
             // Try install service worker then finally fire files loading
