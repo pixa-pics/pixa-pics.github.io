@@ -241,7 +241,8 @@ const styles = theme => ({
         "& .MuiTab-wrapper svg": {
             width: 32,
             height: 32,
-            filter: "sepia(1) hue-rotate(180deg) saturate(2) brightness(0.75) contrast(1.5) drop-shadow(0px 0px 2px skyblue)"
+            filter: "sepia(1) hue-rotate(180deg) saturate(2) brightness(0.75) contrast(1.5) drop-shadow(0px 0px 2px skyblue)",
+            contentVisibility: "auto",
         }
     },
     tabNoIcon: {
@@ -398,6 +399,7 @@ class Pixel extends React.Component {
             _attachment_previews: {},
             _filters_thumbnail: {},
             _last_filters_hash: "",
+            _filters_preview_progression: "0",
             _toolbox_container_ref: null,
             settings: props.settings,
             ...JSON.parse(props.settings)
@@ -1403,9 +1405,9 @@ class Pixel extends React.Component {
         });
     };
 
-    _handle_filters_thumbnail_change = (_filters_thumbnail, _last_filters_hash) => {
+    _handle_filters_thumbnail_change = (_filters_thumbnail, _last_filters_hash, _filters_preview_progression) => {
 
-        this.setState({_filters_thumbnail, _last_filters_hash}, () => {
+        this.setState({_filters_thumbnail, _last_filters_hash, _filters_preview_progression}, () => {
 
             this.forceUpdate();
         });
@@ -1655,6 +1657,7 @@ class Pixel extends React.Component {
             _is_cursor_fuck_you_active,
             _filters_thumbnail,
             _last_filters_hash,
+            _filters_preview_progression,
         } = this.state;
 
         let x = _x === -1 ? "out": _x + 1;
@@ -1736,6 +1739,7 @@ class Pixel extends React.Component {
                                 import_colorize={_import_colorize}
                                 filters_thumbnail={_filters_thumbnail}
                                 last_filters_hash={_last_filters_hash}
+                                filters_preview_progression={_filters_preview_progression}
 
                                 set_tool={this._set_tool}
                                 set_select_mode={this._set_select_mode}
@@ -1838,6 +1842,7 @@ class Pixel extends React.Component {
                                 import_colorize={_import_colorize}
                                 filters_thumbnail={_filters_thumbnail}
                                 last_filters_hash={_last_filters_hash}
+                                filters_preview_progression={_filters_preview_progression}
 
                                 set_tool={this._set_tool}
                                 set_select_mode={this._set_select_mode}

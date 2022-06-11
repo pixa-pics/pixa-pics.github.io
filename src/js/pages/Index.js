@@ -340,7 +340,7 @@ class Index extends React.Component {
 
             if(!was_the_settings_known) {
 
-                this._set_analytics(8000);
+                this._set_analytics(15 * 1000);
             }
 
             setTimeout(() => {
@@ -359,71 +359,70 @@ class Index extends React.Component {
         }
     };
 
-    _set_analytics = (wait = 0) => {
+    _set_analytics = (wait = 10 * 1000) => {
+
+        /* MATOMO TAG MANAGER (ADDON) */
+        var _mtm = window._mtm = window._mtm || [];
+        _mtm.push({'mtm.startTime': (new Date().getTime()), 'event': 'mtm.Start'});
+
+        // Just for us to count download by type just sending "+1"
+        window.addEventListener('art-download-raster1', () => { _mtm.push({'event': 'art-download-raster1'}); });
+        window.addEventListener('art-download-raster16', () => { _mtm.push({'event': 'art-download-raster16'}); });
+        window.addEventListener('art-download-raster32', () => { _mtm.push({'event': 'art-download-raster32'}); });
+        window.addEventListener('art-download-raster48', () => { _mtm.push({'event': 'art-download-raster48'}); });
+        window.addEventListener('art-download-vectoromni', () => { _mtm.push({'event': 'art-download-vectoromni'}); });
+        window.addEventListener('art-download-vectorxbrz', () => { _mtm.push({'event': 'art-download-vectorxbrz'}); });
+
+        // Error on upload and button type leading upload
+        window.addEventListener('art-upload-browsererror', () => { _mtm.push({'event': 'art-upload-browsererror'}); });
+        window.addEventListener('art-upload-dialog', () => { _mtm.push({'event': 'art-upload-dialog'}); });
+        window.addEventListener('art-upload-drawer', () =>{ _mtm.push({'event': 'art-upload-drawer'}); });
+        window.addEventListener('art-import-drawer', () => { _mtm.push({'event': 'art-import-drawer'}); });
+
+        // Actions (Button accessed, only a few...)
+        window.addEventListener('home-action-tryeditor', () => { _mtm.push({'event': 'home-action-tryeditor'}); });
+        window.addEventListener('home-action-tryshare', () => { _mtm.push({'event': 'home-action-tryshare'}); });
+        window.addEventListener('menu-action-tryeditor', () => { _mtm.push({'event': 'menu-action-tryeditor'}); });
+        window.addEventListener('menu-action-settings', () => { _mtm.push({'event': 'menu-action-settings'}); });
+
+        // Editor, few key interactions
+        window.addEventListener('art-action-gethelp', () => { _mtm.push({'event': 'art-action-gethelp'}); });
+
+        let element_a = document.getElementById("matomo-container") || null;
+        let append_a = false;
+
+        if(element_a === null) {
+            append_a = true;
+            element_a = document.createElement("script");
+        }
+
+        element_a.setAttribute("id", "matomo-container");
+        element_a.setAttribute("defer", "true");
+        element_a.setAttribute("src", "https://app.friendlyanalytics.ch/js/container_jRxgodNd.js");
+
+        var _paq = window._paq = window._paq || [];
+        _paq.push(["setDoNotTrack", true]);
+        _paq.push(["disableCookies"]);
+        _paq.push(['trackPageView']);
+        _paq.push(['enableLinkTracking']);
+        _paq.push(['setTrackerUrl', 'https://app.friendlyanalytics.ch/matomo.php']);
+        _paq.push(['setSiteId', '77']);
+
+        let element_b = document.getElementById("matomo-analytics") || null;
+        let append_b = false;
+
+        if(element_b === null) {
+            append_b = true;
+            element_b = document.createElement("script");
+        }
+
+        element_b.setAttribute("id", "matomo-analytics");
+        element_a.setAttribute("defer", "true");
+        element_b.setAttribute("src", "https://app.friendlyanalytics.ch/matomo.js");
 
         setTimeout(async() => {
 
-            /* MATOMO TAG MANAGER (ADDON) */
-            var _mtm = window._mtm = window._mtm || [];
-            _mtm.push({'mtm.startTime': (new Date().getTime()), 'event': 'mtm.Start'});
-
-            // Just for us to count download by type just sending "+1"
-            window.addEventListener('art-download-raster1', () => { _mtm.push({'event': 'art-download-raster1'}); });
-            window.addEventListener('art-download-raster16', () => { _mtm.push({'event': 'art-download-raster16'}); });
-            window.addEventListener('art-download-raster32', () => { _mtm.push({'event': 'art-download-raster32'}); });
-            window.addEventListener('art-download-raster48', () => { _mtm.push({'event': 'art-download-raster48'}); });
-            window.addEventListener('art-download-vectoromni', () => { _mtm.push({'event': 'art-download-vectoromni'}); });
-            window.addEventListener('art-download-vectorxbrz', () => { _mtm.push({'event': 'art-download-vectorxbrz'}); });
-
-            // Error on upload and button type leading upload
-            window.addEventListener('art-upload-browsererror', () => { _mtm.push({'event': 'art-upload-browsererror'}); });
-            window.addEventListener('art-upload-dialog', () => { _mtm.push({'event': 'art-upload-dialog'}); });
-            window.addEventListener('art-upload-drawer', () =>{ _mtm.push({'event': 'art-upload-drawer'}); });
-            window.addEventListener('art-import-drawer', () => { _mtm.push({'event': 'art-import-drawer'}); });
-
-            // Actions (Button accessed, only a few...)
-            window.addEventListener('home-action-tryeditor', () => { _mtm.push({'event': 'home-action-tryeditor'}); });
-            window.addEventListener('home-action-tryshare', () => { _mtm.push({'event': 'home-action-tryshare'}); });
-            window.addEventListener('menu-action-tryeditor', () => { _mtm.push({'event': 'menu-action-tryeditor'}); });
-            window.addEventListener('menu-action-settings', () => { _mtm.push({'event': 'menu-action-settings'}); });
-
-            // Editor, few key interactions
-            window.addEventListener('art-action-gethelp', () => { _mtm.push({'event': 'art-action-gethelp'}); });
-
-            let element_a = document.getElementById("matomo-container") || null;
-            let append_a = false;
-
-            if(element_a === null) {
-                append_a = true;
-                element_a = document.createElement("script");
-            }
-
-            element_a.setAttribute("id", "matomo-container");
-            element_a.setAttribute("defer", "true");
-            element_a.setAttribute("src", "https://app.friendlyanalytics.ch/js/container_jRxgodNd.js");
-
             if(append_a) {document.head.appendChild(element_a);}
-
-            var _paq = window._paq = window._paq || [];
-            _paq.push(["setDoNotTrack", true]);
-            _paq.push(["disableCookies"]);
-            _paq.push(['trackPageView']);
-            _paq.push(['enableLinkTracking']);
-            _paq.push(['setTrackerUrl', 'https://app.friendlyanalytics.ch/matomo.php']);
-            _paq.push(['setSiteId', '77']);
-
-            let element_b = document.getElementById("matomo-analytics") || null;
-            let append_b = false;
-
-            if(element_b === null) {
-                append_b = true;
-                element_b = document.createElement("script");
-            }
-
-            element_b.setAttribute("id", "matomo-analytics");
-            element_a.setAttribute("defer", "true");
-            element_b.setAttribute("src", "https://app.friendlyanalytics.ch/matomo.js");
-
             if(append_b) {document.head.appendChild(element_b);}
 
         }, wait);

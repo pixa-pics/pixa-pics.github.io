@@ -1,7 +1,6 @@
 import React from "react";
-import { withStyles } from "@material-ui/core";
 
-import {Avatar, List, ListItem, ListItemAvatar, ListItemIcon, ListItemText, ListSubheader, Typography, Slider, RadioGroup, Radio, FormLabel, Collapse, Divider, FormControlLabel, Button, Menu} from "@material-ui/core";
+import {withStyles, Avatar, List, ListItem, ListItemAvatar, ListItemIcon, LinearProgress, ListItemText, ListSubheader, Typography, Slider, RadioGroup, Radio, FormLabel, Collapse, Divider, FormControlLabel, Button, Menu} from "@material-ui/core";
 
 import {HISTORY} from "../utils/constants";
 
@@ -143,6 +142,7 @@ const styles = theme => ({
         width: "100%",
         maxWidth: "100%",
         overflowX: "scroll",
+        contentVisibility: "auto",
         "& .MuiFormGroup-root": {
             flexWrap: "nowrap",
             padding: "16px 0px !important",
@@ -202,7 +202,22 @@ const styles = theme => ({
     },
     sliderLabel: {
         marginRight: theme.spacing(2),
-    }
+    },
+    linearProgress: {
+        "& .MuiLinearProgress-barColorPrimary": {
+            background: "linear-gradient(90deg, #0056ce 0%, #0056ce 100%)",
+            zIndex: -1,
+        },
+        zIndex: 1,
+        marginBottom: -2,
+        height: 2,
+        backgroundColor: "transparent",
+        width: "100%",
+        display: "flex",
+        left: 0,
+        bottom: 0,
+        position: "absolute",
+    },
 });
 
 
@@ -248,6 +263,9 @@ class PixelToolboxSwipeableViews extends React.Component {
             import_colorize: props.import_colorize,
             filters_thumbnail: props.filters_thumbnail,
             last_filters_hash: props.last_filters_hash,
+            filters_preview_progression: props.filters_preview_progression,
+            _filter_ar_on_one: "1.0",
+            _filter_thumbnail_changed: true,
         };
     };
 
@@ -255,7 +273,6 @@ class PixelToolboxSwipeableViews extends React.Component {
 
         const {
             canvas,
-            should_update,
             view_name_index,
             previous_view_name_index,
             view_names,
@@ -275,12 +292,16 @@ class PixelToolboxSwipeableViews extends React.Component {
             height,
             filters,
             last_filters_hash,
+            filters_preview_progression,
             select_mode,
             pencil_mirror_mode,
             is_something_selected,
             import_size,
             import_colorize
         } = this.state;
+
+        const _filters_changed = Boolean(last_filters_hash !== new_props.last_filters_hash);
+        const must_compute_filter = Boolean(view_name_index !== new_props.view_name_index || layer_index !== new_props.layer_index) && new_props.view_name_index === 6;
 
         if (Boolean(new_props.should_update) && (
             Boolean(canvas) !== Boolean(new_props.canvas) ||
@@ -307,23 +328,40 @@ class PixelToolboxSwipeableViews extends React.Component {
             pencil_mirror_mode !== new_props.pencil_mirror_mode ||
             is_something_selected !== new_props.is_something_selected ||
             import_size !== new_props.import_size ||
-            import_colorize !== new_props.import_colorize
+            import_colorize !== new_props.import_colorize ||
+            parseInt(filters_preview_progression) !== parseInt(new_props.filters_preview_progression)
         )) {
 
-            this.setState(new_props, () => {
+            if(_filters_changed) {
 
-                this.forceUpdate(() => {
+                var src = null;
 
-                    if(
-                        (view_name_index !== new_props.view_name_index ||
-                        layer_index !== new_props.layer_index) && new_props.view_name_index === 6
-                    ) {
+                for(let i = 0; i < new_props.filters.length; i++) {
 
-                        const { compute_filters_preview } = this.state.canvas;
-                        if(!Boolean(compute_filters_preview)) { return; }
-                        compute_filters_preview();
-                    }
+                    src = new_props.filters_thumbnail[new_props.filters[i]] || null;
+                    if(src !== null) { i = new_props.filters.length;}
+                }
+
+                let img = new Image();
+                img.addEventListener("load", () => {
+
+                    const w = img.naturalWidth || img.width;
+                    const h = img.naturalHeight || img.height;
+                    const ar = Math.round(parseFloat(w/h) * 100) / 100;
+                    this.setState({_filter_ar_on_one: String(ar)});
                 });
+                img.src = src;
+            }else if(must_compute_filter) {
+
+                try {
+
+                    this.state.canvas.compute_filters_preview();
+                }catch (e){}
+            }
+
+            this.setState({...new_props, _filters_changed}, () => {
+
+                this.forceUpdate();
             });
         }else {
 
@@ -603,10 +641,9 @@ class PixelToolboxSwipeableViews extends React.Component {
             canvas,
             _anchor_el,
             view_name_index,
-            previous_view_name_index,
             filters_thumbnail,
             last_filters_hash,
-            view_names,
+            filters_preview_progression,
             layers,
             layer_index,
             _previous_layer_index,
@@ -630,8 +667,7 @@ class PixelToolboxSwipeableViews extends React.Component {
             _luminosity,
             _opacity,
             _layer_opened,
-            default_width,
-            default_height,
+            _filter_ar_on_one,
             import_size,
             import_colorize,
         } = this.state;
@@ -1345,33 +1381,36 @@ class PixelToolboxSwipeableViews extends React.Component {
             "filters": [
                 {
                     icon: <ImageFilterMagicIcon/>,
-                    text: "Filters",
+                    progression: String(filters_preview_progression),
+                    text: `Filters`,
                     label: "primary",
                     local_i: 0,
                     sub: "The strength selected matters meanwhile preview are only shown at 100% intensity. To cancel any operation, use 'undo'.",
-                    tools: filters.map((name) => {
+                    tools: filters.map((name, name_index) => {
+
+                        const f = filters_thumbnail[name] || "";
                         return {
-                            icon: (filters_thumbnail[name] || "").length >= 1 ?
-                                <Avatar style={{height: "100%", width: "100%", border: "4px solid #020529"}} key={name + "" + last_filters_hash} variant={"rounded"} src={filters_thumbnail[name]} sizes="24" />:
-                                <Jdenticon key={name} value={name} size={"24"}/>, text: name, on_click: () => {
-                                    canvas.to_filter(name, slider_value);
-                                    this._handle_action_close();
-                                }
+                            icon: <Avatar style={{filter: `opacity(${String(Boolean(f.length === 0 && name_index !== 0) ? "0.5": "1.0")})`, height: "100%", width: "100%", aspectRatio: `${_filter_ar_on_one} / 1`, border: "4px solid #020529"}} key={String(f.length > 0 ? name+"-loaded": name+"-loading") + "-preview-" + last_filters_hash} variant={"rounded"} src={String(f.length > 0 ? f: filters_thumbnail[filters[0]])} />,
+                            text: name,
+                            on_click: () => {
+                                canvas.to_filter(name, slider_value);
+                                this._handle_action_close();
+                            }
                         }
                     }).concat([
                         {
-                            icon: <Jdenticon key={name} value={"Black & White"} size={"24"}/>,
+                            icon: <Jdenticon style={{height: "100%", width: "100%", aspectRatio: `${_filter_ar_on_one} / 1`, border: "4px solid #020529"}} key={"bw"} value={"Black & White"} size={"24"}/>,
                             text: "Black & White",
                             on_click: () => {
                                 canvas.to_greyscale()
                             }
                         },
                         {
-                            icon: <Jdenticon key={name} value={"Sepia"} size={"24"}/>, text: "Sepia", on_click: () => {
+                            icon: <Jdenticon style={{height: "100%", width: "100%", aspectRatio: `${_filter_ar_on_one} / 1`, border: "4px solid #020529"}} key={"sepia"} value={"Sepia"} size={"24"}/>, text: "Sepia", on_click: () => {
                                 canvas.to_sepia()
                             }
                         },
-                    ]),
+                    ])
                 },
             ],
         };
@@ -1737,6 +1776,15 @@ class PixelToolboxSwipeableViews extends React.Component {
                                                 <ListSubheader className={classes.listSubHeader}>
                                                     <span>{action_set.icon}</span>
                                                     <span>{action_set.text}</span>
+                                                    {Boolean(action_set.progression) &&
+                                                    <LinearProgress
+                                                        color="primary"
+                                                        variant="determinate"
+                                                        role="progressbar" aria-valuenow={action_set.progression} aria-valuemin="0" aria-valuemax="100"
+                                                        aria-label={`main-progressbar-${action_set.text}`}
+                                                        className={classes.linearProgress}
+                                                        value={parseInt(action_set.progression % 100)} />
+                                                    }
                                                 </ListSubheader>
                                                 <div className={classes.listItems}
                                                      style={
@@ -1769,7 +1817,7 @@ class PixelToolboxSwipeableViews extends React.Component {
                                                             </div>
                                                         ):
                                                         (
-                                                            <ListItem key={name + "-" + action_set.label + tool.text.toLowerCase().replaceAll(" ", "-")} button disabled={tool.disabled || false}
+                                                            <ListItem key={name + "-" + action_set.label + (tool.text || "").toLowerCase().replaceAll(" ", "-")} button disabled={tool.disabled || false}
                                                                       onClick={tool.on_click}>
                                                                 <ListItemIcon className={classes.listItemIcon}>
                                                                     {tool.icon}

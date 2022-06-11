@@ -23,7 +23,7 @@
             }
             body.loading[datainitiated=true] > #app {
                 will-change: contents;
-                content-visibility: visible;
+                content-visibility: auto;
             }
             body.loading[datainitiated=false] > #app {
                 will-change: auto;
@@ -95,7 +95,7 @@
                 min-width: 100vw;
             }
             body[datainitiated=true]::after {
-                animation: zoom-out .3s ease !important;
+                animation: zoom-out .2s ease !important;
                 animation-fill-mode: both !important;
                 animation-delay: 0s;
                 animation-timing-function: ease;
@@ -149,6 +149,7 @@
 
                                 if(document.querySelectorAll(`script[src$="${"norris.min.js"}"]`).length === 0) {
 
+                                    e.setAttribute("defer", "true");
                                     document.body.appendChild(e);
                                 }
 

@@ -167,10 +167,6 @@ const get_settings = (callback_function_info = null, attachment_ids = [], callba
                     if(err) {
 
                         callback_function_info("DB post error", null);
-                    }else {
-
-                        window.settings_db.compact();
-                        window.settings_db.viewCleanup();
                     }
                 });
                 callback_function_info(null, _merge_object({}, window._pixa_settings));
@@ -406,7 +402,6 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
 
                             callback_function_info(null, _merge_object({}, window._pixa_settings));
                             window.settings_db.compact();
-                            window.settings_db.viewCleanup();
                         }
                     });
                 };

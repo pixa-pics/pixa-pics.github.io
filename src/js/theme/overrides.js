@@ -115,7 +115,6 @@ const overrides = {
             },
             ".MuiAvatar-root": {
                 contain: "paint style layout",
-                contentVisibility: "auto",
             },
             ".MuiTableSortLabel-root.MuiTableSortLabel-root.MuiTableSortLabel-active": {
                 color: "inherit"

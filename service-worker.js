@@ -283,17 +283,17 @@ self.addEventListener("fetch", function(event) {
         event.respondWith(
             Promise.race([
                 required_cache.then(function (cache) {
-                    return cache.match(u).then(function (response) {
+                    return cache.match(url).then(function (response) {
                         if(response) { return response }
                     });
                 }),
                 useful_cache.then(function (cache) {
-                    return cache.match(u).then(function (response) {
+                    return cache.match(url).then(function (response) {
                         if(response) { return response }
                     });
                 }),
                 static_cache.then(function (cache) {
-                    return cache.match(u).then(function (response) {
+                    return cache.match(url).then(function (response) {
                         if(response) { return response }
                     });
                 }),

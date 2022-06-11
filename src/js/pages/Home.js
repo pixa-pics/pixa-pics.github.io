@@ -28,6 +28,27 @@ const styles = theme => ({
         overflow: "hidden",
         position: "relative",
     },
+    bold: {
+        fontWeight: "bold",
+    },
+    stepPoints: {
+        color: "#008eff",
+        filter: "drop-shadow(0px 0px 6px #2196f3)",
+        display: "inline-block",
+        transformOrigin: "left",
+        fontWeight: "bold",
+        fontSize: "200%",
+        [theme.breakpoints.down("sm")]: {
+            fontSize: "150%",
+        },
+        [theme.breakpoints.down("sm")]: {
+            fontSize: "100%",
+        },
+    },
+    revelantText: {
+        color: "#008eff",
+        filter: "drop-shadow(0px 0px 6px #2196f3)",
+    },
     insideRoot: {
         pointerEvents: "none",
         backgroundSize: "auto 120%",
@@ -110,6 +131,7 @@ const styles = theme => ({
     backgroundImage: {
         pointerEvents: "none",
         contain: "size style paint layout",
+        contentVisibility: "auto",
         width: "100%",
         height: "100%",
         overflow: "hidden",
@@ -118,13 +140,15 @@ const styles = theme => ({
             opacity: ".75",
             imageRendering: "optimizespeed",
         },
+        "& > img.aspect-ratio-one": {
+            aspectRatio: "1",
+        },
         padding: 64,
         [theme.breakpoints.down("sm")]: {
             padding: theme.spacing(4)
         },
     },
     backgroundImageImage: {
-        contentVisibility: "visible",
         right: "max(9vw, 9vh)",
         bottom: "max(12vw, 12vh)",
         width: "min(47.5vw, 47.5vh)",
@@ -262,27 +286,6 @@ const styles = theme => ({
             display: "none",
         },
     },
-    bold: {
-        fontWeight: "bold",
-    },
-    stepPoints: {
-        color: "#008eff",
-        textShadow: "0px 0px 6px #2196f3",
-        display: "inline-block",
-        transformOrigin: "left",
-        fontWeight: "bold",
-        fontSize: "200%",
-        [theme.breakpoints.down("sm")]: {
-            fontSize: "150%",
-        },
-        [theme.breakpoints.down("sm")]: {
-            fontSize: "100%",
-        },
-    },
-    revelantText: {
-        color: "#008eff",
-        textShadow: "0px 0px 6px #2196f3",
-    }
 });
 
 
@@ -457,7 +460,7 @@ class Home extends React.Component {
                     <div className={classes.backgroundImage} style={{
                         backdropFilter: bf
                     }}>
-                        {_image_name_infographics.length >= 1 && <Grow in={_infographics_in} exit={!_infographics_in} timeout={{ enter: _infographics_fadein_time, exit: _infographics_fadein_time }}><img src={`/src/images/gallery/${_image_name_infographics}`} alt="Image demo." className={" pixelated " + classes.backgroundImageImage}/></Grow>}
+                        {_image_name_infographics.length >= 1 && <Grow in={_infographics_in} exit={!_infographics_in} timeout={{ enter: _infographics_fadein_time, exit: _infographics_fadein_time }}><img src={`/src/images/gallery/${_image_name_infographics}`} alt="Image demo." className={String(_image_name_infographics === "Luck.png" ? " aspect-ratio-one ": "") + " pixelated " + classes.backgroundImageImage}/></Grow>}
                         <h2 className={classes.backgroundImageImage} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff", backgroundColor: THEME_DAY && !IS_EVENING ? "#ffffff99": "#00651080", padding: 16, textAlign: "center", border: "8px solid #00ff0054", borderRadius: "16px"}}>RENDER REAL "SVG" SHAPES!<br/><span style={{fontSize: "0.75em"}}>Use (6x) "xBRZ" instead of default pixelated rendering of (16x, 32x, 48x).</span></h2>
                         <h3 className={classes.backgroundImageImage} onClick={this._toggle_bii3_opacity} style={{borderRadius: "16px", zIndex: 90, opacity: _bii3_opacity, color: THEME_DAY && !IS_EVENING ? "#000": "#fff", border: "4px solid #980000", backgroundColor: THEME_DAY && !IS_EVENING ? "#ffffffcc": "#000000cc", padding: 16, textAlign: "center"}}>RENDER REAL "SVG" SHAPES!<br/><span style={{fontSize: "0.75em"}}>Use (6x) "xBRZ" instead of default pixelated rendering of (16x, 32x, 48x).</span> <span style={{fontSize: "0.5em"}}>CLICK TO CLOSE</span></h3>
                     </div>
