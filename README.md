@@ -30,18 +30,22 @@ All the screenshots were captured using a "Samsung Galaxy J3 (2017)" having 2gb 
 
 # Special features
 
+![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/doc/screenshots/screenshot.pixa.pics.jpeg)
+
  * Create pixel art from your pictures and draw, cut, select, do anything.
  * Have fun with NFTs weighting as low as ~10-100Kb.
  * Restore and colorize B/W while scaling up to 12x images.
 
-![](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/images/screenshots/pixa.pics_1.png)
-![](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/images/screenshots/pixa.pics_2.png)
-![](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/images/screenshots/pixa.pics_3.png)
-![](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/images/screenshots/pixa.pics_4.png)
-![](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/images/screenshots/pixa.pics_5.png)
-![](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/images/screenshots/pixa.pics_6.png)
-![](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/images/screenshots/pixa.pics_7.png)
-![](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/images/screenshots/pixa.pics_8.png)
+ ## More screenshots
+
+ * https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/images/screenshots/pixa.pics_1.png
+ * https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/images/screenshots/pixa.pics_2.png
+ * https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/images/screenshots/pixa.pics_3.png
+ * https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/images/screenshots/pixa.pics_4.png
+ * https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/images/screenshots/pixa.pics_5.png
+ * https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/images/screenshots/pixa.pics_6.png
+ * https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/images/screenshots/pixa.pics_7.png
+ * https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/images/screenshots/pixa.pics_8.png
 
 # Technology
 
@@ -56,13 +60,11 @@ All the screenshots were captured using a "Samsung Galaxy J3 (2017)" having 2gb 
  * Encoding of Portable Network Graphics in type of palette (PNGQuant)
  * Chunk ("norris") system for dropping script evaluation cost within CPU
 
-# 94 / 100 of performance (Lighthouse desktop metrics)
+# 99 / 100 of performance (Lighthouse desktop metrics)
 
 > 1.0-2.0 seconds in average, is the necessary time to get the content displayed on desktop (Chrome) for the first website's visit after an update of the application which is automatically done within those small 1690ms and prolongated in background for about 8 seconds, then it is more than twice as fast and doesn't require any form of connection to the Internet since assets are stored in the browser cache until the need to update them is hapenning.
 
-![Came out being atop of the codechain perfs more quickly than a true jaguar](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/doc/test/VITALS/LIGHTHOUSE.png)
-
-> FULL Difference compared to Facebook.com (Web application) and Photoshop.com (Just their website) -> https://github.com/pixa-pics/pixa-pics.github.io/tree/main/doc/test/VITALS
+![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/doc/screenshots/pagespeed.web.dev.jpeg)
 
 And let's say in the years 1980s a computer to play video games wasn't that much as cheap as my android smartphone of an old series.
 The phone to which it has been tested is nowadays sold at $100 unused it was dozen of times that price to do the same graphics that time.
