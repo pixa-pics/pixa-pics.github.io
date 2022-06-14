@@ -26,11 +26,10 @@ SOFTWARE.
 "use strict";
 const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
 
-const get_base64_png_data_url_process_function = new AsyncFunction(`var e=async function(e,r,t,a,n,i,c){"use strict";function f(e){return"#".concat("00000000".concat(e.toString(16)).slice(-8))}function o(e){return new Uint8ClampedArray(Uint32Array.of(e).buffer).reverse()}function s(e,r,t,a){return new Uint32Array(Uint8ClampedArray.of(a,t,r,e).buffer)[0]}function l(e,r=!1){if(e=void 0===e?0:e,r&&"number"==typeof e)return e;if(!r&&"number"==typeof e)return f(e);var t="",a=e,n=a.length;if(9===n)t=a;else if(7===n)t=a.concat("ff");else if(5===n){var i=a.charAt(1),c=a.charAt(2),o=a.charAt(3),s=a.charAt(4);t="#".concat(i,i,c,c,o,o,s,s)}else if(4===n){i=a.charAt(1),c=a.charAt(2),o=a.charAt(3);t="#".concat(i,i,c,c,o,o,"ff")}return r?function(e){return parseInt(e.slice(1),16)}(t):t}function u(e,r,t=1,a=!1,n=!1,i=!1){if(e=l(e,!0),0===t&&"hover"!==r&&a)return i?0:"#00000000";if("hover"===r){var c=o(e),u=function(e,r,t){e/=255,r/=255,t/=255;var a,n,i=Math.max(e,r,t),c=Math.min(e,r,t),f=(i+c)/2;if(i==c)a=n=0;else{var o=i-c;switch(n=f>.5?o/(2-i-c):o/(i+c),i){case e:a=(r-t)/o+(r<t?6:0);break;case r:a=(t-e)/o+2;break;case t:a=(e-r)/o+4}a/=6}return Array.of(parseInt(360*a),parseInt(100*n),parseInt(100*f))}(c[0],c[1],c[2],c[3]),v=function(e,r,t){var a,n,i;if(e/=360,t/=100,0==(r/=100))a=n=i=t;else{function o(e,r,t){return t<0&&(t+=1),t>1&&(t-=1),t<1/6?e+6*(r-e)*t:t<.5?r:t<2/3?e+(r-e)*(2/3-t)*6:e}var c=t<.5?t*(1+r):t+r-t*r,f=2*t-c;a=o(f,c,e+1/3),n=o(f,c,e),i=o(f,c,e-1/3)}return Uint8ClampedArray.of(parseInt(255*a),parseInt(255*n),parseInt(255*i))}(u[0],u[1],parseInt(u[2]>=50?u[2]/2:2*u[2]));r=s(v[0],v[1],v[2],255)}else r=l(r,!0);if(a&&0===r&&1===t)return i?0:"#00000000";var p=o(e),h=o(r);if(255===h[3]&&1===t)return i?r:f(r);var m,d,y,b,g=p[3]/255,A=h[3]/255*t,I=new Uint8ClampedArray(4),w=0;if(g>0&&A>0){var C=A/(w=n?A+g:1-(1-A)*(1-g)),O=g*(1-A)/w;I[0]=parseInt(h[0]*C+p[0]*O),I[1]=parseInt(h[1]*C+p[1]*O),I[2]=parseInt(h[2]*C+p[2]*O)}else A>0?(w=h[3]/255,I[0]=h[0],I[1]=h[1],I[2]=h[2]):(w=p[3]/255,I[0]=p[0],I[1]=p[1],I[2]=p[2]);return n&&(w/=2),I[3]=parseInt(255*w),i?s(I[0],I[1],I[2],I[3]):(m=I[0],d=I[1],y=I[2],b=I[3],"#".concat("00000000".concat(new Uint32Array(Uint8ClampedArray.of(b,y,d,m).buffer)[0].toString(16)).slice(-8)))}try{if("undefined"==typeof OffscreenCanvas)throw new Error("Impossible to create OffscreenCanvas in this web environment.");var v=(d=new OffscreenCanvas(e*i,r*i)).getContext("2d"),p=new Set;t[0].forEach(((r,c)=>{var s=[],l=-1;l++;for(var h=a.length-1;h>=0;h--){var m=a[h][t[h][c]];if(s[h]=m,255===o(m)[3]){l=h;break}}var d=0;for(h=l;h<a.length;h++){if(!n[h].hidden)d=u(d,m=s[h],n[h].opacity,!1,!1,!0)}var y=c%e,b=(c-y)/e;p.add(d),v.fillStyle=f(d),v.fillRect(y*i,b*i,1*i,1*i)}));var h=new OffscreenCanvas(e*i,r*i).getContext("bitmaprenderer"),m=v.getImageData(0,0,e*i,r*i);return createImageBitmap(m,{premultiplyAlpha:"none",colorSpaceConversion:"none",resizeQuality:"pixelated"}).then((e=>(h.transferFromImageBitmap(e),e.close(),h.canvas.convertToBlob({type:"image/png"}).then((e=>function(e){return new Promise(((r,t)=>{var a=new FileReader;a.onload=()=>r(a.result),a.readAsDataURL(e)}))}(e).then((e=>c?Object.values(Object.assign({},{0:e,1:Array.from(p).map((e=>l(e)))})):Object.values(Object.assign({},{0:e})))))))))}catch(s){var d;p=new Set;(d=document.createElement("canvas")).width=e*i,d.height=r*i;v=d.getContext("2d");return t[0].forEach(((r,c)=>{var s=[],l=-1;l++;for(var h=a.length-1;h>=0;h--){var m=a[h][t[h][c]];if(s[h]=m,255===o(m)[3]){l=h;break}}var d=0;for(h=l;h<a.length;h++){if(!n[h].hidden)d=u(d,m=s[h],n[h].opacity,!1,!1,!0)}var y=c%e,b=(c-y)/e;p.add(d),v.fillStyle=f(d),v.fillRect(y*i,b*i,1*i,1*i)})),c?Object.values(Object.assign({},{0:d.toDataURL(),1:Array.from(p).map((e=>l(e)))})):Object.values(Object.assign({},{0:d.toDataURL()}))}};`
-    + "return e;")();
+window.get_base64_png_data_url_process_function = new AsyncFunction(`var r=async function(r,e,n,t,a,f,i){return new Promise((function(o,l){"use strict";function c(r){return"#".concat("00000000".concat(r.toString(16)).slice(-8))}function u(r){return new Uint8ClampedArray(Uint32Array.of(r).buffer).reverse()}function s(r,e,n,t){return new Uint32Array(Uint8ClampedArray.of(t,n,e,r).buffer)[0]}function v(r,e=!1){if(r=void 0===r?0:r,e&&"number"==typeof r)return r;if(!e&&"number"==typeof r)return c(r);var n="",t=r,a=t.length;if(9===a)n=t;else if(7===a)n=t.concat("ff");else if(5===a){var f=t.charAt(1),i=t.charAt(2),o=t.charAt(3),l=t.charAt(4);n="#".concat(f,f,i,i,o,o,l,l)}else if(4===a){f=t.charAt(1),i=t.charAt(2),o=t.charAt(3);n="#".concat(f,f,i,i,o,o,"ff")}return e?function(r){return parseInt(r.slice(1),16)}(n):n}function h(r,e,n=1,t=!1,a=!1,f=!1){if(r=v(r,!0),0===n&&"hover"!==e&&t)return f?0:"#00000000";if("hover"===e){var i=u(r),o=function(r,e,n){r/=255,e/=255,n/=255;var t,a,f=Math.max(r,e,n),i=Math.min(r,e,n),o=(f+i)/2;if(f==i)t=a=0;else{var l=f-i;switch(a=o>.5?l/(2-f-i):l/(f+i),f){case r:t=(e-n)/l+(e<n?6:0);break;case e:t=(n-r)/l+2;break;case n:t=(r-e)/l+4}t/=6}return Array.of(parseInt(360*t),parseInt(100*a),parseInt(100*o))}(i[0],i[1],i[2],i[3]),l=function(r,e,n){var t,a,f;if(r/=360,n/=100,0==(e/=100))t=a=f=n;else{function l(r,e,n){return n<0&&(n+=1),n>1&&(n-=1),n<1/6?r+6*(e-r)*n:n<.5?e:n<2/3?r+(e-r)*(2/3-n)*6:r}var i=n<.5?n*(1+e):n+e-n*e,o=2*n-i;t=l(o,i,r+1/3),a=l(o,i,r),f=l(o,i,r-1/3)}return Uint8ClampedArray.of(parseInt(255*t),parseInt(255*a),parseInt(255*f))}(o[0],o[1],parseInt(o[2]>=50?o[2]/2:2*o[2]));e=s(l[0],l[1],l[2],255)}else e=v(e,!0);if(t&&0===e&&1===n)return f?0:"#00000000";var h=u(r),p=u(e);if(255===p[3]&&1===n)return f?e:c(e);var m,y,d,A,g=h[3]/255,w=p[3]/255*n,I=new Uint8ClampedArray(4),b=0;if(g>0&&w>0){var C=w/(b=a?w+g:1-(1-w)*(1-g)),U=g*(1-w)/b;I[0]=parseInt(p[0]*C+h[0]*U),I[1]=parseInt(p[1]*C+h[1]*U),I[2]=parseInt(p[2]*C+h[2]*U)}else w>0?(b=p[3]/255,I[0]=p[0],I[1]=p[1],I[2]=p[2]):(b=h[3]/255,I[0]=h[0],I[1]=h[1],I[2]=h[2]);return a&&(b/=2),I[3]=parseInt(255*b),f?s(I[0],I[1],I[2],I[3]):(m=I[0],y=I[1],d=I[2],A=I[3],"#".concat("00000000".concat(new Uint32Array(Uint8ClampedArray.of(A,d,y,m).buffer)[0].toString(16)).slice(-8)))}try{if("undefined"==typeof OffscreenCanvas)throw new Error("Impossible to create OffscreenCanvas in this web environment.");var p=(d=new OffscreenCanvas(r*f,e*f)).getContext("2d"),m=new Set;n[0].forEach(((e,i)=>{var o=[],l=-1;l++;for(var s=t.length-1;s>=0;s--){var v=t[s][n[s][i]];if(o[s]=v,255===u(v)[3]){l=s;break}}var y=0;for(s=l;s<t.length;s++){if(!a[s].hidden)y=h(y,v=o[s],a[s].opacity,!1,!1,!0)}var d=i%r,A=(i-d)/r;m.add(y),p.fillStyle=c(y),p.fillRect(d*f,A*f,1*f,1*f)}));var y=p.getImageData(0,0,r*f,e*f);p=null,d=null,createImageBitmap(y).then((n=>{var t=new OffscreenCanvas(r*f,e*f),a=t.getContext("bitmaprenderer");a.transferFromImageBitmap(n),n.close(),t.convertToBlob({type:"image/png"}).then((r=>function(r){return new Promise(((e,n)=>{var t=new FileReader;t.onload=()=>e(t.result),t.readAsDataURL(r)}))}(r).then((r=>{i?(o(Array.of(r,Array.from(m).map((r=>v(r))))),r=null,m=null):(o(Array.of(r)),r=null,m=null)})))),a=null,t=null})),y=null}catch(A){var d;m=new Set;(d=document.createElement("canvas")).width=r*f,d.height=e*f;p=d.getContext("2d");n[0].forEach(((e,i)=>{var o=[],l=-1;l++;for(var s=t.length-1;s>=0;s--){var v=t[s][n[s][i]];if(o[s]=v,255===u(v)[3]){l=s;break}}var y=0;for(s=l;s<t.length;s++){if(!a[s].hidden)y=h(y,v=o[s],a[s].opacity,!1,!1,!0)}var d=i%r,A=(i-d)/r;m.add(y),p.fillStyle=c(y),p.fillRect(d*f,A*f,1*f,1*f)})),i?(o(Array.of(d.toDataURL(),Array.from(m).map((r=>v(r))))),p=null,d=null,m=null):(o(Array.of(d.toDataURL())),p=null,d=null)}}))};`
+    + "return r;")();
 /*
         var fu = async function(
-
             pxl_width,
             pxl_height,
             _s_pxls,
@@ -38,7 +37,7 @@ const get_base64_png_data_url_process_function = new AsyncFunction(`var e=async 
             _layers,
             scale,
             with_palette
-        ) {
+        ) {return new Promise(function(resolve, reject){
 
             "use strict";
             function this_rgb_to_hsl(r, g, b) {
@@ -294,21 +293,17 @@ const get_base64_png_data_url_process_function = new AsyncFunction(`var e=async 
                     ctx.fillRect(pos_x * scale, pos_y * scale, 1 * scale, 1 * scale);
                 });
 
-                var canvas2 = new OffscreenCanvas(pxl_width * scale, pxl_height * scale);
-                var ctx2 = canvas2.getContext("bitmaprenderer");
-
                 var image_data = ctx.getImageData(0, 0, pxl_width * scale, pxl_height * scale);
+                ctx = null; canvas = null;
 
-                return createImageBitmap(image_data, {
-                    premultiplyAlpha: 'none',
-                    colorSpaceConversion: 'none',
-                    resizeQuality: "pixelated",
-                }).then((btmp_i) => {
+                createImageBitmap(image_data).then((btmp_i) => {
 
+                    var canvas2 = new OffscreenCanvas(pxl_width * scale, pxl_height * scale);
+                    var ctx2 = canvas2.getContext("bitmaprenderer");
                     ctx2.transferFromImageBitmap(btmp_i);
                     btmp_i.close();
 
-                    return ctx2.canvas.convertToBlob({type: "image/png"}).then((blob) => {
+                    canvas2.convertToBlob({type: "image/png"}).then((blob) => {
 
                         function blob_to_base64(blob) {
                           return new Promise((resolve, _) => {
@@ -322,14 +317,19 @@ const get_base64_png_data_url_process_function = new AsyncFunction(`var e=async 
 
                             if(with_palette) {
 
-                                return Object.values(Object.assign({}, {0: data_url, 1: Array.from(all_colors).map((c) => this_format_color(c))}));
+                                resolve(Array.of(data_url, Array.from(all_colors).map((c) => this_format_color(c))));
+                                data_url = null; all_colors = null;
                             }else {
 
-                                return Object.values(Object.assign({}, {0: data_url}));
+                                resolve(Array.of(data_url));
+                                data_url = null; all_colors = null;
                             }
                         });
+                        blob = null;
                     });
+                    ctx2 = null; canvas2 = null;
                 });
+                image_data = null;
 
             }catch (e) {
 
@@ -378,39 +378,41 @@ const get_base64_png_data_url_process_function = new AsyncFunction(`var e=async 
 
                 if(with_palette) {
 
-                    return Object.values(Object.assign({}, {0: canvas.toDataURL(), 1: Array.from(all_colors).map((c) => this_format_color(c))}));
+                    resolve(Array.of(canvas.toDataURL(), Array.from(all_colors).map((c) => this_format_color(c))));
+                    ctx = null; canvas = null; all_colors = null;
                 }else {
 
-                    return Object.values(Object.assign({}, {0: canvas.toDataURL()}));
+                    resolve(Array.of(canvas.toDataURL()));
+                    ctx = null; canvas = null;
                 }
             }
-        }
+        })};
  */
 
-const get_layer_base64_png_data_url_process_function = new AsyncFunction(`var e=async function(e,t,r,n,a,i){"use strict";function c(e,t=!1){if(e=void 0===e?0:e,t&&"number"==typeof e)return e;if(!t&&"number"==typeof e)return"#".concat("00000000".concat(e.toString(16)).slice(-8));var r="",n=e,a=n.length;if(9===a)r=n;else if(7===a)r=n.concat("ff");else if(5===a){var i=n.charAt(1),c=n.charAt(2),o=n.charAt(3),f=n.charAt(4);r="#".concat(i,i,c,c,o,o,f,f)}else if(4===a){i=n.charAt(1),c=n.charAt(2),o=n.charAt(3);r="#".concat(i,i,c,c,o,o,"ff")}return t?function(e){return parseInt(e.slice(1),16)}(r):r}try{if("undefined"==typeof OffscreenCanvas)throw new Error("Impossible to create OffscreenCanvas in this web environment.");var o=null;if(1===parseInt(a)){var f=n.map((function(e){return c(e,!0)})),s=r.map((function(e){return f[e]})),m=new Uint8ClampedArray(Uint32Array.from(s.reverse()).buffer).reverse();o=new ImageData(m,e,t)}else{var u=n.map((function(e){return c(e)})),l=new OffscreenCanvas(e*a,t*a);(v=l.getContext("2d")).imageSmoothingEnabled=!1,r.forEach(((t,r)=>{var n=u[t],i=r%e,c=(r-i)/e;v.fillStyle=n,v.fillRect(i*a,c*a,1*a,1*a)})),o=v.getImageData(0,0,e*a,t*a)}var h=i/(e*a),g=parseInt(e*a*h),d=parseInt(t*a*h),p=new OffscreenCanvas(g,d);return(w=p.getContext("bitmaprenderer")).imageSmoothingEnabled=!1,createImageBitmap(o,{resizeWidth:g,resizeHeight:d,resizeQuality:"pixelated"}).then((e=>{w.transferFromImageBitmap(e);e.close();return w.canvas.convertToBlob({type:"image/png"}).then((e=>{try{return FileReaderSync.readAsDataURL(e)}catch(t){function r(e){return new Promise((t=>{var r=new FileReader;r.onload=()=>t(r.result),r.readAsDataURL(e)}))}return r(e).then((e=>e))}}))}))}catch(y){(l=document.createElement("canvas")).width=e*a,l.height=t*a;var v=l.getContext("2d");o=null;if(1===parseInt(a)){f=n.map((function(e){return c(e,!0)})),s=r.map((function(e){return f[e]})),m=new Uint8ClampedArray(Uint32Array.from(s.reverse()).buffer).reverse();o=new ImageData(m,e,t),v.putImageData(o,0,0)}else{u=n.map((function(e){return c(e)}));(l=document.createElement("canvas")).width=e*a,l.height=t*a,(v=l.getContext("2d")).imageSmoothingEnabled=!1,r.forEach(((t,r)=>{var n=u[t],i=r%e,c=(r-i)/e;v.fillStyle=n,v.fillRect(i*a,c*a,1*a,1*a)}))}var w;h=i/(e*a),g=parseInt(e*a*h),d=parseInt(t*a*h);return(p=document.createElement("canvas")).width=g,p.height=d,(w=p.getContext("2d")).imageSmoothingEnabled=!1,w.drawImage(l,0,0,g,d),p.toDataURL("image/png")}};`
-    + "return e;")();
+window.get_layer_base64_png_data_url_process_function = new AsyncFunction(`var fu=async function(e,n,t,r,a,l){return new Promise((function(i,c){"use strict";function u(e,n=!1){if(e=void 0===e?0:e,n&&"number"==typeof e)return e;if(!n&&"number"==typeof e)return"#".concat("00000000".concat(e.toString(16)).slice(-8));var t="",r=e,a=r.length;if(9===a)t=r;else if(7===a)t=r.concat("ff");else if(5===a){var l=r.charAt(1),i=r.charAt(2),c=r.charAt(3),u=r.charAt(4);t="#".concat(l,l,i,i,c,c,u,u)}else if(4===a){l=r.charAt(1),i=r.charAt(2),c=r.charAt(3);t="#".concat(l,l,i,i,c,c,"ff")}return n?function(e){return parseInt(e.slice(1),16)}(t):t}try{if("undefined"==typeof OffscreenCanvas)throw new Error("Impossible to create OffscreenCanvas in this web environment.");var o=null;if(1===parseInt(a)){var f=r.map((function(e){return u(e,!0)})),s=t.map((function(e){return f[e]}));f=null;var m=new Uint8ClampedArray(Uint32Array.from(s.reverse()).buffer).reverse();s=null,o=new ImageData(m,e,n),m=null}else{var h=r.map((function(e){return u(e)})),g=new OffscreenCanvas(e*a,n*a);(I=g.getContext("2d")).imageSmoothingEnabled=!1,t.forEach(((n,t)=>{var r=h[n],l=t%e,i=(t-l)/e;I.fillStyle=r,I.fillRect(l*a,i*a,1*a,1*a)})),o=I.getImageData(0,0,e*a,n*a),I=null,g=null,h=null}var d=l/(e*a),v=parseInt(e*a*d),p=parseInt(n*a*d),w=new OffscreenCanvas(v,p);(y=w.getContext("bitmaprenderer")).imageSmoothingEnabled=!1,createImageBitmap(o,{resizeWidth:v,resizeHeight:p}).then((e=>{y.transferFromImageBitmap(e),e.close();w.convertToBlob({type:"image/png"}).then((e=>{y=null,w=null;try{i(FileReaderSync.readAsDataURL(e)),e=null}catch(n){function t(e){return new Promise(((n,t)=>{var r=new FileReader;r.onload=()=>n(r.result),r.readAsDataURL(e)}))}return t(e).then((e=>{i(e),e=null}))}}))})),o=null}catch(A){(g=document.createElement("canvas")).width=e*a,g.height=n*a;var I=g.getContext("2d");o=null;if(1===parseInt(a)){f=r.map((function(e){return u(e,!0)})),s=t.map((function(e){return f[e]}));f=null;m=new Uint8ClampedArray(Uint32Array.from(s.reverse()).buffer).reverse();o=new ImageData(m,e,n),m=null,I.putImageData(o,0,0),o=null}else{h=r.map((function(e){return u(e)}));(g=document.createElement("canvas")).width=e*a,g.height=n*a,(I=g.getContext("2d")).imageSmoothingEnabled=!1,t.forEach(((n,t)=>{var r=h[n],l=t%e,i=(t-l)/e;I.fillStyle=r,I.fillRect(l*a,i*a,1*a,1*a)})),h=null}var y;d=l/(e*a),v=parseInt(e*a*d),p=parseInt(n*a*d);(w=document.createElement("canvas")).width=v,w.height=p,(y=w.getContext("2d")).imageSmoothingEnabled=!1,y.drawImage(g,0,0,v,p),I=null,g=null,i(w.toDataURL("image/png")),y=null,w=null}}))};`
+    + "return fu;")();
 
         /*var fu = async function(
             pxl_width,
             pxl_height,
-            pxls, 
+            pxls,
             pxl_colors,
             scale,
             resize_width
-        ) {
-            
+        ) {return new Promise(function(resolve, reject){
+
             "use strict";
-            
+
             function this_get_hex_from_Uint32(num) {
 
                 return "#".concat("00000000".concat(num.toString(16)).slice(-8));
             }
-            
+
             function this_get_uint32_from_hex(hex) {
-        
+
                 return parseInt(hex.slice(1), 16);
             }
-            
+
             function this_get_rgba_from_Uint32(num) {
 
                 return new Uint8ClampedArray(Uint32Array.of(num).buffer).reverse();
@@ -421,81 +423,85 @@ const get_layer_base64_png_data_url_process_function = new AsyncFunction(`var e=
                 color = typeof color === "undefined" ? 0: color;
 
                 if(getUint32 && typeof color === "number"){
-        
+
                     return color;
                 }else {
-        
+
                     if(!getUint32 && typeof color === "number"){
-        
+
                         return this_get_hex_from_Uint32(color);
                     }
-        
+
                     var formatted = "";
                     var hex = color;
                     var hex_length = hex.length;
-        
+
                     if(hex_length === 9) {
-        
+
                         formatted = hex;
-        
+
                     } else if (hex_length === 7) {
-        
+
                         formatted = hex.concat("ff");
                     } else if (hex_length === 5) {
-        
+
                         var a = hex.charAt(1), b = hex.charAt(2), c = hex.charAt(3), d = hex.charAt(4);
                         formatted =  "#".concat(a, a, b, b, c, c, d, d);
                     } else if (hex_length === 4) {
-        
+
                         var a = hex.charAt(1), b = hex.charAt(2), c = hex.charAt(3);
                         formatted = "#".concat(a, a, b, b, c, c, "ff");
                     }
-        
+
                     if(getUint32){
-        
+
                         return this_get_uint32_from_hex(formatted);
                     }else {
-        
+
                         return formatted;
                     }
                 }
             }
-            
+
             try {
-            
+
                 if (typeof OffscreenCanvas === "undefined") {
                    throw new Error("Impossible to create OffscreenCanvas in this web environment.");
                 }
-                
+
                 var image_data = null;
                 if(parseInt(scale) === 1){
-                
+
                     var pxl_colors_uint32 = pxl_colors.map(function(c) { return this_format_color(c, true)});
                     var pxl_data_uint32 = pxls.map(function(pxl){ return pxl_colors_uint32[pxl]});
+                    pxl_colors_uint32 = null;
                     var ui8ca = new Uint8ClampedArray(Uint32Array.from(pxl_data_uint32.reverse()).buffer).reverse();
+                    pxl_data_uint32 = null;
                     image_data = new ImageData(ui8ca, pxl_width, pxl_height);
+                    ui8ca = null;
 
                 } else {
-                
+
                     var pxl_colors_hex = pxl_colors.map(function(c) { return this_format_color(c)});
                     var canvas = new OffscreenCanvas(pxl_width * scale, pxl_height * scale);
                     var ctx = canvas.getContext('2d');
                     ctx.imageSmoothingEnabled = false;
-                
+
                     pxls.forEach((pxl, index) => {
-            
+
                         var pixel_color_hex = pxl_colors_hex[pxl];
-            
+
                         var pos_x = index % pxl_width;
                         var pos_y = (index - pos_x) / pxl_width;
-            
+
                         ctx.fillStyle = pixel_color_hex;
                         ctx.fillRect(pos_x * scale, pos_y * scale, 1 * scale, 1 * scale);
                     });
-                    
+
                     image_data = ctx.getImageData(0, 0, pxl_width * scale, pxl_height * scale);
+                    ctx = null; canvas = null; pxl_colors_hex = null;
                 }
-                
+
                 var resize_ratio = resize_width / (pxl_width * scale);
                 var resizeWidth = parseInt((pxl_width * scale) * resize_ratio);
                 var resizeHeight = parseInt((pxl_height * scale) * resize_ratio);
@@ -504,21 +510,22 @@ const get_layer_base64_png_data_url_process_function = new AsyncFunction(`var e=
                 var ctx2 = canvas2.getContext("bitmaprenderer");
                 ctx2.imageSmoothingEnabled = false;
 
-                return createImageBitmap(image_data, {
+                createImageBitmap(image_data, {
                     resizeWidth: resizeWidth,
-                    resizeHeight: resizeHeight,
-                    resizeQuality: "pixelated",
+                    resizeHeight: resizeHeight
                 }).then((btmp_i) => {
 
                     ctx2.transferFromImageBitmap(btmp_i);
                     btmp_i.close()
 
                     var blob_params = {type: "image/png"};
-                    return ctx2.canvas.convertToBlob(blob_params).then((blob) => {
+                    canvas2.convertToBlob(blob_params).then((blob) => {
 
+                        ctx2 = null; canvas2 = null;
                         try {
 
-                            return FileReaderSync.readAsDataURL(blob);
+                            resolve(FileReaderSync.readAsDataURL(blob));
+                            blob = null;
                         } catch(e) {
 
                             function blob_to_base64(blob) {
@@ -531,64 +538,73 @@ const get_layer_base64_png_data_url_process_function = new AsyncFunction(`var e=
 
                             return blob_to_base64(blob).then((data_url) => {
 
-                                 return data_url;
+                                 resolve(data_url);
+                                 data_url = null;
                             });
+                            blob = null;
                         }
                     });
                 });
-                
+                image_data = null;
+
             }catch (e) {
-            
+
                 var canvas = document.createElement("canvas");
                 canvas.width = pxl_width * scale;
                 canvas.height = pxl_height * scale;
                 var ctx = canvas.getContext('2d');
-                
+
                 var image_data = null;
                 if(parseInt(scale) === 1){
 
                     var pxl_colors_uint32 = pxl_colors.map(function(c) { return this_format_color(c, true)});
                     var pxl_data_uint32 = pxls.map(function(pxl){ return pxl_colors_uint32[pxl]});
+                    pxl_colors_uint32 = null;
                     var ui8ca = new Uint8ClampedArray(Uint32Array.from(pxl_data_uint32.reverse()).buffer).reverse();
                     image_data = new ImageData(ui8ca, pxl_width, pxl_height);
-                    
+                    ui8ca = null;
                     ctx.putImageData(image_data, 0, 0);
+                    image_data = null;
+
                 } else {
-                
+
                     var pxl_colors_hex = pxl_colors.map(function(c) { return this_format_color(c)});
                     var canvas = document.createElement("canvas");
                     canvas.width = pxl_width * scale;
                     canvas.height = pxl_height * scale;
                     var ctx = canvas.getContext('2d');
                     ctx.imageSmoothingEnabled = false;
-                
+
                     pxls.forEach((pxl, index) => {
-            
+
                         var pixel_color_hex = pxl_colors_hex[pxl];
                         var pos_x = index % pxl_width;
                         var pos_y = (index - pos_x) / pxl_width;
-            
+
                         ctx.fillStyle = pixel_color_hex;
                         ctx.fillRect(pos_x * scale, pos_y * scale, 1 * scale, 1 * scale);
                     });
+                    pxl_colors_hex = null;
                 }
-                
+
                 var resize_ratio = resize_width / (pxl_width * scale);
                 var resizeWidth = parseInt((pxl_width * scale) * resize_ratio);
                 var resizeHeight = parseInt((pxl_height * scale) * resize_ratio);
-                
+
                 var canvas2 = document.createElement("canvas");
                 canvas2.width = resizeWidth;
                 canvas2.height = resizeHeight;
                 var ctx2 = canvas2.getContext("2d");
                 ctx2.imageSmoothingEnabled = false;
                 ctx2.drawImage(canvas, 0, 0, resizeWidth, resizeHeight);
-                
-                return canvas2.toDataURL("image/png");
-            }
-        }*/
+                ctx = null; canvas = null;
 
-const remove_close_pxl_colors_process_function = new AsyncFunction(`var r=async function(r,a,n,t,e,f,i){"use strict";function o(r){return"#".concat("00000000".concat(r.toString(16)).slice(-8))}function c(r){return new Uint8ClampedArray(Uint32Array.of(r).buffer).reverse()}function u(r,a,n,t){return new Uint32Array(Uint8ClampedArray.of(t,n,a,r).buffer)[0]}function s(r,a=!1){if(r=void 0===r?0:r,a&&"number"==typeof r)return r;if(!a&&"number"==typeof r)return o(r);var n="",t=r,e=t.length;if(9===e)n=t;else if(7===e)n=t.concat("ff");else if(5===e){var f=t.charAt(1),i=t.charAt(2),c=t.charAt(3),u=t.charAt(4);n="#".concat(f,f,i,i,c,c,u,u)}else if(4===e){f=t.charAt(1),i=t.charAt(2),c=t.charAt(3);n="#".concat(f,f,i,i,c,c,"ff")}return a?function(r){return parseInt(r.slice(1),16)}(n):n}function l(r,a,n){if(1===(n=void 0===n?null:n))return!0;if(0===n)return r===a;var t=parseInt(255*n);r=s(r,!0),a=s(a,!0);var e=c(r),f=c(a),i=Math.abs(e[3]-f[3]),o=Math.abs(e[0]-f[0]),u=Math.abs(e[1]-f[1]),l=Math.abs(e[2]-f[2]),h=Math.abs(1-i/255);return null!==n?Boolean(o<t&&u<t&&l<t&&i<t):parseFloat(parseInt(o+u+l)/parseInt(765))*h}function h(r,a,n=1,t=!1,e=!1,f=!1){if(r=s(r,!0),0===n&&"hover"!==a&&t)return f?0:"#00000000";if("hover"===a){var i=c(r),l=function(r,a,n){r/=255,a/=255,n/=255;var t,e,f=Math.max(r,a,n),i=Math.min(r,a,n),o=(f+i)/2;if(f==i)t=e=0;else{var c=f-i;switch(e=o>.5?c/(2-f-i):c/(f+i),f){case r:t=(a-n)/c+(a<n?6:0);break;case a:t=(n-r)/c+2;break;case n:t=(r-a)/c+4}t/=6}return Array.of(parseInt(360*t),parseInt(100*e),parseInt(100*o))}(i[0],i[1],i[2],i[3]),h=function(r,a,n){var t,e,f;if(r/=360,n/=100,0==(a/=100))t=e=f=n;else{function c(r,a,n){return n<0&&(n+=1),n>1&&(n-=1),n<1/6?r+6*(a-r)*n:n<.5?a:n<2/3?r+(a-r)*(2/3-n)*6:r}var i=n<.5?n*(1+a):n+a-n*a,o=2*n-i;t=c(o,i,r+1/3),e=c(o,i,r),f=c(o,i,r-1/3)}return Uint8ClampedArray.of(255*t,255*e,255*f)}(l[0],l[1],parseInt(l[2]>=50?l[2]/2:2*l[2]));a=u(h[0],h[1],h[2],255)}else a=s(a,!0);if(t&&0===a&&1===n)return f?0:"#00000000";var A=c(r),v=c(a);if(255===v[3]&&1===n)return f?a:o(a);var y=A[3]/255,m=v[3]/255*n,p=new Uint8ClampedArray(4),d=0;if(y>0&&m>0){var U=m/(d=e?m+y:1-(1-m)*(1-y)),b=y*(1-m)/d;p[0]=parseInt(v[0]*U+A[0]*b),p[1]=parseInt(v[1]*U+A[1]*b),p[2]=parseInt(v[2]*U+A[2]*b)}else m>0?(d=v[3]/255,p[0]=v[0],p[1]=v[1],p[2]=v[2]):(d=A[3]/255,p[0]=A[0],p[1]=A[1],p[2]=A[2]);return e&&(d/=2),p[3]=parseInt(255*d),f?u(p[0],p[1],p[2],p[3]):function(r,a,n,t){return"#".concat("00000000".concat(new Uint32Array(Uint8ClampedArray.of(t,n,a,r).buffer)[0].toString(16)).slice(-8))}(p[0],p[1],p[2],p[3])}function A(r,a){r=Array.from(r),a=Uint32Array.from(a);var n={},t=0,e=new Array(r.length);Array.from(r).forEach(((r,f)=>{var i=a[r],o=void 0===n[i]?null:n[i];null===o&&(o=t,n[i]=o,t++),e[f]=o}));var f=new Uint32Array(t);return Object.entries(n).forEach((r=>{f[r[1]]=r[0]})),Object.assign({},{0:Array.from(e),1:Uint32Array.from(f)})}var v=new Set,y=Array.from(r),m=Uint32Array.from(a),p="auto"===n,d=!p,U=15,b=new Set;((f=null!==f?f:Math.max(Math.sqrt(m.length)+e,100))<2||f>a.length)&&(d=!0);for(var I=1;!d||1===I;){I++,n=p?1/(U-2):n||i,t=t||parseInt(255*n),y=Array.from(r),m=Uint32Array.from(a);for(var g=Array.from(y),w=Uint32Array.from(m),M=1;M<=t;M+=1){var C=n*(M/t),E=M/t;v.clear();var S=new Array(w.length).fill(0);Uint32Array.from(g).forEach((r=>{S[r]++})),w.forEach(((r,a)=>{if(!v.has(a)){var n=S[a];w.forEach(((t,e)=>{if(a!==e&&!v.has(e)){var f=S[e],i=n>f,o=i?n/f:f/n;if(l(r,t,(C+C*(1-1/o)*E)/(1+E))){var c=i?h(m[a],m[e],1/o,!0,!1,!0):h(m[e],m[a],1/o,!0,!1,!0);m[a]=c,m[e]=c,v.add(a),v.add(e)}}}))}}));var j=A(g,m);g=j[0],w=j[1],m=Uint32Array.from(w)}if(m.length+12>f&&m.length-12<f||!p||b.has(U))return A(g,m);m.length>f?(b.add(U),U--):(b.add(U),U++)}var k=A(r,a);return k[0]=Array.from(k[0]),k};`
+                resolve(canvas2.toDataURL("image/png"));
+                ctx2 = null; canvas2 = null;
+            }
+        })}*/
+
+window.remove_close_pxl_colors_process_function = new AsyncFunction(`var r=async function(r,n,a,t,e,f,i){"use strict";function o(r){return"#".concat("00000000".concat(r.toString(16)).slice(-8))}function c(r){return new Uint8ClampedArray(Uint32Array.of(r).buffer).reverse()}function u(r,n,a,t){return new Uint32Array(Uint8ClampedArray.of(t,a,n,r).buffer)[0]}function l(r,n=!1){if(r=void 0===r?0:r,n&&"number"==typeof r)return r;if(!n&&"number"==typeof r)return o(r);var a="",t=r,e=t.length;if(9===e)a=t;else if(7===e)a=t.concat("ff");else if(5===e){var f=t.charAt(1),i=t.charAt(2),c=t.charAt(3),u=t.charAt(4);a="#".concat(f,f,i,i,c,c,u,u)}else if(4===e){f=t.charAt(1),i=t.charAt(2),c=t.charAt(3);a="#".concat(f,f,i,i,c,c,"ff")}return n?function(r){return parseInt(r.slice(1),16)}(a):a}function s(r,n,a){if(1===(a=void 0===a?null:a))return!0;if(0===a)return r===n;var t=parseInt(255*a);r=l(r,!0),n=l(n,!0);var e=c(r),f=c(n),i=Math.abs(e[3]-f[3]),o=Math.abs(e[0]-f[0]),u=Math.abs(e[1]-f[1]),s=Math.abs(e[2]-f[2]),h=Math.abs(1-i/255);return null!==a?Boolean(o<t&&u<t&&s<t&&i<t):parseFloat(parseInt(o+u+s)/parseInt(765))*h}function h(r,n,a=1,t=!1,e=!1,f=!1){if(r=l(r,!0),0===a&&"hover"!==n&&t)return f?0:"#00000000";if("hover"===n){var i=c(r),s=function(r,n,a){r/=255,n/=255,a/=255;var t,e,f=Math.max(r,n,a),i=Math.min(r,n,a),o=(f+i)/2;if(f==i)t=e=0;else{var c=f-i;switch(e=o>.5?c/(2-f-i):c/(f+i),f){case r:t=(n-a)/c+(n<a?6:0);break;case n:t=(a-r)/c+2;break;case a:t=(r-n)/c+4}t/=6}return Array.of(parseInt(360*t),parseInt(100*e),parseInt(100*o))}(i[0],i[1],i[2],i[3]),h=function(r,n,a){var t,e,f;if(r/=360,a/=100,0==(n/=100))t=e=f=a;else{function c(r,n,a){return a<0&&(a+=1),a>1&&(a-=1),a<1/6?r+6*(n-r)*a:a<.5?n:a<2/3?r+(n-r)*(2/3-a)*6:r}var i=a<.5?a*(1+n):a+n-a*n,o=2*a-i;t=c(o,i,r+1/3),e=c(o,i,r),f=c(o,i,r-1/3)}return Uint8ClampedArray.of(255*t,255*e,255*f)}(s[0],s[1],parseInt(s[2]>=50?s[2]/2:2*s[2]));n=u(h[0],h[1],h[2],255)}else n=l(n,!0);if(t&&0===n&&1===a)return f?0:"#00000000";var v=c(r),A=c(n);if(255===A[3]&&1===a)return f?n:o(n);var p,y,d,m,b=v[3]/255,w=A[3]/255*a,I=new Uint8ClampedArray(4),U=0;if(b>0&&w>0){var g=w/(U=e?w+b:1-(1-w)*(1-b)),M=b*(1-w)/U;I[0]=parseInt(A[0]*g+v[0]*M),I[1]=parseInt(A[1]*g+v[1]*M),I[2]=parseInt(A[2]*g+v[2]*M)}else w>0?(U=A[3]/255,I[0]=A[0],I[1]=A[1],I[2]=A[2]):(U=v[3]/255,I[0]=v[0],I[1]=v[1],I[2]=v[2]);return e&&(U/=2),I[3]=parseInt(255*U),f?u(I[0],I[1],I[2],I[3]):(p=I[0],y=I[1],d=I[2],m=I[3],"#".concat("00000000".concat(new Uint32Array(Uint8ClampedArray.of(m,d,y,p).buffer)[0].toString(16)).slice(-8)))}function v(r,n){var a=new Object,t=0,e=r.map((function(r){var e=n[r],f=void 0===a[e]?null:a[e];return null===f&&(f=t,a[e]=f,t++),f})),f=new Uint32Array(t);return Object.entries(a).forEach((r=>{f[r[1]]=r[0]})),Array.of(e,f)}return new Promise((function(o,c){var u="auto"===a,l=!u,A=15,p=new Set;((f=null!==f?f:Math.max(Math.sqrt(n.length)+e,100))<2||f+12>n.length)&&(l=!0);for(var y=1,d=new Array(r.length),m=new Uint32Array(n.length);!l||1===y;){y++,a=u?1/(A-2):a||i,t=t||parseInt(255*a),d=Array.from(r),m=Uint32Array.from(n);for(var b=1;b<=t;b+=1){var w=a*(b/t),I=b/t,U=new Set,g=new Array(m.length).fill(0);d.forEach((r=>{g[r]++})),m.forEach(((r,n)=>{if(!U.has(n)){var a=g[n];m.forEach(((t,e)=>{if(n!==e&&!U.has(e)){var f=g[e],i=a>f,o=i?a/f:f/a;if(s(r,t,(w+w*(1-1/o)*I)/(1+I))){var c=i?h(m[n],m[e],1/o,!0,!1,!0):h(m[e],m[n],1/o,!0,!1,!0);m[n]=c,m[e]=c,U.add(n),U.add(e)}}}))}})),g=null;var M=v(d,m);d=Array.from(M[0]),m=Uint32Array.from(M[1]),M=null}m.length+12>f&&m.length-12<f||!u||p.has(A)?l=!0:m.length>f?(p.add(A),A--):(p.add(A),A++)}o(v(d,m)),d=null,m=null}))};`
     + "return r;")();
 /*
 var fu = async function(
@@ -842,19 +858,14 @@ var fu = async function(
                 }
             }
 
-            function this_remove_duplicate_pxl_colors(_pxls, _pxl_colors) {
-
-                _pxls = Array.from(_pxls);
-                _pxl_colors = Uint32Array.from(_pxl_colors);
+            function this_remove_duplicate_pxl_colors(pxls, pxl_colors) {
 
                 // Work with Hashtables and Typed Array so it is fast
-                var new_pxl_colors_object = {};
+                var new_pxl_colors_object = new Object();
                 var new_pxl_colors_object_length = 0;
-                var new_pxls = new Array(_pxls.length);
+                var new_pxls = pxls.map(function (pxl){
 
-                Array.from(_pxls).forEach((pxl, iteration) => {
-
-                    var color = _pxl_colors[pxl];
+                    var color = pxl_colors[pxl];
                     var index_of_color = typeof new_pxl_colors_object[color] === "undefined" ? null: new_pxl_colors_object[color];
 
                     if(index_of_color === null) {
@@ -864,33 +875,33 @@ var fu = async function(
                         new_pxl_colors_object_length++;
                     }
 
-                    new_pxls[iteration] = index_of_color;
+                    return index_of_color;
                 });
-
                 var new_pxl_colors = new Uint32Array(new_pxl_colors_object_length);
                 Object.entries(new_pxl_colors_object).forEach((entry) => {
 
                     new_pxl_colors[entry[1]] = entry[0];
-                })
+                });
 
-                return Object.assign({}, {0: Array.from(new_pxls), 1: Uint32Array.from(new_pxl_colors)});
+                return Array.of(new_pxls, new_pxl_colors);
             }
 
-            var indexes_of_colors_proceed = new Set();
-            var original_pxls = Array.from(pxls);
-            var original_pxl_colors = Uint32Array.from(pxl_colors);
-            var is_bucket_threshold_auto = bucket_threshold === "auto";
-            var is_bucket_threshold_auto_goal_reached = !is_bucket_threshold_auto;
-            var bucket_threshold_auto_goal_target = 15;
-            var bucket_threshold_auto_goal_attempt = new Set();
-            best_color_number = best_color_number !== null ? best_color_number: Math.max(Math.sqrt(original_pxl_colors.length) + color_number_bonus, 100);
+            return new Promise(function(resolve, reject){
 
-            if(best_color_number < 2 || best_color_number > pxl_colors.length) {
+                var is_bucket_threshold_auto = bucket_threshold === "auto";
+                var is_bucket_threshold_auto_goal_reached = !is_bucket_threshold_auto;
+                var bucket_threshold_auto_goal_target = 15;
+                var bucket_threshold_auto_goal_attempt = new Set();
+                best_color_number = best_color_number !== null ? best_color_number: Math.max(Math.sqrt(pxl_colors.length) + color_number_bonus, 100);
 
-                is_bucket_threshold_auto_goal_reached = true;
-            }
+                if(best_color_number < 2 || best_color_number + 12 > pxl_colors.length) {
 
-            var attempt = 1;
+                    is_bucket_threshold_auto_goal_reached = true;
+                }
+
+                var attempt = 1;
+                var new_pxls = new Array(pxls.length);
+                var new_pxl_colors = new Uint32Array(pxl_colors.length);
 
             while (!is_bucket_threshold_auto_goal_reached || attempt === 1) {
                 attempt++;
@@ -900,25 +911,20 @@ var fu = async function(
                     bucket_threshold || this_state_bucket_threshold;
                 threshold_steps = threshold_steps || parseInt(bucket_threshold * 255);
 
-                original_pxls = Array.from(pxls);
-                original_pxl_colors = Uint32Array.from(pxl_colors);
-
-                var new_pxls = Array.from(original_pxls);
-                var new_pxl_colors = Uint32Array.from(original_pxl_colors);
+                new_pxls = Array.from(pxls);
+                new_pxl_colors = Uint32Array.from(pxl_colors);
 
                 for (var i = 1; i <= threshold_steps; i += 1) {
-                
+
                     var threshold = bucket_threshold * (i / threshold_steps);
                     var weight_applied_to_color_usage_difference = i / threshold_steps;
-                    
-                    indexes_of_colors_proceed.clear();
+                    var indexes_of_colors_proceed = new Set();
                     var pxl_colors_usage = new Array(new_pxl_colors.length).fill(0);
-                    
-                    Uint32Array.from(new_pxls).forEach((color_index) => {
+                    new_pxls.forEach((color_index) => {
                     
                         pxl_colors_usage[color_index]++;
                     });
-                    
+
                     new_pxl_colors.forEach((color_a, index_of_color_a) => {
                     
                         if(!indexes_of_colors_proceed.has(index_of_color_a)) {
@@ -938,11 +944,11 @@ var fu = async function(
                                     if(this_match_color(color_a, color_b, weighted_threshold)) {
                     
                                         var color = color_a_more_used ?
-                                            this_blend_colors(original_pxl_colors[index_of_color_a], original_pxl_colors[index_of_color_b], 1 / (color_usage_difference), true, false, true):
-                                            this_blend_colors(original_pxl_colors[index_of_color_b], original_pxl_colors[index_of_color_a], 1 / (color_usage_difference), true, false, true);
-                    
-                                        original_pxl_colors[index_of_color_a] = color;
-                                        original_pxl_colors[index_of_color_b] = color;
+                                            this_blend_colors(new_pxl_colors[index_of_color_a], new_pxl_colors[index_of_color_b], 1 / (color_usage_difference), true, false, true):
+                                            this_blend_colors(new_pxl_colors[index_of_color_b], new_pxl_colors[index_of_color_a], 1 / (color_usage_difference), true, false, true);
+
+                                        new_pxl_colors[index_of_color_a] = color;
+                                        new_pxl_colors[index_of_color_b] = color;
                                         indexes_of_colors_proceed.add(index_of_color_a);
                                         indexes_of_colors_proceed.add(index_of_color_b);
                                     }
@@ -950,17 +956,18 @@ var fu = async function(
                             });
                         }
                     });
-                    
-                    var r = this_remove_duplicate_pxl_colors(new_pxls, original_pxl_colors);
-                    new_pxls = r[0];
-                    new_pxl_colors = r[1];
-                    original_pxl_colors = Uint32Array.from(new_pxl_colors);
+
+                    pxl_colors_usage = null;
+                    var r = this_remove_duplicate_pxl_colors(new_pxls, new_pxl_colors);
+                    new_pxls = Array.from(r[0]);
+                    new_pxl_colors = Uint32Array.from(r[1]);
+                    r = null;
                 }
 
-                if((original_pxl_colors.length + 12 > best_color_number && original_pxl_colors.length - 12 < best_color_number) || !is_bucket_threshold_auto || bucket_threshold_auto_goal_attempt.has(bucket_threshold_auto_goal_target)) {
+                if((new_pxl_colors.length + 12 > best_color_number && new_pxl_colors.length - 12 < best_color_number) || !is_bucket_threshold_auto || bucket_threshold_auto_goal_attempt.has(bucket_threshold_auto_goal_target)) {
 
-                    return this_remove_duplicate_pxl_colors(new_pxls, original_pxl_colors);
-                }else if(original_pxl_colors.length > best_color_number){
+                    is_bucket_threshold_auto_goal_reached = true;
+                }else if(new_pxl_colors.length > best_color_number){
 
                     bucket_threshold_auto_goal_attempt.add(bucket_threshold_auto_goal_target);
                     bucket_threshold_auto_goal_target --;
@@ -971,13 +978,13 @@ var fu = async function(
                 }
             }
 
-            var fr = this_remove_duplicate_pxl_colors(pxls, pxl_colors);
-            fr[0] = Array.from(fr[0]);
-            return fr;
-        };
-*/
+            resolve(this_remove_duplicate_pxl_colors(new_pxls, new_pxl_colors));
+            new_pxls = null;
+            new_pxl_colors = null;
+        })};*/
 
-let w_canvas_pixels = {
+
+window.w_canvas_pixels = {
     _caf_id: null,
     _last_raf_time: Date.now(),
     _previous_cpaf_fps: 0,
@@ -985,10 +992,10 @@ let w_canvas_pixels = {
     _is_mobile_or_tablet: Boolean((/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino|android|ipad|playbook|silk/i.test(navigator.userAgent||navigator.vendor||window.opera)||/1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(navigator.userAgent||navigator.vendor||window.opera.substr(0,4)))),
 };
 
-window._fps_interval = setInterval(async() => {
+window._fps_interval = setInterval(() => {
 
-    w_canvas_pixels._previous_cpaf_fps = w_canvas_pixels._cpaf_frames * 4;
-    w_canvas_pixels._cpaf_frames = 0;
+    window.w_canvas_pixels._previous_cpaf_fps = window.w_canvas_pixels._cpaf_frames * 4;
+    window.w_canvas_pixels._cpaf_frames = 0;
 }, 250);
 
 const _raf =
@@ -1004,18 +1011,18 @@ const _caf =
     window.webkitCancelAnimationFrame ||
     window.msCancelAnimationFrame;
 
-async function _loop(render, do_not_cancel_animation, force_update, requested_at_t = Date.now()) {
+function _loop(render, do_not_cancel_animation, force_update, requested_at_t = Date.now()) {
 
-    if(requested_at_t < w_canvas_pixels._last_raf_time && !do_not_cancel_animation) { return }
+    if(requested_at_t < window.w_canvas_pixels._last_raf_time && !do_not_cancel_animation) { return }
 
     try {
 
-        let skip_frame_rate = w_canvas_pixels._is_mobile_or_tablet ? 27: 44;
+        let skip_frame_rate = window.w_canvas_pixels._is_mobile_or_tablet ? 27: 44;
 
         let now = Date.now();
         let running_smoothly = true;
 
-        let deltaT = now - w_canvas_pixels._last_raf_time;
+        let deltaT = now - window.w_canvas_pixels._last_raf_time;
         // do not render frame when deltaT is too high
         if ( deltaT > 1000 / (skip_frame_rate * 2/3)) {
             running_smoothly = false;
@@ -1023,48 +1030,48 @@ async function _loop(render, do_not_cancel_animation, force_update, requested_at
 
         if(force_update) {
 
-            if(w_canvas_pixels._caf_id !== null) {
+            if(window.w_canvas_pixels._caf_id !== null) {
 
-                _caf(w_canvas_pixels._caf_id);
+                _caf(window.w_canvas_pixels._caf_id);
             }
-            w_canvas_pixels._caf_id = null;
+            window.w_canvas_pixels._caf_id = null;
 
             if(do_not_cancel_animation) {
 
                 _raf(render);
             }else {
 
-                w_canvas_pixels._caf_id = _raf(render);
+                window.w_canvas_pixels._caf_id = _raf(render);
             }
 
-            w_canvas_pixels._cpaf_frames++;
-            w_canvas_pixels._last_raf_time = now;
+            window.w_canvas_pixels._cpaf_frames++;
+            window.w_canvas_pixels._last_raf_time = now;
 
-        }else if ( w_canvas_pixels._caf_id === null) { // Best
+        }else if ( window.w_canvas_pixels._caf_id === null) { // Best
 
             if(do_not_cancel_animation) {
 
                 _raf(render);
             }else {
 
-                w_canvas_pixels._caf_id = _raf(render);
+                window.w_canvas_pixels._caf_id = _raf(render);
             }
-            w_canvas_pixels._last_raf_time = now;
-            w_canvas_pixels._cpaf_frames++;
+            window.w_canvas_pixels._last_raf_time = now;
+            window.w_canvas_pixels._cpaf_frames++;
 
-        }else if(!running_smoothly && w_canvas_pixels._caf_id !== null && deltaT > 1000 / (skip_frame_rate * 6/3) ) { // Average
+        }else if(!running_smoothly && window.w_canvas_pixels._caf_id !== null && deltaT > 1000 / (skip_frame_rate * 6/3) ) { // Average
 
-            if(w_canvas_pixels._caf_id !== null) {
+            if(window.w_canvas_pixels._caf_id !== null) {
 
-                _caf(w_canvas_pixels._caf_id);
+                _caf(window.w_canvas_pixels._caf_id);
             }
-            w_canvas_pixels._caf_id = null;
-            w_canvas_pixels._last_raf_time = now;
+            window.w_canvas_pixels._caf_id = null;
+            window.w_canvas_pixels._last_raf_time = now;
 
             if(!do_not_cancel_animation) {
 
-                w_canvas_pixels._caf_id = _raf(render);
-                w_canvas_pixels._cpaf_frames++;
+                window.w_canvas_pixels._caf_id = _raf(render);
+                window.w_canvas_pixels._cpaf_frames++;
 
             }else {
 
@@ -1073,29 +1080,29 @@ async function _loop(render, do_not_cancel_animation, force_update, requested_at
 
         }else if(!running_smoothly){ // Low
 
-            if(w_canvas_pixels._caf_id !== null) {
+            if(window.w_canvas_pixels._caf_id !== null) {
 
-                _caf(w_canvas_pixels._caf_id);
+                _caf(window.w_canvas_pixels._caf_id);
             }
-            w_canvas_pixels._caf_id = null;
+            window.w_canvas_pixels._caf_id = null;
 
             if(do_not_cancel_animation) {
 
                 _raf(render);
             }else {
 
-                w_canvas_pixels._caf_id = _raf(render);
+                window.w_canvas_pixels._caf_id = _raf(render);
             }
 
-            w_canvas_pixels._cpaf_frames++;
-            w_canvas_pixels._last_raf_time = now;
+            window.w_canvas_pixels._cpaf_frames++;
+            window.w_canvas_pixels._last_raf_time = now;
 
         }else if(deltaT < 1000 / (skip_frame_rate * 2)){
 
-            setTimeout(async() => {_loop(render, do_not_cancel_animation, force_update, requested_at_t)}, 1000 / (skip_frame_rate * 8));
+            setTimeout(() => {_loop(render, do_not_cancel_animation, force_update, requested_at_t)}, 1000 / (skip_frame_rate * 8));
         }else if(force_update || do_not_cancel_animation) {
 
-            setTimeout(async() => {_loop(render, do_not_cancel_animation, force_update, requested_at_t)}, 1000 / (skip_frame_rate * 8));
+            setTimeout(() => {_loop(render, do_not_cancel_animation, force_update, requested_at_t)}, 1000 / (skip_frame_rate * 8));
         }else {
 
             //caf(caf_id);
@@ -1103,7 +1110,7 @@ async function _loop(render, do_not_cancel_animation, force_update, requested_at
     }catch (e) {}
 };
 
-async function _anim_loop ( render, do_not_cancel_animation = false, force_update = false ) {
+function _anim_loop ( render, do_not_cancel_animation = false, force_update = false ) {
 
     _loop(render, do_not_cancel_animation, force_update);
 };
@@ -1204,7 +1211,7 @@ class CanvasPixels extends React.Component {
             _last_action_timestamp: Date.now(),
             _last_paint_timestamp: Date.now(),
             _lazy_lazy_compute_time_ms: 10 * 1000,
-            _undo_buffer_time_ms: parseInt(parseInt(props.pxl_width || 32) * 2 + parseInt(props.pxl_height || 32) * 2 + parseInt(w_canvas_pixels._is_mobile_or_tablet ? 3000: 1500)),
+            _undo_buffer_time_ms: parseInt(parseInt(props.pxl_width || 32) * 2 + parseInt(props.pxl_height || 32) * 2 + parseInt(window.w_canvas_pixels._is_mobile_or_tablet ? 3000: 1500)),
             _mouse_inside: false,
             _paint_hover_old_pxls_snapshot: new Array((props.pxl_width || 32) * (props.pxl_height || 32)).fill(0),
             _select_hover_old_pxls_snapshot: [],
@@ -1315,33 +1322,28 @@ class CanvasPixels extends React.Component {
         this._notify_size_change();
         window.addEventListener("resize", this._updated_dimensions);
         this._updated_dimensions();
-        if(w_canvas_pixels._is_mobile_or_tablet && this.state._device_motion === true){
+        if(window.w_canvas_pixels._is_mobile_or_tablet && this.state._device_motion === true){
             window.addEventListener("devicemotion", this._handle_motion_changes);
         }
 
         let _intervals = [];
 
-        _intervals[0] = setInterval(async() => {this._maybe_save_state()}, parseInt(this.state._undo_buffer_time_ms * 1.05));
+        _intervals[0] = window._fps_interval;
 
-        if(!w_canvas_pixels._is_mobile_or_tablet) {
+        _intervals[1] = setInterval(() => {this._maybe_save_state()}, parseInt(this.state._undo_buffer_time_ms * 1.05));
 
-            _intervals[1] = setInterval(async() => {this._notify_fps()},  1500);
+        _intervals[2] = setInterval(() => {this._maybe_update_mine_player()}, 1000 / 30);
+
+        _intervals[3] = setInterval(() => {this._maybe_update_selection_highlight()}, window.w_canvas_pixels._is_mobile_or_tablet ? 2500: 1250);
+
+        _intervals[5] = setInterval(() => {this._notify_export_state()}, this.state.export_state_every_ms);
+
+        _intervals[7] = setInterval(() => {this._update_canvas()}, parseInt(this.state._undo_buffer_time_ms * 1));
+
+        if(!window.w_canvas_pixels._is_mobile_or_tablet) {
+
+            _intervals[8] = setInterval(() => {this.set_move_speed_average_now()},  31);
         }
-
-        _intervals[2] = setInterval(async() => {this._maybe_update_mine_player()}, 1000 / 30);
-
-        _intervals[3] = setInterval(async() => {this._maybe_update_selection_highlight()}, w_canvas_pixels._is_mobile_or_tablet ? 2500: 1250);
-
-        if(!w_canvas_pixels._is_mobile_or_tablet) {
-
-            _intervals[4] = setInterval(async() => {this.set_move_speed_average_now()},  31);
-        }
-
-        _intervals[5] = setInterval(async() => {this._notify_export_state()}, this.state.export_state_every_ms);
-
-        _intervals[6] = window._fps_interval;
-
-        _intervals[7] = setInterval(async() => {this._update_canvas()}, parseInt(this.state._undo_buffer_time_ms * 1));
 
         const body_css =
             "body {" +
@@ -1351,13 +1353,12 @@ class CanvasPixels extends React.Component {
         const pixelated_css =
             ".Canvas-Pixels, .Canvas-Wrapper-Overflow, .Canvas-Wrapper, .Canvas-Pixels-Cover {" +
                 "image-rendering: optimizeSpeed;" +
-                "image-rendering: optimizespeed;" +
                 "image-rendering: -moz-crisp-edges;" +
+                "image-rendering: -webkit-crisp-edges;" +
                 "image-rendering: -webkit-optimize-contrast;" +
-                "image-rendering: optimizequality;" +
-                "image-rendering: optimize-contrast;" +
                 "image-rendering: -o-pixelated;" +
                 "image-rendering: crisp-edges;" +
+                "-ms-interpolation-mode: nearest-neighbor;" +
                 "image-rendering: pixelated;" +
                 "touch-action: none;" +
                 "pointer-events: none;" +
@@ -1637,7 +1638,7 @@ class CanvasPixels extends React.Component {
                 break;
         }
 
-        if(w_canvas_pixels._is_mobile_or_tablet && this.state.perspective && this.state.has_shown_canvas_once) {
+        if(window.w_canvas_pixels._is_mobile_or_tablet && this.state.perspective && this.state.has_shown_canvas_once) {
 
             this.setState({_device_motion: true, perspective_coordinate: [x, y], perspective_coordinate_last_change: Date.now()}, () => {
 
@@ -1654,13 +1655,13 @@ class CanvasPixels extends React.Component {
 
     set_perspective_coordinate = (array) => {
 
-        if((!w_canvas_pixels._is_mobile_or_tablet || !this.state._device_motion) && this.state.perspective && this.state.has_shown_canvas_once) {
+        if((!window.w_canvas_pixels._is_mobile_or_tablet || !this.state._device_motion) && this.state.perspective && this.state.has_shown_canvas_once) {
 
             this.setState({perspective_coordinate: array, perspective_coordinate_last_change: Date.now()}, () => {
 
                 this._request_force_update(true, true, () => {
 
-                    if(!w_canvas_pixels._is_mobile_or_tablet) {
+                    if(!window.w_canvas_pixels._is_mobile_or_tablet) {
 
                         this._notify_perspective_coordinate_changes(array.concat([this.state.scale]));
                     }
@@ -2031,7 +2032,7 @@ class CanvasPixels extends React.Component {
 
                     const [p2, pc2] = this._filter_pixels(name, force, p, pc, true);
 
-                    this.get_layer_base64_png_data_url(pxl_width, pxl_height, p2, pc2, async(result) => {
+                    this.get_layer_base64_png_data_url(pxl_width, pxl_height, p2, pc2, (result) => {
 
                         thumbnails[name] = result;
                         thumbnail_count++;
@@ -2045,7 +2046,7 @@ class CanvasPixels extends React.Component {
 
     _notify_layers_and_compute_thumbnails_change = (callback_function = null, start = Date.now(), layers_index_changed = false) => {
 
-        const maybe_set_layers = async(lyrs, lyrs_length, lyrs_changed, lyrs_hash) => {
+        const maybe_set_layers = (lyrs, lyrs_length, lyrs_changed, lyrs_hash) => {
 
             if(callback_function !== null) {
 
@@ -2066,13 +2067,7 @@ class CanvasPixels extends React.Component {
 
         const { _layers, pxl_width, pxl_height, _s_pxls, _s_pxl_colors } = this.state;
 
-        let layers = Array.from(_layers);
-        const pxl_w = parseInt(pxl_width);
-        const pxl_h = parseInt(pxl_height);
-        const s_pxls = Array.from(_s_pxls);
-        const s_pxl_colors = Array.from(_s_pxl_colors);
-
-        if(!Boolean(s_pxls.length === s_pxl_colors.length && s_pxl_colors.length === _layers.length)) {
+        if(!Boolean(_s_pxls.length === _s_pxl_colors.length && _s_pxl_colors.length === _layers.length)) {
 
             setTimeout(() => {
 
@@ -2084,17 +2079,17 @@ class CanvasPixels extends React.Component {
         let all_layers = [];
         let all_layers_length = 0;
 
-        for(let index = 0; index < layers.length; index++){
+        for(let index = 0; index < _layers.length; index++){
 
-            const l = layers[index];
+            const l = _layers[index];
             all_layers[index] = Object.assign({}, l);
-            const p = Array.from(s_pxls[index]);
-            const pc = Uint32Array.from(s_pxl_colors[index]);
+            const p = Array.from(_s_pxls[index]);
+            const pc = Uint32Array.from(_s_pxl_colors[index]);
             const hash = this._xxhashthat(p) + "-"+ this._xxhashthat(pc);
 
             if(hash !== all_layers[index].hash  || !Boolean(all_layers[index].thumbnail)) {
 
-                this.get_layer_base64_png_data_url(pxl_w, pxl_h, p, pc, (result) => {
+                this.get_layer_base64_png_data_url(pxl_width, pxl_height, p, pc, (result) => {
 
                     all_layers[index].hash = hash;
                     all_layers[index].colors = Array.from(pc.slice(0, 128) || []).map((c) => this._format_color(c));
@@ -2102,22 +2097,22 @@ class CanvasPixels extends React.Component {
                     all_layers[index].thumbnail = result;
                     all_layers_length++;
 
-                    if(all_layers_length === layers.length) {
+                    if(all_layers_length === _layers.length) {
 
                         const all_new_layers_hash = all_layers.map((l) => {return l.hash || ""}).join("+");
-                        const has_changed = Boolean(layers_index_changed || String(layers.map((l) => {return l.hash || ""}).join("+") + layers.map((l) => {return l.id.toString() + String(l.hidden ? "hidden": "visible") + l.opacity.toString()}).join("-")) !== String(all_layers.map((l) => {return l.hash || ""}).join("+") + all_layers.map((l) => {return l.id.toString() + String(l.hidden ? "hidden": "visible") + l.opacity.toString()}).join("-")));
+                        const has_changed = Boolean(layers_index_changed || String(_layers.map((l) => {return l.hash || ""}).join("+") + _layers.map((l) => {return l.id.toString() + String(l.hidden ? "hidden": "visible") + l.opacity.toString()}).join("-")) !== String(all_layers.map((l) => {return l.hash || ""}).join("+") + all_layers.map((l) => {return l.id.toString() + String(l.hidden ? "hidden": "visible") + l.opacity.toString()}).join("-")));
                         maybe_set_layers(all_layers, all_layers_length, has_changed, all_new_layers_hash);
                     }
-                }, 64 / (pxl_height / pxl_width));
+                }, 80);
 
             }else {
 
                 all_layers_length++;
 
-                if(all_layers_length === layers.length) {
+                if(all_layers_length === _layers.length) {
 
                     const all_new_layers_hash = all_layers.map((l) => {return l.hash || ""}).join("+");
-                    const has_changed = Boolean(layers_index_changed || String(layers.map((l) => {return l.hash || ""}).join("+") + layers.map((l) => {return l.id.toString() + String(l.hidden ? "hidden": "visible") + l.opacity.toString()}).join("-")) !== String(all_layers.map((l) => {return l.hash || ""}).join("+") + all_layers.map((l) => {return l.id.toString() + String(l.hidden ? "hidden": "visible") + l.opacity.toString()}).join("-")));
+                    const has_changed = Boolean(layers_index_changed || String(_layers.map((l) => {return l.hash || ""}).join("+") + _layers.map((l) => {return l.id.toString() + String(l.hidden ? "hidden": "visible") + l.opacity.toString()}).join("-")) !== String(all_layers.map((l) => {return l.hash || ""}).join("+") + all_layers.map((l) => {return l.id.toString() + String(l.hidden ? "hidden": "visible") + l.opacity.toString()}).join("-")));
                     maybe_set_layers(all_layers, all_layers_length, has_changed, all_new_layers_hash);
                 }
             }
@@ -2129,30 +2124,28 @@ class CanvasPixels extends React.Component {
         const scale = 1;
         resize_width = resize_width === 0 ? pxl_width: resize_width;
 
-        (async() => {
+        pool.exec(window.get_layer_base64_png_data_url_process_function, [
+            pxl_width,
+            pxl_height,
+            pxls,
+            pxl_colors,
+            scale,
+            resize_width
+        ]).catch((e) => {
 
-            const result = pool.exec(get_layer_base64_png_data_url_process_function, [
+            return window.get_layer_base64_png_data_url_process_function(
                 pxl_width,
                 pxl_height,
                 pxls,
                 pxl_colors,
                 scale,
                 resize_width
-            ]).catch((e) => {
+            );
 
-                return get_layer_base64_png_data_url_process_function(
-                    pxl_width,
-                    pxl_height,
-                    pxls,
-                    pxl_colors,
-                    scale,
-                    resize_width
-                );
+        }).timeout(5 * 1000).then((result) => {
 
-            }).timeout(5 * 1000);
-
-            callback_function(await result);
-        })();
+            callback_function(result);
+        });
     };
 
     get_base64_png_data_url = (scale = 1, callback_function = () => {}, with_palette = false, with_compression_speed = 0, with_compression_quality_min = 30, with_compression_quality_max = 35) => {
@@ -2164,9 +2157,17 @@ class CanvasPixels extends React.Component {
 
         const { pxl_width, pxl_height, _s_pxls, _s_pxl_colors, _layers } = this.state;
 
-        (async() => {
+        pool.exec(window.get_base64_png_data_url_process_function, [
+            pxl_width,
+            pxl_height,
+            _s_pxls,
+            _s_pxl_colors,
+            _layers,
+            scale,
+            with_palette
+        ]).catch((e) => {
 
-            let r = pool.exec(get_base64_png_data_url_process_function, [
+            return window.get_base64_png_data_url_process_function(
                 pxl_width,
                 pxl_height,
                 _s_pxls,
@@ -2174,38 +2175,30 @@ class CanvasPixels extends React.Component {
                 _layers,
                 scale,
                 with_palette
-            ]).catch((e) => {
+            );
 
-                return get_base64_png_data_url_process_function(
-                    pxl_width,
-                    pxl_height,
-                    _s_pxls,
-                    _s_pxl_colors,
-                    _layers,
-                    scale,
-                    with_palette
-                );
+        }).timeout(10 * 1000).then((result) => {
 
-            }).timeout(10 * 1000);
+            result = Object.values(result);
+            let base64_in = String(result[0] || "");
+            let palette = Array.from(result[1] || []);
+            result = null;
 
-            let result = Object.values(await r);
             if(with_compression_speed !== 0) {
 
-                const base64_in = result[0];
-                const palette = result[1];
                 import("../utils/png_quant").then(({png_quant}) => {
 
-                    png_quant(base64_in, with_compression_quality_min, with_compression_quality_max, with_compression_speed,  pool).then((base_64_out) => {
+                    png_quant(base64_in, with_compression_quality_min, with_compression_quality_max, with_compression_speed, pool).then((base_64_out) => {
 
-                        callback_function([base_64_out, palette]);
+                        base64_in = null;
+                        callback_function(with_palette ? Array.of(base_64_out, palette): Array.of(base_64_out));
                     });
                 });
             }else {
 
-                callback_function(result);
+                callback_function(with_palette ? Array.of(base64_in, palette): Array.of(base64_in));
             }
-
-        })();
+        });
     };
 
     _get_pixels_palette_and_list_from_image_data = (image_data, force_full_compute = false) => {
@@ -2547,7 +2540,7 @@ class CanvasPixels extends React.Component {
 
         }else {
 
-            setTimeout( async() => {
+            setTimeout( () => {
 
                 const { default_size, max_size, ideal_size, _base64_original_images, dont_change_img_size_onload, dont_compute_base64_original_image } = this.state;
 
@@ -2961,7 +2954,7 @@ class CanvasPixels extends React.Component {
         try {
 
             window.removeEventListener("resize", this._updated_dimensions);
-            if(w_canvas_pixels._is_mobile_or_tablet && this.state._device_motion === true){
+            if(window.w_canvas_pixels._is_mobile_or_tablet && this.state._device_motion === true){
                 window.removeEventListener("devicemotion", this._handle_motion_changes);
             }
             _canvas_wrapper_overflow.removeEventListener("wheel", this.handle_canvas_wrapper_overflow_wheel);
@@ -3784,7 +3777,7 @@ class CanvasPixels extends React.Component {
             }
         }
 
-        return [ pxls, pxl_colors, pxl_indexes ];
+        return [ pxls, Uint32Array.from(pxl_colors), pxl_indexes ];
     }
 
     _get_pixels_palette_and_list_from_rectangle = (pxls, index_a, index_b, pxl_colors = [], pxl_color_new = null, pxl_current_opacity = null) => {
@@ -4252,7 +4245,7 @@ class CanvasPixels extends React.Component {
 
         const { perspective, _device_motion } = this.state;
 
-        if(perspective > 0 && (!w_canvas_pixels._is_mobile_or_tablet || !_device_motion)) {
+        if(perspective > 0 && (!window.w_canvas_pixels._is_mobile_or_tablet || !_device_motion)) {
 
             const pos = this._get_canvas_pos();
             const pos_x_in_canvas_container = ((event.pageX || x) - pos.canvas_container.left);
@@ -4631,7 +4624,6 @@ class CanvasPixels extends React.Component {
     _handle_canvas_mouse_move = (event, canvas_event_target) => {
 
         const { tool, pxl_width, pxl_height, _pxls_hovered, hide_canvas_content, _mouse_down, _event_button, no_actions } = this.state;
-        const pxl_current_color = this._format_color(this.state.pxl_current_color, true);
         let { _pxl_indexes_of_selection, _imported_image_pxls } = this.state;
 
         const event_which = _event_button+1;
@@ -4740,11 +4732,9 @@ class CanvasPixels extends React.Component {
                     _paint_or_select_hover_actions_latest_index = pxl_index;
                 }
 
-                let palette_and_list = this._get_pixels_palette_and_list_from_line(_s_pxls[_layer_index], _paint_or_select_hover_actions_latest_index, pxl_index, _s_pxl_colors[_layer_index], pxl_current_color, pxl_current_opacity);
-                _s_pxls[_layer_index] = palette_and_list[0];
-                delete palette_and_list[0];
-                _s_pxl_colors[_layer_index] = palette_and_list[1];
-                delete palette_and_list[1];
+                const pxl_current_color = this._format_color(this.state.pxl_current_color, true);
+                let new_drawn_pxl_indexes;
+                [_s_pxls[_layer_index], _s_pxl_colors[_layer_index], new_drawn_pxl_indexes]= this._get_pixels_palette_and_list_from_line(_s_pxls[_layer_index], _paint_or_select_hover_actions_latest_index, pxl_index, _s_pxl_colors[_layer_index], pxl_current_color, pxl_current_opacity);
 
                 const { pencil_mirror_mode, _pencil_mirror_index } = this.state;
 
@@ -4754,7 +4744,6 @@ class CanvasPixels extends React.Component {
                 if(tool === "CONTOUR") {
 
                     _last_action_timestamp = 1 / 0;
-                    const new_drawn_pxl_indexes = palette_and_list[2];
 
                     _paint_or_select_hover_pxl_indexes = new Set([..._paint_or_select_hover_pxl_indexes, ...new_drawn_pxl_indexes]);
                     _paint_or_select_hover_pxl_indexes = new Set(_paint_or_select_hover_pxl_indexes);
@@ -4763,7 +4752,6 @@ class CanvasPixels extends React.Component {
                 }else if(tool === "PENCIL"){
 
                     _last_action_timestamp = Date.now();
-                    const new_drawn_pxl_indexes = palette_and_list[2];
 
                     _paint_or_select_hover_pxl_indexes = new Set([..._paint_or_select_hover_pxl_indexes, ...new_drawn_pxl_indexes]);
                     _paint_or_select_hover_pxl_indexes = new Set(_paint_or_select_hover_pxl_indexes);
@@ -4771,7 +4759,6 @@ class CanvasPixels extends React.Component {
                 }else if(tool === "PENCIL PERFECT") {
 
                     _last_action_timestamp = Date.now();
-                    const new_drawn_pxl_indexes = palette_and_list[2];
 
                     _paint_or_select_hover_pxl_indexes = new Set([..._paint_or_select_hover_pxl_indexes, ...new_drawn_pxl_indexes]);
 
@@ -5596,7 +5583,7 @@ class CanvasPixels extends React.Component {
                     _previous_imported_image_pxls_positioned_keyset: new Set(imported_image_pxls_positioned_keyset),
                     _previous_image_imported_resizer_index: parseInt(image_imported_resizer_index),
                     _old_selection_pair_highlight: Boolean(_selection_pair_highlight),
-                    _old_layers: Array.from(_layers).map((l) => {
+                    _old_layers: _layers.map((l) => {
                         return {
                             id: parseInt(l.id),
                             hash: String(l.hash),
@@ -5605,8 +5592,8 @@ class CanvasPixels extends React.Component {
                             opacity: parseInt(l.opacity),
                         }
                     }),
-                    _old_pxls: Array.from(_s_pxls_layer_index),
-                    _old_pxl_colors: Uint32Array.from(_s_pxl_colors[_layer_index]),
+                    _old_pxls: _s_pxls[_layer_index],
+                    _old_pxl_colors: _s_pxl_colors[_layer_index],
                     _old_pxl_width: parseInt(pxl_width),
                     _old_pxl_height: parseInt(pxl_height),
                     _previous_mine_player_index: parseInt(_mine_player_index),
@@ -5622,14 +5609,6 @@ class CanvasPixels extends React.Component {
                     }, !has_shown_canvas_once, !has_shown_canvas_once); // Enable to cancel in order to know that a frame has not been drawn
                 });
             }
-        }
-    };
-
-    _notify_fps = () => {
-
-        if(this.props.on_fps_change) {
-
-            this.props.on_fps_change(Math.round(w_canvas_pixels._previous_cpaf_fps));
         }
     };
 
@@ -5655,7 +5634,7 @@ class CanvasPixels extends React.Component {
                     pxl_width: parseInt(pxl_width),
                     pxl_height: parseInt(pxl_height),
                     _original_image_index: parseInt(_original_image_index),
-                    _layers: Array.from(layers).map(function(l) {
+                    _layers: layers.map(function(l) {
                         return {
                             id: parseInt(l.id),
                             hash: String(l.hash),
@@ -5665,8 +5644,8 @@ class CanvasPixels extends React.Component {
                         };
                     }),
                     _layer_index: parseInt(_layer_index),
-                    _s_pxls: Array.from(_s_pxls).map((a) => Array.from(a)),
-                    _s_pxl_colors: Array.from(_s_pxl_colors).map((a) => Uint32Array.from(a)),
+                    _s_pxls: _s_pxls.map((a) => Array.from(a)),
+                    _s_pxl_colors: _s_pxl_colors.map((a) => Uint32Array.from(a)),
                     _pxl_indexes_of_selection: new Set(_pxl_indexes_of_selection),
                     _pencil_mirror_index: parseInt(_pencil_mirror_index),
                 });
@@ -5680,14 +5659,11 @@ class CanvasPixels extends React.Component {
                 _json_state_history.previous_history_position = 0;
                 _json_state_history.history_position = 1;
 
-                this.setState({_json_state_history, _saved_json_state_history_timestamp_from_drawing: Date.now()}, () => {
-
-                    this._notify_can_undo_redo_change();
-                    if(set_anyway_if_changes_callback !== null) {
-                        set_anyway_if_changes_callback(_json_state_history, true);
-                    }
-                    _json_state_history = null;
-                });
+                this._notify_can_undo_redo_change(_json_state_history);
+                this.setState({_json_state_history, _saved_json_state_history_timestamp_from_drawing: Date.now()});
+                if(set_anyway_if_changes_callback !== null) {
+                    set_anyway_if_changes_callback(_json_state_history, true);
+                }
                 return true;
 
             }else if(layers_changed){
@@ -5716,15 +5692,11 @@ class CanvasPixels extends React.Component {
                         _json_state_history.history_position = parseInt(_json_state_history.state_history.length);
                     }
 
-                    this.setState({_json_state_history, _saved_json_state_history_timestamp_from_drawing: Date.now()}, () => {
-
-                        this._notify_can_undo_redo_change();
-                        if(set_anyway_if_changes_callback !== null) {
-                            set_anyway_if_changes_callback(_json_state_history, true);
-                        }
-                        _json_state_history = null;
-                    });
-
+                    this._notify_can_undo_redo_change(_json_state_history);
+                    this.setState({_json_state_history, _saved_json_state_history_timestamp_from_drawing: Date.now()});
+                    if(set_anyway_if_changes_callback !== null) {
+                        set_anyway_if_changes_callback(_json_state_history, true);
+                    }
                     return true;
                 }else  {
 
@@ -5732,17 +5704,14 @@ class CanvasPixels extends React.Component {
                     if(set_anyway_if_changes_callback !== null) {
                         set_anyway_if_changes_callback(_json_state_history, false);
                     }
-                    _json_state_history = null;
                     return false;
                 }
             }else {
 
-                this._notify_can_undo_redo_change();
                 if(set_anyway_if_changes_callback !== null) {
 
                     set_anyway_if_changes_callback(_json_state_history, false);
                 }
-                _json_state_history = null;
                 return false;
             }
         }, Date.now(), true);
@@ -5773,7 +5742,7 @@ class CanvasPixels extends React.Component {
 
                 this.setState({_notified_position_at: now}, () => {
 
-                    this.props.onPositionChange(position);
+                    this.props.onPositionChange(position, window.w_canvas_pixels._previous_cpaf_fps);
                 });
             }else if(now < date + 150){
 
@@ -5834,10 +5803,10 @@ class CanvasPixels extends React.Component {
         if(this.props.onImageImportComplete) { this.props.onImageImportComplete(); }
     };
 
-    _notify_can_undo_redo_change = () => {
+    _notify_can_undo_redo_change = (_json_state_history) => {
 
-        const can_undo = this._can_undo();
-        const can_redo = this._can_redo();
+        const can_undo = this._can_undo(_json_state_history);
+        const can_redo = this._can_redo(_json_state_history);
 
         if(this.props.onCanUndoRedoChange) { this.props.onCanUndoRedoChange(can_undo, can_redo); }
     };
@@ -5854,19 +5823,27 @@ class CanvasPixels extends React.Component {
         this.import_JS_state(JSON.parse(json));
     };
 
-    import_JS_state = async(js, callback_function) => {
+    import_JS_state = (js, callback_function) => {
 
         let _json_state_history = Object.assign({}, {
             history_position: parseInt(js._json_state_history.history_position),
             previous_history_position: parseInt(js._json_state_history.previous_history_position),
-            state_history: Array.from(js._json_state_history.state_history).map((state) => Object.assign({}, {
+            state_history: js._json_state_history.state_history.map((state) => Object.assign({}, {
                 _original_image_index: parseInt(state._original_image_index),
                 pxl_width: parseInt(state.pxl_width),
                 pxl_height: parseInt(state.pxl_height),
                 _pxl_indexes_of_selection: new Set(Boolean(state._pxl_indexes_of_selection.length) ? state._pxl_indexes_of_selection : []),
-                _s_pxl_colors: Array.from(state._s_pxl_colors).map((a) => Uint32Array.from(Object.values(a).map((i) => this._format_color(i, true)))),
-                _s_pxls: Array.from(state._s_pxls).map((a) => Array.from(Object.values(a).map((i) => parseInt(i)))),
-                _layers: Array.from(state._layers),
+                _s_pxl_colors: state._s_pxl_colors.map((a) => Uint32Array.from(Object.values(a).map((i) => this._format_color(i, true)))),
+                _s_pxls: state._s_pxls.map((a) => Array.from(Object.values(a).map((i) => parseInt(i)))),
+                _layers: state._layers.map((l) => {
+                    return {
+                        id: parseInt(l.id),
+                        hash: String(l.hash),
+                        name: String(l.name),
+                        hidden: Boolean(l.hidden),
+                        opacity: parseInt(l.opacity),
+                    };
+                }),
                 _layer_index: parseInt(state._layer_index),
                 _pencil_mirror_index: parseInt(state._pencil_mirror_index),
                 _id: parseInt(state._pencil_mirror_index)
@@ -5882,7 +5859,7 @@ class CanvasPixels extends React.Component {
             _base64_original_images: Array.from(js._base64_original_images),
             _original_image_index: parseInt(_original_image_index),
             _saved_json_state_history_timestamp_from_drawing: 0,
-            _layers: Array.from(_layers).map((l) => {
+            _layers: _layers.map((l) => {
                 return {
                     id: parseInt(l.id),
                     hash: String(l.hash),
@@ -5892,8 +5869,8 @@ class CanvasPixels extends React.Component {
                 }
             }),
             _layer_index: parseInt(_layer_index),
-            _s_pxls: Array.from(_s_pxls).map((a) => Array.from(Object.values(a).map((i) => parseInt(i)))),
-            _s_pxl_colors: Array.from(_s_pxl_colors).map((a) => Uint32Array.from(Object.values(a).map((i) => this._format_color(i, true)))),
+            _s_pxls: _s_pxls.map((a) => Array.from(Object.values(a).map((i) => parseInt(i)))),
+            _s_pxl_colors: _s_pxl_colors.map((a) => Uint32Array.from(Object.values(a).map((i) => this._format_color(i, true)))),
             _pxl_indexes_of_selection: new Set(_pxl_indexes_of_selection),
             _pencil_mirror_index: parseInt(_pencil_mirror_index),
             _json_state_history: _json_state_history,
@@ -5944,11 +5921,14 @@ class CanvasPixels extends React.Component {
         });
     };
 
-    _can_undo = () => {
+    _can_undo = (_json_state_history) => {
 
-        const { _json_state_history } = this.state;
+        if(typeof _json_state_history === "undefined") {
 
-        return _json_state_history.history_position > 1;
+            _json_state_history = this.state._json_state_history;
+        }
+
+        return Boolean(_json_state_history.history_position > 1);
     };
 
     nothing_happened_undo = () => {
@@ -5966,7 +5946,7 @@ class CanvasPixels extends React.Component {
 
         this._maybe_save_state((_json_state_history, saved) => {
 
-            if(this._can_undo()){
+            if(this._can_undo(_json_state_history)){
 
                 _json_state_history.previous_history_position = parseInt(_json_state_history.history_position);
                 _json_state_history.history_position -= 1;
@@ -5979,7 +5959,7 @@ class CanvasPixels extends React.Component {
                     pxl_width: parseInt(pxl_width),
                     pxl_height: parseInt(pxl_height),
                     _original_image_index: parseInt(_original_image_index),
-                    _layers: Array.from(_layers).map(function(l) {
+                    _layers: _layers.map(function(l) {
                         return {
                             id: parseInt(l.id),
                             hash: String(l.hash),
@@ -5989,8 +5969,8 @@ class CanvasPixels extends React.Component {
                         };
                     }),
                     _layer_index: parseInt(_layer_index),
-                    _s_pxls: Array.from(_s_pxls).map((a) => Array.from(a)),
-                    _s_pxl_colors: Array.from(_s_pxl_colors).map((a) => Uint32Array.from(a)),
+                    _s_pxls: _s_pxls.map((a) => Array.from(a)),
+                    _s_pxl_colors: _s_pxl_colors.map((a) => Uint32Array.from(a)),
                     _pxl_indexes_of_selection: new Set(_pxl_indexes_of_selection),
                     _pencil_mirror_index: parseInt(_pencil_mirror_index),
                     _json_state_history: _json_state_history,
@@ -6022,16 +6002,21 @@ class CanvasPixels extends React.Component {
         });
     };
 
-    _can_redo = () => {
+    _can_redo = (_json_state_history) => {
 
-        return this.state._json_state_history.state_history.length > this.state._json_state_history.history_position;
+        if(typeof _json_state_history === "undefined") {
+
+            _json_state_history = this.state._json_state_history;
+        }
+
+        return Boolean(_json_state_history.state_history.length > _json_state_history.history_position);
     }
 
     redo = () => {
 
         this._maybe_save_state((_json_state_history, saved) => {
 
-            if (this._can_redo()) {
+            if (this._can_redo(_json_state_history)) {
 
                 _json_state_history.previous_history_position = parseInt(_json_state_history.history_position);
                 _json_state_history.history_position += 1;
@@ -6055,7 +6040,7 @@ class CanvasPixels extends React.Component {
                     pxl_width: parseInt(pxl_width),
                     pxl_height: parseInt(pxl_height),
                     _original_image_index: parseInt(_original_image_index),
-                    _layers: Array.from(_layers).map(function(l) {
+                    _layers: _layers.map(function(l) {
                         return {
                             id: parseInt(l.id),
                             hash: String(l.hash),
@@ -6065,8 +6050,8 @@ class CanvasPixels extends React.Component {
                         };
                     }),
                     _layer_index: parseInt(_layer_index),
-                    _s_pxls: Array.from(_s_pxls).map((a) => Array.from(a)),
-                    _s_pxl_colors: Array.from(_s_pxl_colors).map((a) => Uint32Array.from(a)),
+                    _s_pxls: _s_pxls.map((a) => Array.from(a)),
+                    _s_pxl_colors: _s_pxl_colors.map((a) => Uint32Array.from(a)),
                     _pxl_indexes_of_selection: new Set(_pxl_indexes_of_selection),
                     _pencil_mirror_index: parseInt(_pencil_mirror_index),
                     _json_state_history: _json_state_history,
@@ -7275,11 +7260,10 @@ class CanvasPixels extends React.Component {
         let { _s_pxls, _s_pxl_colors } = this.state;
 
         const color_number = _s_pxl_colors[_layer_index].length;
+        this._remove_close_pxl_colors(Array.from(_s_pxls[_layer_index]), Uint32Array.from(_s_pxl_colors[_layer_index]), threshold).then(([pxls, pxl_colors]) => {
 
-        (async () => {
-            let cleaned = await this._remove_close_pxl_colors(Uint32Array.from(_s_pxls[_layer_index]), Uint32Array.from(_s_pxl_colors[_layer_index]), threshold);
-            _s_pxls[_layer_index] = Array.from(cleaned[0]);
-            _s_pxl_colors[_layer_index] = Uint32Array.from(cleaned[1]);
+            _s_pxls[_layer_index] = Array.from(pxls);
+            _s_pxl_colors[_layer_index] = Uint32Array.from(pxl_colors);
 
             const color_remaining_number = _s_pxl_colors[_layer_index].length;
             let results = {
@@ -7292,7 +7276,7 @@ class CanvasPixels extends React.Component {
                 this._update_canvas();
                 callback_function(results);
             });
-        })();
+        });
     };
 
     _auto_adjust_contrast = (intensity = 1) => {
@@ -7374,42 +7358,39 @@ class CanvasPixels extends React.Component {
 
     _pxl_to_vignette = (pxls, pxl_colors, color, intensity, callback_function) => {
 
-        (async () => {
+        color = this._format_color(color, true);
 
-            color = this._format_color(color, true);
+        const {pxl_width, pxl_height } = this.state;
 
-            const {pxl_width, pxl_height } = this.state;
+        const [ctx] = this._get_new_ctx_from_canvas(pxl_width, pxl_height);
 
-            const [ctx] = this._get_new_ctx_from_canvas(pxl_width, pxl_height);
+        // Create a radial gradient
+        // The inner circle is at x=110, y=90, with radius=30
+        // The outer circle is at x=100, y=100, with radius=70
+        const max_width_height = Math.max(pxl_width, pxl_height);
+        const inverted_color = this._invert_hex_color(color);
 
-            // Create a radial gradient
-            // The inner circle is at x=110, y=90, with radius=30
-            // The outer circle is at x=100, y=100, with radius=70
-            const max_width_height = Math.max(pxl_width, pxl_height);
-            const inverted_color = this._invert_hex_color(color);
+        let gradient = ctx.createRadialGradient(pxl_width / 2,pxl_height / 2,0, pxl_width / 2,pxl_height / 2, max_width_height / 2);
 
-            let gradient = ctx.createRadialGradient(pxl_width / 2,pxl_height / 2,0, pxl_width / 2,pxl_height / 2, max_width_height / 2);
+        gradient.addColorStop(1, color);
+        gradient.addColorStop(0.85, this._blend_colors(color, inverted_color, 0.75));
+        gradient.addColorStop(0, inverted_color);
 
-            gradient.addColorStop(1, color);
-            gradient.addColorStop(0.85, this._blend_colors(color, inverted_color, 0.75));
-            gradient.addColorStop(0, inverted_color);
+        // Fill with gradient
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, pxl_width, pxl_height);
 
-            // Fill with gradient
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, pxl_width, pxl_height);
+        const canvas_image_data = ctx.getImageData(0, 0, pxl_width, pxl_height);
+        let {new_pxls, new_pxl_colors} = this._get_pixels_palette_and_list_from_image_data(canvas_image_data, true, 0);
 
-            const canvas_image_data = ctx.getImageData(0, 0, pxl_width, pxl_height);
-            let {new_pxls, new_pxl_colors} = this._get_pixels_palette_and_list_from_image_data(canvas_image_data, true, 0);
+        this._remove_close_pxl_colors(new_pxls, new_pxl_colors, 255/6/255, null, 18).then( ([new_pxls, new_pxl_colors]) => {
 
-            let cleaned = await this._remove_close_pxl_colors(new_pxls, new_pxl_colors, 255/6/255, null, 18);
-            new_pxls = cleaned[0];
-            new_pxl_colors = cleaned[1];
-            [ new_pxls, new_pxl_colors ] = this._pxl_colors_to_alpha(new_pxls, new_pxl_colors, inverted_color, 1);
+            [new_pxls, new_pxl_colors] = this._pxl_colors_to_alpha(new_pxls, new_pxl_colors, inverted_color, 1);
 
-            const [ r, g, b, a ] = this._get_rgba_from_Uint32(color);
+            const [r, g, b, a] = this._get_rgba_from_Uint32(color);
             new_pxl_colors = new_pxl_colors.map((pxl_color, color_index) => {
 
-                const [ p_r, p_g, p_b, p_a ] = this._get_rgba_from_Uint32(pxl_color);
+                const [p_r, p_g, p_b, p_a] = this._get_rgba_from_Uint32(pxl_color);
                 return this._get_Uint32_color_from_rgba_values(r, g, b, p_a);
             });
 
@@ -7421,7 +7402,7 @@ class CanvasPixels extends React.Component {
 
                 const new_color = this._blend_colors(old_pxl_color, pxl_color, intensity, false, false, true);
 
-                if(brand_new_pxl_colors.indexOf(new_color) === -1) {
+                if (brand_new_pxl_colors.indexOf(new_color) === -1) {
 
                     brand_new_pxl_colors.push(new_color);
                 }
@@ -7429,13 +7410,12 @@ class CanvasPixels extends React.Component {
                 const new_color_index = brand_new_pxl_colors.indexOf(new_color);
 
                 return new_color_index;
-            })
+            });
 
             new_pxl_colors = brand_new_pxl_colors;
 
             callback_function(Array.of(Array.from(new_pxls), Uint32Array.from(new_pxl_colors)));
-
-        })();
+        });
     };
 
     _to_vignette = (color, intensity) => {
@@ -8069,10 +8049,10 @@ class CanvasPixels extends React.Component {
 
     };
 
-    _remove_close_pxl_colors = async(pxls = [], pxl_colors  = [], bucket_threshold = null, threshold_steps = null, color_number_bonus = 54, best_color_number = null, callback_function = null) => {
+    _remove_close_pxl_colors = async(pxls = [], pxl_colors  = [], bucket_threshold = null, threshold_steps = null, color_number_bonus = 54, best_color_number = null) => {
 
         const this_state_bucket_threshold = this.state.bucket_threshold;
-        let response = pool.exec(remove_close_pxl_colors_process_function, [
+        return pool.exec(window.remove_close_pxl_colors_process_function, [
             pxls,
             pxl_colors,
             bucket_threshold,
@@ -8082,7 +8062,7 @@ class CanvasPixels extends React.Component {
             this_state_bucket_threshold,
         ]).catch((e) => {
 
-            return remove_close_pxl_colors_process_function(
+            return window.remove_close_pxl_colors_process_function(
                 pxls,
                 pxl_colors,
                 bucket_threshold,
@@ -8093,13 +8073,6 @@ class CanvasPixels extends React.Component {
             );
 
         }).timeout(120 * 1000);
-
-        if(callback_function !== null) {
-
-            callback_function(await response);
-        }
-
-        return response;
     };
 
     _remove_duplicate_pxl_colors = (_pxls, _pxl_colors) => {
@@ -8352,7 +8325,7 @@ class CanvasPixels extends React.Component {
         const {_force_updated_timestamp } = this.state;
         const now = Date.now();
 
-        const min_fps = w_canvas_pixels._is_mobile_or_tablet ? 25: 75;
+        const min_fps = window.w_canvas_pixels._is_mobile_or_tablet ? 25: 75;
         const nevertheless_force = Boolean((_force_updated_timestamp + 1000 / min_fps) < now);
         const nevertheless_for_sure_force = Boolean((_force_updated_timestamp + 1000 / (min_fps / 10)) < now);
 
@@ -8451,7 +8424,6 @@ class CanvasPixels extends React.Component {
             show_original_image_in_background,
             show_transparent_image_in_background,
             className,
-            _base64_original_images,
             _original_image_index,
             scale,
             scale_move_x,
@@ -8482,11 +8454,11 @@ class CanvasPixels extends React.Component {
 
         let { perspective_coordinate } = this.state;
 
-        const p = w_canvas_pixels._is_mobile_or_tablet ? 0: perspective / 4;
+        const p = window.w_canvas_pixels._is_mobile_or_tablet ? 0: perspective / 4;
 
-        let background_image_style_props = show_original_image_in_background && typeof _base64_original_images[_original_image_index] !== "undefined" ?
+        let background_image_style_props = show_original_image_in_background && typeof this.state._base64_original_images[_original_image_index] !== "undefined" ?
             {
-                background: `center / cover no-repeat url("${_base64_original_images[_original_image_index]}")`,
+                background: `center / cover no-repeat url("${this.state._base64_original_images[_original_image_index]}")`,
             }:
             show_transparent_image_in_background ?
                 {
@@ -8504,7 +8476,7 @@ class CanvasPixels extends React.Component {
         const canvas_wrapper_width = Math.round(pxl_width * _screen_zoom_ratio * scale);
         const canvas_wrapper_height = Math.round(pxl_height * _screen_zoom_ratio * scale);
 
-        const l = w_canvas_pixels._is_mobile_or_tablet ? 0: light * p * 2;
+        const l = window.w_canvas_pixels._is_mobile_or_tablet ? 0: light * p * 2;
 
         const filter_force = (1 - (p/200) * l) + (
                                     (
@@ -8648,7 +8620,7 @@ class CanvasPixels extends React.Component {
                         contain: "layout size style paint",
                         zIndex: 10,
                     }}></div>
-                    {!w_canvas_pixels._is_mobile_or_tablet && <div style={{
+                    {!window.w_canvas_pixels._is_mobile_or_tablet && <div style={{
                         zIndex: 1,
                         color: canvas_wrapper_background_color,
                         textAlign: "center",

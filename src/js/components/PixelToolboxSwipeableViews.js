@@ -272,7 +272,6 @@ class PixelToolboxSwipeableViews extends React.Component {
     componentWillReceiveProps(new_props) {
 
         const {
-            canvas,
             view_name_index,
             previous_view_name_index,
             view_names,
@@ -304,7 +303,6 @@ class PixelToolboxSwipeableViews extends React.Component {
         const must_compute_filter = Boolean(view_name_index !== new_props.view_name_index || layer_index !== new_props.layer_index) && new_props.view_name_index === 6;
 
         if (Boolean(new_props.should_update) && (
-            Boolean(canvas) !== Boolean(new_props.canvas) ||
             view_name_index !== new_props.view_name_index ||
             previous_view_name_index !== new_props.previous_view_name_index ||
             view_names !== new_props.view_names ||
@@ -348,18 +346,20 @@ class PixelToolboxSwipeableViews extends React.Component {
                     const w = img.naturalWidth || img.width;
                     const h = img.naturalHeight || img.height;
                     const ar = Math.round(parseFloat(w/h) * 100) / 100;
-                    this.setState({_filter_ar_on_one: String(ar)});
+                    this.setState({_filter_ar_on_one: String(ar)}, () => {
+
+                        this.forceUpdate();
+                    });
                 });
                 img.src = src;
-            }else if(must_compute_filter) {
-
-                try {
-
-                    this.state.canvas.compute_filters_preview();
-                }catch (e){}
             }
 
             this.setState({...new_props, _filters_changed}, () => {
+
+                if(must_compute_filter) {
+
+                    try { this.state.canvas.compute_filters_preview() }catch (e){}
+                }
 
                 this.forceUpdate();
             });
@@ -704,25 +704,25 @@ class PixelToolboxSwipeableViews extends React.Component {
                         },
                         {
                             icon: <FileDownloadIcon/>,
-                            text: "Render (16x size)",
-                            sub: "Upscale 16x",
+                            text: "Render (6x size)",
+                            sub: "Upscale 6x",
                             on_click: () => {
-                                this._download_png(16)
+                                this._download_png(6)
                             }
                         },
                         {
                             icon: <FileDownloadIcon/>,
-                            text: "Render (32x size)",
+                            text: "Render (12x size)",
                             sub: "[CTRL + S]", on_click: () => {
-                                this._download_png(32)
+                                this._download_png(12)
                             }
                         },
                         {
                             icon: <FileDownloadIcon/>,
-                            text: "Render (48x size)",
-                            sub: "Upscale 48x",
+                            text: "Render (24x size)",
+                            sub: "Upscale 24x",
                             on_click: () => {
-                                this._download_png(32)
+                                this._download_png(24)
                             }
                         }
                     ]
@@ -1390,7 +1390,7 @@ class PixelToolboxSwipeableViews extends React.Component {
 
                         const f = filters_thumbnail[name] || "";
                         return {
-                            icon: <Avatar style={{filter: `opacity(${String(Boolean(f.length === 0 && name_index !== 0) ? "0.5": "1.0")})`, height: "100%", width: "100%", aspectRatio: `${_filter_ar_on_one} / 1`, border: "4px solid #020529"}} key={String(f.length > 0 ? name+"-loaded": name+"-loading") + "-preview-" + last_filters_hash} variant={"rounded"} src={String(f.length > 0 ? f: filters_thumbnail[filters[0]])} />,
+                            icon: <Avatar className={"pixelated"} style={{filter: `opacity(${String(Boolean(f.length === 0 && name_index !== 0) ? "0.5": "1.0")})`, height: "100%", width: "100%", aspectRatio: `${_filter_ar_on_one} / 1`, border: "4px solid #020529"}} key={String(f.length > 0 ? name+"-loaded": name+"-loading") + "-preview-" + last_filters_hash} variant={"rounded"} src={String(f.length > 0 ? f: filters_thumbnail[filters[0]])} />,
                             text: name,
                             on_click: () => {
                                 canvas.to_filter(name, slider_value);
@@ -1468,7 +1468,7 @@ class PixelToolboxSwipeableViews extends React.Component {
                                                                 <ListItemAvatar>
                                                                     <Avatar variant="square"
                                                                             className={classes.layerThumbnail}
-                                                                            imgProps={{style: {background: `repeating-conic-gradient(rgb(248 248 248 / 100%) 0% 25%, rgb(224 224 224 / 100%) 0% 50%) left top 50% / calc(200% / ${width}) calc(200% / ${height})`}}}
+                                                                            imgProps={{className: "pixelated", style: {background: `repeating-conic-gradient(rgb(248 248 248 / 100%) 0% 25%, rgb(224 224 224 / 100%) 0% 50%) left top 50% / calc(200% / ${width}) calc(200% / ${height})`}}}
                                                                             src={layer.thumbnail}/>
                                                                 </ListItemAvatar>
                                                                 <ListItemText primary={layer.name}/>

@@ -42,8 +42,9 @@ import JamySuspicious from "../icons/JamySuspicious";
 import api from "../utils/api";
 import sound_api from "../utils/sound-api";
 import { update_meta_title } from "../utils/meta-tags";
-import { PAGE_ROUTES, HISTORY } from "../utils/constants";
+import { PAGE_ROUTES } from "../utils/constants";
 import ShareDialog from "../components/ShareDialog";
+import {l} from "../utils/t";
 
 const styles = theme => ({
     root: {
@@ -329,8 +330,17 @@ class Index extends React.Component {
                 this.state._language !== _language ||
                 this.state._selected_currency !== _selected_currency
             ) {
-                document.documentElement.lang = _language;
-                document.body.setAttribute("datainitiated", "true");
+
+                if(this.state._language !== _language) {
+
+                    l(_language);
+                }
+
+                if(this.state._know_the_settings === false) {
+
+                    document.body.setAttribute("datainitiated", "true");
+                }
+
                 this.setState({ _ret, _camo, _onboarding_enabled, _sfx_enabled, _music_enabled, _jamy_enabled, _selected_locales_code, _language, _selected_currency, _know_the_settings: true, _has_played_index_music_counter: parseInt((!this.state._know_the_settings && _music_enabled) ? 1: this.state._has_played_index_music_counter )}, () => {
 
                     this.forceUpdate();
@@ -510,41 +520,19 @@ class Index extends React.Component {
 
     _update_jamy = (state_of_mind, duration) => {
 
-        this.setState({_jamy_state_of_mind: state_of_mind}, () => {
+        const jamy_states = [
+            {som: state_of_mind, dur: 0},
+            {som: "shocked", dur: duration},
+            {som: "suspicious", dur: duration+750},
+            {som: "shocked", dur: duration+750+75}
+        ];
 
-            this.forceUpdate(() => {
+        jamy_states.forEach((js) => {
 
-                setTimeout(() => {
+            setTimeout(() => {
 
-                    this.setState({_jamy_state_of_mind: "shocked"}, () => {
-
-                        this.forceUpdate(() => {
-
-                            setTimeout(() => {
-
-                                this.setState({_jamy_state_of_mind: "suspicious"}, () => {
-
-                                    this.forceUpdate(() => {
-                                        setTimeout(() => {
-
-                                            this.setState({_jamy_state_of_mind: "shocked"}, () => {
-
-                                                this.forceUpdate();
-                                            });
-
-                                        }, 75);
-                                    });
-
-                                });
-
-                            }, 750);
-
-                        });
-
-                    });
-                }, duration);
-
-            });
+                this.setState({_jamy_state_of_mind: js.som}, this.forceUpdate);
+            }, js.dur)
         });
     }
 

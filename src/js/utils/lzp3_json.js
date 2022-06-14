@@ -344,12 +344,12 @@ Public License instead of this License.
 // 97% SOURCE: https://github.com/eladkarako/compressjs-flattened/blob/master/Lzp3_joined_.js
 
 const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
-const lzp3_json_process_function = AsyncFunction(`var t=async function(t,e){"use strict";var r,i,s,o,n,h,a,u,c,f;if(r=function(){var t=Math.pow(2,31),e=t>>>8,r=Math.pow(2,32)-1,i=function(e){this.low=0,this.range=t,this.buffer=0,this.help=0,this.bytecount=0,this.stream=e},s=function(i,s){for(;i.range<=e;){if(i.low<255<<23){for(s.writeByte(i.buffer);i.help;i.help--)s.writeByte(255);i.buffer=i.low>>>23&255}else if(i.low&t){for(s.writeByte(i.buffer+1);i.help;i.help--)s.writeByte(0);i.buffer=i.low>>>23&255}else if(i.help++,i.help>r)throw new Error("Too many bytes outstanding, file too large!");i.range=i.range<<8>>>0,i.low=(i.low<<8&t-1)>>>0,i.bytecount++}};i.prototype.encodeStart=function(e,r){this.low=0,this.range=t,this.buffer=e,this.help=0,this.bytecount=r},i.prototype.encodeFreq=function(t,e,r){s(this,this.stream);var i=this.range/r>>>0,o=i*e;this.low+=o,e+t<r?this.range=i*t:this.range-=o},i.prototype.encodeShift=function(t,e,r){s(this,this.stream);var i=this.range>>>r,o=i*e;this.low+=o,e+t>>>r?this.range-=o:this.range=i*t},i.prototype.encodeBit=function(t){this.encodeShift(1,t?1:0,1)},i.prototype.encodeByte=function(t){this.encodeShift(1,t,8)},i.prototype.encodeShort=function(t){this.encodeShift(1,t,16)},i.prototype.encodeFinish=function(){var t=this.stream;s(this,t),this.bytecount+=5;var r=this.low>>>23;if((this.low&e-1)>=(16777215&this.bytecount)>>>1&&r++,r>255)for(t.writeByte(this.buffer+1);this.help;this.help--)t.writeByte(0);else for(t.writeByte(this.buffer);this.help;this.help--)t.writeByte(255);return t.writeByte(255&r),t.writeByte(this.bytecount>>>16&255),t.writeByte(this.bytecount>>>8&255),t.writeByte(255&this.bytecount),this.bytecount},i.prototype.decodeStart=function(t){var e=t?0:this.stream.readByte();return"number"!=typeof e||e<0||(this.buffer=this.stream.readByte(),this.low=this.buffer>>>1,this.range=128),e};var o=function(t,r){for(;t.range<=e;)t.low=t.low<<8|t.buffer<<7&255,t.buffer=r.readByte(),t.low|=t.buffer>>>1,t.low=t.low>>>0,t.range=t.range<<8>>>0};return i.prototype.decodeCulFreq=function(t){o(this,this.stream),this.help=this.range/t>>>0;var e=this.low/this.help>>>0;return e>=t?t-1:e},i.prototype.decodeCulShift=function(t){o(this,this.stream),this.help=this.range>>>t;var e=this.low/this.help>>>0;return e>>>t?(1<<t)-1:e},i.prototype.decodeUpdate=function(t,e,r){var i=this.help*e;this.low-=i,e+t<r?this.range=this.help*t:this.range-=i},i.prototype.decodeBit=function(){var t=this.decodeCulShift(1);return this.decodeUpdate(1,t,2),t},i.prototype.decodeByte=function(){var t=this.decodeCulShift(8);return this.decodeUpdate(1,t,256),t},i.prototype.decodeShort=function(){var t=this.decodeCulShift(16);return this.decodeUpdate(1,t,65536),t},i.prototype.decodeFinish=function(){o(this,this.stream)},i.prototype.writeBit=i.prototype.encodeBit,i.prototype.readBit=i.prototype.decodeBit,i.prototype.writeByte=i.prototype.encodeByte,i.prototype.readByte=i.prototype.decodeByte,i}(),i=function(){var t=function(){};return t.prototype.readByte=function(){var t=[0];return 0===this.read(t,0,1)?(this._eof=!0,-1):t[0]},t.prototype.read=function(t,e,r){for(var i,s=0;s<r;){if(-1===(i=this.readByte())){this._eof=!0;break}t[e+s++]=i}return s},t.prototype.eof=function(){return!!this._eof},t.prototype.seek=function(t){throw new Error("Stream is not seekable.")},t.prototype.tell=function(){throw new Error("Stream is not seekable.")},t.prototype.writeByte=function(t){var e=[t];this.write(e,0,1)},t.prototype.write=function(t,e,r){var i;for(i=0;i<r;i++)this.writeByte(t[e+i]);return r},t.prototype.flush=function(){},t.EOF=-1,t}(),s=function(){var t=function(t){(function(){var e=256;this.readBit=function(){if(0==(255&e)){var r=t.readByte();if(r===i.EOF)return this._eof=!0,r;e=r<<1|1}var s=256&e?1:0;return e<<=1,s},this.seekBit=function(t){var e=t>>>3,r=t-8*e;this.seek(e),this._eof=!1,this.readBits(r)},this.tellBit=function(){for(var r=8*t.tell(),i=e;0!=(255&i);)r--,i<<=1;return r},this.readByte=function(){return 0==(255&e)?t.readByte():this.readBits(8)},this.seek=function(r){t.seek(r),e=256}}).call(this),function(){var e=1;this.writeBit=function(r){e<<=1,r&&(e|=1),256&e&&(t.writeByte(255&e),e=1)},this.writeByte=function(r){1===e?t.writeByte(r):t.writeBits(8,r)},this.flush=function(){for(;1!==e;)this.writeBit(0);t.flush&&t.flush()}}.call(this)};return t.EOF=i.EOF,(t.prototype=Object.create(i.prototype)).readBits=function(t){var e,r=0;if(t>31)return(r=65536*this.readBits(t-16))+this.readBits(16);for(e=0;e<t;e++)r<<=1,this.readBit()>0&&r++;return r},t.prototype.writeBits=function(t,e){if(t>32){var r=65535&e,i=(e-r)/65536;return this.writeBits(t-16,i),void this.writeBits(16,r)}var s;for(s=t-1;s>=0;s--)this.writeBit(e>>>s&1)},t}(),o=function(){var t=Object.create(null),e=i.EOF;t.coerceInputStream=function(t,r){if("readByte"in t){if(r&&!("read"in t)){var s=t;(t=new i).readByte=function(){var t=s.readByte();return t===e&&(this._eof=!0),t},"size"in s&&(t.size=s.size),"seek"in s&&(t.seek=function(t){s.seek(t),this._eof=!1}),"tell"in s&&(t.tell=s.tell.bind(s))}}else{var o=t;(t=new i).size=o.length,t.pos=0,t.readByte=function(){return this.pos>=this.size?e:o[this.pos++]},t.read=function(t,e,r){for(var i=0;i<r&&this.pos<o.length;)t[e++]=o[this.pos++],i++;return i},t.seek=function(t){this.pos=t},t.tell=function(){return this.pos},t.eof=function(){return this.pos>=o.length}}return t};var r=function(t,e){this.buffer=t,this.resizeOk=e,this.pos=0};(r.prototype=Object.create(i.prototype)).writeByte=function(e){if(this.resizeOk&&this.pos>=this.buffer.length){var r=t.makeU8Buffer(2*this.buffer.length);r.set(this.buffer),this.buffer=r}this.buffer[this.pos++]=e},r.prototype.getBuffer=function(){if(this.pos!==this.buffer.length){if(!this.resizeOk)throw new TypeError("outputsize does not match decoded input");var e=t.makeU8Buffer(this.pos);e.set(this.buffer.subarray(0,this.pos)),this.buffer=e}return this.buffer},t.coerceOutputStream=function(e,i){var s={stream:e,retval:e};if(e){if("object"==typeof e&&"writeByte"in e)return s;"number"==typeof i?(console.assert(i>=0),s.stream=new r(t.makeU8Buffer(i),!1)):s.stream=new r(e,!1)}else s.stream=new r(t.makeU8Buffer(16384),!0);return Object.defineProperty(s,"retval",{get:s.stream.getBuffer.bind(s.stream)}),s},t.compressFileHelper=function(e,r,i){return function(s,o,n){s=t.coerceInputStream(s);var h,a,u=t.coerceOutputStream(o,o);for(o=u.stream,h=0;h<e.length;h++)o.writeByte(e.charCodeAt(h));if(a="size"in s&&s.size>=0?s.size:-1,i){var c=t.coerceOutputStream([]);for(t.writeUnsignedNumber(c.stream,a+1),c=c.retval,h=0;h<c.length-1;h++)o.writeByte(c[h]);i=c[c.length-1]}else t.writeUnsignedNumber(o,a+1);return r(s,o,a,n,i),u.retval}},t.decompressFileHelper=function(e,r){return function(i,s){var o;for(i=t.coerceInputStream(i),o=0;o<e.length;o++)if(e.charCodeAt(o)!==i.readByte())throw new Error("Bad magic");var n=t.readUnsignedNumber(i)-1,h=t.coerceOutputStream(s,n);return s=h.stream,r(i,s,n),h.retval}},t.compressWithModel=function(t,r,i){for(var s=0;s!==r;){var o=t.readByte();if(o===e){i.encode(256);break}i.encode(o),s++}},t.decompressWithModel=function(t,e,r){for(var i=0;i!==e;){var s=r.decode();if(256===s)break;t.writeByte(s),i++}},t.writeUnsignedNumber=function(t,e){console.assert(e>=0);var r,i=[];do{i.push(127&e),e=Math.floor(e/128)}while(0!==e);for(i[0]|=128,r=i.length-1;r>=0;r--)t.writeByte(i[r]);return t},t.readUnsignedNumber=function(t){for(var e,r=0;;){if(128&(e=t.readByte())){r+=127&e;break}r=128*(r+e)}return r};var s=function(t){for(var e=0,r=t.length;e<r;e++)t[e]=0;return t},o=function(t){return s(new Array(t))},n=function(t){return t};"undefined"!=typeof process&&Array.prototype.some.call(new Uint32Array(128),(function(t){return 0!==t}))&&(n=s),t.makeU8Buffer="undefined"!=typeof Uint8Array?function(t){return n(new Uint8Array(t))}:"undefined"!=typeof Buffer?function(t){var e=new Buffer(t);return e.fill(0),e}:o,t.makeU16Buffer="undefined"!=typeof Uint16Array?function(t){return n(new Uint16Array(t))}:o,t.makeU32Buffer="undefined"!=typeof Uint32Array?function(t){return n(new Uint32Array(t))}:o,t.makeS32Buffer="undefined"!=typeof Int32Array?function(t){return n(new Int32Array(t))}:o,t.arraycopy=function(t,e){console.assert(t.length>=e.length);for(var r=0,i=e.length;r<i;r++)t[r]=e[r];return t};var h=[0,1,2,2,3,3,3,3,4,4,4,4,4,4,4,4,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8];console.assert(256===h.length);var a=t.fls=function(t){return console.assert(t>=0),t>4294967295?32+a(Math.floor(t/4294967296)):0!=(4294901760&t)?0!=(4278190080&t)?24+h[t>>>24&255]:16+h[t>>>16]:0!=(65280&t)?8+h[t>>>8]:h[t]};return t.log2c=function(t){return 0===t?-1:a(t-1)},t}(),n=function(){var t=function(t,e,r,i){var s,n=o.fls(t-1);for(this.extraStates=+e||0,this.lgDistanceModel=r(1+n+e),this.distanceModel=[],s=2;s<=n;s++){var h=s-1;this.distanceModel[s]=i(1<<h)}};return t.prototype.encode=function(t){if(t<2)this.lgDistanceModel.encode(t+this.extraStates);else{var e=o.fls(t);console.assert(t&1<<e-1),console.assert(e>=2),this.lgDistanceModel.encode(e+this.extraStates);var r=t&(1<<e-1)-1;this.distanceModel[e].encode(r)}},t.prototype.decode=function(){var t=this.lgDistanceModel.decode()-this.extraStates;return t<2?t:(1<<t-1)+this.distanceModel[t].decode()},t}(),h=function(){var t=function(t,e,r,i){this.up=t,this.down=e,this.symbol=r,this.weight=i};t.prototype.clone=function(){return new t(this.up,this.down,this.symbol,this.weight)},t.prototype.set=function(t){this.up=t.up,this.down=t.down,this.symbol=t.symbol,this.weight=t.weight};var e=function(e,r,i,s){var o;for(console.assert(e&&"number"==typeof e),(!r||r>e)&&(r=e),(r<<=1)&&r--,this.table=[],o=0;o<=r;o++)this.table[o]=new t(0,0,0,0);if(this.map=[],this.size=e)for(o=0;o<e;o++)this.map[o]=0;this.esc=this.root=r,i&&(this.readBit=i.readBit.bind(i),this.writeBit=i.writeBit.bind(i)),this.max_weight=s};return e.factory=function(t,r){return function(i){return new e(i,i,t,r)}},e.prototype.split=function(t){var e,r;return(e=this.esc)?(this.esc--,(r=this.esc)?(this.table[e].down=r,this.table[e].weight=1,this.table[r].up=e,this.esc--):(e=0,r=1),this.table[r].symbol=t,this.table[r].weight=0,this.table[r].down=0,this.map[t]=r,this.table[this.esc].weight=0,this.table[this.esc].down=0,this.table[this.esc].up=e,r):(console.assert(!1),0)},e.prototype.leader=function(t){for(var e,r,i=this.table[t].weight,s=t;i===this.table[s+1].weight;)s++;return s===t?t:(r=this.table[t].symbol,e=this.table[s].symbol,this.table[s].symbol=r,this.table[t].symbol=e,this.map[r]=s,this.map[e]=t,s)},e.prototype.slide=function(t){var e,r=t;if(1&(e=this.table[r++].clone()).weight)for(;e.weight>this.table[r+1].weight;)r++;return this.table[t].set(this.table[r]),this.table[r].set(e),this.table[r].up=this.table[t].up,this.table[t].up=e.up,1&e.weight?(this.table[e.down].up=r,this.table[e.down-1].up=r,this.map[this.table[t].symbol]=t):(this.table[this.table[t].down-1].up=t,this.table[this.table[t].down].up=t,this.map[e.symbol]=r),r},e.prototype.increment=function(t){var e;for(this.table[t].up===t+1?(this.table[t].weight+=2,t++):t=this.leader(t);this.table[t].weight+=2,e=this.table[t].up;){for(;this.table[t].weight>this.table[t+1].weight;)t=this.slide(t);t=1&this.table[t].weight?e:this.table[t].up}this.max_weight&&this.table[this.root].weight>=this.max_weight&&this.scale(1)},e.prototype.scale=function(t){for(var e,r,i=this.esc;++i<=this.root;)for(1&this.table[i].weight?(e=-2&this.table[this.table[i].down].weight)&&(e+=1|this.table[this.table[i].down-1].weight):(e=this.table[i].weight>>t&-2)||(this.map[this.table[i].symbol]=0,this.esc++&&this.esc++),this.table[i].weight=e,r=i;e<this.table[--r].weight;)this.slide(r);this.table[this.esc].down=0},e.prototype.sendid=function(t){for(var e,r=0;t--;)this.map[t]||r++;if(e=this.size-Math.floor((this.root-this.esc)/2)-1)do{this.writeBit(1&r),r>>=1}while(e>>=1)},e.prototype.encode=function(t){var e,r,i,s,o=1;if(t<this.size){if((i=s=this.map[t])||(i=this.esc)){for(;r=this.table[i].up;)o<<=1,o|=1&i,i=r;for(;e=1&o,o>>=1;)this.writeBit(e);s||(this.sendid(t),s=this.split(t)),this.increment(s)}}else console.assert(!1)},e.prototype.readid=function(){var t,e,r=0,i=1;if(t=this.size-Math.floor((this.root-this.esc)/2)-1)do{r|=this.readBit()?i:0,i<<=1}while(t>>=1);for(e=0;e<this.size;e++)if(!this.map[e]&&!r--)return e;return console.assert(!1),0},e.prototype.decode=function(){for(var t,e,r=this.root;e=this.table[r].down;)r=this.readBit()?e-1:e;if(r===this.esc){if(!this.esc)return console.assert(!1),0;t=this.readid(),r=this.split(t)}else t=this.table[r].symbol;return this.increment(r),t},e.MAGIC="huff",e.compressFile=o.compressFileHelper(e.MAGIC,(function(t,r,i,n){var h=new s(r),a=256;i<0&&a++;var u=new e(257,a,h,8191);o.compressWithModel(t,i,u),h.flush()})),e.decompressFile=o.decompressFileHelper(e.MAGIC,(function(t,r,i){var n=new s(t),h=256;i<0&&h++;var a=new e(257,h,n,8191);o.decompressWithModel(r,i,a)})),e}(),a=function(){var t=function(t,e){this.bitstream=t,this.bits=o.fls(e-1)};return t.factory=function(e){return function(r){return new t(e,r)}},t.prototype.encode=function(t){var e;for(e=this.bits-1;e>=0;e--){var r=t>>>e&1;this.bitstream.writeBit(r)}},t.prototype.decode=function(){var t,e=0;for(t=this.bits-1;t>=0;t--)e<<=1,this.bitstream.readBit()&&e++;return e},t.MAGIC="nomo",t.compressFile=o.compressFileHelper(t.MAGIC,(function(e,r,i,n){var h=new s(r),a=new t(h,i<0?257:256);o.compressWithModel(e,i,a),h.flush()})),t.decompressFile=o.decompressFileHelper(t.MAGIC,(function(e,r,i){var n=new s(e),h=new t(n,i<0?257:256);o.decompressWithModel(r,i,h)})),t}(),u=function(){var t=65535,e=4294901760,i=16,s=4294901758,n=function(t,e,r,s){var n;for(this.coder=t,this.numSyms=e+1,this.tree=o.makeU32Buffer(2*this.numSyms),this.increment=+s||256,this.max_prob=+r||65280,console.assert(this.max_prob+(this.increment-1)<=65535),console.assert(e<=65535),n=0;n<e;n++)this.tree[this.numSyms+n]=1;this.tree[this.numSyms+n]=0|this.increment<<i,this._sumTree()};return n.factory=function(t,e,r){return function(i){return new n(t,i,e,r)}},n.prototype.clone=function(){var t,e=new n(this.coder,this.size,this.max_prob,this.increment);for(t=1;t<this.tree.length;t++)e.tree[t]=this.tree[t];return e},n.prototype.encode=function(r){var s=this.numSyms+r,o=this.tree[s],n=e,h=i,a=this.increment<<i;0==(o&e)?(this.encode(this.numSyms-1),n=t,a-=1,h=0):r===this.numSyms-1&&(this.tree[1]&t)>>>0==1&&(a=-this.tree[s]);for(var u=0;s>1;){var c=s>>>1;1&s&&(u+=this.tree[2*c]),this.tree[s]+=a,s=c}var f=this.tree[1];this.tree[1]+=a,o=(o&n)>>>h,u=(u&n)>>>h,f=(f&n)>>>h,this.coder.encodeFreq(o,u,f),(this.tree[1]&e)>>>i>=this.max_prob&&this._rescale()},n.prototype._decode=function(r){var s=e,o=i,n=this.increment<<i;r&&(s=t,n-=1,o=0);for(var h=(this.tree[1]&s)>>>o,a=this.coder.decodeCulFreq(h),u=1,c=0;u<this.numSyms;){this.tree[u]+=n;var f=(this.tree[2*u]&s)>>>o;u*=2,a-c>=f&&(c+=f,u++)}var p=u-this.numSyms,d=(this.tree[u]&s)>>>o;if(this.tree[u]+=n,this.coder.decodeUpdate(d,c,h),p===this.numSyms-1&&(this.tree[1]&t)>>>0==1)for(n=-this.tree[u];u>=1;)this.tree[u]+=n,u>>>=1;return(this.tree[1]&e)>>>i>=this.max_prob&&this._rescale(),p},n.prototype.decode=function(){var t=this._decode(!1);return t===this.numSyms-1&&(t=this._decode(!0)),t},n.prototype._rescale=function(){var e,r,i=!0;for(e=0;e<this.numSyms-1;e++)0==((r=this.tree[this.numSyms+e])&t)?(0===(r=(r&s)>>>1)&&(r=1,i=!1),this.tree[this.numSyms+e]=r):i=!1;r=((r=this.tree[this.numSyms+e])&s)>>>1,i?r=0:0===r&&(r=65536),this.tree[this.numSyms+e]=r,this._sumTree()},n.prototype._sumTree=function(){var t;for(t=this.numSyms-1;t>0;t--)this.tree[t]=this.tree[2*t]+this.tree[2*t+1]},n.MAGIC="fenw",n.compressFile=o.compressFileHelper(n.MAGIC,(function(t,e,i,s,h){var a=new r(e);a.encodeStart(h,1);var u=new n(a,i<0?257:256);o.compressWithModel(t,i,u),a.encodeFinish()}),!0),n.decompressFile=o.decompressFileHelper(n.MAGIC,(function(t,e,i){var s=new r(t);s.decodeStart(!0);var h=new n(s,i<0?257:256);o.decompressWithModel(e,i,h),s.decodeFinish()})),n}(),function(){var t=256,e=function(e,r,i){var s;console.assert(r<300);var n=this.numSyms=r;for(this.coder=e,this.prob=o.makeU16Buffer(r+2),this.escape=o.makeU16Buffer(r+1),this.update=o.makeU16Buffer(r+1),this.prob[n+1]=t,s=0;s<=this.numSyms;s++)this.escape[s]=s;if(this.updateCount=0,this.updateThresh=t-Math.floor(128),i){for(this.probToSym=o.makeU16Buffer(t),this.escProbToSym=o.makeU16Buffer(this.numSyms),s=0;s<t;s++)this.probToSym[s]=n;for(s=0;s<this.numSyms;s++)this.escProbToSym[s]=s}};return e.factory=function(t,r){return function(i){return new e(t,i,r)}},e.prototype._update=function(e,r){if(e===this.numSyms){if(this.update[e]>=40)return;if(this.updateCount>=this.updateThresh-1)return}if(this.update[e]++,this.updateCount++,!(this.updateCount<this.updateThresh)){var i,s,o,n,h,a;for(this.escape[0]=this.prob[0]=i=s=o=0,n=0;n<this.numSyms+1;n++){var u=(this.prob[n+1]-this.prob[n]>>>1)+this.update[n];u?(this.prob[n]=i,i+=u,1&u&&o++,this.escape[n]=s):(this.prob[n]=i,this.escape[n]=s,s++)}for(this.prob[n]=i,console.assert(i===t),this.updateThresh=t-Math.floor((i-o)/2),n=0;n<this.numSyms+1;n++)this.update[n]=0;if(this.update[this.numSyms]=1,this.updateCount=1,r)for(n=0,h=0,a=0;n<this.numSyms+1;n++){for(var c=this.prob[n+1];h<c;h++)this.probToSym[h]=n;for(var f=this.escape[n+1];a<f;a++)this.escProbToSym[a]=n}}},e.prototype.encode=function(e){var r=this.prob[e],i=this.prob[e+1]-r;if(console.assert(this.prob[this.numSyms+1]===t),i)return this.coder.encodeShift(i,r,8),this._update(e);console.assert(e!==this.numSyms),this.encode(this.numSyms),r=this.escape[e],i=this.escape[e+1]-r;var s=this.escape[this.numSyms];return this.coder.encodeFreq(i,r,s),this._update(e)},e.prototype.decode=function(){var e=this.coder.decodeCulShift(8),r=this.probToSym[e],i=this.prob[r],s=this.prob[r+1]-i;if(this.coder.decodeUpdate(s,i,t),this._update(r,!0),r!==this.numSyms)return r;var o=this.escape[this.numSyms];return e=this.coder.decodeCulFreq(o),r=this.escProbToSym[e],i=this.escape[r],s=this.escape[r+1]-i,this.coder.decodeUpdate(s,i,o),this._update(r,!0),r},e.MAGIC="dfsm",e.compressFile=o.compressFileHelper(e.MAGIC,(function(t,i,s,n,h){var a=new r(i);a.encodeStart(h,1);var u=new e(a,s<0?257:256);o.compressWithModel(t,s,u),a.encodeFinish()}),!0),e.decompressFile=o.decompressFileHelper(e.MAGIC,(function(t,i,s){var n=new r(t);n.decodeStart(!0);var h=new e(n,s<0?257:256,!0);o.decompressWithModel(i,s,h),n.decodeFinish()})),e}(),c=function(){var t=function(t,e,r){var i;for(this.literalModel=[],i=0;i<e;i++)this.literalModel[i]=t(r)};return t.prototype.encode=function(t,e){this.literalModel[e].encode(t)},t.prototype.decode=function(t){return this.literalModel[t].decode()},t.MAGIC="ctx1",t.compressFile=o.compressFileHelper(t.MAGIC,(function(e,r,i,n){var a=new s(r),u=256;i<0&&u++;var c=h.factory(a,8191),f=new t(c,256,u),p=32,d={encode:function(t){f.encode(t,p),p=t}};o.compressWithModel(e,i,d),a.flush()})),t.decompressFile=o.decompressFileHelper(t.MAGIC,(function(e,r,i){var n=new s(e),a=256;i<0&&a++;var u=h.factory(n,8191),c=new t(u,256,a),f=32,p={decode:function(){var t=c.decode(f);return f=t,t}};o.decompressWithModel(r,i,p)})),t}(),f=function(){var t=Object.create(null);t.MAGIC="lzp3";var e=1<<20,f=1048575,p=65535,d=function(t){this.buffer=o.makeU8Buffer(Math.min(t+4,e)),this.pos=0,this.ctxt4=o.makeU32Buffer(65536),this.ctxt3=o.makeU32Buffer(4096),this.ctxt2=o.makeU32Buffer(65536),this.put(99),this.put(83),this.put(97),this.put(32)};return d.prototype.put=function(t){return this.buffer[this.pos++]=t,this.pos>=e&&(this.pos=0),t},d.prototype.get=function(t){return this.buffer[1048575&t]},d.prototype.context=function(t,r){var i,s=0;for(t=t-r&1048575,i=0;i<r;i++)s=s<<8|this.buffer[t++],t>=e&&(t=0);return s},d.prototype.getIndex=function(t,e){var r=this.context(t,4),i=65535&(r>>>15^r),s=4095&(r>>>11^r),o=r&p,n=0;return 0===e&&(0!==(n=this.ctxt4[i])&&r!==this.context(n-1,4)&&(n=0),0===n&&(0!==(n=this.ctxt3[s])&&(16777215&r)!==this.context(n-1,3)&&(n=0),0===n&&0!==(n=this.ctxt2[o])&&(r&&p)!==this.context(n-1,2)&&(n=0))),e&&e--,this.ctxt4[i]=this.ctxt3[s]=this.ctxt2[o]=1+(t|e<<20),n},t.compressFile=o.compressFileHelper(t.MAGIC,(function(t,s,o,h){var p,l,y,m=new d(o>=0?o:e),w=new r(s);w.encodeStart(0,0),p=u.factory(w,65280,256);var b=a.factory(w);l=function(t){return t>256?b(t):p(t)},y=function(){w.encodeFinish()};var v,B=new c(p,256,o<0?257:256),g=[];for(v=0;v<16;v++)g[v]=new n(1048576,1,p,l);for(var S,M=0,F=0;M!==o;){var k=t.readByte();S=m.pos;var U=m.getIndex(S,0);if(0!==U){for(var C=1+(--U>>>20),x=0;m.get(U+x)===k&&x<f;)x++,m.put(k),k=t.readByte();C===x?g[15&F].encode(-1):g[15&F].encode(x),m.getIndex(S,x),M+=x,F<<=1,x>0&&(F|=1)}var A=m.get(m.pos-1);if(k===i.EOF){o<0&&B.encode(256,A);break}B.encode(k,A),m.put(k),M++}y&&y()})),t.decompressFile=o.decompressFileHelper(t.MAGIC,(function(t,i,o){var f,l,y,m=!!(128&t.readByte()),w=new d(o>=0?o:e);if(m){var b=new s(t);f=h.factory(b,p),l=a.factory(b)}else{var v=new r(t);v.decodeStart(!0),f=u.factory(v,65280,256);var B=a.factory(v);l=function(t){return t>256?B(t):f(t)},y=function(){v.decodeFinish()}}var g,S=new c(f,256,o<0?257:256),M=[];for(g=0;g<16;g++)M[g]=new n(1048576,1,f,l);for(var F,k,U=0,C=0;U!==o;){F=w.pos;var x=w.getIndex(F,0);if(0!==x){var A=1+(--x>>>20),_=M[15&C].decode();for(_<0&&(_=A),g=0;g<_;g++)k=w.get(x+g),i.writeByte(w.put(k));w.getIndex(F,_),U+=_,C<<=1,_>0&&(C|=1)}if(U===o)break;var I=w.get(w.pos-1);if(256===(k=S.decode(I)))break;i.writeByte(w.put(k)),U++}y&&y()})),t}(),"COMPRESS_OBJECT"===e){var p=JSON.stringify(t,null,0),d=new TextEncoder("utf-8").encode(p),l=f.compressFile(d);return Uint8Array.from(l)}if("DECOMPRESS_UINT8A"===e){var y=f.decompressFile(t);d=Uint8Array.from(y),p=(new TextDecoder).decode(d);return JSON.parse(p)}return null};`
-    + "return t;"
+window.lzp3_json_process_function = AsyncFunction(`var fu=async function(t,e){return new Promise((function(r,i){"use strict";var s,o,n,h,a,u,f,c,p,d;s=function(){var t=Math.pow(2,31),e=t>>>8,r=Math.pow(2,32)-1,i=function(e){this.low=0,this.range=t,this.buffer=0,this.help=0,this.bytecount=0,this.stream=e},s=function(i,s){for(;i.range<=e;){if(i.low<255<<23){for(s.writeByte(i.buffer);i.help;i.help--)s.writeByte(255);i.buffer=i.low>>>23&255}else if(i.low&t){for(s.writeByte(i.buffer+1);i.help;i.help--)s.writeByte(0);i.buffer=i.low>>>23&255}else if(i.help++,i.help>r)throw new Error("Too many bytes outstanding, file too large!");i.range=i.range<<8>>>0,i.low=(i.low<<8&t-1)>>>0,i.bytecount++}};i.prototype.encodeStart=function(e,r){this.low=0,this.range=t,this.buffer=e,this.help=0,this.bytecount=r},i.prototype.encodeFreq=function(t,e,r){s(this,this.stream);var i=this.range/r>>>0,o=i*e;this.low+=o,e+t<r?this.range=i*t:this.range-=o},i.prototype.encodeShift=function(t,e,r){s(this,this.stream);var i=this.range>>>r,o=i*e;this.low+=o,e+t>>>r?this.range-=o:this.range=i*t},i.prototype.encodeBit=function(t){this.encodeShift(1,t?1:0,1)},i.prototype.encodeByte=function(t){this.encodeShift(1,t,8)},i.prototype.encodeShort=function(t){this.encodeShift(1,t,16)},i.prototype.encodeFinish=function(){var t=this.stream;s(this,t),this.bytecount+=5;var r=this.low>>>23;if((this.low&e-1)>=(16777215&this.bytecount)>>>1&&r++,r>255)for(t.writeByte(this.buffer+1);this.help;this.help--)t.writeByte(0);else for(t.writeByte(this.buffer);this.help;this.help--)t.writeByte(255);return t.writeByte(255&r),t.writeByte(this.bytecount>>>16&255),t.writeByte(this.bytecount>>>8&255),t.writeByte(255&this.bytecount),this.bytecount},i.prototype.decodeStart=function(t){var e=t?0:this.stream.readByte();return"number"!=typeof e||e<0||(this.buffer=this.stream.readByte(),this.low=this.buffer>>>1,this.range=128),e};var o=function(t,r){for(;t.range<=e;)t.low=t.low<<8|t.buffer<<7&255,t.buffer=r.readByte(),t.low|=t.buffer>>>1,t.low=t.low>>>0,t.range=t.range<<8>>>0};return i.prototype.decodeCulFreq=function(t){o(this,this.stream),this.help=this.range/t>>>0;var e=this.low/this.help>>>0;return e>=t?t-1:e},i.prototype.decodeCulShift=function(t){o(this,this.stream),this.help=this.range>>>t;var e=this.low/this.help>>>0;return e>>>t?(1<<t)-1:e},i.prototype.decodeUpdate=function(t,e,r){var i=this.help*e;this.low-=i,e+t<r?this.range=this.help*t:this.range-=i},i.prototype.decodeBit=function(){var t=this.decodeCulShift(1);return this.decodeUpdate(1,t,2),t},i.prototype.decodeByte=function(){var t=this.decodeCulShift(8);return this.decodeUpdate(1,t,256),t},i.prototype.decodeShort=function(){var t=this.decodeCulShift(16);return this.decodeUpdate(1,t,65536),t},i.prototype.decodeFinish=function(){o(this,this.stream)},i.prototype.writeBit=i.prototype.encodeBit,i.prototype.readBit=i.prototype.decodeBit,i.prototype.writeByte=i.prototype.encodeByte,i.prototype.readByte=i.prototype.decodeByte,i}(),o=function(){var t=function(){};return t.prototype.readByte=function(){var t=[0];return 0===this.read(t,0,1)?(this._eof=!0,-1):t[0]},t.prototype.read=function(t,e,r){for(var i,s=0;s<r;){if(-1===(i=this.readByte())){this._eof=!0;break}t[e+s++]=i}return s},t.prototype.eof=function(){return!!this._eof},t.prototype.seek=function(t){throw new Error("Stream is not seekable.")},t.prototype.tell=function(){throw new Error("Stream is not seekable.")},t.prototype.writeByte=function(t){var e=[t];this.write(e,0,1)},t.prototype.write=function(t,e,r){var i;for(i=0;i<r;i++)this.writeByte(t[e+i]);return r},t.prototype.flush=function(){},t.EOF=-1,t}(),n=function(){var t=function(t){(function(){var e=256;this.readBit=function(){if(0==(255&e)){var r=t.readByte();if(r===o.EOF)return this._eof=!0,r;e=r<<1|1}var i=256&e?1:0;return e<<=1,i},this.seekBit=function(t){var e=t>>>3,r=t-8*e;this.seek(e),this._eof=!1,this.readBits(r)},this.tellBit=function(){for(var r=8*t.tell(),i=e;0!=(255&i);)r--,i<<=1;return r},this.readByte=function(){return 0==(255&e)?t.readByte():this.readBits(8)},this.seek=function(r){t.seek(r),e=256}}).call(this),function(){var e=1;this.writeBit=function(r){e<<=1,r&&(e|=1),256&e&&(t.writeByte(255&e),e=1)},this.writeByte=function(r){1===e?t.writeByte(r):t.writeBits(8,r)},this.flush=function(){for(;1!==e;)this.writeBit(0);t.flush&&t.flush()}}.call(this)};return t.EOF=o.EOF,(t.prototype=Object.create(o.prototype)).readBits=function(t){var e,r=0;if(t>31)return(r=65536*this.readBits(t-16))+this.readBits(16);for(e=0;e<t;e++)r<<=1,this.readBit()>0&&r++;return r},t.prototype.writeBits=function(t,e){if(t>32){var r=65535&e,i=(e-r)/65536;return this.writeBits(t-16,i),void this.writeBits(16,r)}var s;for(s=t-1;s>=0;s--)this.writeBit(e>>>s&1)},t}(),h=function(){var t=Object.create(null),e=o.EOF;t.coerceInputStream=function(t,r){if("readByte"in t){if(r&&!("read"in t)){var i=t;(t=new o).readByte=function(){var t=i.readByte();return t===e&&(this._eof=!0),t},"size"in i&&(t.size=i.size),"seek"in i&&(t.seek=function(t){i.seek(t),this._eof=!1}),"tell"in i&&(t.tell=i.tell.bind(i))}}else{var s=t;(t=new o).size=s.length,t.pos=0,t.readByte=function(){return this.pos>=this.size?e:s[this.pos++]},t.read=function(t,e,r){for(var i=0;i<r&&this.pos<s.length;)t[e++]=s[this.pos++],i++;return i},t.seek=function(t){this.pos=t},t.tell=function(){return this.pos},t.eof=function(){return this.pos>=s.length}}return t};var r=function(t,e){this.buffer=t,this.resizeOk=e,this.pos=0};(r.prototype=Object.create(o.prototype)).writeByte=function(e){if(this.resizeOk&&this.pos>=this.buffer.length){var r=t.makeU8Buffer(2*this.buffer.length);r.set(this.buffer),this.buffer=r}this.buffer[this.pos++]=e},r.prototype.getBuffer=function(){if(this.pos!==this.buffer.length){if(!this.resizeOk)throw new TypeError("outputsize does not match decoded input");var e=t.makeU8Buffer(this.pos);e.set(this.buffer.subarray(0,this.pos)),this.buffer=e}return this.buffer},t.coerceOutputStream=function(e,i){var s={stream:e,retval:e};if(e){if("object"==typeof e&&"writeByte"in e)return s;s.stream=new r("number"==typeof i?t.makeU8Buffer(i):e,!1)}else s.stream=new r(t.makeU8Buffer(16384),!0);return Object.defineProperty(s,"retval",{get:s.stream.getBuffer.bind(s.stream)}),s},t.compressFileHelper=function(e,r,i){return function(s,o,n){s=t.coerceInputStream(s);var h,a,u=t.coerceOutputStream(o,o);for(o=u.stream,h=0;h<e.length;h++)o.writeByte(e.charCodeAt(h));if(a="size"in s&&s.size>=0?s.size:-1,i){var f=t.coerceOutputStream([]);for(t.writeUnsignedNumber(f.stream,a+1),f=f.retval,h=0;h<f.length-1;h++)o.writeByte(f[h]);i=f[f.length-1]}else t.writeUnsignedNumber(o,a+1);return r(s,o,a,n,i),u.retval}},t.decompressFileHelper=function(e,r){return function(i,s){var o;for(i=t.coerceInputStream(i),o=0;o<e.length;o++)if(e.charCodeAt(o)!==i.readByte())throw new Error("Bad magic");var n=t.readUnsignedNumber(i)-1,h=t.coerceOutputStream(s,n);return s=h.stream,r(i,s,n),h.retval}},t.compressWithModel=function(t,r,i){for(var s=0;s!==r;){var o=t.readByte();if(o===e){i.encode(256);break}i.encode(o),s++}},t.decompressWithModel=function(t,e,r){for(var i=0;i!==e;){var s=r.decode();if(256===s)break;t.writeByte(s),i++}},t.writeUnsignedNumber=function(t,e){var r,i=[];do{i.push(127&e),e=Math.floor(e/128)}while(0!==e);for(i[0]|=128,r=i.length-1;r>=0;r--)t.writeByte(i[r]);return t},t.readUnsignedNumber=function(t){for(var e,r=0;;){if(128&(e=t.readByte())){r+=127&e;break}r=128*(r+e)}return r};var i=function(t){for(var e=0,r=t.length;e<r;e++)t[e]=0;return t},s=function(t){return i(new Array(t))},n=function(t){return t};"undefined"!=typeof process&&Array.prototype.some.call(new Uint32Array(128),(function(t){return 0!==t}))&&(n=i),t.makeU8Buffer="undefined"!=typeof Uint8Array?function(t){return n(new Uint8Array(t))}:"undefined"!=typeof Buffer?function(t){var e=new Buffer(t);return e.fill(0),e}:s,t.makeU16Buffer="undefined"!=typeof Uint16Array?function(t){return n(new Uint16Array(t))}:s,t.makeU32Buffer="undefined"!=typeof Uint32Array?function(t){return n(new Uint32Array(t))}:s,t.makeS32Buffer="undefined"!=typeof Int32Array?function(t){return n(new Int32Array(t))}:s,t.arraycopy=function(t,e){for(var r=0,i=e.length;r<i;r++)t[r]=e[r];return t};var h=[0,1,2,2,3,3,3,3,4,4,4,4,4,4,4,4,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8],a=t.fls=function(t){return t>4294967295?32+a(Math.floor(t/4294967296)):0!=(4294901760&t)?0!=(4278190080&t)?24+h[t>>>24&255]:16+h[t>>>16]:0!=(65280&t)?8+h[t>>>8]:h[t]};return t.log2c=function(t){return 0===t?-1:a(t-1)},t}(),a=function(){var t=function(t,e,r,i){var s,o=h.fls(t-1);for(this.extraStates=+e||0,this.lgDistanceModel=r(1+o+e),this.distanceModel=[],s=2;s<=o;s++){var n=s-1;this.distanceModel[s]=i(1<<n)}};return t.prototype.encode=function(t){if(t<2)this.lgDistanceModel.encode(t+this.extraStates);else{var e=h.fls(t);this.lgDistanceModel.encode(e+this.extraStates);var r=t&(1<<e-1)-1;this.distanceModel[e].encode(r)}},t.prototype.decode=function(){var t=this.lgDistanceModel.decode()-this.extraStates;return t<2?t:(1<<t-1)+this.distanceModel[t].decode()},t}(),u=function(){var t=function(t,e,r,i){this.up=t,this.down=e,this.symbol=r,this.weight=i};t.prototype.clone=function(){return new t(this.up,this.down,this.symbol,this.weight)},t.prototype.set=function(t){this.up=t.up,this.down=t.down,this.symbol=t.symbol,this.weight=t.weight};var e=function(e,r,i,s){var o;for((!r||r>e)&&(r=e),(r<<=1)&&r--,this.table=[],o=0;o<=r;o++)this.table[o]=new t(0,0,0,0);if(this.map=[],this.size=e)for(o=0;o<e;o++)this.map[o]=0;this.esc=this.root=r,i&&(this.readBit=i.readBit.bind(i),this.writeBit=i.writeBit.bind(i)),this.max_weight=s};return e.factory=function(t,r){return function(i){return new e(i,i,t,r)}},e.prototype.split=function(t){var e,r;return(e=this.esc)?(this.esc--,(r=this.esc)?(this.table[e].down=r,this.table[e].weight=1,this.table[r].up=e,this.esc--):(e=0,r=1),this.table[r].symbol=t,this.table[r].weight=0,this.table[r].down=0,this.map[t]=r,this.table[this.esc].weight=0,this.table[this.esc].down=0,this.table[this.esc].up=e,r):0},e.prototype.leader=function(t){for(var e,r,i=this.table[t].weight,s=t;i===this.table[s+1].weight;)s++;return s===t?t:(r=this.table[t].symbol,e=this.table[s].symbol,this.table[s].symbol=r,this.table[t].symbol=e,this.map[r]=s,this.map[e]=t,s)},e.prototype.slide=function(t){var e,r=t;if(1&(e=this.table[r++].clone()).weight)for(;e.weight>this.table[r+1].weight;)r++;return this.table[t].set(this.table[r]),this.table[r].set(e),this.table[r].up=this.table[t].up,this.table[t].up=e.up,1&e.weight?(this.table[e.down].up=r,this.table[e.down-1].up=r,this.map[this.table[t].symbol]=t):(this.table[this.table[t].down-1].up=t,this.table[this.table[t].down].up=t,this.map[e.symbol]=r),r},e.prototype.increment=function(t){var e;for(this.table[t].up===t+1?(this.table[t].weight+=2,t++):t=this.leader(t);this.table[t].weight+=2,e=this.table[t].up;){for(;this.table[t].weight>this.table[t+1].weight;)t=this.slide(t);t=1&this.table[t].weight?e:this.table[t].up}this.max_weight&&this.table[this.root].weight>=this.max_weight&&this.scale(1)},e.prototype.scale=function(t){for(var e,r,i=this.esc;++i<=this.root;)for(1&this.table[i].weight?(e=-2&this.table[this.table[i].down].weight)&&(e+=1|this.table[this.table[i].down-1].weight):(e=this.table[i].weight>>t&-2)||(this.map[this.table[i].symbol]=0,this.esc++&&this.esc++),this.table[i].weight=e,r=i;e<this.table[--r].weight;)this.slide(r);this.table[this.esc].down=0},e.prototype.sendid=function(t){for(var e,r=0;t--;)this.map[t]||r++;if(e=this.size-Math.floor((this.root-this.esc)/2)-1)do{this.writeBit(1&r),r>>=1}while(e>>=1)},e.prototype.encode=function(t){var e,r,i,s,o=1;if(t<this.size&&((i=s=this.map[t])||(i=this.esc))){for(;r=this.table[i].up;)o<<=1,o|=1&i,i=r;for(;e=1&o,o>>=1;)this.writeBit(e);s||(this.sendid(t),s=this.split(t)),this.increment(s)}},e.prototype.readid=function(){var t,e,r=0,i=1;if(t=this.size-Math.floor((this.root-this.esc)/2)-1)do{r|=this.readBit()?i:0,i<<=1}while(t>>=1);for(e=0;e<this.size;e++)if(!this.map[e]&&!r--)return e;return 0},e.prototype.decode=function(){for(var t,e,r=this.root;e=this.table[r].down;)r=this.readBit()?e-1:e;if(r===this.esc){if(!this.esc)return 0;t=this.readid(),r=this.split(t)}else t=this.table[r].symbol;return this.increment(r),t},e.MAGIC="huff",e.compressFile=h.compressFileHelper(e.MAGIC,(function(t,r,i,s){var o=new n(r),a=256;i<0&&a++;var u=new e(257,a,o,8191);h.compressWithModel(t,i,u),o.flush()})),e.decompressFile=h.decompressFileHelper(e.MAGIC,(function(t,r,i){var s=new n(t),o=256;i<0&&o++;var a=new e(257,o,s,8191);h.decompressWithModel(r,i,a)})),e}(),f=function(){var t=function(t,e){this.bitstream=t,this.bits=h.fls(e-1)};return t.factory=function(e){return function(r){return new t(e,r)}},t.prototype.encode=function(t){var e;for(e=this.bits-1;e>=0;e--){var r=t>>>e&1;this.bitstream.writeBit(r)}},t.prototype.decode=function(){var t,e=0;for(t=this.bits-1;t>=0;t--)e<<=1,this.bitstream.readBit()&&e++;return e},t.MAGIC="nomo",t.compressFile=h.compressFileHelper(t.MAGIC,(function(e,r,i,s){var o=new n(r),a=new t(o,i<0?257:256);h.compressWithModel(e,i,a),o.flush()})),t.decompressFile=h.decompressFileHelper(t.MAGIC,(function(e,r,i){var s=new n(e),o=new t(s,i<0?257:256);h.decompressWithModel(r,i,o)})),t}(),c=function(){var t=65535,e=4294901760,r=16,i=4294901758,o=function(t,e,i,s){var o;for(this.coder=t,this.numSyms=e+1,this.tree=h.makeU32Buffer(2*this.numSyms),this.increment=+s||256,this.max_prob=+i||65280,o=0;o<e;o++)this.tree[this.numSyms+o]=1;this.tree[this.numSyms+o]=0|this.increment<<r,this._sumTree()};return o.factory=function(t,e,r){return function(i){return new o(t,i,e,r)}},o.prototype.clone=function(){var t,e=new o(this.coder,this.size,this.max_prob,this.increment);for(t=1;t<this.tree.length;t++)e.tree[t]=this.tree[t];return e},o.prototype.encode=function(i){var s=this.numSyms+i,o=this.tree[s],n=e,h=r,a=this.increment<<r;0==(o&e)?(this.encode(this.numSyms-1),n=t,a-=1,h=0):i===this.numSyms-1&&(this.tree[1]&t)>>>0==1&&(a=-this.tree[s]);for(var u=0;s>1;){var f=s>>>1;1&s&&(u+=this.tree[2*f]),this.tree[s]+=a,s=f}var c=this.tree[1];this.tree[1]+=a,o=(o&n)>>>h,u=(u&n)>>>h,c=(c&n)>>>h,this.coder.encodeFreq(o,u,c),(this.tree[1]&e)>>>r>=this.max_prob&&this._rescale()},o.prototype._decode=function(i){var s=e,o=r,n=this.increment<<r;i&&(s=t,n-=1,o=0);for(var h=(this.tree[1]&s)>>>o,a=this.coder.decodeCulFreq(h),u=1,f=0;u<this.numSyms;){this.tree[u]+=n;var c=(this.tree[2*u]&s)>>>o;u*=2,a-f>=c&&(f+=c,u++)}var p=u-this.numSyms,d=(this.tree[u]&s)>>>o;if(this.tree[u]+=n,this.coder.decodeUpdate(d,f,h),p===this.numSyms-1&&(this.tree[1]&t)>>>0==1)for(n=-this.tree[u];u>=1;)this.tree[u]+=n,u>>>=1;return(this.tree[1]&e)>>>r>=this.max_prob&&this._rescale(),p},o.prototype.decode=function(){var t=this._decode(!1);return t===this.numSyms-1&&(t=this._decode(!0)),t},o.prototype._rescale=function(){var e,r,s=!0;for(e=0;e<this.numSyms-1;e++)0==((r=this.tree[this.numSyms+e])&t)?(0===(r=(r&i)>>>1)&&(r=1,s=!1),this.tree[this.numSyms+e]=r):s=!1;r=((r=this.tree[this.numSyms+e])&i)>>>1,s?r=0:0===r&&(r=65536),this.tree[this.numSyms+e]=r,this._sumTree()},o.prototype._sumTree=function(){var t;for(t=this.numSyms-1;t>0;t--)this.tree[t]=this.tree[2*t]+this.tree[2*t+1]},o.MAGIC="fenw",o.compressFile=h.compressFileHelper(o.MAGIC,(function(t,e,r,i,n){var a=new s(e);a.encodeStart(n,1);var u=new o(a,r<0?257:256);h.compressWithModel(t,r,u),a.encodeFinish()}),!0),o.decompressFile=h.decompressFileHelper(o.MAGIC,(function(t,e,r){var i=new s(t);i.decodeStart(!0);var n=new o(i,r<0?257:256);h.decompressWithModel(e,r,n),i.decodeFinish()})),o}(),function(){var t=256,e=function(e,r,i){var s,o=this.numSyms=r;for(this.coder=e,this.prob=h.makeU16Buffer(r+2),this.escape=h.makeU16Buffer(r+1),this.update=h.makeU16Buffer(r+1),this.prob[o+1]=t,s=0;s<=this.numSyms;s++)this.escape[s]=s;if(this.updateCount=0,this.updateThresh=t-Math.floor(128),i){for(this.probToSym=h.makeU16Buffer(t),this.escProbToSym=h.makeU16Buffer(this.numSyms),s=0;s<t;s++)this.probToSym[s]=o;for(s=0;s<this.numSyms;s++)this.escProbToSym[s]=s}};e.factory=function(t,r){return function(i){return new e(t,i,r)}},e.prototype._update=function(e,r){if(e===this.numSyms){if(this.update[e]>=40)return;if(this.updateCount>=this.updateThresh-1)return}if(this.update[e]++,this.updateCount++,!(this.updateCount<this.updateThresh)){var i,s,o,n,h,a;for(this.escape[0]=this.prob[0]=i=s=o=0,n=0;n<this.numSyms+1;n++){var u=(this.prob[n+1]-this.prob[n]>>>1)+this.update[n];u?(this.prob[n]=i,i+=u,1&u&&o++,this.escape[n]=s):(this.prob[n]=i,this.escape[n]=s,s++)}for(this.prob[n]=i,this.updateThresh=t-Math.floor((i-o)/2),n=0;n<this.numSyms+1;n++)this.update[n]=0;if(this.update[this.numSyms]=1,this.updateCount=1,r)for(n=0,h=0,a=0;n<this.numSyms+1;n++){for(var f=this.prob[n+1];h<f;h++)this.probToSym[h]=n;for(var c=this.escape[n+1];a<c;a++)this.escProbToSym[a]=n}}},e.prototype.encode=function(t){var e=this.prob[t],r=this.prob[t+1]-e;if(r)return this.coder.encodeShift(r,e,8),this._update(t);this.encode(this.numSyms),e=this.escape[t],r=this.escape[t+1]-e;var i=this.escape[this.numSyms];return this.coder.encodeFreq(r,e,i),this._update(t)},e.prototype.decode=function(){var e=this.coder.decodeCulShift(8),r=this.probToSym[e],i=this.prob[r],s=this.prob[r+1]-i;if(this.coder.decodeUpdate(s,i,t),this._update(r,!0),r!==this.numSyms)return r;var o=this.escape[this.numSyms];return e=this.coder.decodeCulFreq(o),r=this.escProbToSym[e],i=this.escape[r],s=this.escape[r+1]-i,this.coder.decodeUpdate(s,i,o),this._update(r,!0),r},e.MAGIC="dfsm",e.compressFile=h.compressFileHelper(e.MAGIC,(function(t,r,i,o,n){var a=new s(r);a.encodeStart(n,1);var u=new e(a,i<0?257:256);h.compressWithModel(t,i,u),a.encodeFinish()}),!0),e.decompressFile=h.decompressFileHelper(e.MAGIC,(function(t,r,i){var o=new s(t);o.decodeStart(!0);var n=new e(o,i<0?257:256,!0);h.decompressWithModel(r,i,n),o.decodeFinish()}))}(),p=function(){var t=function(t,e,r){var i;for(this.literalModel=[],i=0;i<e;i++)this.literalModel[i]=t(r)};return t.prototype.encode=function(t,e){this.literalModel[e].encode(t)},t.prototype.decode=function(t){return this.literalModel[t].decode()},t.MAGIC="ctx1",t.compressFile=h.compressFileHelper(t.MAGIC,(function(e,r,i,s){var o=new n(r),a=256;i<0&&a++;var f=u.factory(o,8191),c=new t(f,256,a),p=32,d={encode:function(t){c.encode(t,p),p=t}};h.compressWithModel(e,i,d),o.flush()})),t.decompressFile=h.decompressFileHelper(t.MAGIC,(function(e,r,i){var s=new n(e),o=256;i<0&&o++;var a=u.factory(s,8191),f=new t(a,256,o),c=32,p={decode:function(){var t=f.decode(c);return c=t,t}};h.decompressWithModel(r,i,p)})),t}(),d=function(){var t=Object.create(null);t.MAGIC="lzp3";var e=1<<20,r=1048575,i=65535,d=function(t){this.buffer=h.makeU8Buffer(Math.min(t+4,e)),this.pos=0,this.ctxt4=h.makeU32Buffer(65536),this.ctxt3=h.makeU32Buffer(4096),this.ctxt2=h.makeU32Buffer(65536),this.put(99),this.put(83),this.put(97),this.put(32)};return d.prototype.put=function(t){return this.buffer[this.pos++]=t,this.pos>=e&&(this.pos=0),t},d.prototype.get=function(t){return this.buffer[1048575&t]},d.prototype.context=function(t,r){var i,s=0;for(t=t-r&1048575,i=0;i<r;i++)s=s<<8|this.buffer[t++],t>=e&&(t=0);return s},d.prototype.getIndex=function(t,e){var r=this.context(t,4),s=65535&(r>>>15^r),o=4095&(r>>>11^r),n=r&i,h=0;return 0===e&&(0!==(h=this.ctxt4[s])&&r!==this.context(h-1,4)&&(h=0),0===h&&(0!==(h=this.ctxt3[o])&&(16777215&r)!==this.context(h-1,3)&&(h=0),0===h&&0!==(h=this.ctxt2[n])&&(r&&i)!==this.context(h-1,2)&&(h=0))),e&&e--,this.ctxt4[s]=this.ctxt3[o]=this.ctxt2[n]=1+(t|e<<20),h},t.compressFile=h.compressFileHelper(t.MAGIC,(function(t,i,n,h){var u,l,y,m=new d(n>=0?n:e),w=new s(i);w.encodeStart(0,0),u=c.factory(w,65280,256);var b=f.factory(w);l=function(t){return t>256?b(t):u(t)},y=function(){w.encodeFinish()};var v,B=new p(u,256,n<0?257:256),g=[];for(v=0;v<16;v++)g[v]=new a(1048576,1,u,l);for(var S,M=0,F=0;M!==n;){var k=t.readByte();S=m.pos;var U=m.getIndex(S,0);if(0!==U){for(var C=1+(--U>>>20),A=0;m.get(U+A)===k&&A<r;)A++,m.put(k),k=t.readByte();C===A?g[15&F].encode(-1):g[15&F].encode(A),m.getIndex(S,A),M+=A,F<<=1,A>0&&(F|=1)}var x=m.get(m.pos-1);if(k===o.EOF){n<0&&B.encode(256,x);break}B.encode(k,x),m.put(k),M++}y&&y()})),t.decompressFile=h.decompressFileHelper(t.MAGIC,(function(t,r,o){var h,l,y,m=!!(128&t.readByte()),w=new d(o>=0?o:e);if(m){var b=new n(t);h=u.factory(b,i),l=f.factory(b)}else{var v=new s(t);v.decodeStart(!0),h=c.factory(v,65280,256);var B=f.factory(v);l=function(t){return t>256?B(t):h(t)},y=function(){v.decodeFinish()}}var g,S=new p(h,256,o<0?257:256),M=[];for(g=0;g<16;g++)M[g]=new a(1048576,1,h,l);for(var F,k,U=0,C=0;U!==o;){F=w.pos;var A=w.getIndex(F,0);if(0!==A){var x=1+(--A>>>20),_=M[15&C].decode();for(_<0&&(_=x),g=0;g<_;g++)k=w.get(A+g),r.writeByte(w.put(k));w.getIndex(F,_),U+=_,C<<=1,_>0&&(C|=1)}if(U===o)break;var I=w.get(w.pos-1);if(256===(k=S.decode(I)))break;r.writeByte(w.put(k)),U++}y&&y()})),t}(),"COMPRESS_OBJECT"===e?r(Uint8Array.from(d.compressFile(new TextEncoder("utf-8").encode(JSON.stringify(t,null,0))))):"DECOMPRESS_UINT8A"===e?r(JSON.parse((new TextDecoder).decode(Uint8Array.from(d.decompressFile(t))))):i(null)}))};`
+    + "return fu;"
 )();
 
 /*
-    var fu = async function(uint8a_or_obj, mode) {
+    var fu = async function(uint8a_or_obj, mode) {return new Promise(function(resolve, reject){
         
         "use strict";
         var RangeCoder          //no dependencies
@@ -382,14 +382,14 @@ const lzp3_json_process_function = AsyncFunction(`var t=async function(t,e){"use
             var SHIFT_BITS = (CODE_BITS - 9);
             var EXTRA_BITS = ((CODE_BITS - 2) % 8 + 1);
             var Bottom_value = (Top_value >>> 8);
-        
+
             var MAX_INT = Math.pow(2, CODE_BITS) - 1;
-        
+
             /* it is highly recommended that the total frequency count is less  $/
             /* than 1 << 19 to minimize rounding effects.                       $/
             /* the total frequency count MUST be less than 1<<23                $/
-        
-        
+
+
             var RangeCoder = function(stream) {
                 this.low = 0; /* low end of interval $/
                 this.range = Top_value; /* length of interval $/
@@ -398,7 +398,7 @@ const lzp3_json_process_function = AsyncFunction(`var t=async function(t,e){"use
                 this.bytecount = 0; /* counter for output bytes $/
                 this.stream = stream;
             };
-        
+
             /* Do the normalization before we need a defined state, instead of
              * after messing it up.  This simplifies starting and ending. $/
             var enc_normalize = function(rc, outputStream) {
@@ -424,7 +424,7 @@ const lzp3_json_process_function = AsyncFunction(`var t=async function(t,e){"use
                     rc.bytecount++;
                 }
             };
-        
+
             /* Start the encoder                                         $/
             /* c is written as the first byte in the datastream.
              * one could do w/o, but then you have an additional if per output byte $/
@@ -435,7 +435,7 @@ const lzp3_json_process_function = AsyncFunction(`var t=async function(t,e){"use
                 this.help = 0;
                 this.bytecount = initlength;
             };
-        
+
             /* Encode a symbol using frequencies                         $/
             /* rc is the range coder to be used                          $/
             /* sy_f is the interval length (frequency of the symbol)     $/
@@ -476,7 +476,7 @@ const lzp3_json_process_function = AsyncFunction(`var t=async function(t,e){"use
             RangeCoder.prototype.encodeShort = function(s) {
                 this.encodeShift(1, s, 16);
             };
-        
+
             /* Finish encoding                                           $/
             /* returns number of bytes written                           $/
             RangeCoder.prototype.encodeFinish = function() {
@@ -504,7 +504,7 @@ const lzp3_json_process_function = AsyncFunction(`var t=async function(t,e){"use
                 outputStream.writeByte((this.bytecount) & 0xFF);
                 return this.bytecount;
             };
-        
+
             /* Start the decoder; you need to provide the *second* byte from the
              * datastream. (The first byte was provided to startEncoding and is
              * ignored by the decoder.)
@@ -519,7 +519,7 @@ const lzp3_json_process_function = AsyncFunction(`var t=async function(t,e){"use
                 this.range = 1 << EXTRA_BITS;
                 return c;
             };
-        
+
             var dec_normalize = function(rc, inputStream) {
                 while (rc.range <= Bottom_value) {
                     rc.low = (rc.low << 8) | ((rc.buffer << EXTRA_BITS) & 0xFF);
@@ -530,7 +530,7 @@ const lzp3_json_process_function = AsyncFunction(`var t=async function(t,e){"use
                     rc.range = (rc.range << 8) >>> 0; /* ensure stays positive $/
                 }
             };
-        
+
             /* Calculate cumulative frequency for next symbol. Does NO update!$/
             /* rc is the range coder to be used                          $/
             /* tot_f is the total frequency                              $/
@@ -549,7 +549,7 @@ const lzp3_json_process_function = AsyncFunction(`var t=async function(t,e){"use
                 // shift is less than 31, so shift below will remain positive
                 return ((tmp >>> shift) ? (1 << shift) - 1 : tmp);
             };
-        
+
             /* Update decoding state                                     $/
             /* rc is the range coder to be used                          $/
             /* sy_f is the interval length (frequency of the symbol)     $/
@@ -564,7 +564,7 @@ const lzp3_json_process_function = AsyncFunction(`var t=async function(t,e){"use
                     this.range -= tmp;
                 }
             };
-        
+
             /* Decode a bit w/o modelling. $/
             RangeCoder.prototype.decodeBit = function() {
                 var tmp = this.decodeCulShift(1);
@@ -583,32 +583,32 @@ const lzp3_json_process_function = AsyncFunction(`var t=async function(t,e){"use
                 this.decodeUpdate(1, tmp, 1 << 16);
                 return tmp;
             };
-        
+
             /* Finish decoding $/
             RangeCoder.prototype.decodeFinish = function() {
                 /* normalize to use up all bytes $/
                 dec_normalize(this, this.stream);
             };
-        
+
             /** Utility functions $/
-        
+
         // bitstream interface
             RangeCoder.prototype.writeBit = RangeCoder.prototype.encodeBit;
             RangeCoder.prototype.readBit = RangeCoder.prototype.decodeBit;
-        
+
         // stream interface
             RangeCoder.prototype.writeByte = RangeCoder.prototype.encodeByte;
             RangeCoder.prototype.readByte = RangeCoder.prototype.decodeByte;
-        
+
             return RangeCoder;
-        
+
         }());
-        
-        
+
+
         Stream = (function(){
             /** Abstract Stream interface, for byte-oriented i/o. $/
             var EOF = -1;
-        
+
             var Stream = function() {
                 /* ABSTRACT $/
             };
@@ -648,11 +648,11 @@ const lzp3_json_process_function = AsyncFunction(`var t=async function(t,e){"use
             };
             Stream.prototype.flush = function(){};      //flush will happily do nothing if you don't override it.
             Stream.EOF = EOF;                           //export EOF as a constant.
-        
+
             return Stream;
         }());
-        
-        
+
+
         BitStream = (function(){
             /** Big-Endian Bit Stream, implemented on top of a (normal byte) stream. $/
             var BitStream = function(stream) {
@@ -759,16 +759,16 @@ const lzp3_json_process_function = AsyncFunction(`var t=async function(t,e){"use
                     this.writeBit((value >>> i) & 1);
                 }
             };
-        
+
             return BitStream;
         }());
-        
-        
+
+
         Util = (function(){
             var Util = Object.create(null);
-        
+
             var EOF = Stream.EOF;
-        
+
             /* Take a buffer, array, or stream, and return an input stream. $/
             Util.coerceInputStream = function(input, forceRead) {
                 if (!('readByte' in input)) {
@@ -813,7 +813,7 @@ const lzp3_json_process_function = AsyncFunction(`var t=async function(t,e){"use
                 }
                 return input;
             };
-        
+
             var BufferStream = function(buffer, resizeOk) {
                 this.buffer = buffer;
                 this.resizeOk = resizeOk;
@@ -839,7 +839,7 @@ const lzp3_json_process_function = AsyncFunction(`var t=async function(t,e){"use
                 }
                 return this.buffer;
             };
-        
+
             /* Take a stream (or not) and an (optional) size, and return an
              * output stream.  Return an object with a 'retval' field equal to
              * the output stream (if that was given) or else a pointer at the
@@ -865,20 +865,20 @@ const lzp3_json_process_function = AsyncFunction(`var t=async function(t,e){"use
                 });
                 return r;
             };
-        
+
             Util.compressFileHelper = function(magic, guts, suppressFinalByte) {
                 return function(inStream, outStream, props) {
                     inStream = Util.coerceInputStream(inStream);
                     var o = Util.coerceOutputStream(outStream, outStream);
                     outStream = o.stream;
-        
+
                     // write the magic number to identify this file type
                     // (it better be ASCII, we're not doing utf-8 conversion)
                     var i;
                     for (i = 0; i < magic.length; i++) {
                         outStream.writeByte(magic.charCodeAt(i));
                     }
-        
+
                     // if we know the size, write it
                     var fileSize;
                     if ('size' in inStream && inStream.size >= 0) {
@@ -897,17 +897,17 @@ const lzp3_json_process_function = AsyncFunction(`var t=async function(t,e){"use
                     } else {
                         Util.writeUnsignedNumber(outStream, fileSize + 1);
                     }
-        
+
                     // call the guts to do the real compression
                     guts(inStream, outStream, fileSize, props, suppressFinalByte);
-        
+
                     return o.retval;
                 };
             };
             Util.decompressFileHelper = function(magic, guts) {
                 return function(inStream, outStream) {
                     inStream = Util.coerceInputStream(inStream);
-        
+
                     // read the magic number to confirm this file type
                     // (it better be ASCII, we're not doing utf-8 conversion)
                     var i;
@@ -916,15 +916,15 @@ const lzp3_json_process_function = AsyncFunction(`var t=async function(t,e){"use
                             throw new Error("Bad magic");
                         }
                     }
-        
+
                     // read the file size & create an appropriate output stream/buffer
                     var fileSize = Util.readUnsignedNumber(inStream) - 1;
                     var o = Util.coerceOutputStream(outStream, fileSize);
                     outStream = o.stream;
-        
+
                     // call the guts to do the real decompression
                     guts(inStream, outStream, fileSize);
-        
+
                     return o.retval;
                 };
             };
@@ -953,7 +953,7 @@ const lzp3_json_process_function = AsyncFunction(`var t=async function(t,e){"use
                     outSize++;
                 }
             };
-        
+
             /** Write a number using a self-delimiting big-endian encoding. $/
             Util.writeUnsignedNumber = function(output, n) {
                 console.assert(n >= 0);
@@ -971,7 +971,7 @@ const lzp3_json_process_function = AsyncFunction(`var t=async function(t,e){"use
                 }
                 return output;
             };
-        
+
             /** Read a number using a self-delimiting big-endian encoding. $/
             Util.readUnsignedNumber = function(input) {
                 var n = 0
@@ -984,20 +984,20 @@ const lzp3_json_process_function = AsyncFunction(`var t=async function(t,e){"use
                 }
                 return n;
             };
-        
+
         // Compatibility thunks for Buffer/TypedArray constructors.
-        
+
             var zerofill = function(a) {
                 for (var i = 0, len = a.length; i < len; i++) {
                     a[i] = 0;
                 }
                 return a;
             };
-        
+
             var fallbackarray = function(size) {
                 return zerofill(new Array(size));
             };
-        
+
         // Node 0.11.6 - 0.11.10ish don't properly zero fill typed arrays.
         // See https://github.com/joyent/node/issues/6664
         // Try to detect and workaround the bug.
@@ -1009,7 +1009,7 @@ const lzp3_json_process_function = AsyncFunction(`var t=async function(t,e){"use
                 //console.warn('Working around broken TypedArray');
                 ensureZeroed = zerofill;
             }
-        
+
             /** Portable 8-bit unsigned buffer. $/
             Util.makeU8Buffer = (typeof(Uint8Array) !== 'undefined') ? function(size) {
                 // Uint8Array ought to be  automatically zero-filled
@@ -1019,25 +1019,25 @@ const lzp3_json_process_function = AsyncFunction(`var t=async function(t,e){"use
                 b.fill(0);
                 return b;
             } : fallbackarray;
-        
+
             /** Portable 16-bit unsigned buffer. $/
             Util.makeU16Buffer = (typeof(Uint16Array) !== 'undefined') ? function(size) {
                 // Uint16Array ought to be  automatically zero-filled
                 return ensureZeroed(new Uint16Array(size));
             } : fallbackarray;
-        
+
             /** Portable 32-bit unsigned buffer. $/
             Util.makeU32Buffer = (typeof(Uint32Array) !== 'undefined') ? function(size) {
                 // Uint32Array ought to be  automatically zero-filled
                 return ensureZeroed(new Uint32Array(size));
             } : fallbackarray;
-        
+
             /** Portable 32-bit signed buffer. $/
             Util.makeS32Buffer = (typeof(Int32Array) !== 'undefined') ? function(size) {
                 // Int32Array ought to be  automatically zero-filled
                 return ensureZeroed(new Int32Array(size));
             } : fallbackarray;
-        
+
             Util.arraycopy = function(dst, src) {
                 console.assert(dst.length >= src.length);
                 for (var i = 0, len = src.length; i < len; i++) {
@@ -1045,7 +1045,7 @@ const lzp3_json_process_function = AsyncFunction(`var t=async function(t,e){"use
                 }
                 return dst;
             };
-        
+
             /** Highest bit set in a byte. $/
             var bytemsb = [
                 0
@@ -1083,14 +1083,14 @@ const lzp3_json_process_function = AsyncFunction(`var t=async function(t,e){"use
             Util.log2c = function(v) {
                 return (v === 0) ? -1 : fls(v - 1);
             };
-        
+
             return Util; // ensure constants are recognized as such.
         }());
-        
-        
+
+
         LogDistanceModel = (function(){
             /** Simple (log n)(n) distance model. $/
-        
+
         // lengthBitsModelFactory will be called with arguments 2, 4, 8, 16, etc
         // and must return an appropriate model or coder.
             var LogDistanceModel = function(size, extraStates
@@ -1131,12 +1131,12 @@ const lzp3_json_process_function = AsyncFunction(`var t=async function(t,e){"use
                 var rest = this.distanceModel[lgDistance].decode();
                 return (1 << (lgDistance - 1)) + rest;
             };
-        
+
             return LogDistanceModel;
-        
+
         }());
-        
-        
+
+
         Huffman = (function(){
             /* Adaptive Huffman code, using Vitter's algorithm ported from
              * vitter.c at http://code.google.com/p/compression-code/downloads/list
@@ -1146,57 +1146,57 @@ const lzp3_json_process_function = AsyncFunction(`var t=async function(t,e){"use
              * ps. some truly grotty C code in the originally, faithfully ported to
              *     evil comma-operator-using, assignment-in-if-condition JavaScript.
              $/
-        
+
         //  This code is adapted from Professor Vitter's
         //  article, Design and Analysis of Dynamic Huffman Codes,
         //  which appeared in JACM October 1987
-        
+
         //  A design trade-off has been made to simplify the
         //  code:  a node's block is determined dynamically,
         //  and the implicit tree structure is maintained,
         //  e.g. explicit node numbers are also implicit.
-        
+
         //  Dynamic Huffman table weight ranking
         //  is maintained per Professor Vitter's
         //  invariant (*) for algorithm FGK:
-        
+
         //  leaves precede internal nodes of the
         //  same weight in a non-decreasing ranking
         //  of weights using implicit node numbers:
-        
+
         //  1) leaves slide over internal nodes, internal nodes
         //  swap over groups of leaves, leaves are swapped
         //  into group leader position, but two internal
         //  nodes never change positions relative
         //  to one another.
-        
+
         //  2) weights are incremented by 2:
         //  leaves always have even weight values;
         //  internal nodes always have odd values.
-        
+
         //  3) even node numbers are always right children;
         //  odd numbers are left children in the tree.
-        
+
         //  node 2 * HuffSize - 1 is always the tree root;
         //  node HuffEsc is the escape node;
-        
+
         //  the tree is initialized by creating an
         //  escape node as the root.
-        
+
         //  each new leaf symbol is paired with a new escape
         //  node into the previous escape node in the tree,
         //  until the last symbol which takes over the
         //  tree position of the escape node, and
         //  HuffEsc is left at zero.
-        
+
         //  overall table size: 2 * HuffSize
-        
+
         //  huff_init(alphabet_size, potential symbols used)
         //  huff_encode(next_symbol)
         //  next_symbol = huff_decode()
-        
+
         //  huff_scale(by_bits) -- scale weights and re-balance tree
-        
+
             var HTable = function(up, down, symbol, weight) {
                 this.up = up; // next node up the tree
                 this.down = down; // pair of down nodes
@@ -1212,32 +1212,32 @@ const lzp3_json_process_function = AsyncFunction(`var t=async function(t,e){"use
                 this.symbol = htable.symbol;
                 this.weight = htable.weight;
             };
-        
+
         //  initialize an adaptive coder
         //  for alphabet size, and count
         //  of nodes to be used
             var Huffman = function(size, root, bitstream, max_weight) {
                 var i;
                 //  default: all alphabet symbols are used
-        
+
                 console.assert(size && typeof(size) === 'number');
                 if (!root || root > size)
                     root = size;
-        
+
                 //  create the initial escape node
                 //  at the tree root
-        
+
                 if (root <<= 1) {
                     root--;
                 }
-        
+
                 // create root+1 htables (coding table)
                 // XXX this could be views on a backing Uint32 array?
                 this.table = [];
                 for (i = 0; i <= root; i++) {
                     this.table[i] = new HTable(0, 0, 0, 0);
                 }
-        
+
                 // this.map => mapping for symbols to nodes
                 this.map = [];
                 // this.size => the alphabet size
@@ -1246,11 +1246,11 @@ const lzp3_json_process_function = AsyncFunction(`var t=async function(t,e){"use
                         this.map[i] = 0;
                     }
                 }
-        
+
                 // this.esc  => the current tree height
                 // this.root => the root of the tree
                 this.esc = this.root = root;
-        
+
                 if (bitstream) {
                     this.readBit = bitstream.readBit.bind(bitstream);
                     this.writeBit = bitstream.writeBit.bind(bitstream);
@@ -1263,29 +1263,29 @@ const lzp3_json_process_function = AsyncFunction(`var t=async function(t,e){"use
                     return new Huffman(size, size, bitstream, max_weight);
                 };
             };
-        
-        
+
+
         // split escape node to incorporate new symbol
-        
+
             Huffman.prototype.split = function(symbol) {
                 var pair, node;
-        
+
                 //  is the tree already full???
-        
+
                 if (pair = this.esc) {
                     this.esc--;
                 } else {
                     console.assert(false);
                     return 0;
                 }
-        
+
                 //  if this is the last symbol, it moves into
                 //  the escape node's old position, and
                 //  this.esc is set to zero.
-        
+
                 //  otherwise, the escape node is promoted to
                 //  parent a new escape node and the new symbol.
-        
+
                 if (node = this.esc) {
                     this.table[pair].down = node;
                     this.table[pair].weight = 1;
@@ -1295,80 +1295,80 @@ const lzp3_json_process_function = AsyncFunction(`var t=async function(t,e){"use
                     pair = 0;
                     node = 1;
                 }
-        
+
                 //  initialize the new symbol node
-        
+
                 this.table[node].symbol = symbol;
                 this.table[node].weight = 0;
                 this.table[node].down = 0;
                 this.map[symbol] = node;
-        
+
                 //  initialize a new escape node.
-        
+
                 this.table[this.esc].weight = 0;
                 this.table[this.esc].down = 0;
                 this.table[this.esc].up = pair;
                 return node;
             };
-        
+
         //  swap leaf to group leader position
         //  return symbol's new node
-        
+
             Huffman.prototype.leader = function(node) {
                 var weight = this.table[node].weight;
                 var leader = node
                     , prev, symbol;
-        
+
                 while (weight === this.table[leader + 1].weight) {
                     leader++;
                 }
-        
+
                 if (leader === node) {
                     return node;
                 }
-        
+
                 // swap the leaf nodes
-        
+
                 symbol = this.table[node].symbol;
                 prev = this.table[leader].symbol;
-        
+
                 this.table[leader].symbol = symbol;
                 this.table[node].symbol = prev;
                 this.map[symbol] = leader;
                 this.map[prev] = node;
                 return leader;
             };
-        
+
         //  slide internal node up over all leaves of equal weight;
         //  or exchange leaf with next smaller weight internal node
-        
+
         //  return node's new position
-        
+
             Huffman.prototype.slide = function(node) {
                 var next = node;
                 var swap;
-        
+
                 swap = this.table[next++].clone();
-        
+
                 // if we're sliding an internal node, find the
                 // highest possible leaf to exchange with
-        
+
                 if (swap.weight & 1) {
                     while (swap.weight > this.table[next + 1].weight) {
                         next++;
                     }
                 }
-        
+
                 //  swap the two nodes
-        
+
                 this.table[node].set(this.table[next]);
                 this.table[next].set(swap);
-        
+
                 this.table[next].up = this.table[node].up;
                 this.table[node].up = swap.up;
-        
+
                 //  repair the symbol map and tree structure
-        
+
                 if (swap.weight & 1) {
                     this.table[swap.down].up = next;
                     this.table[swap.down - 1].up = next;
@@ -1378,50 +1378,50 @@ const lzp3_json_process_function = AsyncFunction(`var t=async function(t,e){"use
                     this.table[this.table[node].down].up = node;
                     this.map[swap.symbol] = next;
                 }
-        
+
                 return next;
             };
-        
+
         //  increment symbol weight and re balance the tree.
-        
+
             Huffman.prototype.increment = function(node) {
                 var up;
-        
+
                 //  obviate swapping a parent with its child:
                 //    increment the leaf and proceed
                 //    directly to its parent.
-        
+
                 //  otherwise, promote leaf to group leader position in the tree
-        
+
                 if (this.table[node].up === node + 1) {
                     this.table[node].weight += 2;
                     node++;
                 } else {
                     node = this.leader(node);
                 }
-        
+
                 //  increase the weight of each node and slide
                 //  over any smaller weights ahead of it
                 //  until reaching the root
-        
+
                 //  internal nodes work upwards from
                 //  their initial positions; while
                 //  symbol nodes slide over first,
                 //  then work up from their final
                 //  positions.
-        
+
                 while (this.table[node].weight += 2, up = this.table[node].up) {
                     while (this.table[node].weight > this.table[node + 1].weight) {
                         node = this.slide(node);
                     }
-        
+
                     if (this.table[node].weight & 1) {
                         node = up;
                     } else {
                         node = this.table[node].up;
                     }
                 }
-        
+
                 /* Re-scale if necessary. $/
                 if (this.max_weight) {
                     if (this.table[this.root].weight >= this.max_weight) {
@@ -1429,72 +1429,72 @@ const lzp3_json_process_function = AsyncFunction(`var t=async function(t,e){"use
                     }
                 }
             };
-        
+
         //  scale all weights and re-balance the tree
-        
+
         //  zero weight nodes are removed from the tree
         //  by sliding them out the left of the rank list
-        
+
             Huffman.prototype.scale = function(bits) {
                 var node = this.esc
                     , weight, prev;
-        
+
                 //  work up the tree from the escape node
                 //  scaling weights by the value of bits
-        
+
                 while (++node <= this.root) {
                     //  recompute the weight of internal nodes;
                     //  slide down and out any unused ones
-        
+
                     if (this.table[node].weight & 1) {
                         if (weight = this.table[this.table[node].down].weight & ~1) {
                             weight += this.table[this.table[node].down - 1].weight | 1;
                         }
-        
+
                         //  remove zero weight leaves by incrementing HuffEsc
                         //  and removing them from the symbol map.  take care
-        
+
                     } else if (!(weight = this.table[node].weight >> bits & ~1)) {
                         if (this.map[this.table[node].symbol] = 0, this.esc++) {
                             this.esc++;
                         }
                     }
-        
+
                     // slide the scaled node back down over any
                     // previous nodes with larger weights
-        
+
                     this.table[node].weight = weight;
                     prev = node;
-        
+
                     while (weight < this.table[--prev].weight) {
                         this.slide(prev);
                     }
                 }
-        
+
                 // prepare a new escape node
-        
+
                 this.table[this.esc].down = 0;
             };
-        
+
         //  send the bits for an escaped symbol
-        
+
             Huffman.prototype.sendid = function(symbol) {
                 var empty = 0
                     , max;
-        
+
                 //  count the number of empty symbols
                 //  before the symbol in the table
-        
+
                 while (symbol--) {
                     if (!this.map[symbol]) {
                         empty++;
                     }
                 }
-        
+
                 //  send LSB of this count first, using
                 //  as many bits as are required for
                 //  the maximum possible count
-        
+
                 if (max = this.size - Math.floor((this.root - this.esc) / 2) - 1) {
                     do {
                         this.writeBit(empty & 1);
@@ -1502,81 +1502,81 @@ const lzp3_json_process_function = AsyncFunction(`var t=async function(t,e){"use
                     } while (max >>= 1);
                 }
             };
-        
+
         //  encode the next symbol
-        
+
             Huffman.prototype.encode = function(symbol) {
                 var emit = 1
                     , bit;
                 var up, idx, node;
-        
+
                 if (symbol < this.size) {
                     node = this.map[symbol];
                 } else {
                     console.assert(false);
                     return;
                 }
-        
+
                 //  for a new symbol, direct the receiver to the escape node
                 //  but refuse input if table is already full.
-        
+
                 if (!(idx = node)) {
                     if (!(idx = this.esc)) {
                         return;
                     }
                 }
-        
+
                 //  accumulate the code bits by
                 //  working up the tree from
                 //  the node to the root
-        
+
                 while (up = this.table[idx].up) {
                     emit <<= 1;
                     emit |= idx & 1;
                     idx = up;
                 }
-        
+
                 //  send the code, root selector bit first
-        
+
                 while (bit = emit & 1, emit >>= 1) {
                     this.writeBit(bit);
                 }
-        
+
                 //  send identification and incorporate
                 //  new symbols into the tree
-        
+
                 if (!node) {
                     this.sendid(symbol);
                     node = this.split(symbol);
                 }
-        
+
                 //  adjust and re-balance the tree
-        
+
                 this.increment(node);
             };
-        
+
         //  read the identification bits
         //  for an escaped symbol
-        
+
             Huffman.prototype.readid = function() {
                 var empty = 0
                     , bit = 1
                     , max, symbol;
-        
+
                 //  receive the symbol, LSB first, reading
                 //  only the number of bits necessary to
                 //  transmit the maximum possible symbol value
-        
+
                 if (max = this.size - Math.floor((this.root - this.esc) / 2) - 1) {
                     do {
                         empty |= this.readBit() ? bit : 0;
                         bit <<= 1;
                     } while (max >>= 1);
                 }
-        
+
                 //  the count is of unmapped symbols
                 //  in the table before the new one
-        
+
                 for (symbol = 0; symbol < this.size; symbol++) {
                     if (!this.map[symbol]) {
                         if (!empty--) {
@@ -1584,27 +1584,27 @@ const lzp3_json_process_function = AsyncFunction(`var t=async function(t,e){"use
                         }
                     }
                 }
-        
+
                 //  oops!  our count is too big, either due
                 //  to a bit error, or a short node count
                 //  given to huff_init.
-        
+
                 console.assert(false);
                 return 0;
             };
-        
+
         //  decode the next symbol
-        
+
             Huffman.prototype.decode = function() {
                 var node = this.root;
                 var symbol, down;
-        
+
                 //  work down the tree from the root
                 //  until reaching either a leaf
                 //  or the escape node.  A one
                 //  bit means go left, a zero
                 //  means go right.
-        
+
                 while (down = this.table[node].down) {
                     if (this.readBit()) {
                         node = down - 1; // the left child precedes the right child
@@ -1612,10 +1612,10 @@ const lzp3_json_process_function = AsyncFunction(`var t=async function(t,e){"use
                         node = down;
                     }
                 }
-        
+
                 //  sent to the escape node???
                 //  refuse to add to a full tree
-        
+
                 if (node === this.esc) {
                     if (this.esc) {
                         symbol = this.readid();
@@ -1627,19 +1627,19 @@ const lzp3_json_process_function = AsyncFunction(`var t=async function(t,e){"use
                 } else {
                     symbol = this.table[node].symbol;
                 }
-        
+
                 //  increment weights and re-balance
                 //  the coding tree
-        
+
                 this.increment(node);
                 return symbol;
             };
-        
+
         // stand alone compressor, mostly for testing
             Huffman.MAGIC = 'huff';
             Huffman.compressFile = Util.compressFileHelper(Huffman.MAGIC, function(input, output, size, props) {
                 var bitstream = new BitStream(output);
-        
+
                 var alphabetSize = 256;
                 if (size < 0) {
                     alphabetSize++;
@@ -1648,11 +1648,11 @@ const lzp3_json_process_function = AsyncFunction(`var t=async function(t,e){"use
                 Util.compressWithModel(input, size, huff);
                 bitstream.flush();
             });
-        
+
         // stand alone decompresser, again for testing
             Huffman.decompressFile = Util.decompressFileHelper(Huffman.MAGIC, function(input, output, size) {
                 var bitstream = new BitStream(input);
-        
+
                 var alphabetSize = 256;
                 if (size < 0) {
                     alphabetSize++;
@@ -1660,18 +1660,18 @@ const lzp3_json_process_function = AsyncFunction(`var t=async function(t,e){"use
                 var huff = new Huffman(257, alphabetSize, bitstream, 8191);
                 Util.decompressWithModel(output, size, huff);
             });
-        
+
             return Huffman;
-        
+
         }());
-        
-        
+
+
         NoModel = (function(){
             /** Simple "lack of model" -- just encode the bits directly.
              *  Useful especially with sparse spaces or Huffman coders where there's
              *  no obvious prediction to be made that will pay for itself.
              $/
-        
+
             var NoModel = function(bitstream, size) {
                 this.bitstream = bitstream;
                 this.bits = Util.fls(size - 1);
@@ -1694,7 +1694,7 @@ const lzp3_json_process_function = AsyncFunction(`var t=async function(t,e){"use
                 }
                 return r;
             };
-        
+
             /** Brain-dead self-test. $/
             NoModel.MAGIC = 'nomo';
             NoModel.compressFile = Util.compressFileHelper(NoModel.MAGIC, function(inStream, outStream, fileSize, props) {
@@ -1708,26 +1708,26 @@ const lzp3_json_process_function = AsyncFunction(`var t=async function(t,e){"use
                 var model = new NoModel(bitstream, (fileSize < 0) ? 257 : 256);
                 Util.decompressWithModel(outStream, fileSize, model);
             });
-        
+
             return NoModel;
-        
-        
+
+
         }());
-        
-        
+
+
         FenwickModel = (function(){
             /** Range coding model based on Fenwick trees for O(ln N) query/update. $/
-        
+
             /** We store two probabilities in a U32, so max prob is going to be 0xFFFF $/
             var DEFAULT_MAX_PROB = 0xFF00;
             var DEFAULT_INCREMENT = 0x0100;
-        
+
             var ESC_MASK = 0x0000FFFF
                 , ESC_SHIFT = 0;
             var SYM_MASK = 0xFFFF0000
                 , SYM_SHIFT = 16;
             var SCALE_MASK = 0xFFFEFFFE;
-        
+
             var FenwickModel = function(coder, size, max_prob, increment) {
                 this.coder = coder;
                 this.numSyms = size + 1; // save space for an escape symbol
@@ -1768,7 +1768,7 @@ const lzp3_json_process_function = AsyncFunction(`var t=async function(t,e){"use
                 var mask = SYM_MASK
                     , shift = SYM_SHIFT;
                 var update = (this.increment << SYM_SHIFT);
-        
+
                 if ((sy_f & SYM_MASK) === 0) { // escape!
                     this.encode(this.numSyms - 1);
                     mask = ESC_MASK;
@@ -1894,7 +1894,7 @@ const lzp3_json_process_function = AsyncFunction(`var t=async function(t,e){"use
                     this.tree[i] = this.tree[2 * i] + this.tree[2 * i + 1];
                 }
             };
-        
+
             FenwickModel.MAGIC = 'fenw';
             /** Simple order-0 compressor, as self-test. $/
             FenwickModel.compressFile = Util.compressFileHelper(FenwickModel.MAGIC, function(inStream, outStream, fileSize, props, finalByte) {
@@ -1904,7 +1904,7 @@ const lzp3_json_process_function = AsyncFunction(`var t=async function(t,e){"use
                 Util.compressWithModel(inStream, fileSize, model);
                 range.encodeFinish();
             }, true);
-        
+
             /** Simple order-0 decompresser, as self-test. $/
             FenwickModel.decompressFile = Util.decompressFileHelper(FenwickModel.MAGIC, function(inStream, outStream, fileSize) {
                 var range = new RangeCoder(inStream);
@@ -1913,21 +1913,21 @@ const lzp3_json_process_function = AsyncFunction(`var t=async function(t,e){"use
                 Util.decompressWithModel(outStream, fileSize, model);
                 range.decodeFinish();
             });
-        
+
             return FenwickModel;
-        
+
         }());
-        
-        
+
+
         DefSumModel = (function(){
             /** Deferred-sum model, suitable for small ( ~ 256 ) ranges. $/
         // See http://cbloom.com/src/defsum.zip
         //     http://cbloom.com/papers/context.pdf
-        
+
             var LOG_PROB_TOTAL = 8;
             var PROB_TOTAL = 1 << LOG_PROB_TOTAL;
             var MAX_ESCAPE_COUNT = 40;
-        
+
             var DefSumModel = function(coder, size, isDecoder) {
                 var i;
                 console.assert(size < 300); // not meant for sparse
@@ -2061,7 +2061,7 @@ const lzp3_json_process_function = AsyncFunction(`var t=async function(t,e){"use
                 this._update(symbol, true);
                 return symbol;
             };
-        
+
             DefSumModel.MAGIC = 'dfsm';
             /** Simple order-0 compressor, as self-test. $/
             DefSumModel.compressFile = Util.compressFileHelper(DefSumModel.MAGIC, function(inStream, outStream, fileSize, props, finalByte) {
@@ -2079,15 +2079,15 @@ const lzp3_json_process_function = AsyncFunction(`var t=async function(t,e){"use
                 Util.decompressWithModel(outStream, fileSize, model);
                 range.decodeFinish();
             });
-        
+
             return DefSumModel;
-        
+
         }());
-        
-        
+
+
         Context1Model = (function(){
             /** A simple context-1 model. $/
-        
+
             var Context1Model = function(modelFactory, contextSize, alphabetSize) {
                 var i;
                 this.literalModel = [];
@@ -2102,7 +2102,7 @@ const lzp3_json_process_function = AsyncFunction(`var t=async function(t,e){"use
             Context1Model.prototype.decode = function(context) {
                 return this.literalModel[context].decode();
             };
-        
+
             /** Simple self-test. $/
             Context1Model.MAGIC = 'ctx1';
             Context1Model.compressFile = Util.compressFileHelper(Context1Model.MAGIC, function(inStream, outStream, fileSize, props) {
@@ -2137,22 +2137,22 @@ const lzp3_json_process_function = AsyncFunction(`var t=async function(t,e){"use
                 };
                 Util.decompressWithModel(outStream, fileSize, modelp);
             });
-        
+
             return Context1Model;
-        
+
         }());
-        
-        
+
+
         Lzp3 = (function(){
             /* Implementation of LZP3(ish), with an adaptive Huffman code or a range
              * coder (instead of LZP3's original static Huffman code).
              * See: http://www.cbloom.com/papers/lzp.pdf
              $/
-        
-        
+
+
             var Lzp3 = Object.create(null);
             Lzp3.MAGIC = 'lzp3';
-        
+
         // use Huffman coder (fast) or else use range coder (slow)
             var USE_HUFFMAN_CODE = false;
         // use deferred-sum model, which is supposed to be faster (but compresses worse)
@@ -2161,7 +2161,7 @@ const lzp3_json_process_function = AsyncFunction(`var t=async function(t,e){"use
             var LENGTH_MODEL_CUTOFF = 256;
             var MODEL_MAX_PROB = 0xFF00;
             var MODEL_INCREMENT = 0x100;
-        
+
         // Constants was used for compress/decompress function.
             var CTXT4_TABLE_SIZE = 1 << 16;
             var CTXT3_TABLE_SIZE = 1 << 12;
@@ -2171,13 +2171,13 @@ const lzp3_json_process_function = AsyncFunction(`var t=async function(t,e){"use
             var WINDOW_SIZE = 1 << LOG_WINDOW_SIZE;
             var MAX_MATCH_LEN = WINDOW_SIZE - 1;
             var MATCH_LEN_CONTEXTS = 16;
-        
+
             var MAX32 = 0xFFFFFFFF;
             var MAX24 = 0x00FFFFFF;
             var MAX16 = 0x0000FFFF;
             var MAX8 = 0x000000FF;
-        
-        
+
+
             var Window = function(maxSize) {
                 this.buffer = Util.makeU8Buffer(Math.min(maxSize + 4, WINDOW_SIZE));
                 this.pos = 0;
@@ -2258,9 +2258,9 @@ const lzp3_json_process_function = AsyncFunction(`var t=async function(t,e){"use
             Lzp3.compressFile = Util.compressFileHelper(Lzp3.MAGIC, function(inStream, outStream, fileSize, props) {
                 // sliding window & hash table
                 var window = new Window((fileSize >= 0) ? fileSize : WINDOW_SIZE);
-        
+
                 var coderFactory, sparseCoderFactory, flush;
-        
+
                 if (USE_HUFFMAN_CODE) {
                     // Huffman contexts
                     outStream.writeByte(0x80); // mark that this is Huffman coded.
@@ -2268,11 +2268,11 @@ const lzp3_json_process_function = AsyncFunction(`var t=async function(t,e){"use
                     flush = bitstream.flush.bind(bitstream);
                     coderFactory = Huffman.factory(bitstream, MAX16);
                     sparseCoderFactory = NoModel.factory(bitstream);
-        
+
                 } else { // range encoder
                     var range = new RangeCoder(outStream);
                     range.encodeStart(0x00, 0); // 0x00 == range encoded
-        
+
                     coderFactory = FenwickModel.factory(range, MODEL_MAX_PROB, MODEL_INCREMENT);
                     if (USE_DEFSUM) {
                         coderFactory = DefSumModel.factory(range, false /* encoder $/ );
@@ -2287,7 +2287,7 @@ const lzp3_json_process_function = AsyncFunction(`var t=async function(t,e){"use
                     };
                     flush = function() { range.encodeFinish(); };
                 }
-        
+
                 var huffLiteral = new Context1Model(coderFactory, 256
                     , (fileSize < 0) ? 257 : 256);
                 var huffLen = []
@@ -2296,7 +2296,7 @@ const lzp3_json_process_function = AsyncFunction(`var t=async function(t,e){"use
                     huffLen[i] = new LogDistanceModel(MAX_MATCH_LEN + 1, 1
                         , coderFactory, sparseCoderFactory);
                 }
-        
+
                 var inSize = 0
                     , s, matchContext = 0;
                 while (inSize !== fileSize) {
@@ -2342,19 +2342,19 @@ const lzp3_json_process_function = AsyncFunction(`var t=async function(t,e){"use
                 }
                 if (flush) flush();
             });
-        
+
             /**
              * Decompress using modified LZP3 algorithm.
              $/
             Lzp3.decompressFile = Util.decompressFileHelper(Lzp3.MAGIC, function(inStream, outStream, fileSize) {
                 var flags = inStream.readByte();
                 var use_huffman_code = !!(flags & 0x80);
-        
+
                 // sliding window & hash table
                 var window = new Window((fileSize >= 0) ? fileSize : WINDOW_SIZE);
-        
+
                 var coderFactory, sparseCoderFactory, finish;
-        
+
                 if (use_huffman_code) {
                     // Huffman contexts
                     var bitstream = new BitStream(inStream);
@@ -2427,47 +2427,34 @@ const lzp3_json_process_function = AsyncFunction(`var t=async function(t,e){"use
         }());
         
         if(mode === "COMPRESS_OBJECT") {
-        
-            var json_str = JSON.stringify(uint8a_or_obj, null, 0);
-            var ui8a = new TextEncoder("utf-8").encode(json_str);
-            var compressed = Lzp3.compressFile(ui8a);
-            
-            return Uint8Array.from(compressed);
+            //  JS -> json_str -> ui8a -> compressed ui8a
+            resolve(Uint8Array.from(Lzp3.compressFile(new TextEncoder("utf-8").encode(JSON.stringify(uint8a_or_obj, null, 0)))));
             
         }else if(mode === "DECOMPRESS_UINT8A") {
-          
-             var decompressed = Lzp3.decompressFile(uint8a_or_obj);
-             var ui8a =  Uint8Array.from(decompressed);
-             var json_str = new TextDecoder().decode(ui8a);
-             
-            return JSON.parse(json_str);
+            // ui8a decompressed -> ui8a -> json_str -> JS
+            resolve(JSON.parse(new TextDecoder().decode(Uint8Array.from(Lzp3.decompressFile(uint8a_or_obj)))));
             
         }else {
         
-            return null;
+            reject(null);
         }
-} */
+})} */
 
 const LZP3 = async(uint8a_or_obj, mode = "COMPRESS_OBJECT", pool = null) => {
 
-    if(Boolean(pool)) {
+    if(pool !== null) {
 
-        return pool.exec(lzp3_json_process_function, [
+        return pool.exec(window.lzp3_json_process_function, [
             uint8a_or_obj,
             mode,
         ]).catch((e) => {
 
-            if(e === "Pool terminated") {
-                return LZP3(uint8a_or_obj, mode, pool);
-            }else {
-
-                return lzp3_json_process_function(uint8a_or_obj, mode);
-            }
+            return window.lzp3_json_process_function(uint8a_or_obj, mode);
         }).timeout(60 * 1000);
 
     }else {
 
-        return lzp3_json_process_function(uint8a_or_obj, mode);
+        return window.lzp3_json_process_function(uint8a_or_obj, mode);
     }
 };
 

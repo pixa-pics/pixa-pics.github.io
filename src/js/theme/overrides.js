@@ -30,14 +30,29 @@ const overrides = {
             "h1 > p, h2 > p, h3 > p, h4 > p, h5 > p, h6 > p": {
                 margin: 0,
             },
-            "canvas":{
-                imageRendering: "optimizespeed",
+            ".pixelated:not(a), .pixelated:not(a) *": {
+                msImageInterpolationMode: "nearest-neighbor;",
             },
-            ".pixelated": {
+            ".pixelated:not(b), .pixelated:not(b) *": {
+                imageRendering: "optimizeSpeed",
+            },
+            ".pixelated:not(c), .pixelated:not(c) *": {
+                imageRendering: "-webkit-optimize-contrast;",
+            },
+            ".pixelated:not(d), .pixelated:not(d) *": {
+                imageRendering: "-webkit-crisp-edges",
+            },
+            ".pixelated:not(e), .pixelated:not(e) *": {
+                imageRendering: "-moz-crisp-edges",
+            },
+            ".pixelated:not(f), .pixelated:not(f) *": {
+                imageRendering: "-o-pixelated",
+            },
+            ".pixelated:not(g), .pixelated:not(g) *": {
+                imageRendering: "crisp-edges",
+            },
+            ".pixelated:not(h), .pixelated:not(h) *": {
                 imageRendering: "pixelated",
-                "& *": {
-                    imageRendering: "crisp-edges",
-                }
             },
             ".emoji": {
                 verticalAlign: "inherit",

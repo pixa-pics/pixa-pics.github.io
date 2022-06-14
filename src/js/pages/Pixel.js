@@ -418,7 +418,7 @@ class Pixel extends React.Component {
         api.get_settings(this._process_settings_info_result);
 
         this.setState({_h_svg: get_svg_in_b64(<HexGrid color={"#e5e5e5"}/>)});
-        import("../utils/ressource_pixel").then(async(RESSOURCE_PIXELS) => {
+        import("../utils/ressource_pixel").then((RESSOURCE_PIXELS) => {
 
             this.setState({_library: RESSOURCE_PIXELS});
         });
@@ -445,7 +445,7 @@ class Pixel extends React.Component {
 
             this.setState({_kb: current_state.kb}, () => {
 
-                import("../utils/lzp3_json").then(async({LZP3}) => {
+                import("../utils/lzp3_json").then(({LZP3}) => {
 
                     api.set_settings({}, (err, res) => {
 
@@ -531,10 +531,11 @@ class Pixel extends React.Component {
             // Set new settings from query result
             const _attachment_previews = typeof settings.attachment_previews !== "undefined" ? settings.attachment_previews: {};
 
+            actions.trigger_loading_update(100);
+            actions.trigger_sfx("hero_decorative-celebration-02");
+
             this.setState({ _is_pixel_dialog_create_open: true, _attachment_previews, _know_the_settings: true }, () => {
 
-                actions.trigger_loading_update(100);
-                actions.trigger_sfx("hero_decorative-celebration-02");
                 this.forceUpdate();
             });
         }
@@ -771,17 +772,19 @@ class Pixel extends React.Component {
 
     _download_image = (size) => {
 
+        const optimize_render_size = Boolean(size > 1);
         const { get_base64_png_data_url } = this.state._canvas;
 
         window.dispatchEvent(new Event(`art-download-raster${size}`));
 
-        let a = document.createElement("a"); //Create <a>
-        a.download = `Pixelart_N${Date.now()}_PIXAPICS_x${size}.png`; //File name Here
-
         get_base64_png_data_url(size, ([base_64]) => {
 
-            a.href = "" + base_64;
+            let a = document.createElement("a"); //Create <a>
+            a.download = `Pixelart_N${Date.now()}_PIXAPICS_x${size}.png`; //File name Here
+            a.href = base_64;
             a.click();
+            a.remove();
+            base_64 = null;
 
             actions.trigger_sfx("hero_decorative-celebration-02");
             setTimeout(() => {
@@ -790,7 +793,7 @@ class Pixel extends React.Component {
                 actions.trigger_sfx("alert_high-intensity");
 
             }, 2000);
-        }, false, 0);
+        }, false, optimize_render_size ? 6: 0, 40, 50);
     };
 
     _download_svg = (using = "xbrz", optimize_render_size = false) => {
@@ -808,24 +811,25 @@ class Pixel extends React.Component {
 
                 get_base64_png_data_url(1, ([png_base64_in, palette]) => {
 
-                    let a = document.createElement("a"); //Create <a>
-                    a.download = `Painting_SRC_1x_N${Date.now()}_PIXAPICS.png`; //File name Here
-                    a.href = "" + png_base64_in;
-                    a.click();
-
                     base64png_to_xbrz_svg(png_base64_in, (image_base64) => {
 
+                        png_base64_in = null;
                         let a = document.createElement("a"); //Create <a>
                         a.download = `Painting_IMG_6x_${using.toUpperCase()}_N${Date.now()}_PIXAPICS.png`; //File name Here
-                        a.href = "" + image_base64;
+                        a.href = image_base64;
                         a.click();
+                        a.remove();
+                        image_base64 = null;
 
                     }, (svg_base64) => {
 
+                        palette = null;
                         let a = document.createElement("a"); //Create <a>
                         a.download = `Painting_VECT_6x_${using.toUpperCase()}_N${Date.now()}_PIXAPICS.svg`; //File name Here
-                        a.href = "" + svg_base64;
+                        a.href = svg_base64;
                         a.click();
+                        a.remove();
+                        svg_base64 = null;
 
                         this.setState({_loading: false, _loading_process: ""}, () => {
 
@@ -841,7 +845,13 @@ class Pixel extends React.Component {
 
                     }, palette, using, optimize_render_size);
 
-                }, true, optimize_render_size ? 2: 0, 60, 75);
+                    let a = document.createElement("a"); //Create <a>
+                    a.download = `Painting_SRC_1x_N${Date.now()}_PIXAPICS.png`; //File name Here
+                    a.href = png_base64_in;
+                    a.click();
+                    a.remove();
+
+                }, true, optimize_render_size ? 6: 0, 40, 50);
 
             }, 500);
 
@@ -951,7 +961,7 @@ class Pixel extends React.Component {
 
                     bitmap_to_imagedata(bitmap_input, resize_original_to, (imagedata) => {
 
-                        import("../utils/rgb_quant").then(async({rgb_quant}) => {
+                        import("../utils/rgb_quant").then(({rgb_quant}) => {
 
                             if(_import_colorize === "1") {
 
@@ -1154,7 +1164,7 @@ class Pixel extends React.Component {
 
     _handle_import_json_state_id = (id) => {
 
-        import("../utils/lzp3_json").then(async({LZP3}) => {
+        import("../utils/lzp3_json").then(({LZP3}) => {
 
             this._handle_pixel_dialog_create_close();
             this._handle_load("image_preload");
@@ -1239,43 +1249,47 @@ class Pixel extends React.Component {
 
     _set_ripple_ref = (element) => {
 
-        if(element === null) {return}
-        this.setState({_ripple: element});
-    };
-
-    _set_canvas_ref = (element) => {
-
-        if(element === null) {return}
+        if(element === null || this.state._ripple !== null) {return}
 
         let new_element = {};
 
         Object.keys(element).forEach((k) => {
 
-            const val = element[k];
+            if(typeof element[k] === "function") {
 
-            if(typeof val === "function") {
+                new_element[k] = element[k];
+            }
+        });
 
-                new_element[k] = val;
+        this.setState({_ripple: new_element});
+    };
+
+    _set_canvas_ref = (element) => {
+
+        if(element === null || this.state._filters.length > 0) {return}
+
+        let new_element = {};
+
+        Object.keys(element).forEach((k) => {
+
+            if(typeof element[k] === "function") {
+
+                new_element[k] = element[k];
             }
         });
 
         this.setState({_canvas: new_element, _filters: new_element.get_filter_names()});
     };
 
-    _handle_position_change = (position) => {
+    _handle_position_change = (position, fps) => {
 
-        this.setState({_x: position.x, _y: position.y});
+        this.setState({_x: position.x, _y: position.y, _fps: parseInt(fps)});
     }
 
     _handle_can_undo_redo_change = (_can_undo, _can_redo) => {
 
         this.setState({_can_undo, _can_redo})
     }
-
-    _handle_fps_change = (fps) => {
-
-        this.setState({_fps: parseInt(fps), _prev_fps: parseInt(this.state._fps)});
-    };
 
     _handle_size_change = (_width, _height) => {
 
@@ -1324,9 +1338,12 @@ class Pixel extends React.Component {
         this.setState({_is_something_selected: is_something_selected});
     };
 
-    _set_value_from_slider = (event, value) => {
+    _set_value_from_slider_with_update = (event, value) => {
 
-        this.setState({_slider_value: value});
+        this.setState({_slider_value: value}, () => {
+
+            this.forceUpdate();
+        });
     };
 
     _set_width_from_slider = (event, value) => {
@@ -1636,7 +1653,7 @@ class Pixel extends React.Component {
             _filters,
             _select_mode,
             _pencil_mirror_mode,
-            _x, _y, _kb, _fps, _prev_fps,
+            _x, _y, _kb, _fps,
             _is_something_selected,
             _mine_player_direction,
             _is_edit_drawer_open,
@@ -1698,11 +1715,12 @@ class Pixel extends React.Component {
                                 </Typography>
                                 <Slider
                                     className={classes.effectSlider}
+                                    key={_slider_value}
                                     defaultValue={_slider_value}
                                     step={1/32}
                                     min={0}
                                     max={1}
-                                    onChangeCommitted={this._set_value_from_slider}
+                                    onChangeCommitted={this._set_value_from_slider_with_update}
                                     aria-labelledby="strength-slider"
                                 />
                             </div>
@@ -1778,7 +1796,7 @@ class Pixel extends React.Component {
                         <div style={{boxShadow: "rgb(0 0 0 / 20%) 0px 2px 4px -1px, rgb(0 0 0 / 14%) 0px 4px 5px 0px, rgb(0 0 0 / 12%) 0px 1px 10px 0px", zIndex: 1}}>
                             <div className={classes.drawerHeader}>
                                             <span className={classes.coordinate}>
-                                                <span>{`FPS: ${Math.round((_fps + _prev_fps) / 2)}`}</span>
+                                                <span>{`FPS: ${_fps}`}</span>
                                                 <span>{` | X: ${x}, Y: ${y} | `}</span>
                                                 <span className={_kb < 64 ? classes.green: classes.red}>{`[~${Math.round(_kb * 100) / 100} kB]`}</span>
                                             </span>
@@ -1786,12 +1804,13 @@ class Pixel extends React.Component {
                                     Effect strength :
                                 </Typography>
                                 <Slider
+                                    key={_slider_value}
                                     defaultValue={_slider_value}
                                     className={classes.effectSlider}
                                     step={1/32}
                                     min={0}
                                     max={1}
-                                    onChangeCommitted={this._set_value_from_slider}
+                                    onChangeCommitted={this._set_value_from_slider_with_update}
                                     aria-labelledby="strength-slider"
                                 />
                             </div>
@@ -2088,8 +2107,8 @@ class Pixel extends React.Component {
                     </ListItem>
                 </Menu>
 
-                <div className={classes.fatabs} style={_is_edit_drawer_open && _less_than_1280w ? {minHeight: 36, height: 36, backgroundColor: "#fff"}: {}}>
-                    <Tabs className={classes.tabs} style={_is_edit_drawer_open && _less_than_1280w ? {minHeight: 36, height: 36}: {}}
+                <div className={classes.fatabs} style={_is_edit_drawer_open && _less_than_1280w ? {minHeight: 48, height: 48, backgroundColor: "#fff"}: {}}>
+                    <Tabs className={classes.tabs} style={_is_edit_drawer_open && _less_than_1280w ? {minHeight: 48, height: 48}: {}}
                           variant="scrollable"
                           scrollButtons="auto"
                           indicatorColor="primary"
@@ -2097,13 +2116,13 @@ class Pixel extends React.Component {
                           selectionFollowsFocus={false}
                           value={_view_name_index}
                           onChange={(event, index) => {this._handle_edit_drawer_open(event, index)}}>
-                        <Tab className={_is_edit_drawer_open && _less_than_1280w ? classes.tabNoIcon: classes.tab} label={"colors"} icon={<ColorsTweemoji />} />
-                        <Tab className={_is_edit_drawer_open && _less_than_1280w ? classes.tabNoIcon: classes.tab} label={"image"} icon={<ImageTweemoji />} />
-                        <Tab className={_is_edit_drawer_open && _less_than_1280w ? classes.tabNoIcon: classes.tab} label={"layers"} icon={<LayersTweemoji />} />
-                        <Tab className={_is_edit_drawer_open && _less_than_1280w ? classes.tabNoIcon: classes.tab} label={"tools"} icon={<ToolsTweemoji />} />
-                        <Tab className={_is_edit_drawer_open && _less_than_1280w ? classes.tabNoIcon: classes.tab} label={"select"} icon={<SelectTweemoji />} />
-                        <Tab className={_is_edit_drawer_open && _less_than_1280w ? classes.tabNoIcon: classes.tab} label={"effects"} icon={<EffectsTweemoji />} />
-                        <Tab className={_is_edit_drawer_open && _less_than_1280w ? classes.tabNoIcon: classes.tab} label={"filters"} icon={<FiltersTweemoji />} />
+                        <Tab className={classes.tab} label={"colors"} icon={<ColorsTweemoji />} />
+                        <Tab className={classes.tab} label={"image"} icon={<ImageTweemoji />} />
+                        <Tab className={classes.tab} label={"layers"} icon={<LayersTweemoji />} />
+                        <Tab className={classes.tab} label={"tools"} icon={<ToolsTweemoji />} />
+                        <Tab className={classes.tab} label={"select"} icon={<SelectTweemoji />} />
+                        <Tab className={classes.tab} label={"effects"} icon={<EffectsTweemoji />} />
+                        <Tab className={classes.tab} label={"filters"} icon={<FiltersTweemoji />} />
                     </Tabs>
                 </div>
 

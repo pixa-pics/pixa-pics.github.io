@@ -40,8 +40,11 @@
                 contain: size paint style layout;
                 content: " ";
                 position: fixed;
-                z-index: 999999999999999;
+                z-index: 9999999;
+                -ms-interpolation-mode: nearest-neighbor;
                 image-rendering: optimizeSpeed;
+                image-rendering: -o-pixelated;
+                image-rendering: -webkit-optimize-contrast;
                 image-rendering: -webkit-crisp-edges;
                 image-rendering: -moz-crisp-edges;
                 image-rendering: crisp-edges;
@@ -180,7 +183,7 @@
 
                                 if(document.querySelectorAll(`script[src$="${"norris.min.js"}"]`).length === 0) {
 
-                                    e.setAttribute("async", "true");
+                                    e.setAttribute("defer", "true");
                                     document.body.appendChild(e);
                                 }
 

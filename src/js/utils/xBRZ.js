@@ -25,11 +25,11 @@ SOFTWARE.
 
 const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
 
-const xbrz_process_function = new AsyncFunction(`var e=async function(e,t){"use strict";const s=16711680,r=65280;function n(e,t,s,r,n){return e&((n&e)*t+(r&e)*(s-t))/s}function i(e,t,i,l){const a=i.get(),h=n(s,e,t,a,l)|n(r,e,t,a,l)|n(255,e,t,a,l);i.set(4278190080|h)}class l{constructor(){this.scale=2}scale(){return this.scale}blendLineShallow(e,t){i(1,4,t.ref(this.scale-1,0),e),i(3,4,t.ref(this.scale-1,1),e)}blendLineSteep(e,t){i(1,4,t.ref(0,this.scale-1),e),i(3,4,t.ref(1,this.scale-1),e)}blendLineSteepAndShallow(e,t){i(1,4,t.ref(1,0),e),i(1,4,t.ref(0,1),e),i(5,6,t.ref(1,1),e)}blendLineDiagonal(e,t){i(1,2,t.ref(1,1),e)}blendCorner(e,t){i(21,100,t.ref(1,1),e)}}class a extends l{constructor(){super(),this.scale=3}blendLineShallow(e,t){super.blendLineShallow(e,t),i(1,4,t.ref(this.scale-2,2),e),t.ref(this.scale-1,2).set(e)}blendLineSteep(e,t){super.blendLineSteep(e,t),i(1,4,t.ref(2,this.scale-2),e),t.ref(2,this.scale-1).set(e)}blendLineSteepAndShallow(e,t){i(1,4,t.ref(2,0),e),i(1,4,t.ref(0,2),e),i(3,4,t.ref(2,1),e),i(3,4,t.ref(1,2),e),t.ref(2,2).set(e)}blendLineDiagonal(e,t){i(1,8,t.ref(1,2),e),i(1,8,t.ref(2,1),e),i(7,8,t.ref(2,2),e)}blendCorner(e,t){i(45,100,t.ref(2,2),e)}}class h extends a{constructor(){super(),this.scale=4}blendLineShallow(e,t){super.blendLineShallow(e,t),i(3,4,t.ref(this.scale-2,3),e),t.ref(this.scale-1,3).set(e)}blendLineSteep(e,t){super.blendLineSteep(e,t),i(3,4,t.ref(3,this.scale-2),e),t.ref(3,this.scale-1).set(e)}blendLineSteepAndShallow(e,t){i(3,4,t.ref(3,1),e),i(3,4,t.ref(1,3),e),i(1,4,t.ref(3,0),e),i(1,4,t.ref(0,3),e),i(1,3,t.ref(2,2),e),t.ref(3,3).set(e),t.ref(3,2).set(e),t.ref(2,3).set(e)}blendLineDiagonal(e,t){i(1,2,t.ref(this.scale-1,this.scale/2),e),i(1,2,t.ref(this.scale-2,this.scale/2+1),e),t.ref(this.scale-1,this.scale-1).set(e)}blendCorner(e,t){i(68,100,t.ref(3,3),e),i(9,100,t.ref(3,2),e),i(9,100,t.ref(2,3),e)}}class c extends h{constructor(){super(),this.scale=5}blendLineShallow(e,t){super.blendLineShallow(e,t),i(1,4,t.ref(this.scale-3,4),e),t.ref(this.scale-1,4).set(e),t.ref(this.scale-2,4).set(e)}blendLineSteep(e,t){super.blendLineSteep(e,t),i(1,4,t.ref(4,this.scale-3),e),i(3,4,t.ref(3,this.scale-2),e),t.ref(4,this.scale-1).set(e),t.ref(4,this.scale-2).set(e)}blendLineSteepAndShallow(e,t){i(1,4,t.ref(0,this.scale-1),e),i(1,4,t.ref(2,this.scale-2),e),i(3,4,t.ref(1,this.scale-1),e),i(1,4,t.ref(this.scale-1,0),e),i(1,4,t.ref(this.scale-2,2),e),i(3,4,t.ref(this.scale-1,1),e),i(2,3,t.ref(3,3),e),t.ref(2,this.scale-1).set(e),t.ref(3,this.scale-1).set(e),t.ref(4,this.scale-1).set(e),t.ref(this.scale-1,2).set(e),t.ref(this.scale-1,3).set(e)}blendLineDiagonal(e,t){i(1,8,t.ref(this.scale-1,this.scale/2),e),i(1,8,t.ref(this.scale-2,this.scale/2+1),e),i(1,8,t.ref(this.scale-3,this.scale/2+2),e),i(7,8,t.ref(4,3),e),i(7,8,t.ref(3,4),e),t.ref(4,4).set(e)}blendCorner(e,t){i(86,100,t.ref(4,4),e),i(23,100,t.ref(4,3),e),i(23,100,t.ref(3,4),e)}}class f extends c{constructor(){super(),this.scale=6}blendLineShallow(e,t){super.blendLineShallow(e,t),i(3,4,t.ref(this.scale-3,5),e),t.ref(this.scale-1,5).set(e),t.ref(this.scale-2,5).set(e)}blendLineSteep(e,t){super.blendLineSteep(e,t),i(3,4,t.ref(5,this.scale-3),e),t.ref(5,this.scale-1).set(e),t.ref(5,this.scale-2).set(e)}blendLineSteepAndShallow(e,t){i(1,4,t.ref(0,this.scale-1),e),i(1,4,t.ref(2,this.scale-2),e),i(3,4,t.ref(1,this.scale-1),e),i(3,4,t.ref(3,this.scale-2),e),i(1,4,t.ref(this.scale-1,0),e),i(1,4,t.ref(this.scale-2,2),e),i(3,4,t.ref(this.scale-1,1),e),i(3,4,t.ref(this.scale-2,3),e),t.ref(2,this.scale-1).set(e),t.ref(3,this.scale-1).set(e),t.ref(4,this.scale-1).set(e),t.ref(5,this.scale-1).set(e),t.ref(4,this.scale-2).set(e),t.ref(5,this.scale-2).set(e),t.ref(this.scale-1,2).set(e),t.ref(this.scale-1,3).set(e)}blendLineDiagonal(e,t){i(1,2,t.ref(this.scale-1,this.scale/2),e),i(1,2,t.ref(this.scale-2,this.scale/2+1),e),i(1,2,t.ref(this.scale-3,this.scale/2+2),e),t.ref(this.scale-2,this.scale-1).set(e),t.ref(this.scale-1,this.scale-1).set(e),t.ref(this.scale-1,this.scale-2).set(e)}blendCorner(e,t){i(97,100,t.ref(5,5),e),i(42,100,t.ref(4,5),e),i(42,100,t.ref(5,4),e),i(6,100,t.ref(5,3),e),i(6,100,t.ref(3,5),e)}}class o{constructor(e){this.arr=e,this.ptr=0}position(e){this.ptr=e}get(){return this.arr[this.ptr]}set(e){this.arr[this.ptr]=e}}class u{constructor(e,t,s){this.out=new o(t),this.n=144*(e-2),this.outWidth=s,this.outi=0,this.nr=0}move(e,t){this.nr=this.n+36*e,this.outi=t}ref(e,t){e=parseInt(e),t=parseInt(t);const s=C[this.nr+6*e+t];return this.out.position(this.outi+s.J+s.I*this.outWidth),this.out}}const d=function(){let e=[];const t=[[0,1,2,3,4,5,6,7,8],[6,3,0,7,4,1,8,5,2],[8,7,6,5,4,3,2,1,0],[2,5,8,1,4,7,0,3,6]];for(let s=0;s<4;s++)for(let r=0;r<9;r++)e[(r<<2)+s]=t[s][r];return e}(),p=0,b=1,L=2,g=new class{constructor(){this.f=0,this.g=0,this.j=0,this.k=0}reset(){this.f=0,this.g=0,this.j=0,this.k=0}};function S(e){return e*e}function m(e,t,s,r,n){for(let i=0;i<n;++i,t+=s)for(let s=0;s<n;++s)e[t+s]=r}function w(e,t,n){return e===t?0:function(e,t,n){const i=(e&s)-(t&s)>>16,l=(255&e)-(255&t),a=.2126*i+.7152*((e&r)-(t&r)>>8)+.0722*l,h=.5389092476826902*(l-a),c=.63500127000254*(i-a);return S(n*a)+S(h)+S(c)}(e,t,n)}let k=3.6,j=1,M=2.2;function R(e,t){return w(e&=4294967295,t&=4294967295,j)}const x=S(30);function A(e,t){return w(e,t,j)<x}function B(e,t){return w(e,t,j)}function T(e,t,s,r){let n=0,i=0;if(0===e)n=t,i=s;else{const l=T(e-1,t,s,r);n=r-1-l.J,i=l.I}return{I:n,J:i}}let C=function(){let e=[];for(let t=2;t<7;t++)for(let s=0;s<4;s++){let r=144*(t-2)+36*s;for(let n=0;n<6;n++)for(let i=0;i<6;i++)e[r+6*n+i]=T(s,n,i,t)}return e}();function D(e){if(g.reset(),e.f===e.g&&e.j===e.k||e.f===e.j&&e.g===e.k)return;const t=R,s=t(e.i,e.f)+t(e.f,e.c)+t(e.n,e.k)+t(e.k,e.h)+4*t(e.j,e.g),r=t(e.e,e.j)+t(e.j,e.o)+t(e.b,e.g)+t(e.g,e.l)+4*t(e.f,e.k),n=k*s<r;s<r?(e.f!==e.g&&e.f!==e.j&&(g.f=n?L:b),e.k!==e.g&&e.k!==e.j&&(g.k=n?L:b)):r<s&&(e.j!==e.f&&e.j!==e.k&&(g.j=n?L:b),e.g!==e.f&&e.g!==e.k&&(g.g=n?L:b))}const I={getTopL:e=>3&e,getTopR:e=>3&e>>2,getBottomR:e=>3&e>>4,getBottomL:e=>3&e>>6,setTopL:(e,t)=>255&(e|t),setTopR:(e,t)=>255&(e|t<<2),setBottomR:(e,t)=>255&(e|t<<4),setBottomL:(e,t)=>255&(e|t<<6),rotate(e,t){const s=t<<1;return 255&(e<<s|e>>8-s)}};let v;function y(e,t,s,r,n,i,l){const a=s[d[4+t]],h=s[d[8+t]],c=s[d[12+t]],f=s[d[16+t]],o=s[d[20+t]],u=s[d[24+t]],b=s[d[28+t]],g=s[d[32+t]],S=I.rotate(l,t);if(I.getBottomR(S)===p)return;const m=A,w=B;let k;k=I.getBottomR(S)>=L||!(I.getTopR(S)!==p&&!m(f,u))&&(!(I.getBottomL(S)!==p&&!m(f,h))&&!(m(u,b)&&m(b,g)&&m(g,o)&&m(o,h)&&!m(f,g)));const j=w(f,o)<=w(f,b)?o:b,R=v;if(R.move(t,n),!k)return void e.blendCorner(j,R);const x=w(o,u),T=w(b,h),C=M*T<=x&&f!==h&&a!==h;M*x<=T&&f!==u&&c!==u?C?e.blendLineSteepAndShallow(j,R):e.blendLineShallow(j,R):C?e.blendLineSteep(j,R):e.blendLineDiagonal(j,R)}const J=Array.from(e.data);let W=[];for(let e=0,t=J.length;e<t;e+=4){const t=J[e],s=J[e+1],r=J[e+2],n=J[e+3]<<24|t<<16|s<<8|r;W.push(n)}let U=new Array(e.width*t*e.height*t);U.fill(0),function(e,t,s,r,n,i,o){if((i=Math.max(i,0))>=(o=Math.min(o,n))||r<=0)return;const d=r*e;let p=[],b={a:0,b:0,c:0,d:0,e:0,f:0,g:0,h:0,i:0,j:0,k:0,l:0,m:0,n:0,o:0,p:0};if(i>0){const e=i-1,s=r*Math.max(e-1,0),l=r*e,a=r*Math.min(e+1,n-1),h=r*Math.min(e+2,n-1);for(let e=0;e<r;++e){const n=Math.max(e-1,0),i=Math.min(e+1,r-1),c=Math.min(e+2,r-1);b.a=t[s+n],b.b=t[s+e],b.c=t[s+i],b.d=t[s+c],b.e=t[l+n],b.f=t[l+e],b.g=t[l+i],b.h=t[l+c],b.i=t[a+n],b.j=t[a+e],b.k=t[a+i],b.l=t[a+c],b.m=t[h+n],b.n=t[h+e],b.o=t[h+i],b.p=t[h+c],D(b),p[e]=I.setTopR(p[e],g.j),e+1<r&&(p[e+1]=I.setTopL(255&p[e+1],g.k))}}v=new u(e,s,d);let L=0,S=0,w=[];for(let u=i;u<o;++u){let i=e*u*d;const o=r*Math.max(u-1,0),k=r*u,j=r*Math.min(u+1,n-1),M=r*Math.min(u+2,n-1);S=0;for(let n=0;n<r;++n,i+=e){const u=Math.max(n-1,0),R=Math.min(n+1,r-1),x=Math.min(n+2,r-1);if(b.a=t[o+u],b.b=t[o+n],b.c=t[o+R],b.d=t[o+x],b.e=t[k+u],b.f=t[k+n],b.g=t[k+R],b.h=t[k+x],b.i=t[j+u],b.j=t[j+n],b.k=t[j+R],b.l=t[j+x],b.m=t[M+u],b.n=t[M+n],b.o=t[M+R],b.p=t[M+x],D(b),L=I.setBottomR(p[n],g.f),S=I.setTopR(S,g.j),p[n]=S,S=I.setTopL(0,g.k),n+1<r&&(p[n+1]=I.setBottomL(p[n+1],g.g)),m(s,i,d,t[k+n],e),0===L)continue;const A=1,B=2,T=3,C=4,v=5,J=6,W=7,U=8;let q;switch(w[0]=t[o+u],w[A]=t[o+n],w[B]=t[o+R],w[T]=t[k+u],w[C]=t[k+n],w[v]=t[k+R],w[J]=t[j+u],w[W]=t[j+n],w[U]=t[j+R],e){case 2:q=new l;break;case 3:q=new a;break;case 4:q=new h;break;case 5:q=new c;break;default:q=new f}y(q,0,w,0,i,0,L),y(q,1,w,0,i,0,L),y(q,2,w,0,i,0,L),y(q,3,w,0,i,0,L)}}}(t,W,U,e.width,e.height,0,e.height);let q=[];for(let e=0,t=U.length;e<t;++e){const t=U[e],s=t>>24&255,r=t>>16&255,n=t>>8&255,i=255&t;q.push(r),q.push(n),q.push(i),q.push(s)}const z=new Uint8ClampedArray(q);return new ImageData(z,e.width*t,e.height*t)};`
+window.xbrz_process_function = new AsyncFunction(`var e=async function(e,t){return new Promise((function(s,r){"use strict";const n=16711680,l=65280;function i(e,t,s,r,n){return e&((n&e)*t+(r&e)*(s-t))/s}function a(e,t,s,r){const a=s.get(),c=i(n,e,t,a,r)|i(l,e,t,a,r)|i(255,e,t,a,r);s.set(4278190080|c)}class c{constructor(){this.scale=2}scale(){return this.scale}blendLineShallow(e,t){a(1,4,t.ref(this.scale-1,0),e),a(3,4,t.ref(this.scale-1,1),e)}blendLineSteep(e,t){a(1,4,t.ref(0,this.scale-1),e),a(3,4,t.ref(1,this.scale-1),e)}blendLineSteepAndShallow(e,t){a(1,4,t.ref(1,0),e),a(1,4,t.ref(0,1),e),a(5,6,t.ref(1,1),e)}blendLineDiagonal(e,t){a(1,2,t.ref(1,1),e)}blendCorner(e,t){a(21,100,t.ref(1,1),e)}}class f extends c{constructor(){super(),this.scale=3}blendLineShallow(e,t){super.blendLineShallow(e,t),a(1,4,t.ref(this.scale-2,2),e),t.ref(this.scale-1,2).set(e)}blendLineSteep(e,t){super.blendLineSteep(e,t),a(1,4,t.ref(2,this.scale-2),e),t.ref(2,this.scale-1).set(e)}blendLineSteepAndShallow(e,t){a(1,4,t.ref(2,0),e),a(1,4,t.ref(0,2),e),a(3,4,t.ref(2,1),e),a(3,4,t.ref(1,2),e),t.ref(2,2).set(e)}blendLineDiagonal(e,t){a(1,8,t.ref(1,2),e),a(1,8,t.ref(2,1),e),a(7,8,t.ref(2,2),e)}blendCorner(e,t){a(45,100,t.ref(2,2),e)}}class h extends f{constructor(){super(),this.scale=4}blendLineShallow(e,t){super.blendLineShallow(e,t),a(3,4,t.ref(this.scale-2,3),e),t.ref(this.scale-1,3).set(e)}blendLineSteep(e,t){super.blendLineSteep(e,t),a(3,4,t.ref(3,this.scale-2),e),t.ref(3,this.scale-1).set(e)}blendLineSteepAndShallow(e,t){a(3,4,t.ref(3,1),e),a(3,4,t.ref(1,3),e),a(1,4,t.ref(3,0),e),a(1,4,t.ref(0,3),e),a(1,3,t.ref(2,2),e),t.ref(3,3).set(e),t.ref(3,2).set(e),t.ref(2,3).set(e)}blendLineDiagonal(e,t){a(1,2,t.ref(this.scale-1,this.scale/2),e),a(1,2,t.ref(this.scale-2,this.scale/2+1),e),t.ref(this.scale-1,this.scale-1).set(e)}blendCorner(e,t){a(68,100,t.ref(3,3),e),a(9,100,t.ref(3,2),e),a(9,100,t.ref(2,3),e)}}class o extends h{constructor(){super(),this.scale=5}blendLineShallow(e,t){super.blendLineShallow(e,t),a(1,4,t.ref(this.scale-3,4),e),t.ref(this.scale-1,4).set(e),t.ref(this.scale-2,4).set(e)}blendLineSteep(e,t){super.blendLineSteep(e,t),a(1,4,t.ref(4,this.scale-3),e),a(3,4,t.ref(3,this.scale-2),e),t.ref(4,this.scale-1).set(e),t.ref(4,this.scale-2).set(e)}blendLineSteepAndShallow(e,t){a(1,4,t.ref(0,this.scale-1),e),a(1,4,t.ref(2,this.scale-2),e),a(3,4,t.ref(1,this.scale-1),e),a(1,4,t.ref(this.scale-1,0),e),a(1,4,t.ref(this.scale-2,2),e),a(3,4,t.ref(this.scale-1,1),e),a(2,3,t.ref(3,3),e),t.ref(2,this.scale-1).set(e),t.ref(3,this.scale-1).set(e),t.ref(4,this.scale-1).set(e),t.ref(this.scale-1,2).set(e),t.ref(this.scale-1,3).set(e)}blendLineDiagonal(e,t){a(1,8,t.ref(this.scale-1,this.scale/2),e),a(1,8,t.ref(this.scale-2,this.scale/2+1),e),a(1,8,t.ref(this.scale-3,this.scale/2+2),e),a(7,8,t.ref(4,3),e),a(7,8,t.ref(3,4),e),t.ref(4,4).set(e)}blendCorner(e,t){a(86,100,t.ref(4,4),e),a(23,100,t.ref(4,3),e),a(23,100,t.ref(3,4),e)}}class u extends o{constructor(){super(),this.scale=6}blendLineShallow(e,t){super.blendLineShallow(e,t),a(3,4,t.ref(this.scale-3,5),e),t.ref(this.scale-1,5).set(e),t.ref(this.scale-2,5).set(e)}blendLineSteep(e,t){super.blendLineSteep(e,t),a(3,4,t.ref(5,this.scale-3),e),t.ref(5,this.scale-1).set(e),t.ref(5,this.scale-2).set(e)}blendLineSteepAndShallow(e,t){a(1,4,t.ref(0,this.scale-1),e),a(1,4,t.ref(2,this.scale-2),e),a(3,4,t.ref(1,this.scale-1),e),a(3,4,t.ref(3,this.scale-2),e),a(1,4,t.ref(this.scale-1,0),e),a(1,4,t.ref(this.scale-2,2),e),a(3,4,t.ref(this.scale-1,1),e),a(3,4,t.ref(this.scale-2,3),e),t.ref(2,this.scale-1).set(e),t.ref(3,this.scale-1).set(e),t.ref(4,this.scale-1).set(e),t.ref(5,this.scale-1).set(e),t.ref(4,this.scale-2).set(e),t.ref(5,this.scale-2).set(e),t.ref(this.scale-1,2).set(e),t.ref(this.scale-1,3).set(e)}blendLineDiagonal(e,t){a(1,2,t.ref(this.scale-1,this.scale/2),e),a(1,2,t.ref(this.scale-2,this.scale/2+1),e),a(1,2,t.ref(this.scale-3,this.scale/2+2),e),t.ref(this.scale-2,this.scale-1).set(e),t.ref(this.scale-1,this.scale-1).set(e),t.ref(this.scale-1,this.scale-2).set(e)}blendCorner(e,t){a(97,100,t.ref(5,5),e),a(42,100,t.ref(4,5),e),a(42,100,t.ref(5,4),e),a(6,100,t.ref(5,3),e),a(6,100,t.ref(3,5),e)}}class d{constructor(e){this.arr=e,this.ptr=0}position(e){this.ptr=e}get(){return this.arr[this.ptr]}set(e){this.arr[this.ptr]=e}}class p{constructor(e,t,s){this.out=new d(t),this.n=144*(e-2),this.outWidth=s,this.outi=0,this.nr=0}move(e,t){this.nr=this.n+36*e,this.outi=t}ref(e,t){e=parseInt(e),t=parseInt(t);const s=v[this.nr+6*e+t];return this.out.position(this.outi+s.J+s.I*this.outWidth),this.out}}const b=function(){let e=[];const t=[[0,1,2,3,4,5,6,7,8],[6,3,0,7,4,1,8,5,2],[8,7,6,5,4,3,2,1,0],[2,5,8,1,4,7,0,3,6]];for(let s=0;s<4;s++)for(let r=0;r<9;r++)e[(r<<2)+s]=t[s][r];return e}(),L=0,g=1,m=2,w=new class{constructor(){this.f=0,this.g=0,this.j=0,this.k=0}reset(){this.f=0,this.g=0,this.j=0,this.k=0}};function S(e){return e*e}function k(e,t,s,r,n){for(let l=0;l<n;++l,t+=s)for(let s=0;s<n;++s)e[t+s]=r}function j(e,t,s){return e===t?0:function(e,t,s){const r=(e&n)-(t&n)>>16,i=(255&e)-(255&t),a=.2126*r+.7152*((e&l)-(t&l)>>8)+.0722*i,c=.5389092476826902*(i-a),f=.63500127000254*(r-a);return S(s*a)+S(c)+S(f)}(e,t,s)}let M=3.6,A=1,R=2.2;function x(e,t){return j(e&=4294967295,t&=4294967295,A)}const B=S(30);function T(e,t){return j(e,t,A)<B}function C(e,t){return j(e,t,A)}function I(e,t,s,r){let n=0,l=0;if(0===e)n=t,l=s;else{const i=I(e-1,t,s,r);n=r-1-i.J,l=i.I}return{I:n,J:l}}let v=function(){let e=[];for(let t=2;t<7;t++)for(let s=0;s<4;s++){let r=144*(t-2)+36*s;for(let n=0;n<6;n++)for(let l=0;l<6;l++)e[r+6*n+l]=I(s,n,l,t)}return e}();function y(e){if(w.reset(),e.f===e.g&&e.j===e.k||e.f===e.j&&e.g===e.k)return;const t=x,s=t(e.i,e.f)+t(e.f,e.c)+t(e.n,e.k)+t(e.k,e.h)+4*t(e.j,e.g),r=t(e.e,e.j)+t(e.j,e.o)+t(e.b,e.g)+t(e.g,e.l)+4*t(e.f,e.k),n=M*s<r;s<r?(e.f!==e.g&&e.f!==e.j&&(w.f=n?m:g),e.k!==e.g&&e.k!==e.j&&(w.k=n?m:g)):r<s&&(e.j!==e.f&&e.j!==e.k&&(w.j=n?m:g),e.g!==e.f&&e.g!==e.k&&(w.g=n?m:g))}const D={getTopL:e=>3&e,getTopR:e=>3&e>>2,getBottomR:e=>3&e>>4,getBottomL:e=>3&e>>6,setTopL:(e,t)=>255&(e|t),setTopR:(e,t)=>255&(e|t<<2),setBottomR:(e,t)=>255&(e|t<<4),setBottomL:(e,t)=>255&(e|t<<6),rotate(e,t){const s=t<<1;return 255&(e<<s|e>>8-s)}};let J;function U(e,t,s,r,n,l,i){const a=s[b[4+t]],c=s[b[8+t]],f=s[b[12+t]],h=s[b[16+t]],o=s[b[20+t]],u=s[b[24+t]],d=s[b[28+t]],p=s[b[32+t]],g=D.rotate(i,t);if(D.getBottomR(g)===L)return;const w=T,S=C;let k;k=D.getBottomR(g)>=m||!(D.getTopR(g)!==L&&!w(h,u))&&(!(D.getBottomL(g)!==L&&!w(h,c))&&!(w(u,d)&&w(d,p)&&w(p,o)&&w(o,c)&&!w(h,p)));const j=S(h,o)<=S(h,d)?o:d,M=J;if(M.move(t,n),!k)return void e.blendCorner(j,M);const A=S(o,u),x=S(d,c),B=R*x<=A&&h!==c&&a!==c;R*A<=x&&h!==u&&f!==u?B?e.blendLineSteepAndShallow(j,M):e.blendLineShallow(j,M):B?e.blendLineSteep(j,M):e.blendLineDiagonal(j,M)}try{var W=Uint8ClampedArray.from(e.data),P=parseInt(e.width),q=parseInt(e.height),z=new Array;for(let e=0,t=W.length;e<t;e+=4){const t=W[e],s=W[e+1],r=W[e+2],n=W[e+3]<<24|t<<16|s<<8|r;z.push(n)}W=null;var E=new Array(P*t*q*t);E.fill(0),function(e,t,s,r,n,l,i){if((l=Math.max(l,0))>=(i=Math.min(i,n))||r<=0)return;const a=r*e;let d=[],b={a:0,b:0,c:0,d:0,e:0,f:0,g:0,h:0,i:0,j:0,k:0,l:0,m:0,n:0,o:0,p:0};if(l>0){const e=l-1,s=r*Math.max(e-1,0),i=r*e,a=r*Math.min(e+1,n-1),c=r*Math.min(e+2,n-1);for(let n=0;n<r;++n){const e=Math.max(n-1,0),l=Math.min(n+1,r-1),f=Math.min(n+2,r-1);b.a=t[s+e],b.b=t[s+n],b.c=t[s+l],b.d=t[s+f],b.e=t[i+e],b.f=t[i+n],b.g=t[i+l],b.h=t[i+f],b.i=t[a+e],b.j=t[a+n],b.k=t[a+l],b.l=t[a+f],b.m=t[c+e],b.n=t[c+n],b.o=t[c+l],b.p=t[c+f],y(b),d[n]=D.setTopR(d[n],w.j),n+1<r&&(d[n+1]=D.setTopL(255&d[n+1],w.k))}}J=new p(e,s,a);let L=0,g=0,m=[];for(let p=l;p<i;++p){let l=e*p*a;const i=r*Math.max(p-1,0),S=r*p,j=r*Math.min(p+1,n-1),M=r*Math.min(p+2,n-1);g=0;for(let n=0;n<r;++n,l+=e){const p=Math.max(n-1,0),A=Math.min(n+1,r-1),R=Math.min(n+2,r-1);if(b.a=t[i+p],b.b=t[i+n],b.c=t[i+A],b.d=t[i+R],b.e=t[S+p],b.f=t[S+n],b.g=t[S+A],b.h=t[S+R],b.i=t[j+p],b.j=t[j+n],b.k=t[j+A],b.l=t[j+R],b.m=t[M+p],b.n=t[M+n],b.o=t[M+A],b.p=t[M+R],y(b),L=D.setBottomR(d[n],w.f),g=D.setTopR(g,w.j),d[n]=g,g=D.setTopL(0,w.k),n+1<r&&(d[n+1]=D.setBottomL(d[n+1],w.g)),k(s,l,a,t[S+n],e),0===L)continue;const x=1,B=2,T=3,C=4,I=5,v=6,J=7,W=8;let P;switch(m[0]=t[i+p],m[x]=t[i+n],m[B]=t[i+A],m[T]=t[S+p],m[C]=t[S+n],m[I]=t[S+A],m[v]=t[j+p],m[J]=t[j+n],m[W]=t[j+A],e){case 2:P=new c;break;case 3:P=new f;break;case 4:P=new h;break;case 5:P=new o;break;default:P=new u}U(P,0,m,0,l,0,L),U(P,1,m,0,l,0,L),U(P,2,m,0,l,0,L),U(P,3,m,0,l,0,L)}}}(t,z,E,P,q,0,q),z=null;var F=new Array;for(let e=0,t=E.length;e<t;++e){const t=E[e],s=t>>24&255,r=t>>16&255,n=t>>8&255,l=255&t;F.push(r),F.push(n),F.push(l),F.push(s)}E=null,s(new ImageData(new Uint8ClampedArray(F),P*t,q*t)),F=null}catch(G){r(null)}}))};`
     + "return e;"
 )();
 /*
-    var fu = async function(image_data, scale) {
+    var fu = async function(image_data, scale) {return new Promise(function(resolve, reject){
 
     "use strict";
     const redMask = 0xff0000
@@ -414,14 +414,12 @@ const xbrz_process_function = new AsyncFunction(`var e=async function(e,t){"use 
     }
   
     const Rot = (function () {
-      /*
-      |0|6|8|2|1|3|
-      |7|5|2|0|6|8|
-      |3|8|5|1|4|4|
-      |4|4|5|1|3|7|
-      |6|8|2|0|7|5|
-      |1|3|8|2|0|7|
-       $/
+      // |0|6|8|2|1|3|
+      // |7|5|2|0|6|8|
+      // |3|8|5|1|4|4|
+      // |4|4|5|1|3|7|
+      // |6|8|2|0|7|5|
+      // |1|3|8|2|0|7|
       let arr = []
       const
           a = 0, b = 1, c = 2,
@@ -854,62 +852,64 @@ const xbrz_process_function = new AsyncFunction(`var e=async function(e,t){"use 
         }
       }
     }
-    
-    const source_buffer = Array.from(image_data.data);
-    let source = [];
-    for (let i = 0, len = source_buffer.length; i < len; i += 4) {
-        const r = source_buffer[i];
-        const g = source_buffer[i + 1];
-        const b = source_buffer[i + 2];
-        const a = source_buffer[i + 3];
-        const pixel = a << 24 | r << 16 | g << 8 | b;
-        source.push(pixel)
-    }
-  
-    let target = new Array(image_data.width * scale * image_data.height * scale);
-    target.fill(0);
-    scaleImage(scale, source, target, image_data.width, image_data.height, 0, image_data.height);
-  
-    let target_buffer = [];
-    for (let i = 0, len = target.length; i < len; ++i) {
-      const pixel = target[i];
-      const a = (pixel >> 24) & 0xff;
-      const r = (pixel >> 16) & 0xff;
-      const g = (pixel >> 8) & 0xff;
-      const b = (pixel) & 0xff;
-      target_buffer.push(r);
-      target_buffer.push(g);
-      target_buffer.push(b);
-      target_buffer.push(a);
-    }
-  
-    const data_array_target = new Uint8ClampedArray(target_buffer);
-    const final_image_data = new ImageData(data_array_target, image_data.width * scale, image_data.height * scale);
-    return final_image_data;
-  }
-*/
+
+    try {
+        var source_buffer = Uint8ClampedArray.from(image_data.data);
+        var width = parseInt(image_data.width);
+        var height = parseInt(image_data.height);
+
+        var source = new Array();
+        for (let i = 0, len = source_buffer.length; i < len; i += 4) {
+            const r = source_buffer[i];
+            const g = source_buffer[i + 1];
+            const b = source_buffer[i + 2];
+            const a = source_buffer[i + 3];
+            const pixel = a << 24 | r << 16 | g << 8 | b;
+            source.push(pixel)
+        }
+        source_buffer = null;
+
+        var target = new Array(width * scale * height * scale);
+        target.fill(0);
+        scaleImage(scale, source, target, width, height, 0, height);
+        source = null;
+
+        var target_buffer = new Array();
+        for (let i = 0, len = target.length; i < len; ++i) {
+          const pixel = target[i];
+          const a = (pixel >> 24) & 0xff;
+          const r = (pixel >> 16) & 0xff;
+          const g = (pixel >> 8) & 0xff;
+          const b = (pixel) & 0xff;
+          target_buffer.push(r);
+          target_buffer.push(g);
+          target_buffer.push(b);
+          target_buffer.push(a);
+        }
+        target = null;
+
+        resolve(new ImageData(new Uint8ClampedArray(target_buffer), width * scale, height * scale));
+        target_buffer = null;
+    } catch(e){reject(null)}
+  })}
+ */
 
 const xbrz = async (image_data, scale, pool = null) => {
 
     if(pool) {
 
-      return pool.exec(xbrz_process_function, [
+      return pool.exec(window.xbrz_process_function, [
         image_data,
         scale,
       ]).catch((e) => {
 
-          if(e === "Pool terminated") {
-              return xbrz(image_data, scale, pool);
-          }else {
-
-              return xbrz_process_function(image_data, scale);
-          }
+          return window.xbrz_process_function(image_data, scale);
 
       }).timeout(60 * 1000);
 
     }else {
 
-        return xbrz_process_function(image_data, scale);
+        return window.xbrz_process_function(image_data, scale);
     }
 };
 

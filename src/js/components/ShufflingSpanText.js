@@ -28,6 +28,11 @@ class ShufflingSpanText extends React.Component {
             animation_duration_ms: typeof props.animation_duration_ms !== "undefined" ? props.animation_duration_ms : 3500,
             animation_fps: typeof props.animation_fps !== "undefined" ? props.animation_fps : 20,
             _text_proceed: "",
+            _text_proceed_started: false,
+            _text_proceed_finished: false,
+            _delay_timeout: null,
+            _animation_timeout: null,
+            _animation_interval: null,
         };
     };
 
@@ -41,13 +46,22 @@ class ShufflingSpanText extends React.Component {
         this._run_animation();
     }
 
+    componentWillUnmount() {
+
+        const {_delay_timeout, _animation_timeout,_animation_interval} = this.state;
+
+        if(_delay_timeout !== null){ clearTimeout(_delay_timeout) }
+        if(_animation_timeout !== null){ clearTimeout(_animation_timeout) }
+        if(_animation_interval !== null){ clearInterval(_animation_interval) }
+    }
+
     _run_animation = () => {
 
         const { animation_delay_ms, animation_duration_ms, animation_fps, text } = this.state;
 
-        const delay_timeout = setTimeout(() => {
+        const _delay_timeout = setTimeout(() => {
 
-            const animation_interval = setInterval(() => {
+            const _animation_interval = setInterval(() => {
 
                 let _text_proceed = "";
 
@@ -62,28 +76,32 @@ class ShufflingSpanText extends React.Component {
 
                     this.forceUpdate();
                 });
-            }, 1000 / 100);
+            }, 1000 / animation_fps);
 
-            const animation_timeout = setTimeout(() => {
+            const _animation_timeout = setTimeout(() => {
 
-                clearInterval(animation_interval);
-                this.setState({_text_proceed: text}, () => {
+                clearInterval(_animation_interval);
+                this.setState({_text_proceed: text, _text_proceed_finished: true}, () => {
 
                     this.forceUpdate();
                 });
 
             }, animation_duration_ms);
 
+            this.setState({_animation_timeout, _animation_interval, _text_proceed_started: true});
+
         }, animation_delay_ms);
+
+        this.setState({_delay_timeout})
     };
 
     render() {
 
         const { classes, style } = this.state;
-        const { _text_proceed, pre, app } = this.state;
+        const { _text_proceed, _text_proceed_started, _text_proceed_finished, pre, app } = this.state;
 
         return (
-            <span style={{willChange: "contents", ...style}}>{pre}{_text_proceed}{app}</span>
+            <span style={{willChange: Boolean(_text_proceed_started && !_text_proceed_finished) ? "contents": "auto", ...style}}>{pre}{_text_proceed}{app}</span>
         );
     }
 }

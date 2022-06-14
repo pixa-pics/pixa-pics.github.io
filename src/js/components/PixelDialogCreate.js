@@ -7,7 +7,6 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import TimeAgo from "javascript-time-ago";
 import {t} from "../utils/t";
 import actions from "../actions/utils";
-import {parse} from "@ungap/structured-clone/cjs/json";
 
 const styles = theme => ({
     dialogContentContainer: {
@@ -95,7 +94,7 @@ class PixelDialogCreate extends React.Component {
         return false;
     }
 
-    _set_size_from_slider = (event, value) => {
+    _notify_size_from_slider = (event, value) => {
 
         if(this.props.on_import_size_change) {
 
@@ -134,7 +133,14 @@ class PixelDialogCreate extends React.Component {
                         <div className={classes.rightImagesContainer}>
                             <div className={classes.rightImagesContainer} style={{padding: "8px 24px", position: "relative", overflow: "hidden", boxSizing: "border-box", width: "100%"}}>
                                 <Typography id="size-slider" gutterBottom>Reduce size of minima to :</Typography>
-                                <Slider defaultValue={parseInt(size)} step={8} valueLabelDisplay="auto" min={16} max={size > 512 ? size: 512} onChangeCommitted={this._set_size_from_slider} aria-labelledby="size-slider"/>
+                                <Slider key={size}
+                                        defaultValue={parseInt(size)}
+                                        step={8}
+                                        valueLabelDisplay="auto"
+                                        min={16} max={size > 512 ? size: 512}
+                                        onChangeCommitted={this._notify_size_from_slider}
+                                        aria-labelledby="size-slider"
+                                />
                             </div>
                             <input
                                 onChange={this.props.on_upload}

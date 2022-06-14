@@ -1,6 +1,6 @@
 const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
 
-var file_to_base64_process_function = new AsyncFunction(`var t = async function(file) {
+window.file_to_base64_process_function = new AsyncFunction(`var t = async function(file) {
 
     "use strict";
 
@@ -20,7 +20,7 @@ var file_to_base64_process_function = new AsyncFunction(`var t = async function(
         return new Promise(function(resolve, _) {
             let reader = new FileReader();
             reader.onload = function(){ resolve(reader.result)};
-            reader.onerror = function(){ resolve(URL.createObjectURL(file))};
+            reader.onerror = function(){ var u = URL.createObjectURL(file); resolve(u); URL.revokeObjectURL(u);};
             reader.readAsDataURL(file);
         });
     }
@@ -28,29 +28,28 @@ var file_to_base64_process_function = new AsyncFunction(`var t = async function(
 
 const file_to_base64 = (file, callback_function = () => {}, pool = null) => {
 
-    (async () => {
+    if(pool !== null) {
 
-        if(pool !== null) {
+        pool.exec(window.file_to_base64_process_function, [
+            file
+        ]).catch((e) => {
 
-            const r = pool.exec(file_to_base64_process_function, [
-                file
-            ]).catch((e) => {
+            return window.file_to_base64_process_function(file);
+        }).timeout(60 * 1000).then((r) => {
 
-                return file_to_base64_process_function(file);
-            }).timeout(60 * 1000);
+            callback_function(r);
+        });
 
-            callback_function(await r);
+    }else {
 
-        }else {
+        window.file_to_base64_process_function(file).then((r) => {
 
-            const r = file_to_base64_process_function(file);
-            callback_function(await r);
-        }
-    })();
-
+            callback_function(r);
+        });
+    }
 };
 
-var base64_to_bitmap_process_function = new AsyncFunction(`var t = async function(base64) {
+window.base64_to_bitmap_process_function = new AsyncFunction(`var t = async function(base64) {
 
     "use strict";
 
@@ -69,31 +68,32 @@ var base64_to_bitmap_process_function = new AsyncFunction(`var t = async functio
 
 const base64_to_bitmap = (base64, callback_function = () => {}, pool = null) => {
 
-    (async () => {
+
 
         if(pool !== null) {
 
-            const r = pool.exec(base64_to_bitmap_process_function, [
+            pool.exec(window.base64_to_bitmap_process_function, [
                 base64
             ]).catch((e) => {
 
-                return base64_to_bitmap_process_function(base64);
-            }).timeout(60 * 1000);
+                return window.base64_to_bitmap_process_function(base64);
+            }).timeout(60 * 1000).then((r) => {
 
-            callback_function(await r);
+                callback_function(r);
+            });
 
         }else {
 
-            const r = base64_to_bitmap_process_function(base64);
-            callback_function(await r);
+            window.base64_to_bitmap_process_function(base64).then((r) => {
+
+                callback_function(r);
+            });
         }
-    })();
 
 };
 
 const bitmap_to_imagedata = (bitmap, resize_to =  1920*1080, callback_function = () => {}) => {
 
-    (async () => {
 
         let img_data; // Create image data
         let scale = 1;
@@ -118,10 +118,9 @@ const bitmap_to_imagedata = (bitmap, resize_to =  1920*1080, callback_function =
         img_data = ctx.getImageData(0, 0, canvas.width, canvas.height); // This isn't available in web worker
 
         callback_function(img_data);
-    })();
 };
 
-var imagedata_to_base64_process_function = new AsyncFunction(`var t = async function(imagedata, type) {
+window.imagedata_to_base64_process_function = new AsyncFunction(`var t = async function(imagedata, type) {
 
     "use strict"
     
@@ -146,9 +145,10 @@ var imagedata_to_base64_process_function = new AsyncFunction(`var t = async func
                 var ctx = canvas.getContext("bitmaprenderer");
                 ctx.imageSmoothingEnabled = false;
                 ctx.transferFromImageBitmap(bmp);
-    
-                return canvas.convertToBlob({type: type}).then(function(blb) {
+                bmp = null;
                 
+                return canvas.convertToBlob({type: type}).then(function(blb) {
+                    
                     return FileReaderSync.readAsDataURL(blb);
                 });
             });
@@ -167,6 +167,7 @@ var imagedata_to_base64_process_function = new AsyncFunction(`var t = async func
             ctx.putImageData(imagedata, 0, 0);
             
             var base64 = canvas.toDataURL("image/png");
+            canvas = null;
             resolve(base64);
         });
     }
@@ -175,25 +176,25 @@ var imagedata_to_base64_process_function = new AsyncFunction(`var t = async func
 
 const imagedata_to_base64 = (imagedata, type= "image/png", callback_function = () => {}, pool = null) => {
 
-    (async () => {
-
         if(pool !== null) {
 
-            const r = pool.exec(imagedata_to_base64_process_function, [
+            pool.exec(window.imagedata_to_base64_process_function, [
                 imagedata, type
             ]).catch((e) => {
 
-                return imagedata_to_base64_process_function(imagedata, type);
-            }).timeout(60 * 1000);
+                return window.imagedata_to_base64_process_function(imagedata, type);
+            }).timeout(60 * 1000).then((r) => {
 
-            callback_function(await r);
+                callback_function(r);
+            });
 
         }else {
 
-            const r = imagedata_to_base64_process_function(imagedata, type);
-            callback_function(await r);
+            window.imagedata_to_base64_process_function(imagedata, type).then((r) => {
+
+                callback_function(r);
+            });
         }
-    })();
 
 };
 

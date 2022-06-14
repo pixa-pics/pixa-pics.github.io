@@ -1,24 +1,25 @@
 import pool from "../utils/worker-pool";
 
-function base64png_to_xbrz_svg (base64png, callback_function_for_image, callback_function_for_svg, pal= [], using = "xbrz", optimize_render_size = false) {
+const base64png_to_xbrz_svg = (base64png, callback_function_for_image, callback_function_for_svg, pal= [], using = "xbrz", optimize_render_size = false) => {
 
     let image = new Image();
     image.onload = () => {
 
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-
+        base64png = null;
+        let canvas = document.createElement('canvas');
+        let ctx = canvas.getContext('2d');
         const {width, height} = image;
         canvas.width = width;
         canvas.height = height;
         ctx.drawImage(image, 0, 0, width, height);
-        const image_data = ctx.getImageData(0, 0, width, height);
+        let image_data = ctx.getImageData(0, 0, width, height);
+        image = null; ctx = null; canvas = null;
 
         const process_svg = (image_data, scale) => {
 
             import("../utils/image_tracer").then(({image_tracer}) => {
 
-                image_tracer( image_data, {
+                image_tracer(image_data, {
 
                     // Palette
                     pal: pal.map((c) => {
@@ -63,11 +64,12 @@ function base64png_to_xbrz_svg (base64png, callback_function_for_image, callback
 
                 }, pool).then((svg_source) => {
 
+                    image_data = null;
                     if(optimize_render_size) {
 
                         import("svgo/dist/svgo.browser").then(({optimize}) => {
 
-                            let data = optimize(svg_source, {
+                            svg_source = optimize(svg_source, {
                                 // optional but recommended field
                                 path: 'path-to.svg',
                                 // all config fields are also available here
@@ -75,11 +77,17 @@ function base64png_to_xbrz_svg (base64png, callback_function_for_image, callback
                                 plugin: ["mergePaths"],
                             }).data;
 
-                            callback_function_for_svg("data:image/svg+xml;base64," + window.btoa(data));
+                            let svg_b64_str = "data:image/svg+xml;base64," + window.btoa(svg_source);
+                            svg_source = null;
+                            callback_function_for_svg(String(svg_b64_str));
+                            svg_b64_str = null;
                         });
                     }else {
 
-                        callback_function_for_svg("data:image/svg+xml;base64," + window.btoa(svg_source));
+                        let svg_b64_str = "data:image/svg+xml;base64," + window.btoa(svg_source);
+                        svg_source = null;
+                        callback_function_for_svg(String(svg_b64_str));
+                        svg_b64_str = null;
                     }
                 });
             });
@@ -87,26 +95,30 @@ function base64png_to_xbrz_svg (base64png, callback_function_for_image, callback
 
         if(using === "omniscale") {
 
-            const first_scale_size = 6;
-            const third_canvas = document.createElement("canvas");
-
             import("../utils/omniscale").then(({omniscale}) => {
+
+                const first_scale_size = 6;
 
                 omniscale(image_data, first_scale_size, pool).then((second_image_data) => {
 
+                    image_data = null;
+                    let third_canvas = document.createElement("canvas");
                     third_canvas.width = second_image_data.width;
                     third_canvas.height = second_image_data.height;
                     let third_canvas_ctx = third_canvas.getContext("2d");
                     third_canvas_ctx.putImageData(second_image_data, 0, 0);
-                    const base64_out = third_canvas_ctx.canvas.toDataURL("image/png");
+                    let base64_out = third_canvas_ctx.canvas.toDataURL("image/png");
+                    third_canvas_ctx = null; third_canvas = null;
+                    process_svg(second_image_data, first_scale_size);
 
                     if(optimize_render_size) {
 
                         import("../utils/png_quant").then(({png_quant}) => {
 
-                            png_quant(base64_out, 60, 70, 8, pool).then((base64_out_second) => {
+                            png_quant(base64_out, 40, 50, 6, pool).then((base64_out_second) => {
 
                                 callback_function_for_image(base64_out_second);
+                                base64_out = null;
                             });
                         });
                     }else {
@@ -114,31 +126,33 @@ function base64png_to_xbrz_svg (base64png, callback_function_for_image, callback
                         callback_function_for_image(base64_out);
                     }
 
-                    process_svg(second_image_data, first_scale_size);
                 });
             });
 
         }else {
 
-            const first_scale_size = 6;
-            const third_canvas = document.createElement("canvas");
-
             import("../utils/xBRZ").then(({xbrz}) => {
 
+                const first_scale_size = 6;
                 xbrz(image_data, first_scale_size, pool).then((second_image_data) => {
 
+                    image_data = null;
+                    let third_canvas = document.createElement("canvas");
                     third_canvas.width = second_image_data.width;
                     third_canvas.height = second_image_data.height;
                     let third_canvas_ctx = third_canvas.getContext("2d");
                     third_canvas_ctx.putImageData(second_image_data, 0, 0);
-                    const base64_out = third_canvas_ctx.canvas.toDataURL("image/png");
+                    let base64_out = third_canvas_ctx.canvas.toDataURL("image/png");
+                    third_canvas_ctx = null; third_canvas = null;
+                    process_svg(second_image_data, first_scale_size);
 
                     if(optimize_render_size) {
 
                         import("../utils/png_quant").then(({png_quant}) => {
 
-                            png_quant(base64_out, 60, 70, 8, pool).then((base64_out_second) => {
+                            png_quant(base64_out, 40, 50, 6, pool).then((base64_out_second) => {
 
+                                base64_out = null;
                                 callback_function_for_image(base64_out_second);
                             });
                         });
@@ -146,14 +160,12 @@ function base64png_to_xbrz_svg (base64png, callback_function_for_image, callback
 
                         callback_function_for_image(base64_out);
                     }
-
-                    process_svg(second_image_data, first_scale_size);
                 });
             });
         }
     };
     image.src = base64png;
-}
+};
 
 module.exports = {base64png_to_xbrz_svg};
 
