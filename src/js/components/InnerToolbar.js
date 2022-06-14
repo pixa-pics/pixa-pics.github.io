@@ -348,7 +348,6 @@ class InnerToolbar extends React.Component {
                 </IconButton>
                 <IconButton aria-label="current-page-options-button" style={pathname === "/" ? {}: {display: "none"}} className={classes.infoIcon} onClick={this._handle_music_enabled_switch_change}>
                     {music_enabled ? <VolumeOffIcon />: <VolumeUpIcon />}
-                    {music_enabled ? <span className={classes.linkIcon}> RedEclipse - Ωst</span>: <span className={classes.linkIcon}> MUSIC?!</span>}
                 </IconButton>
             </div>
         );

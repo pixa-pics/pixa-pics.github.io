@@ -406,6 +406,16 @@ class Pixel extends React.Component {
         };
     };
 
+    componentWillMount() {
+
+        actions.trigger_page_render_complete();
+        actions.trigger_loading_update(0);
+        setTimeout(() => {
+
+            actions.trigger_loading_update(100);
+        }, 300);
+    }
+
     componentDidMount() {
 
         actions.trigger_snackbar(`This is PIXAAAAAA and beyond! Here, ideas easily find a new sunshine!`, 5000);
@@ -413,7 +423,6 @@ class Pixel extends React.Component {
         this._updated_dimensions();
         document.addEventListener("keydown", this._handle_keydown);
         document.addEventListener("keyup", this._handle_keyup);
-        actions.trigger_loading_update(0);
 
         api.get_settings(this._process_settings_info_result);
 
@@ -531,7 +540,6 @@ class Pixel extends React.Component {
             // Set new settings from query result
             const _attachment_previews = typeof settings.attachment_previews !== "undefined" ? settings.attachment_previews: {};
 
-            actions.trigger_loading_update(100);
             actions.trigger_sfx("hero_decorative-celebration-02");
 
             this.setState({ _is_pixel_dialog_create_open: true, _attachment_previews, _know_the_settings: true }, () => {
@@ -1715,7 +1723,6 @@ class Pixel extends React.Component {
                                 </Typography>
                                 <Slider
                                     className={classes.effectSlider}
-                                    key={_slider_value}
                                     defaultValue={_slider_value}
                                     step={1/32}
                                     min={0}
@@ -1804,7 +1811,6 @@ class Pixel extends React.Component {
                                     Effect strength :
                                 </Typography>
                                 <Slider
-                                    key={_slider_value}
                                     defaultValue={_slider_value}
                                     className={classes.effectSlider}
                                     step={1/32}

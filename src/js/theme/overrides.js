@@ -58,46 +58,32 @@ const overrides = {
                 verticalAlign: "inherit",
                 height: "1em",
                 width: "1em",
-                "&.bounce": {
-                    animation: "$bounce 1.2s cubic-bezier(0.280, 0.840, 0.420, 1) infinite 1s",
-                    "@global": {
-                        "@keyframes bounce": {
-                            "0%": {transform: "scale(1,1) translateY(0)"},
-                            "10%": {transform: "scale(1.1,.9) translateY(0)"},
-                            "30%": {transform: "scale(.9,1.1) translateY(-40px)"},
-                            "50%": {transform: "scale(1.05,.95) translateY(0)"},
-                            "57%": {transform: "scale(1,1) translateY(-3px)"},
-                            "64%": {transform: "scale(1,1) translateY(0)"},
-                            "100%": {transform: "scale(1,1) translateY(0)"},
-                        }
+            },
+            ".bounce": {
+                animation: "$bounce 1.2s cubic-bezier(0.280, 0.840, 0.420, 1) infinite 1s",
+                "@global": {
+                    "@keyframes bounce": {
+                        "0%": {transform: "scale(1,1) translateY(0)"},
+                        "10%": {transform: "scale(1.1,.9) translateY(0)"},
+                        "30%": {transform: "scale(.9,1.1) translateY(-40px)"},
+                        "50%": {transform: "scale(1.05,.95) translateY(0)"},
+                        "57%": {transform: "scale(1,1) translateY(-3px)"},
+                        "64%": {transform: "scale(1,1) translateY(0)"},
+                        "100%": {transform: "scale(1,1) translateY(0)"},
                     }
-                },
-                "&.pulse": {
-                    animation: "$pulse 1.8s cubic-bezier(0.280, 0.840, 0.420, 1) infinite 1s",
-                    "@global": {
-                        "@keyframes pulse": {
-                            "0%": {transform: "scale(.9)"},
-                            "10%": {transform: "scale(1)"},
-                            "30%": {transform: "scale(.9)"},
-                            "50%": {transform: "scale(1)"},
-                            "57%": {transform: "scale(.9)"},
-                            "64%": {transform: "scale(1)"},
-                            "100%": {transform: "scale(.9)"},
-                        }
-                    }
-                },
-                "&.pulse2": {
-                    animation: "$pulse2 1.8s cubic-bezier(0.280, 0.840, 0.420, 1) infinite 1s",
-                    "@global": {
-                        "@keyframes pulse2": {
-                            "0%": {transform: "scale(1.9)"},
-                            "10%": {transform: "scale(2)"},
-                            "30%": {transform: "scale(1.9)"},
-                            "50%": {transform: "scale(2)"},
-                            "57%": {transform: "scale(1.9)"},
-                            "64%": {transform: "scale(2)"},
-                            "100%": {transform: "scale(1.9)"},
-                        }
+                }
+            },
+            ".pulse": {
+                animation: "$pulse 1.8s cubic-bezier(0.280, 0.840, 0.420, 1) infinite 1s",
+                "@global": {
+                    "@keyframes pulse": {
+                        "0%": {transform: "scale(.9)"},
+                        "10%": {transform: "scale(1)"},
+                        "30%": {transform: "scale(.9)"},
+                        "50%": {transform: "scale(1)"},
+                        "57%": {transform: "scale(.9)"},
+                        "64%": {transform: "scale(1)"},
+                        "100%": {transform: "scale(.9)"},
                     }
                 }
             },

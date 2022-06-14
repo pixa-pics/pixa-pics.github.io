@@ -4,23 +4,11 @@ import "regenerator-runtime/runtime";
 import { get_settings } from "../js/utils/api";
 import { l } from "../js/utils/t";
 
-get_settings((error, settings) => {
-
-    if(!Boolean(error) && typeof (settings || {}).locales !== "undefined") {
-
-        const _selected_locales_code =  typeof settings.locales !== "undefined" ? settings.locales: "en-US";
-        const _language = _selected_locales_code.split("-")[0];
-
-        l(_language)
-    }
-}); // It will init the DB
-
 import React from "react";
 import ReactDOM from "react-dom";
 import { HISTORY } from "./utils/constants";
 
 import TimeAgo from "javascript-time-ago";
-
 import en from "javascript-time-ago/locale/en"
 import fr from "javascript-time-ago/locale/fr"
 import pt from "javascript-time-ago/locale/pt"
@@ -33,17 +21,26 @@ import ko from "javascript-time-ago/locale/ko"
 import ru from "javascript-time-ago/locale/ru"
 import hi from "javascript-time-ago/locale/hi"
 
-TimeAgo.addDefaultLocale(en);
-TimeAgo.addLocale(fr);
-TimeAgo.addLocale(pt);
-TimeAgo.addLocale(id);
-TimeAgo.addLocale(it);
-TimeAgo.addLocale(de);
-TimeAgo.addLocale(ja);
-TimeAgo.addLocale(zh);
-TimeAgo.addLocale(ko);
-TimeAgo.addLocale(ru);
-TimeAgo.addLocale(hi);
+get_settings((error, settings) => {
+
+    if(typeof (settings || {}).locales !== "undefined") {
+
+        const _language = settings.locales.split("-")[0];
+        l(_language)
+    }
+
+    TimeAgo.addDefaultLocale(en);
+    TimeAgo.addLocale(fr);
+    TimeAgo.addLocale(pt);
+    TimeAgo.addLocale(id);
+    TimeAgo.addLocale(it);
+    TimeAgo.addLocale(de);
+    TimeAgo.addLocale(ja);
+    TimeAgo.addLocale(zh);
+    TimeAgo.addLocale(ko);
+    TimeAgo.addLocale(ru);
+    TimeAgo.addLocale(hi);
+}); // It will init the DB
 
 // Theme
 import { ThemeProvider } from "@material-ui/core"

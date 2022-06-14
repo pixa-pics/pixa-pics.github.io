@@ -14,7 +14,7 @@
         <!-- CSS -->
         <style>
             body.loaded {
-                content-visibility: visible;
+                content-visibility: auto;
                 background-color: #fafafa;
             }
             body.loaded > #app {
@@ -23,16 +23,14 @@
                 will-change: auto;
             }
             body.loading[datainitiated=true] > #app {
+                contain: paint style layout;
                 will-change: contents;
                 content-visibility: visible;
             }
             body.loading[datainitiated=false] > #app {
+                contain: size paint style layout;
                 will-change: auto;
                 content-visibility: hidden;
-            }
-            body.loading > #app {
-                contain: size paint style layout;
-                content-visibility: auto;
             }
             body::after {
                 content-visibility: auto;
@@ -68,8 +66,8 @@
                 will-change: auto;
                 animation-fill-mode: both;
                 animation-name: bounce-in;
-                animation-duration: 400ms;
-                animation-delay: 75ms;
+                animation-duration: 325ms;
+                animation-delay: 25ms;
                 animation-timing-function: ease;
                 animation-iteration-count: 1;
             }
@@ -87,7 +85,7 @@
             }
             body.loading  {
                 font-size: 0 !important;
-                content-visibility: auto;
+                content-visibility: visible;
                 background-color: #fff;
                 contain: size paint style layout;
                 padding: 0;
@@ -101,11 +99,11 @@
             }
             body[datainitiated=true]::after {
                 animation-iteration-count: 1;
-                animation-delay: 0ms !important;
+                animation-delay: 25ms !important;
                 animation-fill-mode: both !important;
                 animation-timing-function: ease-out !important;
                 animation-name: zoom-out !important;
-                animation-duration: 200ms !important;
+                animation-duration: 225ms !important;
             }
             @keyframes zoom-out {
                 0% {
@@ -116,7 +114,7 @@
                 100% {
                     transform: translateZ(10px) scale(8);
                     filter: opacity(0);
-                    content-visibility: hidden!important;
+                    content-visibility: hidden !important;
                 }
             }
         </style>
@@ -183,14 +181,14 @@
 
                                 if(document.querySelectorAll(`script[src$="${"norris.min.js"}"]`).length === 0) {
 
-                                    e.setAttribute("defer", "true");
+                                    e.setAttribute("async", "true");
                                     document.body.appendChild(e);
                                 }
 
                             }else {
 
                                 e.setAttribute("defer", "true");
-                                document.body.appendChild(e);
+                                document.head.appendChild(e);
                             }
 
                         }else if(ss.endsWith(".css")) {
@@ -200,7 +198,7 @@
                             e.setAttribute("media", "print");
                             e.setAttribute("onload", "this.onload=null;this.removeAttribute('media');");
                             e.setAttribute("rel", "stylesheet");
-                            document.head.appendChild(e);
+                            document.body.appendChild(e);
                         }
                     });
                 }
@@ -239,7 +237,6 @@
 
                             sw.addEventListener('statechange', function(e) {
 
-                                console.log(e.target.state);
                                 if(e.target.state === "activated") { window._FIRE_IT() }
                             });
                         }else { window._FIRE_IT() }

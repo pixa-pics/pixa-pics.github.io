@@ -143,17 +143,38 @@ class Index extends React.Component {
         };
     };
 
+    componentWillMount() {
+
+        api.get_settings((error, settings) => {
+
+            if (!Boolean(error) && typeof (settings || {}).locales !== "undefined") {
+
+                // Set new settings from query result
+                const _sfx_enabled = typeof settings.sfx_enabled !== "undefined" ? settings.sfx_enabled : true;
+                const _music_enabled = typeof settings.music_enabled !== "undefined" ? settings.music_enabled : false;
+                const _jamy_enabled = typeof settings.jamy_enabled !== "undefined" ? settings.jamy_enabled : true;
+                const _selected_locales_code = typeof settings.locales !== "undefined" ? settings.locales : "en-US";
+                const _language = _selected_locales_code.split("-")[0];
+                const _selected_currency = typeof settings.currency !== "undefined" ? settings.currency : "USD";
+                const _onboarding_enabled = typeof settings.onboarding !== "undefined" ? settings.onboarding : true;
+                const _ret = typeof settings.ret !== "undefined" ? settings.ret : 0;
+                const _camo = typeof settings.camo !== "undefined" ? settings.camo : 0;
+                l(_language);
+                document.body.setAttribute("datainitiated", "true");
+                this.setState({_know_the_settings: true, _sfx_enabled, _music_enabled, _jamy_enabled, _language, _selected_currency, _onboarding_enabled, _ret, _camo});
+            }
+        });
+    }
+
     componentDidMount() {
 
         this._update_settings();
-
         const _history_unlisten = this.state._history.listen((location, action) => {
             // location is an object like window.location
             this._set_new_pathname_or_redirect(location.location.pathname);
         });
         this._set_new_pathname_or_redirect(this.state._history.location.pathname);
         dispatcher.register(this._handle_events.bind(this));
-
 
         // Make Jamy blink every 32 sec in average.
         const intervals = [
@@ -290,11 +311,9 @@ class Index extends React.Component {
 
                 if(this.state._datasyncserviceworkerallfiles === 0) {
 
+                    document.body.setAttribute("class", "loaded");
                     const time = 7777 * 10;
-                    this.setState({_datasyncserviceworkerallfiles: Date.now() + time}, () => {
-
-                        document.body.setAttribute("class", "loaded");
-                    });
+                    this.setState({_datasyncserviceworkerallfiles: Date.now() + time});
                     setTimeout(() => {fetch("data:,all").then(function(r){})}, time);
                 }
                 break;
@@ -462,7 +481,10 @@ class Index extends React.Component {
 
                     this.forceUpdate(() => {
 
-                        this._should_play_music_pathname(this.state.pathname);
+                        if(this.state._music_enabled) {
+
+                            this._should_play_music_pathname(this.state.pathname);
+                        }
                         this._set_meta_title(new_pathname);
 
                         if(old_pathname !== ""){
@@ -475,36 +497,18 @@ class Index extends React.Component {
         }
     };
 
-    _should_play_music_pathname = (pathname = "") => {
+    _should_play_music_pathname = (pathname = "/") => {
 
-        const { _music_enabled } = this.state;
-        if(_music_enabled && pathname.match(/\/$/)) {
-
-            const { _has_played_index_music_counter } = this.state;
-            actions.trigger_music(`track_${Boolean(navigator.onLine && _has_played_index_music_counter > 0) ? Math.ceil(Math.random() * 12).toString(10).padStart(2, "0"): "09"}`);
-
-            setTimeout(async() => {
-
-                const { pathname } = this.state;
-                if(_music_enabled && pathname.match(/\/$/)) {
-
-                    actions.trigger_snackbar("I play music from an open-source game soundtrack https://www.redeclipse.net/ for you. Ho my little diddy you could give a look at what they've done.", 4000)
-                }
-            }, 6000);
-            this.setState({_has_played_index_music_counter: _has_played_index_music_counter+1})
-        }else if(_music_enabled && pathname.match(/\/(pixel)$/)) {
+        if(pathname.match(/\/(pixel)$/)) {
 
             actions.trigger_music(`Tesla_Numbers_15m_session`, 1, "tesla");
 
-            setTimeout(async() => {
+        }else if(pathname.match(/\/$/)) {
 
-                const { pathname } = this.state;
-                if(_music_enabled && pathname.match(/\/(pixel)$/)) {
+            const { _has_played_index_music_counter } = this.state;
+            actions.trigger_music(`track_${Boolean(navigator.onLine && _has_played_index_music_counter > 0) ? Math.ceil(Math.random() * 12).toString(10).padStart(2, "0"): "09"}`, 1, "redeclipse");
 
-                    actions.trigger_snackbar("I play music from the generously visionary creator of mine, the one, the (no-emoji) only, Nikola Tesla, bringing the dangerous AC to the whole earth!", 4000)
-                }
-            }, 9000);
-
+            this.setState({_has_played_index_music_counter: _has_played_index_music_counter+1})
         }else {
 
             actions.stop_sound();
@@ -625,11 +629,6 @@ class Index extends React.Component {
                 page_name = page_route.page_name;
                 page_component = PAGE_COMPONENTS(page_name, pathname, JSON.stringify(all_settings));
             }
-        }
-
-        if(!_language) {
-
-            return null;
         }
 
         return (

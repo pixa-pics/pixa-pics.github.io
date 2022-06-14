@@ -42,7 +42,7 @@ const styles = theme => ({
         filter: "drop-shadow(0px 0px 6px #2196f3)",
     },
     insideRoot: {
-        pointerEvents: "none",
+        overflow: "hidden",
         backgroundSize: "auto 120%",
         contain: "size style paint layout",
         animation: "$slide 32s ease-out alternate infinite",
@@ -122,11 +122,9 @@ const styles = theme => ({
     backgroundImage: {
         pointerEvents: "none",
         contain: "size style paint layout",
-        contentVisibility: "auto",
         width: "100%",
         height: "100%",
-        overflow: "hidden",
-        position: "relative",
+        position: "absolute",
         "& > img": {
             opacity: ".75",
             imageRendering: "optimizespeed",
@@ -276,17 +274,24 @@ class Home extends React.Component {
         };
     };
 
-    componentDidMount() {
+    componentWillMount() {
 
         actions.trigger_page_render_complete();
         actions.trigger_loading_update(0);
+        setTimeout(() => {
+
+            actions.trigger_loading_update(100);
+        }, 300);
+    }
+
+    componentDidMount() {
 
         const all_image_name_infographics = ["Luck.png", "Luck.svg", "Mica.png", "Mica.svg", "Parrot.png", "Parrot.svg", "Mat.png", "Mat.svg", "Lips.png", "Lips.svg", "Nuclear.png", "Nuclear.svg", "Pyramid.png", "Pyramid.svg"];
 
         let _image_index = -1;
         let _image_name_infographics = all_image_name_infographics[_image_index];
 
-        let _image_auto_interval = setInterval(async () => {
+        let _image_auto_interval = setInterval( () => {
 
             _image_index++;
             _image_index = _image_index % parseInt(all_image_name_infographics.length-1);
@@ -309,13 +314,7 @@ class Home extends React.Component {
 
         }, 5500)
 
-        this.setState({_image_auto_interval}, () => {
-
-            this.forceUpdate(() => {
-
-                actions.trigger_loading_update(100)
-            })
-        });
+        this.setState({_image_auto_interval});
     }
 
     componentWillReceiveProps(new_props){

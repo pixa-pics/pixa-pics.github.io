@@ -25,15 +25,19 @@ class Unknown extends React.Component {
         };
     };
 
-    componentDidMount() {
+    componentWillMount() {
 
-        actions.jamy_update("annoyed");
-
+        actions.trigger_page_render_complete();
         actions.trigger_loading_update(0);
         setTimeout(() => {
 
             actions.trigger_loading_update(100);
-        }, 250);
+        }, 300);
+    }
+
+    componentDidMount() {
+
+        actions.jamy_update("annoyed");
     }
 
     shouldComponentUpdate(nextProps, nextState, nextContext) {
