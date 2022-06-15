@@ -68,7 +68,7 @@ Screenshot of the homepage of pixa.pics.
 
 > 1.0-2.0 seconds in average, is the necessary time to get the content displayed on desktop (Chrome) for the first website's visit after an update of the application which is automatically done within those small 1690ms and prolongated in background for about 8 seconds, then it is more than twice as fast and doesn't require any form of connection to the Internet since assets are stored in the browser cache until the need to update them is comming into matter.
 
-![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/doc/screenshots/pagespeed.web.dev.jpeg)
+![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/doc/screenshots/pagespeed.web.dev.jpeg?chucknorris=reload)
 Lighthouse (google's webpage loading test) metrics of pixa.pics at left while those of instagram at right
 
 ![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/doc/test/instagram.pixapics.adobeexpress.png)
