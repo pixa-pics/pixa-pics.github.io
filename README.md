@@ -34,6 +34,7 @@ All the screenshots were captured using a "Samsung Galaxy J3 (2017)" having 2gb 
 # Special features
 
 ![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/doc/screenshots/screenshot.pixa.pics.jpeg)
+Screenshot of the homepage of pixa.pics.
 
  * Create pixel art from your pictures and draw, cut, select, do anything.
  * Have fun with NFTs weighting as low as ~10-100Kb.
@@ -65,9 +66,13 @@ All the screenshots were captured using a "Samsung Galaxy J3 (2017)" having 2gb 
 
 # 99 / 100 of performance (Lighthouse desktop metrics)
 
-> 1.0-2.0 seconds in average, is the necessary time to get the content displayed on desktop (Chrome) for the first website's visit after an update of the application which is automatically done within those small 1690ms and prolongated in background for about 8 seconds, then it is more than twice as fast and doesn't require any form of connection to the Internet since assets are stored in the browser cache until the need to update them is hapenning.
+> 1.0-2.0 seconds in average, is the necessary time to get the content displayed on desktop (Chrome) for the first website's visit after an update of the application which is automatically done within those small 1690ms and prolongated in background for about 8 seconds, then it is more than twice as fast and doesn't require any form of connection to the Internet since assets are stored in the browser cache until the need to update them is comming into matter.
 
 ![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/doc/screenshots/pagespeed.web.dev.jpeg)
+Lighthouse (google's webpage loading test) metrics of pixa.pics at left while those of instagram at right
+
+![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/doc/test/instagram.pixapics.adobeexpress.png)
+Instagram vs Pixapics vs Adobeexpress in the field of loading metrics made on www.webpagetest.org
 
 And let's say in the years 1980s a computer to play video games wasn't that much as cheap as my android smartphone of an old series.
 The phone to which it has been tested is nowadays sold at $100 unused it was dozen of times that price to do the same graphics that time.
