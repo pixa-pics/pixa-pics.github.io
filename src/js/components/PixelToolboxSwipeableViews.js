@@ -172,7 +172,7 @@ const styles = theme => ({
             justifyContent: "flex-start",
             flexDirection: "row",
             flexWrap: "wrap",
-            overflow: "overlay",
+            overflow: "auto",
             width: "100%",
             maxWidth: "100%",
             flexFlow: "row",
@@ -1442,8 +1442,12 @@ class PixelToolboxSwipeableViews extends React.Component {
                 {
                     Object.entries(actions).map(([name, view], index) => {
 
+                        if(view_name_index !== index) {
+                            return (<List key={name} style={{ contain: "style layout paint", overflow: "auto", contentVisibility: "auto", paddingTop: 0}} />);
+                        }
+
                         return (
-                            <List key={name} style={{ contain: "style layout paint", overflow: String(view_name_index !== index ? "auto": "visible"), contentVisibility: String(view_name_index !== index ? "auto": "auto"), paddingTop: 0}}>
+                            <List key={name} style={{ contain: "style layout paint", overflow: "visible", contentVisibility: "auto", paddingTop: 0}}>
 
                                 {
                                     name === "layers" ?

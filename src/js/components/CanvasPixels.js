@@ -7499,7 +7499,6 @@ class CanvasPixels extends React.Component {
             }
 
             return this._format_color(color);
-
         });
 
         let ns_pxl_colors = this.state._s_pxl_colors;

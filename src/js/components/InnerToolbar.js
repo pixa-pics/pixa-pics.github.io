@@ -15,8 +15,8 @@ import actions from "../actions/utils";
 
 const styles = theme => ({
     "@keyframes innerToolbarCyberPunkAnimation": {
-        "0%": { opacity: "1", left: "-20%"},
-        "100%": { opacity: "1", left: "70%"}
+        "0%": { opacity: "1", transform: "translateX(-20%)"},
+        "100%": { opacity: "1", transform: "translateX(70%)"}
     },
     root: {
         display: "flex",
@@ -45,9 +45,9 @@ const styles = theme => ({
         },
         color: "#d7dbff",
         "&::before": {
-            display: "flex",
+            display: "inline-block",
             top: 0,
-            left: "-20%",
+            left: 0,
             "content": "\"\"",
             position: "absolute",
             contain: "size style paint layout",

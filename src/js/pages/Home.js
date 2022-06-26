@@ -44,7 +44,8 @@ const styles = theme => ({
     insideRoot: {
         overflow: "hidden",
         backgroundSize: "auto 120%",
-        contain: "size style paint layout",
+        contain: "style paint layout",
+        willChange: "background",
         animation: "$slide 32s ease-out alternate infinite",
         animationFillMode: "both",
         "@global": {
@@ -121,7 +122,7 @@ const styles = theme => ({
     },
     backgroundImage: {
         pointerEvents: "none",
-        contain: "size style paint layout",
+        contain: "style paint layout",
         width: "100%",
         height: "100%",
         position: "absolute",
@@ -141,6 +142,7 @@ const styles = theme => ({
         right: "max(9vw, 9vh)",
         bottom: "max(12vw, 12vh)",
         width: "min(47.5vw, 47.5vh)",
+        contain: "style paint layout",
         filter: "drop-shadow(0px 0px 12px #00000066)",
         position: "fixed",
         display: "relative",
@@ -412,14 +414,12 @@ class Home extends React.Component {
         let bi =  THEME_DAY ?
             "url(/src/images/illustrations/Fuji-day.svg)":
             "url(/src/images/illustrations/Indo-night.svg)";
-        let bf = THEME_DAY ? "saturate(1.25)": "brightness(0.75)";
         if(
             THEME_DAY === null ||
             IS_EVENING === null ||
             IS_LATE_EVENING === null
         ) {
             bi = null;
-            bf = null;
         }
 
         return (
@@ -429,7 +429,7 @@ class Home extends React.Component {
                     backgroundImage: bi,
                 }}>
                     <div className={classes.backgroundImage} style={{
-                        backdropFilter: bf
+                        backdropFilter: "blur(3px)"
                     }}>
                         {_image_name_infographics.length >= 1 && <Grow in={_infographics_in} exit={!_infographics_in} timeout={{ enter: _infographics_fadein_time, exit: _infographics_fadein_time }}><img src={`/src/images/gallery/${_image_name_infographics}`} alt="Image demo." className={String(_image_name_infographics === "Luck.png" ? " aspect-ratio-one ": "") + " pixelated " + classes.backgroundImageImage}/></Grow>}
                         <h2 className={classes.backgroundImageImage} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff", backgroundColor: THEME_DAY && !IS_EVENING ? "#ffffff99": "#00651080", padding: 16, textAlign: "center", border: "8px solid #00ff0054", borderRadius: "16px"}}>RENDER REAL "SVG" SHAPES!<br/><span style={{fontSize: "0.75em"}}>Use (6x) "xBRZ" instead of default pixelated rendering of (1x, 6x, 12x, 24x).</span></h2>
