@@ -2547,8 +2547,8 @@ class CanvasPixels extends React.Component {
                 const { default_size, max_size, ideal_size, _base64_original_images, dont_change_img_size_onload, dont_compute_base64_original_image } = this.state;
 
                 // Draw the original image in an invisible canvas
-                let width = image_obj.width;
-                let height = image_obj.height;
+                let width = image_obj.naturalWidth;
+                let height = image_obj.naturalHeight;
 
                 let [canvas_ctx, canvas] = this._get_new_ctx_from_canvas(width, height, false);
                 canvas_ctx.drawImage(image_obj, 0, 0, width, height);
@@ -2684,23 +2684,23 @@ class CanvasPixels extends React.Component {
                         });
 
                         // We'll check if there is a near occurrence that match image width
-                        if(image_obj.width % adjusted_following_occurrence !== 0) {
+                        if(image_obj.naturalWidth % adjusted_following_occurrence !== 0) {
 
                             let difference = 1;
                             while(
-                                image_obj.width % (adjusted_following_occurrence + difference) !== 0 && image_obj.width % (adjusted_following_occurrence - difference) !== 0 &&
-                                image_obj.height % (adjusted_following_occurrence + difference) !== 0 && image_obj.height % (adjusted_following_occurrence - difference) !== 0 &&
+                                image_obj.naturalWidth % (adjusted_following_occurrence + difference) !== 0 && image_obj.naturalWidth % (adjusted_following_occurrence - difference) !== 0 &&
+                                image_obj.naturalHeight % (adjusted_following_occurrence + difference) !== 0 && image_obj.naturalHeight % (adjusted_following_occurrence - difference) !== 0 &&
                                 difference < 16
                                 ) {
 
                                 if(
-                                    image_obj.width % (adjusted_following_occurrence - difference) === 0 &&
-                                    image_obj.height % (adjusted_following_occurrence - difference) === 0) {
+                                    image_obj.naturalWidth % (adjusted_following_occurrence - difference) === 0 &&
+                                    image_obj.naturalHeight % (adjusted_following_occurrence - difference) === 0) {
 
                                     adjusted_following_occurrence -= difference;
                                 }else if(
-                                    image_obj.width % (adjusted_following_occurrence + difference) === 0 &&
-                                    image_obj.height % (adjusted_following_occurrence + difference) === 0
+                                    image_obj.naturalWidth % (adjusted_following_occurrence + difference) === 0 &&
+                                    image_obj.naturalHeight % (adjusted_following_occurrence + difference) === 0
                                 ) {
 
                                     adjusted_following_occurrence += difference;
