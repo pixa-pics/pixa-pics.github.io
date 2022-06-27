@@ -9,7 +9,13 @@ import {t} from "../utils/t";
 import actions from "../actions/utils";
 
 const styles = theme => ({
+    dialogMobileFullscreen: {
+        "& .MuiPaper-root": {
+            maxHeight: "calc(100% - -24px)",
+        }
+    },
     dialogContentContainer: {
+        marginTop: 16,
         [theme.breakpoints.up("lg")]: {
             display: "inline-flex",
         },
@@ -39,9 +45,15 @@ const styles = theme => ({
     rightImagesContainer: {
         float: "right",
     },
+    uploadButtonDesktop: {
+        background: "#000000ff",
+        boxShadow: "none",
+        color: "#fff",
+        fontWeight: "bold",
+        fontSize: "2.5em"
+    },
     mainUploadButton: {
-        display: "inherit",
-        filter: "opacity(0.33)",
+        display: "flex",
         [theme.breakpoints.up("lg")]: {
             display: "none",
         }
@@ -73,16 +85,10 @@ class PixelDialogCreate extends React.Component {
         if(
             this.state.open !== new_props.open ||
             this.state.size !== new_props.size ||
-            Object.keys(this.state.pixel_arts).length !== Object.keys(new_props.pixel_arts).length
+            Object.keys(this.state.pixel_arts).join("-") !== Object.keys(new_props.pixel_arts).join("-")
         ) {
 
-            this.setState({
-                classes: new_props.classes,
-                keepMounted: new_props.keepMounted || false,
-                open: new_props.open,
-                size: new_props.size,
-                pixel_arts: Object.assign({}, new_props.pixel_arts)
-            }, () => {
+            this.setState(new_props, () => {
 
                 this.forceUpdate();
             });
@@ -114,11 +120,12 @@ class PixelDialogCreate extends React.Component {
 
         return (
             <Dialog open={open}
+                    className={classes.dialogMobileFullscreen}
                     maxWidth={"xl"}
                     onClose={this.props.onClose}
                     keepMounted={keepMounted}>
                 <DialogContent>
-                    <Typography component={"h2"} variant={"h6"}>New pixel art (minima) from upload (or lab backup)</Typography>
+                    <Typography component={"h2"} variant={"h6"}>New/old pixel art (minima)</Typography>
                     <div className={classes.dialogContentContainer}>
                         <div className={classes.leftImage}>
                             <input
@@ -128,7 +135,7 @@ class PixelDialogCreate extends React.Component {
                                 id="button-file-dialog-primary"
                                 type="file"
                             />
-                            <Button component={"label"} htmlFor="button-file-dialog-primary" fullWidth variant="contained" color="secondary" style={{background: "#ffffff00", boxShadow: "none", color: "#fff", fontWeight: "bold", fontSize: "2.5em"}} autoFocus onClick={this.props.on_upload}>Upload a<br/>picture!</Button>
+                            <Button component={"label"} htmlFor="button-file-dialog-primary" fullWidth variant="contained" color="secondary" className={classes.uploadButtonDesktop} autoFocus onClick={this.props.on_upload}>Upload a<br/>picture!</Button>
                         </div>
                         <div className={classes.rightImagesContainer}>
                             <div className={classes.rightImagesContainer} style={{padding: "8px 24px", position: "relative", overflow: "hidden", boxSizing: "border-box", width: "100%"}}>
@@ -150,15 +157,15 @@ class PixelDialogCreate extends React.Component {
                                 type="file"
                             />
                             <Button component={"label"} htmlFor="button-file-dialog-secondary" className={classes.mainUploadButton} fullWidth variant="contained" color="primary" autoFocus>UPLOAD</Button>
-                            <Typography component={"h2"} variant={"h6"} style={{marginTop: 16}}>Unsaved minima</Typography>
+                            <Typography component={"h2"} variant={"h6"} style={{marginTop: 16, marginLeft: 24}}>Unsaved minima</Typography>
                             <div style={{padding: "8px 24px", position: "relative", display: "flex", flexWrap: "wrap", justifyContent: "space-around", overflow: "hidden", boxSizing: "border-box", width: "100%"}}>
-                                <ImageList rowHeight={288} cols={2.0} style={{flexWrap: "nowrap", transform: "translateZ(0)", contains: "strict", maxWidth: "min(576px, (100vw - 160px))"}}>
-                                    {!Object.keys(pixel_arts).length && <ImageListItem style={{display: "inline-block", width: "auto", userSelect: "none"}}
+                                <ImageList rowHeight={288} cols={2.0} style={{flexWrap: "nowrap", transform: "translateZ(0)", contains: "strict", maxWidth: "min(576px, (100vw - 96px))"}}>
+                                    {!Object.keys(pixel_arts).length && <ImageListItem style={{maxWidth: "100%", display: "inline-block", width: "auto", userSelect: "none"}}
                                                     className={"pixelated"} key={"new"}>
                                         <img
                                             src={"/src/images/laboratory.svg"}
                                             alt={"Create new"}
-                                            style={{width: "auto", height: "100%", cursor: "pointer"}}
+                                            style={{width: "100%", height: "auto", cursor: "pointer"}}
                                             onClick={this.props.onClose}/>
                                         <ImageListItemBar
                                             title={"Create new painting"}

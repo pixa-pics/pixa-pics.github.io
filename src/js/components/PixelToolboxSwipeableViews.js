@@ -1647,11 +1647,12 @@ class PixelToolboxSwipeableViews extends React.Component {
                                                 <input
                                                     accept="image/jpg, image/jpeg, image/png, image/svg, image/webp, image/gif"
                                                     style={{display: "none"}}
-                                                    id="button-file-drawer-upload"
+                                                    id={`button-file-drawer-upload-key-${(layers[layer_index] || {}).hash}`}
+                                                    key={`input-button-file-drawer-upload-key-${(layers[layer_index] || {}).hash}`}
                                                     type="file"
                                                     onChange={this._upload_image}
                                                 />
-                                                <ListItem component="label" button htmlFor="button-file-drawer-upload" >
+                                                <ListItem component="label" button key={`list-item-button-file-drawer-upload-key-${(layers[layer_index] || {}).hash}`} htmlFor={`button-file-drawer-upload-key-${(layers[layer_index] || {}).hash}`} >
                                                     <ListItemIcon className={classes.listItemIcon}>
                                                         <ImagePlusIcon/>
                                                     </ListItemIcon>

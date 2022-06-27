@@ -1319,7 +1319,6 @@ class CanvasPixels extends React.Component {
             this.setState({_xxHash: xxHash32});
         }
 
-        this._notify_size_change();
         window.addEventListener("resize", this._updated_dimensions);
         this._updated_dimensions();
         if(window.w_canvas_pixels._is_mobile_or_tablet && this.state._device_motion === true){
@@ -1430,12 +1429,15 @@ class CanvasPixels extends React.Component {
         const canvas_style = document.createElement("style");
         canvas_style.innerHTML = body_css + pixelated_css + canvas_wrapper_css;
         document.head.appendChild(canvas_style);
-        this.setState({_intervals});
+        this.setState({_intervals}, () => {
+
+            this._notify_size_change();
+        });
     }
 
     _xxhashthat = (array) => {
 
-        return this.state._xxHash(Uint8Array.from(Buffer.from(array)));
+        return String(this.state._xxHash(Uint8Array.from(Buffer.from(array))));
     };
 
     _set_size = (width = null, height = null) => {
@@ -2015,11 +2017,11 @@ class CanvasPixels extends React.Component {
 
         if(this.props.onFiltersThumbnailChange) {
 
-            const { _layer_index, pxl_width, pxl_height, _s_pxls, _s_pxl_colors, _last_filters_hash } = this.state;
+            const { _layers, _layer_index, pxl_width, pxl_height, _s_pxls, _s_pxl_colors, _last_filters_hash } = this.state;
 
             const p = Array.from(_s_pxls[_layer_index]);
-            const pc = Uint32Array.from(_s_pxl_colors[_layer_index]);
-            const hash = Array.of(p, pc).map((array) => this._xxhashthat(array)).join("-");
+            const pc = Uint32Array.from(_s_pxl_colors[_layer_index]).map((c) => { return this._format_color(c, true)})
+            const hash = String((_layers[_layer_index] || {}).hash);
 
             if(_last_filters_hash === hash) { return; }
 
@@ -2084,7 +2086,7 @@ class CanvasPixels extends React.Component {
             const l = _layers[index];
             all_layers[index] = Object.assign({}, l);
             const p = Array.from(_s_pxls[index]);
-            const pc = Uint32Array.from(_s_pxl_colors[index]);
+            const pc = Uint32Array.from(_s_pxl_colors[index]).map((c) => { return this._format_color(c, true)})
             const hash = this._xxhashthat(p) + "-"+ this._xxhashthat(pc);
 
             if(hash !== all_layers[index].hash  || !Boolean(all_layers[index].thumbnail)) {
@@ -2871,7 +2873,7 @@ class CanvasPixels extends React.Component {
 
         this.setState({_canvas: element, has_shown_canvas_once: false}, () => {
 
-            this._request_force_update();
+            this._request_force_update(false, false);
         });
     };
 
@@ -7758,7 +7760,7 @@ class CanvasPixels extends React.Component {
 
         [_s_pxls[_layer_index], _s_pxl_colors[_layer_index]] = this._filter_pixels(name, intensity, _s_pxls[_layer_index], _s_pxl_colors[_layer_index]);
 
-        this.setState({_s_pxls, _s_pxl_colors, _old_pxls_hovered: -1, _pxls_hovered: -1}, () => {
+        this.setState({_s_pxls, _s_pxl_colors, _old_pxls_hovered: -1, _pxls_hovered: -1, _last_action_timestamp: Date.now()}, () => {
 
             this._update_canvas();
         });
