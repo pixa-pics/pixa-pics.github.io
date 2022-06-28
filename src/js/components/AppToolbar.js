@@ -148,22 +148,6 @@ const styles = theme => ({
             transition: "opacity cubic-bezier(0.4, 0, 0.2, 1) 1750ms",
             fontWeight: "bold",
             paddingBottom: 12,
-        },
-        "&::before": {
-            position: "absolute",
-            width: "100%",
-            height: "100%",
-            padding: 12,
-            top: 0,
-            left: 0,
-            content: `' '`,
-            backgroundPosition: "90% 100%",
-            backgroundRepeat: "no-repeat",
-            backgroundSize: "cover",
-            opacity: ".777",
-            backgroundImage: `linear-gradient(353deg, #010310 10%, #01031044, #01031044 60%, #01031094, #010310 90%), linear-gradient(353deg, #01031000 0%, #01031078, #007bff82 60%, #010310b8, #0022ff00 100%), url("/src/images/illustrations/Operative.png")`,
-            transition: "all cubic-bezier(0.4, 0, 0.2, 1) 750ms",
-            zIndex: -1
         }
     },
     drawerPrivacyHintHidden: {
@@ -178,22 +162,6 @@ const styles = theme => ({
         "& > p": {
             opacity: 0,
             transition: "opacity cubic-bezier(0.4, 0, 0.2, 1) 1750ms",
-        },
-        "&::before": {
-            position: "absolute",
-            width: "100%",
-            height: "100%",
-            padding: 12,
-            top: 0,
-            left: 0,
-            content: `' '`,
-            backgroundPosition: "100% 100%",
-            backgroundRepeat: "no-repeat",
-            backgroundSize: "auto",
-            opacity: "0",
-            backgroundImage: `linear-gradient(353deg, #060e23 10%, #060e235e, #060e236e 60%, #060e235c, #060e23 90%), linear-gradient(353deg, #060e23 0%, #060e235e, #00000000 60%, #060e235c, #060e23 100%)`,
-            transition: "all cubic-bezier(0.4, 0, 0.2, 1) 2500ms",
-            zIndex: -1,
         }
     }
 });

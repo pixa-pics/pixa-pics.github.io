@@ -1,6 +1,6 @@
-var REQUIRED_CACHE = "unless-update-cache-v246-required";
-var USEFUL_CACHE = "unless-update-cache-v246-useful";
-var STATIC_CACHE = "unless-update-cache-v246-static";
+var REQUIRED_CACHE = "unless-update-cache-v247-required";
+var USEFUL_CACHE = "unless-update-cache-v247-useful";
+var STATIC_CACHE = "unless-update-cache-v247-static";
 var MAIN_CHILD_CHUNK_REGEX = /chunk_(main\~[a-z0-9]+)\.min\.js/i;
 var CHILD_CHUNK_REGEX = /chunk_([0-9]+)\.min\.js/i;
 
@@ -73,10 +73,8 @@ self.addEventListener("install", function(event) {
                 "/src/images/illustrations/Indo-night.svg",
                 "/src/images/illustrations/Fuji-day.svg",
                 "/src/images/illustrations/ITLab.png",
-                "/src/images/illustrations/Operative.png",
                 "/src/images/gallery/Luck.png",
                 "/src/images/infographics/Wardenclyffe.png",
-                "/src/images/infographics/Leana.svg",
             ]);
         })
     ]);

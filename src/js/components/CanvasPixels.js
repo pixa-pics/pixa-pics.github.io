@@ -2433,7 +2433,7 @@ class CanvasPixels extends React.Component {
 
             if(true || pxl_width > width && pxl_height > height) {
 
-                let [canvas_ctx] = this._get_new_ctx_from_canvas(width, height, false);
+                let [canvas_ctx] = this._get_new_ctx_from_canvas(width, height, true);
                 canvas_ctx.drawImage(image_obj, 0, 0, width, height);
                 const image_data = canvas_ctx.getImageData(0, 0, width, height);
                 const { new_pxl_colors, new_pxls } = this._get_pixels_palette_and_list_from_image_data(image_data, true);
@@ -2465,7 +2465,7 @@ class CanvasPixels extends React.Component {
 
         if(_imported_image_pxls.length) {
 
-            let [canvas_ctx, canvas] = this._get_new_ctx_from_canvas(_imported_image_width, _imported_image_height, false);
+            let [canvas_ctx, canvas] = this._get_new_ctx_from_canvas(_imported_image_width, _imported_image_height, true);
 
 
             _imported_image_pxls.forEach((pxl, index) => {
@@ -2481,7 +2481,7 @@ class CanvasPixels extends React.Component {
             const scaled_width = _imported_image_width + _imported_image_scale_delta_x;
             const scaled_height = _imported_image_height + _imported_image_scale_delta_y;
 
-            let [canvas_resized_ctx] = this._get_new_ctx_from_canvas(scaled_width, scaled_height, false);
+            let [canvas_resized_ctx] = this._get_new_ctx_from_canvas(scaled_width, scaled_height, true);
             canvas_resized_ctx.drawImage(canvas, 0, 0, _imported_image_width, _imported_image_height, 0, 0, scaled_width, scaled_height);
             const resized_image_data = canvas_resized_ctx.getImageData(0, 0, scaled_width, scaled_height);
             const { new_pxls, new_pxl_colors } = this._get_pixels_palette_and_list_from_image_data(resized_image_data, true);
@@ -2550,7 +2550,7 @@ class CanvasPixels extends React.Component {
                 let width = image_obj.naturalWidth;
                 let height = image_obj.naturalHeight;
 
-                let [canvas_ctx, canvas] = this._get_new_ctx_from_canvas(width, height, false);
+                let [canvas_ctx, canvas] = this._get_new_ctx_from_canvas(width, height, true);
                 canvas_ctx.drawImage(image_obj, 0, 0, width, height);
                 const image_data = canvas_ctx.getImageData(0, 0, width, height);
                 const base64_original_image = dont_compute_base64_original_image ? "": loading_base64_img.length > 0 ? loading_base64_img: canvas.toDataURL("image/jpeg");
@@ -2563,12 +2563,8 @@ class CanvasPixels extends React.Component {
                 if(dont_change_img_size_onload === false) {
 
                     // From the result in colors and pixels color index find if the image is resized bigger but from a pixelart image
-                    let colorandpixelbag = this._get_pixels_palette_and_list_from_image_data(image_data, false);
-                    let new_pxls = Uint32Array.from(colorandpixelbag.new_pxls);
-                    let new_pxl_colors = Uint32Array.from(colorandpixelbag.new_pxl_colors);
-
+                    let {new_pxls, new_pxl_colors} = this._get_pixels_palette_and_list_from_image_data(image_data, true);
                     let ratio_pixel_per_color = new_pxls.length / new_pxl_colors.length;
-
                     let enough_sure = max_size * max_size > height * width;
 
                     if(!enough_sure) {
@@ -2771,7 +2767,7 @@ class CanvasPixels extends React.Component {
                     width = Math.floor(cropped_width);
                     height = Math.floor(cropped_height);
 
-                    [canvas_resized_ctx] = this._get_new_ctx_from_canvas(width, height, false);
+                    [canvas_resized_ctx] = this._get_new_ctx_from_canvas(width, height, true);
                     canvas_resized_ctx.drawImage(image_obj, sx, sy, sw, sh, 0, 0, width, height);
                     canvas_resized_image_data = canvas_resized_ctx.getImageData(0, 0, width, height);
 
@@ -2780,7 +2776,7 @@ class CanvasPixels extends React.Component {
                     width = Math.floor(width);
                     height = Math.floor(height);
 
-                    [canvas_resized_ctx] = this._get_new_ctx_from_canvas(width, height, false);
+                    [canvas_resized_ctx] = this._get_new_ctx_from_canvas(width, height, true);
                     canvas_resized_ctx.drawImage(image_obj, 0, 0, width, height);
                     canvas_resized_image_data = canvas_resized_ctx.getImageData(0, 0, width, height);
 
@@ -7169,11 +7165,11 @@ class CanvasPixels extends React.Component {
             let image = new Image();
             image.onload = () => {
 
-                let [ ctx, canvas ] = this._get_new_ctx_from_canvas(image.width, image.height);
+                let [ ctx, canvas ] = this._get_new_ctx_from_canvas(image.naturalWidth, image.naturalHeight);
 
                 ctx.save();
                 ctx.scale(x_scale, y_scale);
-                ctx.drawImage(image, 0, 0, image.width * x_scale, image.height * y_scale);
+                ctx.drawImage(image, 0, 0, image.naturalWidth * x_scale, image.naturalHeight * y_scale);
                 ctx.restore();
 
                 const base64_original_image = image.src.includes("image/png") ?
@@ -7852,13 +7848,13 @@ class CanvasPixels extends React.Component {
             let image = new Image();
             image.onload = () => {
 
-                let [ ctx, canvas ] = this._get_new_ctx_from_canvas(image.height, image.width);
+                let [ ctx, canvas ] = this._get_new_ctx_from_canvas(image.naturalHeight, image.naturalWidth);
 
                 ctx.clearRect(0,0, canvas.width, canvas.height);
                 ctx.save();
                 ctx.translate(canvas.width / 2,canvas.height / 2);
                 ctx.rotate(degrees * Math.PI / 180);
-                ctx.drawImage(image,-image.width / 2, -image.height / 2);
+                ctx.drawImage(image,-image.naturalWidth / 2, -image.naturalHeight / 2);
                 ctx.restore();
 
                 const base64_original_image = image.src.includes("image/png") ?
