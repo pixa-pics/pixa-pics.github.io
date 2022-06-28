@@ -136,7 +136,7 @@ window.imagedata_to_base64_process_function = new AsyncFunction(`var t = async f
         
         return new Promise(function(resolve, _) {
 
-            var base64 = createImageBitmap(base64, {
+            var base64 = createImageBitmap(imagedata, {
                 premultiplyAlpha: 'premultiply',
                 resizeQuality: 'pixelated'
             }).then(function(bmp){
