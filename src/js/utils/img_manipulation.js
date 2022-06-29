@@ -2,12 +2,24 @@ const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
 
 window.file_to_base64_process_function = new AsyncFunction(`var t = async function(file) {
     "use strict";
-     return new Promise(function(resolve, _) {
-            let reader = new FileReader();
+    try {
+    
+        if (typeof FileReaderSync === "undefined") {
+            throw new Error("Impossible to create FileReaderSync in this web environment.");
+        }
+        
+        return new Promise(function(resolve, _) {
+            resolve(FileReaderSync.readAsDataURL(file));
+        });
+    } catch(error) {
+    
+        return new Promise(function(resolve, _) {
+            var reader = new FileReader();
             reader.onload = function(){ resolve(reader.result)};
             reader.onerror = function(){ var u = URL.createObjectURL(file); resolve(u); URL.revokeObjectURL(u);};
             reader.readAsDataURL(file);
         });
+    }
 }; return t;`)();
 
 const file_to_base64 = (file, callback_function = () => {}, pool = null) => {
@@ -27,6 +39,48 @@ const file_to_base64 = (file, callback_function = () => {}, pool = null) => {
     }else {
 
         window.file_to_base64_process_function(file).then((r) => {
+
+            callback_function(r);
+        });
+    }
+};
+
+window.base64_sanitize_process_function = new AsyncFunction(`var t = async function(base64) {
+    "use strict";
+    return new Promise(function(resolve, reject) {
+        var img = new Image();
+        var is_png = base64.startsWith("data:image/png;base64,");
+        img.onload = function() {
+    
+            var canvas = document.createElement("canvas");
+            canvas.width = img.naturalWidth || img.width;
+            canvas.height = img.naturalHeight || img.height;
+            var ctx = canvas.getContext("2d");
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            resolve(canvas.toDataURL(is_png ? "image/png": "image/jpeg")); 
+        };
+        img.onerror = function() { reject(); };
+        img.src = base64;
+    });
+}; return t;`)();
+
+const base64_sanitize = (base64, callback_function = () => {}, pool = null) => {
+
+    if(pool !== null) {
+
+        pool.exec(window.base64_sanitize_process_function, [
+            base64
+        ]).catch((e) => {
+
+            return window.base64_sanitize_process_function(base64);
+        }).timeout(60 * 1000).then((r) => {
+
+            callback_function(r);
+        });
+
+    }else {
+
+        window.base64_sanitize_process_function(base64).then((r) => {
 
             callback_function(r);
         });
@@ -172,4 +226,4 @@ const imagedata_to_base64 = (imagedata, type= "image/png", callback_function = (
 
 };
 
-module.exports = { file_to_base64, base64_to_bitmap, bitmap_to_imagedata, imagedata_to_base64 }
+module.exports = { file_to_base64, base64_to_bitmap, bitmap_to_imagedata, imagedata_to_base64, base64_sanitize }

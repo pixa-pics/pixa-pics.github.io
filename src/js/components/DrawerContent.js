@@ -85,7 +85,7 @@ const styles = theme => ({
         "& > div:first-child": {
             backgroundColor: "transparent",
             background: `linear-gradient(45deg, #01031088 33%, #033aff44 ), url("/src/images/illustrations/ITLab.png")`,
-            backgroundSize: "120%",
+            backgroundSize: "auto 120%",
             backgroundPosition: "right",
             textShadow: "0 0px 6px white",
             filter: "brightness(1) contrast(1)",
@@ -93,7 +93,7 @@ const styles = theme => ({
         },
         "&:hover > div:first-child": {
             filter: "brightness(1.2) contrast(1.2)",
-            backgroundSize: "100%",
+            backgroundSize: "auto 100%",
         }
     }
 });
