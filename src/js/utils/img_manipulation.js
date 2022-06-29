@@ -1,29 +1,13 @@
 const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
 
 window.file_to_base64_process_function = new AsyncFunction(`var t = async function(file) {
-
     "use strict";
-
-    try {
-
-        if (typeof FileReaderSync === "undefined") {
-            throw new Error("Impossible to create FileReaderSync in this web environment.");
-        }
-        
-        return new Promise(function(resolve, _) {
-
-            resolve(FileReaderSync.readAsDataURL(file));
-        });
-
-    } catch(error) {
-
-        return new Promise(function(resolve, _) {
+     return new Promise(function(resolve, _) {
             let reader = new FileReader();
             reader.onload = function(){ resolve(reader.result)};
             reader.onerror = function(){ var u = URL.createObjectURL(file); resolve(u); URL.revokeObjectURL(u);};
             reader.readAsDataURL(file);
         });
-    }
 }; return t;`)();
 
 const file_to_base64 = (file, callback_function = () => {}, pool = null) => {
@@ -94,30 +78,20 @@ const base64_to_bitmap = (base64, callback_function = () => {}, pool = null) => 
 
 const bitmap_to_imagedata = (bitmap, resize_to =  1920*1080, callback_function = () => {}) => {
 
-
-        let img_data; // Create image data
         let scale = 1;
+        while (Math.round(bitmap.width * scale) * Math.round(bitmap.height * scale) > resize_to) { scale -= 0.01; }
 
-        while (bitmap.width * scale * bitmap.height * scale > resize_to) { scale -= 0.01; }
+        let canvas = document.createElement("canvas");
+        canvas.width = Math.round(bitmap.width * scale);
+        canvas.height = Math.round(bitmap.height * scale);
 
-        let canvas = null;
-
-        try {
-
-            canvas = new OffscreenCanvas(Math.floor(bitmap.width * scale), Math.floor(bitmap.height * scale));
-        } catch(error) {
-
-            canvas = document.createElement("canvas");
-            canvas.width = Math.floor(bitmap.width * scale);
-            canvas.height = Math.floor(bitmap.height * scale);
-        }
-
-        var ctx = canvas.getContext("2d");
+        let ctx = canvas.getContext("2d");
         ctx.imageSmoothingEnabled = false;
         ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
-        img_data = ctx.getImageData(0, 0, canvas.width, canvas.height); // This isn't available in web worker
 
-        callback_function(img_data);
+        callback_function(ctx.getImageData(0, 0, canvas.width, canvas.height));  // "getImageData" isn't available in web worker
+        canvas = null;
+        ctx = null;
 };
 
 window.imagedata_to_base64_process_function = new AsyncFunction(`var t = async function(imagedata, type) {
