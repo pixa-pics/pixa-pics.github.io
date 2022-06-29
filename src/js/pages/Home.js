@@ -43,15 +43,15 @@ const styles = theme => ({
     },
     insideRoot: {
         overflow: "hidden",
-        backgroundSize: "auto 120%",
+        backgroundSize: "cover",
         contain: "style paint layout",
         willChange: "background",
-        animation: "$slide 32s ease-out alternate infinite",
+        animation: "$slide 40s ease-out alternate infinite",
         animationFillMode: "both",
         "@global": {
             "@keyframes slide": {
-                "0%": {backgroundPosition: "30% 0%"},
-                "100%": {backgroundPosition: "70% 0%"},
+                "0%": {backgroundPosition: "0% 0%"},
+                "100%": {backgroundPosition: "100% 0%"},
             }
         },
         backgroundRepeat: "no-repeat",
@@ -412,8 +412,8 @@ class Home extends React.Component {
         const IS_LATE_EVENING = is_late_evening(cc);
 
         let bi =  THEME_DAY ?
-            "url(/src/images/illustrations/Fuji-day.svg)":
-            "url(/src/images/illustrations/Indo-night.svg)";
+            "url(/src/images/illustrations/Cervin-day.svg)":
+            "url(/src/images/illustrations/Cervin-night.svg)";
         if(
             THEME_DAY === null ||
             IS_EVENING === null ||

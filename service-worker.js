@@ -1,6 +1,6 @@
-var REQUIRED_CACHE = "unless-update-cache-v249-required";
-var USEFUL_CACHE = "unless-update-cache-v249-useful";
-var STATIC_CACHE = "unless-update-cache-v249-static";
+var REQUIRED_CACHE = "unless-update-cache-v250-required";
+var USEFUL_CACHE = "unless-update-cache-v250-useful";
+var STATIC_CACHE = "unless-update-cache-v250-static";
 var MAIN_CHILD_CHUNK_REGEX = /chunk_(main\~[a-z0-9]+)\.min\.js/i;
 var CHILD_CHUNK_REGEX = /chunk_([0-9]+)\.min\.js/i;
 
@@ -70,8 +70,8 @@ self.addEventListener("install", function(event) {
                 "/src/images/favicon.ico",
                 "/src/images/manifest/logo-white.png",
                 "/src/images/logo-transparent.png",
-                "/src/images/illustrations/Indo-night.svg",
-                "/src/images/illustrations/Fuji-day.svg",
+                "/src/images/illustrations/Cervin-night.svg",
+                "/src/images/illustrations/Cervin-day.svg",
                 "/src/images/illustrations/ITLab.png",
                 "/src/images/gallery/Luck.png",
                 "/src/images/infographics/Wardenclyffe.png",
