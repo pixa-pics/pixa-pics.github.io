@@ -1,6 +1,6 @@
-var REQUIRED_CACHE = "unless-update-cache-v251-required";
-var USEFUL_CACHE = "unless-update-cache-v251-useful";
-var STATIC_CACHE = "unless-update-cache-v251-static";
+var REQUIRED_CACHE = "unless-update-cache-v252-required";
+var USEFUL_CACHE = "unless-update-cache-v252-useful";
+var STATIC_CACHE = "unless-update-cache-v252-static";
 var MAIN_CHILD_CHUNK_REGEX = /chunk_(main\~[a-z0-9]+)\.min\.js/i;
 var CHILD_CHUNK_REGEX = /chunk_([0-9]+)\.min\.js/i;
 
@@ -160,6 +160,8 @@ self.addEventListener("fetch", function(event) {
                         "/src/sounds/voice/cn/complete.mp3",
                         "/src/sounds/voice/cn/please_wait.mp3",
                         "/src/sounds/voice/cn/data_upload.mp3",
+                        "/src/sounds/voice/cn/processing.mp3",
+                        "/src/sounds/voice/cn/enhanced.mp3",
                         "/src/sounds/voice/cn/rewriting_deep_layer_protocols.mp3",
                         "/src/sounds/music/redeclipse/track_09.mp3",
                     ]);
@@ -319,7 +321,7 @@ self.addEventListener("activate", function(event) {
     event.waitUntil(
         caches.keys().then(function(keys) { return Promise.allSettled(
             keys.filter(function(key){
-                return Boolean(key !== REQUIRED_CACHE && key !== STATIC_CACHE && key !== USEFUL_CACHE);
+                return Boolean(key !== REQUIRED_CACHE && key !== STATIC_CACHE && key !== USEFUL_CACHE && key.startsWith("unless-update-cache"));
             }).map(function(key){
                 return caches.delete(key);
             })

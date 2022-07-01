@@ -810,6 +810,7 @@ class Pixel extends React.Component {
 
         using === "xbrz" ? window.dispatchEvent(new Event("art-download-vectorxbrz")): window.dispatchEvent(new Event("art-download-vectoromni"));
 
+        actions.trigger_voice("please_wait");
         actions.trigger_snackbar("Please wait... Files will download in a few seconds.", 5700);
         actions.jamy_update("angry");
 
@@ -819,6 +820,7 @@ class Pixel extends React.Component {
 
                 get_base64_png_data_url(1, ([png_base64_in, palette]) => {
 
+                    actions.trigger_voice("processing");
                     base64png_to_xbrz_svg(png_base64_in, (image_base64) => {
 
                         png_base64_in = null;
@@ -841,6 +843,7 @@ class Pixel extends React.Component {
 
                         this.setState({_loading: false, _loading_process: ""}, () => {
 
+                            actions.trigger_voice("complete");
                             actions.trigger_sfx("hero_decorative-celebration-02");
                             setTimeout(() => {
 
@@ -861,7 +864,7 @@ class Pixel extends React.Component {
 
                 }, true, optimize_render_size ? 6: 0, 40, 50);
 
-            }, 500);
+            }, 750);
 
         });
     };
@@ -1236,9 +1239,6 @@ class Pixel extends React.Component {
             this._handle_edit_drawer_close();
             this._handle_menu_close();
             this._handle_pixel_dialog_create_close();
-        }else if(process === "less_color_auto") {
-
-            actions.trigger_voice("please_wait");
         }
     };
 
@@ -1524,12 +1524,14 @@ class Pixel extends React.Component {
 
         const { auto_adjust_contrast } = this.state._canvas;
         auto_adjust_contrast(1/3);
+        actions.trigger_voice("enhanced");
     };
 
     _to_auto_medium_more_saturation = () => {
 
         const { auto_adjust_saturation } = this.state._canvas;
         auto_adjust_saturation(1/3);
+        actions.trigger_voice("enhanced");
     };
 
     _less_colors_stepped = (increase = 1, callback_function = () => {}) => {
@@ -1542,6 +1544,7 @@ class Pixel extends React.Component {
 
         const { _layers, _layer_index } = this.state;
         const { to_less_color } = this.state._canvas;
+        actions.trigger_voice("please_wait");
 
         if(parseInt((_layers[_layer_index] || {}).number_of_colors || 0) >= 384) {
 
