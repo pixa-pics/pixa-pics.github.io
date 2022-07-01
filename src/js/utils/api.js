@@ -119,37 +119,68 @@ const get_settings = (callback_function_info = null, attachment_ids = [], callba
                                 window._pixa_settings = _merge_object({}, JSON.parse(doc.info));
                                 if(callback_function_info){ callback_function_info(null, _merge_object({}, window._pixa_settings))}
 
-                                let blobs = [];
-                                Object.entries(doc._attachments).forEach(([name_id, value]) => {
+                                let blobs = {};
+                                if(Boolean(doc._attachments)) {
 
-                                    if(Boolean( attachment_ids === "all") || attachment_ids.includes(name_id)) {
+                                    Object.entries(doc._attachments).forEach(([name_id, value]) => {
 
-                                        blobs[name_id] = value.data;
-                                    }
-                                });
+                                        if(Boolean( attachment_ids === "all") || attachment_ids.includes(name_id)) {
 
-                                Object.entries(blobs).forEach(([name_id, blob]) => {
-
-                                    blob.arrayBuffer().then((array_buffer) => {
-
-                                        const uint8a = new Uint8Array(array_buffer);
-
-                                        try {
-
-                                            LZP3(uint8a, "DECOMPRESS_UINT8A", pool).then((obj) => {
-
-                                                callback_function_attachment(null, obj);
-                                            });
-
-                                        } catch (e) {
-
-                                            callback_function_attachment("LZP3 not working", null);
+                                            blobs[name_id] = value.data;
                                         }
-                                    }).catch((e) => {
-
-                                        callback_function_attachment("DB not working", null);
                                     });
-                                });
+
+                                    Object.entries(blobs).forEach(([name_id, blob]) => {
+
+                                        blob.arrayBuffer().then((array_buffer) => {
+
+                                            const uint8a = new Uint8Array(array_buffer);
+
+                                            try {
+
+                                                LZP3(uint8a, "DECOMPRESS_UINT8A", pool).then((obj) => {
+
+                                                    callback_function_attachment(null, obj);
+                                                });
+
+                                            } catch (e) {
+
+                                                callback_function_attachment("LZP3 not working", null);
+                                            }
+                                        }).catch((e) => {
+
+                                            callback_function_attachment("DB not working", null);
+                                        });
+                                    });
+
+                                    let delete_count = 0;
+                                    window._pixa_settings.attachment_previews = window._pixa_settings.attachment_previews || {};
+                                    attachment_ids.forEach((att_id) => {
+
+                                        if(!Boolean(blobs[att_id])) {
+
+                                            delete window._pixa_settings.attachment_previews[att_id];
+                                            delete_count++;
+                                        }
+                                    });
+
+                                    if(delete_count > 0) {
+
+                                        window.settings_db.put({
+                                            _id: doc._id,
+                                            _rev: doc._rev,
+                                            info: JSON.stringify(_merge_object({}, window._pixa_settings)),
+                                            timestamp: Date.now(),
+                                        }, {force: true}, (err) => {
+
+                                            callback_function_attachment("Empty DB files", null);
+                                        });
+
+                                    }
+                                }else {
+
+                                    callback_function_attachment("Empty DB files", null);
+                                }
                             }else {
 
                                 callback_function_attachment("DB not working", null);

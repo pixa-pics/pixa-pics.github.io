@@ -217,6 +217,10 @@ const styles = theme => ({
         contain: "paint size style layout",
         height: 72,
         display: "grid",
+        "& .MuiTabs-scroller": {
+
+            overflowY: "hidden",
+        },
         "& .MuiTab-root": {
             minWidth: "auto",
             flex: "auto",
@@ -287,7 +291,7 @@ const styles = theme => ({
         [theme.breakpoints.up("md")]: {
             width: "calc(100vw - 256px)",
         },
-        zIndex: 1350,
+        zIndex: 1300,
         position: "fixed",
         bottom: 0,
         right: 0,
@@ -556,7 +560,6 @@ class Pixel extends React.Component {
 
         if(Boolean(error)) {
 
-            console.log(error);
             actions.trigger_snackbar("Looks like I can't get your file as something was erroneous.", 5700);
             actions.jamy_update("angry");
             this._handle_pixel_dialog_create_open();
@@ -1579,7 +1582,7 @@ class Pixel extends React.Component {
 
     _handle_pixel_dialog_create_open = () => {
 
-        this.setState({_is_pixel_dialog_create_open: true});
+        api.get_settings(this._process_settings_info_result);
     };
 
     _get_OS = () => {
@@ -1716,6 +1719,7 @@ class Pixel extends React.Component {
                     disableBackdropTransition={false}
                     disableSwipeToOpen={true}
                     disableDiscovery={true}
+                    disablePortal={true}
                     keepMounted={true}
                     open={_is_edit_drawer_open}
                     onOpen={this._handle_edit_drawer_open}
@@ -1967,166 +1971,168 @@ class Pixel extends React.Component {
                                 fast_drawing={true}
                                 px_per_px={1}/>
                         </Suspense>
+                        <Menu
+                            className={_is_cursor_fuck_you_active ? classes.contextMenuFuckYouActive: classes.contextMenuFuckYouDisable}
+                            PaperProps={{
+                                style: {
+                                    maxHeight: 350,
+                                    width: 250,
+                                    overflowY: "overlay"
+                                },
+                            }}
+                            onContextMenu={(e) => {e.preventDefault()}}
+                            MenuListProps={{dense: true}}
+                            transitionDuration={{enter: 50, exit: 75}}
+                            open={_menu_mouse_y !== null}
+                            onClose={this._handle_menu_close}
+                            anchorReference="anchorPosition"
+                            anchorPosition={
+                                _menu_mouse_y !== null && _menu_mouse_x !== null
+                                    ? { top: _menu_mouse_y, left: _menu_mouse_x }
+                                    : undefined
+                            }
+                        >
+                            <span style={{textAlign: "left", padding: "12px 8px", color: "#666"}}>X: {_menu_data.pos_x}, Y: {_menu_data.pos_y}</span>
+                            {
+                                (_tool === "SET PENCIL MIRROR" || _pencil_mirror_mode !== "NONE") &&
+                                <div>
+                                    <ListSubheader className={classes.contextMenuSubheader}>Tools</ListSubheader>
+                                    <ListItem button divider disabled={_tool === "PENCIL"} onClick={() => {this._set_tool("PENCIL")}}>
+                                        <ListItemIcon>
+                                            <PencilIcon />
+                                        </ListItemIcon>
+                                        <ListItemText primary="Pencil" />
+                                    </ListItem>
+                                    <ListItem button divider disabled={_tool === "PENCIL PERFECT"} onClick={() => {this._set_tool("PENCIL PERFECT")}}>
+                                        <ListItemIcon>
+                                            <PencilPerfectIcon />
+                                        </ListItemIcon>
+                                        <ListItemText primary="Pencil perfect" />
+                                    </ListItem>
+
+                                    <ListSubheader className={classes.contextMenuSubheader}>Mirror mode</ListSubheader>
+                                    {
+                                        [
+                                            {icon: <MirrorIcon />, disabled: _pencil_mirror_mode === "NONE",text: "None", on_click: () => {this._set_pencil_mirror_mode("NONE")}},
+                                            {icon: <MirrorIcon />, disabled: _pencil_mirror_mode === "VERTICAL", text: "Vertical", on_click: () => {this._set_pencil_mirror_mode("VERTICAL")}},
+                                            {icon: <MirrorIcon />, disabled: _pencil_mirror_mode === "HORIZONTAL", text: "Horizontal", on_click: () => {this._set_pencil_mirror_mode("HORIZONTAL")}},
+                                            {icon: <MirrorIcon />, disabled: _pencil_mirror_mode === "BOTH", text: "Both", on_click: () => {this._set_pencil_mirror_mode("BOTH")}},
+                                        ].map((item) => {
+
+                                            return (
+                                                <ListItem key={item.text} button divider disabled={item.disabled} onClick={item.on_click}>
+                                                    <ListItemIcon>
+                                                        {item.icon}
+                                                    </ListItemIcon>
+                                                    <ListItemText primary={item.text} />
+                                                </ListItem>
+                                            );
+
+                                        })
+                                    }
+                                </div>
+                            }
+                            {
+                                _is_something_selected &&
+                                <div>
+                                    <ListSubheader className={classes.contextMenuSubheader}>Apply to selection</ListSubheader>
+                                    {
+                                        [
+                                            {icon: <SelectRemoveDifferenceIcon />, text: "Unselect", on_click: () => {_canvas.to_selection_none()}},
+                                            {icon: <BucketIcon />, text: "Colorize dynamical", on_click: () => {_canvas.to_selection_changes(_current_color, false)}},
+                                            {icon: <SelectColorIcon />, text: "Get average color", on_click: () => {this._get_average_color_of_selection()}},
+                                            {icon: <SelectInImageIcon />, text: "Shrink", on_click: () => {_canvas.to_selection_size(-1)}},
+                                            {icon: <SelectInImageIcon />, text: "Grow", on_click: () => {_canvas.to_selection_size(1)}},
+                                            {icon: <BorderBottomIcon />, text: "Border", on_click: () => {_canvas.to_selection_border()}},
+                                            {icon: <BucketIcon />, text: "Bucket", on_click: () => {_canvas.to_selection_bucket()}},
+                                            {icon: <SelectInImageIcon />, text: "Crop", on_click: () => {_canvas.to_selection_crop()}},
+                                            {icon: <SelectInvertIcon />, text: "Invert", on_click: () => {_canvas.to_selection_invert()}},
+                                            {icon: <CopyIcon />, text: "Copy", on_click: () => {_canvas.copy_selection()}},
+                                            {icon: <CutIcon />, text: "Cut", on_click: () => {_canvas.cut_selection()}},
+                                            {icon: <EraserIcon />, text: "Erase", on_click: () => {_canvas.erase_selection()}},
+                                        ].map((item) => {
+
+                                            return (
+                                                <ListItem key={item.text} button divider onClick={item.on_click}>
+                                                    <ListItemIcon>
+                                                        {item.icon}
+                                                    </ListItemIcon>
+                                                    <ListItemText primary={item.text} />
+                                                </ListItem>
+                                            );
+                                        })
+                                    }
+                                </div>
+                            }
+                            <ListSubheader style={_menu_data.pxl_color === null ? {display: "none"}: {}} className={classes.contextMenuSubheader}>Color</ListSubheader>
+                            <ListItem button divider style={_menu_data.pxl_color === null ? {display: "none"}: {}} disabled={_menu_data.pxl_color === _current_color || _menu_data.pxl_color === null} onClick={(event) => {this._set_current_color(_menu_data.pxl_color); this._handle_relevant_action_event(_menu_event, _menu_data.pxl_color, 1);}}>
+                                <ListItemIcon>
+                                    <SquareIcon style={{ color: _menu_data.pxl_color, background: `repeating-conic-gradient(#80808055 0% 25%, #00000000 0% 50%) 50% / calc(200% / ${_width}) calc(200% / ${_height})`}} />
+                                </ListItemIcon>
+                                <ListItemText primary="Pick color" />
+                            </ListItem>
+                            <ListItem button divider style={_menu_data.pxl_color === null ? {display: "none"}: {}} disabled={_menu_data.pxl_color === _current_color || _menu_data.pxl_color === null} onClick={(event) => {this._exchange_pixel_colors(_menu_data.pxl_color, _current_color); this._handle_relevant_action_event(_menu_event, _current_color, 1);}}>
+                                <ListItemIcon>
+                                    <SquareIcon style={{ color: _current_color, background: `repeating-conic-gradient(#80808055 0% 25%, #00000000 0% 50%) 50% / calc(200% / ${_width}) calc(200% / ${_height})`}} />
+                                </ListItemIcon>
+                                <ListItemText primary="Replace color" />
+                            </ListItem>
+                            <ListSubheader className={classes.contextMenuSubheader}>Undo / Redo</ListSubheader>
+                            <ListItem button divider onClick={(event) => {_canvas.undo()}}>
+                                <ListItemIcon>
+                                    <ChangeHistoryIcon />
+                                </ListItemIcon>
+                                <ListItemText primary="Undo" />
+                            </ListItem>
+                            <ListItem button divider onClick={(event) => {_canvas.redo()}}>
+                                <ListItemIcon>
+                                    <ChangeHistoryIcon />
+                                </ListItemIcon>
+                                <ListItemText primary="Redo" />
+                            </ListItem>
+                            <ListSubheader className={classes.contextMenuSubheader}>Effect</ListSubheader>
+                            <ListItem button divider onClick={(event) => this._to_auto_medium_more_contrast()}>
+                                <ListItemIcon>
+                                    <ContrastCircleIcon />
+                                </ListItemIcon>
+                                <ListItemText primary="Increase contrast" />
+                            </ListItem>
+                            <ListItem button divider onClick={(event) => this._to_auto_medium_more_saturation()}>
+                                <ListItemIcon>
+                                    <ContrastCircleIcon />
+                                </ListItemIcon>
+                                <ListItemText primary="Increase saturation" />
+                            </ListItem>
+                            <ListItem button divider onClick={(event) => this._handle_edit_drawer_open(null,6)}>
+                                <ListItemIcon>
+                                    <ImageFilterMagicIcon />
+                                </ListItemIcon>
+                                <ListItemText primary="Add a filter" />
+                            </ListItem>
+                            <ListItem button divider onClick={(event) => this._less_colors_stepped(2)}>
+                                <ListItemIcon>
+                                    <LessColorIcon />
+                                </ListItemIcon>
+                                <ListItemText primary="Reduce color number" />
+                            </ListItem>
+                            <ListItem button divider onClick={this._less_colors_auto}>
+                                <ListItemIcon>
+                                    <LessColorIcon />
+                                </ListItemIcon>
+                                <ListItemText primary="To auto colors number" />
+                            </ListItem>
+                            <ListItem button divider onClick={(event) => _canvas.smooth_adjust(1)}>
+                                <ListItemIcon>
+                                    <ImageSmoothIcon />
+                                </ListItemIcon>
+                                <ListItemText primary="Smooth a bit" />
+                            </ListItem>
+                        </Menu>
                         {drawer_desktop}
                     </div>
                 </div>
-                <Menu
-                    className={_is_cursor_fuck_you_active ? classes.contextMenuFuckYouActive: classes.contextMenuFuckYouDisable}
-                    PaperProps={{
-                        style: {
-                            maxHeight: 350,
-                            width: 250,
-                            overflowY: "overlay"
-                        },
-                    }}
-                    onContextMenu={(e) => {e.preventDefault()}}
-                    MenuListProps={{dense: true}}
-                    transitionDuration={{enter: 50, exit: 75}}
-                    open={_menu_mouse_y !== null}
-                    onClose={this._handle_menu_close}
-                    anchorReference="anchorPosition"
-                    anchorPosition={
-                        _menu_mouse_y !== null && _menu_mouse_x !== null
-                            ? { top: _menu_mouse_y, left: _menu_mouse_x }
-                            : undefined
-                    }
-                >
-                    <span style={{textAlign: "left", padding: "12px 8px", color: "#666"}}>X: {_menu_data.pos_x}, Y: {_menu_data.pos_y}</span>
-                    {
-                        (_tool === "SET PENCIL MIRROR" || _pencil_mirror_mode !== "NONE") &&
-                            <div>
-                                <ListSubheader className={classes.contextMenuSubheader}>Tools</ListSubheader>
-                                <ListItem button divider disabled={_tool === "PENCIL"} onClick={() => {this._set_tool("PENCIL")}}>
-                                    <ListItemIcon>
-                                        <PencilIcon />
-                                    </ListItemIcon>
-                                    <ListItemText primary="Pencil" />
-                                </ListItem>
-                                <ListItem button divider disabled={_tool === "PENCIL PERFECT"} onClick={() => {this._set_tool("PENCIL PERFECT")}}>
-                                    <ListItemIcon>
-                                        <PencilPerfectIcon />
-                                    </ListItemIcon>
-                                    <ListItemText primary="Pencil perfect" />
-                                </ListItem>
 
-                                <ListSubheader className={classes.contextMenuSubheader}>Mirror mode</ListSubheader>
-                                {
-                                    [
-                                        {icon: <MirrorIcon />, disabled: _pencil_mirror_mode === "NONE",text: "None", on_click: () => {this._set_pencil_mirror_mode("NONE")}},
-                                        {icon: <MirrorIcon />, disabled: _pencil_mirror_mode === "VERTICAL", text: "Vertical", on_click: () => {this._set_pencil_mirror_mode("VERTICAL")}},
-                                        {icon: <MirrorIcon />, disabled: _pencil_mirror_mode === "HORIZONTAL", text: "Horizontal", on_click: () => {this._set_pencil_mirror_mode("HORIZONTAL")}},
-                                        {icon: <MirrorIcon />, disabled: _pencil_mirror_mode === "BOTH", text: "Both", on_click: () => {this._set_pencil_mirror_mode("BOTH")}},
-                                    ].map((item) => {
-
-                                        return (
-                                            <ListItem key={item.text} button divider disabled={item.disabled} onClick={item.on_click}>
-                                                <ListItemIcon>
-                                                    {item.icon}
-                                                </ListItemIcon>
-                                                <ListItemText primary={item.text} />
-                                            </ListItem>
-                                        );
-
-                                    })
-                                }
-                            </div>
-                    }
-                    {
-                        _is_something_selected &&
-                            <div>
-                                <ListSubheader className={classes.contextMenuSubheader}>Apply to selection</ListSubheader>
-                                {
-                                    [
-                                        {icon: <SelectRemoveDifferenceIcon />, text: "Unselect", on_click: () => {_canvas.to_selection_none()}},
-                                        {icon: <BucketIcon />, text: "Colorize dynamical", on_click: () => {_canvas.to_selection_changes(_current_color, false)}},
-                                        {icon: <SelectColorIcon />, text: "Get average color", on_click: () => {this._get_average_color_of_selection()}},
-                                        {icon: <SelectInImageIcon />, text: "Shrink", on_click: () => {_canvas.to_selection_size(-1)}},
-                                        {icon: <SelectInImageIcon />, text: "Grow", on_click: () => {_canvas.to_selection_size(1)}},
-                                        {icon: <BorderBottomIcon />, text: "Border", on_click: () => {_canvas.to_selection_border()}},
-                                        {icon: <BucketIcon />, text: "Bucket", on_click: () => {_canvas.to_selection_bucket()}},
-                                        {icon: <SelectInImageIcon />, text: "Crop", on_click: () => {_canvas.to_selection_crop()}},
-                                        {icon: <SelectInvertIcon />, text: "Invert", on_click: () => {_canvas.to_selection_invert()}},
-                                        {icon: <CopyIcon />, text: "Copy", on_click: () => {_canvas.copy_selection()}},
-                                        {icon: <CutIcon />, text: "Cut", on_click: () => {_canvas.cut_selection()}},
-                                        {icon: <EraserIcon />, text: "Erase", on_click: () => {_canvas.erase_selection()}},
-                                    ].map((item) => {
-
-                                        return (
-                                            <ListItem key={item.text} button divider onClick={item.on_click}>
-                                                <ListItemIcon>
-                                                    {item.icon}
-                                                </ListItemIcon>
-                                                <ListItemText primary={item.text} />
-                                            </ListItem>
-                                        );
-                                    })
-                                }
-                            </div>
-                    }
-                    <ListSubheader style={_menu_data.pxl_color === null ? {display: "none"}: {}} className={classes.contextMenuSubheader}>Color</ListSubheader>
-                    <ListItem button divider style={_menu_data.pxl_color === null ? {display: "none"}: {}} disabled={_menu_data.pxl_color === _current_color || _menu_data.pxl_color === null} onClick={(event) => {this._set_current_color(_menu_data.pxl_color); this._handle_relevant_action_event(_menu_event, _menu_data.pxl_color, 1);}}>
-                        <ListItemIcon>
-                            <SquareIcon style={{ color: _menu_data.pxl_color, background: `repeating-conic-gradient(#80808055 0% 25%, #00000000 0% 50%) 50% / calc(200% / ${_width}) calc(200% / ${_height})`}} />
-                        </ListItemIcon>
-                        <ListItemText primary="Pick color" />
-                    </ListItem>
-                    <ListItem button divider style={_menu_data.pxl_color === null ? {display: "none"}: {}} disabled={_menu_data.pxl_color === _current_color || _menu_data.pxl_color === null} onClick={(event) => {this._exchange_pixel_colors(_menu_data.pxl_color, _current_color); this._handle_relevant_action_event(_menu_event, _current_color, 1);}}>
-                        <ListItemIcon>
-                            <SquareIcon style={{ color: _current_color, background: `repeating-conic-gradient(#80808055 0% 25%, #00000000 0% 50%) 50% / calc(200% / ${_width}) calc(200% / ${_height})`}} />
-                        </ListItemIcon>
-                        <ListItemText primary="Replace color" />
-                    </ListItem>
-                    <ListSubheader className={classes.contextMenuSubheader}>Undo / Redo</ListSubheader>
-                    <ListItem button divider onClick={(event) => {_canvas.undo()}}>
-                        <ListItemIcon>
-                            <ChangeHistoryIcon />
-                        </ListItemIcon>
-                        <ListItemText primary="Undo" />
-                    </ListItem>
-                    <ListItem button divider onClick={(event) => {_canvas.redo()}}>
-                        <ListItemIcon>
-                            <ChangeHistoryIcon />
-                        </ListItemIcon>
-                        <ListItemText primary="Redo" />
-                    </ListItem>
-                    <ListSubheader className={classes.contextMenuSubheader}>Effect</ListSubheader>
-                    <ListItem button divider onClick={(event) => this._to_auto_medium_more_contrast()}>
-                        <ListItemIcon>
-                            <ContrastCircleIcon />
-                        </ListItemIcon>
-                        <ListItemText primary="Increase contrast" />
-                    </ListItem>
-                    <ListItem button divider onClick={(event) => this._to_auto_medium_more_saturation()}>
-                        <ListItemIcon>
-                            <ContrastCircleIcon />
-                        </ListItemIcon>
-                        <ListItemText primary="Increase saturation" />
-                    </ListItem>
-                    <ListItem button divider onClick={(event) => this._handle_edit_drawer_open(null,6)}>
-                        <ListItemIcon>
-                            <ImageFilterMagicIcon />
-                        </ListItemIcon>
-                        <ListItemText primary="Add a filter" />
-                    </ListItem>
-                    <ListItem button divider onClick={(event) => this._less_colors_stepped(2)}>
-                        <ListItemIcon>
-                            <LessColorIcon />
-                        </ListItemIcon>
-                        <ListItemText primary="Reduce color number" />
-                    </ListItem>
-                    <ListItem button divider onClick={this._less_colors_auto}>
-                        <ListItemIcon>
-                            <LessColorIcon />
-                        </ListItemIcon>
-                        <ListItemText primary="To auto colors number" />
-                    </ListItem>
-                    <ListItem button divider onClick={(event) => _canvas.smooth_adjust(1)}>
-                        <ListItemIcon>
-                            <ImageSmoothIcon />
-                        </ListItemIcon>
-                        <ListItemText primary="Smooth a bit" />
-                    </ListItem>
-                </Menu>
+                {drawer_mobile}
 
                 <div className={classes.fatabs} style={_is_edit_drawer_open && _less_than_1280w ? {minHeight: 48, height: 48, backgroundColor: "#fff"}: {}}>
                     <Tabs className={classes.tabs} style={_is_edit_drawer_open && _less_than_1280w ? {minHeight: 48, height: 48}: {}}
@@ -2147,9 +2153,8 @@ class Pixel extends React.Component {
                     </Tabs>
                 </div>
 
-                {drawer_mobile}
-
                 <ImageFileDialog
+                    keepMounted={false}
                     open={_library_dialog_open}
                     object={_library}
                     onClose={this._close_library}

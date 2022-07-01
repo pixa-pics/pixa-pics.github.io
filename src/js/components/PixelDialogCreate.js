@@ -123,6 +123,7 @@ class PixelDialogCreate extends React.Component {
                     className={classes.dialogMobileFullscreen}
                     maxWidth={"xl"}
                     onClose={this.props.onClose}
+                    disablePortal={true}
                     keepMounted={keepMounted}>
                 <DialogContent>
                     <Typography component={"h2"} variant={"h6"}>New/old pixel art (minima)</Typography>

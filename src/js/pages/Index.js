@@ -641,6 +641,24 @@ class Index extends React.Component {
         return (
             <React.Fragment>
                 <div className={classes.root}>
+                    <AppToolbar
+                        ret={_ret}
+                        camo={_camo}
+                        loaded_progress_percent={_loaded_progress_percent}
+                        know_if_logged={_know_if_logged}
+                        know_the_settings={_know_the_settings}
+                        logged_account={_logged_account}
+                        pathname={pathname}
+                        music_enabled={_music_enabled}
+                        jamy_enabled={_jamy_enabled}
+                        jamy_state_of_mind={_jamy_state_of_mind}/>
+                    <AppDrawer
+                        pathname={pathname}
+                        logged_account={_logged_account}/>
+                    <Toolbar />
+                    <main className={classes.content}>
+                        {_know_the_settings && page_component}
+                    </main>
                     <Snackbar
                         className={classes.snackbar}
                         open={_snackbar_open}
@@ -660,24 +678,6 @@ class Index extends React.Component {
                         autoHideDuration={_snackbar_auto_hide_duration}
                         onClose={this._close_snackbar}
                     />
-                    <AppToolbar
-                        ret={_ret}
-                        camo={_camo}
-                        loaded_progress_percent={_loaded_progress_percent}
-                        know_if_logged={_know_if_logged}
-                        know_the_settings={_know_the_settings}
-                        logged_account={_logged_account}
-                        pathname={pathname}
-                        music_enabled={_music_enabled}
-                        jamy_enabled={_jamy_enabled}
-                        jamy_state_of_mind={_jamy_state_of_mind}/>
-                    <AppDrawer
-                        pathname={pathname}
-                        logged_account={_logged_account}/>
-                    <Toolbar />
-                    <main className={classes.content}>
-                        {_know_the_settings && page_component}
-                    </main>
                 </div>
                 <ShareDialog
                     open={_is_share_dialog_open}

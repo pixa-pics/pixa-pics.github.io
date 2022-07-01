@@ -178,6 +178,7 @@ class ShareDialog extends React.Component {
         return (
             <div>
                 <Dialog
+                    disablePortal={true}
                     open={open}
                     onClose={(event) => {this.props.onClose(event)}}
                 >
