@@ -148,7 +148,6 @@ self.addEventListener("fetch", function(event) {
                 }),
                 static_cache.then(function (cache) {
                     return cache.addAll([
-                        "/src/sounds/sfx/md/FullHorizonThrow.mp3",
                         "/src/sounds/sfx/md/hero_decorative-celebration-02.mp3",
                         "/src/sounds/sfx/md/navigation_selection-complete-celebration.mp3",
                         "/src/sounds/sfx/md/navigation_transition-left.mp3",
@@ -156,8 +155,13 @@ self.addEventListener("fetch", function(event) {
                         "/src/sounds/sfx/md/ui_lock.mp3",
                         "/src/sounds/sfx/md/ui_unlock.mp3",
                         "/src/sounds/sfx/md/alert_high-intensity.mp3",
-                        "/src/sounds/music/redeclipse/track_09.mp3",
                         "/src/sounds/sfx/md/navigation_transition-right.mp3",
+                        "/src/sounds/voice/cn/accessing_memory.mp3",
+                        "/src/sounds/voice/cn/complete.mp3",
+                        "/src/sounds/voice/cn/please_wait.mp3",
+                        "/src/sounds/voice/cn/data_upload.mp3",
+                        "/src/sounds/voice/cn/rewriting_deep_layer_protocols.mp3",
+                        "/src/sounds/music/redeclipse/track_09.mp3",
                     ]);
                 })
             ])

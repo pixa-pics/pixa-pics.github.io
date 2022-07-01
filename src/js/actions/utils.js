@@ -35,6 +35,23 @@ function trigger_sfx(name, volume = 1, pack = "md") {
     }
 }
 
+function trigger_voice(name, volume = 1, pack = "cn") {
+
+    if(!dispatcher.isDispatching()) {
+
+        dispatcher.dispatch({
+            type: "TRIGGER_VOICE",
+            data: { pack, name, volume}
+        });
+    }else {
+
+        setTimeout(() => {
+
+            trigger_sfx(name, volume, pack);
+        }, 10);
+    }
+}
+
 function trigger_music(name, volume = 0.75, pack = "redeclipse") {
 
     if(!dispatcher.isDispatching()) {
@@ -192,6 +209,7 @@ module.exports = {
     stop_sound: stop_sound,
     jamy_update: jamy_update,
     trigger_sfx: trigger_sfx,
+    trigger_voice: trigger_voice,
     trigger_music: trigger_music,
     trigger_share: trigger_share,
     trigger_snackbar: trigger_snackbar,

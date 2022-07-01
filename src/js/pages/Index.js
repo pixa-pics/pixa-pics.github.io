@@ -122,6 +122,7 @@ class Index extends React.Component {
             _ret: 0,
             _camo: 0,
             _sfx_enabled: true,
+            _voice_enabled: true,
             _music_enabled: false,
             _jamy_enabled: true,
             _vocal_enabled: false,
@@ -151,6 +152,7 @@ class Index extends React.Component {
 
                 // Set new settings from query result
                 const _sfx_enabled = typeof settings.sfx_enabled !== "undefined" ? settings.sfx_enabled : true;
+                const _voice_enabled = typeof settings.voice_enabled !== "undefined" ? settings.voice_enabled : true;
                 const _music_enabled = typeof settings.music_enabled !== "undefined" ? settings.music_enabled : false;
                 const _jamy_enabled = typeof settings.jamy_enabled !== "undefined" ? settings.jamy_enabled : true;
                 const _selected_locales_code = typeof settings.locales !== "undefined" ? settings.locales : "en-US";
@@ -161,7 +163,7 @@ class Index extends React.Component {
                 const _camo = typeof settings.camo !== "undefined" ? settings.camo : 0;
                 l(_language);
                 document.body.setAttribute("datainitiated", "true");
-                this.setState({_know_the_settings: true, _sfx_enabled, _music_enabled, _jamy_enabled, _language, _selected_currency, _onboarding_enabled, _ret, _camo});
+                this.setState({_know_the_settings: true, _sfx_enabled, _voice_enabled, _music_enabled, _jamy_enabled, _language, _selected_currency, _onboarding_enabled, _ret, _camo});
             }
         });
     }
@@ -260,7 +262,7 @@ class Index extends React.Component {
 
     _handle_events(event) {
 
-        const { _sfx_enabled, _music_enabled, _know_the_settings } = this.state;
+        const { _sfx_enabled, _voice_enabled, _music_enabled, _know_the_settings } = this.state;
         let global = null;
 
         // Make different actions send from a dispatcher bounded to this function
@@ -269,6 +271,11 @@ class Index extends React.Component {
             case "TRIGGER_SFX":
                 global = false;
                 if(_sfx_enabled) { this._trigger_sound("sfx", event.data.pack, event.data.name, event.data.volume, global); }
+                break;
+
+            case "TRIGGER_VOICE":
+                global = false;
+                if(_voice_enabled) { this._trigger_sound("voice", event.data.pack, event.data.name, event.data.volume, global); }
                 break;
 
             case "TRIGGER_MUSIC":

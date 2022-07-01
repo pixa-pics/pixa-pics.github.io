@@ -79,6 +79,7 @@ class Settings extends React.Component {
 
     _on_settings_changed = () => {
 
+        actions.trigger_voice("rewriting_deep_layer_protocols");
         actions.trigger_loading_update(0);
         setTimeout(() => {
 
@@ -137,6 +138,26 @@ class Settings extends React.Component {
 
         const settings = { music_enabled: !checked };
         this.setState({_music_enabled: !checked});
+        api.set_settings(settings,  this._on_settings_changed);
+    };
+
+    _handle_voice_enabled_switch_change = (event) => {
+
+        const checked = Boolean(this.state._voice_enabled);
+
+        if(checked){
+
+            actions.trigger_sfx("ui_lock");
+            actions.jamy_update("happy");
+            actions.stop_sound();
+        }else {
+
+            actions.trigger_sfx("ui_unlock");
+            actions.jamy_update("happy");
+        }
+
+        const settings = { voice_enabled: !checked };
+        this.setState({_voice_enabled: !checked});
         api.set_settings(settings,  this._on_settings_changed);
     };
 
@@ -312,6 +333,12 @@ class Settings extends React.Component {
                                     value={"Enable music effects"}
                                     control={<Switch checked={_music_enabled} onChange={this._handle_music_enabled_switch_change} color="primary" />}
                                     label={ "Enable music effects"}
+                                    labelPlacement="end"
+                                /> <br />
+                                <FormControlLabel
+                                    value={"Enable voice effects"}
+                                    control={<Switch checked={_music_enabled} onChange={this._handle_voice_enabled_switch_change} color="primary" />}
+                                    label={ "Enable voice effects"}
                                     labelPlacement="end"
                                 />
                             </CardContent>

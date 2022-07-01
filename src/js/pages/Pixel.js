@@ -955,6 +955,8 @@ class Pixel extends React.Component {
 
                 base64_sanitize(base64_input, (base64_input) => {
 
+                    actions.trigger_voice("data_upload");
+
                     const max_original_size = is_mobile_or_tablet ? Math.sqrt(1920 * 1280): Math.sqrt(4096 * 2160);
                     const max_size = is_mobile_or_tablet ? Math.sqrt(1280 * 720): Math.sqrt(1920 * 1280);
                     const max_color = is_mobile_or_tablet ? 384: 512;
@@ -1180,6 +1182,7 @@ class Pixel extends React.Component {
 
             this._handle_pixel_dialog_create_close();
             this._handle_load("image_preload");
+            actions.trigger_voice("accessing_memory");
             api.get_settings(() => {}, ["json_state-ID" + id + ".json.lzp3"], this._process_settings_attachment_result, LZP3);
         }).catch(() => {
 
@@ -1230,10 +1233,12 @@ class Pixel extends React.Component {
 
         if(process === "image_preload"){
 
-            actions.trigger_sfx("FullHorizonThrow");
             this._handle_edit_drawer_close();
             this._handle_menu_close();
             this._handle_pixel_dialog_create_close();
+        }else if(process === "less_color_auto") {
+
+            actions.trigger_voice("please_wait");
         }
     };
 
@@ -1253,7 +1258,10 @@ class Pixel extends React.Component {
         }else if(process === "image_load"){
 
             actions.trigger_snackbar(`DONE! We've imported an image with my now ${data.number_of_colors} colors.`);
-            actions.trigger_sfx("PrometheusVertical2");
+            setTimeout(() => {
+
+                actions.trigger_voice("complete");
+            }, 1000);
             actions.jamy_update("happy");
             this._handle_edit_drawer_close();
         }

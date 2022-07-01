@@ -9,7 +9,7 @@ const _init = () => {
 
     if(typeof window.settings_db === "undefined") {
 
-        window.settings_db = new PouchDB("settings_db", {adapter: "idb", deterministic_revs: true, revs_limit: 1});
+        window.settings_db = new PouchDB("settings_db", {adapter: "idb", deterministic_revs: false, revs_limit: 1});
         return true;
     }else {
 
@@ -31,12 +31,10 @@ const _get_default_settings = () => {
         currency: _get_currency_by_locales(locales),
         ret: 0,
         camo: 0,
-        manual_warning_enabled: true,
         sfx_enabled: true,
         jamy_enabled: true,
-        enable_3d: false,
+        voice_enabled: true,
         music_enabled: false,
-        onboarding: true,
         attachment_previews: {},
     };
 };
