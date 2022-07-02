@@ -7,7 +7,7 @@ window.mobileAndTabletCheck = function() {
 let is_mobile_or_tablet = window.mobileAndTabletCheck();
 import React, { Suspense } from "react";
 const CanvasPixels = React.lazy(() => import("../components/CanvasPixels"));
-import { withStyles } from "@material-ui/core";
+import {IconButton, withStyles} from "@material-ui/core";
 import pool from "../utils/worker-pool";
 
 import {ListItem, Typography, Backdrop, Slider, SwipeableDrawer, Drawer, Tabs, Tab, Menu, ListSubheader, ListItemText, ListItemIcon} from "@material-ui/core";
@@ -42,6 +42,8 @@ import PencilPerfectIcon from "../icons/PencilPerfect";
 import ChangeHistoryIcon from "@material-ui/icons/ChangeHistory";
 import SelectColorIcon from "../icons/SelectColor";
 import SelectRemoveDifferenceIcon from "../icons/SelectRemoveDifference";
+import PerspectiveOn from "../icons/3dOn";
+import PerspectiveOff from "../icons/3dOff";
 
 import ShufflingSpanText from "../components/ShufflingSpanText";
 import ImageFileDialog from "../components/ImageFileDialog";
@@ -333,6 +335,11 @@ const styles = theme => ({
         color: theme.palette.secondary.lighter,
         textAlign: "center",
         minWidth: "100%",
+    },
+    perspectiveButton: {
+        position: "absolute",
+        left: 16,
+        top: 16,
     }
 });
 
@@ -344,6 +351,7 @@ class Pixel extends React.Component {
         this.state = {
             classes: props.classes,
             _history: HISTORY,
+            _perspective: false,
             _library_dialog_open: false,
             _library: {},
             _library_type: "open",
@@ -1391,6 +1399,11 @@ class Pixel extends React.Component {
         this.setState({_import_colorize: value || event.target.value});
     };
 
+    _revert_tool = () => {
+
+        this.setState({_tool: String(this.state._memory_tool)});
+    };
+
     _set_tool = (name, remember = true) => {
 
         this.setState({_tool: name.toUpperCase()});
@@ -1649,6 +1662,24 @@ class Pixel extends React.Component {
         }
     };
 
+    _toggle_perspective = () => {
+
+        const new_perspective = Boolean(!this.state._perspective);
+
+        if(new_perspective) {
+
+            this._set_tool("MOVE", false);
+        }else {
+
+            this._revert_tool();
+        }
+
+        this.setState({_perspective: new_perspective}, () => {
+
+            this.forceUpdate();
+        });
+    };
+
     render() {
 
         const {
@@ -1701,6 +1732,7 @@ class Pixel extends React.Component {
             _filters_thumbnail,
             _last_filters_hash,
             _filters_preview_progression,
+            _perspective,
         } = this.state;
 
         let x = _x === -1 ? "out": _x + 1;
@@ -1926,7 +1958,7 @@ class Pixel extends React.Component {
                     }}>
                         <Suspense fallback={<div className={classes.contentCanvas}/>}>
                             <CanvasPixels
-                                perspective={0}
+                                perspective={_perspective ? 5: 0}
                                 on_export_state={this._handle_canvas_state_export}
                                 export_state_every_ms={is_mobile_or_tablet ? 5 * 60 * 1000: 3.5 * 60 * 1000}
                                 shadow_size={is_mobile_or_tablet ? 0: 1.5}
@@ -2131,6 +2163,10 @@ class Pixel extends React.Component {
                         {drawer_desktop}
                     </div>
                 </div>
+
+                <IconButton className={classes.perspectiveButton} onClick={this._toggle_perspective}>
+                    {_perspective ? <PerspectiveOff />: <PerspectiveOn />}
+                </IconButton>
 
                 {drawer_mobile}
 
