@@ -411,7 +411,7 @@ class Pixel extends React.Component {
             _attachment_previews: {},
             _filters_thumbnail: {},
             _last_filters_hash: "",
-            _filters_preview_progression: "0",
+            _filters_preview_progression: 0,
             _toolbox_container_ref: null,
             settings: props.settings,
             ...JSON.parse(props.settings)
@@ -1460,6 +1460,13 @@ class Pixel extends React.Component {
 
     _handle_filters_thumbnail_change = (_filters_thumbnail, _last_filters_hash, _filters_preview_progression) => {
 
+        if(this.state._filters_preview_progression === 0) {
+            actions.trigger_voice("filtering");
+        }else if(_filters_preview_progression === 100) {
+            actions.trigger_voice("complete");
+            _filters_preview_progression = 0;
+        }
+
         this.setState({_filters_thumbnail, _last_filters_hash, _filters_preview_progression}, () => {
 
             this.forceUpdate();
@@ -1668,9 +1675,11 @@ class Pixel extends React.Component {
 
         if(new_perspective) {
 
+            actions.trigger_voice("vision_activated");
             this._set_tool("MOVE", false);
         }else {
 
+            actions.trigger_voice("vision_deactivated");
             this._revert_tool();
         }
 

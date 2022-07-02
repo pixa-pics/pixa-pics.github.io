@@ -1292,7 +1292,7 @@ class CanvasPixels extends React.Component {
             _hidden: true,
             _intervals: [],
             _kb: 0,
-            _device_motion: false,
+            _device_motion: true,
             export_state_every_ms: props.export_state_every_ms || 60 * 1000,
             _xxHash: function(array){return array.length;},
             _last_filters_hash: "",
@@ -1567,22 +1567,6 @@ class CanvasPixels extends React.Component {
         if(this.state.tool === "MINE" && new_props.tool !== "MINE") {
 
             this.setState({_mine_player_index: null, _mine_index: null});
-        }
-
-        if(this.state.perspective !== new_props.perspective) {
-
-            const previous_dm = Boolean(this.state._device_motion);
-            const dm = Boolean(parseFloat(new_props.perspective || 0) > 0 && window.w_canvas_pixels._is_mobile_or_tablet);
-            this.setState({_device_motion: dm}, () => {
-
-                if(dm && !previous_dm) {
-
-                    window.addEventListener("devicemotion", this._handle_motion_changes);
-                }else if(!dm && previous_dm) {
-
-                    window.removeEventListener("devicemotion", this._handle_motion_changes);
-                }
-            });
         }
 
         if(this.state.pencil_mirror_mode !== "NONE" && new_props.pencil_mirror_mode === "NONE" || (this.state.tool.includes("PENCIL") && !new_props.tool.includes("PENCIL"))) {
