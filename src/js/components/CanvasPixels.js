@@ -1569,6 +1569,22 @@ class CanvasPixels extends React.Component {
             this.setState({_mine_player_index: null, _mine_index: null});
         }
 
+        if(this.state.perspective !== new_props.perspective) {
+
+            const previous_dm = Boolean(this.state._device_motion);
+            const dm = Boolean(parseFloat(new_props.perspective || 0) > 0 && window.w_canvas_pixels._is_mobile_or_tablet);
+            this.setState({_device_motion: dm}, () => {
+
+                if(dm && !previous_dm) {
+
+                    window.addEventListener("devicemotion", this._handle_motion_changes);
+                }else if(!dm && previous_dm) {
+
+                    window.removeEventListener("devicemotion", this._handle_motion_changes);
+                }
+            });
+        }
+
         if(this.state.pencil_mirror_mode !== "NONE" && new_props.pencil_mirror_mode === "NONE" || (this.state.tool.includes("PENCIL") && !new_props.tool.includes("PENCIL"))) {
 
             this.setState({_pencil_mirror_index: -1});
