@@ -10,10 +10,6 @@
 ![](https://img.shields.io/badge/Maintained%3F-yes-green.svg)
 ![](https://img.shields.io/website-up-down-green-red/http/pixa.pics)
 
-# Tools
-
-All the screenshots were captured using a "Samsung Galaxy J3 (2017)" having 2gb of ram, a smartphone for 100$ fits for creating crazy things with a bit f magic in mind!
-
 # The challenges of first-class active protection for the preservation of identity
 
 **What was foreseen by the agent of public order and general justice in 2008 in Switzerland against chaos and negativity regarding Internet potential about one's image.** 
@@ -27,7 +23,7 @@ All the screenshots were captured using a "Samsung Galaxy J3 (2017)" having 2gb 
  * **Protect images.**
  * **Sanitizing private data before processing it remotely.**
  * **Staying on the front line of dropping cost as it is a FOSS.**
- * **Getting to openly fight what misses to be just great, while boring good exists.** 
+ * **Getting to openly fight what misses being just great, while boring good exists.** 
  * **Staying modern without paying anything for useless and toxic ultra-simplification tools.**
 
 
@@ -58,11 +54,16 @@ Screenshot of the homepage of pixa.pics.
  * Fast Compression (LZP3)
  * Offline Cache & Auto Save (PouchDB)
  * AI Processing (Deepai.org, !remote!)
- * Up-Scaling (xBRZ)
+ * Up-Scaling 6 times (xBRZ)*
  * Vectorized (ImageTracerJS)
  * Color Quantization (RGBQuant + Custom)
  * Encoding of Portable Network Graphics in type of palette (PNGQuant)
  * Chunk ("norris") system for dropping script evaluation cost within CPU
+
+![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/doc/screenshots/yakuza.png?v=1)
+*3564x2388 are the output dimension of the image up-scaled with xBRZ based on an image of 594x398 which can weight from 70Kb up to 210Kb only. This 4K ultra HD image can be stored in some blockchain without compression but pngquant (it encodes png best) entirely!
+
+Look! On the STEEM blockchain you can post base64 text, transactions are rigged to 73Kb at maxima but STEEM is now kinda old for a blockchain.
 
 # 99 / 100 of performance (Lighthouse desktop metrics)
 
