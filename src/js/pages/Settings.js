@@ -216,7 +216,7 @@ class Settings extends React.Component {
 
     render() {
 
-        const { _locales,  _sfx_enabled, _music_enabled, _jamy_enabled, _currency_countries, _selected_locales_code, classes, _camo, _ret } = this.state;
+        const { _voice_enabled, _locales,  _sfx_enabled, _music_enabled, _jamy_enabled, _currency_countries, _selected_locales_code, classes, _camo, _ret } = this.state;
 
         let locales = _locales[0];
 
@@ -337,7 +337,7 @@ class Settings extends React.Component {
                                 /> <br />
                                 <FormControlLabel
                                     value={"Enable voice effects"}
-                                    control={<Switch checked={_music_enabled} onChange={this._handle_voice_enabled_switch_change} color="primary" />}
+                                    control={<Switch checked={_voice_enabled} onChange={this._handle_voice_enabled_switch_change} color="primary" />}
                                     label={ "Enable voice effects"}
                                     labelPlacement="end"
                                 />
