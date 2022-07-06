@@ -29,31 +29,26 @@ import { lightTheme } from "./theme/index";
 // Pages
 import Index from "../js/pages/Index";
 
+get_settings((error, settings) => {
+
+    if(typeof (settings || {}).locales !== "undefined") {
+
+        const _language = settings.locales.split("-")[0];
+        l(_language)
+    }
+}); // It will init the DB
+
 TimeAgo.addDefaultLocale(en);
-
-(async function(){
-
-    get_settings((error, settings) => {
-
-        TimeAgo.addLocale(fr);
-        TimeAgo.addLocale(pt);
-        TimeAgo.addLocale(id);
-        TimeAgo.addLocale(it);
-        TimeAgo.addLocale(de);
-        TimeAgo.addLocale(ja);
-        TimeAgo.addLocale(zh);
-        TimeAgo.addLocale(ko);
-        TimeAgo.addLocale(ru);
-        TimeAgo.addLocale(hi);
-
-        if(typeof (settings || {}).locales !== "undefined") {
-
-            const _language = settings.locales.split("-")[0];
-            l(_language)
-        }
-    }); // It will init the DB
-
-})()
+TimeAgo.addLocale(fr);
+TimeAgo.addLocale(pt);
+TimeAgo.addLocale(id);
+TimeAgo.addLocale(it);
+TimeAgo.addLocale(de);
+TimeAgo.addLocale(ja);
+TimeAgo.addLocale(zh);
+TimeAgo.addLocale(ko);
+TimeAgo.addLocale(ru);
+TimeAgo.addLocale(hi);
 
 let element = document.getElementById("app");
 if(element === null) {

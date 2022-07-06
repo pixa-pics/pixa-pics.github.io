@@ -12,7 +12,7 @@ import dispatcher from "../dispatcher";
 import actions from "../actions/utils";
 
 import Home from "./Home";
-import Unknown from "./Unknown";
+const Unknown = React.lazy(() => import("../pages/Unknown"));
 const Pixel = React.lazy(() => import("../pages/Pixel"));
 const Settings = React.lazy(() => import("../pages/Settings"));
 
@@ -25,7 +25,7 @@ const PAGE_COMPONENTS = (name, pathname, settings = JSON.stringify("{}")) => {
         case "pixel":
             return <Suspense fallback={<div/>}><Pixel settings={settings}/></Suspense>;
         case "unknown":
-            return <Unknown />;
+            return <Suspense fallback={<div/>}><Unknown /></Suspense>;
         case "settings":
             return <Suspense fallback={<div/>}><Settings settings={settings} /></Suspense>;
     }
@@ -43,7 +43,7 @@ import api from "../utils/api";
 import sound_api from "../utils/sound-api";
 import { update_meta_title } from "../utils/meta-tags";
 import { PAGE_ROUTES } from "../utils/constants";
-import ShareDialog from "../components/ShareDialog";
+const ShareDialog = React.lazy(() => import("../components/ShareDialog"));
 import {l} from "../utils/t";
 
 const styles = theme => ({
@@ -110,7 +110,7 @@ class Index extends React.Component {
         super(props);
         this.state = {
             _history: props.history,
-            pathname: "",
+            pathname: props.history.location.pathname,
             _intervals: [],
             _jamy_state_of_mind: "shocked",
             _unlisten: null,
@@ -144,66 +144,74 @@ class Index extends React.Component {
         };
     };
 
+    componentWillMount() {
+
+        (async () => {
+
+            this._update_settings();
+        })()
+    }
+
     componentDidMount() {
 
-        this._update_settings();
         const _history_unlisten = this.state._history.listen((location, action) => {
             // location is an object like window.location
             this._set_new_pathname_or_redirect(location.location.pathname);
         });
-        this._set_new_pathname_or_redirect(this.state._history.location.pathname);
+        this._set_meta_title(this.state._history.location.pathname);
         dispatcher.register(this._handle_events.bind(this));
-        actions.trigger_page_render_complete();
 
-        // Make Jamy blink every 32 sec in average.
-        const intervals = [
-            setInterval(() => {
+        setTimeout(() => {
 
-                const { is_online } = this.state;
-                if(navigator.onLine !== is_online){
+            // Make Jamy blink every 32 sec in average.
+            const intervals = [
+                setInterval(async() => {
 
-                    this.setState({is_online: navigator.onLine});
-                    actions.jamy_update(navigator.onLine ? "happy": "sad");
-                }
-            }, 1000),
-            setInterval(() => {
+                    const { is_online } = this.state;
+                    if(navigator.onLine !== is_online){
 
-                if(!Math.floor(Math.random() * 32)) {
+                        this.setState({is_online: navigator.onLine});
+                        actions.jamy_update(navigator.onLine ? "happy": "sad");
+                    }
+                }, 1000),
+                setInterval(async() => {
 
-                    const { _jamy_state_of_mind } = this.state;
+                    if(!Math.floor(Math.random() * 32)) {
 
-                    this.setState({_jamy_state_of_mind: "suspicious"}, () => {
+                        const { _jamy_state_of_mind } = this.state;
 
-                        this.forceUpdate(() => {
+                        this.setState({_jamy_state_of_mind: "suspicious"}, () => {
 
-                            setTimeout(() => {
+                            this.forceUpdate(() => {
 
-                                if(this.state._jamy_state_of_mind === "suspicious") {
+                                setTimeout(() => {
 
-                                    this.setState({_jamy_state_of_mind}, () => {
+                                    if(this.state._jamy_state_of_mind === "suspicious") {
 
-                                        this.forceUpdate();
-                                    });
-                                }
+                                        this.setState({_jamy_state_of_mind}, () => {
 
-                            }, 75);
+                                            this.forceUpdate();
+                                        });
+                                    }
+
+                                }, 75);
+
+                            });
 
                         });
 
-                    });
+                    }
 
-                }
+                }, 1000)
+            ];
 
-            }, 1000)
-        ];
+            this.setState({_intervals: intervals, _history_unlisten: _history_unlisten});
+        }, 5000);
 
-        this.setState({_intervals: intervals, _history_unlisten: _history_unlisten}, ( ) => {
+        setTimeout(async() => {
 
-            setTimeout(() => {
-
-                actions.trigger_snackbar("Hello, I am Jamy! Let's take a look to our laboratory to process images, wanna give it a try?", 7000)
-            }, 1250);
-        });
+            actions.trigger_snackbar("Hello, I am Jamy! Let's take a look to our laboratory to process images, wanna give it a try?", 7000)
+        }, 1250);
     }
 
     componentWillUnmount() {
@@ -214,10 +222,7 @@ class Index extends React.Component {
 
                 clearInterval(itrvl);
             });
-        } catch(e) {
-
-        }
-
+        } catch(e) {}
     }
 
     _trigger_sound = (category, pack, name, volume, global) => {
@@ -310,7 +315,7 @@ class Index extends React.Component {
         }
     }
 
-    _process_settings_query_result = (error, settings) => {
+    _process_settings_query_result = async (error, settings) => {
 
         if(!Boolean(error) && typeof (settings || {}).locales !== "undefined") {
 
@@ -340,34 +345,31 @@ class Index extends React.Component {
                 this.state._selected_currency !== _selected_currency
             ) {
 
-                if(this.state._language !== _language) {
+                const set_language = Boolean(this.state._language !== _language);
+                const know_settings = Boolean(this.state._know_the_settings === false);
 
-                    l(_language);
-                }
+                this.setState({ _ret, _camo, _onboarding_enabled, _sfx_enabled, _music_enabled, _jamy_enabled, _selected_locales_code, _language, _selected_currency, _know_the_settings: true, _has_played_index_music_counter: parseInt((!this.state._know_the_settings && _music_enabled) ? 1: this.state._has_played_index_music_counter )}, async() => {
 
-                if(this.state._know_the_settings === false) {
+                    if(know_settings){ document.body.setAttribute("datainitiated", "true"); }
+                    this.forceUpdate(async() => {
 
-                    document.body.setAttribute("datainitiated", "true");
-                }
+                        setTimeout(async() => {
 
-                this.setState({ _ret, _camo, _onboarding_enabled, _sfx_enabled, _music_enabled, _jamy_enabled, _selected_locales_code, _language, _selected_currency, _know_the_settings: true, _has_played_index_music_counter: parseInt((!this.state._know_the_settings && _music_enabled) ? 1: this.state._has_played_index_music_counter )}, () => {
+                            if(_music_enabled === true && was_music_enabled === false) {
 
-                    this.forceUpdate();
+                                this._should_play_music_pathname(this.state.pathname);
+                            }
+                        }, 75);
+                    });
                 });
+
+                if(set_language) { l(_language) }
             }
 
             if(!was_the_settings_known) {
 
                 this._set_analytics(15 * 1000);
             }
-
-            setTimeout(() => {
-
-                if(_music_enabled === true && was_music_enabled === false) {
-
-                    this._should_play_music_pathname(this.state.pathname);
-                }
-            }, 75);
 
         }else {
             setTimeout(() => {
@@ -446,7 +448,7 @@ class Index extends React.Component {
         }, wait);
     }
 
-    _update_settings = () => {
+    _update_settings = async () => {
 
         // Call the api to get results of current settings and send it to a callback function
         api.get_settings(this._process_settings_query_result);
@@ -459,31 +461,17 @@ class Index extends React.Component {
         const new_pathname = String(neo_pathname || _history.location.pathname);
         const old_pathname = String(this.state.pathname);
 
-        if(new_pathname !== old_pathname) {
+        if(new_pathname === "/index.html") {
 
-            if(new_pathname === "/index.html") {
+            _history.push("/");
+        }else if(new_pathname !== old_pathname) {
 
-                _history.push("/");
-            }else {
+            // Set pathname
+            this._set_meta_title(new_pathname);
+            this.setState({pathname: new_pathname}, () => {
 
-                // Set pathname
-                this.setState({pathname: new_pathname}, () => {
-
-                    this.forceUpdate(() => {
-
-                        if(this.state._music_enabled) {
-
-                            this._should_play_music_pathname(this.state.pathname);
-                        }
-                        this._set_meta_title(new_pathname);
-
-                        if(old_pathname !== ""){
-
-                            actions.trigger_sfx("navigation_transition-right", .33);
-                        }
-                    });
-                });
-            }
+                this.forceUpdate();
+            });
         }
     };
 
@@ -588,6 +576,7 @@ class Index extends React.Component {
 
     render() {
 
+        if(!this.state._know_the_settings) { return null; }
         const { pathname, classes} = this.state;
         const { _snackbar_open, _snackbar_message, _snackbar_auto_hide_duration } = this.state;
         const {  _is_share_dialog_open } = this.state;
@@ -662,9 +651,11 @@ class Index extends React.Component {
                         onClose={this._close_snackbar}
                     />
                 </div>
-                <ShareDialog
-                    open={_is_share_dialog_open}
-                    onClose={this._handle_share_dialog_close}/>
+                <Suspense fallback={<div/>}>
+                    <ShareDialog
+                        open={_is_share_dialog_open}
+                        onClose={this._handle_share_dialog_close}/>
+                </Suspense>
             </React.Fragment>
         );
     }

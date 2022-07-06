@@ -1,6 +1,6 @@
-var REQUIRED_CACHE = "unless-update-cache-v267-required";
-var USEFUL_CACHE = "unless-update-cache-v267-useful";
-var STATIC_CACHE = "unless-update-cache-v267-static";
+var REQUIRED_CACHE = "unless-update-cache-v269-required";
+var USEFUL_CACHE = "unless-update-cache-v269-useful";
+var STATIC_CACHE = "unless-update-cache-v269-static";
 var MAIN_CHILD_CHUNK_REGEX = /chunk_(main\~[a-z0-9]+)\.min\.js/i;
 var CHILD_CHUNK_REGEX = /chunk_([0-9]+)\.min\.js/i;
 
@@ -49,30 +49,28 @@ self.addEventListener("install", function(event) {
         return true;
     }
 
-    event.waitUntil(Promise.race([
-        required_cache.then(function (cache) {
-            return cache.addAll([
-                "/chunk_main~1f20a385.min.js",
-                "/chunk_main~2a42e354.min.js",
-                "/chunk_main~5a2dc592.min.js",
-                "/chunk_main~253ae210.min.js",
-                "/chunk_main~0436ed57.min.js",
-                "/chunk_main~678f84af.min.js",
-                "/chunk_main~690b702c.min.js",
-                "/chunk_main~748942c6.min.js",
-                "/chunk_main~af9f4ef7.min.js",
-                "/chunk_norris.min.js",
-            ])
-        }),
-        useful_cache.then(function (cache) {
-            return cache.addAll([
-                "/src/images/favicon.ico",
-                "/src/images/manifest/logo-white.png",
-                "/src/images/logo-transparent.png",
-                "/src/fonts/jura/index.css",
-            ]);
-        })
-    ]));
+    required_cache.then(function (cache) {
+        cache.addAll([
+            "/chunk_main~1f20a385.min.js",
+            "/chunk_main~2a42e354.min.js",
+            "/chunk_main~5a2dc592.min.js",
+            "/chunk_main~253ae210.min.js",
+            "/chunk_main~0436ed57.min.js",
+            "/chunk_main~678f84af.min.js",
+            "/chunk_main~690b702c.min.js",
+            "/chunk_main~748942c6.min.js",
+            "/chunk_norris.min.js",
+        ])
+    });
+
+    event.waitUntil(useful_cache.then(function (cache) {
+        return cache.addAll([
+            "/src/images/favicon.ico",
+            "/src/images/manifest/logo-white.png",
+            "/src/images/logo-transparent.png",
+            "/src/fonts/jura/index.css",
+        ]);
+    }));
 });
 
 self.addEventListener("fetch", function(event) {
@@ -139,6 +137,8 @@ self.addEventListener("fetch", function(event) {
                         "/chunk_11.min.js",
                         "/chunk_12.min.js",
                         "/chunk_13.min.js",
+                        "/chunk_14.min.js",
+                        "/chunk_15.min.js",
                     ]);
                 }),
                 static_cache.then(function (cache) {

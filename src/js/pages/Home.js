@@ -45,14 +45,7 @@ const styles = theme => ({
         backgroundSize: "cover",
         contain: "style paint layout",
         willChange: "background",
-        animation: "$slide 40s ease-out alternate infinite 10s",
-        animationFillMode: "both",
-        "@global": {
-            "@keyframes slide": {
-                "0%": {backgroundPosition: "0% 0%"},
-                "100%": {backgroundPosition: "100% 0%"},
-            }
-        },
+        backgroundPosition: "50% 0%",
         backgroundRepeat: "no-repeat",
         backgroundOrigin: "border-box",
         imageRendering: "optimizespeed",
@@ -279,6 +272,7 @@ class Home extends React.Component {
 
     componentWillMount() {
 
+        actions.trigger_page_render_complete();
         actions.trigger_loading_update(0);
         setTimeout(() => {
 

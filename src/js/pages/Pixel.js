@@ -421,6 +421,7 @@ class Pixel extends React.Component {
     componentWillMount() {
 
         actions.trigger_loading_update(0);
+        actions.trigger_page_render_complete();
         setTimeout(() => {
 
             actions.trigger_loading_update(100);
@@ -822,7 +823,7 @@ class Pixel extends React.Component {
 
         actions.trigger_voice("please_wait");
         actions.trigger_snackbar("Please wait... Files will download in a few seconds.", 5700);
-        actions.jamy_update("angry");
+        actions.jamy_update("happy");
 
         this.setState({_loading: true, _loading_process: "image_render"}, () => {
 
@@ -830,25 +831,30 @@ class Pixel extends React.Component {
 
                 get_base64_png_data_url(1, ([png_base64_in, palette]) => {
 
+                    let a_src = document.createElement("a"); //Create <a>
+                    a_src.download = `Painting_SRC_1x_N${Date.now()}_PIXAPICS.png`; //File name Here
+                    a_src.href = String(png_base64_in);
+                    a_src.click();
+                    a_src.remove();
+
                     actions.trigger_voice("processing");
                     base64png_to_xbrz_svg(png_base64_in, (image_base64) => {
 
-                        png_base64_in = null;
-                        let a = document.createElement("a"); //Create <a>
-                        a.download = `Painting_IMG_6x_${using.toUpperCase()}_N${Date.now()}_PIXAPICS.png`; //File name Here
-                        a.href = image_base64;
-                        a.click();
-                        a.remove();
+                        let a_png = document.createElement("a"); //Create <a>
+                        a_png.download = `Painting_IMG_6x_${using.toUpperCase()}_N${Date.now()}_PIXAPICS.png`; //File name Here
+                        a_png.href = String(image_base64);
+                        a_png.click();
+                        a_png.remove();
                         image_base64 = null;
 
                     }, (svg_base64) => {
 
                         palette = null;
-                        let a = document.createElement("a"); //Create <a>
-                        a.download = `Painting_VECT_6x_${using.toUpperCase()}_N${Date.now()}_PIXAPICS.svg`; //File name Here
-                        a.href = svg_base64;
-                        a.click();
-                        a.remove();
+                        let a_svg = document.createElement("a"); //Create <a>
+                        a_svg.download = `Painting_VECT_6x_${using.toUpperCase()}_N${Date.now()}_PIXAPICS.svg`; //File name Here
+                        a_svg.href = String(svg_base64);
+                        a_svg.click();
+                        a_svg.remove();
                         svg_base64 = null;
 
                         this.setState({_loading: false, _loading_process: ""}, () => {
@@ -866,11 +872,7 @@ class Pixel extends React.Component {
 
                     }, palette, using, optimize_render_size);
 
-                    let a = document.createElement("a"); //Create <a>
-                    a.download = `Painting_SRC_1x_N${Date.now()}_PIXAPICS.png`; //File name Here
-                    a.href = png_base64_in;
-                    a.click();
-                    a.remove();
+                    png_base64_in = null;
 
                 }, true, optimize_render_size ? 6: 0, 40, 50);
 
