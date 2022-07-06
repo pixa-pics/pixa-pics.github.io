@@ -173,6 +173,7 @@ class AppToolbar extends React.Component {
         this.state = {
             classes: props.classes,
             pathname: props.pathname,
+            language: props.language,
             camo: props.camo,
             ret: props.ret,
             logged_account: props.logged_account,
@@ -317,7 +318,7 @@ class AppToolbar extends React.Component {
 
     render() {
 
-        const { classes, ret, camo, _is_pre_reset, pathname, loaded_progress_percent, know_the_settings, _swipeable_app_drawer_open, _account_menu_anchor_element, logged_account, jamy_state_of_mind, jamy_enabled, music_enabled } = this.state;
+        const { classes, ret, camo, _is_pre_reset, pathname, language, loaded_progress_percent, know_the_settings, _swipeable_app_drawer_open, _account_menu_anchor_element, logged_account, jamy_state_of_mind, jamy_enabled, music_enabled } = this.state;
 
         const JAMY = {
             angry: <JamyAngry className={classes.jamy} />,
@@ -346,7 +347,7 @@ class AppToolbar extends React.Component {
                                 <span className={classes.swipeableDrawerAppTitle}>HTTPS://PIXA.PICS/</span>
                             </div>
                         </Toolbar>
-                        <DrawerContent logged_account={logged_account} pathname={pathname} onClose={this._handle_close_swipeable_app_drawer}/>
+                        <DrawerContent logged_account={logged_account} language={language} onClose={this._handle_close_swipeable_app_drawer}/>
                     <div className={_swipeable_app_drawer_open ? classes.drawerPrivacyHint: classes.drawerPrivacyHintHidden}>
                         <p style={{fontSize: "0.777em"}}>Cutting off annoying details is free while on the journey! Easily becoming a lighter adventure, using a sanitized online-self's image tends to honor one's real beauty stronger.<br/><br/>THIS APP: Is in your hands only, doesn't sniff network requests, and is neutral just like Switzerland.</p>
                         <h4 style={{color: "#ffffffff", marginBottom: 0}}>Online-self image matters! This isn't madness; This is Pixaaaaa! ... Pics</h4>

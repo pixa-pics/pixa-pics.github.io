@@ -15,13 +15,13 @@ if(typeof window.settings_db === "undefined") {
 
                 window._pixa_settings = _merge_object({}, _get_default_settings());
 
-                (async() => {
+                setTimeout(() => {
 
                     window.settings_db.post({
                         info: JSON.stringify(_merge_object({}, window._pixa_settings)),
                         timestamp: Date.now(),
                     });
-                })();
+                }, 3000);
             }
         }
     });

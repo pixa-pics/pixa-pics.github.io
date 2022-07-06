@@ -206,10 +206,6 @@ class InnerToolbar extends React.Component {
 
     }
 
-    componentWillUnmount() {
-
-    }
-
     componentWillReceiveProps(new_props) {
 
         const state = {

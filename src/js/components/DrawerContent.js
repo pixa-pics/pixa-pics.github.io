@@ -1,9 +1,9 @@
 import React from "react";
-import {Tooltip, withStyles} from "@material-ui/core";
+import {withStyles} from "@material-ui/core";
 
 import { t } from "../utils/t";
 
-import {Fade, Divider, List, ListItem, ListItemIcon, ListItemText, Badge} from "@material-ui/core";
+import {List, ListItem, ListItemIcon, ListItemText, Badge} from "@material-ui/core";
 
 import PersonIcon from "@material-ui/icons/Person";
 import CodeIcon from "@material-ui/icons/Code";
@@ -99,18 +99,30 @@ class DrawerContent extends React.Component {
         super(props);
         this.state = {
             classes: props.classes,
-            pathname: props.pathname,
+            language: String(props.language),
             _history: HISTORY,
         };
     };
 
     componentDidMount() {
 
+        this.forceUpdate();
     }
 
     componentWillReceiveProps(new_props) {
 
-        this.setState({...new_props});
+        if(this.state.language !== new_props.language) {
+
+            this.setState({language: String(new_props.language)}, () => {
+
+                this.forceUpdate();
+            });
+        }
+    }
+
+    shouldComponentUpdate() {
+
+        return false;
     }
 
     _open_pixel_page = () => {
@@ -133,37 +145,29 @@ class DrawerContent extends React.Component {
 
     render() {
 
-        const { classes } = this.state;
+        const { classes, language } = this.state;
 
         return (
-            <div style={{contentVisibility: "auto"}}>
-                <div>
-                    <List style={{paddingTop: 0}} className={classes.labList}>
-                        <ListItem style={{borderBottom: "2px solid #0056ce"}} button onClick={this._open_pixel_page}>
-                            <ListItemText className={classes.boldListItemText} primary={"PIXEL ART EDITOR! MINIMA'S LAB..."} />
-                        </ListItem>
-                        <Fade in timeout={100}>
-                            <ListItem button className={classes.listItemGrey} onClick={(event) => this._open_link(event, "https://github.com/pixa-pics/pixa-pics.github.io/graphs/contributors")}>
-                                <ListItemIcon><PersonIcon className={classes.iconColor} /></ListItemIcon>
-                                <ListItemText primary={t( "components.drawer_content.menu.more.contributors")} />
-                            </ListItem>
-                        </Fade>
-                        <Fade in timeout={150}>
-                            <ListItem button className={classes.listItemGrey} onClick={(event) => this._open_link(event, "https://github.com/pixa-pics/pixa-pics.github.io")}>
-                                <ListItemIcon><CodeIcon className={classes.iconColor} /></ListItemIcon>
-                                <ListItemText primary={t( "components.drawer_content.menu.more.source_code")} />
-                            </ListItem>
-                        </Fade>
-                        <Fade in timeout={200}>
-                            <ListItem button className={classes.listItemGrey} onClick={(event) => this._open_link(event, "https://t.me/pixapics")}>
-                                <Badge className={classes.styledBadgeConnected} overlap="circular" badgeContent=" " variant="dot">
-                                    <ListItemIcon><ForumIcon className={classes.iconColor} /></ListItemIcon>
-                                </Badge>
-                                <ListItemText primary="Telegram" />
-                            </ListItem>
-                        </Fade>
-                    </List>
-                </div>
+            <div>
+                <List key={language} style={{paddingTop: 0}} className={classes.labList}>
+                    <ListItem style={{borderBottom: "2px solid #0056ce"}} button onClick={this._open_pixel_page}>
+                        <ListItemText className={classes.boldListItemText} primary={"PIXEL ART EDITOR! MINIMA'S LAB..."} />
+                    </ListItem>
+                    <ListItem button className={classes.listItemGrey} onClick={(event) => this._open_link(event, "https://github.com/pixa-pics/pixa-pics.github.io/graphs/contributors")}>
+                        <ListItemIcon><PersonIcon className={classes.iconColor} /></ListItemIcon>
+                        <ListItemText primary={t( "components.drawer_content.menu.more.contributors")} />
+                    </ListItem>
+                    <ListItem button className={classes.listItemGrey} onClick={(event) => this._open_link(event, "https://github.com/pixa-pics/pixa-pics.github.io")}>
+                        <ListItemIcon><CodeIcon className={classes.iconColor} /></ListItemIcon>
+                        <ListItemText primary={t( "components.drawer_content.menu.more.source_code")} />
+                    </ListItem>
+                    <ListItem button className={classes.listItemGrey} onClick={(event) => this._open_link(event, "https://t.me/pixapics")}>
+                        <Badge className={classes.styledBadgeConnected} overlap="circular" badgeContent=" " variant="dot">
+                            <ListItemIcon><ForumIcon className={classes.iconColor} /></ListItemIcon>
+                        </Badge>
+                        <ListItemText primary="Telegram" />
+                    </ListItem>
+                </List>
             </div>
         );
     }

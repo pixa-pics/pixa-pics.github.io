@@ -17,21 +17,6 @@ const styles = theme => ({
         },
         "& > div > div": {
             transition: "opacity cubic-bezier(0.4, 0, 0.2, 1) 175ms",
-            opacity: .75,
-        },
-        "& > div:hover > div": {
-            transition: "opacity cubic-bezier(0.4, 0, 0.2, 1) 175ms",
-            opacity: 1,
-        },
-    },
-    drawerHome: {
-        width: 256,
-        flexShrink: 0,
-        [theme.breakpoints.down("sm")]: {
-            display: "none"
-        },
-        "& > div > div": {
-            transition: "opacity cubic-bezier(0.4, 0, 0.2, 1) 175ms",
             opacity: 1,
         },
     },
@@ -87,13 +72,31 @@ class AppDrawer extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            pathname: props.pathname,
-            classes: props.classes
+            know_the_settings: props.know_the_settings,
+            language: String(props.language),
+            classes: props.classes,
         };
     };
 
+    shouldComponentUpdate() {
+
+        return false;
+    }
+
+    componentDidMount() {
+
+        this.forceUpdate();
+    }
+
     componentWillReceiveProps(new_props) {
-        this.setState(new_props);
+
+        if(this.state.language !== new_props.language || this.state.know_the_settings !== new_props.know_the_settings) {
+
+            this.setState({know_the_settings: new_props.know_the_settings, language: String(new_props.language)}, () => {
+
+                this.forceUpdate();
+            });
+        }
     }
 
     trigger_share = () => {
@@ -103,14 +106,14 @@ class AppDrawer extends React.Component {
 
     render() {
 
-        const { classes, pathname } = this.state;
+        const { classes, language } = this.state;
         
         return (
             <Box elevation={4}>
-                <Drawer ModalProps={{disablePortal: true, keepMounted: true}} className={pathname === "/" ? classes.drawerHome: classes.drawer} variant="permanent" classes={{paper: classes.drawerPaper}}>
+                <Drawer ModalProps={{disablePortal: true, keepMounted: true}} className={classes.drawer} variant="permanent" classes={{paper: classes.drawerPaper}}>
                     <Toolbar />
                     <div className={classes.drawerContainer}>
-                        <DrawerContent pathname={pathname} onClose={() => {}} />
+                        <DrawerContent language={language} onClose={() => {}} />
                         <Fade in={true} timeout={400}>
                             <div className={classes.drawerPrivacyHint}>
                                 <p style={{fontSize: "0.777em"}}>Cutting off annoying details is free while on the journey! Easily becoming a lighter adventure, using a sanitized online-self's image tends to honor one's real beauty stronger.<br/><br/>THIS APP: Is in your hands only, doesn't sniff network requests, and is neutral just like Switzerland.</p>

@@ -1,7 +1,7 @@
-var REQUIRED_CACHE = "unless-update-cache-v269-required";
-var USEFUL_CACHE = "unless-update-cache-v269-useful";
-var STATIC_CACHE = "unless-update-cache-v269-static";
-var MAIN_CHILD_CHUNK_REGEX = /chunk_(main\~[a-z0-9]+)\.min\.js/i;
+var REQUIRED_CACHE = "unless-update-cache-v270-required";
+var USEFUL_CACHE = "unless-update-cache-v270-useful";
+var STATIC_CACHE = "unless-update-cache-v270-static";
+var MAIN_CHILD_CHUNK_REGEX = /chunk_(vendors_main_[a-z0-9]+)\.min\.js/i;
 var CHILD_CHUNK_REGEX = /chunk_([0-9]+)\.min\.js/i;
 
 var required_cache_object = {};
@@ -49,20 +49,6 @@ self.addEventListener("install", function(event) {
         return true;
     }
 
-    required_cache.then(function (cache) {
-        cache.addAll([
-            "/chunk_main~1f20a385.min.js",
-            "/chunk_main~2a42e354.min.js",
-            "/chunk_main~5a2dc592.min.js",
-            "/chunk_main~253ae210.min.js",
-            "/chunk_main~0436ed57.min.js",
-            "/chunk_main~678f84af.min.js",
-            "/chunk_main~690b702c.min.js",
-            "/chunk_main~748942c6.min.js",
-            "/chunk_norris.min.js",
-        ])
-    });
-
     event.waitUntil(useful_cache.then(function (cache) {
         return cache.addAll([
             "/src/images/favicon.ico",
@@ -71,6 +57,18 @@ self.addEventListener("install", function(event) {
             "/src/fonts/jura/index.css",
         ]);
     }));
+
+    required_cache.then(function (cache) {
+        cache.addAll([
+            "/chunk_vendors_main_0f485567.min.js",
+            "/chunk_vendors_main_2a42e354.min.js",
+            "/chunk_vendors_main_5a2dc592.min.js",
+            "/chunk_vendors_main_253ae210.min.js",
+            "/chunk_vendors_main_678f84af.min.js",
+            "/chunk_vendors_main_690b702c.min.js",
+            "/chunk_norris.min.js",
+        ])
+    });
 });
 
 self.addEventListener("fetch", function(event) {
@@ -139,6 +137,18 @@ self.addEventListener("fetch", function(event) {
                         "/chunk_13.min.js",
                         "/chunk_14.min.js",
                         "/chunk_15.min.js",
+                        "/chunk_16.min.js",
+                        "/chunk_17.min.js",
+                        "/chunk_18.min.js",
+                        "/chunk_19.min.js",
+                        "/chunk_20.min.js",
+                        "/chunk_21.min.js",
+                        "/chunk_22.min.js",
+                        "/chunk_23.min.js",
+                        "/chunk_24.min.js",
+                        "/chunk_25.min.js",
+                        "/chunk_26.min.js",
+                        "/chunk_27.min.js",
                     ]);
                 }),
                 static_cache.then(function (cache) {

@@ -4,9 +4,33 @@ import { withStyles } from "@material-ui/core/styles"
 import {Dialog, Button, DialogContent, DialogActions, Typography, Slider, ImageList, ImageListItem, ImageListItemBar, IconButton} from "@material-ui/core";
 
 import DeleteIcon from "@material-ui/icons/Delete";
-import TimeAgo from "javascript-time-ago";
 import {t} from "../utils/t";
 import actions from "../actions/utils";
+
+import TimeAgo from "javascript-time-ago";
+import en from "javascript-time-ago/locale/en"
+import fr from "javascript-time-ago/locale/fr"
+import pt from "javascript-time-ago/locale/pt"
+import id from "javascript-time-ago/locale/id"
+import it from "javascript-time-ago/locale/it"
+import de from "javascript-time-ago/locale/de"
+import ja from "javascript-time-ago/locale/ja"
+import zh from "javascript-time-ago/locale/zh"
+import ko from "javascript-time-ago/locale/ko"
+import ru from "javascript-time-ago/locale/ru"
+import hi from "javascript-time-ago/locale/hi"
+
+TimeAgo.addDefaultLocale(en);
+TimeAgo.addLocale(fr);
+TimeAgo.addLocale(pt);
+TimeAgo.addLocale(id);
+TimeAgo.addLocale(it);
+TimeAgo.addLocale(de);
+TimeAgo.addLocale(ja);
+TimeAgo.addLocale(zh);
+TimeAgo.addLocale(ko);
+TimeAgo.addLocale(ru);
+TimeAgo.addLocale(hi);
 
 const styles = theme => ({
     dialogMobileFullscreen: {

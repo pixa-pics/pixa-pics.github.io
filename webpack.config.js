@@ -94,12 +94,12 @@ module.exports = {
         chunkIds: 'named',
         splitChunks: {
             chunks: 'all',
-            minSize: 240 * 1024,
-            maxSize: 480 * 1024,
-            minChunks: 4,
-            maxAsyncRequests: 12,
-            maxInitialRequests: 12,
-            automaticNameDelimiter: '~',
+            minSize: 256 * 1024,
+            maxSize: 512 * 1024,
+            minChunks: 1,
+            maxAsyncRequests: 8,
+            maxInitialRequests: 8,
+            automaticNameDelimiter: '_',
             automaticNameMaxLength: 30,
             name: true,
             cacheGroups: {
@@ -109,8 +109,8 @@ module.exports = {
                 },
                 default: {
                     minChunks: 4,
-                    maxAsyncRequests: 12,
-                    maxInitialRequests: 12,
+                    maxAsyncRequests: 8,
+                    maxInitialRequests: 8,
                     priority: -20,
                     reuseExistingChunk: true
                 }

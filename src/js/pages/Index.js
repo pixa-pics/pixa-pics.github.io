@@ -7,15 +7,15 @@ import CloseIcon from "@material-ui/icons/Close";
 
 import AppToolbar from "../components/AppToolbar";
 import AppDrawer from "../components/AppDrawer";
+import ShareDialog from "../components/ShareDialog";
 
 import dispatcher from "../dispatcher";
 import actions from "../actions/utils";
 
 import Home from "./Home";
-const Unknown = React.lazy(() => import("../pages/Unknown"));
 const Pixel = React.lazy(() => import("../pages/Pixel"));
+const Unknown = React.lazy(() => import("../pages/Unknown"));
 const Settings = React.lazy(() => import("../pages/Settings"));
-
 
 const PAGE_COMPONENTS = (name, pathname, settings = JSON.stringify("{}")) => {
 
@@ -23,10 +23,13 @@ const PAGE_COMPONENTS = (name, pathname, settings = JSON.stringify("{}")) => {
         case "home":
             return <Home settings={settings} />;
         case "pixel":
+
             return <Suspense fallback={<div/>}><Pixel settings={settings}/></Suspense>;
         case "unknown":
+
             return <Suspense fallback={<div/>}><Unknown /></Suspense>;
         case "settings":
+
             return <Suspense fallback={<div/>}><Settings settings={settings} /></Suspense>;
     }
 };
@@ -40,10 +43,8 @@ import JamyShocked from "../icons/JamyShocked";
 import JamySuspicious from "../icons/JamySuspicious";
 
 import api from "../utils/api";
-import sound_api from "../utils/sound-api";
 import { update_meta_title } from "../utils/meta-tags";
 import { PAGE_ROUTES } from "../utils/constants";
-const ShareDialog = React.lazy(() => import("../components/ShareDialog"));
 import {l} from "../utils/t";
 
 const styles = theme => ({
@@ -110,7 +111,8 @@ class Index extends React.Component {
         super(props);
         this.state = {
             _history: props.history,
-            pathname: props.history.location.pathname,
+            init_pathname: props.history.location.pathname,
+            pathname: "",
             _intervals: [],
             _jamy_state_of_mind: "shocked",
             _unlisten: null,
@@ -125,12 +127,7 @@ class Index extends React.Component {
             _voice_enabled: true,
             _music_enabled: false,
             _jamy_enabled: true,
-            _vocal_enabled: false,
-            _onboarding_enabled: false,
-            _onboarding_autoplay_enabled: true,
-            _onboarding_showed_once_in_session: false,
             _selected_locales_code: null,
-            _selected_currency: null,
             _know_if_logged: false,
             _loaded_progress_percent: 100,
             _know_the_settings: false,
@@ -144,12 +141,19 @@ class Index extends React.Component {
         };
     };
 
+    componentWillReceiveProps(new_props) {
+
+        this.setState({_history: props.history, init_pathname: props.history.location.pathname});
+    }
+
+    shouldComponentUpdate() {
+
+        return false;
+    }
+
     componentWillMount() {
 
-        (async () => {
-
-            this._update_settings();
-        })()
+        this._update_settings();
     }
 
     componentDidMount() {
@@ -158,7 +162,7 @@ class Index extends React.Component {
             // location is an object like window.location
             this._set_new_pathname_or_redirect(location.location.pathname);
         });
-        this._set_meta_title(this.state._history.location.pathname);
+        this._set_new_pathname_or_redirect(this.state._history.location.pathname);
         dispatcher.register(this._handle_events.bind(this));
 
         setTimeout(() => {
@@ -231,7 +235,10 @@ class Index extends React.Component {
 
         if(_know_the_settings){
 
-            sound_api.play_sound(category, pack, name, volume, global);
+            import("../utils/sound-api").then((sound_api) => {
+
+                sound_api.play_sound(category, pack, name, volume, global);
+            });
         }else {
 
             setTimeout(() => {
@@ -245,7 +252,10 @@ class Index extends React.Component {
 
     _stop_sound = () => {
 
-        sound_api.stop_sound();
+        import("../utils/sound-api").then((sound_api) => {
+
+            sound_api.stop_sound();
+        });
     };
 
     _handle_events(event) {
@@ -315,55 +325,53 @@ class Index extends React.Component {
         }
     }
 
-    _process_settings_query_result = async (error, settings) => {
+    _process_settings_query_result = (error, settings) => {
 
         if(!Boolean(error) && typeof (settings || {}).locales !== "undefined") {
 
             const was_music_enabled = Boolean(this.state._music_enabled);
-            const was_the_settings_known = this.state._know_the_settings;
+            const was_the_settings_known = Boolean(this.state._know_the_settings);
             // Set new settings from query result
-            const _sfx_enabled = typeof settings.sfx_enabled !== "undefined" ? settings.sfx_enabled: true;
-            const _music_enabled = typeof settings.music_enabled !== "undefined" ? settings.music_enabled: false;
-            const _jamy_enabled = typeof settings.jamy_enabled !== "undefined" ? settings.jamy_enabled: true;
-            const _selected_locales_code =  typeof settings.locales !== "undefined" ? settings.locales: "en-US";
-            const _language = _selected_locales_code.split("-")[0];
-            const _selected_currency = typeof settings.currency !== "undefined" ? settings.currency: "USD";
-            const _onboarding_enabled = typeof settings.onboarding !== "undefined" ? settings.onboarding: true;
-            const _ret = typeof settings.ret !== "undefined" ? settings.ret: 0;
-            const _camo = typeof settings.camo !== "undefined" ? settings.camo: 0;
+            const _sfx_enabled = Boolean(typeof settings.sfx_enabled !== "undefined" ? settings.sfx_enabled: true);
+            const _music_enabled = Boolean(typeof settings.music_enabled !== "undefined" ? settings.music_enabled: false);
+            const _voice_enabled = Boolean(typeof settings.voice_enabled !== "undefined" ? settings.voice_enabled: false);
+            const _jamy_enabled = Boolean(typeof settings.jamy_enabled !== "undefined" ? settings.jamy_enabled: true);
+            const _selected_locales_code =  String(typeof settings.locales !== "undefined" ? settings.locales: "en-US");
+            const _language = String(_selected_locales_code.split("-")[0]);
+            const _ret = parseInt(typeof settings.ret !== "undefined" ? settings.ret: 0);
+            const _camo = parseInt(typeof settings.camo !== "undefined" ? settings.camo: 0);
+
+            const set_language_on_document = Boolean(this.state._language !== _language); // Already defined in entry file client.js
+            const know_settings = Boolean(this.state._know_the_settings === false);
+
+            if(set_language_on_document) { l(_language, () => {
+
+                this.setState({_language}, () => {
+
+                    this.forceUpdate();
+                });
+            })}
 
             if(
                 this.state._know_the_settings === false ||
                 this.state._ret !== _ret ||
                 this.state._camo !== _camo ||
-                this.state._onboarding_enabled !== _onboarding_enabled ||
                 this.state._sfx_enabled !== _sfx_enabled ||
                 this.state._music_enabled !== _music_enabled ||
+                this.state._voice_enabled !== _voice_enabled ||
                 this.state._jamy_enabled !== _jamy_enabled ||
-                this.state._selected_locales_code !== _selected_locales_code ||
-                this.state._language !== _language ||
-                this.state._selected_currency !== _selected_currency
+                this.state._selected_locales_code !== _selected_locales_code
             ) {
 
-                const set_language = Boolean(this.state._language !== _language);
-                const know_settings = Boolean(this.state._know_the_settings === false);
-
-                this.setState({ _ret, _camo, _onboarding_enabled, _sfx_enabled, _music_enabled, _jamy_enabled, _selected_locales_code, _language, _selected_currency, _know_the_settings: true, _has_played_index_music_counter: parseInt((!this.state._know_the_settings && _music_enabled) ? 1: this.state._has_played_index_music_counter )}, async() => {
+                this.setState({ _ret, _camo, _voice_enabled, _sfx_enabled, _music_enabled, _jamy_enabled, _selected_locales_code, _know_the_settings: true, _has_played_index_music_counter: parseInt((!this.state._know_the_settings && _music_enabled) ? 1: this.state._has_played_index_music_counter )}, async() => {
 
                     if(know_settings){ document.body.setAttribute("datainitiated", "true"); }
-                    this.forceUpdate(async() => {
+                    this.forceUpdate();
+                    if(_music_enabled === true && was_music_enabled === false) {
 
-                        setTimeout(async() => {
-
-                            if(_music_enabled === true && was_music_enabled === false) {
-
-                                this._should_play_music_pathname(this.state.pathname);
-                            }
-                        }, 75);
-                    });
+                        this._should_play_music_pathname(this.state.pathname);
+                    }
                 });
-
-                if(set_language) { l(_language) }
             }
 
             if(!was_the_settings_known) {
@@ -448,7 +456,7 @@ class Index extends React.Component {
         }, wait);
     }
 
-    _update_settings = async () => {
+    _update_settings = () => {
 
         // Call the api to get results of current settings and send it to a callback function
         api.get_settings(this._process_settings_query_result);
@@ -555,35 +563,35 @@ class Index extends React.Component {
         });
     };
 
-    shouldComponentUpdate() {
-
-        return false;
-    }
-
     _handle_share_dialog_close = () => {
 
-        this.setState({_is_share_dialog_open: false});
+        this.setState({_is_share_dialog_open: false}, () => {
+
+            this.forceUpdate();
+        });
         actions.trigger_sfx("state-change_confirm-down");
         actions.jamy_update("suspicious");
     };
 
     _handle_share_dialog_open = () => {
 
-        this.setState({_is_share_dialog_open: true});
+        this.setState({_is_share_dialog_open: true}, () => {
+
+            this.forceUpdate();
+        });
         actions.trigger_sfx("hero_decorative-celebration-02");
         actions.jamy_update("happy");
     };
 
     render() {
 
-        if(!this.state._know_the_settings) { return null; }
         const { pathname, classes} = this.state;
         const { _snackbar_open, _snackbar_message, _snackbar_auto_hide_duration } = this.state;
         const {  _is_share_dialog_open } = this.state;
         const { _logged_account, _know_if_logged, _loaded_progress_percent, _jamy_state_of_mind } = this.state;
 
-        const {_ret, _camo, _onboarding_enabled, _sfx_enabled, _music_enabled, _jamy_enabled, _selected_locales_code, _language, _selected_currency, _know_the_settings} = this.state;
-        const all_settings = {_ret, _camo, _onboarding_enabled, _sfx_enabled, _music_enabled, _jamy_enabled, _selected_locales_code, _language, _selected_currency, _know_the_settings};
+        const {_ret, _camo, _onboarding_enabled, _sfx_enabled, _music_enabled, _voice_enabled, _jamy_enabled, _selected_locales_code, _language, _selected_currency, _know_the_settings} = this.state;
+        const all_settings = Object.assign({}, {_ret, _camo, _onboarding_enabled, _sfx_enabled, _music_enabled, _voice_enabled, _jamy_enabled, _selected_locales_code, _language, _selected_currency, _know_the_settings});
 
         const JAMY = {
             angry: <JamyAngry className={classes.jamy} />,
@@ -616,6 +624,7 @@ class Index extends React.Component {
                     <AppToolbar
                         ret={_ret}
                         camo={_camo}
+                        language={_language}
                         loaded_progress_percent={_loaded_progress_percent}
                         know_if_logged={_know_if_logged}
                         know_the_settings={_know_the_settings}
@@ -625,7 +634,8 @@ class Index extends React.Component {
                         jamy_enabled={_jamy_enabled}
                         jamy_state_of_mind={_jamy_state_of_mind}/>
                     <AppDrawer
-                        pathname={pathname}
+                        know_the_settings={_know_the_settings}
+                        language={_language}
                         logged_account={_logged_account}/>
                     <Toolbar />
                     <main className={classes.content}>
@@ -651,11 +661,9 @@ class Index extends React.Component {
                         onClose={this._close_snackbar}
                     />
                 </div>
-                <Suspense fallback={<div/>}>
-                    <ShareDialog
-                        open={_is_share_dialog_open}
-                        onClose={this._handle_share_dialog_close}/>
-                </Suspense>
+                {_language && <ShareDialog
+                    open={_is_share_dialog_open}
+                    onClose={this._handle_share_dialog_close}/>}
             </React.Fragment>
         );
     }
