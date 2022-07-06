@@ -63,17 +63,18 @@ const styles = theme => ({
         bottom: 0,
     },
     homeCTAuseit: {
+        boxShadow: "none !important",
         pointerEvents: "auto",
         contain: "style paint layout",
         fontWeight: "bold",
         transform: "translateY(0px) scale(1)  !important",
         fontSize: "1.314rem",
         minWidth: "min(320px, calc(100% - 32px))",
-        borderRadius: "8px",
+        borderRadius: "12px",
         marginTop: "48x",
         color: "#ffffff",
         textShadow: "0px 0px 4px white",
-        filter: "drop-shadow(0px 0px 4px skyblue) brightness(1)",
+        filter: "drop-shadow(0px 0px 4px lightskyblue) brightness(1)",
         backgroundImage: "linear-gradient(32deg, #6100fd, #5dbff3, #7be2f1, #98ecff, #32c4ff, #6d5bff, #020562)",
         "&:hover": {
             color: "#ffffff",
@@ -89,6 +90,7 @@ const styles = theme => ({
         },
     },
     homeCTAsendit: {
+        boxShadow: "none !important",
         pointerEvents: "auto",
         contain: "style paint layout",
         transform: "translateY(0px) scale(1)  !important",
