@@ -21,15 +21,18 @@ import ko from "javascript-time-ago/locale/ko"
 import ru from "javascript-time-ago/locale/ru"
 import hi from "javascript-time-ago/locale/hi"
 
+// Theme
+import { ThemeProvider } from "@material-ui/core"
+import CssBaseline from '@material-ui/core/CssBaseline';
+import { lightTheme } from "./theme/index";
+
+// Pages
+import Index from "../js/pages/Index";
+
+TimeAgo.addDefaultLocale(en);
+
 get_settings((error, settings) => {
 
-    if(typeof (settings || {}).locales !== "undefined") {
-
-        const _language = settings.locales.split("-")[0];
-        l(_language)
-    }
-
-    TimeAgo.addDefaultLocale(en);
     TimeAgo.addLocale(fr);
     TimeAgo.addLocale(pt);
     TimeAgo.addLocale(id);
@@ -40,15 +43,13 @@ get_settings((error, settings) => {
     TimeAgo.addLocale(ko);
     TimeAgo.addLocale(ru);
     TimeAgo.addLocale(hi);
+
+    if(typeof (settings || {}).locales !== "undefined") {
+
+        const _language = settings.locales.split("-")[0];
+        l(_language)
+    }
 }); // It will init the DB
-
-// Theme
-import { ThemeProvider } from "@material-ui/core"
-import CssBaseline from '@material-ui/core/CssBaseline';
-import { lightTheme } from "./theme/index";
-
-// Pages
-import Index from "../js/pages/Index";
 
 let element = document.getElementById("app");
 if(element === null) {

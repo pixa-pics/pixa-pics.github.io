@@ -12,9 +12,9 @@ import dispatcher from "../dispatcher";
 import actions from "../actions/utils";
 
 import Home from "./Home";
-import Settings from "./Settings";
 import Unknown from "./Unknown";
 const Pixel = React.lazy(() => import("../pages/Pixel"));
+const Settings = React.lazy(() => import("../pages/Settings"));
 
 
 const PAGE_COMPONENTS = (name, pathname, settings = JSON.stringify("{}")) => {
@@ -27,7 +27,7 @@ const PAGE_COMPONENTS = (name, pathname, settings = JSON.stringify("{}")) => {
         case "unknown":
             return <Unknown />;
         case "settings":
-            return <Settings settings={settings} />;
+            return <Suspense fallback={<div/>}><Settings settings={settings} /></Suspense>;
     }
 };
 

@@ -122,52 +122,57 @@
         <!-- Service worker -->
         <script type="text/javascript">
 
-            window._FIRE_IT = function() {
+            /* LOAD JS FILE (in two "moves") */
+            var _LET_FIRE_IT = function(is_service_worker_activation_successful) {
 
-                function fire_it(what) {
+                var _FIRED_IT_STATE = "";
+                var _MAIN_JS_FILE_ENDS_WITH = "norris.min.js";
+                var _PRE_FILES = Array.of(
+                    "/chunk_main~1f20a385.min.js",
+                    "/chunk_main~5a2dc592.min.js",
+                    "/chunk_main~253ae210.min.js",
+                    "/chunk_main~0d5ee630.min.js",
+                    "/chunk_main~748942c6.min.js",
+                    "/chunk_main~af9f4ef7.min.js",
+                    "/chunk_main~c1dd23ef.min.js",
+                    "/chunk_main~f9ca8911.min.js",
+                );
+                var _POST_FILES = Array.of(
+                    "/chunk_norris.min.js",
+                    "/src/fonts/jura/index.css", // Font - Every font except latin
+                );
+
+                if(is_service_worker_activation_successful) { console.log("GREAT, the service worker has been activated with success.") } else { console.log("GOOD, the service worker installation has been ignored successfully.") }
+                // Load pre-used (PRE) file or finally used ones (POST)
+                var fire_it = function(what) {
 
                     var hrefs = [];
+                    if(Boolean(what === "FIRST" && Boolean(_FIRED_IT_STATE !== "FIRST" && _FIRED_IT_STATE !== "LAST")) || Boolean(what === "LAST" && Boolean(_FIRED_IT_STATE !== "FIRST" || _FIRED_IT_STATE !== "LAST"))) {
 
-                    if(
-                        Boolean(what === "pre" && Boolean(window._FIRED_IT !== "pre" && window._FIRED_IT !== "post")) ||
-                        Boolean(what === "post" && Boolean(window._FIRED_IT !== "pre" || window._FIRED_IT !== "post"))
-                    ) {
-
-                        hrefs = hrefs.concat(Array.of(
-                            "/chunk_main~1f20a385.min.js",
-                            "/chunk_main~5a2dc592.min.js",
-                            "/chunk_main~9acc357d.min.js",
-                            "/chunk_main~253ae210.min.js",
-                            "/chunk_main~0436ed57.min.js",
-                            "/chunk_main~748942c6.min.js",
-                            "/chunk_main~af9f4ef7.min.js",
-                            "/chunk_main~c1dd23ef.min.js",
-                            "/chunk_main~f9ca8911.min.js",
-                        ));
-                        window._FIRED_IT = "pre";
+                        hrefs = hrefs.concat(_PRE_FILES);
+                        console.log("First files to load have been ignited.")
+                        _FIRED_IT_STATE = "FIRST";
                     }
 
-                    if(
-                        Boolean(what === "post" && Boolean(window._FIRED_IT !== "pre" || window._FIRED_IT !== "post"))
-                    ) {
+                    if(Boolean(what === "LAST" && Boolean(_FIRED_IT_STATE !== "FIRST" || _FIRED_IT_STATE !== "LAST"))) {
 
-                        hrefs = hrefs.concat(Array.of(
-                            "/chunk_norris.min.js",
-                            "/src/fonts/jura/index.css", // Font - Every font except latin
-                        ));
-                        window._FIRED_IT = "post";
+                        hrefs = hrefs.concat(_POST_FILES);
+                        console.log("Last files to load have been ignited.")
+                        _FIRED_IT_STATE = "LAST";
                     }
 
-                    hrefs.forEach(function(ss){
+                    for(var i = 0; i < hrefs.length; i++){
 
+                        var ss = hrefs[i];
                         if(ss.endsWith(".js")) {
 
                             var e = document.createElement("script");
                             e.setAttribute("src", ss);
                             e.setAttribute("type", "text/javascript");
-                            if(ss.endsWith("norris.min.js")){
 
-                                if(document.querySelectorAll(`script[src$="${"norris.min.js"}"]`).length === 0) {
+                            if(ss.endsWith(_MAIN_JS_FILE_ENDS_WITH)){
+
+                                if(document.querySelectorAll('script[src$="'+_MAIN_JS_FILE_ENDS_WITH+'"]').length === 0) {
 
                                     e.setAttribute("async", "true");
                                     document.body.appendChild(e);
@@ -188,29 +193,24 @@
                             e.setAttribute("rel", "stylesheet");
                             document.body.appendChild(e);
                         }
-                    });
+                    }
                 }
 
-                // Prevent this function of being executed twice or more
-                if(document.readyState === "interactive") {
+                // Prevent this function from being executed none, twice or more using parameters what
+                if(document.readyState === "interactive") { fire_it("FIRST") }
+                if(document.readyState === "complete") { fire_it("LAST") }
 
-                    fire_it("pre");
-                }
+                // This event fires after doc ready state is interactive and before it is complete, it doesn't wait on resources to be loaded
+                document.addEventListener('DOMContentLoaded', function() { fire_it("LAST") });
+                document.addEventListener('readystatechange', function() {
 
-                if(document.readyState === "complete") {
-
-                    fire_it("post");
-                }
-
-                document.addEventListener('readystatechange', () => {
-
-                    if(document.readyState === "interactive") { fire_it("pre") }
-                    if(document.readyState === "complete") { fire_it("post") }
+                    if(document.readyState === "interactive") { fire_it("FIRST") }
+                    if(document.readyState === "complete") { fire_it("LAST") }
                 });
             };
 
-            // Try install service worker then finally fire files loading
-            function rsw() {
+            /* TRY INSTALL SERVICE WORKER, FINALLY LOAD JS FILE */
+            var _REGISTER_SERVICE_WORKER = function() {
                 if ("serviceWorker" in navigator) {
 
                     return navigator.serviceWorker.register("/service-worker.js", {
@@ -218,21 +218,18 @@
                     }).then(function(r) {
 
                         var sw = r.installing || r.waiting || r.active || null;
-
                         if (sw !== null) {
 
-                            if(sw.state === "activated") { window._FIRE_IT() }
+                            if(sw.state === "activated") { _LET_FIRE_IT(true) }
 
                             sw.addEventListener('statechange', function(e) {
 
-                                if(e.target.state === "activated") { window._FIRE_IT() }
+                                if(e.target.state === "activated") { _LET_FIRE_IT(true) }
                             });
-                        }else { window._FIRE_IT() }
+                        }else { _LET_FIRE_IT(false) }
                     });
-                }else { window._FIRE_IT() }
-            }
-
-            rsw();
+                }else { _LET_FIRE_IT(false) }
+            }; _REGISTER_SERVICE_WORKER();
         </script>
 
         <!-- Font (latin only) -->

@@ -86,7 +86,6 @@ const styles = theme => ({
             backgroundColor: "transparent",
             background: `linear-gradient(45deg, #01031088 33%, #033aff44 ), url("/src/images/illustrations/ITLab.png")`,
             backgroundSize: "auto 120%",
-            backgroundPosition: "right",
             textShadow: "0 0px 6px white",
             filter: "brightness(1) contrast(1)",
             transition: "filter, background-size cubic-bezier(0.4, 0, 0.2, 1) 275ms",
@@ -141,7 +140,7 @@ class DrawerContent extends React.Component {
         const { classes } = this.state;
 
         return (
-            <div>
+            <div style={{contentVisibility: "auto"}}>
                 <div>
                     <List style={{paddingTop: 0}} className={classes.labList}>
                         <ListItem style={{borderBottom: "2px solid #0056ce"}} button onClick={this._open_pixel_page}>

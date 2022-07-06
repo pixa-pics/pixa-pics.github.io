@@ -1564,6 +1564,20 @@ class CanvasPixels extends React.Component {
 
     componentWillReceiveProps(new_props) {
 
+        if(this.state.perspective !== new_props.perspective) {
+
+            if(window.w_canvas_pixels._is_mobile_or_tablet && this.state._device_motion === true){
+
+                if(new_props.perspective > 0) {
+
+                    window.addEventListener("devicemotion", this._handle_motion_changes);
+                }else {
+
+                    window.removeEventListener("devicemotion", this._handle_motion_changes);
+                }
+            }
+        }
+
         if(this.state.tool === "MINE" && new_props.tool !== "MINE") {
 
             this.setState({_mine_player_index: null, _mine_index: null});

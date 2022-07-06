@@ -46,7 +46,7 @@ const styles = theme => ({
         backgroundSize: "cover",
         contain: "style paint layout",
         willChange: "background",
-        animation: "$slide 40s ease-out alternate infinite",
+        animation: "$slide 40s ease-out alternate infinite 10s",
         animationFillMode: "both",
         "@global": {
             "@keyframes slide": {
@@ -452,11 +452,11 @@ class Home extends React.Component {
                     </h2>
                     <Fade in={true} timeout={0}>
                         <Button className={classes.homeCTAuseit} variant={"contained"} size={"large"} color="primary" onClick={this._go_to_editor}>
-                            100% FREE <img src="/src/images/infographics/Wardenclyffe.png" alt="Laboratory decoration" width={24} height={24} style={{transform: "scale(3.5)", width: 24, height: 24, marginRight: "1.5em", marginLeft: "1.5em", filter: "drop-shadow(white 0px 0px 6px)"}} className="emoji-150" /> RUN NOW!
+                            RUN IT <img src="/src/images/infographics/Wardenclyffe.png" alt="Laboratory decoration" width={24} height={24} style={{transform: "scale(3.5)", width: 24, height: 24, marginRight: "2em", marginLeft: "2em", filter: "drop-shadow(white 0px 0px 6px)"}} className="emoji-150" /> NOW
                         </Button>
                     </Fade>
                     <Fade in={true} timeout={0}>
-                        <p className={classes.subtitleButton}><span><EarthEmojiSvg alt="whole-earth-tweemoji" className="emoji"/> For Everyone <CrownEmojiSvg alt="king-crown-tweemoji" className="emoji"/> For Free <LightingEmojiSvg alt="sky-lightning-tweemoji" className="emoji"/> Forever Open-Source...</span></p>
+                        <p className={classes.subtitleButton}><span><CrownEmojiSvg alt="king-crown-tweemoji" className="emoji"/> Free For Everyone <LightingEmojiSvg alt="sky-lightning-tweemoji" className="emoji"/> Forever Open-Source</span></p>
                     </Fade>
                     <Fade in={true} timeout={0}>
                         <Button className={classes.homeCTAsendit} variant={"contained"} size={"large"} color="primary" onClick={(event) => {this._handle_speed_dial_action(event, "share")}}>

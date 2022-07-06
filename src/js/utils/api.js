@@ -9,7 +9,7 @@ const _init = () => {
 
     if(typeof window.settings_db === "undefined") {
 
-        window.settings_db = new PouchDB("settings_db", {adapter: "idb", deterministic_revs: false, revs_limit: 1});
+        window.settings_db = new PouchDB("settings_db", {adapter: "idb", deterministic_revs: false, revs_limit: 0});
         return true;
     }else {
 
@@ -70,7 +70,7 @@ const get_settings = (callback_function_info = null, attachment_ids = [], callba
 
     if(typeof window._pixa_settings !== "undefined" && window._pixa_settings !== null) {
 
-        if(typeof window._pixa_settings.locales !== "undefined" && window._pixa_settings.locales !== null && callback_function_attachment === null && !Boolean(Boolean(attachment_ids === "all" || attachment_ids.length > 0))) {
+        if(typeof window._pixa_settings.locales !== "undefined" && window._pixa_settings.locales !== null && callback_function_attachment === null && !Boolean(attachment_ids === "all" || attachment_ids.length > 0)) {
 
             if(callback_function_info !== null) {
 
