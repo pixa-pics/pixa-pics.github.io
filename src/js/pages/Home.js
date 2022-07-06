@@ -18,6 +18,7 @@ const styles = theme => ({
         height: "100%",
         overflow: "hidden",
         position: "relative",
+        contain: "style paint layout",
     },
     bold: {
         fontWeight: "bold",
@@ -41,13 +42,11 @@ const styles = theme => ({
         filter: "drop-shadow(0px 0px 6px #2196f3)",
     },
     insideRoot: {
+        contain: "style paint layout",
         overflow: "hidden",
         backgroundSize: "cover",
-        contain: "style paint layout",
-        willChange: "background",
-        backgroundPosition: "50% 0%",
+        backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
-        backgroundOrigin: "border-box",
         imageRendering: "optimizespeed",
         position: "absolute",
         width: "100%",
@@ -58,7 +57,6 @@ const styles = theme => ({
     homeCTAuseit: {
         boxShadow: "none !important",
         pointerEvents: "auto",
-        contain: "style paint layout",
         fontWeight: "bold",
         transform: "translateY(0px) scale(1)  !important",
         fontSize: "1.314rem",
@@ -85,7 +83,6 @@ const styles = theme => ({
     homeCTAsendit: {
         boxShadow: "none !important",
         pointerEvents: "auto",
-        contain: "style paint layout",
         transform: "translateY(0px) scale(1)  !important",
         color: "#6f440d",
         backgroundImage: "linear-gradient(-32deg, goldenrod, #fff9f0, gold, darkgoldenrod, #fff8aa, goldenrod, blanchedalmond)",
@@ -116,7 +113,6 @@ const styles = theme => ({
     },
     backgroundImage: {
         pointerEvents: "none",
-        contain: "style paint layout",
         width: "100%",
         height: "100%",
         position: "absolute",
@@ -136,7 +132,6 @@ const styles = theme => ({
         right: "max(9vw, 9vh)",
         bottom: "max(12vw, 12vh)",
         width: "min(47.5vw, 47.5vh)",
-        contain: "style paint layout",
         filter: "drop-shadow(0px 0px 12px #00000066)",
         position: "fixed",
         display: "relative",
