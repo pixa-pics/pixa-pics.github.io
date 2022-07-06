@@ -4,28 +4,28 @@ import pool from "../utils/worker-pool";
 import PouchDB from "pouchdb-core";
 import PouchDB_IDB from "pouchdb-adapter-idb";
 import PouchDB_memory from "pouchdb-adapter-memory";
-PouchDB.plugin(PouchDB_IDB)
-PouchDB.plugin(PouchDB_memory)
-
-PouchDB.on("created", function (name) {
-
-    if(typeof window._pixa_settings !== "undefined" ) {
-
-        if(name === "settings_db") {
-
-            window._pixa_settings = _merge_object({}, _get_default_settings());
-            window.settings_db.post({
-                info: JSON.stringify(_merge_object({}, window._pixa_settings)),
-                timestamp: Date.now(),
-            });
-        }
-    }
-});
 
 const _init = () => {
 
     if(typeof window.settings_db === "undefined") {
 
+        PouchDB.on("created", function (name) {
+
+            if(typeof window._pixa_settings !== "undefined" ) {
+
+                if(name === "settings_db") {
+
+                    window._pixa_settings = _merge_object({}, _get_default_settings());
+                    window.settings_db.post({
+                        info: JSON.stringify(_merge_object({}, window._pixa_settings)),
+                        timestamp: Date.now(),
+                    }, function (){});
+                }
+            }
+        });
+
+        PouchDB.plugin(PouchDB_IDB)
+        PouchDB.plugin(PouchDB_memory)
         window.settings_db = new PouchDB("settings_db", {adapter: "idb", view_adapter: "memory", deterministic_revs: false, revs_limit: 0});
         return true;
     }else {

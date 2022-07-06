@@ -31,25 +31,29 @@ import Index from "../js/pages/Index";
 
 TimeAgo.addDefaultLocale(en);
 
-get_settings((error, settings) => {
+(async function(){
 
-    TimeAgo.addLocale(fr);
-    TimeAgo.addLocale(pt);
-    TimeAgo.addLocale(id);
-    TimeAgo.addLocale(it);
-    TimeAgo.addLocale(de);
-    TimeAgo.addLocale(ja);
-    TimeAgo.addLocale(zh);
-    TimeAgo.addLocale(ko);
-    TimeAgo.addLocale(ru);
-    TimeAgo.addLocale(hi);
+    get_settings((error, settings) => {
 
-    if(typeof (settings || {}).locales !== "undefined") {
+        TimeAgo.addLocale(fr);
+        TimeAgo.addLocale(pt);
+        TimeAgo.addLocale(id);
+        TimeAgo.addLocale(it);
+        TimeAgo.addLocale(de);
+        TimeAgo.addLocale(ja);
+        TimeAgo.addLocale(zh);
+        TimeAgo.addLocale(ko);
+        TimeAgo.addLocale(ru);
+        TimeAgo.addLocale(hi);
 
-        const _language = settings.locales.split("-")[0];
-        l(_language)
-    }
-}); // It will init the DB
+        if(typeof (settings || {}).locales !== "undefined") {
+
+            const _language = settings.locales.split("-")[0];
+            l(_language)
+        }
+    }); // It will init the DB
+
+})()
 
 let element = document.getElementById("app");
 if(element === null) {
