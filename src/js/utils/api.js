@@ -3,13 +3,30 @@ import get_browser_locales from "../utils/locales";
 import pool from "../utils/worker-pool";
 import PouchDB from "pouchdb-core";
 import PouchDB_IDB from "pouchdb-adapter-idb";
+import PouchDB_memory from "pouchdb-adapter-memory";
 PouchDB.plugin(PouchDB_IDB)
+PouchDB.plugin(PouchDB_memory)
+
+PouchDB.on("created", function (name) {
+
+    if(typeof window._pixa_settings !== "undefined" ) {
+
+        if(name === "settings_db") {
+
+            window._pixa_settings = _merge_object({}, _get_default_settings());
+            window.settings_db.post({
+                info: JSON.stringify(_merge_object({}, window._pixa_settings)),
+                timestamp: Date.now(),
+            });
+        }
+    }
+});
 
 const _init = () => {
 
     if(typeof window.settings_db === "undefined") {
 
-        window.settings_db = new PouchDB("settings_db", {adapter: "idb", deterministic_revs: false, revs_limit: 0});
+        window.settings_db = new PouchDB("settings_db", {adapter: "idb", view_adapter: "memory", deterministic_revs: false, revs_limit: 0});
         return true;
     }else {
 
@@ -204,10 +221,6 @@ const get_settings = (callback_function_info = null, attachment_ids = [], callba
 
                 window._pixa_settings = _merge_object({}, _get_default_settings());
                 callback_function_info(null, _merge_object({}, window._pixa_settings));
-                window.settings_db.post({
-                    info: JSON.stringify(_merge_object({}, window._pixa_settings)),
-                    timestamp: Date.now(),
-                });
             }
         }
 
@@ -252,7 +265,7 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
             settings_docs = settings_docs.map((sd, sdi) => {return {_id: sd._id, _rev: sd._rev, _deleted: true, timestamp: 0, data: null, info: null, _attachments: {}}})
 
             // Choose the first
-            if(typeof settings_doc !== null) {
+            if(settings_doc !== null) {
 
                 let pixa_settings = _merge_object(JSON.parse(settings_doc.info), info);
                 window._pixa_settings = _merge_object({}, pixa_settings);

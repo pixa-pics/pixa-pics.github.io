@@ -250,7 +250,7 @@ const styles = theme => ({
         color: "white",
     },
     subtitleButton: {
-        color: "#44cb16",
+        color: "#1658cb",
         fontWeight: "bold",
         fontSize: "12px",
         [theme.breakpoints.down("sm")]: {

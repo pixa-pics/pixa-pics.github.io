@@ -133,12 +133,12 @@ module.exports = {
                                 'react',
                                 ["env", {
                                     targets: {
-                                        "android": "67",
-                                        "chrome": "67",
-                                        "edge": "17",
-                                        "firefox": "61",
-                                        "ios": "11",
-                                        "safari": "11"
+                                        "android": "54",
+                                        "chrome": "54",
+                                        "edge": "5",
+                                        "firefox": "49",
+                                        "ios": "10",
+                                        "safari": "10"
                                     },
                                     //ignoreBrowserslistConfig: true,
                                     forceAllTransforms: true, //true,

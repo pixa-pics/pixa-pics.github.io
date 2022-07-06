@@ -144,30 +144,6 @@ class Index extends React.Component {
         };
     };
 
-    componentWillMount() {
-
-        api.get_settings((error, settings) => {
-
-            if (!Boolean(error) && typeof (settings || {}).locales !== "undefined") {
-
-                // Set new settings from query result
-                const _sfx_enabled = typeof settings.sfx_enabled !== "undefined" ? settings.sfx_enabled : true;
-                const _voice_enabled = typeof settings.voice_enabled !== "undefined" ? settings.voice_enabled : true;
-                const _music_enabled = typeof settings.music_enabled !== "undefined" ? settings.music_enabled : false;
-                const _jamy_enabled = typeof settings.jamy_enabled !== "undefined" ? settings.jamy_enabled : true;
-                const _selected_locales_code = typeof settings.locales !== "undefined" ? settings.locales : "en-US";
-                const _language = _selected_locales_code.split("-")[0];
-                const _selected_currency = typeof settings.currency !== "undefined" ? settings.currency : "USD";
-                const _onboarding_enabled = typeof settings.onboarding !== "undefined" ? settings.onboarding : true;
-                const _ret = typeof settings.ret !== "undefined" ? settings.ret : 0;
-                const _camo = typeof settings.camo !== "undefined" ? settings.camo : 0;
-                l(_language);
-                document.body.setAttribute("datainitiated", "true");
-                this.setState({_know_the_settings: true, _sfx_enabled, _voice_enabled, _music_enabled, _jamy_enabled, _language, _selected_currency, _onboarding_enabled, _ret, _camo});
-            }
-        });
-    }
-
     componentDidMount() {
 
         this._update_settings();
