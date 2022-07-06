@@ -69,7 +69,6 @@ class Settings extends React.Component {
 
     componentWillMount() {
 
-        actions.trigger_page_render_complete();
         actions.trigger_loading_update(0);
         setTimeout(() => {
 

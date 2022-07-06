@@ -153,6 +153,7 @@ class Index extends React.Component {
         });
         this._set_new_pathname_or_redirect(this.state._history.location.pathname);
         dispatcher.register(this._handle_events.bind(this));
+        actions.trigger_page_render_complete();
 
         // Make Jamy blink every 32 sec in average.
         const intervals = [
@@ -196,7 +197,13 @@ class Index extends React.Component {
             }, 1000)
         ];
 
-        this.setState({_intervals: intervals, _history_unlisten: _history_unlisten});
+        this.setState({_intervals: intervals, _history_unlisten: _history_unlisten}, ( ) => {
+
+            setTimeout(() => {
+
+                actions.trigger_snackbar("Hello, I am Jamy! Let's take a look to our laboratory to process images, wanna give it a try?", 7000)
+            }, 1250);
+        });
     }
 
     componentWillUnmount() {

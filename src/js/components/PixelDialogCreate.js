@@ -76,7 +76,6 @@ class PixelDialogCreate extends React.Component {
 
     componentDidMount() {
 
-        actions.trigger_page_render_complete();
         actions.trigger_loading_update(100);
     }
 

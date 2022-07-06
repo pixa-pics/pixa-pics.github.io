@@ -1,6 +1,6 @@
-var REQUIRED_CACHE = "unless-update-cache-v262-required";
-var USEFUL_CACHE = "unless-update-cache-v262-useful";
-var STATIC_CACHE = "unless-update-cache-v262-static";
+var REQUIRED_CACHE = "unless-update-cache-v263-required";
+var USEFUL_CACHE = "unless-update-cache-v263-useful";
+var STATIC_CACHE = "unless-update-cache-v263-static";
 var MAIN_CHILD_CHUNK_REGEX = /chunk_(main\~[a-z0-9]+)\.min\.js/i;
 var CHILD_CHUNK_REGEX = /chunk_([0-9]+)\.min\.js/i;
 
@@ -49,7 +49,7 @@ self.addEventListener("install", function(event) {
         return true;
     }
 
-    event.waitUntil(Promise.all([
+    event.waitUntil(Promise.race([
         required_cache.then(function (cache) {
             return cache.addAll([
                 "/chunk_main~1f20a385.min.js",
@@ -69,12 +69,7 @@ self.addEventListener("install", function(event) {
                 "/src/fonts/jura/index.css",
                 "/src/images/favicon.ico",
                 "/src/images/manifest/logo-white.png",
-                "/src/images/logo-transparent.png",
-                "/src/images/illustrations/Cervin-night.svg",
-                "/src/images/illustrations/Cervin-day.svg",
-                "/src/images/illustrations/ITLab.png",
-                "/src/images/gallery/Luck.png",
-                "/src/images/infographics/Wardenclyffe.png",
+                "/src/images/logo-transparent.png"
             ]);
         })
     ]));
@@ -96,6 +91,7 @@ self.addEventListener("fetch", function(event) {
                 useful_cache.then(function (cache) {
                     return cache.addAll([
                         "/src/images/infographics/ShareWho.svg",
+                        "/src/images/gallery/Luck.png",
                         "/src/images/gallery/Luck.svg",
                         "/src/images/Gallery/Nuclear.png",
                         "/src/images/Gallery/Nuclear.svg",
