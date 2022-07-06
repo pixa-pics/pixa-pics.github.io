@@ -1,6 +1,6 @@
-var REQUIRED_CACHE = "unless-update-cache-v260-required";
-var USEFUL_CACHE = "unless-update-cache-v260-useful";
-var STATIC_CACHE = "unless-update-cache-v260-static";
+var REQUIRED_CACHE = "unless-update-cache-v261-required";
+var USEFUL_CACHE = "unless-update-cache-v261-useful";
+var STATIC_CACHE = "unless-update-cache-v261-static";
 var MAIN_CHILD_CHUNK_REGEX = /chunk_(main\~[a-z0-9]+)\.min\.js/i;
 var CHILD_CHUNK_REGEX = /chunk_([0-9]+)\.min\.js/i;
 
@@ -49,7 +49,17 @@ self.addEventListener("install", function(event) {
         return true;
     }
 
-    const first_required = Promise.allSettled([
+    useful_cache.then(function (cache) {
+        cache.addAll([
+            "/src/images/illustrations/Cervin-night.svg",
+            "/src/images/illustrations/Cervin-day.svg",
+            "/src/images/illustrations/ITLab.png",
+            "/src/images/gallery/Luck.png",
+            "/src/images/infographics/Wardenclyffe.png",
+        ]);
+    });
+
+    event.waitUntil(Promise.all([
         required_cache.then(function (cache) {
             return cache.addAll([
                 "/chunk_main~1f20a385.min.js",
@@ -72,21 +82,7 @@ self.addEventListener("install", function(event) {
                 "/src/images/logo-transparent.png"
             ]);
         })
-    ]);
-
-    const first_required_nono_critical = Promise.allSettled([
-        useful_cache.then(function (cache) {
-            return cache.addAll([
-                "/src/images/illustrations/Cervin-night.svg",
-                "/src/images/illustrations/Cervin-day.svg",
-                "/src/images/illustrations/ITLab.png",
-                "/src/images/gallery/Luck.png",
-                "/src/images/infographics/Wardenclyffe.png",
-            ]);
-        })
-    ]);
-
-    event.waitUntil(first_required);
+    ]));
 });
 
 self.addEventListener("fetch", function(event) {
