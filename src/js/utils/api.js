@@ -30,7 +30,7 @@ if(typeof window.settings_db === "undefined") {
 
         PouchDB.plugin(PouchDB_IDB);
         PouchDB.plugin(PouchDB_memory);
-        window.settings_db = new PouchDB("settings_db", {adapter: "idb", view_adapter: "memory", deterministic_revs: false, revs_limit: 0});
+        window.settings_db = new PouchDB("settings_db", {adapter: "idb", view_adapter: "memory", deterministic_revs: true, revs_limit: 0});
     })();
 
 }

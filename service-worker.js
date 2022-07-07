@@ -1,6 +1,6 @@
-var REQUIRED_CACHE = "unless-update-cache-v273-required";
-var USEFUL_CACHE = "unless-update-cache-v273-useful";
-var STATIC_CACHE = "unless-update-cache-v273-static";
+var REQUIRED_CACHE = "unless-update-cache-v274-required";
+var USEFUL_CACHE = "unless-update-cache-v274-useful";
+var STATIC_CACHE = "unless-update-cache-v274-static";
 var MAIN_CHILD_CHUNK_REGEX = /chunk_(vendors_main_[a-z0-9]+)\.min\.js/i;
 var CHILD_CHUNK_REGEX = /chunk_([0-9]+)\.min\.js/i;
 
@@ -110,8 +110,6 @@ self.addEventListener("fetch", function(event) {
                         "/src/images/labostration/GENOMA.svg",
                         "/src/images/labostration/MOLECULE.svg",
                         "/src/images/labostration/NUCLEAR.svg",
-                        "/src/images/labostration/PARTICLE.svg",
-                        "/src/images/labostration/RENDERING.svg",
                         "/src/images/labostration/SCIENCE.svg",
                         "/src/images/REMINDER.svg",
                         "/src/images/Error.svg",
