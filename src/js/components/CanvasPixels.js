@@ -2862,7 +2862,8 @@ class CanvasPixels extends React.Component {
 
             element.offscreenCanvas = new OffscreenCanvas(pxl_width, pxl_height);
             element.offscreenCanvas.context2d = element.offscreenCanvas.getContext("2d", {
-                desynchronized: true
+                desynchronized: true,
+                willReadFrequently: true
             });
 
         } catch (e) {
@@ -2871,11 +2872,12 @@ class CanvasPixels extends React.Component {
             element.offscreenCanvas.width = pxl_width;
             element.offscreenCanvas.height = pxl_height;
             element.offscreenCanvas.context2d = element.offscreenCanvas.getContext("2d", {
-                desynchronized: true
+                desynchronized: true,
+                willReadFrequently: true
             });
         }
 
-
+        element.offscreenCanvas.addEventListener("contextlost", () => {this._set_canvas_ref(element)});
         element.offscreenCanvas.context2d.globalCompositeOperation = "source-over";
         element.offscreenCanvas.context2d.imageSmoothingEnabled = false;
         element.context2d.globalCompositeOperation = "copy";

@@ -30,7 +30,7 @@
 # Special features
 
 ![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/doc/screenshots/screenshot.pixa.pics.jpeg?v=2)
-Screenshot of the homepage of pixa.pics.
+Screenshot of the editor of pixa.pics.
 
  * Create pixel art from your pictures and draw, cut, select, do anything.
  * Have fun with NFTs weighting as low as ~10-100Kb.
