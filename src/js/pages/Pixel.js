@@ -580,7 +580,7 @@ class Pixel extends React.Component {
 
                 this.setState({ _is_pixel_dialog_create_open: false, _attachment_previews: []});
             });
-
+            data = null;
         }
     };
 
@@ -840,6 +840,7 @@ class Pixel extends React.Component {
                     actions.trigger_voice("processing");
                     base64png_to_xbrz_svg(png_base64_in, (image_base64) => {
 
+                        png_base64_in = null;
                         let a_png = document.createElement("a"); //Create <a>
                         a_png.download = `Painting_IMG_6x_${using.toUpperCase()}_N${Date.now()}_PIXAPICS.png`; //File name Here
                         a_png.href = String(image_base64);
@@ -871,8 +872,6 @@ class Pixel extends React.Component {
                         });
 
                     }, palette, using, optimize_render_size);
-
-                    png_base64_in = null;
 
                 }, true, optimize_render_size ? 6: 0, 40, 50);
 

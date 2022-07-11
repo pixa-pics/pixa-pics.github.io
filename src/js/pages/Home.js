@@ -18,7 +18,6 @@ const styles = theme => ({
         height: "100%",
         overflow: "hidden",
         position: "relative",
-        contain: "style paint layout",
     },
     bold: {
         fontWeight: "bold",
@@ -42,7 +41,6 @@ const styles = theme => ({
         filter: "drop-shadow(0px 0px 6px #2196f3)",
     },
     insideRoot: {
-        contain: "style paint layout",
         overflow: "hidden",
         backgroundSize: "cover",
         backgroundPosition: "center",
@@ -112,6 +110,7 @@ const styles = theme => ({
         },
     },
     backgroundImage: {
+        contain: "style paint layout",
         pointerEvents: "none",
         width: "100%",
         height: "100%",

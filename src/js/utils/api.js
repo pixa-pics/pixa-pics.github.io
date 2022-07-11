@@ -145,19 +145,20 @@ const get_settings = (callback_function_info = null, attachment_ids = [], callba
                                             blobs[name_id] = value.data;
                                         }
                                     });
+                                    doc._attachments = null;
 
                                     Object.entries(blobs).forEach(([name_id, blob]) => {
 
                                         blob.arrayBuffer().then((array_buffer) => {
 
-                                            const uint8a = new Uint8Array(array_buffer);
-
                                             try {
 
-                                                LZP3(uint8a, "DECOMPRESS_UINT8A", pool).then((obj) => {
+                                                LZP3(new Uint8Array(array_buffer), "DECOMPRESS_UINT8A", pool).then((obj) => {
 
-                                                    callback_function_attachment(null, obj);
+                                                    callback_function_attachment(null, Object.assign({}, obj));
+                                                    obj = null;
                                                 });
+                                                array_buffer = null;
 
                                             } catch (e) {
 
@@ -167,6 +168,7 @@ const get_settings = (callback_function_info = null, attachment_ids = [], callba
 
                                             callback_function_attachment("DB not working", null);
                                         });
+                                        blob = null;
                                     });
 
                                     let delete_count = 0;
@@ -179,6 +181,8 @@ const get_settings = (callback_function_info = null, attachment_ids = [], callba
                                             delete_count++;
                                         }
                                     });
+
+                                    blobs = null;
 
                                     if(delete_count > 0) {
 

@@ -2044,7 +2044,8 @@ class CanvasPixels extends React.Component {
 
             this.setState({_last_filters_hash: hash}, () => {
 
-                Array.from(this.get_filter_names()).map((name, index, array) => {
+                const filter_names = Array.from(this.get_filter_names());
+                filter_names.map((name) => {
 
                     const [p2, pc2] = this._filter_pixels(name, force, p, pc, true);
 
@@ -2052,7 +2053,7 @@ class CanvasPixels extends React.Component {
 
                         thumbnails[name] = result;
                         thumbnail_count++;
-                        this.props.onFiltersThumbnailChange(Object.assign({}, thumbnails), hash, Math.round(parseFloat(thumbnail_count / array.length)*100));
+                        this.props.onFiltersThumbnailChange(Object.assign({}, thumbnails), hash, Math.round(parseFloat(thumbnail_count / filter_names.length)*100));
                     });
                 }, 80);
 
@@ -5839,6 +5840,7 @@ class CanvasPixels extends React.Component {
 
     import_JS_state = (js, callback_function) => {
 
+        let _base64_original_images = Array.from(js._base64_original_images);
         let _json_state_history = Object.assign({}, {
             history_position: parseInt(js._json_state_history.history_position),
             previous_history_position: parseInt(js._json_state_history.previous_history_position),
@@ -5864,13 +5866,15 @@ class CanvasPixels extends React.Component {
             }))
         });
 
+        js = null;
+
         let { _original_image_index, pxl_width, pxl_height, _pxl_indexes_of_selection, _s_pxl_colors, _s_pxls, _layers, _layer_index, _pencil_mirror_index, _id } = _json_state_history.state_history[_json_state_history.history_position-1];
 
         this.setState({
             _id: parseInt(_id),
             pxl_width: parseInt(pxl_width),
             pxl_height: parseInt(pxl_height),
-            _base64_original_images: Array.from(js._base64_original_images),
+            _base64_original_images: Array.from(_base64_original_images),
             _original_image_index: parseInt(_original_image_index),
             _saved_json_state_history_timestamp_from_drawing: 0,
             _layers: _layers.map((l) => {
@@ -5887,9 +5891,12 @@ class CanvasPixels extends React.Component {
             _s_pxl_colors: _s_pxl_colors.map((a) => Uint32Array.from(Object.values(a).map((i) => this._format_color(i, true)))),
             _pxl_indexes_of_selection: new Set(_pxl_indexes_of_selection),
             _pencil_mirror_index: parseInt(_pencil_mirror_index),
-            _json_state_history: _json_state_history,
+            _json_state_history: Object.assign({}, _json_state_history),
             _is_there_new_dimension: true,
         }, () => {
+
+            _base64_original_images = null;
+            _json_state_history = null;
 
             this._notify_layers_and_compute_thumbnails_change( () => {
 
