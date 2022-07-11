@@ -103,23 +103,6 @@ function trigger_share() {
     }
 }
 
-function trigger_vocal(name, volume = 1, pack = "gg") {
-
-    if(!dispatcher.isDispatching()) {
-
-        dispatcher.dispatch({
-            type: "TRIGGER_VOCAL",
-            data: { pack, name, volume}
-        });
-    }else {
-
-        setTimeout(() => {
-
-            trigger_vocal(name, volume, pack);
-        }, 10);
-    }
-}
-
 function trigger_snackbar(message = "", auto_hide_duration = 3500) {
 
     if(!dispatcher.isDispatching()) {
@@ -205,6 +188,25 @@ function trigger_page_render_complete() {
     }
 }
 
+function trigger_canvas_action(name) {
+
+    if(!dispatcher.isDispatching()) {
+
+        dispatcher.dispatch({
+            type: "TRIGGER_CANVAS_ACTION",
+            data: {
+                name: String(name).toUpperCase()
+            }
+        });
+    }else {
+
+        setTimeout(() => {
+
+            trigger_canvas_action(name);
+        }, 10);
+    }
+}
+
 module.exports = {
     stop_sound: stop_sound,
     jamy_update: jamy_update,
@@ -216,5 +218,6 @@ module.exports = {
     trigger_login_update: trigger_login_update,
     trigger_settings_update: trigger_settings_update,
     trigger_loading_update: trigger_loading_update,
-    trigger_page_render_complete: trigger_page_render_complete
+    trigger_page_render_complete: trigger_page_render_complete,
+    trigger_canvas_action: trigger_canvas_action,
     };

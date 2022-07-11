@@ -235,6 +235,11 @@ class InnerToolbar extends React.Component {
         actions.trigger_sfx("navigation_selection-complete-celebration");
     };
 
+    _trigger_canvas_action = (name) => {
+
+        actions.trigger_canvas_action(name);
+    };
+
     _go_to = (url) => {
 
         const { _history } = this.state;
@@ -301,12 +306,12 @@ class InnerToolbar extends React.Component {
         const usrnm = (know_if_logged ? logged_account ? logged_account.name: t( "components.inner_toolbar.guest"): "");
 
         const tip_items = [
-            <Fade in={true}><a key="tip-legend" onClick={() => {this._trigger_tip(`(0?) Aware it musts be working as intended, tips are in chronological order while asterisks means mandatory for completion.`)}} className={classes.link}>&nbsp;0-5&nbsp;STEPS&nbsp;›&nbsp;</a></Fade>,
-            <Fade in={true}><a key="tip-contrast" onClick={() => {this._trigger_tip("(1?) Tones looks better if they are more distant from each other. -> Double-tap or Right-click around the movable and drawing card area to open the context-menu containing the related tools.")}} className={classes.link}>&nbsp;1)&nbsp;Contrasts&nbsp;→&nbsp;</a></Fade>,
-            <Fade in={true}><a key="tip-colors" onClick={() => {this._trigger_tip("(2?) For a pixel art to get good, your palette needs to contain less than 100 colors. -> Double-tap or Right-click around the movable and drawing card area to open the context-menu containing the tool which increase contrast.")}} className={classes.link}>&nbsp;2)&nbsp;Palette*&nbsp;→&nbsp;</a></Fade>,
-            <Fade in={true}><a key="tip-smooth" onClick={() => {this._trigger_tip(`(3?) For a pixel art to get neat, you can use the "smooth" functionality available in menu on double-tap or right-click. -> All your pixel should live with similar neighbors (6/8). Algorithmic raids will adopts neighbour's color for lonely pixel.`)}} className={classes.link}>&nbsp;3)&nbsp;Smooth&nbsp;→&nbsp;</a></Fade>,
-            <Fade in={true}><a key="tip-filters" onClick={() => {this._trigger_tip(`(4?) Apply filters to your color palette and image to change color mapping. -> Within menu sections, in "Filters" (7/7) apply an adjustable color correction out of 20+ previews.`)}} className={classes.link}>&nbsp;4)&nbsp;Filters&nbsp;→&nbsp;</a></Fade>,
-            <Fade in={true}><a key="tip-export" onClick={() => {this._trigger_tip(`(5?) If you don't want to export your artwork up-scaled by 6, 12, or 24 times with crisp edges as in "Image" menu section, the nostalgia of legendary video games had let remastering find faithful solutions in saving your eyes, you can export your artworks in SVG containing nice shapes if there is less than 128 colors.`)}} className={classes.link}>&nbsp;5)&nbsp;Render*&nbsp;</a></Fade>,
+            <Fade in={true}><a key="tip-legend" onClick={() => {this._trigger_tip(`We know it musts be working as intended, tips are in chronological order while asterisks means mandatory for completion.`)}} className={classes.link}>&nbsp;0-5&nbsp;STEPS&nbsp;›&nbsp;</a></Fade>,
+            <Fade in={true}><a key="tip-contrast" onClick={() => {this._trigger_canvas_action("contrast")}} className={classes.link}>&nbsp;1)&nbsp;Contrasts&nbsp;→&nbsp;</a></Fade>,
+            <Fade in={true}><a key="tip-colors" onClick={() => {this._trigger_canvas_action("palette")}} className={classes.link}>&nbsp;2)&nbsp;Palette*&nbsp;→&nbsp;</a></Fade>,
+            <Fade in={true}><a key="tip-smooth" onClick={() => {this._trigger_canvas_action("smooth")}} className={classes.link}>&nbsp;3)&nbsp;Smooth&nbsp;→&nbsp;</a></Fade>,
+            <Fade in={true}><a key="tip-filters" onClick={() => {this._trigger_canvas_action("filter")}} className={classes.link}>&nbsp;4)&nbsp;Filters&nbsp;→&nbsp;</a></Fade>,
+            <Fade in={true}><a key="tip-export" onClick={() => {this._trigger_canvas_action("render")}} className={classes.link}>&nbsp;5)&nbsp;Render*&nbsp;</a></Fade>,
         ];
 
         return (

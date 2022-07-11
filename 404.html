@@ -209,14 +209,14 @@
                 }
 
                 // Prevent this function from being executed none, twice or more using parameters what
-                if(document.readyState === "interactive") { fire_it("PRE"); }
+                if(document.readyState === "interactive") { fire_it("FIRST"); }
                 if(document.readyState === "complete") { fire_it("LAST"); }
 
                 // This event fires after doc ready state is interactive and before it is complete, it doesn't wait on resources to be loaded
                 document.addEventListener('DOMContentLoaded', function() { fire_it("LAST"); });
                 document.addEventListener('readystatechange', function() {
 
-                    if(document.readyState === "interactive") { fire_it("PRE"); }
+                    if(document.readyState === "interactive") { fire_it("FIRST"); }
                     if(document.readyState === "complete") { fire_it("LAST"); window.addEventListener("load", function() { fire_it("LAST"); }); }
                 });
             };

@@ -6,17 +6,14 @@ window.mobileAndTabletCheck = function() {
 
 let is_mobile_or_tablet = window.mobileAndTabletCheck();
 import React, { Suspense } from "react";
+import dispatcher from "../dispatcher";
 const CanvasPixels = React.lazy(() => import("../components/CanvasPixels"));
 import {IconButton, withStyles} from "@material-ui/core";
 import pool from "../utils/worker-pool";
-
 import {ListItem, Typography, Backdrop, Slider, SwipeableDrawer, Drawer, Tabs, Tab, Menu, ListSubheader, ListItemText, ListItemIcon} from "@material-ui/core";
 import TouchRipple from "@material-ui/core/ButtonBase/TouchRipple";
-
 import { HISTORY } from "../utils/constants";
-
 import actions from "../actions/utils";
-
 import ImageFilterMagicIcon from "../icons/ImageFilterMagic";
 import SquareIcon from "../icons/Square";
 
@@ -435,9 +432,8 @@ class Pixel extends React.Component {
         this._updated_dimensions();
         document.addEventListener("keydown", this._handle_keydown);
         document.addEventListener("keyup", this._handle_keyup);
-
         api.get_settings(this._process_settings_info_result);
-
+        dispatcher.register(this._handle_events.bind(this));
         this.setState({_h_svg: get_svg_in_b64(<HexGrid color={"#e5e5e5"}/>)});
         import("../utils/ressource_pixel").then((RESSOURCE_PIXELS) => {
 
@@ -453,6 +449,34 @@ class Pixel extends React.Component {
 
                 this.forceUpdate();
             });
+        }
+    }
+
+    _handle_events(event) {
+
+        // Make different actions send from a dispatcher bounded to this function
+        if(event.type === "TRIGGER_CANVAS_ACTION") {
+            switch(event.data.name.toUpperCase()) {
+
+                case "CONTRAST":
+                    this._to_auto_medium_more_contrast();
+                    break;
+                case "PALETTE":
+                    this._less_colors_auto();
+                    break;
+                case "SMOOTH":
+                    this._smooth_adjust();
+                    break;
+                case "FILTER":
+                    this._handle_edit_drawer_open(null, 6);
+                    break;
+                case "RENDER":
+                    this._handle_edit_drawer_open(null, 1);
+                    setTimeout(() => {
+                        this._handle_edit_drawer_open(null, 1);
+                    }, 100);
+                    break;
+            }
         }
     }
 
@@ -1689,6 +1713,11 @@ class Pixel extends React.Component {
         });
     };
 
+    _smooth_adjust = (run = 1) => {
+        const { smooth_adjust } = this.state._canvas;
+        smooth_adjust(run);
+    }
+
     render() {
 
         const {
@@ -2162,7 +2191,7 @@ class Pixel extends React.Component {
                                 </ListItemIcon>
                                 <ListItemText primary="To auto colors number" />
                             </ListItem>
-                            <ListItem button divider onClick={(event) => _canvas.smooth_adjust(1)}>
+                            <ListItem button divider onClick={(event) => this._smooth_adjust(1)}>
                                 <ListItemIcon>
                                     <ImageSmoothIcon />
                                 </ListItemIcon>
