@@ -2,7 +2,7 @@
 import "regenerator-runtime/runtime";
 
 import { get_settings } from "../js/utils/api";
-import { l } from "../js/utils/t";
+get_settings(); // It will init the DB
 
 import React from "react";
 import ReactDOM from "react-dom";
@@ -24,8 +24,6 @@ if(element === null) {
     document.body.appendChild(element);
     element = document.getElementById("app");
 }
-
-get_settings(); // It will init the DB
 
 ReactDOM.render(
     <ThemeProvider theme={lightTheme}>
