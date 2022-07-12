@@ -1,38 +1,30 @@
 import { CURRENCY_COUNTRIES } from "../utils/constants";
 import get_browser_locales from "../utils/locales";
-import pool from "../utils/worker-pool";
 import PouchDB from "pouchdb-core";
 import PouchDB_IDB from "pouchdb-adapter-idb";
 import PouchDB_memory from "pouchdb-adapter-memory";
 
 if(typeof window.settings_db === "undefined") {
 
-    PouchDB.on("created", function (name) {
+    PouchDB.on("created",  () => {
 
         if(typeof window._pixa_settings !== "undefined" ) {
 
-            if(name === "settings_db") {
+            window._pixa_settings = _merge_object({}, _get_default_settings());
 
-                window._pixa_settings = _merge_object({}, _get_default_settings());
+            setTimeout(() => {
 
-                setTimeout(() => {
-
-                    window.settings_db.post({
-                        info: JSON.stringify(_merge_object({}, window._pixa_settings)),
-                        timestamp: Date.now(),
-                    });
-                }, 3000);
-            }
+                window.settings_db.post({
+                    info: JSON.stringify(_merge_object({}, window._pixa_settings)),
+                    timestamp: Date.now(),
+                });
+            }, 3000);
         }
     });
 
-    (async() => {
-
-        PouchDB.plugin(PouchDB_IDB);
-        PouchDB.plugin(PouchDB_memory);
-        window.settings_db = new PouchDB("settings_db", {adapter: "idb", view_adapter: "memory", deterministic_revs: true, revs_limit: 0});
-    })();
-
+    PouchDB.plugin(PouchDB_memory);
+    PouchDB.plugin(PouchDB_IDB);
+    window.settings_db = new PouchDB("settings_db", {adapter: "idb", view_adapter: "memory", deterministic_revs: true, revs_limit: 0});
 }
 
 const _merge_object = (obj1, obj2) => {
@@ -84,17 +76,21 @@ const reset_all_databases = (callback_function) => {
     });
 }
 
-const get_settings = (callback_function_info = null, attachment_ids = [], callback_function_attachment = null, LZP3 = null ) => {
+const get_settings = (callback_function_info = null, attachment_ids = [], callback_function_attachment = null, LZP3 = null, POOL = null ) => {
 
     if(typeof window._pixa_settings !== "undefined" && window._pixa_settings !== null) {
 
-        if(typeof window._pixa_settings.locales !== "undefined" && window._pixa_settings.locales !== null && callback_function_attachment === null && !Boolean(attachment_ids === "all" || attachment_ids.length > 0)) {
+        if(typeof window._pixa_settings.locales !== "undefined" && window._pixa_settings.locales !== null) {
 
             if(callback_function_info !== null) {
 
                 callback_function_info(null, _merge_object({}, window._pixa_settings));
             }
-            return;
+
+            if(attachment_ids === [] && callback_function_attachment === null) {
+
+                return null;
+            }
         }
     }
 
@@ -153,7 +149,7 @@ const get_settings = (callback_function_info = null, attachment_ids = [], callba
 
                                             try {
 
-                                                LZP3(new Uint8Array(array_buffer), "DECOMPRESS_UINT8A", pool).then((obj) => {
+                                                LZP3(new Uint8Array(array_buffer), "DECOMPRESS_UINT8A", POOL).then((obj) => {
 
                                                     callback_function_attachment(null, Object.assign({}, obj));
                                                     obj = null;
@@ -248,7 +244,7 @@ const get_settings = (callback_function_info = null, attachment_ids = [], callba
     });
 }
 
-const set_settings = (info = {}, callback_function_info = () => {}, attachment_array = {}, LZP3 = null) => {
+const set_settings = (info = {}, callback_function_info = () => {}, attachment_array = {}, LZP3 = null, POOL = null) => {
 
     window.settings_db.allDocs({
         include_docs: true,
@@ -291,7 +287,7 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
 
                                 try {
 
-                                    LZP3(data, "COMPRESS_OBJECT", pool).then((uint8a) => {
+                                    LZP3(data, "COMPRESS_OBJECT", POOL).then((uint8a) => {
 
                                         settings_doc._attachments = settings_doc._attachments || {};
                                         settings_doc._attachments[name_id] = {
@@ -466,7 +462,7 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
 
                     try {
 
-                        LZP3(data, "COMPRESS_OBJECT", pool).then((uint8a) => {
+                        LZP3(data, "COMPRESS_OBJECT", POOL).then((uint8a) => {
 
                             attachments[name_id] = {
                                 content_type: "application/octet-stream",

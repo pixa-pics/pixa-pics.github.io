@@ -502,7 +502,7 @@ class Pixel extends React.Component {
                             actions.trigger_snackbar("Looks like I can't save your file as our compression module can't load.", 5700);
                             actions.jamy_update("angry");
                         }
-                    }, attachment_array, LZP3);
+                    }, attachment_array, LZP3, pool);
                 }).catch(() => {
 
                     actions.trigger_snackbar("Looks like I can't save your file as our compression module can't load.", 5700);
@@ -1224,7 +1224,7 @@ class Pixel extends React.Component {
             this._handle_pixel_dialog_create_close();
             this._handle_load("image_preload");
             actions.trigger_voice("accessing_memory");
-            api.get_settings(() => {}, ["json_state-ID" + id + ".json.lzp3"], this._process_settings_attachment_result, LZP3);
+            api.get_settings(() => {}, ["json_state-ID" + id + ".json.lzp3"], this._process_settings_attachment_result, LZP3, pool);
         }).catch(() => {
 
             actions.trigger_snackbar("Looks like I can't get your file as our compression module can't load.", 5700);

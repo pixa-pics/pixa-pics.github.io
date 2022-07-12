@@ -31,25 +31,25 @@ const overrides = {
                 margin: 0,
             },
             ".pixelated:not(a), .pixelated:not(a) *": {
-                msImageInterpolationMode: "nearest-neighbor;",
-            },
-            ".pixelated:not(b), .pixelated:not(b) *": {
                 imageRendering: "optimizeSpeed",
             },
+            ".pixelated:not(b), .pixelated:not(b) *": {
+                msImageInterpolationMode: "nearest-neighbor",
+            },
             ".pixelated:not(c), .pixelated:not(c) *": {
-                imageRendering: "-webkit-optimize-contrast;",
+                imageRendering: "-moz-crisp-edges",
             },
             ".pixelated:not(d), .pixelated:not(d) *": {
                 imageRendering: "-webkit-crisp-edges",
             },
             ".pixelated:not(e), .pixelated:not(e) *": {
-                imageRendering: "-moz-crisp-edges",
+                imageRendering: "-webkit-optimize-contrast",
             },
             ".pixelated:not(f), .pixelated:not(f) *": {
                 imageRendering: "-o-pixelated",
             },
             ".pixelated:not(g), .pixelated:not(g) *": {
-                imageRendering: "crisp-edges",
+                imageRendering: "nearest-neighbor",
             },
             ".pixelated:not(h), .pixelated:not(h) *": {
                 imageRendering: "pixelated",

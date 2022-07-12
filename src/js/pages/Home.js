@@ -110,7 +110,6 @@ const styles = theme => ({
         },
     },
     backgroundImage: {
-        contain: "style paint layout",
         pointerEvents: "none",
         width: "100%",
         height: "100%",

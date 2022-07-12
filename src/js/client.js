@@ -1,8 +1,8 @@
 "use strict";
 import "regenerator-runtime/runtime";
 
-import { get_settings } from "../js/utils/api";
-get_settings(); // It will init the DB
+import api from "../js/utils/api";
+api.get_settings(); // It will init the DB
 
 import React from "react";
 import ReactDOM from "react-dom";
