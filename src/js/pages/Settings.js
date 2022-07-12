@@ -303,7 +303,8 @@ class Settings extends React.Component {
                                 <div className={classes.sliderContainer}>
                                     <Typography className={classes.sliderLabel} id="ret-slider"
                                                 gutterBottom>Symbol</Typography>
-                                    <Slider value={_ret} step={1}
+                                    <Slider defaultValue={_ret} step={1}
+                                            valueLabelFormat={(value) => { return Array.of("no", "hnd", "sly", "sun", "bhz", "evl", "ptn", "skl", "ncl", "ufo", "msc", "tgr", "rvn")[value]}}
                                             valueLabelDisplay="auto" min={0} max={12}
                                             onChangeCommitted={this._set_ret_from_slider}
                                             aria-labelledby="ret-slider"/>
@@ -311,7 +312,8 @@ class Settings extends React.Component {
                                 <div className={classes.sliderContainer}>
                                     <Typography className={classes.sliderLabel} id="camo-slider"
                                                 gutterBottom>Toolbar</Typography>
-                                    <Slider value={_camo} step={1}
+                                    <Slider defaultValue={_camo} step={1}
+                                            valueLabelFormat={(value) => { return Array.of("no", "dgt", "jgl", "snd", "cns", "mny", "rpt", "mgk", "npn", "lf", "dth", "fr", "blt")[value]}}
                                             valueLabelDisplay="auto" min={0} max={12}
                                             onChangeCommitted={this._set_camo_from_slider}
                                             aria-labelledby="camo-slider"/>

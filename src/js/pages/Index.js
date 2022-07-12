@@ -153,6 +153,7 @@ class Index extends React.Component {
 
     componentWillMount() {
 
+        dispatcher.register(this._handle_events.bind(this));
         this._update_settings();
     }
 
@@ -163,7 +164,6 @@ class Index extends React.Component {
             this._set_new_pathname_or_redirect(location.location.pathname);
         });
         this._set_new_pathname_or_redirect(this.state._history.location.pathname);
-        dispatcher.register(this._handle_events.bind(this));
 
         setTimeout(() => {
 
@@ -316,7 +316,6 @@ class Index extends React.Component {
 
                 if(this.state._datasyncserviceworkerallfiles === 0) {
 
-                    document.body.setAttribute("class", "loaded");
                     const time = 7777 * 10;
                     this.setState({_datasyncserviceworkerallfiles: Date.now() + time});
                     setTimeout(() => {fetch("data:,all").then(function(r){})}, time);
@@ -341,18 +340,27 @@ class Index extends React.Component {
             const _ret = parseInt(typeof settings.ret !== "undefined" ? settings.ret: 0);
             const _camo = parseInt(typeof settings.camo !== "undefined" ? settings.camo: 0);
 
-            const set_language_on_document = Boolean(this.state._language !== _language); // Already defined in entry file client.js
             const know_settings = Boolean(this.state._know_the_settings === false);
+            const set_language_on_document = Boolean(know_settings && this.state._language !== _language); // Already defined in entry file client.js
 
-            if(set_language_on_document) { l(_language, () => {
+            let state = {};
 
-                this.setState({_language}, () => {
+            if(know_settings || set_language_on_document) { l(_language, () => {
 
-                    this.forceUpdate();
+                state = Object.assign(state, {_language});
+                state = Object.assign(state, { _ret, _camo, _voice_enabled, _sfx_enabled, _music_enabled, _jamy_enabled, _selected_locales_code, _know_the_settings: true, _has_played_index_music_counter: parseInt((!this.state._know_the_settings && _music_enabled) ? 1: this.state._has_played_index_music_counter )});
+
+                if(know_settings){ document.body.setAttribute("datainitiated", "true"); }
+                this.setState(state, async() => {
+
+                    this.forceUpdate(() => {
+
+                        if(know_settings){ document.body.setAttribute("class", "loaded"); }
+                    });
+                    if(_music_enabled === true && was_music_enabled === false) { this._should_play_music_pathname(this.state.pathname);}
                 });
-            })}
 
-            if(
+            })}else if(
                 this.state._know_the_settings === false ||
                 this.state._ret !== _ret ||
                 this.state._camo !== _camo ||
@@ -361,17 +369,16 @@ class Index extends React.Component {
                 this.state._voice_enabled !== _voice_enabled ||
                 this.state._jamy_enabled !== _jamy_enabled ||
                 this.state._selected_locales_code !== _selected_locales_code
-            ) {
+            ){
 
-                this.setState({ _ret, _camo, _voice_enabled, _sfx_enabled, _music_enabled, _jamy_enabled, _selected_locales_code, _know_the_settings: true, _has_played_index_music_counter: parseInt((!this.state._know_the_settings && _music_enabled) ? 1: this.state._has_played_index_music_counter )}, async() => {
+                state = Object.assign(state, { _ret, _camo, _voice_enabled, _sfx_enabled, _music_enabled, _jamy_enabled, _selected_locales_code, _know_the_settings: true, _has_played_index_music_counter: parseInt((!this.state._know_the_settings && _music_enabled) ? 1: this.state._has_played_index_music_counter )});
 
-                    if(know_settings){ document.body.setAttribute("datainitiated", "true"); }
+                this.setState(state, async() => {
+
                     this.forceUpdate();
-                    if(_music_enabled === true && was_music_enabled === false) {
-
-                        this._should_play_music_pathname(this.state.pathname);
-                    }
+                    if(_music_enabled === true && was_music_enabled === false) { this._should_play_music_pathname(this.state.pathname);}
                 });
+
             }
 
             if(!was_the_settings_known) {

@@ -474,6 +474,9 @@ class Pixel extends React.Component {
                     this._handle_edit_drawer_open(null, 1);
                     setTimeout(() => {
                         this._handle_edit_drawer_open(null, 1);
+                        setTimeout(() => {
+                            this._handle_edit_drawer_open(null, 1);
+                        }, 100);
                     }, 100);
                     break;
             }
