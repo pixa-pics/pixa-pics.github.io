@@ -2,7 +2,7 @@
 import "regenerator-runtime/runtime";
 
 import api from "../js/utils/api";
-api.get_settings(); // It will init the DB
+api.init(); // It will init the DB
 
 import React from "react";
 import ReactDOM from "react-dom";

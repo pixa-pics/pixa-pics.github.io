@@ -4,28 +4,33 @@ import PouchDB from "pouchdb-core";
 import PouchDB_IDB from "pouchdb-adapter-idb";
 import PouchDB_memory from "pouchdb-adapter-memory";
 
-if(typeof window.settings_db === "undefined") {
+const init = () => {
 
-    PouchDB.on("created",  () => {
+    if(typeof window.settings_db === "undefined") {
 
-        if(typeof window._pixa_settings !== "undefined" ) {
+        PouchDB.on("created",  () => {
 
-            window._pixa_settings = _merge_object({}, _get_default_settings());
+            if(typeof window._pixa_settings !== "undefined" ) {
 
-            setTimeout(() => {
+                window._pixa_settings = _merge_object({}, _get_default_settings());
 
-                window.settings_db.post({
-                    info: JSON.stringify(_merge_object({}, window._pixa_settings)),
-                    timestamp: Date.now(),
-                });
-            }, 3000);
-        }
-    });
+                setTimeout(() => {
 
-    PouchDB.plugin(PouchDB_memory);
-    PouchDB.plugin(PouchDB_IDB);
-    window.settings_db = new PouchDB("settings_db", {adapter: "idb", view_adapter: "memory", deterministic_revs: true, revs_limit: 0});
-}
+                    window.settings_db.post({
+                        info: JSON.stringify(_merge_object({}, window._pixa_settings)),
+                        timestamp: Date.now(),
+                    });
+                }, 3000);
+            }
+        });
+
+        (async () => {
+            PouchDB.plugin(PouchDB_memory);
+            PouchDB.plugin(PouchDB_IDB);
+            window.settings_db = new PouchDB("settings_db", {adapter: "idb", view_adapter: "memory", deterministic_revs: true, revs_limit: 0});
+        })();
+    }
+};
 
 const _merge_object = (obj1, obj2) => {
 
@@ -78,6 +83,7 @@ const reset_all_databases = (callback_function) => {
 
 const get_settings = (callback_function_info = null, attachment_ids = [], callback_function_attachment = null, LZP3 = null, POOL = null ) => {
 
+    init();
     if(typeof window._pixa_settings !== "undefined" && window._pixa_settings !== null) {
 
         if(typeof window._pixa_settings.locales !== "undefined" && window._pixa_settings.locales !== null) {
@@ -246,6 +252,7 @@ const get_settings = (callback_function_info = null, attachment_ids = [], callba
 
 const set_settings = (info = {}, callback_function_info = () => {}, attachment_array = {}, LZP3 = null, POOL = null) => {
 
+    init();
     window.settings_db.allDocs({
         include_docs: true,
         descending: false,
@@ -529,6 +536,7 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
 }
 
 module.exports = {
+    init: init,
     reset_all_databases: reset_all_databases,
     get_settings: get_settings,
     set_settings: set_settings
