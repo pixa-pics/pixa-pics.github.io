@@ -94,9 +94,9 @@ module.exports = {
         chunkIds: 'named',
         splitChunks: {
             chunks: 'all',
-            minSize: 256 * 1024,
-            maxSize: 512 * 1024,
-            minChunks: 1,
+            minSize: 192 * 1024,
+            maxSize: 640 * 1024,
+            minChunks: 2,
             maxAsyncRequests: 8,
             maxInitialRequests: 8,
             automaticNameDelimiter: '_',
@@ -108,7 +108,7 @@ module.exports = {
                     priority: -10
                 },
                 default: {
-                    minChunks: 4,
+                    minChunks: 2,
                     maxAsyncRequests: 8,
                     maxInitialRequests: 8,
                     priority: -20,

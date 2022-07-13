@@ -19,7 +19,7 @@
             }
             body.loaded > #app {
                 contain: paint style layout;
-                content-visibility: auto;
+                content-visibility: initial;
                 will-change: auto;
             }
             body.loading[datainitiated=true] > #app {
@@ -103,7 +103,7 @@
                 animation-fill-mode: both !important;
                 animation-timing-function: ease-out !important;
                 animation-name: zoom-out !important;
-                animation-duration: 150ms !important;
+                animation-duration: 175ms !important;
             }
             @keyframes zoom-out {
                 0% {
@@ -142,13 +142,13 @@
                 var _MAIN_JS_FILE_ENDS_WITH = "norris.min.js";
                 var _PRE_FILES = Array.of(
                     "/src/fonts/jura/index.css", // Font - Every font except latin
-                    "/chunk_vendors_main_0f485567.min.js",
-                    "/chunk_vendors_main_1f20a385.min.js",
-                    "/chunk_vendors_main_2a42e354.min.js",
-                    "/chunk_vendors_main_5a2dc592.min.js",
-                    "/chunk_vendors_main_253ae210.min.js",
-                    "/chunk_vendors_main_678f84af.min.js",
-                    "/chunk_vendors_main_690b702c.min.js",
+                    "/chunk_main_1f20a385.min.js",
+                    "/chunk_main_2a42e354.min.js",
+                    "/chunk_main_5a2dc592.min.js",
+                    "/chunk_main_253ae210.min.js",
+                    "/chunk_main_678f84af.min.js",
+                    "/chunk_main_690b702c.min.js",
+                    "/chunk_main_748942c6.min.js",
                 );
                 var _POST_FILES = Array.of(
                     "/chunk_norris.min.js",
