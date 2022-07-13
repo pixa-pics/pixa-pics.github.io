@@ -154,7 +154,6 @@ class Index extends React.Component {
     componentWillMount() {
 
         dispatcher.register(this._handle_events.bind(this));
-        document.body.setAttribute("datainitiated", "true");
         this._update_settings();
     }
 
@@ -346,18 +345,23 @@ class Index extends React.Component {
 
             let state = {};
 
-            if(know_settings || set_language_on_document) { l(_language, () => {
+            if(know_settings || set_language_on_document) {
+
+                if(know_settings){ document.body.setAttribute("datainitiated", "true"); }
+                if(_music_enabled === true && was_music_enabled === false) { setTimeout(() => {this._should_play_music_pathname(this.state.pathname);}, 1000)}
 
                 state = Object.assign(state, {_language});
                 state = Object.assign(state, { _ret, _camo, _voice_enabled, _sfx_enabled, _music_enabled, _jamy_enabled, _selected_locales_code, _know_the_settings: true, _has_played_index_music_counter: parseInt((!this.state._know_the_settings && _music_enabled) ? 1: this.state._has_played_index_music_counter )});
-                this.setState(state, () => {
+
+                this.setState(state);
+                l(_language, () => {
+
                     this.forceUpdate(() => {
                         if(know_settings){ document.body.setAttribute("class", "loaded"); }
                     });
-                    if(_music_enabled === true && was_music_enabled === false) { this._should_play_music_pathname(this.state.pathname);}
                 });
 
-            })}else if(
+            }else if(
                 this.state._know_the_settings === false ||
                 this.state._ret !== _ret ||
                 this.state._camo !== _camo ||

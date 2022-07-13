@@ -4,7 +4,7 @@ import PouchDB from "pouchdb-core";
 import PouchDB_IDB from "pouchdb-adapter-idb";
 import PouchDB_memory from "pouchdb-adapter-memory";
 
-const init = () => {
+const init = async() => {
 
     if(typeof window.settings_db === "undefined") {
 
@@ -24,11 +24,9 @@ const init = () => {
             }
         });
 
-        (async () => {
-            PouchDB.plugin(PouchDB_memory);
-            PouchDB.plugin(PouchDB_IDB);
-            window.settings_db = new PouchDB("settings_db", {adapter: "idb", view_adapter: "memory", deterministic_revs: true, revs_limit: 0});
-        })();
+        PouchDB.plugin(PouchDB_memory);
+        PouchDB.plugin(PouchDB_IDB);
+        window.settings_db = new PouchDB("settings_db", {adapter: "idb", view_adapter: "memory", deterministic_revs: true, revs_limit: 0});
     }
 };
 
