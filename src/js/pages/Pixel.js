@@ -60,6 +60,7 @@ import FiltersTweemoji from "../twemoji/react/1F984";
 
 import HexGrid from "../icons/HexGrid";
 import get_svg_in_b64 from "../utils/svgToBase64";
+import { t } from "../utils/t";
 
 const styles = theme => ({
     green: {
@@ -390,6 +391,7 @@ class Pixel extends React.Component {
             _mine_player_direction: "UP",
             _is_edit_drawer_open: false,
             _kb: 0,
+            _saved_at: Date.now(),
             _fps: 0,
             _prev_fps: 0,
             _menu_mouse_y: null,
@@ -491,7 +493,7 @@ class Pixel extends React.Component {
             let attachment_array = {};
             attachment_array["json_state-ID" + current_state.id + ".json.lzp3"] = current_state;
 
-            this.setState({_kb: current_state.kb}, () => {
+            this.setState({_kb: current_state.kb, _saved_at: Date.now()}, () => {
 
                 import("../utils/lzp3_json").then(({LZP3}) => {
 
@@ -601,7 +603,7 @@ class Pixel extends React.Component {
 
         }else {
 
-            this.setState({_kb: data.kb});
+            this.setState({_kb: data.kb, _saved_at: Date.now()});
 
             import_JS_state(data, () => {
 
@@ -814,6 +816,12 @@ class Pixel extends React.Component {
             }
 
         }
+    };
+
+    _backup_state = () => {
+
+        const { export_state } = this.state._canvas;
+        export_state();
     };
 
     _download_image = (size) => {
@@ -1751,7 +1759,7 @@ class Pixel extends React.Component {
             _filters,
             _select_mode,
             _pencil_mirror_mode,
-            _x, _y, _kb, _fps,
+            _x, _y, _kb, _saved_at, _fps,
             _is_something_selected,
             _mine_player_direction,
             _is_edit_drawer_open,
@@ -1897,7 +1905,7 @@ class Pixel extends React.Component {
                                             <span className={classes.coordinate}>
                                                 <span>{`FPS: ${_fps}`}</span>
                                                 <span>{` | X: ${x}, Y: ${y} | `}</span>
-                                                <span className={_kb < 64 ? classes.green: classes.red}>{`[~${Math.round(_kb * 100) / 100} kB]`}</span>
+                                                <span onClick={this._backup_state} style={{cursor: "pointer"}} className={_kb < 64 ? classes.green: classes.red}>{`[~${Math.round(_kb * 100) / 100} kB] ${t(_saved_at, {mini: true})}`}</span>
                                             </span>
                                 <Typography className={classes.effectSliderText} id="strength-slider" gutterBottom>
                                     Effect strength :

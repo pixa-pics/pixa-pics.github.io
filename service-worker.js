@@ -1,6 +1,6 @@
-var REQUIRED_CACHE = "unless-update-cache-v280-required";
-var USEFUL_CACHE = "unless-update-cache-v280-useful";
-var STATIC_CACHE = "unless-update-cache-v280-static";
+var REQUIRED_CACHE = "unless-update-cache-v281-required";
+var USEFUL_CACHE = "unless-update-cache-v281-useful";
+var STATIC_CACHE = "unless-update-cache-v281-static";
 var MAIN_CHILD_CHUNK_REGEX = /chunk_(vendors_main_[a-z0-9]+)\.min\.js/i;
 var CHILD_CHUNK_REGEX = /chunk_([0-9]+)\.min\.js/i;
 
@@ -51,22 +51,24 @@ self.addEventListener("install", function(event) {
 
     event.waitUntil(useful_cache.then(function (cache) {
         return cache.addAll([
+            "/manifest.json",
             "/src/images/favicon.ico",
             "/src/images/manifest/logo-white.png",
-            "/src/images/logo-transparent.png",
-            "/src/fonts/jura/index.css",
+            "/src/images/logo-transparent.png"
         ]);
     }));
 
     required_cache.then(function (cache) {
         cache.addAll([
+            "/src/fonts/jura/index.css",
             "/chunk_vendors_main_0f485567.min.js",
+            "/chunk_vendors_main_1f20a385.min.js",
             "/chunk_vendors_main_2a42e354.min.js",
             "/chunk_vendors_main_5a2dc592.min.js",
             "/chunk_vendors_main_253ae210.min.js",
             "/chunk_vendors_main_678f84af.min.js",
             "/chunk_vendors_main_690b702c.min.js",
-            "/chunk_norris.min.js",
+            "/chunk_norris.min.js"
         ])
     });
 });

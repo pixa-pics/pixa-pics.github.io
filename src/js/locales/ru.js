@@ -1,4 +1,7 @@
+import ru from "javascript-time-ago/locale/ru";
+
 module.exports = {
+    "_time_ago": ru,
     "_plurals": {
         "key": {
             "one": "ключ",

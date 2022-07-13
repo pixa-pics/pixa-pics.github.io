@@ -1,4 +1,7 @@
+import zh from "javascript-time-ago/locale/zh";
+
 module.exports = {
+    "_time_ago": zh,
     "_plurals": {
         "key": {
             "one": "秘钥",

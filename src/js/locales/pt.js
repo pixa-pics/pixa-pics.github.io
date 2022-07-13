@@ -1,4 +1,7 @@
+import pt from "javascript-time-ago/locale/pt";
+
 module.exports = {
+    "_time_ago": pt,
     "_plurals": {
         "key": {
             "one": "chave",

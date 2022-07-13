@@ -1,4 +1,7 @@
+import ko from "javascript-time-ago/locale/ko";
+
 module.exports = {
+    "_time_ago": ko,
     "_plurals": {
         "key": {
             "one": "키",

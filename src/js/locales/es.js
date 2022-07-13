@@ -1,4 +1,7 @@
-﻿module.exports = {
+﻿import es from "javascript-time-ago/locale/es";
+
+module.exports = {
+    "_time_ago": es,
     "_plurals": {
         "key": {
             "one": "clave",

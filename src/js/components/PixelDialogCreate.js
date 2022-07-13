@@ -7,31 +7,6 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import {t} from "../utils/t";
 import actions from "../actions/utils";
 
-import TimeAgo from "javascript-time-ago";
-import en from "javascript-time-ago/locale/en"
-import fr from "javascript-time-ago/locale/fr"
-import pt from "javascript-time-ago/locale/pt"
-import id from "javascript-time-ago/locale/id"
-import it from "javascript-time-ago/locale/it"
-import de from "javascript-time-ago/locale/de"
-import ja from "javascript-time-ago/locale/ja"
-import zh from "javascript-time-ago/locale/zh"
-import ko from "javascript-time-ago/locale/ko"
-import ru from "javascript-time-ago/locale/ru"
-import hi from "javascript-time-ago/locale/hi"
-
-TimeAgo.addDefaultLocale(en);
-TimeAgo.addLocale(fr);
-TimeAgo.addLocale(pt);
-TimeAgo.addLocale(id);
-TimeAgo.addLocale(it);
-TimeAgo.addLocale(de);
-TimeAgo.addLocale(ja);
-TimeAgo.addLocale(zh);
-TimeAgo.addLocale(ko);
-TimeAgo.addLocale(ru);
-TimeAgo.addLocale(hi);
-
 const styles = theme => ({
     dialogMobileFullscreen: {
         "& .MuiPaper-root": {
@@ -203,7 +178,7 @@ class PixelDialogCreate extends React.Component {
                                                 <ImageListItem style={{display: "inline-block", width: "auto", userSelect: "none"}} className={"pixelated"} key={id}>
                                                     <img src={preview} alt={id} style={{width: "auto", height: "100%", cursor: "pointer"}} onClick={() => {this.props.import_JSON_state(id)}}/>
                                                     <ImageListItemBar
-                                                        title={new TimeAgo(document.documentElement.lang).format(timestamp)}
+                                                        title={t(Date.now())}
                                                         subtitle={<span>{kb.toFixed(2)} Kb</span>}
                                                         actionIcon={
                                                             <IconButton style={{color: "#fff"}} onClick={() => {this.props.on_pixel_art_delete(id)}} aria-label={`Delete`}>

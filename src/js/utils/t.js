@@ -1,59 +1,62 @@
 const PARAM_PROPS_NAME = ["faw", "fluc", "flc", "fllc", "tuc", "tlc", "aed", "ated"];
 
-const import_en = async() => { return import(`../locales/en`)};
-const import_fr = async() => { return import(`../locales/fr`)};
-const import_id = async() => { return import(`../locales/id`)};
-const import_pt = async() => { return import(`../locales/pt`)};
-const import_it = async() => { return import(`../locales/it`)};
-const import_de = async() => { return import(`../locales/de`)};
-const import_ja = async() => { return import(`../locales/ja`)};
-const import_zh = async() => { return import(`../locales/zh`)};
-const import_ko = async() => { return import(`../locales/ko`)};
-const import_ru = async() => { return import(`../locales/ru`)};
-const import_hi = async() => { return import(`../locales/hi`)};
-const import_es = async() => { return import(`../locales/es`)};
+const lang_import_en = async() => { return import(`../locales/en`)};
+const lang_import_fr = async() => { return import(`../locales/fr`)};
+const lang_import_id = async() => { return import(`../locales/id`)};
+const lang_import_pt = async() => { return import(`../locales/pt`)};
+const lang_import_it = async() => { return import(`../locales/it`)};
+const lang_import_de = async() => { return import(`../locales/de`)};
+const lang_import_ja = async() => { return import(`../locales/ja`)};
+const lang_import_zh = async() => { return import(`../locales/zh`)};
+const lang_import_ko = async() => { return import(`../locales/ko`)};
+const lang_import_ru = async() => { return import(`../locales/ru`)};
+const lang_import_hi = async() => { return import(`../locales/hi`)};
+const lang_import_es = async() => { return import(`../locales/es`)};
 
 const get_lang_lib = async (name) => {
 
     switch (name) {
 
         case "fr":
-            return import_fr();
+            return lang_import_fr();
             break;
         case "id":
-            return import_id();
+            return lang_import_id();
             break;
         case "pt":
-            return import_pt();
+            return lang_import_pt();
             break;
         case "it":
-            return import_it();
+            return lang_import_it();
             break;
         case "de":
-            return import_de();
+            return lang_import_de();
             break;
         case "ja":
-            return import_ja();
+            return lang_import_ja();
             break;
         case "zh":
-            return import_zh();
+            return lang_import_zh();
             break;
         case "ko":
-            return import_ko();
+            return lang_import_ko();
             break;
         case "ru":
-            return import_ru();
+            return lang_import_ru();
             break;
         case "hi":
-            return import_hi();
+            return lang_import_hi();
             break;
         case "es":
-            return import_es();
+            return lang_import_es();
             break;
         default:
-            return import_en();
+            return lang_import_en();
     }
 }
+
+import TimeAgo from "javascript-time-ago";
+
 /* Do not flood the read of the translate object and the document lang element, just set an interval to check it*/
 const l = (_l, callback_function = () => {}) => {
 
@@ -70,9 +73,11 @@ const l = (_l, callback_function = () => {}) => {
     if(String(window.LANG) !== l1) {
 
         window.LANG = l1;
-        return get_lang_lib(l1).then((ld) => {
+        window.TIME_AGO = TimeAgo;
+        get_lang_lib(l1).then((ld) => {
 
             window.LANG_DIR = Object.assign({}, ld);
+            window.TIME_AGO.addDefaultLocale(window.LANG_DIR["_time_ago"]);
             callback_function(true);
         });
     }else {
@@ -83,8 +88,19 @@ const l = (_l, callback_function = () => {}) => {
 
 const t = (path = "", variables = {}, parameters = {}) => {
 
+    if(typeof path === "number") {
 
-    if(typeof window.LANG_DIR !== "undefined" && window.LANG_DIR !== null) {
+        if (typeof window.TIME_AGO !== "undefined") {
+
+            let option = null;
+
+            if(variables.mini === true){
+                option = "mini"
+            }
+
+            return String(new window.TIME_AGO(window.LANG).format(parseInt(path), option));
+        }
+    }else if(typeof window.LANG_DIR !== "undefined") {
 
         // Split path every dot
         const paths_array = path.split(".");

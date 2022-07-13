@@ -1,4 +1,7 @@
+import fr from "javascript-time-ago/locale/fr";
+
 module.exports = {
+    "_time_ago": fr,
     _plurals: {
         "key": {
             "one": "clé",

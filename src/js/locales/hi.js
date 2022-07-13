@@ -1,4 +1,7 @@
+import hi from "javascript-time-ago/locale/hi";
+
 module.exports = {
+    "_time_ago": hi,
     "_plurals": {
         "key": {
             "one": "की",

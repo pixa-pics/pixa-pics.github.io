@@ -1,4 +1,7 @@
+import id from "javascript-time-ago/locale/id";
+
 module.exports = {
+    "_time_ago": id,
     "_plurals": {
         "key": {
             "one": "kunci",

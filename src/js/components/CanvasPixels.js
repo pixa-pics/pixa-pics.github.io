@@ -1466,6 +1466,11 @@ class CanvasPixels extends React.Component {
         });
     }
 
+    export_state = () => {
+
+        this._notify_export_state();
+    };
+
     _notify_export_state = () => {
 
         if(this.props.on_export_state) {
