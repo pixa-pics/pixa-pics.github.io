@@ -1006,22 +1006,27 @@ class Pixel extends React.Component {
 
                     actions.trigger_voice("data_upload");
 
-                    const max_original_size = is_mobile_or_tablet ? Math.sqrt(1920 * 1280): Math.sqrt(4096 * 2160);
-                    const max_size = is_mobile_or_tablet ? Math.sqrt(1280 * 720): Math.sqrt(1920 * 1280);
-                    const max_color = is_mobile_or_tablet ? 384: 512;
+                    const max_original_size = is_mobile_or_tablet ? Math.sqrt(1280 * 720): Math.sqrt(1920 * 1080);
+                    const max_size = is_mobile_or_tablet ? Math.sqrt(512 * 512): Math.sqrt(512 * 512);
+                    const max_color = is_mobile_or_tablet ? 512: 768;
 
-                    let ratio_l_l2 = is_mobile_or_tablet ? 0.75: 1;
-                    let min_size = is_mobile_or_tablet ? 0: 0;
-                    let min_color = is_mobile_or_tablet ? 192: 256;
+                    let ratio_l_l2 = is_mobile_or_tablet ? 1: 1.5;
+                    let min_size = is_mobile_or_tablet ? 192: 256;
+                    let min_color = is_mobile_or_tablet ? 256: 384;
 
                     const resize_original_to = parseInt(max_original_size * max_original_size);
-                    const resize_to = Math.min(parseInt(max_size * max_size), Math.max(parseInt(_import_size * _import_size), parseInt(min_size * min_size)));
                     const limit_color_number = Math.min(max_color, Math.max(parseInt(_import_size * ratio_l_l2), min_color));
+                    const resize_to_before = Math.min(parseInt(max_size * max_size), Math.max(parseInt(_import_size * _import_size), parseInt(min_size * min_size)));
+                    const resize_to_finally = Math.min(parseInt(max_size * max_size), parseInt(_import_size * _import_size));
 
                     base64_to_bitmap(base64_input, ( bitmap_input ) => {
 
+                        smart_file = null;
+                        base64_input = null;
+
                         bitmap_to_imagedata(bitmap_input, resize_original_to, (imagedata) => {
 
+                            bitmap_input = null;
                             import("../utils/rgb_quant").then(({rgb_quant}) => {
 
                                 if(_import_colorize === "1") {
@@ -1033,24 +1038,44 @@ class Pixel extends React.Component {
 
                                     imagedata_to_base64(imagedata, mimetype,(base64_resized) => {
 
+                                        imagedata = null;
                                         postJSON("https://deepai.pixa-pics.workers.dev/colorizer", base64_resized, (err, res) => {
 
                                             base64_to_bitmap(res, (bitmap_received) => {
 
-                                                bitmap_to_imagedata(bitmap_received, resize_to, (imagedata_received) => {
+                                                res = null;
+                                                bitmap_to_imagedata(bitmap_received, resize_to_before, (imagedata_received) => {
 
+                                                    bitmap_received = null;
                                                     rgb_quant(imagedata_received, limit_color_number,(imagedata2) => {
 
+                                                        imagedata_received = null;
                                                         imagedata_to_base64(imagedata2, "image/png", (base64) => {
 
-                                                            let img = new Image();
-                                                            img.addEventListener("load", () => {
+                                                            imagedata2 = null;
+                                                            base64_to_bitmap(base64, (bitmap_received) => {
 
-                                                                this._handle_load_complete("image_ai", {});
-                                                                set_canvas_from_image(img, res, {}, true);
-                                                                this._handle_menu_close();
+                                                                base64 = null;
+                                                                bitmap_to_imagedata(bitmap_received, resize_to_finally, (imagedata_received_2) => {
+
+                                                                    bitmap_received = null;
+                                                                    imagedata_to_base64(imagedata_received_2, "image/png", (base64_final) => {
+
+                                                                        imagedata_received_2 = null;
+                                                                        let img = new Image();
+                                                                        img.addEventListener("load", () => {
+
+                                                                            this._handle_load_complete("image_ai", {});
+                                                                            set_canvas_from_image(img, String(base64_resized), {}, true);
+                                                                            this._handle_menu_close();
+                                                                            base64_resized = null;
+                                                                        }, {once: true, capture: true});
+                                                                        img.src = String(base64_final);
+                                                                        base64_final = null;
+
+                                                                    });
+                                                                });
                                                             });
-                                                            img.src = base64;
                                                         }, pool);
                                                     }, pool);
                                                 });
@@ -1065,26 +1090,46 @@ class Pixel extends React.Component {
                                     actions.trigger_snackbar("Getting associated with DeepAI.org systems", 5700);
                                     actions.jamy_update("angry");
 
-                                    imagedata_to_base64(imagedata, mimetype, (base64_resized) => {
+                                    imagedata_to_base64(imagedata, mimetype,(base64_resized) => {
 
+                                        imagedata = null;
                                         postJSON("https://deepai.pixa-pics.workers.dev/waifu2x", base64_resized, (err, res) => {
 
                                             base64_to_bitmap(res, (bitmap_received) => {
 
-                                                bitmap_to_imagedata(bitmap_received, resize_to, (imagedata_received) => {
+                                                res = null;
+                                                bitmap_to_imagedata(bitmap_received, resize_to_before, (imagedata_received) => {
 
+                                                    bitmap_received = null;
                                                     rgb_quant(imagedata_received, limit_color_number,(imagedata2) => {
 
+                                                        imagedata_received = null;
                                                         imagedata_to_base64(imagedata2, "image/png", (base64) => {
 
-                                                            let img = new Image();
-                                                            img.addEventListener("load", () => {
+                                                            imagedata2 = null;
+                                                            base64_to_bitmap(base64, (bitmap_received) => {
 
-                                                                this._handle_load_complete("image_ai", {});
-                                                                set_canvas_from_image(img, res, {}, true);
-                                                                this._handle_menu_close();
+                                                                base64 = null;
+                                                                bitmap_to_imagedata(bitmap_received, resize_to_finally, (imagedata_received_2) => {
+
+                                                                    bitmap_received = null;
+                                                                    imagedata_to_base64(imagedata_received_2, "image/png", (base64_final) => {
+
+                                                                        imagedata_received_2 = null;
+                                                                        let img = new Image();
+                                                                        img.addEventListener("load", () => {
+
+                                                                            this._handle_load_complete("image_ai", {});
+                                                                            set_canvas_from_image(img, String(base64_resized), {}, true);
+                                                                            this._handle_menu_close();
+                                                                            base64_resized = null;
+                                                                        }, {once: true, capture: true});
+                                                                        img.src = String(base64_final);
+                                                                        base64_final = null;
+
+                                                                    });
+                                                                });
                                                             });
-                                                            img.src = base64;
                                                         }, pool);
                                                     }, pool);
                                                 });
@@ -1101,26 +1146,47 @@ class Pixel extends React.Component {
 
                                     imagedata_to_base64(imagedata, mimetype, (base64_resized) => {
 
+                                        imagedata = null;
                                         postJSON("https://deepai.pixa-pics.workers.dev/colorizer", base64_resized, (err, res) => {
 
                                             postJSON("https://deepai.pixa-pics.workers.dev/waifu2x",  res, (err2, res2) => {
 
+                                                res = null;
                                                 base64_to_bitmap(res2, (bitmap_received) => {
 
-                                                    bitmap_to_imagedata(bitmap_received, resize_to, (imagedata_received) => {
+                                                    res2 = null;
+                                                    bitmap_to_imagedata(bitmap_received, resize_to_before, (imagedata_received) => {
 
+                                                        bitmap_received = null;
                                                         rgb_quant(imagedata_received, limit_color_number,(imagedata2) => {
 
-                                                            imagedata_to_base64(imagedata2, "image/png",(base64) => {
+                                                            imagedata_received = null;
+                                                            imagedata_to_base64(imagedata2, "image/png", (base64) => {
 
-                                                                let img = new Image();
-                                                                img.addEventListener("load", () => {
+                                                                imagedata2 = null;
+                                                                base64_to_bitmap(base64, (bitmap_received_2) => {
 
-                                                                    this._handle_load_complete("image_ai", {});
-                                                                    set_canvas_from_image(img, res2, {}, true);
-                                                                    this._handle_menu_close();
+                                                                    base64 = null;
+                                                                    bitmap_to_imagedata(bitmap_received_2, resize_to_finally, (imagedata_received_2) => {
+
+                                                                        bitmap_received_2 = null;
+                                                                        imagedata_to_base64(imagedata_received_2, "image/png", (base64_final) => {
+
+                                                                            imagedata_received_2 = null;
+                                                                            let img = new Image();
+                                                                            img.addEventListener("load", () => {
+
+                                                                                this._handle_load_complete("image_ai", {});
+                                                                                set_canvas_from_image(img, String(base64_resized), {}, true);
+                                                                                this._handle_menu_close();
+                                                                                base64_resized = null;
+                                                                            }, {once: true, capture: true});
+                                                                            img.src = String(base64_final);
+                                                                            base64_final = null;
+
+                                                                        });
+                                                                    });
                                                                 });
-                                                                img.src = base64;
                                                             }, pool);
                                                         }, pool);
                                                     });
@@ -1133,14 +1199,16 @@ class Pixel extends React.Component {
 
                                     imagedata_to_base64(imagedata, mimetype, (base64_resized) => {
 
+                                        imagedata = null;
                                         base64_to_bitmap(base64_resized, (bitmap) => {
 
-                                            bitmap_to_imagedata(bitmap, resize_to, (imagedata_resized_final) => {
+                                            bitmap_to_imagedata(bitmap, resize_to_before, (imagedata_received) => {
 
-                                                rgb_quant(imagedata_resized_final, limit_color_number, (imagedata_quant) => {
+                                                bitmap = null;
+                                                rgb_quant(imagedata_received, limit_color_number,(imagedata2) => {
 
-                                                    imagedata_quant = imagedata_quant || null;
-                                                    if(imagedata_quant === null) {
+                                                    imagedata_received = null;
+                                                    if(imagedata2 === null) {
 
                                                         window.dispatchEvent(new Event("art-upload-browsererror"));
                                                         this._handle_load_complete("image_preload", {});
@@ -1188,17 +1256,32 @@ class Pixel extends React.Component {
 
                                                     }else {
 
-                                                        imagedata_to_base64(imagedata_quant, "image/png",(base64_quant) => {
+                                                        imagedata_to_base64(imagedata2, "image/png", (base64) => {
 
-                                                            let img = new Image();
-                                                            img.addEventListener("load", () => {
+                                                            imagedata2 = null;
+                                                            base64_to_bitmap(base64, (bitmap_received) => {
 
-                                                                this._handle_load_complete("image_preload", {});
-                                                                set_canvas_from_image(img, base64_resized, {}, false);
-                                                                this._handle_menu_close();
+                                                                base64 = null;
+                                                                bitmap_to_imagedata(bitmap_received, resize_to_finally, (imagedata_received_2) => {
+
+                                                                    bitmap_received = null;
+                                                                    imagedata_to_base64(imagedata_received_2, "image/png", (base64_final) => {
+
+                                                                        imagedata_received_2 = null;
+                                                                        let img = new Image();
+                                                                        img.addEventListener("load", () => {
+
+                                                                            this._handle_load_complete("image_preload", {});
+                                                                            set_canvas_from_image(img, String(base64_resized), {}, false);
+                                                                            this._handle_menu_close();
+                                                                            base64_resized = null;
+                                                                        }, {once: true, capture: true});
+                                                                        img.src = String(base64_final);
+                                                                        base64_final = null;
+
+                                                                    });
+                                                                });
                                                             });
-                                                            img.src = base64_quant;
-
                                                         }, pool);
                                                     }
                                                 }, pool);

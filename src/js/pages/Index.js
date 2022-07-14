@@ -153,8 +153,8 @@ class Index extends React.Component {
 
     componentWillMount() {
 
-        dispatcher.register(this._handle_events.bind(this));
         this._update_settings();
+        dispatcher.register(this._handle_events.bind(this));
     }
 
     componentDidMount() {
@@ -326,11 +326,11 @@ class Index extends React.Component {
 
     _process_settings_query_result = (error, settings) => {
 
-        if(!Boolean(error) && typeof (settings || {}).locales !== "undefined") {
+        if(!Boolean(error) && typeof Object.assign({}, settings).locales !== "undefined") {
 
             const was_music_enabled = Boolean(this.state._music_enabled);
             const was_the_settings_known = Boolean(this.state._know_the_settings);
-            // Set new settings from query result
+
             const _sfx_enabled = Boolean(typeof settings.sfx_enabled !== "undefined" ? settings.sfx_enabled: true);
             const _music_enabled = Boolean(typeof settings.music_enabled !== "undefined" ? settings.music_enabled: false);
             const _voice_enabled = Boolean(typeof settings.voice_enabled !== "undefined" ? settings.voice_enabled: false);
@@ -347,19 +347,29 @@ class Index extends React.Component {
 
             if(know_settings || set_language_on_document) {
 
-                if(know_settings){ document.body.setAttribute("datainitiated", "true"); }
-                if(_music_enabled === true && was_music_enabled === false) { setTimeout(() => {this._should_play_music_pathname(this.state.pathname);}, 1000)}
+                if(know_settings){document.body.setAttribute("datainitiated", "true"); }
 
                 state = Object.assign(state, {_language});
                 state = Object.assign(state, { _ret, _camo, _voice_enabled, _sfx_enabled, _music_enabled, _jamy_enabled, _selected_locales_code, _know_the_settings: true, _has_played_index_music_counter: parseInt((!this.state._know_the_settings && _music_enabled) ? 1: this.state._has_played_index_music_counter )});
 
-                this.setState(state);
-                l(_language, () => {
+                let will_force_update_loaded_once = false;
+                const force_update_loaded = () => {
 
-                    this.forceUpdate(() => {
-                        if(know_settings){ document.body.setAttribute("class", "loaded"); }
-                    });
-                });
+                    if(!will_force_update_loaded_once) {
+
+                        will_force_update_loaded_once = true;
+                    }else {
+
+                        this.forceUpdate(() => {
+                            if(know_settings){ document.body.setAttribute("class", "loaded"); }
+                        });
+                    }
+                };
+
+                if(_music_enabled === true && was_music_enabled === false) { setTimeout(() => {this._should_play_music_pathname(this.state.pathname);}, 1000)}
+
+                l(_language, force_update_loaded);
+                this.setState(state, force_update_loaded);
 
             }else if(
                 this.state._know_the_settings === false ||

@@ -10,15 +10,9 @@ import CrownEmojiSvg from "../twemoji/react/1F451";
 import LightingEmojiSvg from "../twemoji/react/26A1";
 import GlassesEmojiSvg from "../twemoji/react/1F97D";
 import JacketEmojiSvg from "../twemoji/react/1F97C";
-import DangerEmoji from "../twemoji/react/26A0";
+import SecurityEmoji from "../twemoji/react/1F6E1";
 
 const styles = theme => ({
-    root: {
-        pointerEvents: "none",
-        height: "100%",
-        overflow: "hidden",
-        position: "relative",
-    },
     bold: {
         fontWeight: "bold",
     },
@@ -39,18 +33,6 @@ const styles = theme => ({
     revelantText: {
         color: "#100d4e",
         filter: "drop-shadow(0px 0px 6px #2196f3)",
-    },
-    insideRoot: {
-        overflow: "hidden",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
-        imageRendering: "optimizespeed",
-        position: "absolute",
-        width: "100%",
-        height: "100%",
-        right: 0,
-        bottom: 0,
     },
     homeCTAuseit: {
         boxShadow: "none !important",
@@ -413,10 +395,25 @@ class Home extends React.Component {
             _image_name_infographics = `/src/images/gallery/${_image_name_infographics}`;
         }
         return (
-            <div className={classes.root}>
-                <div className={classes.insideRoot} style={{
-                    contentVisibility: Boolean(bi)? "visible": "hidden",
+            <div style={{
+                pointerEvents: "none",
+                height: "100%",
+                overflow: "hidden",
+                position: "relative",
+            }}>
+                <div style={{
+                    contentVisibility: "visible",
                     backgroundImage: bi,
+                    overflow: "hidden",
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                    backgroundRepeat: "no-repeat",
+                    imageRendering: "optimizespeed",
+                    position: "absolute",
+                    width: "100%",
+                    height: "100%",
+                    right: 0,
+                    bottom: 0,
                 }}>
                     <div className={classes.backgroundImage} style={{
                         backdropFilter: "blur(3px)"
@@ -428,7 +425,7 @@ class Home extends React.Component {
                 </div>
                 <div className={classes.headerContainer} style={{color: THEME_DAY && !IS_EVENING? "#000": "#fff", contentVisibility: "auto"}}>
                     <h1 className={classes.titleh1} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff"}}>
-                        <span className={classes.stepPoints} style={{color: THEME_DAY && !IS_EVENING ? "#100d4e": "#008eff"}}>1 >></span><DangerEmoji alt="scientific-danger-tweemoji" style={{verticalAlign: "baseline"}} className="emoji-150"/>
+                        <span className={classes.stepPoints} style={{color: THEME_DAY && !IS_EVENING ? "#100d4e": "#008eff"}}>1 >></span><SecurityEmoji alt="security-tweemoji" style={{verticalAlign: "baseline"}} className="emoji-150"/>
                         <span className={classes.revelantText} style={{color: THEME_DAY && !IS_EVENING ? "#100d4e": "#008eff"}}>«PIXA.PICS» lovely minima-arts</span><span> from real-life pictures to enhance privacy for NFTs.</span><br/>
                     </h1>
                     <h2 className={classes.titleh2} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff"}}>

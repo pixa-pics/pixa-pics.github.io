@@ -4,7 +4,7 @@ import { withStyles } from "@material-ui/core";
 import { t } from "../utils/t";
 import { HISTORY } from "../utils/constants";
 
-import {Fade, Button, LinearProgress, IconButton} from "@material-ui/core";
+import {Button, LinearProgress, IconButton} from "@material-ui/core";
 
 import VolumeOffIcon from "@material-ui/icons/VolumeOff";
 import VolumeUpIcon from "@material-ui/icons/VolumeUp";
@@ -15,8 +15,11 @@ import actions from "../actions/utils";
 
 const styles = theme => ({
     "@keyframes innerToolbarCyberPunkAnimation": {
-        "0%": { opacity: "1", transform: "translateX(-20%)"},
-        "100%": { opacity: "1", transform: "translateX(70%)"}
+        "0%": { transform: "translateX(-25%)"},
+        "25%": { transform: "translateX(0%)"},
+        "50%": { transform: "translateX(25%)"},
+        "75%": { transform: "translateX(50%)"},
+        "100%": { transform: "translateX(75%)"}
     },
     root: {
         display: "flex",
@@ -50,12 +53,17 @@ const styles = theme => ({
             left: 0,
             "content": "\"\"",
             position: "absolute",
-            contain: "size style paint layout",
-            contentVisibility: "auto",
+            contain: "paint layout",
             height: 40,
             width: "60%",
             background: "linear-gradient(to right, transparent, rgb(155 163 220 / 44%), transparent)",
-            animation: "$innerToolbarCyberPunkAnimation 7.7s linear alternate infinite 200ms",
+            animationFillMode: "both",
+            animationName: "$innerToolbarCyberPunkAnimation",
+            animationDuration: "7770ms",
+            animationTimingFunction: "linear",
+            animationDirection: "alternate",
+            animationIterationCount: "infinite",
+            animationDelay: "75ms",
         },
         backColor: "rgba(108,114,183,0.18)",
         //boxShadow: "inset 0px 0px 6px #475db3ab, inset 0px 0px 24px #838fdc61, inset 0px 0px 48px #cbd4ff40",
@@ -300,18 +308,18 @@ class InnerToolbar extends React.Component {
             }
 
 
-            return element === "" ? null: <Fade in={know_if_logged}  key={index}><a key={index} onClick={() => {this._go_to(link_to)}} className={classes.link} >&nbsp;►&nbsp;{element}</a></Fade>;
+            return element === "" ? null: <a key={index} onClick={() => {this._go_to(link_to)}} className={classes.link} >&nbsp;►&nbsp;{element}</a>;
         });
 
         const usrnm = (know_if_logged ? logged_account ? logged_account.name: t( "components.inner_toolbar.guest"): "");
 
         const tip_items = [
-            <Fade in={true}><a key="tip-legend" onClick={() => {this._trigger_tip(`We know it musts be working as intended, tips are in chronological order while asterisks means mandatory for completion.`)}} className={classes.link}>&nbsp;0-5&nbsp;STEPS&nbsp;›&nbsp;</a></Fade>,
-            <Fade in={true}><a key="tip-contrast" onClick={() => {this._trigger_canvas_action("contrast")}} className={classes.link}>&nbsp;1)&nbsp;Contrasts&nbsp;→&nbsp;</a></Fade>,
-            <Fade in={true}><a key="tip-colors" onClick={() => {this._trigger_canvas_action("palette")}} className={classes.link}>&nbsp;2)&nbsp;Palette*&nbsp;→&nbsp;</a></Fade>,
-            <Fade in={true}><a key="tip-smooth" onClick={() => {this._trigger_canvas_action("smooth")}} className={classes.link}>&nbsp;3)&nbsp;Smooth&nbsp;→&nbsp;</a></Fade>,
-            <Fade in={true}><a key="tip-filters" onClick={() => {this._trigger_canvas_action("filter")}} className={classes.link}>&nbsp;4)&nbsp;Filters&nbsp;→&nbsp;</a></Fade>,
-            <Fade in={true}><a key="tip-export" onClick={() => {this._trigger_canvas_action("render")}} className={classes.link}>&nbsp;5)&nbsp;Render*&nbsp;</a></Fade>,
+            <a key="tip-legend" onClick={() => {this._trigger_tip(`We know it musts be working as intended, tips are in chronological order while asterisks means mandatory for completion.`)}} className={classes.link}>&nbsp;0-5&nbsp;STEPS&nbsp;›&nbsp;</a>,
+            <a key="tip-contrast" onClick={() => {this._trigger_canvas_action("contrast")}} className={classes.link}>&nbsp;1)&nbsp;Contrasts&nbsp;→&nbsp;</a>,
+            <a key="tip-colors" onClick={() => {this._trigger_canvas_action("palette")}} className={classes.link}>&nbsp;2)&nbsp;Palette*&nbsp;→&nbsp;</a>,
+            <a key="tip-smooth" onClick={() => {this._trigger_canvas_action("smooth")}} className={classes.link}>&nbsp;3)&nbsp;Smooth&nbsp;→&nbsp;</a>,
+            <a key="tip-filters" onClick={() => {this._trigger_canvas_action("filter")}} className={classes.link}>&nbsp;4)&nbsp;Filters&nbsp;→&nbsp;</a>,
+            <a key="tip-export" onClick={() => {this._trigger_canvas_action("render")}} className={classes.link}>&nbsp;5)&nbsp;Render*&nbsp;</a>,
         ];
 
         return (
@@ -337,7 +345,7 @@ class InnerToolbar extends React.Component {
                                     value={100 - loaded_progress_percent} />
                             </div>
                             <span className={classes.innerToolbarText} style={pathname.includes("gallery") ? {width: "calc(100% - 36px)", overflow: "overlay"}: {}}>
-                                {!_is_info_bar_active && <Fade in={know_if_logged}><a className={classes.link} onClick={() => {this._go_to(logged_account ? "/": "/")}}>{(usrnm ? ret_e: null)}{usrnm}</a></Fade>}
+                                {!_is_info_bar_active && <a className={classes.link} onClick={() => {this._go_to(logged_account ? "/": "/")}}>{(usrnm ? ret_e: null)}{usrnm}</a>}
                                 {!_is_info_bar_active && pathame_items}
                                 {_is_info_bar_active && tip_items}
                             </span>

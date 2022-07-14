@@ -3,7 +3,7 @@ import { withStyles } from "@material-ui/core";
 
 import { t } from "../utils/t";
 
-import {Fade, AppBar, Toolbar, Divider, SwipeableDrawer, ListItemIcon, ListItemText, IconButton, MenuItem, Menu, Tooltip} from "@material-ui/core";
+import {AppBar, Toolbar, Divider, SwipeableDrawer, ListItemIcon, ListItemText, IconButton, MenuItem, Menu, Tooltip} from "@material-ui/core";
 
 import MenuIcon from "@material-ui/icons/Menu";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
@@ -100,6 +100,7 @@ const styles = theme => ({
         width: "auto",
         marginRight: theme.spacing(1),
         verticalAlign: "middle",
+        animationFillMode: "both",
         animation: "$jamy",
         animationDuration: "24s",
         animationIterationCount: "infinite",
@@ -332,7 +333,6 @@ class AppToolbar extends React.Component {
 
         return (
             <div>
-
                 <SwipeableDrawer
                     keepMounted={true}
                     transitionDuration={{enter: 125, exit: 75}}
@@ -358,38 +358,34 @@ class AppToolbar extends React.Component {
                         <IconButton edge="start" className={classes.drawerButton} color="inherit" aria-label="menu" onClick={this._handle_open_swipeable_app_drawer}>
                             <MenuIcon />
                         </IconButton>
-                        <Fade in={know_the_settings}>
-                            <div className={classes.drawerToolbarSpacer} onClick={this._open_home}>
-                                {
-                                    know_the_settings ?
-                                        jamy_enabled ?
-                                            <div className={classes.jamyContainer}
-                                                onMouseEnter={this._handle_jamy_mouse_enter}
-                                                onMouseLeave={this._handle_jamy_mouse_leave}
-                                                onClick={this._handle_jamy_mouse_click}>
-                                                <Tooltip
-                                                    title={t( "sentences.hey i am jamy")}>
-                                                    <div className={classes.jamyContainer}>
-                                                        {JAMY[jamy_state_of_mind]}
-                                                    </div>
-                                                </Tooltip>
-                                            </div>:
-                                            <img src={"/src/images/logo-transparent.png"} className={classes.logo} />
-                                        : null
-                                }
-                                <span className={classes.appTitle}>PIXA.PICS</span>
-                            </div>
-                        </Fade>
+                        <div className={classes.drawerToolbarSpacer} onClick={this._open_home}>
+                            {
+                                know_the_settings ?
+                                    jamy_enabled ?
+                                        <div className={classes.jamyContainer}
+                                            onMouseEnter={this._handle_jamy_mouse_enter}
+                                            onMouseLeave={this._handle_jamy_mouse_leave}
+                                            onClick={this._handle_jamy_mouse_click}>
+                                            <Tooltip
+                                                title={t( "sentences.hey i am jamy")}>
+                                                <div className={classes.jamyContainer}>
+                                                    {JAMY[jamy_state_of_mind]}
+                                                </div>
+                                            </Tooltip>
+                                        </div>:
+                                        <img src={"/src/images/logo-transparent.png"} className={classes.logo} />
+                                    : null
+                            }
+                            <span className={classes.appTitle}>PIXA.PICS</span>
+                        </div>
                         <InnerToolbar ret={ret} camo={camo} know_if_logged={true} music_enabled={music_enabled} logged_account={logged_account} pathname={pathname} loaded_progress_percent={loaded_progress_percent}/>
-                        <Fade in>
-                            <IconButton className={classes.accountButton}
-                                        edge="end"
-                                        aria-haspopup="true"
-                                        color="inherit"
-                                        onClick={this._open_account_menu}>
-                                <AccountCircleIcon/>
-                            </IconButton>
-                        </Fade>
+                        <IconButton className={classes.accountButton}
+                                    edge="end"
+                                    aria-haspopup="true"
+                                    color="inherit"
+                                    onClick={this._open_account_menu}>
+                            <AccountCircleIcon/>
+                        </IconButton>
                         <Menu anchorEl={_account_menu_anchor_element}
                             anchorOrigin={{ vertical: "top", horizontal: "right"}}
                             keepMounted
