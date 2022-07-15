@@ -867,16 +867,18 @@ class Pixel extends React.Component {
 
                 get_base64_png_data_url(1, ([png_base64_in, palette]) => {
 
-                    let a_src = document.createElement("a"); //Create <a>
-                    a_src.download = `Painting_SRC_1x_N${Date.now()}_PIXAPICS.png`; //File name Here
-                    a_src.href = String(png_base64_in);
-                    a_src.click();
-                    a_src.remove();
+                    let { _files_waiting_download } = this.state;
+                    _files_waiting_download.push({
+                        name: `Painting_SRC_1x_N${Date.now()}_PIXAPICS.png`,
+                        url: String(png_base64_in)
+                    });
+                    this.setState({_files_waiting_download}, () => {
+
+                        this.forceUpdate();
+                    });
 
                     actions.trigger_voice("processing");
-                    base64png_to_xbrz_svg(png_base64_in, (image_base64) => {
-
-                        png_base64_in = null;
+                    base64png_to_xbrz_svg(String(png_base64_in), (image_base64) => {
 
                         let { _files_waiting_download } = this.state;
                         _files_waiting_download.push({
@@ -890,8 +892,6 @@ class Pixel extends React.Component {
                         });
 
                     }, (svg_base64) => {
-
-                        palette = null;
 
                         let { _files_waiting_download } = this.state;
                         _files_waiting_download.push({
@@ -917,9 +917,11 @@ class Pixel extends React.Component {
 
                         });
 
-                    }, palette, using, optimize_render_size);
+                    }, Array.from(palette), String(using), Boolean(optimize_render_size));
+                    palette = null;
+                    png_base64_in = null;
 
-                }, true, optimize_render_size ? 6: 0, 40, 50);
+                }, true,  Boolean(optimize_render_size) ? 6: 0, 40, 50);
 
             }, 750);
 
