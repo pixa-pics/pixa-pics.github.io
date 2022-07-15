@@ -30,23 +30,23 @@ const overrides = {
             "h1 > p, h2 > p, h3 > p, h4 > p, h5 > p, h6 > p": {
                 margin: 0,
             },
-            ".pixelated:not(a), .pixelated:not(a) *": {
+            ".pixelated, .pixelated *": {
                 imageRendering: "optimizeSpeed",
             },
             ".pixelated:not(b), .pixelated:not(b) *": {
-                msImageInterpolationMode: "nearest-neighbor",
-            },
-            ".pixelated:not(c), .pixelated:not(c) *": {
                 imageRendering: "-moz-crisp-edges",
             },
-            ".pixelated:not(d), .pixelated:not(d) *": {
+            ".pixelated:not(c), .pixelated:not(c) *": {
                 imageRendering: "-webkit-crisp-edges",
             },
-            ".pixelated:not(e), .pixelated:not(e) *": {
+            ".pixelated:not(d), .pixelated:not(d) *": {
                 imageRendering: "-webkit-optimize-contrast",
             },
-            ".pixelated:not(f), .pixelated:not(f) *": {
+            ".pixelated:not(e), .pixelated:not(e) *": {
                 imageRendering: "-o-pixelated",
+            },
+            ".pixelated:not(f), .pixelated:not(f) *": {
+                imageRendering: "crisp-edges",
             },
             ".pixelated:not(g), .pixelated:not(g) *": {
                 imageRendering: "nearest-neighbor",

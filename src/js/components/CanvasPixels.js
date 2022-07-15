@@ -1130,7 +1130,7 @@ class CanvasPixels extends React.Component {
             perspective: props.perspective || 0,
             shadow_size: props.shadow_size || 0,
             shadow_color: props.shadow_color || "#575757",
-            light: props.light || 1,
+            light: props.light || 2,
             perspective_coordinate: [0, 0],
             perspective_coordinate_last_change: 0,
             perspective_coordinate_notify_after_ms: 1000 / 20,
