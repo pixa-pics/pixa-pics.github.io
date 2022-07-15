@@ -60,8 +60,16 @@ Screenshot of the editor of pixa.pics.
  * Encoding of Portable Network Graphics in type of palette (PNGQuant)
  * Chunk ("norris") system for dropping script evaluation cost within CPU
 
-![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/doc/screenshots/yakuza.png?v=1)
-*3564x2388 are the output dimension of the image up-scaled with xBRZ based on an image of 594x398 which can weight from 70Kb up to 210Kb only. This 4K ultra HD image can be stored in some blockchain without compression but pngquant (it encodes png best) entirely!
+![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/doc/screenshots/me_boat_1x.png)
+Source file #0 in png : 11.8Kb (Perfectly fits into some blockchains entirely!)
+
+![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/doc/screenshots/me_boat_6x.png)
+Output file #1 in png : 1020x576 (6 times bigger from source file, good for social media post)
+
+![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/doc/screenshots/me_boat_12x.png)
+Output file in png manually rendered from the #2 in svg not shown, here 2040x1152 (12 times bigger from source file, good for printing)
+
+Demo Ultra HD rendering : https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/doc/screenshots/yakuza.png
 
 Look! On the STEEM blockchain you can post base64 text, transactions are rigged to 73Kb at maxima but STEEM is now kinda old for a blockchain.
 
