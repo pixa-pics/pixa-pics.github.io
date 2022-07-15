@@ -1230,7 +1230,7 @@ window.omniscale_process_function = new AsyncFunction(`var fu=async function(t,i
 
 const omniscale = async (image_data, scale, pool = null) => {
 
-    if(pool) {
+    if(Boolean(pool)) {
 
         return pool.exec(window.omniscale_process_function, [
             image_data,

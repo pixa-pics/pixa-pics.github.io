@@ -888,7 +888,7 @@ window.xbrz_process_function = new AsyncFunction(`var e=async function(e,t){retu
 
 const xbrz = async (image_data, scale, pool = null) => {
 
-    if(pool) {
+    if(Boolean(pool)) {
 
       return pool.exec(window.xbrz_process_function, [
         image_data,
@@ -897,7 +897,7 @@ const xbrz = async (image_data, scale, pool = null) => {
 
           return window.xbrz_process_function(image_data, scale);
 
-      }).timeout(60 * 1000);
+      }).timeout(10 * 1000);
 
     }else {
 

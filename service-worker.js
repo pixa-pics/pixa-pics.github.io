@@ -1,6 +1,6 @@
-var REQUIRED_CACHE = "unless-update-cache-v287-required";
-var USEFUL_CACHE = "unless-update-cache-v287-useful";
-var STATIC_CACHE = "unless-update-cache-v287-static";
+var REQUIRED_CACHE = "unless-update-cache-v288-required";
+var USEFUL_CACHE = "unless-update-cache-v288-useful";
+var STATIC_CACHE = "unless-update-cache-v288-static";
 var MAIN_CHILD_CHUNK_REGEX = /chunk_(main_[a-z0-9]+)\.min\.js/i;
 var CHILD_CHUNK_REGEX = /chunk_([0-9]+)\.min\.js/i;
 
@@ -51,7 +51,6 @@ self.addEventListener("install", function(event) {
 
     event.waitUntil(useful_cache.then(function (cache) {
         return cache.addAll([
-            "/",
             "/src/images/favicon.ico",
             "/src/images/manifest/logo-white.png",
             "/src/fonts/jura/index.css",
@@ -65,7 +64,8 @@ self.addEventListener("install", function(event) {
             "/chunk_main_678f84af.min.js",
             "/chunk_main_690b702c.min.js",
             "/chunk_main_748942c6.min.js",
-            "/chunk_norris.min.js"
+            "/chunk_norris.min.js",
+            "/",
         ])
     });
 });

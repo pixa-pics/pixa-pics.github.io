@@ -413,6 +413,7 @@ class Pixel extends React.Component {
             _filters_preview_progression: 0,
             _toolbox_container_ref: null,
             settings: props.settings,
+            _files_waiting_download: [],
             ...JSON.parse(props.settings)
         };
     };
@@ -876,22 +877,32 @@ class Pixel extends React.Component {
                     base64png_to_xbrz_svg(png_base64_in, (image_base64) => {
 
                         png_base64_in = null;
-                        let a_png = document.createElement("a"); //Create <a>
-                        a_png.download = `Painting_IMG_6x_${using.toUpperCase()}_N${Date.now()}_PIXAPICS.png`; //File name Here
-                        a_png.href = String(image_base64);
-                        a_png.click();
-                        a_png.remove();
+
+                        let { _files_waiting_download } = this.state;
+                        _files_waiting_download.push({
+                            name: `Painting_IMG_6x_${using.toUpperCase()}_N${Date.now()}_PIXAPICS.png`,
+                            url: String(image_base64)
+                        });
                         image_base64 = null;
+                        this.setState({_files_waiting_download}, () => {
+
+                            this.forceUpdate();
+                        });
 
                     }, (svg_base64) => {
 
                         palette = null;
-                        let a_svg = document.createElement("a"); //Create <a>
-                        a_svg.download = `Painting_VECT_6x_${using.toUpperCase()}_N${Date.now()}_PIXAPICS.svg`; //File name Here
-                        a_svg.href = String(svg_base64);
-                        a_svg.click();
-                        a_svg.remove();
+
+                        let { _files_waiting_download } = this.state;
+                        _files_waiting_download.push({
+                            name: `Painting_VECT_6x_${using.toUpperCase()}_N${Date.now()}_PIXAPICS.svg`,
+                            url: String(svg_base64)
+                        });
                         svg_base64 = null;
+                        this.setState({_files_waiting_download}, () => {
+
+                            this.forceUpdate();
+                        });
 
                         this.setState({_loading: false, _loading_process: ""}, () => {
 
@@ -912,6 +923,24 @@ class Pixel extends React.Component {
 
             }, 750);
 
+        });
+    };
+
+    _continue_download = () => {
+
+        let { _files_waiting_download } = this.state;
+        let file = _files_waiting_download.pop();
+
+        let a = document.createElement("a"); //Create <a>
+        a.download = String(file.name); //File name Here
+        a.href = String(file.url);
+        a.click();
+        a.remove();
+        file = null;
+
+        this.setState({_files_waiting_download}, () => {
+
+            this.forceUpdate();
         });
     };
 
@@ -1865,6 +1894,7 @@ class Pixel extends React.Component {
             _last_filters_hash,
             _filters_preview_progression,
             _perspective,
+            _files_waiting_download,
         } = this.state;
 
         let x = _x === -1 ? "out": _x + 1;
@@ -2346,30 +2376,33 @@ class Pixel extends React.Component {
                     center={false}
                     style={{color: _ripple_color, opacity: _ripple_opacity, position: "fixed", width: "100vw", height: "100vh", zIndex: 2000}}/>
 
-                <Backdrop className={classes.backdrop} open={_loading}>
+                <Backdrop className={classes.backdrop} open={_loading || _files_waiting_download.length > 0}>
                     <div className={classes.backdropTextContent} style={{fontFamily: `"Jura"`}}>
-                        {_loading && <h1><ShufflingSpanText text={_loading_process === "browser" ? "Laboratory in DANGER!": "Laboratory processing..."} animation_delay_ms={0} animation_duration_ms={250}/></h1>}
-                        {_loading && _loading_process === "browser" && <h4><ShufflingSpanText text={"Doesn't feel like home for our dear code here."} animation_delay_ms={300} animation_duration_ms={500}/></h4>}
-                        {_loading && _loading_process === "browser" && <div onClick={this._get_advanced_browser}><img src={["Linux", "Windows"].includes(os) ? "/src/images/EdgeGreatDownload.svg": "/src/images/ChromeGreatDownload.svg"} style={{width: "min(75vw, 75vh)"}}/></div>}
-                        {_loading && _loading_process === "browser" && <h5><ShufflingSpanText text={"It can take a while, please download an advanced browser."} animation_delay_ms={is_mobile_or_tablet ? 5000: 2500} animation_duration_ms={500}/></h5>}
-                        {_loading && _loading_process === "image_ai" && <h4><ShufflingSpanText text={"AI processing your image"} animation_delay_ms={300} animation_duration_ms={500}/></h4>}
-                        {_loading && _loading_process === "image_ai" && <div><img src="/src/images/labostration/MOLECULE.svg" style={{width: "min(75vw, 75vh)", filter: "grayscale(0.33)"}}/></div>}
-                        {_loading && _loading_process === "image_ai" && <h5><ShufflingSpanText text={"It can take a while, please wait ~10sec."} animation_delay_ms={is_mobile_or_tablet ? 5000: 2500} animation_duration_ms={500}/></h5>}
-                        {_loading && _loading_process === "image_preload" && <h4><ShufflingSpanText text={"Preparing laboratory"} animation_delay_ms={300} animation_duration_ms={500}/></h4>}
-                        {_loading && _loading_process === "image_preload" && <div><img src="/src/images/labostration/SCIENCE.svg" style={{width: "min(75vw, 75vh)", filter: "grayscale(0.33)"}}/></div>}
-                        {_loading && _loading_process === "image_preload" && <h5><ShufflingSpanText text={`It can take a while, please wait ~${parseInt(parseFloat(_import_size / 100) * 3) * (is_mobile_or_tablet ? 3: 1)}sec.`} animation_delay_ms={is_mobile_or_tablet ? 5000: 2500} animation_duration_ms={500}/></h5>}
-                        {_loading && _loading_process === "image_load" && <h4><ShufflingSpanText text={"Abducting your image"} animation_delay_ms={300} animation_duration_ms={500}/></h4>}
-                        {_loading && _loading_process === "image_load" && <div><img src="/src/images/labostration/ABDUCTION.svg" style={{width: "min(75vw, 75vh)", filter: "grayscale(0.33)"}}/></div>}
-                        {_loading && _loading_process === "image_load" && <h5><ShufflingSpanText text={`It can take a while, please wait ~${parseInt(parseFloat(_import_size / 100) * 4) * (is_mobile_or_tablet ? 3: 1)}sec.`} animation_delay_ms={is_mobile_or_tablet ? 5000: 2500} animation_duration_ms={500}/></h5>}
-                        {_loading && _loading_process === "image_render" && <div><img src="/src/images/labostration/COMPUTING.svg" style={{width: "min(75vw, 75vh)", filter: "grayscale(0.33)"}}/></div>}
-                        {_loading && _loading_process === "image_render" && <h4><ShufflingSpanText text={"Atomic rendering in process ~10-20sec"} animation_delay_ms={300} animation_duration_ms={500}/></h4>}
-                        {_loading && _loading_process === "image_render" && <h5><ShufflingSpanText text={"It can take a while, please wait ~14sec."} animation_delay_ms={is_mobile_or_tablet ? 5000: 2500} animation_duration_ms={500}/></h5>}
-                        {_loading && _loading_process === "less_color" && <h4><ShufflingSpanText text={"Coupling few color DNA"} animation_delay_ms={300} animation_duration_ms={500}/></h4>}
-                        {_loading && _loading_process === "less_color" && <div><img src="/src/images/labostration/GENOMA.svg" style={{width: "min(75vw, 75vh)", filter: "grayscale(0.33)"}}/></div>}
-                        {_loading && _loading_process === "less_color" && <h5><ShufflingSpanText text={"It can take a while, please wait ~4sec."} animation_delay_ms={is_mobile_or_tablet ? 5000: 2500} animation_duration_ms={500}/></h5>}
-                        {_loading && _loading_process === "less_color_auto" && <h4><ShufflingSpanText text={"Coupling the DNA of many color"} animation_delay_ms={500} animation_duration_ms={500}/></h4>}
-                        {_loading && _loading_process === "less_color_auto" && <div><img src="/src/images/labostration/GENOMA.svg" style={{width: "min(75vw, 75vh)", filter: "grayscale(0.33)"}}/></div>}
-                        {_loading && _loading_process === "less_color_auto" && <h5><ShufflingSpanText text={"It can take a while, please wait ~7sec."} animation_delay_ms={is_mobile_or_tablet ? 5000: 2500} animation_duration_ms={500}/></h5>}
+                        {_loading || _files_waiting_download.length > 0 && <h1><ShufflingSpanText text={_loading_process === "browser" ? "Laboratory in DANGER!": "Laboratory processing..."} animation_delay_ms={0} animation_duration_ms={250}/></h1>}
+                        {_files_waiting_download.length > 0 && <h4><ShufflingSpanText text={"ACTION REQUIRED..."} animation_delay_ms={300} animation_duration_ms={500}/></h4>}
+                        {_files_waiting_download.length > 0 && <div onClick={this._continue_download}><img src={"/src/images/labostration/MOLECULE.svg"} style={{width: "min(75vw, 75vh)"}}/></div>}
+                        {_files_waiting_download.length > 0 && <h5><ShufflingSpanText text={"CLICK ON THE SCREEN TO CONTINUE DOWNLOAD!"} animation_delay_ms={is_mobile_or_tablet ? 5000: 2500} animation_duration_ms={500}/></h5>}
+                        {_files_waiting_download.length === 0 && _loading && _loading_process === "browser" && <h4><ShufflingSpanText text={"Doesn't feel like home for our dear code here."} animation_delay_ms={300} animation_duration_ms={500}/></h4>}
+                        {_files_waiting_download.length === 0 && _loading  && _loading_process === "browser" && <div onClick={this._get_advanced_browser}><img src={["Linux", "Windows"].includes(os) ? "/src/images/EdgeGreatDownload.svg": "/src/images/ChromeGreatDownload.svg"} style={{width: "min(75vw, 75vh)"}}/></div>}
+                        {_files_waiting_download.length === 0 && _loading  && _loading_process === "browser" && <h5><ShufflingSpanText text={"It can take a while, please download an advanced browser."} animation_delay_ms={is_mobile_or_tablet ? 5000: 2500} animation_duration_ms={500}/></h5>}
+                        {_files_waiting_download.length === 0 && _loading  && _loading_process === "image_ai" && <h4><ShufflingSpanText text={"AI processing your image"} animation_delay_ms={300} animation_duration_ms={500}/></h4>}
+                        {_files_waiting_download.length === 0 && _loading  && _loading_process === "image_ai" && <div><img src="/src/images/labostration/MOLECULE.svg" style={{width: "min(75vw, 75vh)", filter: "grayscale(0.33)"}}/></div>}
+                        {_files_waiting_download.length === 0 && _loading  && _loading_process === "image_ai" && <h5><ShufflingSpanText text={"It can take a while, please wait ~10sec."} animation_delay_ms={is_mobile_or_tablet ? 5000: 2500} animation_duration_ms={500}/></h5>}
+                        {_files_waiting_download.length === 0 && _loading  && _loading_process === "image_preload" && <h4><ShufflingSpanText text={"Preparing laboratory"} animation_delay_ms={300} animation_duration_ms={500}/></h4>}
+                        {_files_waiting_download.length === 0 && _loading  && _loading_process === "image_preload" && <div><img src="/src/images/labostration/SCIENCE.svg" style={{width: "min(75vw, 75vh)", filter: "grayscale(0.33)"}}/></div>}
+                        {_files_waiting_download.length === 0 && _loading  && _loading_process === "image_preload" && <h5><ShufflingSpanText text={`It can take a while, please wait ~${parseInt(parseFloat(_import_size / 100) * 3) * (is_mobile_or_tablet ? 3: 1)}sec.`} animation_delay_ms={is_mobile_or_tablet ? 5000: 2500} animation_duration_ms={500}/></h5>}
+                        {_files_waiting_download.length === 0 && _loading  && _loading_process === "image_load" && <h4><ShufflingSpanText text={"Abducting your image"} animation_delay_ms={300} animation_duration_ms={500}/></h4>}
+                        {_files_waiting_download.length === 0 && _loading  && _loading_process === "image_load" && <div><img src="/src/images/labostration/ABDUCTION.svg" style={{width: "min(75vw, 75vh)", filter: "grayscale(0.33)"}}/></div>}
+                        {_files_waiting_download.length === 0 && _loading  && _loading_process === "image_load" && <h5><ShufflingSpanText text={`It can take a while, please wait ~${parseInt(parseFloat(_import_size / 100) * 4) * (is_mobile_or_tablet ? 3: 1)}sec.`} animation_delay_ms={is_mobile_or_tablet ? 5000: 2500} animation_duration_ms={500}/></h5>}
+                        {_files_waiting_download.length === 0 && _loading  && _loading_process === "image_render" && <div><img src="/src/images/labostration/COMPUTING.svg" style={{width: "min(75vw, 75vh)", filter: "grayscale(0.33)"}}/></div>}
+                        {_files_waiting_download.length === 0 && _loading  && _loading_process === "image_render" && <h4><ShufflingSpanText text={"Atomic rendering in process ~10-20sec"} animation_delay_ms={300} animation_duration_ms={500}/></h4>}
+                        {_files_waiting_download.length === 0 && _loading  && _loading_process === "image_render" && <h5><ShufflingSpanText text={"It can take a while, please wait ~14sec."} animation_delay_ms={is_mobile_or_tablet ? 5000: 2500} animation_duration_ms={500}/></h5>}
+                        {_files_waiting_download.length === 0 && _loading  && _loading_process === "less_color" && <h4><ShufflingSpanText text={"Coupling few color DNA"} animation_delay_ms={300} animation_duration_ms={500}/></h4>}
+                        {_files_waiting_download.length === 0 && _loading  && _loading_process === "less_color" && <div><img src="/src/images/labostration/GENOMA.svg" style={{width: "min(75vw, 75vh)", filter: "grayscale(0.33)"}}/></div>}
+                        {_files_waiting_download.length === 0 && _loading  && _loading_process === "less_color" && <h5><ShufflingSpanText text={"It can take a while, please wait ~4sec."} animation_delay_ms={is_mobile_or_tablet ? 5000: 2500} animation_duration_ms={500}/></h5>}
+                        {_files_waiting_download.length === 0 && _loading  && _loading_process === "less_color_auto" && <h4><ShufflingSpanText text={"Coupling the DNA of many color"} animation_delay_ms={500} animation_duration_ms={500}/></h4>}
+                        {_files_waiting_download.length === 0 && _loading  && _loading_process === "less_color_auto" && <div><img src="/src/images/labostration/GENOMA.svg" style={{width: "min(75vw, 75vh)", filter: "grayscale(0.33)"}}/></div>}
+                        {_files_waiting_download.length === 0 && _loading  && _loading_process === "less_color_auto" && <h5><ShufflingSpanText text={"It can take a while, please wait ~7sec."} animation_delay_ms={is_mobile_or_tablet ? 5000: 2500} animation_duration_ms={500}/></h5>}
                     </div>
                 </Backdrop>
             </div>

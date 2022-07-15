@@ -1196,7 +1196,7 @@ var fu = async function(image_data, options){return new Promise(function(resolve
 
 const image_tracer = async(image_data, options, pool) => {
 
-	if(pool !== null) {
+	if(Boolean(pool)) {
 
 		return pool.exec(window.image_tracer_process_function, [
 			image_data,
