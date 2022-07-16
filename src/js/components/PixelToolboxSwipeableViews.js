@@ -691,7 +691,7 @@ class PixelToolboxSwipeableViews extends React.Component {
             "image": [
                 {
                     icon: <DownloadIcon/>,
-                    text: "Download (raster / matrix)",
+                    text: "Download pixelated",
                     local_i: 1,
                     label: "matrix",
                     tools: [
@@ -727,13 +727,13 @@ class PixelToolboxSwipeableViews extends React.Component {
                 },
                 {
                     icon: <DownloadIcon/>,
-                    text: "Download (vector / painting)",
+                    text: "Download enhanced",
                     local_i: 2,
                     label: "vector",
                     tools: [
                         {
                             icon: <FileDownloadIcon/>,
-                            text: "Fast Render OMNI :|",
+                            text: "Fast OMNI",
                             sub: "Upscale by 6x using Omniscale",
                             disabled: too_much_colors_no_vector,
                             on_click: () => {
@@ -742,7 +742,7 @@ class PixelToolboxSwipeableViews extends React.Component {
                         },
                         {
                             icon: <FileDownloadIcon/>,
-                            text: "Opt. Render OMNI :|",
+                            text: "Opt. OMNI",
                             sub: "Upscale by 6x using Omniscale +compress",
                             disabled: too_much_colors_no_vector,
                             on_click: () => {
@@ -751,7 +751,7 @@ class PixelToolboxSwipeableViews extends React.Component {
                         },
                         {
                             icon: <FileDownloadIcon/>,
-                            text: "Fast Render xBRZ :]",
+                            text: "Fast xBRZ",
                             sub: "Upscale by 6x using xBRZ",
                             disabled: too_much_colors_no_vector,
                             on_click: () => {
@@ -760,7 +760,7 @@ class PixelToolboxSwipeableViews extends React.Component {
                         },
                         {
                             icon: <FileDownloadIcon/>,
-                            text: "Opt. Render xBRZ :]",
+                            text: "Opt. xBRZ",
                             sub: "Upscale by 6x using xBRZ +compress",
                             disabled: too_much_colors_no_vector,
                             on_click: () => {

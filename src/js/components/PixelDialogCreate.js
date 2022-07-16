@@ -178,7 +178,7 @@ class PixelDialogCreate extends React.Component {
                                                 <ImageListItem style={{display: "inline-block", width: "auto", userSelect: "none"}} className={"pixelated"} key={id}>
                                                     <img src={preview} alt={id} style={{width: "auto", height: "100%", cursor: "pointer"}} onClick={() => {this.props.import_JSON_state(id)}}/>
                                                     <ImageListItemBar
-                                                        title={t(Date.now())}
+                                                        title={t(timestamp)}
                                                         subtitle={<span>{kb.toFixed(2)} Kb</span>}
                                                         actionIcon={
                                                             <IconButton style={{color: "#fff"}} onClick={() => {this.props.on_pixel_art_delete(id)}} aria-label={`Delete`}>

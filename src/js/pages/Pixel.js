@@ -828,14 +828,16 @@ class Pixel extends React.Component {
     _download_image = (size) => {
 
         const optimize_render_size = Boolean(size > 1);
-        const { get_base64_png_data_url } = this.state._canvas;
+        const { get_base64_png_data_url, xxhashthat } = this.state._canvas;
 
         window.dispatchEvent(new Event(`art-download-raster${size}`));
 
         get_base64_png_data_url(size, ([base_64]) => {
 
+            const hash = xxhashthat(base_64);
+
             let a = document.createElement("a"); //Create <a>
-            a.download = `Pixelart_N${Date.now()}_PIXAPICS_x${size}.png`; //File name Here
+            a.download = `Pixapics_${hash}_RAS_${size}x.png`; //File name Here
             a.href = base_64;
             a.click();
             a.remove();
@@ -867,11 +869,11 @@ class Pixel extends React.Component {
 
                 get_base64_png_data_url(1, ([png_base64_in, palette]) => {
 
-                    const hash = xxhashthat(png_base64_in).toUpperCase();
+                    const hash = xxhashthat(png_base64_in);
 
                     let { _files_waiting_download } = this.state;
                     _files_waiting_download.push({
-                        name: `PIXAPICS_${hash}_NORMAL_SRC_1x.png`,
+                        name: `Pixapics_${hash}_RAS_1x.png`,
                         url: String(png_base64_in)
                     });
                     this.setState({_files_waiting_download}, () => {
@@ -884,7 +886,7 @@ class Pixel extends React.Component {
 
                         let { _files_waiting_download } = this.state;
                         _files_waiting_download.push({
-                            name: `PIXAPICS_${hash}_${using.toUpperCase()}_HD_6x.png`,
+                            name: `Pixapics_${hash}_${using.toUpperCase()}_RAS_6x.png`,
                             url: String(image_base64)
                         });
                         image_base64 = null;
@@ -897,7 +899,7 @@ class Pixel extends React.Component {
 
                         let { _files_waiting_download } = this.state;
                         _files_waiting_download.push({
-                            name: `PIXAPICS_${hash}_${using.toUpperCase()}_VEC_6x.svg`,
+                            name: `Pixapics_${hash}_${using.toUpperCase()}_VEC_6x.svg`,
                             url: String(svg_base64)
                         });
                         svg_base64 = null;
@@ -2387,9 +2389,9 @@ class Pixel extends React.Component {
                 <Backdrop className={classes.backdrop} open={_loading || _files_waiting_download.length > 0}>
                     <div className={classes.backdropTextContent} style={{fontFamily: `"Jura"`}} onClick={this._continue_download}>
                         {_loading || _files_waiting_download.length > 0 && <h1><ShufflingSpanText text={_loading_process === "browser" ? "Laboratory in DANGER!": "Laboratory processing..."} animation_delay_ms={0} animation_duration_ms={250}/></h1>}
-                        {_files_waiting_download.length > 0 && <h4><ShufflingSpanText key={String(_files_waiting_download[0].name)} text={`ACTION REQUIRED... ${String(_files_waiting_download[0].name)}`} animation_delay_ms={300} animation_duration_ms={500}/></h4>}
+                        {_files_waiting_download.length > 0 && <h2><ShufflingSpanText key={String(_files_waiting_download[0].name)} text={`ACTION REQUIRED... ${String(_files_waiting_download[0].name)}`} animation_delay_ms={300} animation_duration_ms={500}/></h2>}
                         {_files_waiting_download.length > 0 && <div><img src={"/src/images/labostration/MOLECULE.svg"} style={{width: "min(75vw, 75vh)"}}/></div>}
-                        {_files_waiting_download.length > 0 && <h5><ShufflingSpanText text={"CLICK ON THE SCREEN TO CONTINUE DOWNLOAD!"} animation_delay_ms={is_mobile_or_tablet ? 5000: 2500} animation_duration_ms={500}/></h5>}
+                        {_files_waiting_download.length > 0 && <h3><ShufflingSpanText text={"CLICK ON THE SCREEN TO CONTINUE DOWNLOAD!"} animation_delay_ms={is_mobile_or_tablet ? 5000: 2500} animation_duration_ms={500}/></h3>}
                         {_files_waiting_download.length === 0 && _loading && _loading_process === "browser" && <h4><ShufflingSpanText text={"Doesn't feel like home for our dear code here."} animation_delay_ms={300} animation_duration_ms={500}/></h4>}
                         {_files_waiting_download.length === 0 && _loading  && _loading_process === "browser" && <div onClick={this._get_advanced_browser}><img src={["Linux", "Windows"].includes(os) ? "/src/images/EdgeGreatDownload.svg": "/src/images/ChromeGreatDownload.svg"} style={{width: "min(75vw, 75vh)"}}/></div>}
                         {_files_waiting_download.length === 0 && _loading  && _loading_process === "browser" && <h5><ShufflingSpanText text={"It can take a while, please download an advanced browser."} animation_delay_ms={is_mobile_or_tablet ? 5000: 2500} animation_duration_ms={500}/></h5>}

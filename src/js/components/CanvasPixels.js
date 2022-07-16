@@ -1217,6 +1217,7 @@ class CanvasPixels extends React.Component {
             _select_hover_old_pxls_snapshot: [],
             _paint_or_select_hover_actions_latest_index: -1,
             _paint_or_select_hover_pxl_indexes: new Set(),
+            _paint_or_select_hover_pxl_indexes_exception: new Set(),
             _shape_index_a: -1,
             _select_shape_index_a: -1,
             _shape_index_b: -1,
@@ -1442,7 +1443,18 @@ class CanvasPixels extends React.Component {
 
     _xxhashthat = (array) => {
 
-        return String(this.state._xxHash(Uint8Array.from(Buffer.from(array))));
+        const alphabet = "123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ";
+        let base = BigInt(alphabet.length); // base is the length of the alphabet (58 in this case)
+        let num = BigInt(this.state._xxHash(Uint8Array.from(Buffer.from(array))));
+
+        let encoded = '';
+        while (num){
+            let remainder = parseInt(num % base);
+            num = num / base;
+            encoded = alphabet[remainder].toString() + encoded;
+        }
+
+        return encoded;
     };
 
     _set_size = (width = null, height = null) => {
@@ -2112,7 +2124,7 @@ class CanvasPixels extends React.Component {
             all_layers[index] = Object.assign({}, l);
             const p = Array.from(_s_pxls[index]);
             const pc = Uint32Array.from(_s_pxl_colors[index]).map((c) => { return this._format_color(c, true)})
-            const hash = this._xxhashthat(p) + "-"+ this._xxhashthat(pc);
+            const hash = this._xxhashthat(p) + "-" + this._xxhashthat(pc);
 
             if(hash !== all_layers[index].hash  || !Boolean(all_layers[index].thumbnail)) {
 
@@ -4025,10 +4037,9 @@ class CanvasPixels extends React.Component {
         return [ Array.from(pxls), Uint32Array.from(pxl_colors), pxl_indexes ];
     }
 
-    _should_remove_not_perfect_second_latest_pixel_from_array = (array) => {
+    _should_remove_not_perfect_second_latest_pixel_from_array = (_paint_or_select_hover_pxl_indexes) => {
 
         const { pxl_width } = this.state;
-        const _paint_or_select_hover_pxl_indexes = [...array];
 
         if(_paint_or_select_hover_pxl_indexes.length >= 3) {
 
@@ -4053,9 +4064,7 @@ class CanvasPixels extends React.Component {
 
                 if(
                     (first_latest_pixel_x === second_latest_pixel_x && second_latest_pixel_y === third_latest_pixel_y) ||
-                    (first_latest_pixel_y === second_latest_pixel_y && second_latest_pixel_x === third_latest_pixel_x) ||
-                    (third_latest_pixel_x ===  second_latest_pixel_x && second_latest_pixel_y === first_latest_pixel_y) ||
-                    (third_latest_pixel_y ===  second_latest_pixel_y && second_latest_pixel_x === first_latest_pixel_x)
+                    (first_latest_pixel_y === second_latest_pixel_y && second_latest_pixel_x === third_latest_pixel_x)
                 ) {
 
                     return true;
@@ -4064,7 +4073,6 @@ class CanvasPixels extends React.Component {
         }
 
         return false;
-
     };
 
     get_pixel_color_from_pos = (x, y) => {
@@ -4747,7 +4755,7 @@ class CanvasPixels extends React.Component {
 
             }else if((tool === "PENCIL" || tool === "PENCIL PERFECT" || tool === "CONTOUR") && event_which === 1 && _mouse_down){
 
-                let { _last_action_timestamp, _paint_or_select_hover_pxl_indexes, _paint_or_select_hover_actions_latest_index, _s_pxls, _s_pxl_colors, _layer_index, pxl_current_opacity } = this.state;
+                let { _last_action_timestamp, _paint_or_select_hover_pxl_indexes, _paint_or_select_hover_pxl_indexes_exception, _paint_or_select_hover_actions_latest_index, _s_pxls, _s_pxl_colors, _layer_index, pxl_current_opacity } = this.state;
                 const { _paint_hover_old_pxls_snapshot } = this.state;
                 const _paint_or_select_hover_pxl_indexes_copy = [..._paint_or_select_hover_pxl_indexes];
 
@@ -4786,27 +4794,17 @@ class CanvasPixels extends React.Component {
                     _last_action_timestamp = Date.now();
 
                     _paint_or_select_hover_pxl_indexes = new Set([..._paint_or_select_hover_pxl_indexes, ...new_drawn_pxl_indexes]);
+                    Array.from(_paint_or_select_hover_pxl_indexes_exception).forEach((ie) => {
+
+                        _paint_or_select_hover_pxl_indexes.delete(ie);
+                    });
 
                     if(this._should_remove_not_perfect_second_latest_pixel_from_array(_paint_or_select_hover_pxl_indexes)) {
 
                         const second_latest_pixel_drawn = _paint_or_select_hover_pxl_indexes[_paint_or_select_hover_pxl_indexes.length - 2];
-                        _paint_or_select_hover_pxl_indexes.splice(- 2, 1);
+                        _paint_or_select_hover_pxl_indexes_exception.add(_paint_or_select_hover_pxl_indexes.splice(-2, 1));
 
                         let pixel_index_stack = new Set(Array.of(second_latest_pixel_drawn));
-
-                        Array.from(pixel_index_stack).forEach((pixel_stacked) => {
-
-                            const [s_pos_x, s_pos_y] = pixel_stacked;
-
-                            const y = s_pos_y - (s_pos_y - pencil_mirror_y) * 2;
-                            const x = s_pos_x;
-
-                            if(x >= 0 && x < pxl_width && y >= 0 && y <= pxl_height) {
-
-                                pixel_index_stack.add(y * pxl_width + x);
-
-                            }
-                        });
 
                         Array.from(pixel_index_stack).forEach((pixel_stacked) => {
 
@@ -4833,7 +4831,7 @@ class CanvasPixels extends React.Component {
                 let pixel_stack = new Set(Array.of(_paint_or_select_hover_pxl_indexes)
                     .filter((index) => {
 
-                        return !_paint_or_select_hover_pxl_indexes_copy.includes(index);
+                        return Boolean(!_paint_or_select_hover_pxl_indexes_copy.includes(index) && !_paint_or_select_hover_pxl_indexes_exception.has(index));
                     })
                     .map((index) => {
 
@@ -5016,7 +5014,7 @@ class CanvasPixels extends React.Component {
                     _paint_or_select_hover_actions_latest_index: -1,
                     _paint_hover_old_pxls_snapshot: Array.from(_s_pxls[_layer_index]),
                     _select_hover_old_pxls_snapshot: Uint32Array.from(_pxl_indexes_of_selection),
-                    _paint_or_select_hover_pxl_indexes: new Set(),
+                    _paint_or_select_hover_pxl_indexes: new Set()
                 }, () => {
 
                     this._update_canvas();
@@ -5139,6 +5137,7 @@ class CanvasPixels extends React.Component {
             this.setState({
                 _pxl_indexes_of_selection,
                 _paint_or_select_hover_pxl_indexes: new Set(),
+                _paint_or_select_hover_pxl_indexes_exception: new Set(),
                 _last_action_timestamp: Date.now()
             }, () => {
 
