@@ -82,7 +82,7 @@ module.exports = {
                         inline: true,
                         reduce_vars: true,
                         collapse_vars: true,
-                        passes: 5,
+                        passes: 9,
                     },
                     output: {
                         comments: false,

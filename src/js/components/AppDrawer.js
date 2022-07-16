@@ -117,7 +117,7 @@ class AppDrawer extends React.Component {
                         <Fade in={true} timeout={400}>
                             <div className={classes.drawerPrivacyHint}>
                                 <p style={{fontSize: "0.777em"}}>Cutting off annoying details is free while on the journey! Easily becoming a lighter adventure, using a sanitized online-self's image tends to honor one's real beauty stronger.<br/><br/>THIS APP: Is in your hands only, doesn't sniff network requests, and is neutral just like Switzerland.</p>
-                                <h4 style={{color: "#ffffffff", marginBottom: 0}}>Private experience doesn't matters? This is madness!</h4>
+                                <h4 style={{color: "#ffffffff", marginBottom: 0}}>Online-self's image doesn't matters? This is madness!</h4>
                             </div>
                         </Fade>
                     </div>

@@ -7388,7 +7388,7 @@ class CanvasPixels extends React.Component {
 
     _pxl_to_vignette = (pxls, pxl_colors, color, intensity, callback_function) => {
 
-        color = this._format_color(color, true);
+        color = this._format_color(color);
 
         const {pxl_width, pxl_height } = this.state;
 
@@ -7417,7 +7417,7 @@ class CanvasPixels extends React.Component {
 
             [new_pxls, new_pxl_colors] = this._pxl_colors_to_alpha(new_pxls, new_pxl_colors, inverted_color, 1);
 
-            const [r, g, b, a] = this._get_rgba_from_Uint32(color);
+            const [r, g, b, a] = this._get_rgba_from_hex(color);
             new_pxl_colors = new_pxl_colors.map((pxl_color, color_index) => {
 
                 const [p_r, p_g, p_b, p_a] = this._get_rgba_from_Uint32(pxl_color);

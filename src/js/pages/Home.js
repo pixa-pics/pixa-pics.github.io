@@ -6,6 +6,7 @@ import { HISTORY, UTC_OFFSET_PER_COUNTRIES } from "../utils/constants";
 import {Button, Fade, Grow} from "@material-ui/core";
 import actions from "../actions/utils";
 
+import ChemistryEmojiSvg from "../twemoji/react/1F9Ea";
 import CrownEmojiSvg from "../twemoji/react/1F451";
 import LightingEmojiSvg from "../twemoji/react/26A1";
 import GlassesEmojiSvg from "../twemoji/react/1F97D";
@@ -435,7 +436,7 @@ class Home extends React.Component {
                         <span className={classes.revelantText} style={{color: THEME_DAY && !IS_EVENING ? "#100d4e": "#008eff"}}>«PIXA.PICS» lovely minima-arts</span><span> from real-life pictures to enhance privacy for NFTs.</span><br/>
                     </h1>
                     <h2 className={classes.titleh2} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff"}}>
-                        <span><span className={classes.bold}>Wanna use effects in laboratory? Yes or No?</span> Essential lab operations gives the <span className={classes.bold}><span className={classes.revelantText} style={{color: THEME_DAY && !IS_EVENING ? "#100d4e": "#008eff"}}>MAXIMA of PRIVACY</span></span> in a fashion not only looking great for the <span className={classes.bold}>ONLINE SELF-IMAGE</span>...</span>
+                        <span><span className={classes.bold}>Wanna use effects in laboratory? <ChemistryEmojiSvg alt="chemistry-tweemoji" style={{verticalAlign: "baseline"}} className="emoji-150" />Yes or No?</span> Essential lab operations gives the <span className={classes.bold}><span className={classes.revelantText} style={{color: THEME_DAY && !IS_EVENING ? "#100d4e": "#008eff"}}>MAXIMA of PRIVACY</span></span> in a fashion not only looking great for the <span className={classes.bold}>ONLINE SELF-IMAGE</span>...</span>
                     </h2>
                     <h2 className={classes.titleh2} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff"}}>
                         <span><span className={classes.stepPoints} style={{color: THEME_DAY && !IS_EVENING ? "#100d4e": "#008eff"}}>2 >></span> <JacketEmojiSvg alt="scientist-jacket-tweemoji" className="emoji-150"/> <span className={classes.bold}><span className={classes.revelantText} style={{color: THEME_DAY && !IS_EVENING ? "#100d4e": "#008eff"}}> WHILE DRAWING/EDITING</span></span> a <span className={classes.bold}>MINIMA-ART</span>, you can use <span className={classes.bold}>55+ tools for pixel art within 7 panels</span> such as : layer's option, filters, selections, shapes, and effects.</span>

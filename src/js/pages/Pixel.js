@@ -914,8 +914,13 @@ class Pixel extends React.Component {
                             actions.trigger_sfx("hero_decorative-celebration-02");
                             setTimeout(() => {
 
-                                actions.trigger_snackbar("SHARING IT greatly helps PIXA.PICS! Happy means happy.", 7000);
-                                actions.trigger_sfx("alert_high-intensity");
+                                actions.trigger_share();
+                                window.dispatchEvent(new Event("home-action-tryshare"));
+
+                                setTimeout(() => {
+
+                                    actions.trigger_snackbar("SHARING IT greatly helps PIXA.PICS! Happy means happy.", 7000);
+                                }, 2000);
 
                             }, 2000);
 
