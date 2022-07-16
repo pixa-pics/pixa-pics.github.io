@@ -197,7 +197,7 @@ class AppToolbar extends React.Component {
 
     componentWillReceiveProps(new_props) {
 
-        this.setState({...new_props});
+        this.setState(new_props);
     }
 
     _handle_open_swipeable_app_drawer = () => {

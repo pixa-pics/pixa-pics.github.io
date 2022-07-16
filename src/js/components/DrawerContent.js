@@ -104,14 +104,9 @@ class DrawerContent extends React.Component {
         };
     };
 
-    componentDidMount() {
-
-        this.forceUpdate();
-    }
-
     componentWillReceiveProps(new_props) {
 
-        if(this.state.language !== new_props.language) {
+        if(String(this.state.language) !== String(new_props.language)) {
 
             this.setState({language: String(new_props.language)}, () => {
 
@@ -149,7 +144,7 @@ class DrawerContent extends React.Component {
 
         return (
             <div>
-                <List key={language} style={{paddingTop: 0}} className={classes.labList}>
+                <List style={{paddingTop: 0}} className={classes.labList}>
                     <ListItem style={{
                         borderBottom: "2px solid #212558",
                         backgroundColor: "transparent",
@@ -162,11 +157,11 @@ class DrawerContent extends React.Component {
                     </ListItem>
                     <ListItem button className={classes.listItemGrey} onClick={(event) => this._open_link(event, "https://github.com/pixa-pics/pixa-pics.github.io/graphs/contributors")}>
                         <ListItemIcon><PersonIcon className={classes.iconColor} /></ListItemIcon>
-                        <ListItemText primary={t( "components.drawer_content.menu.more.contributors")} />
+                        <ListItemText primary="Contributors" />
                     </ListItem>
                     <ListItem button className={classes.listItemGrey} onClick={(event) => this._open_link(event, "https://github.com/pixa-pics/pixa-pics.github.io")}>
                         <ListItemIcon><CodeIcon className={classes.iconColor} /></ListItemIcon>
-                        <ListItemText primary={t( "components.drawer_content.menu.more.source_code")} />
+                        <ListItemText primary="Source Code" />
                     </ListItem>
                     <ListItem button className={classes.listItemGrey} onClick={(event) => this._open_link(event, "https://t.me/pixapics")}>
                         <Badge className={classes.styledBadgeConnected} overlap="circular" badgeContent=" " variant="dot">

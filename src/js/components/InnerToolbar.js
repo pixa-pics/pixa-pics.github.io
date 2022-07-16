@@ -103,6 +103,12 @@ const styles = theme => ({
         display: "block",
     },
     innerToolbarText: {
+        position: "absolute",
+        width: "100%",
+        display: "block",
+        overflow: "auto",
+    },
+    innerToolbarTextInner: {
         whiteSpace: "nowrap",
         position: "relative",
         width: "100%",
@@ -134,7 +140,7 @@ const styles = theme => ({
     },
     linearProgressVisibleOffline: {
         "& .MuiLinearProgress-barColorPrimary": {
-            background: `linear-gradient(90deg, ${theme.palette.primary.actionRed} 0%, ${"rgb(155 163 220 / 0%)"} 100%);`,
+            background: "linear-gradient(90deg, #B51234 0%, #5a0505 100%)",
             zIndex: -1,
         },
         zIndex: 1,
@@ -208,7 +214,7 @@ class InnerToolbar extends React.Component {
 
             import("../utils/custom_toolbar").then(({RETS, CAMS}) => {
 
-                this.setState({_rets: RETS, _cams: CAMS});
+                this.setState({_rets: Array.from(RETS), _cams: Array.from(CAMS)});
             });
         };
 
@@ -288,8 +294,8 @@ class InnerToolbar extends React.Component {
         const { classes, pathname, logged_account, know_if_logged, loaded_progress_percent, _is_info_bar_active, music_enabled } = this.state;
 
         let { _cams, camo, _rets, ret } = this.state;
-        _cams = _cams || [""];
-        _rets = _rets || [""];
+        _cams = _cams.length > 0 ? _cams: [""];
+        _rets = _rets.length > 0 ? _rets: [""];
         camo = camo || 0;
         ret = ret || 0;
 
@@ -299,7 +305,7 @@ class InnerToolbar extends React.Component {
         let pathname_splitted = pathname.split("/");
         pathname_splitted.shift();
 
-        const pathame_items = pathname_splitted.map((element, index, array) => {
+        const pathame_items = !_is_info_bar_active ? pathname_splitted.map((element, index, array) => {
 
             let link_to = "/";
             for (let i = 0; i <= index; i++) {
@@ -309,18 +315,17 @@ class InnerToolbar extends React.Component {
 
 
             return element === "" ? null: <a key={index} onClick={() => {this._go_to(link_to)}} className={classes.link} >&nbsp;►&nbsp;{element}</a>;
-        });
+        }): null;
 
         const usrnm = (know_if_logged ? logged_account ? logged_account.name: t( "components.inner_toolbar.guest"): "");
 
-        const tip_items = [
-            <a key="tip-legend" onClick={() => {this._trigger_tip(`We know it musts be working as intended, tips are in chronological order while asterisks means mandatory for completion.`)}} className={classes.link}>&nbsp;0-5&nbsp;STEPS&nbsp;›&nbsp;</a>,
+        const tip_items = _is_info_bar_active ? [
             <a key="tip-contrast" onClick={() => {this._trigger_canvas_action("contrast")}} className={classes.link}>&nbsp;1)&nbsp;Contrasts&nbsp;→&nbsp;</a>,
             <a key="tip-colors" onClick={() => {this._trigger_canvas_action("palette")}} className={classes.link}>&nbsp;2)&nbsp;Palette*&nbsp;→&nbsp;</a>,
             <a key="tip-smooth" onClick={() => {this._trigger_canvas_action("smooth")}} className={classes.link}>&nbsp;3)&nbsp;Smooth&nbsp;→&nbsp;</a>,
             <a key="tip-filters" onClick={() => {this._trigger_canvas_action("filter")}} className={classes.link}>&nbsp;4)&nbsp;Filters&nbsp;→&nbsp;</a>,
             <a key="tip-export" onClick={() => {this._trigger_canvas_action("render")}} className={classes.link}>&nbsp;5)&nbsp;Render*&nbsp;</a>,
-        ];
+    ]: null;
 
         return (
             <div className={classes.root}>
@@ -344,10 +349,12 @@ class InnerToolbar extends React.Component {
                                     className={navigator.onLine ? classes.linearProgressVisible: classes.linearProgressVisibleOffline}
                                     value={100 - loaded_progress_percent} />
                             </div>
-                            <span className={classes.innerToolbarText} style={pathname.includes("gallery") ? {width: "calc(100% - 36px)", overflow: "overlay"}: {}}>
-                                {!_is_info_bar_active && <a className={classes.link} onClick={() => {this._go_to(logged_account ? "/": "/")}}>{(usrnm ? ret_e: null)}{usrnm}</a>}
-                                {!_is_info_bar_active && pathame_items}
-                                {_is_info_bar_active && tip_items}
+                            <span className={classes.innerToolbarText}>
+                                <span className={classes.innerToolbarTextInner} style={pathname.includes("gallery") ? {width: "calc(100% - 36px)", overflow: "overlay"}: {}}>
+                                    {!_is_info_bar_active && <a className={classes.link} onClick={() => {this._go_to(logged_account ? "/": "/")}}>{(usrnm ? ret_e: null)}{usrnm}</a>}
+                                    {pathame_items}
+                                    {tip_items}
+                                </span>
                             </span>
                         </span>
                     </span>

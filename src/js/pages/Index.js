@@ -340,36 +340,26 @@ class Index extends React.Component {
             const _ret = parseInt(typeof settings.ret !== "undefined" ? settings.ret: 0);
             const _camo = parseInt(typeof settings.camo !== "undefined" ? settings.camo: 0);
 
-            const know_settings = Boolean(this.state._know_the_settings === false);
-            const set_language_on_document = Boolean(know_settings && this.state._language !== _language); // Already defined in entry file client.js
-
+            const set_language_on_document = Boolean(this.state._language !== _language); // Already defined in entry file client.js
+            const dont_know_settings = !Boolean(this.state._know_the_settings);
             let state = {};
 
-            if(know_settings || set_language_on_document) {
+            if(set_language_on_document) {
 
-                if(know_settings){document.body.setAttribute("datainitiated", "true"); }
+                if(dont_know_settings){document.body.setAttribute("datainitiated", "true"); }
 
                 state = Object.assign(state, {_language});
                 state = Object.assign(state, { _ret, _camo, _voice_enabled, _sfx_enabled, _music_enabled, _jamy_enabled, _selected_locales_code, _know_the_settings: true, _has_played_index_music_counter: parseInt((!this.state._know_the_settings && _music_enabled) ? 1: this.state._has_played_index_music_counter )});
 
-                let will_force_update_loaded_once = false;
-                const force_update_loaded = () => {
-
-                    if(!will_force_update_loaded_once) {
-
-                        will_force_update_loaded_once = true;
-                    }else {
-
-                        this.forceUpdate(() => {
-                            if(know_settings){ document.body.setAttribute("class", "loaded"); }
-                        });
-                    }
-                };
-
                 if(_music_enabled === true && was_music_enabled === false) { setTimeout(() => {this._should_play_music_pathname(this.state.pathname);}, 1000)}
 
-                l(_language, force_update_loaded);
-                this.setState(state, force_update_loaded);
+                l(_language, () => {
+                    this.setState(state, () => {
+                        this.forceUpdate(() => {
+                            if(dont_know_settings){ document.body.setAttribute("class", "loaded"); }
+                        });
+                    });
+                });
 
             }else if(
                 this.state._know_the_settings === false ||

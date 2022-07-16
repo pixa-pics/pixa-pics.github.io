@@ -1435,6 +1435,11 @@ class CanvasPixels extends React.Component {
         });
     }
 
+    xxhashthat = (array) => {
+
+        return this._xxhashthat(array);
+    };
+
     _xxhashthat = (array) => {
 
         return String(this.state._xxHash(Uint8Array.from(Buffer.from(array))));
@@ -7465,63 +7470,40 @@ class CanvasPixels extends React.Component {
     };
 
 
-    _to_colorized = (hue_or_mode = null, opacity = null, blend_with_a_saturation_of = null, blend_with_a_luminosity_of = null) => {
+    _to_colorized = (hue = null, opacity = null, blend_with_a_saturation_of = null, blend_with_a_luminosity_of = null) => {
 
         const { _s_pxl_colors, _layer_index } = this.state;
-        let mode = hue_or_mode !== null && hue_or_mode >= 0 && hue_or_mode <= 360 ? "hue": hue_or_mode === "sepia" ? "sepia": "greyscale";
         opacity = opacity === null ? 1: opacity;
 
         const _new_pxl_colors = _s_pxl_colors[_layer_index].map((color) => {
 
             color = this._format_color(color, true);
 
-            let [r, g, b, a] = this._get_rgba_from_Uint32(color);
+            const [r, g, b, a] = this._get_rgba_from_Uint32(color);
+            let [hue, saturation, luminosity] = this._rgb_to_hsl(r, g, b);
 
-            if(mode === "greyscale") {
+            let added = [blend_with_a_saturation_of, blend_with_a_luminosity_of, opacity];
+            let base = [saturation, luminosity, 1];
+            let mix = [];
 
-                const average = (r + g + b) / 3;
-                color = this._get_Uint32_color_from_rgba_values(average, average, average,a * opacity);
-            }else if(mode === "sepia"){
+            if (opacity !== 0) {
 
-                function limit_to(n, l) {
+                mix[2] = 1 - (1 - added[2]) * (1 - base[2]); // alpha
+                mix[0] = Math.round((added[0] * added[2] / mix[2]) + (base[0] * base[2] * (1 - added[2]) / mix[2])); // red
+                mix[1] = Math.round((added[1] * added[2] / mix[2]) + (base[1] * base[2] * (1 - added[2]) / mix[2])); // green
+            }else {
 
-                    return n > l ? l: n;
-                }
+                mix = [saturation, luminosity];
+            }
 
-                const s_r = limit_to((r * .393) + (g *.769) + (b * .189), 255);
-                const s_g = limit_to((r * .349) + (g *.686) + (b * .168), 255);
-                const s_b = limit_to((r * .272) + (g *.534) + (b * .131), 255);
+            const [h_r, h_g, h_b] = this._hsl_to_rgb(hue, mix[0], mix[1]);
 
-                color = this._get_Uint32_color_from_rgba_values(s_r, s_g, s_b, parseInt(a * opacity));
-            }else if(mode === "hue") {
+            if (a === 0) {
 
-                const [r, g, b, a] = this._get_rgba_from_Uint32(color);
-                let [hue, saturation, luminosity] = this._rgb_to_hsl(r, g, b);
+                color = 0;
+            }else {
 
-                let added = [blend_with_a_saturation_of, blend_with_a_luminosity_of, opacity];
-                let base = [saturation, luminosity, 1];
-                let mix = [];
-
-                if (opacity !== 0) {
-
-                    mix[2] = 1 - (1 - added[2]) * (1 - base[2]); // alpha
-                    mix[0] = Math.round((added[0] * added[2] / mix[2]) + (base[0] * base[2] * (1 - added[2]) / mix[2])); // red
-                    mix[1] = Math.round((added[1] * added[2] / mix[2]) + (base[1] * base[2] * (1 - added[2]) / mix[2])); // green
-                }else {
-
-                    mix = [saturation, luminosity];
-                }
-
-                const [h_r, h_g, h_b] = this._hsl_to_rgb(hue_or_mode, mix[0], mix[1]);
-
-                if (a === 0) {
-
-                    color = 0;
-                }else {
-
-                    color = this._get_Uint32_color_from_rgba_values(h_r, h_g, h_b, a);
-                }
-
+                color = this._get_Uint32_color_from_rgba_values(h_r, h_g, h_b, a);
             }
 
             return this._format_color(color);
@@ -7533,7 +7515,6 @@ class CanvasPixels extends React.Component {
         this.setState({_s_pxl_colors: ns_pxl_colors, _last_action_timestamp: Date.now()}, () => {
 
             this._update_canvas();
-            //this._remove_duplicate_pxl_colors();
         });
     };
 
@@ -7701,14 +7682,7 @@ class CanvasPixels extends React.Component {
 
     get_filter_names = () => {
 
-        const filters = this._get_filters();
-        const names = Object.entries(filters).map((entry) => {
-
-            const [key, value] = entry;
-            return key;
-        });
-
-        return names;
+        return Object.keys(this._get_filters()).concat(Array.of("Greyscale", "Sepia"));
     };
 
     _dutone_pixels = (contrast, color_a, color_b, pxls, pxl_colors) => {
@@ -7732,12 +7706,32 @@ class CanvasPixels extends React.Component {
 
         pxls = Array.from(pxls);
         pxl_colors = Uint32Array.from(pxl_colors).map((c) => { return this._format_color(c, true)});
-
-        const filters = this._get_filters();
-        const filter = filters[name] || filters["1997"];
         const pxl_colors_copy = Uint32Array.from(pxl_colors);
 
-        if(intensity !== 0) {
+        if(name.toLowerCase() === "greyscale") {
+
+            pxl_colors = pxl_colors.map((color) => {
+
+                let [r, g, b, a] = this._get_rgba_from_Uint32(color);
+                const average = (r + g + b) / 3;
+                return this._get_Uint32_color_from_rgba_values(average, average, average, a)
+            });
+
+        }else if(name.toLowerCase() === "sepia"){
+
+            pxl_colors = pxl_colors.map((color) => {
+
+                let [r, g, b, a] = this._get_rgba_from_Uint32(color);
+                function limit_to(n, l) { return n > l ? l: n;}
+                const s_r = limit_to((r * .393) + (g *.769) + (b * .189), 255);
+                const s_g = limit_to((r * .349) + (g *.686) + (b * .168), 255);
+                const s_b = limit_to((r * .272) + (g *.534) + (b * .131), 255);
+                return this._get_Uint32_color_from_rgba_values(s_r, s_g, s_b, a);
+            });
+        }else {
+
+            const filters = this._get_filters();
+            const filter = filters[name] || filters["1997"];
 
             pxl_colors = pxl_colors.map((hex) => {
 
@@ -7752,14 +7746,14 @@ class CanvasPixels extends React.Component {
                     rgba[3]
                 );
             });
+        }
 
-            if(intensity !== 1) {
+        if(intensity !== 1) {
 
-                pxl_colors = pxl_colors.map((hex, index) => {
+            pxl_colors = pxl_colors.map((hex, index) => {
 
-                    return this._blend_colors(pxl_colors_copy[index], hex, intensity, false, false, true);
-                });
-            }
+                return this._blend_colors(pxl_colors_copy[index], hex, intensity, false, false, true);
+            });
         }
 
         return remove_duplicate_pxl_colors ? this._remove_duplicate_pxl_colors(pxls, pxl_colors): [pxls, pxl_colors];

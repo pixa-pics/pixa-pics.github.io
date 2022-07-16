@@ -271,7 +271,7 @@ class Settings extends React.Component {
                             <CardContent>
                                 <div style={{textAlign: "right", display: "flex"}}>
                                     <p style={{float: "left", padding: 16, margin: 0, width: "50%", height: "100%"}}>All those friends just help us moving forward rightly only faster while being free and open-source.</p>
-                                    <img src="/src/images/REMINDER.svg" style={{float: "right", padding: 16, margin: 0, width: "50%", height: "100%"}}></img>
+                                    <img src="/src/images/logo-transparent.png" style={{float: "right", padding: 16, margin: 0, width: "50%", height: "100%"}}></img>
                                 </div>
                             </CardContent>
                             <CardContent>

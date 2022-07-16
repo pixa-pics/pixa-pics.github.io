@@ -74,8 +74,6 @@ import SwapVerticalIcon from "../icons/SwapVertical";
 
 import NavigationIcon from "../icons/Navigation";
 
-import Jdenticon from "react-jdenticon";
-
 const styles = theme => ({
     listSubHeader: {
         width: "100%",
@@ -172,7 +170,7 @@ const styles = theme => ({
             justifyContent: "flex-start",
             flexDirection: "row",
             flexWrap: "wrap",
-            overflow: "auto",
+            overflowX: "overlay",
             width: "100%",
             maxWidth: "100%",
             flexFlow: "row",
@@ -1390,27 +1388,14 @@ class PixelToolboxSwipeableViews extends React.Component {
 
                         const f = filters_thumbnail[name] || "";
                         return {
-                            icon: <Avatar className={"pixelated"} style={{filter: `opacity(${String(Boolean(f.length === 0 && name_index !== 0) ? "0.5": "1.0")})`, height: "100%", width: "100%", aspectRatio: `${_filter_ar_on_one} / 1`, border: "4px solid #020529"}} key={String(f.length > 0 ? name+"-loaded": name+"-loading") + "-preview-" + last_filters_hash} variant={"rounded"} src={String(f.length > 0 ? f: filters_thumbnail[filters[0]])} />,
+                            icon: <Avatar className={"pixelated"} style={{filter: `opacity(${String(Boolean(f.length === 0 && name_index !== 0) ? "0.5": "1.0")})`, height: "100%", width: "100%", aspectRatio: `${_filter_ar_on_one} / 1`, border: "4px solid #020529"}} key={String(Boolean(f.length > 0) ? String(name+"-loaded-"+_filter_ar_on_one): String(name+"-loading-"+_filter_ar_on_one)) + "-preview-" + last_filters_hash} variant={"rounded"} src={String(f.length > 0 ? f: filters_thumbnail[filters[0]])} />,
                             text: name,
                             on_click: () => {
                                 canvas.to_filter(name, slider_value);
                                 this._handle_action_close();
                             }
                         }
-                    }).concat([
-                        {
-                            icon: <Jdenticon style={{height: "100%", width: "100%", aspectRatio: `${_filter_ar_on_one} / 1`, border: "4px solid #020529"}} key={"bw"} value={"Black & White"} size={"24"}/>,
-                            text: "Black & White",
-                            on_click: () => {
-                                canvas.to_greyscale()
-                            }
-                        },
-                        {
-                            icon: <Jdenticon style={{height: "100%", width: "100%", aspectRatio: `${_filter_ar_on_one} / 1`, border: "4px solid #020529"}} key={"sepia"} value={"Sepia"} size={"24"}/>, text: "Sepia", on_click: () => {
-                                canvas.to_sepia()
-                            }
-                        },
-                    ])
+                    })
                 },
             ],
         };
@@ -1759,7 +1744,7 @@ class PixelToolboxSwipeableViews extends React.Component {
                                                     <FormControlLabel
                                                         value={"2"}
                                                         control={<Radio color="primary"/>}
-                                                        label="SCALE 2X"
+                                                        label="SCALE2X"
                                                         labelPlacement="bottom"
                                                     />
                                                     <FormControlLabel
