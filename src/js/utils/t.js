@@ -55,8 +55,6 @@ const get_lang_lib = async (name) => {
     }
 }
 
-import TimeAgo from "javascript-time-ago";
-
 /* Do not flood the read of the translate object and the document lang element, just set an interval to check it*/
 const l = (_l, callback_function = () => {}) => {
 
@@ -73,12 +71,16 @@ const l = (_l, callback_function = () => {}) => {
     if(String(window.LANG) !== l1) {
 
         window.LANG = l1;
-        window.TIME_AGO = TimeAgo;
-        get_lang_lib(l1).then((ld) => {
+
+        get_lang_lib(l1).then(function(ld) {
 
             window.LANG_DIR = Object.assign({}, ld);
-            window.TIME_AGO.addDefaultLocale(window.LANG_DIR["_time_ago"]);
             callback_function(true);
+            import("javascript-time-ago/bundle/javascript-time-ago").then(function(TimeAgo){
+
+                TimeAgo.default.addDefaultLocale(window.LANG_DIR["_time_ago"]);
+                window.TIME_AGO = new TimeAgo.default(window.LANG);
+            });
         });
     }else {
 
@@ -98,7 +100,7 @@ const t = (path = "", variables = {}, parameters = {}) => {
                 option = "mini"
             }
 
-            return String(new window.TIME_AGO(window.LANG).format(parseInt(path), option));
+            return String(window.TIME_AGO.format(path, option) || "");
         }
     }else if(typeof window.LANG_DIR !== "undefined") {
 

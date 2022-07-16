@@ -1,4 +1,4 @@
-import pt from "javascript-time-ago/locale/pt";
+import pt from "javascript-time-ago/locale/pt.json";
 
 module.exports = {
     "_time_ago": pt,

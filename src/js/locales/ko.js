@@ -1,4 +1,4 @@
-import ko from "javascript-time-ago/locale/ko";
+import ko from "javascript-time-ago/locale/ko.json";
 
 module.exports = {
     "_time_ago": ko,

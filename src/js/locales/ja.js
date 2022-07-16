@@ -1,4 +1,4 @@
-import ja from "javascript-time-ago/locale/ja";
+import ja from "javascript-time-ago/locale/ja.json";
 
 module.exports = {
     "_time_ago": ja,

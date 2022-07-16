@@ -1,4 +1,4 @@
-import fr from "javascript-time-ago/locale/fr";
+import fr from "javascript-time-ago/locale/fr.json";
 
 module.exports = {
     "_time_ago": fr,

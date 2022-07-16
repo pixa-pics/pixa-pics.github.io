@@ -1,4 +1,4 @@
-import zh from "javascript-time-ago/locale/zh";
+import zh from "javascript-time-ago/locale/zh.json";
 
 module.exports = {
     "_time_ago": zh,

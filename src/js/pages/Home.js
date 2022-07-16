@@ -410,9 +410,9 @@ class Home extends React.Component {
                 height: "100%",
                 overflow: "hidden",
                 position: "relative",
+                contentVisibility: "visible",
             }}>
                 <div style={{
-                    contentVisibility: "visible",
                     backgroundImage: bi,
                     overflow: "hidden",
                     backgroundSize: "cover",
@@ -433,7 +433,7 @@ class Home extends React.Component {
                         <h3 className={classes.backgroundImageImage} onClick={this._toggle_bii3_opacity} style={{borderRadius: "16px", zIndex: 90, opacity: _bii3_opacity, color: THEME_DAY && !IS_EVENING ? "#000": "#fff", border: "4px solid #980000", backgroundColor: THEME_DAY && !IS_EVENING ? "#ffffffcc": "#000000cc", padding: 16, textAlign: "center"}}>RENDER REAL "SVG" SHAPES!<br/><span style={{fontSize: "0.75em"}}>Use (6x) "xBRZ" instead of default pixelated rendering of (1x, 6x, 12x, 24x).</span> <span style={{fontSize: "0.5em"}}>CLICK TO CLOSE</span></h3>
                     </div>
                 </div>
-                <div className={classes.headerContainer} style={{color: THEME_DAY && !IS_EVENING? "#000": "#fff", contentVisibility: "auto"}}>
+                <div className={classes.headerContainer} style={{color: THEME_DAY && !IS_EVENING? "#000": "#fff"}}>
                     <h1 className={classes.titleh1} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff"}}>
                         <span className={classes.stepPoints} style={{color: THEME_DAY && !IS_EVENING ? "#100d4e": "#008eff"}}>1 >></span><SecurityEmoji alt="security-tweemoji" style={{verticalAlign: "baseline"}} className="emoji-150"/>
                         <span className={classes.revelantText} style={{color: THEME_DAY && !IS_EVENING ? "#100d4e": "#008eff"}}>«PIXA.PICS» lovely minima-arts</span><span> from real-life pictures to enhance privacy for NFTs.</span><br/>

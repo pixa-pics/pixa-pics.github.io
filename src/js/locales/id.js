@@ -1,4 +1,4 @@
-import id from "javascript-time-ago/locale/id";
+import id from "javascript-time-ago/locale/id.json";
 
 module.exports = {
     "_time_ago": id,

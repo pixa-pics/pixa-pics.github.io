@@ -1,35 +1,6 @@
 import {createBrowserHistory} from "history";
 const HISTORY = createBrowserHistory();
-
-import en_locale from "date-fns/locale/en-US";
-import fr_locale from "date-fns/locale/fr";
-import id_locale from "date-fns/locale/id";
-import pt_locale from "date-fns/locale/pt";
-import it_locale from "date-fns/locale/it";
-import de_locale from "date-fns/locale/de";
-import ja_locale from "date-fns/locale/ja";
-import zh_locale from "date-fns/locale/zh-CN";
-import ko_locale from "date-fns/locale/ko";
-import ru_locale from "date-fns/locale/ru";
-import hi_locale from "date-fns/locale/hi";
-import es_locale from "date-fns/locale/es";
-
 const LANGUAGES = ["en", "fr", "id", "pt", "it", "de", "ja", "zh", "ko", "ru", "hi", "es"];
-
-const DATE_FNS_LOCALE_MAP = {
-    en: en_locale,
-    fr: fr_locale,
-    id: id_locale,
-    pt: pt_locale,
-    it: it_locale,
-    de: de_locale,
-    ja: ja_locale,
-    zh: zh_locale,
-    ko: ko_locale,
-    ru: ru_locale,
-    hi: hi_locale,
-    es: es_locale,
-}
 
 /*
  * The page routes system is working with regex, tabs system (weird) isn't great but it will change
@@ -604,7 +575,6 @@ const UTC_OFFSET_PER_COUNTRIES = {
 
 module.exports = {
     LANGUAGES: LANGUAGES,
-    DATE_FNS_LOCALE_MAP: DATE_FNS_LOCALE_MAP,
     HISTORY: HISTORY,
     PAGE_ROUTES: PAGE_ROUTES,
     LOCALES: LOCALES,
