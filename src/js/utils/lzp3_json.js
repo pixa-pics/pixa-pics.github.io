@@ -2450,7 +2450,7 @@ const LZP3 = async(uint8a_or_obj, mode = "COMPRESS_OBJECT", pool = null) => {
         ]).catch((e) => {
 
             return window.lzp3_json_process_function(uint8a_or_obj, mode);
-        }).timeout(60 * 1000);
+        }).timeout(30 * 1000);
 
     }else {
 

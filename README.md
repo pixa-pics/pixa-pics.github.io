@@ -3,7 +3,7 @@
 **This is PIXAAAAA!** - Awesome pixel art editor made with material design guideline trends and awesome web technologies!
 *100% visionary in privacy concerns/critics and against detractors with its development force that legally stands bold against those mightily neglecting privacy in their online-self (image).*
 
-![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/doc/screenshots/home.screenshot.pixa.pics.jpeg?v=2)
+[![](https://img.youtube.com/vi/iMMWj0WfQJE/0.jpg)](https://www.youtube.com/watch?v=iMMWj0WfQJE)
 
 **Does https://pixa.pics/pixel get?**
 

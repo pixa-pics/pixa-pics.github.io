@@ -2181,7 +2181,7 @@ class CanvasPixels extends React.Component {
                 resize_width
             );
 
-        }).timeout(5 * 1000).then((result) => {
+        }).timeout(3 * 1000).then((result) => {
 
             callback_function(result);
         });
@@ -2216,7 +2216,7 @@ class CanvasPixels extends React.Component {
                 with_palette
             );
 
-        }).timeout(10 * 1000).then((result) => {
+        }).timeout(5 * 1000).then((result) => {
 
             result = Object.values(result);
             let base64_in = String(result[0] || "");
@@ -2470,10 +2470,13 @@ class CanvasPixels extends React.Component {
 
             if(true || pxl_width > width && pxl_height > height) {
 
-                let [canvas_ctx] = this._get_new_ctx_from_canvas(width, height, true);
+                let [canvas_ctx, canvas] = this._get_new_ctx_from_canvas(width, height, true);
                 canvas_ctx.drawImage(image_obj, 0, 0, width, height);
-                const image_data = canvas_ctx.getImageData(0, 0, width, height);
+                let image_data = canvas_ctx.getImageData(0, 0, width, height);
+                canvas_ctx = null;
+                canvas = null;
                 const { new_pxl_colors, new_pxls } = this._get_pixels_palette_and_list_from_image_data(image_data, true);
+                image_data = null;
 
                 this.setState({
                     _imported_image_start_x: 0,
@@ -2518,10 +2521,15 @@ class CanvasPixels extends React.Component {
             const scaled_width = _imported_image_width + _imported_image_scale_delta_x;
             const scaled_height = _imported_image_height + _imported_image_scale_delta_y;
 
-            let [canvas_resized_ctx] = this._get_new_ctx_from_canvas(scaled_width, scaled_height, true);
+            let [canvas_resized_ctx, canvas_resized] = this._get_new_ctx_from_canvas(scaled_width, scaled_height, true);
             canvas_resized_ctx.drawImage(canvas, 0, 0, _imported_image_width, _imported_image_height, 0, 0, scaled_width, scaled_height);
-            const resized_image_data = canvas_resized_ctx.getImageData(0, 0, scaled_width, scaled_height);
+            canvas_ctx = null;
+            canvas = null;
+            let resized_image_data = canvas_resized_ctx.getImageData(0, 0, scaled_width, scaled_height);
+            canvas_resized_ctx = null;
+            canvas_resized = null;
             const { new_pxls, new_pxl_colors } = this._get_pixels_palette_and_list_from_image_data(resized_image_data, true);
+            resized_image_data = null;
             return [ new_pxls, new_pxl_colors, scaled_width, scaled_height ];
 
         }else {
@@ -2589,8 +2597,9 @@ class CanvasPixels extends React.Component {
 
                 let [canvas_ctx, canvas] = this._get_new_ctx_from_canvas(width, height, true);
                 canvas_ctx.drawImage(image_obj, 0, 0, width, height);
-                const image_data = canvas_ctx.getImageData(0, 0, width, height);
+                let image_data = canvas_ctx.getImageData(0, 0, width, height);
                 const base64_original_image = dont_compute_base64_original_image ? "": loading_base64_img.length > 0 ? loading_base64_img: canvas.toDataURL("image/jpeg");
+                canvas_ctx = null;
                 canvas = null;
 
                 const merge_color_threshold = 4/16;
@@ -2601,6 +2610,7 @@ class CanvasPixels extends React.Component {
 
                     // From the result in colors and pixels color index find if the image is resized bigger but from a pixelart image
                     let {new_pxls, new_pxl_colors} = this._get_pixels_palette_and_list_from_image_data(image_data, true);
+                    image_data = null;
                     let ratio_pixel_per_color = new_pxls.length / new_pxl_colors.length;
                     let enough_sure = max_size * max_size > height * width;
 
@@ -2780,6 +2790,7 @@ class CanvasPixels extends React.Component {
 
                 }
 
+                let canvas_resized;
                 let canvas_resized_ctx;
                 let canvas_resized_image_data = null;
 
@@ -2804,7 +2815,7 @@ class CanvasPixels extends React.Component {
                     width = Math.floor(cropped_width);
                     height = Math.floor(cropped_height);
 
-                    [canvas_resized_ctx] = this._get_new_ctx_from_canvas(width, height, true);
+                    [canvas_resized_ctx, canvas_resized] = this._get_new_ctx_from_canvas(width, height, true);
                     canvas_resized_ctx.drawImage(image_obj, sx, sy, sw, sh, 0, 0, width, height);
                     canvas_resized_image_data = canvas_resized_ctx.getImageData(0, 0, width, height);
 
@@ -2813,7 +2824,7 @@ class CanvasPixels extends React.Component {
                     width = Math.floor(width);
                     height = Math.floor(height);
 
-                    [canvas_resized_ctx] = this._get_new_ctx_from_canvas(width, height, true);
+                    [canvas_resized_ctx, canvas_resized] = this._get_new_ctx_from_canvas(width, height, true);
                     canvas_resized_ctx.drawImage(image_obj, 0, 0, width, height);
                     canvas_resized_image_data = canvas_resized_ctx.getImageData(0, 0, width, height);
 
@@ -2822,7 +2833,11 @@ class CanvasPixels extends React.Component {
                     canvas_resized_image_data = image_data;
                 }
 
-                const new_pxl_data = this._get_pixels_palette_and_list_from_image_data(canvas_resized_image_data, true);
+                let new_pxl_data = this._get_pixels_palette_and_list_from_image_data(canvas_resized_image_data, true);
+                canvas_resized_ctx = null;
+                canvas_resized = null;
+                image_data = null;
+                canvas_resized_image_data = null;
 
                 let new_base64_original_images = _base64_original_images;
 
@@ -2833,6 +2848,7 @@ class CanvasPixels extends React.Component {
 
                 let ns_pxl_colors = Array.of(Uint32Array.from(new_pxl_data.new_pxl_colors));
                 let ns_pxls = Array.of(Uint32Array.from(new_pxl_data.new_pxls));
+                new_pxl_data = null;
 
                 this.setState({
                     _id: Date.now(),
@@ -3876,7 +3892,7 @@ class CanvasPixels extends React.Component {
 
         let pxl_indexes = new Set();
 
-        let [ctx] = this._get_new_ctx_from_canvas(pxl_width, pxl_height);
+        let [ctx, canvas] = this._get_new_ctx_from_canvas(pxl_width, pxl_height);
         ctx.lineWidth = 0;
         ctx.beginPath();
 
@@ -3900,26 +3916,26 @@ class CanvasPixels extends React.Component {
         ctx.stroke();
         ctx.fill();
 
-        const canvas_image_data = ctx.getImageData(0, 0, pxl_width, pxl_height);
-        const new_pxl_data = this._get_pixels_palette_and_list_from_image_data(canvas_image_data, true, 0);
+        let canvas_image_data = ctx.getImageData(0, 0, pxl_width, pxl_height);
+        ctx = null;
+        canvas = null;
+        let {new_pxl_colors, new_pxls} = this._get_pixels_palette_and_list_from_image_data(canvas_image_data, true, 0);
+        canvas_image_data = null;
 
-        let full_new_pxl_colors = new_pxl_data.new_pxl_colors;
-        let full_new_pxls = new_pxl_data.new_pxls;
-
-        for(let i = 0; i < full_new_pxls.length; i++){
+        for(let i = 0; i < new_pxl_colors.length; i++){
 
             const inside_shape_x = i % pxl_width;
             const inside_shape_y = (i - inside_shape_x) / pxl_width;
 
             const current_pxl_index = inside_shape_y * pxl_width + inside_shape_x;
 
-            if(full_new_pxls[current_pxl_index] === full_new_pxl_colors.indexOf(this._get_uint32_from_hex("#ffffffff")) || path_indexes.has(i)) {
+            if(new_pxls[current_pxl_index] === new_pxl_colors.indexOf(this._get_uint32_from_hex("#ffffffff")) || path_indexes.has(i)) {
 
                 pxl_indexes.add(current_pxl_index);
             }
         }
 
-        for(let i = 0; i < full_new_pxls.length; i++){
+        for(let i = 0; i < new_pxls.length; i++){
 
             if(!path_indexes.has(i)) {
 
@@ -3936,6 +3952,9 @@ class CanvasPixels extends React.Component {
                 }
             }
         }
+
+        new_pxl_colors = null;
+        new_pxls = null;
 
         //pxl_indexes = this._to_selection_size(-1, pxl_indexes);
 
@@ -3986,7 +4005,7 @@ class CanvasPixels extends React.Component {
         const ellipse_middle_x = ellipse_rayon_x + ellipse_top_left_x;
         const ellipse_middle_y = ellipse_rayon_y + ellipse_top_left_y;
 
-        let [ellipse_context] = this._get_new_ctx_from_canvas(pxl_width, pxl_height);
+        let [ellipse_context, ellipse_canvas] = this._get_new_ctx_from_canvas(pxl_width, pxl_height);
 
         ellipse_context.save();
         ellipse_context.translate(ellipse_middle_x, ellipse_middle_y);
@@ -3998,20 +4017,20 @@ class CanvasPixels extends React.Component {
         ellipse_context.fillStyle = "#ffffffff";
         ellipse_context.fill();
 
-        const canvas_image_data = ellipse_context.getImageData(0, 0, pxl_width, pxl_height);
-        const new_pxl_data = this._get_pixels_palette_and_list_from_image_data(canvas_image_data, true, 0);
+        let canvas_image_data = ellipse_context.getImageData(0, 0, pxl_width, pxl_height);
+        let {new_pxl_colors, new_pxls} = this._get_pixels_palette_and_list_from_image_data(canvas_image_data, true, 0);
+        ellipse_context = null;
+        ellipse_canvas = null;
+        canvas_image_data = null;
 
-        let full_new_pxl_colors = new_pxl_data.new_pxl_colors;
-        let full_new_pxls = new_pxl_data.new_pxls;
-
-        for(let i = 0; i < full_new_pxls.length; i++){
+        for(let i = 0; i < new_pxls.length; i++){
 
             const inside_ellipse_x = i % ellipse_width;
             const inside_ellipse_y = (i - inside_ellipse_x) / ellipse_width;
 
             const current_pxl_index = (ellipse_top_left_y + inside_ellipse_y) * pxl_width + (ellipse_top_left_x + inside_ellipse_x);
 
-            if(full_new_pxls[current_pxl_index] === full_new_pxl_colors.indexOf(this._get_uint32_from_hex("#ffffffff"))) {
+            if(new_pxls[current_pxl_index] === new_pxl_colors.indexOf(this._get_uint32_from_hex("#ffffffff"))) {
 
                 const current_pxl_color_index = pxls[current_pxl_index];
 
@@ -4031,8 +4050,10 @@ class CanvasPixels extends React.Component {
                 }
                 pxl_indexes.push(current_pxl_index);
             }
-
         }
+
+        new_pxl_colors = null;
+        new_pxls = null;
 
         return [ Array.from(pxls), Uint32Array.from(pxl_colors), pxl_indexes ];
     }
@@ -5562,7 +5583,7 @@ class CanvasPixels extends React.Component {
 
                 let image_data = null;
 
-                if(Boolean(has_layers_visibility_or_opacity_changed || Boolean(hide_canvas_content && !_was_canvas_content_hidden) || Boolean(pixel_updated * 2 > pxl_width * pxl_height))){
+                if(Boolean(has_layers_visibility_or_opacity_changed || Boolean(hide_canvas_content && !_was_canvas_content_hidden) || Boolean(pixel_updated * 1.25 > pxl_width * pxl_height))){
 
                     image_data = Boolean(has_layers_visibility_or_opacity_changed || Boolean(hide_canvas_content && !_was_canvas_content_hidden)) ?
                         new ImageData(new Uint8ClampedArray(pxl_width * pxl_height * 4).fill(0), pxl_width, pxl_height):
@@ -6493,13 +6514,18 @@ class CanvasPixels extends React.Component {
                     );
                     ctx.restore();
 
-                    const base64_original_image = image.src.includes("image/png") ?
+                    let base64_original_image = image.src.includes("image/png") ?
                         canvas.toDataURL("image/png") :
                         canvas.toDataURL("image/jpeg");
+
+                    ctx = null;
+                    canvas = null;
 
                     const new_base64_original_images = !_base64_original_images.includes(base64_original_image) ?
                         _base64_original_images.concat([base64_original_image]) :
                         _base64_original_images;
+
+                    base64_original_image = null;
 
 
                     this.setState({
@@ -7392,7 +7418,7 @@ class CanvasPixels extends React.Component {
 
         const {pxl_width, pxl_height } = this.state;
 
-        const [ctx] = this._get_new_ctx_from_canvas(pxl_width, pxl_height);
+        let [ctx, canvas] = this._get_new_ctx_from_canvas(pxl_width, pxl_height);
 
         // Create a radial gradient
         // The inner circle is at x=110, y=90, with radius=30
@@ -7410,8 +7436,11 @@ class CanvasPixels extends React.Component {
         ctx.fillStyle = gradient;
         ctx.fillRect(0, 0, pxl_width, pxl_height);
 
-        const canvas_image_data = ctx.getImageData(0, 0, pxl_width, pxl_height);
+        let canvas_image_data = ctx.getImageData(0, 0, pxl_width, pxl_height);
+        ctx = null;
+        canvas = null;
         let {new_pxls, new_pxl_colors} = this._get_pixels_palette_and_list_from_image_data(canvas_image_data, true, 0);
+        canvas_image_data = null;
 
         this._remove_close_pxl_colors(new_pxls, new_pxl_colors, 255/6/255, null, 18).then( ([new_pxls, new_pxl_colors]) => {
 
@@ -7878,13 +7907,18 @@ class CanvasPixels extends React.Component {
                 ctx.drawImage(image,-image.naturalWidth / 2, -image.naturalHeight / 2);
                 ctx.restore();
 
-                const base64_original_image = image.src.includes("image/png") ?
+                let base64_original_image = image.src.includes("image/png") ?
                     canvas.toDataURL("image/png"):
                     canvas.toDataURL("image/jpeg");
+
+                ctx = null;
+                canvas = null;
 
                 const new_base64_original_images = !_base64_original_images.includes(base64_original_image) ?
                     _base64_original_images.concat([base64_original_image]):
                     _base64_original_images;
+
+                base64_original_image = null;
 
                 this.setState({
                     pxl_width: new_pxl_width,

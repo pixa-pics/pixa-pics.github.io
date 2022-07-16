@@ -99,11 +99,11 @@
             }
             body[datainitiated=true]::after {
                 animation-iteration-count: 1;
-                animation-delay: 25ms !important;
+                animation-delay: 30ms !important;
                 animation-fill-mode: both !important;
                 animation-timing-function: ease-out !important;
                 animation-name: zoom-out !important;
-                animation-duration: 75ms !important;
+                animation-duration: 120ms !important;
             }
             @keyframes zoom-out {
                 0% {
@@ -112,7 +112,7 @@
                     content-visibility: auto !important;
                 }
                 100% {
-                    transform: translateZ(10px) scale(7.5);
+                    transform: translateZ(10px) scale(6);
                     filter: opacity(0);
                     content-visibility: hidden!important;
                 }

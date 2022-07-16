@@ -110,6 +110,7 @@ const base64png_to_xbrz_svg = (base64png, callback_function_for_image, callback_
                     let base64_out = third_canvas_ctx.canvas.toDataURL("image/png");
                     third_canvas_ctx = null; third_canvas = null;
                     process_svg(second_image_data, first_scale_size);
+                    second_image_data = null;
 
                     if(optimize_render_size) {
 
@@ -145,6 +146,7 @@ const base64png_to_xbrz_svg = (base64png, callback_function_for_image, callback_
                     let base64_out = third_canvas_ctx.canvas.toDataURL("image/png");
                     third_canvas_ctx = null; third_canvas = null;
                     process_svg(second_image_data, first_scale_size);
+                    second_image_data = null;
 
                     if(optimize_render_size) {
 

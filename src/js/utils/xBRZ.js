@@ -913,7 +913,7 @@ const xbrz = async (image_data, scale, pool = null) => {
 
           return window.xbrz_process_function(image_data, scale);
 
-      }).timeout(10 * 1000);
+      }).timeout(20 * 1000);
 
     }else {
 

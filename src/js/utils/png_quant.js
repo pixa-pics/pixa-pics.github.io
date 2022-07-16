@@ -775,7 +775,7 @@ const png_quant = async(dataurl, quality_min, quality_max, speed, pool = null) =
         ]).catch((e) => {
 
             return window.png_quant_process_function(dataurl, options);
-        }).timeout(120 * 1000);
+        }).timeout(40 * 1000);
     }else {
 
         return window.png_quant_process_function(dataurl, options);

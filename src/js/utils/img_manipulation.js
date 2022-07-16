@@ -31,7 +31,7 @@ const file_to_base64 = (file, callback_function = () => {}, pool = null) => {
         ]).catch((e) => {
 
             return window.file_to_base64_process_function(file);
-        }).timeout(60 * 1000).then((r) => {
+        }).timeout(5 * 1000).then((r) => {
 
             callback_function(r);
         });
@@ -73,7 +73,7 @@ const base64_sanitize = (base64, callback_function = () => {}, pool = null) => {
         ]).catch((e) => {
 
             return window.base64_sanitize_process_function(base64);
-        }).timeout(60 * 1000).then((r) => {
+        }).timeout(5 * 1000).then((r) => {
 
             callback_function(r);
         });
@@ -115,7 +115,7 @@ const base64_to_bitmap = (base64, callback_function = () => {}, pool = null) => 
             ]).catch((e) => {
 
                 return window.base64_to_bitmap_process_function(base64);
-            }).timeout(60 * 1000).then((r) => {
+            }).timeout(5 * 1000).then((r) => {
 
                 callback_function(r);
             });
@@ -211,7 +211,7 @@ const imagedata_to_base64 = (imagedata, type= "image/png", callback_function = (
             ]).catch((e) => {
 
                 return window.imagedata_to_base64_process_function(imagedata, type);
-            }).timeout(60 * 1000).then((r) => {
+            }).timeout(5 * 1000).then((r) => {
 
                 callback_function(r);
             });

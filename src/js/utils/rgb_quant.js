@@ -967,7 +967,7 @@ const rgb_quant = (imagedata, limit, callback_function = () => {}, pool = null) 
         ]).catch((e) => {
 
             return window.rgb_quant_process_function(imagedata, limit);
-        }).timeout(60 * 1000).then((r)=> {
+        }).timeout(5 * 1000).then((r)=> {
 
             callback_function(r);
         });

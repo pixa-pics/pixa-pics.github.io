@@ -837,7 +837,7 @@ class Pixel extends React.Component {
             const hash = xxhashthat(base_64);
 
             let a = document.createElement("a"); //Create <a>
-            a.download = `Pixapics_${hash}_RAS_${size}x.png`; //File name Here
+            a.download = `PIXAPICS-${hash}_RAS_${size}x.png`; //File name Here
             a.href = base_64;
             a.click();
             a.remove();
@@ -873,7 +873,7 @@ class Pixel extends React.Component {
 
                     let { _files_waiting_download } = this.state;
                     _files_waiting_download.push({
-                        name: `Pixapics_${hash}_RAS_1x.png`,
+                        name: `PIXAPICS-${hash}_RAS_1x.png`,
                         url: String(png_base64_in)
                     });
                     this.setState({_files_waiting_download}, () => {
@@ -886,7 +886,7 @@ class Pixel extends React.Component {
 
                         let { _files_waiting_download } = this.state;
                         _files_waiting_download.push({
-                            name: `Pixapics_${hash}_${using.toUpperCase()}_RAS_6x.png`,
+                            name: `PIXAPICS-${hash}_${using.toUpperCase()}_RAS_6x.png`,
                             url: String(image_base64)
                         });
                         image_base64 = null;
@@ -899,7 +899,7 @@ class Pixel extends React.Component {
 
                         let { _files_waiting_download } = this.state;
                         _files_waiting_download.push({
-                            name: `Pixapics_${hash}_${using.toUpperCase()}_VEC_6x.svg`,
+                            name: `PIXAPICS-${hash}_${using.toUpperCase()}_VEC_6x.svg`,
                             url: String(svg_base64)
                         });
                         svg_base64 = null;
@@ -949,10 +949,15 @@ class Pixel extends React.Component {
             a.download = String(file.name); //File name Here
             a.href = String(file.url);
             a.click();
-            a.remove();
+            delete file.url;
+            delete file.name;
             file = null;
+            a.remove();
 
-            this.setState({_files_waiting_download: Array.from(_files_waiting_download)}, () => {
+            if(_files_waiting_download.length === 0) {
+                pool.terminate();
+            }
+            this.setState({_files_waiting_download}, () => {
 
                 this.forceUpdate();
             });

@@ -97,8 +97,8 @@ module.exports = {
             minSize: 384 * 1024,
             maxSize: 640 * 1024,
             minChunks: 2,
-            maxAsyncRequests: 10,
-            maxInitialRequests: 5,
+            maxAsyncRequests: 12,
+            maxInitialRequests: 4,
             automaticNameDelimiter: '_',
             automaticNameMaxLength: 30,
             name: true,
@@ -109,8 +109,8 @@ module.exports = {
                 },
                 default: {
                     minChunks: 2,
-                    maxAsyncRequests: 10,
-                    maxInitialRequests: 5,
+                    maxAsyncRequests: 12,
+                    maxInitialRequests: 4,
                     priority: -20,
                     reuseExistingChunk: true
                 }
@@ -140,11 +140,12 @@ module.exports = {
                                         "ios": "10",
                                         "safari": "10"
                                     },
-                                    //ignoreBrowserslistConfig: true,
-                                    forceAllTransforms: true, //true,
+                                    forceAllTransforms: true,
                                     shippedProposals: true,
                                     bugfixes: true,
-                                    useBuiltIns: "usage" //"entry"
+                                    loose: true,
+                                    useBuiltIns: "entry",
+                                    corejs: "3.23.4"
                                 }],
                                 'stage-0'
                             ]

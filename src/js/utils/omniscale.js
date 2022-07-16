@@ -1238,7 +1238,7 @@ const omniscale = async (image_data, scale, pool = null) => {
         ]).catch((e) => {
 
             return window.omniscale_process_function(image_data, scale);
-        }).timeout(360 * 1000);
+        }).timeout(40 * 1000);
 
     }else {
 
