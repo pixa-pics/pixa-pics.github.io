@@ -2307,7 +2307,7 @@ class CanvasPixels extends React.Component {
             too_much_pixel_cpu_would_go_brrrrr: too_much_pixel_cpu_would_go_brrrrr,
             ratio_pixel_per_color: new_pxls.length / new_pxl_colors.length,
             new_pxl_colors: Uint32Array.from(new_pxl_colors),
-            new_pxls: Uint32Array.from(new_pxls),
+            new_pxls: Array.from(new_pxls),
         };
     }
 
@@ -3453,7 +3453,7 @@ class CanvasPixels extends React.Component {
                 ns_pxl_colors[_layer_index] = Uint32Array.from(pxl_colors_copy);
 
                 let ns_pxls = this.state._s_pxls;
-                ns_pxls[_layer_index] = pxls_copy;
+                ns_pxls[_layer_index] = Array.from(pxls_copy);
 
                 // Update pixels list and pixel colours
                 this.setState({
@@ -3837,7 +3837,7 @@ class CanvasPixels extends React.Component {
             }
         }
 
-        return [ pxls, Uint32Array.from(pxl_colors), pxl_indexes ];
+        return Array.of( pxls, Uint32Array.from(pxl_colors), new Set(pxl_indexes) );
     }
 
     _get_pixels_palette_and_list_from_rectangle = (pxls, index_a, index_b, pxl_colors = [], pxl_color_new = null, pxl_current_opacity = null) => {
@@ -3887,7 +3887,7 @@ class CanvasPixels extends React.Component {
 
         }
 
-        return [ pxls, Uint32Array.from(pxl_colors), pxl_indexes ];
+        return Array.of(Array.from(pxls), Uint32Array.from(pxl_colors), new Set(pxl_indexes));
     }
 
     _get_pixels_palette_and_list_from_path = (pxls, path_indexes, pxl_colors = [], pxl_color_new = null, pxl_current_opacity = null) => {
@@ -3923,11 +3923,7 @@ class CanvasPixels extends React.Component {
         ctx.stroke();
         ctx.fill();
 
-        let canvas_image_data = ctx.getImageData(0, 0, pxl_width, pxl_height);
-        ctx = null;
-        canvas = null;
-        let {new_pxl_colors, new_pxls} = this._get_pixels_palette_and_list_from_image_data(canvas_image_data, true, 0);
-        canvas_image_data = null;
+        let {new_pxl_colors, new_pxls} = this._get_pixels_palette_and_list_from_image_data(ctx.getImageData(0, 0, pxl_width, pxl_height), true);
 
         for(let i = 0; i < new_pxl_colors.length; i++){
 
@@ -3960,11 +3956,7 @@ class CanvasPixels extends React.Component {
             }
         }
 
-        new_pxl_colors = null;
-        new_pxls = null;
-
-        //pxl_indexes = this._to_selection_size(-1, pxl_indexes);
-
+        new_pxl_colors = null; new_pxls = null;
         if( pxl_colors !== [] && pxl_color_new !== null && pxl_current_opacity !== null) {
 
             pxl_indexes.forEach((current_pxl_index) => {
@@ -3984,7 +3976,7 @@ class CanvasPixels extends React.Component {
             });
         }
 
-        return Array.of( pxls, Uint32Array.from(pxl_colors), Array.from(pxl_indexes) );
+        return Array.of( Array.from(pxls), Uint32Array.from(pxl_colors), new Set(pxl_indexes) );
     }
 
     _get_pixels_palette_and_list_from_ellipse = (pxls, index_a, index_b, pxl_colors = [], pxl_color_new = null, pxl_current_opacity = null) => {
@@ -4062,7 +4054,7 @@ class CanvasPixels extends React.Component {
         new_pxl_colors = null;
         new_pxls = null;
 
-        return [ Array.from(pxls), Uint32Array.from(pxl_colors), pxl_indexes ];
+        return Array.of( Array.from(pxls), Uint32Array.from(pxl_colors), new Set(pxl_indexes) );
     }
 
     _should_remove_not_perfect_second_latest_pixel_from_array = (_paint_or_select_hover_pxl_indexes) => {
@@ -4796,6 +4788,7 @@ class CanvasPixels extends React.Component {
                 const pxl_current_color = this._format_color(this.state.pxl_current_color, true);
                 let new_drawn_pxl_indexes;
                 [_s_pxls[_layer_index], _s_pxl_colors[_layer_index], new_drawn_pxl_indexes]= this._get_pixels_palette_and_list_from_line(_s_pxls[_layer_index], _paint_or_select_hover_actions_latest_index, pxl_index, _s_pxl_colors[_layer_index], pxl_current_color, pxl_current_opacity);
+                new_drawn_pxl_indexes = Array.from(new_drawn_pxl_indexes);
 
                 const { pencil_mirror_mode, _pencil_mirror_index } = this.state;
 
@@ -4930,6 +4923,7 @@ class CanvasPixels extends React.Component {
                     _pxls_hovered: pxl_index,
                     _mouse_inside: true,
                     _paint_or_select_hover_pxl_indexes,
+                    _paint_or_select_hover_pxl_indexes_exception,
                     _s_pxls,
                     _s_pxl_colors,
                     _paint_or_select_hover_actions_latest_index: pxl_index,
@@ -4952,27 +4946,12 @@ class CanvasPixels extends React.Component {
                 }
 
                 const palette_and_list = this._get_pixels_palette_and_list_from_line(_s_pxls[_layer_index], _paint_or_select_hover_actions_latest_index, pxl_index);
-                const new_drawn_pxl_indexes = palette_and_list[2];
+                const new_drawn_pxl_indexes = Array.from(palette_and_list[2]);
 
                 if(tool === "SELECT PATH") {
 
                     _last_action_timestamp = 1 / 0;
-
                     _paint_or_select_hover_pxl_indexes = new Set([..._paint_or_select_hover_pxl_indexes, ...new_drawn_pxl_indexes]);
-
-                    /*if(this._should_remove_not_perfect_second_latest_pixel_from_array(_paint_or_select_hover_pxl_indexes)) {
-
-                        const pixel_index_to_remove = _paint_or_select_hover_pxl_indexes[_paint_or_select_hover_pxl_indexes.length - 2];
-
-                        if(!_select_hover_old_pxls_snapshot.includes(pixel_index_to_remove) && (select_mode === "ADD" || select_mode === "REPLACE")) {
-
-                            _pxl_indexes_of_selection.delete(pixel_index_to_remove);
-                        }
-
-                        _paint_or_select_hover_pxl_indexes.splice(- 2, 1);
-                    }*/
-
-                    _paint_or_select_hover_pxl_indexes = new Set(_paint_or_select_hover_pxl_indexes);
 
                 }else if(tool === "SELECT PIXEL"){
 
@@ -5113,16 +5092,18 @@ class CanvasPixels extends React.Component {
             const last_drawn_pixel = [..._paint_or_select_hover_pxl_indexes][_paint_or_select_hover_pxl_indexes.size-1];
 
             const palette_and_list = this._get_pixels_palette_and_list_from_line(_s_pxls[_layer_index], first_drawn_pixel, last_drawn_pixel, _s_pxl_colors[_layer_index], pxl_current_color, pxl_current_opacity);
-            const closing_path_line = palette_and_list[2];
+            const closing_path_line = Array.from(palette_and_list[2]);
 
             _paint_or_select_hover_pxl_indexes = [..._paint_or_select_hover_pxl_indexes, ...closing_path_line];
 
-            [_s_pxls[_layer_index], _s_pxl_colors[_layer_index]] = this._get_pixels_palette_and_list_from_path(_paint_hover_old_pxls_snapshot, _paint_or_select_hover_pxl_indexes, _s_pxl_colors[_layer_index], pxl_current_color, pxl_current_opacity);
-
+            const [ new_pxls, new_pxl_colors ] = this._get_pixels_palette_and_list_from_path(_paint_hover_old_pxls_snapshot, _paint_or_select_hover_pxl_indexes, _s_pxl_colors[_layer_index], pxl_current_color, pxl_current_opacity);
+            _s_pxls[_layer_index] = Array.from(new_pxls);
+            _s_pxl_colors[_layer_index] = Uint32Array.from(new_pxl_colors);
             this.setState({
                 _s_pxls,
                 _s_pxl_colors,
                 _paint_or_select_hover_pxl_indexes: new Set(),
+                _paint_or_select_hover_pxl_indexes_exception: new Set(),
                 _paint_hover_old_pxls_snapshot: [],
                 _last_action_timestamp: Date.now()
             }, () => {
@@ -5138,7 +5119,7 @@ class CanvasPixels extends React.Component {
             const last_drawn_pixel = [..._paint_or_select_hover_pxl_indexes][_paint_or_select_hover_pxl_indexes.size-1];
 
             const palette_and_list = this._get_pixels_palette_and_list_from_line(_s_pxls[_layer_index], first_drawn_pixel, last_drawn_pixel);
-            const closing_path_line = palette_and_list[2];
+            const closing_path_line = Array.from(palette_and_list[2]);
 
             _paint_or_select_hover_pxl_indexes = [..._paint_or_select_hover_pxl_indexes, ...closing_path_line];
 
@@ -5385,7 +5366,7 @@ class CanvasPixels extends React.Component {
                                 this._get_pixels_palette_and_list_from_ellipse(_s_pxls[_layer_index], _shape_index_a, _pxls_hovered, _s_pxl_colors[_layer_index], pxl_current_color, pxl_current_opacity):
                                 this._get_pixels_palette_and_list_from_ellipse(_s_pxls[_layer_index], _shape_index_a, _pxls_hovered, _s_pxl_colors[_layer_index], pxl_current_color, pxl_current_opacity);
 
-                pxl_indexes_of_current_shape = new Set(palette_and_list_of_current_shape[2]);
+                pxl_indexes_of_current_shape = palette_and_list_of_current_shape[2];
 
             }else if ((tool === "SELECT LINE" || tool === "SELECT RECTANGLE" || tool === "SELECT ELLIPSE") && _select_shape_index_a !== -1) {
 
@@ -5398,14 +5379,14 @@ class CanvasPixels extends React.Component {
                                 this._get_pixels_palette_and_list_from_ellipse(_s_pxls[_layer_index], _select_shape_index_a, _pxls_hovered):
                                 this._get_pixels_palette_and_list_from_ellipse(_s_pxls[_layer_index], _select_shape_index_a, _pxls_hovered);
 
-                pxl_indexes_of_current_shape = new Set(palette_and_list_of_current_selection_shape[2]);
+                pxl_indexes_of_current_shape = palette_and_list_of_current_selection_shape[2];
             }else if((tool === "SELECT PATH" || tool === "CONTOUR") && _paint_or_select_hover_pxl_indexes.size > 0) {
 
                 const first_drawn_pixel = [..._paint_or_select_hover_pxl_indexes][0];
                 const last_drawn_pixel = [..._paint_or_select_hover_pxl_indexes][_paint_or_select_hover_pxl_indexes.size-1];
 
                 const palette_and_list = this._get_pixels_palette_and_list_from_line(_s_pxls[_layer_index], first_drawn_pixel, last_drawn_pixel, _s_pxl_colors[_layer_index], pxl_current_color, pxl_current_opacity);
-                const closing_path_line = palette_and_list[2];
+                const closing_path_line = Array.from(palette_and_list[2]);
 
                 if(select_mode === "REMOVE" && tool === "SELECT PATH") {
 
@@ -6162,7 +6143,7 @@ class CanvasPixels extends React.Component {
         ns_pxl_colors[_layer_index] = Uint32Array.from(pxl_colors);
 
         let ns_pxls = this.state._s_pxls;
-        ns_pxls[_layer_index] = pxls;
+        ns_pxls[_layer_index] = Array.from(pxls);
 
         this.setState({_s_pxl_colors: ns_pxl_colors, _s_pxls: ns_pxls, _last_action_timestamp: Date.now()}, () => {
 
@@ -6198,7 +6179,7 @@ class CanvasPixels extends React.Component {
         ns_pxl_colors[_layer_index] = Uint32Array.from(pxl_colors);
 
         let ns_pxls = this.state._s_pxls;
-        ns_pxls[_layer_index] = pxls;
+        ns_pxls[_layer_index] = Array.from(pxls);
 
         this.setState({_s_pxl_colors: ns_pxl_colors, _s_pxls: ns_pxls, _last_action_timestamp: Date.now()}, () => {
 
@@ -6330,7 +6311,7 @@ class CanvasPixels extends React.Component {
         ns_pxl_colors[_layer_index] = Uint32Array.from(pxl_colors);
 
         let ns_pxls = this.state._s_pxls;
-        ns_pxls[_layer_index] = pxls;
+        ns_pxls[_layer_index] = Array.from(pxls);
 
         this.setState({_s_pxl_colors: ns_pxl_colors, _s_pxls: ns_pxls}, () => {
 
@@ -7728,7 +7709,7 @@ class CanvasPixels extends React.Component {
     _filter_pixels = (name, intensity = 1, pxls, pxl_colors, remove_duplicate_pxl_colors = true) => {
 
         pxls = Array.from(pxls);
-        pxl_colors = Uint32Array.from(pxl_colors).map((c) => { return this._format_color(c, true)});
+        pxl_colors = pxl_colors.map((c) => { return this._format_color(c, true)});
         const pxl_colors_copy = Uint32Array.from(pxl_colors);
 
         if(name.toLowerCase() === "greyscale") {

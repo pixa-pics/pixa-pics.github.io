@@ -73,6 +73,7 @@ import SwapHorizontalIcon from "../icons/SwapHorizontal";
 import SwapVerticalIcon from "../icons/SwapVertical";
 
 import NavigationIcon from "../icons/Navigation";
+import CodeIcon from "@material-ui/icons/Code";
 
 const styles = theme => ({
     listSubHeader: {
@@ -727,7 +728,7 @@ class PixelToolboxSwipeableViews extends React.Component {
                 },
                 {
                     icon: <DownloadIcon/>,
-                    text: "Download enhanced",
+                    text: `Download enhanced${too_much_colors_no_vector ? " (Disabled)": ""}`,
                     local_i: 2,
                     label: "vector",
                     tools: [
@@ -768,7 +769,7 @@ class PixelToolboxSwipeableViews extends React.Component {
                             }
                         },
                     ]
-                },
+                }
             ],
             "layers": [
                 {
@@ -1776,6 +1777,14 @@ class PixelToolboxSwipeableViews extends React.Component {
                                                         value={parseInt(action_set.progression % 100)} />
                                                     }
                                                 </ListSubheader>
+                                                {
+                                                    Boolean(Boolean(name === "filters" || action_set.label === "vector") && too_much_colors_no_vector) ?
+                                                        <ListItem button onClick={() => {canvas.to_less_color("auto")}}>
+                                                            <ListItemIcon><LessColorAutoIcon className={classes.listItemIcon} /></ListItemIcon>
+                                                            <ListItemText primary="Auto reduce color palette" secondary={"May you need less color in your palette?"} />
+                                                        </ListItem>: Boolean(name === "filters") ?
+                                                            <blockquote>DID YOU KNOW? Just double-tap/right-click around the drawing area to open a context menu with shortcuts including some to adjust saturation and contrast like a professional...</blockquote>: null
+                                                }
                                                 <div className={classes.listItems}
                                                      style={
                                                          action_set.text.toLowerCase().includes("effects") || action_set.text.toLowerCase().includes("download") || action_set.text.toLowerCase().includes("filter") ?
