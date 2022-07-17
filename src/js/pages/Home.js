@@ -99,33 +99,55 @@ const styles = theme => ({
             right: 24,
         },
     },
-    backgroundImage: {
+    backgroundImageContainer: {
         pointerEvents: "none",
         width: "100%",
         height: "100%",
         position: "absolute",
-        "& > img": {
-            opacity: ".75",
-            imageRendering: "optimizespeed",
-        },
-        "& > img.aspect-ratio-one": {
-            aspectRatio: "1",
-        },
         padding: 64,
         [theme.breakpoints.down("sm")]: {
             padding: theme.spacing(4)
         },
     },
-    backgroundImageImage: {
+    backgroundImageWrapper: {
+        pointerEvents: "auto",
         right: "max(9vw, 9vh)",
         bottom: "max(12vw, 12vh)",
         width: "min(47.5vw, 47.5vh)",
         filter: "drop-shadow(0px 0px 12px #00000066)",
-        position: "fixed",
+        position: "absolute",
         display: "relative",
         transform: "translate(min(50vh, 50%), min(50vh, 50%))",
+        cursor: "pointer",
+        "& > img": {
+            userSelect: "none",
+            width: "100%",
+            height: "100%",
+            pointerEvents: "none",
+            filter: "opacity(0.6)",
+            transform: "translateZ(10px)",
+            imageRendering: "optimizeSpeed",
+            transition: "filter cubic-bezier(0.4, 0, 0.2, 1) 625ms !important"
+        },
+        "&:hover > img": {
+            filter: "opacity(1)",
+            transition: "filter cubic-bezier(0.4, 0, 0.2, 1) 125ms !important"
+        },
+        "& > img.aspect-ratio-one": {
+            aspectRatio: "1",
+        },
+        [theme.breakpoints.down("md")]: {
+            fontSize: 12,
+            right: "max(6vw, 6vh)",
+            bottom: "max(18vw, 18vh)",
+            width: "min(60vw, 40vh)",
+        },
+    },
+    backgroundImageInfo: {
+        pointerEvents: "auto",
+        position: "absolute",
         "h2&": {
-            right: "max(12vw, 12vh)",
+            right: "max(9vw, 9vh)",
             bottom: "max(12vw, 12vh)",
             transform: "scale(0.75)",
             transformOrigin: "right bottom",
@@ -134,12 +156,6 @@ const styles = theme => ({
             display: "none",
         },
         [theme.breakpoints.down("md")]: {
-            "& ": {
-                fontSize: 12,
-                right: "max(6vw, 6vh)",
-                bottom: "max(18vw, 18vh)",
-                width: "min(60vw, 40vh)",
-            },
             "h2&": {
                 display: "none",
             },
@@ -156,6 +172,7 @@ const styles = theme => ({
         margin: theme.spacing(1, 2)
     },
     headerContainer: {
+        pointerEvents: "none",
         fontFamily: `"Jura"`,
         position: "absolute",
         padding: "0px 48px",
@@ -168,6 +185,7 @@ const styles = theme => ({
             }
         },
         "& blockquote": {
+            pointerEvents: "auto",
             fontSize: "14px",
             display: "none",
         },
@@ -178,13 +196,14 @@ const styles = theme => ({
         }
     },
     titleh1: {
+        pointerEvents: "auto",
         whiteSpace: "break-spaces",
         maxWidth: "1200px",
         fontWeight: "bold",
         fontSize: "36px",
         "& sup": {
-            fontSize: "0.33em",
-            opacity: "0.66",
+            fontSize: "0.3em",
+            opacity: "0.6",
             fontWeight: "bold",
         },
         [theme.breakpoints.down("md")]: {
@@ -194,19 +213,20 @@ const styles = theme => ({
             fontSize: "18px",
             "& sup": {
                 fontSize: "0.5em",
-                opacity: "0.77",
+                opacity: "0.8",
                 fontWeight: "bold",
             },
         },
     },
     titleh2: {
+        pointerEvents: "auto",
         whiteSpace: "break-spaces",
         fontWeight: "normal",
         fontSize: "21px",
         maxWidth: "900px",
         "& sup": {
-            fontSize: "0.33em",
-            opacity: "0.66",
+            fontSize: "0.3em",
+            opacity: "0.6",
             fontWeight: "bold",
         },
         [theme.breakpoints.down("md")]: {
@@ -215,18 +235,20 @@ const styles = theme => ({
         [theme.breakpoints.down("sm")]: {
             fontSize: "10px",
             "& sup": {
-                fontSize: "0.66em",
+                fontSize: "0.6em",
                 opacity: "1",
                 fontWeight: "bold",
             },
         },
     },
     titleSubTitle: {
+        pointerEvents: "auto",
         position: "fixed",
         bottom: 28,
         color: "white",
     },
     subtitleButton: {
+        pointerEvents: "auto",
         color: "#1658cb",
         fontWeight: "bold",
         fontSize: "12px",
@@ -425,12 +447,23 @@ class Home extends React.Component {
                     right: 0,
                     bottom: 0,
                 }}>
-                    <div className={classes.backgroundImage} style={{
+                    <div className={classes.backgroundImageContainer} style={{
                         backdropFilter: bf
                     }}>
-                        {_image_name_infographics.length >= 1 && <Grow in={_infographics_in} exit={!_infographics_in} timeout={{ enter: _infographics_fadein_time, exit: _infographics_fadein_time }}><img src={_image_name_infographics} alt="Image demo." className={String(first_image ? " aspect-ratio-one pixelated": _image_name_infographics.endsWith(".png") ? "pixelated": "") + " pixelated " + classes.backgroundImageImage}/></Grow>}
-                        <h2 className={classes.backgroundImageImage} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff", backgroundColor: THEME_DAY && !IS_EVENING ? "#ffffff99": "#00651080", padding: 16, textAlign: "center", border: "8px solid #00ff0054", borderRadius: "16px"}}>RENDER REAL "SVG" SHAPES!<br/><span style={{fontSize: "0.75em"}}>Use (6x) "xBRZ" instead of default pixelated rendering of (1x, 6x, 12x, 24x).</span></h2>
-                        <h3 className={classes.backgroundImageImage} onClick={this._toggle_bii3_opacity} style={{borderRadius: "16px", zIndex: 90, opacity: _bii3_opacity, color: THEME_DAY && !IS_EVENING ? "#000": "#fff", border: "4px solid #980000", backgroundColor: THEME_DAY && !IS_EVENING ? "#ffffffcc": "#000000cc", padding: 16, textAlign: "center"}}>RENDER REAL "SVG" SHAPES!<br/><span style={{fontSize: "0.75em"}}>Use (6x) "xBRZ" instead of default pixelated rendering of (1x, 6x, 12x, 24x).</span> <span style={{fontSize: "0.5em"}}>CLICK TO CLOSE</span></h3>
+                        {_image_name_infographics.length >= 1 &&
+                        <Grow
+                            in={_infographics_in}
+                            exit={!_infographics_in}
+                            timeout={{ enter: _infographics_fadein_time, exit: _infographics_fadein_time }}>
+                            <div className={classes.backgroundImageWrapper}>
+                                <img src={_image_name_infographics}
+                                     alt="Image demo."
+                                     className={String(first_image ? " aspect-ratio-one pixelated": _image_name_infographics.endsWith(".png") ? "pixelated": "") + " pixelated "}
+                                />
+                            </div>
+                        </Grow>}
+                        <h2 className={classes.backgroundImageInfo} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff", backgroundColor: THEME_DAY && !IS_EVENING ? "#ffffff99": "#00651080", padding: 16, textAlign: "center", border: "8px solid #00ff0054", borderRadius: "16px"}}>RENDER REAL "SVG" SHAPES!<br/><span style={{fontSize: "0.75em"}}>Use (6x) "xBRZ" instead of default pixelated rendering of (1x, 6x, 12x, 24x).</span></h2>
+                        <h3 className={classes.backgroundImageInfo} onClick={this._toggle_bii3_opacity} style={{borderRadius: "16px", zIndex: 90, opacity: _bii3_opacity, color: THEME_DAY && !IS_EVENING ? "#000": "#fff", border: "4px solid #980000", backgroundColor: THEME_DAY && !IS_EVENING ? "#ffffffcc": "#000000cc", padding: 16, textAlign: "center"}}>RENDER REAL "SVG" SHAPES!<br/><span style={{fontSize: "0.75em"}}>Use (6x) "xBRZ" instead of default pixelated rendering of (1x, 6x, 12x, 24x).</span> <span style={{fontSize: "0.5em"}}>CLICK TO CLOSE</span></h3>
                     </div>
                 </div>
                 <div className={classes.headerContainer} style={{color: THEME_DAY && !IS_EVENING? "#000": "#fff"}}>

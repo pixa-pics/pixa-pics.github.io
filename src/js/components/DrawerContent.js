@@ -19,7 +19,8 @@ const styles = theme => ({
     boldListItemText: {
         "& > span": {
             fontWeight: "bold",
-            fontSize: "1.25em"
+            fontSize: "1.25em",
+            filter: "opacity(0.5)",
         }
     },
     listItemGrey: {

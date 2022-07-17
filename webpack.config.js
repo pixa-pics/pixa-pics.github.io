@@ -143,9 +143,7 @@ module.exports = {
                                     forceAllTransforms: true,
                                     shippedProposals: true,
                                     bugfixes: true,
-                                    loose: true,
-                                    useBuiltIns: "entry",
-                                    corejs: "3.23.4"
+                                    useBuiltIns: "entry"
                                 }],
                                 'stage-0'
                             ]
