@@ -604,7 +604,7 @@ window.get_layer_base64_png_data_url_process_function = new AsyncFunction(`var f
             }
         })}*/
 
-window.remove_close_pxl_colors_process_function = new AsyncFunction(`var r=async function(r,n,a,t,e,f,i){"use strict";function o(r){return"#".concat("00000000".concat(r.toString(16)).slice(-8))}function c(r){return new Uint8ClampedArray(Uint32Array.of(r).buffer).reverse()}function u(r,n,a,t){return new Uint32Array(Uint8ClampedArray.of(t,a,n,r).buffer)[0]}function l(r,n=!1){if(r=void 0===r?0:r,n&&"number"==typeof r)return r;if(!n&&"number"==typeof r)return o(r);var a="",t=r,e=t.length;if(9===e)a=t;else if(7===e)a=t.concat("ff");else if(5===e){var f=t.charAt(1),i=t.charAt(2),c=t.charAt(3),u=t.charAt(4);a="#".concat(f,f,i,i,c,c,u,u)}else if(4===e){f=t.charAt(1),i=t.charAt(2),c=t.charAt(3);a="#".concat(f,f,i,i,c,c,"ff")}return n?function(r){return parseInt(r.slice(1),16)}(a):a}function s(r,n,a){if(1===(a=void 0===a?null:a))return!0;if(0===a)return r===n;var t=parseInt(255*a);r=l(r,!0),n=l(n,!0);var e=c(r),f=c(n),i=Math.abs(e[3]-f[3]),o=Math.abs(e[0]-f[0]),u=Math.abs(e[1]-f[1]),s=Math.abs(e[2]-f[2]),h=Math.abs(1-i/255);return null!==a?Boolean(o<t&&u<t&&s<t&&i<t):parseFloat(parseInt(o+u+s)/parseInt(765))*h}function h(r,n,a=1,t=!1,e=!1,f=!1){if(r=l(r,!0),0===a&&"hover"!==n&&t)return f?0:"#00000000";if("hover"===n){var i=c(r),s=function(r,n,a){r/=255,n/=255,a/=255;var t,e,f=Math.max(r,n,a),i=Math.min(r,n,a),o=(f+i)/2;if(f==i)t=e=0;else{var c=f-i;switch(e=o>.5?c/(2-f-i):c/(f+i),f){case r:t=(n-a)/c+(n<a?6:0);break;case n:t=(a-r)/c+2;break;case a:t=(r-n)/c+4}t/=6}return Array.of(parseInt(360*t),parseInt(100*e),parseInt(100*o))}(i[0],i[1],i[2],i[3]),h=function(r,n,a){var t,e,f;if(r/=360,a/=100,0==(n/=100))t=e=f=a;else{function c(r,n,a){return a<0&&(a+=1),a>1&&(a-=1),a<1/6?r+6*(n-r)*a:a<.5?n:a<2/3?r+(n-r)*(2/3-a)*6:r}var i=a<.5?a*(1+n):a+n-a*n,o=2*a-i;t=c(o,i,r+1/3),e=c(o,i,r),f=c(o,i,r-1/3)}return Uint8ClampedArray.of(255*t,255*e,255*f)}(s[0],s[1],parseInt(s[2]>=50?s[2]/2:2*s[2]));n=u(h[0],h[1],h[2],255)}else n=l(n,!0);if(t&&0===n&&1===a)return f?0:"#00000000";var v=c(r),A=c(n);if(255===A[3]&&1===a)return f?n:o(n);var p,y,d,m,b=v[3]/255,w=A[3]/255*a,I=new Uint8ClampedArray(4),U=0;if(b>0&&w>0){var g=w/(U=e?w+b:1-(1-w)*(1-b)),M=b*(1-w)/U;I[0]=parseInt(A[0]*g+v[0]*M),I[1]=parseInt(A[1]*g+v[1]*M),I[2]=parseInt(A[2]*g+v[2]*M)}else w>0?(U=A[3]/255,I[0]=A[0],I[1]=A[1],I[2]=A[2]):(U=v[3]/255,I[0]=v[0],I[1]=v[1],I[2]=v[2]);return e&&(U/=2),I[3]=parseInt(255*U),f?u(I[0],I[1],I[2],I[3]):(p=I[0],y=I[1],d=I[2],m=I[3],"#".concat("00000000".concat(new Uint32Array(Uint8ClampedArray.of(m,d,y,p).buffer)[0].toString(16)).slice(-8)))}function v(r,n){var a=new Object,t=0,e=r.map((function(r){var e=n[r],f=void 0===a[e]?null:a[e];return null===f&&(f=t,a[e]=f,t++),f})),f=new Uint32Array(t);return Object.entries(a).forEach((r=>{f[r[1]]=r[0]})),Array.of(e,f)}return new Promise((function(o,c){var u="auto"===a,l=!u,A=15,p=new Set;((f=null!==f?f:Math.max(Math.sqrt(n.length)+e,100))<2||f+12>n.length)&&(l=!0);for(var y=1,d=new Array(r.length),m=new Uint32Array(n.length);!l||1===y;){y++,a=u?1/(A-2):a||i,t=t||parseInt(255*a),d=Array.from(r),m=Uint32Array.from(n);for(var b=1;b<=t;b+=1){var w=a*(b/t),I=b/t,U=new Set,g=new Array(m.length).fill(0);d.forEach((r=>{g[r]++})),m.forEach(((r,n)=>{if(!U.has(n)){var a=g[n];m.forEach(((t,e)=>{if(n!==e&&!U.has(e)){var f=g[e],i=a>f,o=i?a/f:f/a;if(s(r,t,(w+w*(1-1/o)*I)/(1+I))){var c=i?h(m[n],m[e],1/o,!0,!1,!0):h(m[e],m[n],1/o,!0,!1,!0);m[n]=c,m[e]=c,U.add(n),U.add(e)}}}))}})),g=null;var M=v(d,m);d=Array.from(M[0]),m=Uint32Array.from(M[1]),M=null}m.length+12>f&&m.length-12<f||!u||p.has(A)?l=!0:m.length>f?(p.add(A),A--):(p.add(A),A++)}o(v(d,m)),d=null,m=null}))};`
+window.remove_close_pxl_colors_process_function = new AsyncFunction(`var r=async function(r,a,n,t,e,f,i){"use strict";function o(r){return"#".concat("00000000".concat(r.toString(16)).slice(-8))}function c(r){return new Uint8ClampedArray(Uint32Array.of(r).buffer).reverse()}function u(r,a,n,t){return new Uint32Array(Uint8ClampedArray.of(t,n,a,r).buffer)[0]}function s(r,a=!1){if(r=void 0===r?0:r,a&&"number"==typeof r)return r;if(!a&&"number"==typeof r)return o(r);var n="",t=r,e=t.length;if(9===e)n=t;else if(7===e)n=t.concat("ff");else if(5===e){var f=t.charAt(1),i=t.charAt(2),c=t.charAt(3),u=t.charAt(4);n="#".concat(f,f,i,i,c,c,u,u)}else if(4===e){f=t.charAt(1),i=t.charAt(2),c=t.charAt(3);n="#".concat(f,f,i,i,c,c,"ff")}return a?function(r){return parseInt(r.slice(1),16)}(n):n}function l(r,a,n){if(1===(n=void 0===n?null:n))return!0;if(0===n)return r===a;var t=parseInt(255*n);r=s(r,!0),a=s(a,!0);var e=c(r),f=c(a),i=Math.abs(e[3]-f[3]),o=Math.abs(e[0]-f[0]),u=Math.abs(e[1]-f[1]),l=Math.abs(e[2]-f[2]),h=Math.abs(1-i/255);return null!==n?Boolean(o<t&&u<t&&l<t&&i<t):parseFloat(parseInt(o+u+l)/parseInt(765))*h}function h(r,a,n=1,t=!1,e=!1,f=!1){if(r=s(r,!0),0===n&&"hover"!==a&&t)return f?0:"#00000000";if("hover"===a){var i=c(r),l=function(r,a,n){r/=255,a/=255,n/=255;var t,e,f=Math.max(r,a,n),i=Math.min(r,a,n),o=(f+i)/2;if(f==i)t=e=0;else{var c=f-i;switch(e=o>.5?c/(2-f-i):c/(f+i),f){case r:t=(a-n)/c+(a<n?6:0);break;case a:t=(n-r)/c+2;break;case n:t=(r-a)/c+4}t/=6}return Array.of(parseInt(360*t),parseInt(100*e),parseInt(100*o))}(i[0],i[1],i[2],i[3]),h=function(r,a,n){var t,e,f;if(r/=360,n/=100,0==(a/=100))t=e=f=n;else{function c(r,a,n){return n<0&&(n+=1),n>1&&(n-=1),n<1/6?r+6*(a-r)*n:n<.5?a:n<2/3?r+(a-r)*(2/3-n)*6:r}var i=n<.5?n*(1+a):n+a-n*a,o=2*n-i;t=c(o,i,r+1/3),e=c(o,i,r),f=c(o,i,r-1/3)}return Uint8ClampedArray.of(255*t,255*e,255*f)}(l[0],l[1],parseInt(l[2]>=50?l[2]/2:2*l[2]));a=u(h[0],h[1],h[2],255)}else a=s(a,!0);if(t&&0===a&&1===n)return f?0:"#00000000";var v=c(r),A=c(a);if(255===A[3]&&1===n)return f?a:o(a);var p,y,d,m,w=v[3]/255,g=A[3]/255*n,I=new Uint8ClampedArray(4),b=0;if(w>0&&g>0){var U=g/(b=e?g+w:1-(1-g)*(1-w)),M=w*(1-g)/b;I[0]=parseInt(A[0]*U+v[0]*M),I[1]=parseInt(A[1]*U+v[1]*M),I[2]=parseInt(A[2]*U+v[2]*M)}else g>0?(b=A[3]/255,I[0]=A[0],I[1]=A[1],I[2]=A[2]):(b=v[3]/255,I[0]=v[0],I[1]=v[1],I[2]=v[2]);return e&&(b/=2),I[3]=parseInt(255*b),f?u(I[0],I[1],I[2],I[3]):(p=I[0],y=I[1],d=I[2],m=I[3],"#".concat("00000000".concat(new Uint32Array(Uint8ClampedArray.of(m,d,y,p).buffer)[0].toString(16)).slice(-8)))}function v(r,a){var n=new Map,t=new Array(r.length);r.forEach(((r,e)=>{var f=a[r],i=n.get(f);void 0===i&&(i=n.size,n.set(f,i)),t[e]=i}));var e=new Uint32Array(n.size);for(var[f,i]of n)e[i]=f;return Array.of(t,e)}return new Promise((function(o,c){var u="auto"===n,s=!u,A=15,p=new Set;((f=null!==f?f:Math.max(Math.sqrt(a.length)+e,100))<2||f+12>a.length)&&(s=!0);for(var y=1,d=new Array(r.length),m=new Uint32Array(a.length);!s||1===y;){y++,n=u?1/(A-2):n||i,t=t||parseInt(255*n),d=Array.from(r),m=Uint32Array.from(a);for(var w=1;w<=t;w+=1){var g=n*(w/t),I=w/t,b=new Set,U=new Array(m.length).fill(0);d.forEach((r=>{U[r]++})),m.forEach(((r,a)=>{if(!b.has(a)){var n=U[a];m.forEach(((t,e)=>{if(a!==e&&!b.has(e)){var f=U[e],i=n>f,o=i?n/f:f/n;if(l(r,t,(g+g*(1-1/o)*I)/(1+I))){var c=i?h(m[a],m[e],1/o,!0,!1,!0):h(m[e],m[a],1/o,!0,!1,!0);m[a]=c,m[e]=c,b.add(a),b.add(e)}}}))}})),U=null;var M=v(d,m);d=Array.from(M[0]),m=Uint32Array.from(M[1]),M=null}m.length+12>f&&m.length-12<f||!u||p.has(A)?s=!0:m.length>f?(p.add(A),A--):(p.add(A),A++)}o(v(d,m)),d=null,m=null}))};`
     + "return r;")();
 /*
 var fu = async function(
@@ -858,30 +858,31 @@ var fu = async function(
                 }
             }
 
-            function this_remove_duplicate_pxl_colors(pxls, pxl_colors) {
+            function this_remove_duplicate_pxl_colors(_pxls, _pxl_colors) {
 
                 // Work with Hashtables and Typed Array so it is fast
-                var new_pxl_colors_object = new Object();
-                var new_pxl_colors_object_length = 0;
-                var new_pxls = pxls.map(function (pxl){
+                var new_pxl_colors_map = new Map();
+                var new_pxls = new Array(_pxls.length);
 
-                    var color = pxl_colors[pxl];
-                    var index_of_color = typeof new_pxl_colors_object[color] === "undefined" ? null: new_pxl_colors_object[color];
+                _pxls.forEach((pxl, iteration) => {
 
-                    if(index_of_color === null) {
+                    var color = _pxl_colors[pxl];
+                    var index_of_color = new_pxl_colors_map.get(color);
 
-                        index_of_color = new_pxl_colors_object_length;
-                        new_pxl_colors_object[color] = index_of_color;
-                        new_pxl_colors_object_length++;
+                    if(typeof index_of_color === "undefined") {
+
+                        index_of_color = new_pxl_colors_map.size;
+                        new_pxl_colors_map.set(color, index_of_color);
                     }
 
-                    return index_of_color;
+                    new_pxls[iteration] = index_of_color;
                 });
-                var new_pxl_colors = new Uint32Array(new_pxl_colors_object_length);
-                Object.entries(new_pxl_colors_object).forEach((entry) => {
 
-                    new_pxl_colors[entry[1]] = entry[0];
-                });
+                var new_pxl_colors = new Uint32Array(new_pxl_colors_map.size);
+                for (var [key, value] of new_pxl_colors_map) {
+
+                    new_pxl_colors[value] = key;
+                }
 
                 return Array.of(new_pxls, new_pxl_colors);
             }
@@ -2893,34 +2894,38 @@ class CanvasPixels extends React.Component {
             desynchronized: true
         });
 
+        let offscreenCanvas;
+
         try {
 
             if (typeof OffscreenCanvas === "undefined") {
                 throw new Error("Impossible to create OffscreenCanvas in this web environment.");
             }
 
-            element.offscreenCanvas = new OffscreenCanvas(pxl_width, pxl_height);
-            element.offscreenCanvas.context2d = element.offscreenCanvas.getContext("2d", {
-                desynchronized: true,
+            offscreenCanvas = new OffscreenCanvas(pxl_width, pxl_height);
+            offscreenCanvas.addEventListener("contextlost", () => {this._set_canvas_ref(element)});
+            element.offscreenCanvasContext2d = offscreenCanvas.getContext("2d", {
                 willReadFrequently: true
             });
 
         } catch (e) {
 
-            element.offscreenCanvas = document.createElement("canvas");
-            element.offscreenCanvas.width = pxl_width;
-            element.offscreenCanvas.height = pxl_height;
-            element.offscreenCanvas.context2d = element.offscreenCanvas.getContext("2d", {
-                desynchronized: true,
+            offscreenCanvas = document.createElement("canvas");
+            offscreenCanvas.width = pxl_width;
+            offscreenCanvas.height = pxl_height;
+            offscreenCanvas.addEventListener("contextlost", () => {this._set_canvas_ref(element)});
+            element.offscreenCanvasContext2d = offscreenCanvas.getContext("2d", {
                 willReadFrequently: true
             });
         }
 
-        element.offscreenCanvas.addEventListener("contextlost", () => {this._set_canvas_ref(element)});
-        element.offscreenCanvas.context2d.globalCompositeOperation = "source-over";
-        element.offscreenCanvas.context2d.imageSmoothingEnabled = false;
+        element.offscreenCanvasContext2d.globalCompositeOperation = "source-over";
+        element.offscreenCanvasContext2d.imageSmoothingEnabled = false;
         element.context2d.globalCompositeOperation = "copy";
         element.context2d.imageSmoothingEnabled = false;
+        element.drawOffscreenCanvas = function() {
+            element.context2d.drawImage(element.offscreenCanvasContext2d.canvas, 0, 0);
+        };
 
         this.setState({_canvas: element, has_shown_canvas_once: false}, () => {
 
@@ -5175,7 +5180,7 @@ class CanvasPixels extends React.Component {
         // Potentially cancel the latest animation frame (Clear old) and then request a new one that will maybe be rendered
         const { _loading_base64_img, dont_show_canvas_until_img_set, dont_show_canvas, but_show_canvas_once, has_shown_canvas_once, _last_paint_timestamp, _hidden } = this.state;
         if(_last_paint_timestamp > tried_rendering_at || (_loading_base64_img.length === 0 && dont_show_canvas_until_img_set) || (dont_show_canvas && !(but_show_canvas_once && !has_shown_canvas_once)) || _hidden){return;}
-        if(_last_paint_timestamp + 1000 / 60 > tried_rendering_at) { setTimeout(() => {this._update_canvas(force_update, do_not_cancel_animation, tried_rendering_at)}, 1000 / 90); return; }
+        if(_last_paint_timestamp + 1000 / 30 > tried_rendering_at) { setTimeout(() => {this._update_canvas(force_update, do_not_cancel_animation, tried_rendering_at)}, 1000 / 30); return; }
 
         const { _layers } = this.state;
         let { _s_pxl_colors, _s_pxls } = this.state;
@@ -5199,7 +5204,7 @@ class CanvasPixels extends React.Component {
         });
 
         // Importing state variables
-        const { offscreenCanvas, context2d } = this.state._canvas;
+        const {_canvas} = this.state;
         const {
             select_mode,
             pencil_mirror_mode,
@@ -5359,13 +5364,12 @@ class CanvasPixels extends React.Component {
 
         }
 
-        let pixel_updated = 0;
         const is_there_new_dimension = Boolean(_old_pxl_width !== pxl_width || _old_pxl_height !== pxl_height || _is_there_new_dimension);
         const has_new_pixel_hovered = Boolean(_old_pxls_hovered !== _pxls_hovered);
         const has_new_mine_player_index = Boolean(_previous_mine_player_index !== _mine_player_index);
 
         // Only operate on canvas context if existing
-        if (offscreenCanvas.context2d) {
+        if (_canvas.offscreenCanvasContext2d) {
 
             let pxl_indexes_of_current_shape = new Set();
 
@@ -5434,9 +5438,8 @@ class CanvasPixels extends React.Component {
             // This is a list of color index that we explore
             const _s_pxls_layer_index = _s_pxls[_layer_index];
             const length = _s_pxls_layer_index.length;
-            const _s_pxl_colors_uint32 = _s_pxl_colors;
 
-            let indexed_changes = [];
+            let indexed_changes = new Map();
             for(let index = 0; index < length; index++){
 
                 const pxl = _s_pxls_layer_index[index];
@@ -5496,13 +5499,13 @@ class CanvasPixels extends React.Component {
                         is_in_image_imported_resizer && Boolean(_selection_pair_highlight !== _old_selection_pair_highlight)
                     )) {
 
-                    let layer_pixel_colors = [];
+                    let layer_pixel_colors = new Map();
                     let start_i = 0;
 
                     for (let i = _layers.length - 1; i >= 0; i--) {
 
-                        const layer_pixel_color = _s_pxl_colors_uint32[i][_s_pxls[i][index]];
-                        layer_pixel_colors[i] = layer_pixel_color;
+                        const layer_pixel_color = _s_pxl_colors[i][_s_pxls[i][index]];
+                        layer_pixel_colors.set(i, layer_pixel_color);
 
                         if(this._get_rgba_from_Uint32(layer_pixel_color)[3] === 255 && parseFloat(_layers[i].opacity) === parseFloat(1) && !_layers[i].hidden) {
 
@@ -5518,7 +5521,7 @@ class CanvasPixels extends React.Component {
 
                         if(!_layers[i].hidden) {
 
-                            const layer_pixel_color = layer_pixel_colors[i];
+                            const layer_pixel_color = layer_pixel_colors.get(i);
 
                             pixel_color_Uint32 = this._blend_colors(pixel_color_Uint32, layer_pixel_color, parseFloat(_layers[i].opacity), false, false, true);
 
@@ -5534,25 +5537,26 @@ class CanvasPixels extends React.Component {
                         }
                     }
 
-                    let color =
+                    let color;
+                    if(Boolean(
                         is_in_pencil_mirror_axes_hover_indexes ||
                         is_in_pencil_mirror_axes_indexes ||
                         (is_pixel_hovered || is_mine_player_index) ||
                         (_mouse_inside && is_in_the_current_shape) ||
                         (is_in_the_current_selection && !is_in_the_old_selection_drawn) ||
                         (is_a_new_pixel_to_paint && is_in_the_current_selection) ||
-                        is_selected_and_hovered_recently ?
-                            is_pixel_hovered || is_mine_player_index || is_in_pencil_mirror_axes_indexes ?
-                                this._blend_colors(pixel_color_Uint32, "hover", 2/3, false, false, true):
-                                this._blend_colors(pixel_color_Uint32, "hover", 1/3, false, false, true)
-                            : pixel_color_Uint32;
+                        is_selected_and_hovered_recently) && !Boolean(
+                        is_the_old_mine_player_index_to_paint || is_ancient_selected_pixel_waiting_to_update || (is_a_new_pixel_to_paint && !is_in_the_current_selection && !is_pixel_hovered && !is_in_pencil_mirror_axes_indexes)
+                    )) {
 
-                    if(is_the_old_mine_player_index_to_paint || is_ancient_selected_pixel_waiting_to_update || (is_a_new_pixel_to_paint && !is_in_the_current_selection && !is_pixel_hovered && !is_in_pencil_mirror_axes_indexes)) {
+                        if(is_pixel_hovered || is_mine_player_index || is_in_pencil_mirror_axes_indexes) {
 
-                        color = pixel_color_Uint32;
-                    }
+                            color = pixel_color_Uint32 = this._blend_colors(pixel_color_Uint32, "hover", 2/3, false, false, true);
+                        }else {
 
-                    if(is_in_image_imported_resizer || (is_in_the_current_selection && !is_in_the_current_shape && !is_pixel_hovered)) {
+                            color = pixel_color_Uint32 = this._blend_colors(pixel_color_Uint32, "hover", 1/3, false, false, true);
+                        }
+                    }else if(is_in_image_imported_resizer || (is_in_the_current_selection && !is_in_the_current_shape && !is_pixel_hovered)) {
 
                         const pos_x = index % pxl_width;
                         const pos_y = (index - pos_x) / pxl_width;
@@ -5570,48 +5574,40 @@ class CanvasPixels extends React.Component {
                             const opacity = 1/3 + (0 + ((pos_x + pos_y + (_selection_pair_highlight ? 1: 0)) % 2)) / 3;
                             color = this._blend_colors(pixel_color_Uint32, "hover", opacity, false, false, true);
                         }
+                    } else {
+
+                        color = pixel_color_Uint32;
                     }
-
-                    // We need to clear the pixel that won't totally be opaque because it can merge colors accidentally
-                    indexed_changes[index] = color;
-
-                    pixel_updated++;
+                    indexed_changes.set(index, color);
                 }
             }
 
-            if(has_layers_visibility_or_opacity_changed || pixel_updated > 0 || Boolean(hide_canvas_content && !_was_canvas_content_hidden)) {
+            if(has_layers_visibility_or_opacity_changed || indexed_changes.size > 0 || Boolean(hide_canvas_content && !_was_canvas_content_hidden)) {
 
-                let image_data = null;
+                if(Boolean(has_layers_visibility_or_opacity_changed || Boolean(hide_canvas_content && !_was_canvas_content_hidden) || Boolean(indexed_changes.size * 2 > pxl_width * pxl_height))){
 
-                if(Boolean(has_layers_visibility_or_opacity_changed || Boolean(hide_canvas_content && !_was_canvas_content_hidden) || Boolean(pixel_updated * 1.25 > pxl_width * pxl_height))){
-
-                    image_data = Boolean(has_layers_visibility_or_opacity_changed || Boolean(hide_canvas_content && !_was_canvas_content_hidden)) ?
+                    let image_data = Boolean(has_layers_visibility_or_opacity_changed || Boolean(hide_canvas_content && !_was_canvas_content_hidden)) ?
                         new ImageData(new Uint8ClampedArray(pxl_width * pxl_height * 4).fill(0), pxl_width, pxl_height):
-                        offscreenCanvas.context2d.getImageData(0, 0, pxl_width, pxl_height);
+                        _canvas.offscreenCanvasContext2d.getImageData(0, 0, pxl_width, pxl_height);
 
-                    Object.entries(indexed_changes).forEach(([index, colorUint32]) => {
+                    for (const [index, colorUint32] of indexed_changes) {
 
-                        const rgba = this._get_rgba_from_Uint32(colorUint32);
-                        const index_by_4 = index * 4;
+                        image_data.data.set(this._get_rgba_from_Uint32(colorUint32), index * 4);
+                    }
 
-                        image_data.data[index_by_4 + 0] = rgba[0];
-                        image_data.data[index_by_4 + 1] = rgba[1];
-                        image_data.data[index_by_4 + 2] = rgba[2];
-                        image_data.data[index_by_4 + 3] = rgba[3];
-                    });
-
-                    offscreenCanvas.context2d.putImageData(image_data, 0, 0);
+                    _canvas.offscreenCanvasContext2d.putImageData(image_data, 0, 0);
                 }else {
 
-                    Object.entries(indexed_changes).forEach(([index, colorUint32]) => {
-
+                    for (const [index, colorUint32] of indexed_changes) {
+                        indexed_changes.set(index, this._get_hex_from_Uint32(colorUint32));
+                    }
+                    for (const [index, hex] of indexed_changes) {
                         const x = index % pxl_width;
                         const y = (index - x) / pxl_width;
-
-                        offscreenCanvas.context2d.fillStyle = this._get_hex_from_Uint32(colorUint32);
-                        offscreenCanvas.context2d.clearRect(x, y, 1, 1);
-                        offscreenCanvas.context2d.fillRect(x, y, 1, 1);
-                    });
+                        _canvas.offscreenCanvasContext2d.fillStyle = hex;
+                        _canvas.offscreenCanvasContext2d.clearRect(x, y, 1, 1);
+                        _canvas.offscreenCanvasContext2d.fillRect(x, y, 1, 1);
+                    }
                 }
 
                 this.setState({
@@ -5628,17 +5624,9 @@ class CanvasPixels extends React.Component {
                     _previous_imported_image_pxls_positioned_keyset: new Set(imported_image_pxls_positioned_keyset),
                     _previous_image_imported_resizer_index: parseInt(image_imported_resizer_index),
                     _old_selection_pair_highlight: Boolean(_selection_pair_highlight),
-                    _old_layers: _layers.map((l) => {
-                        return {
-                            id: parseInt(l.id),
-                            hash: String(l.hash),
-                            name: String(l.name),
-                            hidden: Boolean(l.hidden),
-                            opacity: parseInt(l.opacity),
-                        }
-                    }),
-                    _old_pxls: _s_pxls[_layer_index],
-                    _old_pxl_colors: _s_pxl_colors[_layer_index],
+                    _old_layers: _layers.map(l => Object.assign({}, l)),
+                    _old_pxls: Array.from(_s_pxls[_layer_index]),
+                    _old_pxl_colors: Uint32Array.from(_s_pxl_colors[_layer_index]),
                     _old_pxl_width: parseInt(pxl_width),
                     _old_pxl_height: parseInt(pxl_height),
                     _previous_mine_player_index: parseInt(_mine_player_index),
@@ -5646,13 +5634,8 @@ class CanvasPixels extends React.Component {
                     _was_canvas_content_hidden: Boolean(hide_canvas_content),
                     _last_paint_timestamp: Date.now(),
                     has_shown_canvas_once: true
-                }, () => {
-
-                    _anim_loop(() => {
-
-                        context2d.drawImage(offscreenCanvas, 0, 0);
-                    }, !has_shown_canvas_once, !has_shown_canvas_once); // Enable to cancel in order to know that a frame has not been drawn
                 });
+                _anim_loop(_canvas.drawOffscreenCanvas, !has_shown_canvas_once, !has_shown_canvas_once);
             }
         }
     };
@@ -8129,37 +8112,31 @@ class CanvasPixels extends React.Component {
 
     _remove_duplicate_pxl_colors = (_pxls, _pxl_colors) => {
 
-        _pxls = Uint32Array.from(_pxls);
-        _pxl_colors = Uint32Array.from(_pxl_colors);
-
         // Work with Hashtables and Typed Array so it is fast
-        let new_pxl_colors_object = {};
-        let new_pxl_colors_object_length = 0;
-        let new_pxls = new Array(_pxls.length).fill(0);
+        let new_pxl_colors_map = new Map();
+        let new_pxls = new Array(_pxls.length);
 
         _pxls.forEach((pxl, iteration) => {
 
             const color = _pxl_colors[pxl];
-            let index_of_color = typeof new_pxl_colors_object[color] === "undefined" ? null: new_pxl_colors_object[color];
+            let index_of_color = new_pxl_colors_map.get(color);
 
-            if(index_of_color === null) {
+            if(typeof index_of_color === "undefined") {
 
-                index_of_color = new_pxl_colors_object_length;
-                new_pxl_colors_object[color] = index_of_color;
-                new_pxl_colors_object_length++;
+                index_of_color = new_pxl_colors_map.size;
+                new_pxl_colors_map.set(color, index_of_color);
             }
 
             new_pxls[iteration] = index_of_color;
         });
 
-        let new_pxl_colors = new Uint32Array(new_pxl_colors_object_length);
-        Object.entries(new_pxl_colors_object).forEach((entry) => {
+        let new_pxl_colors = new Uint32Array(new_pxl_colors_map.size);
+        for (const [key, value] of new_pxl_colors_map) {
 
-            const [key, value] = entry;
             new_pxl_colors[value] = key;
-        })
+        }
 
-        return [new_pxls, new_pxl_colors];
+        return Array.of(new_pxls, new_pxl_colors);
     };
     
     _get_shadow = (elevation) => {

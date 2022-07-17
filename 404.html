@@ -222,7 +222,7 @@
 
                 // Prevent this function from being executed none, twice or more using parameters what
                 if(document.readyState === "interactive") { fire_it("FIRST"); }
-                if(document.readyState === "complete") { fire_it("LAST"); }
+                if(document.readyState === "complete") { fire_it("LAST"); window.addEventListener("load", function() { fire_it("LAST"); }); }
             };
 
             /* TRY INSTALL SERVICE WORKER, FINALLY LOAD JS FILE */
