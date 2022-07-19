@@ -73,7 +73,9 @@ import SwapHorizontalIcon from "../icons/SwapHorizontal";
 import SwapVerticalIcon from "../icons/SwapVertical";
 
 import NavigationIcon from "../icons/Navigation";
-import CodeIcon from "@material-ui/icons/Code";
+
+import ColorConversion from "../components/canvaspixels/utils/ColorConversion";
+const color_conversion = Object.create(ColorConversion).new();
 
 const styles = theme => ({
     listSubHeader: {
@@ -371,15 +373,6 @@ class PixelToolboxSwipeableViews extends React.Component {
         return false;
     }
 
-    _hsla_to_hex = (h, s, l, a) => {
-
-        const { _hsla_to_hex } = this.state.canvas;
-
-        if(!Boolean(_hsla_to_hex)) { return "#00000000" }
-
-        return _hsla_to_hex(h, s, l, a);
-    };
-
     _rgba_from_hex = (hex) => {
 
         const { get_rgba_from_hex } = this.state.canvas;
@@ -414,10 +407,10 @@ class PixelToolboxSwipeableViews extends React.Component {
     _colorize = () => {
 
         const { current_color, slider_value } = this.state;
-        const { get_rgba_from_hex, rgb_to_hsl, to_color } = this.state.canvas;
+        const { to_color } = this.state.canvas;
 
-        const [r, g, b, a] = get_rgba_from_hex(current_color);
-        const [h, s, l] = rgb_to_hsl(r, g, b);
+        const [r, g, b, a] = color_conversion.to_rgba_from_hex(current_color);
+        const [h, s, l, o] = color_conversion.to_hsla_from_rgba(r, g, b, a);
 
         to_color(h, slider_value, s === 0 ? null: s, l === 0 ? null: l);
     }
@@ -1404,13 +1397,13 @@ class PixelToolboxSwipeableViews extends React.Component {
         let colors = [];
         for (let i = 1; i <= 128; i++) {
 
-            colors.push(this._hsla_to_hex((i / 128) * 360, _saturation, _luminosity, _opacity));
+            colors.push(color_conversion.to_hex_from_rgba(color_conversion.to_rgba_from_hsla(Array.of((i / 128) * 360, _saturation, _luminosity, _opacity))));
         }
 
-        const [r_1, g_1, b_1] = current_color === "#ffffff" ? [196, 196, 196] : this._rgba_from_hex(current_color);
+        const [r_1, g_1, b_1] = current_color === "#ffffff" ? [196, 196, 196] : color_conversion.to_rgba_from_hex(current_color);
         const is_current_color_dark = r_1 + g_1 + b_1 < 152 * 3;
 
-        const [r_2, g_2, b_2] = second_color === "#ffffff" ? [196, 196, 196] : this._rgba_from_hex(second_color);
+        const [r_2, g_2, b_2] = second_color === "#ffffff" ? [196, 196, 196] : color_conversion.to_rgba_from_hex(second_color);
         const is_second_color_dark = r_2 + g_2 + b_2 < 152 * 3;
 
         return (

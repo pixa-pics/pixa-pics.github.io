@@ -34,18 +34,6 @@ class PixelColorPaletteItem extends React.Component {
         this.setState(new_props);
     }
 
-    _get_rgba_from_hex = (color) => {
-
-        color = color || "#00000000";
-
-        const r = parseInt(color.slice(1, 3), 16);
-        const g = parseInt(color.slice(3, 5), 16);
-        const b = parseInt(color.slice(5, 7), 16);
-        const a = parseInt(color.slice(7, 9), 16);
-
-        return [r, g, b, a];
-    };
-
     shouldComponentUpdate(new_props) {
 
         const { selected, color, size, icon } = this.state;
@@ -63,7 +51,7 @@ class PixelColorPaletteItem extends React.Component {
 
         const { classes, full_width, selected, size, color, icon, style } = this.state;
 
-        let [r, g, b, a] = this._get_rgba_from_hex(color);
+        let [r, g, b, a] = new Uint8ClampedArray(Uint32Array.of(parseInt(color.slice(1), 16)).buffer).reverse();
 
         const is_color_dark = a > 96 && (r + g + b) * (255 - a) / 255 < 192 * 3;
 

@@ -7,7 +7,7 @@ window.mobileAndTabletCheck = function() {
 let is_mobile_or_tablet = window.mobileAndTabletCheck();
 import React, { Suspense } from "react";
 import dispatcher from "../dispatcher";
-const CanvasPixels = React.lazy(() => import("../components/CanvasPixels"));
+const CanvasPixels = React.lazy(() => import("../components/canvaspixels/CanvasPixels"));
 import {IconButton, withStyles} from "@material-ui/core";
 import pool from "../utils/worker-pool";
 import {ListItem, Typography, Backdrop, Slider, SwipeableDrawer, Drawer, Tabs, Tab, Menu, ListSubheader, ListItemText, ListItemIcon} from "@material-ui/core";
@@ -61,6 +61,9 @@ import FiltersTweemoji from "../twemoji/react/1F984";
 import HexGrid from "../icons/HexGrid";
 import get_svg_in_b64 from "../utils/svgToBase64";
 import { t } from "../utils/t";
+
+import ColorConversion from "../components/canvaspixels/utils/ColorConversion";
+const color_conversion = Object.create(ColorConversion).new();
 
 const styles = theme => ({
     green: {
@@ -1502,15 +1505,15 @@ class Pixel extends React.Component {
 
     _handle_current_color_change = (color, event) => {
 
-        const { _get_hex_color_from_rgba_values, get_rgba_from_hex, rgb_to_hsl } = this.state._canvas;
-
         if(typeof color.rgb !== "undefined") {
 
-            color = _get_hex_color_from_rgba_values(color.rgb.r, color.rgb.g, color.rgb.b, color.rgb.a * 255);
+            color = color_conversion.to_hex_from_rgba(Uint8ClampedArray.of(color.rgb.r, color.rgb.g, color.rgb.b, parseInt(color.rgb.a * 255)));
+        }else {
+
+            color = color_conversion.format_hex_color(color);
         }
 
-        const [r, g, b, a] = get_rgba_from_hex(color);
-        const [h, s, l] = rgb_to_hsl(r, g, b);
+        const h = color_conversion.to_hsla_from_rgba(color_conversion.to_rgba_from_hex(color))[0];
 
         this.setState({_current_color: color, _hue: h});
     };
