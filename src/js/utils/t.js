@@ -56,7 +56,7 @@ const get_lang_lib = async (name) => {
 }
 
 /* Do not flood the read of the translate object and the document lang element, just set an interval to check it*/
-const l = (_l, callback_function = () => {}) => {
+const l = async(_l, callback_function = () => {}) => {
 
     let l1 = "";
     if(typeof _l !== "undefined") {
@@ -72,15 +72,15 @@ const l = (_l, callback_function = () => {}) => {
 
         window.LANG = l1;
 
-        get_lang_lib(l1).then(function(ld) {
+        get_lang_lib(l1).then(async(ld) => {
 
             window.LANG_DIR = Object.assign({}, ld);
-            callback_function(true);
-            import("javascript-time-ago/bundle/javascript-time-ago").then(function(TimeAgo){
+            import("javascript-time-ago/bundle/javascript-time-ago").then(async(TimeAgo) => {
 
                 TimeAgo.default.addDefaultLocale(window.LANG_DIR["_time_ago"]);
                 window.TIME_AGO = new TimeAgo.default(window.LANG);
             });
+            callback_function(true);
         });
     }else {
 

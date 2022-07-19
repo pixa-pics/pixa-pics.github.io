@@ -26,7 +26,7 @@ const init = async() => {
 
         PouchDB.plugin(PouchDB_memory);
         PouchDB.plugin(PouchDB_IDB);
-        window.settings_db = new PouchDB("settings_db", {adapter: "idb", view_adapter: "memory", deterministic_revs: true, revs_limit: 0});
+        window.settings_db = new PouchDB("settings_db", {adapter: "idb", view_adapter: "memory", deterministic_revs: false, revs_limit: 0});
     }
 };
 

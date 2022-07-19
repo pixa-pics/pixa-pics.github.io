@@ -324,7 +324,7 @@ class Index extends React.Component {
         }
     }
 
-    _process_settings_query_result = (error, settings) => {
+    _process_settings_query_result = async(error, settings) => {
 
         if(!Boolean(error) && typeof Object.assign({}, settings).locales !== "undefined") {
 
@@ -346,20 +346,21 @@ class Index extends React.Component {
 
             if(set_language_on_document) {
 
-                state = Object.assign(state, {_language});
-                state = Object.assign(state, { _ret, _camo, _voice_enabled, _sfx_enabled, _music_enabled, _jamy_enabled, _selected_locales_code, _know_the_settings: true, _has_played_index_music_counter: parseInt((!this.state._know_the_settings && _music_enabled) ? 1: this.state._has_played_index_music_counter )});
+                state = { _language, _ret, _camo, _voice_enabled, _sfx_enabled, _music_enabled, _jamy_enabled, _selected_locales_code, _know_the_settings: true, _has_played_index_music_counter: parseInt(Boolean(!this.state._know_the_settings && _music_enabled) ? 1: this.state._has_played_index_music_counter )};
+
+                this.setState(state);
+                l(_language, async() => {
+
+                    if(dont_know_settings){
+                        document.body.setAttribute("datainitiated", "true");
+                        this.forceUpdate(async function(){document.body.setAttribute("class", "loaded")});
+                    }else {
+
+                        this.forceUpdate();
+                    }
+                });
 
                 if(_music_enabled === true && was_music_enabled === false) { setTimeout(() => {this._should_play_music_pathname(this.state.pathname);}, 1000)}
-
-                l(_language, () => {
-
-                    this.setState(state, () => {
-                        if(dont_know_settings){document.body.setAttribute("datainitiated", "true"); }
-                        this.forceUpdate(() => {
-                            if(dont_know_settings){ document.body.setAttribute("class", "loaded"); }
-                        });
-                    });
-                });
 
             }else if(
                 this.state._know_the_settings === false ||
@@ -372,7 +373,7 @@ class Index extends React.Component {
                 this.state._selected_locales_code !== _selected_locales_code
             ){
 
-                state = Object.assign(state, { _ret, _camo, _voice_enabled, _sfx_enabled, _music_enabled, _jamy_enabled, _selected_locales_code, _know_the_settings: true, _has_played_index_music_counter: parseInt((!this.state._know_the_settings && _music_enabled) ? 1: this.state._has_played_index_music_counter )});
+                state = { _ret, _camo, _voice_enabled, _sfx_enabled, _music_enabled, _jamy_enabled, _selected_locales_code, _know_the_settings: true, _has_played_index_music_counter: parseInt(Boolean(!this.state._know_the_settings && _music_enabled) ? 1: this.state._has_played_index_music_counter )};
 
                 this.setState(state, async() => {
 

@@ -288,7 +288,6 @@ class PixelToolboxSwipeableViews extends React.Component {
             tool,
             width,
             height,
-            filters,
             last_filters_hash,
             filters_preview_progression,
             select_mode,
@@ -319,14 +318,13 @@ class PixelToolboxSwipeableViews extends React.Component {
             tool !== new_props.tool ||
             width !== new_props.width ||
             height !== new_props.height ||
-            filters !== new_props.filters ||
             last_filters_hash !== new_props.last_filters_hash ||
             select_mode !== new_props.select_mode ||
             pencil_mirror_mode !== new_props.pencil_mirror_mode ||
             is_something_selected !== new_props.is_something_selected ||
             import_size !== new_props.import_size ||
             import_colorize !== new_props.import_colorize ||
-            parseInt(filters_preview_progression) !== parseInt(new_props.filters_preview_progression)
+            parseInt(Math.round(parseFloat(filters_preview_progression / 5) * 5)) !== parseInt(Math.round(parseFloat(new_props.filters_preview_progression / 5) * 5))
         )) {
 
             if(_filters_changed) {
@@ -335,7 +333,7 @@ class PixelToolboxSwipeableViews extends React.Component {
 
                 for(let i = 0; i < new_props.filters.length; i++) {
 
-                    src = new_props.filters_thumbnail[new_props.filters[i]] || null;
+                    src = new_props.filters_thumbnail.get(new_props.filters[i]) || null;
                     if(src !== null) { i = new_props.filters.length;}
                 }
 
@@ -686,6 +684,7 @@ class PixelToolboxSwipeableViews extends React.Component {
             }
         });
 
+        const _filters_preview_progression_stepped = Math.round(parseFloat(filters_preview_progression / 7) * 7);
         const too_much_colors_no_vector = layers_colors_max >= 128;
         const actions = {
             "palette": [],
@@ -1380,16 +1379,17 @@ class PixelToolboxSwipeableViews extends React.Component {
             "filters": [
                 {
                     icon: <ImageFilterMagicIcon/>,
-                    progression: String(filters_preview_progression),
+                    progression: String(_filters_preview_progression_stepped),
+                    change: String(parseInt(_filters_preview_progression_stepped) === 0 ? "scroll-position": "contents, scroll-position"),
                     text: `Filters`,
                     label: "primary",
                     local_i: 0,
                     sub: "The strength selected matters meanwhile preview are only shown at 100% intensity. To cancel any operation, use 'undo'.",
                     tools: filters.map((name, name_index) => {
 
-                        const f = filters_thumbnail[name] || "";
+                        const f = filters_thumbnail.get(name) || "";
                         return {
-                            icon: <Avatar className={"pixelated"} style={{filter: `opacity(${String(Boolean(f.length === 0 && name_index !== 0) ? "0.5": "1.0")})`, height: "100%", width: "100%", aspectRatio: `${_filter_ar_on_one} / 1`, border: "4px solid #020529"}} key={String(Boolean(f.length > 0) ? String(name+"-loaded-"+_filter_ar_on_one): String(name+"-loading-"+_filter_ar_on_one)) + "-preview-" + last_filters_hash} variant={"rounded"} src={String(f.length > 0 ? f: filters_thumbnail[filters[0]])} />,
+                            icon: <Avatar className={"speed"} style={{width: "80px", height: `${parseInt(80/_filter_ar_on_one)}px`, filter: `opacity(${String(Boolean(f.length === 0 && name_index !== 0) ? "0.5": "1.0")})`, border: "4px solid #020529", contain: "paint style size"}} key={String(Boolean(f.length > 0) ? String(name+"-loaded-"+_filter_ar_on_one): String(name+"-loading-"+_filter_ar_on_one)) + String("-preview-" + last_filters_hash)} variant={"rounded"} src={String(f.length > 0 ? f: filters_thumbnail.get(filters[0]))} />,
                             text: name,
                             on_click: () => {
                                 canvas.to_filter(name, slider_value);
@@ -1424,6 +1424,7 @@ class PixelToolboxSwipeableViews extends React.Component {
                 index={view_name_index}
                 onChangeIndex={this._handle_view_name_change}
                 disabled={false}
+                key={"fixlol"}
             >
                 {
                     Object.entries(actions).map(([name, view], index) => {
@@ -1458,7 +1459,7 @@ class PixelToolboxSwipeableViews extends React.Component {
                                                                 <ListItemAvatar>
                                                                     <Avatar variant="square"
                                                                             className={classes.layerThumbnail}
-                                                                            imgProps={{className: "pixelated", style: {background: `repeating-conic-gradient(rgb(248 248 248 / 100%) 0% 25%, rgb(224 224 224 / 100%) 0% 50%) left top 50% / calc(200% / ${width}) calc(200% / ${height})`}}}
+                                                                            imgProps={{className: "speed", style: {background: `repeating-conic-gradient(rgb(248 248 248 / 100%) 0% 25%, rgb(224 224 224 / 100%) 0% 50%) left top 50% / calc(200% / ${width}) calc(200% / ${height})`}}}
                                                                             src={layer.thumbnail}/>
                                                                 </ListItemAvatar>
                                                                 <ListItemText primary={layer.name}/>
@@ -1774,7 +1775,7 @@ class PixelToolboxSwipeableViews extends React.Component {
                                                         role="progressbar" aria-valuenow={action_set.progression} aria-valuemin="0" aria-valuemax="100"
                                                         aria-label={`main-progressbar-${action_set.text}`}
                                                         className={classes.linearProgress}
-                                                        value={parseInt(action_set.progression % 100)} />
+                                                        value={parseInt(action_set.progression) % 100} />
                                                     }
                                                 </ListSubheader>
                                                 {
@@ -1792,9 +1793,10 @@ class PixelToolboxSwipeableViews extends React.Component {
                                                                  flexWrap: "wrap",
                                                                  alignContent: "stretch",
                                                                  flexDirection: "row",
-                                                                 justifyContent: "flex-start"
+                                                                 justifyContent: "flex-start",
+                                                                 willChange: String(action_set.change || "initial")
                                                              }
-                                                             : {}
+                                                             : {willChange: String(action_set.change || "initial")}
                                                      }>
                                                     {action_set.tools.map((tool, index) => {
                                                         return tool.for ? (

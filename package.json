@@ -4,7 +4,6 @@
   "description": "Pixel art editor. Make potential (un)limited.",
   "main": "/index.html",
   "dependencies": {
-    "@date-io/date-fns": "^1.3.13",
     "@material-ui/core": "~4.12.3",
     "@material-ui/icons": "^4.11.2",
     "@material-ui/lab": "~4.0.0-alpha.57",
@@ -24,7 +23,7 @@
     "react-color": "^2.19.3",
     "react-dom": "^16.14.0",
     "react-swipeable-views": "^0.13.9",
-    "react-time-ago": "^7.1.4",
+    "readable-stream": "~4.1.0",
     "regenerator-runtime": "^0.13.9",
     "svg64": "^1.1.0",
     "svgo": "^2.8.0",

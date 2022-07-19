@@ -30,28 +30,28 @@ const overrides = {
             "h1 > p, h2 > p, h3 > p, h4 > p, h5 > p, h6 > p": {
                 margin: 0,
             },
-            ".pixelated, .pixelated *": {
+            ".speed:not(a), .speed:not(a)": {
                 imageRendering: "optimizeSpeed",
             },
-            ".pixelated:not(b), .pixelated:not(b) *": {
+            ".speed:not(b), .speed:not(b)": {
+                imageRendering: "optimizespeed",
+            },
+            ".pixelated:not(a), .pixelated:not(a) *": {
                 imageRendering: "-moz-crisp-edges",
             },
-            ".pixelated:not(c), .pixelated:not(c) *": {
+            ".pixelated:not(b), .pixelated:not(b) *": {
                 imageRendering: "-webkit-crisp-edges",
             },
-            ".pixelated:not(d), .pixelated:not(d) *": {
-                imageRendering: "-webkit-optimize-contrast",
-            },
-            ".pixelated:not(e), .pixelated:not(e) *": {
+            ".pixelated:not(c), .pixelated:not(c) *": {
                 imageRendering: "-o-pixelated",
             },
-            ".pixelated:not(f), .pixelated:not(f) *": {
+            ".pixelated:not(d), .pixelated:not(d) *": {
                 imageRendering: "crisp-edges",
             },
-            ".pixelated:not(g), .pixelated:not(g) *": {
+            ".pixelated:not(e), .pixelated:not(e) *": {
                 imageRendering: "nearest-neighbor",
             },
-            ".pixelated:not(h), .pixelated:not(h) *": {
+            ".pixelated:not(f), .pixelated:not(f) *": {
                 imageRendering: "pixelated",
             },
             ".emoji": {

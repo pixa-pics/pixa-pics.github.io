@@ -3,7 +3,7 @@ import { withStyles } from "@material-ui/core";
 
 import { HISTORY, UTC_OFFSET_PER_COUNTRIES } from "../utils/constants";
 
-import {Button, Fade, Grow} from "@material-ui/core";
+import {Button, Grow} from "@material-ui/core";
 import actions from "../actions/utils";
 
 import ChemistryEmojiSvg from "../twemoji/react/1F9Ea";
@@ -12,6 +12,7 @@ import LightingEmojiSvg from "../twemoji/react/26A1";
 import GlassesEmojiSvg from "../twemoji/react/1F97D";
 import JacketEmojiSvg from "../twemoji/react/1F97C";
 import SecurityEmoji from "../twemoji/react/1F6E1";
+import ShufflingSpanText from "../components/ShufflingSpanText";
 
 const styles = theme => ({
     bold: {
@@ -272,6 +273,7 @@ class Home extends React.Component {
             _infographics_fadein_time: 0,
             _infographics_in: true,
             _bii3_opacity: 1,
+            _join_now_button_update: 0,
         };
     };
 
@@ -299,7 +301,7 @@ class Home extends React.Component {
             _image_name_infographics = all_image_name_infographics[_image_index] || all_image_name_infographics[0];
 
             // image  has been loaded
-            this.setState({_infographics_in: true, _image_name_infographics, _infographics_fadein_time: 500}, () => {
+            this.setState({_infographics_in: true, _image_name_infographics, _infographics_fadein_time: 300}, () => {
 
                 this.forceUpdate(() => {
 
@@ -309,13 +311,21 @@ class Home extends React.Component {
 
                             this.forceUpdate();
                         });
-                    }, 5000);
+                    }, 2500);
                 });
             });
 
-        }, 5500)
+        }, 3000);
 
-        this.setState({_image_auto_interval});
+        const _button_interval = setInterval(() => {
+
+            this.setState({_join_now_button_update: this.state._join_now_button_update+1}, () => {
+
+                this.forceUpdate();
+            });
+        }, 3000);
+
+        this.setState({_image_auto_interval, _button_interval});
     }
 
     componentWillReceiveProps(new_props){
@@ -339,6 +349,7 @@ class Home extends React.Component {
         try {
             actions.stop_sound();
             clearInterval(this.state._image_auto_interval);
+            clearInterval(this.state._button_interval);
         } catch(e) {
 
         }
@@ -376,7 +387,7 @@ class Home extends React.Component {
     render() {
 
         const { classes, _bii3_opacity, _infographics_fadein_time, _infographics_in, _selected_locales_code } = this.state;
-        let { _image_name_infographics } = this.state;
+        let { _image_name_infographics, _join_now_button_update } = this.state;
 
         function get_now_hours24_with_locale(lc) {
 
@@ -458,7 +469,7 @@ class Home extends React.Component {
                             <div className={classes.backgroundImageWrapper}>
                                 <img src={_image_name_infographics}
                                      alt="Image demo."
-                                     className={String(first_image ? " aspect-ratio-one pixelated": _image_name_infographics.endsWith(".png") ? "pixelated": "") + " pixelated "}
+                                     className={String(first_image ? " aspect-ratio-one pixelated": _image_name_infographics.endsWith(".png") ? "pixelated": "speed")}
                                 />
                             </div>
                         </Grow>}
@@ -469,7 +480,7 @@ class Home extends React.Component {
                 <div className={classes.headerContainer} style={{color: THEME_DAY && !IS_EVENING? "#000": "#fff"}}>
                     <h1 className={classes.titleh1} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff"}}>
                         <span className={classes.stepPoints} style={{color: THEME_DAY && !IS_EVENING ? "#100d4e": "#008eff"}}>1 >></span><SecurityEmoji alt="security-tweemoji" style={{verticalAlign: "baseline"}} className="emoji-150"/>
-                        <span className={classes.revelantText} style={{color: THEME_DAY && !IS_EVENING ? "#100d4e": "#008eff"}}>«PIXA.PICS» lovely minima-arts</span><span> from real-life pictures to enhance privacy for NFTs.</span><br/>
+                        <span className={classes.revelantText} style={{color: THEME_DAY && !IS_EVENING ? "#100d4e": "#008eff"}}><ShufflingSpanText pre="«" key={Boolean(_join_now_button_update % 11)} placeholder="PIXA.PICS" text="PIXA.PICS" app="»" animation_delay_ms={_join_now_button_update === 0 ? 4500: 0} animation_duration_ms={1500}/> lovely minima-arts</span><span> from real-life pictures to enhance <ShufflingSpanText key={Boolean(_join_now_button_update % 7)} placeholder="privacy for NFTs" text="privacy for NFTs" app="." animation_delay_ms={_join_now_button_update === 0 ? 4500: 0} animation_duration_ms={1500}/></span><br/>
                     </h1>
                     <h2 className={classes.titleh2} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff"}}>
                         <span><span className={classes.bold}>Wanna use effects in laboratory? <ChemistryEmojiSvg alt="chemistry-tweemoji" style={{verticalAlign: "baseline"}} className="emoji-150" />Yes or No?</span> Essential lab operations gives the <span className={classes.bold}><span className={classes.revelantText} style={{color: THEME_DAY && !IS_EVENING ? "#100d4e": "#008eff"}}>MAXIMA of PRIVACY</span></span> in a fashion not only looking great for the <span className={classes.bold}>ONLINE SELF-IMAGE</span>...</span>
@@ -480,19 +491,15 @@ class Home extends React.Component {
                     <h2 className={classes.titleh2} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff"}}>
                         <span><span className={classes.stepPoints} style={{color: THEME_DAY && !IS_EVENING ? "#100d4e": "#008eff"}}>3 >></span> <GlassesEmojiSvg alt="scientist-jacket-tweemoji" style={{verticalAlign: "middle"}} className="emoji-150"/> <span className={classes.bold}><span className={classes.revelantText} style={{color: THEME_DAY && !IS_EVENING ? "#100d4e": "#008eff"}}> RENDER UNLIMITED PIXEL ART</span></span> in <span className={classes.bold}>4K<sup> Ultra HD</sup> images</span> or in <span className={classes.bold}>humanized ∞ %<sup> Scalable</sup> shapes</span> of vectors using its PIXEL-MATRIX to get it majestically in SVG.</span>
                     </h2>
-                    <Fade in={true} timeout={0}>
-                        <Button className={classes.homeCTAuseit} variant={"contained"} size={"large"} color="primary" onClick={this._go_to_editor}>
-                            JOIN LAB <img src="data:image/png;base64,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" alt="Laboratory decoration" width={24} height={24} style={{transform: "scale(3.5)", width: 24, height: 24, marginRight: "2em", marginLeft: "2em", filter: "drop-shadow(white 0px 0px 6px)"}} className="emoji-150" /> NOW!
-                        </Button>
-                    </Fade>
-                    <Fade in={true} timeout={0}>
-                        <p className={classes.subtitleButton}><span><CrownEmojiSvg alt="king-crown-tweemoji" className="emoji"/> Free For Everyone <LightingEmojiSvg alt="sky-lightning-tweemoji" className="emoji"/> Forever Open-Source</span></p>
-                    </Fade>
-                    <Fade in={true} timeout={0}>
-                        <Button className={classes.homeCTAsendit} variant={"contained"} size={"large"} color="primary" onClick={(event) => {this._handle_speed_dial_action(event, "share")}}>
-                            SEND
-                        </Button>
-                    </Fade>
+                    <Button key={_join_now_button_update} className={classes.homeCTAuseit} variant={"contained"} size={"large"} color="primary" onClick={this._go_to_editor}>
+                        <ShufflingSpanText placeholder={_join_now_button_update % 5 ? "START " : "JOIN LAB "} text={_join_now_button_update % 5 ? "START " : "JOIN LAB "} animation_delay_ms={_join_now_button_update === 0 ? 3000: 0} animation_duration_ms={1000} />
+                            <img src="data:image/png;base64,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" alt="Laboratory decoration" width={24} height={24} style={{transform: "scale(3.5)", width: 24, height: 24, marginRight: "2em", marginLeft: "2em", filter: "drop-shadow(white 0px 0px 6px)"}} className="emoji-150" />
+                        <ShufflingSpanText placeholder={_join_now_button_update % 5 ? " SOON" : " NOW"} text={_join_now_button_update % 5 ? " SOON" : " NOW"} app="!" animation_delay_ms={_join_now_button_update === 0 ? 3000: 500} animation_duration_ms={1000} />
+                    </Button>
+                    <p className={classes.subtitleButton}><span><CrownEmojiSvg alt="king-crown-tweemoji" className="emoji"/> Free For Everyone <LightingEmojiSvg alt="sky-lightning-tweemoji" className="emoji"/> Forever Open-Source</span></p>
+                    <Button className={classes.homeCTAsendit} variant={"contained"} size={"large"} color="primary" onClick={(event) => {this._handle_speed_dial_action(event, "share")}}>
+                        <ShufflingSpanText pre="[ " app="! ]" placeholder={_join_now_button_update % 3 ? "SEND IT" : "SHARE NOW"} text={_join_now_button_update % 3 ? "SEND IT" : "SHARE NOW"} animation_delay_ms={_join_now_button_update === 0 ? 3000: 750} animation_duration_ms={750} />
+                    </Button>
                 </div>
             </div>
         );

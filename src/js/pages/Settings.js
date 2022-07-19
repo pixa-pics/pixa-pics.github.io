@@ -6,7 +6,8 @@ import { t } from "../utils/t";
 import {Divider, CardHeader, Container, Card, CardContent, FormControlLabel, Switch, TextField, Fade} from "@material-ui/core";
 import {Autocomplete} from "@material-ui/lab";
 
-import { LANGUAGES, LOCALES, CURRENCY_COUNTRIES } from "../utils/constants";
+import { LANGUAGES, CURRENCY_COUNTRIES } from "../utils/constants";
+import LOCALES from "../utils/constant_locales";
 
 import SwissTweemoji from "../twemoji/react/1F1E81F1Ed";
 import DangerTweemoji from "../twemoji/react/26A0";

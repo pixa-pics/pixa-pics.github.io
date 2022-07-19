@@ -1,9 +1,6 @@
 "use strict";
 import "regenerator-runtime/runtime";
 
-import api from "../js/utils/api";
-api.init(); // It will init the DB
-
 import React from "react";
 import ReactDOM from "react-dom";
 import { HISTORY } from "./utils/constants";
@@ -15,6 +12,9 @@ import { lightTheme } from "./theme/index";
 
 // Pages
 import Index from "../js/pages/Index";
+
+import api from "../js/utils/api";
+api.init(); // It will init the DB
 
 let element = document.getElementById("app");
 if(element === null) {

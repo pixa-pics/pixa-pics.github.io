@@ -23,10 +23,11 @@ class ShufflingSpanText extends React.Component {
             style: props.style,
             pre: props.pre || "",
             text: props.text,
+            placeholder: props.placeholder || "",
             app: props.app || "",
             animation_delay_ms: typeof props.animation_delay_ms !== "undefined" ? props.animation_delay_ms : 500,
             animation_duration_ms: typeof props.animation_duration_ms !== "undefined" ? props.animation_duration_ms : 3500,
-            animation_fps: typeof props.animation_fps !== "undefined" ? props.animation_fps : 20,
+            animation_fps: typeof props.animation_fps !== "undefined" ? props.animation_fps : 30,
             _text_proceed: "",
             _text_proceed_started: false,
             _text_proceed_finished: false,
@@ -35,6 +36,17 @@ class ShufflingSpanText extends React.Component {
             _animation_interval: null,
         };
     };
+
+    componentWillReceiveProps(new_props, ) {
+
+        if(new_props.text !== this.state.text) {
+
+            this.setState(new_props, () => {
+
+                this._run_animation();
+            });
+        }
+    }
 
     shouldComponentUpdate() {
 
@@ -98,10 +110,10 @@ class ShufflingSpanText extends React.Component {
     render() {
 
         const { classes, style } = this.state;
-        const { _text_proceed, _text_proceed_started, _text_proceed_finished, pre, app } = this.state;
+        const { _text_proceed, _text_proceed_started, _text_proceed_finished, pre, app, placeholder } = this.state;
 
         return (
-            <span style={{willChange: Boolean(_text_proceed_started && !_text_proceed_finished) ? "contents": "auto", ...style}}>{pre}{_text_proceed}{app}</span>
+            <span style={{willChange: Boolean(_text_proceed_started && !_text_proceed_finished) ? "contents": "auto", ...style}}>{pre}{_text_proceed || placeholder}{app}</span>
         );
     }
 }
