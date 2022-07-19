@@ -3,7 +3,7 @@
 **This is PIXAAAAA!** - Awesome pixel art editor made with material design guideline trends and awesome web technologies!
 *100% visionary in privacy concerns/critics and against detractors with its development force that legally stands bold against those mightily neglecting privacy in their online-self (image).*
 
-[![](https://img.youtube.com/vi/iMMWj0WfQJE/0.jpg)](https://www.youtube.com/watch?v=iMMWj0WfQJE)
+![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/doc/screenshots/home.screenshot.pixa.pics.jpeg?v=777)
 
 **Does https://pixa.pics/pixel get?**
 
@@ -29,8 +29,8 @@
 
 # Special features
 
-![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/doc/screenshots/screenshot.pixa.pics.jpeg?v=2)
-Screenshot of the editor of pixa.pics.
+![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/doc/screenshots/screenshot.pixa.pics.jpeg?v=777)
+Screenshot of the minima's laboratory of pixa.pics (which is a pixel art editor).
 
  * Create pixel art from your pictures and draw, cut, select, do anything.
  * Have fun with NFTs weighting as low as ~10-100Kb.
