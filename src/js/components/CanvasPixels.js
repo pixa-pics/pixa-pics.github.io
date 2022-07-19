@@ -8337,14 +8337,12 @@ class CanvasPixels extends React.Component {
             return;
         }
 
-
         _anim_loop(() => {
+
             this.forceUpdate(() => {
 
-                this.setState({_force_updated_timestamp: now}, () => {
-
-                    callback_function();
-                });
+                this.setState({_force_updated_timestamp: now});
+                callback_function();
             });
         }, Boolean(!can_be_cancelable || nevertheless_force), Boolean(!especially_dont_force || nevertheless_force));
     }
