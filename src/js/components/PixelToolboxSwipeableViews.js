@@ -1389,7 +1389,7 @@ class PixelToolboxSwipeableViews extends React.Component {
 
                         const f = filters_thumbnail.get(name) || "";
                         return {
-                            icon: <Avatar className={"speed"} style={{width: "80px", height: `${parseInt(80/_filter_ar_on_one)}px`, filter: `opacity(${String(Boolean(f.length === 0 && name_index !== 0) ? "0.5": "1.0")})`, border: "4px solid #020529", contain: "paint style size"}} key={String(Boolean(f.length > 0) ? String(name+"-loaded-"+_filter_ar_on_one): String(name+"-loading-"+_filter_ar_on_one)) + String("-preview-" + last_filters_hash)} variant={"rounded"} src={String(f.length > 0 ? f: filters_thumbnail.get(filters[0]))} />,
+                            icon: <Avatar className={"speed"} style={{width: "80px", height: `${parseInt(80/_filter_ar_on_one)}px`, filter: `opacity(${String(Boolean(f.length === 0 && name_index !== 0) ? "0.5": "1.0")})`, webkitFilter: `opacity(${String(Boolean(f.length === 0 && name_index !== 0) ? "0.5": "1.0")})`, border: "4px solid #020529", contain: "paint style size"}} key={String(Boolean(f.length > 0) ? String(name+"-loaded-"+_filter_ar_on_one): String(name+"-loading-"+_filter_ar_on_one)) + String("-preview-" + last_filters_hash)} variant={"rounded"} src={String(f.length > 0 ? f: filters_thumbnail.get(filters[0]))} />,
                             text: name,
                             on_click: () => {
                                 canvas.to_filter(name, slider_value);

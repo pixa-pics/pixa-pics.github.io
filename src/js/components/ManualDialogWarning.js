@@ -25,10 +25,10 @@ const styles = theme => ({
         cursor: "pointer",
         "@global": {
             "@keyframes $warn-dialog-image-enter": {
-                "0%": {transform: "scale(6)", filter: "opacity(0)"},
-                "50%": {transform: "scale(6)", filter: "opacity(0)"},
-                "75%": {transform: "scale(3)", filter: "opacity(.25)"},
-                "100%": {transform: "scale(1)", filter: "opacity(1)"},
+                "0%": {transform: "scale(6)", filter: "opacity(0)", webkitFilter: "opacity(0)"},
+                "50%": {transform: "scale(6)", filter: "opacity(0)", webkitFilter: "opacity(0)"},
+                "75%": {transform: "scale(3)", filter: "opacity(.25)", webkitFilter: "opacity(.25)"},
+                "100%": {transform: "scale(1)", filter: "opacity(1)", webkitFilter: "opacity(1)"},
             }
         }
     },
@@ -37,8 +37,8 @@ const styles = theme => ({
         animationFillMode: "both",
         "@global": {
             "@keyframes warn-dialog-helper-enter": {
-                "0%": {filter: "opacity(0)"},
-                "100%": {filter: "opacity(1)"},
+                "0%": {filter: "opacity(0)", webkitFilter: "opacity(0)"},
+                "100%": {filter: "opacity(1)", webkitFilter: "opacity(1)"},
             }
         }
     },
@@ -47,8 +47,8 @@ const styles = theme => ({
         animationFillMode: "both",
         "@global": {
             "@keyframes warn-dialog-hint-enter": {
-                "0%": {filter: "opacity(0)"},
-                "100%": {filter: "opacity(1)"},
+                "0%": {filter: "opacity(0)", webkitFilter: "opacity(0)"},
+                "100%": {filter: "opacity(1)", webkitFilter: "opacity(1)"},
             }
         }
     },

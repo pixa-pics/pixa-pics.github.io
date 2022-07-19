@@ -21,6 +21,7 @@ const styles = theme => ({
             fontWeight: "bold",
             fontSize: "1.25em",
             filter: "opacity(0.5)",
+            webkitFilter: "opacity(0.5)",
         }
     },
     listItemGrey: {
@@ -33,6 +34,7 @@ const styles = theme => ({
     },
     iconLeft: {
         filter: "drop-shadow(0px 0px 15px #011562)",
+        webkitFilter: "drop-shadow(0px 0px 15px #011562)",
         color: theme.palette.secondary.contrastText,
         margin: "-12px 16px -12px -16px",
         width: "96px",
@@ -85,10 +87,12 @@ const styles = theme => ({
     labList: {
         "& > div:first-child": {
             filter: "brightness(1.4) contrast(1.4)",
+            webkitFilter: "brightness(1.4) contrast(1.4)",
             transition: "filter ease-in 750ms !important",
         },
         "&:hover > div:first-child": {
             filter: "brightness(1.6) contrast(1.2) !important",
+            webkitFilter: "brightness(1.6) contrast(1.2) !important",
             transition: "filter ease-out 500ms !important",
         }
     }
