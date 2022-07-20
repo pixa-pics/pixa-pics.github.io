@@ -24,961 +24,6 @@ SOFTWARE.
  */
 
 "use strict";
-const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
-
-window.get_base64_png_data_url_process_function = new AsyncFunction(`var r=async function(r,e,n,t,a,f,i){return new Promise((function(o,l){"use strict";function c(r){return"#".concat("00000000".concat(r.toString(16)).slice(-8))}function u(r){return new Uint8ClampedArray(Uint32Array.of(r).buffer).reverse()}function s(r,e,n,t){return new Uint32Array(Uint8ClampedArray.of(t,n,e,r).buffer)[0]}function v(r,e=!1){if(r=void 0===r?0:r,e&&"number"==typeof r)return r;if(!e&&"number"==typeof r)return c(r);var n="",t=r,a=t.length;if(9===a)n=t;else if(7===a)n=t.concat("ff");else if(5===a){var f=t.charAt(1),i=t.charAt(2),o=t.charAt(3),l=t.charAt(4);n="#".concat(f,f,i,i,o,o,l,l)}else if(4===a){f=t.charAt(1),i=t.charAt(2),o=t.charAt(3);n="#".concat(f,f,i,i,o,o,"ff")}return e?function(r){return parseInt(r.slice(1),16)}(n):n}function h(r,e,n=1,t=!1,a=!1,f=!1){if(r=v(r,!0),0===n&&"hover"!==e&&t)return f?0:"#00000000";if("hover"===e){var i=u(r),o=function(r,e,n){r/=255,e/=255,n/=255;var t,a,f=Math.max(r,e,n),i=Math.min(r,e,n),o=(f+i)/2;if(f==i)t=a=0;else{var l=f-i;switch(a=o>.5?l/(2-f-i):l/(f+i),f){case r:t=(e-n)/l+(e<n?6:0);break;case e:t=(n-r)/l+2;break;case n:t=(r-e)/l+4}t/=6}return Array.of(parseInt(360*t),parseInt(100*a),parseInt(100*o))}(i[0],i[1],i[2],i[3]),l=function(r,e,n){var t,a,f;if(r/=360,n/=100,0==(e/=100))t=a=f=n;else{function l(r,e,n){return n<0&&(n+=1),n>1&&(n-=1),n<1/6?r+6*(e-r)*n:n<.5?e:n<2/3?r+(e-r)*(2/3-n)*6:r}var i=n<.5?n*(1+e):n+e-n*e,o=2*n-i;t=l(o,i,r+1/3),a=l(o,i,r),f=l(o,i,r-1/3)}return Uint8ClampedArray.of(parseInt(255*t),parseInt(255*a),parseInt(255*f))}(o[0],o[1],parseInt(o[2]>=50?o[2]/2:2*o[2]));e=s(l[0],l[1],l[2],255)}else e=v(e,!0);if(t&&0===e&&1===n)return f?0:"#00000000";var h=u(r),p=u(e);if(255===p[3]&&1===n)return f?e:c(e);var m,y,d,A,g=h[3]/255,w=p[3]/255*n,I=new Uint8ClampedArray(4),b=0;if(g>0&&w>0){var C=w/(b=a?w+g:1-(1-w)*(1-g)),U=g*(1-w)/b;I[0]=parseInt(p[0]*C+h[0]*U),I[1]=parseInt(p[1]*C+h[1]*U),I[2]=parseInt(p[2]*C+h[2]*U)}else w>0?(b=p[3]/255,I[0]=p[0],I[1]=p[1],I[2]=p[2]):(b=h[3]/255,I[0]=h[0],I[1]=h[1],I[2]=h[2]);return a&&(b/=2),I[3]=parseInt(255*b),f?s(I[0],I[1],I[2],I[3]):(m=I[0],y=I[1],d=I[2],A=I[3],"#".concat("00000000".concat(new Uint32Array(Uint8ClampedArray.of(A,d,y,m).buffer)[0].toString(16)).slice(-8)))}try{if("undefined"==typeof OffscreenCanvas)throw new Error("Impossible to create OffscreenCanvas in this web environment.");var p=(d=new OffscreenCanvas(r*f,e*f)).getContext("2d"),m=new Set;n[0].forEach(((e,i)=>{var o=[],l=-1;l++;for(var s=t.length-1;s>=0;s--){var v=t[s][n[s][i]];if(o[s]=v,255===u(v)[3]){l=s;break}}var y=0;for(s=l;s<t.length;s++){if(!a[s].hidden)y=h(y,v=o[s],a[s].opacity,!1,!1,!0)}var d=i%r,A=(i-d)/r;m.add(y),p.fillStyle=c(y),p.fillRect(d*f,A*f,1*f,1*f)}));var y=p.getImageData(0,0,r*f,e*f);p=null,d=null,createImageBitmap(y).then((n=>{var t=new OffscreenCanvas(r*f,e*f),a=t.getContext("bitmaprenderer");a.transferFromImageBitmap(n),n.close(),t.convertToBlob({type:"image/png"}).then((r=>function(r){return new Promise(((e,n)=>{var t=new FileReader;t.onload=()=>e(t.result),t.readAsDataURL(r)}))}(r).then((r=>{i?(o(Array.of(r,Array.from(m).map((r=>v(r))))),r=null,m=null):(o(Array.of(r)),r=null,m=null)})))),a=null,t=null})),y=null}catch(A){var d;m=new Set;(d=document.createElement("canvas")).width=r*f,d.height=e*f;p=d.getContext("2d");n[0].forEach(((e,i)=>{var o=[],l=-1;l++;for(var s=t.length-1;s>=0;s--){var v=t[s][n[s][i]];if(o[s]=v,255===u(v)[3]){l=s;break}}var y=0;for(s=l;s<t.length;s++){if(!a[s].hidden)y=h(y,v=o[s],a[s].opacity,!1,!1,!0)}var d=i%r,A=(i-d)/r;m.add(y),p.fillStyle=c(y),p.fillRect(d*f,A*f,1*f,1*f)})),i?(o(Array.of(d.toDataURL(),Array.from(m).map((r=>v(r))))),p=null,d=null,m=null):(o(Array.of(d.toDataURL())),p=null,d=null)}}))};`
-    + "return r;")();
-/*
-        var fu = async function(
-            pxl_width,
-            pxl_height,
-            _s_pxls,
-            _s_pxl_colors,
-            _layers,
-            scale,
-            with_palette
-        ) {return new Promise(function(resolve, reject){
-
-            "use strict";
-            function this_rgb_to_hsl(r, g, b) {
-
-                r /= 255, g /= 255, b /= 255;
-                var max = Math.max(r, g, b), min = Math.min(r, g, b);
-                var h, s, l = (max + min) / 2;
-
-                if(max == min){
-                    h = s = 0; // achromatic
-                }else{
-                    var d = max - min;
-                    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-                    switch(max){
-                        case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-                        case g: h = (b - r) / d + 2; break;
-                        case b: h = (r - g) / d + 4; break;
-                    }
-                    h /= 6;
-                }
-
-                return Array.of(parseInt(h * 360), parseInt(s * 100), parseInt(l * 100));
-            }
-
-            function this_hsl_to_rgb(h, s, l) {
-
-                h /= 360;
-                s /= 100;
-                l /= 100;
-
-                var r, g, b;
-                if (s === 0) {
-                    r = g = b = l;
-                } else {
-                    function hue_to_rgb(p, q, t) {
-                        if (t < 0) t += 1;
-                        if (t > 1) t -= 1;
-                        if (t < 1 / 6) return p + (q - p) * 6 * t;
-                        if (t < 1 / 2) return q;
-                        if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
-                        return p;
-                    }
-                    var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-                    var p = 2 * l - q;
-                    r = hue_to_rgb(p, q, h + 1 / 3);
-                    g = hue_to_rgb(p, q, h);
-                    b = hue_to_rgb(p, q, h - 1 / 3);
-                }
-
-                return Uint8ClampedArray.of(parseInt(r * 255), parseInt(g * 255), parseInt(b * 255));
-            }
-
-            function this_get_hex_color_from_rgba_values(r, g, b, a) {
-
-                return "#".concat("00000000".concat(new Uint32Array(Uint8ClampedArray.of(a, b, g, r).buffer)[0].toString(16)).slice(-8));
-            }
-
-            function this_get_hex_from_Uint32(num) {
-
-                return "#".concat("00000000".concat(num.toString(16)).slice(-8));
-            }
-
-            function this_get_uint32_from_hex(hex) {
-
-                return parseInt(hex.slice(1), 16);
-            }
-
-            function this_get_rgba_from_Uint32(num) {
-
-                return new Uint8ClampedArray(Uint32Array.of(num).buffer).reverse();
-            }
-
-            function this_get_Uint32_color_from_rgba_values (r, g , b, a) {
-
-                return new Uint32Array(Uint8ClampedArray.of(a, b, g, r).buffer)[0];
-            }
-
-            function this_format_color(color, getUint32 = false) {
-
-                color = typeof color === "undefined" ? 0: color;
-
-                if(getUint32 && typeof color === "number"){
-
-                    return color;
-                }else {
-
-                    if(!getUint32 && typeof color === "number"){
-
-                        return this_get_hex_from_Uint32(color);
-                    }
-
-                    var formatted = "";
-                    var hex = color;
-                    var hex_length = hex.length;
-
-                    if(hex_length === 9) {
-
-                        formatted = hex;
-
-                    } else if (hex_length === 7) {
-
-                        formatted = hex.concat("ff");
-                    } else if (hex_length === 5) {
-
-                        var a = hex.charAt(1), b = hex.charAt(2), c = hex.charAt(3), d = hex.charAt(4);
-                        formatted =  "#".concat(a, a, b, b, c, c, d, d);
-                    } else if (hex_length === 4) {
-
-                        var a = hex.charAt(1), b = hex.charAt(2), c = hex.charAt(3);
-                        formatted = "#".concat(a, a, b, b, c, c, "ff");
-                    }
-
-                    if(getUint32){
-
-                        return this_get_uint32_from_hex(formatted);
-                    }else {
-
-                        return formatted;
-                    }
-                }
-            }
-
-            function this_blend_colors (color_a, color_b, amount = 1, should_return_transparent = false, alpha_addition = false, in_uint_32 = false) {
-
-                color_a = this_format_color(color_a, true);
-                // If we blend the first color with the second with 0 "force", return transparent
-                if(amount === 0 && color_b !== "hover" && should_return_transparent) {
-
-                    return in_uint_32 ? 0: "#00000000";
-                }
-
-                // Make sure we have a color based on the 4*2 hex char format
-
-                if(color_b === "hover") {
-
-                    var rgba = this_get_rgba_from_Uint32(color_a);
-                    var hsl = this_rgb_to_hsl(rgba[0], rgba[1], rgba[2], rgba[3]);
-                    var rgb = this_hsl_to_rgb(hsl[0], hsl[1], parseInt(hsl[2] >= 50 ? hsl[2]/2: hsl[2]*2));
-                    color_b = this_get_Uint32_color_from_rgba_values(rgb[0], rgb[1], rgb[2], 255);
-                }else {
-
-                    color_b = this_format_color(color_b, true);
-                }
-                // If the second color is transparent, return transparent
-                if(should_return_transparent && color_b === 0 && amount === 1) { return in_uint_32 ? 0: "#00000000"; }
-
-                // Extract RGBA from both colors
-                var base = this_get_rgba_from_Uint32(color_a);
-                var added = this_get_rgba_from_Uint32(color_b);
-
-                if(added[3] === 255 && amount === 1) { return in_uint_32 ? color_b: this_get_hex_from_Uint32(color_b); }
-
-                var ba3 = base[3] / 255;
-                var ad3 = (added[3] / 255) * amount;
-
-                var mix = new Uint8ClampedArray(4);
-                var mi3 = 0;
-
-                if (ba3 > 0 && ad3 > 0) {
-
-                    if(alpha_addition) {
-
-                        mi3 = ad3 + ba3;
-                    }else {
-
-                        mi3 = 1 - (1 - ad3) * (1 - ba3);
-                    }
-
-                    var ao = ad3 / mi3;
-                    var bo = ba3 * (1 - ad3) / mi3;
-
-                    mix[0] = parseInt(added[0] * ao + base[0] * bo); // red
-                    mix[1] = parseInt(added[1] * ao + base[1] * bo); // green
-                    mix[2] = parseInt(added[2] * ao + base[2] * bo); // blue
-                }else if(ad3 > 0) {
-
-                    mi3 = added[3] / 255;
-
-                    mix[0] = added[0];
-                    mix[1] = added[1];
-                    mix[2] = added[2];
-                }else {
-
-                    mi3 = base[3] / 255;
-
-                    mix[0] = base[0];
-                    mix[1] = base[1];
-                    mix[2] = base[2];
-                }
-
-                if(alpha_addition) {
-                    mi3 /= 2;
-                }
-
-                mix[3] = parseInt(mi3 * 255);
-
-                if(in_uint_32){
-
-                    return this_get_Uint32_color_from_rgba_values(mix[0], mix[1], mix[2], mix[3]);
-                }else {
-
-                    return this_get_hex_color_from_rgba_values(mix[0], mix[1], mix[2], mix[3]);
-                }
-            }
-
-            try {
-
-                if (typeof OffscreenCanvas === "undefined") {
-                    throw new Error("Impossible to create OffscreenCanvas in this web environment.");
-                }
-
-                var canvas = new OffscreenCanvas(pxl_width * scale, pxl_height * scale);
-                var ctx = canvas.getContext('2d');
-                var all_colors = new Set();
-
-                _s_pxls[0].forEach((pxl, index) => {
-
-                    var layer_pixel_colors = [];
-                    var start_i = -1;
-                    start_i++;
-
-                    for (var i = _s_pxl_colors.length - 1; i >= 0; i--) {
-
-                        var layer_pixel_color = _s_pxl_colors[i][_s_pxls[i][index]];
-                        layer_pixel_colors[i] = layer_pixel_color;
-                        var rgba = this_get_rgba_from_Uint32(layer_pixel_color);
-
-                        if(rgba[3] === 255) {
-
-                            start_i = i;
-                            break;
-                        }
-
-                    }
-
-                    var pixel_color_hex = 0;
-
-                    for (var i = start_i; i < _s_pxl_colors.length ; i++) {
-
-                        if(!_layers[i].hidden) {
-
-                            var layer_pixel_color = layer_pixel_colors[i];
-
-                            pixel_color_hex = this_blend_colors(pixel_color_hex, layer_pixel_color, _layers[i].opacity, false, false, true);
-                        }
-                    }
-
-                    var pos_x = index % pxl_width;
-                    var pos_y = (index - pos_x) / pxl_width;
-
-                    all_colors.add(pixel_color_hex);
-                    ctx.fillStyle = this_get_hex_from_Uint32(pixel_color_hex);
-                    ctx.fillRect(pos_x * scale, pos_y * scale, 1 * scale, 1 * scale);
-                });
-
-                var image_data = ctx.getImageData(0, 0, pxl_width * scale, pxl_height * scale);
-                ctx = null; canvas = null;
-
-                createImageBitmap(image_data).then((btmp_i) => {
-
-                    var canvas2 = new OffscreenCanvas(pxl_width * scale, pxl_height * scale);
-                    var ctx2 = canvas2.getContext("bitmaprenderer");
-                    ctx2.transferFromImageBitmap(btmp_i);
-                    btmp_i.close();
-
-                    canvas2.convertToBlob({type: "image/png"}).then((blob) => {
-
-                        function blob_to_base64(blob) {
-                          return new Promise((resolve, _) => {
-                            var reader = new FileReader();
-                            reader.onload = () => resolve(reader.result);
-                            reader.readAsDataURL(blob);
-                          })
-                        }
-
-                        return blob_to_base64(blob).then((data_url) => {
-
-                            if(with_palette) {
-
-                                resolve(Array.of(data_url, Array.from(all_colors).map((c) => this_format_color(c))));
-                                data_url = null; all_colors = null;
-                            }else {
-
-                                resolve(Array.of(data_url));
-                                data_url = null; all_colors = null;
-                            }
-                        });
-                        blob = null;
-                    });
-                    ctx2 = null; canvas2 = null;
-                });
-                image_data = null;
-
-            }catch (e) {
-
-                var all_colors = new Set();
-                var canvas = document.createElement("canvas");
-                canvas.width = pxl_width * scale;
-                canvas.height = pxl_height * scale;
-                var ctx = canvas.getContext('2d');
-
-                _s_pxls[0].forEach((pxl, index) => {
-
-                    var layer_pixel_colors = [];
-                    var start_i = -1;
-                    start_i++;
-
-                    for (var i = _s_pxl_colors.length - 1; i >= 0; i--) {
-
-                        var layer_pixel_color = _s_pxl_colors[i][_s_pxls[i][index]];
-                        layer_pixel_colors[i] = layer_pixel_color;
-                        var rgba = this_get_rgba_from_Uint32(layer_pixel_color);
-
-                        if(rgba[3] === 255) {
-
-                            start_i = i;
-                            break;
-                        }
-
-                    }
-
-                    var pixel_color_hex = 0;
-                    for (var i = start_i; i < _s_pxl_colors.length ; i++) {
-
-                        if(!_layers[i].hidden) {
-
-                            var layer_pixel_color = layer_pixel_colors[i];
-                            pixel_color_hex = this_blend_colors(pixel_color_hex, layer_pixel_color, _layers[i].opacity, false, false, true);
-                        }
-                    }
-
-                    var pos_x = index % pxl_width;
-                    var pos_y = (index - pos_x) / pxl_width;
-                    all_colors.add(pixel_color_hex);
-                    ctx.fillStyle = this_get_hex_from_Uint32(pixel_color_hex);
-                    ctx.fillRect(pos_x * scale, pos_y * scale, 1 * scale, 1 * scale);
-                });
-
-                if(with_palette) {
-
-                    resolve(Array.of(canvas.toDataURL(), Array.from(all_colors).map((c) => this_format_color(c))));
-                    ctx = null; canvas = null; all_colors = null;
-                }else {
-
-                    resolve(Array.of(canvas.toDataURL()));
-                    ctx = null; canvas = null;
-                }
-            }
-        })};
- */
-
-window.get_layer_base64_png_data_url_process_function = new AsyncFunction(`var e=async function(e,n,t,r,a,l){return new Promise((function(i){"use strict";function o(e,n=!1){if(e=void 0===e?0:e,n&&"number"==typeof e)return e;if(!n&&"number"==typeof e)return"#".concat("00000000".concat(e.toString(16)).slice(-8));var t="",r=e,a=r.length;if(9===a)t=r;else if(7===a)t=r.concat("ff");else if(5===a){var l=r.charAt(1),i=r.charAt(2),o=r.charAt(3),c=r.charAt(4);t="#".concat(l,l,i,i,o,o,c,c)}else if(4===a){l=r.charAt(1),i=r.charAt(2),o=r.charAt(3);t="#".concat(l,l,i,i,o,o,"ff")}return n?function(e){return parseInt(e.slice(1),16)}(t):t}var c=parseFloat(l/parseInt(e*a)),u=parseInt(parseFloat(e*a)*c),f=parseInt(parseFloat(n*a)*c);try{if("undefined"==typeof OffscreenCanvas)throw new Error("Impossible to create OffscreenCanvas in this web environment.");var s=null;if(1===parseInt(a)){var m=r.map((function(e){return o(e,!0)})),g=t.map((function(e){return m[e]}));m=null;var h=new Uint8ClampedArray(Uint32Array.from(g.reverse()).buffer).reverse();g=null,s=new ImageData(h,e,n),h=null}else{var p=r.map((function(e){return o(e)})),v=new OffscreenCanvas(e*a,n*a);(w=v.getContext("2d")).imageSmoothingEnabled=!1,t.forEach(((n,t)=>{var r=p[n],l=t%e,i=(t-l)/e;w.fillStyle=r,w.fillRect(l*a,i*a,1*a,1*a)})),s=w.getImageData(0,0,e*a,n*a),w=null,v=null,p=null}var d=new OffscreenCanvas(u,f);(y=d.getContext("bitmaprenderer")).imageSmoothingEnabled=!1,createImageBitmap(s,{resizeWidth:u,resizeHeight:f}).then((e=>{y.transferFromImageBitmap(e),e.close();d.convertToBlob({type:"image/png"}).then((e=>{y=null,d=null;try{i(FileReaderSync.readAsDataURL(e)),e=null}catch(n){function t(e){return new Promise((n=>{var t=new FileReader;t.onload=()=>n(t.result),t.readAsDataURL(e)}))}return t(e).then((e=>{i(e),e=null}))}}))})),s=null}catch(I){var w;(v=document.createElement("canvas")).width=e*a,v.height=n*a,(w=v.getContext("2d")).imageSmoothingEnabled=!1;var y;s=null;if(1===parseInt(a)){m=r.map((function(e){return o(e,!0)})),g=t.map((function(e){return m[e]}));m=null;h=new Uint8ClampedArray(Uint32Array.from(g.reverse()).buffer).reverse();s=new ImageData(h,e,n),h=null,w.putImageData(s,0,0),s=null}else{p=r.map((function(e){return o(e)}));t.forEach(((n,t)=>{var r=p[n],l=t%e,i=(t-l)/e;w.fillStyle=r,w.fillRect(l*a,i*a,1*a,1*a)})),p=null}(d=document.createElement("canvas")).width=u,d.height=f,(y=d.getContext("2d")).imageSmoothingEnabled=!1,y.drawImage(v,0,0,u,f),w=null,v=null,i(d.toDataURL("image/png")),y=null,d=null}}))};`
-    + "return e;")();
-
-        /*var fu = async function(
-            pxl_width,
-            pxl_height,
-            pxls,
-            pxl_colors,
-            scale,
-            resize_width
-        ) {return new Promise(function(resolve, reject){
-
-            "use strict";
-
-            function this_get_hex_from_Uint32(num) {
-
-                return "#".concat("00000000".concat(num.toString(16)).slice(-8));
-            }
-
-            function this_get_uint32_from_hex(hex) {
-
-                return parseInt(hex.slice(1), 16);
-            }
-
-            function this_get_rgba_from_Uint32(num) {
-
-                return new Uint8ClampedArray(Uint32Array.of(num).buffer).reverse();
-            }
-
-            function this_format_color(color, getUint32 = false) {
-
-                color = typeof color === "undefined" ? 0: color;
-
-                if(getUint32 && typeof color === "number"){
-
-                    return color;
-                }else {
-
-                    if(!getUint32 && typeof color === "number"){
-
-                        return this_get_hex_from_Uint32(color);
-                    }
-
-                    var formatted = "";
-                    var hex = color;
-                    var hex_length = hex.length;
-
-                    if(hex_length === 9) {
-
-                        formatted = hex;
-
-                    } else if (hex_length === 7) {
-
-                        formatted = hex.concat("ff");
-                    } else if (hex_length === 5) {
-
-                        var a = hex.charAt(1), b = hex.charAt(2), c = hex.charAt(3), d = hex.charAt(4);
-                        formatted =  "#".concat(a, a, b, b, c, c, d, d);
-                    } else if (hex_length === 4) {
-
-                        var a = hex.charAt(1), b = hex.charAt(2), c = hex.charAt(3);
-                        formatted = "#".concat(a, a, b, b, c, c, "ff");
-                    }
-
-                    if(getUint32){
-
-                        return this_get_uint32_from_hex(formatted);
-                    }else {
-
-                        return formatted;
-                    }
-                }
-            }
-
-            var resize_ratio = parseFloat(resize_width / parseInt(pxl_width * scale));
-            var resizeWidth = parseInt(parseFloat(pxl_width * scale) * resize_ratio);
-            var resizeHeight = parseInt(parseFloat(pxl_height * scale) * resize_ratio);
-
-            try {
-
-                if (typeof OffscreenCanvas === "undefined") {
-                   throw new Error("Impossible to create OffscreenCanvas in this web environment.");
-                }
-
-                var image_data = null;
-                if(parseInt(scale) === 1){
-
-                    var pxl_colors_uint32 = pxl_colors.map(function(c) { return this_format_color(c, true)});
-                    var pxl_data_uint32 = pxls.map(function(pxl){ return pxl_colors_uint32[pxl]});
-                    pxl_colors_uint32 = null;
-                    var ui8ca = new Uint8ClampedArray(Uint32Array.from(pxl_data_uint32.reverse()).buffer).reverse();
-                    pxl_data_uint32 = null;
-                    image_data = new ImageData(ui8ca, pxl_width, pxl_height);
-                    ui8ca = null;
-
-                } else {
-
-                    var pxl_colors_hex = pxl_colors.map(function(c) { return this_format_color(c)});
-                    var canvas = new OffscreenCanvas(pxl_width * scale, pxl_height * scale);
-                    var ctx = canvas.getContext('2d');
-                    ctx.imageSmoothingEnabled = false;
-
-                    pxls.forEach((pxl, index) => {
-
-                        var pixel_color_hex = pxl_colors_hex[pxl];
-
-                        var pos_x = index % pxl_width;
-                        var pos_y = (index - pos_x) / pxl_width;
-
-                        ctx.fillStyle = pixel_color_hex;
-                        ctx.fillRect(pos_x * scale, pos_y * scale, 1 * scale, 1 * scale);
-                    });
-
-                    image_data = ctx.getImageData(0, 0, pxl_width * scale, pxl_height * scale);
-                    ctx = null; canvas = null; pxl_colors_hex = null;
-                }
-
-                var canvas2 = new OffscreenCanvas(resizeWidth, resizeHeight);
-                var ctx2 = canvas2.getContext("bitmaprenderer");
-                ctx2.imageSmoothingEnabled = false;
-
-                createImageBitmap(image_data, {
-                    resizeWidth: resizeWidth,
-                    resizeHeight: resizeHeight
-                }).then((btmp_i) => {
-
-                    ctx2.transferFromImageBitmap(btmp_i);
-                    btmp_i.close()
-
-                    var blob_params = {type: "image/png"};
-                    canvas2.convertToBlob(blob_params).then((blob) => {
-
-                        ctx2 = null; canvas2 = null;
-                        try {
-
-                            resolve(FileReaderSync.readAsDataURL(blob));
-                            blob = null;
-                        } catch(e) {
-
-                            function blob_to_base64(blob) {
-                              return new Promise((resolve, _) => {
-                                var reader = new FileReader();
-                                reader.onload = () => resolve(reader.result);
-                                reader.readAsDataURL(blob);
-                              })
-                            }
-
-                            return blob_to_base64(blob).then((data_url) => {
-
-                                 resolve(data_url);
-                                 data_url = null;
-                            });
-                            blob = null;
-                        }
-                    });
-                });
-                image_data = null;
-
-            }catch (e) {
-
-                var canvas = document.createElement("canvas");
-                canvas.width = pxl_width * scale;
-                canvas.height = pxl_height * scale;
-                var ctx = canvas.getContext('2d');
-                ctx.imageSmoothingEnabled = false;
-
-                var image_data = null;
-                if(parseInt(scale) === 1){
-
-                    var pxl_colors_uint32 = pxl_colors.map(function(c) { return this_format_color(c, true)});
-                    var pxl_data_uint32 = pxls.map(function(pxl){ return pxl_colors_uint32[pxl]});
-                    pxl_colors_uint32 = null;
-                    var ui8ca = new Uint8ClampedArray(Uint32Array.from(pxl_data_uint32.reverse()).buffer).reverse();
-                    image_data = new ImageData(ui8ca, pxl_width, pxl_height);
-                    ui8ca = null;
-                    ctx.putImageData(image_data, 0, 0);
-                    image_data = null;
-
-                } else {
-
-                    var pxl_colors_hex = pxl_colors.map(function(c) { return this_format_color(c)});
-
-                    pxls.forEach((pxl, index) => {
-
-                        var pixel_color_hex = pxl_colors_hex[pxl];
-                        var pos_x = index % pxl_width;
-                        var pos_y = (index - pos_x) / pxl_width;
-
-                        ctx.fillStyle = pixel_color_hex;
-                        ctx.fillRect(pos_x * scale, pos_y * scale, 1 * scale, 1 * scale);
-                    });
-                    pxl_colors_hex = null;
-                }
-
-                var canvas2 = document.createElement("canvas");
-                canvas2.width = resizeWidth;
-                canvas2.height = resizeHeight;
-                var ctx2 = canvas2.getContext("2d");
-                ctx2.imageSmoothingEnabled = false;
-                ctx2.drawImage(canvas, 0, 0, resizeWidth, resizeHeight);
-                ctx = null; canvas = null;
-
-                resolve(canvas2.toDataURL("image/png"));
-                ctx2 = null; canvas2 = null;
-            }
-        })}*/
-
-window.remove_close_pxl_colors_process_function = new AsyncFunction(`var r=async function(r,a,e,n,t,f,i){"use strict";function o(r){return"#".concat("00000000".concat(r.toString(16)).slice(-8))}function c(r){return new Uint8ClampedArray(Uint32Array.of(r).buffer).reverse()}function s(r,a,e,n){return new Uint32Array(Uint8ClampedArray.of(n,e,a,r).buffer)[0]}function u(r,a=!1){if(r=void 0===r?0:r,a&&"number"==typeof r)return r;if(!a&&"number"==typeof r)return o(r);var e="",n=r,t=n.length;if(9===t)e=n;else if(7===t)e=n.concat("ff");else if(5===t){var f=n.charAt(1),i=n.charAt(2),c=n.charAt(3),s=n.charAt(4);e="#".concat(f,f,i,i,c,c,s,s)}else if(4===t){f=n.charAt(1),i=n.charAt(2),c=n.charAt(3);e="#".concat(f,f,i,i,c,c,"ff")}return a?function(r){return parseInt(r.slice(1),16)}(e):e}function l(r,a,e){if(1===(e=void 0===e?null:e))return!0;if(0===e)return r===a;var n=parseInt(255*e);r=u(r,!0),a=u(a,!0);var t=c(r),f=c(a),i=Math.abs(t[3]-f[3]),o=Math.abs(t[0]-f[0]),s=Math.abs(t[1]-f[1]),l=Math.abs(t[2]-f[2]),h=Math.abs(1-i/255);return null!==e?Boolean(o<n&&s<n&&l<n&&i<n):parseFloat(parseInt(o+s+l)/parseInt(765))*h}function h(r,a,e=1,n=!1,t=!1,f=!1){if(r=u(r,!0),0===e&&"hover"!==a&&n)return f?0:"#00000000";if("hover"===a){var i=c(r),l=function(r,a,e){r/=255,a/=255,e/=255;var n,t,f=Math.max(r,a,e),i=Math.min(r,a,e),o=(f+i)/2;if(f==i)n=t=0;else{var c=f-i;switch(t=o>.5?c/(2-f-i):c/(f+i),f){case r:n=(a-e)/c+(a<e?6:0);break;case a:n=(e-r)/c+2;break;case e:n=(r-a)/c+4}n/=6}return Array.of(parseInt(360*n),parseInt(100*t),parseInt(100*o))}(i[0],i[1],i[2],i[3]),h=function(r,a,e){var n,t,f;if(r/=360,e/=100,0==(a/=100))n=t=f=e;else{function c(r,a,e){return e<0&&(e+=1),e>1&&(e-=1),e<1/6?r+6*(a-r)*e:e<.5?a:e<2/3?r+(a-r)*(2/3-e)*6:r}var i=e<.5?e*(1+a):e+a-e*a,o=2*e-i;n=c(o,i,r+1/3),t=c(o,i,r),f=c(o,i,r-1/3)}return Uint8ClampedArray.of(255*n,255*t,255*f)}(l[0],l[1],parseInt(l[2]>=50?l[2]/2:2*l[2]));a=s(h[0],h[1],h[2],255)}else a=u(a,!0);if(n&&0===a&&1===e)return f?0:"#00000000";var v=c(r),p=c(a);if(255===p[3]&&1===e)return f?a:o(a);var A,y,d,g,w=v[3]/255,m=p[3]/255*e,I=new Uint8ClampedArray(4),b=0;if(w>0&&m>0){var M=m/(b=t?m+w:1-(1-m)*(1-w)),U=w*(1-m)/b;I[0]=parseInt(p[0]*M+v[0]*U),I[1]=parseInt(p[1]*M+v[1]*U),I[2]=parseInt(p[2]*M+v[2]*U)}else m>0?(b=p[3]/255,I[0]=p[0],I[1]=p[1],I[2]=p[2]):(b=v[3]/255,I[0]=v[0],I[1]=v[1],I[2]=v[2]);return t&&(b/=2),I[3]=parseInt(255*b),f?s(I[0],I[1],I[2],I[3]):(A=I[0],y=I[1],d=I[2],g=I[3],"#".concat("00000000".concat(new Uint32Array(Uint8ClampedArray.of(g,d,y,A).buffer)[0].toString(16)).slice(-8)))}function v(r,a){var e=new Map,n=new Array(r.length);r.forEach(((r,t)=>{var f=a[r],i=e.get(f)||-1;-1===i&&(i=e.size,e.set(f,i)),n[t]=i}));var t=new Uint32Array(e.size);for(var[f,i]of e)t[i]=f;return Array.of(n,t)}return new Promise((function(o,c){var s="auto"===e,u=!s,p=15,A=new Set;((f=null!==f?f:Math.max(Math.sqrt(a.length)+t,100))<2||f+12>a.length)&&(u=!0);for(var y=1,d=new Array(r.length),g=new Uint32Array(a.length);!u||1===y;){y++,e=s?1/(p-2):e||i,n=n||parseInt(255*e),d=Array.from(r),g=Uint32Array.from(a);for(var w=new Set,m=new Map,I=1;I<=n;I+=1){var b=parseFloat(e*(I/n)),M=parseFloat(I/n);d.forEach((r=>{var a=m.get(r)||0;m.set(r,a+1)})),g.forEach(((r,a)=>{if(!w.has(a)){var e=m.get(a);g.forEach(((n,t)=>{if(a!==t&&!w.has(t)){var f=m.get(t),i=e>f,o=i?e/f:f/e;if(l(r,n,(b+b*(1-1/o)*M)/(1+M))){var c=i?h(g[a],g[t],1/o,!0,!1,!0):h(g[t],g[a],1/o,!0,!1,!0);g[a]=c,g[t]=c,w.add(a),w.add(t)}}}))}})),w.clear(),m.clear();var U=v(d,g);d=U[0],g=U[1]}g.length+12>f&&g.length-12<f||!s||A.has(p)?u=!0:g.length>f?(A.add(p),p--):(A.add(p),p++)}o(v(d,g)),d=null,g=null}))};`
-    + "return r;")();
-/*
-var fu = async function(
-            pxls,
-            pxl_colors,
-            bucket_threshold,
-            threshold_steps,
-            color_number_bonus,
-            best_color_number,
-            this_state_bucket_threshold 
-        ) {
-
-            "use strict";
-            function this_rgb_to_hsl(r, g, b) {
-
-                r /= 255, g /= 255, b /= 255;
-                var max = Math.max(r, g, b), min = Math.min(r, g, b);
-                var h, s, l = (max + min) / 2;
-
-                if(max == min){
-                    h = s = 0; // achromatic
-                }else{
-                    var d = max - min;
-                    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-                    switch(max){
-                        case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-                        case g: h = (b - r) / d + 2; break;
-                        case b: h = (r - g) / d + 4; break;
-                    }
-                    h /= 6;
-                }
-
-                return Array.of(parseInt(h * 360), parseInt(s * 100), parseInt(l * 100));
-            }
-
-            function this_hsl_to_rgb(h, s, l) {
-
-                h /= 360;
-                s /= 100;
-                l /= 100;
-
-                var r, g, b;
-                if (s === 0) {
-                    r = g = b = l;
-                } else {
-                    function hue_to_rgb(p, q, t) {
-                        if (t < 0) t += 1;
-                        if (t > 1) t -= 1;
-                        if (t < 1 / 6) return p + (q - p) * 6 * t;
-                        if (t < 1 / 2) return q;
-                        if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
-                        return p;
-                    }
-                    var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-                    var p = 2 * l - q;
-                    r = hue_to_rgb(p, q, h + 1 / 3);
-                    g = hue_to_rgb(p, q, h);
-                    b = hue_to_rgb(p, q, h - 1 / 3);
-                }
-
-                return Uint8ClampedArray.of(r * 255, g * 255, b * 255);
-            }
-
-            function this_get_hex_color_from_rgba_values(r, g, b, a) {
-
-                return "#".concat("00000000".concat(new Uint32Array(Uint8ClampedArray.of(a, b, g, r).buffer)[0].toString(16)).slice(-8));
-            }
-            
-            function this_get_hex_from_Uint32(num) {
-
-                return "#".concat("00000000".concat(num.toString(16)).slice(-8));
-            }
-            
-            function this_get_uint32_from_hex(hex) {
-        
-                return parseInt(hex.slice(1), 16);
-            }
-            
-            function this_get_rgba_from_Uint32(num) {
-
-                return new Uint8ClampedArray(Uint32Array.of(num).buffer).reverse();
-            }
-        
-            function this_get_Uint32_color_from_rgba_values (r, g , b, a) {
-        
-                return new Uint32Array(Uint8ClampedArray.of(a, b, g, r).buffer)[0];
-            }
-
-            function this_format_color(color, getUint32 = false) {
-
-                color = typeof color === "undefined" ? 0: color;
-
-                if(getUint32 && typeof color === "number"){
-        
-                    return color;
-                }else {
-        
-                    if(!getUint32 && typeof color === "number"){
-        
-                        return this_get_hex_from_Uint32(color);
-                    }
-        
-                    var formatted = "";
-                    var hex = color;
-                    var hex_length = hex.length;
-        
-                    if(hex_length === 9) {
-        
-                        formatted = hex;
-        
-                    } else if (hex_length === 7) {
-        
-                        formatted = hex.concat("ff");
-                    } else if (hex_length === 5) {
-        
-                        var a = hex.charAt(1), b = hex.charAt(2), c = hex.charAt(3), d = hex.charAt(4);
-                        formatted =  "#".concat(a, a, b, b, c, c, d, d);
-                    } else if (hex_length === 4) {
-        
-                        var a = hex.charAt(1), b = hex.charAt(2), c = hex.charAt(3);
-                        formatted = "#".concat(a, a, b, b, c, c, "ff");
-                    }
-        
-                    if(getUint32){
-        
-                        return this_get_uint32_from_hex(formatted);
-                    }else {
-        
-                        return formatted;
-                    }
-                }
-            }
-
-            function this_match_color (color_a, color_b, threshold) {
-
-                threshold = typeof threshold === "undefined" ? null: threshold;
-
-                if(threshold === 1) {
-
-                    return true;
-                }else if(threshold === 0){
-
-                    return color_a === color_b;
-                }else {
-
-                    var threshold_256 = parseInt(threshold * 255);
-
-                    color_a = this_format_color(color_a, true);
-                    color_b = this_format_color(color_b, true);
-
-                    var c_a = this_get_rgba_from_Uint32(color_a);
-                    var c_b = this_get_rgba_from_Uint32(color_b);
-
-                    var a_diff = Math.abs(c_a[3] - c_b[3]);
-                    var r_diff = Math.abs(c_a[0] - c_b[0]);
-                    var g_diff = Math.abs(c_a[1] - c_b[1]);
-                    var b_diff = Math.abs(c_a[2] - c_b[2]);
-
-                    var a_diff_ratio = Math.abs(1 - a_diff / 255);
-
-                    if(threshold !== null) {
-
-                        return Boolean(r_diff < threshold_256 && g_diff < threshold_256 && b_diff < threshold_256 && a_diff < threshold_256);
-                    }else {
-
-                        return parseFloat(parseInt(r_diff + g_diff + b_diff) / parseInt(255 * 3)) * a_diff_ratio;
-                    }
-                }
-            }
-
-            function this_blend_colors (color_a, color_b, amount = 1, should_return_transparent = false, alpha_addition = false, in_uint_32 = false) {
-
-                color_a = this_format_color(color_a, true);
-                // If we blend the first color with the second with 0 "force", return transparent
-                if(amount === 0 && color_b !== "hover" && should_return_transparent) {
-        
-                    return in_uint_32 ? 0: "#00000000";
-                }
-        
-                // Make sure we have a color based on the 4*2 hex char format
-        
-                if(color_b === "hover") {
-        
-                    var rgba = this_get_rgba_from_Uint32(color_a);
-                    var hsl = this_rgb_to_hsl(rgba[0], rgba[1], rgba[2], rgba[3]);
-                    var rgb = this_hsl_to_rgb(hsl[0], hsl[1], parseInt(hsl[2] >= 50 ? hsl[2]/2: hsl[2]*2));
-                    color_b = this_get_Uint32_color_from_rgba_values(rgb[0], rgb[1], rgb[2], 255);
-                }else {
-        
-                    color_b = this_format_color(color_b, true);
-                }
-                // If the second color is transparent, return transparent
-                if(should_return_transparent && color_b === 0 && amount === 1) { return in_uint_32 ? 0: "#00000000"; }
-        
-                // Extract RGBA from both colors
-                var base = this_get_rgba_from_Uint32(color_a);
-                var added = this_get_rgba_from_Uint32(color_b);
-        
-                if(added[3] === 255 && amount === 1) { return in_uint_32 ? color_b: this_get_hex_from_Uint32(color_b); }
-        
-                var ba3 = base[3] / 255;
-                var ad3 = (added[3] / 255) * amount;
-        
-                var mix = new Uint8ClampedArray(4);
-                var mi3 = 0;
-        
-                if (ba3 > 0 && ad3 > 0) {
-        
-                    if(alpha_addition) {
-        
-                        mi3 = ad3 + ba3;
-                    }else {
-        
-                        mi3 = 1 - (1 - ad3) * (1 - ba3);
-                    }
-        
-                    var ao = ad3 / mi3;
-                    var bo = ba3 * (1 - ad3) / mi3;
-        
-                    mix[0] = parseInt(added[0] * ao + base[0] * bo); // red
-                    mix[1] = parseInt(added[1] * ao + base[1] * bo); // green
-                    mix[2] = parseInt(added[2] * ao + base[2] * bo); // blue
-                }else if(ad3 > 0) {
-        
-                    mi3 = added[3] / 255;
-        
-                    mix[0] = added[0];
-                    mix[1] = added[1];
-                    mix[2] = added[2];
-                }else {
-        
-                    mi3 = base[3] / 255;
-        
-                    mix[0] = base[0];
-                    mix[1] = base[1];
-                    mix[2] = base[2];
-                }
-        
-                if(alpha_addition) {
-                    mi3 /= 2;
-                }
-        
-                mix[3] = parseInt(mi3 * 255);
-        
-                if(in_uint_32){
-        
-                    return this_get_Uint32_color_from_rgba_values(mix[0], mix[1], mix[2], mix[3]);
-                }else {
-        
-                    return this_get_hex_color_from_rgba_values(mix[0], mix[1], mix[2], mix[3]);
-                }
-            }
-
-            function this_remove_duplicate_pxl_colors(_pxls, _pxl_colors) {
-
-                // Work with Hashtables and Typed Array so it is fast
-                var new_pxl_colors_map = new Map();
-                var new_pxls = new Array(_pxls.length);
-
-                _pxls.forEach((pxl, iteration) => {
-
-                    var color = _pxl_colors[pxl];
-                    var index_of_color = new_pxl_colors_map.get(color) || -1;
-
-                    if(index_of_color === -1) {
-
-                        index_of_color = new_pxl_colors_map.size;
-                        new_pxl_colors_map.set(color, index_of_color);
-                    }
-
-                    new_pxls[iteration] = index_of_color;
-                });
-
-                var new_pxl_colors = new Uint32Array(new_pxl_colors_map.size);
-                for (var [key, value] of new_pxl_colors_map) {
-
-                    new_pxl_colors[value] = key;
-                }
-
-                return Array.of(new_pxls, new_pxl_colors);
-            }
-
-            return new Promise(function(resolve, reject){
-
-                var is_bucket_threshold_auto = bucket_threshold === "auto";
-                var is_bucket_threshold_auto_goal_reached = !is_bucket_threshold_auto;
-                var bucket_threshold_auto_goal_target = 15;
-                var bucket_threshold_auto_goal_attempt = new Set();
-                best_color_number = best_color_number !== null ? best_color_number: Math.max(Math.sqrt(pxl_colors.length) + color_number_bonus, 100);
-
-                if(best_color_number < 2 || best_color_number + 12 > pxl_colors.length) {
-
-                    is_bucket_threshold_auto_goal_reached = true;
-                }
-
-                var attempt = 1;
-                var new_pxls = new Array(pxls.length);
-                var new_pxl_colors = new Uint32Array(pxl_colors.length);
-
-            while (!is_bucket_threshold_auto_goal_reached || attempt === 1) {
-                attempt++;
-                
-                bucket_threshold = is_bucket_threshold_auto ?
-                    1/(bucket_threshold_auto_goal_target - 2):
-                    bucket_threshold || this_state_bucket_threshold;
-                threshold_steps = threshold_steps || parseInt(bucket_threshold * 255);
-
-                new_pxls = Array.from(pxls);
-                new_pxl_colors = Uint32Array.from(pxl_colors);
-                var indexes_of_colors_proceed = new Set();
-                var pxl_colors_usage = new Map();
-
-                for (var i = 1; i <= threshold_steps; i += 1) {
-
-                    var threshold = parseFloat(bucket_threshold * (i / threshold_steps));
-                    var weight_applied_to_color_usage_difference = parseFloat(i / threshold_steps);
-
-                    new_pxls.forEach((color_index) => {
-                    
-                        var n = pxl_colors_usage.get(color_index) || 0;
-                        pxl_colors_usage.set(color_index, n+1);
-                    });
-
-                    new_pxl_colors.forEach((color_a, index_of_color_a) => {
-                    
-                        if(!indexes_of_colors_proceed.has(index_of_color_a)) {
-                    
-                            var color_a_usage = pxl_colors_usage.get(index_of_color_a);
-                    
-                            new_pxl_colors.forEach((color_b, index_of_color_b) => {
-                    
-                                if(index_of_color_a !== index_of_color_b && !indexes_of_colors_proceed.has(index_of_color_b)) {
-                    
-                                    var color_b_usage = pxl_colors_usage.get(index_of_color_b);
-                                    var color_a_more_used = color_a_usage > color_b_usage;
-                    
-                                    var color_usage_difference = color_a_more_used ? color_a_usage / color_b_usage: color_b_usage / color_a_usage;
-                                    var weighted_threshold = (threshold + (threshold * (1 - 1 / color_usage_difference) * weight_applied_to_color_usage_difference)) / (1 + weight_applied_to_color_usage_difference);
-                    
-                                    if(this_match_color(color_a, color_b, weighted_threshold)) {
-                    
-                                        var color = color_a_more_used ?
-                                            this_blend_colors(new_pxl_colors[index_of_color_a], new_pxl_colors[index_of_color_b], 1 / (color_usage_difference), true, false, true):
-                                            this_blend_colors(new_pxl_colors[index_of_color_b], new_pxl_colors[index_of_color_a], 1 / (color_usage_difference), true, false, true);
-
-                                        new_pxl_colors[index_of_color_a] = color;
-                                        new_pxl_colors[index_of_color_b] = color;
-                                        indexes_of_colors_proceed.add(index_of_color_a);
-                                        indexes_of_colors_proceed.add(index_of_color_b);
-                                    }
-                                }
-                            });
-                        }
-                    });
-
-                    indexes_of_colors_proceed.clear();
-                    pxl_colors_usage.clear();
-                    var r = this_remove_duplicate_pxl_colors(new_pxls, new_pxl_colors);
-                    new_pxls = r[0];
-                    new_pxl_colors = r[1];
-                }
-
-                if((new_pxl_colors.length + 12 > best_color_number && new_pxl_colors.length - 12 < best_color_number) || !is_bucket_threshold_auto || bucket_threshold_auto_goal_attempt.has(bucket_threshold_auto_goal_target)) {
-
-                    is_bucket_threshold_auto_goal_reached = true;
-                }else if(new_pxl_colors.length > best_color_number){
-
-                    bucket_threshold_auto_goal_attempt.add(bucket_threshold_auto_goal_target);
-                    bucket_threshold_auto_goal_target --;
-                }else {
-
-                    bucket_threshold_auto_goal_attempt.add(bucket_threshold_auto_goal_target);
-                    bucket_threshold_auto_goal_target ++;
-                }
-            }
-
-            resolve(this_remove_duplicate_pxl_colors(new_pxls, new_pxl_colors));
-            new_pxls = null;
-            new_pxl_colors = null;
-        })};*/
-
-
 window.w_canvas_pixels = {
     _caf_id: null,
     _last_raf_time: Date.now(),
@@ -1114,6 +159,9 @@ import React from "react";
 import pool from "../../utils/worker-pool";
 import {xxHash32} from "js-xxhash";
 import xxHash from "xxhash-wasm";
+import B64PngCanvas from "../canvaspixels/utils/B64PngCanvas";
+import B64PngLayer from "../canvaspixels/utils/B64PngLayer";
+import ReducePalette from "../canvaspixels/utils/ReducePalette";
 import SuperCanvas from "../canvaspixels/utils/SuperCanvas";
 import ColorConversion from "../canvaspixels/utils/ColorConversion";
 const color_conversion = Object.create(ColorConversion).new();
@@ -2166,25 +1214,7 @@ class CanvasPixels extends React.Component {
         const scale = 1;
         const resize_w = resize_width || pxl_width;
 
-        pool.exec(window.get_layer_base64_png_data_url_process_function, [
-            pxl_width,
-            pxl_height,
-            pxls,
-            pxl_colors,
-            scale,
-            resize_w
-        ]).catch((e) => {
-
-            return window.get_layer_base64_png_data_url_process_function(
-                pxl_width,
-                pxl_height,
-                pxls,
-                pxl_colors,
-                scale,
-                resize_w
-            );
-
-        }).timeout(3 * 1000).then(callback_function);
+        Object.create(B64PngLayer).from(pool, pxl_width, pxl_height, pxls, pxl_colors, scale, resize_w).render(callback_function);
     };
 
     get_base64_png_data_url = (scale = 1, callback_function = () => {}, with_palette = false, with_compression_speed = 0, with_compression_quality_min = 30, with_compression_quality_max = 35) => {
@@ -2196,27 +1226,7 @@ class CanvasPixels extends React.Component {
 
         const { pxl_width, pxl_height, _s_pxls, _s_pxl_colors, _layers } = this.state;
 
-        pool.exec(window.get_base64_png_data_url_process_function, [
-            pxl_width,
-            pxl_height,
-            _s_pxls,
-            _s_pxl_colors,
-            _layers,
-            scale,
-            with_palette
-        ]).catch((e) => {
-
-            return window.get_base64_png_data_url_process_function(
-                pxl_width,
-                pxl_height,
-                _s_pxls,
-                _s_pxl_colors,
-                _layers,
-                scale,
-                with_palette
-            );
-
-        }).timeout(5 * 1000).then(function(result) {
+        Object.create(B64PngCanvas).from(pool, pxl_width, pxl_height, _s_pxls, _s_pxl_colors, _layers, scale, with_palette).render(function(result) {
 
             if(with_compression_speed !== 0) {
 
@@ -2426,7 +1436,7 @@ class CanvasPixels extends React.Component {
                 }
             }
 
-            [ new_pxls, new_pxl_colors ] = this._remove_duplicate_pxl_colors(new_pxls, new_pxl_colors);
+            [ new_pxls, new_pxl_colors ] = color_conversion.clean_duplicate_colors(new_pxls, new_pxl_colors);
 
             this.setState({
                 _imported_image_start_x: top_left[0],
@@ -2888,7 +1898,7 @@ class CanvasPixels extends React.Component {
 
         const { pxl_width, pxl_height } = this.state;
 
-        let _super_canvas = Object.create(SuperCanvas).from(can, pxl_width, pxl_height);
+        const _super_canvas = Object.create(SuperCanvas).from(can, pxl_width, pxl_height);
         this.setState({_super_canvas, has_shown_canvas_once: false, _is_there_new_dimension: true}, () => {
 
             this._request_force_update(false, false, () => {
@@ -3085,7 +2095,7 @@ class CanvasPixels extends React.Component {
             return pxl === pxl_color_index ? new_color_index: pxl;
         });
 
-        [pxls_copy, pxl_colors_copy] = this._remove_duplicate_pxl_colors(pxls_copy, pxl_colors_copy);
+        [pxls_copy, pxl_colors_copy] = color_conversion.clean_duplicate_colors(pxls_copy, pxl_colors_copy);
 
         let ns_pxl_colors = this.state._s_pxl_colors;
         ns_pxl_colors[_layer_index] = pxl_colors_copy;
@@ -3601,7 +2611,7 @@ class CanvasPixels extends React.Component {
                     });
 
                     let {_s_pxls, _s_pxl_colors} = this.state;
-                    [_s_pxls[_layer_index], _s_pxl_colors[_layer_index]] = this._remove_duplicate_pxl_colors(pxls_copy, pxl_colors_copy);
+                    [_s_pxls[_layer_index], _s_pxl_colors[_layer_index]] = color_conversion.clean_duplicate_colors(pxls_copy, pxl_colors_copy);
 
 
                     // Update pixels list and pixel colours
@@ -3637,7 +2647,7 @@ class CanvasPixels extends React.Component {
                 }else if(tool === "BUCKET" || tool === "HUE BUCKET"){
 
                     let {_s_pxls, _s_pxl_colors} = this.state;
-                    [_s_pxls[_layer_index], _s_pxl_colors[_layer_index]] = this._remove_duplicate_pxl_colors(pxls_copy, pxl_colors_copy);
+                    [_s_pxls[_layer_index], _s_pxl_colors[_layer_index]] = color_conversion.clean_duplicate_colors(pxls_copy, pxl_colors_copy);
 
                     // Update pixels list and pixel colours
                     this.setState({_s_pxls, _s_pxl_colors, _last_action_timestamp: Date.now()}, () => {
@@ -6413,7 +5423,7 @@ class CanvasPixels extends React.Component {
                     new_pxls[i] = pxls[index];
                 }
 
-                [new_pxls, new_pxl_colors] = this._remove_duplicate_pxl_colors(new_pxls, _s_pxl_colors[l]);
+                [new_pxls, new_pxl_colors] = color_conversion.clean_duplicate_colors(new_pxls, _s_pxl_colors[l]);
                 ns_pxls[l] = new_pxls;
                 ns_pxl_colors[l] = new_pxl_colors;
             }
@@ -6614,7 +5624,7 @@ class CanvasPixels extends React.Component {
 
             });
 
-            [_s_pxls[_layer_index], _s_pxl_colors[_layer_index]] = this._remove_duplicate_pxl_colors(_s_pxls[_layer_index], _s_pxl_colors[_layer_index]);
+            [_s_pxls[_layer_index], _s_pxl_colors[_layer_index]] = color_conversion.clean_duplicate_colors(_s_pxls[_layer_index], _s_pxl_colors[_layer_index]);
 
             this.setState({
                 _s_pxls,
@@ -7389,7 +6399,7 @@ class CanvasPixels extends React.Component {
 
         });
 
-        return this._remove_duplicate_pxl_colors(pxls, pxl_colors);
+        return color_conversion.clean_duplicate_colors(pxls, pxl_colors);
     };
 
     _filter_pixels = (name, intensity = 1, pxls, pxl_colors, remove_duplicate_pxl_colors = true) => {
@@ -7445,7 +6455,7 @@ class CanvasPixels extends React.Component {
             });
         }
 
-        return remove_duplicate_pxl_colors ? this._remove_duplicate_pxl_colors(pxls, pxl_colors): [pxls, pxl_colors];
+        return remove_duplicate_pxl_colors ? color_conversion.clean_duplicate_colors(pxls, pxl_colors): [pxls, pxl_colors];
     };
 
     _to_dutone = (contrast = 0.8, color_a = "#ffffffff", color_b = "#000000ff") => {
@@ -7758,62 +6768,18 @@ class CanvasPixels extends React.Component {
 
         }
 
-        return this._remove_duplicate_pxl_colors(pxls, pxl_colors);
+        return color_conversion.clean_duplicate_colors(pxls, pxl_colors);
 
     };
 
     _remove_close_pxl_colors = async(pxls = [], pxl_colors  = [], bucket_threshold = null, threshold_steps = null, color_number_bonus = 54, best_color_number = null) => {
 
-        return pool.exec(window.remove_close_pxl_colors_process_function, [
-            pxls,
-            pxl_colors,
-            bucket_threshold,
-            threshold_steps,
-            color_number_bonus,
-            best_color_number,
-            this.state.bucket_threshold
-        ]).catch((e) => {
+        const state_bucket_threshold = this.state.bucket_threshold;
 
-            return window.remove_close_pxl_colors_process_function(
-                pxls,
-                pxl_colors,
-                bucket_threshold,
-                threshold_steps,
-                color_number_bonus,
-                best_color_number,
-                this.state.bucket_threshold
-            );
+        return new Promise(function(resolve){
 
-        }).timeout(120 * 1000);
-    };
-
-    _remove_duplicate_pxl_colors = (_pxls, _pxl_colors) => {
-
-        // Work with Hashtables and Typed Array so it is fast
-        let new_pxl_colors_map = new Map();
-        let new_pxls = new Array(_pxls.length);
-
-        _pxls.forEach((pxl, iteration) => {
-
-            const color = _pxl_colors[pxl];
-            let index_of_color = new_pxl_colors_map.get(color) || -1;
-
-            if(index_of_color === -1) {
-
-                index_of_color = new_pxl_colors_map.size;
-                new_pxl_colors_map.set(color, index_of_color);
-            }
-
-            new_pxls[iteration] = index_of_color;
+            Object.create(ReducePalette).from(pool, pxls, pxl_colors, bucket_threshold, threshold_steps, color_number_bonus, best_color_number, state_bucket_threshold).compute(resolve);
         });
-
-        let new_pxl_colors = new Uint32Array(new_pxl_colors_map.size);
-        for (const [key, value] of new_pxl_colors_map) {
-
-            new_pxl_colors[value] = key;
-        }
-
-        return Array.of(new_pxls, new_pxl_colors);
     };
     
     _get_shadow = (elevation) => {

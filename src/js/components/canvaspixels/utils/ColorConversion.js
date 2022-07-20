@@ -1,6 +1,5 @@
 const ColorConversion = {
     new: function(){
-
         return {
 
             format_hex_color: function(hex) { // Supports #fff (short rgb), #fff0 (short rgba), #e2e2e2 (full rgb) and #e2e2e2ff (full rgba)
@@ -167,6 +166,67 @@ const ColorConversion = {
                 const [r, g, b, a] = this.to_rgba_from_uint32(uint32);
                 return this.to_uint32_from_rgba(Uint8ClampedArray.of(255 - r, 255 - g, 255 - b, a));
             },
+            match_color: function(color_a, color_b, threshold) {
+
+                threshold = typeof threshold === "undefined" ? null: threshold;
+
+                if(threshold === 1) {
+
+                    return true;
+                }else if(threshold === 0){
+
+                    return color_a === color_b;
+                }else {
+
+                    const threshold_256 = parseInt(threshold * 255);
+
+                    const c_a = this.to_rgba_from_uint32(color_a);
+                    const c_b = this.to_rgba_from_uint32(color_b);
+
+                    const a_diff = Math.abs(c_a[3] - c_b[3]);
+                    const r_diff = Math.abs(c_a[0] - c_b[0]);
+                    const g_diff = Math.abs(c_a[1] - c_b[1]);
+                    const b_diff = Math.abs(c_a[2] - c_b[2]);
+
+                    const a_diff_ratio = Math.abs(1 - a_diff / 255);
+
+                    if(threshold !== null) {
+
+                        return Boolean(r_diff < threshold_256 && g_diff < threshold_256 && b_diff < threshold_256 && a_diff < threshold_256);
+                    }else {
+
+                        return parseFloat(parseInt(r_diff + g_diff + b_diff) / parseInt(255 * 3)) * a_diff_ratio;
+                    }
+                }
+            },
+            clean_duplicate_colors(_pxls, _pxl_colors) {
+
+                // Work with Hashtables and Typed Array so it is fast
+                let new_pxl_colors_map = new Map();
+                let new_pxls = new Array(_pxls.length);
+
+                _pxls.forEach((pxl, iteration) => {
+
+                    const color = _pxl_colors[pxl];
+                    let index_of_color = new_pxl_colors_map.get(color) || -1;
+
+                    if(index_of_color === -1) {
+
+                        index_of_color = new_pxl_colors_map.size;
+                        new_pxl_colors_map.set(color, index_of_color);
+                    }
+
+                    new_pxls[iteration] = index_of_color;
+                });
+
+                let new_pxl_colors = new Uint32Array(new_pxl_colors_map.size);
+                for (let [key, value] of new_pxl_colors_map) {
+
+                    new_pxl_colors[value] = key;
+                }
+
+                return Array.of(new_pxls, new_pxl_colors);
+            }
         };
     }
 };
