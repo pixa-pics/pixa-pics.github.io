@@ -168,7 +168,7 @@ module.exports = {
     resolve: {
         alias: {
             'bn.js': path.join(__dirname, 'node_modules/bn.js/lib/bn.js'),
-            'readable-stream': path.join(__dirname, 'node_modules/readable-stream/lib/stream.js'),
+            //'readable-stream': path.join(__dirname, 'node_modules/readable-stream/lib/stream.js'),
         }
     },
     plugins: process.env.NODE_ENV === "development" ? [

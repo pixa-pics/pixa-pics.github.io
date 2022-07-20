@@ -297,19 +297,33 @@ const ReducePalette = {
 
         return {
             // Methods
-            set_data(pool, pxls, pxl_colors, bucket_threshold, threshold_steps, color_number_bonus, best_color_number, state_bucket_threshold) {
+            new(pool, pxls, pxl_colors, bucket_threshold, threshold_steps, color_number_bonus, best_color_number, state_bucket_threshold) {
 
                 s = cs(pool, pxls, pxl_colors, bucket_threshold, threshold_steps, color_number_bonus, best_color_number, state_bucket_threshold);
             },
+            destroy(callback_function = function(){}) {
+                if(s !== null) {
+                    s.workerp.terminate(callback_function);
+                    s = null;
+                }else {
+                    callback_function("ok");
+                }
+            },
             compute(callback_function) {
 
-                s.workerp.exec(
+                if(s !== null) {
 
-                    s.asyncf, [s.p, s.pc, s.bt, s.ts, s.cnb, s.bcn, s.stb]
-                ).catch((e) => {
+                    s.workerp.exec(
 
-                    return s.asyncf(s.p, s.pc, s.bt, s.ts, s.cnb, s.bcn, s.stb);
-                }).timeout(120 * 1000).then(callback_function);
+                        s.asyncf, [s.p, s.pc, s.bt, s.ts, s.cnb, s.bcn, s.stb]
+                    ).catch((e) => {
+
+                        return s.asyncf(s.p, s.pc, s.bt, s.ts, s.cnb, s.bcn, s.stb);
+                    }).timeout(120 * 1000).then(callback_function);
+                }else {
+
+                    callback_function([]);
+                }
             },
         };
     }

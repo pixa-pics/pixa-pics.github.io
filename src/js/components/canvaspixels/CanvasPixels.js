@@ -24,136 +24,6 @@ SOFTWARE.
  */
 
 "use strict";
-window.w_canvas_pixels = {
-    _caf_id: null,
-    _last_raf_time: Date.now(),
-    _previous_cpaf_fps: 0,
-    _cpaf_frames: 0,
-    _is_mobile_or_tablet: Boolean((/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino|android|ipad|playbook|silk/i.test(navigator.userAgent||navigator.vendor||window.opera)||/1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(navigator.userAgent||navigator.vendor||window.opera.substr(0,4)))),
-};
-
-window._fps_interval = setInterval(() => {
-
-    window.w_canvas_pixels._previous_cpaf_fps = window.w_canvas_pixels._cpaf_frames * 4;
-    window.w_canvas_pixels._cpaf_frames = 0;
-}, 250);
-
-const _raf =
-    window.requestAnimationFrame       ||
-    window.oRequestAnimationFrame      ||
-    window.mozRequestAnimationFrame    ||
-    window.webkitRequestAnimationFrame ||
-    window.msRequestAnimationFrame;
-const _caf =
-    window.cancelAnimationFrame       ||
-    window.oCancelAnimationFrame      ||
-    window.mozCancelAnimationFrame    ||
-    window.webkitCancelAnimationFrame ||
-    window.msCancelAnimationFrame;
-
-function _loop(render, do_not_cancel_animation, force_update, requested_at_t = Date.now()) {
-
-    if(requested_at_t < window.w_canvas_pixels._last_raf_time && !do_not_cancel_animation) { return }
-
-    try {
-
-        let skip_frame_rate = window.w_canvas_pixels._is_mobile_or_tablet ? 27: 44;
-
-        let now = Date.now();
-        let running_smoothly = true;
-
-        let deltaT = now - window.w_canvas_pixels._last_raf_time;
-        // do not render frame when deltaT is too high
-        if ( deltaT > 1000 / (skip_frame_rate * 2/3)) {
-            running_smoothly = false;
-        }
-
-        if(force_update) {
-
-            if(window.w_canvas_pixels._caf_id !== null) {
-
-                _caf(window.w_canvas_pixels._caf_id);
-            }
-            window.w_canvas_pixels._caf_id = null;
-
-            if(do_not_cancel_animation) {
-
-                _raf(render);
-            }else {
-
-                window.w_canvas_pixels._caf_id = _raf(render);
-            }
-
-            window.w_canvas_pixels._cpaf_frames++;
-            window.w_canvas_pixels._last_raf_time = now;
-
-        }else if ( window.w_canvas_pixels._caf_id === null) { // Best
-
-            if(do_not_cancel_animation) {
-
-                _raf(render);
-            }else {
-
-                window.w_canvas_pixels._caf_id = _raf(render);
-            }
-            window.w_canvas_pixels._last_raf_time = now;
-            window.w_canvas_pixels._cpaf_frames++;
-
-        }else if(!running_smoothly && window.w_canvas_pixels._caf_id !== null && deltaT > 1000 / (skip_frame_rate * 6/3) ) { // Average
-
-            if(window.w_canvas_pixels._caf_id !== null) {
-
-                _caf(window.w_canvas_pixels._caf_id);
-            }
-            window.w_canvas_pixels._caf_id = null;
-            window.w_canvas_pixels._last_raf_time = now;
-
-            if(!do_not_cancel_animation) {
-
-                window.w_canvas_pixels._caf_id = _raf(render);
-                window.w_canvas_pixels._cpaf_frames++;
-
-            }else {
-
-                _raf(render);
-            }
-
-        }else if(!running_smoothly){ // Low
-
-            if(window.w_canvas_pixels._caf_id !== null) {
-
-                _caf(window.w_canvas_pixels._caf_id);
-            }
-            window.w_canvas_pixels._caf_id = null;
-
-            if(do_not_cancel_animation) {
-
-                _raf(render);
-            }else {
-
-                window.w_canvas_pixels._caf_id = _raf(render);
-            }
-
-            window.w_canvas_pixels._cpaf_frames++;
-            window.w_canvas_pixels._last_raf_time = now;
-
-        }else if(deltaT < 1000 / (skip_frame_rate * 2)){
-
-            setTimeout(() => {_loop(render, do_not_cancel_animation, force_update, requested_at_t)}, 1000 / (skip_frame_rate * 8));
-        }else if(force_update || do_not_cancel_animation) {
-
-            setTimeout(() => {_loop(render, do_not_cancel_animation, force_update, requested_at_t)}, 1000 / (skip_frame_rate * 8));
-        }else {
-
-            //caf(caf_id);
-        }
-    }catch (e) {}
-};
-
-function _anim_loop ( render, do_not_cancel_animation = false, force_update = false ) {
-
-    _loop(render, do_not_cancel_animation, force_update);
-};
 
 import React from "react";
 import pool from "../../utils/worker-pool";
@@ -165,6 +35,9 @@ import ReducePalette from "../canvaspixels/utils/ReducePalette";
 import SuperCanvas from "../canvaspixels/utils/SuperCanvas";
 import ColorConversion from "../canvaspixels/utils/ColorConversion";
 const color_conversion = Object.create(ColorConversion).new();
+import SmartRequestAnimationFrame from "../canvaspixels/utils/SmartRequestAnimationFrame";
+const sraf =  Object.create(SmartRequestAnimationFrame).new();
+sraf.start_timer();
 
 class CanvasPixels extends React.Component {
 
@@ -248,7 +121,7 @@ class CanvasPixels extends React.Component {
             _old_pxl_height: 0,
             _pxls_hovered: -1,
             _old_pxls_hovered: -1,
-            _super_canvas: null,
+            _super_canvas: Object.create(SuperCanvas).from(null, props.pxl_width || 32, props.pxl_height || 32),
             _canvas_container: null,
             _canvas_wrapper: null,
             _canvas_wrapper_overflow: null,
@@ -257,7 +130,7 @@ class CanvasPixels extends React.Component {
             _last_action_timestamp: Date.now(),
             _last_paint_timestamp: Date.now(),
             _lazy_lazy_compute_time_ms: 10 * 1000,
-            _undo_buffer_time_ms: parseInt(parseInt(props.pxl_width || 32) * 2 + parseInt(props.pxl_height || 32) * 2 + parseInt(window.w_canvas_pixels._is_mobile_or_tablet ? 3000: 1500)),
+            _undo_buffer_time_ms: parseInt(parseInt(props.pxl_width || 32) + parseInt(props.pxl_height || 32) + 1000),
             _mouse_inside: false,
             _paint_hover_old_pxls_snapshot: new Array((props.pxl_width || 32) * (props.pxl_height || 32)).fill(0),
             _select_hover_old_pxls_snapshot: [],
@@ -368,7 +241,7 @@ class CanvasPixels extends React.Component {
 
         window.addEventListener("resize", this._updated_dimensions);
         this._updated_dimensions();
-        if(window.w_canvas_pixels._is_mobile_or_tablet && this.state._device_motion === true){
+        if(sraf.get_state().is_mobile_or_tablet && this.state._device_motion === true){
             window.addEventListener("devicemotion", this._handle_motion_changes);
         }
 
@@ -380,13 +253,13 @@ class CanvasPixels extends React.Component {
 
         _intervals[2] = setInterval(this._maybe_update_mine_player, 1000 / 30);
 
-        _intervals[3] = setInterval(this._maybe_update_selection_highlight, window.w_canvas_pixels._is_mobile_or_tablet ? 2500: 1250);
+        _intervals[3] = setInterval(this._maybe_update_selection_highlight, sraf.get_state().is_mobile_or_tablet ? 2500: 1250);
 
         _intervals[5] = setInterval(this._notify_export_state, this.state.export_state_every_ms);
 
         _intervals[7] = setInterval(this._maybe_update_canvas, parseInt(this.state._undo_buffer_time_ms * 1));
 
-        if(!window.w_canvas_pixels._is_mobile_or_tablet) {
+        if(!sraf.get_state().is_mobile_or_tablet) {
 
             _intervals[8] = setInterval(this.set_move_speed_average_now,  31);
         }
@@ -643,7 +516,7 @@ class CanvasPixels extends React.Component {
 
         if(this.state.perspective !== new_props.perspective) {
 
-            if(window.w_canvas_pixels._is_mobile_or_tablet && this.state._device_motion === true){
+            if(sraf.get_state().is_mobile_or_tablet && this.state._device_motion === true){
 
                 if(new_props.perspective > 0) {
 
@@ -731,7 +604,7 @@ class CanvasPixels extends React.Component {
                 break;
         }
 
-        if(window.w_canvas_pixels._is_mobile_or_tablet && this.state.perspective && this.state.has_shown_canvas_once) {
+        if(sraf.get_state().is_mobile_or_tablet && this.state.perspective && this.state.has_shown_canvas_once) {
 
             this.setState({_device_motion: true, perspective_coordinate: [x, y], perspective_coordinate_last_change: Date.now()}, () => {
 
@@ -748,13 +621,13 @@ class CanvasPixels extends React.Component {
 
     set_perspective_coordinate = (array) => {
 
-        if((!window.w_canvas_pixels._is_mobile_or_tablet || !this.state._device_motion) && this.state.perspective && this.state.has_shown_canvas_once) {
+        if((!sraf.get_state().is_mobile_or_tablet || !this.state._device_motion) && this.state.perspective && this.state.has_shown_canvas_once) {
 
             this.setState({perspective_coordinate: array, perspective_coordinate_last_change: Date.now()}, () => {
 
                 this._request_force_update(true, true, () => {
 
-                    if(!window.w_canvas_pixels._is_mobile_or_tablet) {
+                    if(!sraf.get_state().is_mobile_or_tablet) {
 
                         this._notify_perspective_coordinate_changes(array.concat([this.state.scale]));
                     }
@@ -1213,8 +1086,8 @@ class CanvasPixels extends React.Component {
 
         const scale = 1;
         const resize_w = resize_width || pxl_width;
-
-        Object.create(B64PngLayer).from(pool, pxl_width, pxl_height, pxls, pxl_colors, scale, resize_w).render(callback_function);
+        const b64pnglayer = Object.create(B64PngLayer).from(pool, pxl_width, pxl_height, pxls, pxl_colors, scale, resize_w);
+        b64pnglayer.render(function(r){callback_function(r); b64pnglayer.destroy()});
     };
 
     get_base64_png_data_url = (scale = 1, callback_function = () => {}, with_palette = false, with_compression_speed = 0, with_compression_quality_min = 30, with_compression_quality_max = 35) => {
@@ -1226,8 +1099,10 @@ class CanvasPixels extends React.Component {
 
         const { pxl_width, pxl_height, _s_pxls, _s_pxl_colors, _layers } = this.state;
 
-        Object.create(B64PngCanvas).from(pool, pxl_width, pxl_height, _s_pxls, _s_pxl_colors, _layers, scale, with_palette).render((result) => {
-console.log(result);
+        const b64pngcanvas = Object.create(B64PngCanvas).from(pool, pxl_width, pxl_height, _s_pxls, _s_pxl_colors, _layers, scale, with_palette);
+        b64pngcanvas.render(function(result) {
+
+            b64pngcanvas.destroy();
             if(with_compression_speed !== 0) {
 
                 import("../../utils/png_quant").then(({png_quant}) => {
@@ -1896,9 +1771,9 @@ console.log(result);
         if(typeof can.width === "undefined") {return}
         if(can.width === null) {return}
 
-        const { pxl_width, pxl_height } = this.state;
+        let { _super_canvas, pxl_width, pxl_height } = this.state;
+        _super_canvas.new(can, pxl_width, pxl_height);
 
-        const _super_canvas = Object.create(SuperCanvas).from(can, pxl_width, pxl_height);
         this.setState({_super_canvas, has_shown_canvas_once: false, _is_there_new_dimension: true}, () => {
 
             this._request_force_update(false, false, () => {
@@ -1985,10 +1860,11 @@ console.log(result);
 
         const { _canvas_wrapper_overflow, _intervals } = this.state;
 
+        sraf.destroy();
         try {
 
             window.removeEventListener("resize", this._updated_dimensions);
-            if(window.w_canvas_pixels._is_mobile_or_tablet && this.state._device_motion === true){
+            if(sraf.get_state().is_mobile_or_tablet && this.state._device_motion === true){
                 window.removeEventListener("devicemotion", this._handle_motion_changes);
             }
             _canvas_wrapper_overflow.removeEventListener("wheel", this.handle_canvas_wrapper_overflow_wheel);
@@ -3238,7 +3114,7 @@ console.log(result);
 
         const { perspective, _device_motion } = this.state;
 
-        if(perspective > 0 && (!window.w_canvas_pixels._is_mobile_or_tablet || !_device_motion)) {
+        if(perspective > 0 && (!sraf.get_state().is_mobile_or_tablet || !_device_motion)) {
 
             const pos = this._get_canvas_pos();
             const pos_x_in_canvas_container = ((event.pageX || x) - pos.canvas_container.left);
@@ -4091,8 +3967,8 @@ console.log(result);
         // Potentially cancel the latest animation frame (Clear old) and then request a new one that will maybe be rendered
         const { _loading_base64_img, dont_show_canvas_until_img_set, dont_show_canvas, but_show_canvas_once, has_shown_canvas_once, _last_paint_timestamp, _hidden, no_actions } = this.state;
         if(_last_paint_timestamp > tried_rendering_at || (_loading_base64_img.length === 0 && dont_show_canvas_until_img_set) || (dont_show_canvas && !(but_show_canvas_once && !has_shown_canvas_once)) || _hidden){return;}
-        if(Date.now() < _last_paint_timestamp + parseInt(1000 / parseInt(window.w_canvas_pixels._previous_cpaf_fps * 1.5))) {
-            setTimeout(() => {this._update_canvas(force_update, do_not_cancel_animation, tried_rendering_at)}, parseInt(1000 / parseInt(window.w_canvas_pixels._previous_cpaf_fps * 5)));
+        if(Date.now() < _last_paint_timestamp + parseInt(1000 / parseInt(sraf.get_state().previous_cpaf_fps * 1.5))) {
+            setTimeout(() => {this._update_canvas(force_update, do_not_cancel_animation, tried_rendering_at)}, parseInt(1000 / parseInt(sraf.get_state().previous_cpaf_fps * 5)));
             return;
         }
 
@@ -4582,7 +4458,7 @@ console.log(result);
                 });
                 if(no_actions === false) {
 
-                    _anim_loop(_super_canvas.render, Boolean(!has_shown_canvas_once || do_not_cancel_animation), Boolean(!has_shown_canvas_once));
+                    sraf.run_frame(_super_canvas.render, Boolean(!has_shown_canvas_once || do_not_cancel_animation), Boolean(!has_shown_canvas_once));
                 }
             }
         }
@@ -4718,7 +4594,7 @@ console.log(result);
 
                 this.setState({_notified_position_at: now}, () => {
 
-                    this.props.onPositionChange(position, window.w_canvas_pixels._previous_cpaf_fps);
+                    this.props.onPositionChange(position, sraf.get_state().previous_cpaf_fps);
                 });
             }else if(now < date + 150){
 
@@ -6997,7 +6873,7 @@ console.log(result);
         const {_force_updated_timestamp } = this.state;
         const now = Date.now();
 
-        const min_fps = window.w_canvas_pixels._is_mobile_or_tablet ? 25: 75;
+        const min_fps = sraf.get_state().is_mobile_or_tablet ? 25: 75;
         const nevertheless_force = Boolean((_force_updated_timestamp + 1000 / min_fps) < now);
         const nevertheless_for_sure_force = Boolean((_force_updated_timestamp + 1000 / (min_fps / 10)) < now);
 
@@ -7006,7 +6882,7 @@ console.log(result);
             return;
         }
 
-        _anim_loop(() => {
+        sraf.run_frame(() => {
 
             this.forceUpdate(() => {
 
@@ -7126,7 +7002,7 @@ console.log(result);
 
         let { perspective_coordinate } = this.state;
 
-        const p = window.w_canvas_pixels._is_mobile_or_tablet ? 0: perspective / 4;
+        const p = sraf.get_state().is_mobile_or_tablet ? 0: perspective / 4;
 
         let background_image_style_props = show_original_image_in_background && typeof this.state._base64_original_images[_original_image_index] !== "undefined" ?
             {
@@ -7148,7 +7024,7 @@ console.log(result);
         const canvas_wrapper_width = Math.round(pxl_width * _screen_zoom_ratio * scale);
         const canvas_wrapper_height = Math.round(pxl_height * _screen_zoom_ratio * scale);
 
-        const l = window.w_canvas_pixels._is_mobile_or_tablet ? 0: light * p * 2;
+        const l = sraf.get_state().is_mobile_or_tablet ? 0: light * p * 2;
 
         const filter_force = (1 - (p/200) * l) + (
                                     (
@@ -7293,7 +7169,7 @@ console.log(result);
                         contain: "layout size style paint",
                         zIndex: 10,
                     }}></div>
-                    {!window.w_canvas_pixels._is_mobile_or_tablet && <div style={{
+                    {!sraf.get_state().is_mobile_or_tablet && <div style={{
                         zIndex: 1,
                         color: canvas_wrapper_background_color,
                         textAlign: "center",

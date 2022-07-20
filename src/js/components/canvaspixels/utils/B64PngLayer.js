@@ -187,19 +187,35 @@ const B64PngLayer = {
 
         return {
             // Methods
-            set_data(pool, pxl_width, pxl_height, pxls, pxl_colors, scale, resize_w) {
+            new(pool, pxl_width, pxl_height, pxls, pxl_colors, scale, resize_w) {
 
                 s = cs( pool, pxl_width, pxl_height, pxls, pxl_colors, scale, resize_w);
             },
+            destroy(callback_function = function(){}) {
+                if(s !== null) {
+                    s.workerp.terminate(function (c){
+                        s = null;
+                        callback_function(c);
+                    });
+                }else {
+                    callback_function("ok");
+                }
+            },
             render(callback_function) {
 
-                s.workerp.exec(
+                if(s !== null) {
 
-                    s.asyncf, [s.w, s.h, s.p, s.pc, s.s, s.rw]
-                ).catch(function (e) {
+                    s.workerp.exec(
 
-                    return s.asyncf(s.w, s.h, s.p, s.pc, s.s, s.rw);
-                }).timeout(5 * 1000).then(callback_function);
+                        s.asyncf, [s.w, s.h, s.p, s.pc, s.s, s.rw]
+                    ).catch(function (e) {
+
+                        return s.asyncf(s.w, s.h, s.p, s.pc, s.s, s.rw);
+                    }).timeout(5 * 1000).then(callback_function);
+                }else {
+
+                    callback_function([]);
+                }
             },
         };
     }

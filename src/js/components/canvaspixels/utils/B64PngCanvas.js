@@ -337,19 +337,34 @@ const B64PngCanvas = {
 
         return {
             // Methods
-            set_data(pool, pxl_width, pxl_height, _s_pxls, _s_pxl_colors, _layers, scale, with_palette) {
+            new(pool, pxl_width, pxl_height, _s_pxls, _s_pxl_colors, _layers, scale, with_palette) {
 
                 s = cs( pool, pxl_width, pxl_height, _s_pxls, _s_pxl_colors, _layers, scale, with_palette);
             },
+            destroy(callback_function = function(){}) {
+                if(s !== null) {
+                    s.workerp.terminate(function (c){
+                        s = null;
+                        callback_function(c);
+                    });
+                }else {
+                    callback_function("ok");
+                }
+            },
             render(callback_function) {
 
-                s.workerp.exec(
+                if(s !== null) {
+                    s.workerp.exec(
 
-                    s.asyncf, [s.w, s.h, s.sp, s.spc, s.l, s.s, s.wp]
-                ).catch(function(e) {
+                        s.asyncf, [s.w, s.h, s.sp, s.spc, s.l, s.s, s.wp]
+                    ).catch(function(e) {
 
-                    return s.asyncf(s.w, s.h, s.sp, s.spc, s.l, s.s, s.wp);
-                }).timeout(10 * 1000).then(callback_function);
+                        return s.asyncf(s.w, s.h, s.sp, s.spc, s.l, s.s, s.wp);
+                    }).timeout(10 * 1000).then(callback_function);
+                }else {
+
+                    callback_function("");
+                }
             },
         };
     }

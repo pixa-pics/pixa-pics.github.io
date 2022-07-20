@@ -20,6 +20,14 @@ const SuperCanvas = {
                 });
         }
 
+        if(c === null) {
+
+            c = Object.assign(document.createElement("canvas"), {
+                    width: pxl_width,
+                    height: pxl_height
+                });
+        }
+
         return Object.assign({}, {
             // Compute properties
             width: pxl_width,
@@ -59,8 +67,28 @@ const SuperCanvas = {
             },
             set_dimensions(w, h) {
 
-                s = cs(s.canvas_context2d.canvas, w, h);
-            }
+                if(s !== null) {
+
+                    s = cs(s.canvas_context2d.canvas, w, h);
+                    return true;
+                }else {
+
+                    return false;
+                }
+            },
+            new(c, pxl_width, pxl_height) {
+
+                s = cs(c, pxl_width, pxl_height);
+            },
+            destroy(callback_function) {
+
+                if(s !== null) {
+                    s.workerp.terminate(callback_function);
+                    s = null;
+                }else {
+                    callback_function("ok");
+                }
+            },
         };
     }
 };
