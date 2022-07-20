@@ -1226,8 +1226,8 @@ class CanvasPixels extends React.Component {
 
         const { pxl_width, pxl_height, _s_pxls, _s_pxl_colors, _layers } = this.state;
 
-        Object.create(B64PngCanvas).from(pool, pxl_width, pxl_height, _s_pxls, _s_pxl_colors, _layers, scale, with_palette).render(function(result) {
-
+        Object.create(B64PngCanvas).from(pool, pxl_width, pxl_height, _s_pxls, _s_pxl_colors, _layers, scale, with_palette).render((result) => {
+console.log(result);
             if(with_compression_speed !== 0) {
 
                 import("../../utils/png_quant").then(({png_quant}) => {

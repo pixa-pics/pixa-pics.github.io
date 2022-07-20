@@ -196,7 +196,7 @@ const B64PngLayer = {
                 s.workerp.exec(
 
                     s.asyncf, [s.w, s.h, s.p, s.pc, s.s, s.rw]
-                ).catch((e) => {
+                ).catch(function (e) {
 
                     return s.asyncf(s.w, s.h, s.p, s.pc, s.s, s.rw);
                 }).timeout(5 * 1000).then(callback_function);

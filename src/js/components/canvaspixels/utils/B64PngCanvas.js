@@ -180,7 +180,7 @@
 
                         if(!_layers[i].hidden) {
 
-                            pixel_color_hex = coco.blend_colors(pixel_color_uint32, layer_pixel_colors[i], _layers[i].opacity, false, false);
+                            pixel_color_uint32 = coco.blend_colors(pixel_color_uint32, layer_pixel_colors[i], _layers[i].opacity, false, false);
                         }
                     }
 
@@ -216,11 +216,12 @@
 
                             if(with_palette) {
 
-                                resolve(Array.of(data_url, Array.from(all_colors)));
+                                resolve(Object.assign({}, {"0": String(data_url), "1": Array.from(all_colors)}));
+
                                 data_url = null; all_colors = null;
                             }else {
 
-                                resolve(Array.of(data_url));
+                                resolve(Object.assign({}, {"0": String(data_url)}));
                                 data_url = null; all_colors = null;
                             }
                         });
@@ -277,16 +278,16 @@
 
                 if(with_palette) {
 
-                    resolve(Array.of(canvas.toDataURL(), Array.from(all_colors)));
+                    resolve(Object.assign({}, {"0": canvas.toDataURL("image/png"), "1": Array.from(all_colors)}));
                     ctx = null; canvas = null; all_colors = null;
                 }else {
 
-                    resolve(Array.of(canvas.toDataURL()));
+                    resolve(Object.assign({}, {"0": canvas.toDataURL("image/png")}));
                     ctx = null; canvas = null;
                 }
             }
-        })};
-*/
+        })};*/
+
 
 
 const B64PngCanvas = {
@@ -303,7 +304,7 @@ const B64PngCanvas = {
     ) {
 
         const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
-        const asyncs = `var r=async function(r,t,n,e,a,o,f){return new Promise((function(i,u){"use strict";var l={blend_colors:function(r,t,n=1,e=!1,a=!1){if(0===n&&"hover"!==t&&e)return 0;if("hover"===t){var o=this.to_hsla_from_rgba(this.to_rgba_from_uint32(r));o[2]=parseInt(o[2]>=50?o[2]/2:2*o[2]),t=this.to_uint32_from_rgba(this.to_rgba_from_hsla(o))}var f=this.to_rgba_from_uint32(r),i=this.to_rgba_from_uint32(t);if(255===i[3]&&1===n)return t;var u=f[3]/255,l=i[3]/255*n,s=new Uint8ClampedArray(4),c=0;if(u>0&&l>0){var _=l/(c=a?l+u:1-(1-l)*(1-u)),m=u*(1-l)/c;s.set(Array.of(parseInt(i[0]*_+f[0]*m),parseInt(i[1]*_+f[1]*m),parseInt(i[2]*_+f[2]*m)),0)}else l>0?(c=i[3]/255,s.set(i,0)):(c=f[3]/255,s.set(f,0));return a&&(c/=2),s[3]=parseInt(255*c),this.to_uint32_from_rgba(s)},to_hex_from_uint32:function(r){return"#".concat("00000000".concat(r.toString(16)).slice(-8))},to_hex_from_rgba:function(r){return"#".concat("00000000".concat(new Uint32Array(r.reverse().buffer)[0].toString(16)).slice(-8))},to_rgba_from_hex:function(r){return new Uint8ClampedArray(Uint32Array.of(parseInt(r.slice(1),16)).buffer).reverse()},to_rgba_from_uint32:function(r){return new Uint8ClampedArray(Uint32Array.of(r).buffer).reverse()},to_uint32_from_rgba:function(r){return new Uint32Array(r.reverse().buffer)[0]},to_uint32_from_hex:function(r){return parseInt(r.slice(1),16)},to_hsla_from_rgba:function(r){var[t,n,e,a]=r;t/=255,n/=255,e/=255,a/=255;var o,f,i=Math.max(t,n,e),u=Math.min(t,n,e),l=(i+u)/2;if(i==u)o=f=0;else{var s=i-u;switch(f=l>.5?s/(2-i-u):s/(i+u),i){case t:o=(n-e)/s+(n<e?6:0);break;case n:o=(e-t)/s+2;break;case e:o=(t-n)/s+4}o/=6}return Array.of(parseInt(360*o),parseInt(100*f),parseInt(100*l),parseInt(100*a))},to_rgba_from_hsla:function(r){var t,n,e,[a,o,f,i]=r;if(a/=360,f/=100,i/=100,0===(o/=100))t=n=e=f;else{function r(r,t,n){return n<0&&(n+=1),n>1&&(n-=1),n<1/6?r+6*(t-r)*n:n<.5?t:n<2/3?r+(t-r)*(2/3-n)*6:r}var u=f<.5?f*(1+o):f+o-f*o,l=2*f-u;t=r(l,u,a+1/3),n=r(l,u,a),e=r(l,u,a-1/3)}return Uint8ClampedArray.of(parseInt(255*t),parseInt(255*n),parseInt(255*e),parseInt(255*i))}};try{if("undefined"==typeof OffscreenCanvas)throw new Error("Impossible to create OffscreenCanvas in this web environment.");var s=(m=new OffscreenCanvas(r*o,t*o)).getContext("2d"),c=new Set;n[0].forEach((function(t,f){var i=[],u=-1;u++;for(var _=e.length-1;_>=0;_--){var m=e[_][n[_][f]];if(i[_]=m,255===l.to_rgba_from_uint32(m)[3]){u=_;break}}for(_=u;_<e.length;_++)a[_].hidden||(g=l.blend_colors(0,i[_],a[_].opacity,!1,!1));var h=f%r,v=(f-h)/r,g=l.to_hex_from_uint32(0);c.add(g),s.fillStyle=g,s.fillRect(h*o,v*o,1*o,1*o)}));var _=s.getImageData(0,0,r*o,t*o);s=null,m=null,createImageBitmap(_).then((function(n){var e=new OffscreenCanvas(r*o,t*o),a=e.getContext("bitmaprenderer");a.transferFromImageBitmap(n),n.close(),e.convertToBlob({type:"image/png"}).then((function(r){return function(r){return new Promise((function(t,n){var e=new FileReader;e.onload=function(){return t(e.result)},e.readAsDataURL(r)}))}(r).then((function(r){f?(i(Array.of(r,Array.from(c))),r=null,c=null):(i(Array.of(r)),r=null,c=null)}))})),a=null,e=null})),_=null}catch(h){var m;c=new Set;(m=document.createElement("canvas")).width=r*o,m.height=t*o;s=m.getContext("2d");n[0].forEach((function(t,f){var i=[],u=-1;u++;for(var _=e.length-1;_>=0;_--){var m=e[_][n[_][f]];if(i[_]=m,255===l.to_rgba_from_uint32(m)[3]){u=_;break}}var h=0;for(_=u;_<e.length;_++)a[_].hidden||(h=l.blend_colors(h,i[_],a[_].opacity,!1,!1));var v=f%r,g=(f-v)/r,b=l.to_hex_from_uint32(h);c.add(b),s.fillStyle=b,s.fillRect(v*o,g*o,1*o,1*o)})),f?(i(Array.of(m.toDataURL(),Array.from(c))),s=null,m=null,c=null):(i(Array.of(m.toDataURL())),s=null,m=null)}}))};`
+        const asyncs = `var r=async function(r,n,t,e,a,o,i){return new Promise((function(f,s){"use strict";var u={blend_colors:function(r,n,t=1,e=!1,a=!1){if(0===t&&"hover"!==n&&e)return 0;if("hover"===n){var o=this.to_hsla_from_rgba(this.to_rgba_from_uint32(r));o[2]=parseInt(o[2]>=50?o[2]/2:2*o[2]),n=this.to_uint32_from_rgba(this.to_rgba_from_hsla(o))}var i=this.to_rgba_from_uint32(r),f=this.to_rgba_from_uint32(n);if(255===f[3]&&1===t)return n;var s=i[3]/255,u=f[3]/255*t,l=new Uint8ClampedArray(4),c=0;if(s>0&&u>0){var _=u/(c=a?u+s:1-(1-u)*(1-s)),m=s*(1-u)/c;l.set(Array.of(parseInt(f[0]*_+i[0]*m),parseInt(f[1]*_+i[1]*m),parseInt(f[2]*_+i[2]*m)),0)}else u>0?(c=f[3]/255,l.set(f,0)):(c=i[3]/255,l.set(i,0));return a&&(c/=2),l[3]=parseInt(255*c),this.to_uint32_from_rgba(l)},to_hex_from_uint32:function(r){return"#".concat("00000000".concat(r.toString(16)).slice(-8))},to_hex_from_rgba:function(r){return"#".concat("00000000".concat(new Uint32Array(r.reverse().buffer)[0].toString(16)).slice(-8))},to_rgba_from_hex:function(r){return new Uint8ClampedArray(Uint32Array.of(parseInt(r.slice(1),16)).buffer).reverse()},to_rgba_from_uint32:function(r){return new Uint8ClampedArray(Uint32Array.of(r).buffer).reverse()},to_uint32_from_rgba:function(r){return new Uint32Array(r.reverse().buffer)[0]},to_uint32_from_hex:function(r){return parseInt(r.slice(1),16)},to_hsla_from_rgba:function(r){var[n,t,e,a]=r;n/=255,t/=255,e/=255,a/=255;var o,i,f=Math.max(n,t,e),s=Math.min(n,t,e),u=(f+s)/2;if(f==s)o=i=0;else{var l=f-s;switch(i=u>.5?l/(2-f-s):l/(f+s),f){case n:o=(t-e)/l+(t<e?6:0);break;case t:o=(e-n)/l+2;break;case e:o=(n-t)/l+4}o/=6}return Array.of(parseInt(360*o),parseInt(100*i),parseInt(100*u),parseInt(100*a))},to_rgba_from_hsla:function(r){var n,t,e,[a,o,i,f]=r;if(a/=360,i/=100,f/=100,0===(o/=100))n=t=e=i;else{function r(r,n,t){return t<0&&(t+=1),t>1&&(t-=1),t<1/6?r+6*(n-r)*t:t<.5?n:t<2/3?r+(n-r)*(2/3-t)*6:r}var s=i<.5?i*(1+o):i+o-i*o,u=2*i-s;n=r(u,s,a+1/3),t=r(u,s,a),e=r(u,s,a-1/3)}return Uint8ClampedArray.of(parseInt(255*n),parseInt(255*t),parseInt(255*e),parseInt(255*f))}};try{if("undefined"==typeof OffscreenCanvas)throw new Error("Impossible to create OffscreenCanvas in this web environment.");var l=(m=new OffscreenCanvas(r*o,n*o)).getContext("2d"),c=new Set;t[0].forEach((function(n,i){var f=[],s=-1;s++;for(var _=e.length-1;_>=0;_--){var m=e[_][t[_][i]];if(f[_]=m,255===u.to_rgba_from_uint32(m)[3]){s=_;break}}var g=0;for(_=s;_<e.length;_++)a[_].hidden||(g=u.blend_colors(g,f[_],a[_].opacity,!1,!1));var h=i%r,v=(i-h)/r,b=u.to_hex_from_uint32(g);c.add(b),l.fillStyle=b,l.fillRect(h*o,v*o,1*o,1*o)}));var _=l.getImageData(0,0,r*o,n*o);l=null,m=null,createImageBitmap(_).then((function(t){var e=new OffscreenCanvas(r*o,n*o),a=e.getContext("bitmaprenderer");a.transferFromImageBitmap(t),t.close(),e.convertToBlob({type:"image/png"}).then((function(r){return function(r){return new Promise((function(n,t){var e=new FileReader;e.onload=function(){return n(e.result)},e.readAsDataURL(r)}))}(r).then((function(r){i?(f(Object.assign({},{0:String(r),1:Array.from(c)})),r=null,c=null):(f(Object.assign({},{0:String(r)})),r=null,c=null)}))})),a=null,e=null})),_=null}catch(g){var m;c=new Set;(m=document.createElement("canvas")).width=r*o,m.height=n*o;l=m.getContext("2d");t[0].forEach((function(n,i){var f=[],s=-1;s++;for(var _=e.length-1;_>=0;_--){var m=e[_][t[_][i]];if(f[_]=m,255===u.to_rgba_from_uint32(m)[3]){s=_;break}}var g=0;for(_=s;_<e.length;_++)a[_].hidden||(g=u.blend_colors(g,f[_],a[_].opacity,!1,!1));var h=i%r,v=(i-h)/r,b=u.to_hex_from_uint32(g);c.add(b),l.fillStyle=b,l.fillRect(h*o,v*o,1*o,1*o)})),i?(f(Object.assign({},{0:m.toDataURL("image/png"),1:Array.from(c)})),l=null,m=null,c=null):(f(Object.assign({},{0:m.toDataURL("image/png")})),l=null,m=null)}}))};`
             + "return r;";
 
         return Object.assign({}, {
@@ -345,7 +346,7 @@ const B64PngCanvas = {
                 s.workerp.exec(
 
                     s.asyncf, [s.w, s.h, s.sp, s.spc, s.l, s.s, s.wp]
-                ).catch((e) => {
+                ).catch(function(e) {
 
                     return s.asyncf(s.w, s.h, s.sp, s.spc, s.l, s.s, s.wp);
                 }).timeout(10 * 1000).then(callback_function);
