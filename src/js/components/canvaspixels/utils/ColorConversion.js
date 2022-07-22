@@ -1,7 +1,30 @@
 const ColorConversion = {
     new: function(){
         return {
+            to_int_array_from_uint32_array_for_subcolor: function(uint32_array, subcolor) {
 
+                let ci;
+                switch (subcolor) {
+                    case "r":
+                        ci = 3; break;
+                    case "g":
+                        ci = 2; break;
+                    case "b":
+                        ci = 1; break;
+                    default:
+                        ci = 0;
+                }
+
+                const uint8array_rgba = new Uint8ClampedArray(uint32_array.buffer);
+                let uint8array_subcolor = new Uint8ClampedArray(uint32_array.length);
+
+                for(let i = 0, i2 = 0; i2 < uint8array_rgba.length; i++, i2 += 4) {
+
+                    uint8array_subcolor[i] = uint8array_rgba[i2+ci];
+                }
+
+                return uint8array_subcolor;
+            },
             format_hex_color: function(hex) { // Supports #fff (short rgb), #fff0 (short rgba), #e2e2e2 (full rgb) and #e2e2e2ff (full rgba)
 
                 if(typeof hex === "undefined"){

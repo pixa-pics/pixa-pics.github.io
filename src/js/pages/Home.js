@@ -479,7 +479,7 @@ class Home extends React.Component {
                             <div className={classes.backgroundImageWrapper}>
                                 <img src={_image_name_infographics}
                                      alt="Image demo."
-                                     className={String(first_image ? " aspect-ratio-one pixelated": _image_name_infographics.endsWith(".png") ? "pixelated": "speed")}
+                                     className={String(first_image ? " aspect-ratio-one pixelated shiny": _image_name_infographics.endsWith(".png") ? "pixelated shiny": "speed shiny")}
                                 />
                             </div>
                         </Grow>}
@@ -489,7 +489,7 @@ class Home extends React.Component {
                 </div>
                 <div className={classes.headerContainer} style={{color: THEME_DAY && !IS_EVENING? "#000": "#fff"}}>
                     <h1 className={classes.titleh1} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff"}}>
-                        <span className={classes.stepPoints} style={{color: THEME_DAY && !IS_EVENING ? "#100d4e": "#008eff"}}>1 >></span><SecurityEmoji alt="security-tweemoji" style={{verticalAlign: "baseline"}} className="emoji-150"/>
+                        <span className={classes.stepPoints} style={{color: THEME_DAY && !IS_EVENING ? "#100d4e": "#008eff"}}>1 >></span><SecurityEmoji alt="security-tweemoji" style={{verticalAlign: "baseline"}} className="shiny emoji-150"/>
                         <span className={classes.revelantText} style={{color: THEME_DAY && !IS_EVENING ? "#100d4e": "#008eff"}}><ShufflingSpanText pre="«" key={Boolean(_join_now_button_update % 11)} placeholder="PIXA.PICS" text="PIXA.PICS" app="»" animation_delay_ms={_join_now_button_update === 0 ? 4500: 0} animation_duration_ms={1500}/> lovely minima-arts</span><span> from real-life pictures to enhance <ShufflingSpanText key={Boolean(_join_now_button_update % 7)} placeholder="privacy for NFTs" text="privacy for NFTs" app="." animation_delay_ms={_join_now_button_update === 0 ? 4500: 0} animation_duration_ms={1500}/></span><br/>
                     </h1>
                     <h2 className={classes.titleh2} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff"}}>

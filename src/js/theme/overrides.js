@@ -30,6 +30,24 @@ const overrides = {
             "h1 > p, h2 > p, h3 > p, h4 > p, h5 > p, h6 > p": {
                 margin: 0,
             },
+            ".shiny": {
+                overflow: "hidden",
+            },
+            ".shiny::after": {
+                position: "absolute",
+                width: "100%",
+                height: "100%",
+                content: `""`,
+                backgroundColor: "#00000000",
+                background: "linear-gradient(-135deg, transparent 20%, rgba(255,255,255, .1) 20%, rgba(255,255,255, .1) 50%, transparent 50%), linear-gradient(-135deg, transparent 25%, rgba(255,255,255, .1) 25%, rgba(255,255,255, .1) 45%, transparent 45%), linear-gradient(-135deg, transparent 30%, rgba(255,255,255, .15) 30%, rgba(255,255,255, .15) 40%, transparent 40%)",
+                backgroundSize: "200%",
+                backgroundPosition: "200% 50%",
+                transition: "background-position cubic-bezier(0.4, 0, 0.2, 1) 350ms",
+            },
+            ".shiny::after:hover": {
+                backgroundPosition: "0% 50%",
+                transition: "background-position cubic-bezier(0.4, 0, 0.2, 1) 175ms",
+            },
             ".speed:not(a), .speed:not(a)": {
                 imageRendering: "optimizeSpeed",
             },

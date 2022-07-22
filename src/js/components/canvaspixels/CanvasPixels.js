@@ -27,8 +27,6 @@ SOFTWARE.
 
 import React from "react";
 import pool from "../../utils/worker-pool";
-import {xxHash32} from "js-xxhash";
-import xxHash from "xxhash-wasm";
 import B64PngCanvas from "../canvaspixels/utils/B64PngCanvas";
 import B64PngLayer from "../canvaspixels/utils/B64PngLayer";
 import ReducePalette from "../canvaspixels/utils/ReducePalette";
@@ -37,6 +35,9 @@ import ColorConversion from "../canvaspixels/utils/ColorConversion";
 const color_conversion = Object.create(ColorConversion).new();
 import SmartRequestAnimationFrame from "../canvaspixels/utils/SmartRequestAnimationFrame";
 const sraf =  Object.create(SmartRequestAnimationFrame).new();
+import XXHash from "../canvaspixels/utils/XXHash";
+const xxhash =  Object.create(XXHash).new();
+
 sraf.start_timer();
 
 class CanvasPixels extends React.Component {
@@ -214,30 +215,11 @@ class CanvasPixels extends React.Component {
             _kb: 0,
             _device_motion: true,
             export_state_every_ms: props.export_state_every_ms || 60 * 1000,
-            _xxHash: function(array){return array.length;},
             _last_filters_hash: "",
         };
     };
 
     componentDidMount() {
-
-        try {
-
-            this.setState({_xxHash: xxHash32}, () => {
-
-                xxHash().then(({h64Raw}) => {
-
-                    const h = h64Raw(Uint8Array.from(Buffer.from(Array.of(3, 69, 777, 666))));
-                    this.setState({_xxHash: h64Raw});
-                });
-
-            });
-
-        } catch( e ) {
-
-            console.log("xxhash is pure js can't use wasm");
-            this.setState({_xxHash: xxHash32});
-        }
 
         window.addEventListener("resize", this._updated_dimensions);
         this._updated_dimensions();
@@ -357,23 +339,7 @@ class CanvasPixels extends React.Component {
 
     xxhashthat = (array) => {
 
-        return this._xxhashthat(array);
-    };
-
-    _xxhashthat = (array) => {
-
-        const alphabet = "123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ";
-        let base = BigInt(alphabet.length); // base is the length of the alphabet (58 in this case)
-        let num = BigInt(this.state._xxHash(Uint8Array.from(Buffer.from(array))));
-
-        let encoded = '';
-        while (num){
-            let remainder = parseInt(num % base);
-            num = num / base;
-            encoded = alphabet[remainder].toString() + encoded;
-        }
-
-        return encoded;
+        return xxhash.base58_that(array);
     };
 
     _set_size = (width = null, height = null) => {
@@ -1048,7 +1014,7 @@ class CanvasPixels extends React.Component {
             all_layers[index] = Object.assign({}, l);
             const p = Array.from(_s_pxls[index]);
             const pc = Uint32Array.from(_s_pxl_colors[index])
-            const hash = this._xxhashthat(p) + "-" + this._xxhashthat(pc);
+            const hash = xxhash.bigint_that(p).toString(16) + "-" + xxhash.bigint_that(pc).toString(16);
 
             if(hash !== all_layers[index].hash  || !Boolean(all_layers[index].thumbnail)) {
 
@@ -4216,6 +4182,7 @@ class CanvasPixels extends React.Component {
             const imported_image_pxls_positioned_keyset = new Set(Object.keys(imported_image_pxls_positioned));
             const explosion_pxls_positioned_keyset = new Set(Object.keys(explosion_pxls_positioned));
 
+            const _s_pxl_colors_a = _s_pxl_colors.map(function(a){return color_conversion.to_int_array_from_uint32_array_for_subcolor(a)});
             let indexed_changes = new Map();
 
             let layer_pixel_colors = new Map();
@@ -4321,7 +4288,7 @@ class CanvasPixels extends React.Component {
                         const layer_pixel_color = _s_pxl_colors[i][_s_pxls[i][index]];
                         layer_pixel_colors.set(i, layer_pixel_color);
 
-                        if(color_conversion.to_rgba_from_uint32(layer_pixel_color)[3] === 255 && parseFloat(_layers_simplified[i].opacity) === parseFloat(1) && !_layers_simplified[i].hidden) {
+                        if(_s_pxl_colors_a[i][_s_pxls[i][index]] === 255 && parseFloat(_layers_simplified[i].opacity) === parseFloat(1) && !_layers_simplified[i].hidden) {
 
                             start_i = i;
                             break;
