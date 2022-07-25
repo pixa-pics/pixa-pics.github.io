@@ -4,30 +4,35 @@ import PouchDB from "pouchdb-core";
 import PouchDB_IDB from "pouchdb-adapter-idb";
 import PouchDB_memory from "pouchdb-adapter-memory";
 
-const init = async() => {
+const init = (callback_function = function(){}) => {
 
-    if(typeof window.settings_db === "undefined") {
+    (async function(){
 
-        PouchDB.on("created",  () => {
+        if(typeof window.settings_db === "undefined") {
 
-            if(typeof window._pixa_settings !== "undefined" ) {
+            PouchDB.on("created",  () => {
 
-                window._pixa_settings = _merge_object({}, _get_default_settings());
+                if(typeof window._pixa_settings !== "undefined" ) {
 
-                setTimeout(() => {
+                    window._pixa_settings = _merge_object({}, _get_default_settings());
 
-                    window.settings_db.post({
-                        info: JSON.stringify(_merge_object({}, window._pixa_settings)),
-                        timestamp: Date.now(),
-                    });
-                }, 3000);
-            }
-        });
+                    setTimeout(() => {
 
-        PouchDB.plugin(PouchDB_memory);
-        PouchDB.plugin(PouchDB_IDB);
-        window.settings_db = new PouchDB("settings_db", {adapter: "idb", view_adapter: "memory", deterministic_revs: false, revs_limit: 0});
-    }
+                        window.settings_db.post({
+                            info: JSON.stringify(_merge_object({}, window._pixa_settings)),
+                            timestamp: Date.now(),
+                        });
+                    }, 3000);
+                }
+            });
+
+            PouchDB.plugin(PouchDB_memory);
+            PouchDB.plugin(PouchDB_IDB);
+            window.settings_db = new PouchDB("settings_db", {adapter: "idb", view_adapter: "memory", deterministic_revs: false, revs_limit: 0});
+            callback_function();
+        }
+
+    })();
 };
 
 const _merge_object = (obj1, obj2) => {
