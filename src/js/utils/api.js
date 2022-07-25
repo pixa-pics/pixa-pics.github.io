@@ -145,7 +145,6 @@ const get_settings = (callback_function_info = null, attachment_ids = [], callba
                                             blobs[name_id] = value.data;
                                         }
                                     });
-                                    doc._attachments = null;
 
                                     Object.entries(blobs).forEach(([name_id, blob]) => {
 
@@ -191,6 +190,7 @@ const get_settings = (callback_function_info = null, attachment_ids = [], callba
                                             _rev: doc._rev,
                                             info: JSON.stringify(_merge_object({}, window._pixa_settings)),
                                             timestamp: Date.now(),
+                                            _attachments: settings_doc._attachments,
                                         }, {force: true}, (err) => {
 
                                             callback_function_attachment("Empty DB files", null);
@@ -328,6 +328,7 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
                                             _rev: settings_doc._rev,
                                             info: JSON.stringify(_merge_object({}, window._pixa_settings)),
                                             timestamp: Date.now(),
+                                            _attachments: settings_doc._attachments
                                         }, {force: true}, (err) => {
 
                                             if(!err) {
@@ -409,6 +410,7 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
                             _rev: settings_doc._rev,
                             info: JSON.stringify(_merge_object({}, window._pixa_settings)),
                             timestamp: Date.now(),
+                            _attachments: settings_doc._attachments,
                         }, {force: true}, (err) => {
 
                             if(!err) {

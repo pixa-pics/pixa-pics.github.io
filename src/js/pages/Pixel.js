@@ -1,3 +1,5 @@
+import FileImportIcon from "../icons/FileImport";
+
 window.mobileAndTabletCheck = function() {
     let check = false;
     (function(a){if(/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino|android|ipad|playbook|silk/i.test(a)||/1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(a.substr(0,4))) check = true;})(navigator.userAgent||navigator.vendor||window.opera);
@@ -8,7 +10,7 @@ let is_mobile_or_tablet = window.mobileAndTabletCheck();
 import React, { Suspense } from "react";
 import dispatcher from "../dispatcher";
 const CanvasPixels = React.lazy(() => import("../components/canvaspixels/CanvasPixels"));
-import {IconButton, withStyles} from "@material-ui/core";
+import {Button, IconButton, withStyles} from "@material-ui/core";
 import pool from "../utils/worker-pool";
 import {ListItem, Typography, Backdrop, Slider, SwipeableDrawer, Drawer, Tabs, Tab, Menu, ListSubheader, ListItemText, ListItemIcon} from "@material-ui/core";
 import TouchRipple from "@material-ui/core/ButtonBase/TouchRipple";
@@ -36,7 +38,7 @@ import EraserIcon from "../icons/Eraser";
 import MirrorIcon from "../icons/Mirror";
 import PencilIcon from "../icons/Pencil";
 import PencilPerfectIcon from "../icons/PencilPerfect";
-import ChangeHistoryIcon from "@material-ui/icons/ChangeHistory";
+import SaveIcon from "@material-ui/icons/SaveOutlined";
 import SelectColorIcon from "../icons/SelectColor";
 import SelectRemoveDifferenceIcon from "../icons/SelectRemoveDifference";
 import PerspectiveOn from "../icons/3dOn";
@@ -344,6 +346,40 @@ const styles = theme => ({
         position: "absolute",
         left: 16,
         top: 16,
+    },
+    saveButton: {
+        position: "absolute",
+        right: 496,
+        top: 16,
+        [theme.breakpoints.down("md")]: {
+            right: 16,
+        },
+    },
+    confirmImportButton: {
+        position: "absolute",
+        left: 16,
+        bottom: 16,
+        [theme.breakpoints.down("md")]: {
+            right: 88,
+        },
+    },
+    undoButton: {
+        position: "absolute",
+        right: 496,
+        bottom: 60,
+        [theme.breakpoints.down("md")]: {
+            right: 16,
+            bottom: 132,
+        },
+    },
+    redoButton: {
+        position: "absolute",
+        right: 496,
+        bottom: 16,
+        [theme.breakpoints.down("md")]: {
+            right: 16,
+            bottom: 88,
+        },
     }
 });
 
@@ -364,7 +400,6 @@ class Pixel extends React.Component {
             _previous_view_name_index: 1,
             _view_names: ["palette", "image", "layers", "tools", "selection", "effects", "filters"],
             _canvas: null,
-            _canvas_elevation: 8,
             _loading: false,
             _loading_process: "",
             _can_undo: false,
@@ -404,6 +439,7 @@ class Pixel extends React.Component {
             _menu_mouse_x: null,
             _menu_data: {},
             _menu_event: null,
+            _ripple: null,
             _ripple_color: "#ffffffff",
             _ripple_opacity: 1,
             _is_pixel_dialog_post_edit_open: false,
@@ -436,7 +472,11 @@ class Pixel extends React.Component {
 
     componentDidMount() {
 
-        actions.trigger_snackbar(`This is PIXAAAAAA and beyond! Here, ideas easily find a new sunshine!`, 5000);
+        //actions.trigger_snackbar(`This is PIXAAAAAA and beyond! Here, ideas easily find a new sunshine!`, 5000);
+
+        actions.trigger_snackbar("Looks like some of the LAB operations can be no more functional, waiting to be reengineered for 'PERFS' within hours...", 777 * 10);
+        actions.jamy_update("sad");
+
         window.addEventListener("resize", this._updated_dimensions);
         this._updated_dimensions();
         document.addEventListener("keydown", this._handle_keydown);
@@ -833,7 +873,6 @@ class Pixel extends React.Component {
 
     _download_image = (size) => {
 
-        const optimize_render_size = Boolean(size > 1);
         const { get_base64_png_data_url, xxhashthat } = this.state._canvas;
 
         window.dispatchEvent(new Event(`art-download-raster${size}`));
@@ -856,7 +895,7 @@ class Pixel extends React.Component {
                 actions.trigger_sfx("alert_high-intensity");
 
             }, 2000);
-        }, false, optimize_render_size ? 6: 0, 40, 50);
+        }, false, 1, 100, 100);
     };
 
     _download_svg = (using = "xbrz", optimize_render_size = false) => {
@@ -936,7 +975,7 @@ class Pixel extends React.Component {
                     palette = null;
                     png_base64_in = null;
 
-                }, true,  Boolean(optimize_render_size) ? 6: 0, 40, 50);
+                }, true, 1, 100, 100);
 
             }, 750);
 
@@ -1518,22 +1557,28 @@ class Pixel extends React.Component {
         this.setState({_current_color: color, _hue: h});
     };
 
-    _handle_relevant_action_event = (event, color, opacity) => {
+    _handle_relevant_action_event = (event, color = "#ffffff", opacity = 0, sound = false) => {
 
         const { _ripple } = this.state;
 
         if(event && _ripple) {
 
-            actions.trigger_sfx("navigation_selection-complete-celebration");
+            if(sound) {
 
-            this.setState({_ripple_color: color, _ripple_opacity: 1}, () => {
-                _ripple.start(event);
+                actions.trigger_sfx("navigation_selection-complete-celebration");
+            }
 
-                setTimeout(() => {
+            if(opacity !== 0) {
 
-                    _ripple.stop(event);
-                }, 250);
-            });
+                this.setState({_ripple_color: color, _ripple_opacity: opacity}, () => {
+                    _ripple.start(event);
+
+                    setTimeout(() => {
+
+                        _ripple.stop(event);
+                    }, 250);
+                });
+            }
         }
     };
 
@@ -1763,11 +1808,6 @@ class Pixel extends React.Component {
         this._handle_current_color_change(color);
     };
 
-    _handle_elevation_change = (elevation) => {
-
-        this.setState({_canvas_elevation: elevation});
-    };
-
     _handle_pixel_dialog_create_close = () => {
 
         this.setState({_is_pixel_dialog_create_open: false, _attachment_previews: []});
@@ -1867,6 +1907,14 @@ class Pixel extends React.Component {
         smooth_adjust(run);
     }
 
+    _handle_fps_change = (_fps) => {
+
+        this.setState({_fps}, () => {
+
+            this.forceUpdate();
+        });
+    }
+
     render() {
 
         const {
@@ -1929,7 +1977,6 @@ class Pixel extends React.Component {
         _menu_data.pos_x = _menu_data.pos_x === -1 ? "out": _menu_data.pos_x;
         _menu_data.pos_y = _menu_data.pos_y === -1 ? "out": _menu_data.pos_y;
 
-        const rgb = 245 // - Math.floor(Math.abs(_canvas_elevation) / 2);
         const os = this._get_OS();
 
         const drawer_mobile = _less_than_1280w &&
@@ -2150,7 +2197,6 @@ class Pixel extends React.Component {
                                 on_export_state={this._handle_canvas_state_export}
                                 export_state_every_ms={is_mobile_or_tablet ? 5 * 60 * 1000: 3.5 * 60 * 1000}
                                 shadow_size={is_mobile_or_tablet ? 0: 1.5}
-                                onContextMenu={(e) => {e.preventDefault()}}
                                 key={"canvas"}
                                 className={classes.contentCanvas}
                                 ref={this._set_canvas_ref}
@@ -2285,30 +2331,17 @@ class Pixel extends React.Component {
                                 </div>
                             }
                             <ListSubheader style={_menu_data.pxl_color === null ? {display: "none"}: {}} className={classes.contextMenuSubheader}>Color</ListSubheader>
-                            <ListItem button divider style={_menu_data.pxl_color === null ? {display: "none"}: {}} disabled={_menu_data.pxl_color === _current_color || _menu_data.pxl_color === null} onClick={(event) => {this._set_current_color(_menu_data.pxl_color); this._handle_relevant_action_event(_menu_event, _menu_data.pxl_color, 1);}}>
+                            <ListItem button divider style={_menu_data.pxl_color === null ? {display: "none"}: {}} disabled={_menu_data.pxl_color === _current_color || _menu_data.pxl_color === null} onClick={(event) => {this._set_current_color(_menu_data.pxl_color); this._handle_relevant_action_event(_menu_event, _menu_data.pxl_color, 1, true);}}>
                                 <ListItemIcon>
                                     <SquareIcon style={{ color: _menu_data.pxl_color, background: `repeating-conic-gradient(#80808055 0% 25%, #00000000 0% 50%) 50% / calc(200% / ${_width}) calc(200% / ${_height})`}} />
                                 </ListItemIcon>
                                 <ListItemText primary="Pick color" />
                             </ListItem>
-                            <ListItem button divider style={_menu_data.pxl_color === null ? {display: "none"}: {}} disabled={_menu_data.pxl_color === _current_color || _menu_data.pxl_color === null} onClick={(event) => {this._exchange_pixel_colors(_menu_data.pxl_color, _current_color); this._handle_relevant_action_event(_menu_event, _current_color, 1);}}>
+                            <ListItem button divider style={_menu_data.pxl_color === null ? {display: "none"}: {}} disabled={_menu_data.pxl_color === _current_color || _menu_data.pxl_color === null} onClick={(event) => {this._exchange_pixel_colors(_menu_data.pxl_color, _current_color); this._handle_relevant_action_event(_menu_event, _current_color, 1, true);}}>
                                 <ListItemIcon>
                                     <SquareIcon style={{ color: _current_color, background: `repeating-conic-gradient(#80808055 0% 25%, #00000000 0% 50%) 50% / calc(200% / ${_width}) calc(200% / ${_height})`}} />
                                 </ListItemIcon>
                                 <ListItemText primary="Replace color" />
-                            </ListItem>
-                            <ListSubheader className={classes.contextMenuSubheader}>Undo / Redo</ListSubheader>
-                            <ListItem button divider onClick={(event) => {_canvas.undo()}}>
-                                <ListItemIcon>
-                                    <ChangeHistoryIcon />
-                                </ListItemIcon>
-                                <ListItemText primary="Undo" />
-                            </ListItem>
-                            <ListItem button divider onClick={(event) => {_canvas.redo()}}>
-                                <ListItemIcon>
-                                    <ChangeHistoryIcon />
-                                </ListItemIcon>
-                                <ListItemText primary="Redo" />
                             </ListItem>
                             <ListSubheader className={classes.contextMenuSubheader}>Effect</ListSubheader>
                             <ListItem button divider onClick={(event) => this._to_auto_medium_more_contrast()}>
@@ -2352,9 +2385,20 @@ class Pixel extends React.Component {
                     </div>
                 </div>
 
-                <IconButton className={classes.perspectiveButton} onClick={this._toggle_perspective}>
+                <IconButton className={classes.perspectiveButton} color={"primary"} size={"small"} onClick={this._toggle_perspective}>
                     {_perspective ? <PerspectiveOff />: <PerspectiveOn />}
                 </IconButton>
+
+                <Button className={classes.saveButton} variant={"text"} color={"primary"} onClick={this._backup_state}>
+                    {t(_saved_at, {mini: true})} <SaveIcon/> {Math.round(_kb)} kB
+                </Button>
+
+                <IconButton disabled={!_is_image_import_mode} className={classes.confirmImportButton} color={"primary"} size={"small"} onClick={() => {_canvas.confirm_import()}}>
+                   <FileImportIcon/>
+                </IconButton>
+
+                <Button disabled={!_can_undo} variant={"text"} color={"primary"} size={"small"} className={classes.undoButton} onClick={(event) => {_canvas.undo()}}>Undo</Button>
+                <Button disabled={!_can_redo} variant={"text"} color={"primary"} size={"small"}className={classes.redoButton} onClick={(event) => {_canvas.redo()}}>Redo</Button>
 
                 {drawer_mobile}
 

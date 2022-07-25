@@ -13,8 +13,6 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import PixelColorPalette from "./PixelColorPalette";
 import {ChromePicker} from "react-color";
 import ImagePlusIcon from "../icons/ImagePlus";
-import ArrowBackIcon from "@material-ui/icons/ArrowBack";
-import ArrowForwardIcon from "@material-ui/icons/ArrowForward";
 import ImportIcon from "../icons/Import";
 import DownloadIcon from "../icons/Download";
 import FileDownloadIcon from "../icons/FileDownload";
@@ -31,7 +29,6 @@ import MergeIcon from "../icons/Merge";
 import FileImportIcon from "../icons/FileImport";
 import DrawIcon from "../icons/Draw";
 import ColorPickerIcon from "../icons/ColorPicker";
-import MoveIcon from "../icons/Move";
 import PencilIcon from "../icons/Pencil";
 import PencilPerfectIcon from "../icons/PencilPerfect";
 import MirrorIcon from "../icons/Mirror";
@@ -71,8 +68,6 @@ import RotateLeftIcon from "../icons/RotateLeft";
 import RotateRightIcon from "../icons/RotateRight";
 import SwapHorizontalIcon from "../icons/SwapHorizontal";
 import SwapVerticalIcon from "../icons/SwapVertical";
-
-import NavigationIcon from "../icons/Navigation";
 
 import ColorConversion from "../components/canvaspixels/utils/ColorConversion";
 const color_conversion = Object.create(ColorConversion).new();
@@ -154,7 +149,7 @@ const styles = theme => ({
             display: "block",
             flexGrow: 1,
             flexBasis: "auto",
-            width: "100px",
+            width: "120px",
             textAlign: "center",
             "& .MuiListItemIcon-root": {
                 minWidth: 0,
@@ -181,7 +176,7 @@ const styles = theme => ({
                 display: "block",
                 flexGrow: 1,
                 flexBasis: "auto",
-                width: "100px",
+                width: "120px",
                 textAlign: "center",
                 "& .MuiListItemIcon-root": {
                     minWidth: 0,
@@ -567,11 +562,11 @@ class PixelToolboxSwipeableViews extends React.Component {
         }
     };
 
-    _set_import_size = (event) => {
+    _set_import_size = (event, value) => {
 
         if(this.props.set_import_size) {
 
-            this.props.set_import_size(event);
+            this.props.set_import_size(event, value);
         }
     };
 
@@ -848,37 +843,6 @@ class PixelToolboxSwipeableViews extends React.Component {
                 },
             ],
             "tools": [
-                {
-                    icon: <NavigationIcon/>,
-                    text: "Navigation",
-                    local_i: 0,
-                    label: "navigation",
-                    tools: [
-                        {
-                            icon: <MoveIcon/>, disabled: tool === "MOVE", text: "Move", on_click: () => {
-                                this._set_tool("MOVE")
-                            }
-                        },
-                        {
-                            icon: <ArrowBackIcon/>,
-                            disabled: !can_undo,
-                            text: "Undo",
-                            sub: "[CTRL + Z]",
-                            on_click: () => {
-                                canvas.undo()
-                            }
-                        },
-                        {
-                            icon: <ArrowForwardIcon/>,
-                            disabled: !can_redo,
-                            text: "Redo",
-                            sub: "[CTRL + Y]",
-                            on_click: () => {
-                                canvas.redo()
-                            }
-                        },
-                    ]
-                },
                 {
                     icon: <DrawIcon/>,
                     text: "Drawing tools",
@@ -1382,7 +1346,7 @@ class PixelToolboxSwipeableViews extends React.Component {
 
                         const f = filters_thumbnail.get(name) || "";
                         return {
-                            icon: <Avatar className={"speed"} style={{width: "80px", height: `${parseInt(80/_filter_ar_on_one)}px`, filter: `opacity(${String(Boolean(f.length === 0 && name_index !== 0) ? "0.5": "1.0")})`, webkitFilter: `opacity(${String(Boolean(f.length === 0 && name_index !== 0) ? "0.5": "1.0")})`, border: "4px solid #020529", contain: "paint style size"}} key={String(Boolean(f.length > 0) ? String(name+"-loaded-"+_filter_ar_on_one): String(name+"-loading-"+_filter_ar_on_one)) + String("-preview-" + last_filters_hash)} variant={"rounded"} src={String(f.length > 0 ? f: filters_thumbnail.get(filters[0]))} />,
+                            icon: <Avatar className={"speed"} style={{width: "100px", height: `${parseInt(100/_filter_ar_on_one)}px`, filter: `opacity(${String(Boolean(f.length === 0 && name_index !== 0) ? "0.5": "1.0")})`, webkitFilter: `opacity(${String(Boolean(f.length === 0 && name_index !== 0) ? "0.5": "1.0")})`, border: "4px solid #020529", contain: "paint style size"}} key={String(Boolean(f.length > 0) ? String(name+"-loaded-"+_filter_ar_on_one): String(name+"-loading-"+_filter_ar_on_one)) + String("-preview-" + last_filters_hash)} variant={"rounded"} src={String(f.length > 0 ? f: filters_thumbnail.get(filters[0]))} />,
                             text: name,
                             on_click: () => {
                                 canvas.to_filter(name, slider_value);
@@ -1650,75 +1614,19 @@ class PixelToolboxSwipeableViews extends React.Component {
                                                 </ListItem>
                                             </div>
                                             <div className={classes.listItems}>
-                                                <RadioGroup row name="Import size" onChange={this._set_import_size}
-                                                            value={import_size} style={{padding: "12px 0px", margin: "0px 11px"}}>
-                                                    <FormControlLabel
-                                                        value={"32"}
-                                                        control={<Radio color="primary"/>}
-                                                        label="32px"
-                                                        labelPlacement="bottom"
-                                                    />
-                                                    <FormControlLabel
-                                                        value={"64"}
-                                                        control={<Radio color="primary"/>}
-                                                        label="64px"
-                                                        labelPlacement="bottom"
-                                                    />
-                                                    <FormControlLabel
-                                                        value={"96"}
-                                                        control={<Radio color="primary"/>}
-                                                        label="96px"
-                                                        labelPlacement="bottom"
-                                                    />
-                                                    <FormControlLabel
-                                                        value={"128"}
-                                                        control={<Radio color="primary"/>}
-                                                        label="128px"
-                                                        labelPlacement="bottom"
-                                                    />
-                                                    <FormControlLabel
-                                                        value={"160"}
-                                                        control={<Radio color="primary"/>}
-                                                        label="160px"
-                                                        labelPlacement="bottom"
-                                                    />
-                                                    <FormControlLabel
-                                                        value={"192"}
-                                                        control={<Radio color="primary"/>}
-                                                        label="192px"
-                                                        labelPlacement="bottom"
-                                                    />
-                                                    <FormControlLabel
-                                                        value={"224"}
-                                                        control={<Radio color="primary"/>}
-                                                        label="224px"
-                                                        labelPlacement="bottom"
-                                                    />
-                                                    <FormControlLabel
-                                                        value={"256"}
-                                                        control={<Radio color="primary"/>}
-                                                        label="256px"
-                                                        labelPlacement="bottom"
-                                                    />
-                                                    <FormControlLabel
-                                                        value={"320"}
-                                                        control={<Radio color="primary"/>}
-                                                        label="320px"
-                                                        labelPlacement="bottom"
-                                                    />
-                                                    <FormControlLabel
-                                                        value={"384"}
-                                                        control={<Radio color="primary"/>}
-                                                        label="384px"
-                                                        labelPlacement="bottom"
-                                                    />
-                                                    <FormControlLabel
-                                                        value={"512"}
-                                                        control={<Radio color="primary"/>}
-                                                        label="512px"
-                                                        labelPlacement="bottom"
-                                                    />
-                                                </RadioGroup>
+                                                <div style={{
+                                                    padding: "8px 24px",
+                                                    position: "relative",
+                                                    overflow: "hidden",
+                                                    boxSizing: "border-box",
+                                                    width: "100%"
+                                                }}>
+                                                    <Typography id="width-slider" gutterBottom>Import size</Typography>
+                                                    <Slider defaultValue={import_size} step={8} valueLabelDisplay="auto" min={0}
+                                                            max={import_size > 512 ? import_size : 512}
+                                                            onChangeCommitted={this._set_import_size}
+                                                            aria-labelledby="width-slider"/>
+                                                </div>
                                             </div>
                                             <FormLabel style={{padding: "24px 0px 12px 24px"}} component="legend">AI TUNING BEFORE IMPORT</FormLabel>
                                             <div className={classes.listItems}>
@@ -1727,19 +1635,19 @@ class PixelToolboxSwipeableViews extends React.Component {
                                                     <FormControlLabel
                                                         value={"0"}
                                                         control={<Radio color="primary"/>}
-                                                        label="ORIGINAL"
+                                                        label="NONE"
                                                         labelPlacement="bottom"
                                                     />
                                                     <FormControlLabel
                                                         value={"1"}
                                                         control={<Radio color="primary"/>}
-                                                        label="COLORIZE"
+                                                        label="COLOR"
                                                         labelPlacement="bottom"
                                                     />
                                                     <FormControlLabel
                                                         value={"2"}
                                                         control={<Radio color="primary"/>}
-                                                        label="SCALE2X"
+                                                        label="SCALE"
                                                         labelPlacement="bottom"
                                                     />
                                                     <FormControlLabel

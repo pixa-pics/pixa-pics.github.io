@@ -192,6 +192,7 @@ var fu = async function(
                     pxl_colors_usage.set(color_index, n+1);
                 });
 
+
                 new_pxl_colors.forEach((color_a, index_of_color_a) => {
 
                     if(!indexes_of_colors_proceed.has(index_of_color_a)) {

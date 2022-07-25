@@ -150,14 +150,7 @@ module.exports = {
                         }
                     }
                 ]
-            },
-            {
-              test: /\.css$/i,
-                use: [
-                    'style-loader',
-                    'css-loader'
-                ],
-            },
+            }
         ]
     },
     output: {
@@ -177,7 +170,9 @@ module.exports = {
             filename: "index.html"
         }),
         new BundleAnalyzerPlugin()
-    ]: [new BundleAnalyzerPlugin()],
+    ]: [
+        new BundleAnalyzerPlugin()
+    ],
     devServer: {
         static: {
             directory: path.join(__dirname, "/"),

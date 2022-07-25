@@ -29,24 +29,36 @@ const SmartRequestAnimationFrame = {
         let cs = this._create_state;
         let s = cs();
         let fps_intereval;
+        let nfpsc = function(){};
 
         return {
             // Methods
             new() {
 
+                clearInterval(fps_intereval);
                 if(fps_intereval) { clearInterval(fps_intereval) }
                 s = cs();
                 fps_intereval = setInterval(function() {
 
+                    s.second_previous_cpaf_fps = parseInt(s.previous_cpaf_fps);
                     s.previous_cpaf_fps = s.cpaf_frames * 4;
                     s.cpaf_frames = 0;
+                    nfpsc(parseInt(parseInt(s.second_previous_cpaf_fps + s.previous_cpaf_fps) / 2));
                 }, 250);
             },
+            set_notify_fps_callback(notify_fps_callback = function(){}) {
+
+                nfpsc = notify_fps_callback;
+            },
             start_timer() {
+
+                clearInterval(fps_intereval);
                 fps_intereval = setInterval(function() {
 
+                    s.second_previous_cpaf_fps = parseInt(s.previous_cpaf_fps);
                     s.previous_cpaf_fps = s.cpaf_frames * 4;
                     s.cpaf_frames = 0;
+                    nfpsc(parseInt(parseInt(s.second_previous_cpaf_fps + s.previous_cpaf_fps) / 2));
                 }, 250);
             },
             destroy(callback_function = function(){}) {

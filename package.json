@@ -4,6 +4,7 @@
   "description": "Pixel art editor. Make potential (un)limited.",
   "main": "/index.html",
   "dependencies": {
+    "@jsquash/oxipng": "^1.0.0",
     "@material-ui/core": "~4.12.3",
     "@material-ui/icons": "^4.11.2",
     "@material-ui/lab": "~4.0.0-alpha.57",
@@ -32,6 +33,7 @@
   },
   "devDependencies": {
     "@svgr/cli": "^5.5.0",
+    "@wasm-tool/wasm-pack-plugin": "^1.6.0",
     "babel-core": "^6.26.3",
     "babel-loader": "^7.1.5",
     "babel-preset-env": "^1.7.0",
