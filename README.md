@@ -3,7 +3,8 @@
 **This is PIXAAAAA!** - Awesome pixel art editor made with material design guideline trends and awesome web technologies!
 *100% visionary in privacy concerns/critics and against detractors with its development force that legally stands bold against those mightily neglecting privacy in their online-self (image).*
 
-![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/doc/screenshots/home.screenshot.pixa.pics.jpeg?v=777)
+![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/doc/screenshots/home_page_view_dark.png?v=1)
+![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/doc/screenshots/editor_view_mobile.png?v=1)
 
 **Does https://pixa.pics/pixel get?**
 
@@ -29,23 +30,16 @@
 
 # Special features
 
-![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/doc/screenshots/screenshot.pixa.pics.jpeg?v=777)
+![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/doc/screenshots/editor_view_start.png?v=1)
+
 Screenshot of the minima's laboratory of pixa.pics (which is a pixel art editor).
 
  * Create pixel art from your pictures and draw, cut, select, do anything.
  * Have fun with NFTs weighting as low as ~10-100Kb.
  * Restore and colorize B/W while scaling up to 12x images.
 
- ## More screenshots
+![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/doc/screenshots/editor_view_filter.png?v=1)
 
- * https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/images/screenshots/pixa.pics_1.png
- * https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/images/screenshots/pixa.pics_2.png
- * https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/images/screenshots/pixa.pics_3.png
- * https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/images/screenshots/pixa.pics_4.png
- * https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/images/screenshots/pixa.pics_5.png
- * https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/images/screenshots/pixa.pics_6.png
- * https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/images/screenshots/pixa.pics_7.png
- * https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/images/screenshots/pixa.pics_8.png
 
 # Technology
 
@@ -57,17 +51,20 @@ Screenshot of the minima's laboratory of pixa.pics (which is a pixel art editor)
  * Up-Scaling 6 times (xBRZ)*
  * Vectorized (ImageTracerJS)
  * Color Quantization (RGBQuant + Custom)
- * Encoding of Portable Network Graphics in type of palette (PNGQuant)
+ * Always encode well Portable Network Graphics in type of palette (PNGQuant)
  * Chunk ("norris") system for dropping script evaluation cost within CPU
 
-![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/doc/screenshots/me_boat_1x.png)
-Source file #0 in png : 11.8Kb (Perfectly fits into some blockchains entirely!)
+![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/doc/screenshots/RAS_1x.png)
+Source file #0 in png : 5.0Kb (Perfectly fits into some blockchains entirely!)
 
-![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/doc/screenshots/me_boat_6x.png)
-Output file #1 in png : 1020x576 (6 times bigger from source file, good for social media post)
+![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/doc/screenshots/RAS_6x.png)
+Output file #1.1 in png : 1020x576 (6 times bigger compared to the source file, good for social media post)
 
-![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/doc/screenshots/me_boat_12x.png)
-Output file in png manually rendered from the #2 in svg not shown, here 2040x1152 (12 times bigger from source file, good for printing)
+![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/doc/screenshots/XBRZ_RAS_6x.png)
+Output file #1.2 in png : 1020x576 (6 times bigger (using xBRZ) compared to the source file, good for social media post)
+
+![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/doc/screenshots/XBRZ_VEC_6x.svg)
+Output file in svg from #1.2, good for printing
 
 Demo Ultra HD rendering : https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/doc/screenshots/yakuza.png
 
@@ -75,17 +72,9 @@ Look! On the STEEM blockchain you can post base64 text, transactions are rigged 
 
 # 99 / 100 of performance (Lighthouse desktop metrics)
 
-> 1.0-2.0 seconds in average, is the necessary time to get the content displayed on desktop (Chrome) for the first website's visit after an update of the application which is automatically done within those small 1690ms and prolongated in background for about 8 seconds, then it is more than twice as fast and doesn't require any form of connection to the Internet since assets are stored in the browser cache until the need to update them is comming into matter.
-
-![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/doc/screenshots/pagespeed.web.dev.jpeg?chucknorris=reload)
+![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/doc/screenshots/pagespeed.web.dev.png?v=1)
 Lighthouse (google's webpage loading test) metrics of pixa.pics at left while those of instagram at right
 
-![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/doc/test/instagram.pixapics.adobeexpress.png)
-Instagram vs Pixapics vs Adobeexpress in the field of loading metrics made on www.webpagetest.org
-
-And let's say in the years 1980s a computer to play video games wasn't that much as cheap as my android smartphone of an old series.
-The phone to which it has been tested is nowadays sold at $100 unused it was dozen of times that price to do the same graphics that time.
-You can easily multiply that it doesn't cost anyone much to share a simple details-less pictures on the fly even on a blockchain.
 
 # Legal concerns and acknowledgment
 
