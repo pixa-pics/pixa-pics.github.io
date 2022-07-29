@@ -1,6 +1,6 @@
 const CanvasPos = {
 
-    _get_init_state: function(pxl_width, pxl_height, default_scale, canvas_wrapper_padding, canvas_wrapper_border_width) {
+    _get_init_state: function(pxl_width, pxl_height, default_scale, canvas_wrapper_padding, canvas_wrapper_border_width, perspective) {
 
         return Object.assign({}, {
             canvas_event_target: "CANVAS_WRAPPER_OVERFLOW",
@@ -28,7 +28,8 @@ const CanvasPos = {
                 move_speed_timestamp: Date.now(),
                 moves_speed_average_now: 16,
             },
-            device_pixel_ratio: parseFloat(window.devicePixelRatio)
+            device_pixel_ratio: parseFloat(window.devicePixelRatio),
+            perspective: parseInt(perspective)
         });
     },
     _get_screen_zoom_ratio(s) {
@@ -198,7 +199,7 @@ const CanvasPos = {
     },
 
 
-    from: function(pxl_width, pxl_height, default_scale, canvas_wrapper_padding, canvas_wrapper_border_width){
+    from: function(pxl_width, pxl_height, default_scale, canvas_wrapper_padding, canvas_wrapper_border_width, perspective){
 
         const gszr = this._get_screen_zoom_ratio;
         const cis = this._get_init_state;
@@ -210,7 +211,7 @@ const CanvasPos = {
         let move_on_click = false;
         let sh = gsh("#020529");
         let ps = gips();
-        let s = cis(pxl_width, pxl_height, default_scale, canvas_wrapper_padding, canvas_wrapper_border_width);
+        let s = cis(pxl_width, pxl_height, default_scale, canvas_wrapper_padding, canvas_wrapper_border_width, perspective);
         let szr = gszr(s);
         let p = gp(s, szr);
         let notifiers = {
@@ -223,6 +224,7 @@ const CanvasPos = {
         };
 
         let msi = null;
+        let pe = null;
 
         return {
             // Methods
@@ -254,13 +256,71 @@ const CanvasPos = {
                 szr = gszr(s);
                 p = gp(s, szr);
             },
+            set_perspective(perspective) {
+
+                s.perspective = parseInt(perspective);
+            },
             get_pointer_state() {
 
                 return Object.assign({}, ps);
             },
+            get_perspective_state() {
+
+                return Object.assign({
+                    transform_rotate: "",
+                    background_image: "",
+                }, pe);
+            },
             get_screen_zoom_ratio() {
 
                 return parseFloat(szr);
+            },
+            compute_perspective_from_pointer_event(pageX, pageY) {
+
+
+                if(!Boolean(s.perspective > 0)) {
+                    return;
+                }
+
+                const pos_x_in_canvas_container = pageX - p.canvas_container.left;
+                const pos_y_in_canvas_container = pageY - p.canvas_container.top;
+
+                const x = s.perspective * ((pos_x_in_canvas_container - p.canvas_container.width / 2) / (p.canvas_container.width / 2));
+                const y = -s.perspective * ((pos_y_in_canvas_container - p.canvas_container.height / 2) / (p.canvas_container.height / 2));
+                const p_x = x > s.perspective ? x : x * 2;
+                const p_y = y < 0 ? y : 2 * y;
+
+                const rotate_y = Math.round((p_x * 1.25 / s.scale.current) * 1000) / 1000;
+                const rotate_x = Math.round((p_y * 1.25 / s.scale.current) * 1000) / 1000;
+                const any_rotation = Boolean(rotate_x || rotate_y);
+
+                const transform_rotate = any_rotation ? `rotateX(${rotate_x}deg) rotateY(${rotate_y}deg)`: ``
+                const background_image = any_rotation ? `linear-gradient(to left, rgba(
+                            ${255 - Math.floor(p_x / 2 * 255)},
+                            ${255 - Math.floor(p_x / 2 * 255)},
+                            ${255 - Math.floor(p_x / 2 * 255)}, 
+                            ${(Math.abs(p_x * 0.1) / parseInt(s.perspective*2)).toFixed(2)}
+                            ), rgba(
+                            ${255 - Math.floor(p_x / 2 * 255)},
+                            ${255 - Math.floor(p_x / 2 * 255)},
+                            ${255 - Math.floor(p_x / 2 * 255)}, 
+                            ${(Math.abs(p_x * 0.6) / parseInt(s.perspective*2)).toFixed(2)}
+                            )), linear-gradient(to top, rgba(
+                            ${Math.floor(p_y / 2 * 255)},
+                            ${Math.floor(p_y / 2 * 255)},
+                            ${Math.floor(p_y / 2 * 255)}, 
+                            ${(Math.abs(p_y * 0.75) / parseInt(s.perspective*2)).toFixed(2)}
+                            ), rgba(
+                            ${Math.floor(p_y / 2 * 255)},
+                            ${Math.floor(p_y / 2 * 255)},
+                            ${Math.floor(p_y / 2 * 255)}, 
+                            ${(Math.abs(p_y  * 0.25) / parseInt(s.perspective*2)).toFixed(2)}
+                            ))`: ``;
+
+                pe = {
+                    transform_rotate,
+                    background_image,
+                };
             },
             set_pointer_state(object) {
 
@@ -555,7 +615,7 @@ const CanvasPos = {
                 event.stopImmediatePropagation();
                 event = ce(event);
 
-                const {canvas_event_target } = this.get_state();
+                const {canvas_event_target} = this.get_state();
                 this.compute_canvas_event_target(parseInt(event.pageX), parseInt(event.pageY));
                 const new_canvas_event_target = this.get_state().canvas_event_target;
                 let {
@@ -658,11 +718,11 @@ const CanvasPos = {
 
                 this.set_moves(new_scale_move_x_rigged, new_scale_move_y_rigged);
             },
-            new(pxl_width, pxl_height, default_scale, canvas_wrapper_padding, canvas_wrapper_border_width) {
+            new(pxl_width, pxl_height, default_scale, canvas_wrapper_padding, canvas_wrapper_border_width, perspective) {
 
                 sh = gsh("#020529");
                 ps = gips();
-                s = cis(pxl_width, pxl_height, default_scale, canvas_wrapper_padding, canvas_wrapper_border_width);
+                s = cis(pxl_width, pxl_height, default_scale, canvas_wrapper_padding, canvas_wrapper_border_width, perspective);
                 szr = gszr(s);
                 p = gp(s, szr);
                 notifiers = {
@@ -739,7 +799,8 @@ const CanvasPos = {
             },
             compute_canvas_event_target(pageX, pageY){
 
-                const {canvas, canvas_wrapper} = this.get_pos();
+                this.compute_perspective_from_pointer_event(pageX, pageY);
+                const {canvas, canvas_wrapper} = p;
                 if(pageX >= canvas.left && pageY >= canvas.top && pageX <= canvas.right && pageY <= canvas.bottom) { // Canvas
 
                     s = Object.assign(s, {canvas_event_target: "CANVAS"});
@@ -778,8 +839,11 @@ const CanvasPos = {
 
                     s = Object.assign(s, {scale: Object.assign(s.scale, {
                          moves_speed_average_now: new_moves_speed_average_now,
-                            move_speed_timestamp: now
+                        move_speed_timestamp: now
                     })});
+
+                        notifiers.update(false, true);
+                }else if(s.perspective > 0) {
 
                         notifiers.update(false, true);
                 }

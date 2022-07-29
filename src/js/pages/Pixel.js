@@ -2193,7 +2193,7 @@ class Pixel extends React.Component {
                     }}>
                         <Suspense fallback={<div className={classes.contentCanvas}/>}>
                             <CanvasPixels
-                                perspective={_perspective ? 5: 0}
+                                perspective={_perspective ? 2: 0}
                                 on_export_state={this._handle_canvas_state_export}
                                 export_state_every_ms={is_mobile_or_tablet ? 5 * 60 * 1000: 3.5 * 60 * 1000}
                                 shadow_size={is_mobile_or_tablet ? 0: 1.5}
