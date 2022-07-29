@@ -540,14 +540,14 @@ const CanvasPos = {
                 pointer_events.set(event.pointerId, event);
                 const one_pointer = Boolean(pointer_events.size !== 2);
                 const two_pointer = Boolean(pointer_events.size === 2);
-                previous_single_pointer_down_timestamp = one_pointer ? Date.now(): previous_single_pointer_down_timestamp;
-                previous_double_pointer_down_timestamp = two_pointer ? Date.now(): previous_double_pointer_down_timestamp;
-                const mouse_down = !Boolean(parseInt(event.button || 0) !== 0);
+                previous_single_pointer_down_timestamp = one_pointer ? Date.now(): 0;
+                previous_double_pointer_down_timestamp = two_pointer ? Date.now(): 0;
+                const mouse_down = true;
 
                 this.set_pointer_state({
                     pointer_events,
                     mouse_down: mouse_down,
-                    event_button: parseInt(event.button || 0),
+                    event_button: parseInt(event.button),
                     previous_single_pointer_down_timestamp: parseInt(previous_single_pointer_down_timestamp),
                     previous_double_pointer_down_timestamp: parseInt(previous_double_pointer_down_timestamp),
                     latest_pointers_client_x_center: parseInt(event.clientX),
@@ -578,8 +578,6 @@ const CanvasPos = {
                     latest_pointers_distance,
                     latest_pointers_client_x_center,
                     latest_pointers_client_y_center,
-                    previous_double_pointer_down_timestamp,
-                    previous_single_pointer_down_timestamp,
                 } = this.get_pointer_state();
 
                 pointer_events.delete(event.pointerId);
@@ -590,8 +588,6 @@ const CanvasPos = {
                     latest_pointers_distance: parseInt(latest_pointers_distance),
                     latest_pointers_client_x_center: parseInt(latest_pointers_client_x_center),
                     latest_pointers_client_y_center: parseInt(latest_pointers_client_y_center),
-                    previous_double_pointer_down_timestamp: Boolean(pointer_events.size === 2) ? Date.now(): previous_double_pointer_down_timestamp,
-                    previous_single_pointer_down_timestamp: Boolean(pointer_events.size !== 2) ? Date.now(): previous_single_pointer_down_timestamp,
                 });
 
                 if(event.pointerType === "mouse") {
@@ -673,7 +669,7 @@ const CanvasPos = {
 
                     if(new_canvas_event_target !== "CANVAS" || Boolean(new_canvas_event_target === "CANVAS" && event_button === 0 && move_on_click) || event_button === 1) {
 
-                        if(previous_double_pointer_move_timestamp + 200 < Date.now()){
+                        if(previous_double_pointer_move_timestamp + 200 < Date.now() || event_button === 1){
 
                             this.set_pointer_state(pointer_state_object);
                             this._handle_canvas_move( parseInt(event.clientX - latest_pointers_client_x_center), parseInt(event.clientY - latest_pointers_client_y_center));
