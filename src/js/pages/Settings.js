@@ -27,6 +27,12 @@ const styles = theme => ({
             padding: theme.spacing(2, 0)
         }
     },
+    pixaLogo: {
+        margin: "-12.5% 0%",
+        [theme.breakpoints.down("sm")]: {
+            margin: ""
+        }
+    },
     marginTop: {
         marginTop: theme.spacing(2)
     },
@@ -272,7 +278,7 @@ class Settings extends React.Component {
                             <CardContent>
                                 <div style={{textAlign: "right", display: "flex"}}>
                                     <p style={{float: "left", padding: 16, margin: 0, width: "50%", height: "100%"}}>All those friends just help us moving forward rightly only faster while being free and open-source.</p>
-                                    <img src="/src/images/logo-transparent.png" style={{float: "right", padding: 16, margin: 0, width: "50%", height: "100%"}}></img>
+                                    <img src="/src/images/logo-transparent.png" className={classes.pixaLogo} style={{float: "right", padding: 16, width: "50%", height: "100%"}}></img>
                                 </div>
                             </CardContent>
                             <CardContent>
@@ -288,6 +294,12 @@ class Settings extends React.Component {
                             <CardContent>
                                 <h2><img src={"/src/images/league/Diamond.png"} style={{verticalAlign: "middle", height: "2em"}}/> ∞) Diamond Supporters* <sub style={{fontSize: "0.5em"}}>*Businesses involving ours.</sub></h2>
                                 <p>Coming soon!</p>
+                            </CardContent>
+                            <CardContent>
+                                <h2>How it works</h2>
+                                <p>Gold ($ 6K/Month), Silver ($ 4K/Month), and Bronze ($ 2K/Month) supporters enable Pixa.Pics to have a bigger team soon while benefiting a positive cashflow to pay everything that is related to activities from development to marketing content/analyses and production.</p>
+                                <h4>INTERESTED INTO SPONSORING? Please email-us at: <a style={{color: "#ffffff"}} href={"mailto:pixa.pics@protonmail.com"}>pixa.pics@protonmail.com</a>.</h4>
+                                <h3>Thanks for support!</h3>
                             </CardContent>
                             <CardContent>
                                 <div style={{textAlign: "left", display: "flex", alignItems: "center"}}>
