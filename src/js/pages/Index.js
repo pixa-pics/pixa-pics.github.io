@@ -116,11 +116,17 @@ class Index extends React.Component {
             _intervals: [],
             _jamy_state_of_mind: "shocked",
             _unlisten: null,
-            _language: null,
-            _logged_account: null,
             _snackbar_open: false,
             _snackbar_message: "",
             _snackbar_auto_hide_duration: 1975,
+            classes: props.classes,
+            _database_attempt: 0,
+            _is_share_dialog_open: false,
+            _datasyncserviceworkerallfiles: 0,
+            _history_unlisten: null
+        };
+        this.settings = {
+            _language: null,
             _ret: 0,
             _camo: 0,
             _sfx_enabled: true,
@@ -129,15 +135,8 @@ class Index extends React.Component {
             _jamy_enabled: true,
             _selected_locales_code: null,
             _know_if_logged: false,
-            _loaded_progress_percent: 100,
             _know_the_settings: false,
-            /*is_online: true,*/
-            classes: props.classes,
-            _database_attempt: 0,
-            _is_share_dialog_open: false,
             _has_played_index_music_counter: 0,
-            _datasyncserviceworkerallfiles: 0,
-            _history_unlisten: null
         };
     };
 
@@ -229,9 +228,9 @@ class Index extends React.Component {
         } catch(e) {}
     }
 
-    _trigger_sound = (category, pack, name, volume, global) => {
+    _trigger_sound(category, pack, name, volume, global){
 
-        const { _know_the_settings } = this.state;
+        const { _know_the_settings } = this.settings;
 
         if(_know_the_settings){
 
@@ -247,20 +246,20 @@ class Index extends React.Component {
 
             }, 25);
         }
-    };
+    }
 
-
-    _stop_sound = () => {
+    _stop_sound() {
 
         import("../utils/sound-api").then((sound_api) => {
 
             sound_api.stop_sound();
         });
-    };
+    }
 
     _handle_events(event) {
 
-        const { _sfx_enabled, _voice_enabled, _music_enabled, _know_the_settings, _history } = this.state;
+        const { _history } = this.state;
+        const { _sfx_enabled, _voice_enabled, _music_enabled, _know_the_settings } = this.settings;
         let global = null;
 
         // Make different actions send from a dispatcher bounded to this function
@@ -329,12 +328,13 @@ class Index extends React.Component {
         }
     }
 
-    _process_settings_query_result = async(error, settings) => {
+    _process_settings_query_result = (error, settings) => {
 
-        if(!Boolean(error) && typeof Object.assign({}, settings).locales !== "undefined") {
+        settings = Object.assign({}, settings);
+        if(!Boolean(error) && Boolean(settings.locales)) {
 
-            const was_music_enabled = Boolean(this.state._music_enabled);
-            const was_the_settings_known = Boolean(this.state._know_the_settings);
+            const was_music_enabled = Boolean(this.settings._music_enabled);
+            const was_the_settings_known = Boolean(this.settings._know_the_settings);
 
             const _sfx_enabled = Boolean(typeof settings.sfx_enabled !== "undefined" ? settings.sfx_enabled: true);
             const _music_enabled = Boolean(typeof settings.music_enabled !== "undefined" ? settings.music_enabled: false);
@@ -345,62 +345,24 @@ class Index extends React.Component {
             const _ret = parseInt(typeof settings.ret !== "undefined" ? settings.ret: 0);
             const _camo = parseInt(typeof settings.camo !== "undefined" ? settings.camo: 0);
 
-            const set_language_on_document = Boolean(this.state._language !== _language); // Already defined in entry file client.js
-            const dont_know_settings = !Boolean(this.state._know_the_settings);
-            let state = {};
 
-            if(set_language_on_document) {
+            this.settings = Object.assign({}, { _language, _ret, _camo, _voice_enabled, _sfx_enabled, _music_enabled, _jamy_enabled, _selected_locales_code, _know_the_settings: true, _has_played_index_music_counter: parseInt(Boolean(!this.settings._know_the_settings && _music_enabled) ? 1: this.settings._has_played_index_music_counter )});;
+            this.forceUpdate(function() {
+                document.body.setAttribute("class", "loaded");
+            });
 
-                state = { _language, _ret, _camo, _voice_enabled, _sfx_enabled, _music_enabled, _jamy_enabled, _selected_locales_code, _know_the_settings: true, _has_played_index_music_counter: parseInt(Boolean(!this.state._know_the_settings && _music_enabled) ? 1: this.state._has_played_index_music_counter )};
-
-                this.setState(state, () => {
-
-                    if(dont_know_settings){
-
-                        this.forceUpdate(async function(){document.body.setAttribute("class", "loaded")});
-                    }else {
-
-                        this.forceUpdate();
-                    }
-                });
-
-                if(_music_enabled === true && was_music_enabled === false) { setTimeout(() => {this._should_play_music_pathname(this.state.pathname);}, 1000)}
-
-            }else if(
-                this.state._know_the_settings === false ||
-                this.state._ret !== _ret ||
-                this.state._camo !== _camo ||
-                this.state._sfx_enabled !== _sfx_enabled ||
-                this.state._music_enabled !== _music_enabled ||
-                this.state._voice_enabled !== _voice_enabled ||
-                this.state._jamy_enabled !== _jamy_enabled ||
-                this.state._selected_locales_code !== _selected_locales_code
-            ){
-
-                state = { _ret, _camo, _voice_enabled, _sfx_enabled, _music_enabled, _jamy_enabled, _selected_locales_code, _know_the_settings: true, _has_played_index_music_counter: parseInt(Boolean(!this.state._know_the_settings && _music_enabled) ? 1: this.state._has_played_index_music_counter )};
-
-                this.setState(state, async() => {
-
-                    this.forceUpdate();
-                    if(_music_enabled === true && was_music_enabled === false) { this._should_play_music_pathname(this.state.pathname);}
-                });
-
-            }
-
+            if(_music_enabled === true && was_music_enabled === false) { setTimeout(() => {this._should_play_music_pathname(this.state.pathname);}, 1000)}
             if(!was_the_settings_known) {
 
                 this._set_analytics(15 * 1000);
             }
 
         }else {
-            setTimeout(() => {
-
-                this._update_settings();
-            }, 5);
+            setTimeout(this._update_settings, 5);
         }
     };
 
-    _set_analytics = (wait = 10 * 1000) => {
+    _set_analytics(wait = 10 * 1000) {
 
         /* MATOMO TAG MANAGER (ADDON) */
         var _mtm = window._mtm = window._mtm || [];
@@ -469,13 +431,13 @@ class Index extends React.Component {
         }, wait);
     }
 
-    _update_settings = () => {
+    _update_settings() {
 
         // Call the api to get results of current settings and send it to a callback function
         api.get_settings(this._process_settings_query_result);
-    };
+    }
 
-    _set_new_pathname_or_redirect = (neo_pathname) => {
+    _set_new_pathname_or_redirect (neo_pathname) {
 
         const { _history } = this.state;
 
@@ -494,9 +456,9 @@ class Index extends React.Component {
                 this.forceUpdate();
             });
         }
-    };
+    }
 
-    _should_play_music_pathname = (pathname = "/") => {
+    _should_play_music_pathname(pathname = "/") {
 
         if(pathname.match(/\/(pixel)$/)) {
 
@@ -504,7 +466,7 @@ class Index extends React.Component {
 
         }else if(pathname.match(/\/$/)) {
 
-            const { _has_played_index_music_counter } = this.state;
+            const { _has_played_index_music_counter } = this.settings;
             actions.trigger_music(`track_${Boolean(navigator.onLine && _has_played_index_music_counter > 0) ? Math.ceil(Math.random() * 12).toString(10).padStart(2, "0"): "09"}`, 1, "redeclipse");
 
             this.setState({_has_played_index_music_counter: _has_played_index_music_counter+1})
@@ -513,15 +475,15 @@ class Index extends React.Component {
             actions.stop_sound();
         }
 
-    };
+    }
 
-    _set_meta_title = (pathname) => {
+    _set_meta_title(pathname) {
 
         pathname = pathname.replace("/", "").replace(/\//g, " > ");
         update_meta_title("PIXA | " + pathname);
-    };
+    }
 
-    _update_jamy = (state_of_mind, duration) => {
+    _update_jamy(state_of_mind, duration){
 
         const jamy_states = [
             {som: state_of_mind, dur: 0},
@@ -539,7 +501,7 @@ class Index extends React.Component {
         });
     }
 
-    _trigger_snackbar = (_snackbar_message, _snackbar_auto_hide_duration) => {
+    _trigger_snackbar(_snackbar_message, _snackbar_auto_hide_duration) {
 
         const { _snackbar_open } = this.state;
 
@@ -576,7 +538,7 @@ class Index extends React.Component {
         });
     };
 
-    _handle_share_dialog_close = () => {
+    _handle_share_dialog_close(){
 
         this.setState({_is_share_dialog_open: false}, () => {
 
@@ -586,7 +548,7 @@ class Index extends React.Component {
         actions.jamy_update("suspicious");
     };
 
-    _handle_share_dialog_open = () => {
+    _handle_share_dialog_open() {
 
         this.setState({_is_share_dialog_open: true}, () => {
 
@@ -601,9 +563,9 @@ class Index extends React.Component {
         const { pathname, classes} = this.state;
         const { _snackbar_open, _snackbar_message, _snackbar_auto_hide_duration } = this.state;
         const {  _is_share_dialog_open, _load_with } = this.state;
-        const { _logged_account, _know_if_logged, _loaded_progress_percent, _jamy_state_of_mind } = this.state;
+        const { _know_if_logged, _loaded_progress_percent, _jamy_state_of_mind } = this.state;
 
-        const {_ret, _camo, _onboarding_enabled, _sfx_enabled, _music_enabled, _voice_enabled, _jamy_enabled, _selected_locales_code, _language, _selected_currency, _know_the_settings} = this.state;
+        const {_ret, _camo, _onboarding_enabled, _sfx_enabled, _music_enabled, _voice_enabled, _jamy_enabled, _selected_locales_code, _language, _selected_currency, _know_the_settings} = this.settings;
         const all_settings = Object.assign({}, {_ret, _camo, _onboarding_enabled, _sfx_enabled, _music_enabled, _voice_enabled, _jamy_enabled, _selected_locales_code, _language, _selected_currency, _know_the_settings});
 
         const JAMY = {
@@ -641,15 +603,13 @@ class Index extends React.Component {
                         loaded_progress_percent={_loaded_progress_percent}
                         know_if_logged={_know_if_logged}
                         know_the_settings={_know_the_settings}
-                        logged_account={_logged_account}
                         pathname={pathname}
                         music_enabled={_music_enabled}
                         jamy_enabled={_jamy_enabled}
                         jamy_state_of_mind={_jamy_state_of_mind}/>
                     <AppDrawer
                         know_the_settings={_know_the_settings}
-                        language={_language}
-                        logged_account={_logged_account}/>
+                        language={_language}/>
                     <Toolbar />
                     <main className={classes.content}>
                         {_know_the_settings && page_component}
