@@ -1,6 +1,23 @@
 import dispatcher from "../dispatcher";
 
 // Functions enabling events to be dispatched and received elsewhere in the code with data
+function load_with(b64 = "") {
+
+    if(!dispatcher.isDispatching()) {
+
+        dispatcher.dispatch({
+            type: "LOAD_WITH",
+            data: { b64: String(b64) }
+        });
+    }else {
+
+        setTimeout(() => {
+
+            load_with(b64);
+        }, 10);
+    }
+}
+// Functions enabling events to be dispatched and received elsewhere in the code with data
 function jamy_update(state_of_mind = "shocked", duration = 2500) {
 
     if(!dispatcher.isDispatching()) {
@@ -220,4 +237,5 @@ module.exports = {
     trigger_loading_update: trigger_loading_update,
     trigger_page_render_complete: trigger_page_render_complete,
     trigger_canvas_action: trigger_canvas_action,
+    load_with: load_with,
     };

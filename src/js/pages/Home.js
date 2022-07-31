@@ -140,6 +140,7 @@ const styles = theme => ({
             transition: "filter cubic-bezier(0.4, 0, 0.2, 1) 625ms !important"
         },
         "&:hover > img": {
+            pointerEvents: "none",
             filter: "opacity(1)",
             webkitFilter: "opacity(1)",
             transition: "filter cubic-bezier(0.4, 0, 0.2, 1) 125ms !important"
@@ -155,26 +156,20 @@ const styles = theme => ({
         },
     },
     backgroundImageInfo: {
-        pointerEvents: "auto",
+        pointerEvents: "none",
         position: "absolute",
+        transform: "scale(0.5)",
         "h2&": {
             right: "max(9vw, 9vh)",
             bottom: "max(12vw, 12vh)",
-            transform: "scale(0.75)",
             transformOrigin: "right bottom",
         },
-        "h3&": {
-            display: "none",
-        },
         [theme.breakpoints.down("md")]: {
+
             "h2&": {
-                display: "none",
-            },
-            "h3&": {
                 display: "inherit",
                 bottom: "180px",
                 right: "32px",
-                transform: "scale(0.75)",
                 transformOrigin: "right bottom",
             },
         },
@@ -365,11 +360,39 @@ class Home extends React.Component {
         }
     }
 
-    _go_to_editor = () => {
+    _go_to_editor = (load_with = "") => {
 
         window.dispatchEvent(new Event("home-action-tryeditor"));
-        const { _history } = this.state;
-        _history.push("/pixel");
+
+        if(load_with.length > 0) {
+
+            if(load_with.startsWith("data:image/png;base64,")){
+
+                actions.load_with(load_with);
+            }else {
+
+                fetch(load_with).then((resp) => {
+
+                    resp.blob().then((blob) => {
+
+                        new Promise(function(resolve, _) {
+                            var reader = new FileReader();
+                            reader.onload = function(){ resolve(reader.result)};
+                            reader.onerror = function(){ var u = URL.createObjectURL(blob); resolve(u); URL.revokeObjectURL(u);};
+                            reader.readAsDataURL(blob);
+                        }).then((base64) => {
+
+                            actions.load_with(base64);
+                        });
+                    });
+                });
+            }
+
+        }else {
+
+            const { _history } = this.state;
+            _history.push("/pixel");
+        }
     };
 
     _handle_speed_dial_action = (event, action) => {
@@ -476,15 +499,14 @@ class Home extends React.Component {
                             in={_infographics_in}
                             exit={!_infographics_in}
                             timeout={{ enter: _infographics_fadein_time, exit: _infographics_fadein_time }}>
-                            <div className={classes.backgroundImageWrapper}>
+                            <div className={classes.backgroundImageWrapper} onClick={() => {this._go_to_editor(_image_name_infographics.replace(".svg", ".png"))}}>
                                 <img src={_image_name_infographics}
                                      alt="Image demo."
                                      className={String(first_image ? " aspect-ratio-one pixelated shiny": _image_name_infographics.endsWith(".png") ? "pixelated shiny": "speed shiny")}
                                 />
                             </div>
                         </Grow>}
-                        <h2 className={classes.backgroundImageInfo} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff", backgroundColor: THEME_DAY && !IS_EVENING ? "#ffffffa8": "#100d4ea8", padding: 16, textAlign: "center", borderRadius: "4px"}}>RENDER REAL "SVG" SHAPES!<br/><span style={{fontSize: "0.75em"}}>Use (6x) "xBRZ" instead of default pixelated rendering of (1x, 6x, 12x, 24x).</span></h2>
-                        <h3 className={classes.backgroundImageInfo} onClick={this._toggle_bii3_opacity} style={{borderRadius: "4px", zIndex: 90, opacity: _bii3_opacity, color: THEME_DAY && !IS_EVENING ? "#000": "#fff", border: "4px solid #980000", backgroundColor: THEME_DAY && !IS_EVENING ? "#ffffffa8": "#100d4ea8", padding: 16, textAlign: "center"}}>RENDER REAL "SVG" SHAPES!<br/><span style={{fontSize: "0.75em"}}>Use (6x) "xBRZ" instead of default pixelated rendering of (1x, 6x, 12x, 24x).</span> <span style={{fontSize: "0.5em"}}>CLICK TO CLOSE</span></h3>
+                        <h2 className={classes.backgroundImageInfo} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff", backgroundColor: THEME_DAY && !IS_EVENING ? "#ffffffa8": "#100d4ea8", padding: 16, textAlign: "center", borderRadius: "4px"}}>REAL "SVG" RENDERING<br/><span style={{fontSize: "0.75em"}}>Let's gooooo! Click to try it right now.</span></h2>
                     </div>
                 </div>
                 <div className={classes.headerContainer} style={{color: THEME_DAY && !IS_EVENING? "#000": "#fff"}}>

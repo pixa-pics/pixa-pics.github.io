@@ -394,6 +394,7 @@ class Pixel extends React.Component {
         super(props);
         this.state = {
             classes: props.classes,
+            load_with: String(props.load_with) || "",
             _history: HISTORY,
             _perspective: false,
             _library_dialog_open: false,
@@ -451,8 +452,7 @@ class Pixel extends React.Component {
             _base64_url: "",
             _logged_account: {},
             _less_than_1280w: false,
-            _is_pixel_dialog_create_open: true,
-            _know_the_settings: false,
+            _is_pixel_dialog_create_open: false,
             _attachment_previews: {},
             _filters_thumbnail: new Map(),
             _last_filters_hash: "",
@@ -485,8 +485,8 @@ class Pixel extends React.Component {
         this._updated_dimensions();
         document.addEventListener("keydown", this._handle_keydown);
         document.addEventListener("keyup", this._handle_keyup);
-        api.get_settings(this._process_settings_info_result);
         dispatcher.register(this._handle_events.bind(this));
+        this._try_load_with_payload(String(this.state.load_with || ""));
         this.setState({_h_svg: get_svg_in_b64(<HexGrid color={"#e5e5e5"}/>)});
         import("../utils/ressource_pixel").then((RESSOURCE_PIXELS) => {
 
@@ -496,14 +496,57 @@ class Pixel extends React.Component {
 
     componentWillReceiveProps(new_props) {
 
+        if(new_props.load_with !== this.state.load_with) {
+
+            this.setState({load_with: String(new_props.load_with)}, ()  => {
+
+                this._try_load_with_payload(String(new_props.load_with));
+            });
+        }
+
         if(new_props.settings !== this.state.settings) {
 
-            this.setState({settings: props.settings, ...JSON.parse(new_props.settings)}, ()  => {
+            this.setState({settings: new_props.settings, ...JSON.parse(new_props.settings)}, ()  => {
 
                 this.forceUpdate();
             });
         }
     }
+
+    _try_load_with_payload = (load_with) => {
+
+        if(load_with.length <= 0){
+
+            this.setState({_is_pixel_dialog_create_open: !Boolean(load_with.length > 0)}, () => {
+
+                api.get_settings(this._process_settings_info_result);
+            });
+        }else {
+
+            actions.trigger_sfx("alert_high-intensity");
+            this._handle_load("image_preload");
+            base64_sanitize(String(load_with), (base64) => {
+
+                let img = new Image();
+                img.addEventListener("load", () => {
+                    const try_again = () => {
+
+                        if(!Boolean(this.state._canvas)) {
+
+                            setTimeout(() => {try_again()}, 100);
+                        }else {
+
+                            this.state._canvas.set_canvas_from_image(img, String(base64), {}, true);
+                            this._handle_load_complete("image_preload", {});
+                        }
+                    };
+                    try_again();
+                }, {once: true, capture: true});
+                img.src = String(base64);
+
+            });
+        }
+    };
 
     _handle_events(event) {
 
@@ -634,7 +677,7 @@ class Pixel extends React.Component {
 
             actions.trigger_sfx("hero_decorative-celebration-02");
 
-            this.setState({ _is_pixel_dialog_create_open: true, _attachment_previews, _know_the_settings: true }, () => {
+            this.setState({_attachment_previews}, () => {
 
                 this.forceUpdate();
             });
@@ -658,7 +701,7 @@ class Pixel extends React.Component {
 
             import_JS_state(data, () => {
 
-                this.setState({ _is_pixel_dialog_create_open: false, _attachment_previews: []});
+                this.setState({ _is_pixel_dialog_create_open: false, _attachment_previews: {}});
             });
             data = null;
         }
@@ -1165,7 +1208,6 @@ class Pixel extends React.Component {
 
                                                                             this._handle_load_complete("image_ai", {});
                                                                             set_canvas_from_image(img, String(base64_resized), {}, true);
-                                                                            this._handle_menu_close();
                                                                             base64_resized = null;
                                                                         }, {once: true, capture: true});
                                                                         img.src = String(base64_final);
@@ -1219,7 +1261,6 @@ class Pixel extends React.Component {
 
                                                                             this._handle_load_complete("image_ai", {});
                                                                             set_canvas_from_image(img, String(base64_resized), {}, true);
-                                                                            this._handle_menu_close();
                                                                             base64_resized = null;
                                                                         }, {once: true, capture: true});
                                                                         img.src = String(base64_final);
@@ -1276,7 +1317,6 @@ class Pixel extends React.Component {
 
                                                                                 this._handle_load_complete("image_ai", {});
                                                                                 set_canvas_from_image(img, String(base64_resized), {}, true);
-                                                                                this._handle_menu_close();
                                                                                 base64_resized = null;
                                                                             }, {once: true, capture: true});
                                                                             img.src = String(base64_final);
@@ -1371,7 +1411,6 @@ class Pixel extends React.Component {
 
                                                                             this._handle_load_complete("image_preload", {});
                                                                             set_canvas_from_image(img, String(base64_resized), {}, false);
-                                                                            this._handle_menu_close();
                                                                             base64_resized = null;
                                                                         }, {once: true, capture: true});
                                                                         img.src = String(base64_final);
@@ -1410,7 +1449,6 @@ class Pixel extends React.Component {
 
         import("../utils/lzp3_json").then(({LZP3}) => {
 
-            this._handle_pixel_dialog_create_close();
             this._handle_load("image_preload");
             actions.trigger_voice("accessing_memory");
             api.get_settings(() => {}, ["json_state-ID" + id + ".json.lzp3"], this._process_settings_attachment_result, LZP3, pool);
@@ -1491,6 +1529,8 @@ class Pixel extends React.Component {
             }, 1000);
             actions.jamy_update("happy");
             this._handle_edit_drawer_close();
+            this._handle_menu_close();
+            this._handle_pixel_dialog_create_close();
         }
     };
 
@@ -1814,12 +1854,18 @@ class Pixel extends React.Component {
 
     _handle_pixel_dialog_create_close = () => {
 
-        this.setState({_is_pixel_dialog_create_open: false, _attachment_previews: []});
+        this.setState({_is_pixel_dialog_create_open: false, _attachment_previews: {}}, () => {
+
+            this.forceUpdate();
+        });
     };
 
     _handle_pixel_dialog_create_open = () => {
 
-        api.get_settings(this._process_settings_info_result);
+        this.setState({_is_pixel_dialog_create_open: true}, () => {
+
+            api.get_settings(this._process_settings_info_result);
+        });
     };
 
     _get_OS = () => {
@@ -1964,7 +2010,6 @@ class Pixel extends React.Component {
             _library,
             _less_than_1280w,
             _is_pixel_dialog_create_open,
-            _know_the_settings,
             _h_svg,
             _attachment_previews,
             _is_cursor_fuck_you_active,
@@ -2438,7 +2483,7 @@ class Pixel extends React.Component {
 
 
                 <PixelDialogCreate keepMounted={false}
-                                   open={_is_pixel_dialog_create_open && _know_the_settings}
+                                   open={_is_pixel_dialog_create_open}
                                    pixel_arts={_attachment_previews}
                                    size={_import_size}
                                    on_import_size_change={this._set_import_size}

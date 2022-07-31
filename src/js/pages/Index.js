@@ -17,14 +17,14 @@ const Pixel = React.lazy(() => import("../pages/Pixel"));
 const Unknown = React.lazy(() => import("../pages/Unknown"));
 const Settings = React.lazy(() => import("../pages/Settings"));
 
-const PAGE_COMPONENTS = (name, pathname, settings = JSON.stringify("{}")) => {
+const PAGE_COMPONENTS = (name, pathname, settings = JSON.stringify("{}"), load_with = "") => {
 
     switch (name) {
         case "home":
             return <Home settings={settings} />;
         case "pixel":
 
-            return <Suspense fallback={<div/>}><Pixel settings={settings}/></Suspense>;
+            return <Suspense fallback={<div/>}><Pixel load_with={load_with} settings={settings}/></Suspense>;
         case "unknown":
 
             return <Suspense fallback={<div/>}><Unknown /></Suspense>;
@@ -156,6 +156,7 @@ class Index extends React.Component {
             _history: props.history,
             init_pathname: props.history.location.pathname,
             pathname: "",
+            _load_with: "",
             _intervals: [],
             _jamy_state_of_mind: "shocked",
             _unlisten: null,
@@ -315,7 +316,7 @@ class Index extends React.Component {
 
     _handle_events(event) {
 
-        const { _sfx_enabled, _voice_enabled, _music_enabled, _know_the_settings } = this.state;
+        const { _sfx_enabled, _voice_enabled, _music_enabled, _know_the_settings, _history } = this.state;
         let global = null;
 
         // Make different actions send from a dispatcher bounded to this function
@@ -324,6 +325,11 @@ class Index extends React.Component {
             case "TRIGGER_SFX":
                 global = false;
                 if(_sfx_enabled) { this._trigger_sound("sfx", event.data.pack, event.data.name, event.data.volume, global); }
+                break;
+
+            case "LOAD_WITH":
+                _history.push("/pixel");
+                 this.setState({_load_with: event.data.b64}, () => {this.forceUpdate()});
                 break;
 
             case "TRIGGER_VOICE":
@@ -651,7 +657,7 @@ class Index extends React.Component {
 
         const { pathname, classes} = this.state;
         const { _snackbar_open, _snackbar_message, _snackbar_auto_hide_duration } = this.state;
-        const {  _is_share_dialog_open } = this.state;
+        const {  _is_share_dialog_open, _load_with } = this.state;
         const { _logged_account, _know_if_logged, _loaded_progress_percent, _jamy_state_of_mind } = this.state;
 
         const {_ret, _camo, _onboarding_enabled, _sfx_enabled, _music_enabled, _voice_enabled, _jamy_enabled, _selected_locales_code, _language, _selected_currency, _know_the_settings} = this.state;
@@ -678,7 +684,7 @@ class Index extends React.Component {
             if(pathname.match(page_route.page_regex)){
 
                 page_name = page_route.page_name;
-                page_component = PAGE_COMPONENTS(page_name, pathname, JSON.stringify(all_settings));
+                page_component = PAGE_COMPONENTS(page_name, pathname, JSON.stringify(all_settings), _load_with);
             }
         }
 
