@@ -4,17 +4,18 @@ import PouchDB from "pouchdb-core";
 import PouchDB_IDB from "pouchdb-adapter-idb";
 import PouchDB_memory from "pouchdb-adapter-memory";
 
-const init = (callback_function = function(){}) => {
+const init = () => {
 
-    (async function(){
+    return new Promise(function(resolve, reject){
 
-        if(typeof window.settings_db === "undefined") {
+        if(!Boolean(window.settings_db)) {
 
-            PouchDB.on("created",  () => {
+            PouchDB.on("created",  function(){
 
-                if(typeof window._pixa_settings !== "undefined" ) {
+                if(Boolean(window._pixa_settings)) {
 
                     window._pixa_settings = _merge_object({}, _get_default_settings());
+                    resolve(_merge_object({}, window._pixa_settings));
 
                     setTimeout(() => {
 
@@ -22,17 +23,47 @@ const init = (callback_function = function(){}) => {
                             info: JSON.stringify(_merge_object({}, window._pixa_settings)),
                             timestamp: Date.now(),
                         });
-                    }, 3000);
+                    }, 100);
+                }else {
+
+                    resolve(_merge_object({}, window._pixa_settings));
                 }
             });
 
             PouchDB.plugin(PouchDB_memory);
             PouchDB.plugin(PouchDB_IDB);
             window.settings_db = new PouchDB("settings_db", {adapter: "idb", view_adapter: "memory", deterministic_revs: true, revs_limit: 1});
-            callback_function();
-        }
 
-    })();
+        }else if(Boolean(window._pixa_settings)){
+
+            resolve(_merge_object({}, window._pixa_settings));
+        }else {
+
+            window.settings_db.allDocs({
+                include_docs: true,
+                descending: false,
+                attachments: false,
+                binary: false
+            }).then(function (response) {
+
+                let settings_docs = response.rows.map((row) => {
+                    return row.doc;
+                }).sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                let settings_doc = settings_docs.splice(0, 1)[0] || null;
+
+                // Choose the first
+                if (settings_doc !== null) {
+
+                    window._pixa_settings = _merge_object({}, JSON.parse(settings_doc.info));
+                    resolve(_merge_object({}, window._pixa_settings));
+                }
+
+            }).catch(function (error) {
+                reject(error)
+            });
+        }
+    });
+
 };
 
 const _merge_object = (obj1, obj2) => {
@@ -86,7 +117,6 @@ const reset_all_databases = (callback_function) => {
 
 const get_settings = (callback_function_info = null, attachment_ids = [], callback_function_attachment = null, LZP3 = null, POOL = null ) => {
 
-    init();
     if(typeof window._pixa_settings !== "undefined" && window._pixa_settings !== null) {
 
         if(typeof window._pixa_settings.locales !== "undefined" && window._pixa_settings.locales !== null) {
@@ -255,7 +285,6 @@ const get_settings = (callback_function_info = null, attachment_ids = [], callba
 
 const set_settings = (info = {}, callback_function_info = () => {}, attachment_array = {}, LZP3 = null, POOL = null) => {
 
-    init();
     window.settings_db.allDocs({
         include_docs: true,
         descending: false,

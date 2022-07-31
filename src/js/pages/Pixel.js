@@ -63,7 +63,7 @@ import FiltersTweemoji from "../twemoji/react/1F984";
 
 import HexGrid from "../icons/HexGrid";
 import get_svg_in_b64 from "../utils/svgToBase64";
-import { t } from "../utils/t";
+import { l, t } from "../utils/t";
 
 import ColorConversion from "../components/canvaspixels/utils/ColorConversion";
 const color_conversion = Object.create(ColorConversion).new();
@@ -460,6 +460,7 @@ class Pixel extends React.Component {
             _toolbox_container_ref: null,
             settings: props.settings,
             _files_waiting_download: [],
+            _time_ago_initiated: false,
             ...JSON.parse(props.settings)
         };
     };
@@ -472,6 +473,13 @@ class Pixel extends React.Component {
 
             actions.trigger_loading_update(100);
         }, 300);
+        l(null, () => {
+
+            this.setState({_time_ago_initiated: true}, () => {
+
+                this.forceUpdate();
+            });
+        }, true);
     }
 
     componentDidMount() {
@@ -2018,6 +2026,7 @@ class Pixel extends React.Component {
             _filters_preview_progression,
             _perspective,
             _files_waiting_download,
+            _time_ago_initiated,
         } = this.state;
 
         let x = _x === -1 ? "out": _x + 1;
@@ -2482,9 +2491,9 @@ class Pixel extends React.Component {
                 />
 
 
-                <PixelDialogCreate keepMounted={false}
+                <PixelDialogCreate keepMounted={true}
                                    open={_is_pixel_dialog_create_open}
-                                   pixel_arts={_attachment_previews}
+                                   pixel_arts={_time_ago_initiated ? _attachment_previews: {}}
                                    size={_import_size}
                                    on_import_size_change={this._set_import_size}
                                    on_pixel_art_delete={(id) => {this._delete_unsaved_pixel_art(id)}}

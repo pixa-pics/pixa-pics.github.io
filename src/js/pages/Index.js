@@ -45,7 +45,6 @@ import JamySuspicious from "../icons/JamySuspicious";
 import api from "../utils/api";
 import { update_meta_title } from "../utils/meta-tags";
 import { PAGE_ROUTES } from "../utils/constants";
-import {l} from "../utils/t";
 
 const styles = theme => ({
     root: {
@@ -103,49 +102,6 @@ const styles = theme => ({
         marginRight: 12,
         verticalAlign: "middle",
     },
-});
-
-let lang_ok = false;
-let init_state = null;
-
-
-api.get_settings( (error, settings) => {
-
-    if (!Boolean(error) && typeof Object.assign({}, settings).locales !== "undefined") {
-
-        const _sfx_enabled = Boolean(typeof settings.sfx_enabled !== "undefined" ? settings.sfx_enabled : true);
-        const _music_enabled = Boolean(typeof settings.music_enabled !== "undefined" ? settings.music_enabled : false);
-        const _voice_enabled = Boolean(typeof settings.voice_enabled !== "undefined" ? settings.voice_enabled : false);
-        const _jamy_enabled = Boolean(typeof settings.jamy_enabled !== "undefined" ? settings.jamy_enabled : true);
-        const _selected_locales_code = String(typeof settings.locales !== "undefined" ? settings.locales : "en-US");
-        const _language = String(_selected_locales_code.split("-")[0]);
-        const _ret = parseInt(typeof settings.ret !== "undefined" ? settings.ret : 0);
-        const _camo = parseInt(typeof settings.camo !== "undefined" ? settings.camo : 0);
-
-        const set_language_on_document = true // Already defined in entry file client.js
-        let state = {};
-
-        if (set_language_on_document) {
-
-            state = {
-                _language,
-                _ret,
-                _camo,
-                _voice_enabled,
-                _sfx_enabled,
-                _music_enabled,
-                _jamy_enabled,
-                _selected_locales_code,
-                _know_the_settings: true
-            };
-
-            l(_language, async () => {
-
-                lang_ok = true;
-                init_state = state;
-            });
-        }
-    }
 });
 
 class Index extends React.Component {
@@ -260,18 +216,6 @@ class Index extends React.Component {
 
             actions.trigger_snackbar("Hello, I am Jamy! Let's take a look to our laboratory to process images, wanna give it a try?", 7000)
         }, 1250);
-
-        const inte = setInterval(() => {
-
-            if(Boolean(init_state)) {
-                document.body.setAttribute("datainitiated", "true");
-                this.setState(init_state, () => {
-
-                    this.forceUpdate(async function(){document.body.setAttribute("class", "loaded");});
-                });
-                clearInterval(inte);
-            }
-        }, 5);
     }
 
     componentWillUnmount() {
@@ -409,11 +353,10 @@ class Index extends React.Component {
 
                 state = { _language, _ret, _camo, _voice_enabled, _sfx_enabled, _music_enabled, _jamy_enabled, _selected_locales_code, _know_the_settings: true, _has_played_index_music_counter: parseInt(Boolean(!this.state._know_the_settings && _music_enabled) ? 1: this.state._has_played_index_music_counter )};
 
-                this.setState(state);
-                l(_language, async() => {
+                this.setState(state, () => {
 
                     if(dont_know_settings){
-                        document.body.setAttribute("datainitiated", "true");
+
                         this.forceUpdate(async function(){document.body.setAttribute("class", "loaded")});
                     }else {
 
@@ -453,7 +396,7 @@ class Index extends React.Component {
             setTimeout(() => {
 
                 this._update_settings();
-            }, 25);
+            }, 5);
         }
     };
 

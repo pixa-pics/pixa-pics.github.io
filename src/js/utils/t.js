@@ -56,10 +56,10 @@ const get_lang_lib = async (name) => {
 }
 
 /* Do not flood the read of the translate object and the document lang element, just set an interval to check it*/
-const l = async(_l, callback_function = () => {}) => {
+const l = async(_l = null, callback_function = () => {}, time_ago = false) => {
 
     let l1 = "";
-    if(typeof _l !== "undefined") {
+    if(Boolean(_l)) {
 
         l1 = String(_l).toLowerCase();
         document.documentElement.lang = l1;
@@ -72,20 +72,27 @@ const l = async(_l, callback_function = () => {}) => {
 
         window.LANG = l1;
 
-        get_lang_lib(l1).then(async(ld) => {
+    }
 
-            window.LANG_DIR = Object.assign({}, ld);
-            import("javascript-time-ago/bundle/javascript-time-ago").then(async(TimeAgo) => {
+    get_lang_lib(l1).then(function(ld){
+
+        window.LANG_DIR = Object.assign({}, ld);
+
+        if(time_ago) {
+            import("javascript-time-ago/bundle/javascript-time-ago").then(function(TimeAgo) {
 
                 TimeAgo.default.addDefaultLocale(window.LANG_DIR["_time_ago"]);
                 window.TIME_AGO = new TimeAgo.default(window.LANG);
-            });
-            callback_function(true);
-        });
-    }else {
+                callback_function(true);
+            }).catch(function(){
 
-        callback_function(true);
-    }
+                callback_function(false);
+            });
+        }else {
+
+            callback_function(true);
+        }
+    });
 };
 
 const t = (path = "", variables = {}, parameters = {}) => {
