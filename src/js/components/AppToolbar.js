@@ -337,8 +337,7 @@ class AppToolbar extends React.Component {
                     keepMounted={true}
                     transitionDuration={{enter: 125, exit: 75}}
                     anchor="left"
-                    className={classes.swipeableDrawer}
-                    classes={{paper: classes.drawerPaper}}
+                    classes={{root: classes.swipeableDrawer, paper: classes.drawerPaper}}
                     open={_swipeable_app_drawer_open}
                     onOpen={this._handle_open_swipeable_app_drawer}
                     onClose={this._handle_close_swipeable_app_drawer}>

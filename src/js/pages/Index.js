@@ -228,7 +228,7 @@ class Index extends React.Component {
         } catch(e) {}
     }
 
-    _trigger_sound(category, pack, name, volume, global){
+    _trigger_sound = (category, pack, name, volume, global) => {
 
         const { _know_the_settings } = this.settings;
 
@@ -248,7 +248,7 @@ class Index extends React.Component {
         }
     }
 
-    _stop_sound() {
+    _stop_sound = () => {
 
         import("../utils/sound-api").then((sound_api) => {
 
@@ -256,7 +256,7 @@ class Index extends React.Component {
         });
     }
 
-    _handle_events(event) {
+    _handle_events = (event) => {
 
         const { _history } = this.state;
         const { _sfx_enabled, _voice_enabled, _music_enabled, _know_the_settings } = this.settings;
@@ -458,7 +458,7 @@ class Index extends React.Component {
         }
     }
 
-    _should_play_music_pathname(pathname = "/") {
+    _should_play_music_pathname = (pathname = "/") => {
 
         if(pathname.match(/\/(pixel)$/)) {
 
@@ -477,13 +477,13 @@ class Index extends React.Component {
 
     }
 
-    _set_meta_title(pathname) {
+    _set_meta_title = (pathname) => {
 
         pathname = pathname.replace("/", "").replace(/\//g, " > ");
         update_meta_title("PIXA | " + pathname);
     }
 
-    _update_jamy(state_of_mind, duration){
+    _update_jamy = (state_of_mind, duration) => {
 
         const jamy_states = [
             {som: state_of_mind, dur: 0},
@@ -501,7 +501,7 @@ class Index extends React.Component {
         });
     }
 
-    _trigger_snackbar(_snackbar_message, _snackbar_auto_hide_duration) {
+    _trigger_snackbar = (_snackbar_message, _snackbar_auto_hide_duration) => {
 
         const { _snackbar_open } = this.state;
 
@@ -538,7 +538,7 @@ class Index extends React.Component {
         });
     };
 
-    _handle_share_dialog_close(){
+    _handle_share_dialog_close = () => {
 
         this.setState({_is_share_dialog_open: false}, () => {
 
@@ -548,7 +548,7 @@ class Index extends React.Component {
         actions.jamy_update("suspicious");
     };
 
-    _handle_share_dialog_open() {
+    _handle_share_dialog_open = () => {
 
         this.setState({_is_share_dialog_open: true}, () => {
 

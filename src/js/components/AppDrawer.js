@@ -12,6 +12,11 @@ const styles = theme => ({
     drawer: {
         width: 256,
         flexShrink: 0,
+        position: "fixed",
+        zIndex: 111,
+        height: "100%",
+        contain: "layout paint size style",
+        boxShadow: "2px 0px 4px 0px rgb(0 0 0 / 20%), 4px 0px 5px 0px rgb(0 0 0 / 14%), 6px 0px 10px 0px rgb(0 0 0 / 12%)",
         [theme.breakpoints.down("sm")]: {
             display: "none"
         },
@@ -24,7 +29,6 @@ const styles = theme => ({
         width: 256,
         backgroundColor: theme.palette.secondary.dark,
         color: theme.palette.secondary.contrastText,
-        boxShadow: "0px 2px 4px -1px rgb(0 0 0 / 20%), 0px 4px 5px 0px rgb(0 0 0 / 14%), 0px 1px 10px 0px rgb(0 0 0 / 12%)",
         border: 0,
         backgroundSize: "calc(100% + 96px)",
         contain: "layout paint size style",

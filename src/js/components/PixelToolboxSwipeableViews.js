@@ -109,6 +109,24 @@ const styles = theme => ({
             //display: "none",
         }
     },
+    thanksSponsors: {
+        padding: "16px 24px 8px 24px",
+        fontFamily: "'Jura'",
+        textTransform: "uppercase",
+        boxShadow: "inset 0px 3px 6px #050c4c22",
+        marginBottom: "-8px",
+        marginTop: "16px",
+        backgroundColor: "#ededff",
+        color: "#050c4c",
+        position: "relative",
+        overflow: "hidden",
+        boxSizing: "border-box",
+        width: "100%",
+        [theme.breakpoints.down("md")]: {
+            marginBottom: "-36px",
+            marginTop: "24px",
+        }
+    },
     listItemIcon: {
         color: theme.palette.secondary.dark
     },
@@ -1410,14 +1428,14 @@ class PixelToolboxSwipeableViews extends React.Component {
                     Object.entries(actions).map(([name, view], index) => {
 
                         if(view_name_index !== index) {
-                            return (<List key={name} style={{ contain: "style layout paint", overflow: "auto", contentVisibility: "auto", paddingTop: 0}} />);
+                            return (<List key={name} style={{ contain: "style layout paint", overflow: "auto", contentVisibility: "visible", paddingTop: 0}} />);
                         }
 
                         return (
-                            <List key={name} style={{ contain: "style layout paint", overflow: "visible", contentVisibility: "auto", paddingTop: 0}}>
+                            <List key={name} style={{ contain: "style layout paint", overflow: "visible", contentVisibility: "visible", paddingTop: 0}}>
 
                                 {
-                                    name === "layers" ?
+                                    name === "layers" &&
                                         <div key={"layers-layers-main"} className={`swipetoolbox_i_${index}_${0}`}>
                                             <ListSubheader className={classes.listSubHeader}>
                                                 <span><AllLayersIcon/></span>
@@ -1497,12 +1515,12 @@ class PixelToolboxSwipeableViews extends React.Component {
                                                     );
                                                 })}
                                             </div>
-                                        </div> : null
+                                        </div>
                                 }
 
                                 {
 
-                                    name === "palette" ?
+                                    name === "palette" &&
                                         <div key={"palette-palette-main"} className={`swipetoolbox_i_${index}_${0}`}>
                                             <Menu
                                                 className={classes.menu}
@@ -1600,11 +1618,11 @@ class PixelToolboxSwipeableViews extends React.Component {
                                                 </div>
                                             </div>
 
-                                        </div> : null
+                                        </div>
                                 }
 
                                 {
-                                    name === "image" ?
+                                    name === "image" &&
                                         <div key={"image-image-upload"} className={`swipetoolbox_i_${index}_${0}`}>
                                             <ListSubheader className={classes.listSubHeader}>
                                                 <span><ImportIcon/></span>
@@ -1682,7 +1700,6 @@ class PixelToolboxSwipeableViews extends React.Component {
                                                 </RadioGroup>
                                             </div>
                                         </div>
-                                        : null
                                 }
 
                                 {
@@ -1759,7 +1776,7 @@ class PixelToolboxSwipeableViews extends React.Component {
                                 }
 
                                 {
-                                    name === "image" ?
+                                    name === "image" &&
                                         <div key={"image-image-create"} className={`swipetoolbox_i_${index}_${3}`}>
                                             <ListSubheader className={classes.listSubHeader}>
                                                 <span><ImagePlusIcon/></span>
@@ -1784,16 +1801,9 @@ class PixelToolboxSwipeableViews extends React.Component {
                                                         aria-labelledby="height-slider"/>
                                             </div>
                                         </div>
-                                        : null
                                 }
 
-                                <div style={{
-                                    padding: "8px 24px",
-                                    position: "relative",
-                                    overflow: "hidden",
-                                    boxSizing: "border-box",
-                                    width: "100%"
-                                }}>
+                                <div className={classes.thanksSponsors}>
                                     <h4>INTERESTED INTO SPONSORING? Please email-us at: <a style={{color: "#3729c1"}} href={"mailto:pixa.pics@protonmail.com"}>pixa.pics@protonmail.com</a>.</h4>
                                     <h3>Thanks for support!</h3>
                                 </div>
