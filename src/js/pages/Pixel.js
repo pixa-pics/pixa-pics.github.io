@@ -536,7 +536,7 @@ class Pixel extends React.Component {
 
         if(current_state.kb > 1) {
 
-            actions.trigger_snackbar("Automatically saving your artwork...", 5000)
+            actions.trigger_snackbar("Artwork, SAVED!", 2000)
             let attachment_array = {};
             attachment_array["json_state-ID" + current_state.id + ".json.lzp3"] = current_state;
 

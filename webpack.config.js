@@ -19,6 +19,7 @@ module.exports = {
                         toplevel: true,
                         eval: true,
                         reserved: [
+                            'Object',
                             'Uint8ClampedArray',
                             'Uint32Array',
                             'Int32Array',
@@ -45,6 +46,9 @@ module.exports = {
                             'Buffer',
                             'buffer',
                             'Set',
+                            'Map',
+                            'WeakSet',
+                            'WeakMap',
                             'TextEncoder',
                             'RangeCoder',
                             'BigInteger',
@@ -82,12 +86,13 @@ module.exports = {
                         inline: true,
                         reduce_vars: true,
                         collapse_vars: true,
-                        passes: 3,
+                        passes: 12,
                     },
                     output: {
                         comments: false,
                         beautify: false,
-                    },
+                        webkit: true
+                    }
                 }
             })
         ],
@@ -161,7 +166,9 @@ module.exports = {
     resolve: {
         alias: {
             'bn.js': path.join(__dirname, 'node_modules/bn.js/lib/bn.js'),
-            'readable-stream': path.join(__dirname, 'node_modules/readable-stream'),
+            'process': path.join(__dirname, 'node_modules/process'),
+            'readable-stream': path.join(__dirname, 'node_modules/readable-stream/lib/ours/browser.js'),
+            "buffer": path.join(__dirname, 'node_modules/buffer'),
         }
     },
     plugins: process.env.NODE_ENV === "development" ? [

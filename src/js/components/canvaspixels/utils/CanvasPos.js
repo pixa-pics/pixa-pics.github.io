@@ -582,15 +582,25 @@ const CanvasPos = {
 
                 pointer_events.delete(event.pointerId);
 
+                let pointer_down_again = false;
+                if(pointer_events.size === 1) {
+
+                    pointer_events.clear();
+                    pointer_down_again = true;
+                }
+
                 this.set_pointer_state({
                     pointer_events: pointer_events,
-                    mouse_down: Boolean(pointer_events.size !== 0 && Boolean(event.button === 0)),
+                    mouse_down: Boolean(pointer_events.size !== 0),
                     latest_pointers_distance: parseInt(latest_pointers_distance),
                     latest_pointers_client_x_center: parseInt(latest_pointers_client_x_center),
                     latest_pointers_client_y_center: parseInt(latest_pointers_client_y_center),
                 });
 
-                if(event.pointerType === "mouse") {
+                if(pointer_down_again){
+
+                    this.handle_pointer_down(event);
+                }else if(event.pointerType === "mouse") {
 
                     if(canvas_event_target === "CANVAS") {
 
