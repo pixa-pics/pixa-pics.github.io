@@ -73,7 +73,7 @@ const SmartRequestAnimationFrame = {
             },
             run_frame(render, do_not_cancel_animation, force_update, requested_at_t = Date.now()) {
 
-                if(requested_at_t < s.lasts_raf_time && !do_not_cancel_animation) { return }
+                if(requested_at_t < s.lasts_raf_time && !do_not_cancel_animation && !force_update) { return }
 
                 let skip_frame_rate = s.is_mobile_or_tablet ? 27: 44;
 

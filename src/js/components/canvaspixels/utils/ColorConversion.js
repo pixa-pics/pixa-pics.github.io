@@ -64,11 +64,12 @@ const ColorConversion = {
 
                     let hsla = this.to_hsla_from_rgba(this.to_rgba_from_uint32(color_a));
                     hsla[2] = parseInt(hsla[2] >= 50 ? hsla[2]/2: hsla[2]*2);
+                    hsla[3] = Math.max(hsla[3], 100 * (amount/2));
                     color_b = this.to_uint32_from_rgba(this.to_rgba_from_hsla(hsla));
                 }
 
                 // If the second color is transparent, return transparent
-                if(should_return_transparent && color_b === 0 && amount === 1) { 0 }
+                if(should_return_transparent && color_b === 0 && amount === 1) { return 0 }
 
                 // Extract RGBA from both colors
                 const base = this.to_rgba_from_uint32(color_a);
@@ -95,7 +96,7 @@ const ColorConversion = {
                     const ao = ad3 / mi3;
                     const bo = ba3 * (1 - ad3) / mi3;
 
-                    mix.set(Array.of(
+                    mix.set(Uint8ClampedArray.of(
                         parseInt(added[0] * ao + base[0] * bo), // red
                         parseInt(added[1] * ao + base[1] * bo), // green
                         parseInt(added[2] * ao + base[2] * bo)

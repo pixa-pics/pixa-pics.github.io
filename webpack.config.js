@@ -82,7 +82,7 @@ module.exports = {
                         inline: true,
                         reduce_vars: true,
                         collapse_vars: true,
-                        passes: 9,
+                        passes: 3,
                     },
                     output: {
                         comments: false,
@@ -143,7 +143,7 @@ module.exports = {
                                     forceAllTransforms: true,
                                     shippedProposals: true,
                                     bugfixes: true,
-                                    useBuiltIns: "entry"
+                                    useBuiltIns: "usage"
                                 }],
                                 'stage-0'
                             ]

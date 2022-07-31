@@ -2,45 +2,30 @@ const SuperCanvas = {
 
     _create_state: function(c, pxl_width, pxl_height) {
 
+        if(!Boolean(c)) { c = document.createElement("canvas"); }
+        c.width = pxl_width;
+        c.height = pxl_height;
+        let cc2d = c.getContext('2d', {willReadFrequently: true, desynchronized: false});
+        cc2d.imageSmoothingEnabled = false;
+        cc2d.globalCompositeOperation = "copy";
+
         let occ2d;
         try {
-            occ2d = Object.assign(
-                new OffscreenCanvas(pxl_width, pxl_height).getContext("2d", {willReadFrequently: false, desynchronized: false}), {
-                    globalCompositeOperation: "source-over",
-                    imageSmoothingEnabled: false
-                });
+            occ2d = new OffscreenCanvas(pxl_width, pxl_height).getContext("2d", {willReadFrequently: true, desynchronized: true,});
         } catch (e) {
-            occ2d = Object.assign(
-                Object.assign( document.createElement("canvas"), {
-                    width: pxl_width,
-                    height: pxl_height
-                }).getContext("2d", {willReadFrequently: false, desynchronized: false}), {
-                    globalCompositeOperation: "source-over",
-                    imageSmoothingEnabled: false
-                });
+            let occ = document.createElement("canvas");
+            occ.width = pxl_width;
+            occ.height = pxl_height;
+            occ2d = occ.getContext("2d", {willReadFrequently: true, desynchronized: true});
         }
+        occ2d.imageSmoothingEnabled = false;
 
-        if(c === null) {
-
-            c = Object.assign(document.createElement("canvas"), {
-                    width: pxl_width,
-                    height: pxl_height
-                });
-        }
-
-        return Object.assign({}, {
-            // Compute properties
-            width: pxl_width,
-            height: pxl_height,
-            canvas_context2d: Object.assign( Object.assign( c, {
-                width: pxl_width,
-                height: pxl_height
-            }).getContext('2d', {desynchronized: false}), {
-                globalCompositeOperation: "copy",
-                imageSmoothingEnabled: false,
-            }),
+        return {
+            width: parseInt(pxl_width),
+            height: parseInt(pxl_height),
+            canvas_context2d: cc2d,
             offscreen_canvas_context2d: occ2d
-        });
+        };
     },
 
     from: function(c, pxl_width, pxl_height){
@@ -50,18 +35,23 @@ const SuperCanvas = {
 
         return {
             // Methods
-            clear_rect(x, y) {
-                s.offscreen_canvas_context2d.clearRect(0, 0, x, y);
-            },
             clear() {
                 s.offscreen_canvas_context2d.clearRect(0, 0, s.width, s.height);
             },
             render() {
 
+                s.canvas_context2d.globalCompositeOperation = "copy";
                 s.canvas_context2d.drawImage(s.offscreen_canvas_context2d.canvas, 0, 0);
             },
             draw_path_with_style(path, style) {
 
+                if(!style.endsWith("ff")){
+
+                    s.offscreen_canvas_context2d.globalCompositeOperation = "destination-out";
+                    s.offscreen_canvas_context2d.fillStyle = "#ffffffff";
+                    s.offscreen_canvas_context2d.fill(path);
+                }
+                s.offscreen_canvas_context2d.globalCompositeOperation = "source-over";
                 s.offscreen_canvas_context2d.fillStyle = style;
                 s.offscreen_canvas_context2d.fill(path);
             },
@@ -70,10 +60,6 @@ const SuperCanvas = {
                 if(s !== null) {
 
                     s = cs(s.canvas_context2d.canvas, w, h);
-                    return true;
-                }else {
-
-                    return false;
                 }
             },
             new(c, pxl_width, pxl_height) {
@@ -82,12 +68,8 @@ const SuperCanvas = {
             },
             destroy(callback_function) {
 
-                if(s !== null) {
-                    s.workerp.terminate(callback_function);
-                    s = null;
-                }else {
-                    callback_function("ok");
-                }
+                s = null;
+                callback_function("ok");
             },
         };
     }

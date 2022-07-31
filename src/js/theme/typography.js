@@ -1,48 +1,48 @@
 const typography = {
     h1: {
-        fontFamily: `"Jura"`
+        fontFamily: `"Baksheesh", "Jura"`
     },
     h2: {
-        fontFamily: `"Jura"`
+        fontFamily: `"Baksheesh", "Jura"`
     },
     h3: {
-        fontFamily: `"Jura"`
+        fontFamily: `"Baksheesh", "Jura"`
     },
     h4: {
-        fontFamily: `"Jura"`
+        fontFamily: `"Baksheesh", "Jura"`
     },
     h5: {
-        fontFamily: `"Jura"`
+        fontFamily: `"Baksheesh", "Jura"`
     },
     h6: {
-        fontFamily: `"Jura"`
+        fontFamily: `"Baksheesh", "Jura"`
     },
     subtitle1: {
-        fontFamily: `"Jura"`
+        fontFamily: `"Baksheesh", "Jura"`
     },
     subtitle2: {
-        fontFamily: `"Jura"`
+        fontFamily: `"Baksheesh", "Jura"`
     },
     body1: {
-        fontFamily: `"Jura"`
+        fontFamily: `"Baksheesh", "Jura"`
     },
     body2: {
-        fontFamily: `"Jura"`
+        fontFamily: `"Baksheesh", "Jura"`
     },
     button: {
-        fontFamily: `"Jura"`
+        fontFamily: `"Baksheesh", "Jura"`
     },
     caption: {
-        fontFamily: `"Jura"`
+        fontFamily: `"Baksheesh", "Jura"`
     },
     overline: {
-        fontFamily: `"Jura"`
+        fontFamily: `"Baksheesh", "Jura"`
     },
     text: {
-        fontFamily: `"Jura"`
+        fontFamily: `"Baksheesh", "Jura"`
     },
     label: {
-        fontFamily: `"Jura"`
+        fontFamily: `"Baksheesh", "Jura"`
     },
 }
 

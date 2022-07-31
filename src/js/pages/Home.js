@@ -333,7 +333,7 @@ class Home extends React.Component {
 
                 this.forceUpdate();
             });
-        }, 6000);
+        }, 12 * 1000);
 
         this.setState({_image_auto_interval, _button_interval});
     }

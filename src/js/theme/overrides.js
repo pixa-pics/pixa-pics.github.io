@@ -6,11 +6,11 @@ const overrides = {
                 overscrollBehavior: "none",
                 textRendering: "optimizespeed",
                 touchAction: "none",
-                fontFamily: `"Jura"`,
+                fontFamily: `"Baksheesh", "Jura"`,
                 height: "100%",
             },
             "body.loaded": {
-                fontFamily: `"Jura"`,
+                fontFamily: `"Baksheesh", "Jura"`,
                 fontSize: "auto !important",
                 position: "fixed",
                 overflow: "hidden",
