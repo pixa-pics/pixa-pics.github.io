@@ -33,6 +33,7 @@ import BorderBottomIcon from "../icons/BorderBottom";
 import BucketIcon from "../icons/Bucket";
 import SelectInvertIcon from "../icons/SelectInvert";
 import CopyIcon from "@material-ui/icons/FileCopy";
+import ChangeHistoryOutlined from "@material-ui/icons/ChangeHistoryOutlined";
 import CutIcon from "../icons/Cut";
 import EraserIcon from "../icons/Eraser";
 import MirrorIcon from "../icons/Mirror";
@@ -195,7 +196,10 @@ const styles = theme => ({
         '& div .react-swipeable-view-container > div': {
             overflow: "initial !important",
             alignItems: "normal",
-            contain: "size style !important"
+            contain: "size style !important",
+            [theme.breakpoints.up("lg")]: {
+                height: "16px",
+            },
         },
         '& div .react-swipeable-view-container > div[aria-hidden=true]': {
             overflow: "hidden !important",
@@ -363,7 +367,7 @@ const styles = theme => ({
             right: 88,
         },
     },
-    undoButton: {
+    redoButton: {
         position: "absolute",
         right: 496,
         bottom: 60,
@@ -372,7 +376,7 @@ const styles = theme => ({
             bottom: 132,
         },
     },
-    redoButton: {
+    undoButton: {
         position: "absolute",
         right: 496,
         bottom: 16,
@@ -402,8 +406,8 @@ class Pixel extends React.Component {
             _canvas: null,
             _loading: false,
             _loading_process: "",
-            _can_undo: false,
-            _can_redo: false,
+            _can_undo: 0,
+            _can_redo: 0,
             _current_color: "#ffffffff",
             _second_color: "#000000ff",
             _pxl_current_opacity: 1,
@@ -2219,9 +2223,8 @@ class Pixel extends React.Component {
                                 onCurrentColorChange={this._handle_current_color_change}
                                 onSomethingSelectedChange={this._handle_something_selected_change}
                                 onImageImportModeChange={this._handle_image_import_mode_change}
-                                on_fps_change={!is_mobile_or_tablet ? this._handle_fps_change: null}
-                                on_elevation_change={!is_mobile_or_tablet ? this._handle_elevation_change: null}
-                                onPositionChange={!is_mobile_or_tablet ? this._handle_position_change: null}
+                                on_fps_change={this._handle_fps_change}
+                                onPositionChange={this._handle_position_change}
                                 onLayersChange={this._handle_layers_change}
                                 onFiltersThumbnailChange={this._handle_filters_thumbnail_change}
                                 onGameEnd={this._handle_game_end}
@@ -2397,8 +2400,12 @@ class Pixel extends React.Component {
                    <FileImportIcon/>
                 </IconButton>
 
-                <Button disabled={!_can_undo} variant={"text"} color={"primary"} size={"small"} className={classes.undoButton} onClick={(event) => {_canvas.undo()}}>Undo</Button>
-                <Button disabled={!_can_redo} variant={"text"} color={"primary"} size={"small"}className={classes.redoButton} onClick={(event) => {_canvas.redo()}}>Redo</Button>
+                <Button disabled={!_can_redo} variant={"text"} color={"primary"} size={"small"}className={classes.redoButton} onClick={(event) => {_canvas.redo()}}>
+                    {`${-_can_redo || ""} Redo`} <ChangeHistoryOutlined style={{transition: "ease-out 225ms transform 25m", transform: `rotate(+${_can_redo*360+90}deg)`}}/>
+                </Button>
+                <Button disabled={!_can_undo} variant={"text"} color={"primary"} size={"small"} className={classes.undoButton} onClick={(event) => {_canvas.undo()}}>
+                    <ChangeHistoryOutlined style={{transition: "ease-out 225ms transform 25ms", transform: `rotate(-${_can_undo*360+90}deg)`}}/>{`${+_can_undo || ""} Undo`}
+                </Button>
 
                 {drawer_mobile}
 

@@ -528,6 +528,7 @@ const CanvasPos = {
                 const {canvas_event_target} = this.get_state();
                 const pointer_state = this.get_pointer_state();
                 let {
+                    latest_pointers_distance,
                     latest_pointers_client_x_center,
                     latest_pointers_client_y_center,
                     previous_single_pointer_down_timestamp,
@@ -548,6 +549,7 @@ const CanvasPos = {
                     pointer_events,
                     mouse_down: mouse_down,
                     event_button: parseInt(event.button),
+                    latest_pointers_distance: two_pointer ? 0: parseFloat(latest_pointers_distance),
                     previous_single_pointer_down_timestamp: parseInt(previous_single_pointer_down_timestamp),
                     previous_double_pointer_down_timestamp: parseInt(previous_double_pointer_down_timestamp),
                     latest_pointers_client_x_center: parseInt(event.clientX),
@@ -575,7 +577,6 @@ const CanvasPos = {
                 const {canvas_event_target} = this.get_state();
                 let {
                     pointer_events,
-                    latest_pointers_distance,
                     latest_pointers_client_x_center,
                     latest_pointers_client_y_center,
                 } = this.get_pointer_state();
@@ -592,7 +593,6 @@ const CanvasPos = {
                 this.set_pointer_state({
                     pointer_events: pointer_events,
                     mouse_down: Boolean(pointer_events.size !== 0),
-                    latest_pointers_distance: parseInt(latest_pointers_distance),
                     latest_pointers_client_x_center: parseInt(latest_pointers_client_x_center),
                     latest_pointers_client_y_center: parseInt(latest_pointers_client_y_center),
                 });
@@ -649,11 +649,11 @@ const CanvasPos = {
                     const move_x = latest_pointers_client_x_center > 0 ? latest_pointers_client_x_center - client_x_center: 0;
                     const move_y = latest_pointers_client_y_center > 0 ? latest_pointers_client_y_center - client_y_center: 0;
 
-                    const of = latest_pointers_distance > 0 ? anchor_diff / latest_pointers_distance : 1;
+                    const of = Boolean(latest_pointers_distance > 0) ? parseFloat(anchor_diff / latest_pointers_distance) : 1;
 
                     const pointer_state_object = {
                         pointer_events,
-                        latest_pointers_distance: parseInt(anchor_diff),
+                        latest_pointers_distance: parseFloat(anchor_diff),
                         latest_pointers_client_x_center: parseInt(client_x_center),
                         latest_pointers_client_y_center: parseInt(client_y_center),
                         previous_double_pointer_move_timestamp: Date.now(),
@@ -671,7 +671,6 @@ const CanvasPos = {
 
                     const pointer_state_object = {
                         pointer_events,
-                        latest_pointers_distance: parseInt(latest_pointers_distance),
                         latest_pointers_client_x_center: parseInt(event.clientX),
                         latest_pointers_client_y_center: parseInt(event.clientY),
                         previous_double_pointer_move_timestamp: parseInt(previous_double_pointer_move_timestamp),

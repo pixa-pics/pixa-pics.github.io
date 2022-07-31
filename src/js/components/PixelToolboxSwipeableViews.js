@@ -1,6 +1,27 @@
 import React from "react";
 
-import {withStyles, Avatar, List, ListItem, ListItemAvatar, ListItemIcon, LinearProgress, ListItemText, ListSubheader, Typography, Slider, RadioGroup, Radio, FormLabel, Collapse, Divider, FormControlLabel, Button, Menu} from "@material-ui/core";
+import {
+    withStyles,
+    Avatar,
+    List,
+    ListItem,
+    ListItemAvatar,
+    ListItemIcon,
+    LinearProgress,
+    ListItemText,
+    ListSubheader,
+    Typography,
+    Slider,
+    RadioGroup,
+    Radio,
+    FormLabel,
+    Collapse,
+    Divider,
+    FormControlLabel,
+    Button,
+    Menu,
+    CardContent
+} from "@material-ui/core";
 
 import {HISTORY} from "../utils/constants";
 
@@ -76,9 +97,10 @@ const styles = theme => ({
     listSubHeader: {
         width: "100%",
         alignSelf: "flex-start",
+        boxShadow: "inset 0px 3px 6px #050c4c22",
         color: "#3729c1",
         fontWeight: "bold",
-        backgroundColor: "#eee",
+        backgroundColor: "#ededff",
         textTransform: "uppercase",
         "& span svg": {
             verticalAlign: "middle",
@@ -135,6 +157,7 @@ const styles = theme => ({
         alignContent: "stretch",
         flexDirection: "row",
         justifyContent: "flex-start",
+        marginBottom: "-20px",
         width: "100%",
         maxWidth: "100%",
         overflowX: "scroll",
@@ -321,7 +344,7 @@ class PixelToolboxSwipeableViews extends React.Component {
             is_something_selected !== new_props.is_something_selected ||
             import_size !== new_props.import_size ||
             import_colorize !== new_props.import_colorize ||
-            parseInt(Math.round(parseFloat(filters_preview_progression / 3) * 3)) !== parseInt(Math.round(parseFloat(new_props.filters_preview_progression / 3) * 3))
+            Math.round(parseFloat(filters_preview_progression * 7) / 7) !== Math.round(parseFloat(new_props.filters_preview_progression * 7) / 7)
         )) {
 
             if(_filters_changed) {
@@ -1346,7 +1369,7 @@ class PixelToolboxSwipeableViews extends React.Component {
 
                         const f = filters_thumbnail.get(name) || "";
                         return {
-                            icon: <Avatar className={"speed"} style={{width: "100px", height: `${parseInt(100/_filter_ar_on_one)}px`, filter: `opacity(${String(Boolean(f.length === 0 && name_index !== 0) ? "0.5": "1.0")})`, webkitFilter: `opacity(${String(Boolean(f.length === 0 && name_index !== 0) ? "0.5": "1.0")})`, border: "4px solid #020529", contain: "paint style size"}} key={String(Boolean(f.length > 0) ? String(name+"-loaded-"+_filter_ar_on_one): String(name+"-loading-"+_filter_ar_on_one)) + String("-preview-" + last_filters_hash)} variant={"rounded"} src={String(f.length > 0 ? f: filters_thumbnail.get(filters[0]))} />,
+                            icon: <Avatar className={"speed"} style={{width: "100px", height: `${parseInt(100/_filter_ar_on_one)}px`, filter: `${String(Boolean(f.length === 0 && name_index !== 0) ? "drop-shadow(0px 1px 2px #02052944) opacity(0.5)": "drop-shadow(0px 1px 2px #020529bb) opacity(1.0)")}`, webkitFilter: `${String(Boolean(f.length === 0 && name_index !== 0) ? "drop-shadow(0px 1px 2px #02052944) opacity(0.5)": "drop-shadow(0px 1px 2px #020529bb) opacity(1.0)")}`, border: "4px solid #020529", contain: "paint style size"}} key={String(Boolean(f.length > 0) ? String(name+"-loaded-"+_filter_ar_on_one): String(name+"-loading-"+_filter_ar_on_one)) + String("-preview-" + last_filters_hash)} variant={"rounded"} src={String(f.length > 0 ? f: filters_thumbnail.get(filters[0]))} />,
                             text: name,
                             on_click: () => {
                                 canvas.to_filter(name, slider_value);
@@ -1764,6 +1787,16 @@ class PixelToolboxSwipeableViews extends React.Component {
                                         : null
                                 }
 
+                                <div style={{
+                                    padding: "8px 24px",
+                                    position: "relative",
+                                    overflow: "hidden",
+                                    boxSizing: "border-box",
+                                    width: "100%"
+                                }}>
+                                    <h4>INTERESTED INTO SPONSORING? Please email-us at: <a style={{color: "#3729c1"}} href={"mailto:pixa.pics@protonmail.com"}>pixa.pics@protonmail.com</a>.</h4>
+                                    <h3>Thanks for support!</h3>
+                                </div>
                             </List>
                         );
                     })

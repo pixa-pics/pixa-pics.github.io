@@ -3281,7 +3281,6 @@ class CanvasPixels extends React.Component {
                 _is_there_new_dimension,
                 _shape_index_a,
                 _select_shape_index_a,
-                pxl_current_color,
                 pxl_current_opacity,
                 _pxl_indexes_of_selection,
                 _pxl_indexes_of_selection_drawn,
@@ -3290,6 +3289,7 @@ class CanvasPixels extends React.Component {
                 _old_selection_pair_highlight,
                 _pxl_indexes_of_old_shape
             } = this.st4te;
+            const pxl_current_color = this.color_conversion.to_uint32_from_hex(this.color_conversion.format_hex_color(this.st4te.pxl_current_color));
 
 
             let {
@@ -3644,7 +3644,8 @@ class CanvasPixels extends React.Component {
 
         if(this.st4te._last_action_timestamp + 2500 < Date.now() || force){
 
-            const previous_state = this.st4te._json_state_history.state_history[this.st4te._json_state_history.history_position] || this.st4te._json_state_history.state_history[0] || null;
+            const previous_history_position = parseInt(this.st4te._json_state_history.history_position) || 0;
+            const previous_state = this.st4te._json_state_history.state_history[previous_history_position] || this.st4te._json_state_history.state_history[0] || null;
             this._notify_layers_and_compute_thumbnails_change((layers, layer_index, layers_length, layers_changed, layers_hash, current_state) => {
 
                 let {_json_state_history, _state_history_length } = this.st4te;
@@ -3669,26 +3670,29 @@ class CanvasPixels extends React.Component {
 
                 }else if(layers_changed){
 
-
+                    const current_history_position = parseInt(_json_state_history.history_position) || 0;
                     if(previous_state._layers.map(function(l){return l.hash}).join("+") !== current_state._layers.map(function(l){return l.hash}).join("+")) {
 
-                        // An action must have been performed and the last action must be older of 1 sec
-                        if(_json_state_history.history_position < _json_state_history.state_history.length-1) {
+                        if(Math.abs(current_history_position - previous_history_position) <= 1) {
 
-                            _json_state_history.state_history.splice(parseInt(_json_state_history.history_position+1));
+                            // An action must have been performed and the last action must be older of 1 sec
+                            if(_json_state_history.history_position < _json_state_history.state_history.length-1) {
+
+                                _json_state_history.state_history.splice(parseInt(_json_state_history.history_position+1));
+                            }
+
+                            _json_state_history.previous_history_position = parseInt(_json_state_history.history_position);
+                            if(_json_state_history.state_history.length-1 > _state_history_length) {
+
+                                _json_state_history.state_history.shift();
+                                _json_state_history.state_history.push(current_state);
+                            }else {
+
+                                _json_state_history.state_history.push(current_state);
+                            }
+
+                            _json_state_history.history_position = parseInt(_json_state_history.state_history.length-1);
                         }
-
-                        _json_state_history.previous_history_position = parseInt(_json_state_history.history_position);
-                        if(_json_state_history.state_history.length-1 > _state_history_length) {
-
-                            _json_state_history.state_history.shift();
-                            _json_state_history.state_history.push(current_state);
-                        }else {
-
-                            _json_state_history.state_history.push(current_state);
-                        }
-
-                        _json_state_history.history_position = parseInt(_json_state_history.state_history.length-1);
 
                         this.setSt4te({_json_state_history, _saved_json_state_history_timestamp_from_drawing: Date.now()}, () => {
 
@@ -3934,7 +3938,7 @@ class CanvasPixels extends React.Component {
             _json_state_history = this.st4te._json_state_history;
         }
 
-        return Boolean(_json_state_history.history_position >= 1);
+        return parseInt(_json_state_history.history_position);
     };
 
     undo = () => {
@@ -3960,7 +3964,7 @@ class CanvasPixels extends React.Component {
                     this.super_canvas.set_dimensions(pxl_width, pxl_height);
                     this.canvas_pos.set_current_scale_default();
                 }
-                this.setSt4te(Object.assign({}, {
+                this.setSt4te({
                     _id: String(_id),
                     pxl_width: parseInt(pxl_width),
                     pxl_height: parseInt(pxl_height),
@@ -3982,7 +3986,8 @@ class CanvasPixels extends React.Component {
                     _json_state_history: _json_state_history,
                     _is_there_new_dimension: has_new_dimension,
                     has_shown_canvas_once: !has_new_dimension,
-                }), () => {
+                    _last_action_timestamp: Date.now(),
+                }, () => {
 
                     this._notify_is_something_selected();
                     this._notify_can_undo_redo_change(_json_state_history);
@@ -3999,7 +4004,7 @@ class CanvasPixels extends React.Component {
             _json_state_history = this.st4te._json_state_history;
         }
 
-        return Boolean(_json_state_history.state_history.length - 1 > _json_state_history.history_position);
+        return parseInt(_json_state_history.state_history.length - parseInt(_json_state_history.history_position+1));
     }
 
     redo = () => {
@@ -4031,7 +4036,7 @@ class CanvasPixels extends React.Component {
                     this.canvas_pos.set_current_scale_default();
                 }
 
-                this.setSt4te(Object.assign({}, {
+                this.setSt4te({
                     _id: String(_id),
                     pxl_width: parseInt(pxl_width),
                     pxl_height: parseInt(pxl_height),
@@ -4053,7 +4058,8 @@ class CanvasPixels extends React.Component {
                     _json_state_history: _json_state_history,
                     _is_there_new_dimension: has_new_dimension,
                     has_shown_canvas_once: !has_new_dimension,
-                }), () => {
+                    _last_action_timestamp: Date.now(),
+                }, () => {
 
                     this._update_canvas();
                     this._notify_is_something_selected();
@@ -4065,7 +4071,7 @@ class CanvasPixels extends React.Component {
 
     to_selection_border = () => {
 
-        const { _s_pxls, pxl_width, pxl_height, _pxl_indexes_of_selection, _s_pxl_colors, _layer_index, pxl_current_opacity } = this.st4te;
+        const { _s_pxls,  _pxl_indexes_of_selection, _s_pxl_colors, _layer_index, pxl_current_opacity } = this.st4te;
         const pxl_current_color = this.color_conversion.to_uint32_from_hex(this.color_conversion.format_hex_color(this.st4te.pxl_current_color));
 
         let pxls = Array.from(_s_pxls[_layer_index]);
@@ -4102,12 +4108,13 @@ class CanvasPixels extends React.Component {
 
     to_selection_bucket = () => {
 
-        const { _s_pxls, pxl_width, pxl_height, _pxl_indexes_of_selection, _s_pxl_colors, _layer_index, pxl_current_color, pxl_current_opacity } = this.st4te;
+        const { _s_pxls, _pxl_indexes_of_selection, _s_pxl_colors, _layer_index, pxl_current_opacity } = this.st4te;
+        const pxl_current_color = this.color_conversion.to_uint32_from_hex(this.color_conversion.format_hex_color(this.st4te.pxl_current_color));
 
         let pxls = Array.from(_s_pxls[_layer_index]);
         let pxl_colors = Array.from(_s_pxl_colors[_layer_index])
 
-        pxl_indexes_of_selection.forEach((pxl_index) => {
+        _pxl_indexes_of_selection.forEach((pxl_index) => {
 
             const current_pxl_color_index = pxls[pxl_index];
             const current_pxl_color = pxl_colors[current_pxl_color_index];
