@@ -321,7 +321,7 @@ class PixelToolboxSwipeableViews extends React.Component {
             is_something_selected !== new_props.is_something_selected ||
             import_size !== new_props.import_size ||
             import_colorize !== new_props.import_colorize ||
-            parseInt(Math.round(parseFloat(filters_preview_progression / 5) * 5)) !== parseInt(Math.round(parseFloat(new_props.filters_preview_progression / 5) * 5))
+            parseInt(Math.round(parseFloat(filters_preview_progression / 3) * 3)) !== parseInt(Math.round(parseFloat(new_props.filters_preview_progression / 3) * 3))
         )) {
 
             if(_filters_changed) {

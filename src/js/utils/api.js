@@ -28,7 +28,7 @@ const init = (callback_function = function(){}) => {
 
             PouchDB.plugin(PouchDB_memory);
             PouchDB.plugin(PouchDB_IDB);
-            window.settings_db = new PouchDB("settings_db", {adapter: "idb", view_adapter: "memory", deterministic_revs: false, revs_limit: 0});
+            window.settings_db = new PouchDB("settings_db", {adapter: "idb", view_adapter: "memory", deterministic_revs: true, revs_limit: 1});
             callback_function();
         }
 
@@ -338,21 +338,21 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
 
                                             if(!err) {
 
-                                                if(callback_function_info !== null) {
-
-                                                    callback_function_info(null, _merge_object({}, window._pixa_settings));
-                                                }
-
                                                 if(settings_docs.length > 0) {
 
                                                     // Delete all others
                                                     Promise.allSettled(settings_docs.map((p) => {
 
                                                         return window.settings_db.put(p, {force: true});
-                                                    })).then(() => {
+                                                    })).finally(() => {
 
                                                         window.settings_db.compact();
                                                     });
+
+                                                    if(callback_function_info !== null) {
+
+                                                        callback_function_info(null, _merge_object({}, window._pixa_settings));
+                                                    }
                                                 }
                                             }else {
 
@@ -380,21 +380,21 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
 
                                 if(!err) {
 
-                                    if(callback_function_info !== null) {
-
-                                        callback_function_info(null, _merge_object({}, window._pixa_settings));
-                                    }
-
                                     if(settings_docs.length > 0) {
 
                                         // Delete all others
                                         Promise.allSettled(settings_docs.map((p) => {
 
                                             return window.settings_db.put(p, {force: true});
-                                        })).then(() => {
+                                        })).finally(() => {
 
                                             window.settings_db.compact();
                                         });
+                                    }
+
+                                    if(callback_function_info !== null) {
+
+                                        callback_function_info(null, _merge_object({}, window._pixa_settings));
                                     }
 
                                 }else {
@@ -419,10 +419,6 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
                         }, {force: true}, (err) => {
 
                             if(!err) {
-                                if(callback_function_info !== null) {
-
-                                    callback_function_info(null, _merge_object({}, window._pixa_settings));
-                                }
 
                                 if(settings_docs.length > 0) {
 
@@ -430,11 +426,17 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
                                     Promise.allSettled(settings_docs.map((p) => {
 
                                         return window.settings_db.put(p, {force: true});
-                                    })).then(() => {
+                                    })).finally(() => {
 
                                         window.settings_db.compact();
                                     });
                                 }
+
+                                if(callback_function_info !== null) {
+
+                                    callback_function_info(null, _merge_object({}, window._pixa_settings));
+                                }
+
                             }else {
 
                                 if(callback_function_info !== null) {
