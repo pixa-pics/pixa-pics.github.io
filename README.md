@@ -3,6 +3,16 @@
 **This is PIXAAAAA!** - Awesome pixel art editor made with material design guideline trends and awesome web technologies!
 *100% visionary in privacy concerns/critics and against detractors with its development force that legally stands bold against those mightily neglecting privacy in their online-self (image).*
 
+## We do :
+ * Defend the freedom of expression, communication, education; respect the privacy of citizens and civil rights in general.
+ * Defend the free flow of ideas, knowledge and culture.
+ * Support the reform of copyright and patent laws.
+ * Have a commitment to work collaboratively, and participate with maximum transparency.
+ * Use free software and open source software, open-source hardware, DIY and open protocols whenever possible.
+Politically defend an open, participative and collaborative construction of any public policy.
+
+> We also supports free speech, anti-corruption and net neutrality.
+
 ![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/doc/screenshots/home_page_view_dark.png?v=1)
 ![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/doc/screenshots/editor_view_mobile.png?v=1)
 
