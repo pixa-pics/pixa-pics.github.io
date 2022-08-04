@@ -1,5 +1,8 @@
 # PIXA.PICS 
 
+![](https://steemitimages.com/300x300/https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/logo-transparent.png)
+![](https://steemitimages.com/300x300/https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/PIXAPICS-2Y9EeTV9vJL_RAS_12x.png)
+
 ## Introduction
 
 Pixa Pics stands in favor of the freedom of expression, communication, education; respect for the privacy of citizens and civil rights in general. We defend the free flow of ideas, knowledge and culture as the software is completely free and open-source. 
