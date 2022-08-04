@@ -1,17 +1,13 @@
 # PIXA.PICS 
 
-**This is PIXAAAAA!** - Awesome pixel art editor made with material design guideline trends and awesome web technologies!
-*100% visionary in privacy concerns/critics and against detractors with its development force that legally stands bold against those mightily neglecting privacy in their online-self (image).*
+Pixa Pics stands in favor of the freedom of expression, communication, education; respect for the privacy of citizens and civil rights in general. We defend the free flow of ideas, knowledge and culture as the software is completely free and open-source. 
 
-## We do :
- * Defend the freedom of expression, communication, education; respect the privacy of citizens and civil rights in general.
- * Defend the free flow of ideas, knowledge and culture.
- * Support the reform of copyright and patent laws.
- * Have a commitment to work collaboratively, and participate with maximum transparency.
- * Use free software and open source software, open-source hardware, DIY and open protocols whenever possible.
-Politically defend an open, participative and collaborative construction of any public policy.
+As a team we have a commitment to work collaboratively, and participate with maximum transparency and thus lastly, we also supports free speech, anti-corruption and net neutrality facing it with the swords of code we are forging to improve the third web’s major update.
 
-> We also supports free speech, anti-corruption and net neutrality.
+So what does it performs?
+
+
+This is PIXAAAAA! An awesome pixel art editor made with material design guideline trends and awesome web technologies! 100% visionary in privacy concerns/critics and against detractors with its development that has enabled to show an online-self (image) within a minimalistic version of an high definition image (minima-art), to which, looks like pixel art throughout an automatic resize and color quantization, and then to up-scale it way beyond Full HD through an algorithm that makes it happens to make it looking like a painting, while it will generate an infinite SVG and 6x bigger PNG version of the minima-art.
 
 ![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/doc/screenshots/home_page_view_dark.png?v=1)
 ![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/doc/screenshots/editor_view_mobile.png?v=1)
