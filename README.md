@@ -9,6 +9,12 @@ So what does it performs?
 
 This is PIXAAAAA! An awesome pixel art editor made with material design guideline trends and awesome web technologies! 100% visionary in privacy concerns/critics and against detractors with its development that has enabled to show an online-self (image) within a minimalistic version of an high definition image (minima-art), to which, looks like pixel art throughout an automatic resize and color quantization, and then to up-scale it way beyond Full HD through an algorithm that makes it happens to make it looking like a painting, while it will generate an infinite SVG and 6x bigger PNG version of the minima-art.
 
+ * **Protect images.**
+ * **Sanitizing private data before processing it remotely.**
+ * **Staying on the front line of dropping cost as it is a FOSS.**
+ * **Getting to openly fight what misses being just great, while boring good exists.** 
+ * **Staying modern without paying anything for useless and toxic ultra-simplification tools.**
+
 ![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/doc/screenshots/home_page_view_dark.png?v=1)
 ![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/doc/screenshots/editor_view_mobile.png?v=1)
 
@@ -17,22 +23,8 @@ This is PIXAAAAA! An awesome pixel art editor made with material design guidelin
 ![](https://img.shields.io/badge/Maintained%3F-yes-green.svg)
 ![](https://img.shields.io/website-up-down-green-red/http/pixa.pics)
 
-# The challenges of first-class active protection for the preservation of identity
-
-**What was foreseen by the agent of public order and general justice in 2008 in Switzerland against chaos and negativity regarding Internet potential about one's image.** 
 
 > The use of social networking sites should be governed by the same principles as use of the Internet in general. As little personal information as possible should be divulged. The information should be well protected and only made accessible to clearly defined persons. Ultimately, the responsibility lies with each individual Internet user. Prior to publication, everyone should think and decide for themselves which personal data to publish on the Internet, thereby making it available to the public for an indeterminate time period.  — Semi-annual report of 2008, *Federal Strategic Unit for IT (FSUIT) - Federal Office of Police fedpol (Swiss Confederation). 🇨🇭*
-
-**Very interesting for pixa.pics as truth forcefully let it being so representing it again, one hating crime before any will to show supports of any laws without fair questioning doing unrighteousness changes on other people's life and true will.**
-
-# The benefits of transparency and integrity of shared knowledge
-
- * **Protect images.**
- * **Sanitizing private data before processing it remotely.**
- * **Staying on the front line of dropping cost as it is a FOSS.**
- * **Getting to openly fight what misses being just great, while boring good exists.** 
- * **Staying modern without paying anything for useless and toxic ultra-simplification tools.**
-
 
 # Special features
 
