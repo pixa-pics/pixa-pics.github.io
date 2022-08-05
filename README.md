@@ -1,18 +1,17 @@
 # PIXA.PICS 
 
 ![](https://steemitimages.com/300x300/https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/logo-transparent.png)
-![](https://steemitimages.com/300x300/https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/PIXAPICS-2Y9EeTV9vJL_RAS_12x.png)
 
-## Introduction
+## Tomorrow is knocking!
 
-Pixa Pics stands in favor of the freedom of expression, communication, education; respect for the privacy of citizens and civil rights in general. We defend the free flow of ideas, knowledge and culture as the software is completely free and open-source. 
+Pixa Pics stands in favor of the freedom of expression, communication, education; **respect for the privacy of citizens and civil rights in general**. We defend the free flow of ideas, knowledge and culture as the software is completely free and open-source. 
 
-As a team we have a commitment to work collaboratively, and participate with maximum transparency and thus lastly, we also supports free speech, anti-corruption and net neutrality facing it with the swords of code we are forging to improve the third web’s major update.
+As a team we have a commitment to work collaboratively, and participate with maximum transparency and thus lastly, we also supports free speech, anti-corruption and net neutrality facing it with **the swords of code we are forging to improve the third web’s major update.**
 
 ## What does it performs?
 
 
-This is PIXAAAAA! An awesome pixel art editor made with material design guideline trends and awesome web technologies! 100% visionary in privacy concerns/critics and against detractors with its development that has enabled to show an online-self (image) within a minimalistic version of an high definition image (minima-art), to which, looks like pixel art throughout an automatic resize and color quantization, and then to up-scale it way beyond Full HD through an algorithm that makes it happens to make it looking like a painting, while it will generate an infinite SVG and 6x bigger PNG version of the minima-art.
+ > This is PIXAAAAA! An awesome pixel art editor made with material design guideline trends and awesome web technologies! 100% visionary in privacy concerns/critics and against detractors with its development that has enabled to show an online-self (image) within a minimalistic version of an high definition image (minima-art), to which, looks like pixel art throughout an automatic resize and color quantization, and then to up-scale it way beyond Full HD through an algorithm that makes it happens to make it looking like a painting, while it will generate an infinite SVG and 6x bigger PNG version of the minima-art.
 
  * **Protect images.**
  * **Sanitizing private data before processing it remotely.**
