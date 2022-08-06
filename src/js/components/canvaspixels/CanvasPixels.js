@@ -34,7 +34,6 @@ import SuperCanvas from "../canvaspixels/utils/SuperCanvas";
 import ColorConversion from "../canvaspixels/utils/ColorConversion";
 import SmartRequestAnimationFrame from "../canvaspixels/utils/SmartRequestAnimationFrame";
 import XXHash from "../canvaspixels/utils/XXHash";
-const xxhash = Object.create(XXHash).new();
 import CanvasPos from "../canvaspixels/utils/CanvasPos"
 
 class CanvasPixels extends React.Component {
@@ -112,7 +111,7 @@ class CanvasPixels extends React.Component {
             _undo_buffer_time_ms: parseInt(parseInt(props.pxl_width || 32) + parseInt(props.pxl_height || 32) + 1000),
             _mouse_inside: false,
             _paint_hover_old_pxls_snapshot: new Array((props.pxl_width || 32) * (props.pxl_height || 32)).fill(0),
-            _select_hover_old_pxls_snapshot: [],
+            _select_hover_old_pxls_snapshot: new Array(),
             _paint_or_select_hover_actions_latest_index: -1,
             _paint_or_select_hover_pxl_indexes: new Set(),
             _paint_or_select_hover_pxl_indexes_exception: new Set(),
@@ -142,13 +141,6 @@ class CanvasPixels extends React.Component {
             _previous_image_imported_resizer_index: -1,
             _selection_pair_highlight: true,
             _old_selection_pair_highlight: true,
-            _pointer_events: [],
-            _latest_pointers_distance: 0,
-            _latest_pointers_client_x_center: 0,
-            _latest_pointers_client_y_center: 0,
-            _previous_single_pointer_down_timestamp: 0,
-            _previous_double_pointer_down_timestamp: 0,
-            _previous_double_pointer_move_timestamp: 0,
             _image_move_from: [-1, -1],
             _updated_at: Date.now(),
             _notified_position_at: 0,
@@ -157,12 +149,11 @@ class CanvasPixels extends React.Component {
             _loading_base64_img_changed: 0,
             _intervals: [],
             _kb: 0,
-            _device_motion: true,
             export_state_every_ms: props.export_state_every_ms || 60 * 1000,
             _last_filters_hash: "",
         };
         if(!this.hasnt_been_mount) {
-            this.xxhash = xxhash;
+            this.xxhash = Object.create(XXHash).new();
             this.color_conversion = Object.create(ColorConversion).new();
             this.super_canvas = Object.create(SuperCanvas).from(null, 32, 32);
             this.canvas_pos = Object.create(CanvasPos).from(32,  32,  0.9,  32, 0, 0);
@@ -193,7 +184,7 @@ class CanvasPixels extends React.Component {
 
         let _intervals = [];
 
-        _intervals[0] = setInterval(this._maybe_save_state, parseInt(2500));
+        _intervals[0] = setInterval(this._maybe_save_state, parseInt(750));
 
         _intervals[1] = setInterval(this._maybe_update_mine_player, 1000 / 30);
 
@@ -836,48 +827,31 @@ class CanvasPixels extends React.Component {
         }
     };
 
-    _notify_layers_and_compute_thumbnails_change = (callback_function = null, start = Date.now(), layers_index_changed = false) => {
+    _notify_layers_and_compute_thumbnails_change = (callback_function = null, start = Date.now()) => {
 
-        const maybe_set_layers = (lyrs, lyrs_index, lyrs_length, lyrs_changed, lyrs_hash, current_state) => {
+        const maybe_set_layers = (lyrs, lyrs_index, lyrs_changed, current_state) => {
 
             if(lyrs_changed) {
 
-                current_state._layers = lyrs.map(function(l) {
-                    return {
-                        id: parseInt(l.id),
-                        hash: String(l.hash),
-                        name: String(l.name),
-                        hidden: Boolean(l.hidden),
-                        opacity: parseInt(l.opacity),
-                    };
-                });
+                current_state._layers = lyrs;
 
                 this.setSt4te({_layers: lyrs, _layers_defined_at: Date.now()}, () => {
 
                     if(callback_function !== null) {
 
-                        callback_function(lyrs, lyrs_index, lyrs_length, lyrs_changed, lyrs_hash, current_state);
+                        callback_function(lyrs, lyrs_index, lyrs_changed, current_state);
                     }
                 });
             }else {
 
                 if(callback_function !== null) {
 
-                    callback_function(lyrs, lyrs_length, lyrs_changed, lyrs_hash, current_state);
+                    callback_function(lyrs, lyrs_index, lyrs_changed, current_state);
                 }
             }
         }
 
         const { _id, _layers, pxl_width, pxl_height, _s_pxls, _s_pxl_colors,  _original_image_index, _layer_index, _pxl_indexes_of_selection, _pencil_mirror_index } = this.st4te;
-
-        if(!Boolean(_s_pxls.length === _s_pxl_colors.length && _s_pxl_colors.length === _layers.length)) {
-
-            setTimeout(() => {
-
-                this._notify_layers_and_compute_thumbnails_change(callback_function, start, layers_index_changed);
-            }, 20);
-            return false;
-        }
 
         let current_state = Object.assign({}, {
             _id: String(_id),
@@ -891,17 +865,19 @@ class CanvasPixels extends React.Component {
                     name: String(l.name),
                     hidden: Boolean(l.hidden),
                     opacity: parseInt(l.opacity),
+                    thumbnail: String(l.thumbnail)
                 };
             }),
             _layer_index: parseInt(_layer_index),
-            _s_pxls: _s_pxls.map((a) => Array.from(a)),
-            _s_pxl_colors: _s_pxl_colors.map((a) => Uint32Array.from(a)),
+            _s_pxls: Array.from(_s_pxls),
+            _s_pxl_colors: Array.from(_s_pxl_colors),
             _pxl_indexes_of_selection: new Set(_pxl_indexes_of_selection),
             _pencil_mirror_index: parseInt(_pencil_mirror_index),
         });
 
         let all_layers = [];
         let all_layers_length = 0;
+        let has_changed = false;
 
         for(let index = 0; index < current_state._layers.length; index++){
 
@@ -909,9 +885,14 @@ class CanvasPixels extends React.Component {
             all_layers[index] = Object.assign({}, l);
             const p = current_state._s_pxls[index];
             const pc = current_state._s_pxl_colors[index];
-            const hash = String(this.xxhash.base58_that(Uint32Array.from(p)) + this.xxhash.base58_that(Uint32Array.from(pc)));
+            const hash = this.xxhash.base58_that(Uint32Array.from(p.map(pci => pc[pci])));
 
-            if(hash !== all_layers[index].hash  || !Boolean(all_layers[index].thumbnail)) {
+            if(hash !== l.hash || !Boolean(l.thumbnail.length)) {
+
+                if(hash !== l.hash) {
+
+                    has_changed = true;
+                }
 
                 this.get_layer_base64_png_data_url(pxl_width, pxl_height, p, pc, (result) => {
 
@@ -923,9 +904,7 @@ class CanvasPixels extends React.Component {
 
                     if(all_layers_length === current_state._layers.length) {
 
-                        const all_new_layers_hash = all_layers.map((l) => {return l.hash || ""}).join("+");
-                        const has_changed = Boolean(layers_index_changed || String(current_state._layers.map((l) => {return l.hash || ""}).join("+") + current_state._layers.map((l) => {return l.id.toString() + String(l.hidden ? "hidden": "visible") + l.opacity.toString()}).join("-")) !== String(all_layers.map((l) => {return l.hash || ""}).join("+") + all_layers.map((l) => {return l.id.toString() + String(l.hidden ? "hidden": "visible") + l.opacity.toString()}).join("-")));
-                        maybe_set_layers(all_layers, _layer_index, all_layers_length, has_changed, all_new_layers_hash, current_state);
+                        maybe_set_layers(all_layers, _layer_index, has_changed, current_state);
                     }
                 }, 120);
 
@@ -935,9 +914,7 @@ class CanvasPixels extends React.Component {
 
                 if(all_layers_length === _layers.length) {
 
-                    const all_new_layers_hash = all_layers.map((l) => {return l.hash || ""}).join("+");
-                    const has_changed = Boolean(layers_index_changed || String(_layers.map((l) => {return l.hash || ""}).join("+") + _layers.map((l) => {return l.id.toString() + String(l.hidden ? "hidden": "visible") + l.opacity.toString()}).join("-")) !== String(all_layers.map((l) => {return l.hash || ""}).join("+") + all_layers.map((l) => {return l.id.toString() + String(l.hidden ? "hidden": "visible") + l.opacity.toString()}).join("-")));
-                    maybe_set_layers(all_layers, _layer_index, all_layers_length, has_changed, all_new_layers_hash, current_state);
+                    maybe_set_layers(all_layers, _layer_index, has_changed, current_state);
                 }
             }
         }
@@ -3118,7 +3095,7 @@ class CanvasPixels extends React.Component {
                     _mouse_inside: true,
                     _paint_or_select_hover_actions_latest_index: -1,
                     _paint_hover_old_pxls_snapshot: Array.from(_s_pxls[_layer_index]),
-                    _select_hover_old_pxls_snapshot: Uint32Array.from(_pxl_indexes_of_selection),
+                    _select_hover_old_pxls_snapshot: Array.from(_pxl_indexes_of_selection),
                     _paint_or_select_hover_pxl_indexes: new Set()
                 }, () => {
 
@@ -3221,13 +3198,9 @@ class CanvasPixels extends React.Component {
         }
     };
 
-    _update_canvas(force_update = false, do_not_cancel_animation = false) {
+    _update_canvas = async(force_update = false, do_not_cancel_animation = false) => {
 
-        // Potentially cancel the latest animation frame (Clear old) and then request a new one that will maybe be rendered
-        const { _loading_base64_img, dont_show_canvas_until_img_set, dont_show_canvas, but_show_canvas_once, has_shown_canvas_once, no_actions } = this.st4te;
-        if(Boolean(_loading_base64_img.length === 0 && dont_show_canvas_until_img_set) || Boolean(dont_show_canvas && !Boolean(but_show_canvas_once && !has_shown_canvas_once))){return;}
-
-        const { _s_pxl_colors, _s_pxls, _layer_index, _layers } = this.st4te;
+        const { has_shown_canvas_once, _s_pxl_colors, _s_pxls, _layer_index, _layers } = this.st4te;
         const _layers_simplified = Array.from(_layers.map(function(l) {
                 return Object.assign({}, {
                     id: parseInt(l.id),
@@ -3237,24 +3210,6 @@ class CanvasPixels extends React.Component {
                     opacity: parseInt(l.opacity),
                 });
             }));
-
-        if(!Boolean(_layers_simplified.length === _s_pxl_colors.length && _s_pxl_colors.length === _s_pxls.length)) {
-
-            this._notify_layers_and_compute_thumbnails_change(() => {
-                this._update_canvas(force_update, do_not_cancel_animation);
-            });
-            return;
-        }
-
-        _layers_simplified.forEach((l) => {
-            if(!Boolean(l.hash)) {
-
-                this._notify_layers_and_compute_thumbnails_change(() => {
-                    this._update_canvas(force_update, do_not_cancel_animation);
-                });
-                return;
-            }
-        });
 
         // Only operate on canvas context if existing
         if (Boolean(this.super_canvas)) {
@@ -3611,6 +3566,7 @@ class CanvasPixels extends React.Component {
                     }
                 }
 
+                this.sraf.run_frame(this.super_canvas.render, Boolean(!force_update), Boolean(force_update));
                 this.setSt4te({
                     _pxl_indexes_of_selection_drawn: new Set(Array.from(_pxl_indexes_of_selection)),
                     _pxl_indexes_of_old_shape: new Set(Array.from(pxl_indexes_of_current_shape)),
@@ -3632,9 +3588,6 @@ class CanvasPixels extends React.Component {
                     has_shown_canvas_once: true,
                     _is_there_new_dimension: false,
                     _did_hide_canvas_content: Boolean(hide_canvas_content)
-                }, async () => {
-
-                    this.sraf.run_frame(this.super_canvas.render, Boolean(!force_update), Boolean(force_update));
                 });
             }
         }
@@ -3642,15 +3595,15 @@ class CanvasPixels extends React.Component {
 
     _maybe_save_state = (set_anyway_if_changes_callback = null, force = false) => {
 
-        if(this.st4te._last_action_timestamp + 2500 < Date.now() || force){
+        if(this.st4te._last_action_timestamp + 750 <= Date.now() || force){
 
             const previous_history_position = parseInt(this.st4te._json_state_history.history_position) || 0;
             const previous_state = this.st4te._json_state_history.state_history[previous_history_position] || this.st4te._json_state_history.state_history[0] || null;
-            this._notify_layers_and_compute_thumbnails_change((layers, layer_index, layers_length, layers_changed, layers_hash, current_state) => {
+            this._notify_layers_and_compute_thumbnails_change((layers, layer_index, layers_changed, current_state) => {
 
                 let {_json_state_history, _state_history_length } = this.st4te;
 
-                if(!Boolean(previous_state)) { // Fist state
+                if(!Boolean(previous_state._layers.length)) { // Fist state
 
                     _json_state_history.state_history = [current_state];
                     _json_state_history.previous_history_position = -1;
@@ -3668,49 +3621,41 @@ class CanvasPixels extends React.Component {
                         }
                     });
 
-                }else if(layers_changed){
+                }else if(layers_changed && previous_state._layers.map(function(l){return l.hash}).join("+") !== current_state._layers.map(function(l){return l.hash}).join("+")){
 
                     const current_history_position = parseInt(_json_state_history.history_position) || 0;
-                    if(previous_state._layers.map(function(l){return l.hash}).join("+") !== current_state._layers.map(function(l){return l.hash}).join("+")) {
+                   if(Math.abs(current_history_position - previous_history_position) <= 1) {
 
-                        if(Math.abs(current_history_position - previous_history_position) <= 1) {
+                        // An action must have been performed and the last action must be older of 1 sec
+                        if(_json_state_history.history_position < _json_state_history.state_history.length-1) {
 
-                            // An action must have been performed and the last action must be older of 1 sec
-                            if(_json_state_history.history_position < _json_state_history.state_history.length-1) {
-
-                                _json_state_history.state_history.splice(parseInt(_json_state_history.history_position+1));
-                            }
-
-                            _json_state_history.previous_history_position = parseInt(_json_state_history.history_position);
-                            if(_json_state_history.state_history.length-1 > _state_history_length) {
-
-                                _json_state_history.state_history.shift();
-                                _json_state_history.state_history.push(current_state);
-                            }else {
-
-                                _json_state_history.state_history.push(current_state);
-                            }
-
-                            _json_state_history.history_position = parseInt(_json_state_history.state_history.length-1);
+                            _json_state_history.state_history.splice(parseInt(_json_state_history.history_position+1));
                         }
 
-                        this.setSt4te({_json_state_history, _saved_json_state_history_timestamp_from_drawing: Date.now()}, () => {
+                        _json_state_history.previous_history_position = parseInt(_json_state_history.history_position);
+                        if(_json_state_history.state_history.length-1 > _state_history_length) {
 
-                            this._notify_can_undo_redo_change(this.st4te._json_state_history);
-                            if(this.props.onLayersChange) {
-                                this.props.onLayersChange(layer_index, layers);
-                            }
-                            if(set_anyway_if_changes_callback !== null) {
-                                set_anyway_if_changes_callback(this.st4te._json_state_history, true);
-                            }
-                        });
+                            _json_state_history.state_history.shift();
+                            _json_state_history.state_history.push(current_state);
+                        }else {
 
-                    }else  {
-
-                        if(set_anyway_if_changes_callback !== null) {
-                            set_anyway_if_changes_callback(this.st4te._json_state_history, false);
+                            _json_state_history.state_history.push(current_state);
                         }
+
+                        _json_state_history.history_position = parseInt(_json_state_history.state_history.length-1);
                     }
+
+                    this.setSt4te({_json_state_history, _saved_json_state_history_timestamp_from_drawing: Date.now()}, () => {
+
+                        this._notify_can_undo_redo_change(this.st4te._json_state_history);
+                        if(this.props.onLayersChange) {
+                            this.props.onLayersChange(layer_index, layers);
+                        }
+                        if(set_anyway_if_changes_callback !== null) {
+                            set_anyway_if_changes_callback(this.st4te._json_state_history, true);
+                        }
+                    });
+
                 }else {
 
                     if(set_anyway_if_changes_callback !== null) {
@@ -3947,12 +3892,13 @@ class CanvasPixels extends React.Component {
 
             if(this._can_undo(_json_state_history)){
 
-                _json_state_history.previous_history_position = parseInt(_json_state_history.history_position);
-                _json_state_history.history_position -= 1;
+                if(saved) {
 
-                if(saved && this._can_undo(_json_state_history)) {
+                    _json_state_history.previous_history_position = parseInt(_json_state_history.previous_history_position);
+                    _json_state_history.history_position = parseInt(_json_state_history.history_position);
+                }else {
 
-                    _json_state_history.previous_history_position -= 1;
+                    _json_state_history.previous_history_position = parseInt(_json_state_history.history_position);
                     _json_state_history.history_position -= 1;
                 }
 
@@ -5957,10 +5903,9 @@ class CanvasPixels extends React.Component {
         const {mouse_down} = this.canvas_pos.get_pointer_state();
         const screen_zoom_ratio = this.canvas_pos.get_screen_zoom_ratio();
         const {box_shadow} = this.canvas_pos.get_style();
-        const {background_image, transform_rotate} = this.canvas_pos.get_perspective_state();
+        const {background_image, transform_rotate, filter} = this.canvas_pos.get_perspective_state();
 
         const is_mobile_or_tablet = this.sraf.get_state().is_mobile_or_tablet;
-        const p = is_mobile_or_tablet ? 0: perspective / 4;
 
         let background_image_style_props = show_original_image_in_background && typeof _base64_original_images[_original_image_index] !== "undefined" ?
             {
@@ -6020,8 +5965,8 @@ class CanvasPixels extends React.Component {
                              width: Math.floor(canvas_wrapper_width),
                              height: Math.floor(canvas_wrapper_height),
                              boxShadow: `${box_shadow}`,
-                             filter: `opacity(${Boolean(has_shown_canvas_once || !_is_there_new_dimension) ? "1": "0"})`,
-                             webkitFilter: `opacity(${Boolean(has_shown_canvas_once || !_is_there_new_dimension) ? "1": "0"})`,
+                             filter: `opacity(${Boolean(has_shown_canvas_once || !_is_there_new_dimension) ? "1": "0"}) ${perspective ? filter: ""}`,
+                             webkitFilter: `opacity(${Boolean(has_shown_canvas_once || !_is_there_new_dimension) ? "1": "0"}) ${perspective ? filter: ""}`,
                              transform: `translate(${Math.round(scale.move_x * 100) / 100}px, ${Math.round(scale.move_y * 100) / 100}px) ${perspective ? transform_rotate: ""}`,
                              willChange: "transform, box-shadow",
                              transformOrigin: "center middle",

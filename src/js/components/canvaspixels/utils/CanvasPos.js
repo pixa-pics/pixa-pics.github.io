@@ -316,10 +316,13 @@ const CanvasPos = {
                             ${Math.floor(p_y / 2 * 255)}, 
                             ${(Math.abs(p_y  * 0.25) / parseInt(s.perspective*2)).toFixed(2)}
                             ))`: ``;
+                const filter_force = 1 + parseFloat(Math.abs(p_y)+Math.abs(p_x)) / 4 / parseInt(s.perspective*2);
+                const filter = any_rotation ? `brightness(${filter_force}) contrast(${filter_force})`: "";
 
                 pe = {
                     transform_rotate,
                     background_image,
+                    filter
                 };
             },
             set_pointer_state(object) {
@@ -330,7 +333,7 @@ const CanvasPos = {
 
                 let new_scale_move_speed_timestamp = Date.now();
 
-                const {scale, canvas_event_target} = this.get_state();
+                const {scale, canvas_event_target} = s;
                 const max_move_speed = Boolean(canvas_event_target !== "CANVAS_WRAPPER_OVERFLOW") ? 18: 24;
 
                 let {
@@ -409,7 +412,7 @@ const CanvasPos = {
             },
             set_zoom(of = 1, page_x, page_y , new_move_x = 0, new_move_y = 0, callback_function = function(){}){
 
-                const { scale, canvas_container, canvas_wrapper } = this.get_state();
+                const { scale, canvas_container, canvas_wrapper } = s;
                 const {current, move_y, move_x} = scale;
                 let new_scale = parseFloat(current * of);
 
@@ -450,7 +453,7 @@ const CanvasPos = {
             handle_wheel({deltaY, pageY, pageX, movementX = 0, movementY = 0}) {
 
                 const { canvas_container, canvas_wrapper } = this.get_pos();
-                const { move_x, move_y, current } = this.get_state().scale;
+                const { move_x, move_y, current } = s.scale;
 
                 let delta = Math.max(Math.min(0.125, Math.abs(deltaY * -0.01)), 0.25);
                 delta = deltaY * -0.01 > 0 ? delta: -delta;
@@ -495,7 +498,7 @@ const CanvasPos = {
             handle_move(latest_pointers_client_x_center, latest_pointers_client_y_center, to_x, to_y){
 
                 const {canvas_container, canvas_wrapper} = this.get_pos();
-                const {move_x, move_y} = this.get_state().scale;
+                const {move_x, move_y} = s.scale;
 
                 const for_middle_x = parseFloat(parseInt(canvas_container.width - canvas_wrapper.width) / 2);
                 const for_middle_y = parseFloat(parseInt(canvas_container.height - canvas_wrapper.height) / 2);
@@ -525,7 +528,7 @@ const CanvasPos = {
                 event = ce(event);
 
                 this.compute_canvas_event_target(parseInt(event.pageX), parseInt(event.pageY));
-                const {canvas_event_target} = this.get_state();
+                const {canvas_event_target} = s;
                 const pointer_state = this.get_pointer_state();
                 let {
                     latest_pointers_distance,
@@ -574,17 +577,15 @@ const CanvasPos = {
                 event = ce(event);
 
                 this.compute_canvas_event_target(parseInt(event.pageX), parseInt(event.pageY));
-                const {canvas_event_target} = this.get_state();
+                const {canvas_event_target} = s;
                 let {
                     pointer_events,
-                    latest_pointers_client_x_center,
-                    latest_pointers_client_y_center,
                 } = this.get_pointer_state();
 
                 pointer_events.delete(event.pointerId);
 
                 let pointer_down_again = false;
-                if(pointer_events.size === 1) {
+                if(pointer_events.size === 0) {
 
                     pointer_events.clear();
                     pointer_down_again = true;
@@ -592,24 +593,20 @@ const CanvasPos = {
 
                 this.set_pointer_state({
                     pointer_events: pointer_events,
-                    mouse_down: Boolean(pointer_events.size !== 0),
-                    latest_pointers_client_x_center: parseInt(latest_pointers_client_x_center),
-                    latest_pointers_client_y_center: parseInt(latest_pointers_client_y_center),
+                    mouse_down: Boolean(pointer_events.size !== 0 && !pointer_down_again),
                 });
 
                 if(pointer_down_again){
 
                     this.handle_pointer_down(event);
-                }else if(event.pointerType === "mouse") {
+                }else {
 
-                    if(canvas_event_target === "CANVAS") {
+                    this.notify_up(event);
 
-                        this.notify_up(event);
-
-                    }else if(canvas_event_target === "CANVAS_WRAPPER_OVERFLOW" && event.which === 1){
+                    if(canvas_event_target === "CANVAS_WRAPPER_OVERFLOW" && event.which === 1){
 
                         this.notify_moved();
-                    }else {
+                    }else if(canvas_event_target !== "CANVAS"){
 
                         this.notify_moved();
                     }
@@ -621,9 +618,9 @@ const CanvasPos = {
                 event.stopImmediatePropagation();
                 event = ce(event);
 
-                const {canvas_event_target} = this.get_state();
+                const {canvas_event_target} = s;
                 this.compute_canvas_event_target(parseInt(event.pageX), parseInt(event.pageY));
-                const new_canvas_event_target = this.get_state().canvas_event_target;
+                const new_canvas_event_target = s.canvas_event_target;
                 let {
                     mouse_down,
                     event_button,
@@ -704,7 +701,7 @@ const CanvasPos = {
             _handle_canvas_move(diff_scale_move_x, diff_scale_move_y) {
 
                 const {canvas_container, canvas_wrapper} = this.get_pos();
-                const {move_x, move_y} = this.get_state().scale;
+                const {move_x, move_y} = s.scale;
 
                 const for_middle_x = (canvas_container.width - canvas_wrapper.width) / 2;
                 const for_middle_y = (canvas_container.height - canvas_wrapper.height) / 2;
@@ -756,7 +753,7 @@ const CanvasPos = {
             },
             get_style() {
 
-                const state = this.get_state();
+                const state = s;
                 const msan = state.scale.moves_speed_average_now;
                 const shadow_depth = msan < 0 ? Math.round(Math.abs(msan) / 2): msan;
                 return Object.assign({box_shadow: sh[shadow_depth]}, state);
@@ -768,7 +765,7 @@ const CanvasPos = {
             get_canvas_pos_from_event(pageX, pageY) {
 
                 const {canvas} = this.get_pos();
-                const {width, height} = this.get_state().sizes;
+                const {width, height} = s.sizes;
 
                 const pos_x_in_canvas = parseInt(pageX) - canvas.left;
                 const pos_y_in_canvas = parseInt(pageY) - canvas.top;

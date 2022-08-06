@@ -64,7 +64,7 @@ const XXHash = {
             },
             bigint_that: function(array) {
 
-                return BigInt(s.xxh_f(Uint8Array.from(Buffer.from(array))));
+                return BigInt(s.xxh_f(new Uint8Array(array.buffer || Buffer.from(array))));
             },
             base58_that: function (array) {
                 let num = this.bigint_that(array);
