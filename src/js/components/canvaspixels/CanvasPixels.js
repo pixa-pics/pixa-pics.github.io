@@ -887,7 +887,7 @@ class CanvasPixels extends React.Component {
             const pc = current_state._s_pxl_colors[index];
             const hash = this.xxhash.base58_that(Uint32Array.from(p.map(pci => pc[pci])));
 
-            if(hash !== l.hash || !Boolean(l.thumbnail.length)) {
+            if(hash !== l.hash || !Boolean(l.thumbnail)) {
 
                 if(hash !== l.hash) {
 
