@@ -19,7 +19,7 @@ class ShufflingSpanText extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            classes: props.classes,
+            className: props.classes || props.className,
             style: props.style,
             pre: props.pre || "",
             text: props.text,
@@ -109,11 +109,11 @@ class ShufflingSpanText extends React.Component {
 
     render() {
 
-        const { classes, style } = this.state;
+        const { className, style } = this.state;
         const { _text_proceed, _text_proceed_started, _text_proceed_finished, pre, app, placeholder } = this.state;
 
         return (
-            <span style={{willChange: Boolean(_text_proceed_started && !_text_proceed_finished) ? "contents": "auto", ...style}}>{pre}{_text_proceed || placeholder}{app}</span>
+            <span className={className} style={{willChange: Boolean(_text_proceed_started && !_text_proceed_finished) ? "contents": "auto", ...style}}>{pre}{_text_proceed || placeholder}{app}</span>
         );
     }
 }
