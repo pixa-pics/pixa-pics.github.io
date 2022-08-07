@@ -584,32 +584,18 @@ const CanvasPos = {
 
                 pointer_events.delete(event.pointerId);
 
-                let pointer_down_again = false;
-                if(pointer_events.size === 0) {
-
-                    pointer_events.clear();
-                    pointer_down_again = true;
-                }
-
                 this.set_pointer_state({
                     pointer_events: pointer_events,
-                    mouse_down: Boolean(pointer_events.size !== 0 && !pointer_down_again),
+                    mouse_down: Boolean(pointer_events.size !== 0),
                 });
 
-                if(pointer_down_again){
+                this.notify_up(event);
+                if(canvas_event_target === "CANVAS_WRAPPER_OVERFLOW" && event.which === 1){
 
-                    this.handle_pointer_down(event);
-                }else {
+                    this.notify_moved();
+                }else if(canvas_event_target !== "CANVAS"){
 
-                    this.notify_up(event);
-
-                    if(canvas_event_target === "CANVAS_WRAPPER_OVERFLOW" && event.which === 1){
-
-                        this.notify_moved();
-                    }else if(canvas_event_target !== "CANVAS"){
-
-                        this.notify_moved();
-                    }
+                    this.notify_moved();
                 }
             },
             handle_pointer_move(event){

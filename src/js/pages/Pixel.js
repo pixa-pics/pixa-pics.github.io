@@ -544,6 +544,7 @@ class Pixel extends React.Component {
                             setTimeout(() => {try_again()}, 100);
                         }else {
 
+                            this.setState({_kb: 0, _saved_at: 1/0});
                             this.state._canvas.set_canvas_from_image(img, String(base64), {}, true);
                             this._handle_load_complete("image_preload", {});
                         }
@@ -589,9 +590,10 @@ class Pixel extends React.Component {
 
     _handle_canvas_state_export = (current_state) => {
 
+        console.log(current_state);
         if(current_state.kb > 1) {
 
-            actions.trigger_snackbar("Artwork, SAVED!", 2000)
+            actions.trigger_snackbar("Saving current work...!", 2000);
             let attachment_array = {};
             attachment_array["json_state-ID" + current_state.id + ".json.lzp3"] = current_state;
 
@@ -606,7 +608,16 @@ class Pixel extends React.Component {
                             actions.trigger_snackbar("Looks like I can't save your file as our compression module can't load.", 5700);
                             actions.jamy_update("angry");
                         }
-                    }, attachment_array, LZP3, pool);
+                    }, attachment_array, LZP3, pool, (err, res) => {
+
+                        if(!err) {
+
+                            actions.trigger_snackbar("SAVING, Successful!", 2000);
+                        }else {
+
+                            actions.trigger_snackbar("SAVING, Failed!", 2000);
+                        }
+                    });
                 }).catch(() => {
 
                     actions.trigger_snackbar("Looks like I can't save your file as our compression module can't load.", 5700);
@@ -621,7 +632,23 @@ class Pixel extends React.Component {
         const attachments = {};
         attachments["json_state-ID" + id + ".json.lzp3"] = "delete";
 
-        api.set_settings({}, this._process_settings_info_result, attachments);
+        api.set_settings({}, this._process_settings_info_result, attachments, null, null, (err, res) => {
+
+            if(!err) {
+
+                actions.trigger_snackbar("DELETION, Successful!", 2000);
+                let ap = Object.assign({}, this.state._attachment_previews);
+                delete ap[id];
+                this.setState({_attachment_previews, ap}, () => {
+
+                    this.forceUpdate();
+                });
+            }else {
+
+                actions.trigger_snackbar("DELETION, Failed!", 2000);
+            }
+
+        });
     };
 
     _updated_dimensions = () => {
@@ -937,7 +964,7 @@ class Pixel extends React.Component {
             const hash = xxhashthat(base_64);
 
             let a = document.createElement("a"); //Create <a>
-            a.download = `PIXAPICS-${hash}_RAS_${size}x.png`; //File name Here
+            a.download = `PXPS-${hash}-RAS_${size}x.png`; //File name Here
             a.href = base_64;
             a.click();
             a.remove();
@@ -973,7 +1000,7 @@ class Pixel extends React.Component {
 
                     let { _files_waiting_download } = this.state;
                     _files_waiting_download.push({
-                        name: `PIXAPICS-${hash}_RAS_1x.png`,
+                        name: `PXPS-${hash}-RAS_1x.png`,
                         url: String(png_base64_in)
                     });
                     this.setState({_files_waiting_download}, () => {
@@ -986,7 +1013,7 @@ class Pixel extends React.Component {
 
                         let { _files_waiting_download } = this.state;
                         _files_waiting_download.push({
-                            name: `PIXAPICS-${hash}_${using.toUpperCase()}_RAS_6x.png`,
+                            name: `PXPS-${hash}-${using.toUpperCase()}_RAS_6x.png`,
                             url: String(image_base64)
                         });
                         image_base64 = null;
@@ -999,7 +1026,7 @@ class Pixel extends React.Component {
 
                         let { _files_waiting_download } = this.state;
                         _files_waiting_download.push({
-                            name: `PIXAPICS-${hash}_${using.toUpperCase()}_VEC_6x.svg`,
+                            name: `PXPS-${hash}-${using.toUpperCase()}_VEC_6x.svg`,
                             url: String(svg_base64)
                         });
                         svg_base64 = null;
@@ -1114,6 +1141,7 @@ class Pixel extends React.Component {
 
             if(_library_type === "open") {
 
+                this.setState({_kb: 0, _saved_at: 1/0});
                 set_canvas_from_image(img);
             }else if(_library_type === "import"){
 
@@ -1215,6 +1243,7 @@ class Pixel extends React.Component {
                                                                         img.addEventListener("load", () => {
 
                                                                             this._handle_load_complete("image_ai", {});
+                                                                            this.setState({_kb: 0, _saved_at: 1/0});
                                                                             set_canvas_from_image(img, String(base64_resized), {}, true);
                                                                             base64_resized = null;
                                                                         }, {once: true, capture: true});
@@ -1268,6 +1297,7 @@ class Pixel extends React.Component {
                                                                         img.addEventListener("load", () => {
 
                                                                             this._handle_load_complete("image_ai", {});
+                                                                            this.setState({_kb: 0, _saved_at: 1/0});
                                                                             set_canvas_from_image(img, String(base64_resized), {}, true);
                                                                             base64_resized = null;
                                                                         }, {once: true, capture: true});
@@ -1324,6 +1354,7 @@ class Pixel extends React.Component {
                                                                             img.addEventListener("load", () => {
 
                                                                                 this._handle_load_complete("image_ai", {});
+                                                                                this.setState({_kb: 0, _saved_at: 1/0});
                                                                                 set_canvas_from_image(img, String(base64_resized), {}, true);
                                                                                 base64_resized = null;
                                                                             }, {once: true, capture: true});
@@ -1418,6 +1449,7 @@ class Pixel extends React.Component {
                                                                         img.addEventListener("load", () => {
 
                                                                             this._handle_load_complete("image_preload", {});
+                                                                            this.setState({_kb: 0, _saved_at: 1/0});
                                                                             set_canvas_from_image(img, String(base64_resized), {}, false);
                                                                             base64_resized = null;
                                                                         }, {once: true, capture: true});
@@ -2149,7 +2181,7 @@ class Pixel extends React.Component {
                                             <span className={classes.coordinate}>
                                                 <span>{`FPS: ${_fps}`}</span>
                                                 <span>{` | X: ${x}, Y: ${y} | `}</span>
-                                                <span onClick={this._backup_state} style={{cursor: "pointer"}} className={_kb < 64 ? classes.green: classes.red}>{`[~${Math.round(_kb * 100) / 100} kB] ${t(_saved_at, {mini: true})}`}</span>
+                                                <span onClick={this._backup_state} style={{cursor: "pointer"}} className={_kb < 64 ? classes.green: classes.red}>{`[~${_kb < 1 ? "?": Math.round(_kb * 100) / 100} kB] ${t(_saved_at, {mini: true})}`}</span>
                                             </span>
                                 <Typography className={classes.effectSliderText} id="strength-slider" gutterBottom>
                                     Effect strength :
@@ -2447,7 +2479,7 @@ class Pixel extends React.Component {
                 </IconButton>
 
                 <Button className={classes.saveButton} variant={"text"} color={"primary"} onClick={this._backup_state}>
-                    {t(_saved_at, {mini: true})} <SaveIcon/> {Math.round(_kb)} kB
+                    {t(_saved_at, {mini: true})} <SaveIcon/> {_kb < 1 ? "?": Math.round(_kb * 10) / 10} kB
                 </Button>
 
                 <IconButton disabled={!_is_image_import_mode} className={classes.confirmImportButton} color={"primary"} size={"small"} onClick={() => {_canvas.confirm_import()}}>
@@ -2496,8 +2528,8 @@ class Pixel extends React.Component {
                                    pixel_arts={_time_ago_initiated ? _attachment_previews: {}}
                                    size={_import_size}
                                    on_import_size_change={this._set_import_size}
-                                   on_pixel_art_delete={(id) => {this._delete_unsaved_pixel_art(id)}}
-                                   import_JSON_state={(id) => {this._handle_import_json_state_id(id)}}
+                                   on_pixel_art_delete={this._delete_unsaved_pixel_art}
+                                   import_JSON_state={this._handle_import_json_state_id}
                                    on_upload={(e) => {window.dispatchEvent(new Event("art-upload-dialog")); this._upload_image(e);}}
                                    onClose={this._handle_pixel_dialog_create_close}/>
 

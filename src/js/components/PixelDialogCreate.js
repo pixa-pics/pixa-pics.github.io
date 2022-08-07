@@ -4,6 +4,7 @@ import { withStyles } from "@material-ui/core/styles"
 import {Dialog, Button, DialogContent, DialogActions, Typography, Slider, ImageList, ImageListItem, ImageListItemBar, IconButton} from "@material-ui/core";
 
 import DeleteIcon from "@material-ui/icons/Delete";
+import CloudUploadIcon from "@material-ui/icons/CloudUpload";
 import {t} from "../utils/t";
 import actions from "../actions/utils";
 
@@ -93,7 +94,7 @@ class PixelDialogCreate extends React.Component {
         }
     }
 
-    shouldComponentUpdate(nextProps, nextState, nextContext) {
+    shouldComponentUpdate() {
 
         return false;
     }
@@ -103,6 +104,14 @@ class PixelDialogCreate extends React.Component {
         if(this.props.on_import_size_change) {
 
             this.props.on_import_size_change(event, value);
+        }
+    };
+
+    _handle_pixel_art_delete = (id) => {
+
+        if(this.props.on_pixel_art_delete) {
+
+            this.props.on_pixel_art_delete(id);
         }
     };
 
@@ -134,7 +143,13 @@ class PixelDialogCreate extends React.Component {
                                 id="button-file-dialog-primary"
                                 type="file"
                             />
-                            <Button component={"label"} htmlFor="button-file-dialog-primary" fullWidth variant="contained" color="secondary" className={classes.uploadButtonDesktop} autoFocus onClick={this.props.on_upload}>Upload a<br/>picture!</Button>
+                            <Button
+                                component={"label"}
+                                htmlFor="button-file-dialog-primary"
+                                fullWidth variant="contained"
+                                color="secondary"
+                                className={classes.uploadButtonDesktop}
+                                autoFocus onClick={this.props.on_upload}><CloudUploadIcon/> Let's upload!</Button>
                         </div>
                         <div className={classes.rightImagesContainer}>
                             <div className={classes.rightImagesContainer} style={{padding: "8px 24px", position: "relative", overflow: "hidden", boxSizing: "border-box", width: "100%"}}>
@@ -155,11 +170,18 @@ class PixelDialogCreate extends React.Component {
                                 id="button-file-dialog-secondary"
                                 type="file"
                             />
-                            <Button component={"label"} htmlFor="button-file-dialog-secondary" className={classes.mainUploadButton} fullWidth variant="contained" color="primary" autoFocus>UPLOAD</Button>
+                            <Button
+                                component={"label"}
+                                htmlFor="button-file-dialog-secondary"
+                                className={classes.mainUploadButton}
+                                fullWidth
+                                variant="contained"
+                                color="primary"
+                                autoFocus><CloudUploadIcon/> UPLOAD</Button>
                             <Typography component={"h2"} variant={"h6"} style={{marginTop: 16, marginLeft: 24}}>Unsaved minima</Typography>
                             <div style={{padding: "8px 24px", position: "relative", display: "flex", flexWrap: "wrap", justifyContent: "space-around", overflow: "hidden", boxSizing: "border-box", width: "100%"}}>
-                                <ImageList rowHeight={288} cols={2.0} style={{flexWrap: "nowrap", transform: "translateZ(0)", contains: "strict", maxWidth: "min(576px, (100vw - 96px))"}}>
-                                    {!Object.keys(pixel_arts).length && <ImageListItem style={{maxWidth: "100%", display: "inline-block", width: "auto", userSelect: "none"}}
+                                <ImageList rowHeight={288} cols={2.0} style={{flexWrap: "nowrap", contain: "paint style layout", contains: "strict", maxWidth: "min(576px, (100vw - 96px))"}}>
+                                    {Boolean(Object.keys(pixel_arts).length === 0) && <ImageListItem style={{maxWidth: "100%", display: "inline-block", width: "auto", userSelect: "none"}}
                                                     className={"pixelated"} key={"new"}>
                                         <img
                                             src={"/src/images/laboratory.svg"}
@@ -176,12 +198,12 @@ class PixelDialogCreate extends React.Component {
                                             const {id, kb, preview, timestamp} = v;
                                             return (
                                                 <ImageListItem style={{display: "inline-block", width: "auto", userSelect: "none"}} className={"pixelated"} key={id}>
-                                                    <img src={preview} alt={id} style={{width: "auto", height: "100%", cursor: "pointer"}} onClick={() => {this.props.import_JSON_state(id)}}/>
+                                                    <img onClick={() => {this.props.import_JSON_state(id)}} src={v.preview} alt={`preview ${i}`} style={{zIndex: 0, width: "auto", height: "100%", cursor: "pointer"}}/>
                                                     <ImageListItemBar
                                                         title={t(timestamp)}
                                                         subtitle={<span>{kb.toFixed(2)} Kb</span>}
                                                         actionIcon={
-                                                            <IconButton style={{color: "#fff"}} onClick={() => {this.props.on_pixel_art_delete(id)}} aria-label={`Delete`}>
+                                                            <IconButton style={{color: "#fff"}} onClick={(event) => {this._handle_pixel_art_delete(id)}} aria-label={`Delete`}>
                                                                 <DeleteIcon />
                                                             </IconButton>
                                                         }

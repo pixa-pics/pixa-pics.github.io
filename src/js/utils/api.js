@@ -283,7 +283,7 @@ const get_settings = (callback_function_info = null, attachment_ids = [], callba
     });
 }
 
-const set_settings = (info = {}, callback_function_info = () => {}, attachment_array = {}, LZP3 = null, POOL = null) => {
+const set_settings = (info = {}, callback_function_info = () => {}, attachment_array = {}, LZP3 = null, POOL = null, callback_function_attachment = null) => {
 
     window.settings_db.allDocs({
         include_docs: true,
@@ -349,10 +349,11 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
 
                             }else {
 
-                                window._pixa_settings.attachment_previews = window._pixa_settings.attachment_previews  || {};
-                                delete window._pixa_settings.attachment_previews[name_id];
+                                window.settings_db.removeAttachment(settings_doc._id, name_id, settings_doc._rev, (err, res) => {
 
-                                window.settings_db.removeAttachment(settings_doc._id, name_id, settings_doc._rev, () => {
+                                    let ap = Object.assign({}, window._pixa_settings.attachment_previews);
+                                    delete ap[name_id];
+                                    window._pixa_settings = Object.assign(window._pixa_settings, {attachment_previews: ap});
 
                                     attachments_to_process--;
                                     if(attachments_to_process === 0) {
@@ -366,6 +367,7 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
                                         }, {force: true}, (err) => {
 
                                             if(!err) {
+
 
                                                 if(settings_docs.length > 0) {
 
@@ -409,6 +411,9 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
 
                                 if(!err) {
 
+                                    if(callback_function_attachment !== null) {
+                                        callback_function_attachment(null, true);
+                                    }
                                     if(settings_docs.length > 0) {
 
                                         // Delete all others
@@ -428,12 +433,14 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
 
                                 }else {
 
+                                    if(callback_function_attachment !== null) {
+                                        callback_function_attachment(err, false);
+                                    }
                                     if(callback_function_info !== null) {
 
                                         callback_function_info("DB error post", null);
                                     }
                                 }
-
                             });
                         };
 

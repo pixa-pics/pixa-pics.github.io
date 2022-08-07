@@ -16,7 +16,6 @@
     "history": "^5.2.0",
     "howler": "^2.2.3",
     "javascript-time-ago": "~2.5.6",
-    "js-xxhash": "^1.0.4",
     "pouchdb-adapter-idb": "^7.3.0",
     "pouchdb-adapter-memory": "^7.3.0",
     "pouchdb-core": "^7.3.0",
@@ -31,7 +30,8 @@
     "svg64": "^1.1.0",
     "svgo": "^2.8.0",
     "workerpool": "^6.2.1",
-    "xxhash-wasm": "^1.0.1"
+    "xxhash-wasm": "~1.0.1",
+    "xxhashjs": "~0.2.2"
   },
   "devDependencies": {
     "@svgr/cli": "^5.5.0",
