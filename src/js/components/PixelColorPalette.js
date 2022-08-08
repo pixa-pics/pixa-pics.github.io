@@ -63,9 +63,9 @@ class PixelColorPalette extends React.Component {
         const selected_colors_set = new Set([...selected_colors]);
 
         return (
-            <div className={classes.colorPalette} style={align === "center" ? {padding, gap}: align === "left" ? {justifyContent: "end", padding, gap}: {justifyContent: "start", padding, gap}}>
+            <div className={classes.colorPalette} style={align === "center" ? {padding, gap}: align === "left" ? {justifyContent: "start", padding, gap}: {justifyContent: "start", padding, gap}}>
                 <PixelColorPaletteItem style={transparent ? {}: {display: "none"}}
-                                       size={32}
+                                       size={40}
                                        className={classes.eraseButton}
                                        icon={<EraserIcon />}
                                        full_width={true}

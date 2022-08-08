@@ -802,7 +802,7 @@ class CanvasPixels extends React.Component {
                             thumbnails.set(name, result);
                             progression = String(Math.round(parseFloat(thumbnails.size / filter_names.length)*100));
                             this.props.onFiltersThumbnailChange(thumbnails, hash, progression);
-                        }, 80
+                        }, 96
                     );
                 });
 
@@ -810,100 +810,85 @@ class CanvasPixels extends React.Component {
         }
     };
 
-    _notify_layers_and_compute_thumbnails_change = (callback_function = null, params, start = Date.now()) => {
+    _notify_layers_and_compute_thumbnails_change = (old_current_state, new_current_state, callback_function = null, start = Date.now()) => {
 
-        const maybe_set_layers = (lyrs_index, lyrs_changed, current_state = {}) => {
+        const maybe_set_layers = (lyrs_changed, new_current_state = {}) => {
 
             const leading_change = Boolean(start > this.st4te._layers_defined_at);
-            const layers = leading_change ? Array.from(current_state._layers): this.st4te._layers;
-            const state = Object.assign(current_state, {_layers: layers.map(function(l) { return {
-                    id: parseInt(l.id),
-                    hash: String(l.hash),
-                    name: String(l.name),
-                    hidden: Boolean(l.hidden),
-                    opacity: parseInt(l.opacity),
-                }})});
+            const current_state = Object.assign(Object.assign({}, new_current_state), {_layers: Array.from(new_current_state._layers)
+                    .map(function(l) {
+                        return Object.assign({}, {
+                            id: parseInt(l.id),
+                            hash: String(l.hash),
+                            name: String(l.name),
+                            hidden: Boolean(l.hidden),
+                            opacity: parseInt(l.opacity),
+                        });
+                    })
+            });
 
             if(lyrs_changed && leading_change) {
 
-                this.setSt4te({_layers: layers, _layers_defined_at: start}, () => {
+                this.setSt4te({_layer_index: new_current_state._layer_index, _layers: Array.from(new_current_state._layers), _layers_defined_at: start}, () => {
 
-                    if(callback_function !== null) {
-
-                        callback_function(layers, lyrs_index, true, state);
-                    }
+                    if(this.props.onLayersChange) {this.props.onLayersChange(this.st4te._layer_index, this.st4te._layers);}
+                    if(callback_function !== null) {callback_function(this.st4te._layers, this.st4te._layer_index, true, current_state);}
                 });
+            }else if(leading_change){
+
+                if(callback_function !== null) {callback_function(this.st4te._layers, this.st4te._layer_index, false, current_state);}
             }else {
 
-                if(callback_function !== null) {
-
-                    callback_function(layers, lyrs_index, false, state);
-                }
+                if(callback_function !== null) {callback_function(this.st4te._layers, this.st4te._layer_index, false, {});}
             }
         }
 
-        const { _id, _layers, pxl_width, pxl_height, _s_pxls, _s_pxl_colors,  _original_image_index, _layer_index, _pxl_indexes_of_selection, _pencil_mirror_index } = params;
-        const current_state = {
-            _id: String(_id),
-            pxl_width: parseInt(pxl_width),
-            pxl_height: parseInt(pxl_height),
-            _original_image_index: parseInt(_original_image_index),
-            _layers: Array.from(_layers.map((l, li) => {
-                return Object.assign({}, {
-                    id: parseInt(l.id),
-                    hash: String(l.hash),
-                    name: String(l.name),
-                    hidden: Boolean(l.hidden),
-                    opacity: parseInt(l.opacity),
-                    colors: Array.from(_s_pxl_colors[li].slice(0, 128) || []).map((c) => this.color_conversion.to_hex_from_uint32(c)),
-                    number_of_colors: parseInt(_s_pxl_colors[li].length),
-                    thumbnail: String(l.thumbnail),
-                });
-            })),
-            _layer_index: parseInt(_layer_index),
-            _s_pxls: Array.from(_s_pxls),
-            _s_pxl_colors: Array.from(_s_pxl_colors),
-            _pxl_indexes_of_selection: new Set(_pxl_indexes_of_selection),
-            _pencil_mirror_index: parseInt(_pencil_mirror_index),
-        };
-
         let all_layers_length = 0;
+
+        const old_timestamp = parseInt(old_current_state._timestamp) || Date.now();
+        const new_timestamp = parseInt(new_current_state._timestamp);
+        let timestamp = old_timestamp;
         let has_changed = false;
 
-        for(let index = 0; index < current_state._layers.length; index++){
+        for(let index = 0; index < new_current_state._layers.length; index++){
 
-            const l = current_state._layers[index];
-            const p = current_state._s_pxls[index];
-            const pc = current_state._s_pxl_colors[index];
-            const hash = String(this.xxhash.base58_that(Uint32Array.from(p.map(pci => pc[pci]))));
+            const p = new_current_state._s_pxls[index];
+            const pc = new_current_state._s_pxl_colors[index];
+            const new_hash = String(this.xxhash.base58_that(Uint32Array.from(p.map(pci => pc[pci]))));
+            const old_layer = Object.assign({}, (old_current_state._layers || new Array())[index]);
+            const old_thumbnail = old_layer.thumbnail || "";
+            const old_hash = old_layer.hash || "";
 
-            if(hash !== l.hash || !Boolean(l.thumbnail.length)) {
+            if(old_hash !== new_hash || !Boolean(old_hash) || !Boolean(old_thumbnail)) {
 
-                if(hash !== l.hash || !Boolean(l.hash.length)) {
+                this.get_layer_base64_png_data_url(new_current_state.pxl_width, new_current_state.pxl_height, p, pc, (new_thumbnail) => {
 
-                    l.hash = hash;
-                    has_changed = true;
-                }
+                    if(old_hash !== new_hash || !Boolean(old_hash)) {
 
-                this.get_layer_base64_png_data_url(pxl_width, pxl_height, p, pc, (result) => {
-
-                    l.thumbnail = result;
-                    current_state._layers[index] = l;
+                        has_changed = true;
+                        timestamp = new_timestamp;
+                    }
+                    new_current_state._layers[index].hash = new_hash;
+                    new_current_state._layers[index].thumbnail = new_thumbnail;
                     all_layers_length++;
 
-                    if(all_layers_length === current_state._layers.length) {
+                    if(all_layers_length === new_current_state._layers.length) {
 
-                        maybe_set_layers(_layer_index, has_changed, current_state);
+                        new_current_state._timestamp = parseInt(timestamp);
+                        maybe_set_layers(has_changed, new_current_state);
                     }
-                }, 120);
+                }, 96);
 
             }else {
 
+                new_current_state._layers[index].hash = new_hash;
+                new_current_state._layers[index].thumbnail = old_thumbnail;
                 all_layers_length++;
 
-                if(all_layers_length === current_state._layers.length) {
+                if(all_layers_length === new_current_state._layers.length) {
 
-                    maybe_set_layers(_layer_index, has_changed, current_state);
+                    new_current_state._timestamp = parseInt(timestamp);
+                    maybe_set_layers(has_changed, new_current_state);
                 }
             }
         }
@@ -3588,26 +3573,54 @@ class CanvasPixels extends React.Component {
 
                     const { _id, _layers, pxl_width, pxl_height, _s_pxls, _s_pxl_colors,  _original_image_index, _layer_index, _pxl_indexes_of_selection, _pencil_mirror_index } = this.st4te;
                     const old_current_history_position = parseInt(this.st4te._json_state_history.history_position);
+                    const old_current_state = this.st4te._json_state_history.state_history.length === 0 ? {}: this.st4te._json_state_history.state_history[old_current_history_position];// First state let's not save current history timestamp
+                    const old_current_state_timestamp = parseInt(old_current_state._timestamp || 0);
+
                     this.st4te._saving_json_state_history_running = true;
 
-                    this._notify_layers_and_compute_thumbnails_change((layers, layer_index, layers_changed_state, current_state) => {
+                    let new_current_state = Object.assign({}, {
+                        _timestamp: parseInt(Date.now()),
+                        _id: String(_id),
+                        pxl_width: parseInt(pxl_width),
+                        pxl_height: parseInt(pxl_height),
+                        _original_image_index: parseInt(_original_image_index),
+                        _layers: Array.from(_layers.map((l, li) => {
+                            return Object.assign({}, {
+                                id: parseInt(l.id),
+                                hash: String(l.hash || ""),
+                                name: String(l.name || ""),
+                                hidden: Boolean(l.hidden),
+                                opacity: parseFloat(l.opacity || 1),
+                                colors: Array.from(_s_pxl_colors[li].slice(0, 128) || []).map((c) => this.color_conversion.to_hex_from_uint32(c)),
+                                number_of_colors: parseInt(_s_pxl_colors[li].length),
+                                thumbnail: String(l.thumbnail || ""),
+                            });
+                        })),
+                        _layer_index: parseInt(_layer_index),
+                        _s_pxls: Array.from(_s_pxls.map(function(a){return Array.from(a);})),
+                        _s_pxl_colors: Array.from(_s_pxl_colors.map(function(a){return Uint32Array.from(a);})),
+                        _pxl_indexes_of_selection: new Set(_pxl_indexes_of_selection),
+                        _pencil_mirror_index: parseInt(_pencil_mirror_index),
+                    });
+
+                    this._notify_layers_and_compute_thumbnails_change(old_current_state, new_current_state, (layers, layer_index, layers_changed_state, new_current_state) => {
 
                         let _json_state_history = this.st4te._json_state_history;
-                        let {_state_history_length, _saving_json_state_history_ran_timestamp, _saving_json_state_history_running } = this.st4te;
-                        _saving_json_state_history_running = false;
-                        const first_change = !Boolean(_json_state_history.state_history.length);
+                        let {_state_history_length, _saving_json_state_history_ran_timestamp } = this.st4te;
+                        const first_change = Boolean(_json_state_history.state_history.length === 0);
                         const new_current_history_position = parseInt(_json_state_history.history_position);
-                        const got_ninja_position_switch = Boolean(old_current_history_position !== new_current_history_position);
+                        const new_current_state_timestamp = new_current_state._timestamp || 0;
+                        const now = Date.now();
 
-                        if(first_change) { // Fist state
+                        if(first_change && new_current_state_timestamp !== 0) { // Fist state
 
-                            _json_state_history.state_history = Array.of(current_state);
+                            _json_state_history.state_history = Array.of(new_current_state);
                             _json_state_history.history_position = 0;
-                            _saving_json_state_history_ran_timestamp = Date.now();
+                            _saving_json_state_history_ran_timestamp = now;
 
-                        }else if(layers_changed_state && !got_ninja_position_switch) {
+                        }else if(layers_changed_state) {
 
-                            const backward_of = parseInt(_json_state_history.state_history.length - 1) - old_current_history_position;
+                            const backward_of = parseInt(_json_state_history.state_history.length - 1) - new_current_history_position;
                             // An action have been performed while being in the past
                             if(backward_of > 0) {
 
@@ -3626,27 +3639,33 @@ class CanvasPixels extends React.Component {
                             }
 
                             if(_json_state_history.state_history.length-1 > _state_history_length) { _json_state_history.state_history.shift(); } // As we limit edit history, just delete the first element if it will be above max size
-                            _json_state_history.state_history.push(current_state); // Then we add the current state history
+                            _json_state_history.state_history.push(new_current_state); // Then we add the current state history
                             _json_state_history.history_position = parseInt(_json_state_history.state_history.length-1);
-                            _saving_json_state_history_ran_timestamp = Date.now();
+                            _saving_json_state_history_ran_timestamp = now;
                         } else {
 
-                            _json_state_history.state_history[old_current_history_position] = current_state;
-                            _saving_json_state_history_ran_timestamp = Date.now();
+                            // History states just got shuffled and we need to update the right moment in time (in the not-now-that-is-now)
+                            for(let i = 0; i < _json_state_history.state_history.length; i++) {
+
+                                if(_json_state_history.state_history[i]._timestamp === new_current_state._timestamp) {
+
+                                    _json_state_history.state_history[i] = new_current_state;
+                                    _saving_json_state_history_ran_timestamp = now;
+                                    i = _json_state_history.state_history.length;
+                                }
+                            }
                         }
 
-                        this.setSt4te({_json_state_history, _saving_json_state_history_running, _saving_json_state_history_ran_timestamp}, () =>{
+                        _json_state_history = Object.assign({}, _json_state_history);
+                        this.setSt4te({_json_state_history, _saving_json_state_history_running: false, _saving_json_state_history_ran_timestamp}, () =>{
 
                             this._notify_can_undo_redo_change();
-                            if(this.props.onLayersChange) {
-                                this.props.onLayersChange(layer_index, layers);
-                            }
                             if(set_anyway_if_changes_callback !== null) {
-                                set_anyway_if_changes_callback(_json_state_history, Boolean(layers_changed_state && !got_ninja_position_switch));
+                                set_anyway_if_changes_callback(_json_state_history, Boolean(_saving_json_state_history_ran_timestamp === now));
                             }
                         });
 
-                    }, { _id, _layers, pxl_width, pxl_height, _s_pxls, _s_pxl_colors,  _original_image_index, _layer_index, _pxl_indexes_of_selection, _pencil_mirror_index });
+                    }, Date.now());
                 }
             }else {
 

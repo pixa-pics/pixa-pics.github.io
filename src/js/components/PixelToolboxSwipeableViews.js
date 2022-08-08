@@ -138,11 +138,11 @@ const styles = theme => ({
     },
     layerThumbnail: {
         width: "auto",
-        height: theme.spacing(8),
+        height: "auto",
+        imageRendering: "pixelated",
         "& .MuiAvatar-img": {
-            width: "auto",
+            width: 96,
             borderRadius: 2,
-            imageRendering: "pixelated",
         },
         marginRight: theme.spacing(2),
     },
@@ -1575,8 +1575,8 @@ class PixelToolboxSwipeableViews extends React.Component {
 
                                             <PixelColorPalette
                                                 transparent={true}
-                                                padding="12px 24px 24px 24px"
-                                                gap="8px"
+                                                padding="12px 16px 24px 24px"
+                                                gap="0px"
                                                 align="left"
                                                 colors={colors}
                                                 selected_colors={[current_color]}

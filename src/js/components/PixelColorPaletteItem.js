@@ -8,8 +8,8 @@ const styles = theme => ({
     colorPaletteItem: {
         padding: 0,
         borderRadius: 0,
-        height: 32,
-        width: 32
+        height: 40,
+        width: 40
     },
 });
 

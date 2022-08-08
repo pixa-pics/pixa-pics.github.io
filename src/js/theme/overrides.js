@@ -48,28 +48,25 @@ const overrides = {
                 backgroundPosition: "0% 50%",
                 transition: "background-position cubic-bezier(0.4, 0, 0.2, 1) 175ms",
             },
-            ".speed:not(a), .speed:not(a)": {
+            ".speed:, .speed: *, .speed:not(a), .speed:not(a) *": {
                 imageRendering: "optimizeSpeed",
             },
-            ".speed:not(b), .speed:not(b)": {
-                imageRendering: "optimizespeed",
-            },
-            ".pixelated:not(a), .pixelated:not(a) *": {
+            ".pixelated, .pixelated *, .pixelated:not(a), .pixelated:not(a) *": {
                 imageRendering: "-moz-crisp-edges",
             },
-            ".pixelated:not(b), .pixelated:not(b) *": {
+            ".pixelated, .pixelated *, .pixelated:not(b), .pixelated:not(b) *": {
                 imageRendering: "-webkit-crisp-edges",
             },
-            ".pixelated:not(c), .pixelated:not(c) *": {
+            ".pixelated, .pixelated *, .pixelated:not(c), .pixelated:not(c) *": {
                 imageRendering: "-o-pixelated",
             },
-            ".pixelated:not(d), .pixelated:not(d) *": {
+            ".pixelated, .pixelated *, .pixelated:not(d), .pixelated:not(d) *": {
                 imageRendering: "crisp-edges",
             },
-            ".pixelated:not(e), .pixelated:not(e) *": {
+            ".pixelated, .pixelated *, .pixelated:not(e), .pixelated:not(e) *": {
                 imageRendering: "nearest-neighbor",
             },
-            ".pixelated:not(f), .pixelated:not(f) *": {
+            ".pixelated, .pixelated *, .pixelated:not(f), .pixelated:not(f) *": {
                 imageRendering: "pixelated",
             },
             ".emoji": {
@@ -107,8 +104,8 @@ const overrides = {
             },
             ".emoji-150": {
                 verticalAlign: "inherit",
-                height: "1em",
-                width: "2.5em",
+                height: "1.5em",
+                width: "3em",
                 transform: "scale(1.5)",
             },
             ".highlighted": {
