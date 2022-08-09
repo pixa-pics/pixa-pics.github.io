@@ -59,6 +59,13 @@ const SuperCanvas = {
 
                     const now = Date.now();
 
+                    if(ics.length > 0 && ic.size === 0) {
+
+                        ic = new Map(Object.entries(ics.reduce(function (acc, val) {
+                            return Object.assign(acc, Object.fromEntries(val.entries()));
+                        }, {}))); ics = new Array();
+                    }
+
                     if (ic.size > 0) {
 
                         const indexed_by_color_changes = new Map();
@@ -86,7 +93,7 @@ const SuperCanvas = {
                             });
                             set.clear();
                             indexed_by_color_paths.set(style, path);
-                        } indexed_by_color_changes.clear();
+                        }
 
                         // Clear parts of canvas before
                         const summed_path = new Path2D();
@@ -104,11 +111,13 @@ const SuperCanvas = {
                         for (const [style, path] of indexed_by_color_paths) {
                             s.offscreen_canvas_context2d.fillStyle = style;
                             s.offscreen_canvas_context2d.fill(path);
-                        } indexed_by_color_paths.clear();
+                        }
+
                         ic.clear();
-                        pt = Date.now() - now;
-                        setTimeout(callback, Math.max(0, timeout-pt));
+                        if(idle !== 0) { cancelIdleCallback(idle); idle = 0; }
                     }
+                    pt = Date.now() - now;
+                    setTimeout(callback, Math.max(0, timeout-pt));
                 }
 
                 rs++;
@@ -116,29 +125,22 @@ const SuperCanvas = {
 
                 if(rs <= 1) {
 
-                    if(ics.length > 0 && ic.size === 0) {
-
-                        ic = new Map(Object.entries(ics.reduce(function (acc, val) {
-                            return Object.assign(acc, Object.fromEntries(val.entries()));
-                        }, {}))); ics.length = 0;
-                    }
-
                     if(rt + tbf < now) {
 
                         rs--;
-                        if(ic.size > 0) {prender(draw, 1)}
+                        if(ics.length > 0 || ic.size > 0) {prender(draw, 1)}
 
                     }else {
 
                         rs--;
-                        if(ic.size > 0) {prender(draw, Math.max(1, rt + tbf - now))}
+                        if(ics.length > 0 || ic.size > 0) {prender(draw, Math.max(1, rt + tbf - now))}
                     }
                 }else{
 
                     rs--;
                 }
             },
-            push(indexed_changes_map) {
+            pushcrowd(indexed_changes_map) {
 
                 ics.push(indexed_changes_map);
             },
@@ -150,7 +152,7 @@ const SuperCanvas = {
 
                         ic = new Map(Object.entries(ics.reduce(function (acc, val) {
                             return Object.assign(acc, Object.fromEntries(val.entries()));
-                        }, {}))); ics.length = 0;
+                        }, {}))); ics = new Array();
                     }
 
                     if (ic.size > 0) {
@@ -180,7 +182,7 @@ const SuperCanvas = {
                             });
                             set.clear();
                             indexed_by_color_paths.set(style, path);
-                        } indexed_by_color_changes.clear();
+                        }
 
                         // Clear parts of canvas before
                         const summed_path = new Path2D();
@@ -198,14 +200,14 @@ const SuperCanvas = {
                         for (const [style, path] of indexed_by_color_paths) {
                             s.offscreen_canvas_context2d.fillStyle = style;
                             s.offscreen_canvas_context2d.fill(path);
-                        } indexed_by_color_paths.clear();
+                        }
                         ic.clear();
-                        idle = 0;
                     }
+
+                    idle = 0;
                 }
 
-                if(!idle && Date.now() - rt > tbf) {
-
+                if(idle === 0 && typeof requestIdleCallback !== "undefined") {
                     idle = requestIdleCallback(uc);
                 }
             },
