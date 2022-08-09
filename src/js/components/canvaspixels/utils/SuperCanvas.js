@@ -32,11 +32,13 @@ const SuperCanvas = {
 
         let cs = this._create_state;
         let s = cs(c, pxl_width, pxl_height);
-        let ic = new Array(); // Maps within an array for changes indexed by color in Uint32
+        let ics = new Array(); // Maps within an set for changes indexed by color in Uint32
+        let ic = new Map();
         let rt = Date.now();
         let rs = 0;
         let tbf = parseInt(1000 / max_fps);
         let pt = tbf;
+        let idle = 0;
 
         return {
             // Methods
@@ -47,69 +49,66 @@ const SuperCanvas = {
 
                 function draw(){
 
-                    s.canvas_context2d.drawImage(s.offscreen_canvas_context2d.canvas, 0, 0);
                     const now = Date.now();
-                    tbf = now - rt - pt;
+                    s.canvas_context2d.drawImage(s.offscreen_canvas_context2d.canvas, 0, 0);
+                    tbf = now - rt;
                     rt = Date.now();
                 }
 
                 function prender(callback, timeout) {
 
                     const now = Date.now();
-                    const indexed_changes = new Map();
-                    while (ic.length) {
 
-                        const icm = ic.shift();
-                        for (const [index, colorUint32] of icm) {
+                    if (ic.size > 0) {
 
-                            indexed_changes.set(index, colorUint32);
+                        const indexed_by_color_changes = new Map();
+                        for (const [index, colorUint32] of ic) {
+
+                            if (!indexed_by_color_changes.has(colorUint32)) {
+
+                                const set = new Set();
+                                set.add(index);
+                                indexed_by_color_changes.set(colorUint32, set);
+                            } else {
+
+                                indexed_by_color_changes.get(colorUint32).add(index);
+                            }
                         }
-                    }
 
-                    const indexed_by_color_changes = new Map();
-                    for (const [index, colorUint32] of indexed_changes) {
+                        const indexed_by_color_paths = new Map();
+                        for (const [uint32, set] of indexed_by_color_changes) {
 
-                        if(!indexed_by_color_changes.has(colorUint32)) {
+                            const path = new Path2D();
+                            const style = "#".concat("00000000".concat(uint32.toString(16)).slice(-8));
+                            set.forEach((i) => {
+                                const x = i % s.width, y = (i - x) / s.width;
+                                path.rect(x, y, 1, 1);
+                            });
+                            set.clear();
+                            indexed_by_color_paths.set(style, path);
+                        } indexed_by_color_changes.clear();
 
-                            indexed_by_color_changes.set(colorUint32, Array.of(index));
-                        }else {
+                        // Clear parts of canvas before
+                        const summed_path = new Path2D();
+                        indexed_by_color_paths.values(function (p) {
 
-                            indexed_by_color_changes.get(colorUint32).push(index);
-                        }
-                    }
-
-                    const indexed_by_color_paths = new Map();
-                    for (const [uint32, array] of indexed_by_color_changes) {
-
-                        const path = new Path2D();
-                        const style = "#".concat("00000000".concat(uint32.toString(16)).slice(-8));
-                        array.forEach((i) => {
-                            const x = i % s.width, y = (i - x) / s.width;
-                            path.rect(x, y, 1, 1);
+                            summed_path.addPath(p);
                         });
 
-                        indexed_by_color_paths.set(style, path);
+                        s.offscreen_canvas_context2d.globalCompositeOperation = "destination-out";
+                        s.offscreen_canvas_context2d.fillStyle = "#ffffffff";
+                        s.offscreen_canvas_context2d.fill(summed_path);
+
+                        // Draw paths b color
+                        s.offscreen_canvas_context2d.globalCompositeOperation = "source-over";
+                        for (const [style, path] of indexed_by_color_paths) {
+                            s.offscreen_canvas_context2d.fillStyle = style;
+                            s.offscreen_canvas_context2d.fill(path);
+                        } indexed_by_color_paths.clear();
+                        ic.clear();
+                        pt = Date.now() - now;
+                        setTimeout(callback, Math.max(0, timeout-pt));
                     }
-
-                    // Clear parts of canvas before
-                    const summed_path = new Path2D();
-                    indexed_by_color_paths.values(function(p){
-
-                        summed_path.addPath(p);
-                    });
-                    s.offscreen_canvas_context2d.globalCompositeOperation = "destination-out";
-                    s.offscreen_canvas_context2d.fillStyle = "#ffffffff";
-                    s.offscreen_canvas_context2d.fill(summed_path);
-
-                    // Draw paths b color
-                    s.offscreen_canvas_context2d.globalCompositeOperation = "source-over";
-                    for (const [style, path] of indexed_by_color_paths) {
-                        s.offscreen_canvas_context2d.fillStyle = style;
-                        s.offscreen_canvas_context2d.fill(path);
-                    }
-
-                    pt = Date.now() - now;
-                    setTimeout(callback, Math.max(1, timeout-pt));
                 }
 
                 rs++;
@@ -117,15 +116,22 @@ const SuperCanvas = {
 
                 if(rs <= 1) {
 
+                    if(ics.length > 0 && ic.size === 0) {
+
+                        ic = new Map(Object.entries(ics.reduce(function (acc, val) {
+                            return Object.assign(acc, Object.fromEntries(val.entries()));
+                        }, {}))); ics.length = 0;
+                    }
+
                     if(rt + tbf < now) {
 
                         rs--;
-                        if(ic.length > 0) {prender(draw, 0)}
+                        if(ic.size > 0) {prender(draw, 1)}
 
                     }else {
 
                         rs--;
-                        if(ic.length > 0) {prender(draw, parseInt(rt + tbf - Date.now()))}
+                        if(ic.size > 0) {prender(draw, Math.max(1, rt + tbf - now))}
                     }
                 }else{
 
@@ -134,7 +140,74 @@ const SuperCanvas = {
             },
             push(indexed_changes_map) {
 
-                ic.push(indexed_changes_map);
+                ics.push(indexed_changes_map);
+            },
+            uncrowd() {
+
+                function uc() {
+
+                    if(ics.length > 0 && ic.size === 0) {
+
+                        ic = new Map(Object.entries(ics.reduce(function (acc, val) {
+                            return Object.assign(acc, Object.fromEntries(val.entries()));
+                        }, {}))); ics.length = 0;
+                    }
+
+                    if (ic.size > 0) {
+
+                        const indexed_by_color_changes = new Map();
+                        for (const [index, colorUint32] of ic) {
+
+                            if (!indexed_by_color_changes.has(colorUint32)) {
+
+                                const set = new Set();
+                                set.add(index);
+                                indexed_by_color_changes.set(colorUint32, set);
+                            } else {
+
+                                indexed_by_color_changes.get(colorUint32).add(index);
+                            }
+                        }
+
+                        const indexed_by_color_paths = new Map();
+                        for (const [uint32, set] of indexed_by_color_changes) {
+
+                            const path = new Path2D();
+                            const style = "#".concat("00000000".concat(uint32.toString(16)).slice(-8));
+                            set.forEach((i) => {
+                                const x = i % s.width, y = (i - x) / s.width;
+                                path.rect(x, y, 1, 1);
+                            });
+                            set.clear();
+                            indexed_by_color_paths.set(style, path);
+                        } indexed_by_color_changes.clear();
+
+                        // Clear parts of canvas before
+                        const summed_path = new Path2D();
+                        indexed_by_color_paths.values(function (p) {
+
+                            summed_path.addPath(p);
+                        });
+
+                        s.offscreen_canvas_context2d.globalCompositeOperation = "destination-out";
+                        s.offscreen_canvas_context2d.fillStyle = "#ffffffff";
+                        s.offscreen_canvas_context2d.fill(summed_path);
+
+                        // Draw paths b color
+                        s.offscreen_canvas_context2d.globalCompositeOperation = "source-over";
+                        for (const [style, path] of indexed_by_color_paths) {
+                            s.offscreen_canvas_context2d.fillStyle = style;
+                            s.offscreen_canvas_context2d.fill(path);
+                        } indexed_by_color_paths.clear();
+                        ic.clear();
+                        idle = 0;
+                    }
+                }
+
+                if(!idle && Date.now() - rt > tbf) {
+
+                    idle = requestIdleCallback(uc);
+                }
             },
             set_dimensions(w, h) {
 

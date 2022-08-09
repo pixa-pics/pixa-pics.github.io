@@ -590,7 +590,6 @@ class Pixel extends React.Component {
 
     _handle_canvas_state_export = (current_state) => {
 
-        console.log(current_state);
         if(current_state.kb > 1) {
 
             actions.trigger_snackbar("Saving current work...!", 2000);
