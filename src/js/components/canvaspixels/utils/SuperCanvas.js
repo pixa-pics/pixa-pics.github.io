@@ -1,3 +1,26 @@
+let requestIdleCallback, cancelIdleCallback;
+if ('requestIdleCallback' in window) {
+
+    requestIdleCallback = window.requestIdleCallback;
+    cancelIdleCallback = window.cancelIdleCallback;
+} else {
+
+    requestIdleCallback = function(cb, settings) {
+        var start = Date.now();
+        return setTimeout(function() {
+            cb({
+                didTimeout: false,
+                timeRemaining: function() {
+                    return Math.max(0, parseInt(settings.timeout || 50) - parseInt(Date.now() - start));
+                },
+            });
+        }, 1);
+    };
+    cancelIdleCallback = function(id) {
+        clearTimeout(id);
+    };
+}
+
 const SuperCanvas = {
 
     _create_state: function(c, pxl_width, pxl_height) {
@@ -112,7 +135,7 @@ const SuperCanvas = {
         let tbf = parseInt(1000 / max_fps);
         let pt = tbf;
         let refresh = false;
-        let idle_id = null;
+        let idle_id = 0;
 
         return {
             // Methods
@@ -163,6 +186,7 @@ const SuperCanvas = {
 
                         rs--;
 
+                        cancelIdleCallback(idle_id); idle_id = 0;
                         prender(draw, 1);
                         return true;
 
@@ -181,7 +205,15 @@ const SuperCanvas = {
             },
             uncrowd(force = false){
 
-                function prender(callback = function(){}, timeout = 0) {
+                function prender(deadline) {
+
+                    if(typeof deadline === "undefined") {
+
+                        deadline = {will_execute: 1, timeRemaining: function(){return 0;}};
+                    }else if(typeof deadline.timeRemaining !== "function") {
+
+                        deadline = {will_execute: 1, timeRemaining: function(){return 0;}};
+                    }
 
                     function prender_resolve(callback, timeout){
 
@@ -193,30 +225,26 @@ const SuperCanvas = {
                         setTimeout(callback, 1);
                     }
 
-                    const r = uc(s.width, ics, ic, s, pt, refresh, prender_resolve, prender_reject, callback, timeout);
-                    ics = r.ics;
-                    ic = r.ic;
-                    s = r.s;
-                    pt = r.pt;
-                    refresh = r.refresh;
+                    while (Boolean(deadline.will_execute) || deadline.timeRemaining() > 0) {
+                        const r = uc(s.width, ics, ic, s, pt, refresh, prender_resolve, prender_reject, function(){}, 1);
+                        ics = r.ics;
+                        ic = r.ic;
+                        s = r.s;
+                        pt = r.pt;
+                        refresh = r.refresh;
+                        deadline.will_execute = Math.max(0, deadline.will_execute-1);
+                    }
 
-                    return;
+                    cancelIdleCallback(idle_id); idle_id = 0;
                 }
 
-                if(force === false && typeof requestIdleCallback !== "undefined") {
+                if(force === false && idle_id === 0) {
 
                     idle_id = requestIdleCallback(prender, {timeout: 250});
-                }else if(force){
+                }else if(force === true) {
 
-                    prender(function(){
-
-                        if(Boolean(idle_id !== null && force) && typeof cancelIdleCallback !== "undefined") {
-
-                            cancelIdleCallback(idle_id);
-                            idle_id = null;
-                        }
-
-                    });
+                    cancelIdleCallback(idle_id); idle_id = 0;
+                    prender();
                 }
             },
             putcrowd(indexed_changes_map) {

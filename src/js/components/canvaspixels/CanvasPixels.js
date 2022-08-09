@@ -192,7 +192,7 @@ class CanvasPixels extends React.Component {
 
         _intervals[3] = setInterval(this._notify_export_state, this.st4te.export_state_every_ms);
 
-        _intervals[4] = setInterval(() => {this._maybe_update_canvas(true)}, this.sraf.get_state().is_mobile_or_tablet ? 125: 75);
+        _intervals[4] = setInterval(this._update_canvas, this.sraf.get_state().is_mobile_or_tablet ? 500: 250);
 
         const body_css =
             "body {" +
@@ -391,24 +391,14 @@ class CanvasPixels extends React.Component {
 
     _maybe_update_selection_highlight = () => {
 
-        const { tool, _moves_speed_average_now, _select_shape_index_a, _selection_pair_highlight, no_actions } = this.st4te;
+        const { tool, _select_shape_index_a, _selection_pair_highlight, no_actions } = this.st4te;
 
-        if(no_actions === false && _moves_speed_average_now <= -16 && tool.toUpperCase().includes("SELECT") && parseInt(_select_shape_index_a) < 0) {
+        if(no_actions === false && tool.toUpperCase().includes("SELECT") && parseInt(_select_shape_index_a) < 0) {
 
             this.setSt4te({_selection_pair_highlight: !_selection_pair_highlight}, () => {
 
-                this._update_canvas();
+                this._update_canvas(true);
             });
-        }
-    };
-
-    _maybe_update_canvas = () => {
-
-        const { _moves_speed_average_now, _select_shape_index_a } = this.st4te;
-
-        if(_moves_speed_average_now <= -16 && parseInt(_select_shape_index_a) < 0) {
-
-            this._update_canvas();
         }
     };
 
@@ -3498,10 +3488,10 @@ class CanvasPixels extends React.Component {
 
             if(indexed_changes.size > 0) {
 
-                force_update = Boolean(indexed_changes.size * 2 > pxl_width * pxl_height || force_update || clear_canvas);
+                force_update = Boolean(indexed_changes.size * 1.05 > pxl_width * pxl_height || force_update || clear_canvas);
 
                 this.super_canvas.putcrowd(indexed_changes);
-                this.super_canvas.uncrowd(force_update);
+                this.super_canvas.uncrowd();
                 this.setSt4te({
                     _pxl_indexes_of_selection_drawn: new Set(Array.from(_pxl_indexes_of_selection)),
                     _pxl_indexes_of_old_shape: new Set(Array.from(pxl_indexes_of_current_shape)),
