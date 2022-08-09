@@ -192,7 +192,7 @@ class CanvasPixels extends React.Component {
 
         _intervals[3] = setInterval(this._notify_export_state, this.st4te.export_state_every_ms);
 
-        _intervals[4] = setInterval(this._maybe_update_canvas, parseInt(250));
+        _intervals[4] = setInterval(() => {this._maybe_update_canvas(true)}, this.sraf.get_state().is_mobile_or_tablet ? 125: 75);
 
         const body_css =
             "body {" +
@@ -3523,7 +3523,7 @@ class CanvasPixels extends React.Component {
                     _is_there_new_dimension: false,
                     _did_hide_canvas_content: Boolean(hide_canvas_content)
                 });
-                this.sraf.run_frame(this.super_canvas.render, !force_update, force_update);
+                this.sraf.run_frame(this.super_canvas.render, force_update, force_update);
             }
         }else {
 
