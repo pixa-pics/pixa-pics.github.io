@@ -3164,16 +3164,16 @@ class CanvasPixels extends React.Component {
 
     _update_canvas = async(force_update = false, do_not_cancel_animation = false) => {
 
-        const { has_shown_canvas_once, _s_pxl_colors, _s_pxls, _layer_index, _layers } = this.st4te;
-        const _layers_simplified = Array.from(_layers.map(function(l) {
-                return Object.assign({}, {
+        const { has_shown_canvas_once, _s_pxl_colors, _s_pxls, _layer_index, _layers, _old_layers } = this.st4te;
+        const _layers_simplified = _layers.map(function(l) {
+                return {
                     id: parseInt(l.id),
                     hash: String(l.hash),
                     name: String(l.name),
                     hidden: Boolean(l.hidden),
                     opacity: parseInt(l.opacity),
-                });
-            }));
+                };
+            });
 
         // Only operate on canvas context if existing
         if (Boolean(this.super_canvas)) {
@@ -3192,14 +3192,12 @@ class CanvasPixels extends React.Component {
                 _old_pxl_height,
                 pxl_width,
                 pxl_height,
-                _old_layers,
                 _old_pxls_hovered,
                 _pxls_hovered,
                 tool,
                 _is_there_new_dimension,
                 _shape_index_a,
                 _select_shape_index_a,
-                pxl_current_opacity,
                 _pxl_indexes_of_selection,
                 _pxl_indexes_of_selection_drawn,
                 _paint_or_select_hover_pxl_indexes,
@@ -3207,8 +3205,6 @@ class CanvasPixels extends React.Component {
                 _old_selection_pair_highlight,
                 _pxl_indexes_of_old_shape
             } = this.st4te;
-
-            const pxl_current_color = this.color_conversion.to_uint32_from_hex(this.color_conversion.format_hex_color(this.st4te.pxl_current_color));
 
             let {
                 _imported_image_start_x,
@@ -3407,8 +3403,8 @@ class CanvasPixels extends React.Component {
                             b.is_the_old_pixel_hovered_to_paint ||
                             b.is_a_new_pixel_to_paint ||
                             Boolean(b.is_pixel_hovered && !b.pixel_hover_exception) ||
-                            b.is_in_the_old_shape ||
-                            b.is_in_the_current_shape ||
+                            Boolean(!b.is_in_the_old_shape && b.is_in_the_current_shape) ||
+                            Boolean(b.is_in_the_old_shape && !b.is_in_the_current_shape) ||
                             Boolean(b.is_in_the_current_selection && !b.is_in_the_old_selection_drawn) ||
                             b.is_selected_and_hovered_recently ||
                             b.is_in_image_imported_resizer && Boolean(_selection_pair_highlight !== _old_selection_pair_highlight)
@@ -3502,35 +3498,7 @@ class CanvasPixels extends React.Component {
 
                 force_update = Boolean(indexed_changes.size * 2 > pxl_width * pxl_height || force_update || clear_canvas);
 
-                if(indexed_changes.size > 0) {
-
-                    let indexed_by_color_changes = new Map();
-
-                    for (const [index, colorUint32] of indexed_changes) {
-
-                        if(!indexed_by_color_changes.has(colorUint32)) {
-
-                            indexed_by_color_changes.set(colorUint32, Array.of(index));
-                        }else {
-
-                            indexed_by_color_changes.get(colorUint32).push(index);
-                        }
-                    }
-
-                    for (const [colorUint32, array] of indexed_by_color_changes) {
-
-                        let path = new Path2D();
-
-                        array.forEach((i) => {
-                            const x = i % pxl_width, y = (i - x) / pxl_width;
-                            path.rect(x, y, 1, 1);
-                        });
-
-                        this.super_canvas.draw_path_with_style(path, this.color_conversion.to_hex_from_uint32(colorUint32));
-                    }
-                }
-
-                this.sraf.run_frame(this.super_canvas.render, Boolean(!force_update), Boolean(force_update));
+                this.super_canvas.push(indexed_changes);
                 this.setSt4te({
                     _pxl_indexes_of_selection_drawn: new Set(Array.from(_pxl_indexes_of_selection)),
                     _pxl_indexes_of_old_shape: new Set(Array.from(pxl_indexes_of_current_shape)),
@@ -3551,8 +3519,14 @@ class CanvasPixels extends React.Component {
                     has_shown_canvas_once: true,
                     _is_there_new_dimension: false,
                     _did_hide_canvas_content: Boolean(hide_canvas_content)
+                }, () => {
+
+                    this.sraf.run_frame(this.super_canvas.render, false, false);
                 });
             }
+        }else {
+
+            this._update_canvas();
         }
     }
 

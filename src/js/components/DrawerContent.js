@@ -1,8 +1,6 @@
 import React from "react";
 import {withStyles} from "@material-ui/core";
 
-import { t } from "../utils/t";
-
 import {List, ListItem, ListItemIcon, ListItemText, Badge} from "@material-ui/core";
 
 import PersonIcon from "@material-ui/icons/Person";
@@ -126,8 +124,7 @@ class DrawerContent extends React.Component {
     _open_pixel_page = () => {
 
         window.dispatchEvent(new Event("menu-action-tryeditor"));
-        const { _history } = this.state;
-        _history.push("/pixel");
+        actions.load_with();
         this.props.onClose();
     };
 
