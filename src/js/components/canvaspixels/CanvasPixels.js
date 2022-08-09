@@ -1736,7 +1736,7 @@ class CanvasPixels extends React.Component {
 
         this.setSt4te({_s_pxls: ns_pxls, _s_pxl_colors: ns_pxl_colors, _last_action_timestamp: Date.now()}, () => {
 
-            this._update_canvas();
+            this._update_canvas(true);
         });
 
     };
@@ -2322,7 +2322,7 @@ class CanvasPixels extends React.Component {
 
         this.setSt4te({_pxl_indexes_of_selection, _last_action_timestamp: Date.now()}, () => {
 
-            this._update_canvas();
+            this._update_canvas(true);
             this._notify_is_something_selected();
         });
 
@@ -2728,7 +2728,7 @@ class CanvasPixels extends React.Component {
 
     _handle_canvas_middle = () => {
 
-        this._update_canvas();
+        this._update_canvas(true);
     };
 
     _handle_canvas_mouse_move = (event) => {
@@ -3154,7 +3154,7 @@ class CanvasPixels extends React.Component {
                 _last_action_timestamp: Date.now()
             }, () => {
 
-                this._update_canvas();
+                this._update_canvas(true);
                 this._notify_is_something_selected();
             });
 
@@ -3501,7 +3501,7 @@ class CanvasPixels extends React.Component {
                 force_update = Boolean(indexed_changes.size * 2 > pxl_width * pxl_height || force_update || clear_canvas);
 
                 this.super_canvas.putcrowd(indexed_changes);
-                this.super_canvas.uncrowd(!force_update);
+                if(force_update) {this.super_canvas.uncrowd(false);}
                 this.setSt4te({
                     _pxl_indexes_of_selection_drawn: new Set(Array.from(_pxl_indexes_of_selection)),
                     _pxl_indexes_of_old_shape: new Set(Array.from(pxl_indexes_of_current_shape)),
@@ -3523,7 +3523,7 @@ class CanvasPixels extends React.Component {
                     _is_there_new_dimension: false,
                     _did_hide_canvas_content: Boolean(hide_canvas_content)
                 });
-                this.sraf.run_frame(this.super_canvas.render, false, force_update);
+                this.sraf.run_frame(this.super_canvas.render, !force_update, force_update);
             }
         }else {
 
@@ -3826,7 +3826,7 @@ class CanvasPixels extends React.Component {
             this._notify_image_load_complete();
             this._notify_is_something_selected();
             this._notify_can_undo_redo_change();
-            this._update_canvas();
+            this._update_canvas(true);
             callback_function();
         });
     };
@@ -3905,7 +3905,7 @@ class CanvasPixels extends React.Component {
 
                     this._notify_is_something_selected();
                     this._notify_can_undo_redo_change();
-                    this._update_canvas();
+                    this._update_canvas(true);
                 });
             }
         }, true);
@@ -3964,7 +3964,7 @@ class CanvasPixels extends React.Component {
 
                     this._notify_is_something_selected();
                     this._notify_can_undo_redo_change();
-                    this._update_canvas();
+                    this._update_canvas(true);
                 });
             }
         }, true);
@@ -4039,7 +4039,7 @@ class CanvasPixels extends React.Component {
 
         this.setSt4te({_s_pxl_colors: ns_pxl_colors, _s_pxls: ns_pxls, _last_action_timestamp: Date.now()}, () => {
 
-            this._update_canvas();
+            this._update_canvas(true);
         });
     }
 
@@ -4059,7 +4059,7 @@ class CanvasPixels extends React.Component {
 
         this.setSt4te({_pxl_indexes_of_selection: pxl_indexes_of_selection, _last_action_timestamp: Date.now()}, () => {
 
-            this._update_canvas();
+            this._update_canvas(true);
         });
     }
 
@@ -4169,14 +4169,13 @@ class CanvasPixels extends React.Component {
         let ns_pxls = this.st4te._s_pxls;
         ns_pxls[_layer_index] = Array.from(pxls);
 
-        this.setSt4te({_s_pxl_colors: ns_pxl_colors, _s_pxls: ns_pxls}, () => {
+        this.setSt4te( {
+            _s_pxl_colors: ns_pxl_colors,
+            _s_pxls: ns_pxls,
+            _last_action_timestamp: Date.now()
+        }, () => {
 
-            this.setSt4te(() => {
-                _last_action_timestamp: Date.now()
-            }, () => {
-
-                this._update_canvas();
-            });
+            this._update_canvas(true);
         });
     };
 
@@ -4377,7 +4376,7 @@ class CanvasPixels extends React.Component {
                         has_shown_canvas_once: false,
                     }, () => {
 
-                        this._update_canvas();
+                        this._update_canvas(true);
                     })
                 };
                 image.src = _base64_original_images[_original_image_index];
@@ -4398,7 +4397,7 @@ class CanvasPixels extends React.Component {
                     has_shown_canvas_once: false,
                 }, () => {
 
-                    this._update_canvas();
+                    this._update_canvas(true);
                 });
 
             }
@@ -4447,7 +4446,8 @@ class CanvasPixels extends React.Component {
 
         this.setSt4te({_pxl_indexes_of_selection: new Set()}, () => {
 
-            this._update_canvas();
+            this._notify_is_something_selected();
+            this._update_canvas(true);
         });
     };
 
@@ -4824,13 +4824,13 @@ class CanvasPixels extends React.Component {
                     _pxl_indexes_of_selection: new_pxl_indexes_of_selection,
                     _s_pxls: ns_pxls,
                     _base64_original_images: new_base64_original_images,
-                    _original_image_index: -1,
+                    _original_image_index: new_base64_original_images.indexOf(base64_original_image),
                     _is_there_new_dimension: true,
-                    _imported_image_pxls
+                    _imported_image_pxls,
+                    _last_action_timestamp: Date.now()
                 }, () => {
 
-                    this.setSt4te({_original_image_index: new_base64_original_images.indexOf(base64_original_image), _last_action_timestamp: Date.now()});
-                    this._update_canvas();
+                    this._update_canvas(true);
                 })
 
             };
@@ -4848,7 +4848,7 @@ class CanvasPixels extends React.Component {
                 _imported_image_pxls
             }, () => {
 
-                this._update_canvas();
+                this._update_canvas(true);
             });
         }
     };
@@ -4885,7 +4885,7 @@ class CanvasPixels extends React.Component {
 
         this.setSt4te({_s_pxls: ns_pxls, _s_pxl_colors: ns_pxl_colors, _last_action_timestamp: Date.now()}, () => {
 
-            this._update_canvas();
+            this._update_canvas(true);
         });
     }
 
@@ -4908,7 +4908,7 @@ class CanvasPixels extends React.Component {
 
             this.setSt4te({_s_pxls, _s_pxl_colors, _last_action_timestamp: Date.now()}, () => {
 
-                this._update_canvas();
+                this._update_canvas(true);
                 callback_function(results);
             });
         });
@@ -4924,7 +4924,7 @@ class CanvasPixels extends React.Component {
 
         this.setSt4te({_s_pxls, _s_pxl_colors, _last_action_timestamp: Date.now()}, () => {
 
-            this._update_canvas();
+            this._update_canvas(true);
         });
     };
 
@@ -4937,7 +4937,7 @@ class CanvasPixels extends React.Component {
 
         this.setSt4te({_s_pxls, _s_pxl_colors, _last_action_timestamp: Date.now()}, () => {
 
-            this._update_canvas();
+            this._update_canvas(true);
         });
     };
 
@@ -4979,7 +4979,7 @@ class CanvasPixels extends React.Component {
 
         this.setSt4te({_s_pxls, _s_pxl_colors, _last_action_timestamp: Date.now()}, () => {
 
-            this._update_canvas();
+            this._update_canvas(true);
         });
     };
 
@@ -5059,7 +5059,7 @@ class CanvasPixels extends React.Component {
 
                 this.setSt4te({_s_pxls, _s_pxl_colors, _last_action_timestamp: Date.now()}, () => {
 
-                    this._update_canvas();
+                    this._update_canvas(true);
                 });
 
             });
@@ -5109,7 +5109,7 @@ class CanvasPixels extends React.Component {
 
         this.setSt4te({_s_pxl_colors: ns_pxl_colors, _last_action_timestamp: Date.now()}, () => {
 
-            this._update_canvas();
+            this._update_canvas(true);
         });
     };
 
@@ -5361,7 +5361,7 @@ class CanvasPixels extends React.Component {
 
         this.setSt4te({_s_pxls, _s_pxl_colors, _old_pxls_hovered: -1, _pxls_hovered: -1}, () => {
 
-            this._update_canvas();
+            this._update_canvas(true);
         });
 
     };
@@ -5374,7 +5374,7 @@ class CanvasPixels extends React.Component {
 
         this.setSt4te({_s_pxls, _s_pxl_colors, _old_pxls_hovered: -1, _pxls_hovered: -1, _last_action_timestamp: Date.now() }, () => {
 
-            this._update_canvas();
+            this._update_canvas(true);
         });
 
     }
@@ -5503,7 +5503,7 @@ class CanvasPixels extends React.Component {
                     has_shown_canvas_once: false,
                 }, () => {
 
-                    this._update_canvas();
+                    this._update_canvas(true);
                 });
 
             };
@@ -5530,7 +5530,7 @@ class CanvasPixels extends React.Component {
                 has_shown_canvas_once: false,
             }, () => {
 
-                this._update_canvas();
+                this._update_canvas(true);
             });
         }
     };
@@ -5942,7 +5942,7 @@ class CanvasPixels extends React.Component {
                                 userSelect: "none",
                                 width: Math.floor(sizes.width),
                                 height: Math.floor(sizes.height),
-                                transform: `scale(${(screen_zoom_ratio * scale.current).toFixed(3)})`,
+                                transform: `translateZ(10px) scale(${(screen_zoom_ratio * scale.current).toFixed(4)})`,
                                 transformOrigin: "left top",
                                 boxSizing: "content-box",
                                 borderWidth: 0,

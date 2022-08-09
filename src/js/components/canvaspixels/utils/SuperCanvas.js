@@ -105,6 +105,7 @@ const SuperCanvas = {
         let tbf = parseInt(1000 / max_fps);
         let pt = tbf;
         let refresh = false;
+        let idle_id = null;
 
         return {
             // Methods
@@ -151,7 +152,7 @@ const SuperCanvas = {
                     }else {
 
                         rs--;
-                        if(ics.length > 0 || ic.size > 0) {prender(draw, Math.max(1, tbf))}
+                        if(ics.length > 0 || ic.size > 0) {prender(draw, Math.max(1, now - rt - tbf))}
                     }
                 }else{
 
@@ -168,10 +169,12 @@ const SuperCanvas = {
                         pt,
                         refresh
                     ] = uc(s.width, ics, ic, s.offscreen_canvas_context2d, pt, refresh);
+                    idle_id = null;
                 }
 
+                if(idle_id){cancelIdleCallback(idle_id);}
                 if(idle && typeof requestIdleCallback !== "undefined") {
-                    requestIdleCallback(uncr);
+                    idle_id = requestIdleCallback(uncr);
                 }else {
 
                     uncr();
