@@ -27,7 +27,7 @@ const SuperCanvas = {
             offscreen_canvas_context2d: occ2d
         };
     },
-    _uncrowd: function(width, ics, ic, offscreen_canvas_context2d, pt, refresh) {
+    _uncrowd: function(width, ics, ic, s, pt, refresh, resolve, reject, callback, timeout ) {
 
         const now = Date.now();
 
@@ -70,27 +70,34 @@ const SuperCanvas = {
             // Clear parts of canvas before
             const summed_path = new Path2D();
             indexed_by_color_paths.values(function (p) {
-
                 summed_path.addPath(p);
             });
 
-            offscreen_canvas_context2d.globalCompositeOperation = "destination-out";
-            offscreen_canvas_context2d.fillStyle = "#ffffffff";
-            offscreen_canvas_context2d.fill(summed_path);
+            s.offscreen_canvas_context2d.globalCompositeOperation = "destination-out";
+            s.offscreen_canvas_context2d.fillStyle = "#ffffffff";
+            s.offscreen_canvas_context2d.fill(summed_path);
 
             // Draw paths b color
-            offscreen_canvas_context2d.globalCompositeOperation = "source-over";
+            s.offscreen_canvas_context2d.globalCompositeOperation = "source-over";
             for (const [style, path] of indexed_by_color_paths) {
-                offscreen_canvas_context2d.fillStyle = style;
-                offscreen_canvas_context2d.fill(path);
+
+                s.offscreen_canvas_context2d.fillStyle = style;
+                s.offscreen_canvas_context2d.fill(path);
             }
 
-            ic.clear();
+
             pt = Date.now() - now;
             refresh = true;
+            ic.clear();
+
+            resolve(callback, timeout-pt);
+
+        }else {
+
+            reject(callback, 1);
         }
 
-        return [ics, ic, offscreen_canvas_context2d, pt, refresh];
+        return {ics, ic, s, pt, refresh};
     },
 
     from: function(c, pxl_width, pxl_height, max_fps = 60){
@@ -114,29 +121,37 @@ const SuperCanvas = {
             },
             render() {
 
-                function draw(){
+                function prender(callback = function(){}, timeout = 0) {
 
+                    function prender_resolve(callback, timeout){
+
+                        setTimeout(callback, Math.max(1, timeout));
+                    }
+
+                    function prender_reject(callback){
+
+                        setTimeout(callback, 1);
+                    }
+
+                    const r = uc(s.width, ics, ic, s, pt, refresh, prender_resolve, prender_reject, callback, timeout);
+                    ics = r.ics;
+                    ic = r.ic;
+                    s = r.s;
+                    pt = r.pt;
+                    refresh = r.refresh;
+
+                    return;
+                }
+
+                function draw(){
                     if(refresh) {
 
-                        refresh = false;
                         const now = Date.now();
                         s.canvas_context2d.drawImage(s.offscreen_canvas_context2d.canvas, 0, 0);
                         tbf = now - rt;
                         rt = Date.now();
+                        refresh = false;
                     }
-                }
-
-                function prender(callback, timeout) {
-
-                    [
-                        ics,
-                        ic,
-                        s.offscreen_canvas_context2d,
-                        pt,
-                        refresh
-                    ] = uc(s.width, ics, ic, s.offscreen_canvas_context2d, pt, refresh);
-
-                    setTimeout(callback, Math.max(1, timeout-pt));
                 }
 
                 rs++;
@@ -147,37 +162,61 @@ const SuperCanvas = {
                     if(rt + tbf < now) {
 
                         rs--;
-                        if(ics.length > 0 || ic.size > 0) {prender(draw, 1)}
+
+                        prender(draw, 1);
+                        return true;
 
                     }else {
 
                         rs--;
-                        if(ics.length > 0 || ic.size > 0) {prender(draw, Math.max(1, now - rt - tbf))}
+
+                        prender(draw, Math.max(1, now - rt - tbf - pt));
+                        return true;
                     }
                 }else{
 
                     rs--;
+                    return false;
                 }
             },
-            uncrowd(idle = false){
+            uncrowd(force = false){
 
-                function uncr() {
-                    [
-                        ics,
-                        ic,
-                        s.offscreen_canvas_context2d,
-                        pt,
-                        refresh
-                    ] = uc(s.width, ics, ic, s.offscreen_canvas_context2d, pt, refresh);
-                    idle_id = null;
+                function prender(callback = function(){}, timeout = 0) {
+
+                    function prender_resolve(callback, timeout){
+
+                        setTimeout(callback, Math.max(1, timeout));
+                    }
+
+                    function prender_reject(callback){
+
+                        setTimeout(callback, 1);
+                    }
+
+                    const r = uc(s.width, ics, ic, s, pt, refresh, prender_resolve, prender_reject, callback, timeout);
+                    ics = r.ics;
+                    ic = r.ic;
+                    s = r.s;
+                    pt = r.pt;
+                    refresh = r.refresh;
+
+                    return;
                 }
 
-                if(idle_id){cancelIdleCallback(idle_id);}
-                if(idle && typeof requestIdleCallback !== "undefined") {
-                    idle_id = requestIdleCallback(uncr);
-                }else {
+                if(force === false && typeof requestIdleCallback !== "undefined") {
 
-                    uncr();
+                    idle_id = requestIdleCallback(prender, {timeout: 250});
+                }else if(force){
+
+                    prender(function(){
+
+                        if(Boolean(idle_id !== null && force) && typeof cancelIdleCallback !== "undefined") {
+
+                            cancelIdleCallback(idle_id);
+                            idle_id = null;
+                        }
+
+                    });
                 }
             },
             putcrowd(indexed_changes_map) {

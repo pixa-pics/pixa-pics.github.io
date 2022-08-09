@@ -3162,7 +3162,7 @@ class CanvasPixels extends React.Component {
         }
     };
 
-    _update_canvas = async(force_update = false, do_not_cancel_animation = false) => {
+    _update_canvas = async(force_update = false) => {
 
         const { has_shown_canvas_once, _s_pxl_colors, _s_pxls, _layer_index, _layers, _old_layers } = this.st4te;
         const _layers_simplified = _layers.map(function(l) {
@@ -3501,7 +3501,7 @@ class CanvasPixels extends React.Component {
                 force_update = Boolean(indexed_changes.size * 2 > pxl_width * pxl_height || force_update || clear_canvas);
 
                 this.super_canvas.putcrowd(indexed_changes);
-                if(force_update) {this.super_canvas.uncrowd(false);}
+                this.super_canvas.uncrowd(force_update);
                 this.setSt4te({
                     _pxl_indexes_of_selection_drawn: new Set(Array.from(_pxl_indexes_of_selection)),
                     _pxl_indexes_of_old_shape: new Set(Array.from(pxl_indexes_of_current_shape)),
@@ -3522,8 +3522,10 @@ class CanvasPixels extends React.Component {
                     has_shown_canvas_once: true,
                     _is_there_new_dimension: false,
                     _did_hide_canvas_content: Boolean(hide_canvas_content)
+                }, () => {
+
+                    this.sraf.run_frame(this.super_canvas.render, false, force_update);
                 });
-                this.sraf.run_frame(this.super_canvas.render, force_update, force_update);
             }
         }else {
 

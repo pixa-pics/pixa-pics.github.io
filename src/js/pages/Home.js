@@ -129,25 +129,22 @@ const styles = theme => ({
         display: "relative",
         transform: "translate(min(50vh, 50%), min(50vh, 50%))",
         cursor: "pointer",
-        "& > img": {
+        "& > img, & > h2": {
             userSelect: "none",
             width: "100%",
             height: "100%",
             pointerEvents: "none",
-            filter: "opacity(0.75)",
+            filter: "opacity(0.66)",
             webkitFilter: "opacity(0.75)",
             transform: "translateZ(10px)",
             imageRendering: "optimizeSpeed",
             transition: "filter cubic-bezier(0.4, 0, 0.2, 1) 625ms !important"
         },
-        "&:hover > img": {
+        "&:hover > img, &:hover > h2": {
             pointerEvents: "none",
             filter: "opacity(1)",
             webkitFilter: "opacity(1)",
             transition: "filter cubic-bezier(0.4, 0, 0.2, 1) 125ms !important"
-        },
-        "& > img.aspect-ratio-one": {
-            aspectRatio: "1",
         },
         [theme.breakpoints.down("md")]: {
             fontSize: 12,
@@ -508,14 +505,14 @@ class Home extends React.Component {
                                 <img src={_image_name_infographics}
                                      alt="Image demo."
                                      style={first_image ? {aspectRatio: "108/118"}: {}}
-                                     className={String(first_image ? " pixelated shiny": _image_name_infographics.endsWith(".png") ? "pixelated shiny": "speed shiny")}
+                                     className={String(first_image ? " pixelated ": _image_name_infographics.endsWith(".png") ? "pixelated ": " speed ")}
                                 />
                             </div>
                         </Grow>}
-                        <h2 className={classes.backgroundImageInfo} style={{color: "#ffffff", backgroundColor: "#10ff0040", padding: 16, textAlign: "center", borderRadius: "4px"}}>
+                        <h2 className={classes.backgroundImageInfo} style={{filter: "drop-shadow(0px 0px 6px #00000063)", color: "#ffffff", backgroundColor: "#1bcb1863", padding: 16, textAlign: "center", borderRadius: "12px"}}>
                             <span style={{color: "#ffffff", fontSize: "0.75em"}}>REAL INFINITE "SVG" RENDERING...</span>
                             <br/>
-                            <span style={{fontSize: "1em", color: "#44ff00", filter: "drop-shadow(2px 4px 6px darkgreen)"}}>TRY IT right NOW!</span>
+                            <span style={{fontSize: "1em", color: "#22ff00", filter: "drop-shadow(0px 0px 4px darkgreen)"}}>TRY IT RIGHT «NOW»!</span>
                         </h2>
                     </div>
                 </div>
