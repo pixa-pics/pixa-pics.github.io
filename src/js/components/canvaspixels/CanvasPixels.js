@@ -3178,6 +3178,8 @@ class CanvasPixels extends React.Component {
         // Only operate on canvas context if existing
         if (Boolean(this.super_canvas)) {
 
+            this.super_canvas.uncrowd(true);
+
             // Importing state variables
             const {
                 select_mode,
@@ -3498,9 +3500,8 @@ class CanvasPixels extends React.Component {
 
                 force_update = Boolean(indexed_changes.size * 2 > pxl_width * pxl_height || force_update || clear_canvas);
 
-                this.super_canvas.pushcrowd(indexed_changes);
-                this.super_canvas.uncrowd();
-
+                this.super_canvas.putcrowd(indexed_changes);
+                this.super_canvas.uncrowd(!force_update);
                 this.setSt4te({
                     _pxl_indexes_of_selection_drawn: new Set(Array.from(_pxl_indexes_of_selection)),
                     _pxl_indexes_of_old_shape: new Set(Array.from(pxl_indexes_of_current_shape)),
@@ -3521,10 +3522,8 @@ class CanvasPixels extends React.Component {
                     has_shown_canvas_once: true,
                     _is_there_new_dimension: false,
                     _did_hide_canvas_content: Boolean(hide_canvas_content)
-                }, () => {
-
-                    this.sraf.run_frame(this.super_canvas.render, false, false);
                 });
+                this.sraf.run_frame(this.super_canvas.render, false, force_update);
             }
         }else {
 

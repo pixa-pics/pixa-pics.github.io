@@ -27,9 +27,75 @@ const SuperCanvas = {
             offscreen_canvas_context2d: occ2d
         };
     },
+    _uncrowd: function(width, ics, ic, offscreen_canvas_context2d, pt, refresh) {
+
+        const now = Date.now();
+
+        if(ics.length > 0 && ic.size === 0) {
+
+            ic = new Map(Object.entries(ics.reduce(function (acc, val) {
+                return Object.assign(acc, Object.fromEntries(val.entries()));
+            }, {}))); ics = new Array();
+        }
+
+        if (ic.size > 0) {
+
+            const indexed_by_color_changes = new Map();
+            for (const [index, colorUint32] of ic) {
+
+                if (!indexed_by_color_changes.has(colorUint32)) {
+
+                    const set = new Set();
+                    set.add(index);
+                    indexed_by_color_changes.set(colorUint32, set);
+                } else {
+
+                    indexed_by_color_changes.get(colorUint32).add(index);
+                }
+            }
+
+            const indexed_by_color_paths = new Map();
+            for (const [uint32, set] of indexed_by_color_changes) {
+
+                const path = new Path2D();
+                const style = "#".concat("00000000".concat(uint32.toString(16)).slice(-8));
+                set.forEach((i) => {
+                    const x = i % width, y = (i - x) / width;
+                    path.rect(x, y, 1, 1);
+                });
+                set.clear();
+                indexed_by_color_paths.set(style, path);
+            }
+
+            // Clear parts of canvas before
+            const summed_path = new Path2D();
+            indexed_by_color_paths.values(function (p) {
+
+                summed_path.addPath(p);
+            });
+
+            offscreen_canvas_context2d.globalCompositeOperation = "destination-out";
+            offscreen_canvas_context2d.fillStyle = "#ffffffff";
+            offscreen_canvas_context2d.fill(summed_path);
+
+            // Draw paths b color
+            offscreen_canvas_context2d.globalCompositeOperation = "source-over";
+            for (const [style, path] of indexed_by_color_paths) {
+                offscreen_canvas_context2d.fillStyle = style;
+                offscreen_canvas_context2d.fill(path);
+            }
+
+            ic.clear();
+            pt = Date.now() - now;
+            refresh = true;
+        }
+
+        return [ics, ic, offscreen_canvas_context2d, pt, refresh];
+    },
 
     from: function(c, pxl_width, pxl_height, max_fps = 60){
 
+        let uc = this._uncrowd;
         let cs = this._create_state;
         let s = cs(c, pxl_width, pxl_height);
         let ics = new Array(); // Maps within an set for changes indexed by color in Uint32
@@ -38,7 +104,7 @@ const SuperCanvas = {
         let rs = 0;
         let tbf = parseInt(1000 / max_fps);
         let pt = tbf;
-        let idle = 0;
+        let refresh = false;
 
         return {
             // Methods
@@ -49,75 +115,27 @@ const SuperCanvas = {
 
                 function draw(){
 
-                    const now = Date.now();
-                    s.canvas_context2d.drawImage(s.offscreen_canvas_context2d.canvas, 0, 0);
-                    tbf = now - rt;
-                    rt = Date.now();
+                    if(refresh) {
+
+                        refresh = false;
+                        const now = Date.now();
+                        s.canvas_context2d.drawImage(s.offscreen_canvas_context2d.canvas, 0, 0);
+                        tbf = now - rt;
+                        rt = Date.now();
+                    }
                 }
 
                 function prender(callback, timeout) {
 
-                    const now = Date.now();
+                    [
+                        ics,
+                        ic,
+                        s.offscreen_canvas_context2d,
+                        pt,
+                        refresh
+                    ] = uc(s.width, ics, ic, s.offscreen_canvas_context2d, pt, refresh);
 
-                    if(ics.length > 0 && ic.size === 0) {
-
-                        ic = new Map(Object.entries(ics.reduce(function (acc, val) {
-                            return Object.assign(acc, Object.fromEntries(val.entries()));
-                        }, {}))); ics = new Array();
-                    }
-
-                    if (ic.size > 0) {
-
-                        const indexed_by_color_changes = new Map();
-                        for (const [index, colorUint32] of ic) {
-
-                            if (!indexed_by_color_changes.has(colorUint32)) {
-
-                                const set = new Set();
-                                set.add(index);
-                                indexed_by_color_changes.set(colorUint32, set);
-                            } else {
-
-                                indexed_by_color_changes.get(colorUint32).add(index);
-                            }
-                        }
-
-                        const indexed_by_color_paths = new Map();
-                        for (const [uint32, set] of indexed_by_color_changes) {
-
-                            const path = new Path2D();
-                            const style = "#".concat("00000000".concat(uint32.toString(16)).slice(-8));
-                            set.forEach((i) => {
-                                const x = i % s.width, y = (i - x) / s.width;
-                                path.rect(x, y, 1, 1);
-                            });
-                            set.clear();
-                            indexed_by_color_paths.set(style, path);
-                        }
-
-                        // Clear parts of canvas before
-                        const summed_path = new Path2D();
-                        indexed_by_color_paths.values(function (p) {
-
-                            summed_path.addPath(p);
-                        });
-
-                        s.offscreen_canvas_context2d.globalCompositeOperation = "destination-out";
-                        s.offscreen_canvas_context2d.fillStyle = "#ffffffff";
-                        s.offscreen_canvas_context2d.fill(summed_path);
-
-                        // Draw paths b color
-                        s.offscreen_canvas_context2d.globalCompositeOperation = "source-over";
-                        for (const [style, path] of indexed_by_color_paths) {
-                            s.offscreen_canvas_context2d.fillStyle = style;
-                            s.offscreen_canvas_context2d.fill(path);
-                        }
-
-                        ic.clear();
-                        if(idle !== 0) { cancelIdleCallback(idle); idle = 0; }
-                    }
-                    pt = Date.now() - now;
-                    setTimeout(callback, Math.max(0, timeout-pt));
+                    setTimeout(callback, Math.max(1, timeout-pt));
                 }
 
                 rs++;
@@ -133,84 +151,37 @@ const SuperCanvas = {
                     }else {
 
                         rs--;
-                        if(ics.length > 0 || ic.size > 0) {prender(draw, Math.max(1, rt + tbf - now))}
+                        if(ics.length > 0 || ic.size > 0) {prender(draw, Math.max(1, tbf))}
                     }
                 }else{
 
                     rs--;
                 }
             },
-            pushcrowd(indexed_changes_map) {
+            uncrowd(idle = false){
+
+                function uncr() {
+                    [
+                        ics,
+                        ic,
+                        s.offscreen_canvas_context2d,
+                        pt,
+                        refresh
+                    ] = uc(s.width, ics, ic, s.offscreen_canvas_context2d, pt, refresh);
+                }
+
+                if(idle && typeof requestIdleCallback !== "undefined") {
+                    requestIdleCallback(uncr);
+                }else {
+
+                    uncr();
+                }
+            },
+            putcrowd(indexed_changes_map) {
 
                 ics.push(indexed_changes_map);
             },
-            uncrowd() {
 
-                function uc() {
-
-                    if(ics.length > 0 && ic.size === 0) {
-
-                        ic = new Map(Object.entries(ics.reduce(function (acc, val) {
-                            return Object.assign(acc, Object.fromEntries(val.entries()));
-                        }, {}))); ics = new Array();
-                    }
-
-                    if (ic.size > 0) {
-
-                        const indexed_by_color_changes = new Map();
-                        for (const [index, colorUint32] of ic) {
-
-                            if (!indexed_by_color_changes.has(colorUint32)) {
-
-                                const set = new Set();
-                                set.add(index);
-                                indexed_by_color_changes.set(colorUint32, set);
-                            } else {
-
-                                indexed_by_color_changes.get(colorUint32).add(index);
-                            }
-                        }
-
-                        const indexed_by_color_paths = new Map();
-                        for (const [uint32, set] of indexed_by_color_changes) {
-
-                            const path = new Path2D();
-                            const style = "#".concat("00000000".concat(uint32.toString(16)).slice(-8));
-                            set.forEach((i) => {
-                                const x = i % s.width, y = (i - x) / s.width;
-                                path.rect(x, y, 1, 1);
-                            });
-                            set.clear();
-                            indexed_by_color_paths.set(style, path);
-                        }
-
-                        // Clear parts of canvas before
-                        const summed_path = new Path2D();
-                        indexed_by_color_paths.values(function (p) {
-
-                            summed_path.addPath(p);
-                        });
-
-                        s.offscreen_canvas_context2d.globalCompositeOperation = "destination-out";
-                        s.offscreen_canvas_context2d.fillStyle = "#ffffffff";
-                        s.offscreen_canvas_context2d.fill(summed_path);
-
-                        // Draw paths b color
-                        s.offscreen_canvas_context2d.globalCompositeOperation = "source-over";
-                        for (const [style, path] of indexed_by_color_paths) {
-                            s.offscreen_canvas_context2d.fillStyle = style;
-                            s.offscreen_canvas_context2d.fill(path);
-                        }
-                        ic.clear();
-                    }
-
-                    idle = 0;
-                }
-
-                if(idle === 0 && typeof requestIdleCallback !== "undefined") {
-                    idle = requestIdleCallback(uc);
-                }
-            },
             set_dimensions(w, h) {
 
                 if(s !== null) {
