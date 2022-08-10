@@ -2289,7 +2289,6 @@ class Pixel extends React.Component {
                                 key={"canvas"}
                                 className={classes.contentCanvas}
                                 ref={this._set_canvas_ref}
-                                no_actions={_is_pixel_dialog_post_edit_open}
                                 tool={_tool}
                                 canvas_wrapper_padding={32}
                                 hide_canvas_content={_hide_canvas_content}

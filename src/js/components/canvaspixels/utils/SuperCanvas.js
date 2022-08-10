@@ -28,18 +28,19 @@ const SuperCanvas = {
         if(!Boolean(c)) { c = document.createElement("canvas"); }
         c.width = pxl_width;
         c.height = pxl_height;
+
         let cc2d = c.getContext('2d', {willReadFrequently: true, desynchronized: true});
         cc2d.imageSmoothingEnabled = false;
         cc2d.globalCompositeOperation = "copy";
 
         let occ2d;
         try {
-            occ2d = new OffscreenCanvas(pxl_width, pxl_height).getContext("2d", {willReadFrequently: true, desynchronized: true});
+            occ2d = new OffscreenCanvas(pxl_width, pxl_height).getContext("2d", {willReadFrequently: true});
         } catch (e) {
             let occ = document.createElement("canvas");
             occ.width = pxl_width;
             occ.height = pxl_height;
-            occ2d = occ.getContext("2d", {willReadFrequently: true, desynchronized: true});
+            occ2d = occ.getContext("2d", {willReadFrequently: true});
         }
         occ2d.imageSmoothingEnabled = false;
 
@@ -96,12 +97,12 @@ const SuperCanvas = {
                 summed_path.addPath(p);
             });
 
-            s.offscreen_canvas_context2d.globalCompositeOperation = "destination-out";
-            s.offscreen_canvas_context2d.fillStyle = "#ffffffff";
-            s.offscreen_canvas_context2d.fill(summed_path);
+            s.offscreen_canvas_context2d.save();
+            s.offscreen_canvas_context2d.clip(summed_path);
+            s.offscreen_canvas_context2d.clearRect(0, 0, s.width, s.height);
+            s.offscreen_canvas_context2d.restore();
 
             // Draw paths b color
-            s.offscreen_canvas_context2d.globalCompositeOperation = "source-over";
             for (const [style, path] of indexed_by_color_paths) {
 
                 s.offscreen_canvas_context2d.fillStyle = style;
@@ -260,6 +261,17 @@ const SuperCanvas = {
             new(c, pxl_width, pxl_height) {
 
                 s = cs(c, pxl_width, pxl_height);
+                s.canvas_context2d.canvas.addEventListener("contextlost", function(){
+
+                    s.canvas_context2d = s.canvas_context2d.canvas.getContext('2d', {});
+                    s.canvas_context2d.imageSmoothingEnabled = false;
+                    s.canvas_context2d.globalCompositeOperation = "copy";
+                });
+                s.offscreen_canvas_context2d.canvas.addEventListener("contextlost", function(){
+
+                    s.offscreen_canvas_context2d = s.offscreen_canvas_context2d.canvas.getContext("2d", {});
+                    s.offscreen_canvas_context2d.imageSmoothingEnabled = false;
+                });
             },
             destroy(callback_function) {
 

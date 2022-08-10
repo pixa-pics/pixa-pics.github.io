@@ -47,7 +47,6 @@ class CanvasPixels extends React.Component {
             animation: props.animation || true,
             animation_duration: props.animation_duration || 60,
             move_using_full_container: props.move_using_full_container,
-            no_actions: props.no_actions || false,
             dont_compute_base64_original_image: props.dont_compute_base64_original_image || false,
             dont_change_img_size_onload: props.dont_change_img_size_onload || false,
             dont_show_canvas_until_img_set: props.dont_show_canvas_until_img_set || false,
@@ -188,7 +187,7 @@ class CanvasPixels extends React.Component {
 
         _intervals[1] = setInterval(this._maybe_update_mine_player, 1000 / 30);
 
-        _intervals[2] = setInterval(this._maybe_update_selection_highlight, this.sraf.get_state().is_mobile_or_tablet ? 2500: 1250);
+        _intervals[2] = setInterval(this._maybe_update_selection_highlight, this.sraf.get_state().is_mobile_or_tablet ? 2000: 1000);
 
         _intervals[3] = setInterval(this._notify_export_state, this.st4te.export_state_every_ms);
 
@@ -391,9 +390,9 @@ class CanvasPixels extends React.Component {
 
     _maybe_update_selection_highlight = () => {
 
-        const { tool, _select_shape_index_a, _selection_pair_highlight, no_actions } = this.st4te;
+        const { tool, _select_shape_index_a, _selection_pair_highlight } = this.st4te;
 
-        if(no_actions === false && tool.toUpperCase().includes("SELECT") && parseInt(_select_shape_index_a) < 0) {
+        if(this.canvas_pos.getState().moves_speed_average_now <= 0 && tool.toUpperCase().includes("SELECT") && parseInt(_select_shape_index_a) < 0) {
 
             this.setSt4te({_selection_pair_highlight: !_selection_pair_highlight}, () => {
 
@@ -458,72 +457,6 @@ class CanvasPixels extends React.Component {
             this.setSt4te(new_props);
         }
     }
-
-    _handle_motion_changes = (event) => {
-
-        let screen = window.screen;
-        let orientation = (screen.orientation || {}).type || screen.mozOrientation || screen.msOrientation;
-
-        let x = event.accelerationIncludingGravity.x - event.acceleration.x;
-        x = Math.max(-10, Math.min(10, x));
-        let previous_x = x;
-
-        let y = event.accelerationIncludingGravity.y - event.acceleration.y;
-        y = Math.max(-10, Math.min(10, y));
-
-        switch(orientation) {
-
-            case "portrait-primary":
-                x = x;
-                y = y;
-                break;
-            case "portrait-secondary":
-                x = -x;
-                y = -y;
-                break;
-            case "landscape-primary":
-
-                x = -y;
-                y = previous_x;
-                break;
-            case "landscape-secondary":
-
-                x = y;
-                y = -previous_x;
-                break;
-        }
-
-        if(this.sraf.get_state().is_mobile_or_tablet && this.st4te.perspective && this.st4te.has_shown_canvas_once) {
-
-            this.setSt4te({_device_motion: true, perspective_coordinate: [x, y], perspective_coordinate_last_change: Date.now()}, () => {
-
-                if(this.st4te._moves_speed_average_now === -24) {
-
-                    this._request_force_update(true, true, () => {
-
-                        //this._notify_perspective_coordinate_changes([x, y, this.st4te.scale]);
-                    });
-                }
-            });
-        }
-    };
-
-    set_perspective_coordinate = (array) => {
-
-        if((!this.sraf.get_state().is_mobile_or_tablet || !this.st4te._device_motion) && this.st4te.perspective && this.st4te.has_shown_canvas_once) {
-
-            this.setSt4te({perspective_coordinate: array, perspective_coordinate_last_change: Date.now()}, () => {
-
-                this._request_force_update(true, true, () => {
-
-                    if(!this.sraf.get_state().is_mobile_or_tablet) {
-
-                        this._notify_perspective_coordinate_changes(array.concat([this.st4te.scale]));
-                    }
-                });
-            });
-        }
-    };
 
     _notify_perspective_coordinate_changes = (array) => {
 
@@ -2723,7 +2656,7 @@ class CanvasPixels extends React.Component {
 
     _handle_canvas_mouse_move = (event) => {
 
-        const { tool, pxl_width, pxl_height, _pxls_hovered, hide_canvas_content, no_actions } = this.st4te;
+        const { tool, pxl_width, pxl_height, _pxls_hovered, hide_canvas_content } = this.st4te;
         let { _pxl_indexes_of_selection, _imported_image_pxls } = this.st4te;
         const { event_button, mouse_down } = this.canvas_pos.get_pointer_state();
         const event_which = event_button+1;
@@ -2731,11 +2664,6 @@ class CanvasPixels extends React.Component {
         const [ pos_x, pos_y ] = this.canvas_pos.get_canvas_pos_from_event(event.pageX, event.pageY);
 
         if(pos_x === -1 || pos_y === -1) {
-            this._notify_position_change(event, {x: pos_x, y: pos_y});
-            return;
-        }
-
-        if(no_actions) {
             this._notify_position_change(event, {x: pos_x, y: pos_y});
             return;
         }
