@@ -534,7 +534,7 @@ class Home extends React.Component {
                         <JacketEmojiSvg alt="scientist-jacket-tweemoji" className="emoji-150"/>
                         <span className={classes.revelantText} style={{color: THEME_DAY && !IS_EVENING ? "#ffffff": "#008eff"}}> WHILE DRAWING/EDITING</span>
                         <span> an ARTWORK in MINIMA, </span>
-                        <span className={classes.revelantText}>you can use 55+ tools for pixel art within 7 panels</span>
+                        <span className={classes.revelantText}> you can use 55+ tools for pixel art within 7 panels</span>
                         <span> such as : layer's option, filters, selections, shapes, and effects.</span>
                     </h2>
                     <h2 className={classes.titleh2} style={{color: THEME_DAY && !IS_EVENING ? "#ffffffff": "#fff"}}>

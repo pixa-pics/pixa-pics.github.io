@@ -1448,7 +1448,8 @@ class PixelToolboxSwipeableViews extends React.Component {
 
                         const f = filters_thumbnail.get(name) || "";
                         return {
-                            icon: <Avatar className={"speed"} style={{width: "100px", height: `${parseInt(100/_filter_ar_on_one)}px`, filter: `${String(Boolean(f.length === 0 && name_index !== 0) ? "drop-shadow(0px 1px 2px #02052944) opacity(0.5)": "drop-shadow(0px 1px 2px #020529bb) opacity(1.0)")}`, webkitFilter: `${String(Boolean(f.length === 0 && name_index !== 0) ? "drop-shadow(0px 1px 2px #02052944) opacity(0.5)": "drop-shadow(0px 1px 2px #020529bb) opacity(1.0)")}`, border: "4px solid #020529", contain: "paint style size"}} key={String(Boolean(f.length > 0) ? String(name+"-loaded-"+_filter_ar_on_one): String(name+"-loading-"+_filter_ar_on_one)) + String("-preview-" + last_filters_hash)} variant={"rounded"} src={String(f.length > 0 ? f: filters_thumbnail.get(filters[0]))} />,
+                            style: {padding: "4px !important"},
+                            icon: <Avatar className={"speed pixelated"} style={{boxSizing: "border-box", width: "120px", height: `${parseInt(120/_filter_ar_on_one)}px`, filter: `${String(Boolean(f.length === 0 && name_index !== 0) ? "drop-shadow(0px 1px 2px #02052944) opacity(0.5)": "drop-shadow(0px 1px 2px #020529bb) opacity(1.0)")}`, webkitFilter: `${String(Boolean(f.length === 0 && name_index !== 0) ? "drop-shadow(0px 1px 2px #02052944) opacity(0.5)": "drop-shadow(0px 1px 2px #020529bb) opacity(1.0)")}`, border: "0px solid #020529", borderRadius: 2, contain: "paint style size"}} key={String(Boolean(f.length > 0) ? String(name+"-loaded-"+_filter_ar_on_one): String(name+"-loading-"+_filter_ar_on_one)) + String("-preview-" + last_filters_hash)} variant={"rounded"} src={String(f.length > 0 ? f: filters_thumbnail.get(filters[0]))} />,
                             text: name,
                             on_click: () => {
                                 canvas.to_filter(name, slider_value);
@@ -1824,13 +1825,13 @@ class PixelToolboxSwipeableViews extends React.Component {
                                                 <div className={classes.listItems}
                                                      style={
                                                          action_set.text.toLowerCase().includes("effects") || action_set.text.toLowerCase().includes("download") || action_set.text.toLowerCase().includes("filter") ?
-                                                             {
+                                                             Object.assign({
                                                                  flexWrap: "wrap",
                                                                  alignContent: "stretch",
                                                                  flexDirection: "row",
                                                                  justifyContent: "flex-start",
                                                                  willChange: String(action_set.change || "initial")
-                                                             }
+                                                             }, Boolean(action_set.text.toLowerCase().includes("filter")) ? {padding: "16px !important"}: {})
                                                              : {willChange: String(action_set.change || "initial")}
                                                      }>
                                                     {action_set.tools.map((tool, index) => {
@@ -1843,7 +1844,7 @@ class PixelToolboxSwipeableViews extends React.Component {
                                                                     type="file"
                                                                     onChange={tool.on_click}
                                                                 />
-                                                                <ListItem component="label" key={index} htmlFor={tool.for} button disabled={tool.disabled || false}>
+                                                                <ListItem style={tool.style || {}} component="label" key={index} htmlFor={tool.for} button disabled={tool.disabled || false}>
                                                                     <ListItemIcon className={classes.listItemIcon}>
                                                                         {tool.icon}
                                                                     </ListItemIcon>
@@ -1853,7 +1854,7 @@ class PixelToolboxSwipeableViews extends React.Component {
                                                             </div>
                                                         ):
                                                         (
-                                                            <ListItem key={name + "-" + action_set.label + (tool.text || "").toLowerCase().replaceAll(" ", "-")} button disabled={tool.disabled || false}
+                                                            <ListItem style={tool.style || {}} key={name + "-" + action_set.label + (tool.text || "").toLowerCase().replaceAll(" ", "-")} button disabled={tool.disabled || false}
                                                                       onClick={tool.on_click}>
                                                                 <ListItemIcon className={classes.listItemIcon}>
                                                                     {tool.icon}
