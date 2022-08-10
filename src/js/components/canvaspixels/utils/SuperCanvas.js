@@ -144,7 +144,7 @@ const SuperCanvas = {
             },
             render() {
 
-                function prender(callback = function(){}, timeout = 0) {
+                function prender(callback, timeout) {
 
                     function prender_resolve(callback, timeout){
 
@@ -162,13 +162,11 @@ const SuperCanvas = {
                     s = r.s;
                     pt = r.pt;
                     refresh = r.refresh;
-
-                    return;
                 }
 
                 function draw(){
-                    if(refresh) {
 
+                    if(refresh) {
                         const now = Date.now();
                         s.canvas_context2d.drawImage(s.offscreen_canvas_context2d.canvas, 0, 0);
                         tbf = now - rt;

@@ -3514,7 +3514,7 @@ class CanvasPixels extends React.Component {
                     _did_hide_canvas_content: Boolean(hide_canvas_content)
                 }, () => {
 
-                    this.sraf.run_frame(this.super_canvas.render, false, force_update);
+                    this.sraf.run_frame(this.super_canvas.render, !force_update, force_update);
                 });
             }
         }else {
