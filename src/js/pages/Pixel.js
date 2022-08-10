@@ -172,7 +172,6 @@ const styles = theme => ({
     swipeableDrawerPaper: {
         maxWidth: "100%",
         overscrollBehavior: "none",
-        touchAction: "none",
         overflow: "hidden",
         paddingBottom: "48px",
         borderBox: "content-box",
@@ -199,9 +198,9 @@ const styles = theme => ({
             contain: "size style paint layout !important",
         },
         '& div .react-swipeable-view-container > div': {
-            overflow: "overlay !important",
+            overflow: "initial !important",
             alignItems: "normal",
-            contain: "size style layout paint !important",
+            contain: "size style !important",
             height: "100%",
             [theme.breakpoints.down("md")]: {
                 height: "100% !important",
@@ -210,9 +209,7 @@ const styles = theme => ({
             },
         },
         '& div .react-swipeable-view-container > div[aria-hidden=true]': {
-            overflow: "hidden !important",
-            pointerEvents: "none",
-            touchAction: "none",
+           // overflow: "hidden !important",
             [theme.breakpoints.up("lg")]: {
                 height: "16px",
             },

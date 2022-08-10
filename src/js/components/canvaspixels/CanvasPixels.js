@@ -723,7 +723,7 @@ class CanvasPixels extends React.Component {
                             thumbnails.set(name, result);
                             progression = String(Math.round(parseFloat(thumbnails.size / filter_names.length)*100));
                             this.props.onFiltersThumbnailChange(thumbnails, hash, progression);
-                        }, 144
+                        }, 72
                     );
                 });
 
@@ -2649,11 +2649,9 @@ class CanvasPixels extends React.Component {
 
     _handle_canvas_middle = () => {
 
-
-
             this.setSt4te({has_shown_canvas_once: false, _is_there_new_dimension: true}, () => {
 
-                this.forceUpdate(() => {
+                this._request_force_update(false, false, () => {
 
                     this._update_canvas(true);
                 });

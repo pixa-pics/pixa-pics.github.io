@@ -42,7 +42,7 @@ const overrides = {
                 background: "linear-gradient(-135deg, transparent 20%, rgba(255,255,255, .1) 20%, rgba(255,255,255, .1) 50%, transparent 50%), linear-gradient(-135deg, transparent 25%, rgba(255,255,255, .1) 25%, rgba(255,255,255, .1) 45%, transparent 45%), linear-gradient(-135deg, transparent 30%, rgba(255,255,255, .15) 30%, rgba(255,255,255, .15) 40%, transparent 40%)",
                 backgroundSize: "200%",
                 backgroundPosition: "200% 50%",
-                transition: "background-position cubic-bezier(0.4, 0, 0.2, 1) 350ms",
+                transition: "c",
             },
             ".shiny::after:hover": {
                 backgroundPosition: "0% 50%",

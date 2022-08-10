@@ -19,8 +19,7 @@ import {
     Divider,
     FormControlLabel,
     Button,
-    Menu,
-    CardContent
+    Menu
 } from "@material-ui/core";
 
 import {HISTORY} from "../utils/constants";
@@ -97,7 +96,7 @@ const styles = theme => ({
     listSubHeader: {
         width: "100%",
         alignSelf: "flex-start",
-        boxShadow: "inset 0px 3px 6px #050c4c4d",
+        boxShadow: "0px 3px 6px #050c4c4d",
         color: "#3729c1",
         fontWeight: "bold",
         backgroundColor: "#ededff",
@@ -132,11 +131,11 @@ const styles = theme => ({
         padding: "16px 24px 8px 24px",
         fontFamily: "'Jura'",
         textTransform: "uppercase",
-        boxShadow: "inset 0px 3px 6px #050c4c22",
+        boxShadow: "0px -2px 4px #0205299e",
         marginBottom: "-8px",
         marginTop: "16px",
-        backgroundColor: "#ededff",
-        color: "#050c4c",
+        backgroundColor: "#020529",
+        color: "#ddd",
         overflow: "hidden",
         boxSizing: "border-box",
         width: "100%",
@@ -206,8 +205,18 @@ const styles = theme => ({
                 margin: "8px !important",
                 padding: "0px !important",
             },
-            padding: "0px 24px",
+            padding: "0px 8px",
             textAlignLast: "left",
+        },
+        "&.filters > .MuiListItem-root:hover > .MuiListItemText-root": {
+            background: "linear-gradient(to top, #00000080 100%, #ffffff00)",
+            opacity: "1",
+            transition: "opacity background cubic-bezier(0.4, 0, 0.2, 1) 225ms",
+        },
+        "&.filters .MuiListItemText-root": {
+            background: "linear-gradient(to top, #00000040 75%, #ffffff00)",
+            opacity: ".75",
+            transition: "opacity background cubic-bezier(0.4, 0, 0.2, 1) 150ms",
         },
         "& .MuiFormGroup-root": {
             flexWrap: "nowrap",
@@ -219,7 +228,7 @@ const styles = theme => ({
             display: "table",
             flexGrow: 1,
             flexBasis: "auto",
-            width: "144px",
+            width: "128px",
             padding: "8px !important",
             textAlign: "center",
             boxSizing: "border-box",
@@ -249,7 +258,7 @@ const styles = theme => ({
                 display: "block",
                 flexGrow: 1,
                 flexBasis: "auto",
-                width: "144px",
+                width: "72px",
                 textAlign: "center",
                 "& .MuiListItemIcon-root": {
                     minWidth: 0,
@@ -1479,13 +1488,13 @@ class PixelToolboxSwipeableViews extends React.Component {
                         const f = filters_thumbnail.get(name) || "";
                         return {
                             style: {position: "relative", minWidth: "100%" },
-                            icon: <Avatar className={"speed"} style={{ zIndex: "-1", boxSizing: "border-box", minHeight: "100%", minWidth: "100%", width: 144, height: `${parseInt(144/_filter_ar_on_one)}px`, aspectRatio: `${_filter_ar_on_one} / 1`, filter: `${String(Boolean(f.length === 0 && name_index !== 0) ? "drop-shadow(#3729c14d 0px 1px 2px) opacity(0.5)": "drop-shadow(#3729c14d 0px 1px 2px) opacity(1.0)")}`, webkitFilter: `${String(Boolean(f.length === 0 && name_index !== 0) ? "drop-shadow(#3729c14d 0px 1px 2px) opacity(0.5)": "drop-shadow(#3729c14d 0px 1px 2px) opacity(1.0)")}`, border: "0px solid #020529", borderRadius: 4, contain: "paint style size"}} key={String(Boolean(f.length > 0) ? String(name+"-loaded-"+_filter_ar_on_one): String(name+"-loading-"+_filter_ar_on_one)) + String("-preview-" + last_filters_hash)} variant={"rounded"} src={String(f.length > 0 ? f: filters_thumbnail.get(filters[0]))} />,
+                            icon: <Avatar className={"pixelated"} style={{ zIndex: "-1", boxSizing: "border-box", height: "100%", minWidth: "100%", minHeight: parseInt(72 / _filter_ar_on_one), width: 72, aspectRatio: `${_filter_ar_on_one} / 1`, filter: `${String(Boolean(f.length === 0 && name_index !== 0) ? "drop-shadow(#3729c170 0px 2px 4px) opacity(0.66)": "drop-shadow(#3729c1a8 0px 1px 2px) opacity(1.0)")}`, webkitFilter: `${String(Boolean(f.length === 0 && name_index !== 0) ? "drop-shadow(#3729c170 0px 2px 4px) opacity(0.66)": "drop-shadow(#3729c1a8 0px 1px 2px) opacity(1.0)")}`, border: "4px solid #020529", borderRadius: 4, contain: "paint style size"}} key={String(Boolean(f.length > 0) ? String(name+"-loaded-"+_filter_ar_on_one): String(name+"-loading-"+_filter_ar_on_one)) + String("-preview-" + last_filters_hash)} variant={"rounded"} src={String(f.length > 0 ? f: filters_thumbnail.get(filters[0]))} />,
                             text: name,
                             text_style: {
                                 flex: "1 1",
                                 bottom: 16,
                                 left: 8,
-                                width: 144,
+                                width: 72,
                                 minWidth: "100%",
                                 right: 24,
                                 color: "white",
@@ -1498,7 +1507,6 @@ class PixelToolboxSwipeableViews extends React.Component {
                                 position: "absolute",
                                 margin: "-16px -12px -12px -8px",
                                 boxSizing: "border-box",
-                                background: "linear-gradient(to top, #00000080 33%, #ffffff00)"
                             },
                             on_click: () => {
                                 canvas.to_filter(name, slider_value);
@@ -1919,12 +1927,12 @@ class PixelToolboxSwipeableViews extends React.Component {
                                 {this.get_after_action_panel(index)}
 
                                 <div className={classes.thanksSponsorsGhost} >
-                                    <h4>INTERESTED INTO SPONSORING? Please email-us at: <a style={{color: "#3729c1"}} href={"mailto:pixa.pics@protonmail.com"}>pixa.pics@protonmail.com</a>.</h4>
-                                    <h3>Thanks for support!</h3>
+                                    <h4>INTERESTED INTO SPONSORING? Please email-us at: <a href={"mailto:pixa.pics@protonmail.com"}>pixa.pics@protonmail.com</a>.</h4>
+                                    <h3>>>> Thanks for support!</h3>
                                 </div>
                                 <div className={classes.thanksSponsors}>
-                                    <h4>INTERESTED INTO SPONSORING? Please email-us at: <a style={{color: "#3729c1"}} href={"mailto:pixa.pics@protonmail.com"}>pixa.pics@protonmail.com</a>.</h4>
-                                    <h3>Thanks for support!</h3>
+                                    <h4>INTERESTED INTO SPONSORING? Please email-us at: <a style={{color: "#fff"}} href={"mailto:pixa.pics@protonmail.com"}>pixa.pics@protonmail.com</a>.</h4>
+                                    <h3>>>> Thanks for support!</h3>
                                 </div>
                             </List>
                         );

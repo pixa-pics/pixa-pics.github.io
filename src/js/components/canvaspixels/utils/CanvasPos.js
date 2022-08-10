@@ -243,6 +243,7 @@ const CanvasPos = {
                 s.canvas_wrapper = {padding, border_width};
                 szr = gszr(s);
                 p = gp(s, szr);
+                this.set_current_scale_default();
             },
             set_canvas_container(top, left, height, width){
                 s.canvas_container = {top, left, height, width};
@@ -678,7 +679,7 @@ const CanvasPos = {
 
                 }else if(canvas_event_target !== new_canvas_event_target){
 
-                    this.notify_move(event); this.notify_moved();
+                    c
                 } else if(new_canvas_event_target === "CANVAS") {
 
                     this.notify_move(event);
