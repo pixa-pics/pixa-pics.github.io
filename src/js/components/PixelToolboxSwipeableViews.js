@@ -97,7 +97,7 @@ const styles = theme => ({
     listSubHeader: {
         width: "100%",
         alignSelf: "flex-start",
-        boxShadow: "inset 0px 3px 6px #050c4c22",
+        boxShadow: "inset 0px 3px 6px #050c4c4d",
         color: "#3729c1",
         fontWeight: "bold",
         backgroundColor: "#ededff",
@@ -109,7 +109,26 @@ const styles = theme => ({
             //display: "none",
         }
     },
+    thanksSponsorsGhost: {
+        opacity: 0,
+        userSelect: "none",
+        pointerEvents: "none",
+        padding: "16px 24px 8px 24px",
+        fontFamily: "'Jura'",
+        textTransform: "uppercase",
+        marginBottom: "-8px",
+        marginTop: "16px",
+        overflow: "hidden",
+        boxSizing: "border-box",
+        width: "100%",
+        [theme.breakpoints.down("md")]: {
+            marginBottom: "48px",
+            marginTop: "36px",
+        }
+    },
     thanksSponsors: {
+        position: "fixed",
+        bottom: 0,
         padding: "16px 24px 8px 24px",
         fontFamily: "'Jura'",
         textTransform: "uppercase",
@@ -118,7 +137,6 @@ const styles = theme => ({
         marginTop: "16px",
         backgroundColor: "#ededff",
         color: "#050c4c",
-        position: "relative",
         overflow: "hidden",
         boxSizing: "border-box",
         width: "100%",
@@ -170,6 +188,7 @@ const styles = theme => ({
         }
     },
     listItems: {
+        textAlignLast: "center",
         display: "inline-flex",
         flexWrap: "wrap",
         alignContent: "stretch",
@@ -180,6 +199,16 @@ const styles = theme => ({
         maxWidth: "100%",
         overflowX: "scroll",
         contentVisibility: "auto",
+        padding: "16px 16px",
+        contain: "paint style layout",
+        "&.filters": {
+            "& .MuiListItem-root": {
+                margin: "8px !important",
+                padding: "0px !important",
+            },
+            padding: "0px 24px",
+            textAlignLast: "left",
+        },
         "& .MuiFormGroup-root": {
             flexWrap: "nowrap",
             padding: "16px 0px !important",
@@ -190,7 +219,8 @@ const styles = theme => ({
             display: "table",
             flexGrow: 1,
             flexBasis: "auto",
-            width: "120px",
+            width: "144px",
+            padding: "8px !important",
             textAlign: "center",
             boxSizing: "border-box",
             "& .MuiListItemIcon-root": {
@@ -219,7 +249,7 @@ const styles = theme => ({
                 display: "block",
                 flexGrow: 1,
                 flexBasis: "auto",
-                width: "120px",
+                width: "144px",
                 textAlign: "center",
                 "& .MuiListItemIcon-root": {
                     minWidth: 0,
@@ -658,7 +688,7 @@ class PixelToolboxSwipeableViews extends React.Component {
                             <span><ImportIcon/></span>
                             <span>Upload</span>
                         </ListSubheader>
-                        <div className={classes.listItems}>
+                        <div className={"image " + classes.listItems}>
                             <input
                                 accept="image/jpg, image/jpeg, image/png, image/svg, image/webp, image/gif"
                                 style={{display: "none"}}
@@ -686,7 +716,7 @@ class PixelToolboxSwipeableViews extends React.Component {
                                               primary={"Library to new"} secondary={""}/>
                             </ListItem>
                         </div>
-                        <div className={classes.listItems}>
+                        <div className={"image " + classes.listItems}>
                             <div style={{
                                 padding: "8px 24px",
                                 position: "relative",
@@ -703,7 +733,7 @@ class PixelToolboxSwipeableViews extends React.Component {
                         </div>
                         <FormLabel style={{padding: "24px 0px 12px 24px"}} component="legend">AI TUNING BEFORE
                             IMPORT</FormLabel>
-                        <div className={classes.listItems}>
+                        <div className={"image " + classes.listItems}>
                             <RadioGroup row name="Colorize" onChange={this._set_import_colorize}
                                         value={import_colorize} style={{padding: "12px 0px", margin: "0px 11px"}}>
                                 <FormControlLabel
@@ -1439,8 +1469,8 @@ class PixelToolboxSwipeableViews extends React.Component {
                 {
                     icon: <ImageFilterMagicIcon/>,
                     progression: String(_filters_preview_progression_stepped),
-                    change: String(parseInt(_filters_preview_progression_stepped) === 0 ? "scroll-position": "contents, scroll-position"),
                     text: `Filters`,
+                    style: {position: "relative"},
                     label: "primary",
                     local_i: 0,
                     sub: "The strength selected matters meanwhile preview are only shown at 100% intensity. To cancel any operation, use 'undo'.",
@@ -1448,14 +1478,33 @@ class PixelToolboxSwipeableViews extends React.Component {
 
                         const f = filters_thumbnail.get(name) || "";
                         return {
-                            style: {padding: "4px !important"},
-                            icon: <Avatar className={"speed pixelated"} style={{boxSizing: "border-box", width: "120px", height: `${parseInt(120/_filter_ar_on_one)}px`, filter: `${String(Boolean(f.length === 0 && name_index !== 0) ? "drop-shadow(0px 1px 2px #02052944) opacity(0.5)": "drop-shadow(0px 1px 2px #020529bb) opacity(1.0)")}`, webkitFilter: `${String(Boolean(f.length === 0 && name_index !== 0) ? "drop-shadow(0px 1px 2px #02052944) opacity(0.5)": "drop-shadow(0px 1px 2px #020529bb) opacity(1.0)")}`, border: "0px solid #020529", borderRadius: 2, contain: "paint style size"}} key={String(Boolean(f.length > 0) ? String(name+"-loaded-"+_filter_ar_on_one): String(name+"-loading-"+_filter_ar_on_one)) + String("-preview-" + last_filters_hash)} variant={"rounded"} src={String(f.length > 0 ? f: filters_thumbnail.get(filters[0]))} />,
+                            style: {position: "relative", minWidth: "100%" },
+                            icon: <Avatar className={"speed"} style={{ zIndex: "-1", boxSizing: "border-box", minHeight: "100%", minWidth: "100%", width: 144, height: `${parseInt(144/_filter_ar_on_one)}px`, aspectRatio: `${_filter_ar_on_one} / 1`, filter: `${String(Boolean(f.length === 0 && name_index !== 0) ? "drop-shadow(#3729c14d 0px 1px 2px) opacity(0.5)": "drop-shadow(#3729c14d 0px 1px 2px) opacity(1.0)")}`, webkitFilter: `${String(Boolean(f.length === 0 && name_index !== 0) ? "drop-shadow(#3729c14d 0px 1px 2px) opacity(0.5)": "drop-shadow(#3729c14d 0px 1px 2px) opacity(1.0)")}`, border: "0px solid #020529", borderRadius: 4, contain: "paint style size"}} key={String(Boolean(f.length > 0) ? String(name+"-loaded-"+_filter_ar_on_one): String(name+"-loading-"+_filter_ar_on_one)) + String("-preview-" + last_filters_hash)} variant={"rounded"} src={String(f.length > 0 ? f: filters_thumbnail.get(filters[0]))} />,
                             text: name,
+                            text_style: {
+                                flex: "1 1",
+                                bottom: 16,
+                                left: 8,
+                                width: 144,
+                                minWidth: "100%",
+                                right: 24,
+                                color: "white",
+                                padding: 8,
+                                borderBottomLeftRadius: "4px",
+                                borderBottomRightRadius: "4px",
+                                textAlign: "initial",
+                                zIndex: 1,
+                                wordBreak: "break-word",
+                                position: "absolute",
+                                margin: "-16px -12px -12px -8px",
+                                boxSizing: "border-box",
+                                background: "linear-gradient(to top, #00000080 33%, #ffffff00)"
+                            },
                             on_click: () => {
                                 canvas.to_filter(name, slider_value);
                                 this._handle_action_close();
                             }
-                        }
+                        };
                     })
                 },
             ];
@@ -1761,6 +1810,7 @@ class PixelToolboxSwipeableViews extends React.Component {
             canvas,
             view_name_index,
             layers,
+            filters_preview_progression
         } = this.state;
 
         let layers_colors_max = 0;
@@ -1772,6 +1822,7 @@ class PixelToolboxSwipeableViews extends React.Component {
             }
         });
         const too_much_colors_no_vector = layers_colors_max >= 128;
+        const _filters_preview_progression_stepped = Math.round(parseFloat(filters_preview_progression / 7) * 7);
 
         return (
             <SwipeableViews
@@ -1789,11 +1840,11 @@ class PixelToolboxSwipeableViews extends React.Component {
                 {this.get_action_panel_names().map((name, index) => {
 
                         if(view_name_index !== index) {
-                            return (<List key={name} style={{ contain: "style layout paint", overflow: "auto", contentVisibility: "visible", paddingTop: 0}} />);
+                            return (<List key={name} style={{ willChange: "none", minHeight: "100%", contain: "style layout paint", overflow: "auto", contentVisibility: "visible", paddingTop: 0}} />);
                         }
 
                         return (
-                            <List key={name} style={{ contain: "style layout paint", overflow: "visible", contentVisibility: "visible", paddingTop: 0}}>
+                            <List key={name} style={{  willChange: String(Boolean(parseInt(_filters_preview_progression_stepped) === 0 || name !== "filters") ? "scroll-position": "contents, scroll-position"), minHeight: "100%", contain: "style layout paint", overflow: "visible", contentVisibility: "visible", paddingTop: 0}}>
 
                                 {this.get_before_action_panel(index)}
 
@@ -1816,24 +1867,19 @@ class PixelToolboxSwipeableViews extends React.Component {
                                                 </ListSubheader>
                                                 {
                                                     Boolean(Boolean(name === "filters" || action_set.label === "vector") && too_much_colors_no_vector) ?
-                                                        <ListItem button onClick={() => {canvas.to_less_color("auto")}}>
+                                                        <ListItem button={name !== "filters"} onClick={() => {canvas.to_less_color("auto")}}>
                                                             <ListItemIcon><LessColorAutoIcon className={classes.listItemIcon} /></ListItemIcon>
                                                             <ListItemText primary="Auto reduce color palette" secondary={"May you need less color in your palette?"} />
                                                         </ListItem>: Boolean(name === "filters") ?
                                                             <blockquote>DID YOU KNOW? Just double-tap/right-click around the drawing area to open a context menu with shortcuts including some to adjust saturation and contrast like a professional...</blockquote>: null
                                                 }
-                                                <div className={classes.listItems}
-                                                     style={
-                                                         action_set.text.toLowerCase().includes("effects") || action_set.text.toLowerCase().includes("download") || action_set.text.toLowerCase().includes("filter") ?
-                                                             Object.assign({
+                                                <div className={name + " " + classes.listItems}
+                                                     style={Object.assign({
                                                                  flexWrap: "wrap",
                                                                  alignContent: "stretch",
                                                                  flexDirection: "row",
                                                                  justifyContent: "flex-start",
-                                                                 willChange: String(action_set.change || "initial")
-                                                             }, Boolean(action_set.text.toLowerCase().includes("filter")) ? {padding: "16px !important"}: {})
-                                                             : {willChange: String(action_set.change || "initial")}
-                                                     }>
+                                                             }, Boolean(action_set.text.toLowerCase().includes("filter")) ? {padding: "0px !important", margin: "8px !important"}: {})}>
                                                     {action_set.tools.map((tool, index) => {
                                                         return tool.for ? (
                                                             <div key={name + "-" + action_set.label + tool.text.toLowerCase().replaceAll(" ", "-")}>
@@ -1844,8 +1890,8 @@ class PixelToolboxSwipeableViews extends React.Component {
                                                                     type="file"
                                                                     onChange={tool.on_click}
                                                                 />
-                                                                <ListItem style={tool.style || {}} component="label" key={index} htmlFor={tool.for} button disabled={tool.disabled || false}>
-                                                                    <ListItemIcon className={classes.listItemIcon}>
+                                                                <ListItem component="label" key={index} htmlFor={tool.for} button disabled={tool.disabled || false}>
+                                                                    <ListItemIcon className={classes.listItemIcon} style={tool.style || {}}>
                                                                         {tool.icon}
                                                                     </ListItemIcon>
                                                                     <ListItemText className={classes.ListItemText}
@@ -1854,12 +1900,12 @@ class PixelToolboxSwipeableViews extends React.Component {
                                                             </div>
                                                         ):
                                                         (
-                                                            <ListItem style={tool.style || {}} key={name + "-" + action_set.label + (tool.text || "").toLowerCase().replaceAll(" ", "-")} button disabled={tool.disabled || false}
+                                                            <ListItem key={name + "-" + action_set.label + (tool.text || "").toLowerCase().replaceAll(" ", "-")} button disabled={tool.disabled || false}
                                                                       onClick={tool.on_click}>
-                                                                <ListItemIcon className={classes.listItemIcon}>
+                                                                <ListItemIcon className={classes.listItemIcon} style={tool.style || {}}>
                                                                     {tool.icon}
                                                                 </ListItemIcon>
-                                                                <ListItemText className={classes.ListItemText}
+                                                                <ListItemText className={classes.ListItemText} style={tool.text_style ||{}}
                                                                               primary={tool.text} secondary={tool.sub}/>
                                                             </ListItem>
                                                         );
@@ -1872,6 +1918,10 @@ class PixelToolboxSwipeableViews extends React.Component {
 
                                 {this.get_after_action_panel(index)}
 
+                                <div className={classes.thanksSponsorsGhost} >
+                                    <h4>INTERESTED INTO SPONSORING? Please email-us at: <a style={{color: "#3729c1"}} href={"mailto:pixa.pics@protonmail.com"}>pixa.pics@protonmail.com</a>.</h4>
+                                    <h3>Thanks for support!</h3>
+                                </div>
                                 <div className={classes.thanksSponsors}>
                                     <h4>INTERESTED INTO SPONSORING? Please email-us at: <a style={{color: "#3729c1"}} href={"mailto:pixa.pics@protonmail.com"}>pixa.pics@protonmail.com</a>.</h4>
                                     <h3>Thanks for support!</h3>

@@ -723,7 +723,7 @@ class CanvasPixels extends React.Component {
                             thumbnails.set(name, result);
                             progression = String(Math.round(parseFloat(thumbnails.size / filter_names.length)*100));
                             this.props.onFiltersThumbnailChange(thumbnails, hash, progression);
-                        }, 120
+                        }, 144
                     );
                 });
 

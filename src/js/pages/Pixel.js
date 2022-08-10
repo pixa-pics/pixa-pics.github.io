@@ -133,12 +133,13 @@ const styles = theme => ({
         padding: "6px 8px 6px 8px",
         display: "block",
         position: "absolute",
-        color: "#696969",
         top: 0,
         left: "50%",
         transform: "translate(-50%, 0%)",
         borderRadius: "0px 0px 4px 4px",
-        backgroundColor: "#f5f5f5",
+        backgroundColor: "#ededffff",
+        color: "#050c4c",
+        boxShadow: "inset 0px 3px 6px #050c4c4d",
         whiteSpace: "nowrap",
     },
     drawerModalBackdropRoot: {
@@ -266,8 +267,8 @@ const styles = theme => ({
         "& .MuiTab-wrapper svg": {
             width: 32,
             height: 32,
-            filter: "sepia(1) hue-rotate(180deg) saturate(2) brightness(0.66) contrast(2.75) drop-shadow(0px 0px 2px skyblue)",
-            webkitFilter: "sepia(1) hue-rotate(180deg) saturate(2) brightness(0.66) contrast(2.75) drop-shadow(0px 0px 2px skyblue)",
+            filter: "sepia(1) hue-rotate(180deg) saturate(2.5) brightness(0.70) contrast(2.75)",
+            webkitFilter: "sepia(1) hue-rotate(180deg) saturate(2.5) brightness(0.70) contrast(2.75)",
             contentVisibility: "auto",
         }
     },
@@ -362,6 +363,7 @@ const styles = theme => ({
         top: 16,
     },
     saveButton: {
+        backgroundColor: "#0037ff14 !important",
         position: "absolute",
         right: 496,
         top: 16,
@@ -378,6 +380,7 @@ const styles = theme => ({
         },
     },
     redoButton: {
+        backgroundColor: "#0037ff14 !important",
         position: "absolute",
         right: 496,
         bottom: 60,
@@ -387,6 +390,7 @@ const styles = theme => ({
         },
     },
     undoButton: {
+        backgroundColor: "#0037ff14 !important",
         position: "absolute",
         right: 496,
         bottom: 16,
@@ -2324,7 +2328,7 @@ class Pixel extends React.Component {
                                 className={classes.contentCanvas}
                                 ref={this._set_canvas_ref}
                                 tool={_tool}
-                                canvas_wrapper_padding={32}
+                                canvas_wrapper_padding={8}
                                 hide_canvas_content={_hide_canvas_content}
                                 show_original_image_in_background={_show_original_image_in_background}
                                 show_transparent_image_in_background={_show_transparent_image_in_background}
