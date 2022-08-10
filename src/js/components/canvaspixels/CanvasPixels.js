@@ -219,27 +219,25 @@ class CanvasPixels extends React.Component {
         const canvas_wrapper_css =
             `.Canvas-Wrapper-Overflow.Shown {
                 animation-name: canvanimation;
-                animation-fill-mode: both;
-                animation-duration: 240ms;
-                animation-delay: 0ms;
-                animation-timing-function: linear;
-                opacity: 1 !important,
             }
             .Canvas-Wrapper-Overflow {
-                opacity: 0 !important,
                 transform-origin: center center !important;
+                animation-fill-mode: both;
+                animation-duration: 175ms;
+                animation-delay: 25ms;
+                animation-timing-function: linear;
             }
             @keyframes canvanimation { 
-                  0% { transform: matrix3d(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1); opacity: .0; }
-                  4.3% { transform: matrix3d(0.271, 0, 0, 0, 0, 0.271, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1); opacity: .2; }
-                  8.61% { transform: matrix3d(.818, 0, 0, 0, 0, .818, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1); opacity: .8; }
-                  12.91% { transform: matrix3d(1.078, 0, 0, 0, 0, 1.078, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1); opacity: .9; }
-                  17.22% { transform: matrix3d(1.11, 0, 0, 0, 0, 1.11, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1); opacity: 1; }
-                  28.33% { transform: matrix3d(1.031, 0, 0, 0, 0, 1.031, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1); opacity: 1; }
-                  39.44% { transform: matrix3d(.991, 0, 0, 0, 0, .991, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1); opacity: 1; }
-                  61.66% { transform: matrix3d(1.001, 0, 0, 0, 0, 1.001, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1); opacity: 1; }
-                  83.98% { transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1); opacity: 1; }
-                  100% { transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1); opacity: 1; } 
+                  0% { transform: matrix3d(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1); filter: opacity(.0); will-change: transform, filter; }
+                  4.3% { transform: matrix3d(0.136, 0, 0, 0, 0, 0.271, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1); filter: opacity(.2); will-change: transform, filter; }
+                  8.61% { transform: matrix3d(.729, 0, 0, 0, 0, .818, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1); filter: opacity(.8); will-change: transform, filter; }
+                  12.91% { transform: matrix3d(1.146, 0, 0, 0, 0, 1.078, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1); filter: opacity(.9); will-change: transform, filter; }
+                  17.22% { transform: matrix3d(1.22, 0, 0, 0, 0, 1.11, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1); filter: opacity(1); will-change: transform, filter; }
+                  28.33% { transform: matrix3d(1.046, 0, 0, 0, 0, 1.031, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1); filter: opacity(1); will-change: transform, filter; }
+                  39.44% { transform: matrix3d(.988, 0, 0, 0, 0, .991, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1); filter: opacity(1); will-change: transform, filter; }
+                  61.66% { transform: matrix3d(1.002, 0, 0, 0, 0, 1.001, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1); filter: opacity(1); will-change: transform, filter; }
+                  83.98% { transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1); filter: opacity(1); will-change: transform, filter; }
+                  100% { transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1); filter: opacity(1); will-change: initial; } 
             }` +
             ".Canvas-Pixels-Cover::after {" +
                 `top: 0;
@@ -2651,7 +2649,16 @@ class CanvasPixels extends React.Component {
 
     _handle_canvas_middle = () => {
 
-        this._update_canvas(true);
+
+
+            this.setSt4te({has_shown_canvas_once: false, _is_there_new_dimension: true}, () => {
+
+                this.forceUpdate(() => {
+
+                    this._update_canvas(true);
+                });
+            });
+
     };
 
     _handle_canvas_mouse_move = (event) => {
@@ -3419,7 +3426,7 @@ class CanvasPixels extends React.Component {
                 force_update = Boolean(indexed_changes.size * 1.05 > pxl_width * pxl_height || force_update || clear_canvas);
 
                 this.super_canvas.putcrowd(indexed_changes);
-                this.super_canvas.uncrowd();
+                this.super_canvas.uncrowd(force_update);
                 this.setSt4te({
                     _pxl_indexes_of_selection_drawn: new Set(Array.from(_pxl_indexes_of_selection)),
                     _pxl_indexes_of_old_shape: new Set(Array.from(pxl_indexes_of_current_shape)),
