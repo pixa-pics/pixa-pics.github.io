@@ -142,11 +142,11 @@ const styles = theme => ({
         whiteSpace: "nowrap",
     },
     drawerModalBackdropRoot: {
-        transform: "translateY(-48px)",
         contain: "layout size style paint",
     },
     drawerModal: {
-        transform: "translateY(48px)",
+        transform: "translateY(-32px)",
+        marginTop: 32,
         contain: "size layout style",
         overflow: "hidden",
     },
@@ -180,35 +180,45 @@ const styles = theme => ({
     },
     drawerContainer: {
         scrollBehavior: "smooth",
-        contain: "size style",
-        height: "calc(100vh - 224px) !important",
+        contain: "size style paint layout",
+        height: "100% !important",
         overflow: "overlay",
+        [theme.breakpoints.down("md")]: {
+            height: "calc(100vh - 128px) !important"
+        },
         [theme.breakpoints.up("lg")]: {
             overflowX: "hidden",
         },
         "& > div": {
-            overflowX: "auto !important",
-            overflowY: "visible !important",
-            display: "inline-table !important",
+            overflowX: "hidden !important",
+            overflowY: "overlay !important",
+            display: "inline !important",
             width: "100% !important",
-            contain: "size style !important",
+            height: "100% !important",
+            contain: "size style paint layout !important",
         },
         '& div .react-swipeable-view-container > div': {
-            overflow: "initial !important",
+            overflow: "overlay !important",
             alignItems: "normal",
-            contain: "size style !important",
-            [theme.breakpoints.up("lg")]: {
-                height: "16px",
+            contain: "size style layout paint !important",
+            height: "100%",
+            [theme.breakpoints.down("md")]: {
+                height: "100% !important",
+                paddingBottom: "24px",
+                boxSizing: "border-box"
             },
         },
         '& div .react-swipeable-view-container > div[aria-hidden=true]': {
             overflow: "hidden !important",
             pointerEvents: "none",
             touchAction: "none",
+            [theme.breakpoints.up("lg")]: {
+                height: "16px",
+            },
         },
         '& div .react-swipeable-view-container > div[aria-hidden=false]  > ul': {
             [theme.breakpoints.down("md")]: {
-                paddingBottom: 64,
+                paddingBottom: 0,
             }
         },
         '& > div > .react-swipeable-view-container': {
@@ -218,10 +228,10 @@ const styles = theme => ({
             willChange: "none !important",
             contain: "size style !important",
             width: 480,
+            height: "100% !important",
             [theme.breakpoints.down("md")]: {
                 width: "100vw",
-                height: "calc(100vh - 136px) !important"
-            },
+            }
         },
     },
     tabs: {
@@ -760,6 +770,30 @@ class Pixel extends React.Component {
         _toolbox_container_ref.scrollTop = 0;
 
         this.setState({_previous_view_name_index: previous_name_index || this.state._view_name_index, _view_name_index});
+    };
+
+    _handle_view_name_switch = (event, view_name_index,  previous_name_index = null) => {
+
+        if(event.pointerType === "mouse" && event.button === 0 || event.pointerType !== "mouse") {
+
+            const { _view_names, _toolbox_container_ref } = this.state;
+            previous_name_index = previous_name_index === null ? this.state._view_name_index: previous_name_index;
+
+            const _view_name = _view_names[view_name_index] || _view_names[0];
+            const _view_name_index = _view_names.indexOf(_view_name) === -1 ? 0: _view_names.indexOf(_view_name);
+
+            if(previous_name_index > _view_name_index) {
+
+                actions.trigger_sfx("navigation_transition-left");
+            }else {
+
+                actions.trigger_sfx("navigation_transition-right");
+            }
+
+            _toolbox_container_ref.scrollTop = 0;
+
+            this.setState({_previous_view_name_index: previous_name_index || this.state._view_name_index, _view_name_index});
+        }
     };
 
     _handle_keydown = (event) => {
@@ -2495,20 +2529,19 @@ class Pixel extends React.Component {
 
                 <div className={classes.fatabs} style={_is_edit_drawer_open && _less_than_1280w ? {minHeight: 48, height: 48, backgroundColor: "#fff"}: {}}>
                     <Tabs className={classes.tabs} style={_is_edit_drawer_open && _less_than_1280w ? {minHeight: 48, height: 48}: {}}
-                          variant="scrollable"
-                          scrollButtons="auto"
+                          variant="fullWidth"
+                          scrollButtons="off"
                           indicatorColor="primary"
                           textColor="primary"
-                          selectionFollowsFocus={false}
-                          value={_view_name_index}
-                          onChange={(event, index) => {this._handle_edit_drawer_open(event, index)}}>
-                        <Tab className={classes.tab} label={"colors"} icon={<ColorsTweemoji />} />
-                        <Tab className={classes.tab} label={"image"} icon={<ImageTweemoji />} />
-                        <Tab className={classes.tab} label={"layers"} icon={<LayersTweemoji />} />
-                        <Tab className={classes.tab} label={"tools"} icon={<ToolsTweemoji />} />
-                        <Tab className={classes.tab} label={"select"} icon={<SelectTweemoji />} />
-                        <Tab className={classes.tab} label={"effects"} icon={<EffectsTweemoji />} />
-                        <Tab className={classes.tab} label={"filters"} icon={<FiltersTweemoji />} />
+                          selectionFollowsFocus={true}
+                          value={_view_name_index} onChange={(event, index) => {this._handle_edit_drawer_open(event, index)}}>>
+                        <Tab onPointerEnter={(e) => {this._handle_view_name_switch(e, 0)}} className={classes.tab} label={"colors"} icon={<ColorsTweemoji />} />
+                        <Tab onPointerEnter={(e) => {this._handle_view_name_switch(e, 1)}} className={classes.tab} label={"image"} icon={<ImageTweemoji />} />
+                        <Tab onPointerEnter={(e) => {this._handle_view_name_switch(e, 2)}} className={classes.tab} label={"layers"} icon={<LayersTweemoji />} />
+                        <Tab onPointerEnter={(e) => {this._handle_view_name_switch(e, 3)}} className={classes.tab} label={"tools"} icon={<ToolsTweemoji />} />
+                        <Tab onPointerEnter={(e) => {this._handle_view_name_switch(e, 4)}} className={classes.tab} label={"select"} icon={<SelectTweemoji />} />
+                        <Tab onPointerEnter={(e) => {this._handle_view_name_switch(e, 5)}} className={classes.tab} label={"effects"} icon={<EffectsTweemoji />} />
+                        <Tab onPointerEnter={(e) => {this._handle_view_name_switch(e, 6)}}  className={classes.tab} label={"filters"} icon={<FiltersTweemoji />} />
                     </Tabs>
                 </div>
 

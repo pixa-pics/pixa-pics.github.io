@@ -723,7 +723,7 @@ class CanvasPixels extends React.Component {
                             thumbnails.set(name, result);
                             progression = String(Math.round(parseFloat(thumbnails.size / filter_names.length)*100));
                             this.props.onFiltersThumbnailChange(thumbnails, hash, progression);
-                        }, 96
+                        }, 120
                     );
                 });
 
@@ -3103,7 +3103,7 @@ class CanvasPixels extends React.Component {
         // Only operate on canvas context if existing
         if (Boolean(this.super_canvas)) {
 
-            this.super_canvas.uncrowd(true);
+            this.super_canvas.uncrowd();
 
             // Importing state variables
             const {
@@ -3262,38 +3262,38 @@ class CanvasPixels extends React.Component {
             const _s_pxl_colors_a = _s_pxl_colors.map((a) => {return this.color_conversion.to_int_array_from_uint32_array_for_subcolor(a)});
             let indexed_changes = new Map();
 
-            let b = {
-                is_in_image_imported: false,
-                was_in_image_imported: false,
-                is_in_image_imported_resizer: false,
-                was_in_image_imported_resizer: false,
-                is_pixel_hovered: false,
-                is_the_old_pixel_hovered_to_paint: false,
-                is_in_the_old_shape: false,
-                is_in_the_current_shape: false,
-                is_in_the_current_selection: false,
-                is_current_selection_hovered: false,
-                was_current_selection_hovered: false,
-                is_current_selection_hovered_changes: false,
-                is_in_the_old_selection_drawn: false,
-                is_selected_and_hovered_recently: false,
-                is_selected_and_to_paint_again: false,
-                is_ancient_selected_pixel_waiting_to_update: false,
-                is_in_pencil_mirror_axes_hover_indexes: false,
-                was_in_pencil_mirror_axes_hover_indexes: false,
-                is_in_pencil_mirror_axes_indexes: false,
-                is_an_old_pencil_mirror_axes_pixel_to_paint: false,
-                is_a_new_pixel_to_paint: false,
-                pixel_hover_exception: false,
-            };
-
             const clear_canvas = Boolean(_did_hide_canvas_content && !hide_canvas_content) || Boolean(!_did_hide_canvas_content && hide_canvas_content) || !has_shown_canvas_once || hide_canvas_content || has_layers_visibility_or_opacity_changed || is_there_new_dimension;
 
             for(let index = 0; index < _full_pxls.length; index++){
 
+                let b = {
+                    is_in_image_imported: false,
+                    was_in_image_imported: false,
+                    is_in_image_imported_resizer: false,
+                    was_in_image_imported_resizer: false,
+                    is_pixel_hovered: false,
+                    is_the_old_pixel_hovered_to_paint: false,
+                    is_in_the_old_shape: false,
+                    is_in_the_current_shape: false,
+                    is_in_the_current_selection: false,
+                    is_current_selection_hovered: false,
+                    was_current_selection_hovered: false,
+                    is_current_selection_hovered_changes: false,
+                    is_in_the_old_selection_drawn: false,
+                    is_selected_and_hovered_recently: false,
+                    is_selected_and_to_paint_again: false,
+                    is_ancient_selected_pixel_waiting_to_update: false,
+                    is_in_pencil_mirror_axes_hover_indexes: false,
+                    was_in_pencil_mirror_axes_hover_indexes: false,
+                    is_in_pencil_mirror_axes_indexes: false,
+                    is_an_old_pencil_mirror_axes_pixel_to_paint: false,
+                    is_a_new_pixel_to_paint: false,
+                    pixel_hover_exception: false,
+                };
+
                 const full_pxl = _full_pxls[index];
                 b.is_in_image_imported = has_an_image_imported && imported_image_pxls_positioned_keyset.has(index);
-                b.was_in_image_imported = Boolean(_previous_imported_image_pxls_positioned_keyset.has(index));
+                b.was_in_image_imported = _previous_imported_image_pxls_positioned_keyset.has(index);
 
                 b.is_in_image_imported_resizer = Boolean(has_an_image_imported && Boolean(image_imported_resizer_index === index));
                 b.was_in_image_imported_resizer = Boolean(_previous_image_imported_resizer_index === index);
@@ -3324,7 +3324,7 @@ class CanvasPixels extends React.Component {
                         Boolean(
                             b.is_in_pencil_mirror_axes_hover_indexes ||
                             b.is_in_pencil_mirror_axes_indexes ||
-                            (b.is_current_selection_hovered_changes && b.is_in_the_current_selection) ||
+                            Boolean(b.is_current_selection_hovered_changes && b.is_in_the_current_selection) ||
                             b.is_selected_and_to_paint_again ||
                             b.is_ancient_selected_pixel_waiting_to_update ||
                             b.is_the_old_pixel_hovered_to_paint ||
@@ -3333,8 +3333,10 @@ class CanvasPixels extends React.Component {
                             Boolean(!b.is_in_the_old_shape && b.is_in_the_current_shape) ||
                             Boolean(b.is_in_the_old_shape && !b.is_in_the_current_shape) ||
                             Boolean(b.is_in_the_current_selection && !b.is_in_the_old_selection_drawn) ||
-                            b.is_selected_and_hovered_recently ||
-                            b.is_in_image_imported_resizer && Boolean(_selection_pair_highlight !== _old_selection_pair_highlight)
+                            Boolean(
+                                Boolean(b.is_selected_and_hovered_recently || b.is_in_image_imported_resizer) &&
+                                Boolean(_selection_pair_highlight !== _old_selection_pair_highlight)
+                            )
                     ))) {
 
                     let layer_pixel_colors = new Map();
@@ -3426,7 +3428,7 @@ class CanvasPixels extends React.Component {
                 force_update = Boolean(indexed_changes.size * 1.05 > pxl_width * pxl_height || force_update || clear_canvas);
 
                 this.super_canvas.putcrowd(indexed_changes);
-                this.super_canvas.uncrowd(force_update);
+                this.sraf.run_frame(this.super_canvas.render, force_update, force_update);
                 this.setSt4te({
                     _pxl_indexes_of_selection_drawn: new Set(Array.from(_pxl_indexes_of_selection)),
                     _pxl_indexes_of_old_shape: new Set(Array.from(pxl_indexes_of_current_shape)),
@@ -3447,9 +3449,16 @@ class CanvasPixels extends React.Component {
                     has_shown_canvas_once: true,
                     _is_there_new_dimension: false,
                     _did_hide_canvas_content: Boolean(hide_canvas_content)
+                });
+            }else if(clear_canvas){
+
+                this.super_canvas.clear();
+                this.setSt4te({
+                    _old_layers: _layers_simplified,
+                    _did_hide_canvas_content: Boolean(hide_canvas_content)
                 }, () => {
 
-                    this.sraf.run_frame(this.super_canvas.render, !force_update, force_update);
+                    this.sraf.run_frame(this.super_canvas.render, true, true);
                 });
             }
         }else {

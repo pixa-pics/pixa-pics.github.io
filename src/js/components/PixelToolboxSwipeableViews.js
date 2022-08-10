@@ -123,8 +123,8 @@ const styles = theme => ({
         boxSizing: "border-box",
         width: "100%",
         [theme.breakpoints.down("md")]: {
-            marginBottom: "-36px",
-            marginTop: "24px",
+            marginBottom: "48px",
+            marginTop: "36px",
         }
     },
     listItemIcon: {
@@ -187,11 +187,12 @@ const styles = theme => ({
             display: "inline-flex",
         },
         "& .MuiListItem-root": {
-            display: "block",
+            display: "table",
             flexGrow: 1,
             flexBasis: "auto",
             width: "120px",
             textAlign: "center",
+            boxSizing: "border-box",
             "& .MuiListItemIcon-root": {
                 minWidth: 0,
             },
