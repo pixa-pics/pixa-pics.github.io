@@ -28,7 +28,7 @@ SOFTWARE.
 import React from "react";
 import pool from "../../utils/worker-pool";
 import B64PngCanvas from "../canvaspixels/utils/B64PngCanvas";
-import B64PngLayer from "../canvaspixels/utils/B64PngLayer";
+import B64Layer from "./utils/B64Layer";
 import ReducePalette from "../canvaspixels/utils/ReducePalette";
 import SuperCanvas from "../canvaspixels/utils/SuperCanvas";
 import ColorConversion from "../canvaspixels/utils/ColorConversion";
@@ -200,13 +200,11 @@ class CanvasPixels extends React.Component {
 
         const pixelated_css =
             ".Canvas-Pixels, .Canvas-Wrapper-Overflow, .Canvas-Wrapper, .Canvas-Pixels-Cover {" +
-                "image-rendering: optimizeSpeed;" +
+                "-ms-interpolation-mode: nearest-neighbor;" +
                 "image-rendering: -moz-crisp-edges;" +
                 "image-rendering: -webkit-crisp-edges;" +
-                "image-rendering: -webkit-optimize-contrast;" +
                 "image-rendering: -o-pixelated;" +
                 "image-rendering: crisp-edges;" +
-                "-ms-interpolation-mode: nearest-neighbor;" +
                 "image-rendering: pixelated;" +
                 "touch-action: none;" +
                 "pointer-events: none;" +
@@ -390,7 +388,7 @@ class CanvasPixels extends React.Component {
 
         const { tool, _select_shape_index_a, _selection_pair_highlight } = this.st4te;
 
-        if(this.canvas_pos.getState().moves_speed_average_now <= 0 && tool.toUpperCase().includes("SELECT") && parseInt(_select_shape_index_a) < 0) {
+        if(this.canvas_pos.get_state().moves_speed_average_now <= 0 && tool.toUpperCase().includes("SELECT") && parseInt(_select_shape_index_a) < 0) {
 
             this.setSt4te({_selection_pair_highlight: !_selection_pair_highlight}, () => {
 
@@ -723,7 +721,7 @@ class CanvasPixels extends React.Component {
                             thumbnails.set(name, result);
                             progression = String(Math.round(parseFloat(thumbnails.size / filter_names.length)*100));
                             this.props.onFiltersThumbnailChange(thumbnails, hash, progression);
-                        }, 72
+                        }, 96
                     );
                 });
 
@@ -819,8 +817,8 @@ class CanvasPixels extends React.Component {
 
         const scale = 1;
         const resize_w = resize_width || pxl_width;
-        const b64pnglayer = Object.create(B64PngLayer).from(pool, pxl_width, pxl_height, pxls, pxl_colors, scale, resize_w);
-        b64pnglayer.render(function(r){callback_function(r); b64pnglayer.destroy()});
+        const b64layer = Object.create(B64Layer).from(pool, pxl_width, pxl_height, pxls, pxl_colors, scale, resize_w);
+        b64layer.render(function(r){callback_function(r); b64layer.destroy()});
     };
 
     get_base64_png_data_url = (scale = 1, callback_function = () => {}, with_palette = false, with_compression_speed = 0, with_compression_quality_min = 30, with_compression_quality_max = 35) => {
@@ -3101,8 +3099,6 @@ class CanvasPixels extends React.Component {
         // Only operate on canvas context if existing
         if (Boolean(this.super_canvas)) {
 
-            this.super_canvas.uncrowd();
-
             // Importing state variables
             const {
                 select_mode,
@@ -3207,7 +3203,7 @@ class CanvasPixels extends React.Component {
             }
 
             // This is a list of color index that we explore
-            const _full_pxls = Uint32Array.from(_s_pxls[_layer_index].map(pci => _s_pxl_colors[_layer_index][pci]));
+            const full_pxls = Uint32Array.from(_s_pxls[_layer_index].map(pci => _s_pxl_colors[_layer_index][pci]));
             const is_there_new_dimension = Boolean(_old_pxl_width !== pxl_width || _old_pxl_height !== pxl_height || _is_there_new_dimension);
             const has_new_pixel_hovered = Boolean(_old_pxls_hovered !== _pxls_hovered);
             let pxl_indexes_of_current_shape = new Set();
@@ -3262,7 +3258,7 @@ class CanvasPixels extends React.Component {
 
             const clear_canvas = Boolean(_did_hide_canvas_content && !hide_canvas_content) || Boolean(!_did_hide_canvas_content && hide_canvas_content) || !has_shown_canvas_once || hide_canvas_content || has_layers_visibility_or_opacity_changed || is_there_new_dimension;
 
-            for(let index = 0; index < _full_pxls.length; index++){
+            for(let index = 0; index < full_pxls.length; index++){
 
                 let b = {
                     is_in_image_imported: false,
@@ -3289,7 +3285,7 @@ class CanvasPixels extends React.Component {
                     pixel_hover_exception: false,
                 };
 
-                const full_pxl = _full_pxls[index];
+                const full_pxl = full_pxls[index];
                 b.is_in_image_imported = has_an_image_imported && imported_image_pxls_positioned_keyset.has(index);
                 b.was_in_image_imported = _previous_imported_image_pxls_positioned_keyset.has(index);
 
@@ -3390,11 +3386,11 @@ class CanvasPixels extends React.Component {
                         if(b.is_pixel_hovered || b.is_in_pencil_mirror_axes_indexes) {
 
                             pixel_color_Uint32 = this.color_conversion.blend_colors(pixel_color_Uint32, "hover", 2/3, false, false);
-                            indexed_changes.set(index, pixel_color_Uint32);
+                            indexed_changes.set(index,  pixel_color_Uint32);
                         }else {
 
                             pixel_color_Uint32 = this.color_conversion.blend_colors(pixel_color_Uint32, "hover", 1/3, false, false);
-                            indexed_changes.set(index, pixel_color_Uint32);
+                            indexed_changes.set(index,  pixel_color_Uint32);
                         }
                     }else if(b.is_in_image_imported_resizer || Boolean(b.is_in_the_current_selection && !b.is_in_the_current_shape && !b.is_pixel_hovered)) {
 
@@ -3407,16 +3403,16 @@ class CanvasPixels extends React.Component {
                                 2/3 + (0 + ((pos_x + pos_y + (_selection_pair_highlight ? 1: 0)) % 2)) / 3:
                                 1/3 + (0 + ((pos_x + pos_y + (_selection_pair_highlight ? 1: 0)) % 2)) / 3;
                             pixel_color_Uint32 = this.color_conversion.blend_colors(pixel_color_Uint32, "hover", opacity, false, false);
-                            indexed_changes.set(index, pixel_color_Uint32);
+                            indexed_changes.set(index,  pixel_color_Uint32);
                         }else if(b.is_in_the_current_selection && !b.is_in_the_current_shape && !b.is_pixel_hovered) {
 
                             const opacity = 1/3 + (0 + ((pos_x + pos_y + (_selection_pair_highlight ? 1: 0)) % 2)) / 3;
                             pixel_color_Uint32 = this.color_conversion.blend_colors(pixel_color_Uint32, "hover", opacity, false, false);
-                            indexed_changes.set(index, pixel_color_Uint32);
+                            indexed_changes.set(index,  pixel_color_Uint32);
                         }
                     } else {
 
-                        indexed_changes.set(index, pixel_color_Uint32);
+                        indexed_changes.set(index,  pixel_color_Uint32);
                     }
                 }
             }
@@ -3425,8 +3421,8 @@ class CanvasPixels extends React.Component {
 
                 force_update = Boolean(indexed_changes.size * 1.05 > pxl_width * pxl_height || force_update || clear_canvas);
 
-                this.super_canvas.putcrowd(indexed_changes);
-                this.sraf.run_frame(this.super_canvas.render, force_update, force_update);
+                this.super_canvas.pile(indexed_changes, this.super_canvas.unpile, this.super_canvas.prender, this.sraf.run_frame, [this.super_canvas.render, force_update, force_update]);
+
                 this.setSt4te({
                     _pxl_indexes_of_selection_drawn: new Set(Array.from(_pxl_indexes_of_selection)),
                     _pxl_indexes_of_old_shape: new Set(Array.from(pxl_indexes_of_current_shape)),
@@ -3439,7 +3435,7 @@ class CanvasPixels extends React.Component {
                     _previous_imported_image_pxls_positioned_keyset: new Set(Array.from(imported_image_pxls_positioned_keyset)),
                     _old_selection_pair_highlight: Boolean(_selection_pair_highlight),
                     _old_layers: _layers_simplified,
-                    _old_full_pxls: Uint32Array.from(_full_pxls),
+                    _old_full_pxls: Uint32Array.from(full_pxls),
                     _old_pxl_width: parseInt(pxl_width),
                     _old_pxl_height: parseInt(pxl_height),
                     _old_pxls_hovered: parseInt(_pxls_hovered),
@@ -3447,16 +3443,6 @@ class CanvasPixels extends React.Component {
                     has_shown_canvas_once: true,
                     _is_there_new_dimension: false,
                     _did_hide_canvas_content: Boolean(hide_canvas_content)
-                });
-            }else if(clear_canvas){
-
-                this.super_canvas.clear();
-                this.setSt4te({
-                    _old_layers: _layers_simplified,
-                    _did_hide_canvas_content: Boolean(hide_canvas_content)
-                }, () => {
-
-                    this.sraf.run_frame(this.super_canvas.render, true, true);
                 });
             }
         }else {

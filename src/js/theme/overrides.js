@@ -61,12 +61,15 @@ const overrides = {
                 imageRendering: "-o-pixelated",
             },
             ".pixelated, .pixelated *, .pixelated:not(d), .pixelated:not(d) *": {
-                imageRendering: "crisp-edges",
+                imageRendering: "-o-crisp-edges",
             },
             ".pixelated, .pixelated *, .pixelated:not(e), .pixelated:not(e) *": {
-                imageRendering: "nearest-neighbor",
+                imageRendering: "crisp-edges",
             },
             ".pixelated, .pixelated *, .pixelated:not(f), .pixelated:not(f) *": {
+                "-ms-interpolation-mode": "nearest-neighbor",
+            },
+            ".pixelated, .pixelated *, .pixelated:not(g), .pixelated:not(g) *": {
                 imageRendering: "pixelated",
             },
             ".emoji": {

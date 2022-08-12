@@ -607,7 +607,7 @@ const CanvasPos = {
 
                 const {canvas_event_target} = s;
                 this.compute_canvas_event_target(parseInt(event.pageX), parseInt(event.pageY));
-                const new_canvas_event_target = s.canvas_event_target;
+                const new_canvas_event_target = canvas_event_target;
                 let {
                     mouse_down,
                     event_button,
@@ -679,7 +679,7 @@ const CanvasPos = {
 
                 }else if(canvas_event_target !== new_canvas_event_target){
 
-                    c
+                    this.notify_move(event); this.notify_moved();
                 } else if(new_canvas_event_target === "CANVAS") {
 
                     this.notify_move(event);

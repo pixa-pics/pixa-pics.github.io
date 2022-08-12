@@ -67,7 +67,7 @@ var fu = async function(
                     resizeHeight: resizeHeight
                 }).then((btmp_i) => {
 
-                    ctx2.transferFromImageBitmap(btmp_i);
+                     ctx2.transferFromImageBitmap(btmp_i);
                     btmp_i.close()
 
                     var blob_params = {type: "image/png"};
@@ -143,7 +143,7 @@ var fu = async function(
                 ctx2 = null; canvas2 = null;
             }
         })};*/
-const B64PngLayer = {
+const B64Layer = {
 
     _create_state: function (
         pool,
@@ -221,4 +221,4 @@ const B64PngLayer = {
     }
 };
 
-module.exports = B64PngLayer;
+module.exports = B64Layer;

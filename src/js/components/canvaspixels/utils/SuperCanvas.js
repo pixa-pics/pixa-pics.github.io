@@ -1,3 +1,5 @@
+import workerpool from "workerpool";
+
 let requestIdleCallback, cancelIdleCallback;
 if ('requestIdleCallback' in window) {
 
@@ -22,265 +24,261 @@ if ('requestIdleCallback' in window) {
 }
 
 const SuperCanvas = {
+    draw_2d: function (ctx2d, indexed_colors) {
 
-    _create_state: function(c, pxl_width, pxl_height) {
+        const indexed_by_color_changes = new Map();
+        Object.entries(indexed_colors).forEach(function([index, colorUint32]) {
 
-        if(!Boolean(c)) { c = document.createElement("canvas"); }
-        c.width = pxl_width;
-        c.height = pxl_height;
+            if (!indexed_by_color_changes.has(colorUint32)) {
 
-        let cc2d = c.getContext('2d', {});
-        cc2d.imageSmoothingEnabled = false;
-        cc2d.globalCompositeOperation = "copy";
+                const set = new Set();
+                set.add(index);
+                indexed_by_color_changes.set(colorUint32, set);
+            } else {
 
-        let occ2d;
-        try {
-            occ2d = new OffscreenCanvas(pxl_width, pxl_height).getContext("2d", {});
-        } catch (e) {
-            let occ = document.createElement("canvas");
-            occ.width = pxl_width;
-            occ.height = pxl_height;
-            occ2d = occ.getContext("2d", {});
+                indexed_by_color_changes.get(colorUint32).add(index);
+            }
+
+        }); indexed_colors = {};
+
+        const indexed_by_color_paths = new Map();
+        for (const [uint32, set] of indexed_by_color_changes) {
+
+            const path = new Path2D();
+            const style = "#".concat("00000000".concat(uint32.toString(16)).slice(-8));
+            set.forEach((i) => {
+                const x = i % width, y = (i - x) / width;
+                path.rect(x, y, 1, 1);
+            });
+            set.clear();
+            indexed_by_color_paths.set(style, path);
+        } indexed_by_color_changes.clear();
+
+        // Draw paths b color
+        const sum_path = new Path2D();
+        for (const [style, path] of indexed_by_color_paths) {
+
+            if(!style.endsWith("ff")) { sum_path.addPath(path);}
         }
-        occ2d.imageSmoothingEnabled = false;
 
-        return {
-            width: parseInt(pxl_width),
-            height: parseInt(pxl_height),
-            canvas_context2d: cc2d,
-            offscreen_canvas_context2d: occ2d
-        };
+        // Draw paths b color
+        ctx2d.globalCompositeOperation = "destination-out";
+        ctx2d.fillStyle = "#ffffffff";
+        ctx2d.fill(sum_path);
+        for (const [style, path] of indexed_by_color_paths) {
+            ctx2d.globalCompositeOperation = "source-over";
+            ctx2d.fillStyle = style;
+            ctx2d.fill(path);
+        } indexed_by_color_paths.clear();
+
+        return [ctx2d, indexed_colors];
     },
-    _uncrowd: function(width, ics, ic, s, pt, refresh, resolve, reject, callback, timeout ) {
+    from: function(c, pxl_width, pxl_height, max_fps = 30){
 
-        const now = Date.now();
+        const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
+        const bpro = AsyncFunction(
+            `var bpro = async function(width, height, fp){
+            
+                var image_data = new ImageData(width, height);
+                    image_data.data.set(new Uint8ClampedArray(new Uint32Array(fp.buffer).reverse().buffer).reverse());
 
-        if(ics.length > 0 && ic.size === 0) {
+                return createImageBitmap(image_data);
+                 
+            }; return bpro;`)();
 
-            ic = new Map(Object.entries(ics.reduce(function (acc, val) {
-                return Object.assign(acc, Object.fromEntries(val.entries()));
-            }, {}))); ics = new Array();
-        }
+        const pool = workerpool.pool({minWorkers: 1, maxWorkers: 1});
+        const d2d = this.draw_2d;
+        const template = {
+            init: function(c, pxl_width, pxl_height, max_fps){
 
-        if (ic.size > 0) {
+                function cs(c, pxl_width, pxl_height) {
 
-            const indexed_by_color_changes = new Map();
-            for (const [index, colorUint32] of ic) {
+                    if(!Boolean(c)) { c = document.createElement("canvas"); }
+                    c.width = parseInt(pxl_width);
+                    c.height = parseInt(pxl_height);
 
-                if (!indexed_by_color_changes.has(colorUint32)) {
+                    let is_bitmap = Boolean('createImageBitmap' in window);
+                    let is_offscreen =  Boolean('OffscreenCanvas' in window);
+                    let cc2d;
+                    let occ2d;
+                    if (is_offscreen) {
 
-                    const set = new Set();
-                    set.add(index);
-                    indexed_by_color_changes.set(colorUint32, set);
-                } else {
+                        if(!is_bitmap) {
+                            occ2d = new OffscreenCanvas(parseInt(pxl_width), parseInt(pxl_height)).getContext("2d");
+                            occ2d.imageSmoothingEnabled = false;
+                        }
+                    }
 
-                    indexed_by_color_changes.get(colorUint32).add(index);
+                    cc2d = c.getContext('2d' );
+                    cc2d.imageSmoothingEnabled = false;
+                    cc2d.globalCompositeOperation = "copy";
+
+                    return {
+                        is_bitmap: Boolean(is_bitmap),
+                        is_offscreen: Boolean(is_offscreen),
+                        width: parseInt(pxl_width),
+                        height: parseInt(pxl_height),
+                        canvas_context: cc2d,
+                        offscreen_canvas_context: occ2d
+                    };
                 }
+
+                return {
+                    s: cs(c, pxl_width, pxl_height),
+                    bmp: null,
+                    fp: new Uint32Array(pxl_height * pxl_width),
+                    ics: new Array(), // Maps within an set for changes indexed by color in Uint32
+                    ic: new Array(),
+                    v: {
+                        rt: Date.now(),
+                        rs: 0,
+                        tbrt: parseInt(1000 / max_fps),
+                        pt: parseInt(1000 / max_fps),
+                        enable_prender: true,
+                        enable_paint: true,
+                        enable_unpile: true,
+                        idle_id: 0,
+                    },
+                };
             }
+        };
 
-            const indexed_by_color_paths = new Map();
-            for (const [uint32, set] of indexed_by_color_changes) {
-
-                const path = new Path2D();
-                const style = "#".concat("00000000".concat(uint32.toString(16)).slice(-8));
-                set.forEach((i) => {
-                    const x = i % width, y = (i - x) / width;
-                    path.rect(x, y, 1, 1);
-                });
-                set.clear();
-                indexed_by_color_paths.set(style, path);
-            }
-
-            // Draw paths b color
-            const sum_path = new Path2D();
-            for (const [style, path] of indexed_by_color_paths) {
-
-                if(!style.endsWith("ff")) { sum_path.addPath(path);}
-            }
-
-            // Draw paths b color
-            s.offscreen_canvas_context2d.globalCompositeOperation = "destination-out";
-            s.offscreen_canvas_context2d.fillStyle = "#ffffffff";
-            s.offscreen_canvas_context2d.fill(sum_path);
-            for (const [style, path] of indexed_by_color_paths) {
-                s.offscreen_canvas_context2d.globalCompositeOperation = "source-over";
-                s.offscreen_canvas_context2d.fillStyle = style;
-                s.offscreen_canvas_context2d.fill(path);
-            }
-
-            pt = Date.now() - now;
-            refresh = true;
-            ic.clear();
-
-            resolve(callback, timeout-pt);
-
-        }else {
-
-            reject(callback, 1);
-        }
-
-        return {ics, ic, s, pt, refresh};
-    },
-
-    from: function(c, pxl_width, pxl_height, max_fps = 60){
-
-        let uc = this._uncrowd;
-        let cs = this._create_state;
-        let s = cs(c, pxl_width, pxl_height);
-        let ics = new Array(); // Maps within an set for changes indexed by color in Uint32
-        let ic = new Map();
-        let rt = Date.now();
-        let rs = 0;
-        let tbf = parseInt(1000 / max_fps);
-        let pt = tbf;
-        let refresh = false;
-        let idle_id = 0;
+        let state = Object.create(template).init(c, pxl_width, pxl_height, max_fps);
+        let s = state.s;
+        let bmp = state.bmp;
+        let fp = state.fp;
+        let ics = state.ics;
+        let ic = state.ic;
+        let v = state.v;
 
         return {
             // Methods
             clear() {
-                s.offscreen_canvas_context2d.clearRect(0, 0, s.width, s.height);
+                s.offscreen_canvas_context.clearRect(0, 0, s.width, s.height);
             },
             render() {
+                if(v.enable_paint) {
+                    v.enable_paint = false;
+                    if (s.is_bitmap) {
+                        s.canvas_context.drawImage(bmp, 0, 0, s.width, s.height);
+                    } else if (s.is_offscreen) {
 
-                function prender(callback, timeout) {
+                        s.canvas_context.drawImage(s.offscreen_canvas_context, 0, 0, s.width, s.height);
+                    } else if (!s.is_bitmap) {
 
-                    function prender_resolve(callback, timeout){
-
-                        setTimeout(callback, Math.max(1, timeout));
+                        [s.canvas_context, ic] = d2d(s.canvas_context, ic);
                     }
+                    const paint_ended = Date.now();
+                    v.tbrt = paint_ended - v.rt;
+                    v.rt = paint_ended;
+                    v.rs--;
 
-                    function prender_reject(callback){
-
-                        setTimeout(callback, 1);
-                    }
-
-                    const r = uc(s.width, ics, ic, s, pt, refresh, prender_resolve, prender_reject, callback, timeout);
-                    ics = r.ics;
-                    ic = r.ic;
-                    s = r.s;
-                    pt = r.pt;
-                    refresh = r.refresh;
+                    v.enable_unpile = true;
                 }
+            },
+            prender(render_callback = function (){}, render_args = []){
 
-                function draw(){
+                if (v.enable_prender) {
+                    v.enable_prender = false;
 
-                    if(refresh) {
-                        const now = Date.now();
+                    const started = Date.now();
+                    if (s.is_bitmap) {
 
-                        s.canvas_context2d.globalCompositeOperation = "copy";
-                        s.canvas_context2d.drawImage(s.offscreen_canvas_context2d.canvas, 0, 0);
-                        tbf = now - rt;
-                        rt = Date.now();
-                        refresh = false;
-                    }
-                }
+                        pool.exec(bpro, [s.width, s.height, fp]).catch(function () {
 
-                rs++;
-                const now = Date.now();
+                            return b(s.width, s.height, fp);
+                        }).catch(function (){
 
-                if(rs <= 1) {
+                            v.enable_prender = true;
+                            setTimeout(this.prender, v.tbrt, render_callback, render_args);
+                            return pool.terminate();
+                        }).then(function(bitmap){
 
-                    if(rt + tbf < now) {
+                            v.enable_paint = true;
+                            v.pt = Date.now() - started;
+                            bmp = bitmap;
+                            render_callback(...render_args)
+                            return pool.terminate();
+                        });
 
-                        rs--;
+                    }else if (s.is_offscreen) {
 
-                        cancelIdleCallback(idle_id); idle_id = 0;
-                        prender(draw, 1);
-                        return true;
+                        [s.offscreen_canvas_context, ic] = d2d(s.offscreen_canvas_context, ic);
+                        v.enable_paint = true;
+                        v.pt = Date.now() - started;
+                        render_callback(...render_args)
 
                     }else {
 
-                        rs--;
-
-                        prender(draw, Math.max(1, now - rt - tbf - pt));
-                        return true;
+                        v.enable_paint = true;
+                        v.pt = Date.now() - started;
+                        render_callback(...render_args)
                     }
-                }else{
-
-                    rs--;
-                    return false;
                 }
             },
-            uncrowd(force = false){
+            unpile(prender_callback = function (){}, render_callback = function (){}, render_args = []){
 
-                function prender(deadline) {
+                if (ics.length > 0) {
 
-                    if(typeof deadline === "undefined") {
+                    while (ics.length) { ic = Object.assign(ic, ics.shift());}
 
-                        deadline = {will_execute: 1, timeRemaining: function(){return 0;}};
-                    }else if(typeof deadline.timeRemaining !== "function") {
+                    if (s.is_bitmap) {
 
-                        deadline = {will_execute: 1, timeRemaining: function(){return 0;}};
+                        ic = Object.entries(ic).forEach(function ([index, uint32]) {fp[parseInt(index)] = Number(uint32);}) || {};
+                        console.log(fp);
+
+                    } else if (s.is_offscreen) {
+
+                        [s.offscreen_canvas_context, ic] = d2d(s.offscreen_canvas_context, ic);
                     }
 
-                    function prender_resolve(callback, timeout){
-
-                        setTimeout(callback, Math.max(1, timeout));
-                    }
-
-                    function prender_reject(callback){
-
-                        setTimeout(callback, 1);
-                    }
-
-                    while (Boolean(deadline.will_execute) || deadline.timeRemaining() > 0) {
-                        const r = uc(s.width, ics, ic, s, pt, refresh, prender_resolve, prender_reject, function(){}, 1);
-                        ics = r.ics;
-                        ic = r.ic;
-                        s = r.s;
-                        pt = r.pt;
-                        refresh = r.refresh;
-                        deadline.will_execute = Math.max(0, deadline.will_execute-1);
-                    }
-
-                    cancelIdleCallback(idle_id); idle_id = 0;
-                }
-
-                if(force === false && idle_id === 0) {
-
-                    idle_id = requestIdleCallback(prender, {timeout: 250});
-                }else if(force === true) {
-
-                    cancelIdleCallback(idle_id); idle_id = 0;
-                    prender();
+                    v.enable_prender = true;
+                    prender_callback(render_callback, render_args);
                 }
             },
-            putcrowd(indexed_changes_map) {
+            pile(indexed_changes, unpile_callback = function(){}, prender_callback = function (){}, render_callback = function (){}, render_args = []) {
 
-                ics.push(indexed_changes_map);
+                ics.push(Object.fromEntries(indexed_changes.entries()));
+                unpile_callback(prender_callback, render_callback, render_args);
             },
-
             set_dimensions(w, h) {
 
-                if(s !== null) {
-
-                    s = cs(s.canvas_context2d.canvas, w, h);
-                }
+                state = Object.create(template).init(s.canvas_context.canvas, w, h);
+                s = state.s;
+                bmp = state.bmp;
+                fp = state.fp;
+                ics = state.ics;
+                ic = state.ic;
+                v = state.v;
             },
-            new(c, pxl_width, pxl_height) {
+            new(c, w, h) {
 
-                s = cs(c, pxl_width, pxl_height);
+                state = Object.create(template).init(c, w, h);
+                s = state.s;
+                bmp = state.bmp;
+                fp = state.fp;
+                ics = state.ics;
+                ic = state.ic;
+                v = state.v;
+            },
+            secure_context() {
+                /*s.canvas_context.canvas.addEventListener("contextlost", function(){
 
-                s.canvas_context2d.canvas.addEventListener("contextlost", function(){
-
-                    let cc2d = s.canvas_context2d.canvas.getContext('2d', {});
-                        cc2d.imageSmoothingEnabled = false;
-                        cc2d.globalCompositeOperation = "copy";
-                    s.canvas_context2d = cc2d;
+                    let cc2d = s.canvas_context.canvas.getContext('2d', {});
+                    cc2d.imageSmoothingEnabled = false;
+                    cc2d.globalCompositeOperation = "copy";
+                    s.canvas_context = cc2d;
                 });
-                s.offscreen_canvas_context2d.canvas.addEventListener("contextlost", function(){
+                s.offscreen_canvas_context.canvas.addEventListener("contextlost", function(){
 
-                    let occ2d = s.offscreen_canvas_context2d.canvas.getContext("2d", {});
-                        occ2d.imageSmoothingEnabled = false;
-                    s.offscreen_canvas_context2d = occ2d;
-                });
+                    let occ2d = s.offscreen_canvas_context.canvas.getContext("2d", {});
+                    occ2d.imageSmoothingEnabled = false;
+                    s.offscreen_canvas_context = occ2d;
+                });*/
             },
-            destroy(callback_function) {
-
-                s = null;
-                callback_function("ok");
-            },
+            destroy() {
+                s, bmp, fp, ic, ics, v = null;
+            }
         };
     }
 };

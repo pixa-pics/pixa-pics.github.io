@@ -258,7 +258,7 @@ const styles = theme => ({
                 display: "block",
                 flexGrow: 1,
                 flexBasis: "auto",
-                width: "72px",
+                width: "96px",
                 textAlign: "center",
                 "& .MuiListItemIcon-root": {
                     minWidth: 0,
@@ -1488,13 +1488,13 @@ class PixelToolboxSwipeableViews extends React.Component {
                         const f = filters_thumbnail.get(name) || "";
                         return {
                             style: {position: "relative", minWidth: "100%" },
-                            icon: <Avatar className={"pixelated"} style={{ zIndex: "-1", boxSizing: "border-box", height: "100%", minWidth: "100%", minHeight: parseInt(72 / _filter_ar_on_one), width: 72, aspectRatio: `${_filter_ar_on_one} / 1`, filter: `${String(Boolean(f.length === 0 && name_index !== 0) ? "drop-shadow(#3729c170 0px 2px 4px) opacity(0.66)": "drop-shadow(#3729c1a8 0px 1px 2px) opacity(1.0)")}`, webkitFilter: `${String(Boolean(f.length === 0 && name_index !== 0) ? "drop-shadow(#3729c170 0px 2px 4px) opacity(0.66)": "drop-shadow(#3729c1a8 0px 1px 2px) opacity(1.0)")}`, border: "4px solid #020529", borderRadius: 4, contain: "paint style size"}} key={String(Boolean(f.length > 0) ? String(name+"-loaded-"+_filter_ar_on_one): String(name+"-loading-"+_filter_ar_on_one)) + String("-preview-" + last_filters_hash)} variant={"rounded"} src={String(f.length > 0 ? f: filters_thumbnail.get(filters[0]))} />,
+                            icon: <Avatar className={"speed"} style={{ zIndex: "-1", boxSizing: "border-box", height: "100%", minWidth: "100%", minHeight: parseInt(96 / _filter_ar_on_one), width: 96, aspectRatio: `${_filter_ar_on_one} / 1`, filter: `${String(Boolean(f.length === 0 && name_index !== 0) ? "drop-shadow(#3729c170 0px 2px 4px) opacity(0.66)": "drop-shadow(#3729c1a8 0px 1px 2px) opacity(1.0)")}`, webkitFilter: `${String(Boolean(f.length === 0 && name_index !== 0) ? "drop-shadow(#3729c170 0px 2px 4px) opacity(0.66)": "drop-shadow(#3729c1a8 0px 1px 2px) opacity(1.0)")}`, border: "4px solid #020529", borderRadius: 4, contain: "paint style size"}} key={String(Boolean(f.length > 0) ? String(name+"-loaded-"+_filter_ar_on_one): String(name+"-loading-"+_filter_ar_on_one)) + String("-preview-" + last_filters_hash)} variant={"rounded"} src={String(f.length > 0 ? f: filters_thumbnail.get(filters[0]))} />,
                             text: name,
                             text_style: {
                                 flex: "1 1",
                                 bottom: 16,
                                 left: 8,
-                                width: 72,
+                                width: 96,
                                 minWidth: "100%",
                                 right: 24,
                                 color: "white",
