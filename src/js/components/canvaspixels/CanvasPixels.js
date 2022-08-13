@@ -31,6 +31,7 @@ import B64PngCanvas from "../canvaspixels/utils/B64PngCanvas";
 import B64Layer from "./utils/B64Layer";
 import ReducePalette from "../canvaspixels/utils/ReducePalette";
 import SuperCanvas from "../canvaspixels/utils/SuperCanvas";
+import SuperBlend from "../canvaspixels/utils/SuperBlend";
 import ColorConversion from "../canvaspixels/utils/ColorConversion";
 import SmartRequestAnimationFrame from "../canvaspixels/utils/SmartRequestAnimationFrame";
 import XXHash from "../canvaspixels/utils/XXHash";
@@ -154,6 +155,7 @@ class CanvasPixels extends React.Component {
         if(!this.hasnt_been_mount) {
             this.xxhash = Object.create(XXHash).new();
             this.color_conversion = Object.create(ColorConversion).new();
+            this.super_blend = Object.create(SuperBlend).new();
             this.super_canvas = Object.create(SuperCanvas).from(null, 32, 32);
             this.canvas_pos = Object.create(CanvasPos).from(32,  32,  0.9,  32, 0, 0);
             this.sraf =  Object.create(SmartRequestAnimationFrame).new();
@@ -190,8 +192,6 @@ class CanvasPixels extends React.Component {
         _intervals[2] = setInterval(this._maybe_update_selection_highlight, this.sraf.get_state().is_mobile_or_tablet ? 2000: 1000);
 
         _intervals[3] = setInterval(this._notify_export_state, this.st4te.export_state_every_ms);
-
-        _intervals[4] = setInterval(this._update_canvas, this.sraf.get_state().is_mobile_or_tablet ? 500: 250);
 
         const body_css =
             "body {" +
@@ -731,7 +731,7 @@ class CanvasPixels extends React.Component {
 
     _notify_layers_and_compute_thumbnails_change = (old_current_state, new_current_state, callback_function = null, start = Date.now()) => {
 
-        const maybe_set_layers = (lyrs_changed, new_current_state = {}) => {
+        const maybe_set_layers = (has_updated, has_changed, new_current_state = {}) => {
 
             const leading_change = Boolean(start > this.st4te._layers_defined_at);
             const current_state = Object.assign(Object.assign({}, new_current_state), {_layers: Array.from(new_current_state._layers)
@@ -746,19 +746,26 @@ class CanvasPixels extends React.Component {
                     })
             });
 
-            if(lyrs_changed && leading_change) {
+            if(has_changed && leading_change) {
 
                 this.setSt4te({_layer_index: new_current_state._layer_index, _layers: Array.from(new_current_state._layers), _layers_defined_at: start}, () => {
 
                     if(this.props.onLayersChange) {this.props.onLayersChange(this.st4te._layer_index, this.st4te._layers);}
                     if(callback_function !== null) {callback_function(this.st4te._layers, this.st4te._layer_index, true, current_state);}
                 });
-            }else if(leading_change){
+            }else if(has_updated) {
 
-                if(callback_function !== null) {callback_function(this.st4te._layers, this.st4te._layer_index, false, current_state);}
-            }else {
+                this.setSt4te({_layer_index: new_current_state._layer_index, _layers: Array.from(new_current_state._layers), _layers_defined_at: start}, () => {
 
-                if(callback_function !== null) {callback_function(this.st4te._layers, this.st4te._layer_index, false, {});}
+                    if(this.props.onLayersChange) {this.props.onLayersChange(this.st4te._layer_index, this.st4te._layers);}
+                    if (leading_change) {if (callback_function !== null) {callback_function(this.st4te._layers, this.st4te._layer_index, false, current_state);}}
+                });
+            } else if (leading_change) {
+
+                if (callback_function !== null) {callback_function(this.st4te._layers, this.st4te._layer_index, false, current_state);}
+            } else {
+
+                if (callback_function !== null) {callback_function(this.st4te._layers, this.st4te._layer_index, false, {});}
             }
         }
 
@@ -768,6 +775,7 @@ class CanvasPixels extends React.Component {
         const new_timestamp = parseInt(new_current_state._timestamp);
         let timestamp = old_timestamp;
         let has_changed = false;
+        let has_updated = true;
 
         for(let index = 0; index < new_current_state._layers.length; index++){
 
@@ -782,6 +790,7 @@ class CanvasPixels extends React.Component {
 
                 this.get_layer_base64_png_data_url(new_current_state.pxl_width, new_current_state.pxl_height, p, pc, (new_thumbnail) => {
 
+                    has_updated = true;
                     if(old_hash !== new_hash || !Boolean(old_hash)) {
 
                         has_changed = true;
@@ -793,10 +802,10 @@ class CanvasPixels extends React.Component {
 
                     if(all_layers_length === new_current_state._layers.length) {
 
-                        new_current_state._timestamp = parseInt(timestamp);
-                        maybe_set_layers(has_changed, new_current_state);
+                        new_current_state._timestamp = Number(timestamp);
+                        maybe_set_layers(has_updated, has_changed, new_current_state);
                     }
-                }, 96);
+                }, 192);
 
             }else {
 
@@ -807,7 +816,7 @@ class CanvasPixels extends React.Component {
                 if(all_layers_length === new_current_state._layers.length) {
 
                     new_current_state._timestamp = parseInt(timestamp);
-                    maybe_set_layers(has_changed, new_current_state);
+                    maybe_set_layers(has_updated, has_changed, new_current_state);
                 }
             }
         }
@@ -3252,12 +3261,9 @@ class CanvasPixels extends React.Component {
 
             const has_layers_visibility_or_opacity_changed = Boolean(JSON.stringify(_old_layers) !== JSON.stringify(_layers_simplified));
             const imported_image_pxls_positioned_keyset = new Set(Array.from(imported_image_pxls_positioned));
-
-            const _s_pxl_colors_a = _s_pxl_colors.map((a) => {return this.color_conversion.to_int_array_from_uint32_array_for_subcolor(a)});
-            let indexed_changes = new Map();
-
             const clear_canvas = Boolean(_did_hide_canvas_content && !hide_canvas_content) || Boolean(!_did_hide_canvas_content && hide_canvas_content) || !has_shown_canvas_once || hide_canvas_content || has_layers_visibility_or_opacity_changed || is_there_new_dimension;
 
+            this.super_blend.new_from(_layers_simplified.length+1);
             for(let index = 0; index < full_pxls.length; index++){
 
                 let b = {
@@ -3333,42 +3339,20 @@ class CanvasPixels extends React.Component {
                             )
                     ))) {
 
-                    let layer_pixel_colors = new Map();
-                    let start_i = 0;
+                    this.super_blend.push_index(index);
 
-                    for (let i = parseInt(_layers_simplified.length - 1); i >= 0; i--) {
-
-                        const ci = parseInt(_s_pxls[i][index]);
-                        const c = parseInt(_s_pxl_colors[i][ci]);
-                        const a = parseInt(_s_pxl_colors_a[i][ci]);
-
-                        layer_pixel_colors.set(i, c);
-
-                        if(a === 255 && parseFloat(_layers_simplified[i].opacity) === parseFloat(1) && !_layers_simplified[i].hidden) {
-
-                            start_i = i;
-                            break;
-                        }
-
-                    }
-
-                    let pixel_color_Uint32 = this.color_conversion.blend_colors(0,  layer_pixel_colors.get(start_i), parseFloat(_layers_simplified[start_i].opacity), false, false);
-                    if(b.is_in_image_imported && start_i === _layer_index) {
-
-                        pixel_color_Uint32 = this.color_conversion.blend_colors(pixel_color_Uint32, _imported_image_pxl_colors[imported_image_pxls_positioned[index]], 1, false, false);
-                    }
-
-                    for (let i = start_i+1; i <= parseInt(_layers_simplified.length - 1); i++) {
+                    const layers_length = _layers_simplified.length;
+                    for (let i = 0; i < layers_length; i++) {
 
                         if(!_layers_simplified[i].hidden) {
 
-                            const layer_pixel_color = layer_pixel_colors.get(i);
-
-                            pixel_color_Uint32 = this.color_conversion.blend_colors(pixel_color_Uint32, layer_pixel_color, parseFloat(_layers_simplified[i].opacity), false, false);
-
                             if(b.is_in_image_imported && i === _layer_index) {
 
-                                pixel_color_Uint32 = this.color_conversion.blend_colors(pixel_color_Uint32, _imported_image_pxl_colors[imported_image_pxls_positioned[index]], 1, false, false);
+                                this.super_blend.push_item(i, _imported_image_pxl_colors[imported_image_pxls_positioned[index]], 1);
+                            }else {
+
+                                this.super_blend.push_item(i, Number(_s_pxl_colors[i][_s_pxls[i][index]]), Number(_layers_simplified[i].opacity));
+
                             }
                         }
                     }
@@ -3385,12 +3369,10 @@ class CanvasPixels extends React.Component {
 
                         if(b.is_pixel_hovered || b.is_in_pencil_mirror_axes_indexes) {
 
-                            pixel_color_Uint32 = this.color_conversion.blend_colors(pixel_color_Uint32, "hover", 2/3, false, false);
-                            indexed_changes.set(index,  pixel_color_Uint32);
+                            this.super_blend.push_item(layers_length, 0, 2/3, true);
                         }else {
 
-                            pixel_color_Uint32 = this.color_conversion.blend_colors(pixel_color_Uint32, "hover", 1/3, false, false);
-                            indexed_changes.set(index,  pixel_color_Uint32);
+                            this.super_blend.push_item(layers_length, 0, 1/3, true);
                         }
                     }else if(b.is_in_image_imported_resizer || Boolean(b.is_in_the_current_selection && !b.is_in_the_current_shape && !b.is_pixel_hovered)) {
 
@@ -3402,27 +3384,24 @@ class CanvasPixels extends React.Component {
                             const opacity = b.is_pixel_hovered ?
                                 2/3 + (0 + ((pos_x + pos_y + (_selection_pair_highlight ? 1: 0)) % 2)) / 3:
                                 1/3 + (0 + ((pos_x + pos_y + (_selection_pair_highlight ? 1: 0)) % 2)) / 3;
-                            pixel_color_Uint32 = this.color_conversion.blend_colors(pixel_color_Uint32, "hover", opacity, false, false);
-                            indexed_changes.set(index,  pixel_color_Uint32);
+                            this.super_blend.push_item(layers_length, 0, opacity, true);
                         }else if(b.is_in_the_current_selection && !b.is_in_the_current_shape && !b.is_pixel_hovered) {
 
                             const opacity = 1/3 + (0 + ((pos_x + pos_y + (_selection_pair_highlight ? 1: 0)) % 2)) / 3;
-                            pixel_color_Uint32 = this.color_conversion.blend_colors(pixel_color_Uint32, "hover", opacity, false, false);
-                            indexed_changes.set(index,  pixel_color_Uint32);
+                            this.super_blend.push_item(layers_length, 0, opacity, true);
                         }
                     } else {
 
-                        indexed_changes.set(index,  pixel_color_Uint32);
+                        this.super_blend.push_item(layers_length, 0, 0, false);
                     }
                 }
             }
 
+            const indexed_changes = this.super_blend.mix_blend();
             if(indexed_changes.size > 0) {
 
                 force_update = Boolean(indexed_changes.size * 1.05 > pxl_width * pxl_height || force_update || clear_canvas);
-
-                this.super_canvas.pile(indexed_changes, this.super_canvas.unpile, this.super_canvas.prender, this.sraf.run_frame, [this.super_canvas.render, force_update, force_update]);
-
+                this.super_canvas.pile(indexed_changes, this.super_canvas.unpile, this.super_canvas.prender, this.sraf.run_frame, Array.of(this.super_canvas.render, force_update, force_update));
                 this.setSt4te({
                     _pxl_indexes_of_selection_drawn: new Set(Array.from(_pxl_indexes_of_selection)),
                     _pxl_indexes_of_old_shape: new Set(Array.from(pxl_indexes_of_current_shape)),

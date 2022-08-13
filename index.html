@@ -124,7 +124,7 @@
 
             "use strict";
             /* LOAD JS FILE (in two "moves") */
-            var _LET_FIRE_IT = (function(is_service_worker_activation_successful) {
+            var _LET_FIRE_IT = async function(is_service_worker_activation_successful) {
 
                 var _FIRED_IT_STATE = "";
                 var _MAIN_JS_FILE_ENDS_WITH = "norris.min.js";
@@ -139,41 +139,49 @@
                     "/chunk_norris.min.js",
                 );
 
-                if(is_service_worker_activation_successful) { console.log("GREAT, the service worker has been activated with success.") } else { console.log("GOOD, the service worker installation has been ignored successfully.") }
+                if (is_service_worker_activation_successful) {
+                    console.log("GREAT, the service worker has been activated with success.")
+                } else {
+                    console.log("GOOD, the service worker installation has been ignored successfully.")
+                }
                 // Load pre-used (PRE) file or finally used ones (POST)
-                var fire_it = function(what) {
+                var fire_it = function (what) {
 
                     var hrefs = [];
-                    if(Boolean(what === "FIRST" && Boolean(_FIRED_IT_STATE !== "FIRST" && _FIRED_IT_STATE !== "LAST")) || Boolean(what === "LAST" && Boolean(_FIRED_IT_STATE !== "FIRST" && _FIRED_IT_STATE !== "LAST"))) {
+                    if (Boolean(what === "FIRST" && Boolean(_FIRED_IT_STATE !== "FIRST" && _FIRED_IT_STATE !== "LAST")) || Boolean(what === "LAST" && Boolean(_FIRED_IT_STATE !== "FIRST" && _FIRED_IT_STATE !== "LAST"))) {
 
                         hrefs = hrefs.concat(_PRE_FILES);
                         console.log("First files to load have been ignited.")
                         _FIRED_IT_STATE = "FIRST";
                     }
 
-                    if(Boolean(what === "LAST" && Boolean(_FIRED_IT_STATE === "FIRST" || _FIRED_IT_STATE !== "LAST"))) {
+                    if (Boolean(what === "LAST" && Boolean(_FIRED_IT_STATE === "FIRST" || _FIRED_IT_STATE !== "LAST"))) {
 
                         hrefs = hrefs.concat(_POST_FILES);
                         console.log("Last files to load have been ignited.")
                         _FIRED_IT_STATE = "LAST";
                     }
 
-                    for(var i = 0; i < hrefs.length; i++){
+                    for (var i = 0; i < hrefs.length; i++) {
 
                         var ss = hrefs[i];
-                        if(ss.endsWith(".js")) {
+                        if (ss.endsWith(".js")) {
 
                             var e = document.createElement("script");
                             e.setAttribute("src", ss);
                             e.setAttribute("type", "text/javascript");
 
-                            var main_script_sources = document.querySelectorAll('script[src$="'+ss+'"]');
-                            if(main_script_sources.length > 0) {main_script_sources.forEach(function(node){node.remove();});}
+                            var main_script_sources = document.querySelectorAll('script[src$="' + ss + '"]');
+                            if (main_script_sources.length > 0) {
+                                main_script_sources.forEach(function (node) {
+                                    node.remove();
+                                });
+                            }
 
-                            e.setAttribute(ss.endsWith(_MAIN_JS_FILE_ENDS_WITH) ? "async": "defer", "true");
+                            e.setAttribute(ss.endsWith(_MAIN_JS_FILE_ENDS_WITH) ? "async" : "defer", "true");
                             document.body.appendChild(e);
 
-                        }else if(ss.endsWith(".css")) {
+                        } else if (ss.endsWith(".css")) {
 
                             var e = document.createElement("link");
                             e.setAttribute("href", ss);
@@ -185,17 +193,33 @@
                 }
 
                 // This event fires after doc ready state is interactive and before it is complete, it doesn't wait on resources to be loaded
-                document.addEventListener('DOMContentLoaded', function() { fire_it("LAST"); });
-                document.addEventListener('readystatechange', function() {
+                document.addEventListener('DOMContentLoaded', function () {
+                    fire_it("LAST");
+                });
+                document.addEventListener('readystatechange', function () {
 
-                    if(document.readyState === "interactive") { fire_it("FIRST"); }
-                    if(document.readyState === "complete") { fire_it("LAST"); window.addEventListener("load", function() { fire_it("LAST"); }); }
+                    if (document.readyState === "interactive") {
+                        fire_it("FIRST");
+                    }
+                    if (document.readyState === "complete") {
+                        fire_it("LAST");
+                        window.addEventListener("load", function () {
+                            fire_it("LAST");
+                        });
+                    }
                 });
 
                 // Prevent this function from being executed none, twice or more using parameters what
-                if(document.readyState === "interactive") { fire_it("FIRST"); }
-                if(document.readyState === "complete") { fire_it("LAST"); window.addEventListener("load", function() { fire_it("LAST"); }); }
-            })();
+                if (document.readyState === "interactive") {
+                    fire_it("FIRST");
+                }
+                if (document.readyState === "complete") {
+                    fire_it("LAST");
+                    window.addEventListener("load", function () {
+                        fire_it("LAST");
+                    });
+                }
+            };
 
             /* TRY INSTALL SERVICE WORKER, FINALLY LOAD JS FILE */
             var _REGISTER_SERVICE_WORKER = function() {

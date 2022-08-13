@@ -27,7 +27,7 @@ const SuperCanvas = {
     draw_2d: function (ctx2d, indexed_colors) {
 
         const indexed_by_color_changes = new Map();
-        Object.entries(indexed_colors).forEach(function([index, colorUint32]) {
+        indexed_colors.forEach(function(colorUint32, index) {
 
             if (!indexed_by_color_changes.has(colorUint32)) {
 
@@ -39,7 +39,7 @@ const SuperCanvas = {
                 indexed_by_color_changes.get(colorUint32).add(index);
             }
 
-        }); indexed_colors = {};
+        }); indexed_colors.clear();
 
         const indexed_by_color_paths = new Map();
         for (const [uint32, set] of indexed_by_color_changes) {
@@ -127,8 +127,7 @@ const SuperCanvas = {
                     s: cs(c, pxl_width, pxl_height),
                     bmp: null,
                     fp: new Uint32Array(pxl_height * pxl_width),
-                    ics: new Array(), // Maps within an set for changes indexed by color in Uint32
-                    ic: new Array(),
+                    ic: new Map(),
                     v: {
                         rt: Date.now(),
                         rs: 0,
@@ -147,7 +146,6 @@ const SuperCanvas = {
         let s = state.s;
         let bmp = state.bmp;
         let fp = state.fp;
-        let ics = state.ics;
         let ic = state.ic;
         let v = state.v;
 
@@ -187,18 +185,12 @@ const SuperCanvas = {
                         pool.exec(bpro, [s.width, s.height, fp]).catch(function () {
 
                             return b(s.width, s.height, fp);
-                        }).catch(function (){
-
-                            v.enable_prender = true;
-                            setTimeout(this.prender, v.tbrt, render_callback, render_args);
-                            return pool.terminate();
                         }).then(function(bitmap){
 
                             v.enable_paint = true;
                             v.pt = Date.now() - started;
                             bmp = bitmap;
-                            render_callback(...render_args)
-                            return pool.terminate();
+                            render_callback(...render_args);
                         });
 
                     }else if (s.is_offscreen) {
@@ -206,39 +198,45 @@ const SuperCanvas = {
                         [s.offscreen_canvas_context, ic] = d2d(s.offscreen_canvas_context, ic);
                         v.enable_paint = true;
                         v.pt = Date.now() - started;
-                        render_callback(...render_args)
+                        render_callback(...render_args);
 
                     }else {
 
                         v.enable_paint = true;
                         v.pt = Date.now() - started;
-                        render_callback(...render_args)
+                        render_callback(...render_args);
                     }
+                }else {
+
+
+                    render_callback(...render_args);
                 }
             },
             unpile(prender_callback = function (){}, render_callback = function (){}, render_args = []){
 
-                if (ics.length > 0) {
+                if(v.enable_unpile) {
+                    if (ic.size > 0) {
 
-                    while (ics.length) { ic = Object.assign(ic, ics.shift());}
+                        if (s.is_bitmap) {
 
-                    if (s.is_bitmap) {
+                            console.log(fp);
+                            ic.forEach(function (value, index) {
+                                fp[index] = value;
+                            }); ic.clear();
 
-                        ic = Object.entries(ic).forEach(function ([index, uint32]) {fp[parseInt(index)] = Number(uint32);}) || {};
-                        console.log(fp);
+                        } else if (s.is_offscreen) {
 
-                    } else if (s.is_offscreen) {
+                            [s.offscreen_canvas_context, ic] = d2d(s.offscreen_canvas_context, ic);
+                        }
 
-                        [s.offscreen_canvas_context, ic] = d2d(s.offscreen_canvas_context, ic);
+                        v.enable_prender = true;
                     }
-
-                    v.enable_prender = true;
-                    prender_callback(render_callback, render_args);
                 }
+                prender_callback(render_callback, render_args);
             },
             pile(indexed_changes, unpile_callback = function(){}, prender_callback = function (){}, render_callback = function (){}, render_args = []) {
 
-                ics.push(Object.fromEntries(indexed_changes.entries()));
+                indexed_changes.forEach(function(value, index){ic.set(index, Number(value))});
                 unpile_callback(prender_callback, render_callback, render_args);
             },
             set_dimensions(w, h) {
@@ -247,7 +245,6 @@ const SuperCanvas = {
                 s = state.s;
                 bmp = state.bmp;
                 fp = state.fp;
-                ics = state.ics;
                 ic = state.ic;
                 v = state.v;
             },
@@ -257,7 +254,6 @@ const SuperCanvas = {
                 s = state.s;
                 bmp = state.bmp;
                 fp = state.fp;
-                ics = state.ics;
                 ic = state.ic;
                 v = state.v;
             },
@@ -277,7 +273,7 @@ const SuperCanvas = {
                 });*/
             },
             destroy() {
-                s, bmp, fp, ic, ics, v = null;
+                s, bmp, fp, ic, v = null;
             }
         };
     }

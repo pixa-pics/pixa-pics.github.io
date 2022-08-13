@@ -11,11 +11,11 @@ var fu = async function(
 
             "use strict";
 
-    var coco = {
-        to_hex_from_uint32: function(uint32){
-            return "#".concat("00000000".concat(uint32.toString(16)).slice(-8));
-        }
-    };
+            var coco = {
+                to_hex_from_uint32: function(uint32){
+                    return "#".concat("00000000".concat(uint32.toString(16)).slice(-8));
+                }
+            };
 
             var resize_ratio = parseFloat(resize_width / parseInt(pxl_width * scale));
             var resizeWidth = parseInt(parseFloat(pxl_width * scale) * resize_ratio);
@@ -76,24 +76,31 @@ var fu = async function(
                         ctx2 = null; canvas2 = null;
                         try {
 
-                            resolve(FileReaderSync.readAsDataURL(blob));
+                            resolve(URL.createObjectURL(blob));
                             blob = null;
                         } catch(e) {
 
-                            function blob_to_base64(blob) {
-                              return new Promise((resolve, _) => {
-                                var reader = new FileReader();
-                                reader.onload = () => resolve(reader.result);
-                                reader.readAsDataURL(blob);
-                              })
+                            try {
+
+                                resolve(FileReaderSync.readAsDataURL(blob));
+                                blob = null;
+                            } catch(e2) {
+
+                                function blob_to_base64(blob) {
+                                  return new Promise((resolve, _) => {
+                                    var reader = new FileReader();
+                                    reader.onload = () => resolve(reader.result);
+                                    reader.readAsDataURL(blob);
+                                  })
+                                }
+
+                                return blob_to_base64(blob).then((data_url) => {
+
+                                     resolve(data_url);
+                                     data_url = null;
+                                });
+                                blob = null;
                             }
-
-                            return blob_to_base64(blob).then((data_url) => {
-
-                                 resolve(data_url);
-                                 data_url = null;
-                            });
-                            blob = null;
                         }
                     });
                 });
@@ -156,7 +163,7 @@ const B64Layer = {
     ) {
 
         const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
-        const asyncs = `var e=async function(e,n,t,a,r,l){return new Promise((function(i,o){"use strict";var s=function(e){return"#".concat("00000000".concat(e.toString(16)).slice(-8))},c=parseFloat(l/parseInt(e*r)),u=parseInt(parseFloat(e*r)*c),m=parseInt(parseFloat(n*r)*c);try{if("undefined"==typeof OffscreenCanvas)throw new Error("Impossible to create OffscreenCanvas in this web environment.");var f=null;if(1===parseInt(r))f=new ImageData(new Uint8ClampedArray(Uint32Array.from(t.map((function(e){return a[e]})).reverse()).buffer).reverse(),e,n);else{var g=a.map((function(e){return s(e)})),d=new OffscreenCanvas(e*r,n*r);(h=d.getContext("2d")).imageSmoothingEnabled=!1,t.forEach(((n,t)=>{var a=g[n],l=t%e,i=(t-l)/e;h.fillStyle=a,h.fillRect(l*r,i*r,1*r,1*r)})),f=h.getImageData(0,0,e*r,n*r),h=null,d=null,g=null}var p=new OffscreenCanvas(u,m);(v=p.getContext("bitmaprenderer")).imageSmoothingEnabled=!1,createImageBitmap(f,{resizeWidth:u,resizeHeight:m}).then((e=>{v.transferFromImageBitmap(e),e.close();p.convertToBlob({type:"image/png"}).then((e=>{v=null,p=null;try{i(FileReaderSync.readAsDataURL(e)),e=null}catch(n){function t(e){return new Promise(((n,t)=>{var a=new FileReader;a.onload=()=>n(a.result),a.readAsDataURL(e)}))}return t(e).then((e=>{i(e),e=null}))}}))})),f=null}catch(w){var h,v;if((d=document.createElement("canvas")).width=e*r,d.height=n*r,(h=d.getContext("2d")).imageSmoothingEnabled=!1,1===parseInt(r))h.putImageData(new ImageData(new Uint8ClampedArray(Uint32Array.from(t.map((function(e){return a[e]})).reverse()).buffer).reverse(),e,n),0,0);else{g=a.map((function(e){return s(e)}));t.forEach(((n,t)=>{var a=g[n],l=t%e,i=(t-l)/e;h.fillStyle=a,h.fillRect(l*r,i*r,1*r,1*r)})),g=null}(p=document.createElement("canvas")).width=u,p.height=m,(v=p.getContext("2d")).imageSmoothingEnabled=!1,v.drawImage(d,0,0,u,m),h=null,d=null,i(p.toDataURL("image/png")),v=null,p=null}}))};`
+        const asyncs = `var e=async function(e,n,t,a,r,l){return new Promise((function(i){"use strict";var o=function(e){return"#".concat("00000000".concat(e.toString(16)).slice(-8))},c=parseFloat(l/parseInt(e*r)),s=parseInt(parseFloat(e*r)*c),u=parseInt(parseFloat(n*r)*c);try{if("undefined"==typeof OffscreenCanvas)throw new Error("Impossible to create OffscreenCanvas in this web environment.");var m=null;if(1===parseInt(r))m=new ImageData(new Uint8ClampedArray(Uint32Array.from(t.map((function(e){return a[e]})).reverse()).buffer).reverse(),e,n);else{var f=a.map((function(e){return o(e)})),g=new OffscreenCanvas(e*r,n*r);(p=g.getContext("2d")).imageSmoothingEnabled=!1,t.forEach(((n,t)=>{var a=f[n],l=t%e,i=(t-l)/e;p.fillStyle=a,p.fillRect(l*r,i*r,1*r,1*r)})),m=p.getImageData(0,0,e*r,n*r),p=null,g=null,f=null}var d=new OffscreenCanvas(s,u);(h=d.getContext("bitmaprenderer")).imageSmoothingEnabled=!1,createImageBitmap(m,{resizeWidth:s,resizeHeight:u}).then((e=>{h.transferFromImageBitmap(e),e.close();d.convertToBlob({type:"image/png"}).then((e=>{h=null,d=null;try{i(URL.createObjectURL(e)),e=null}catch(n){try{i(FileReaderSync.readAsDataURL(e)),e=null}catch(t){function a(e){return new Promise((n=>{var t=new FileReader;t.onload=()=>n(t.result),t.readAsDataURL(e)}))}return a(e).then((e=>{i(e),e=null}))}}}))})),m=null}catch(v){var p,h;if((g=document.createElement("canvas")).width=e*r,g.height=n*r,(p=g.getContext("2d")).imageSmoothingEnabled=!1,1===parseInt(r))p.putImageData(new ImageData(new Uint8ClampedArray(Uint32Array.from(t.map((function(e){return a[e]})).reverse()).buffer).reverse(),e,n),0,0);else{f=a.map((function(e){return o(e)}));t.forEach(((n,t)=>{var a=f[n],l=t%e,i=(t-l)/e;p.fillStyle=a,p.fillRect(l*r,i*r,1*r,1*r)})),f=null}(d=document.createElement("canvas")).width=s,d.height=u,(h=d.getContext("2d")).imageSmoothingEnabled=!1,h.drawImage(g,0,0,s,u),p=null,g=null,i(d.toDataURL("image/png")),h=null,d=null}}))};`
             + "return e;";
 
         return Object.assign({}, {
