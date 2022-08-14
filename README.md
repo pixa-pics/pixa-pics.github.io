@@ -1,6 +1,6 @@
 # PIXA.PICS 
 
-![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/doc/screenshots/GODFTWARE.jpeg)
+![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/GODFTWARE_BIG.jpeg)
 
 ## Tomorrow is knocking!
 
