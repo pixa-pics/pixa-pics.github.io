@@ -64,7 +64,7 @@ const XXHash = {
             },
             int_that: function(array) {
 
-                return parseInt(s.xxh_f(0xFADE).update(new Uint8Array(array.buffer || Buffer.from(array))).digest());
+                return s.xxh_f(0xFADE).update(new Uint8Array(array.buffer || Buffer.from(array))).digest();
             },
             base58_that: function (array) {
                 let num = this.int_that(array);

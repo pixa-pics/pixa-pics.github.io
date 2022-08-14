@@ -27,21 +27,24 @@ const SuperBlend = {
 
             let i8_rgba_list = new Uint8ClampedArray(i32_rgba_list.reverse().buffer).reverse();
 
+            let hover_indexes = new Array();
             is_hover_indexes.forEach(function (is_hover, indexed_at) {
                 if (is_hover) {
-
-                    const rgb = list.i8_rgba_latest_list.slice(indexed_at * 4, indexed_at * 4 + 3);
-                    const lum = parseInt(parseInt(Math.max.apply(rgb) + Math.min.apply(rgb)) % 510) / 2; // 0 - 255
-                    const is_dark = Boolean(lum < 128);
-                    const color_multiplier = is_dark ? 2 : 0.5;
-                    const color_bonus = 64;
-                    i8_rgba_list.set(Uint8ClampedArray.of(
-                        color_bonus + rgb[0] * color_multiplier,
-                        color_bonus + rgb[1] * color_multiplier,
-                        color_bonus + rgb[2] * color_multiplier,
-                        255,
-                    ), indexed_at * 4);
+                    hover_indexes.push(indexed_at);
                 }
+            });
+            hover_indexes.forEach(function(indexed_at){
+                const rgb = list.i8_rgba_latest_list.slice(indexed_at * 4, indexed_at * 4 + 3);
+                const lum = parseInt(parseInt(Math.max.apply(rgb) + Math.min.apply(rgb)) % 510) / 2; // 0 - 255
+                const is_dark = Boolean(lum < 128);
+                const color_multiplier = is_dark ? 2 : 0.5;
+                const color_bonus = 64;
+                i8_rgba_list.set(Uint8ClampedArray.of(
+                    color_bonus + rgb[0] * color_multiplier,
+                    color_bonus + rgb[1] * color_multiplier,
+                    color_bonus + rgb[2] * color_multiplier,
+                    255*f32_amounts_list[indexed_at],
+                ), indexed_at * 4);
             });
 
             list.i8_rgba_lists[layer_n] = i8_rgba_list;

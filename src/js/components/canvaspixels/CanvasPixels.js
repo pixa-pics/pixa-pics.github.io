@@ -741,7 +741,7 @@ class CanvasPixels extends React.Component {
             const leading_change = Boolean(start > this.st4te._layers_defined_at);
 
             let current_state = Object.assign({}, new_current_state);
-                current_state._layers = Array.from(new_current_state._layers).map(function(l) {
+                current_state._layers = Array.from(new_current_state._layers.map(function(l) {
                         return Object.assign({},{
                             id: parseInt(l.id),
                             hash: String(l.hash),
@@ -749,29 +749,25 @@ class CanvasPixels extends React.Component {
                             hidden: Boolean(l.hidden),
                             opacity: parseFloat(l.opacity),
                         });
-                });
+                }));
 
-            if(has_updated && leading_change && current_state_not_empty) {
+            if(has_changed && leading_change && current_state_not_empty) {
 
                 this.setSt4te({_layer_index: parseInt(new_current_state._layer_index), _layers: Array.from(new_current_state._layers), _layers_defined_at: start}, () => {
-                    if(this.props.onLayersChange) {this.props.onLayersChange(this.st4te._layer_index, Object.assign({}, new_current_state));}
-                    if(callback_function !== null) {callback_function(this.st4te._layers, this.st4te._layer_index, true, current_state);}
+                    if(this.props.onLayersChange) {this.props.onLayersChange(this.st4te._layer_index, Array.from(new_current_state._layers));}
+                    if(callback_function !== null) {callback_function(this.st4te._layers, this.st4te._layer_index, has_changed, current_state);}
                 });
             }else {
 
-                if(Boolean(has_changed || has_updated || leading_change) && current_state_not_empty) {
-                    if(this.props.onLayersChange) {this.props.onLayersChange(this.st4te._layer_index, Object.assign({}, new_current_state));}
-                }
-
-                if (leading_change && current_state_not_empty) {
+                if(Boolean(has_changed || has_updated) && leading_change && current_state_not_empty) {
+                    if(this.props.onLayersChange) {this.props.onLayersChange(this.st4te._layer_index,  Array.from(new_current_state._layers))}
                     if (callback_function !== null) {
-                        callback_function(this.st4te._layers, this.st4te._layer_index, false, current_state)
+                        callback_function(this.st4te._layers, this.st4te._layer_index, has_changed, current_state)
                     }
                 }else {
 
                     if (callback_function !== null) {callback_function(this.st4te._layers, this.st4te._layer_index, false, {});}
                 }
-
             }
         }
 
@@ -3468,7 +3464,7 @@ class CanvasPixels extends React.Component {
                         pxl_width: parseInt(pxl_width),
                         pxl_height: parseInt(pxl_height),
                         _original_image_index: parseInt(_original_image_index),
-                        _layers: Array.from(_layers.map((l, li) => {
+                        _layers: Array.from(_layers).map((l, li) => {
                             return Object.assign({}, {
                                 id: parseInt(l.id),
                                 hash: String(l.hash || ""),
@@ -3479,7 +3475,7 @@ class CanvasPixels extends React.Component {
                                 number_of_colors: parseInt(_s_pxl_colors[li].length),
                                 thumbnail: String(l.thumbnail || ""),
                             });
-                        })),
+                        }),
                         _layer_index: parseInt(_layer_index),
                         _s_pxls: Array.from(_s_pxls.map(function(a){return Array.from(a);})),
                         _s_pxl_colors: Array.from(_s_pxl_colors.map(function(a){return Uint32Array.from(a);})),
@@ -3489,7 +3485,7 @@ class CanvasPixels extends React.Component {
 
                     this._notify_layers_and_compute_thumbnails_change(old_current_state, new_current_state, (layers, layer_index, layers_changed_state, new_current_state) => {
 
-                        let _json_state_history = this.st4te._json_state_history;
+                        let _json_state_history = Object.assign({}, this.st4te._json_state_history);
                         let {_state_history_length, _saving_json_state_history_ran_timestamp } = this.st4te;
                         const first_change = Boolean(_json_state_history.state_history.length === 0);
                         const new_current_history_position = parseInt(_json_state_history.history_position);
@@ -3540,12 +3536,11 @@ class CanvasPixels extends React.Component {
                             }
                         }
 
-                        _json_state_history = Object.assign({}, _json_state_history);
                         this.setSt4te({_json_state_history, _saving_json_state_history_running: false, _saving_json_state_history_ran_timestamp}, () =>{
 
                             this._notify_can_undo_redo_change();
                             if(set_anyway_if_changes_callback !== null) {
-                                set_anyway_if_changes_callback(_json_state_history, Boolean(_saving_json_state_history_ran_timestamp === now));
+                                set_anyway_if_changes_callback(Object.assign({}, this.st4te._json_state_history), Boolean(_saving_json_state_history_ran_timestamp === now));
                             }
                         });
 
@@ -3554,13 +3549,13 @@ class CanvasPixels extends React.Component {
             }else {
 
                 if(set_anyway_if_changes_callback !== null) {
-                    set_anyway_if_changes_callback(this.st4te._json_state_history, false);
+                    set_anyway_if_changes_callback(Object.assign({}, this.st4te._json_state_history), false);
                 }
             }
         }else {
 
             if(set_anyway_if_changes_callback !== null) {
-                set_anyway_if_changes_callback(this.st4te._json_state_history, false);
+                set_anyway_if_changes_callback(Object.assign({}, this.st4te._json_state_history), false);
             }
         }
     };
@@ -3744,8 +3739,6 @@ class CanvasPixels extends React.Component {
 
         this._maybe_save_state((_json_state_history) => {
 
-            const {_base64_original_images} = this.st4te;
-
             this.get_base64_png_data_url(1, ([base_64]) => {
 
                 const bytes = 3 * Math.ceil((base_64.length/4));
@@ -3754,8 +3747,8 @@ class CanvasPixels extends React.Component {
                     kb: bytes / 1024,
                     preview: String(base_64),
                     timestamp: Date.now(),
-                    _base64_original_images: _base64_original_images,
-                    _json_state_history
+                    _base64_original_images: Array.from(this.st4te._base64_original_images),
+                    _json_state_history: Object.assign({}, _json_state_history)
                 });
             }, false, 5, 50, 75);
         }, true);
