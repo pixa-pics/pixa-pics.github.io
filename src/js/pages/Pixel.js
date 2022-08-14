@@ -1786,9 +1786,9 @@ class Pixel extends React.Component {
         this.setState({_is_image_import_mode: is_image_import_mode});
     };
 
-    _handle_layers_change = (_layer_index, _layers) => {
+    _handle_layers_change = (_layer_index, layers) => {
 
-        this.setState({_previous_layer_index: this.state._layer_index, _layer_index, _layers}, () => {
+        this.setState({_previous_layer_index: this.state._layer_index, _layer_index, _layers: layers}, () => {
 
             this.forceUpdate();
         });

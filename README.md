@@ -1,6 +1,6 @@
 # PIXA.PICS 
 
-![](https://steemitimages.com/300x300/https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/logo-transparent.png)
+![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/doc/screenshots/GODFTWARE.jpeg)
 
 ## Tomorrow is knocking!
 

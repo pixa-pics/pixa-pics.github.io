@@ -219,7 +219,6 @@ const SuperCanvas = {
 
                         if (s.is_bitmap) {
 
-                            console.log(fp);
                             ic.forEach(function (value, index) {
                                 fp[index] = value;
                             }); ic.clear();
@@ -279,4 +278,4 @@ const SuperCanvas = {
     }
 };
 
-module.exports = SuperCanvas;
+module.exports = Object.create(SuperCanvas);

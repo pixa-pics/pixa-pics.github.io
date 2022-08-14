@@ -153,12 +153,12 @@ class CanvasPixels extends React.Component {
             _saving_json_state_history_ran_timestamp: 0,
         };
         if(!this.hasnt_been_mount) {
-            this.xxhash = Object.create(XXHash).new();
-            this.color_conversion = Object.create(ColorConversion).new();
-            this.super_blend = Object.create(SuperBlend).new();
-            this.super_canvas = Object.create(SuperCanvas).from(null, 32, 32);
-            this.canvas_pos = Object.create(CanvasPos).from(32,  32,  0.9,  32, 0, 0);
-            this.sraf =  Object.create(SmartRequestAnimationFrame).new();
+            this.xxhash = XXHash.new();
+            this.color_conversion = ColorConversion.new();
+            this.super_blend = SuperBlend.new();
+            this.super_canvas = SuperCanvas.from(null, 32, 32);
+            this.canvas_pos = CanvasPos.from(32,  32,  0.9,  32, 0, 0);
+            this.sraf = SmartRequestAnimationFrame.new();
             this.sraf.start_timer();
             this.hasnt_been_mount = true;
         }
@@ -590,7 +590,7 @@ class CanvasPixels extends React.Component {
 
     change_active_layer = (at_index) => {
 
-        if(this.st4te._s_pxls.length > at_index && 0 <= at_index) {
+        if(this.st4te._layers.length > at_index && 0 <= at_index) {
 
             this.setSt4te({
                 _layer_index: at_index,
@@ -709,6 +709,10 @@ class CanvasPixels extends React.Component {
 
             let thumbnails = new Map();
             let progression = 0;
+            let thumbnail_width = 128;
+            if(pxl_width > 256) { thumbnail_width = pxl_width / 2;}
+            if(pxl_width > 234) { thumbnail_width = pxl_width / 3;}
+
             this.setSt4te({_last_filters_hash: hash}, () => {
 
                 this.get_filter_names().forEach((name, index, filter_names) => {
@@ -721,7 +725,7 @@ class CanvasPixels extends React.Component {
                             thumbnails.set(name, result);
                             progression = String(Math.round(parseFloat(thumbnails.size / filter_names.length)*100));
                             this.props.onFiltersThumbnailChange(thumbnails, hash, progression);
-                        }, 96
+                        }, thumbnail_width
                     );
                 });
 
@@ -733,39 +737,41 @@ class CanvasPixels extends React.Component {
 
         const maybe_set_layers = (has_updated, has_changed, new_current_state = {}) => {
 
+            const current_state_not_empty = Boolean(typeof new_current_state._layers !== "undefined");
             const leading_change = Boolean(start > this.st4te._layers_defined_at);
-            const current_state = Object.assign(Object.assign({}, new_current_state), {_layers: Array.from(new_current_state._layers)
-                    .map(function(l) {
-                        return Object.assign({}, {
+
+            let current_state = Object.assign({}, new_current_state);
+                current_state._layers = Array.from(new_current_state._layers).map(function(l) {
+                        return Object.assign({},{
                             id: parseInt(l.id),
                             hash: String(l.hash),
                             name: String(l.name),
                             hidden: Boolean(l.hidden),
-                            opacity: parseInt(l.opacity),
+                            opacity: parseFloat(l.opacity),
                         });
-                    })
-            });
+                });
 
-            if(has_changed && leading_change) {
+            if(has_updated && leading_change && current_state_not_empty) {
 
-                this.setSt4te({_layer_index: new_current_state._layer_index, _layers: Array.from(new_current_state._layers), _layers_defined_at: start}, () => {
-
-                    if(this.props.onLayersChange) {this.props.onLayersChange(this.st4te._layer_index, this.st4te._layers);}
+                this.setSt4te({_layer_index: parseInt(new_current_state._layer_index), _layers: Array.from(new_current_state._layers), _layers_defined_at: start}, () => {
+                    if(this.props.onLayersChange) {this.props.onLayersChange(this.st4te._layer_index, Object.assign({}, new_current_state));}
                     if(callback_function !== null) {callback_function(this.st4te._layers, this.st4te._layer_index, true, current_state);}
                 });
-            }else if(has_updated) {
+            }else {
 
-                this.setSt4te({_layer_index: new_current_state._layer_index, _layers: Array.from(new_current_state._layers), _layers_defined_at: start}, () => {
+                if(Boolean(has_changed || has_updated || leading_change) && current_state_not_empty) {
+                    if(this.props.onLayersChange) {this.props.onLayersChange(this.st4te._layer_index, Object.assign({}, new_current_state));}
+                }
 
-                    if(this.props.onLayersChange) {this.props.onLayersChange(this.st4te._layer_index, this.st4te._layers);}
-                    if (leading_change) {if (callback_function !== null) {callback_function(this.st4te._layers, this.st4te._layer_index, false, current_state);}}
-                });
-            } else if (leading_change) {
+                if (leading_change && current_state_not_empty) {
+                    if (callback_function !== null) {
+                        callback_function(this.st4te._layers, this.st4te._layer_index, false, current_state)
+                    }
+                }else {
 
-                if (callback_function !== null) {callback_function(this.st4te._layers, this.st4te._layer_index, false, current_state);}
-            } else {
+                    if (callback_function !== null) {callback_function(this.st4te._layers, this.st4te._layer_index, false, {});}
+                }
 
-                if (callback_function !== null) {callback_function(this.st4te._layers, this.st4te._layer_index, false, {});}
             }
         }
 
@@ -775,7 +781,7 @@ class CanvasPixels extends React.Component {
         const new_timestamp = parseInt(new_current_state._timestamp);
         let timestamp = old_timestamp;
         let has_changed = false;
-        let has_updated = true;
+        let has_updated = false;
 
         for(let index = 0; index < new_current_state._layers.length; index++){
 
@@ -787,6 +793,10 @@ class CanvasPixels extends React.Component {
             const old_hash = old_layer.hash || "";
 
             if(old_hash !== new_hash || !Boolean(old_hash) || !Boolean(old_thumbnail)) {
+
+                let thumbnail_width = 128;
+                if(new_current_state.pxl_width > 256) { thumbnail_width = new_current_state.pxl_width / 2;}
+                if(new_current_state.pxl_width > 384) { thumbnail_width = new_current_state.pxl_width / 3;}
 
                 this.get_layer_base64_png_data_url(new_current_state.pxl_width, new_current_state.pxl_height, p, pc, (new_thumbnail) => {
 
@@ -802,10 +812,10 @@ class CanvasPixels extends React.Component {
 
                     if(all_layers_length === new_current_state._layers.length) {
 
-                        new_current_state._timestamp = Number(timestamp);
+                        new_current_state._timestamp = parseInt(timestamp);
                         maybe_set_layers(has_updated, has_changed, new_current_state);
                     }
-                }, 192);
+                }, thumbnail_width);
 
             }else {
 
@@ -826,7 +836,7 @@ class CanvasPixels extends React.Component {
 
         const scale = 1;
         const resize_w = resize_width || pxl_width;
-        const b64layer = Object.create(B64Layer).from(pool, pxl_width, pxl_height, pxls, pxl_colors, scale, resize_w);
+        const b64layer = B64Layer.from(pool, pxl_width, pxl_height, pxls, pxl_colors, scale, resize_w);
         b64layer.render(function(r){callback_function(r); b64layer.destroy()});
     };
 
@@ -839,7 +849,7 @@ class CanvasPixels extends React.Component {
 
         const { pxl_width, pxl_height, _s_pxls, _s_pxl_colors, _layers } = this.st4te;
 
-        const b64pngcanvas = Object.create(B64PngCanvas).from(pool, pxl_width, pxl_height, _s_pxls, _s_pxl_colors, _layers, scale, with_palette);
+        const b64pngcanvas = B64PngCanvas.from(pool, pxl_width, pxl_height, _s_pxls, _s_pxl_colors, _layers, scale, with_palette);
         b64pngcanvas.render((result) => {
 
             if(with_compression_speed !== 0) {
@@ -5572,8 +5582,7 @@ class CanvasPixels extends React.Component {
         const state_bucket_threshold = this.st4te.bucket_threshold;
 
         return new Promise(function(resolve){
-
-            Object.create(ReducePalette).from(pool, pxls, pxl_colors, bucket_threshold, threshold_steps, color_number_bonus, best_color_number, state_bucket_threshold).compute(resolve);
+            ReducePalette.from(pool, pxls, pxl_colors, bucket_threshold, threshold_steps, color_number_bonus, best_color_number, state_bucket_threshold).compute(resolve);
         });
     };
 

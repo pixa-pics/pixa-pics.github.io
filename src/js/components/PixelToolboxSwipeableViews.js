@@ -156,9 +156,10 @@ const styles = theme => ({
     layerThumbnail: {
         width: "auto",
         height: "auto",
-        imageRendering: "pixelated",
+        imageRendering: "speed",
         "& .MuiAvatar-img": {
-            width: 96,
+            width: "128px !important",
+            height: "auto",
             borderRadius: 2,
         },
         marginRight: theme.spacing(2),
@@ -202,6 +203,7 @@ const styles = theme => ({
         contain: "paint style layout",
         "&.filters": {
             "& .MuiListItem-root": {
+                width: 128,
                 margin: "8px !important",
                 padding: "0px !important",
             },
@@ -383,7 +385,7 @@ class PixelToolboxSwipeableViews extends React.Component {
             view_name_index !== new_props.view_name_index ||
             previous_view_name_index !== new_props.previous_view_name_index ||
             view_names !== new_props.view_names ||
-            JSON.stringify(layers) !== JSON.stringify(new_props.layers) ||
+            Array.from(layers).map(function(l){return l.hash}).join("-") !== Array.from(new_props.layers).map(function(l){return l.hash}).join("-") ||
             parseInt(layer_index) !== parseInt(new_props.layer_index) ||
             is_image_import_mode !== new_props.is_image_import_mode ||
             hide_canvas_content !== new_props.hide_canvas_content ||
@@ -409,14 +411,9 @@ class PixelToolboxSwipeableViews extends React.Component {
             if(_filters_changed) {
 
                 var src = null;
-
-                Array.from(this.state.filters_thumbnail).forEach(function (url){
-
-                    URL.revokeObjectURL(url);
-                });
                 for(let i = 0; i < new_props.filters.length; i++) {
 
-                    src = new_props.filters_thumbnail.get(new_props.filters[i]) || null;
+                    src = new_props.filters_thumbnail[new_props.filters[i]]|| null;
                     if(src !== null) { i = new_props.filters.length;}
                 }
 
@@ -483,7 +480,7 @@ class PixelToolboxSwipeableViews extends React.Component {
 
         let layers_colors_max = 0;
 
-        layers.forEach((layer) => {
+        Array.from(layers).forEach((layer) => {
 
             if(layers_colors_max < layer.number_of_colors) {
 
@@ -806,7 +803,7 @@ class PixelToolboxSwipeableViews extends React.Component {
 
         let layers_colors_max = 0;
 
-        layers.forEach((layer) => {
+        Array.from(layers).forEach((layer) => {
 
             if(layers_colors_max < layer.number_of_colors) {
 
@@ -1492,13 +1489,13 @@ class PixelToolboxSwipeableViews extends React.Component {
                         const f = filters_thumbnail.get(name) || "";
                         return {
                             style: {position: "relative", minWidth: "100%" },
-                            icon: <Avatar className={"speed"} style={{ zIndex: "-1", boxSizing: "border-box", height: "100%", minWidth: "100%", minHeight: parseInt(192 / _filter_ar_on_one), width: 192, aspectRatio: `${_filter_ar_on_one} / 1`, filter: `${String(Boolean(f.length === 0 && name_index !== 0) ? "drop-shadow(#3729c170 0px 2px 4px) opacity(0.66)": "drop-shadow(#3729c1a8 0px 1px 2px) opacity(1.0)")}`, webkitFilter: `${String(Boolean(f.length === 0 && name_index !== 0) ? "drop-shadow(#3729c170 0px 2px 4px) opacity(0.66)": "drop-shadow(#3729c1a8 0px 1px 2px) opacity(1.0)")}`, border: "4px solid #020529", borderRadius: 4, contain: "paint style size"}} key={String(Boolean(f.length > 0) ? String(name+"-loaded-"+_filter_ar_on_one): String(name+"-loading-"+_filter_ar_on_one)) + String("-preview-" + last_filters_hash)} variant={"rounded"} src={String(f.length > 0 ? f: filters_thumbnail.get(filters[0]))} />,
+                            icon: <Avatar className={"speed"} style={{ zIndex: "-1", boxSizing: "border-box", height: "100%", minWidth: "100%", minHeight: parseInt(128 / _filter_ar_on_one), width: 128, aspectRatio: `${_filter_ar_on_one} / 1`, filter: `${String(Boolean(f.length === 0 && name_index !== 0) ? "drop-shadow(#3729c170 0px 2px 4px) opacity(0.66)": "drop-shadow(#3729c1a8 0px 1px 2px) opacity(1.0)")}`, webkitFilter: `${String(Boolean(f.length === 0 && name_index !== 0) ? "drop-shadow(#3729c170 0px 2px 4px) opacity(0.66)": "drop-shadow(#3729c1a8 0px 1px 2px) opacity(1.0)")}`, border: "4px solid #020529", borderRadius: 4, contain: "paint style size"}} key={String(Boolean(f.length > 0) ? String(name+"-loaded-"+_filter_ar_on_one): String(name+"-loading-"+_filter_ar_on_one)) + String("-preview-" + last_filters_hash)} variant={"rounded"} src={String(f.length > 0 ? f: filters_thumbnail.get(filters[0]))} />,
                             text: name,
                             text_style: {
                                 flex: "1 1",
                                 bottom: 16,
                                 left: 8,
-                                width: 96,
+                                width: 128,
                                 minWidth: "100%",
                                 right: 24,
                                 color: "white",
@@ -1826,7 +1823,7 @@ class PixelToolboxSwipeableViews extends React.Component {
         } = this.state;
 
         let layers_colors_max = 0;
-        layers.forEach((layer) => {
+        Array.from(layers).forEach((layer) => {
 
             if(layers_colors_max < layer.number_of_colors) {
 

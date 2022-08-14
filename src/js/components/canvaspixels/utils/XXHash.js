@@ -85,4 +85,4 @@ const XXHash = {
     }
 };
 
-module.exports = XXHash;
+module.exports = Object.create(XXHash);

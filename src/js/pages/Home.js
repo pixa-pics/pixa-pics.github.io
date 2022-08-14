@@ -381,7 +381,7 @@ class Home extends React.Component {
                         new Promise(function(resolve, _) {
                             var reader = new FileReader();
                             reader.onload = function(){ resolve(reader.result)};
-                            reader.onerror = function(){ var u = URL.createObjectURL(blob); resolve(u); URL.revokeObjectURL(u);};
+                            reader.onerror = function(){ var u = URL.createObjectURL(blob); resolve(u);};
                             reader.readAsDataURL(blob);
                         }).then((base64) => {
 

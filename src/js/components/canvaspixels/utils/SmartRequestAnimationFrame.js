@@ -157,10 +157,10 @@ const SmartRequestAnimationFrame = {
 
                 }else if(deltaT < 1000 / (skip_frame_rate * 2)){
 
-                    setTimeout(() => {this.run_frame(render, do_not_cancel_animation, force_update, requested_at_t)}, 1000 / (skip_frame_rate * 8));
+                    setTimeout(this.run_frame(render, 1000 / (skip_frame_rate * 8), do_not_cancel_animation, force_update, requested_at_t));
                 }else if(force_update || do_not_cancel_animation) {
 
-                    setTimeout(() => {this.run_frame(render, do_not_cancel_animation, force_update, requested_at_t)}, 1000 / (skip_frame_rate * 8));
+                    setTimeout(this.run_frame(render, 1000 / (skip_frame_rate * 8), do_not_cancel_animation, force_update, requested_at_t));
                 }else {
 
                     //caf(caf_id);
