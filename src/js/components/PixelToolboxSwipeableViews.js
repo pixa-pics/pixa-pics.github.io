@@ -90,6 +90,7 @@ import SwapHorizontalIcon from "../icons/SwapHorizontal";
 import SwapVerticalIcon from "../icons/SwapVertical";
 
 import ColorConversion from "../components/canvaspixels/utils/ColorConversion";
+import {TimeIcon} from "@material-ui/pickers/_shared/icons/TimeIcon";
 const color_conversion = Object.create(ColorConversion).new();
 
 const styles = theme => ({
@@ -374,7 +375,7 @@ class PixelToolboxSwipeableViews extends React.Component {
         } = this.state;
 
         const _filters_changed = Boolean(last_filters_hash !== new_props.last_filters_hash);
-        const must_compute_filter = Boolean(view_name_index !== new_props.view_name_index || layer_index !== new_props.layer_index) && new_props.view_name_index === 6;
+        const must_compute_filter = Boolean(view_name_index !== new_props.view_name_index || _filters_changed) && Boolean(new_props.view_name_index === 6);
 
         if (Boolean(new_props.should_update) && (
             view_name_index !== new_props.view_name_index ||
@@ -400,42 +401,47 @@ class PixelToolboxSwipeableViews extends React.Component {
             is_something_selected !== new_props.is_something_selected ||
             import_size !== new_props.import_size ||
             import_colorize !== new_props.import_colorize ||
-            Math.round(parseFloat(filters_preview_progression * 7) / 7) !== Math.round(parseFloat(new_props.filters_preview_progression * 7) / 7)
+           filters_preview_progression !==new_props.filters_preview_progression
         )) {
 
-            if(_filters_changed) {
+            let props_override = {last_filters_hash: this.state.last_filters_hash};
 
-                var src = null;
-                for(let i = 0; i < new_props.filters.length; i++) {
+            if(must_compute_filter) {
 
-                    src = new_props.filters_thumbnail[new_props.filters[i]]|| null;
-                    if(src !== null) { i = new_props.filters.length;}
+                props_override = {last_filters_hash: last_filters_hash}
+                this.compute_filters_preview();
+
+            }else {
+
+                if (this.state._filters_changed) {
+
+                    let bmp, ar, all_processed = true;
+                    for (let i = 0; i < new_props.filters.length; i++) {
+
+                        bmp = new_props.filters_thumbnail[new_props.filters[i]];
+                        if (typeof bmp !== "undefined") {
+
+                            ar = String(Math.round((bmp.width / bmp.height) * 100) / 100);
+                        }else {
+
+                            all_processed = false;
+                        }
+                    }
+
+                    if (all_processed || ar !== this.state._filter_ar_on_one) {
+
+                        this.setState({_filters_changed: !all_processed, _filter_ar_on_one: ar}, () => {
+                            this.forceUpdate();
+                        });
+                    }
                 }
-
-                let img = new Image();
-                img.addEventListener("load", () => {
-
-                    const w = img.naturalWidth || img.width;
-                    const h = img.naturalHeight || img.height;
-                    const ar = Math.round(parseFloat(w/h) * 100) / 100;
-                    this.setState({_filter_ar_on_one: String(ar)}, () => {
-
-                        this.forceUpdate();
-                    });
-                });
-                img.src = src;
             }
 
-            this.setState({...new_props, _filters_changed}, () => {
-
-                if(must_compute_filter) {
-
-                    Object.values(this.state.filters_thumbnail).forEach(function(value){ try{value.close();}catch(e){} });
-                    try { this.state.canvas.compute_filters_preview() }catch (e){}
-                }
-
+            this.setState({...new_props, props_override}, () => {
                 this.forceUpdate();
             });
+
+
         }else {
 
             return false;
@@ -446,6 +452,17 @@ class PixelToolboxSwipeableViews extends React.Component {
 
         return false;
     }
+
+    compute_filters_preview = () => {
+
+        try {
+            this.setState({_filters_changed: true}, () => {
+
+                this.state.canvas.compute_filters_preview(true);
+                this.forceUpdate();
+            });
+        } catch (e) {}
+    };
 
     get_action_panel_names = () => {
 
@@ -1501,7 +1518,7 @@ class PixelToolboxSwipeableViews extends React.Component {
                                 width={bmp.width || 0}
                                 height={bmp.height || 0}
                                 style={{ zIndex: "-1", boxSizing: "border-box", height: "100%", minWidth: "100%", minHeight: (128 / _filter_ar_on_one) | 0, width: 128, filter: "drop-shadow(#3729c1a8 0px 1px 2px) opacity(1.0)", webkitFilter: "drop-shadow(#3729c1a8 0px 1px 2px) opacity(1.0)", border: "4px solid #020529", borderRadius: 4, contain: "paint style size"}}
-                                key={String(name+_filter_ar_on_one) + String("-preview-" + last_filters_hash)}
+                                key={"name-" + name + "-ratio-" + _filter_ar_on_one + "-over-" + String(bmp.width || 0) + "x" + String(bmp.height || 0) + "-preview-hash-" + last_filters_hash}
                                 />,
                             text: name,
                             text_style: {
@@ -1524,6 +1541,7 @@ class PixelToolboxSwipeableViews extends React.Component {
                             },
                             on_click: () => {
                                 canvas.to_filter(name, slider_value);
+                                this.compute_filters_preview();
                                 this._handle_action_close();
                             }
                         };
@@ -1894,6 +1912,13 @@ class PixelToolboxSwipeableViews extends React.Component {
                                                             <ListItemText primary="Auto reduce color palette" secondary={"May you need less color in your palette?"} />
                                                         </ListItem>: Boolean(name === "filters") ?
                                                             <blockquote>DID YOU KNOW? Just double-tap/right-click around the drawing area to open a context menu with shortcuts including some to adjust saturation and contrast like a professional...</blockquote>: null
+                                                }
+                                                {
+                                                    Boolean(name === "filters" ) &&
+                                                    <ListItem button={true} onClick={this.compute_filters_preview}>
+                                                        <ListItemIcon><TimeIcon className={classes.listItemIcon} /></ListItemIcon>
+                                                        <ListItemText primary="Refresh filter previews" />
+                                                    </ListItem>
                                                 }
                                                 <div className={name + " " + classes.listItems}
                                                      style={Object.assign({

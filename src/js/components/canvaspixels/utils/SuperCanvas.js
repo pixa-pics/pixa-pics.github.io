@@ -201,6 +201,7 @@ const SuperCanvas = {
                             return b(s.width, s.height, fp);
                         }).then(function(bitmap){
 
+                            v.enable_unpile = true;
                             v.enable_paint = true;
                             v.pt = Date.now() - started;
                             bmp = bitmap;
@@ -210,12 +211,15 @@ const SuperCanvas = {
                     }else if (s.is_offscreen) {
 
                         [s.offscreen_canvas_context, ic] = d2d(s.offscreen_canvas_context, ic);
+
+                        v.enable_unpile = true;
                         v.enable_paint = true;
                         v.pt = Date.now() - started;
                         render_callback(...render_args);
 
                     }else {
 
+                        v.enable_unpile = true;
                         v.enable_paint = true;
                         v.pt = Date.now() - started;
                         render_callback(...render_args);

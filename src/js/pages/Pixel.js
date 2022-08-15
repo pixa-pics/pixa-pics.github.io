@@ -1798,9 +1798,6 @@ class Pixel extends React.Component {
 
         if(this.state._filters_preview_progression === "0") {
             actions.trigger_voice("filtering");
-        }else if(_filters_preview_progression === "100") {
-            actions.trigger_voice("complete");
-            _filters_preview_progression = "0";
         }
 
         this.setState({_filters_thumbnail, _last_filters_hash, _filters_preview_progression: String(_filters_preview_progression)}, () => {

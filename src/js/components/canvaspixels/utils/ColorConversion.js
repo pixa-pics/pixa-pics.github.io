@@ -120,6 +120,94 @@ const ColorConversion = {
 
                 return this.to_uint32_from_rgba(mix);
             },
+            blend_rgba_colors: function(all_base, all_added_in_layers, amount = 1, should_return_transparent = 0, alpha_addition = 0) {
+
+                amount = amount * 65535 | 0
+                should_return_transparent = should_return_transparent | 0 > 0;
+                alpha_addition = alpha_addition | 0 > 0;
+                let used_colors_length = all_base.length / 4 | 0;
+                let all_layers_length = all_added_in_layers.length | 0;
+
+                // Blend all color and special ones only starting from the last opaque layer
+                let start_layer_indexes = new Uint8ClampedArray(used_colors_length);
+                let base = new Uint8ClampedArray(4);
+                let added = new Uint8ClampedArray(4);
+                let mix = new Uint8ClampedArray(4);
+                let float_variables = new Float32Array(6); // ba3, ad3, mi3, ao, bo;
+
+                let start_layer = -1;
+                // Browse the full list of pixel colors encoded within 32 bytes of data
+                for(let i1 = 0, i4 = 0; i1 < used_colors_length; i1 = i1+1|0, i4 = i4+4|0) {
+
+                    // Compute the layer to start the color addition
+                    start_layer = -1;
+                    for (let layer_n = all_layers_length - 1; layer_n >= 0; layer_n = layer_n - 1 | 0) {
+
+                        if (start_layer === -1) {
+
+                            if (all_added_in_layers[layer_n][i4 + 3] >= 255) {
+
+                                start_layer = layer_n | 0;
+                            }
+                        }
+                    }
+                    start_layer_indexes[i1] = start_layer | 0;
+                }
+
+                for(let i1 = 0, i4 = 0; i1 < used_colors_length; i1 = i1+1|0, i4 = i4+4|0) {
+
+                    start_layer = start_layer_indexes[i1] | 0;
+                    // Get the first base color to sum up with colors atop of it
+                    if(start_layer === -1) { base.set(all_base.slice(i4, i4+4), 0);
+                    }else { base.set(all_added_in_layers[start_layer].slice(i4, i4+4), 0);}
+
+                    // Sum up all colors above
+                    for(let layer_n = start_layer+1|0; layer_n < all_layers_length; layer_n = layer_n + 1 | 0) {
+
+                        float_variables.fill(amount / 65535, 5, 5);
+                        added.set(all_added_in_layers[layer_n].slice(i4, i4+4), 0);
+
+                        if(should_return_transparent && added[3] === 0 && float_variables[6] === 1) {
+
+                            base.fill( 0);
+                        }else if(added[3] === 255 && float_variables[6] === 1) {
+
+                            base.set(added, 0);
+                        }else {
+
+                            float_variables.fill(base[3] / 255, 0, 0);
+                            float_variables.fill(added[3] / 255 * float_variables[6], 1, 1);
+
+                            mix.fill(0);
+                            float_variables.fill(0, 2, 2);
+                            if (float_variables[0] > 0 && float_variables[1] > 0) {
+                                if(alpha_addition) { float_variables.fill(float_variables[0] + float_variables[1], 2, 2); } else { float_variables.fill(1 - (1 - float_variables[1]) * (1 - float_variables[0]), 2, 2);}
+                                float_variables.fill(float_variables[1] / float_variables[2], 3, 3);
+                                float_variables.fill(float_variables[0] * (1 - float_variables[1]) / float_variables[2], 4, 4);
+                                mix.set(Uint8ClampedArray.of(
+                                    added[0] * float_variables[3] + base[0] * float_variables[4] | 0, // red
+                                    added[1] * float_variables[3] + base[1] * float_variables[4] | 0, // green
+                                    added[2] * float_variables[3] + base[2] * float_variables[4] | 0
+                                ), 0);// blue
+                            }else if(float_variables[1] > 0) {
+                                float_variables.fill(added[3] / 255, 2, 2);
+                                mix.set(added, 0);
+                            }else {
+                                float_variables.fill(base[3] / 255, 2, 2);
+                                mix.set(base, 0);
+                            }
+                            if(alpha_addition) {
+                                float_variables.fill(float_variables[2] / 2, 2, 2);
+                            } mix.fill(float_variables[2] * 255, 3, 3);
+
+                            base.set(mix, 0);
+                        }
+                    }
+                    all_base.set(base, i4);
+                }
+
+                return all_base;
+            },
             to_hex_from_uint32: function(uint32){
                 return "#".concat("00000000".concat(uint32.toString(16)).slice(-8));
             },
