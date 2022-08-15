@@ -278,4 +278,4 @@ const SuperCanvas = {
     }
 };
 
-module.exports = Object.create(SuperCanvas);
+module.exports = SuperCanvas;
