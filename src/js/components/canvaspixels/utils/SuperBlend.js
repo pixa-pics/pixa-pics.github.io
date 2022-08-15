@@ -34,7 +34,7 @@ const SuperBlend = {
         // Compute for special colors like hover
         for(let layer_n = 0; layer_n < all_layers_length; layer_n = layer_n + 1 | 0) {
 
-            for (let color_n = 0; color_n < used_colors_length; color_n = color_n + 1 | 0) {
+            for (let color_n = 0, n4 = 0; color_n < used_colors_length; color_n = color_n+1|0, n4 = n4+4|0) {
 
                 is_hover = shadow_state.hover_data_in_layers[layer_n][color_n] | 0;
 
@@ -42,9 +42,9 @@ const SuperBlend = {
 
                     // Get the color below current layer
                     if(color_n === 0) {
-                        rgba.set(shadow_state.base_rgba_colors_for_blending.slice(color_n*4, color_n*4+4), 0);
+                        rgba.set(shadow_state.base_rgba_colors_for_blending.slice(n4, n4+4), 0);
                     }else {
-                        rgba.set(shadow_state.rgba_colors_data_in_layers[layer_n-1].slice(color_n*4, color_n*4+4), 0);
+                        rgba.set(shadow_state.rgba_colors_data_in_layers[layer_n-1].slice(n4, n4+4), 0);
                     }
 
                     if(Math.max.apply(rgba.slice(0, 3)) + Math.min.apply(rgba.slice(0, 3)) > 255) {
@@ -67,28 +67,34 @@ const SuperBlend = {
         }
 
         // Blend all color and special ones only starting from the last opaque layer
+        let start_layer_indexes = new Uint8ClampedArray(used_colors_length);
         let base = new Uint8ClampedArray(4);
         let added = new Uint8ClampedArray(4);
         let mix = new Uint8ClampedArray(4);
         let float_variables = new Float32Array(6); // ba3, ad3, mi3, ao, bo;
-        let start_layer = 0;
 
+        let start_layer = -1;
         // Browse the full list of pixel colors encoded within 32 bytes of data
         for(let i1 = 0, i4 = 0; i1 < used_colors_length; i1 = i1+1|0, i4 = i4+4|0) {
 
             // Compute the layer to start the color addition
             start_layer = -1;
-            for(let layer_n = all_layers_length-1; layer_n >= 0; layer_n = layer_n - 1 | 0) {
+            for (let layer_n = all_layers_length - 1; layer_n >= 0; layer_n = layer_n - 1 | 0) {
 
-                if(start_layer === -1) {
+                if (start_layer === -1) {
 
-                    if(shadow_state.rgba_colors_data_in_layers[layer_n][i4+3] >= 255) {
+                    if (shadow_state.rgba_colors_data_in_layers[layer_n][i4 + 3] >= 255) {
 
                         start_layer = layer_n | 0;
                     }
                 }
             }
+            start_layer_indexes[i1] = start_layer | 0;
+        }
 
+        for(let i1 = 0, i4 = 0; i1 < used_colors_length; i1 = i1+1|0, i4 = i4+4|0) {
+
+            start_layer = start_layer_indexes[i1] | 0;
             // Get the first base color to sum up with colors atop of it
             if(start_layer === -1) { base.set(shadow_state.base_rgba_colors_for_blending.slice(i4, i4+4), 0);
             }else { base.set(shadow_state.rgba_colors_data_in_layers[start_layer].slice(i4, i4+4), 0);}
@@ -96,7 +102,7 @@ const SuperBlend = {
             // Sum up all colors above
             for(let layer_n = start_layer+1|0; layer_n < all_layers_length; layer_n = layer_n + 1 | 0) {
 
-                float_variables.set(Float32Array.of(shadow_state.amount_data_in_layers[layer_n][i1] / 65535), 5);
+                float_variables.fill(shadow_state.amount_data_in_layers[layer_n][i1] / 65535, 5, 5);
                 added.set(shadow_state.rgba_colors_data_in_layers[layer_n].slice(i4, i4+4), 0);
 
                 if(should_return_transparent && added[3] === 0 && float_variables[6] === 1) {
@@ -107,30 +113,30 @@ const SuperBlend = {
                     base.set(added, 0);
                 }else {
 
-                    float_variables.set(Float32Array.of(base[3] / 255), 0);
-                    float_variables.set(Float32Array.of(added[3] / 255 * float_variables[6]), 1);
+                    float_variables.fill(base[3] / 255, 0, 0);
+                    float_variables.fill(added[3] / 255 * float_variables[6], 1, 1);
 
                     mix.fill(0);
-                    float_variables.set(Float32Array.of(0), 2);
+                    float_variables.fill(0, 2, 2);
                     if (float_variables[0] > 0 && float_variables[1] > 0) {
-                        if(alpha_addition) { float_variables.set(Float32Array.of(float_variables[0] + float_variables[1]), 2); } else { float_variables.set(Float32Array.of(1 - (1 - float_variables[1]) * (1 - float_variables[0])), 2);}
-                        float_variables.set(Float32Array.of(float_variables[1] / float_variables[2]), 3);
-                        float_variables.set(Float32Array.of(float_variables[0] * (1 - float_variables[1]) / float_variables[2]), 4);
+                        if(alpha_addition) { float_variables.fill(float_variables[0] + float_variables[1], 2, 2); } else { float_variables.fill(1 - (1 - float_variables[1]) * (1 - float_variables[0]), 2, 2);}
+                        float_variables.fill(float_variables[1] / float_variables[2], 3, 3);
+                        float_variables.fill(float_variables[0] * (1 - float_variables[1]) / float_variables[2], 4, 4);
                         mix.set(Uint8ClampedArray.of(
                             added[0] * float_variables[3] + base[0] * float_variables[4] | 0, // red
                             added[1] * float_variables[3] + base[1] * float_variables[4] | 0, // green
                             added[2] * float_variables[3] + base[2] * float_variables[4] | 0
                         ), 0);// blue
                     }else if(float_variables[1] > 0) {
-                        float_variables.set(Float32Array.of(added[3] / 255), 2);
+                        float_variables.fill(added[3] / 255, 2, 2);
                         mix.set(added, 0);
                     }else {
-                        float_variables.set(Float32Array.of(base[3] / 255), 2);
+                        float_variables.fill(base[3] / 255, 2, 2);
                         mix.set(base, 0);
                     }
                     if(alpha_addition) {
-                        float_variables.set(Float32Array.of(float_variables[2] / 2), 2);
-                    } mix.set(Uint8ClampedArray.of(float_variables[2] * 255), 3);
+                        float_variables.fill(float_variables[2] / 2, 2, 2);
+                    } mix.fill(float_variables[2] * 255, 3, 3);
 
                     base.set(mix, 0);
                 }
@@ -139,8 +145,6 @@ const SuperBlend = {
         }
 
         // Map index and color as they are converted back in ui32
-
-
         new Uint32Array(new Uint8ClampedArray(shadow_state.base_rgba_colors_for_blending.buffer).reverse().buffer).reverse()
             .forEach(function(color, index){
 
@@ -196,7 +200,7 @@ const SuperBlend = {
                 if(layer_number_difference > 0) { // Must add some layers
 
                     // Add layers within data array
-                    for(let i = 0; i < Math.abs(layer_number_difference); i = i + 1 | 0) {
+                    for(let i = 1; i <= Math.abs(layer_number_difference); i = i + 1 | 0) {
 
                         state.colors_data_in_layers.push(new Uint32Array(max_length));
                         state.amount_data_in_layers.push(new Uint16Array(max_length));
@@ -206,9 +210,9 @@ const SuperBlend = {
                 }else if(layer_number_difference < 0){ // Must remove some layers
 
                     // Delete layers within data array
-                    for(let i = 0; i < Math.abs(layer_number_difference); i = i + 1 | 0) {
+                    for(let i = 1; i <= Math.abs(layer_number_difference); i = i + 1 | 0) {
 
-                        let index = state.layer_number-1-i|0;
+                        let index = state.layer_number-i|0;
                         delete state.colors_data_in_layers[index];
                         delete state.amount_data_in_layers[index];
                         delete state.hover_data_in_layers[index];
@@ -220,7 +224,7 @@ const SuperBlend = {
             // Flooding or recreate existing layers
             if (redefine_it_up_to_layer_n > 0 || state.max_length !== max_length) {
 
-                if (state.max_length !== max_length) {
+                if (state.max_length !== max_length || typeof state.colors_data_in_layers[redefine_it_up_to_layer_n-1] === "undefined") {
 
                     state.indexes_data_for_layers = new Uint32Array(max_length);
                     for (let i = 0; i < redefine_it_up_to_layer_n; i = i + 1 | 0) {
@@ -262,9 +266,11 @@ const SuperBlend = {
                 state.indexes_data_for_layers[state.current_index-1] = pixel_index | 0;
             },
             stack: function(for_layer_index, ui32color, amount, is_hover) {
-                state.colors_data_in_layers[for_layer_index].set(Uint32Array.of(ui32color), state.current_index-1);
-                state.amount_data_in_layers[for_layer_index].set(Uint16Array.of(amount * 65535), state.current_index-1);
-                state.hover_data_in_layers[for_layer_index].set(Uint8ClampedArray.of(is_hover*2), state.current_index-1);
+
+                let sci = state.current_index-1 | 0;
+                state.colors_data_in_layers[for_layer_index].set(Uint32Array.of(ui32color), sci);
+                state.amount_data_in_layers[for_layer_index].set(Uint16Array.of(amount * 65535), sci);
+                state.hover_data_in_layers[for_layer_index].set(Uint8ClampedArray.of(is_hover*2), sci);
             },
             blend: function (should_return_transparent, alpha_addition ) {
                 should_return_transparent = should_return_transparent | 0;

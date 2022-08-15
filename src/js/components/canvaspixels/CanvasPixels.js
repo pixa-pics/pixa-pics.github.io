@@ -28,7 +28,7 @@ SOFTWARE.
 import React from "react";
 import pool from "../../utils/worker-pool";
 import B64PngCanvas from "../canvaspixels/utils/B64PngCanvas";
-import B64Layer from "./utils/B64Layer";
+import BMPLayer from "./utils/BMPLayer";
 import ReducePalette from "../canvaspixels/utils/ReducePalette";
 import SuperCanvas from "../canvaspixels/utils/SuperCanvas";
 import SuperBlend from "../canvaspixels/utils/SuperBlend";
@@ -154,6 +154,7 @@ class CanvasPixels extends React.Component {
         };
         if(!this.hasnt_been_mount) {
             this.xxhash = Object.create(XXHash).new();
+            this.bmp_layer = Object.create(BMPLayer).from(pool);
             this.color_conversion = Object.create(ColorConversion).new();
             this.super_blend = Object.create(SuperBlend).start();
             this.super_canvas = Object.create(SuperCanvas).from(null, 32, 32);
@@ -709,9 +710,6 @@ class CanvasPixels extends React.Component {
 
             let thumbnails = new Map();
             let progression = 0;
-            let thumbnail_width = 128;
-            if(pxl_width > 256) { thumbnail_width = pxl_width / 2;}
-            if(pxl_width > 234) { thumbnail_width = pxl_width / 3;}
 
             this.setSt4te({_last_filters_hash: hash}, () => {
 
@@ -723,9 +721,9 @@ class CanvasPixels extends React.Component {
                         ...this._filter_pixels(name, force, _s_pxls[_layer_index], _s_pxl_colors[_layer_index], true),
                         (result) => {
                             thumbnails.set(name, result);
-                            progression = String(Math.round(parseFloat(thumbnails.size / filter_names.length)*100));
+                            progression = String(Math.round(thumbnails.size / filter_names.length * 100));
                             this.props.onFiltersThumbnailChange(thumbnails, hash, progression);
-                        }, thumbnail_width
+                        }
                     );
                 });
 
@@ -790,10 +788,6 @@ class CanvasPixels extends React.Component {
 
             if(old_hash !== new_hash || !Boolean(old_hash) || !Boolean(old_thumbnail)) {
 
-                let thumbnail_width = 128;
-                if(new_current_state.pxl_width > 256) { thumbnail_width = new_current_state.pxl_width / 2;}
-                if(new_current_state.pxl_width > 384) { thumbnail_width = new_current_state.pxl_width / 3;}
-
                 this.get_layer_base64_png_data_url(new_current_state.pxl_width, new_current_state.pxl_height, p, pc, (new_thumbnail) => {
 
                     has_updated = true;
@@ -811,7 +805,7 @@ class CanvasPixels extends React.Component {
                         new_current_state._timestamp = parseInt(timestamp);
                         maybe_set_layers(has_updated, has_changed, new_current_state);
                     }
-                }, thumbnail_width);
+                });
 
             }else {
 
@@ -828,12 +822,15 @@ class CanvasPixels extends React.Component {
         }
     };
 
-    get_layer_base64_png_data_url = (pxl_width, pxl_height, pxls, pxl_colors, callback_function, resize_width) => {
+    get_layer_base64_png_data_url = (pxl_width, pxl_height, pxls, pxl_colors, callback_function) => {
 
-        const scale = 1;
-        const resize_w = resize_width || pxl_width;
-        const b64layer = B64Layer.from(pool, pxl_width, pxl_height, pxls, pxl_colors, scale, resize_w);
-        b64layer.render(function(r){callback_function(r); b64layer.destroy()});
+        this.bmp_layer.define(pxl_width, pxl_height, pxls, pxl_colors);
+        this.bmp_layer.render((err, res) => {
+
+            if(!err) { callback_function(res); }else {
+                this.bmp_layer.render(function(err, res){if(!err) {callback_function(res);}})
+            }
+        });
     };
 
     get_base64_png_data_url = (scale = 1, callback_function = () => {}, with_palette = false, with_compression_speed = 0, with_compression_quality_min = 30, with_compression_quality_max = 35) => {

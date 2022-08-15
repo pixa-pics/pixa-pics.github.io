@@ -8,12 +8,12 @@ if ('requestIdleCallback' in window) {
 } else {
 
     requestIdleCallback = function(cb, settings) {
-        var start = Date.now();
+        var start = Date.now() | 0;
         return setTimeout(function() {
             cb({
                 didTimeout: false,
                 timeRemaining: function() {
-                    return Math.max(0, parseInt(settings.timeout || 50) - parseInt(Date.now() - start));
+                    return Math.max(0, ((settings.timeout || 50) - (Date.now() - start)) | 0);
                 },
             });
         }, 1);
@@ -29,6 +29,9 @@ const SuperCanvas = {
         const indexed_by_color_changes = new Map();
         indexed_colors.forEach(function(colorUint32, index) {
 
+            colorUint32 = colorUint32 | 0;
+            index = index | 0;
+
             if (!indexed_by_color_changes.has(colorUint32)) {
 
                 const set = new Set();
@@ -42,12 +45,14 @@ const SuperCanvas = {
         }); indexed_colors.clear();
 
         const indexed_by_color_paths = new Map();
-        for (const [uint32, set] of indexed_by_color_changes) {
-
+        let s = "00000000";
+        for (let [uint32, set] of indexed_by_color_changes) {
+            uint32 = uint32 | 0;
+            s = uint32.toString(16);
             const path = new Path2D();
-            const style = "#".concat("00000000".concat(uint32.toString(16)).slice(-8));
+            const style = "#".concat(new Array(8-s.length).join("0").concat().slice(-8));
             set.forEach((i) => {
-                const x = i % width, y = (i - x) / width;
+                const x = i % width | 0, y = (i - x) / width | 0;
                 path.rect(x, y, 1, 1);
             });
             set.clear();
@@ -79,8 +84,11 @@ const SuperCanvas = {
         const bpro = AsyncFunction(
             `var bpro = async function(width, height, fp){
             
+                width = width | 0;
+                height = height | 0;
+                
                 var image_data = new ImageData(width, height);
-                    image_data.data.set(new Uint8ClampedArray(new Uint32Array(fp.buffer).reverse().buffer).reverse());
+                    image_data.data.set(new Uint8ClampedArray(fp.reverse().buffer).reverse());
 
                 return createImageBitmap(image_data);
                  
@@ -91,11 +99,17 @@ const SuperCanvas = {
         const template = {
             init: function(c, pxl_width, pxl_height, max_fps){
 
+                pxl_width = pxl_width | 0;
+                pxl_height = pxl_height | 0;
+                max_fps = max_fps | 0;
+
                 function cs(c, pxl_width, pxl_height) {
 
+                    pxl_width = pxl_width | 0;
+                    pxl_height = pxl_height | 0;
                     if(!Boolean(c)) { c = document.createElement("canvas"); }
-                    c.width = parseInt(pxl_width);
-                    c.height = parseInt(pxl_height);
+                    c.width = pxl_width | 0;
+                    c.height = pxl_height | 0;
 
                     let is_bitmap = Boolean('createImageBitmap' in window);
                     let is_offscreen =  Boolean('OffscreenCanvas' in window);
@@ -104,7 +118,7 @@ const SuperCanvas = {
                     if (is_offscreen) {
 
                         if(!is_bitmap) {
-                            occ2d = new OffscreenCanvas(parseInt(pxl_width), parseInt(pxl_height)).getContext("2d");
+                            occ2d = new OffscreenCanvas(pxl_width, pxl_height).getContext("2d");
                             occ2d.imageSmoothingEnabled = false;
                         }
                     }
@@ -114,10 +128,10 @@ const SuperCanvas = {
                     cc2d.globalCompositeOperation = "copy";
 
                     return {
-                        is_bitmap: Boolean(is_bitmap),
-                        is_offscreen: Boolean(is_offscreen),
-                        width: parseInt(pxl_width),
-                        height: parseInt(pxl_height),
+                        is_bitmap: is_bitmap,
+                        is_offscreen: is_offscreen,
+                        width: pxl_width | 0,
+                        height: pxl_height | 0,
                         canvas_context: cc2d,
                         offscreen_canvas_context: occ2d
                     };
@@ -129,10 +143,10 @@ const SuperCanvas = {
                     fp: new Uint32Array(pxl_height * pxl_width),
                     ic: new Map(),
                     v: {
-                        rt: Date.now(),
+                        rt: Date.now() | 0,
                         rs: 0,
-                        tbrt: parseInt(1000 / max_fps),
-                        pt: parseInt(1000 / max_fps),
+                        tbrt: (1000 / max_fps) | 0,
+                        pt: (1000 / max_fps) | 0,
                         enable_prender: true,
                         enable_paint: true,
                         enable_unpile: true,
@@ -220,7 +234,8 @@ const SuperCanvas = {
                         if (s.is_bitmap) {
 
                             ic.forEach(function (value, index) {
-                                fp[index] = value;
+                                index = index | 0;
+                                fp[index] = value | 0;
                             }); ic.clear();
 
                         } else if (s.is_offscreen) {

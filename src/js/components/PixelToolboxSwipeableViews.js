@@ -154,14 +154,9 @@ const styles = theme => ({
         },
     },
     layerThumbnail: {
-        width: "auto",
+        width: "128px !important",
         height: "auto",
-        imageRendering: "speed",
-        "& .MuiAvatar-img": {
-            width: "128px !important",
-            height: "auto",
-            borderRadius: 2,
-        },
+        borderRadius: 2,
         marginRight: theme.spacing(2),
     },
     layerSelected: {
@@ -435,6 +430,7 @@ class PixelToolboxSwipeableViews extends React.Component {
 
                 if(must_compute_filter) {
 
+                    Object.values(this.state.filters_thumbnail).forEach(function(value){ try{value.close();}catch(e){} });
                     try { this.state.canvas.compute_filters_preview() }catch (e){}
                 }
 
@@ -525,13 +521,13 @@ class PixelToolboxSwipeableViews extends React.Component {
                                             button
                                             onClick={() => this._change_active_layer(index_reverse_order)}>
                                             <ListItemAvatar>
-                                                <Avatar variant="square"
-                                                        className={classes.layerThumbnail}
-                                                        imgProps={{
-                                                            className: "speed",
-                                                            style: {background: `repeating-conic-gradient(rgb(248 248 248 / 100%) 0% 25%, rgb(224 224 224 / 100%) 0% 50%) left top 50% / calc(200% / ${width}) calc(200% / ${height})`}
-                                                        }}
-                                                        src={layer.thumbnail}/>
+                                                <canvas
+                                                    className={"pixelated "+classes.layerThumbnail}
+                                                    ref={(el) => {this._set_canvas_ref(el, layer.thumbnail)}}
+                                                    width={(layer.thumbnail || {}).width || 0}
+                                                    height={(layer.thumbnail || {}).height || 0}
+                                                    style={{background: `repeating-conic-gradient(rgb(248 248 248 / 100%) 0% 25%, rgb(224 224 224 / 100%) 0% 50%) left top 50% / calc(200% / ${width}) calc(200% / ${height})`}}
+                                                />
                                             </ListItemAvatar>
                                             <ListItemText primary={layer.name}/>
                                             <ExpandMoreIcon
@@ -777,6 +773,17 @@ class PixelToolboxSwipeableViews extends React.Component {
         }
     };
 
+    _set_canvas_ref = (can, bmp) => {
+
+        if(typeof bmp === "undefined") {return}
+        if(typeof bmp.width === "undefined") {return}
+        if(typeof can === "undefined") {return}
+        if(can === null) {return}
+        if(typeof can.width === "undefined") {return}
+        if(can.width === null) {return}
+        can.getContext("2d").drawImage(bmp, 0, 0);
+    };
+
     get_action_panel = (index) => {
 
         const {
@@ -812,7 +819,6 @@ class PixelToolboxSwipeableViews extends React.Component {
         });
         const too_much_colors_no_vector = layers_colors_max >= 128;
         const _filters_preview_progression_stepped = Math.round(parseFloat(filters_preview_progression / 7) * 7);
-
 
         const panel_names = this.get_action_panel_names();
 
@@ -1486,10 +1492,17 @@ class PixelToolboxSwipeableViews extends React.Component {
                     sub: "The strength selected matters meanwhile preview are only shown at 100% intensity. To cancel any operation, use 'undo'.",
                     tools: filters.map((name, name_index) => {
 
-                        const f = filters_thumbnail.get(name) || "";
+                        const bmp = filters_thumbnail.get(name) || new Object();
                         return {
                             style: {position: "relative", minWidth: "100%" },
-                            icon: <Avatar className={"speed"} style={{ zIndex: "-1", boxSizing: "border-box", height: "100%", minWidth: "100%", minHeight: parseInt(128 / _filter_ar_on_one), width: 128, aspectRatio: `${_filter_ar_on_one} / 1`, filter: `${String(Boolean(f.length === 0 && name_index !== 0) ? "drop-shadow(#3729c170 0px 2px 4px) opacity(0.66)": "drop-shadow(#3729c1a8 0px 1px 2px) opacity(1.0)")}`, webkitFilter: `${String(Boolean(f.length === 0 && name_index !== 0) ? "drop-shadow(#3729c170 0px 2px 4px) opacity(0.66)": "drop-shadow(#3729c1a8 0px 1px 2px) opacity(1.0)")}`, border: "4px solid #020529", borderRadius: 4, contain: "paint style size"}} key={String(Boolean(f.length > 0) ? String(name+"-loaded-"+_filter_ar_on_one): String(name+"-loading-"+_filter_ar_on_one)) + String("-preview-" + last_filters_hash)} variant={"rounded"} src={String(f.length > 0 ? f: filters_thumbnail.get(filters[0]))} />,
+                            icon: <canvas
+                                className={"pixelated"}
+                                ref={(el) => {this._set_canvas_ref(el, bmp)}}
+                                width={bmp.width || 0}
+                                height={bmp.height || 0}
+                                style={{ zIndex: "-1", boxSizing: "border-box", height: "100%", minWidth: "100%", minHeight: (128 / _filter_ar_on_one) | 0, width: 128, filter: "drop-shadow(#3729c1a8 0px 1px 2px) opacity(1.0)", webkitFilter: "drop-shadow(#3729c1a8 0px 1px 2px) opacity(1.0)", border: "4px solid #020529", borderRadius: 4, contain: "paint style size"}}
+                                key={String(name+_filter_ar_on_one) + String("-preview-" + last_filters_hash)}
+                                />,
                             text: name,
                             text_style: {
                                 flex: "1 1",

@@ -11,31 +11,32 @@ const CanvasPos = {
                 width: 0
             },
             sizes: {
-                width: parseInt(pxl_width),
-                height: parseInt(pxl_height)
+                width: pxl_width | 0,
+                height: pxl_height | 0
             },
             screen_zoom_ratio: 1,
             canvas_wrapper: {
-                padding: parseInt(canvas_wrapper_padding),
-                border_width: parseInt(canvas_wrapper_border_width)
+                padding: canvas_wrapper_padding | 0,
+                border_width: canvas_wrapper_border_width | 0
             },
             scale: {
-                default: parseFloat(default_scale),
-                current: parseFloat(default_scale),
+                default: Float32Array.of(default_scale)[0],
+                current: Float32Array.of(default_scale)[0],
                 move_x: 0,
                 move_y: 0,
-                moves_speeds: [],
-                move_speed_timestamp: Date.now(),
+                moves_speeds: new Array(),
+                move_speed_timestamp: Date.now() | 0,
                 moves_speed_average_now: 16,
             },
-            device_pixel_ratio: parseFloat(window.devicePixelRatio),
-            perspective: parseInt(perspective)
+            device_pixel_ratio: Float32Array.of(window.devicePixelRatio)[0],
+            perspective: perspective | 0
         });
     },
     _get_screen_zoom_ratio(s) {
-        return Boolean(s.canvas_container.width > s.canvas_container.height) ?
-            parseFloat(s.canvas_container.height - s.canvas_wrapper.padding / s.device_pixel_ratio * 2) / s.sizes.height:
-            parseFloat(s.canvas_container.width - s.canvas_wrapper.padding / s.device_pixel_ratio * 2) / s.sizes.width;
+        return Float32Array.of(Boolean(s.canvas_container.width > s.canvas_container.height) ?
+            (s.canvas_container.height - s.canvas_wrapper.padding / s.device_pixel_ratio * 2) / s.sizes.height:
+            (s.canvas_container.width - s.canvas_wrapper.padding / s.device_pixel_ratio * 2) / s.sizes.width
+        )[0];
     },
     _get_pos(s, szr){
 
@@ -58,35 +59,35 @@ const CanvasPos = {
 
         return Object.assign({}, {
             canvas: {
-                offset_left: canvas_offset_left,
-                offset_top: canvas_offset_top,
-                left: canvas_left,
-                top: canvas_top,
-                right: canvas_right,
-                bottom: canvas_bottom,
-                width: canvas_right - canvas_left,
-                height: canvas_bottom - canvas_top,
+                offset_left: canvas_offset_left | 0,
+                offset_top: canvas_offset_top | 0,
+                left: canvas_left | 0,
+                top: canvas_top | 0,
+                right: canvas_right | 0,
+                bottom: canvas_bottom | 0,
+                width: canvas_right - canvas_left | 0,
+                height: canvas_bottom - canvas_top | 0,
             },
             canvas_wrapper: {
-                offset_left: canvas_wrapper_offset_left,
-                offset_top: canvas_wrapper_offset_top,
-                left: canvas_wrapper_left,
-                top: canvas_wrapper_top,
-                right: canvas_wrapper_right,
-                bottom: canvas_wrapper_bottom,
-                width: canvas_wrapper_right - canvas_wrapper_left,
-                height: canvas_wrapper_bottom - canvas_wrapper_top,
+                offset_left: canvas_wrapper_offset_left | 0,
+                offset_top: canvas_wrapper_offset_top | 0,
+                left: canvas_wrapper_left | 0,
+                top: canvas_wrapper_top | 0,
+                right: canvas_wrapper_right | 0,
+                bottom: canvas_wrapper_bottom | 0,
+                width: canvas_wrapper_right - canvas_wrapper_left | 0,
+                height: canvas_wrapper_bottom - canvas_wrapper_top | 0,
             },
             canvas_container: {
-                offset_left: s.canvas_container.left,
-                offset_top: s.canvas_container.top,
-                left: s.canvas_container.left,
-                top: s.canvas_container.top,
-                right: s.canvas_container.left + s.canvas_container.width,
-                bottom: s.canvas_container.top + s.canvas_container.height,
-                width: s.canvas_container.width,
-                height: s.canvas_container.height,
-            },
+                offset_left: s.canvas_container.left | 0,
+                offset_top: s.canvas_container.top | 0,
+                left: s.canvas_container.left | 0,
+                top: s.canvas_container.top | 0,
+                right: s.canvas_container.left + s.canvas_container.width | 0,
+                bottom: s.canvas_container.top + s.canvas_container.height | 0,
+                width: s.canvas_container.width | 0,
+                height: s.canvas_container.height | 0,
+            }
         });
     },
     _get_init_pointer_state() {
@@ -106,12 +107,12 @@ const CanvasPos = {
     _copy_event(event) {
 
         return Object.assign({}, {
-            pointerId: event.pointerId,
-            clientX: event.clientX,
-            clientY: event.clientY,
-            pageX: event.pageX,
-            pageY: event.pageY,
-            button: event.button
+            pointerId: event.pointerId | 0,
+            clientX: event.clientX | 0,
+            clientY: event.clientY | 0,
+            pageX: event.pageX | 0,
+            pageY: event.pageY | 0,
+            button: event.button | 0
         });
     },
     _get_shadows(hex){
@@ -119,15 +120,16 @@ const CanvasPos = {
         const color_conversion = {
             format_hex_color: function(hex) { // Supports #fff (short rgb), #fff0 (short rgba), #e2e2e2 (full rgb) and #e2e2e2ff (full rgba)
 
+                const l = hex.length | 0;
                 if(typeof hex === "undefined"){
 
                     return "#00000000";
                 } else {
 
-                    let a, b, c, d;
-                    let formatted = "";
+                    let a = "a", b = "b", c = "c", d = "d";
+                    let formatted = "#12345678";
 
-                    switch(hex.length) {
+                    switch(l) {
 
                         case 9:
                             formatted = hex;
@@ -149,7 +151,8 @@ const CanvasPos = {
                 }
             },
             to_hex_from_rgba: function(rgba) {
-                return "#".concat("00000000".concat(new Uint32Array(rgba.reverse().buffer)[0].toString(16)).slice(-8));
+                let s = new Uint32Array(rgba.reverse().buffer)[0].toString(16);
+                return "#".concat(new Array(8-s.length | 0).join("0").concat(s));
             },
             to_rgba_from_hex: function(hex) {
                 return new Uint8ClampedArray(Uint32Array.of(parseInt(hex.slice(1), 16)).buffer).reverse();
@@ -259,11 +262,11 @@ const CanvasPos = {
             },
             set_perspective(perspective) {
 
-                s.perspective = parseInt(perspective);
+                s.perspective = perspective | 0;
             },
             get_pointer_state() {
 
-                return Object.assign({}, ps);
+                return Object.assign({}, ps); // Warning
             },
             get_perspective_state() {
 
@@ -277,19 +280,20 @@ const CanvasPos = {
                 return parseFloat(szr);
             },
             compute_perspective_from_pointer_event(pageX, pageY) {
+                pageX = pageX | 0;
+                pageY = pageY | 0;
 
+                if(!Boolean(s.perspective > 0)) { return; }
 
-                if(!Boolean(s.perspective > 0)) {
-                    return;
-                }
+                const pos_x_in_canvas_container = pageX - p.canvas_container.left | 0;
+                const pos_y_in_canvas_container = pageY - p.canvas_container.top | 0;
 
-                const pos_x_in_canvas_container = pageX - p.canvas_container.left;
-                const pos_y_in_canvas_container = pageY - p.canvas_container.top;
-
-                const x = s.perspective * ((pos_x_in_canvas_container - p.canvas_container.width / 2) / (p.canvas_container.width / 2));
-                const y = -s.perspective * ((pos_y_in_canvas_container - p.canvas_container.height / 2) / (p.canvas_container.height / 2));
-                const p_x = x > s.perspective ? x : x * 2;
-                const p_y = y < 0 ? y : 2 * y;
+                const x = (s.perspective * ((pos_x_in_canvas_container - p.canvas_container.width / 2) / (p.canvas_container.width / 2))) | 0;
+                const y = (-s.perspective * ((pos_y_in_canvas_container - p.canvas_container.height / 2) / (p.canvas_container.height / 2))) | 0;
+                const p_x = (x > s.perspective ? x : x * 2) | 0;
+                const p_y = (y < 0 ? y : 2 * y) | 0;
+                const p_x_things = String(255 - (p_x / 2 * 255) | 0);
+                const p_y_things = String((p_y / 2 * 255) | 0);
 
                 const rotate_y = Math.round((p_x * 1.25 / s.scale.current) * 1000) / 1000;
                 const rotate_x = Math.round((p_y * 1.25 / s.scale.current) * 1000) / 1000;
@@ -297,27 +301,27 @@ const CanvasPos = {
 
                 const transform_rotate = any_rotation ? `rotateX(${rotate_x}deg) rotateY(${rotate_y}deg)`: ``
                 const background_image = any_rotation ? `linear-gradient(to left, rgba(
-                            ${255 - Math.floor(p_x / 2 * 255)},
-                            ${255 - Math.floor(p_x / 2 * 255)},
-                            ${255 - Math.floor(p_x / 2 * 255)}, 
-                            ${(Math.abs(p_x * 0.1) / parseInt(s.perspective*2)).toFixed(2)}
+                            ${p_x_things},
+                            ${p_x_things},
+                            ${p_x_things}, 
+                            ${(Math.abs(p_x * 0.1) / (s.perspective*2)).toFixed(2)}
                             ), rgba(
-                            ${255 - Math.floor(p_x / 2 * 255)},
-                            ${255 - Math.floor(p_x / 2 * 255)},
-                            ${255 - Math.floor(p_x / 2 * 255)}, 
-                            ${(Math.abs(p_x * 0.6) / parseInt(s.perspective*2)).toFixed(2)}
+                            ${p_x_things},
+                            ${p_x_things},
+                            ${p_x_things}, 
+                            ${(Math.abs(p_x * 0.6) / (s.perspective*2)).toFixed(2)}
                             )), linear-gradient(to top, rgba(
-                            ${Math.floor(p_y / 2 * 255)},
-                            ${Math.floor(p_y / 2 * 255)},
-                            ${Math.floor(p_y / 2 * 255)}, 
-                            ${(Math.abs(p_y * 0.75) / parseInt(s.perspective*2)).toFixed(2)}
+                            ${p_y_things},
+                            ${p_y_things},
+                            ${p_y_things}, 
+                            ${(Math.abs(p_y * 0.75) / (s.perspective*2)).toFixed(2)}
                             ), rgba(
-                            ${Math.floor(p_y / 2 * 255)},
-                            ${Math.floor(p_y / 2 * 255)},
-                            ${Math.floor(p_y / 2 * 255)}, 
-                            ${(Math.abs(p_y  * 0.25) / parseInt(s.perspective*2)).toFixed(2)}
+                            ${p_y_things},
+                            ${p_y_things},
+                            ${p_y_things}, 
+                            ${(Math.abs(p_y  * 0.25) / (s.perspective*2)).toFixed(2)}
                             ))`: ``;
-                const filter_force = 1 + parseFloat(Math.abs(p_y)+Math.abs(p_x)) / 4 / parseInt(s.perspective*2);
+                const filter_force = (1 + (Math.abs(p_y)+Math.abs(p_x)) / 4 / s.perspective*2).toFixed(2);
                 const filter = any_rotation ? `brightness(${filter_force}) contrast(${filter_force})`: "";
 
                 pe = {
@@ -787,33 +791,32 @@ const CanvasPos = {
                 this.set_moves(for_middle_x, for_middle_y, null, this.notify_middle);
             },
             compute_canvas_event_target(pageX, pageY){
-
+                pageX = pageX | 0;
+                pageY = pageY | 0;
                 this.compute_perspective_from_pointer_event(pageX, pageY);
                 const {canvas, canvas_wrapper} = p;
                 if(pageX >= canvas.left && pageY >= canvas.top && pageX <= canvas.right && pageY <= canvas.bottom) { // Canvas
 
-                    s = Object.assign(s, {canvas_event_target: "CANVAS"});
+                    s.canvas_event_target = "CANVAS";
                 }else if(pageX >= canvas_wrapper.left && pageY >= canvas_wrapper.top && pageX <= canvas_wrapper.right && pageY <= canvas_wrapper.bottom) { // Canvas wrapper
 
-                    s = Object.assign(s, {canvas_event_target: "CANVAS_WRAPPER"});
+                    s.canvas_event_target = "CANVAS_WRAPPER";
                 }else {
 
-                    s = Object.assign(s, {canvas_event_target: "CANVAS_WRAPPER_OVERFLOW"});
+                    s.canvas_event_target = "CANVAS_WRAPPER_OVERFLOW";
                 }
             },
             set_move_speed_average_now() {
 
                 if(!Boolean(s)){ return; }
 
-                const {scale, canvas_event_target} = s;
-                let { moves_speed_average_now, move_speed_timestamp } = scale;
-                const max_move_speed = Boolean(canvas_event_target !== "CANVAS_WRAPPER_OVERFLOW") ? 18: 24;
+                const max_move_speed = Boolean(s.canvas_event_target !== "CANVAS_WRAPPER_OVERFLOW") ? 18: 24;
 
                 const now = Date.now();
 
-                if(now - move_speed_timestamp >= 20 && moves_speed_average_now > -max_move_speed)  {
+                if(now - s.scale.move_speed_timestamp >= 20 && s.scale.moves_speed_average_now > -max_move_speed)  {
 
-                    const new_moves_speed_average_now = Math.max(moves_speed_average_now - 1, -max_move_speed);
+                    const new_moves_speed_average_now = Math.max(s.scale.moves_speed_average_now - 1, -max_move_speed);
 
                     s = Object.assign(s, {scale: Object.assign(s.scale, {
                         moves_speed_average_now: new_moves_speed_average_now,
@@ -822,13 +825,11 @@ const CanvasPos = {
 
                     notifiers.update(false, true);
 
-                }else if(now - move_speed_timestamp >= 20 && moves_speed_average_now < -max_move_speed && max_move_speed < 24) {
-
-                    const new_moves_speed_average_now = Math.max(moves_speed_average_now + 1, -max_move_speed);
+                }else if(now - s.scale.move_speed_timestamp >= 20 && s.scale.moves_speed_average_now < -max_move_speed && max_move_speed < 24) {
 
                     s = Object.assign(s, {scale: Object.assign(s.scale, {
-                         moves_speed_average_now: new_moves_speed_average_now,
-                        move_speed_timestamp: now
+                         moves_speed_average_now: Math.max(s.scale.moves_speed_average_now + 1, -max_move_speed) | 0,
+                        move_speed_timestamp: now | 0
                     })});
 
                         notifiers.update(false, true);
