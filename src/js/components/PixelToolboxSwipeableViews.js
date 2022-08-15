@@ -308,7 +308,7 @@ class PixelToolboxSwipeableViews extends React.Component {
             view_name_index: props.view_name_index,
             current_color: props.current_color,
             second_color: props.second_color,
-            slider_value: props.slider_value,
+            slider_value: parseFloat(props.slider_value),
             layers: props.layers,
             layer_index: props.layer_index,
             can_undo: props.can_undo,
@@ -437,7 +437,7 @@ class PixelToolboxSwipeableViews extends React.Component {
                 }
             }
 
-            this.setState({...new_props, props_override}, () => {
+            this.setState({...new_props, props_override, slider_value: parseFloat(new_props.slider_value)}, () => {
                 this.forceUpdate();
             });
 
@@ -462,6 +462,11 @@ class PixelToolboxSwipeableViews extends React.Component {
                 this.forceUpdate();
             });
         } catch (e) {}
+    };
+
+    _to_filter = (name) => {
+
+        this.state.canvas.to_filter(name, this.state.slider_value);
     };
 
     get_action_panel_names = () => {
@@ -1540,7 +1545,7 @@ class PixelToolboxSwipeableViews extends React.Component {
                                 boxSizing: "border-box",
                             },
                             on_click: () => {
-                                canvas.to_filter(name, slider_value);
+                                this._to_filter(name);
                                 this.compute_filters_preview();
                                 this._handle_action_close();
                             }

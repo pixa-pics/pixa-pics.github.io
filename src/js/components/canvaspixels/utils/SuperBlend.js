@@ -102,41 +102,41 @@ const SuperBlend = {
             // Sum up all colors above
             for(let layer_n = start_layer+1|0; layer_n < all_layers_length; layer_n = layer_n + 1 | 0) {
 
-                float_variables.fill(shadow_state.amount_data_in_layers[layer_n][i1] / 65535, 5, 5);
+                float_variables.fill(shadow_state.amount_data_in_layers[layer_n][i1] / 65535, 5, 6);
                 added.set(shadow_state.rgba_colors_data_in_layers[layer_n].slice(i4, i4+4), 0);
 
-                if(should_return_transparent && added[3] === 0 && float_variables[6] === 1) {
+                if(should_return_transparent && added[3] === 0 && float_variables[5] === 1) {
 
                     base.fill( 0);
-                }else if(added[3] === 255 && float_variables[6] === 1) {
+                }else if(added[3] === 255 && float_variables[5] === 1) {
 
                     base.set(added, 0);
                 }else {
 
-                    float_variables.fill(base[3] / 255, 0, 0);
-                    float_variables.fill(added[3] / 255 * float_variables[6], 1, 1);
+                    float_variables.fill(base[3] / 255, 0, 1);
+                    float_variables.fill(added[3] / 255 * float_variables[5], 1, 2);
 
                     mix.fill(0);
-                    float_variables.fill(0, 2, 2);
+                    float_variables.fill(0, 2, 3);
                     if (float_variables[0] > 0 && float_variables[1] > 0) {
-                        if(alpha_addition) { float_variables.fill(float_variables[0] + float_variables[1], 2, 2); } else { float_variables.fill(1 - (1 - float_variables[1]) * (1 - float_variables[0]), 2, 2);}
-                        float_variables.fill(float_variables[1] / float_variables[2], 3, 3);
-                        float_variables.fill(float_variables[0] * (1 - float_variables[1]) / float_variables[2], 4, 4);
+                        if(alpha_addition) { float_variables.fill(float_variables[0] + float_variables[1], 2, 3); } else { float_variables.fill(1 - (1 - float_variables[1]) * (1 - float_variables[0]), 2, 3);}
+                        float_variables.fill(float_variables[1] / float_variables[2], 3, 4);
+                        float_variables.fill(float_variables[0] * (1 - float_variables[1]) / float_variables[2], 4, 5);
                         mix.set(Uint8ClampedArray.of(
                             added[0] * float_variables[3] + base[0] * float_variables[4] | 0, // red
                             added[1] * float_variables[3] + base[1] * float_variables[4] | 0, // green
                             added[2] * float_variables[3] + base[2] * float_variables[4] | 0
                         ), 0);// blue
                     }else if(float_variables[1] > 0) {
-                        float_variables.fill(added[3] / 255, 2, 2);
+                        float_variables.fill(added[3] / 255, 2, 3);
                         mix.set(added, 0);
                     }else {
-                        float_variables.fill(base[3] / 255, 2, 2);
+                        float_variables.fill(base[3] / 255, 2, 3);
                         mix.set(base, 0);
                     }
                     if(alpha_addition) {
-                        float_variables.fill(float_variables[2] / 2, 2, 2);
-                    } mix.fill(float_variables[2] * 255, 3, 3);
+                        float_variables.fill(float_variables[2] / 2, 2, 3);
+                    } mix.fill(float_variables[2] * 255, 3, 4);
 
                     base.set(mix, 0);
                 }
