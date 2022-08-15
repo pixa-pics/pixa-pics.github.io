@@ -85,6 +85,7 @@ self.addEventListener("fetch", function(event) {
             Promise.allSettled([
                 useful_cache.then(function (cache) {
                     return cache.addAll([
+                        "/src/fonts/baksheesh/index.css",
                         "/src/images/infographics/ShareWho.svg",
                         "/src/images/gallery/Luck.png",
                         "/src/images/gallery/Luck.svg",
