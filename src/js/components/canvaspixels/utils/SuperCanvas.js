@@ -180,12 +180,12 @@ const SuperCanvas = {
             },
             render() {
                 if(v.enable_paint) {
+                    v.enable_unpile = true;
                     v.enable_paint = false;
                     if (s.is_bitmap) {
                         s.canvas_context.drawImage(bmp, bmp_x, bmp_y, bmp.width, bmp.height);
                         old_bmp.close();
                         old_bmp = bmp;
-                        ic.clear();
                     } else if (s.is_offscreen) {
 
                         s.canvas_context.drawImage(s.offscreen_canvas_context, 0, 0, s.width, s.height);
@@ -197,8 +197,6 @@ const SuperCanvas = {
                     v.tbrt = paint_ended - v.rt;
                     v.rt = paint_ended;
                     v.rs--;
-
-                    v.enable_unpile = true;
                 }
             },
             prender(render_callback = function (){}, render_args = []){
@@ -213,19 +211,23 @@ const SuperCanvas = {
                         let new_bmp_y = pr.top_left.y | 0;
                         let new_bmp_width = pr.width | 0;
                         let new_bmp_height = pr.height | 0;
-                        let new_bmp_fp = Uint32Array.from(pr.fp_square);
+                        let new_bmp_fp = new Uint32Array(pr.fp_square.buffer);
 
                         pool.exec(bpro, [new_bmp_width, new_bmp_height, new_bmp_fp]).catch(function () {
 
                             return b(new_bmp_width, new_bmp_height, new_bmp_fp);
                         }).then(function(bitmap){
 
-                            v.enable_unpile = true;
                             v.enable_paint = true;
                             v.pt = Date.now() - started;
                             bmp = bitmap;
                             bmp_x = new_bmp_x | 0;
                             bmp_y = new_bmp_y | 0;
+                            pr.top_left.x = s.width | 0;
+                            pr.top_left.y = s.height | 0;
+                            pr.bottom_right.x = 0;
+                            pr.bottom_right.y = 0;
+                            ic.clear();
                             render_callback(...render_args);
                         });
 
@@ -233,20 +235,17 @@ const SuperCanvas = {
 
                         [s.offscreen_canvas_context, ic] = d2d(s.offscreen_canvas_context, ic);
 
-                        v.enable_unpile = true;
                         v.enable_paint = true;
                         v.pt = Date.now() - started;
                         render_callback(...render_args);
 
                     }else {
 
-                        v.enable_unpile = true;
                         v.enable_paint = true;
                         v.pt = Date.now() - started;
                         render_callback(...render_args);
                     }
                 }else {
-
 
                     render_callback(...render_args);
                 }
@@ -258,10 +257,6 @@ const SuperCanvas = {
 
                         if (s.is_bitmap) {
 
-                            pr.top_left.x = s.width | 0;
-                            pr.top_left.y = s.height | 0;
-                            pr.bottom_right.x = 0;
-                            pr.bottom_right.y = 0;
                             ic.forEach(function (value, index) {
                                 index = index | 0;
                                 const x = index % s.width | 0;
@@ -277,26 +272,42 @@ const SuperCanvas = {
 
                             pr.width = pr.bottom_right.x - pr.top_left.x + 1| 0;
                             pr.height = pr.bottom_right.y - pr.top_left.y  + 1 | 0;
-                            pr.fp_square = new Uint32Array(pr.width * pr.height);
 
+                            pr.fp_square = new Uint32Array(pr.width * pr.height);
                             let square_offset_start_length = pr.top_left.x | 0;
                             let current_offset_start_index = 0;
-
                             for(let i = 0; i < pr.height ; i = i + 1 | 0) {
 
                                 current_offset_start_index = s.width * (i + pr.top_left.y) + square_offset_start_length | 0;
                                 pr.fp_square.set(Uint32Array.from(fp.slice(current_offset_start_index, current_offset_start_index + pr.width)), i*pr.width);
                             }
 
+                            v.enable_prender = true;
+                            v.enable_unpile = false;
+                            prender_callback(render_callback, render_args);
+
                         } else if (s.is_offscreen) {
 
                             [s.offscreen_canvas_context, ic] = d2d(s.offscreen_canvas_context, ic);
+                            v.enable_prender = true;
+                            v.enable_unpile = false;
+                            prender_callback(render_callback, render_args);
+                        }else {
+
+                            v.enable_prender = true;
+                            v.enable_unpile = false;
+                            prender_callback(render_callback, render_args);
                         }
+                    }else {
 
                         v.enable_prender = true;
+                        prender_callback(render_callback, render_args);
                     }
+                }else {
+
+                    v.enable_prender = true;
+                    prender_callback(render_callback, render_args);
                 }
-                prender_callback(render_callback, render_args);
             },
             pile(indexed_changes, unpile_callback = function(){}, prender_callback = function (){}, render_callback = function (){}, render_args = []) {
 

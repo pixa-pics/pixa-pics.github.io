@@ -6,7 +6,6 @@ const SuperBlend = {
 
         let all_layers_length = state.layer_number | 0;
         let used_colors_length = state.current_index | 0;
-        let rgba_colors_length = used_colors_length * 4 | 0;
         let current_mapped_colors_index = 0;
 
         let rgba = new Uint8ClampedArray(4);
@@ -39,18 +38,18 @@ const SuperBlend = {
 
                     if(Math.max.apply(rgba.slice(0, 3)) + Math.min.apply(rgba.slice(0, 3)) > 255) {
 
-                        color_bonus = -64;
+                        color_bonus = -96;
                     }else {
 
-                        color_bonus = +64;
+                        color_bonus = +96;
                     }
 
                     amount_array.set(Float32Array.of(state.amount_data_in_layers[layer_n][color_n] / 65535), 0);
                     shadow_state.rgba_colors_data_in_layers[layer_n].set(Uint8ClampedArray.of(
-                        color_bonus + rgba[0] * amount_array[0],
-                        color_bonus + rgba[1] * amount_array[0],
-                        color_bonus + rgba[2] * amount_array[0],
-                        255,
+                        color_bonus + rgba[0],
+                        color_bonus + rgba[1],
+                        color_bonus + rgba[2],
+                        128 + 128 * amount_array[0],
                     ), color_n*4);
                 }
             }
@@ -151,7 +150,7 @@ const SuperBlend = {
             hover_data_in_layers: new Array(),
         };
 
-        for(let i= 0; i < layer_number-1; i = i+1|0) {
+        for(let i= 0; i < layer_number; i = i+1|0) {
 
             state.colors_data_in_layers.push(new Uint32Array(max_length));
             state.amount_data_in_layers.push(new Uint16Array(max_length));
@@ -274,7 +273,7 @@ const SuperBlend = {
 
         return shadow_state;
     },
-    start: function(){
+    new: function(){
         "use strict";
         const blender = this._blend_state;
         const builder = this._build_state;
