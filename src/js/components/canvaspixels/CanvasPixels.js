@@ -3421,7 +3421,7 @@ class CanvasPixels extends React.Component {
             if(indexed_changes.size > 0) {
 
                 force_update = Boolean(indexed_changes.size * 1.05 > pxl_width * pxl_height || force_update || clear_canvas);
-                this.super_canvas.pile(indexed_changes, this.super_canvas.unpile, this.super_canvas.prender, this.sraf.run_frame, Array.of(this.super_canvas.render, force_update, force_update));
+                this.super_canvas.pile(indexed_changes, this.super_canvas.unpile, this.super_canvas.prender, this.sraf.run_frame, Array.of(this.super_canvas.render, false, false));
                 this.setSt4te({
                     _pxl_indexes_of_selection_drawn: new Set(Array.from(_pxl_indexes_of_selection)),
                     _pxl_indexes_of_old_shape: new Set(Array.from(pxl_indexes_of_current_shape)),
@@ -5265,17 +5265,18 @@ class CanvasPixels extends React.Component {
             }
         }
 
-        return new Uint32Array(
+        pxl_colors = new Uint32Array(
             Uint8ClampedArray.from(
                 this.color_conversion.blend_rgba_colors(
-                    new Uint8ClampedArray(rgba_colors_length),
                     Array.of(old_pxl_colors_rgba, pxl_colors_rgba),
-                    intensity * 65535,
+                    intensity,
                     0,
                     0
                 )
             ).reverse().buffer
         ).reverse();
+
+        return pxl_colors;
     };
 
     _to_dutone = (contrast = 0.8, color_a = "#ffffffff", color_b = "#000000ff") => {
@@ -5284,7 +5285,7 @@ class CanvasPixels extends React.Component {
 
         [_s_pxls[_layer_index], _s_pxl_colors[_layer_index]] = this._dutone_pixels(contrast, color_a, color_b, _s_pxls[_layer_index], _s_pxl_colors[_layer_index]);
 
-        this.setSt4te({_s_pxls, _s_pxl_colors, _old_pxls_hovered: -1, _pxls_hovered: -1}, () => {
+        this.setSt4te({_s_pxls, _s_pxl_colors, _old_pxls_hovered: -1, _pxls_hovered: -1, _last_action_timestamp: Date.now()}, () => {
 
             this._update_canvas(true);
         });
@@ -5295,7 +5296,7 @@ class CanvasPixels extends React.Component {
 
         const { _s_pxl_colors, _layer_index } = this.st4te;
 
-        _s_pxl_colors[_layer_index].set(this._filter_pixels(name, parseFloat(intensity), Uint32Array.from(_s_pxl_colors[_layer_index])), 0);
+        _s_pxl_colors[_layer_index] = this._filter_pixels(name, parseFloat(intensity), Uint32Array.from(_s_pxl_colors[_layer_index]));
 
         this.setSt4te({_s_pxl_colors, _old_pxls_hovered: -1, _pxls_hovered: -1, _last_action_timestamp: Date.now() }, () => {
 

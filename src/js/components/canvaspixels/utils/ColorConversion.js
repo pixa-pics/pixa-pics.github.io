@@ -120,50 +120,29 @@ const ColorConversion = {
 
                 return this.to_uint32_from_rgba(mix);
             },
-            blend_rgba_colors: function(all_base, all_added_in_layers, amount, should_return_transparent = 0, alpha_addition = 0) {
+            blend_rgba_colors: function(all_added_in_layers, amount, should_return_transparent = 0, alpha_addition = 0) {
 
-                amount = (parseFloat(amount) <= 1 ? amount * 65535: amount) | 0;
                 should_return_transparent = should_return_transparent | 0 ;
                 alpha_addition = alpha_addition | 0;
-                let used_colors_length = all_base.length / 4 | 0;
+                let used_colors_length = all_added_in_layers[0].length / 4 | 0;
                 let all_layers_length = all_added_in_layers.length | 0;
+                let all_base = new Uint8ClampedArray(all_added_in_layers[0].length);
 
                 // Blend all color and special ones only starting from the last opaque layer
-                let start_layer_indexes = new Uint8ClampedArray(used_colors_length);
                 let base = new Uint8ClampedArray(4);
                 let added = new Uint8ClampedArray(4);
                 let mix = new Uint8ClampedArray(4);
                 let float_variables = new Float32Array(6); // ba3, ad3, mi3, ao, bo;
-                    float_variables.fill(amount / 65535, 5, 6);
-
-                let start_layer = -1;
-                // Browse the full list of pixel colors encoded within 32 bytes of data
-                for(let i1 = 0, i4 = 0; i1 < used_colors_length; i1 = i1+1|0, i4 = i4+4|0) {
-
-                    // Compute the layer to start the color addition
-                    start_layer = -1;
-                    for (let layer_n = all_layers_length - 1; layer_n >= 0; layer_n = layer_n - 1 | 0) {
-
-                        if (start_layer === -1) {
-
-                            if (all_added_in_layers[layer_n][i4 + 3] >= 255) {
-
-                                start_layer = layer_n | 0;
-                            }
-                        }
-                    }
-                    start_layer_indexes[i1] = start_layer | 0;
-                }
+                    float_variables.fill((amount * 65535 | 0) / 65535, 5, 6);
+                let start_layer = 0;
 
                 for(let i1 = 0, i4 = 0; i1 < used_colors_length; i1 = i1+1|0, i4 = i4+4|0) {
 
-                    start_layer = start_layer_indexes[i1] | 0;
-                    // Get the first base color to sum up with colors atop of it
-                    if(start_layer === -1) { base.set(all_base.slice(i4, i4+4), 0);
-                    }else { base.set(all_added_in_layers[start_layer].slice(i4, i4+4), 0);}
+                    start_layer = 0;
+                    base.set(all_added_in_layers[0].slice(i4, i4+4), 0);
 
                     // Sum up all colors above
-                    for(let layer_n = start_layer+1|0; layer_n < all_layers_length; layer_n = layer_n + 1 | 0) {
+                    for(let layer_n = 1; layer_n < all_layers_length; layer_n = layer_n + 1 | 0) {
 
                         added.set(all_added_in_layers[layer_n].slice(i4, i4+4), 0);
 
@@ -181,7 +160,7 @@ const ColorConversion = {
                             mix.fill(0);
                             float_variables.fill(0, 2, 3);
                             if (float_variables[0] > 0 && float_variables[1] > 0) {
-                                if(alpha_addition) { float_variables.fill(float_variables[0] + float_variables[1], 2, 3); } else { float_variables.fill(1 - (1 - float_variables[1]) * (1 - float_variables[0]), 2, 3);}
+                                if(alpha_addition > 0) { float_variables.fill(float_variables[0] + float_variables[1], 2, 3); } else { float_variables.fill(1 - (1 - float_variables[1]) * (1 - float_variables[0]), 2, 3);}
                                 float_variables.fill(float_variables[1] / float_variables[2], 3, 4);
                                 float_variables.fill(float_variables[0] * (1 - float_variables[1]) / float_variables[2], 4, 5);
                                 mix.set(Uint8ClampedArray.of(

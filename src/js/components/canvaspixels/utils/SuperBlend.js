@@ -1,5 +1,5 @@
 const SuperBlend = {
-    _blend_state: function(state, should_return_transparent, alpha_addition) {
+    _blend_state: function(shadow_state, state, should_return_transparent, alpha_addition) {
         "use strict";
         should_return_transparent = should_return_transparent | 0 > 0;
         alpha_addition = alpha_addition | 0 > 0;
@@ -9,34 +9,24 @@ const SuperBlend = {
         let rgba_colors_length = used_colors_length * 4 | 0;
         let current_mapped_colors_index = 0;
 
-        // Create a shadow state for computation
-        let shadow_state = {
-            mapped_colors: new Map(),
-            indexes_data_for_layers: Uint32Array.from(state.indexes_data_for_layers.slice(0, used_colors_length)),
-            base_rgba_colors_for_blending: new Uint8ClampedArray(rgba_colors_length),
-            rgba_colors_data_in_layers: new Array(all_layers_length),
-            amount_data_in_layers: new Array(all_layers_length),
-            hover_data_in_layers: new Array(all_layers_length),
-        };
-
-        // Slice and clean state
-        for(let layer_n = 0; layer_n < all_layers_length; layer_n = layer_n + 1 | 0) {
-            shadow_state.rgba_colors_data_in_layers[layer_n] = new Uint8ClampedArray(Uint32Array.from(Uint32Array.from(state.colors_data_in_layers[layer_n].slice(0, used_colors_length))).reverse().buffer).reverse();
-            shadow_state.amount_data_in_layers[layer_n] = Uint16Array.from(state.amount_data_in_layers[layer_n].slice(0, used_colors_length));
-            shadow_state.hover_data_in_layers[layer_n] = Uint8ClampedArray.from(state.hover_data_in_layers[layer_n].slice(0, used_colors_length));
-        }
-
         let rgba = new Uint8ClampedArray(4);
         let color_bonus = 64;
         let is_hover = 0;
         let amount_array = Float32Array.of(0);
 
+        let start_layer_indexes = new Uint8ClampedArray(used_colors_length);
+        let base = new Uint8ClampedArray(4);
+        let added = new Uint8ClampedArray(4);
+        let mix = new Uint8ClampedArray(4);
+        let float_variables = new Float32Array(6); // ba3, ad3, mi3, ao, bo;
+
+        let start_layer = -1;
         // Compute for special colors like hover
         for(let layer_n = 0; layer_n < all_layers_length; layer_n = layer_n + 1 | 0) {
 
             for (let color_n = 0, n4 = 0; color_n < used_colors_length; color_n = color_n+1|0, n4 = n4+4|0) {
 
-                is_hover = shadow_state.hover_data_in_layers[layer_n][color_n] | 0;
+                is_hover = state.hover_data_in_layers[layer_n][color_n] | 0;
 
                 if(is_hover > 0) {
 
@@ -55,7 +45,7 @@ const SuperBlend = {
                         color_bonus = +64;
                     }
 
-                    amount_array.set(Float32Array.of(shadow_state.amount_data_in_layers[layer_n][color_n] / 65535), 0);
+                    amount_array.set(Float32Array.of(state.amount_data_in_layers[layer_n][color_n] / 65535), 0);
                     shadow_state.rgba_colors_data_in_layers[layer_n].set(Uint8ClampedArray.of(
                         color_bonus + rgba[0] * amount_array[0],
                         color_bonus + rgba[1] * amount_array[0],
@@ -66,14 +56,6 @@ const SuperBlend = {
             }
         }
 
-        // Blend all color and special ones only starting from the last opaque layer
-        let start_layer_indexes = new Uint8ClampedArray(used_colors_length);
-        let base = new Uint8ClampedArray(4);
-        let added = new Uint8ClampedArray(4);
-        let mix = new Uint8ClampedArray(4);
-        let float_variables = new Float32Array(6); // ba3, ad3, mi3, ao, bo;
-
-        let start_layer = -1;
         // Browse the full list of pixel colors encoded within 32 bytes of data
         for(let i1 = 0, i4 = 0; i1 < used_colors_length; i1 = i1+1|0, i4 = i4+4|0) {
 
@@ -83,7 +65,7 @@ const SuperBlend = {
 
                 if (start_layer === -1) {
 
-                    if (shadow_state.rgba_colors_data_in_layers[layer_n][i4 + 3] >= 255) {
+                    if (shadow_state.rgba_colors_data_in_layers[layer_n][i4 + 3] >= 255 && state.amount_data_in_layers[layer_n][i1] === 65535) {
 
                         start_layer = layer_n | 0;
                     }
@@ -102,7 +84,7 @@ const SuperBlend = {
             // Sum up all colors above
             for(let layer_n = start_layer+1|0; layer_n < all_layers_length; layer_n = layer_n + 1 | 0) {
 
-                float_variables.fill(shadow_state.amount_data_in_layers[layer_n][i1] / 65535, 5, 6);
+                float_variables.fill(state.amount_data_in_layers[layer_n][i1] / 65535, 5, 6);
                 added.set(shadow_state.rgba_colors_data_in_layers[layer_n].slice(i4, i4+4), 0);
 
                 if(should_return_transparent && added[3] === 0 && float_variables[5] === 1) {
@@ -178,6 +160,32 @@ const SuperBlend = {
 
         return state;
     },
+    _build_shadow_state: function (state, old_shadow_state) {
+
+        if(typeof old_shadow_state !== "undefined") {
+
+            delete old_shadow_state.mapped_colors;
+            delete old_shadow_state.base_rgba_colors_for_blending;
+            for(let i = 0; i < old_shadow_state.rgba_colors_data_in_layers.length; i = i+1 | 0) {
+                delete old_shadow_state.rgba_colors_data_in_layers[i];
+            }
+            delete old_shadow_state.rgba_colors_data_in_layers;
+        }
+
+        // Create a shadow state for computation
+        let shadow_state = {
+            mapped_colors: new Map(),
+            base_rgba_colors_for_blending: new Uint8ClampedArray(0),
+            rgba_colors_data_in_layers: new Array(state.layer_number)
+        };
+
+        // Slice uint32 colors and give them as uint8
+        for(let layer_n = 0; layer_n < state.layer_number; layer_n = layer_n + 1 | 0) {
+            shadow_state.rgba_colors_data_in_layers[layer_n] = new Uint8ClampedArray(0);
+        }
+
+        return shadow_state;
+    },
     _update_state: function(state, layer_number, max_length, _build_state) {
         "use strict";
         layer_number = layer_number | 0;
@@ -251,13 +259,31 @@ const SuperBlend = {
             return state;
         }
     },
+    _update_shadow_state: function (shadow_state, state) {
+
+        // Create a shadow state for computation
+        shadow_state.mapped_colors.clear();
+        delete shadow_state.base_rgba_colors_for_blending;
+        shadow_state.base_rgba_colors_for_blending = new Uint8ClampedArray(state.current_index * 4);
+
+        // Slice uint32 colors and give them as uint8
+        for(let layer_n = 0; layer_n < state.layer_number; layer_n = layer_n + 1 | 0) {
+            delete shadow_state.rgba_colors_data_in_layers[layer_n];
+            shadow_state.rgba_colors_data_in_layers[layer_n] = new Uint8ClampedArray(Uint32Array.from(Uint32Array.from(state.colors_data_in_layers[layer_n].slice(0, state.current_index))).reverse().buffer).reverse();
+        }
+
+        return shadow_state;
+    },
     start: function(){
         "use strict";
         const blender = this._blend_state;
         const builder = this._build_state;
+        const shadow_builder = this._build_shadow_state;
         const updater = this._update_state;
+        const shadow_updater = this._update_shadow_state;
 
         let state = builder(1, 1);
+        let shadow_state = shadow_builder(state);
 
         return {
             for: function(pixel_index) {
@@ -275,13 +301,18 @@ const SuperBlend = {
             blend: function (should_return_transparent, alpha_addition ) {
                 should_return_transparent = should_return_transparent | 0;
                 alpha_addition = alpha_addition | 0;
-                return blender(state, should_return_transparent, alpha_addition);
+                shadow_state = shadow_updater(shadow_state, state);
+                return blender(shadow_state, state, should_return_transparent, alpha_addition);
             },
             build: function (layer_number, max_length) {
                 state = builder(layer_number, max_length);
+                shadow_state = shadow_builder(state, shadow_state);
             },
             update: function (layer_number, max_length) {
+
+                const changed_layer_number = Boolean(state.layer_number !== layer_number);
                 state = updater(state, layer_number, max_length, builder);
+                if(changed_layer_number) { shadow_state = shadow_builder(state, shadow_state); }
             },
             clear: function () {
                 state = updater(state, 1, 1, builder);

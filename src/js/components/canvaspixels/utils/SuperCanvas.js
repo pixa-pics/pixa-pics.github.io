@@ -158,10 +158,20 @@ const SuperCanvas = {
 
         let state = Object.create(template).init(c, pxl_width, pxl_height, max_fps);
         let s = state.s;
+        let old_bmp = null;
         let bmp = state.bmp;
+        let bmp_x = 0;
+        let bmp_y = 0;
         let fp = state.fp;
         let ic = state.ic;
         let v = state.v;
+        let pr = {
+            top_left: {x:0, y:0},
+            bottom_right: {x:0, y:0},
+            width: 0,
+            height: 0,
+            fp_square: new Uint32Array(0)
+        };
 
         return {
             // Methods
@@ -172,7 +182,10 @@ const SuperCanvas = {
                 if(v.enable_paint) {
                     v.enable_paint = false;
                     if (s.is_bitmap) {
-                        s.canvas_context.drawImage(bmp, 0, 0, s.width, s.height);
+                        s.canvas_context.drawImage(bmp, bmp_x, bmp_y, bmp.width, bmp.height);
+                        old_bmp.close();
+                        old_bmp = bmp;
+                        ic.clear();
                     } else if (s.is_offscreen) {
 
                         s.canvas_context.drawImage(s.offscreen_canvas_context, 0, 0, s.width, s.height);
@@ -196,15 +209,23 @@ const SuperCanvas = {
                     const started = Date.now();
                     if (s.is_bitmap) {
 
-                        pool.exec(bpro, [s.width, s.height, fp]).catch(function () {
+                        let new_bmp_x = pr.top_left.x | 0;
+                        let new_bmp_y = pr.top_left.y | 0;
+                        let new_bmp_width = pr.width | 0;
+                        let new_bmp_height = pr.height | 0;
+                        let new_bmp_fp = Uint32Array.from(pr.fp_square);
 
-                            return b(s.width, s.height, fp);
+                        pool.exec(bpro, [new_bmp_width, new_bmp_height, new_bmp_fp]).catch(function () {
+
+                            return b(new_bmp_width, new_bmp_height, new_bmp_fp);
                         }).then(function(bitmap){
 
                             v.enable_unpile = true;
                             v.enable_paint = true;
                             v.pt = Date.now() - started;
                             bmp = bitmap;
+                            bmp_x = new_bmp_x | 0;
+                            bmp_y = new_bmp_y | 0;
                             render_callback(...render_args);
                         });
 
@@ -237,10 +258,35 @@ const SuperCanvas = {
 
                         if (s.is_bitmap) {
 
+                            pr.top_left.x = s.width | 0;
+                            pr.top_left.y = s.height | 0;
+                            pr.bottom_right.x = 0;
+                            pr.bottom_right.y = 0;
                             ic.forEach(function (value, index) {
                                 index = index | 0;
+                                const x = index % s.width | 0;
+                                const y = (index - x) / s.width | 0;
+
+                                if(pr.top_left.x > x) { pr.top_left.x = x| 0 }
+                                if(pr.top_left.y > y) { pr.top_left.y = y | 0 }
+                                if(pr.bottom_right.x < x) { pr.bottom_right.x = x | 0 }
+                                if(pr.bottom_right.y < y) { pr.bottom_right.y = y | 0 }
+
                                 fp[index] = value | 0;
-                            }); ic.clear();
+                            });
+
+                            pr.width = pr.bottom_right.x - pr.top_left.x + 1| 0;
+                            pr.height = pr.bottom_right.y - pr.top_left.y  + 1 | 0;
+                            pr.fp_square = new Uint32Array(pr.width * pr.height);
+
+                            let square_offset_start_length = pr.top_left.x | 0;
+                            let current_offset_start_index = 0;
+
+                            for(let i = 0; i < pr.height ; i = i + 1 | 0) {
+
+                                current_offset_start_index = s.width * (i + pr.top_left.y) + square_offset_start_length | 0;
+                                pr.fp_square.set(Uint32Array.from(fp.slice(current_offset_start_index, current_offset_start_index + pr.width)), i*pr.width);
+                            }
 
                         } else if (s.is_offscreen) {
 
