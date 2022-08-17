@@ -93,6 +93,7 @@ Lighthouse (google's webpage loading test) metrics of pixa.pics at left while th
  > Please, just read the [privacy policy](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/privacypolicy.md) while our [licence](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/COPYING) follows similar lines of intentions about what ideal we must being trying to understand legally and morally nevertheless.
 
 # How can it work thanks to sponsorship?
+![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/SPONSORS.jpeg)
 
 Gold ($ 6K/Month), Silver ($ 4K/Month), and Bronze ($ 2K/Month) supporters (VISIBLE IN SETTINGS) enable Pixa.Pics to have a bigger team soon while benefiting a positive cashflow to pay everything that is related to activities from development to marketing content/analyses and production.</p>
 **INTERESTED INTO SPONSORING a good cause? Please email-us at: [pixa.pics@protonmail.com](mailto:pixa.pics@protonmail.com).**
