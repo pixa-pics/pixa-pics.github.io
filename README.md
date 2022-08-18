@@ -150,7 +150,7 @@ Always a new checkpoint is set the king, once it lived only then, it can be rede
 
 ---
 
-INFINITE POSITIVE RESULTS TO ANYONE TRYING ADDING THINGS POSITIVE WHILE IT CAN BE SEEN AND WHY AT BEST FOR IT!
+INFINITE WHILE POSSIBLE IF POSITIVE RESULTS TO ANYONE MAKING ADDING POSITIVE FUNDS OR NICE DEV-IDEA/PROPOSAL-TRY TO THIS WEB APP SUCCEEDING THEN WHILE SEEING IT AS BEST INTENDED AND DONE OR WHILE BEING ABLE AGAIN TO TRY AGAIN SIMPLY AGAIN REALLY.
 
  * THANKS Works to work the next one once you achieved trying your duty in that is code and should matter...
  * THANKS Funds to get back to our pool staying it for new idea for it that of which doesn't negate better builds/wishes/ideas to not go in paradise with your failure nevertheless not coming back of that is void as truth dictate.
