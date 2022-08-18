@@ -147,3 +147,12 @@ Always a new checkpoint is set the king, once it lived only then, it can be rede
 ---
 
 **INTERESTED INTO SPONSORING a good cause? Please email-us at: [pixa.pics@protonmail.com](mailto:pixa.pics@protonmail.com).**
+
+---
+
+INFINITE POSITIVE RESULTS TO ANYONE TRYING ADDING THINGS POSITIVE WHILE IT CAN BE SEEN AND WHY AT BEST FOR IT!
+
+ * THANKS Works to work the next one once you achieved trying your duty in that is code and should matter...
+ * THANKS Funds to get back to our pool staying it for new idea for it that of which doesn't negate better builds/wishes/ideas to not go in paradise with your failure nevertheless not coming back of that is void as truth dictate.
+ * THANKS Paradise letting money here and keeping anything for eternity as needed and until sometimes if it could being what just should get fine to try again.
+ * THANKS Matters getting yourself over yourself as fast as it can and as much as it takes naturally like it just does like not Satan but the inverse, with control optionally and questions all to themselves to solves anything defined or not.
