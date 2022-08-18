@@ -121,7 +121,7 @@ Gold ($ 6K/Month), Silver ($ 4K/Month), and Bronze ($ 2K/Month) supporters (VISI
 
 > SPONSORS SUPPORT PIXA.PICS running forward the fridge non-empty as even the fridge programmer needs his child getting adorable at running a pixel art at will that could need those other developers to have access to cutting edge techs mastered on earth for everyone and for ISS in order to draw that they ate while AND getting more free time at processing time minutely before doing the same on their machine anytime, anywhere before they got a fridge doing it alone, RIGHT THERE, immediately and IN THE NOW staying more human whatever the business cares what is perishing and not eaten in ISS because now one is doing open-sources that steam ahead it's best with sufficiency to not show code more boring that what just stays good and better for now but also to have the power in the veins reading and testing web browser, what they improved just needing going forward reasonably with fun in abundance enabling us to not read them necessarily because they've achieved way back already what they are writing for today and tomorrow while getting extra deception no ones funds ANYONE MOVING possibilities to have FUNIER SHIFTING OF FUN to be GREAT.**.
 
-# Working a donation (=Just kill the king...)
+# Getting further, in the height of the hill, with the king that owns a while greater.
 
 **Great is this king, the king kills that is good, you can't kill what is good but you can kill the king!**
 
@@ -133,11 +133,15 @@ Always a new checkpoint is set the king, once it lived only then, it can be rede
 
 > The king is empty and is not set to achieve anything, currently when it catch a new one, let it hit that is good and will be replaced by a motiated idea accepted and pushed with funds important enough for achievement of the task.
 
+
+![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/KINGOFTHEHILL.png)
+
 **Current ideas seeking funds:**
 
 - Undefined
 
 **Queued ideas seeking funds:**
+
 - Undefined
 
 ---
