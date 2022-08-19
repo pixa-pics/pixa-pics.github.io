@@ -101,16 +101,15 @@ Lighthouse (google's webpage loading test) metrics of pixa.pics at left while th
 
 # How can it work thanks to sponsorship?
 
-
 ![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/SPONSORS.jpeg)
 
-**Regular king participants is rigged to the statues as it follows:**
+**Regular king participants CREATORS is rigged to the statues as it follows:**
 
 Gold ($ 6K/Month), Silver ($ 4K/Month), and Bronze ($ 2K/Month) supporters (VISIBLE IN SETTINGS) enable Pixa.Pics to have a bigger team soon while benefiting a positive cashflow to pay everything that is related to activities from development to marketing content/analyses and production.</p>
 
 > **Thanks for support!**
 
-# Getting further, in the height of the hill, with the king that owns a while greater.
+## Getting further, in the height of the hill, with the king that owns a while greater.
 
 **Great is this king, the king kills that is good, you can't kill what is good but you can kill the king!**
 
@@ -137,9 +136,9 @@ Always a new checkpoint is set the king, once it lived only then, it can be rede
 
 **INTERESTED INTO SPONSORING a good cause? Please email-us at: [pixa.pics@protonmail.com](mailto:pixa.pics@protonmail.com).**
 
----
+## Get started
 
-INFINITE WHILE POSSIBLE IF POSITIVE RESULTS TO ANYONE MAKING ADDING POSITIVE FUNDS OR NICE DEV-IDEA/PROPOSAL-TRY TO THIS WEB APP SUCCEEDING THEN WHILE SEEING IT AS BEST INTENDED AND DONE OR WHILE BEING ABLE AGAIN TO TRY AGAIN SIMPLY AGAIN REALLY.
+INFINITE *"KARMA"* OR POSITIVE MIND-BLOWING EFFECTS WHILE POSITIVE RESULTS TO ANYONE MAKING ADDING POSITIVE FUNDS OR NICE DEV-IDEA/PROPOSAL-TRY. GET US LUCKY!
 
  * THANKS Works to work the next one once you achieved trying your duty in that is code and should matter...
  * THANKS Funds to get back to our pool staying it for new idea for it that of which doesn't negate better builds/wishes/ideas to not go in paradise with your failure nevertheless not coming back of that is void as truth dictate.
