@@ -14,6 +14,8 @@ Also join us, for tomorrow and beyond, in the web app for pixel art, thanks to y
 
 Pixa Pics stands in favor of the freedom of expression, communication, education; **respect for the privacy of citizens and civil rights in general**. We defend the free flow of ideas, knowledge and culture as the software is completely free and open-source. 
 
+> IT CLAIMS TO BE THE UNBREAKABLE, UNCHANGABLE, UNSTOPPABLE Ace of Automatic Information; Blockchain is a list of transactions grouped into multiple blocks that constitute a state in a machine that changes according to a cryptography-based agreement ET between its participating terminals through a data network. This technology allows you to save and keep a structured data set for centuries flawlessly.
+
 As a team we have a commitment to work collaboratively, and participate with maximum transparency and thus lastly, we also supports free speech, anti-corruption and net neutrality facing it with **the swords of code we are forging to improve the third web’s major update.**
 
 ## What does it performs?
