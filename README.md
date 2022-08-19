@@ -147,7 +147,7 @@ INFINITE *"KARMA"* OR POSITIVE MIND-BLOWING EFFECTS WHILE POSITIVE RESULTS TO AN
 
 ---
 
-> All features getting live become tracked on the visible **"Legacy of King History"** having had ruling visionary and generous for how long and how much. Just near monthly "patron/sponsor" in the app being actual wealthier creative, giving chance, fertilizing faith inside all regions of the **"Unearthly Kingdom"** for any great mind to submit and idea or giving talents opportunity to live and donate it the breath of life, and thus the **Pixa's one, once blown, time and wind, the latest the chosen, sow, ...** *becoming godfather creators of the Kings, ...* the contracts, we can stack, describing with resources enough, the new code that goes thoughts, the mind over matter put into the fabric of reality.... *And the history repeat itself.*
+> All features getting live become tracked on the visible **"Legacy of King History"** (Soon linked and listed) having had ruling visionary and generous for how long and how much. Just near monthly "patron/sponsor" in the app being actual wealthier creative, giving chance, fertilizing faith inside all regions of the **"Unearthly Kingdom"** for any great mind to submit and idea or giving talents opportunity to live and donate it the breath of life, and thus the **Pixa's one, once blown, time and wind, the latest the chosen, sow, ...** *becoming godfather creators of the Kings, ...* the contracts, we can stack, describing with resources enough, the new code that goes thoughts, the mind over matter put into the fabric of reality.... *And the history repeat itself.*
 
 ---
 
