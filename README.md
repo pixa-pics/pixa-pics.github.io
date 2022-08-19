@@ -145,3 +145,17 @@ INFINITE WHILE POSSIBLE IF POSITIVE RESULTS TO ANYONE MAKING ADDING POSITIVE FUN
  * THANKS Funds to get back to our pool staying it for new idea for it that of which doesn't negate better builds/wishes/ideas to not go in paradise with your failure nevertheless not coming back of that is void as truth dictate.
  * THANKS Paradise letting money here and keeping anything for eternity as needed and until sometimes if it could being what just should get fine to try again.
  * THANKS Matters getting yourself over yourself as fast as it can and as much as it takes naturally like it just does like not Satan but the inverse, with control optionally and questions all to themselves to solves anything defined or not.
+
+---
+
+> All features getting live become tracked on the visible **"Legacy of King History"** having had ruling visionary and generous for how long and how much. Just near monthly "patron/sponsor" in the app being actual wealthier creative, giving chance, fertilizing faith inside all regions of the **"Unearthly Kingdom"** for any great mind to submit and idea or giving talents opportunity to live and donate it the breath of life, and thus the **Pixa's one, once blown, time and wind, the latest the chosen, sow, ...** *becoming godfather creators of the Kings, ...* the contracts, we can stack, describing with resources enough, the new code that goes thoughts, the mind over matter put into the fabric of reality.... *And the history repeat itself.*
+
+---
+
+**INTERESTED INTO SPONSORING a good cause? Please email-us at: [pixa.pics@protonmail.com](mailto:pixa.pics@protonmail.com).**
+
+---
+
+> **Getting it?** Just when it catch, only prepare to contact us... becoming godfather creators of the Kings... giving a feature proposal and sufficient funds to create the king and stack it, or to get featured in Monthly Patrong/Sponsor for ideas listed.
+
+---
