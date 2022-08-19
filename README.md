@@ -101,13 +101,6 @@ Lighthouse (google's webpage loading test) metrics of pixa.pics at left while th
 
 # How can it work thanks to sponsorship?
 
-> Potential proves potentials true and just like nuclear technologies, simply not devlish, is a joke, which is certainly not a crime even in a war time, because asking question, at pixa pics we never don't cause we could be defined saviour of something, and that has done the next something guess what?
- 
->A bit more fun in IT, requires online universe getting greater while that isn't up to you to requires thinking that, well does our supports requires it to ask you when it catch you that?
-
-> The great of Pixa Pics the ennemy of good, whatever and whenever good just shifted apart went below with it before, unwait is up to you to let it hit them not the funniest, rightly by you, asks you, what does it will that is good and should be shifted away.
-
-> Then you enables the things you want to emerge, and that in the origins and now, we, enabled by some few wise, no force at all, just their means that gived, makes it happens what they we wished we ensured followed that is we are:
 
 ![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/SPONSORS.jpeg)
 
@@ -116,10 +109,6 @@ Lighthouse (google's webpage loading test) metrics of pixa.pics at left while th
 Gold ($ 6K/Month), Silver ($ 4K/Month), and Bronze ($ 2K/Month) supporters (VISIBLE IN SETTINGS) enable Pixa.Pics to have a bigger team soon while benefiting a positive cashflow to pay everything that is related to activities from development to marketing content/analyses and production.</p>
 
 > **Thanks for support!**
-
-> Everything including neat, fluid, and robust performance and experience are due to our incredible threshold of hair that hasn't seen the daylight taken the grey color one by one while we had no time letting the interface charging negatively the old smartphone to get its owner experience's angry thanks to the cost of the choice to try it out there without else much to do but keeping the lowest powerful tier of web's end device your participation as a device that can run with it, as even per low connection and just like the same process and experience as any other as well as in International-Space-Station where they had the JavaScipt Canvas2D and sp(a/e)cies to remember they just have it since it is now popular that JS canvas things even in connected cars and just fridge.
-
-> SPONSORS SUPPORT PIXA.PICS running forward the fridge non-empty as even the fridge programmer needs his child getting adorable at running a pixel art at will that could need those other developers to have access to cutting edge techs mastered on earth for everyone and for ISS in order to draw that they ate while AND getting more free time at processing time minutely before doing the same on their machine anytime, anywhere before they got a fridge doing it alone, RIGHT THERE, immediately and IN THE NOW staying more human whatever the business cares what is perishing and not eaten in ISS because now one is doing open-sources that steam ahead it's best with sufficiency to not show code more boring that what just stays good and better for now but also to have the power in the veins reading and testing web browser, what they improved just needing going forward reasonably with fun in abundance enabling us to not read them necessarily because they've achieved way back already what they are writing for today and tomorrow while getting extra deception no ones funds ANYONE MOVING possibilities to have FUNIER SHIFTING OF FUN to be GREAT.**.
 
 # Getting further, in the height of the hill, with the king that owns a while greater.
 
