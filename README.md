@@ -121,9 +121,6 @@ Always a new checkpoint is set the king, once it lived only then, it can be rede
 
 > The king is empty and is not set to achieve anything, currently when it catch a new one, let it hit that is good and will be replaced by a motiated idea accepted and pushed with funds important enough for achievement of the task.
 
-
-![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/KINGOFTHEHILL.png)
-
 **Current ideas seeking funds:**
 
 - Undefined
