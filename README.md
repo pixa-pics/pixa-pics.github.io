@@ -1,7 +1,7 @@
 # PIXA.PICS 
 
 
-Light data reduced throughout crystal mathemagick functions of our NFTs laboratory as a great pixel art editor just as any others and super-functionalities enhanced for NFTs proves that "Luck" for success editing NFTs and artworks with few pixels really equals that we determined for you into https://pixe.pics, it is no chaos but choice best thought and hard work side that has let no details for all man and pleasing eyes!
+Light data reduced throughout crystal mathemagick functions of our NFTs laboratory as a great pixel art editor just as any others and super-functionalities enhanced for NFTs proves that "Luck" for success editing NFTs and artworks with few pixels really equals that we determined for you into https://pixa.pics/, it is no chaos but choice best thought and hard work side that has let no details for all man and pleasing eyes!
 
 Join the great art we like adventure  NOW! NFTs around 14Kb, easily render 6x fancy and 24x very sharp creation you'll love to give it a try? It is thanks to our contributors including our sponsors supports that give use of which to stays wise and vigilant in being leaders of NFTs laboratory all around the crypto hype.
 
