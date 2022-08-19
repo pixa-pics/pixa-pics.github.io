@@ -153,7 +153,7 @@ INFINITE *"KARMA"* OR POSITIVE MIND-BLOWING EFFECTS WHILE POSITIVE RESULTS TO AN
 
 **INTERESTED INTO SPONSORING a good cause? Please email-us at: [pixa.pics@protonmail.com](mailto:pixa.pics@protonmail.com).**
 
----
+![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/TECTARY.jpeg)
 
 > **Getting it?** Just when it catch, only prepare to contact us... becoming godfather creators of the Kings... giving a feature proposal and sufficient funds to create the king and stack it, or to get featured in Monthly Patrong/Sponsor for ideas listed.
 
