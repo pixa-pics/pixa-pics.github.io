@@ -71,100 +71,114 @@ const SmartRequestAnimationFrame = {
                     callback_function("ok");
                 }
             },
-            run_frame(render, do_not_cancel_animation, force_update, requested_at_t = Date.now()) {
+            run_frame(render, do_not_cancel_animation, force_update, requested_at_t = Date.now(), data = null) {
 
-                if(requested_at_t < s.lasts_raf_time && !do_not_cancel_animation && !force_update) { return }
+                return new Promise(function(resolve, reject){
 
-                let skip_frame_rate = s.is_mobile_or_tablet ? 27: 44;
+                    if(requested_at_t < s.lasts_raf_time && !do_not_cancel_animation && !force_update) { return }
 
-                let now = Date.now();
-                let running_smoothly = true;
+                    let skip_frame_rate = s.is_mobile_or_tablet ? 27: 44;
 
-                let deltaT = now - s.lasts_raf_time;
-                // do not render frame when deltaT is too high
-                if ( deltaT > 1000 / (skip_frame_rate * 2/3)) {
-                    running_smoothly = false;
-                }
+                    let now = Date.now();
+                    let running_smoothly = true;
 
-                if(force_update) {
-
-                    if(s.caf_id !== null) {
-
-                        s.caf.call(window, s.caf_id);
-                    }
-                    s.caf_id = null;
-
-                    if(do_not_cancel_animation) {
-
-                        s.raf.call(window, render);
-                    }else {
-
-                        s.caf_id = s.raf.call(window, render);
+                    let deltaT = now - s.lasts_raf_time;
+                    // do not render frame when deltaT is too high
+                    if ( deltaT > 1000 / (skip_frame_rate * 2/3)) {
+                        running_smoothly = false;
                     }
 
-                    s.cpaf_frames++;
-                    s.lasts_raf_time = now;
+                    if(force_update) {
 
-                }else if ( s.caf_id === null) { // Best
+                        if(s.caf_id !== null) {
 
-                    if(do_not_cancel_animation) {
+                            s.caf.call(window, s.caf_id);
+                        }
+                        s.caf_id = null;
 
-                        s.raf.call(window, render);
-                    }else {
+                        if(do_not_cancel_animation) {
 
-                        s.caf_id = s.raf.call(window, render);
-                    }
-                    s.lasts_raf_time = now;
-                    s.cpaf_frames++;
+                            s.raf.call(window, render);
+                            resolve(data);
+                        }else {
 
-                }else if(!running_smoothly && s.caf_id !== null && deltaT > 1000 / (skip_frame_rate * 6/3) ) { // Average
+                            s.caf_id = s.raf.call(window, render);
+                            resolve(data);
+                        }
 
-                    if(s.caf_id !== null) {
+                        s.cpaf_frames++;
+                        s.lasts_raf_time = now;
 
-                        s.caf.call(window, s.caf_id);
-                    }
-                    s.caf_id = null;
-                    s.lasts_raf_time = now;
+                    }else if ( s.caf_id === null) { // Best
 
-                    if(!do_not_cancel_animation) {
+                        if(do_not_cancel_animation) {
 
-                        s.caf_id = s.raf.call(window, render);
+                            s.raf.call(window, render);
+                            resolve(data);
+                        }else {
+
+                            s.caf_id = s.raf.call(window, render);
+                            resolve();
+                        }
+                        s.lasts_raf_time = now;
                         s.cpaf_frames++;
 
+                    }else if(!running_smoothly && s.caf_id !== null && deltaT > 1000 / (skip_frame_rate * 6/3) ) { // Average
+
+                        if(s.caf_id !== null) {
+
+                            s.caf.call(window, s.caf_id);
+                        }
+                        s.caf_id = null;
+                        s.lasts_raf_time = now;
+
+                        if(!do_not_cancel_animation) {
+
+                            s.caf_id = s.raf.call(window, render);
+                            resolve(data);
+                            s.cpaf_frames++;
+
+                        }else {
+
+                            s.raf.call(window, render);
+                            resolve(data);
+                        }
+
+                    }else if(!running_smoothly){ // Low
+
+                        if(s.caf_id !== null) {
+
+                            s.caf.call(window, s.caf_id);
+                            resolve(data);
+                        }
+                        s.caf_id = null;
+
+                        if(do_not_cancel_animation) {
+
+                            s.raf.call(window, render);
+                            resolve(data);
+                        }else {
+
+                            s.caf_id = s.raf.call(window, render);
+                            resolve(data);
+                        }
+
+                        s.cpaf_frames++;
+                        s.lasts_raf_time = now;
+
+                    }else if(deltaT < 1000 / (skip_frame_rate * 2)){
+
+                        setTimeout(this.run_frame, 1000 / (skip_frame_rate * 8), render, do_not_cancel_animation, force_update, requested_at_t, data);
+                    }else if(force_update || do_not_cancel_animation) {
+
+                        setTimeout(this.run_frame, 1000 / (skip_frame_rate * 8), render, do_not_cancel_animation, force_update, requested_at_t, data);
                     }else {
 
-                        s.raf.call(window, render);
+                        //caf(caf_id);
+                        reject();
                     }
 
-                }else if(!running_smoothly){ // Low
-
-                    if(s.caf_id !== null) {
-
-                        s.caf.call(window, s.caf_id);
-                    }
-                    s.caf_id = null;
-
-                    if(do_not_cancel_animation) {
-
-                        s.raf.call(window, render);
-                    }else {
-
-                        s.caf_id = s.raf.call(window, render);
-                    }
-
-                    s.cpaf_frames++;
-                    s.lasts_raf_time = now;
-
-                }else if(deltaT < 1000 / (skip_frame_rate * 2)){
-
-                    setTimeout(this.run_frame(render, 1000 / (skip_frame_rate * 8), do_not_cancel_animation, force_update, requested_at_t));
-                }else if(force_update || do_not_cancel_animation) {
-
-                    setTimeout(this.run_frame(render, 1000 / (skip_frame_rate * 8), do_not_cancel_animation, force_update, requested_at_t));
-                }else {
-
-                    //caf(caf_id);
-                }
+                });
             },
             get_state() {
                 return s;

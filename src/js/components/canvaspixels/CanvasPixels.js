@@ -1640,8 +1640,8 @@ class CanvasPixels extends React.Component {
                 this._notify_relevant_action_event(event, pixel_color_hex, 1);
             }else if (tool === "EXCHANGE" && event_which === 1) {
 
-                const pixel_color_hex = _s_pxl_colors[_layer_index][pxl_color_index];
-                this._exchange_pixel_color(pixel_color_hex, pxl_current_color);
+                const pixel_color_uint32 = _s_pxl_colors[_layer_index][pxl_color_index];
+                this._exchange_pixel_color(pixel_color_uint32, pxl_current_color);
                 this._notify_relevant_action_event(event, pxl_current_color, 1);
 
             }else if(tool === "LINE" || tool === "RECTANGLE" || tool === "ELLIPSE"){
@@ -1663,23 +1663,21 @@ class CanvasPixels extends React.Component {
                     }
                 }else {
 
+                    let pxl_indexes = new Set();
                     switch (tool) {
 
                         case "LINE":
-                            this.super_state.draw_shape().from_line(_shape_index_a, pxl_index).paint(pxl_current_color, pxl_current_opacity);
+                            pxl_indexes = this.super_state.create_shape().from_line(_shape_index_a, pxl_index);
                             break;
                         case "RECTANGLE":
-                            this.super_state.draw_shape().from_rectangle(_shape_index_a, pxl_index).paint(pxl_current_color, pxl_current_opacity);
+                            pxl_indexes = this.super_state.create_shape().from_rectangle(_shape_index_a, pxl_index);
                             break;
                         case "ELLIPSE":
-                            this.super_state.draw_shape().from_ellipse(_shape_index_a, pxl_index).paint(pxl_current_color, pxl_current_opacity);
+                            pxl_indexes = this.super_state.create_shape().from_ellipse(_shape_index_a, pxl_index);
                             break;
                     }
 
-                    this.super_state.set_state({_shape_index_a: -1, _last_action_timestamp: Date.now()}, () => {
-
-                         this._update_canvas();
-                    });
+                    this.super_state.paint_shape(pxl_indexes, pxl_current_color, pxl_current_opacity, {_shape_index_a: -1, _last_action_timestamp: Date.now()}, this._update_canvas);
                     this._notify_relevant_action_event(event, "#ffffffff", .6);
                 }
 
@@ -1705,12 +1703,12 @@ class CanvasPixels extends React.Component {
 
                     let pixel_indexes =
                         tool === "SELECT LINE" ?
-                            this.super_state.draw_shape().from_line(_select_shape_index_a, pxl_index).get():
+                            this.super_state.create_shape().from_line(_select_shape_index_a, pxl_index):
                             tool === "SELECT RECTANGLE" ?
-                                this.super_state.draw_shape().from_rectangle(_select_shape_index_a, pxl_index).get():
+                                this.super_state.create_shape().from_rectangle(_select_shape_index_a, pxl_index):
                                 tool === "SELECT ELLIPSE" ?
-                                    this.super_state.draw_shape().from_ellipse(_select_shape_index_a, pxl_index).get():
-                                    this.super_state.draw_shape().from_ellipse(_select_shape_index_a, pxl_index).get();
+                                    this.super_state.create_shape().from_ellipse(_select_shape_index_a, pxl_index):
+                                    this.super_state.create_shape().from_ellipse(_select_shape_index_a, pxl_index);
 
                     if(select_mode === "REPLACE") {
 
@@ -2287,8 +2285,7 @@ class CanvasPixels extends React.Component {
 
     _handle_canvas_mouse_move = (event) => {
 
-        const { tool, pxl_width, pxl_height, _pxls_hovered, hide_canvas_content } = this.super_state.get_state();
-        let { _pxl_indexes_of_selection, _imported_image_pxls } = this.super_state.get_state();
+        let { _pxl_indexes_of_selection, _imported_image_pxls, pxl_current_color, tool, pxl_width, pxl_height, _pxls_hovered, hide_canvas_content  } = this.super_state.get_state();
         const { event_button, mouse_down } = this.canvas_pos.get_pointer_state();
         const event_which = event_button+1;
 
@@ -2299,7 +2296,7 @@ class CanvasPixels extends React.Component {
             return;
         }
 
-        const pxl_index = (pos_y * pxl_width) + pos_x;
+        const pxl_index = (pos_y * pxl_width) + pos_x | 0;
 
         if(pxl_index !== _pxls_hovered && !hide_canvas_content) {
 
@@ -2348,7 +2345,7 @@ class CanvasPixels extends React.Component {
                     }
 
                     this.super_state.set_state({
-                        _pxls_hovered: pxl_index,
+                        _pxls_hovered: pxl_index | 0,
                         _is_on_resize_element,
                         _mouse_inside: true,
                         _imported_image_start_x,
@@ -2364,7 +2361,7 @@ class CanvasPixels extends React.Component {
                 }else {
 
                     this.super_state.set_state({
-                        _pxls_hovered: pxl_index,
+                        _pxls_hovered: pxl_index | 0,
                         _is_on_resize_element,
                         _mouse_inside: true
                     }, () => {
@@ -2385,8 +2382,9 @@ class CanvasPixels extends React.Component {
                     _paint_or_select_hover_actions_latest_index = pxl_index;
                 }
 
-                const pxl_current_color = this.color_conversion.to_uint32_from_hex(this.color_conversion.format_hex_color(this.super_state.get_state().pxl_current_color));
-                let new_drawn_pxl_indexes = this.super_state.draw_shape().from_line(_paint_or_select_hover_actions_latest_index, pxl_index).paint(pxl_current_color, pxl_current_opacity, false).get();
+                const current_color_uint32 = this.color_conversion.to_uint32_from_hex(this.color_conversion.format_hex_color(pxl_current_color));
+                let new_drawn_pxl_indexes =  this.super_state.create_shape().from_line(_paint_or_select_hover_actions_latest_index, pxl_index);
+                this.super_state.paint_shape(new_drawn_pxl_indexes, current_color_uint32, pxl_current_opacity);
 
                 const { pencil_mirror_mode, _pencil_mirror_index } = this.super_state.get_state();
 
@@ -2512,7 +2510,7 @@ class CanvasPixels extends React.Component {
 
                 // Update pixels list and pixel colours
                 this.super_state.set_state({
-                    _pxls_hovered: pxl_index,
+                    _pxls_hovered: pxl_index | 0,
                     _mouse_inside: true,
                     _paint_or_select_hover_pxl_indexes,
                     _paint_or_select_hover_pxl_indexes_exception,
@@ -2537,7 +2535,7 @@ class CanvasPixels extends React.Component {
                     _paint_or_select_hover_actions_latest_index = pxl_index;
                 }
 
-                const new_drawn_pxl_indexes = this.super_state.draw_shape().from_line(_paint_or_select_hover_actions_latest_index, pxl_index).get();
+                const new_drawn_pxl_indexes = this.super_state.create_shape().from_line(_paint_or_select_hover_actions_latest_index, pxl_index);
 
                 if(tool === "SELECT PATH") {
 
@@ -2586,7 +2584,7 @@ class CanvasPixels extends React.Component {
                 });
 
                 this.super_state.set_state({
-                    _pxls_hovered: pxl_index,
+                    _pxls_hovered: pxl_index | 0,
                     _mouse_inside: true,
                     _pxl_indexes_of_selection,
                     _paint_or_select_hover_pxl_indexes,
@@ -2603,7 +2601,7 @@ class CanvasPixels extends React.Component {
                 const { _s_pxls, _layer_index } = this.super_state.get_state();
 
                 this.super_state.set_state({
-                    _pxls_hovered: pxl_index,
+                    _pxls_hovered: pxl_index | 0,
                     _mouse_inside: true,
                     _paint_or_select_hover_actions_latest_index: -1,
                     _paint_hover_old_pxls_snapshot: Array.from(_s_pxls[_layer_index]),
@@ -2619,7 +2617,7 @@ class CanvasPixels extends React.Component {
         }else if(_pxls_hovered !== pxl_index) {
 
             this.super_state.set_state({
-                _pxls_hovered: pxl_index,
+                _pxls_hovered: pxl_index | 0,
                 _mouse_inside: true
             }, () => {
 
@@ -2694,38 +2692,36 @@ class CanvasPixels extends React.Component {
 
             // This is a list of color index that we explore
             const full_pxls = Uint32Array.from(_s_pxls[_layer_index].map(pci => _s_pxl_colors[_layer_index][pci]));
-            this.super_blend.update( _layers.length+1, full_pxls.length);
             const is_there_new_dimension = Boolean(_old_pxl_width !== pxl_width || _old_pxl_height !== pxl_height || _is_there_new_dimension);
-            const has_new_pixel_hovered = Boolean(_old_pxls_hovered !== _pxls_hovered);
-            let pxl_indexes_of_current_shape = new Set();
+            let _pxl_indexes_of_current_shape = new Set();
 
             if(Boolean(tool === "LINE" || tool === "RECTANGLE" || tool === "ELLIPSE" || tool === "TRIANGLE") && _shape_index_a !== -1 && _pxls_hovered !== -1) {
 
-                pxl_indexes_of_current_shape =
+                _pxl_indexes_of_current_shape =
                     tool === "LINE" ?
-                        this.super_state.draw_shape().from_line(_shape_index_a, _pxls_hovered).get():
+                        this.super_state.create_shape().from_line(_shape_index_a, _pxls_hovered):
                         tool === "RECTANGLE" ?
-                            this.super_state.draw_shape().from_rectangle(_shape_index_a, _pxls_hovered).get():
+                            this.super_state.create_shape().from_rectangle(_shape_index_a, _pxls_hovered):
                             tool === "ELLIPSE" ?
-                                this.super_state.draw_shape().from_ellipse(_shape_index_a, _pxls_hovered).get():
-                                pxl_indexes_of_current_shape;
+                                this.super_state.create_shape().from_ellipse(_shape_index_a, _pxls_hovered):
+                                _pxl_indexes_of_current_shape;
 
             }else if (Boolean(tool === "SELECT LINE" || tool === "SELECT RECTANGLE" || tool === "SELECT ELLIPSE") && _select_shape_index_a !== -1 && _pxls_hovered !== -1) {
 
-                pxl_indexes_of_current_shape =
+                _pxl_indexes_of_current_shape =
                     tool === "SELECT LINE" ?
-                        this.super_state.draw_shape().from_line(_shape_index_a, _pxls_hovered).get():
+                        this.super_state.create_shape().from_line(_select_shape_index_a, _pxls_hovered):
                         tool === "SELECT RECTANGLE" ?
-                            this.super_state.draw_shape().from_rectangle(_shape_index_a, _pxls_hovered).get():
+                            this.super_state.create_shape().from_rectangle(_select_shape_index_a, _pxls_hovered):
                             tool === "SELECT ELLIPSE" ?
-                                this.super_state.draw_shape().from_ellipse(_shape_index_a, _pxls_hovered).get():
-                                pxl_indexes_of_current_shape;
+                                this.super_state.create_shape().from_ellipse(_select_shape_index_a, _pxls_hovered):
+                                _pxl_indexes_of_current_shape;
 
             }else if(Boolean(tool === "SELECT PATH" || tool === "CONTOUR") && _paint_or_select_hover_pxl_indexes.size > 0) {
 
                 const first_drawn_pixel = _paint_or_select_hover_pxl_indexes[0];
                 const last_drawn_pixel = _paint_or_select_hover_pxl_indexes[_paint_or_select_hover_pxl_indexes.size-1];
-                const closing_path_line = this.super_state.draw_shape().from_line(first_drawn_pixel, last_drawn_pixel).get();
+                const closing_path_line = this.super_state.create_shape().from_line(first_drawn_pixel, last_drawn_pixel);
 
                 if(select_mode === "REMOVE" && tool === "SELECT PATH") {
 
@@ -2737,71 +2733,57 @@ class CanvasPixels extends React.Component {
 
                     closing_path_line.forEach((pxl_index) => {_pxl_indexes_of_selection.add(pxl_index)});
                 }else {
-                    closing_path_line.forEach((pxl_index) => {pxl_indexes_of_current_shape.add(pxl_index)});
+                    closing_path_line.forEach((pxl_index) => {_pxl_indexes_of_current_shape.add(pxl_index)});
                 }
             }
 
             const has_layers_visibility_or_opacity_changed = Boolean(_old_layers.map(function(l){return String(l.hidden ? "h": "v").concat(String(l.opacity))}).join("") !== _layers_simplified.map(function(l){return String(l.hidden ? "h": "v").concat(String(l.opacity))}).join(""));
             const clear_canvas = Boolean(_did_hide_canvas_content && !hide_canvas_content) || Boolean(!_did_hide_canvas_content && hide_canvas_content) || !has_shown_canvas_once || hide_canvas_content || has_layers_visibility_or_opacity_changed || is_there_new_dimension;
             const layers_length = _layers_simplified.length | 0;
+            this.super_blend.update( _layers.length+1, full_pxls.length);
+            let number_to_paint = 0;
             let full_pxls_length = full_pxls.length | 0;
-            let full_pxl = 0 | 0 >>> 0;
+            let full_pxl = 0;
             let pos_x = 0;
             let pos_y = 0;
             let opacity = 0;
-            let b = Uint8Array.of(
-                0, // is_pixel_hovered: false,
-                0, // is_the_old_pixel_hovered_to_paint: false,
-                0, // is_in_the_old_shape: false,
-                0, // is_in_the_current_shape: false,
-                0, // is_in_the_current_selection: false,
-                0, // is_current_selection_hovered: false,
-                0, // was_current_selection_hovered: false,
-                0, // is_current_selection_hovered_changes: false,
-                0, // is_in_the_old_selection_drawn: false,
-                0, // is_selected_and_hovered_recently: false,
-                0, // is_selected_and_to_paint_again: false,
-                0, // is_ancient_selected_pixel_waiting_to_update: false,
-                0, // is_a_new_pixel_to_paint: false,
-                0, // pixel_hover_exception: false,
+            let b = Uint8ClampedArray.of(
+                0, // 0 new pixel hover: false,
+                0, // 1 old pixel hover: false,
+                0, // 2 in current shape: false,
+                0, // 3 in the old shape : false,
+                0, // 4 in the current selection: false,
+                0, // 5 in the old selection: false,
+                0, // 6 is not like the pixel painted
             );
             for(let index = 0; index < full_pxls_length; index = index + 1 | 0){
 
-                full_pxl = full_pxls[index] | 0 >>> 0;
-                
-                b[0] = Boolean(_pxls_hovered === index) | 0; 
-                b[1] = Boolean(Boolean(index === _old_pxls_hovered && has_new_pixel_hovered) || index === _pxls_hovered) | 0; 
-                b[2] = _pxl_indexes_of_old_shape.has(index) | 0; 
-                b[3] = pxl_indexes_of_current_shape.has(index) | 0; 
-                b[4] = _pxl_indexes_of_selection.has(index) | 0; 
-                b[5] = _pxl_indexes_of_selection.has(_pxls_hovered) | 0; 
-                b[6] = _pxl_indexes_of_selection.has(_old_pxls_hovered) | 0; 
-                b[7] = Boolean(b[5] !== b[6]) | 0; 
-                b[8] = _pxl_indexes_of_selection_drawn.has(index) | 0; 
-                b[9] = Boolean(b[4] !== 0 && Boolean(b[0] !== 0 || b[2] !== 0)) | 0;
-                b[10] = Boolean(b[4] !== 0 && _selection_pair_highlight !== _old_selection_pair_highlight) | 0;
-                b[11] = Boolean(b[8] !== 0 && b[4] === 0) | 0;
-                b[12] = Boolean( clear_canvas || full_pxl !== _old_full_pxls[index]) | 0; 
-                b[13] = Boolean(tool === "ELLIPSE" && pxl_indexes_of_current_shape.size > 0) | 0; 
+                full_pxl = full_pxls[index] | 0;
+
+                b.fill((Boolean(_pxls_hovered === index)? 1 : 0) | 0, 0, 1);
+                b.fill((Boolean(index === _old_pxls_hovered && _old_pxls_hovered !== _pxls_hovered)? 1 : 0) | 0, 1, 2);
+                b.fill((_pxl_indexes_of_current_shape.has(index)? 1 : 0) | 0, 2, 3);
+                b.fill((_pxl_indexes_of_old_shape.has(index)? 1 : 0) | 0, 3, 4);
+                b.fill((_pxl_indexes_of_selection.has(index)? 1 : 0) | 0, 4, 5);
+                b.fill((_pxl_indexes_of_selection_drawn.has(_old_pxls_hovered)? 1 : 0) | 0, 5, 6);
+                b.fill((Boolean(full_pxl !== _old_full_pxls[index])? 1 : 0) | 0, 6, 7);
 
                 if (
                     !hide_canvas_content &&
-                    Boolean(clear_canvas ||
+                    Boolean(
+                        clear_canvas ||
                         Boolean(
-                            Boolean(b[7] !== 0 && b[4] !== 0) ||
-                            Boolean(
-                                b[10] !== 0 ||
-                                b[11] !== 0 ||
-                                b[2] !== 0 ||
-                                b[12] !== 0
-                            ) ||
-                            Boolean(b[0] !== 0 && b[13] !== 0) ||
-                            Boolean(b[2] === 0 && b[3] !== 0) ||
-                            Boolean(b[2] !== 0 && b[3] === 0) ||
-                            Boolean(b[4] !== 0 && b[8] === 0) ||
-                            Boolean(_selection_pair_highlight !== _old_selection_pair_highlight)
-                        ))) {
+                            b[0] ||
+                            b[1] ||
+                            b[2] !== 0 ||
+                            b[3] !== 0 ||
+                            b[4] !== 0 ||
+                            b[5] !== 0 ||
+                            b[6] !== 0
+                        )
+                    )) {
 
+                    number_to_paint++;
                     this.super_blend.for(index);
 
                     for (let i = 0; i < layers_length; i = i + 1 | 0) {
@@ -2815,41 +2797,34 @@ class CanvasPixels extends React.Component {
                         }
                     }
 
-                    if(Boolean(
-                        b[0] !== 0 ||
-                        b[3] !== 0 ||
-                        Boolean(b[4] !== 0 && b[8] === 0) ||
-                        Boolean(b[12] !== 0 && b[4] !== 0) ||
-                        b[9] !== 0
-                    ) && !Boolean(b[11] !== 0 || Boolean(b[12] !== 0 && b[4] === 0 && b[0] === 0 ))
-                    ) {
+                    if(b[2] !== 0 || b[0] !== 0) {
 
-                        if(b[0] !== 0) {
-
-                            this.super_blend.stack(layers_length, 0, 2/3, 1);
-                        }else {
+                        if(b[0] === 0) {
 
                             this.super_blend.stack(layers_length, 0, 1/3, 1);
+                        }else {
+
+                            this.super_blend.stack(layers_length, 0, 2/3, 1);
                         }
-                    }else if(Boolean(b[4] !== 0 && b[3] === 0 && b[0] === 0)) {
+                    }else if(b[4] !== 0) {
 
                         pos_x = index % pxl_width | 0;
                         pos_y = (index - pos_x) / pxl_width | 0;
 
-                        opacity = 1/3 + (0 + ((pos_x + pos_y + (_selection_pair_highlight ? 1: 0)) % 2)) / 3;
+                        opacity = 1/3 + ((0 + ((pos_x + pos_y + (_selection_pair_highlight ? 1: 0) | 0) % 2) | 0) / 3);
                         this.super_blend.stack(layers_length, 0, opacity, 1);
                     }
                 }
             }
 
             const indexed_changes = this.super_blend.blend();
-            if(indexed_changes.size > 0) {
+            if(indexed_changes.size > 4) {
 
                 force_update = Boolean(indexed_changes.size * 1.05 > pxl_width * pxl_height || force_update || clear_canvas);
                 this.super_canvas.pile(indexed_changes, this.super_canvas.unpile);
                 this.super_state.set_state({
-                    _pxl_indexes_of_selection_drawn: new Set(Array.from(_pxl_indexes_of_selection)),
-                    _pxl_indexes_of_old_shape: pxl_indexes_of_current_shape,
+                    _pxl_indexes_of_selection_drawn: new Set(_pxl_indexes_of_selection.keys()),
+                    _pxl_indexes_of_old_shape: _pxl_indexes_of_current_shape,
                     _old_selection_pair_highlight: Boolean(_selection_pair_highlight),
                     _old_layers: _layers_simplified,
                     _old_full_pxls: new Uint32Array(full_pxls.buffer),
@@ -2861,7 +2836,9 @@ class CanvasPixels extends React.Component {
                     _is_there_new_dimension: false,
                     _did_hide_canvas_content: Boolean(hide_canvas_content)
                 });
+
                 this.super_canvas.prender(this.sraf.run_frame, Array.of(this.super_canvas.render, true, false));
+
             }
         }
     }
@@ -3346,7 +3323,6 @@ class CanvasPixels extends React.Component {
 
         let pxls = Array.from(_s_pxls[_layer_index]);
         let pxl_colors = Array.from(_s_pxl_colors[_layer_index])
-
         _pxl_indexes_of_selection.forEach((pxl_index) => {
 
             const current_pxl_color_index = pxls[pxl_index];
