@@ -2818,10 +2818,9 @@ class CanvasPixels extends React.Component {
             }
 
             const indexed_changes = this.super_blend.blend();
-            if(indexed_changes.size > 4) {
+            if(indexed_changes.size > 0) {
 
                 force_update = Boolean(indexed_changes.size * 1.05 > pxl_width * pxl_height || force_update || clear_canvas);
-                this.super_canvas.pile(indexed_changes, this.super_canvas.unpile);
                 this.super_state.set_state({
                     _pxl_indexes_of_selection_drawn: new Set(_pxl_indexes_of_selection.keys()),
                     _pxl_indexes_of_old_shape: _pxl_indexes_of_current_shape,
@@ -2836,9 +2835,8 @@ class CanvasPixels extends React.Component {
                     _is_there_new_dimension: false,
                     _did_hide_canvas_content: Boolean(hide_canvas_content)
                 });
-
-                this.super_canvas.prender(this.sraf.run_frame, Array.of(this.super_canvas.render, true, false));
-
+                this.super_canvas.pile(indexed_changes, this.super_canvas.unpile, this.super_canvas.prender);
+                this.sraf.run_frame(this.super_canvas.render, false, false);
             }
         }
     }

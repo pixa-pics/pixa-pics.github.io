@@ -181,17 +181,17 @@ const SuperCanvas = {
             render() {
                 if(v.enable_paint) {
                     v.enable_paint = false;
+                    v.enable_unpile = true;
                     if (s.is_bitmap) {
-                        s.canvas_context.globalCompositeOperation = "destination-over";
-                        s.canvas_context.clearRect(bmp_x, bmp_y, bmp.width, bmp.height);
+                        s.canvas_context.globalCompositeOperation = "copy";
                         s.canvas_context.drawImage(bmp, bmp_x, bmp_y, bmp.width, bmp.height);
-                        if(typeof old_bmp !== "undefined"){old_bmp.close();}
-                        old_bmp = bmp;
-
                         pr.top_left.x = s.width | 0;
                         pr.top_left.y = s.height | 0;
                         pr.bottom_right.x = 0;
                         pr.bottom_right.y = 0;
+                        if(typeof old_bmp !== "undefined"){old_bmp.close();}
+                        old_bmp = bmp;
+
                     } else if (s.is_offscreen) {
                         s.canvas_context.globalCompositeOperation = "copy";
                         s.canvas_context.drawImage(s.offscreen_canvas_context, 0, 0, s.width, s.height);
@@ -206,7 +206,7 @@ const SuperCanvas = {
                     v.rs--;
                 }
             },
-            prender(render_callback = function (){}, render_args = []){
+            prender(render_callback = function (){}){
 
                 if (v.enable_prender) {
                     v.enable_prender = false;
@@ -230,7 +230,7 @@ const SuperCanvas = {
                             bmp = bitmap;
                             bmp_x = new_bmp_x | 0;
                             bmp_y = new_bmp_y | 0;
-                            render_callback(...render_args);
+                            render_callback();
                         });
 
                     }else if (s.is_offscreen) {
@@ -238,19 +238,19 @@ const SuperCanvas = {
                         [s.offscreen_canvas_context, ic] = d2d(s.offscreen_canvas_context, ic);
                         v.enable_paint = true;
                         v.pt = Date.now() - started;
-                        render_callback(...render_args);
+                        render_callback();
 
                     }else {
                         v.enable_paint = true;
                         v.pt = Date.now() - started;
-                        render_callback(...render_args);
+                        render_callback();
                     }
                 }else {
 
-                    render_callback(...render_args);
+                    render_callback();
                 }
             },
-            unpile(prender_callback = function (){}){
+            unpile(prender_callback = function (){}, render_callback = function (){}){
 
                 if(v.enable_unpile) {
                     if (ic.size > 0) {
@@ -283,30 +283,30 @@ const SuperCanvas = {
                             }
 
                             v.enable_prender = true;
-                            prender_callback();
+                            prender_callback(render_callback);
 
                         } else if (s.is_offscreen) {
 
                             [s.offscreen_canvas_context, ic] = d2d(s.offscreen_canvas_context, ic);
                             v.enable_prender = true;
-                            prender_callback();
+                            prender_callback(render_callback);
                         }else {
 
                             v.enable_prender = true;
-                            prender_callback();
+                            prender_callback(render_callback);
                         }
                     }else {
 
                         v.enable_prender = true;
-                        prender_callback();
+                        prender_callback(render_callback);
                     }
                 }else {
 
                     v.enable_prender = true;
-                    prender_callback();
+                    prender_callback(render_callback);
                 }
             },
-            pile(indexed_changes, unpile_callback = function(){}, prender_callback = function (){}, render_callback = function (){}, render_args = []) {
+            pile(indexed_changes, unpile_callback = function(){}, prender_callback = function (){}, render_callback = function (){}) {
 
                 indexed_changes.forEach(function(value, index){
 
@@ -314,7 +314,7 @@ const SuperCanvas = {
                     index = index | 0;
                     ic.set(index, value);
                 });
-                unpile_callback(prender_callback, render_callback, render_args);
+                unpile_callback(prender_callback, render_callback);
             },
             set_dimensions(w, h) {
 
