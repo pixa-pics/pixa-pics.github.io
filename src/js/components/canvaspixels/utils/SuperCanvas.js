@@ -183,7 +183,8 @@ const SuperCanvas = {
                     v.enable_paint = false;
                     v.enable_unpile = true;
                     if (s.is_bitmap) {
-                        s.canvas_context.globalCompositeOperation = "copy";
+                        s.canvas_context.clearRect( bmp_x, bmp_y, bmp.width, bmp.height);
+                        s.canvas_context.globalCompositeOperation = "source-over";
                         s.canvas_context.drawImage(bmp, bmp_x, bmp_y, bmp.width, bmp.height);
                         pr.top_left.x = s.width | 0;
                         pr.top_left.y = s.height | 0;
