@@ -111,7 +111,7 @@ Gold ($ 6K/Month), Silver ($ 4K/Month), and Bronze ($ 2K/Month) supporters (VISI
 
 > **Thanks for support!**
 
-## Getting further, in the height of the hill, with the king that owns a while greater.
+## Getting further with development
 
 **Great is this king, the king kills that is good, you can't kill what is good, but you can kill the king!**
 The king is the newest being an amount of funds along with some specifications to create a new feature that kill one.
@@ -136,7 +136,7 @@ Always while a new checkpoint is set the king, once it lived only then, it can b
 
 **INTERESTED INTO SPONSORING a good cause? Please email-us at: [pixa.pics@protonmail.com](mailto:pixa.pics@protonmail.com).**
 
-## Get started
+## Get started and fund a functionality now
 
 INFINITE *"KARMA"* OR POSITIVE MIND-BLOWING EFFECTS WHILE POSITIVE RESULTS TO ANYONE MAKES ADDING POSITIVE FUNDS OR NICE DEV-IDEA/PROPOSAL-TRY SUCCESS. GET US LUCKY!
 
