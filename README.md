@@ -105,7 +105,7 @@ Lighthouse (google's webpage loading test) metrics of pixa.pics at left while th
 
 ![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/SPONSORS.jpeg)
 
-**Regular king participants CREATORS is rigged to the statues as it follows:**
+**Regular patrons are fixed to the following thresholds :**
 
 Gold ($ 6K/Month), Silver ($ 4K/Month), and Bronze ($ 2K/Month) supporters (VISIBLE IN SETTINGS) enable Pixa.Pics to have a bigger team soon while benefiting a positive cashflow to pay everything that is related to activities from development to marketing content/analyses and production.</p>
 
@@ -113,11 +113,12 @@ Gold ($ 6K/Month), Silver ($ 4K/Month), and Bronze ($ 2K/Month) supporters (VISI
 
 ## Getting further, in the height of the hill, with the king that owns a while greater.
 
-**Great is this king, the king kills that is good, you can't kill what is good but you can kill the king!**
+**Great is this king, the king kills that is good, you can't kill what is good, but you can kill the king!**
+The king is the newest being an amount of funds along with some specifications to create a new feature that kill one.
 
 **SO :**
 
-Always a new checkpoint is set the king, once it lived only then, it can be redefined, and kills that you want that isn't great once finished yet good as it was; Example 1000$ of performanced development next set a new king checkpoint to kills the non-existence of any possibilities to run it uqualy in Africa and Europ (But that is done, yeah!).
+Always while a new checkpoint is set the king, once it lived only then, it can be redefined, and kills that you want that isn't great once finished yet good as it was; Example 1000$ for performance improvement development next set a new king as a checkpoint to kills the good rendering system not enabling to run it well in Africa and Europe (But that is done, yeah!).
 
 **NOW:**
 
