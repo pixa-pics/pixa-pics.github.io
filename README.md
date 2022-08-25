@@ -118,7 +118,7 @@ The king is the newest being an amount of funds along with some specifications t
 
 **SO :**
 
-Always while a new checkpoint is set the king, once it lived only then, it can be redefined, and kills that you want that isn't great once finished yet good as it was; Example 1000$ for performance improvement development next set a new king as a checkpoint to kills the good rendering system not enabling to run it well in Africa and Europe (But that is done, yeah!).
+Always while a new checkpoint is set the king, once it lived only then, it can be redefined, and kills that you want that isn't great once finished yet good as it was; Example 1000$ for performance improvement development next set a new king as a checkpoint to kills the good rendering system not enabling to run it well in Africa and Europe (But that is done, it is running well even on an old smartphone, yeah!).
 
 **NOW:**
 
@@ -138,12 +138,12 @@ Always while a new checkpoint is set the king, once it lived only then, it can b
 
 ## Get started
 
-INFINITE *"KARMA"* OR POSITIVE MIND-BLOWING EFFECTS WHILE POSITIVE RESULTS TO ANYONE MAKING ADDING POSITIVE FUNDS OR NICE DEV-IDEA/PROPOSAL-TRY. GET US LUCKY!
+INFINITE *"KARMA"* OR POSITIVE MIND-BLOWING EFFECTS WHILE POSITIVE RESULTS TO ANYONE MAKES ADDING POSITIVE FUNDS OR NICE DEV-IDEA/PROPOSAL-TRY SUCCESS. GET US LUCKY!
 
- * THANKS Works to work the next one once you achieved trying your duty in that is code and should matter...
- * THANKS Funds to get back to our pool staying it for new idea for it that of which doesn't negate better builds/wishes/ideas to not go in paradise with your failure nevertheless not coming back of that is void as truth dictate.
- * THANKS Paradise letting money here and keeping anything for eternity as needed and until sometimes if it could being what just should get fine to try again.
- * THANKS Matters getting yourself over yourself as fast as it can and as much as it takes naturally like it just does like not Satan but the inverse, with control optionally and questions all to themselves to solves anything defined or not.
+ * THANKS Work.
+ * THANKS Funds.
+ * THANKS Paradise.
+ * THANKS Matter.
 
 ---
 
