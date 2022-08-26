@@ -2676,7 +2676,8 @@ class CanvasPixels extends React.Component {
                 _pxl_indexes_of_selection_drawn,
                 _paint_or_select_hover_pxl_indexes,
                 _selection_pair_highlight,
-                _pxl_indexes_of_old_shape
+                _pxl_indexes_of_old_shape,
+                _previous_imported_image_pxls_positioned_keyset,
             } = this.super_state.get_state();
 
             const _layers_simplified = _layers.map(function(l) {
@@ -2776,6 +2777,7 @@ class CanvasPixels extends React.Component {
                 if (
                     !hide_canvas_content &&
                     Boolean(
+                        _previous_imported_image_pxls_positioned_keyset.has(index) ||
                         imported_image_pxls_positioned_keyset.has(index) ||
                         clear_canvas ||
                         b[0] !== 0 ||
@@ -2833,7 +2835,7 @@ class CanvasPixels extends React.Component {
                 this.super_canvas.pile(indexed_changes, this.super_canvas.unpile, this.super_canvas.prender, this.sraf.run_frame, Array.of(this.super_canvas.render, false, false));
 
                 this.super_state.set_state({
-                    _pxl_indexes_of_selection_drawn: new Set(_pxl_indexes_of_selection.keys()),
+                    _pxl_indexes_of_selection_drawn: _pxl_indexes_of_selection,
                     _pxl_indexes_of_old_shape: _pxl_indexes_of_current_shape,
                     _old_selection_pair_highlight: Boolean(_selection_pair_highlight),
                     _old_layers: _layers_simplified,
@@ -2844,7 +2846,8 @@ class CanvasPixels extends React.Component {
                     _last_paint_timestamp: Date.now(),
                     has_shown_canvas_once: true,
                     _is_there_new_dimension: false,
-                    _did_hide_canvas_content: Boolean(hide_canvas_content)
+                    _did_hide_canvas_content: Boolean(hide_canvas_content),
+                    _previous_imported_image_pxls_positioned_keyset: imported_image_pxls_positioned_keyset
                 });
             }
         }
