@@ -250,10 +250,139 @@ const SuperState = {
 
                 return new Set(_pxl_indexes.keys());
             },
+            get_imported_image_data: function() {
+
+                let state = this.get_state();
+                let _new_canvas_context_2d = this.new_canvas_context_2d;
+                let _get_pixels_palette_and_list_from_image_data = this.get_pixels_palette_and_list_from_image_data;
+
+                function to_hex_from_uint32(uint32){
+                    return "#".concat("00000000".concat(uint32.toString(16)).slice(-8));
+                }
+
+                if(state._imported_image_pxls.length) {
+
+                    let canvas_ctx = _new_canvas_context_2d(state._imported_image_width, state._imported_image_height);
+
+
+                    state._imported_image_pxls.forEach((pxl, index) => {
+
+                        const pos_x = index % state._imported_image_width;
+                        const pos_y = (index - pos_x) / state._imported_image_width;
+
+                        const color = to_hex_from_uint32(state._imported_image_pxl_colors[pxl]);
+                        canvas_ctx.fillStyle = color;
+                        canvas_ctx.fillRect(pos_x, pos_y, 1, 1);
+                    });
+
+                    const scaled_width = state._imported_image_width + state._imported_image_scale_delta_x;
+                    const scaled_height = state._imported_image_height + state._imported_image_scale_delta_y;
+
+                    let canvas_resized_ctx = _new_canvas_context_2d(scaled_width, scaled_height);
+                    canvas_resized_ctx.drawImage(canvas_ctx.canvas, 0, 0, state._imported_image_width, state._imported_image_height, 0, 0, scaled_width, scaled_height);
+                    canvas_ctx = null;
+                    let resized_image_data = canvas_resized_ctx.getImageData(0, 0, scaled_width, scaled_height);
+                    const { new_pxls, new_pxl_colors } = _get_pixels_palette_and_list_from_image_data(resized_image_data);
+                    resized_image_data = null;
+                    canvas_resized_ctx = null;
+                    state._imported_image_pxls = new_pxls;
+                    state._imported_image_pxl_colors = new_pxl_colors;
+                    state._imported_image_width = scaled_width;
+                    state._imported_image_height = scaled_height;
+                }
+
+                let imported_image_pxls_positioned = [];
+                let image_imported_resizer_index = -1;
+                if(state._imported_image_pxls.length > 0) {
+
+                    image_imported_resizer_index = parseInt(state._imported_image_start_x + state._imported_image_width) + parseInt(state._imported_image_start_y + state._imported_image_height) * pxl_width;
+                    state._imported_image_pxls.forEach((pxl, index) => {
+
+                        const pos_x = index % state._imported_image_width;
+                        const pos_y = (index - pos_x) / state._imported_image_width;
+                        const current_pos_x_positioned = pos_x + state._imported_image_start_x;
+                        const current_pos_y_positioned = pos_y + state._imported_image_start_y;
+                        const imported_image_pxl_positioned_index = current_pos_y_positioned * state.pxl_width + current_pos_x_positioned;
+
+                        if(current_pos_x_positioned >= 0 && current_pos_x_positioned < state.pxl_width && current_pos_y_positioned >= 0 && current_pos_y_positioned < state.pxl_height) {
+
+                            imported_image_pxls_positioned[imported_image_pxl_positioned_index] = pxl;
+                        }
+
+                    });
+                }
+
+                const imported_image_pxls_positioned_keyset = new Set(Object.keys(imported_image_pxls_positioned));
+
+                return [
+                    imported_image_pxls_positioned,
+                    state._imported_image_pxl_colors,
+                    image_imported_resizer_index,
+                    imported_image_pxls_positioned_keyset,
+                ];
+            },
+            get_pixels_palette_and_list_from_image_data: function (image_data) {
+
+                function to_uint32_from_rgba(rgba) {
+                    return new Uint32Array(rgba.reverse().buffer)[0];
+                }
+
+                let new_pxl_colors = [];
+                let new_pxl_colors_set = new Set();
+                let new_pxls = new Uint32Array(image_data.width * image_data.height).fill(0);
+
+
+                for (let i = 0; i < image_data.data.length; i += 4) {
+
+                    const color_uint32 = to_uint32_from_rgba(Uint8ClampedArray.of(image_data.data[i+0], image_data.data[i+1], image_data.data[i+2], image_data.data[i+3]));
+
+                    const deja_vu_color_hex = new_pxl_colors_set.has(color_uint32);
+                    let color_uint32_index = deja_vu_color_hex ? new_pxl_colors.indexOf(color_uint32): -1;
+
+                    if (color_uint32_index === -1) {
+
+                        color_uint32_index = new_pxl_colors.push(color_uint32)-1;
+                        new_pxl_colors_set.add(color_uint32);
+                    }
+                    new_pxls[i / 4] = color_uint32_index;
+                }
+                return {
+                    ratio_pixel_per_color: new_pxls.length / new_pxl_colors.length,
+                    new_pxl_colors: Uint32Array.from(new_pxl_colors),
+                    new_pxls: Array.from(new_pxls),
+                };
+            },
+            new_canvas_context_2d: function(width, height) {
+
+                let canvas;
+                try {
+
+                    if (typeof OffscreenCanvas === "undefined") {
+                        throw new Error("Impossible to create OffscreenCanvas in this web environment.");
+                    }
+
+                    canvas = new OffscreenCanvas(width, height);
+                }catch(e) {
+
+                    canvas = document.createElement("canvas");
+                    canvas.width = width;
+                    canvas.height = height;
+                }
+
+                let context = canvas.getContext('2d');
+                context.mozImageSmoothingEnabled = false;
+                context.webkitImageSmoothingEnabled = false;
+                context.msImageSmoothingEnabled = false;
+                context.imageSmoothingEnabled = false;
+
+
+                return context;
+            },
             create_shape: function() {
 
                 let _get_indexes = this.get_indexes;
                 let _get_state = this.get_state;
+                let _new_canvas_context_2d = this.new_canvas_context_2d;
 
                 function get_opposite_coordinates(width, from, to) {
 
@@ -272,32 +401,7 @@ const SuperState = {
                     return {primary, secondary};
                 }
     
-                function get_new_canvas_context_2d(width, height) {
-    
-                    let canvas;
-                    try {
-    
-                        if (typeof OffscreenCanvas === "undefined") {
-                            throw new Error("Impossible to create OffscreenCanvas in this web environment.");
-                        }
-    
-                        canvas = new OffscreenCanvas(width, height);
-                    }catch(e) {
-    
-                        canvas = document.createElement("canvas");
-                        canvas.width = width;
-                        canvas.height = height;
-                    }
-    
-                    let context = canvas.getContext('2d');
-                    context.mozImageSmoothingEnabled = false;
-                    context.webkitImageSmoothingEnabled = false;
-                    context.msImageSmoothingEnabled = false;
-                    context.imageSmoothingEnabled = false;
-    
-    
-                    return context;
-                }
+
     
                 function get_shadow_indexes_from_canvas_context(context, shadow_indexes) {
     
@@ -406,7 +510,7 @@ const SuperState = {
                         const ellipse_middle_x = ellipse_rayon_x + ellipse_top_left_x | 0;
                         const ellipse_middle_y = ellipse_rayon_y + ellipse_top_left_y | 0;
     
-                        let ellipse_context = get_new_canvas_context_2d(width, height);
+                        let ellipse_context = _new_canvas_context_2d(width, height);
                             ellipse_context.save();
                             ellipse_context.translate(ellipse_middle_x, ellipse_middle_y);
                             ellipse_context.rotate(0);

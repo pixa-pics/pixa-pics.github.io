@@ -29,7 +29,7 @@ const CanvasPos = {
                 moves_speed_average_now: 16,
             },
             device_pixel_ratio: Float32Array.of(window.devicePixelRatio)[0],
-            perspective: perspective | 0
+            perspective: perspective
         });
     },
     _get_screen_zoom_ratio(s) {
@@ -262,7 +262,7 @@ const CanvasPos = {
             },
             set_perspective(perspective) {
 
-                s.perspective = perspective | 0;
+                s.perspective = perspective;
             },
             get_pointer_state() {
 
@@ -288,12 +288,12 @@ const CanvasPos = {
                 const pos_x_in_canvas_container = pageX - p.canvas_container.left | 0;
                 const pos_y_in_canvas_container = pageY - p.canvas_container.top | 0;
 
-                const x = (s.perspective * ((pos_x_in_canvas_container - p.canvas_container.width / 2) / (p.canvas_container.width / 2))) | 0;
-                const y = (-s.perspective * ((pos_y_in_canvas_container - p.canvas_container.height / 2) / (p.canvas_container.height / 2))) | 0;
-                const p_x = (x > s.perspective ? x : x * 2) | 0;
-                const p_y = (y < 0 ? y : 2 * y) | 0;
-                const p_x_things = String(255 - (p_x / 2 * 255) | 0);
-                const p_y_things = String((p_y / 2 * 255) | 0);
+                const x = s.perspective * ((pos_x_in_canvas_container - p.canvas_container.width / 2) / (p.canvas_container.width / 2));
+                const y = -s.perspective * ((pos_y_in_canvas_container - p.canvas_container.height / 2) / (p.canvas_container.height / 2));
+                const p_x = x > s.perspective ? x : x * 2;
+                const p_y = (y < 0 ? y : 2 * y);
+                const p_x_things = String(255 - (p_x / 2 * 255));
+                const p_y_things = String(p_y / 2 * 255);
 
                 const rotate_y = Math.round((p_x * 1.25 / s.scale.current) * 1000) / 1000;
                 const rotate_x = Math.round((p_y * 1.25 / s.scale.current) * 1000) / 1000;

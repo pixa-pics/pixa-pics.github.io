@@ -2651,7 +2651,7 @@ class CanvasPixels extends React.Component {
         if (Boolean(this.super_canvas)) {
 
             // Importing state variables
-            const {
+            let {
                 has_shown_canvas_once,
                 _s_pxl_colors,
                 _s_pxls,
@@ -2676,7 +2676,6 @@ class CanvasPixels extends React.Component {
                 _pxl_indexes_of_selection_drawn,
                 _paint_or_select_hover_pxl_indexes,
                 _selection_pair_highlight,
-                _old_selection_pair_highlight,
                 _pxl_indexes_of_old_shape
             } = this.super_state.get_state();
 
@@ -2694,6 +2693,12 @@ class CanvasPixels extends React.Component {
             const full_pxls = Uint32Array.from(_s_pxls[_layer_index].map(pci => _s_pxl_colors[_layer_index][pci]));
             const is_there_new_dimension = Boolean(_old_pxl_width !== pxl_width || _old_pxl_height !== pxl_height || _is_there_new_dimension);
             let _pxl_indexes_of_current_shape = new Set();
+            let [
+                imported_image_pxls_positioned,
+                imported_image_pxl_colors,
+                image_imported_resizer_index,
+                imported_image_pxls_positioned_keyset
+            ] = this.super_state.get_imported_image_data();
 
             if(Boolean(tool === "LINE" || tool === "RECTANGLE" || tool === "ELLIPSE" || tool === "TRIANGLE") && _shape_index_a !== -1 && _pxls_hovered !== -1) {
 
@@ -2771,16 +2776,15 @@ class CanvasPixels extends React.Component {
                 if (
                     !hide_canvas_content &&
                     Boolean(
+                        imported_image_pxls_positioned_keyset.has(index) ||
                         clear_canvas ||
-                        Boolean(
-                            b[0] ||
-                            b[1] ||
-                            b[2] !== 0 ||
-                            b[3] !== 0 ||
-                            b[4] !== 0 ||
-                            b[5] !== 0 ||
-                            b[6] !== 0
-                        )
+                        b[0] !== 0 ||
+                        b[1] !== 0 ||
+                        b[2] !== 0 ||
+                        b[3] !== 0 ||
+                        b[4] !== 0 ||
+                        b[5] !== 0 ||
+                        b[6] !== 0
                     )) {
 
                     number_to_paint++;
@@ -2793,6 +2797,11 @@ class CanvasPixels extends React.Component {
                             if(i === _layer_index) {
 
                                 this.super_blend.stack(i, _s_pxl_colors[i][_s_pxls[i][index]], _layers_simplified[i].opacity, 0);
+
+                                if(imported_image_pxls_positioned_keyset.has(index)) {
+
+                                    this.super_blend.stack(i, imported_image_pxl_colors[imported_image_pxls_positioned[index]], _layers_simplified[i].opacity, 0);
+                                }
                             }
                         }
                     }
