@@ -475,7 +475,7 @@ class CanvasPixels extends React.Component {
             this.super_state.set_state({
                 _layer_index: at_index,
                 _last_action_timestamp: 1/0,
-            });
+            }, () => {this._maybe_save_state(null, true)});
         }
     };
 
@@ -653,9 +653,7 @@ class CanvasPixels extends React.Component {
                 });
             }else {
 
-                if(has_changed) {
-                    if(this.props.onLayersChange) {this.props.onLayersChange(this.super_state.get_state()._layer_index,  Array.from(new_current_state._layers))}
-                }
+                if(this.props.onLayersChange) {this.props.onLayersChange(this.super_state.get_state()._layer_index,  Array.from(new_current_state._layers))}
 
                 if(Boolean(has_changed || has_updated) && leading_change && current_state_not_empty) {
 
