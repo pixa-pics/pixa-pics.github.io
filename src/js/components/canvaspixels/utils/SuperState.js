@@ -310,7 +310,10 @@ const SuperState = {
                         });
                     }
 
-                    const imported_image_pxls_positioned_keyset = new Set(Object.keys(pxls_positioned));
+                    const imported_image_pxls_positioned_keyset = new Set(Object.entries(pxls_positioned).map(function(entry){
+
+                        return entry[0];
+                    }));
 
                     return [
                         pxls_positioned,

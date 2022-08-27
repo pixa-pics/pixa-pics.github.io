@@ -279,7 +279,7 @@ class CanvasPixels extends React.Component {
 
     componentWillReceiveProps(new_props) {
 
-        if(new_props.tool === "MOVE" || this.super_state.get_state()._imported_image_pxl_colors.length !== 0) {
+        if(new_props.tool === "MOVE" && this.super_state.get_state()._imported_image_pxl_colors.length === 0) {
 
             this.canvas_pos.set_boolean_move_on_click(true);
         }else {
@@ -2658,12 +2658,8 @@ class CanvasPixels extends React.Component {
             const full_pxls = Uint32Array.from(_s_pxls[_layer_index].map(pci => _s_pxl_colors[_layer_index][pci]));
             const is_there_new_dimension = Boolean(_old_pxl_width !== pxl_width || _old_pxl_height !== pxl_height || _is_there_new_dimension);
             let _pxl_indexes_of_current_shape = new Set();
-            let [
-                imported_image_pxls_positioned,
-                imported_image_pxl_colors,
-                image_imported_resizer_index,
-                imported_image_pxls_positioned_keyset
-            ] = this.super_state.get_imported_image_data();
+            let [imported_image_pxls_positioned, imported_image_pxl_colors, image_imported_resizer_index, imported_image_pxls_positioned_keyset] = this.super_state.get_imported_image_data()
+
 
             if(Boolean(tool === "LINE" || tool === "RECTANGLE" || tool === "ELLIPSE" || tool === "TRIANGLE") && _shape_index_a !== -1 && _pxls_hovered !== -1) {
 
@@ -2761,18 +2757,13 @@ class CanvasPixels extends React.Component {
                         if(!_layers_simplified[i].hidden) {
 
                             this.super_blend.stack(i, _s_pxl_colors[i][_s_pxls[i][index]], _layers_simplified[i].opacity, 0);
-
-                            if(i === _layer_index) {
-
-                                if(imported_image_pxls_positioned_keyset.has(index)) {
-
-                                    //this.super_blend.stack(i, imported_image_pxl_colors[imported_image_pxls_positioned[index]], _layers_simplified[i].opacity, 0);
-                                }
-                            }
                         }
                     }
 
-                    if(b[2] !== 0 || b[0] !== 0) {
+                    if(imported_image_pxls_positioned_keyset.has(index)) {
+
+                        this.super_blend.stack(layers_length, parseInt(imported_image_pxl_colors[imported_image_pxls_positioned[index]]), 1, 0);
+                    }else if(b[2] !== 0 || b[0] !== 0) {
 
                         if(b[0] === 0) {
 
@@ -3412,7 +3403,7 @@ class CanvasPixels extends React.Component {
 
             const [c_r, c_g, c_b, c_a] = this.color_conversion.to_rgba_from_uint32(current_pxl_color);
             let [c_hue, c_saturation, c_luminosity, c_opacity] = this.color_conversion.to_hsla_from_rgba(Uint8ClampedArray.of(c_r, c_g, c_b, c_a));
-            const c_new_hue = Boolean(c_hue + global_hue_diff < 0 ) ? parseInt(parseInt(360 + c_hue + global_hue_diff) % 360): parseInt(parseInt(c_hue + global_hue_diff) % 360);
+            const c_new_hue = (360 + Math.abs( c_hue - global_hue_diff)) % 360; // Boolean(c_hue + global_hue_diff < 0 ) ? parseInt(parseInt(360 + c_hue + global_hue_diff) % 360): parseInt(parseInt(c_hue + global_hue_diff) % 360);
 
             let added = [saturation, luminosity, 1];
             let base = [c_saturation, c_luminosity, 1];
@@ -3766,8 +3757,6 @@ class CanvasPixels extends React.Component {
 
         });
 
-        [_s_pxls[_layer_index], _s_pxl_colors[_layer_index]] = this.color_conversion.clean_duplicate_colors(_s_pxls[_layer_index], _s_pxl_colors[_layer_index]);
-
         this.super_state.set_state({
             _s_pxls,
             _s_pxl_colors,
@@ -3790,7 +3779,7 @@ class CanvasPixels extends React.Component {
 
     _notify_is_image_import_mode = () => {
 
-        const { _imported_image_pxls } = this.state
+        const { _imported_image_pxls } = this.super_state.get_state();
         const is_image_import_mode = _imported_image_pxls.length > 0;
 
         this.super_state.set_state({_is_image_import_mode: is_image_import_mode});
