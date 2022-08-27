@@ -282,44 +282,51 @@ const SuperState = {
                     canvas_resized_ctx.drawImage(canvas_ctx.canvas, 0, 0, state._imported_image_width, state._imported_image_height, 0, 0, scaled_width, scaled_height);
                     canvas_ctx = null;
                     let resized_image_data = canvas_resized_ctx.getImageData(0, 0, scaled_width, scaled_height);
-                    const { new_pxls, new_pxl_colors } = _get_pixels_palette_and_list_from_image_data(resized_image_data);
+                    const {new_pxls, new_pxl_colors} = _get_pixels_palette_and_list_from_image_data(resized_image_data);
                     resized_image_data = null;
                     canvas_resized_ctx = null;
-                    state._imported_image_pxls = new_pxls;
-                    state._imported_image_pxl_colors = new_pxl_colors;
                     state._imported_image_width = scaled_width;
                     state._imported_image_height = scaled_height;
+
+
+                    let pxls_positioned = [];
+                    let image_imported_resizer_index = -1;
+                    if (new_pxls.length > 0) {
+
+                        image_imported_resizer_index = parseInt(state._imported_image_start_x + scaled_width) + parseInt(state._imported_image_start_y + scaled_height) * state.pxl_width;
+                        new_pxls.forEach((pxl, index) => {
+
+                            const pos_x = index % scaled_width;
+                            const pos_y = (index - pos_x) / scaled_width;
+                            const current_pos_x_positioned = pos_x + state._imported_image_start_x;
+                            const current_pos_y_positioned = pos_y + state._imported_image_start_y;
+                            const imported_image_pxl_positioned_index = current_pos_y_positioned * state.pxl_width + current_pos_x_positioned;
+
+                            if (current_pos_x_positioned >= 0 && current_pos_x_positioned < state.pxl_width && current_pos_y_positioned >= 0 && current_pos_y_positioned < state.pxl_height) {
+
+                                pxls_positioned[imported_image_pxl_positioned_index] = pxl;
+                            }
+
+                        });
+                    }
+
+                    const imported_image_pxls_positioned_keyset = new Set(Object.keys(pxls_positioned));
+
+                    return [
+                        pxls_positioned,
+                        new_pxl_colors,
+                        image_imported_resizer_index,
+                        imported_image_pxls_positioned_keyset,
+                    ];
+                }else {
+
+                    return [
+                        new Array(0),
+                        new Uint32Array(0),
+                        -1,
+                        new Set(),
+                    ];
                 }
-
-                let imported_image_pxls_positioned = [];
-                let image_imported_resizer_index = -1;
-                if(state._imported_image_pxls.length > 0) {
-
-                    image_imported_resizer_index = parseInt(state._imported_image_start_x + state._imported_image_width) + parseInt(state._imported_image_start_y + state._imported_image_height) * pxl_width;
-                    state._imported_image_pxls.forEach((pxl, index) => {
-
-                        const pos_x = index % state._imported_image_width;
-                        const pos_y = (index - pos_x) / state._imported_image_width;
-                        const current_pos_x_positioned = pos_x + state._imported_image_start_x;
-                        const current_pos_y_positioned = pos_y + state._imported_image_start_y;
-                        const imported_image_pxl_positioned_index = current_pos_y_positioned * state.pxl_width + current_pos_x_positioned;
-
-                        if(current_pos_x_positioned >= 0 && current_pos_x_positioned < state.pxl_width && current_pos_y_positioned >= 0 && current_pos_y_positioned < state.pxl_height) {
-
-                            imported_image_pxls_positioned[imported_image_pxl_positioned_index] = pxl;
-                        }
-
-                    });
-                }
-
-                const imported_image_pxls_positioned_keyset = new Set(Object.keys(imported_image_pxls_positioned));
-
-                return [
-                    imported_image_pxls_positioned,
-                    state._imported_image_pxl_colors,
-                    image_imported_resizer_index,
-                    imported_image_pxls_positioned_keyset,
-                ];
             },
             get_pixels_palette_and_list_from_image_data: function (image_data) {
 
@@ -330,7 +337,6 @@ const SuperState = {
                 let new_pxl_colors = [];
                 let new_pxl_colors_set = new Set();
                 let new_pxls = new Uint32Array(image_data.width * image_data.height).fill(0);
-
 
                 for (let i = 0; i < image_data.data.length; i += 4) {
 

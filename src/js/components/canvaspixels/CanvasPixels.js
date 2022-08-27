@@ -653,8 +653,12 @@ class CanvasPixels extends React.Component {
                 });
             }else {
 
-                if(Boolean(has_changed || has_updated) && leading_change && current_state_not_empty) {
+                if(has_changed) {
                     if(this.props.onLayersChange) {this.props.onLayersChange(this.super_state.get_state()._layer_index,  Array.from(new_current_state._layers))}
+                }
+
+                if(Boolean(has_changed || has_updated) && leading_change && current_state_not_empty) {
+
                     if (callback_function !== null) {
                         callback_function(this.super_state.get_state()._layers, this.super_state.get_state()._layer_index, has_changed, current_state)
                     }
@@ -1017,44 +1021,6 @@ class CanvasPixels extends React.Component {
 
         }, 50);
 
-    };
-
-    _get_imported_image_scaled = (_imported_image_pxls, _imported_image_pxl_colors, _imported_image_width, _imported_image_height, _imported_image_scale_delta_x, _imported_image_scale_delta_y) => {
-
-
-        if(_imported_image_pxls.length) {
-
-            let [canvas_ctx, canvas] = this._get_new_ctx_from_canvas(_imported_image_width, _imported_image_height, true);
-
-
-            _imported_image_pxls.forEach((pxl, index) => {
-
-                const pos_x = index % _imported_image_width;
-                const pos_y = (index - pos_x) / _imported_image_width;
-
-                const color = this.color_conversion.to_hex_from_uint32(_imported_image_pxl_colors[pxl]);
-                canvas_ctx.fillStyle = color;
-                canvas_ctx.fillRect(pos_x, pos_y, 1, 1);
-            });
-
-            const scaled_width = _imported_image_width + _imported_image_scale_delta_x;
-            const scaled_height = _imported_image_height + _imported_image_scale_delta_y;
-
-            let [canvas_resized_ctx, canvas_resized] = this._get_new_ctx_from_canvas(scaled_width, scaled_height, true);
-            canvas_resized_ctx.drawImage(canvas, 0, 0, _imported_image_width, _imported_image_height, 0, 0, scaled_width, scaled_height);
-            canvas_ctx = null;
-            canvas = null;
-            let resized_image_data = canvas_resized_ctx.getImageData(0, 0, scaled_width, scaled_height);
-            canvas_resized_ctx = null;
-            canvas_resized = null;
-            const { new_pxls, new_pxl_colors } = this._get_pixels_palette_and_list_from_image_data(resized_image_data, true);
-            resized_image_data = null;
-            return [ new_pxls, new_pxl_colors, scaled_width, scaled_height ];
-
-        }else {
-
-            return [_imported_image_pxls, _imported_image_pxl_colors, _imported_image_width, _imported_image_height];
-        }
     };
 
     set_canvas_from_image = (image_obj = null, loading_base64_img = "", img_d = {}, dont_smart_resize = false) => {
@@ -2796,13 +2762,13 @@ class CanvasPixels extends React.Component {
 
                         if(!_layers_simplified[i].hidden) {
 
-                            if(i === _layer_index) {
+                            this.super_blend.stack(i, _s_pxl_colors[i][_s_pxls[i][index]], _layers_simplified[i].opacity, 0);
 
-                                this.super_blend.stack(i, _s_pxl_colors[i][_s_pxls[i][index]], _layers_simplified[i].opacity, 0);
+                            if(i === _layer_index) {
 
                                 if(imported_image_pxls_positioned_keyset.has(index)) {
 
-                                    this.super_blend.stack(i, imported_image_pxl_colors[imported_image_pxls_positioned[index]], _layers_simplified[i].opacity, 0);
+                                    //this.super_blend.stack(i, imported_image_pxl_colors[imported_image_pxls_positioned[index]], _layers_simplified[i].opacity, 0);
                                 }
                             }
                         }
@@ -2828,7 +2794,7 @@ class CanvasPixels extends React.Component {
                 }
             }
 
-            const indexed_changes = this.super_blend.blend();
+            const indexed_changes = this.super_blend.blend(false, false);
             if(indexed_changes.size > 0) {
 
                 force_update = Boolean(indexed_changes.size * 1.05 > pxl_width * pxl_height || force_update || clear_canvas);
@@ -2854,6 +2820,7 @@ class CanvasPixels extends React.Component {
     }
 
     _maybe_save_state = (set_anyway_if_changes_callback = null, force = false, requested_at = Date.now()) => {
+
 
         if(requested_at > this.super_state.get_state()._saving_json_state_history_ran_timestamp) {
 
@@ -3776,88 +3743,51 @@ class CanvasPixels extends React.Component {
 
     _merge_import = () => {
 
-        let {
-            pxl_width,
-            pxl_height,
-            _imported_image_start_x,
-            _imported_image_start_y,
-            _imported_image_pxls,
-            _imported_image_width,
-            _imported_image_height,
-            _imported_image_pxl_colors,
-            _imported_image_scale_delta_x,
-            _imported_image_scale_delta_y,
-        } = this.super_state.get_state();
+        let [imported_image_pxls_positioned, imported_image_pxl_colors] = this.super_state.get_imported_image_data()
+        let { _s_pxls, _s_pxl_colors, _layer_index } = this.super_state.get_state();
 
-        [_imported_image_pxls, _imported_image_pxl_colors, _imported_image_width, _imported_image_height] = this._get_imported_image_scaled(_imported_image_pxls, _imported_image_pxl_colors, _imported_image_width, _imported_image_height, _imported_image_scale_delta_x, _imported_image_scale_delta_y);
+        Object.entries(imported_image_pxls_positioned).forEach((entry) => {
 
-        let imported_image_pxls_positioned = [];
-        const has_an_image_imported = _imported_image_pxls.length > 0;
+            const [pixel_index, color_index] = entry;
 
-        if(has_an_image_imported) {
+            const old_pixel_color_index = _s_pxls[_layer_index][pixel_index];
+            const old_pixel_color_hex = _s_pxl_colors[_layer_index][old_pixel_color_index];
+            const top_pixel_color_hex = imported_image_pxl_colors[color_index];
+            const new_pixel_color_hex = this.color_conversion.blend_colors(old_pixel_color_hex, top_pixel_color_hex, 1, false, false);
 
-            _imported_image_pxls.forEach((pxl, index) => {
+            if(!_s_pxl_colors[_layer_index].includes(new_pixel_color_hex)) {
 
-                const pos_x = index % _imported_image_width;
-                const pos_y = (index - pos_x) / _imported_image_width;
+                let pxl_colors = Array.from(_s_pxl_colors[_layer_index]);
+                pxl_colors.push(new_pixel_color_hex);
 
-                const current_pos_x_positioned = pos_x + _imported_image_start_x;
-                const current_pos_y_positioned = pos_y + _imported_image_start_y;
+                _s_pxl_colors[_layer_index] = Uint32Array.from(pxl_colors);
+            }
 
-                const imported_image_pxl_positioned_index = current_pos_y_positioned * pxl_width + current_pos_x_positioned;
+            const new_pixel_color_index = _s_pxl_colors[_layer_index].indexOf(new_pixel_color_hex);
+            _s_pxls[_layer_index][pixel_index] = new_pixel_color_index;
 
-                if(current_pos_x_positioned >= 0 && current_pos_x_positioned < pxl_width && current_pos_y_positioned >= 0 && current_pos_y_positioned < pxl_height) {
+        });
 
-                    imported_image_pxls_positioned[imported_image_pxl_positioned_index] = pxl;
-                }
+        [_s_pxls[_layer_index], _s_pxl_colors[_layer_index]] = this.color_conversion.clean_duplicate_colors(_s_pxls[_layer_index], _s_pxl_colors[_layer_index]);
 
-            });
+        this.super_state.set_state({
+            _s_pxls,
+            _s_pxl_colors,
+            _imported_image_start_x: 0,
+            _imported_image_start_y: 0,
+            _imported_image_scale_delta_x: 0,
+            _imported_image_scale_delta_y: 0,
+            _imported_image_pxls: [],
+            _imported_image_width: 0,
+            _imported_image_height: 0,
+            _imported_image_pxl_colors: [],
+            _imported_image_move_from: [0, 0],
+            _last_action_timestamp: Date.now(),
+        }, () => {
 
-            let { _s_pxls, _s_pxl_colors, _layer_index } = this.super_state.get_state();
-
-            Object.entries(imported_image_pxls_positioned).forEach((entry) => {
-
-                const [pixel_index, color_index] = entry;
-
-                const old_pixel_color_index = _s_pxls[_layer_index][pixel_index];
-                const old_pixel_color_hex = _s_pxl_colors[_layer_index][old_pixel_color_index];
-                const top_pixel_color_hex = _imported_image_pxl_colors[color_index];
-                const new_pixel_color_hex = this.color_conversion.blend_colors(old_pixel_color_hex, top_pixel_color_hex, 1, false, false);
-
-                if(!_s_pxl_colors[_layer_index].includes(new_pixel_color_hex)) {
-
-                    let pxl_colors = Array.from(_s_pxl_colors[_layer_index]);
-                    pxl_colors.push(new_pixel_color_hex);
-
-                    _s_pxl_colors[_layer_index] = Uint32Array.from(pxl_colors);
-                }
-
-                const new_pixel_color_index = _s_pxl_colors[_layer_index].indexOf(new_pixel_color_hex);
-                _s_pxls[_layer_index][pixel_index] = new_pixel_color_index;
-
-            });
-
-            [_s_pxls[_layer_index], _s_pxl_colors[_layer_index]] = this.color_conversion.clean_duplicate_colors(_s_pxls[_layer_index], _s_pxl_colors[_layer_index]);
-
-            this.super_state.set_state({
-                _s_pxls,
-                _s_pxl_colors,
-                _imported_image_start_x: 0,
-                _imported_image_start_y: 0,
-                _imported_image_scale_delta_x: 0,
-                _imported_image_scale_delta_y: 0,
-                _imported_image_pxls: [],
-                _imported_image_width: 0,
-                _imported_image_height: 0,
-                _imported_image_pxl_colors: [],
-                _imported_image_move_from: [0, 0],
-                _last_action_timestamp: Date.now(),
-            }, () => {
-
-                this._update_canvas();
-                this._notify_is_image_import_mode();
-            });
-        }
+            this._update_canvas();
+            this._notify_is_image_import_mode();
+        });
     };
 
     _notify_is_image_import_mode = () => {

@@ -1,8 +1,8 @@
 const SuperBlend = {
     _blend_state: function(shadow_state, state, should_return_transparent, alpha_addition) {
         "use strict";
-        should_return_transparent = should_return_transparent | 0 > 0;
-        alpha_addition = alpha_addition | 0 > 0;
+        should_return_transparent = (should_return_transparent | 0) > 0;
+        alpha_addition = (alpha_addition | 0) > 0;
 
         let all_layers_length = state.layer_number | 0;
         let used_colors_length = state.current_index | 0;
