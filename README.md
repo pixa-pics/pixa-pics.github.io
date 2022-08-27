@@ -1,5 +1,9 @@
 # PIXA.PICS 
 
+ * Shift copyright state into nothingness like copyleft (as it recreate a drawing from an image).
+ * Anonymize selfies (keep details masked).
+ * Compress a visual scene into less than 16 Kb PNGs that scales HD.
+ * Do more, without less... This is pixaaaaa! (pics)
 
 Light data reduced throughout crystal mathemagick functions of our NFTs laboratory as a great pixel art editor just as any others and super-functionalities enhanced for NFTs proves that "Luck" for success editing NFTs and artworks with few pixels really equals that we determined for you into https://pixa.pics/, it is no chaos but choice best thought and hard work side that has let no details for all man and pleasing eyes!
 
