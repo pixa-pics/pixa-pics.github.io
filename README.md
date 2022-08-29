@@ -1,31 +1,26 @@
 # PIXA.PICS 
 
+LET'S SAY : You can do selfies to pixel art back to HD image (as a painting) very easily! #NFTs #ARTWORK #ANON #NOCOPYLEFT
+
  * Shift copyright to left (as it recreate a drawing from an image it removes it).
  * Anonymize selfies (keep details masked).
  * Compress a visual scene into less than 16 Kb PNGs that scales HD.
  * Do more, without less... This is pixaaaaa! (pics)
 
-Demo Ultra HD "AMERICAN DREAM", create NFTs and makes fun : https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/doc/screenshots/AMDR.mp4
-
-Light data reduced throughout crystal mathemagick functions of our NFTs laboratory as a great pixel art editor just as any others and super-functionalities enhanced for NFTs proves that "Luck" for success editing NFTs and artworks with few pixels really equals that we determined for you into https://pixa.pics/, it is no chaos but choice best thought and hard work side that has let no details for all man and pleasing eyes!
-
-Join the great art we like adventure  NOW! NFTs around 14Kb, easily render 6x fancy and 24x very sharp creation you'll love to give it a try? It is thanks to our contributors including our sponsors supports that give use of which to stays wise and vigilant in being leaders of NFTs laboratory all around the crypto hype.
-
-Also join us, for tomorrow and beyond, in the web app for pixel art, thanks to yesterday and therefore right now, pixel by pixel, layers by layers, and creative adventures by creative state of existence, but also in real-life, ideas by flow, and willpower by progression thanks to that is shared by success and intentions that you got just now, an enhanced way to achieve, and reclaim it once and for a while even offline on here the cheapest smartphone (Like mine of 2017 nowadays sold anytime in the now for 100$) and tomorrow the most advanced end device giving a full we access to web technologies.
+Demo "AMERICAN DREAM", create NFTs and makes fun : https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/doc/screenshots/AMDR.mp4
 
 ![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/GRODITNOW.png)
 ![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/COODERFACE.png)
 
 ## Tomorrow is knocking!
 
-Pixa Pics stands in favor of the freedom of expression, communication, education; **respect for the privacy of citizens and civil rights in general**. We defend the free flow of ideas, knowledge and culture as the software is completely free and open-source. 
+Pixa.Pics stands in favor of the freedom of expression, communication, education; **respect for the privacy of citizens and civil rights in general**. We defend the free flow of ideas, knowledge and culture as the software is completely free and open-source. 
 
 > IT CLAIMS TO BE THE UNBREAKABLE, UNCHANGABLE, UNSTOPPABLE Ace of Automatic Information; Blockchain is a list of transactions grouped into multiple blocks that constitute a state in a machine that changes according to a cryptography-based agreement AND between its participating terminals through a data network. This technology allows you to save and keep a structured data set for centuries flawlessly.
 
 As a team we have a commitment to work collaboratively, and participate with maximum transparency and thus lastly, we also supports free speech, anti-corruption and net neutrality facing it with **the swords of code we are forging to improve the third web’s major update.**
 
 ## What does it performs?
-
 
  > This is PIXAAAAA! An awesome pixel art editor made with material design guideline trends and awesome web technologies! 100% visionary in privacy concerns/critics and against detractors with its development that has enabled to show an online-self (image) within a minimalistic version of an high definition image (minima-art), to which, looks like pixel art throughout an automatic resize and color quantization, and then to up-scale it way beyond Full HD through an algorithm that makes it happens to make it looking like a painting, while it will generate an infinite SVG and 6x bigger PNG version of the minima-art.
 
@@ -138,24 +133,7 @@ Always while a new checkpoint is set the king, once it lived only then, it can b
 
 - Undefined
 
----
-
-**INTERESTED INTO SPONSORING a good cause? Please email-us at: [pixa.pics@protonmail.com](mailto:pixa.pics@protonmail.com).**
-
 ## Get started and fund a functionality now
-
-INFINITE *"KARMA"* OR POSITIVE MIND-BLOWING EFFECTS WHILE POSITIVE RESULTS TO ANYONE MAKES ADDING POSITIVE FUNDS OR NICE DEV-IDEA/PROPOSAL-TRY SUCCESS. GET US LUCKY!
-
- * THANKS Work.
- * THANKS Funds.
- * THANKS Paradise.
- * THANKS Matter.
-
----
-
-> All features getting live become tracked on the visible **"Legacy of King History"** (Soon linked and listed) having had ruling visionary and generous for how long and how much. Just near monthly "patron/sponsor" in the app being actual wealthier creative, giving chance, fertilizing faith inside all regions of the **"Unearthly Kingdom"** for any great mind to submit and idea or giving talents opportunity to live and donate it the breath of life, and thus the **Pixa's one, once blown, time and wind, the latest the chosen, sow, ...** *becoming godfather creators of the Kings, ...* the contracts, we can stack, describing with resources enough, the new code that goes thoughts, the mind over matter put into the fabric of reality.... *And the history repeat itself.*
-
----
 
 **INTERESTED INTO SPONSORING a good cause? Please email-us at: [pixa.pics@protonmail.com](mailto:pixa.pics@protonmail.com).**
 
