@@ -803,7 +803,9 @@ class PixelToolboxSwipeableViews extends React.Component {
         if(can === null) {return}
         if(typeof can.width === "undefined") {return}
         if(can.width === null) {return}
-        can.getContext("2d").drawImage(bmp, 0, 0);
+        let ctx = can.getContext("2d");
+        ctx.globalCompositeOperation = "copy"
+        ctx.drawImage(bmp, 0, 0);
     };
 
     get_action_panel = (index) => {
