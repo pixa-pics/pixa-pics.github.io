@@ -60,19 +60,19 @@ Screenshot of the minima's laboratory of pixa.pics (which is a pixel art editor)
 
 # Technology
 
- * Multi-threading (Web Worker)
+ * Multi-threading (Web [Worker](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/js/utils/worker-pool.js))
  * GPU's optimisation (CSS3 Transform+will-change)
- * Fast Compression (LZP3)
- * Offline Cache & Auto Save (PouchDB)
+ * Fast Compression ([LZP3](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/js/utils/lzp3_json.js))
+ * Offline Cache & Auto Save ([PouchDB](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/js/utils/api.js))
  * AI Processing (Deepai.org, !remote!)
- * Up-Scaling 6 times (xBRZ)*
- * Vectorized (ImageTracerJS)
- * Color Quantization (RGBQuant + Custom)
- * Always encode well Portable Network Graphics in type of palette (PNGQuant)
- * Chunk ("norris") system for dropping script evaluation cost within CPU
+ * Up-Scaling 6 times ([xBRZ](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/js/utils/xBRZ.js))*
+ * Vectorized ([ImageTracerJS](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/js/utils/image_tracer.js))
+ * Color Quantization ([RGBQuant](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/js/utils/rgb_quant.js) + [Custom](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/js/components/canvaspixels/utils/ReducePalette.js))
+ * Always encode well Portable Network Graphics in type of palette ([PNGQuant](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/js/utils/png_quant.js))
+ * Chunk ("norris") [webpack system](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/webpack.config.js) for dropping script evaluation cost within CPU
 
 ![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/doc/screenshots/RAS_1x.png)
-Source file #0 in png : 5.0Kb (Perfectly fits into some blockchains entirely!)
+Source file #0 in png : 5.9Kb (Perfectly fits into some blockchains entirely!)
 
 ![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/doc/screenshots/RAS_6x.png)
 Output file #1.1 in png : 1020x576 (6 times bigger compared to the source file, good for social media post)
