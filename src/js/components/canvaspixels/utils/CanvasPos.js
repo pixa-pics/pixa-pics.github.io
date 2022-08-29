@@ -735,21 +735,21 @@ const CanvasPos = {
             },
             get_pos() {
 
-                return Object.assign({}, p);
+                return p;
             },
             get_state() {
 
-                return Object.assign({}, s);
+                return s;
             },
             get_style() {
 
                 const msan = s.scale.moves_speed_average_now;
                 const shadow_depth = msan < 0 ? Math.round(Math.abs(msan) / 2): msan;
-                return Object.assign({}, {box_shadow: String(sh[shadow_depth])});
+                return  {box_shadow: String(sh[shadow_depth])};
             },
             get_pointer_state() {
 
-                return Object.assign({}, ps);
+                return ps;
             },
             get_canvas_pos_from_event(pageX, pageY) {
 
