@@ -289,7 +289,7 @@ const SuperState = {
                     state._imported_image_height = scaled_height;
 
 
-                    let pxls_positioned = [];
+                    let pxls_positioned = {};
                     let image_imported_resizer_index = -1;
                     if (new_pxls.length > 0) {
 
@@ -312,7 +312,7 @@ const SuperState = {
 
                     const imported_image_pxls_positioned_keyset = new Set(Object.entries(pxls_positioned).map(function(entry){
 
-                        return entry[0];
+                        return entry[0] | 0;
                     }));
 
                     return [

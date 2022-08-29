@@ -50,7 +50,10 @@ const styles = theme => ({
         boxShadow: "none",
         color: "#fff",
         fontWeight: "bold",
-        fontSize: "2.5em"
+        fontSize: "2.5em",
+        "& .MuiSvgIcon-root": {
+            marginRight: "1em",
+        },
     },
     mainUploadButton: {
         display: "flex",

@@ -126,7 +126,7 @@ const CanvasPos = {
                     return "#00000000";
                 } else {
 
-                    let a = "a", b = "b", c = "c", d = "d";
+                    let a = "", b = "", c = "", d = "";
                     let formatted = "#12345678";
 
                     switch(l) {
@@ -138,11 +138,11 @@ const CanvasPos = {
                             formatted = hex.concat("ff");
                             break;
                         case 5:
-                            a = hex.charAt(1), b = hex.charAt(2), c = hex.charAt(3), d = hex.charAt(4);
+                            a = hex.charAt(1); b = hex.charAt(2); c = hex.charAt(3); d = hex.charAt(4);
                             formatted =  "#".concat(a, a, b, b, c, c, d, d);
                             break;
                         case 4:
-                            a = hex.charAt(1), b = hex.charAt(2), c = hex.charAt(3);
+                            a = hex.charAt(1); b = hex.charAt(2); c = hex.charAt(3);
                             formatted = "#".concat(a, a, b, b, c, c, "ff");
                             break;
                     }
@@ -151,8 +151,7 @@ const CanvasPos = {
                 }
             },
             to_hex_from_rgba: function(rgba) {
-                let s = new Uint32Array(rgba.reverse().buffer)[0].toString(16);
-                return "#".concat(new Array(8-s.length | 0).join("0").concat(s));
+                return "#".concat("00000000".concat(new Uint32Array(rgba.reverse().buffer)[0].toString(16)).slice(-8));
             },
             to_rgba_from_hex: function(hex) {
                 return new Uint8ClampedArray(Uint32Array.of(parseInt(hex.slice(1), 16)).buffer).reverse();
@@ -172,7 +171,7 @@ const CanvasPos = {
                 `${px[8]}px ${px[9]}px ${px[10]}px ${px[11]}px ${hex_ambiant}`,
             ).join(',')        }
 
-        return  Array.of(
+        return Array.of(
             '',
             create_shadow(0, 2, 1, -1, 0, 1, 1, 0, 0, 1, 3, 0),
             create_shadow(0, 3, 1, -2, 0, 2, 2, 0, 0, 1, 5, 0),
@@ -321,7 +320,7 @@ const CanvasPos = {
                             ${p_y_things}, 
                             ${(Math.abs(p_y  * 0.25) / (s.perspective*2)).toFixed(2)}
                             ))`: ``;
-                const filter_force = (1 + (Math.abs(p_y)+Math.abs(p_x)) / 4 / s.perspective*2).toFixed(2);
+                const filter_force = (1 + (-rotate_y + rotate_x) / 40).toFixed(2);
                 const filter = any_rotation ? `brightness(${filter_force}) contrast(${filter_force})`: "";
 
                 pe = {
@@ -744,10 +743,9 @@ const CanvasPos = {
             },
             get_style() {
 
-                const state = s;
-                const msan = state.scale.moves_speed_average_now;
+                const msan = s.scale.moves_speed_average_now;
                 const shadow_depth = msan < 0 ? Math.round(Math.abs(msan) / 2): msan;
-                return Object.assign({box_shadow: sh[shadow_depth]}, state);
+                return Object.assign({}, {box_shadow: String(sh[shadow_depth])});
             },
             get_pointer_state() {
 

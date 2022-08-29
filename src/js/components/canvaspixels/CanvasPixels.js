@@ -2660,7 +2660,6 @@ class CanvasPixels extends React.Component {
             let _pxl_indexes_of_current_shape = new Set();
             let [imported_image_pxls_positioned, imported_image_pxl_colors, image_imported_resizer_index, imported_image_pxls_positioned_keyset] = this.super_state.get_imported_image_data()
 
-
             if(Boolean(tool === "LINE" || tool === "RECTANGLE" || tool === "ELLIPSE" || tool === "TRIANGLE") && _shape_index_a !== -1 && _pxls_hovered !== -1) {
 
                 _pxl_indexes_of_current_shape =
@@ -2787,7 +2786,7 @@ class CanvasPixels extends React.Component {
             if(indexed_changes.size > 0) {
 
                 force_update = Boolean(indexed_changes.size * 1.05 > pxl_width * pxl_height || force_update || clear_canvas);
-                this.super_canvas.pile(indexed_changes, this.super_canvas.unpile, this.super_canvas.prender, this.sraf.run_frame, Array.of(this.super_canvas.render, false, false));
+                this.super_canvas.pile(indexed_changes, this.super_canvas.unpile, this.super_canvas.prender, this.sraf.run_frame, Array.of(this.super_canvas.render, false, true));
 
                 this.super_state.set_state({
                     _pxl_indexes_of_selection_drawn: _pxl_indexes_of_selection,
@@ -5115,14 +5114,6 @@ class CanvasPixels extends React.Component {
                     background: `repeating-conic-gradient(rgb(248 248 248 / 100%) 0% 25%, rgb(235 235 235 / 100%) 0% 50%) left top 50% / calc(200% / ${sizes.width}) calc(200% / ${sizes.height})`,
                 }: {};
 
-        background_image_style_props = show_original_image_in_background && _loading_base64_img.length ?
-            {
-                background: `center / cover no-repeat url("${_loading_base64_img}")`
-            }: background_image_style_props;
-
-        background_image_style_props = (show_image_only_before_canvas_set && !has_shown_canvas_once) || !show_image_only_before_canvas_set ?
-            background_image_style_props: {};
-
         const canvas_wrapper_width = Math.round(sizes.width * screen_zoom_ratio * scale.current);
         const canvas_wrapper_height = Math.round(sizes.height * screen_zoom_ratio * scale.current);
 
@@ -5163,7 +5154,7 @@ class CanvasPixels extends React.Component {
                              padding: padding,
                              width: Math.floor(canvas_wrapper_width),
                              height: Math.floor(canvas_wrapper_height),
-                             boxShadow: `${box_shadow}`,
+                             boxShadow: box_shadow,
                              filter: `opacity(${Boolean(has_shown_canvas_once || !_is_there_new_dimension) ? "1": "0"}) ${perspective ? filter: ""}`,
                              webkitFilter: `opacity(${Boolean(has_shown_canvas_once || !_is_there_new_dimension) ? "1": "0"}) ${perspective ? filter: ""}`,
                              transform: `translate(${Math.round(scale.move_x * 100) / 100}px, ${Math.round(scale.move_y * 100) / 100}px) ${perspective ? transform_rotate: ""}`,
