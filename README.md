@@ -104,7 +104,7 @@ Lighthouse (google's webpage loading test) metrics of pixa.pics at left while th
 
 # How can it work thanks to sponsorship?
 
-![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/SPONSORS.jpeg)
+![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/TECTARY.jpeg)
 
 **Regular patrons are fixed to the following thresholds :**
 
@@ -133,12 +133,8 @@ Always while a new checkpoint is set the king, once it lived only then, it can b
 
 - Undefined
 
-## Get started and fund a functionality now
+## Get started and fund a king functionality now
 
 **INTERESTED INTO SPONSORING a good cause? Please email-us at: [pixa.pics@protonmail.com](mailto:pixa.pics@protonmail.com).**
-
-![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/TECTARY.jpeg)
-
-> **Getting it?** Just when it catch, only prepare to contact us... becoming godfather creators of the Kings... giving a feature proposal and sufficient funds to create the king and stack it, or to get featured in Monthly Patrong/Sponsor for ideas listed.
 
 ---
