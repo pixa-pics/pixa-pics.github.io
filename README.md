@@ -136,6 +136,7 @@ Always while a new checkpoint is set the king, once it lived only then, it can b
 
 ## Get started and fund a king functionality now
 
-**INTERESTED INTO SPONSORING a good cause? Please email-us at: [pixa.pics@protonmail.com](mailto:pixa.pics@protonmail.com).**
+**INTERESTED INTO SPONSORING a good cause? Please email-us at: [pixa.pics@protonmail.com](mailto:pixa.pics@protonmail.com) OR :**
 
----
+### BTC
+ * 1JJq8FgmUUZ2kAeM3EEk3mDkRbvTUrc5Ej
