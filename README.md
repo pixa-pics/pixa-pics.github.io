@@ -132,7 +132,10 @@ Always while a new checkpoint is set the king, once it lived only then, it can b
 
 **Queued ideas seeking funds:**
 
-- Undefined
+* Translate the app in : [EN, FR, DE, IT, ID, PT, JA, ZH, RU, KO, HI, ES]
+* Make code clear and well documented.
+* Rebuild some functionalities again.
+* Audit what users need and list the ideas found.
 
 ## Get started and fund a king functionality now
 
