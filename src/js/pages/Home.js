@@ -490,10 +490,10 @@ class Home extends React.Component {
                 }}>
                     <div className={classes.backgroundImageContainer} style={{
                         backdropFilter: THEME_DAY ?
-                            "blur(4px) saturate(0.9) contrast(1.25)":
+                            "blur(4px) saturate(0.75)":
                             "brightness(0.6) saturate(1.2) hue-rotate(25deg) blur(6px)",
                         webkitBackdropFilter: THEME_DAY ?
-                            "blur(4px) saturate(0.9) contrast(1.25)":
+                            "blur(4px) saturate(0.75)":
                             "brightness(0.6) saturate(1.2) hue-rotate(25deg) blur(6px)"
                     }}>
                         {_image_name_infographics.length >= 1 &&
