@@ -7,7 +7,7 @@ LET'S SAY : You can do selfies to pixel art back to HD image (as a painting) ver
  * Compress a visual scene into less than 16 Kb PNGs that scales HD.
  * Do more, without less... This is pixaaaaa! (pics)
 
-Demo "AMERICAN DREAM", create NFTs and makes fun : https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/doc/screenshots/AMDR.mp4
+Watch to know how it relates to NFTs and the American Dream! https://www.youtube.com/watch?v=Ag_V4RyTIEE
 
 ![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/GRODITNOW.png)
 ![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/COODERFACE.png)
