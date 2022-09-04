@@ -1,20 +1,31 @@
 # PIXA.PICS 
 
-LET'S SAY : You can do selfies to pixel art back to HD image (as a painting) very easily! #NFTs #ARTWORK #ANON #NOCOPYLEFT
+#### LET'S SAY : 
 
- * Shift copyright to left (as it recreate a drawing from an image it removes it).
- * Anonymize selfies (keep details masked).
- * Compress a visual scene into less than 16 Kb PNGs that scales HD.
- * Do more, without less... This is pixaaaaa! (pics)
+**You can do selfies to pixel art back to HD image (as a painting) very easily!** #NFTs #ARTWORK #ANON #NOCOPYLEFT
 
-Watch to know how it relates to NFTs and the American Dream! https://www.youtube.com/watch?v=Ag_V4RyTIEE
-
+ * **Shift copyright** to left (as it recreate a drawing from an image it removes it).
+ * **Anonymize selfies** (keep details masked).
+ * **Compress 100x-1000x** a visual scene into less than 16 Kb PNGs that scales HD.
+ * **Do more, without less**... This is pixaaaaa! (pics)
+ 
 ![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/GRODITNOW.png)
-![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/COODERFACE.png)
+ 
+The aforementioned project (i.e. https://pixa.pics/) whose source code is said to be "open" (visible on: https://github.com/pixa-pics/pixa-pics .github.io) needs for the coming year an amount of 75'000 CHF to operate as drawing software in the field of pixelart and digital-painting (art) among others NFTs ( so-called digital cryptographic tokens).
+
+This project allows anonymization of the target visual subject directly on import by reducing the number of colors and the number of pixels present in the raster image (which is just a pixel grid with a few bonus colors) and allowing retouching of it in an interface made in Switzerland, which offers tools for drawing and retouching tints and colors as well as shapes via functions and algorithms on clicking certain buttons inside this software, available under simply "MIT" license via the WEB...
+
+A person can preserve details of their private life and still publish digital paintings of their portrait without risking leaving pejorative details, or deliberately harming the online-self of the person, since the output files only contain 1:100 to 1:1000 of the weight of the source data for an HD image also which more-is will be a form of artwork disregarded from the eventual copyright that protected the base image.
+
+It is useful in the field of the protection of the private sphere and the online-self, in the field of drawing and image editing, also in the creation of so-called "intelligent" NFTs as well as in the artistic field quite simply. with also the search and identification of missing persons and the anonymization and copyleft (un-copyright) of visual subjects... A real tool for the creation of "artistic situations being safer than safe"!
+
+**Watch?!** --> Know how it relates to NFTs and the American Dream! https://www.youtube.com/watch?v=Ag_V4RyTIEE
 
 ## Tomorrow is knocking!
 
 Pixa.Pics stands in favor of the freedom of expression, communication, education; **respect for the privacy of citizens and civil rights in general**. We defend the free flow of ideas, knowledge and culture as the software is completely free and open-source. 
+
+![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/doc/screenshots/home_page_view_dark.png?v=1)
 
 > IT CLAIMS TO BE THE UNBREAKABLE, UNCHANGABLE, UNSTOPPABLE Ace of Automatic Information; Blockchain is a list of transactions grouped into multiple blocks that constitute a state in a machine that changes according to a cryptography-based agreement AND between its participating terminals through a data network. This technology allows you to save and keep a structured data set for centuries flawlessly.
 
@@ -29,8 +40,7 @@ As a team we have a commitment to work collaboratively, and participate with max
  * **Staying on the front line of dropping cost as it is a FOSS.**
  * **Getting to openly fight what misses being just great, while boring good exists.** 
  * **Staying modern without paying anything for useless and toxic ultra-simplification tools.**
-
-![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/doc/screenshots/home_page_view_dark.png?v=1)
+ 
 ![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/doc/screenshots/editor_view_mobile.png?v=1)
 
 **Does https://pixa.pics/pixel get?**
@@ -38,12 +48,11 @@ As a team we have a commitment to work collaboratively, and participate with max
 ![](https://img.shields.io/badge/Maintained%3F-yes-green.svg)
 ![](https://img.shields.io/website-up-down-green-red/http/pixa.pics)
 
-
-> The use of social networking sites should be governed by the same principles as use of the Internet in general. As little personal information as possible should be divulged. The information should be well protected and only made accessible to clearly defined persons. Ultimately, the responsibility lies with each individual Internet user. Prior to publication, everyone should think and decide for themselves which personal data to publish on the Internet, thereby making it available to the public for an indeterminate time period.  — Semi-annual report of 2008, *Federal Strategic Unit for IT (FSUIT) - Federal Office of Police fedpol (Swiss Confederation). 🇨🇭*
-
 We strongly believe bold the following recklessly for a while. The Internet has become an oligopoly Disneyland with little innovation. The central banks have corrupted money - the operating system of society. We see blockchain as a new computing platform with novel features, that could both, bring a new phase of innovation, and redefine the existing monetary systems. We want to contribute to bringing a better future sooner. Hence, ten months ago, we founded pixa pics.
 
 > And so, when we talk about privacy and anonymity or pecuniary freedom, it wouldn't occur to some that non-fungible tokens are a good reason to think that.
+
+![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/manifest/PXPS_FEDPOL.png)
 
 # Special features
 
