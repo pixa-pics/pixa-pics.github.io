@@ -1,6 +1,6 @@
-# PIXA.PICS 
+# PIXA.PICS
 
-#### LET'S SAY : 
+## A) LET US SAY 
 
 **You can do selfies to pixel art back to HD image (as a painting) very easily!** #NFTs #ARTWORK #ANON #NOCOPYLEFT
 
@@ -10,18 +10,22 @@
  * **Do more, without less**... This is pixaaaaa! (pics)
  
 ![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/GRODITNOW.png)
- 
-The aforementioned project (i.e. https://pixa.pics/) whose source code is said to be "open" (visible on: https://github.com/pixa-pics/pixa-pics .github.io) needs for the coming year an amount of 75'000 CHF to operate as drawing software in the field of pixelart and digital-painting (art) among others NFTs ( so-called digital cryptographic tokens).
 
+### 1) What does it cost?
+The aforementioned project (i.e. https://pixa.pics/) whose source code is said to be "open" (visible on: https://github.com/pixa-pics/pixa-pics .github.io) needs for the coming year an amount of 75'000 CHF to operate as drawing software in the field of pixelart and digital-painting (art) among others NFTs ( so-called digital cryptographic tokens) being free and open-source.
+
+### 2) Anonymization of visual subjects
 This project allows anonymization of the target visual subject directly on import by reducing the number of colors and the number of pixels present in the raster image (which is just a pixel grid with a few bonus colors) and allowing retouching of it in an interface made in Switzerland, which offers tools for drawing and retouching tints and colors as well as shapes via functions and algorithms on clicking certain buttons inside this software, available under simply "MIT" license via the WEB...
 
+### 3) Lighten the online-self up
 A person can preserve details of their private life and still publish digital paintings of their portrait without risking leaving pejorative details, or deliberately harming the online-self of the person, since the output files only contain 1:100 to 1:1000 of the weight of the source data for an HD image also which more-is will be a form of artwork disregarded from the eventual copyright that protected the base image.
 
-It is useful in the field of the protection of the private sphere and the online-self, in the field of drawing and image editing, also in the creation of so-called "intelligent" NFTs as well as in the artistic field quite simply. with also the search and identification of missing persons and the anonymization and copyleft (un-copyright) of visual subjects... A real tool for the creation of "artistic situations being safer than safe"!
+### 4) Preserving yourself as your own hero
+It is useful in the field of the protection of the private sphere and the online-self, in the field of drawing and image editing, also in the creation of so-called "intelligent" NFTs as well as in the artistic field quite simply. Meanwhile, also between the search and identification of missing persons and the anonymization and copyleft (un-copyright) of visual subjects... A real tool for the creation of "artistic situations being safer than safe".
 
 **Watch?!** --> Know how it relates to NFTs and the American Dream! https://www.youtube.com/watch?v=Ag_V4RyTIEE
 
-## Tomorrow is knocking!
+## B) Tomorrow is knocking!
 
 Pixa.Pics stands in favor of the freedom of expression, communication, education; **respect for the privacy of citizens and civil rights in general**. We defend the free flow of ideas, knowledge and culture as the software is completely free and open-source. 
 
@@ -31,7 +35,7 @@ Pixa.Pics stands in favor of the freedom of expression, communication, education
 
 As a team we have a commitment to work collaboratively, and participate with maximum transparency and thus lastly, we also supports free speech, anti-corruption and net neutrality facing it with **the swords of code we are forging to improve the third web’s major update.**
 
-## What does it performs?
+## C) What does it perform?
 
  > This is PIXAAAAA! An awesome pixel art editor made with material design guideline trends and awesome web technologies! 100% visionary in privacy concerns/critics and against detractors with its development that has enabled to show an online-self (image) within a minimalistic version of an high definition image (minima-art), to which, looks like pixel art throughout an automatic resize and color quantization, and then to up-scale it way beyond Full HD through an algorithm that makes it happens to make it looking like a painting, while it will generate an infinite SVG and 6x bigger PNG version of the minima-art.
 
@@ -54,7 +58,7 @@ We strongly believe bold the following recklessly for a while. The Internet has 
 
 ![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/manifest/PXPS_FEDPOL.png)
 
-# Special features
+## D) Special features
 
 ![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/doc/screenshots/editor_view_start.png?v=1)
 
@@ -67,7 +71,7 @@ Screenshot of the minima's laboratory of pixa.pics (which is a pixel art editor)
 ![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/doc/screenshots/editor_view_filter.png?v=1)
 
 
-# Technology
+## E) Technology
 
 * Multi-threading (Web [Worker](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/js/utils/worker-pool.js))
 * GPU's optimisation (CSS3 Transform+will-change)
@@ -97,22 +101,14 @@ Demo Ultra HD rendering : https://raw.githubusercontent.com/pixa-pics/pixa-pics.
 
 Look! On the STEEM blockchain you can post base64 text, transactions are rigged to 73Kb at maxima but STEEM is now kinda old for a blockchain.
 
-# 99 / 100 of performance (Lighthouse desktop metrics)
+## F) Performance
+
+**70-99 / 100 of performance (Lighthouse metrics....)**
 
 ![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/doc/screenshots/pagespeed.web.dev.png?v=1)
 Lighthouse (google's webpage loading test) metrics of pixa.pics at left while those of instagram at right
 
-
-# Legal concerns and acknowledgment
-
- * All splendid emoji named Tweemoji by Twitter.
- * Illustrations magically found on Undraw and ManyPixels to shine in those passionate forms and functions.
- * Most awesome sound effects by Google, simply not evil.
- * Great music on home page arrival by Red Eclipse (video game) and piano melody in the editor by long time dead Tesla Nikola (inventor).
-
- > Please, just read the [privacy policy](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/privacypolicy.md) while our [licence](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/COPYING) follows similar lines of intentions about what ideal we must being trying to understand legally and morally nevertheless.
-
-# How can it work thanks to sponsorship?
+# G) How can it work thanks to sponsorship?
 
 ![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/TECTARY.jpeg)
 
@@ -122,7 +118,7 @@ Gold ($ 6K/Month), Silver ($ 4K/Month), and Bronze ($ 2K/Month) supporters (VISI
 
 > **Thanks for support!**
 
-## Getting further with development
+## G') Getting further with sponsorship and development
 
 **Great is this king, the king kills that is good, you can't kill what is good, but you can kill the king!**
 The king is the newest being an amount of funds along with some specifications to create a new feature that kill one.
@@ -146,9 +142,18 @@ Always while a new checkpoint is set the king, once it lived only then, it can b
 * Rebuild some functionalities again.
 * Audit what users need and list the ideas found.
 
-## Get started and fund a king functionality now
+## G") Get started and fund a king functionality now
 
 **INTERESTED INTO SPONSORING a good cause? Please email-us at: [pixa.pics@protonmail.com](mailto:pixa.pics@protonmail.com) OR :**
 
-### BTC
+**BTC**
  * 1JJq8FgmUUZ2kAeM3EEk3mDkRbvTUrc5Ej
+
+## Z) Legal concerns and acknowledgment
+
+* All splendid emoji named Tweemoji by Twitter.
+* Illustrations magically found on Undraw and ManyPixels to shine in those passionate forms and functions.
+* Most awesome sound effects by Google, simply not evil.
+* Great music on home page arrival by Red Eclipse (video game) and piano melody in the editor by long time dead Tesla Nikola (inventor).
+
+> Please, just read the [privacy policy](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/privacypolicy.md) while our [licence](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/COPYING) follows similar lines of intentions about what ideal we must being trying to understand legally and morally nevertheless.
