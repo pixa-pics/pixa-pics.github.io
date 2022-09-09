@@ -2708,7 +2708,6 @@ class CanvasPixels extends React.Component {
             this.super_blend.update( _layers.length+1, full_pxls.length);
             let number_to_paint = 0;
             let full_pxls_length = full_pxls.length | 0;
-            let full_pxl = 0;
             let pos_x = 0;
             let pos_y = 0;
             let opacity = 0;
@@ -2721,24 +2720,22 @@ class CanvasPixels extends React.Component {
                 0, // 5 in the old selection: false,
                 0, // 6 is not like the pixel painted
             );
+
             for(let index = 0; index < full_pxls_length; index = index + 1 | 0){
 
-                full_pxl = full_pxls[index] | 0;
-
-                b.fill((Boolean(_pxls_hovered === index)? 1 : 0) | 0, 0, 1);
-                b.fill((Boolean(index === _old_pxls_hovered && _old_pxls_hovered !== _pxls_hovered)? 1 : 0) | 0, 1, 2);
-                b.fill((_pxl_indexes_of_current_shape.has(index)? 1 : 0) | 0, 2, 3);
-                b.fill((_pxl_indexes_of_old_shape.has(index)? 1 : 0) | 0, 3, 4);
-                b.fill((_pxl_indexes_of_selection.has(index)? 1 : 0) | 0, 4, 5);
-                b.fill((_pxl_indexes_of_selection_drawn.has(_old_pxls_hovered)? 1 : 0) | 0, 5, 6);
-                b.fill((Boolean(full_pxl !== _old_full_pxls[index])? 1 : 0) | 0, 6, 7);
+                b.fill(Boolean(_pxls_hovered === index)? 1 : 0, 0, 1);
+                b.fill(Boolean(index === _old_pxls_hovered)? 1 : 0, 1, 2);
+                b.fill(_pxl_indexes_of_current_shape.has(index)? 1 : 0, 2, 3);
+                b.fill(_pxl_indexes_of_old_shape.has(index)? 1 : 0, 3, 4);
+                b.fill(_pxl_indexes_of_selection.has(index)? 1 : 0, 4, 5);
+                b.fill(_pxl_indexes_of_selection_drawn.has(_old_pxls_hovered)? 1 : 0, 5, 6);
+                b.fill(Boolean(full_pxls[index] !== _old_full_pxls[index])? 1 : 0, 6, 7);
 
                 if (
                     !hide_canvas_content &&
                     Boolean(
                         _previous_imported_image_pxls_positioned_keyset.has(index) ||
                         imported_image_pxls_positioned_keyset.has(index) ||
-                        clear_canvas ||
                         b[0] !== 0 ||
                         b[1] !== 0 ||
                         b[2] !== 0 ||
@@ -2786,14 +2783,14 @@ class CanvasPixels extends React.Component {
             if(indexed_changes.size > 0) {
 
                 force_update = Boolean(indexed_changes.size * 1.05 > pxl_width * pxl_height || force_update || clear_canvas);
-                this.super_canvas.pile(indexed_changes, this.super_canvas.unpile, this.super_canvas.prender, this.sraf.run_frame, Array.of(this.super_canvas.render, false, true));
+                this.super_canvas.pile(indexed_changes, this.super_canvas.unpile, this.super_canvas.prender, this.sraf.run_frame, Array.of(this.super_canvas.render, true, false));
 
                 this.super_state.set_state({
                     _pxl_indexes_of_selection_drawn: _pxl_indexes_of_selection,
                     _pxl_indexes_of_old_shape: _pxl_indexes_of_current_shape,
                     _old_selection_pair_highlight: Boolean(_selection_pair_highlight),
                     _old_layers: _layers_simplified,
-                    _old_full_pxls: new Uint32Array(full_pxls.buffer),
+                    _old_full_pxls: Uint32Array.from(full_pxls),
                     _old_pxl_width: parseInt(pxl_width),
                     _old_pxl_height: parseInt(pxl_height),
                     _old_pxls_hovered: parseInt(_pxls_hovered),
@@ -5062,7 +5059,7 @@ class CanvasPixels extends React.Component {
                                 userSelect: "none",
                                 width: Math.floor(sizes.width),
                                 height: Math.floor(sizes.height),
-                                transform: `translateZ(10px) scale(${(screen_zoom_ratio * scale.current).toFixed(4)})`,
+                                transform: `scale(${(screen_zoom_ratio * scale.current).toFixed(4)})`,
                                 transformOrigin: "left top",
                                 boxSizing: "content-box",
                                 borderWidth: 0,

@@ -50,7 +50,8 @@ const SuperCanvas = {
             uint32 = uint32 | 0;
             s = uint32.toString(16);
             const path = new Path2D();
-            const style = "#".concat(new Array(8-s.length).join("0").concat().slice(-8));
+            const style = "#".concat("00000000".concat(s).slice(-8));
+
             set.forEach((i) => {
                 const x = i % ctx2d.canvas.width | 0, y = (i - x) / ctx2d.canvas.width | 0;
                 path.rect(x, y, 1, 1);
@@ -117,10 +118,8 @@ const SuperCanvas = {
                     let occ2d;
                     if (is_offscreen) {
 
-                        if(!is_bitmap) {
-                            occ2d = new OffscreenCanvas(pxl_width, pxl_height).getContext("2d");
-                            occ2d.imageSmoothingEnabled = false;
-                        }
+                        occ2d = new OffscreenCanvas(pxl_width, pxl_height).getContext("2d");
+                        occ2d.imageSmoothingEnabled = false;
                     }
 
                     cc2d = c.getContext('2d' );
@@ -194,11 +193,11 @@ const SuperCanvas = {
                         old_bmp = bmp;
 
                     } else if (s.is_offscreen) {
+
                         s.canvas_context.globalCompositeOperation = "copy";
                         s.canvas_context.drawImage(s.offscreen_canvas_context, 0, 0, s.width, s.height);
                     } else if (!s.is_bitmap) {
 
-                        s.canvas_context.globalCompositeOperation = "copy";
                         [s.canvas_context, ic] = d2d(s.canvas_context, ic);
                     }
                     const paint_ended = Date.now();
