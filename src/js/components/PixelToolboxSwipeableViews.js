@@ -375,8 +375,8 @@ class PixelToolboxSwipeableViews extends React.Component {
             import_colorize
         } = this.state;
 
-        const _filters_changed = Boolean(last_filters_hash !== new_props.last_filters_hash);
-        const must_compute_filter = Boolean(view_name_index !== new_props.view_name_index || _filters_changed) && Boolean(new_props.view_name_index === 6);
+        const _history_changed = Boolean(can_undo !== new_props.can_undo) ||  Boolean(can_redo !== new_props.can_redo);
+        const must_compute_filter = Boolean(view_name_index !== new_props.view_name_index || _history_changed) && Boolean(new_props.view_name_index === 6);
 
         let layers_colors_max = 0;
         Array.from(new_props.layers).forEach(function(l){ if(layers_colors_max < parseInt(l.number_of_colors)) { layers_colors_max = parseInt(l.number_of_colors);}});
