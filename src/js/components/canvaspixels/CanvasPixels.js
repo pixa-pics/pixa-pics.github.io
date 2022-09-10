@@ -2724,7 +2724,7 @@ class CanvasPixels extends React.Component {
             for(let index = 0; index < full_pxls_length; index = index + 1 | 0){
 
                 b.fill(Boolean(_pxls_hovered === index)? 1 : 0, 0, 1);
-                b.fill(Boolean(index === _old_pxls_hovered)? 1 : 0, 1, 2);
+                b.fill(Boolean(index === _old_pxls_hovered && _old_pxls_hovered !== _pxls_hovered)? 1 : 0, 1, 2);
                 b.fill(_pxl_indexes_of_current_shape.has(index)? 1 : 0, 2, 3);
                 b.fill(_pxl_indexes_of_old_shape.has(index)? 1 : 0, 3, 4);
                 b.fill(_pxl_indexes_of_selection.has(index)? 1 : 0, 4, 5);
@@ -2783,7 +2783,7 @@ class CanvasPixels extends React.Component {
             if(indexed_changes.size > 0) {
 
                 force_update = Boolean(indexed_changes.size * 1.05 > pxl_width * pxl_height || force_update || clear_canvas);
-                this.super_canvas.pile(indexed_changes, this.super_canvas.unpile, this.super_canvas.prender, this.sraf.run_frame, Array.of(this.super_canvas.render, true, false));
+                this.super_canvas.pile(indexed_changes, this.super_canvas.unpile, this.super_canvas.prender, this.sraf.run_frame, Array.of(this.super_canvas.render, false, false));
 
                 this.super_state.set_state({
                     _pxl_indexes_of_selection_drawn: _pxl_indexes_of_selection,
