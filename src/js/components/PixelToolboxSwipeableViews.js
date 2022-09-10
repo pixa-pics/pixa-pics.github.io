@@ -132,10 +132,10 @@ const styles = theme => ({
         padding: "16px 24px 8px 24px",
         fontFamily: "'Jura'",
         textTransform: "uppercase",
-        boxShadow: "0px -2px 4px #0205299e",
+        boxShadow: "0px -2px 4px #011965",
         marginBottom: "-8px",
         marginTop: "16px",
-        backgroundColor: "#020529",
+        background: "radial-gradient(farthest-corner, #050126 40%, #001f74)",
         color: "#ddd",
         overflow: "hidden",
         boxSizing: "border-box",
@@ -335,6 +335,7 @@ class PixelToolboxSwipeableViews extends React.Component {
             _luminosity: 60,
             _opacity: 100,
             _history: HISTORY,
+            too_much_colors_no_vector: false,
             import_size: props.import_size,
             import_colorize: props.import_colorize,
             filters_thumbnail: props.filters_thumbnail,
@@ -377,7 +378,12 @@ class PixelToolboxSwipeableViews extends React.Component {
         const _filters_changed = Boolean(last_filters_hash !== new_props.last_filters_hash);
         const must_compute_filter = Boolean(view_name_index !== new_props.view_name_index || _filters_changed) && Boolean(new_props.view_name_index === 6);
 
+        let layers_colors_max = 0;
+        Array.from(new_props.layers).forEach(function(l){ if(layers_colors_max < parseInt(l.number_of_colors)) { layers_colors_max = parseInt(l.number_of_colors);}});
+        const too_much_colors_no_vector = Boolean(layers_colors_max >= 128);
+
         if (Boolean(new_props.should_update) && (
+            too_much_colors_no_vector !== this.state.too_much_colors_no_vector,
             view_name_index !== new_props.view_name_index ||
             previous_view_name_index !== new_props.previous_view_name_index ||
             view_names !== new_props.view_names ||
@@ -401,14 +407,14 @@ class PixelToolboxSwipeableViews extends React.Component {
             is_something_selected !== new_props.is_something_selected ||
             import_size !== new_props.import_size ||
             import_colorize !== new_props.import_colorize ||
-           filters_preview_progression !==new_props.filters_preview_progression
+           filters_preview_progression !== new_props.filters_preview_progression
         )) {
 
-            let props_override = {last_filters_hash: this.state.last_filters_hash};
+            let props_override = {last_filters_hash: this.state.last_filters_hash, too_much_colors_no_vector};
 
             if(must_compute_filter) {
 
-                props_override = {last_filters_hash: last_filters_hash}
+                props_override = {last_filters_hash: last_filters_hash, too_much_colors_no_vector}
                 this.compute_filters_preview();
 
             }else {
@@ -437,7 +443,7 @@ class PixelToolboxSwipeableViews extends React.Component {
                 }
             }
 
-            this.setState({...new_props, props_override, slider_value: parseFloat(new_props.slider_value)}, () => {
+            this.setState({...new_props, ...props_override, slider_value: parseFloat(new_props.slider_value)}, () => {
                 this.forceUpdate();
             });
 
@@ -493,18 +499,8 @@ class PixelToolboxSwipeableViews extends React.Component {
             _opacity,
             _layer_opened,
             import_size,
-            import_colorize,
+            import_colorize
         } = this.state;
-
-        let layers_colors_max = 0;
-
-        Array.from(layers).forEach((layer) => {
-
-            if(layers_colors_max < layer.number_of_colors) {
-
-                layers_colors_max = layer.number_of_colors;
-            }
-        });
 
         let colors = [];
         for (let i = 1; i <= 128; i++) {
@@ -828,20 +824,10 @@ class PixelToolboxSwipeableViews extends React.Component {
             pencil_mirror_mode,
             is_something_selected,
             _filter_ar_on_one,
-            layers,
             filters_preview_progression,
+            too_much_colors_no_vector
         } = this.state;
 
-        let layers_colors_max = 0;
-
-        Array.from(layers).forEach((layer) => {
-
-            if(layers_colors_max < layer.number_of_colors) {
-
-                layers_colors_max = layer.number_of_colors;
-            }
-        });
-        const too_much_colors_no_vector = layers_colors_max >= 128;
         const _filters_preview_progression_stepped = Math.round(parseFloat(filters_preview_progression / 7) * 7);
 
         const panel_names = this.get_action_panel_names();
@@ -1564,7 +1550,7 @@ class PixelToolboxSwipeableViews extends React.Component {
         const {
             classes,
             width,
-            height,
+            height
         } = this.state;
 
         const panel_names = this.get_action_panel_names();
@@ -1856,19 +1842,10 @@ class PixelToolboxSwipeableViews extends React.Component {
             classes,
             canvas,
             view_name_index,
-            layers,
+            too_much_colors_no_vector,
             filters_preview_progression
         } = this.state;
 
-        let layers_colors_max = 0;
-        Array.from(layers).forEach((layer) => {
-
-            if(layers_colors_max < layer.number_of_colors) {
-
-                layers_colors_max = layer.number_of_colors;
-            }
-        });
-        const too_much_colors_no_vector = layers_colors_max >= 128;
         const _filters_preview_progression_stepped = Math.round(parseFloat(filters_preview_progression / 7) * 7);
 
         return (
@@ -1898,7 +1875,7 @@ class PixelToolboxSwipeableViews extends React.Component {
                                 {
                                     this.get_action_panel(index).map((action_set) => {
                                         return (
-                                            <div key={name + "-" + action_set.label} className={`swipetoolbox_i_${index}_${action_set.local_i}`}>
+                                            <div key={name + "-" + action_set.label + "-" + action_set.text.toLowerCase() + "-wrapper"} className={`swipetoolbox_i_${index}_${action_set.local_i}`}>
                                                 <ListSubheader className={classes.listSubHeader}>
                                                     <span>{action_set.icon}</span>
                                                     <span>{action_set.text}</span>
@@ -1928,6 +1905,7 @@ class PixelToolboxSwipeableViews extends React.Component {
                                                     </ListItem>
                                                 }
                                                 <div className={name + " " + classes.listItems}
+                                                     key={name + "-" + action_set.label + "-" + action_set.text.toLowerCase() + "-inner"}
                                                      style={Object.assign({
                                                                  flexWrap: "wrap",
                                                                  alignContent: "stretch",
@@ -1944,7 +1922,7 @@ class PixelToolboxSwipeableViews extends React.Component {
                                                                     type="file"
                                                                     onChange={tool.on_click}
                                                                 />
-                                                                <ListItem component="label" key={index} htmlFor={tool.for} button disabled={tool.disabled || false}>
+                                                                <ListItem component="label" key={index + String(tool.disabled ? "-0": "-1")} htmlFor={tool.for} button disabled={tool.disabled}>
                                                                     <ListItemIcon className={classes.listItemIcon} style={tool.style || {}}>
                                                                         {tool.icon}
                                                                     </ListItemIcon>
@@ -1977,8 +1955,8 @@ class PixelToolboxSwipeableViews extends React.Component {
                                     <h3>>>> Thanks for support!</h3>
                                 </div>
                                 <div className={classes.thanksSponsors}>
-                                    <h4>INTERESTED INTO SPONSORING? Please email-us at: <a style={{color: "#fff"}} href={"mailto:pixa.pics@protonmail.com"}>pixa.pics@protonmail.com</a>.</h4>
-                                    <h3>>>> Thanks for support!</h3>
+                                    <h4>INTERESTED INTO SPONSORING? Please email-us at: <a style={{color: "#3f9bd3"}} href={"mailto:pixa.pics@protonmail.com"}>pixa.pics@protonmail.com</a>.</h4>
+                                    <h3>>>> Thanks for support</h3>
                                 </div>
                             </List>
                         );

@@ -1786,9 +1786,9 @@ class Pixel extends React.Component {
         this.setState({_is_image_import_mode: is_image_import_mode});
     };
 
-    _handle_layers_change = (_layer_index, layers) => {
+    _handle_layers_change = (_layer_index, _layers) => {
 
-        this.setState({_previous_layer_index: this.state._layer_index, _layer_index, _layers: layers}, () => {
+        this.setState({_previous_layer_index: parseInt(this.state._layer_index), _layer_index, _layers}, () => {
 
             this.forceUpdate();
         });
@@ -2076,7 +2076,6 @@ class Pixel extends React.Component {
             _ripple_color,
             _ripple_opacity,
             _menu_event,
-            _is_pixel_dialog_post_edit_open,
             _library_dialog_open,
             _library,
             _less_than_1280w,

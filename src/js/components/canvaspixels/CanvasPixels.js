@@ -642,6 +642,8 @@ class CanvasPixels extends React.Component {
                     name: String(l.name),
                     hidden: Boolean(l.hidden),
                     opacity: parseFloat(l.opacity),
+                    colors: Array.from(l.colors),
+                    number_of_colors: parseInt(l.number_of_colors),
                 });
             }));
 
@@ -696,6 +698,8 @@ class CanvasPixels extends React.Component {
                     }
                     new_current_state._layers[index].hash = new_hash;
                     new_current_state._layers[index].thumbnail = new_thumbnail;
+                    new_current_state._layers[index].colors = Array.from(Array.from(pc).slice(0, 128) || []).map((c) => this.color_conversion.to_hex_from_uint32(c));
+                    new_current_state._layers[index].number_of_colors = parseInt(pc.length);
                     all_layers_length++;
 
                     if(all_layers_length === new_current_state._layers.length) {
@@ -709,6 +713,8 @@ class CanvasPixels extends React.Component {
 
                 new_current_state._layers[index].hash = new_hash;
                 new_current_state._layers[index].thumbnail = old_thumbnail;
+                new_current_state._layers[index].colors = Array.from(Array.from(pc).slice(0, 128) || []).map((c) => this.color_conversion.to_hex_from_uint32(c));
+                new_current_state._layers[index].number_of_colors = parseInt(pc.length);
                 all_layers_length++;
 
                 if(all_layers_length === new_current_state._layers.length) {
@@ -2841,8 +2847,6 @@ class CanvasPixels extends React.Component {
                                 name: String(l.name || ""),
                                 hidden: Boolean(l.hidden),
                                 opacity: parseFloat(l.opacity || 1),
-                                colors: Array.from(_s_pxl_colors[li].slice(0, 128) || []).map((c) => this.color_conversion.to_hex_from_uint32(c)),
-                                number_of_colors: parseInt(_s_pxl_colors[li].length),
                                 thumbnail: String(l.thumbnail || ""),
                             });
                         }),

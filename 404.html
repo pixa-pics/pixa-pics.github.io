@@ -145,6 +145,7 @@
                 } else {
                     console.log("GOOD, the service worker installation has been ignored successfully.")
                 }
+
                 // Load pre-used (PRE) file or finally used ones (POST)
                 var fire_it = function (what) {
 
@@ -168,17 +169,12 @@
                         var ss = hrefs[i];
                         if (ss.endsWith(".js")) {
 
+                            var main_script_sources = document.querySelectorAll('script[src$="' + hrefs[i] + '"]');
+                            if (main_script_sources.length > 0) {main_script_sources.forEach(function (node) {node.remove();});}
+
                             var e = document.createElement("script");
                             e.setAttribute("src", ss);
                             e.setAttribute("type", "text/javascript");
-
-                            var main_script_sources = document.querySelectorAll('script[src$="' + ss + '"]');
-                            if (main_script_sources.length > 0) {
-                                main_script_sources.forEach(function (node) {
-                                    node.remove();
-                                });
-                            }
-
                             e.setAttribute(ss.endsWith(_MAIN_JS_FILE_ENDS_WITH) ? "async" : "defer", "true");
                             document.body.appendChild(e);
 
@@ -205,6 +201,7 @@
                     if (document.readyState === "complete") {
                         fire_it("LAST");
                         window.addEventListener("load", function () {
+                            _FIRED_IT_STATE = "";
                             fire_it("LAST");
                         });
                     }
@@ -217,6 +214,7 @@
                 if (document.readyState === "complete") {
                     fire_it("LAST");
                     window.addEventListener("load", function () {
+                        _FIRED_IT_STATE = "";
                         fire_it("LAST");
                     });
                 }
@@ -234,12 +232,13 @@
                         var sw = r.installing || r.waiting || r.active || null;
                         if (sw !== null) {
 
-                            if(sw.state === "activated") { _LET_FIRE_IT(true); }
-
                             sw.addEventListener('statechange', function(e) {
 
                                 if(e.target.state === "activated") { _LET_FIRE_IT(true); }
                             });
+
+                            if(sw.state === "activated") { _LET_FIRE_IT(true); }
+
                         }else { _LET_FIRE_IT(false); }
 
                         return true;
@@ -247,7 +246,9 @@
                 }else { _LET_FIRE_IT(false); }
 
                 return true;
-            }; _REGISTER_SERVICE_WORKER();
+            };
+
+            _REGISTER_SERVICE_WORKER();
         </script>
 
         <!-- Open graph metadata -->

@@ -490,10 +490,10 @@ class Home extends React.Component {
                 }}>
                     <div className={classes.backgroundImageContainer} style={{
                         backdropFilter: THEME_DAY ?
-                            "blur(6px) saturate(0.9)":
+                            "blur(8px) saturate(0.66) contrast(1.33)":
                             "brightness(0.6) saturate(1.2) hue-rotate(25deg) blur(6px)",
                         webkitBackdropFilter: THEME_DAY ?
-                            "blur(6px) saturate(0.9)":
+                            "blur(8px) saturate(0.66) contrast(1.33)":
                             "brightness(0.6) saturate(1.2) hue-rotate(25deg) blur(6px)"
                     }}>
                         {_image_name_infographics.length >= 1 &&
@@ -518,11 +518,11 @@ class Home extends React.Component {
                 </div>
                 <div className={classes.headerContainer} style={{color: THEME_DAY && !IS_EVENING? "#ffffffff": "#fff"}}>
                     <h1 className={classes.titleh1} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#fff"}}>
-                        <span className={classes.stepPoints} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#008eff"}}>1 </span>
                         <img src={"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAXCAMAAABUMB2pAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAABRUExURUdwTM8gNGYm6NaEj+///IEMPZe2wwAAALELMsnk6OuhpA/ghUoGKbLt7/dRTgRMpCoBgwahkvPDxN3193CGk/rX1RYCK6HP3AjQ4rz/yZCgsNNpsAgAAAABdFJOUwBA5thmAAABFElEQVQoz4WTi26DMAxF40DsOGl4tmu7///Q2XltqoBdQZDg6PraMsZ0kcpcSb6D6oIjwn3jiRXzJxjh+BizBu/BAx0zosem5waKHVC0j7+Sku6Aohi5IdPILPX8ZzBa3u+5QZtAkktVsNot2TWu3YpFPnt5rUneO30sbG2cOwMs7wGql0JC0WK+1jhr9p0DZycxci5jSt4KJE5cFQJoJpcvudXGNCfuFE+ayDn10lKlOWNihQIHAEY1aKqTIGvtit2JcVBEWpfzdmvQYlfboTBNQ2nbkCB9pPR6IRYqfCP6yugg/4zcWsSCoTLQoI9tSiljmEudLBTd0xNxEKqEPtvMe0pDeuam6WrHteX/fgVz/rP8ADUeDr4tHJI9AAAAAElFTkSuQmCC"}
-                             alt="pixa-pics-logo" style={{height: "1em", width: "auto", verticalAlign: "baseline", margin:"0px 16px"}} className="pixelated shiny emoji-150"/>
-                        <ShufflingSpanText className={classes.revelantText} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#008eff"}} pre=" «" key={Boolean(_join_now_button_update % 11)} placeholder="PIXA.PICS" text="PIXA.PICS" app="» " animation_delay_ms={_join_now_button_update === 0 ? 4500: 0} animation_duration_ms={1500}/>
-                        <span className={classes.revelantText} style={{color: THEME_DAY && !IS_EVENING ? "#000": "#008eff"}}> From the REAL-LIFE to PIXEL ART and NFTs.</span>
+                             alt="pixa-pics-logo" style={{height: "1.25em", width: "auto", verticalAlign: "baseline", margin:"8px 32px 0px 16px"}} className="pixelated shiny emoji-150"/>
+                        <span className={classes.stepPoints} style={{color: THEME_DAY && !IS_EVENING ? "#fff": "#008eff"}}>1 </span>
+                        <ShufflingSpanText className={classes.revelantText} style={{color: THEME_DAY && !IS_EVENING ? "#fff": "#008eff"}} pre=" «" key={Boolean(_join_now_button_update % 11)} placeholder="PIXA.PICS" text="PIXA.PICS" app="» " animation_delay_ms={_join_now_button_update === 0 ? 4500: 0} animation_duration_ms={1500}/>
+                        <span className={classes.revelantText} style={{color: THEME_DAY && !IS_EVENING ? "#fff": "#008eff"}}> From the REAL-LIFE to PIXEL ART and NFTs.</span>
                     </h1>
                     <h2 className={classes.titleh2} style={{color: THEME_DAY && !IS_EVENING ? "#ffffffff": "#fff"}}>
                         <span className={classes.revelantText} style={{color: THEME_DAY && !IS_EVENING ? "#ffffff": "#008eff"}}>Get the MAXIMA of PRIVACY fashionably for real and for the ONLINE-SELF...</span>
