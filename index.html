@@ -124,131 +124,90 @@
 
             "use strict";
             /* LOAD JS FILE (in two "moves") */
-            var _LET_FIRE_IT = async function(is_service_worker_activation_successful) {
+            var _LET_FIRE_IT = function(is_service_worker_activation_successful) {
 
-                var _FIRED_IT_STATE = "";
-                var _MAIN_JS_FILE_ENDS_WITH = "norris.min.js";
-                var _PRE_FILES = Array.of(
-                    "/chunk_main_253ae210.min.js",
-                    "/chunk_main_31ecd969.min.js",
-                    "/chunk_main_690b702c.min.js",
-                    "/chunk_main_748942c6.min.js",
-                );
-                var _POST_FILES = Array.of(
-                    "/src/fonts/jura/index.css", // Font - Every font except latin
-                    "/chunk_norris.min.js",
-                    "/src/fonts/baksheesh/index.css"
-                );
+                return new Promise(function(resolve, reject){
 
-                if (is_service_worker_activation_successful) {
-                    console.log("GREAT, the service worker has been activated with success.")
-                } else {
-                    console.log("GOOD, the service worker installation has been ignored successfully.")
-                }
+                    var _FIRED_IT_STATE = "";
+                    var _MAIN_JS_FILE_ENDS_WITH = "norris.min.js";
+                    var _PRE_FILES = Array.of("/chunk_main_253ae210.min.js", "/chunk_main_31ecd969.min.js", "/chunk_main_690b702c.min.js", "/chunk_main_748942c6.min.js",);
+                    var _POST_FILES = Array.of( "/src/fonts/jura/index.css", "/chunk_norris.min.js", "/src/fonts/baksheesh/index.css");
 
-                // Load pre-used (PRE) file or finally used ones (POST)
-                var fire_it = function (what) {
+                    if (is_service_worker_activation_successful) { console.log("GREAT, the service worker has been activated with success.") } else {console.log("GOOD, the service worker installation has been ignored successfully.")}
 
-                    var hrefs = [];
-                    if (Boolean(what === "FIRST" && Boolean(_FIRED_IT_STATE !== "FIRST" && _FIRED_IT_STATE !== "LAST")) || Boolean(what === "LAST" && Boolean(_FIRED_IT_STATE !== "FIRST" && _FIRED_IT_STATE !== "LAST"))) {
+                    // Load pre-used (PRE) file or finally used ones (POST)
+                    var fire_it = function (what) {
 
-                        hrefs = hrefs.concat(_PRE_FILES);
-                        console.log("First files to load have been ignited.")
-                        _FIRED_IT_STATE = "FIRST";
-                    }
-
-                    if (Boolean(what === "LAST" && Boolean(_FIRED_IT_STATE === "FIRST" || _FIRED_IT_STATE !== "LAST"))) {
-
-                        hrefs = hrefs.concat(_POST_FILES);
-                        console.log("Last files to load have been ignited.")
-                        _FIRED_IT_STATE = "LAST";
-                    }
-
-                    for (var i = 0; i < hrefs.length; i++) {
-
-                        var ss = hrefs[i];
-                        if (ss.endsWith(".js")) {
-
-                            var main_script_sources = document.querySelectorAll('script[src$="' + hrefs[i] + '"]');
-                            if (main_script_sources.length > 0) {main_script_sources.forEach(function (node) {node.remove();});}
-
-                            var e = document.createElement("script");
-                            e.setAttribute("src", ss);
-                            e.setAttribute("type", "text/javascript");
-                            e.setAttribute(ss.endsWith(_MAIN_JS_FILE_ENDS_WITH) ? "async" : "defer", "true");
-                            document.body.appendChild(e);
-
-                        } else if (ss.endsWith(".css")) {
-
-                            var e = document.createElement("link");
-                            e.setAttribute("href", ss);
-                            e.setAttribute("rel", "stylesheet");
-                            document.body.appendChild(e);
-
+                        var hrefs = [];
+                        if (Boolean(what === "FIRST" && Boolean(_FIRED_IT_STATE !== "FIRST" && _FIRED_IT_STATE !== "LAST")) || Boolean(what === "LAST" && Boolean(_FIRED_IT_STATE !== "FIRST" && _FIRED_IT_STATE !== "LAST"))) {
+                            hrefs = hrefs.concat(_PRE_FILES); console.log("First files to load have been ignited.")
+                            _FIRED_IT_STATE = "FIRST";
                         }
-                    }
-                }
 
-                // This event fires after doc ready state is interactive and before it is complete, it doesn't wait on resources to be loaded
-                document.addEventListener('DOMContentLoaded', function () {
-                    fire_it("LAST");
-                });
-                document.addEventListener('readystatechange', function () {
+                        if (Boolean(what === "LAST" && Boolean(_FIRED_IT_STATE === "FIRST" || _FIRED_IT_STATE !== "LAST"))) {
+                            hrefs = hrefs.concat(_POST_FILES); console.log("Last files to load have been ignited.")
+                            _FIRED_IT_STATE = "LAST";
+                        }
 
-                    if (document.readyState === "interactive") {
-                        fire_it("FIRST");
-                    }
-                    if (document.readyState === "complete") {
-                        fire_it("LAST");
-                        window.addEventListener("load", function () {
-                            _FIRED_IT_STATE = "";
-                            fire_it("LAST");
-                        });
-                    }
-                });
+                        for (var i = 0; i < hrefs.length; i++) {
 
-                // Prevent this function from being executed none, twice or more using parameters what
-                if (document.readyState === "interactive") {
-                    fire_it("FIRST");
-                }
-                if (document.readyState === "complete") {
-                    fire_it("LAST");
-                    window.addEventListener("load", function () {
-                        _FIRED_IT_STATE = "";
-                        fire_it("LAST");
+                            var ss = hrefs[i];
+                            var e;
+                            if (ss.endsWith(".js")) {
+
+                                document.querySelectorAll('script[src$="' + hrefs[i] + '"]').forEach(function (node) {node.remove();});
+                                e = document.createElement("script"); e.setAttribute("src", ss); e.setAttribute("type", "text/javascript"); e.setAttribute(ss.endsWith(_MAIN_JS_FILE_ENDS_WITH) ? "async" : "defer", "true");
+                                document.body.appendChild(e);
+
+                            } else if (ss.endsWith(".css")) {
+
+                                e = document.createElement("link"); e.setAttribute("href", ss); e.setAttribute("rel", "stylesheet");
+                                document.body.appendChild(e);
+                            }
+                        }
+                        return true;
+                    }
+
+                    // This event fires after doc ready state is interactive and before it is complete, it doesn't wait on resources to be loaded
+                    document.addEventListener('DOMContentLoaded', function () {resolve(fire_it("LAST"));});
+                    document.addEventListener('readystatechange', function () {
+
+                        if (document.readyState === "interactive") {fire_it("FIRST");}
+                        if (document.readyState === "complete") {resolve(fire_it("LAST"));}
                     });
-                }
+
+                    // Prevent this function from being executed none, twice or more using parameters what
+                    if (document.readyState === "interactive") {fire_it("FIRST");}
+                    if (document.readyState === "complete") {resolve(fire_it("LAST"));}
+
+                });
             };
 
             /* TRY INSTALL SERVICE WORKER, FINALLY LOAD JS FILE */
             var _REGISTER_SERVICE_WORKER = function() {
-
-                if ("serviceWorker" in navigator) {
-
-                    return navigator.serviceWorker.register("/service-worker.js", {
-                        scope: "/"
-                    }).then(function(r) {
-
-                        var sw = r.installing || r.waiting || r.active || null;
-                        if (sw !== null) {
-
-                            sw.addEventListener('statechange', function(e) {
-
-                                if(e.target.state === "activated") { _LET_FIRE_IT(true); }
-                            });
-
-                            if(sw.state === "activated") { _LET_FIRE_IT(true); }
-
-                        }else { _LET_FIRE_IT(false); }
-
-                        return true;
-                    });
-                }else { _LET_FIRE_IT(false); }
-
-                return true;
+                return new Promise(function(resolve, reject){
+                    if ("serviceWorker" in navigator) {
+                        return navigator.serviceWorker.register("/service-worker.js", {
+                            scope: "/"
+                        }).then(function(r) {
+                            var sw = r.installing || r.waiting || r.active || null;
+                            if (sw !== null) {
+                                sw.addEventListener('statechange', function(e) {
+                                    if(e.target.state === "activated") { _LET_FIRE_IT(true).then(function(){resolve();}); }
+                                });
+                                if(sw.state === "activated") { _LET_FIRE_IT(true).then(function(){resolve();}); }
+                            }else { _LET_FIRE_IT(false).then(function(){resolve();}); }
+                            return true;
+                        });
+                    }else { _LET_FIRE_IT(false).then(function(){resolve();}); }
+                });
             };
 
-            _REGISTER_SERVICE_WORKER();
+            _REGISTER_SERVICE_WORKER().then(function(){
+                window.addEventListener("load", function () {
+                    _REGISTER_SERVICE_WORKER();
+                });
+            });
         </script>
 
         <!-- Open graph metadata -->
