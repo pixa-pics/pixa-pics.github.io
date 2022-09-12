@@ -1374,7 +1374,7 @@ class CanvasPixels extends React.Component {
 
             this._request_force_update(false, false, () => {
 
-                this._update_canvas(true, true);
+                this._update_canvas(true);
             });
         });
     };
@@ -2243,14 +2243,16 @@ class CanvasPixels extends React.Component {
 
     _handle_canvas_middle = () => {
 
-        this.super_state.set_state({has_shown_canvas_once: false, _is_there_new_dimension: true}, () => {
+        this._update_canvas(true, () => {
 
-            this._request_force_update(false, false, () => {
+            this.super_state.set_state({has_shown_canvas_once: false, _is_there_new_dimension: true}, () => {
 
-                this._update_canvas(true);
+                this._request_force_update(false, false, () => {
+
+                    this._update_canvas(true);
+                });
             });
         });
-
     };
 
     _handle_canvas_mouse_move = (event) => {
@@ -2658,7 +2660,7 @@ class CanvasPixels extends React.Component {
         }
     };
 
-    _update_canvas = (force_update = false) => {
+    _update_canvas = (force_update = false, callback_function = function(){}) => {
 
         // Only operate on canvas context if existing
         if (Boolean(this.super_canvas)) {
@@ -2832,7 +2834,7 @@ class CanvasPixels extends React.Component {
             if(indexed_changes.size > 0) {
 
                 force_update = Boolean(indexed_changes.size * 1.05 > pxl_width * pxl_height || force_update || clear_canvas);
-                this.super_canvas.pile(indexed_changes, this.super_canvas.unpile, this.super_canvas.prender, this.sraf.run_frame, Array.of(this.super_canvas.render, false, false));
+                this.super_canvas.pile(indexed_changes, this.super_canvas.unpile, this.super_canvas.prender, this.sraf.run_frame, Array.of(this.super_canvas.render, force_update, force_update));
 
                 this.super_state.set_state({
                     _pxl_indexes_of_selection_drawn: _pxl_indexes_of_selection,
@@ -2848,7 +2850,7 @@ class CanvasPixels extends React.Component {
                     _is_there_new_dimension: false,
                     _did_hide_canvas_content: Boolean(hide_canvas_content),
                     _previous_imported_image_pxls_positioned_keyset: imported_image_pxls_positioned_keyset
-                });
+                }, callback_function);
             }
         }
     }

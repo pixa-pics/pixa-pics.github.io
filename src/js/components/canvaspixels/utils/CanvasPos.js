@@ -363,10 +363,10 @@ const CanvasPos = {
 
                 let moves_speed_average =  [...moves_speeds].slice(-max_move_speed).reduce((p,c,i,a) => p+(c/a.length), 0);
                 moves_speed_average = Math.max(1, Math.round(Math.floor(moves_speed_average * max_move_speed/200 )))
-
+                const is_new_scale = Boolean(new_scale !== null);
                 s = Object.assign(s, {scale: Object.assign(s.scale, {
                     default: parseFloat(scale.default),
-                    current: parseFloat(new_scale === null ? current: new_scale),
+                    current: parseFloat(!is_new_scale ? current: new_scale),
                     move_x: parseInt(new_scale_move_x),
                     move_y: parseInt(new_scale_move_y),
                     move_speed_timestamp: Date.now(),
