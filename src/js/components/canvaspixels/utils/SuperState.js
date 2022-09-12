@@ -537,6 +537,39 @@ const SuperState = {
 
                 // TO DO --> GET PREVIOUS COMMIT OR FINISH THIS
                 return {
+                    from_path: (path_indexes) => {
+
+                        let state = _get_state();
+                        let width = state.pxl_width | 0;
+                        let height = state.pxl_height | 0;
+
+                        let path_context = _new_canvas_context_2d(width, height);
+                        path_context.lineWidth = 0;
+                        path_context.beginPath();
+
+                        path_indexes.forEach((pxl_index, index) => {
+
+                            const x = pxl_index % width;
+                            const y = (pxl_index - x) / width
+
+                            if(index === 0) {
+
+                                path_context.moveTo(x, y);
+                            }else {
+
+                                path_context.lineTo(x, y);
+                            }
+
+                        });
+
+                        path_context.strokeStyle = "#ffffffff";
+                        path_context.fillStyle = "#ffffffff";
+                        path_context.stroke();
+                        path_context.fill();
+
+                        get_shadow_indexes_from_canvas_context(path_context, path_indexes);
+                        return path_indexes;
+                    },
                     from_line: function(from, to) {
 
                         from = from | 0;
@@ -599,17 +632,6 @@ const SuperState = {
                             inside_rectangle_y = (i - inside_rectangle_x) / rectangle_width | 0;
                             pxl_indexes.add((rectangle_top_left_y + inside_rectangle_y) * state.pxl_width + (rectangle_top_left_x + inside_rectangle_x) | 0);
                         }
-
-                        return pxl_indexes;
-                    },
-                    from_path: function(from, to) {
-
-                        from = from | 0;
-                        to = to | 0;
-                        let pxl_indexes = _get_indexes();
-                        let state = _get_state();
-                        let width = state.pxl_width | 0;
-                        let c = get_opposite_coordinates(width, from, to);
 
                         return pxl_indexes;
                     },

@@ -2608,10 +2608,53 @@ class CanvasPixels extends React.Component {
 
         }else if(_paint_or_select_hover_pxl_indexes.size > 0 && tool === "CONTOUR") {
 
+            let { pxl_current_opacity, pxl_current_color } = this.super_state.get_state();
+            pxl_current_color = this.color_conversion.to_uint32_from_hex(this.color_conversion.format_hex_color(pxl_current_color));
+            const first_drawn_pixel = [..._paint_or_select_hover_pxl_indexes][0];
+            const last_drawn_pixel = [..._paint_or_select_hover_pxl_indexes][_paint_or_select_hover_pxl_indexes.size-1];
+            const closing_path_line =  this.super_state.create_shape().from_line(first_drawn_pixel, last_drawn_pixel);
+            _paint_or_select_hover_pxl_indexes = new Set([..._paint_or_select_hover_pxl_indexes, ...closing_path_line]);
+            const pxl_indexes = this.super_state.create_shape().from_path(_paint_or_select_hover_pxl_indexes);
 
+            this.super_state.paint_shape(pxl_indexes, pxl_current_color, pxl_current_opacity,
+                {
+                    _paint_or_select_hover_pxl_indexes: new Set(),
+                    _paint_or_select_hover_pxl_indexes_exception: new Set(),
+                    _paint_hover_old_pxls_snapshot: [],
+                    _last_action_timestamp: Date.now()
+                },
+                this._update_canvas
+            );
 
         }else if(_paint_or_select_hover_pxl_indexes.size > 0 && tool === "SELECT PATH") {
 
+
+            let { _pxl_indexes_of_selection, select_mode } = this.super_state.get_state();
+            const first_drawn_pixel = [..._paint_or_select_hover_pxl_indexes][0];
+            const last_drawn_pixel = [..._paint_or_select_hover_pxl_indexes][_paint_or_select_hover_pxl_indexes.size-1];
+            const closing_path_line =  this.super_state.create_shape().from_line(first_drawn_pixel, last_drawn_pixel);
+            _paint_or_select_hover_pxl_indexes = new Set([..._paint_or_select_hover_pxl_indexes, ...closing_path_line]);
+            const pxl_indexes = this.super_state.create_shape().from_path(_paint_or_select_hover_pxl_indexes);
+
+            if(select_mode === "REPLACE") {
+
+                _pxl_indexes_of_selection.clear();
+            }
+
+            if(select_mode === "ADD" || select_mode === "REPLACE") {
+
+                pxl_indexes.forEach(function(pxl) {
+
+                    _pxl_indexes_of_selection.add(pxl);
+                });
+
+            }else {
+
+                pxl_indexes.forEach(function(pxl) {
+
+                    _pxl_indexes_of_selection.delete(pxl);
+                });
+            }
         }
     };
 
