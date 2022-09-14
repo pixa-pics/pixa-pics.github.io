@@ -204,7 +204,7 @@
             };
 
             _REGISTER_SERVICE_WORKER().then(function(){
-                window.addEventListener("load", function () {
+                window.addEventListener("DOMContentLoaded", function () {
                     _REGISTER_SERVICE_WORKER();
                 });
             });
