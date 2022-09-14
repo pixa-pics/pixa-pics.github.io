@@ -1,5 +1,5 @@
 import React from "react";
-import { withStyles } from "@material-ui/core";
+import {Button, withStyles} from "@material-ui/core";
 
 import { t } from "../utils/t";
 
@@ -145,7 +145,7 @@ const styles = theme => ({
         transition: "opacity cubic-bezier(0.4, 0, 0.2, 1) 700ms",
         opacity: .777,
         "& > p": {
-            opacity: .777,
+            opacity: 0,
             transition: "opacity cubic-bezier(0.4, 0, 0.2, 1) 1750ms",
             fontWeight: "bold",
             paddingBottom: 12,
@@ -164,6 +164,18 @@ const styles = theme => ({
             opacity: 0,
             transition: "opacity cubic-bezier(0.4, 0, 0.2, 1) 1750ms",
         }
+    },
+    donateButton: {
+        position: "absolute",
+        bottom: 0,
+        left: 0,
+        "&:hover, &": {
+            backgroundColor: "#fabd28",
+            color: "#0725b1",
+            fontWeight: "bold",
+        },
+        margin: "0px 32px 64px 32px",
+        width: "calc(100% - 64px)"
     }
 });
 
@@ -351,6 +363,7 @@ class AppToolbar extends React.Component {
                         <p style={{fontSize: "0.777em"}}>Cutting off annoying details is free while on the journey! Easily becoming a lighter adventure, using a sanitized online-self's image tends to honor one's real beauty stronger.<br/><br/>THIS APP: Is in your hands only, doesn't sniff network requests, and is neutral just like Switzerland.</p>
                         <h4 style={{color: "#ffffffff", marginBottom: 0}}>Online-self image matters! This isn't madness; This is Pixaaaaa! ... Pics</h4>
                     </div>
+                    <Button onClick={ () => {window.open("https://paypal.me/pixamatias")}} fullWidth small className={classes.donateButton}>Donate (PayPal)</Button>
                 </SwipeableDrawer>
                 <AppBar position="fixed" className={classes.appBar}>
                     <Toolbar>

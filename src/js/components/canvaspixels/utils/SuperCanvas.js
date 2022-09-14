@@ -109,11 +109,11 @@ const SuperCanvas = {
                     let occ2d;
                     if (is_offscreen) {
 
-                        occ2d = new OffscreenCanvas(pxl_width, pxl_height).getContext("2d");
+                        occ2d = new OffscreenCanvas(pxl_width, pxl_height).getContext("2d", {willReadFrenquently: true});
                         occ2d.imageSmoothingEnabled = false;
                     }
 
-                    cc2d = c.getContext('2d' );
+                    cc2d = c.getContext('2d', {desynchronized: true} );
                     cc2d.imageSmoothingEnabled = false;
                     cc2d.globalCompositeOperation = "copy";
 
@@ -326,19 +326,19 @@ const SuperCanvas = {
                 v = state.v;
             },
             secure_context() {
-                /*s.canvas_context.canvas.addEventListener("contextlost", function(){
+                s.canvas_context.canvas.addEventListener("contextlost", function(){
 
-                    let cc2d = s.canvas_context.canvas.getContext('2d', {});
+                    let cc2d = s.canvas_context.canvas.getContext('2d', {desynchronized: true});
                     cc2d.imageSmoothingEnabled = false;
                     cc2d.globalCompositeOperation = "copy";
                     s.canvas_context = cc2d;
                 });
                 s.offscreen_canvas_context.canvas.addEventListener("contextlost", function(){
 
-                    let occ2d = s.offscreen_canvas_context.canvas.getContext("2d", {});
+                    let occ2d = s.offscreen_canvas_context.canvas.getContext("2d", {willReadFrenquently: true});
                     occ2d.imageSmoothingEnabled = false;
                     s.offscreen_canvas_context = occ2d;
-                });*/
+                });
             },
             destroy() {
                 s, bmp, fp, ic, v = null;

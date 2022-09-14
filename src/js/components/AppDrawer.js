@@ -1,5 +1,5 @@
 import React from "react";
-import { withStyles } from "@material-ui/core";
+import {Button, withStyles} from "@material-ui/core";
 import {Tooltip, Toolbar, Drawer, Box, Fade} from "@material-ui/core";
 import DrawerContent from "../components/DrawerContent";
 
@@ -64,9 +64,21 @@ const styles = theme => ({
             transition: "opacity cubic-bezier(0.4, 0, 0.2, 1) 350ms",
         },
         "&:hover > p": {
-            opacity: .777,
+            opacity: 0,
             transition: "opacity cubic-bezier(0.4, 0, 0.2, 1) 350ms",
         }
+    },
+    donateButton: {
+        position: "absolute",
+        bottom: 0,
+        left: 0,
+        "&:hover, &": {
+            backgroundColor: "#fabd28",
+            color: "#0725b1",
+            fontWeight: "bold",
+        },
+        margin: "0px 32px 64px 32px",
+        width: "calc(100% - 64px)"
     }
 });
 
@@ -125,6 +137,7 @@ class AppDrawer extends React.Component {
                             </div>
                         </Fade>
                     </div>
+                    <Button onClick={() =>   {window.open("https://paypal.me/pixamatias")}} fullWidth small className={classes.donateButton}>Donate (PayPal)</Button>
                 </Drawer>
             </Box>
         );
