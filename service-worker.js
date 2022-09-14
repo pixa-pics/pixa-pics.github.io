@@ -1,7 +1,7 @@
 "use strict";
-var REQUIRED_CACHE = "unless-update-cache-v370-required";
-var USEFUL_CACHE = "unless-update-cache-v370-useful";
-var STATIC_CACHE = "unless-update-cache-v370-static";
+var REQUIRED_CACHE = "unless-update-cache-v371-required";
+var USEFUL_CACHE = "unless-update-cache-v371-useful";
+var STATIC_CACHE = "unless-update-cache-v371-static";
 var MAIN_CHILD_CHUNK_REGEX = /chunk_(main_[a-z0-9]+)\.min\.js/i;
 var CHILD_CHUNK_REGEX = /chunk_([0-9]+)\.min\.js/i;
 
@@ -61,7 +61,7 @@ self.addEventListener("install", function(event) {
     required_cache.then(function (cache) {
         cache.addAll([
             "/chunk_main_253ae210.min.js",
-            "/chunk_main_31ecd969.min.js",
+            "/chunk_main_678f84af.min.js",
             "/chunk_main_690b702c.min.js",
             "/chunk_main_748942c6.min.js",
             "/chunk_norris.min.js",
