@@ -131,9 +131,11 @@ const ColorConversion = {
                 // Blend all color and special ones only starting from the last opaque layer
                 let base = new Uint8ClampedArray(4);
                 let added = new Uint8ClampedArray(4);
-                let mix = new Uint8ClampedArray(4);
-                let float_variables = new Float32Array(6); // ba3, ad3, mi3, ao, bo;
-                    float_variables.fill((amount * 65535 | 0) / 65535, 5, 6);
+                let mix_buffer = new ArrayBuffer(4);
+                let mix_view = new DataView(mix_buffer);
+                let mix = new Uint8ClampedArray(mix_buffer);
+                let float_variables =  new DataView(new ArrayBuffer(24)); // ba3, ad3, mi3, ao, bo;
+                    float_variables.setFloat32(20, (amount * 65535 | 0) / 65535);
                 let start_layer = 0;
 
                 for(let i1 = 0, i4 = 0; i1 < used_colors_length; i1 = i1+1|0, i4 = i4+4|0) {
@@ -146,38 +148,37 @@ const ColorConversion = {
 
                         added.set(all_added_in_layers[layer_n].slice(i4, i4+4), 0);
 
-                        if(should_return_transparent > 0 && added[3] === 0 && float_variables[5] === 1) {
+                        if(should_return_transparent !== 0 && added[3] === 0 && float_variables.getFloat32(20) === 1) {
 
                             base.fill( 0);
-                        }else if(added[3] === 255 && float_variables[5] === 1) {
+                        }else if(added[3] === 255 && float_variables.getFloat32(20) === 1) {
 
                             base.set(added, 0);
                         }else {
 
-                            float_variables.fill(base[3] / 255, 0, 1);
-                            float_variables.fill(added[3] / 255 * float_variables[5], 1, 2);
+                            float_variables.setFloat32(0, base[3] / 255);
+                            float_variables.setFloat32(4, added[3] / 255 * float_variables.getFloat32(20));
 
                             mix.fill(0);
-                            float_variables.fill(0, 2, 3);
-                            if (float_variables[0] > 0 && float_variables[1] > 0) {
-                                if(alpha_addition > 0) { float_variables.fill(float_variables[0] + float_variables[1], 2, 3); } else { float_variables.fill(1 - (1 - float_variables[1]) * (1 - float_variables[0]), 2, 3);}
-                                float_variables.fill(float_variables[1] / float_variables[2], 3, 4);
-                                float_variables.fill(float_variables[0] * (1 - float_variables[1]) / float_variables[2], 4, 5);
-                                mix.set(Uint8ClampedArray.of(
-                                    added[0] * float_variables[3] + base[0] * float_variables[4], // red
-                                    added[1] * float_variables[3] + base[1] * float_variables[4], // green
-                                    added[2] * float_variables[3] + base[2] * float_variables[4]
-                                ), 0);// blue
-                            }else if(float_variables[1] > 0) {
-                                float_variables.fill(added[3] / 255, 2, 3);
+                            float_variables.setFloat32(8, 0);
+                            if (float_variables.getFloat32(0) > 0 && float_variables.getFloat32(4) > 0) {
+                                if(alpha_addition > 0) { float_variables.setFloat32(8, float_variables.getFloat32(0) + float_variables.getFloat32(4)); } else { float_variables.setFloat32(8, 1 - (1 - float_variables.getFloat32(4)) * (1 - float_variables.getFloat32(0)));}
+                                float_variables.setFloat32(12, float_variables.getFloat32(4) / float_variables.getFloat32(8));
+                                float_variables.setFloat32(16, float_variables.getFloat32(0) * (1 - float_variables.getFloat32(4)) / float_variables.getFloat32(8));
+
+                                mix_view.setUint8(0, added[0] * float_variables.getFloat32(12) + base[0] * float_variables.getFloat32(16)); // red
+                                mix_view.setUint8(1, added[1] * float_variables.getFloat32(12) + base[1] * float_variables.getFloat32(16)); // green
+                                mix_view.setUint8(2, added[2] * float_variables.getFloat32(12) + base[2] * float_variables.getFloat32(16)); // blue
+                            }else if(float_variables.getFloat32(4) > 0) {
+                                float_variables.setFloat32(xxx, added[3] / 255, 2, 3);
                                 mix.set(added, 0);
                             }else {
-                                float_variables.fill(base[3] / 255, 2, 3);
+                                float_variables.setFloat32(xxx, base[3] / 255, 2, 3);
                                 mix.set(base, 0);
                             }
                             if(alpha_addition) {
-                                float_variables.fill(float_variables[2] / 2, 2, 3);
-                            } mix.fill(float_variables[2] * 255, 3, 4);
+                                float_variables.setFloat32(xxx, float_variables.getFloat32(8) / 2, 2, 3);
+                            } mix.fill(float_variables.getFloat32(8) * 255, 3, 4);
 
                             base.set(mix, 0);
                         }

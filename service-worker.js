@@ -1,7 +1,7 @@
 "use strict";
-var REQUIRED_CACHE = "unless-update-cache-v374-required";
-var USEFUL_CACHE = "unless-update-cache-v374-useful";
-var STATIC_CACHE = "unless-update-cache-v374-static";
+var REQUIRED_CACHE = "unless-update-cache-v375-required";
+var USEFUL_CACHE = "unless-update-cache-v375-useful";
+var STATIC_CACHE = "unless-update-cache-v375-static";
 var MAIN_CHILD_CHUNK_REGEX = /chunk_(main_[a-z0-9]+)\.min\.js/i;
 var CHILD_CHUNK_REGEX = /chunk_([0-9]+)\.min\.js/i;
 
@@ -49,7 +49,7 @@ self.addEventListener("install", function(event) {
 
         return true;
     }
-    
+
     event.waitUntil(useful_cache.then(function (cache) {
         return cache.addAll([
             "/src/images/favicon.ico",

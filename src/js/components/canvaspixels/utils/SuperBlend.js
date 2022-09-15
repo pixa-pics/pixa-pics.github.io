@@ -10,14 +10,12 @@ const SuperBlend = {
 
         let rgba = new Uint8ClampedArray(4);
         let color_bonus = 64;
-        let is_hover = 0;
-        let amount_array = Float32Array.of(0);
 
-        let start_layer_indexes = new Uint8ClampedArray(used_colors_length);
+        let start_layer_indexes = new Array(used_colors_length);
         let base = new Uint8ClampedArray(4);
         let added = new Uint8ClampedArray(4);
         let mix = new Uint8ClampedArray(4);
-        let float_variables = new Float32Array(6); // ba3, ad3, mi3, ao, bo;
+        let float_variables = new DataView(new ArrayBuffer(28)); // ba3 -> 0, ad3 -> 8, mi3 -> 12, ao -> 16, bo -> 20, amount -> 24;
 
         let start_layer = -1;
         // Compute for special colors like hover
@@ -25,9 +23,7 @@ const SuperBlend = {
 
             for (let color_n = 0, n4 = 0; color_n < used_colors_length; color_n = color_n+1|0, n4 = n4+4|0) {
 
-                is_hover = state.hover_data_in_layers[layer_n][color_n] | 0;
-
-                if(is_hover > 0) {
+                if(state.hover_data_in_layers[layer_n][color_n] !== 0) {
 
                     // Get the color below current layer
                     if(color_n === 0) {
@@ -44,13 +40,14 @@ const SuperBlend = {
                         color_bonus = +96;
                     }
 
-                    amount_array.set(Float32Array.of(state.amount_data_in_layers[layer_n][color_n] / 65535), 0);
-                    shadow_state.rgba_colors_data_in_layers[layer_n].set(Uint8ClampedArray.of(
-                        color_bonus + rgba[0],
-                        color_bonus + rgba[1],
-                        color_bonus + rgba[2],
-                        128 + 128 * amount_array[0],
-                    ), color_n*4);
+                    float_variables.setFloat32(24, state.amount_data_in_layers[layer_n][color_n] / 65535);
+
+                    rgba.fill(color_bonus + rgba[0], 0, 1);
+                    rgba.fill(color_bonus + rgba[1], 1, 2);
+                    rgba.fill(color_bonus + rgba[2], 2, 3);
+                    rgba.fill(128 + 128 * float_variables.getFloat32(24), 3, 4);
+
+                    shadow_state.rgba_colors_data_in_layers[layer_n].set(rgba, color_n*4|0);
                 }
             }
         }
@@ -83,42 +80,44 @@ const SuperBlend = {
             // Sum up all colors above
             for(let layer_n = start_layer+1|0; layer_n < all_layers_length; layer_n = layer_n + 1 | 0) {
 
-                float_variables.fill(state.amount_data_in_layers[layer_n][i1] / 65535, 5, 6);
-                added.set(shadow_state.rgba_colors_data_in_layers[layer_n].slice(i4, i4+4), 0);
+                float_variables.setFloat32(20, state.amount_data_in_layers[layer_n][i1] / 65535);
+                added.set(shadow_state.rgba_colors_data_in_layers[layer_n].slice(i4, i4+4|0), 0);
 
-                if(should_return_transparent && added[3] === 0 && float_variables[5] === 1) {
+                if(should_return_transparent && added.at(3) === 0 && float_variables.getFloat32(20) === 1) {
 
                     base.fill( 0);
-                }else if(added[3] === 255 && float_variables[5] === 1) {
+                }else if(added.at(3) === 255 && float_variables.getFloat32(20) === 1) {
 
                     base.set(added, 0);
                 }else {
 
-                    float_variables.fill(base[3] / 255, 0, 1);
-                    float_variables.fill(added[3] / 255 * float_variables[5], 1, 2);
+                    float_variables.setFloat32(0, base.at(3) / 255);
+                    float_variables.setFloat32(4, added.at(3) / 255 * float_variables.getFloat32(20));
 
                     mix.fill(0);
-                    float_variables.fill(0, 2, 3);
-                    if (float_variables[0] > 0 && float_variables[1] > 0) {
-                        if(alpha_addition) { float_variables.fill(float_variables[0] + float_variables[1], 2, 3); } else { float_variables.fill(1 - (1 - float_variables[1]) * (1 - float_variables[0]), 2, 3);}
-                        float_variables.fill(float_variables[1] / float_variables[2], 3, 4);
-                        float_variables.fill(float_variables[0] * (1 - float_variables[1]) / float_variables[2], 4, 5);
+                    float_variables.setFloat32(8, 0);
+                    if (float_variables.getFloat32(0) > 0 && float_variables.getFloat32(4) > 0) {
+                        if(alpha_addition) { float_variables.setFloat32(8, float_variables.getFloat32(0) + float_variables.getFloat32(4)); } else { float_variables.setFloat32(8, 1 - (1 - float_variables.getFloat32(4)) * (1 - float_variables.getFloat32(0)));}
+                        float_variables.setFloat32(12, float_variables.getFloat32(4) / float_variables.getFloat32(8));
+                        float_variables.setFloat32(16, float_variables.getFloat32(0) * (1 - float_variables.getFloat32(4)) / float_variables.getFloat32(8));
+
                         mix.set(Uint8ClampedArray.of(
-                            added[0] * float_variables[3] + base[0] * float_variables[4] | 0, // red
-                            added[1] * float_variables[3] + base[1] * float_variables[4] | 0, // green
-                            added[2] * float_variables[3] + base[2] * float_variables[4] | 0
+                            added.at(0) * float_variables.getFloat32(12) + base.at(0) * float_variables.getFloat32(16) | 0, // red
+                            added.at(1) * float_variables.getFloat32(12) + base.at(1) * float_variables.getFloat32(16) | 0, // green
+                            added.at(2) * float_variables.getFloat32(12) + base.at(2) * float_variables.getFloat32(16) | 0
                         ), 0);// blue
-                    }else if(float_variables[1] > 0) {
-                        float_variables.fill(added[3] / 255, 2, 3);
+                    }else if(float_variables.getFloat32(4) > 0) {
+                        float_variables.setFloat32(8, added.at(3) / 255);
                         mix.set(added, 0);
                     }else {
-                        float_variables.fill(base[3] / 255, 2, 3);
+                        float_variables.setFloat32(8, base.at(3) / 255);
                         mix.set(base, 0);
                     }
                     if(alpha_addition) {
-                        float_variables.fill(float_variables[2] / 2, 2, 3);
-                    } mix.fill(float_variables[2] * 255, 3, 4);
+                        float_variables.setFloat32(8, float_variables.getFloat32(8) / 2);
+                    }
 
+                    mix.fill(float_variables.getFloat32(8) * 255 | 0, 3, 4);
                     base.set(mix, 0);
                 }
             }
@@ -286,16 +285,16 @@ const SuperBlend = {
 
         return {
             for: function(pixel_index) {
-                pixel_index = pixel_index | 0;
+
                 state.current_index = state.current_index + 1 | 0;
                 state.indexes_data_for_layers[state.current_index-1] = pixel_index | 0;
             },
             stack: function(for_layer_index, ui32color, amount, is_hover) {
 
-                let sci = state.current_index-1 | 0;
-                state.colors_data_in_layers[for_layer_index].set(Uint32Array.of(ui32color), sci);
-                state.amount_data_in_layers[for_layer_index].set(Uint16Array.of(amount * 65535), sci);
-                state.hover_data_in_layers[for_layer_index].set(Uint8ClampedArray.of(is_hover*2), sci);
+                for_layer_index = for_layer_index | 0;
+                state.colors_data_in_layers[for_layer_index].fill(ui32color | 0, state.current_index-1 | 0, state.current_index | 0);
+                state.amount_data_in_layers[for_layer_index].fill(amount * 65535 | 0, state.current_index-1 | 0, state.current_index | 0);
+                state.hover_data_in_layers[for_layer_index].fill(is_hover | 0, state.current_index-1 | 0, state.current_index | 0);
             },
             blend: function (should_return_transparent, alpha_addition ) {
                 should_return_transparent = should_return_transparent | 0;

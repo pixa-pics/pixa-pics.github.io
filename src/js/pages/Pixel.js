@@ -170,6 +170,7 @@ const styles = theme => ({
         contain: "layout paint size style",
     },
     swipeableDrawerPaper: {
+        willChange: "scroll-position",
         maxWidth: "100%",
         overscrollBehavior: "none",
         overflow: "hidden",

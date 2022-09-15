@@ -748,7 +748,7 @@ class PixelToolboxSwipeableViews extends React.Component {
                                 boxSizing: "border-box",
                                 width: "100%"
                             }}>
-                                <Typography id="width-slider" gutterBottom>Import size</Typography>
+                                <Typography id="width-slider" gutterBottom>RESIZE NEW IMAGE TO : </Typography>
                                 <Slider defaultValue={import_size} step={8} valueLabelDisplay="auto" min={0}
                                         max={import_size > 512 ? import_size : 512}
                                         onChangeCommitted={this._set_import_size}
