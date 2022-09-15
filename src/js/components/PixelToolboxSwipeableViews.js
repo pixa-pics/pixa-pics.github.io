@@ -1868,7 +1868,7 @@ class PixelToolboxSwipeableViews extends React.Component {
                         }
 
                         return (
-                            <List key={name} style={{  willChange: String(Boolean(parseInt(_filters_preview_progression_stepped) === 0 || name !== "filters") ? "scroll-position": "contents, scroll-position"), minHeight: "100%", contain: "style layout paint", overflow: "visible", contentVisibility: "visible", paddingTop: 0}}>
+                            <List key={name} style={{willChange: String(Boolean(parseInt(_filters_preview_progression_stepped) === 0 || name !== "filters") ? "": "contents"), minHeight: "100%", contain: "style layout paint", overflow: "visible", contentVisibility: "visible", paddingTop: 0}}>
 
                                 {this.get_before_action_panel(index)}
 

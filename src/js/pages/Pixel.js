@@ -294,6 +294,7 @@ const styles = theme => ({
     backdrop: {
         zIndex: 2000,
         color: "#fff",
+        background: "radial-gradient(#050c6af2 10%, #03067044)",
         contain: "layout paint size style",
         userSelect: "none",
     },
@@ -1219,11 +1220,11 @@ class Pixel extends React.Component {
 
                     const max_original_size = is_mobile_or_tablet ? Math.sqrt(1280 * 720): Math.sqrt(1920 * 1080);
                     const max_size = is_mobile_or_tablet ? Math.sqrt(512 * 512): Math.sqrt(512 * 512);
-                    const max_color = is_mobile_or_tablet ? 512: 768;
+                    const max_color = is_mobile_or_tablet ? 768: 1024;
 
-                    let ratio_l_l2 = is_mobile_or_tablet ? 1: 1.5;
-                    let min_size = is_mobile_or_tablet ? 192: 256;
-                    let min_color = is_mobile_or_tablet ? 256: 384;
+                    let ratio_l_l2 = is_mobile_or_tablet ? 1.5: 2;
+                    let min_size = is_mobile_or_tablet ? 256: 384;
+                    let min_color = is_mobile_or_tablet ? 384: 512;
 
                     const resize_original_to = parseInt(max_original_size * max_original_size);
                     const limit_color_number = Math.min(max_color, Math.max(parseInt(_import_size * ratio_l_l2), min_color));
