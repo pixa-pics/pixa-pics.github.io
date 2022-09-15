@@ -12,7 +12,10 @@
 ![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/GRODITNOW.png)
 
 ### 1) What does it cost?
-The aforementioned project (i.e. https://pixa.pics/) whose source code is said to be "open" (visible on: https://github.com/pixa-pics/pixa-pics .github.io) needs for the coming year an amount of 75'000 CHF to operate as drawing software in the field of pixelart and digital-painting (art) among others NFTs ( so-called digital cryptographic tokens) being free and open-source.
+
+**Permission is hereby granted, free of charge, to any person to use this software.**
+
+The aforementioned project (i.e. https://pixa.pics/) whose source code is said to be "open" (visible on: https://github.com/pixa-pics/pixa-pics .github.io) needs for the coming year an amount of 75000 US dollar to operate as drawing software in the field of pixelart and digital-painting (art) among others NFTs ( so-called digital cryptographic tokens) being free and open-source.
 
 ### 2) Anonymization of visual subjects
 This project allows anonymization of the target visual subject directly on import by reducing the number of colors and the number of pixels present in the raster image (which is just a pixel grid with a few bonus colors) and allowing retouching of it in an interface made in Switzerland, which offers tools for drawing and retouching tints and colors as well as shapes via functions and algorithms on clicking certain buttons inside this software, available under simply "MIT" license via the WEB...
@@ -33,7 +36,9 @@ Pixa.Pics stands in favor of the freedom of expression, communication, education
 
 > IT CLAIMS TO BE THE UNBREAKABLE, UNCHANGABLE, UNSTOPPABLE Ace of Automatic Information; Blockchain is a list of transactions grouped into multiple blocks that constitute a state in a machine that changes according to a cryptography-based agreement AND between its participating terminals through a data network. This technology allows you to save and keep a structured data set for centuries flawlessly.
 
-As a team we have a commitment to work collaboratively, and participate with maximum transparency and thus lastly, we also supports free speech, anti-corruption and net neutrality facing it with **the swords of code we are forging to improve the third web’s major update.**
+We strongly believe bold the following recklessly for a while. The Internet has become an oligopoly Disneyland with little innovation. The central banks have corrupted money - the operating system of society. We see blockchain as a new computing platform with novel features, that could both, bring a new phase of innovation, and redefine the existing monetary systems. We want to contribute to bringing a better future sooner. Hence, ten months ago, we founded pixa pics.
+
+> And so, when we talk about privacy and anonymity or pecuniary freedom, it wouldn't occur to some that non-fungible tokens are a good reason to think that.
 
 ## C) What does it perform?
 
@@ -52,11 +57,11 @@ As a team we have a commitment to work collaboratively, and participate with max
 ![](https://img.shields.io/badge/Maintained%3F-yes-green.svg)
 ![](https://img.shields.io/website-up-down-green-red/http/pixa.pics)
 
-We strongly believe bold the following recklessly for a while. The Internet has become an oligopoly Disneyland with little innovation. The central banks have corrupted money - the operating system of society. We see blockchain as a new computing platform with novel features, that could both, bring a new phase of innovation, and redefine the existing monetary systems. We want to contribute to bringing a better future sooner. Hence, ten months ago, we founded pixa pics.
-
-> And so, when we talk about privacy and anonymity or pecuniary freedom, it wouldn't occur to some that non-fungible tokens are a good reason to think that.
+As a team we have a commitment to work collaboratively, and participate with maximum transparency and thus lastly, we also supports free speech, anti-corruption and net neutrality facing it with **the swords of code we are forging to improve the third web’s major update.**
 
 ![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/manifest/PXPS_FEDPOL.png)
+
+> What they (Switzerland's forces for order enforcement by the rule of the law in this country) had to say in 2008. It was a long time ago yes for sure and we, the people, didn't have yet the testimony or revelation we might call it like that of Mr. Edward Joseph Snowden about the tools that can be used against the online-self or the self as a whole or individually, this is very impressive.
 
 ## D) Special features
 
