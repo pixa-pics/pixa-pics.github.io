@@ -293,30 +293,35 @@ const ColorConversion = {
             clean_duplicate_colors(_pxls, _pxl_colors) {
 
                 // Work with Hashtables and Typed Array so it is fast
-                let new_pxl_colors_map = new Map();
-                let new_pxls = new Array(_pxls.length);
+                var new_pxl_colors_map = new Map();
+                var _pxls_length = _pxls.length | 0;
+                var new_pxls = new Array(_pxls_length);
 
-                _pxls.forEach((pxl, iteration) => {
+                var pxl_color_index = 0;
+                var color = 0;
 
-                    const color = _pxl_colors[pxl];
-                    let index_of_color = new_pxl_colors_map.get(color) || -1;
+                for(var i = 0; i < _pxls_length; i = i + 1 | 0) {
 
-                    if(index_of_color === -1) {
+                    pxl_color_index = _pxls[i] | 0;
+                    color = _pxl_colors[pxl_color_index] | 0;
+                    var new_pxl_color_index = new_pxl_colors_map.get(color)
 
-                        index_of_color = new_pxl_colors_map.size;
-                        new_pxl_colors_map.set(color, index_of_color);
+                    if(typeof new_pxl_color_index === "undefined") {
+
+                        new_pxl_color_index = new_pxl_colors_map.size | 0;
+                        new_pxl_colors_map.set(color, new_pxl_color_index);
                     }
 
-                    new_pxls[iteration] = index_of_color;
-                });
-
-                let new_pxl_colors = new Uint32Array(new_pxl_colors_map.size);
-                for (let [key, value] of new_pxl_colors_map) {
-
-                    new_pxl_colors[value] = key;
+                    new_pxls[i] = new_pxl_color_index | 0;
                 }
 
-                return Array.of(new_pxls, new_pxl_colors);
+                var new_pxl_colors = new Array(new_pxl_colors_map.size);
+                for (var e of new_pxl_colors_map) {
+
+                    new_pxl_colors[e[1]] = e[0] | 0;
+                }
+
+                return Array.of(new_pxls, Uint32Array.from(new_pxl_colors));
             }
         };
     }
