@@ -117,9 +117,6 @@ Lighthouse (google's webpage loading test) metrics of pixa.pics at left while th
 
 ![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/TECTARY.jpeg)
 
-**Regular patrons are fixed to the following thresholds :**
-
-Gold ($ 6K/Month), Silver ($ 4K/Month), and Bronze ($ 2K/Month) supporters (VISIBLE IN SETTINGS) enable Pixa.Pics to have a bigger team soon while benefiting a positive cashflow to pay everything that is related to activities from development to marketing content/analyses and production.</p>
 
 > **Thanks for support!**
 
@@ -149,10 +146,11 @@ Always while a new checkpoint is set the king, once it lived only then, it can b
 
 ## G") Get started and fund a king functionality now
 
-**INTERESTED INTO SPONSORING a good cause? Please email-us at: [pixa.pics@protonmail.com](mailto:pixa.pics@protonmail.com) OR :**
+**INTERESTED INTO SPONSORING a good cause? **
 
-**BTC**
- * 1JJq8FgmUUZ2kAeM3EEk3mDkRbvTUrc5Ej
+Please email-us at: [pixa.pics@protonmail.com](mailto:pixa.pics@protonmail.com)
+
+---
 
 ## Z) Legal concerns and acknowledgment
 
