@@ -71,113 +71,77 @@ const SmartRequestAnimationFrame = {
                     callback_function("ok");
                 }
             },
-            run_frame(render, do_not_cancel_animation, force_update, requested_at_t = Date.now(), data = null) {
+            run_frame(render, do_not_cancel_animation = false, force_update = false, requested_at_t = Date.now()) {
 
                 return new Promise(function(resolve, reject){
 
-                    if(requested_at_t < s.lasts_raf_time && !do_not_cancel_animation && !force_update) { return }
+                    if(requested_at_t <= s.lasts_raf_time) {
 
-                    let skip_frame_rate = s.is_mobile_or_tablet ? 27: 44;
-
-                    let now = Date.now();
-                    let running_smoothly = true;
-
-                    let deltaT = now - s.lasts_raf_time;
-                    // do not render frame when deltaT is too high
-                    if ( deltaT > 1000 / (skip_frame_rate * 2/3)) {
-                        running_smoothly = false;
-                    }
-
-                    if(force_update) {
-
-                        if(s.caf_id !== null) {
-
-                            s.caf.call(window, s.caf_id);
-                        }
-                        s.caf_id = null;
-
-                        if(do_not_cancel_animation) {
-
-                            s.raf.call(window, render);
-                            resolve(data);
-                        }else {
-
-                            s.caf_id = s.raf.call(window, render);
-                            resolve(data);
-                        }
-
-                        s.cpaf_frames++;
-                        s.lasts_raf_time = now;
-
-                    }else if ( s.caf_id === null) { // Best
-
-                        if(do_not_cancel_animation) {
-
-                            s.raf.call(window, render);
-                            resolve(data);
-                        }else {
-
-                            s.caf_id = s.raf.call(window, render);
-                            resolve();
-                        }
-                        s.lasts_raf_time = now;
-                        s.cpaf_frames++;
-
-                    }else if(!running_smoothly && s.caf_id !== null && deltaT > 1000 / (skip_frame_rate * 6/3) ) { // Average
-
-                        if(s.caf_id !== null) {
-
-                            s.caf.call(window, s.caf_id);
-                        }
-                        s.caf_id = null;
-                        s.lasts_raf_time = now;
-
-                        if(!do_not_cancel_animation) {
-
-                            s.caf_id = s.raf.call(window, render);
-                            resolve(data);
-                            s.cpaf_frames++;
-
-                        }else {
-
-                            s.raf.call(window, render);
-                            resolve(data);
-                        }
-
-                    }else if(!running_smoothly){ // Low
-
-                        if(s.caf_id !== null) {
-
-                            s.caf.call(window, s.caf_id);
-                            resolve(data);
-                        }
-                        s.caf_id = null;
-
-                        if(do_not_cancel_animation) {
-
-                            s.raf.call(window, render);
-                            resolve(data);
-                        }else {
-
-                            s.caf_id = s.raf.call(window, render);
-                            resolve(data);
-                        }
-
-                        s.cpaf_frames++;
-                        s.lasts_raf_time = now;
-
-                    }else if(deltaT < 1000 / (skip_frame_rate * 2)){
-
-                        setTimeout(this, 1000 / (skip_frame_rate * 8), resolve, reject);
-                    }else if(force_update || do_not_cancel_animation) {
-
-                        setTimeout(this, 1000 / (skip_frame_rate * 8), resolve, reject);
+                        reject();
                     }else {
 
-                        //caf(caf_id);
-                        reject();
-                    }
+                        let skip_frame_rate = s.is_mobile_or_tablet ? 27: 44;
 
+                        let running_smoothly = true;
+
+                        let deltaT = Date.now() - s.lasts_raf_time;
+                        // do not render frame when deltaT is too high
+                        if ( deltaT > 1000 / (skip_frame_rate * 2/3)) {
+                            running_smoothly = false;
+                        }
+
+                        if(force_update) {
+
+                            if(s.caf_id != null) {
+
+                                s.caf.call(window, s.caf_id);
+                                s.cpaf_frames--;
+                            }
+                            s.caf_id = null;
+                            s.cpaf_frames++;
+                            s.lasts_raf_time = requested_at_t | 0;
+
+                            if(!do_not_cancel_animation) {
+
+                                s.caf_id = s.raf.call(window, render);
+                            }else {
+
+                                s.raf.call(window, render);
+                            }
+
+                            resolve();
+                        }else if(!running_smoothly || s.caf_id !== null && deltaT > 1000 / (skip_frame_rate * 2)){ // Low
+
+                            if(s.caf_id != null) {
+
+                                s.caf.call(window, s.caf_id);
+                                s.cpaf_frames--;
+                            }
+
+                            s.caf_id = null;
+                            s.cpaf_frames++;
+                            s.lasts_raf_time = requested_at_t | 0;
+
+                            if(!do_not_cancel_animation) {
+
+                                s.caf_id = s.raf.call(window, render);
+                            }else {
+
+                                s.raf.call(window, render);
+                            }
+
+                            resolve();
+                        }else if(deltaT < 1000 / (skip_frame_rate * 2)){
+
+                            setTimeout(this, 1000 / (skip_frame_rate * 8), resolve, reject);
+                        }else if(force_update || do_not_cancel_animation) {
+
+                            setTimeout(this, 1000 / (skip_frame_rate * 16), resolve, reject);
+                        }else {
+
+                            setTimeout(this, 1000 / (skip_frame_rate * 4), resolve, reject);
+                        }
+                    }
                 });
             },
             get_state() {

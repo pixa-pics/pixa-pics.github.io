@@ -1052,7 +1052,6 @@ class CanvasPixels extends React.Component {
                 _s_pxls: ns_pxls,
                 _layers: [{id: Date.now(), name: "Layer 0", hidden: false, opacity: 1}],
                 _layer_index,
-                _old_pxls_hovered: -1,
                 _pxls_hovered: -1,
                 has_shown_canvas_once: false,
                 _is_there_new_dimension: true,
@@ -1345,7 +1344,6 @@ class CanvasPixels extends React.Component {
                     _s_pxl_colors: ns_pxl_colors,
                     _s_pxls: ns_pxls,
                     _layer_index: 0,
-                    _old_pxls_hovered: -1,
                     _pxls_hovered: -1,
                     has_shown_canvas_once: false,
                     _is_there_new_dimension: true,
@@ -1649,7 +1647,7 @@ class CanvasPixels extends React.Component {
                             break;
                     }
 
-                    this.super_state.paint_shape(pxl_indexes, pxl_current_color, pxl_current_opacity, {_shape_index_a: -1, _last_action_timestamp: Date.now()}, this._update_canvas);
+                    this.super_state.paint_shape(pxl_indexes, pxl_current_color, pxl_current_opacity, {_shape_index_a: -1, _last_action_timestamp: Date.now()}, this.super_master_meta.update_canvas());
                     this._notify_relevant_action_event(event, "#ffffffff", .6);
                 }
 
@@ -2627,7 +2625,7 @@ class CanvasPixels extends React.Component {
                     _paint_hover_old_pxls_snapshot: [],
                     _last_action_timestamp: Date.now()
                 },
-                this._update_canvas
+                this.super_master_meta.update_canvas
             );
 
         }else if(_paint_or_select_hover_pxl_indexes.size > 0 && tool === "SELECT PATH") {
@@ -2948,7 +2946,6 @@ class CanvasPixels extends React.Component {
             _json_state_history: _json_state_history,
             _is_there_new_dimension: true,
             has_shown_canvas_once: false,
-            _old_pxls_hovered: -1,
             _pxls_hovered: -1,
             _last_action_timestamp: Date.now(),
         }, () => {
@@ -4457,7 +4454,7 @@ class CanvasPixels extends React.Component {
 
         [_s_pxls[_layer_index], _s_pxl_colors[_layer_index]] = this._dutone_pixels(contrast, color_a, color_b, _s_pxls[_layer_index], _s_pxl_colors[_layer_index]);
 
-        this.super_state.set_state({_s_pxls, _s_pxl_colors, _old_pxls_hovered: -1, _pxls_hovered: -1, _last_action_timestamp: Date.now()}, () => {
+        this.super_state.set_state({_s_pxls, _s_pxl_colors, _pxls_hovered: -1, _last_action_timestamp: Date.now()}, () => {
 
             this.super_master_meta.update_canvas(true);
         });
@@ -4470,7 +4467,7 @@ class CanvasPixels extends React.Component {
 
         _s_pxl_colors[_layer_index] = this._filter_pixels(name, parseFloat(intensity), Uint32Array.from(_s_pxl_colors[_layer_index]));
 
-        this.super_state.set_state({_s_pxl_colors, _old_pxls_hovered: -1, _pxls_hovered: -1, _last_action_timestamp: Date.now() }, () => {
+        this.super_state.set_state({_s_pxl_colors, _pxls_hovered: -1, _last_action_timestamp: Date.now() }, () => {
 
             this.super_master_meta.update_canvas(true);
         });

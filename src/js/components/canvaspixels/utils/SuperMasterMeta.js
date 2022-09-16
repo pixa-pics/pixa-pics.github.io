@@ -13,13 +13,14 @@ const SuperMasterMeta = {
         "use strict";
         const builder = this._build_state;
         const meta = builder(super_state, super_canvas, super_blend, sraf);
+        let running = false;
 
         return {
-            update_canvas: function(force_update = false, callback_function = function(){}) {
+            update_canvas(force_update = false, callback_function = function(){}, requested_at = Date.now()) {
 
                 // Only operate on canvas context if existing
-                if (Boolean(meta.super_canvas)) {
-
+                if (Boolean(meta.super_canvas) && running === false) {
+                    running = true;
                     // Importing state variables
                     let {
                         has_shown_canvas_once,
@@ -29,6 +30,7 @@ const SuperMasterMeta = {
                         _layers,
                         _old_layers,
                         select_mode,
+                        _last_paint_timestamp,
                         hide_canvas_content,
                         _did_hide_canvas_content,
                         _old_full_pxls,
@@ -50,6 +52,7 @@ const SuperMasterMeta = {
                         _previous_imported_image_pxls_positioned_keyset,
                     } = meta.super_state.get_state();
 
+                    if(_last_paint_timestamp > requested_at) { return; }
                     const _layers_simplified = _layers.map(function(l) {
                         return {
                             id: parseInt(l.id),
@@ -112,6 +115,7 @@ const SuperMasterMeta = {
                     const clear_canvas = Boolean(_did_hide_canvas_content && !hide_canvas_content) || Boolean(!_did_hide_canvas_content && hide_canvas_content) || !has_shown_canvas_once || hide_canvas_content || has_layers_visibility_or_opacity_changed || is_there_new_dimension;
                     const layers_length = _layers_simplified.length | 0;
                     meta.super_blend.update( _layers.length+1, full_pxls.length);
+                    _old_pxls_hovered = new Set(_old_pxls_hovered.keys());
                     let number_to_paint = 0;
                     let full_pxls_length = full_pxls.length | 0;
                     let pos_x = 0;
@@ -121,13 +125,13 @@ const SuperMasterMeta = {
 
                     for(let index = 0; index < full_pxls_length; index = index + 1 | 0){
 
-                        b.setUint8(0, _pxls_hovered === index| 0);
-                        b.setUint8(1, index === _old_pxls_hovered && _old_pxls_hovered !== _pxls_hovered| 0);
+                        b.setUint8(0, _pxls_hovered === index | 0);
+                        b.setUint8(1, _old_pxls_hovered.has(index) | 0);
                         b.setUint8(2, _pxl_indexes_of_current_shape.has(index)| 0);
                         b.setUint8(3, _pxl_indexes_of_old_shape.has(index)| 0);
                         b.setUint8(4, _pxl_indexes_of_selection.has(index)| 0);
-                        b.setUint8(5, _pxl_indexes_of_selection_drawn.has(_old_pxls_hovered)| 0);
-                        b.setUint8(6, full_pxls[index] !== _old_full_pxls[index]| 0);
+                        b.setUint8(5, _pxl_indexes_of_selection_drawn.has(index) && _old_pxls_hovered.has(index) | 0);
+                        b.setUint8(6, full_pxls[index] !== _old_full_pxls[index] | 0);
                         b.setUint8(7, 0);
 
                         if (
@@ -135,7 +139,7 @@ const SuperMasterMeta = {
                             Boolean(
                                 _previous_imported_image_pxls_positioned_keyset.has(index) ||
                                 imported_image_pxls_positioned_keyset.has(index) ||
-                                b.getBigUint64(0) > 0
+                                new Uint8ClampedArray(b.buffer).some(function (n){return n !== 0;})
                             )) {
 
                             number_to_paint++;
@@ -143,24 +147,23 @@ const SuperMasterMeta = {
 
                             for (let i = 0; i < layers_length; i = i + 1 | 0) {
 
-                                if(!_layers_simplified[i].hidden) {
-
-                                    meta.super_blend.stack(i, _s_pxl_colors[i][_s_pxls[i][index]], _layers_simplified[i].opacity, 0);
-                                }
+                                meta.super_blend.stack(i, _s_pxl_colors[i][_s_pxls[i][index]], _layers_simplified[i].hidden ? 0: _layers_simplified[i].opacity, 0);
                             }
 
                             if(imported_image_pxls_positioned_keyset.has(index)) {
 
-                                meta.super_blend.stack(layers_length, parseInt(imported_image_pxl_colors[imported_image_pxls_positioned[index]]), 1, 0);
+                                meta.super_blend.stack(layers_length, imported_image_pxl_colors[imported_image_pxls_positioned[index]] | 0, 1, 0);
                             }else if(b.getUint8(2) !== 0 || b.getUint8(0) !== 0) {
 
-                                if(b.getUint8(0) === 0) {
-
-                                    meta.super_blend.stack(layers_length, 0, 1/3, 1);
-                                }else {
+                                _old_pxls_hovered.add(index);
+                                if(b.getUint8(0) !== 0) {
 
                                     meta.super_blend.stack(layers_length, 0, 2/3, 1);
+                                }else {
+
+                                    meta.super_blend.stack(layers_length, 0, 1/3, 1);
                                 }
+
                             }else if(b.getUint8(4) !== 0) {
 
                                 pos_x = index % pxl_width | 0;
@@ -168,6 +171,9 @@ const SuperMasterMeta = {
 
                                 opacity = 1/3 + ((0 + ((pos_x + pos_y + (_selection_pair_highlight ? 1: 0) | 0) % 2) | 0) / 3);
                                 meta.super_blend.stack(layers_length, 0, opacity, 1);
+                            }else if(b.getUint8(1) !== 0) {
+
+                                _old_pxls_hovered.delete(index);
                             }
                         }
                     }
@@ -176,24 +182,41 @@ const SuperMasterMeta = {
                     if(indexed_changes.size > 0) {
 
                         force_update = Boolean(indexed_changes.size * 1.05 > pxl_width * pxl_height || force_update || clear_canvas);
-                        meta.super_canvas.pile(indexed_changes, meta.super_canvas.unpile, meta.super_canvas.prender, meta.sraf.run_frame, Array.of(meta.super_canvas.render, force_update, force_update));
+                        meta.super_canvas.pile(indexed_changes).then(function() {
+                            meta.super_canvas.unpile().then(function(){
+                                meta.super_canvas.prender().then(function (){
+                                    meta.sraf.run_frame(function(){
+                                        meta.super_canvas.render(function(){
+                                            meta.super_state.set_state({
+                                                _pxl_indexes_of_selection_drawn: _pxl_indexes_of_selection,
+                                                _pxl_indexes_of_old_shape: _pxl_indexes_of_current_shape,
+                                                _old_selection_pair_highlight: Boolean(_selection_pair_highlight),
+                                                _old_layers: _layers_simplified,
+                                                _old_full_pxls: Uint32Array.from(full_pxls),
+                                                _old_pxl_width: pxl_width | 0,
+                                                _old_pxl_height: pxl_height | 0,
+                                                _old_pxls_hovered: _old_pxls_hovered,
+                                                _last_paint_timestamp: requested_at | 0,
+                                                has_shown_canvas_once: true,
+                                                _is_there_new_dimension: false,
+                                                _did_hide_canvas_content: Boolean(hide_canvas_content),
+                                                _previous_imported_image_pxls_positioned_keyset: new Map(imported_image_pxls_positioned_keyset)
+                                            }, callback_function);
+                                        });
+                                    }, false, false, Date.now()).then(function () {
 
-                        meta.super_state.set_state({
-                            _pxl_indexes_of_selection_drawn: _pxl_indexes_of_selection,
-                            _pxl_indexes_of_old_shape: _pxl_indexes_of_current_shape,
-                            _old_selection_pair_highlight: Boolean(_selection_pair_highlight),
-                            _old_layers: _layers_simplified,
-                            _old_full_pxls: Uint32Array.from(full_pxls),
-                            _old_pxl_width: parseInt(pxl_width),
-                            _old_pxl_height: parseInt(pxl_height),
-                            _old_pxls_hovered: parseInt(_pxls_hovered),
-                            _last_paint_timestamp: Date.now(),
-                            has_shown_canvas_once: true,
-                            _is_there_new_dimension: false,
-                            _did_hide_canvas_content: Boolean(hide_canvas_content),
-                            _previous_imported_image_pxls_positioned_keyset: imported_image_pxls_positioned_keyset
-                        }, callback_function);
+                                        running = false;
+                                    });
+                                });
+                            });
+                        });
+                    }else {
+
+                        running = false;
                     }
+                }else {
+
+                    setTimeout(this.update_canvas, 10, force_update, callback_function, requested_at)
                 }
             }
         };

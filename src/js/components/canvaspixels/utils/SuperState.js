@@ -59,7 +59,7 @@ const SuperState = {
             _old_pxl_width: 0,
             _old_pxl_height: 0,
             _pxls_hovered: -1,
-            _old_pxls_hovered: -1,
+            _old_pxls_hovered: new Set(),
             _canvas_container: null,
             _canvas_wrapper: null,
             _canvas_wrapper_overflow: null,
