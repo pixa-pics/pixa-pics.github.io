@@ -178,49 +178,56 @@ const SuperCanvas = {
             clear() {
                 s.offscreen_canvas_context.clearRect(0, 0, s.width, s.height);
             },
-            render(resolve) {
+            render() {
 
-                if (v.enable_paint_type === "bitmap") {
-                    s.canvas_context.clearRect( bmp_x, bmp_y, bmp.width, bmp.height);
-                    s.canvas_context.globalCompositeOperation = "source-over";
-                    s.canvas_context.drawImage(bmp, bmp_x, bmp_y, bmp.width, bmp.height);
-                    if(typeof old_bmp !== "undefined"){old_bmp.close();}
-                    old_bmp = bmp;
+                return new Promise(function (resolve){
+                    if (v.enable_paint_type === "bitmap") {
+                        s.canvas_context.clearRect( bmp_x, bmp_y, bmp.width, bmp.height);
+                        s.canvas_context.globalCompositeOperation = "source-over";
+                        s.canvas_context.drawImage(bmp, bmp_x, bmp_y, bmp.width, bmp.height);
+                        if(typeof old_bmp !== "undefined"){old_bmp.close();}
+                        old_bmp = bmp;
 
-                    const paint_ended = Date.now();
-                    v.tbrt = paint_ended - v.rt;
-                    v.rt = paint_ended;
-                    v.rs--;
-                    resolve();
-
-                } else if (v.enable_paint_type === "offscreen") {
-
-                    s.canvas_context.globalCompositeOperation = "copy";
-                    s.canvas_context.drawImage(s.offscreen_canvas_context.canvas, 0, 0, s.width, s.height);
-
-                    const paint_ended = Date.now();
-                    v.tbrt = paint_ended - v.rt;
-                    v.rt = paint_ended;
-                    v.rs--;
-                    resolve();
-                }else {
-
-                    d2d(s.canvas_context, ic2).then(function () {
-
-                        if (!s.is_bitmap && !s.is_offscreen) {
-                            ic2.clear();
-                        }
+                        pr.top_left.x = s.width | 0;
+                        pr.top_left.y = s.height | 0;
+                        pr.bottom_right.x = 0;
+                        pr.bottom_right.y = 0;
 
                         const paint_ended = Date.now();
                         v.tbrt = paint_ended - v.rt;
                         v.rt = paint_ended;
                         v.rs--;
                         resolve();
-                    }).catch(function(){
 
+                    } else if (v.enable_paint_type === "offscreen") {
+
+                        s.canvas_context.globalCompositeOperation = "copy";
+                        s.canvas_context.drawImage(s.offscreen_canvas_context.canvas, 0, 0, s.width, s.height);
+
+                        const paint_ended = Date.now();
+                        v.tbrt = paint_ended - v.rt;
+                        v.rt = paint_ended;
+                        v.rs--;
                         resolve();
-                    });
-                }
+                    }else {
+
+                        d2d(s.canvas_context, ic2).then(function () {
+
+                            if (!s.is_bitmap && !s.is_offscreen) {
+                                ic2.clear();
+                            }
+
+                            const paint_ended = Date.now();
+                            v.tbrt = paint_ended - v.rt;
+                            v.rt = paint_ended;
+                            v.rs--;
+                            resolve();
+                        }).catch(function(){
+
+                            resolve();
+                        });
+                    }
+                });
             },
             prender(){
 
@@ -252,10 +259,6 @@ const SuperCanvas = {
                             bmp = bitmap;
                             bmp_x = new_bmp_x | 0;
                             bmp_y = new_bmp_y | 0;
-                            pr.top_left.x = s.width | 0;
-                            pr.top_left.y = s.height | 0;
-                            pr.bottom_right.x = 0;
-                            pr.bottom_right.y = 0;
                             v.pt = Date.now() - started;
                             resolve();
                         });
@@ -296,8 +299,8 @@ const SuperCanvas = {
 
                                 if(pr.top_left.x >= x) { pr.top_left.x = x-1 | 0 }
                                 if(pr.top_left.y >= y) { pr.top_left.y = y-1 | 0 }
-                                if(pr.bottom_right.x < x) { pr.bottom_right.x = x | 0 }
-                                if(pr.bottom_right.y < y) { pr.bottom_right.y = y | 0 }
+                                if(pr.bottom_right.x <= x) { pr.bottom_right.x = x+1 | 0 }
+                                if(pr.bottom_right.y <= y) { pr.bottom_right.y = y+1 | 0 }
                                 fp.fill(value|0, index|0, index+1|0);
 
                             }); ic2.clear();

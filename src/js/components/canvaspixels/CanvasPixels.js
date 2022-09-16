@@ -585,19 +585,19 @@ class CanvasPixels extends React.Component {
 
         if(this.props.onFiltersThumbnailChange) {
 
-            const { s_pxls, _layer_index, _last_filters_hash, pxl_width, pxl_height, _s_pxls, _s_pxl_colors } = this.super_state.get_state();
+            const { _processing_filters, s_pxls, _layer_index, _last_filters_hash, pxl_width, pxl_height, _s_pxls, _s_pxl_colors } = this.super_state.get_state();
 
             const p = Array.from(_s_pxls[_layer_index]);
             const pc = Uint32Array.from(_s_pxl_colors[_layer_index]);
             const hash = String(this.xxhash.base58_that(Uint32Array.from(p.map(pci => pc[pci]))));
-            if(_last_filters_hash === hash) { return; }
+            if(_last_filters_hash === hash || _processing_filters) { return; }
 
             let thumbnails = this.super_state.get_state()._filter_thumbnails || new Map()
             let old_thumbnail = new Map();
             let progression = 0.0;
             let n_processed = 0;
 
-            this.super_state.set_state({_last_filters_hash: hash}, () => {
+            this.super_state.set_state({_last_filters_hash: hash, _processing_filters: true}, () => {
 
                 this.get_filter_names().forEach((name, index, filter_names) => {
 
@@ -614,7 +614,7 @@ class CanvasPixels extends React.Component {
                             this.props.onFiltersThumbnailChange(thumbnails, hash, progression);
                             if(thumbnails.size === filter_names.length) {
 
-                                this.super_state.set_state({_filter_thumbnails: thumbnails}, () => {
+                                this.super_state.set_state({_filter_thumbnails: thumbnails, _processing_filters: false}, () => {
 
                                     Object.values(old_thumbnail).forEach(function(bmp){
                                         bmp.close();
@@ -1540,8 +1540,7 @@ class CanvasPixels extends React.Component {
 
     _handle_canvas_mouse_down = (event) => {
 
-        const { hide_canvas_content, tool, pxl_width, pxl_height, pxl_current_opacity, bucket_threshold, select_mode } = this.super_state.get_state();
-        const pxl_current_color = this.color_conversion.to_uint32_from_hex(this.color_conversion.format_hex_color(this.super_state.get_state().pxl_current_color));
+        const { pxl_current_color, pxl_current_color_uint32, hide_canvas_content, tool, pxl_width, pxl_height, pxl_current_opacity, bucket_threshold, select_mode } = this.super_state.get_state();
         const event_which = event.button + 1;
 
         let [ pos_x, pos_y ] = [ -1, -1 ];
@@ -1559,10 +1558,8 @@ class CanvasPixels extends React.Component {
 
         if(pos_x === -1 || pos_y === -1) { return; }
 
-        let { _shape_index_a, _select_shape_index_a, _shape_index_b, _select_shape_index_b } = this.super_state.get_state();
-        let { _pxl_indexes_of_selection } = this.super_state.get_state();
+        let { _shape_index_a, _select_shape_index_a, _shape_index_b, _select_shape_index_b, _pxl_indexes_of_selection, _s_pxls, _s_pxl_colors, _layer_index, hue } = this.super_state.get_state();
         const pxl_index = (pos_y * pxl_width) + pos_x;
-        const { _s_pxls, _s_pxl_colors, _layer_index, hue, _layers } = this.super_state.get_state();
         const pxl_color_index = _s_pxls[_layer_index][pxl_index];
 
         if (event_which === -1) {
@@ -1611,8 +1608,8 @@ class CanvasPixels extends React.Component {
             }else if (tool === "EXCHANGE" && event_which === 1) {
 
                 const pixel_color_uint32 = _s_pxl_colors[_layer_index][pxl_color_index];
-                this._exchange_pixel_color(pixel_color_uint32, pxl_current_color);
-                this._notify_relevant_action_event(event, pxl_current_color, 1);
+                this._exchange_pixel_color(pixel_color_uint32, pxl_current_color_uint32);
+                this._notify_relevant_action_event(event, pxl_current_color_uint32, 1);
 
             }else if(tool === "LINE" || tool === "RECTANGLE" || tool === "ELLIPSE"){
 
@@ -1647,7 +1644,7 @@ class CanvasPixels extends React.Component {
                             break;
                     }
 
-                    this.super_state.paint_shape(pxl_indexes, pxl_current_color, pxl_current_opacity, {_shape_index_a: -1, _last_action_timestamp: Date.now()}, this.super_master_meta.update_canvas());
+                    this.super_state.paint_shape(pxl_indexes, pxl_current_color_uint32, pxl_current_opacity, {_shape_index_a: -1, _last_action_timestamp: Date.now()}, this.super_master_meta.update_canvas());
                     this._notify_relevant_action_event(event, "#ffffffff", .6);
                 }
 
@@ -1745,7 +1742,7 @@ class CanvasPixels extends React.Component {
 
             }else if((tool === "PENCIL" || tool === "PENCIL PERFECT" || tool === "CONTOUR") && event_which === 1) {
 
-                const pxl_color_new = this.color_conversion.blend_colors(pxl_color, pxl_current_color, pxl_current_opacity, true, false);
+                const pxl_color_new = this.color_conversion.blend_colors(pxl_color, pxl_current_color_uint32, pxl_current_opacity, true, false);
                 let new_color_index = pxl_colors_copy.indexOf(pxl_color_new);
                 if(new_color_index === -1){
 
@@ -1770,7 +1767,7 @@ class CanvasPixels extends React.Component {
 
                         const v_pxl_color_index = _s_pxls[_layer_index][index];
                         const v_pxl_color = pxl_colors_copy[v_pxl_color_index];
-                        const v_pxl_color_new = this.color_conversion.blend_colors(v_pxl_color, pxl_current_color, pxl_current_opacity, true, false);
+                        const v_pxl_color_new = this.color_conversion.blend_colors(v_pxl_color, pxl_current_color_uint32, pxl_current_opacity, true, false);
 
                         // Eventually add current color to color list
                         let v_pxl_color_new_index = pxl_colors_copy.indexOf(v_pxl_color_new);
@@ -1795,7 +1792,7 @@ class CanvasPixels extends React.Component {
 
                             const v_pxl_color_index = _s_pxls[_layer_index][index];
                             const v_pxl_color = pxl_colors_copy[v_pxl_color_index];
-                            const v_pxl_color_new = this.color_conversion.blend_colors(v_pxl_color, pxl_current_color, pxl_current_opacity, true, false);
+                            const v_pxl_color_new = this.color_conversion.blend_colors(v_pxl_color, pxl_current_color_uint32, pxl_current_opacity, true, false);
 
                             // Eventually add current color to color list
                             let v_pxl_color_new_index = pxl_colors_copy.indexOf(v_pxl_color_new);
@@ -1914,7 +1911,7 @@ class CanvasPixels extends React.Component {
 
                             if(paint) {
 
-                                const current_pxl_new_color = this.color_conversion.blend_colors(pxl_colors_copy[pxls_copy[index]], pxl_current_color, pxl_current_opacity, false, false);
+                                const current_pxl_new_color = this.color_conversion.blend_colors(pxl_colors_copy[pxls_copy[index]], pxl_current_color_uint32, pxl_current_opacity, false, false);
                                 let current_pxl_new_color_index = pxl_colors_copy.indexOf(current_pxl_new_color);
                                 if(current_pxl_new_color_index === -1){
 
@@ -2257,7 +2254,7 @@ class CanvasPixels extends React.Component {
 
     _handle_canvas_mouse_move = (event) => {
 
-        let { _pxl_indexes_of_selection, _imported_image_pxls, pxl_current_color, tool, pxl_width, pxl_height, _pxls_hovered, hide_canvas_content  } = this.super_state.get_state();
+        let { _pxl_indexes_of_selection, _imported_image_pxls, pxl_current_color_uint32, tool, pxl_width, pxl_height, _pxls_hovered, hide_canvas_content  } = this.super_state.get_state();
         const { event_button, mouse_down } = this.canvas_pos.get_pointer_state();
         const event_which = event_button+1;
 
@@ -2354,9 +2351,8 @@ class CanvasPixels extends React.Component {
                     _paint_or_select_hover_actions_latest_index = pxl_index;
                 }
 
-                const current_color_uint32 = this.color_conversion.to_uint32_from_hex(this.color_conversion.format_hex_color(pxl_current_color));
                 let new_drawn_pxl_indexes =  this.super_state.create_shape().from_line(_paint_or_select_hover_actions_latest_index, pxl_index);
-                this.super_state.paint_shape(new_drawn_pxl_indexes, current_color_uint32, pxl_current_opacity);
+                this.super_state.paint_shape(new_drawn_pxl_indexes, pxl_current_color_uint32, pxl_current_opacity);
 
                 const { pencil_mirror_mode, _pencil_mirror_index } = this.super_state.get_state();
 
@@ -2464,7 +2460,7 @@ class CanvasPixels extends React.Component {
 
                         const v_pxl_color_index = _s_pxls[_layer_index][index];
                         const v_pxl_color = _s_pxl_colors[_layer_index][v_pxl_color_index];
-                        const v_pxl_color_new = this.color_conversion.blend_colors(v_pxl_color, pxl_current_color, pxl_current_opacity, true, false);
+                        const v_pxl_color_new = this.color_conversion.blend_colors(v_pxl_color, pxl_current_color_uint32, pxl_current_opacity, true, false);
 
                         // Eventually add current color to color list
                         if (!_s_pxl_colors[_layer_index].includes(v_pxl_color_new)) {
@@ -2610,15 +2606,14 @@ class CanvasPixels extends React.Component {
 
         }else if(_paint_or_select_hover_pxl_indexes.size > 0 && tool === "CONTOUR") {
 
-            let { pxl_current_opacity, pxl_current_color } = this.super_state.get_state();
-            pxl_current_color = this.color_conversion.to_uint32_from_hex(this.color_conversion.format_hex_color(pxl_current_color));
+            let { pxl_current_opacity, pxl_current_color_uint32 } = this.super_state.get_state();
             const first_drawn_pixel = [..._paint_or_select_hover_pxl_indexes][0];
             const last_drawn_pixel = [..._paint_or_select_hover_pxl_indexes][_paint_or_select_hover_pxl_indexes.size-1];
             const closing_path_line =  this.super_state.create_shape().from_line(first_drawn_pixel, last_drawn_pixel);
             _paint_or_select_hover_pxl_indexes = new Set([..._paint_or_select_hover_pxl_indexes, ...closing_path_line]);
             const pxl_indexes = this.super_state.create_shape().from_path(_paint_or_select_hover_pxl_indexes);
 
-            this.super_state.paint_shape(pxl_indexes, pxl_current_color, pxl_current_opacity,
+            this.super_state.paint_shape(pxl_indexes, pxl_current_color_uint32, pxl_current_opacity,
                 {
                     _paint_or_select_hover_pxl_indexes: new Set(),
                     _paint_or_select_hover_pxl_indexes_exception: new Set(),
@@ -3097,8 +3092,7 @@ class CanvasPixels extends React.Component {
 
     to_selection_border = () => {
 
-        const { _s_pxls,  _pxl_indexes_of_selection, _s_pxl_colors, _layer_index, pxl_current_opacity } = this.super_state.get_state();
-        const pxl_current_color = this.color_conversion.to_uint32_from_hex(this.color_conversion.format_hex_color(this.super_state.get_state().pxl_current_color));
+        const { pxl_current_color_uint32, _s_pxls,  _pxl_indexes_of_selection, _s_pxl_colors, _layer_index, pxl_current_opacity } = this.super_state.get_state();
 
         let pxls = Array.from(_s_pxls[_layer_index]);
         let pxl_colors = Array.from(_s_pxl_colors[_layer_index]);
@@ -3108,7 +3102,7 @@ class CanvasPixels extends React.Component {
 
             const current_pxl_color_index = pxls[pxl_index];
             const current_pxl_color = pxl_colors[current_pxl_color_index];
-            const current_pxl_new_color = this.color_conversion.blend_colors(current_pxl_color, pxl_current_color, pxl_current_opacity, false, false);
+            const current_pxl_new_color = this.color_conversion.blend_colors(current_pxl_color, pxl_current_color_uint32, pxl_current_opacity, false, false);
 
             // Eventually add current color to color list
             if(!pxl_colors.includes(current_pxl_new_color)){
@@ -3134,8 +3128,7 @@ class CanvasPixels extends React.Component {
 
     to_selection_bucket = () => {
 
-        const { _s_pxls, _pxl_indexes_of_selection, _s_pxl_colors, _layer_index, pxl_current_opacity } = this.super_state.get_state();
-        const pxl_current_color = this.color_conversion.to_uint32_from_hex(this.color_conversion.format_hex_color(this.super_state.get_state().pxl_current_color));
+        const { _s_pxls, _pxl_indexes_of_selection, _s_pxl_colors, _layer_index, pxl_current_opacity, pxl_current_color_uint32 } = this.super_state.get_state();
 
         let pxls = Array.from(_s_pxls[_layer_index]);
         let pxl_colors = Array.from(_s_pxl_colors[_layer_index])
@@ -3143,7 +3136,7 @@ class CanvasPixels extends React.Component {
 
             const current_pxl_color_index = pxls[pxl_index];
             const current_pxl_color = pxl_colors[current_pxl_color_index];
-            const current_pxl_new_color = this.color_conversion.blend_colors(current_pxl_color, pxl_current_color, pxl_current_opacity, false, false);
+            const current_pxl_new_color = this.color_conversion.blend_colors(current_pxl_color, pxl_current_color_uint32, pxl_current_opacity, false, false);
 
             // Eventually add current color to color list
             if(!pxl_colors.includes(current_pxl_new_color)){

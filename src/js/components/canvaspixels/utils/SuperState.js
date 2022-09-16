@@ -1,4 +1,35 @@
 const SuperState = {
+    _format_hex_color_getUin32: function(hex) { // Supports #fff (short rgb), #fff0 (short rgba), #e2e2e2 (full rgb) and #e2e2e2ff (full rgba)
+
+        if(typeof hex === "undefined"){
+
+            return 0;
+        } else {
+
+            let a, b, c, d = "";
+            let formatted = "#00000000";
+
+            switch(hex.length) {
+
+                case 9:
+                    formatted = hex;
+                    break;
+                case 7:
+                    formatted = hex.concat("ff");
+                    break;
+                case 5:
+                    a = hex.charAt(1), b = hex.charAt(2), c = hex.charAt(3), d = hex.charAt(4);
+                    formatted =  "#".concat(a, a, b, b, c, c, d, d);
+                    break;
+                case 4:
+                    a = hex.charAt(1), b = hex.charAt(2), c = hex.charAt(3);
+                    formatted = "#".concat(a, a, b, b, c, c, "ff");
+                    break;
+            }
+
+            return parseInt(formatted.slice(1), 16);;
+        }
+    },
     _build_state: function(props) {
 
         return {
@@ -22,6 +53,7 @@ const SuperState = {
             pxl_width: 32,
             pxl_height: 32,
             pxl_current_color: props.pxl_current_color || "#00000000",
+            pxl_current_color_uint32: this._format_hex_color_getUin32(props.pxl_current_color),
             pxl_current_opacity: props.pxl_current_opacity || 1,
             bucket_threshold: props.bucket_threshold || 0,
             color_loss: props.color_loss || 0.25,
@@ -111,6 +143,7 @@ const SuperState = {
             export_state_every_ms: props.export_state_every_ms || 60 * 1000,
             _last_filters_hash: "",
             _saving_json_state_history_ran_timestamp: 0,
+            _processing_filters: false,
         };
     },
     _blend_rgba_colors: function(all_added_in_layers, amount, should_return_transparent = 0, alpha_addition = 0) {
@@ -183,8 +216,9 @@ const SuperState = {
     from: function(props){
         "use strict";
         let _state = this._build_state(props);
+        let _format_hex_color_getUin32 = this._format_hex_color_getUin32;
+        let _blend_rgba_colors = this._blend_rgba_colors;
         let _pxl_indexes = new Set();
-        let blend_rgba_colors = this._blend_rgba_colors;
 
         return {
             paint_shape: function(pxl_indexes, color, opacity, s = {}, callback_function = function(){}) {
@@ -201,7 +235,7 @@ const SuperState = {
                 }
 
                 let new_ui32_colors = new Uint32Array(
-                   blend_rgba_colors(
+                    _blend_rgba_colors(
                         Array.of(
                             new Uint8ClampedArray(Uint32Array.from(colors).reverse().buffer).reverse(),
                             new Uint8ClampedArray(new Uint32Array(indexes.length).fill(color).reverse().buffer).reverse(),
@@ -235,9 +269,13 @@ const SuperState = {
             set_state: function(new_props, callback = function(){}) {
 
                 Object.entries(new_props).forEach(function(entry){ 
-                    
-                    delete _state[entry[0]];
+
                     _state[entry[0]] = entry[1];
+
+                    if(entry[0] === "pxl_current_color") {
+
+                        _state["pxl_current_color_uint32"] = _format_hex_color_getUin32(entry[1]);
+                    }
                 });
                 
                 callback();
@@ -366,7 +404,7 @@ const SuperState = {
             get_imported_image_data: function() {
 
                 let state = this.get_state();
-                let _new_canvas_context_2d = this.new_canvas_context_2d;
+                let new_canvas_context_2d = this.new_canvas_context_2d;
                 let _get_pixels_palette_and_list_from_image_data = this.get_pixels_palette_and_list_from_image_data;
 
                 function to_hex_from_uint32(uint32){
@@ -375,7 +413,7 @@ const SuperState = {
 
                 if(state._imported_image_pxls.length) {
 
-                    let canvas_ctx = _new_canvas_context_2d(state._imported_image_width, state._imported_image_height);
+                    let canvas_ctx = new_canvas_context_2d(state._imported_image_width, state._imported_image_height);
 
 
                     state._imported_image_pxls.forEach((pxl, index) => {
@@ -391,7 +429,7 @@ const SuperState = {
                     const scaled_width = state._imported_image_width + state._imported_image_scale_delta_x;
                     const scaled_height = state._imported_image_height + state._imported_image_scale_delta_y;
 
-                    let canvas_resized_ctx = _new_canvas_context_2d(scaled_width, scaled_height);
+                    let canvas_resized_ctx = new_canvas_context_2d(scaled_width, scaled_height);
                     canvas_resized_ctx.drawImage(canvas_ctx.canvas, 0, 0, state._imported_image_width, state._imported_image_height, 0, 0, scaled_width, scaled_height);
                     canvas_ctx = null;
                     let resized_image_data = canvas_resized_ctx.getImageData(0, 0, scaled_width, scaled_height);
@@ -502,9 +540,11 @@ const SuperState = {
             },
             create_shape: function() {
 
-                let _get_indexes = this.get_indexes;
-                let _get_state = this.get_state;
-                let _new_canvas_context_2d = this.new_canvas_context_2d;
+                let new_canvas_context_2d = this.new_canvas_context_2d;
+                let state = this.get_state();
+                let pxl_indexes = this.get_indexes();
+                let width = state.pxl_width | 0;
+                let height = state.pxl_height | 0;
 
                 function get_opposite_coordinates(width, from, to) {
 
@@ -523,8 +563,6 @@ const SuperState = {
                     return {primary, secondary};
                 }
     
-
-    
                 function get_shadow_indexes_from_canvas_context(context, shadow_indexes) {
     
                     const ui32_colors = new Uint32Array(context.getImageData(0, 0, context.canvas.width, context.canvas.height).data.reverse().buffer).reverse();
@@ -537,13 +575,10 @@ const SuperState = {
 
                 // TO DO --> GET PREVIOUS COMMIT OR FINISH THIS
                 return {
-                    from_path: (path_indexes) => {
+                    from_path: function(path_indexes){
 
-                        let state = _get_state();
-                        let width = state.pxl_width | 0;
-                        let height = state.pxl_height | 0;
+                        let path_context = new_canvas_context_2d(width, height);
 
-                        let path_context = _new_canvas_context_2d(width, height);
                         path_context.lineWidth = 0;
                         path_context.beginPath();
 
@@ -574,9 +609,6 @@ const SuperState = {
 
                         from = from | 0;
                         to = to | 0;
-                        let pxl_indexes = _get_indexes();
-                        let state = _get_state();
-                        let width = state.pxl_width | 0;
                         let c = get_opposite_coordinates(width, from, to);
 
                         let dx = Math.abs(c.secondary.x - c.primary.x);
@@ -613,15 +645,12 @@ const SuperState = {
 
                         from = from | 0;
                         to = to | 0;
-                        let pxl_indexes = _get_indexes();
-                        let state = _get_state();
-                        let width = state.pxl_width | 0;
                         let c = get_opposite_coordinates(width, from, to);
 
-                        const rectangle_width = Math.abs(c.primary.x - c.secondary.x) + 1;
-                        const rectangle_height = Math.abs(c.primary.y - c.secondary.y) + 1;
-                        const rectangle_top_left_x = Math.max(c.primary.x, c.secondary.x) - (rectangle_width - 1);
-                        const rectangle_top_left_y = Math.max(c.primary.y, c.secondary.y) - (rectangle_height - 1);
+                        const rectangle_width = Math.abs(c.primary.x - c.secondary.x) + 1 | 0;
+                        const rectangle_height = Math.abs(c.primary.y - c.secondary.y) + 1 | 0;
+                        const rectangle_top_left_x = Math.max(c.primary.x, c.secondary.x) - (rectangle_width - 1) | 0;
+                        const rectangle_top_left_y = Math.max(c.primary.y, c.secondary.y) - (rectangle_height - 1) | 0;
                         const pixel_number_in_rectangle = rectangle_width * rectangle_height | 0;
 
                         let inside_rectangle_x = 0;
@@ -639,10 +668,6 @@ const SuperState = {
 
                         from = from | 0;
                         to = to | 0;
-                        let pxl_indexes = _get_indexes();
-                        let state = _get_state();
-                        let width = state.pxl_width | 0;
-                        let height = state.pxl_height | 0;
                         let c = get_opposite_coordinates(width, from, to);
                         let ellipse_width = Math.abs(c.primary.x - c.secondary.x) + 1 | 0;
                         let ellipse_height = Math.abs(c.primary.y - c.secondary.y) + 1 | 0;
@@ -654,7 +679,7 @@ const SuperState = {
                         const ellipse_middle_x = ellipse_rayon_x + ellipse_top_left_x | 0;
                         const ellipse_middle_y = ellipse_rayon_y + ellipse_top_left_y | 0;
     
-                        let ellipse_context = _new_canvas_context_2d(width, height);
+                        let ellipse_context = new_canvas_context_2d(width, height);
                             ellipse_context.save();
                             ellipse_context.translate(ellipse_middle_x, ellipse_middle_y);
                             ellipse_context.rotate(0);

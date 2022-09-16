@@ -170,14 +170,14 @@ const ColorConversion = {
                                 mix_view.setUint8(1, added[1] * float_variables.getFloat32(12) + base[1] * float_variables.getFloat32(16)); // green
                                 mix_view.setUint8(2, added[2] * float_variables.getFloat32(12) + base[2] * float_variables.getFloat32(16)); // blue
                             }else if(float_variables.getFloat32(4) > 0) {
-                                float_variables.setFloat32(xxx, added[3] / 255, 2, 3);
+                                float_variables.setFloat32(2, added[3] / 255);
                                 mix.set(added, 0);
                             }else {
-                                float_variables.setFloat32(xxx, base[3] / 255, 2, 3);
+                                float_variables.setFloat32(2, base[3] / 255);
                                 mix.set(base, 0);
                             }
                             if(alpha_addition) {
-                                float_variables.setFloat32(xxx, float_variables.getFloat32(8) / 2, 2, 3);
+                                float_variables.setFloat32(2, float_variables.getFloat32(8) / 2);
                             } mix.fill(float_variables.getFloat32(8) * 255, 3, 4);
 
                             base.set(mix, 0);
