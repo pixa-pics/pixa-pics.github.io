@@ -404,8 +404,6 @@ const SuperState = {
             get_imported_image_data: function() {
 
                 let state = this.get_state();
-                let new_canvas_context_2d = this.new_canvas_context_2d;
-                let _get_pixels_palette_and_list_from_image_data = this.get_pixels_palette_and_list_from_image_data;
 
                 function to_hex_from_uint32(uint32){
                     return "#".concat("00000000".concat(uint32.toString(16)).slice(-8));
@@ -413,7 +411,7 @@ const SuperState = {
 
                 if(state._imported_image_pxls.length) {
 
-                    let canvas_ctx = new_canvas_context_2d(state._imported_image_width, state._imported_image_height);
+                    let canvas_ctx = this.new_canvas_context_2d(state._imported_image_width, state._imported_image_height);
 
 
                     state._imported_image_pxls.forEach((pxl, index) => {
@@ -429,11 +427,11 @@ const SuperState = {
                     const scaled_width = state._imported_image_width + state._imported_image_scale_delta_x;
                     const scaled_height = state._imported_image_height + state._imported_image_scale_delta_y;
 
-                    let canvas_resized_ctx = new_canvas_context_2d(scaled_width, scaled_height);
+                    let canvas_resized_ctx = this.new_canvas_context_2d(scaled_width, scaled_height);
                     canvas_resized_ctx.drawImage(canvas_ctx.canvas, 0, 0, state._imported_image_width, state._imported_image_height, 0, 0, scaled_width, scaled_height);
                     canvas_ctx = null;
                     let resized_image_data = canvas_resized_ctx.getImageData(0, 0, scaled_width, scaled_height);
-                    const {new_pxls, new_pxl_colors} = _get_pixels_palette_and_list_from_image_data(resized_image_data);
+                    const {new_pxls, new_pxl_colors} = this.get_pixels_palette_and_list_from_image_data(resized_image_data);
                     resized_image_data = null;
                     canvas_resized_ctx = null;
                     state._imported_image_width = scaled_width;
@@ -461,25 +459,22 @@ const SuperState = {
                         });
                     }
 
-                    const imported_image_pxls_positioned_keyset = new Set(Object.entries(pxls_positioned).map(function(entry){
+                    const imported_image_pxls_positioned_keyset = new Set(Object.entries(pxls_positioned).map(function(e){return e[0] | 0;}));
 
-                        return entry[0] | 0;
-                    }));
-
-                    return [
-                        pxls_positioned,
-                        new_pxl_colors,
-                        image_imported_resizer_index,
-                        imported_image_pxls_positioned_keyset,
-                    ];
+                    return {
+                        imported_image_pxls_positioned: pxls_positioned,
+                        imported_image_pxl_colors: new_pxl_colors,
+                        image_imported_resizer_index: image_imported_resizer_index,
+                        imported_image_pxls_positioned_keyset: imported_image_pxls_positioned_keyset,
+                    };
                 }else {
 
-                    return [
-                        new Array(0),
-                        new Uint32Array(0),
-                        -1,
-                        new Set(),
-                    ];
+                    return {
+                        imported_image_pxls_positioned: new Array(0),
+                        imported_image_pxl_colors: new Uint32Array(0),
+                        image_imported_resizer_index: -1,
+                        imported_image_pxls_positioned_keyset: new Set()
+                    };
                 }
             },
             get_pixels_palette_and_list_from_image_data: function (image_data) {

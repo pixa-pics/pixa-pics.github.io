@@ -70,7 +70,7 @@ const SuperMasterMeta = {
                     const full_pxls = Uint32Array.from(_s_pxls[_layer_index].map(pci => _s_pxl_colors[_layer_index][pci]));
                     const is_there_new_dimension = Boolean(_old_pxl_width !== pxl_width || _old_pxl_height !== pxl_height || _is_there_new_dimension);
                     let _pxl_indexes_of_current_shape = new Set();
-                    let [imported_image_pxls_positioned, imported_image_pxl_colors, image_imported_resizer_index, imported_image_pxls_positioned_keyset] = meta.super_state.get_imported_image_data()
+                    const {imported_image_pxls_positioned, imported_image_pxl_colors, imported_image_pxls_positioned_keyset} = meta.super_state.get_imported_image_data()
 
                     if (Boolean(tool === "LINE" || tool === "RECTANGLE" || tool === "ELLIPSE" || tool === "TRIANGLE") && _shape_index_a !== -1 && _pxls_hovered !== -1) {
 
@@ -131,7 +131,7 @@ const SuperMasterMeta = {
                     let pos_x = 0;
                     let pos_y = 0;
                     let opacity = 0;
-                    let b = new DataView(new ArrayBuffer(8));
+                    let b = new DataView(new ArrayBuffer(9));
 
                     for (let index = 0; index < full_pxls_length; index = index + 1 | 0) {
 
@@ -141,7 +141,9 @@ const SuperMasterMeta = {
                         b.setUint8(3, _pxl_indexes_of_old_shape.has(index)| 0);
                         b.setUint8(4, _pxl_indexes_of_selection.has(index)| 0);
                         b.setUint8(5, _pxl_indexes_of_selection_drawn.has(index) | 0);
-                        b.setUint8(6, full_pxls[index] !== _old_full_pxls[index] | 0);
+                        b.setUint8(6, _previous_imported_image_pxls_positioned_keyset.has(index) | 0);
+                        b.setUint8(7, imported_image_pxls_positioned_keyset.has(index) | 0);
+                        b.setUint8(8, full_pxls[index] !== _old_full_pxls[index] | 0);
 
                         if (
                             !hide_canvas_content &&
@@ -151,8 +153,8 @@ const SuperMasterMeta = {
                                 b.getUint8(2) !== b.getUint8(3) ||
                                 b.getUint8(4) !== b.getUint8(5) ||
                                 b.getUint8(6) !== 0 ||
-                                _previous_imported_image_pxls_positioned_keyset.has(index) ||
-                                imported_image_pxls_positioned_keyset.has(index)
+                                b.getUint8(7) !== 0 ||
+                                b.getUint8(8) !== 0
                             )) {
 
                             number_to_paint++;
@@ -171,14 +173,12 @@ const SuperMasterMeta = {
                                 }else if (b.getUint8(4) === 0 && b.getUint8(5) !== 0) {
                                     _pxl_indexes_of_selection_drawn.delete(index);
                                 }
-                            }else {
-                                _old_pxls_hovered.add(index);
-                            }
+                            }else {_old_pxls_hovered.add(index);}
 
 
-                            if (imported_image_pxls_positioned_keyset.has(index)) {
+                            if (b.getUint8(7) !== 0) {
 
-                                meta.super_blend.stack(layers_length, imported_image_pxl_colors[imported_image_pxls_positioned[index]] | 0, 1, 0);
+                                meta.super_blend.stack(layers_length, imported_image_pxl_colors[imported_image_pxls_positioned[index]], 1, 0);
                             } else if (b.getUint8(2) !== 0 || b.getUint8(0) !== 0) {
 
 

@@ -39,7 +39,7 @@ import SmartRequestAnimationFrame from "../canvaspixels/utils/SmartRequestAnimat
 import XXHash from "../canvaspixels/utils/XXHash";
 import CanvasPos from "../canvaspixels/utils/CanvasPos"
 
-class CanvasPixels extends React.Component {
+class CanvasPixels extends React.PureComponent {
 
     constructor(props) {
         super(props);
@@ -2054,8 +2054,9 @@ class CanvasPixels extends React.Component {
                     this.super_state.set_state({_s_pxls, _s_pxl_colors, _last_action_timestamp: Date.now()}, () => {
 
                         this.super_master_meta.update_canvas();
+                        this._notify_relevant_action_event(event, pxl_current_color, 1);
                     });
-                    this._notify_relevant_action_event(event, pxl_current_color, 1);
+
                 }
 
             }else if ((tool === "SELECT COLOR") && event_which === 1) {
@@ -3575,7 +3576,7 @@ class CanvasPixels extends React.Component {
 
     _merge_import = () => {
 
-        let [imported_image_pxls_positioned, imported_image_pxl_colors] = this.super_state.get_imported_image_data()
+        const {imported_image_pxls_positioned, imported_image_pxl_colors} = this.super_state.get_imported_image_data()
         let { _s_pxls, _s_pxl_colors, _layer_index } = this.super_state.get_state();
 
         Object.entries(imported_image_pxls_positioned).forEach((entry) => {

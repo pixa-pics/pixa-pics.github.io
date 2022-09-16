@@ -1852,12 +1852,18 @@ class Pixel extends React.Component {
             _toolbox_container_ref.scrollTop = 0;
         }
 
-        this.setState({_is_edit_drawer_open, _view_name_index, _view_name_sub_index});
+        this.setState({_is_edit_drawer_open, _view_name_index, _view_name_sub_index}, () => {
+
+            this.forceUpdate();
+        });
     };
 
     _handle_edit_drawer_close = () => {
 
-        this.setState({_is_edit_drawer_open: false});
+        this.setState({_is_edit_drawer_open: false}, () => {
+
+            this.forceUpdate();
+        });
     };
 
     _set_current_color = (_current_color) => {
