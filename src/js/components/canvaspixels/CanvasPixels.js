@@ -1598,7 +1598,7 @@ class CanvasPixels extends React.PureComponent {
 
             }else if((event_which === 2) || (tool === "MOVE" && _imported_image_pxls.length <= 0 && (event_which === 1 || event_which === -1))){
 
-                this.super_state.set_state({_image_move_from: [event.x, event.y]});
+                this.super_state.set_state({_imported_image_move_from: [event.x, event.y]});
 
             }else if(tool === "PICKER" && event_which === 1) {
 
@@ -2272,46 +2272,38 @@ class CanvasPixels extends React.PureComponent {
 
             if(_imported_image_pxls.length > 0){
 
-                let { _imported_image_scale_delta_x, _imported_image_scale_delta_y, _imported_image_start_x, _imported_image_start_y, _imported_image_width, _imported_image_height } = this.super_state.get_state();
+                let { _imported_image_move_from, _imported_image_scale_delta_x, _imported_image_scale_delta_y, _imported_image_start_x, _imported_image_start_y, _imported_image_width, _imported_image_height } = this.super_state.get_state();
                 const _imported_image_final_width = _imported_image_width + _imported_image_scale_delta_x;
                 const _imported_image_final_height = _imported_image_height + _imported_image_scale_delta_y;
-
-                const [from_x, from_y] = this.super_state.get_state()._imported_image_move_from;
-                const old_pxl_index = (from_y * pxl_width) + from_x;
-
+                const old_pxl_index = (_imported_image_move_from[1] * pxl_width) + _imported_image_move_from[0];
                 const image_imported_resizer_index = (_imported_image_start_x + _imported_image_final_width) + (_imported_image_start_y + _imported_image_final_height) * pxl_width;
                 const _is_on_resize_element = pxl_index === image_imported_resizer_index || old_pxl_index === image_imported_resizer_index;
+                let _new_imported_image_scale_delta_x = 0;
+                let _new_imported_image_scale_delta_y = 0;
 
                 if(event_which === 1 && mouse_down) {
 
-                    const x_difference = pos_x - from_x;
-                    const y_difference = pos_y - from_y;
-                    let _imported_image_move_from = [pos_x, pos_y];
+                    const x_difference = pos_x - _imported_image_move_from[0];
+                    const y_difference = pos_y - _imported_image_move_from[1];
+                    _imported_image_move_from = Array.of(pos_x, pos_y);
 
                     if(!_is_on_resize_element) {
 
-                        _imported_image_start_x += x_difference;
-                        _imported_image_start_x = _imported_image_start_x < -_imported_image_final_width ? -_imported_image_final_width: _imported_image_start_x;
-                        _imported_image_start_x = _imported_image_start_x >= pxl_width ? pxl_width: _imported_image_start_x;
-
-                        _imported_image_start_y += y_difference;
-                        _imported_image_start_y = _imported_image_start_y < -_imported_image_final_height ? -_imported_image_final_height: _imported_image_start_y;
-                        _imported_image_start_y = _imported_image_start_y >= pxl_height ? pxl_height: _imported_image_start_y;
+                        _imported_image_start_x = _imported_image_start_x + x_difference | 0;
+                        _imported_image_start_x = (_imported_image_start_x < -_imported_image_final_width) ? -_imported_image_final_width: _imported_image_start_x | 0;
+                        _imported_image_start_x = (_imported_image_start_x >= pxl_width) ? pxl_width: _imported_image_start_x  | 0;
+                        _imported_image_start_y = _imported_image_start_y + y_difference | 0;
+                        _imported_image_start_y = (_imported_image_start_y < -_imported_image_final_height) ? -_imported_image_final_height: _imported_image_start_y  | 0;
+                        _imported_image_start_y = (_imported_image_start_y >= pxl_height) ? pxl_height: _imported_image_start_y | 0;
                     }else {
 
-                        let _new_imported_image_scale_delta_x = _imported_image_scale_delta_x + x_difference;
-                        let _new_imported_image_scale_delta_y = _imported_image_scale_delta_y + y_difference;
+                        _new_imported_image_scale_delta_x = _imported_image_scale_delta_x + x_difference | 0;
+                        _new_imported_image_scale_delta_y = _imported_image_scale_delta_y + y_difference | 0;
 
-                        _new_imported_image_scale_delta_x = Math.max(_new_imported_image_scale_delta_x, -(_imported_image_width - 1));
-                        _new_imported_image_scale_delta_y = Math.max(_new_imported_image_scale_delta_y, -(_imported_image_height - 1));
-
-                        _imported_image_move_from = [
-                            from_x + (_new_imported_image_scale_delta_x - _imported_image_scale_delta_x),
-                            from_y + (_new_imported_image_scale_delta_y - _imported_image_scale_delta_y),
-                        ];
-
-                        _imported_image_scale_delta_x = _new_imported_image_scale_delta_x;
-                        _imported_image_scale_delta_y = _new_imported_image_scale_delta_y;
+                        _new_imported_image_scale_delta_x = Math.max(_new_imported_image_scale_delta_x, -(_imported_image_width - 1)) | 0;
+                        _new_imported_image_scale_delta_y = Math.max(_new_imported_image_scale_delta_y, -(_imported_image_height - 1)) | 0;
+                        _imported_image_scale_delta_x = _new_imported_image_scale_delta_x | 0;
+                        _imported_image_scale_delta_y = _new_imported_image_scale_delta_y | 0;
                     }
 
                     this.super_state.set_state({
@@ -2322,7 +2314,10 @@ class CanvasPixels extends React.PureComponent {
                         _imported_image_start_y,
                         _imported_image_scale_delta_x,
                         _imported_image_scale_delta_y,
-                        _imported_image_move_from,
+                        _imported_image_move_from: Array.of(
+                            _imported_image_move_from[0] + _new_imported_image_scale_delta_x - _imported_image_scale_delta_x | 0,
+                            _imported_image_move_from[1] + _new_imported_image_scale_delta_y - _imported_image_scale_delta_y | 0
+                        ),
                     }, () => {
 
                         this.super_master_meta.update_canvas();
@@ -2342,8 +2337,7 @@ class CanvasPixels extends React.PureComponent {
 
             }else if((tool === "PENCIL" || tool === "PENCIL PERFECT" || tool === "CONTOUR") && event_which === 1 && mouse_down){
 
-                let { _last_action_timestamp, _paint_or_select_hover_pxl_indexes, _paint_or_select_hover_pxl_indexes_exception, _paint_or_select_hover_actions_latest_index, _s_pxls, _s_pxl_colors, _layer_index, pxl_current_opacity } = this.super_state.get_state();
-                const { _paint_hover_old_pxls_snapshot } = this.super_state.get_state();
+                let { _paint_hover_old_pxls_snapshot, _last_action_timestamp, _paint_or_select_hover_pxl_indexes, _paint_or_select_hover_pxl_indexes_exception, _paint_or_select_hover_actions_latest_index, _s_pxls, _s_pxl_colors, _layer_index, pxl_current_opacity } = this.super_state.get_state();
                 const _paint_or_select_hover_pxl_indexes_copy = [..._paint_or_select_hover_pxl_indexes];
 
                 // PAINT HACK: compute the pixel between the previous and latest paint by hover pixel (Bresenham’s Line Algorithm)
@@ -2375,7 +2369,7 @@ class CanvasPixels extends React.PureComponent {
                     _last_action_timestamp = Date.now();
 
                     _paint_or_select_hover_pxl_indexes = new Set(Array.from(_paint_or_select_hover_pxl_indexes).concat(Array.from(new_drawn_pxl_indexes)));
-                    _paint_or_select_hover_pxl_indexes_exception.forEach((ie) => {
+                    _paint_or_select_hover_pxl_indexes_exception.forEach(function(ie) {
 
                         _paint_or_select_hover_pxl_indexes.delete(ie);
                     });
@@ -2455,6 +2449,7 @@ class CanvasPixels extends React.PureComponent {
                     const y = pixel_pos[1];
                     const x = pixel_pos[0];
 
+                    let pxl_colors = Array.from(_s_pxl_colors[_layer_index]);
                     if(x >= 0 && x < pxl_width && y >= 0 && y <= pxl_height) {
 
                         const index = y * pxl_width + x;
@@ -2464,17 +2459,11 @@ class CanvasPixels extends React.PureComponent {
                         const v_pxl_color_new = this.color_conversion.blend_colors(v_pxl_color, pxl_current_color_uint32, pxl_current_opacity, true, false);
 
                         // Eventually add current color to color list
-                        if (!_s_pxl_colors[_layer_index].includes(v_pxl_color_new)) {
-
-                            let pxl_colors = Array.from(_s_pxl_colors[_layer_index]);
-                            pxl_colors.push(v_pxl_color_new);
-
-                            _s_pxl_colors[_layer_index] = Uint32Array.from(pxl_colors);
-                        }
-
-
-                        _s_pxls[_layer_index][index] = _s_pxl_colors[_layer_index].indexOf(v_pxl_color_new);
+                        if (!pxl_colors.includes(v_pxl_color_new)) { pxl_colors.push(v_pxl_color_new);}
+                        _s_pxls[_layer_index][index] = pxl_colors.indexOf(v_pxl_color_new);
                     }
+
+                    _s_pxl_colors[_layer_index] = Uint32Array.from(pxl_colors);
                 });
 
                 // Update pixels list and pixel colours

@@ -176,7 +176,7 @@ const SuperCanvas = {
         return {
             // Methods
             clear() {
-                s.offscreen_canvas_context.clearRect(0, 0, s.width, s.height);
+                s.canvas_context.clearRect(0, 0, s.width, s.height);
             },
             render() {
 

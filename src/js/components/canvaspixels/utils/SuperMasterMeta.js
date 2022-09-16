@@ -67,10 +67,9 @@ const SuperMasterMeta = {
                     });
 
                     // This is a list of color index that we explore
-                    const full_pxls = Uint32Array.from(_s_pxls[_layer_index].map(pci => _s_pxl_colors[_layer_index][pci]));
+                    const full_pxls = Uint32Array.from(_s_pxls[_layer_index].map(function(pci){ return _s_pxl_colors[_layer_index][pci] | 0}));
                     const is_there_new_dimension = Boolean(_old_pxl_width !== pxl_width || _old_pxl_height !== pxl_height || _is_there_new_dimension);
                     let _pxl_indexes_of_current_shape = new Set();
-                    const {imported_image_pxls_positioned, imported_image_pxl_colors, imported_image_pxls_positioned_keyset} = meta.super_state.get_imported_image_data()
 
                     if (Boolean(tool === "LINE" || tool === "RECTANGLE" || tool === "ELLIPSE" || tool === "TRIANGLE") && _shape_index_a !== -1 && _pxls_hovered !== -1) {
 
@@ -123,8 +122,11 @@ const SuperMasterMeta = {
                     }).join("") !== _layers_simplified.map(function (l) {
                         return String(l.hidden ? "h" : "v").concat(String(l.opacity))
                     }).join(""));
+
                     const clear_canvas = Boolean(_did_hide_canvas_content && !hide_canvas_content) || Boolean(!_did_hide_canvas_content && hide_canvas_content) || !has_shown_canvas_once || hide_canvas_content || has_layers_visibility_or_opacity_changed || is_there_new_dimension;
                     const layers_length = _layers_simplified.length | 0;
+
+                    const {imported_image_pxls_positioned, imported_image_pxl_colors, imported_image_pxls_positioned_keyset} = meta.super_state.get_imported_image_data();
                     meta.super_blend.update(_layers.length + 1, full_pxls.length);
                     let number_to_paint = 0;
                     let full_pxls_length = full_pxls.length | 0;
@@ -148,6 +150,7 @@ const SuperMasterMeta = {
                         if (
                             !hide_canvas_content &&
                             Boolean(
+                                clear_canvas ||
                                 b.getUint8(0) !== 0 ||
                                 b.getUint8(1) !== 0 ||
                                 b.getUint8(2) !== b.getUint8(3) ||
@@ -173,7 +176,7 @@ const SuperMasterMeta = {
                                 }else if (b.getUint8(4) === 0 && b.getUint8(5) !== 0) {
                                     _pxl_indexes_of_selection_drawn.delete(index);
                                 }
-                            }else {_old_pxls_hovered.add(index);}
+                            }else {_old_pxls_hovered.add(_pxls_hovered);}
 
 
                             if (b.getUint8(7) !== 0) {
@@ -202,7 +205,7 @@ const SuperMasterMeta = {
                     }
 
                     const indexed_changes = meta.super_blend.blend(false, false);
-                    if (indexed_changes.size > 0) {
+                    if (indexed_changes.size > 0 || hide_canvas_content) {
 
                         force_update = Boolean(indexed_changes.size * 1.05 > pxl_width * pxl_height || force_update || clear_canvas);
 
@@ -224,11 +227,18 @@ const SuperMasterMeta = {
                                                 has_shown_canvas_once: true,
                                                 _is_there_new_dimension: false,
                                                 _did_hide_canvas_content: Boolean(hide_canvas_content),
-                                                _previous_imported_image_pxls_positioned_keyset: new Map(imported_image_pxls_positioned_keyset)
+                                                _previous_imported_image_pxls_positioned_keyset: new Set(Array.from(imported_image_pxls_positioned_keyset))
                                             }, callback_function);
-                                            meta.super_canvas.render();
 
-                                    }, force_update, force_update, Date.now())
+                                            if(hide_canvas_content) {
+
+                                                meta.super_canvas.clear();
+                                            }else {
+
+                                                meta.super_canvas.render();
+                                            }
+
+                                    }, false, force_update, Date.now())
                                 });
                             });
                         });

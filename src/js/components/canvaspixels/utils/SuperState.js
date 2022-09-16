@@ -132,7 +132,7 @@ const SuperState = {
             _previous_image_imported_resizer_index: -1,
             _selection_pair_highlight: true,
             _old_selection_pair_highlight: true,
-            _image_move_from: [-1, -1],
+            _imported_image_move_from: [-1, -1],
             _updated_at: Date.now(),
             _notified_position_at: 0,
             _force_updated_timestamp: 0,
@@ -403,69 +403,54 @@ const SuperState = {
             },
             get_imported_image_data: function() {
 
-                let state = this.get_state();
+                if(_state._imported_image_pxls.length) {
 
-                function to_hex_from_uint32(uint32){
-                    return "#".concat("00000000".concat(uint32.toString(16)).slice(-8));
-                }
+                    let canvas_ctx = this.new_canvas_context_2d(_state._imported_image_width, _state._imported_image_height);
+                    _state._imported_image_pxls.forEach((pxl, index) => {
 
-                if(state._imported_image_pxls.length) {
-
-                    let canvas_ctx = this.new_canvas_context_2d(state._imported_image_width, state._imported_image_height);
-
-
-                    state._imported_image_pxls.forEach((pxl, index) => {
-
-                        const pos_x = index % state._imported_image_width;
-                        const pos_y = (index - pos_x) / state._imported_image_width;
-
-                        const color = to_hex_from_uint32(state._imported_image_pxl_colors[pxl]);
-                        canvas_ctx.fillStyle = color;
+                        const pos_x = index % _state._imported_image_width;
+                        const pos_y = (index - pos_x) / _state._imported_image_width;
+                        canvas_ctx.fillStyle = "#".concat("00000000".concat(_state._imported_image_pxl_colors[pxl].toString(16)).slice(-8));
                         canvas_ctx.fillRect(pos_x, pos_y, 1, 1);
                     });
 
-                    const scaled_width = state._imported_image_width + state._imported_image_scale_delta_x;
-                    const scaled_height = state._imported_image_height + state._imported_image_scale_delta_y;
+                    const scaled_width = _state._imported_image_width + _state._imported_image_scale_delta_x;
+                    const scaled_height = _state._imported_image_height + _state._imported_image_scale_delta_y;
 
                     let canvas_resized_ctx = this.new_canvas_context_2d(scaled_width, scaled_height);
-                    canvas_resized_ctx.drawImage(canvas_ctx.canvas, 0, 0, state._imported_image_width, state._imported_image_height, 0, 0, scaled_width, scaled_height);
-                    canvas_ctx = null;
+                    canvas_resized_ctx.drawImage(canvas_ctx.canvas, 0, 0, _state._imported_image_width, _state._imported_image_height, 0, 0, scaled_width, scaled_height);
                     let resized_image_data = canvas_resized_ctx.getImageData(0, 0, scaled_width, scaled_height);
                     const {new_pxls, new_pxl_colors} = this.get_pixels_palette_and_list_from_image_data(resized_image_data);
-                    resized_image_data = null;
-                    canvas_resized_ctx = null;
-                    state._imported_image_width = scaled_width;
-                    state._imported_image_height = scaled_height;
+                    _state._imported_image_width = scaled_width;
+                    _state._imported_image_height = scaled_height;
 
 
-                    let pxls_positioned = {};
+                    let pxls_positioned = new Object();
                     let image_imported_resizer_index = -1;
                     if (new_pxls.length > 0) {
 
-                        image_imported_resizer_index = parseInt(state._imported_image_start_x + scaled_width) + parseInt(state._imported_image_start_y + scaled_height) * state.pxl_width;
-                        new_pxls.forEach((pxl, index) => {
+                        image_imported_resizer_index = _state._imported_image_start_x + scaled_width + (_state._imported_image_start_y + scaled_height) * _state.pxl_width | 0;
+                        new_pxls.forEach(function(pxl, index) {
 
                             const pos_x = index % scaled_width;
                             const pos_y = (index - pos_x) / scaled_width;
-                            const current_pos_x_positioned = pos_x + state._imported_image_start_x;
-                            const current_pos_y_positioned = pos_y + state._imported_image_start_y;
-                            const imported_image_pxl_positioned_index = current_pos_y_positioned * state.pxl_width + current_pos_x_positioned;
+                            const current_pos_x_positioned = pos_x + _state._imported_image_start_x;
+                            const current_pos_y_positioned = pos_y + _state._imported_image_start_y;
+                            const imported_image_pxl_positioned_index = current_pos_y_positioned * _state.pxl_width + current_pos_x_positioned;
 
-                            if (current_pos_x_positioned >= 0 && current_pos_x_positioned < state.pxl_width && current_pos_y_positioned >= 0 && current_pos_y_positioned < state.pxl_height) {
+                            if (current_pos_x_positioned >= 0 && current_pos_x_positioned < _state.pxl_width && current_pos_y_positioned >= 0 && current_pos_y_positioned < _state.pxl_height) {
 
-                                pxls_positioned[imported_image_pxl_positioned_index] = pxl;
+                                pxls_positioned[imported_image_pxl_positioned_index] = pxl | 0;
                             }
 
                         });
                     }
 
-                    const imported_image_pxls_positioned_keyset = new Set(Object.entries(pxls_positioned).map(function(e){return e[0] | 0;}));
-
                     return {
                         imported_image_pxls_positioned: pxls_positioned,
                         imported_image_pxl_colors: new_pxl_colors,
                         image_imported_resizer_index: image_imported_resizer_index,
-                        imported_image_pxls_positioned_keyset: imported_image_pxls_positioned_keyset,
+                        imported_image_pxls_positioned_keyset: new Set(Object.entries(pxls_positioned).map(function(e){return e[0] | 0;})),
                     };
                 }else {
 
