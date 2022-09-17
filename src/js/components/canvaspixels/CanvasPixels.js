@@ -351,11 +351,6 @@ class CanvasPixels extends React.PureComponent {
         }
     };
 
-    shouldComponentUpdate() {
-
-        return false;
-    }
-
     current_layer_up = () => {
 
         let { _layers, _layer_index, _s_pxl_colors, _s_pxls, pxl_width, pxl_height } = this.super_state.get_state();
@@ -585,47 +580,61 @@ class CanvasPixels extends React.PureComponent {
 
         if(this.props.onFiltersThumbnailChange) {
 
-            const { _processing_filters, s_pxls, _layer_index, _last_filters_hash, pxl_width, pxl_height, _s_pxls, _s_pxl_colors } = this.super_state.get_state();
+            const {
+                _processing_filters,
+                s_pxls,
+                _layer_index,
+                _last_filters_hash,
+                pxl_width,
+                pxl_height,
+                _s_pxls,
+                _s_pxl_colors,
+                _filter_thumbnails
+            } = this.super_state.get_state();
 
             const p = Array.from(_s_pxls[_layer_index]);
             const pc = Uint32Array.from(_s_pxl_colors[_layer_index]);
             const hash = String(this.xxhash.base58_that(Uint32Array.from(p.map(pci => pc[pci]))));
-            if(_last_filters_hash === hash || _processing_filters) { return; }
+            if (_last_filters_hash !== hash || _processing_filters === false) {
 
-            let thumbnails = this.super_state.get_state()._filter_thumbnails || new Map()
-            let old_thumbnail = new Map();
-            let progression = 0.0;
-            let n_processed = 0;
+                let thumbnails = _filter_thumbnails || new Map()
+                let old_thumbnail = new Map();
+                let progression = 0.0;
+                let n_processed = 0;
 
-            this.super_state.set_state({_last_filters_hash: hash, _processing_filters: true}, () => {
+                this.super_state.set_state({_last_filters_hash: hash, _processing_filters: true}, () => {
 
-                this.get_filter_names().forEach((name, index, filter_names) => {
+                    this.get_filter_names().forEach((name, index, filter_names) => {
 
-                    this.get_layer_bitmap_image(
-                        pxl_width,
-                        pxl_height,
-                        p,
-                        this._filter_pixels(name, force, pc),
-                        (result) => {
-                            n_processed++;
-                            old_thumbnail.set(name, thumbnails.get(name));
-                            thumbnails.set(name, result);
-                            progression = String(Math.round(n_processed / filter_names.length * 100));
-                            this.props.onFiltersThumbnailChange(thumbnails, hash, progression);
-                            if(thumbnails.size === filter_names.length) {
+                        this.get_layer_bitmap_image(
+                            pxl_width,
+                            pxl_height,
+                            p,
+                            this._filter_pixels(name, force, pc),
+                            (result) => {
+                                n_processed++;
+                                old_thumbnail.set(name, thumbnails.get(name));
+                                thumbnails.set(name, result);
+                                progression = String(Math.round(n_processed / filter_names.length * 100));
+                                this.props.onFiltersThumbnailChange(thumbnails, hash, progression);
+                                if (thumbnails.size === filter_names.length) {
 
-                                this.super_state.set_state({_filter_thumbnails: thumbnails, _processing_filters: false}, () => {
+                                    this.super_state.set_state({
+                                        _filter_thumbnails: thumbnails,
+                                        _processing_filters: false
+                                    }, () => {
 
-                                    Object.values(old_thumbnail).forEach(function(bmp){
-                                        bmp.close();
-                                    })
-                                });
+                                        Object.values(old_thumbnail).forEach(function (bmp) {
+                                            bmp.close();
+                                        })
+                                    });
+                                }
                             }
-                        }
-                    );
-                });
+                        );
+                    });
 
-            });
+                });
+            }
         }
     };
 
@@ -2241,14 +2250,11 @@ class CanvasPixels extends React.PureComponent {
 
     _handle_canvas_middle = () => {
 
-        this.super_master_meta.update_canvas(true, () => {
+        this.super_state.set_state({has_shown_canvas_once: false, _is_there_new_dimension: true}, () => {
 
-            this.super_state.set_state({has_shown_canvas_once: false, _is_there_new_dimension: true}, () => {
+            this._request_force_update(false, false, () => {
 
-                this._request_force_update(false, false, () => {
-
-                    this.super_master_meta.update_canvas(true);
-                });
+                this.super_master_meta.update_canvas(true);
             });
         });
     };
@@ -4893,9 +4899,12 @@ class CanvasPixels extends React.PureComponent {
                                 touchAction: "none",
                                 pointerEvents: "none",
                                 userSelect: "none",
-                                width: Math.floor(sizes.width),
-                                height: Math.floor(sizes.height),
-                                transform: `scale(${(screen_zoom_ratio * scale.current).toFixed(4)})`,
+                                width: sizes.width | 0,
+                                height: sizes.height | 0,
+                                minWidth: screen_zoom_ratio * scale.current * sizes.width | 0,
+                                maxWidth: screen_zoom_ratio * scale.current * sizes.width | 0,
+                                minHeight: screen_zoom_ratio * scale.current * sizes.height | 0,
+                                maxHeight: screen_zoom_ratio * scale.current * sizes.height | 0,
                                 transformOrigin: "left top",
                                 boxSizing: "content-box",
                                 borderWidth: 0,

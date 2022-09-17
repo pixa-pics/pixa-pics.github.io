@@ -424,21 +424,20 @@ class PixelToolboxSwipeableViews extends React.Component {
                     let bmp, ar, all_processed = true;
                     for (let i = 0; i < new_props.filters.length; i++) {
 
-                        bmp = new_props.filters_thumbnail[new_props.filters[i]];
-                        if (typeof bmp !== "undefined") {
+                        bmp = new_props.filters_thumbnail[new_props.filters[i]] || {};
 
-                            ar = String(Math.round((bmp.width / bmp.height) * 100) / 100);
+                        if (Boolean(bmp.width)) {
+                            ar = bmp.width / bmp.height;
                         }else {
 
                             all_processed = false;
                         }
                     }
 
-                    if (all_processed || ar !== this.state._filter_ar_on_one) {
+                    if (ar !== this.state._filter_ar_on_one && Boolean(ar)) {
 
-                        this.setState({_filters_changed: !all_processed, _filter_ar_on_one: ar}, () => {
-                            this.forceUpdate();
-                        });
+                        props_override._filters_changed = false;
+                        props_override._filter_ar_on_one = ar;
                     }
                 }
             }
@@ -748,11 +747,11 @@ class PixelToolboxSwipeableViews extends React.Component {
                                 boxSizing: "border-box",
                                 width: "100%"
                             }}>
-                                <Typography id="width-slider" gutterBottom>RESIZE NEW IMAGE TO : </Typography>
+                                <Typography id="size-slider" gutterBottom>RESIZE NEW IMAGE TO : </Typography>
                                 <Slider defaultValue={import_size} step={8} valueLabelDisplay="auto" min={0}
                                         max={import_size > 512 ? import_size : 512}
                                         onChangeCommitted={this._set_import_size}
-                                        aria-labelledby="width-slider"/>
+                                        aria-labelledby="size-slider"/>
                             </div>
                         </div>
                         <FormLabel style={{padding: "24px 0px 12px 24px"}} component="legend">AI TUNING BEFORE
@@ -1510,7 +1509,7 @@ class PixelToolboxSwipeableViews extends React.Component {
                                 ref={(el) => {this._set_canvas_ref(el, bmp)}}
                                 width={bmp.width || 0}
                                 height={bmp.height || 0}
-                                style={{ zIndex: "-1", boxSizing: "border-box", height: "100%", minWidth: "100%", minHeight: (128 / _filter_ar_on_one) | 0, width: 128, filter: "drop-shadow(#3729c1a8 0px 1px 2px) opacity(1.0)", webkitFilter: "drop-shadow(#3729c1a8 0px 1px 2px) opacity(1.0)", border: "4px solid #020529", borderRadius: 4, contain: "paint style size"}}
+                                style={{ zIndex: "-1", aspectRatio: `1000 / ${_filter_ar_on_one*1000 | 0}`, boxSizing: "border-box", height: "100%", minWidth: "100%", minHeight: (128 / _filter_ar_on_one) | 0, width: 128, boxShadow: "0px 1px 2px #3729c1a8", border: "4px solid #020529", borderRadius: 2, contain: "paint style size"}}
                                 key={"name-" + name + "-ratio-" + _filter_ar_on_one + "-over-" + String(bmp.width || 0) + "x" + String(bmp.height || 0) + "-preview-hash-" + last_filters_hash}
                                 />,
                             text: name,

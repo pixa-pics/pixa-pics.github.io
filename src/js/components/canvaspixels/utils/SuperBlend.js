@@ -40,7 +40,7 @@ const SuperBlend = {
                         color_bonus = +96;
                     }
 
-                    float_variables.setFloat32(24, state.amount_data_in_layers[layer_n][color_n] / 65535);
+                    float_variables.setFloat32(24, state.amount_data_in_layers[layer_n][color_n] / 255);
 
                     rgba.fill(color_bonus + rgba[0], 0, 1);
                     rgba.fill(color_bonus + rgba[1], 1, 2);
@@ -61,7 +61,7 @@ const SuperBlend = {
 
                 if (start_layer === -1) {
 
-                    if (shadow_state.rgba_colors_data_in_layers[layer_n][i4 + 3] >= 255 && state.amount_data_in_layers[layer_n][i1] === 65535) {
+                    if (shadow_state.rgba_colors_data_in_layers[layer_n][i4 + 3] >= 255 && state.amount_data_in_layers[layer_n][i1] === 255) {
 
                         start_layer = layer_n | 0;
                     }
@@ -80,7 +80,7 @@ const SuperBlend = {
             // Sum up all colors above
             for(let layer_n = start_layer+1|0; layer_n < all_layers_length; layer_n = layer_n + 1 | 0) {
 
-                float_variables.setFloat32(20, state.amount_data_in_layers[layer_n][i1] / 65535);
+                float_variables.setFloat32(20, state.amount_data_in_layers[layer_n][i1] / 255);
                 added.set(shadow_state.rgba_colors_data_in_layers[layer_n].slice(i4, i4+4|0), 0);
 
                 if(should_return_transparent && added.at(3) === 0 && float_variables.getFloat32(20) === 1) {
@@ -293,7 +293,7 @@ const SuperBlend = {
 
                 for_layer_index = for_layer_index | 0;
                 state.colors_data_in_layers[for_layer_index].fill(ui32color | 0, state.current_index-1 | 0, state.current_index | 0);
-                state.amount_data_in_layers[for_layer_index].fill(amount * 65535 | 0, state.current_index-1 | 0, state.current_index | 0);
+                state.amount_data_in_layers[for_layer_index].fill(amount * 255 | 0, state.current_index-1 | 0, state.current_index | 0);
                 state.hover_data_in_layers[for_layer_index].fill(is_hover | 0, state.current_index-1 | 0, state.current_index | 0);
             },
             blend: function (should_return_transparent, alpha_addition ) {

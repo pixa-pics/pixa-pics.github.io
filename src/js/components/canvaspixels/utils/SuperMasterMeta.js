@@ -168,15 +168,12 @@ const SuperMasterMeta = {
                                 meta.super_blend.stack(i, _s_pxl_colors[i][_s_pxls[i][index]], _layers_simplified[i].hidden ? 0 : _layers_simplified[i].opacity, 0);
                             }
 
-                            if (b.getUint8(0) === 0) {
-                                if(b.getUint8(1) !== 0){
-                                    _old_pxls_hovered.delete(index);
-                                }else if (b.getUint8(2) === 0 && b.getUint8(3) !== 0) {
-                                    _pxl_indexes_of_old_shape.delete(index);
-                                }else if (b.getUint8(4) === 0 && b.getUint8(5) !== 0) {
-                                    _pxl_indexes_of_selection_drawn.delete(index);
-                                }
-                            }else {_old_pxls_hovered.add(_pxls_hovered);}
+                            if(b.getUint8(1) !== 0 && b.getUint8(0) === 0){_old_pxls_hovered.delete(index);}
+                            if (b.getUint8(2) === 0 && b.getUint8(3) !== 0) {_pxl_indexes_of_old_shape.delete(index);}
+                            else if(b.getUint8(2) !== 0 && b.getUint8(3) === 0) {_pxl_indexes_of_old_shape.add(index)}
+                            if (b.getUint8(4) === 0 && b.getUint8(5) !== 0) {_pxl_indexes_of_selection_drawn.delete(index);}
+                            else if(b.getUint8(4) !== 0 && b.getUint8(5) === 0) {_pxl_indexes_of_selection_drawn.add(index);}
+                            if(b.getUint8(0) !== 0) {_old_pxls_hovered.add(index);}
 
 
                             if (b.getUint8(7) !== 0) {
@@ -215,19 +212,19 @@ const SuperMasterMeta = {
                                     meta.sraf.run_frame(function () {
 
                                             meta.super_state.set_state({
-                                                _pxl_indexes_of_selection_drawn: new Set(Array.from(_pxl_indexes_of_selection_drawn).concat(Array.from(_pxl_indexes_of_selection))),
-                                                _pxl_indexes_of_old_shape: new Set(Array.from(_pxl_indexes_of_old_shape).concat(Array.from(_pxl_indexes_of_current_shape))),
+                                                _pxl_indexes_of_selection_drawn: _pxl_indexes_of_selection_drawn,
+                                                _pxl_indexes_of_old_shape: _pxl_indexes_of_old_shape,
                                                 _old_selection_pair_highlight: Boolean(_selection_pair_highlight),
                                                 _old_layers: _layers_simplified,
                                                 _old_full_pxls: new Uint32Array(full_pxls.buffer),
                                                 _old_pxl_width: pxl_width | 0,
                                                 _old_pxl_height: pxl_height | 0,
-                                                _old_pxls_hovered: new Set(Array.from(_old_pxls_hovered)),
+                                                _old_pxls_hovered: _old_pxls_hovered,
                                                 _last_paint_timestamp: requested_at | 0,
                                                 has_shown_canvas_once: true,
                                                 _is_there_new_dimension: false,
                                                 _did_hide_canvas_content: Boolean(hide_canvas_content),
-                                                _previous_imported_image_pxls_positioned_keyset: new Set(Array.from(imported_image_pxls_positioned_keyset))
+                                                _previous_imported_image_pxls_positioned_keyset: imported_image_pxls_positioned_keyset
                                             }, callback_function);
 
                                             if(hide_canvas_content) {
