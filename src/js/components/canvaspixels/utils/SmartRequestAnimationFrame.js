@@ -73,6 +73,13 @@ const SmartRequestAnimationFrame = {
             },
             run_frame(render, do_not_cancel_animation = false, force_update = false, requested_at_t = Date.now()) {
 
+                const render_it = async function() {
+
+                    const id = s.caf_id | 0;
+                    render();
+                    if(id === s.caf_id) { s.caf_id = null;}
+                };
+
                 return new Promise(function(resolve, reject){
 
                     if(requested_at_t <= s.lasts_raf_time) {
@@ -92,42 +99,43 @@ const SmartRequestAnimationFrame = {
 
                         if(force_update) {
 
-                            if(s.caf_id != null) {
+                            if(s.caf_id !== null) {
 
                                 s.caf.call(window, s.caf_id);
+                                s.caf_id = null;
                                 s.cpaf_frames--;
                             }
-                            s.caf_id = null;
+
                             s.cpaf_frames++;
                             s.lasts_raf_time = requested_at_t | 0;
 
                             if(!do_not_cancel_animation) {
 
-                                s.caf_id = s.raf.call(window, render);
+                                s.caf_id = s.raf.call(window, render_it);
                             }else {
 
-                                s.raf.call(window, render);
+                                s.raf.call(window, render_it);
                             }
 
                             resolve();
                         }else if(!running_smoothly || s.caf_id !== null && deltaT > 1000 / (skip_frame_rate * 2)){ // Low
 
-                            if(s.caf_id != null) {
+                            if(s.caf_id !== null) {
 
                                 s.caf.call(window, s.caf_id);
+                                s.caf_id = null;
                                 s.cpaf_frames--;
                             }
 
-                            s.caf_id = null;
                             s.cpaf_frames++;
                             s.lasts_raf_time = requested_at_t | 0;
 
                             if(!do_not_cancel_animation) {
 
-                                s.caf_id = s.raf.call(window, render);
+                                s.caf_id = s.raf.call(window, render_it);
                             }else {
 
-                                s.raf.call(window, render);
+                                s.raf.call(window, render_it);
                             }
 
                             resolve();

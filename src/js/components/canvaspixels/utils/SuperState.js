@@ -264,21 +264,24 @@ const SuperState = {
                 st._s_pxl_colors[state._layer_index] = Uint32Array.from(pxl_colors);
                 st._s_pxls[state._layer_index] = Array.from(pxls);
 
-                this.set_state(st, callback_function);
+                this.set_state(st).then(callback_function);
             },
-            set_state: function(new_props, callback = function(){}) {
+            set_state: function(new_props) {
 
-                Object.entries(new_props).forEach(function(entry){ 
+                return new Promise(function(resolve, reject){
 
-                    _state[entry[0]] = entry[1];
+                    Object.entries(new_props).forEach(function(entry){
 
-                    if(entry[0] === "pxl_current_color") {
+                        _state[entry[0]] = entry[1];
 
-                        _state["pxl_current_color_uint32"] = _format_hex_color_getUin32(entry[1]);
-                    }
+                        if(entry[0] === "pxl_current_color") {
+
+                            _state["pxl_current_color_uint32"] = _format_hex_color_getUin32(entry[1]);
+                        }
+                    });
+
+                    resolve();
                 });
-                
-                callback();
             },
             get_state: function() {
 
