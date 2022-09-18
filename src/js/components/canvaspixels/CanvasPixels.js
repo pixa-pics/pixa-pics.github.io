@@ -416,54 +416,45 @@ class CanvasPixels extends React.PureComponent {
     merge_down_layer = (at_index) => {
 
         let { _layers, _s_pxls, _s_pxl_colors } = this.super_state.get_state();
-
         _layers = Array.from(_layers);
         _s_pxls = _s_pxls.map((a) => Array.from(a));
         _s_pxl_colors = _s_pxl_colors.map((a) => Uint32Array.from(a));
 
-        const { pxl_width, pxl_height } = this.super_state.get_state();
-
         if(typeof _layers[at_index] !== "undefined" && typeof _layers[at_index - 1] !== "undefined") {
-
-            let new_layer_pxls = new Array(pxl_width * pxl_height).fill(0);
-            let new_layer_pxl_colors = new Array();
 
             const top_layer_pxls = _s_pxls[at_index];
             const bottom_layer_pxls = _s_pxls[at_index - 1];
+            const top_layer_pxl_colors = Uint32Array.from(_s_pxl_colors[at_index]);
+            const top_layer_opacity = (parseFloat(_layers[at_index].opacity) * 255 | 0) >>> 0;
+            const bottom_layer_pxl_colors = Uint32Array.from(_s_pxl_colors[at_index - 1]);
+            const bottom_layer_opacity = (parseFloat(_layers[at_index-1].opacity) * 255 | 0) >>> 0;
 
-            const top_layer_pxl_colors = _s_pxl_colors[at_index];
-            const top_layer_opacity = parseFloat(_layers[at_index].opacity);
-            const bottom_layer_pxl_colors = _s_pxl_colors[at_index - 1];
-            const bottom_layer_opacity = parseFloat(_layers[at_index - 1].opacity);
+            const pxl_length = top_layer_pxls.length | 0;
 
             const new_layer = {
                 id: Date.now(),
                 name: `Merged layers ${at_index}+${at_index-1}`,
-                hidden: Boolean(_layers[at_index].hidden &&  _layers[at_index-1].hidden),
-                opacity: parseInt(bottom_layer_opacity),
+                hidden: Boolean(_layers[at_index].hidden && _layers[at_index-1].hidden),
+                opacity: parseFloat(1),
             };
 
-            bottom_layer_pxls.forEach((pxl, pxl_index) => {
+            const super_blend = Object.create(SuperBlend).new();
+            super_blend.build(2, pxl_length);
 
-                const top_layer_pxl_color = top_layer_pxl_colors[top_layer_pxls[pxl_index]];
-                const bottom_layer_pxl_color = bottom_layer_pxl_colors[pxl];
+            for(let i = 0 ; i < pxl_length; i = (i+1|0)>>>0) {
 
-                let new_layer_pxl_color = this.color_conversion.blend_colors(bottom_layer_pxl_color, top_layer_pxl_color, top_layer_opacity, false, false);
-                let new_layer_pxl_color_index = null;
+                super_blend.for(i);
+                super_blend.stack(0, top_layer_pxl_colors[top_layer_pxls[i]], top_layer_opacity, 0);
+                super_blend.stack(1, bottom_layer_pxl_colors[bottom_layer_pxls[i]], bottom_layer_opacity, 0);
+            }
 
-                if(!new_layer_pxl_colors.includes(new_layer_pxl_color)) {
-
-                    new_layer_pxl_color_index = new_layer_pxl_colors.push(new_layer_pxl_color);
-                }else {
-
-                    new_layer_pxl_color_index = new_layer_pxl_colors.indexOf(new_layer_pxl_color);
-                }
-                new_layer_pxls[pxl_index] = new_layer_pxl_color_index;
-            });
+            const image_data = new Uint8ClampedArray(Uint32Array.from(Array.from(super_blend.blend(false, false))).reverse().buffer).reverse();
+            const {new_pxl_colors, new_pxls} = this._get_pixels_palette_and_list_from_image_data(image_data, true);
+            super_blend.clear();
 
             _layers.splice(at_index-1, 2, new_layer);
-            _s_pxls.splice(at_index-1, 2, Array.from(new_layer_pxls));
-            _s_pxl_colors.splice(at_index-1, 2, Uint32Array.from(new_layer_pxl_colors));
+            _s_pxls.splice(at_index-1, 2, new_pxls);
+            _s_pxl_colors.splice(at_index-1, 2, new_pxl_colors);
 
             this.super_state.set_state({
                 _layer_index: at_index-1,

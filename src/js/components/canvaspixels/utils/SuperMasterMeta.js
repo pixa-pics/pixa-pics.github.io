@@ -73,7 +73,7 @@ const SuperMasterMeta = {
                                 hash: String(l.hash),
                                 name: String(l.name),
                                 hidden: Boolean(l.hidden),
-                                opacity: parseInt(l.opacity),
+                                opacity: (parseFloat(l.opacity) * 255 | 0) >>> 0,
                             };
                         });
 
@@ -129,9 +129,9 @@ const SuperMasterMeta = {
                         }
 
                         const has_layers_visibility_or_opacity_changed = Boolean(_old_layers.map(function (l) {
-                            return String(l.hidden ? "h" : "v").concat(String(l.opacity))
+                            return String(l.id).concat(String(l.hidden ? "h" : "v").concat(String(l.opacity)))
                         }).join("") !== _layers_simplified.map(function (l) {
-                            return String(l.hidden ? "h" : "v").concat(String(l.opacity))
+                            return String(l.id).concat(String(l.hidden ? "h" : "v").concat(String(l.opacity)))
                         }).join(""));
 
                         const clear_canvas = Boolean(_did_hide_canvas_content !== hide_canvas_content) || !has_shown_canvas_once || has_layers_visibility_or_opacity_changed || is_there_new_dimension;
@@ -150,7 +150,7 @@ const SuperMasterMeta = {
 
                             meta.super_blend.update(_layers.length + 1, full_pxls.length);
 
-                            for (let index = 0; index < full_pxls_length; index = index + 1 | 0) {
+                            for (let index = 0; index < full_pxls_length; index = (index + 1 | 0) >>> 0) {
 
                                 b.setUint8(0, (_pxls_hovered === index && !_pxl_indexes_of_selection.has(index)) | 0);
                                 b.setUint8(1, _old_pxls_hovered.has(index) | 0);
@@ -178,7 +178,13 @@ const SuperMasterMeta = {
 
                                     for (let i = 0; i < layers_length; i = i + 1 | 0) {
 
-                                        meta.super_blend.stack(i, _s_pxl_colors[i][_s_pxls[i][index]], _layers_simplified[i].hidden ? 0 : _layers_simplified[i].opacity, 0);
+                                        if(_layers_simplified[i].hidden) {
+
+                                            meta.super_blend.stack(i, _s_pxl_colors[i][_s_pxls[i][index]], 0, 0);
+                                        }else {
+
+                                            meta.super_blend.stack(i, _s_pxl_colors[i][_s_pxls[i][index]], _layers_simplified[i].opacity, false);
+                                        }
                                     }
 
                                     if(b.getUint8(1) !== 0 && b.getUint8(0) === 0){_old_pxls_hovered.delete(index);}
@@ -191,25 +197,26 @@ const SuperMasterMeta = {
 
                                     if (b.getUint8(7) !== 0) {
 
-                                        meta.super_blend.stack(layers_length, imported_image_pxl_colors[imported_image_pxls_positioned[index]], 1, 0);
+                                        meta.super_blend.stack(layers_length, imported_image_pxl_colors[imported_image_pxls_positioned[index]], 255, false);
                                     } else if (b.getUint8(2) !== 0 || b.getUint8(0) !== 0) {
 
 
                                         if (b.getUint8(0) !== 0) {
 
-                                            meta.super_blend.stack(layers_length, 0, 2 / 3, 1);
+                                            meta.super_blend.stack(layers_length, 0, 255, true);
                                         } else {
 
-                                            meta.super_blend.stack(layers_length, 0, 1 / 3, 1);
+                                            meta.super_blend.stack(layers_length, 0, 128, true);
                                         }
 
                                     } else if (b.getUint8(4) !== 0) {
 
-                                        pos_x = index % pxl_width | 0;
-                                        pos_y = (index - pos_x) / pxl_width | 0;
+                                        pos_x = (index % pxl_width | 0) >>> 0;
+                                        pos_y = ((index - pos_x) / pxl_width | 0) >>> 0;
 
-                                        opacity = 1 / 3 + ((0 + ((pos_x + pos_y + (_selection_pair_highlight ? 1 : 0) | 0) % 2) | 0) / 3);
+                                        opacity = 96 + ((0 + ((pos_x + pos_y + (_selection_pair_highlight ? 1 : 0) | 0) % 2) | 0) * 64);
                                         meta.super_blend.stack(layers_length, 0, opacity, 1);
+
                                     }
                                 }
                             }
@@ -1328,7 +1335,7 @@ const SuperMasterMeta = {
 
                 if(notifiers.action) {
 
-                    notifiers.action(event, this.color_conversion.format_hex_color(color), opacity);
+                    notifiers.action(event, meta.color_conversion.format_hex_color(color), opacity);
                 }
             }
         }

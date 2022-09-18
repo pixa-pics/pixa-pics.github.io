@@ -97,9 +97,9 @@ const ColorConversion = {
                     const bo = ba3 * (1 - ad3) / mi3;
 
                     mix.set(Uint8ClampedArray.of(
-                        parseInt(added[0] * ao + base[0] * bo), // red
-                        parseInt(added[1] * ao + base[1] * bo), // green
-                        parseInt(added[2] * ao + base[2] * bo)
+                        added[0] * ao + base[0] * bo, // red
+                        added[1] * ao + base[1] * bo, // green
+                        added[2] * ao + base[2] * bo
                     ), 0);// blue
 
                 }else if(ad3 > 0) {
@@ -116,7 +116,7 @@ const ColorConversion = {
                     mi3 /= 2;
                 }
 
-                mix[3] = parseInt(mi3 * 255);
+                mix[3] = mi3 * 255 | 0;
 
                 return this.to_uint32_from_rgba(mix);
             },
