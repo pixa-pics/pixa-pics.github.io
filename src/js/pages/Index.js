@@ -214,7 +214,7 @@ class Index extends React.Component {
         setTimeout(async() => {
 
             actions.trigger_snackbar("Hello, I am Jamy! Let's take a look to our laboratory to process images, wanna give it a try?", 7000)
-        }, 1250);
+        }, 3000);
     }
 
     componentWillUnmount() {

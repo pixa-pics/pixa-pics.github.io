@@ -1,5 +1,5 @@
 const SuperState = {
-    _format_hex_color_getUin32: function(hex) { // Supports #fff (short rgb), #fff0 (short rgba), #e2e2e2 (full rgb) and #e2e2e2ff (full rgba)
+    _format_hex_color_getUin32(hex) { // Supports #fff (short rgb), #fff0 (short rgba), #e2e2e2 (full rgb) and #e2e2e2ff (full rgba)
 
         if(typeof hex === "undefined"){
 
@@ -30,7 +30,7 @@ const SuperState = {
             return parseInt(formatted.slice(1), 16);;
         }
     },
-    _build_state: function(props) {
+    _build_state(props) {
 
         return {
             _id: String(parseInt(1000 * Math.random() * 1000 ).toString(16)),
@@ -95,7 +95,7 @@ const SuperState = {
             _canvas_container: null,
             _canvas_wrapper: null,
             _canvas_wrapper_overflow: null,
-            _state_history_length: 61 - parseInt(0.1 * parseInt(parseInt(props.pxl_width || 32) + parseInt(props.pxl_height || 32)) / 2),
+            _state_history_length: 20,
             _last_action_timestamp: Date.now(),
             _last_paint_timestamp: Date.now(),
             _lazy_lazy_compute_time_ms: 10 * 1000,
@@ -146,7 +146,7 @@ const SuperState = {
             _processing_filters: false,
         };
     },
-    _blend_rgba_colors: function(all_added_in_layers, amount, should_return_transparent = 0, alpha_addition = 0) {
+    _blend_rgba_colors(all_added_in_layers, amount, should_return_transparent = 0, alpha_addition = 0) {
 
         should_return_transparent = should_return_transparent | 0 ;
         alpha_addition = alpha_addition | 0;
@@ -213,7 +213,7 @@ const SuperState = {
 
         return all_base;
     },
-    from: function(props){
+    from(props){
         "use strict";
         let _state = this._build_state(props);
         let _format_hex_color_getUin32 = this._format_hex_color_getUin32;
@@ -221,7 +221,7 @@ const SuperState = {
         let _pxl_indexes = new Set();
 
         return {
-            paint_shape: function(pxl_indexes, color, opacity, s = {}, callback_function = function(){}) {
+            paint_shape(pxl_indexes, color, opacity, s = {}, callback_function = function(){}) {
 
                 let state = this.get_state();
                 let pxl_colors = Uint32Array.from(state._s_pxl_colors[state._layer_index]);
@@ -266,7 +266,7 @@ const SuperState = {
 
                 this.set_state(st).then(callback_function);
             },
-            set_state: function(new_props) {
+            set_state(new_props) {
 
                 return new Promise(function(resolve, reject){
 
@@ -283,7 +283,7 @@ const SuperState = {
                     resolve();
                 });
             },
-            get_state: function() {
+            get_state() {
 
                 return _state;
             },
@@ -400,11 +400,11 @@ const SuperState = {
                     return 'url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAAAAq0lEQVRYR+1WQQrAIAxb///oDmUOkc3W2kEG2XHQGpPURg6wTzLwqKr2fUQk3Ddc2AMogBqGgo2ARpkhGaKHZtMIKRmnjJLtrBBIU0O9QzvsjrUpyzUd0BgfvAdYWz3StzLUm7KBuWLEKzZPzHjqO8SWElXuX7UnLCCvTCvTFJYsAuarGswp270tQ77FIOQuY0BjQLOM+zuGVlbK7HIpLzXH3vIXGfIwlGXqE9034xUtxdxDAAAAAElFTkSuQmCC") 18 18, auto';
                 }
             },
-            get_indexes: function() {
+            get_indexes() {
 
                 return new Set(_pxl_indexes.keys());
             },
-            get_imported_image_data: function() {
+            get_imported_image_data() {
 
                 if(_state._imported_image_pxls.length) {
 
@@ -465,7 +465,7 @@ const SuperState = {
                     };
                 }
             },
-            get_pixels_palette_and_list_from_image_data: function (image_data) {
+            get_pixels_palette_and_list_from_image_data (image_data) {
 
                 function to_uint32_from_rgba(rgba) {
                     return new Uint32Array(rgba.reverse().buffer)[0];
@@ -495,7 +495,7 @@ const SuperState = {
                     new_pxls: Array.from(new_pxls),
                 };
             },
-            new_canvas_context_2d: function(width, height) {
+            new_canvas_context_2d(width, height) {
 
                 let canvas;
                 try {
@@ -521,7 +521,7 @@ const SuperState = {
 
                 return context;
             },
-            create_shape: function() {
+            create_shape() {
 
                 let new_canvas_context_2d = this.new_canvas_context_2d;
                 let state = this.get_state();
@@ -558,7 +558,90 @@ const SuperState = {
 
                 // TO DO --> GET PREVIOUS COMMIT OR FINISH THIS
                 return {
-                    from_path: function(path_indexes){
+                    from_border(selection_indexes, inside = true, bold = false) {
+
+                        const { pxl_width, pxl_height } = this.get_state();
+
+                        let pxls_of_the_border = new Set();
+
+                        selection_indexes.forEach((pxl_index, iteration) => {
+
+                            let up, right, bottom, left;
+
+                            up = pxl_index - pxl_width; up = up < 0 ? -1: up;
+                            right = pxl_index + 1; right = right % pxl_width === 0 ? -1: right;
+                            bottom = pxl_index + pxl_width; bottom = bottom > (pxl_width * pxl_height) ? -1: bottom;
+                            left = pxl_index - 1; left = left % pxl_width === pxl_width - 1 ? -1: left;
+
+                            let up_left, up_right, bottom_left, bottom_right;
+
+                            up_left = up - 1; up_left = up === -1 || left === -1 ? -1: up_left;
+                            up_right = up + 1; up_right = up === -1 || right === -1 ? -1: up_right;
+                            bottom_left = bottom - 1; bottom_left = bottom === -1 || left === -1 ? -1: bottom_left;
+                            bottom_right = bottom + 1; bottom_right = bottom === -1 || right === -1 ? -1: bottom_right;
+
+                            if(!inside) {
+
+                                if(!selection_indexes.has(up)){
+                                    pxls_of_the_border.add(up)
+                                }
+                                if(!selection_indexes.has(right)){
+                                    pxls_of_the_border.add(right)
+                                }
+                                if(!selection_indexes.has(bottom)){
+                                    pxls_of_the_border.add(bottom)
+                                }
+                                if(!selection_indexes.has(left)){
+                                    pxls_of_the_border.add(left)
+                                }
+
+                                if(bold) {
+
+                                    if(!selection_indexes.has(up_left)){
+                                        pxls_of_the_border.add(up_left)
+                                    }
+                                    if(!selection_indexes.has(up_right)){
+                                        pxls_of_the_border.add(up_right)
+                                    }
+                                    if(!selection_indexes.has(bottom_left)){
+                                        pxls_of_the_border.add(bottom_left)
+                                    }
+                                    if(!selection_indexes.has(bottom_right)){
+                                        pxls_of_the_border.add(bottom_right)
+                                    }
+                                }
+
+                            }else {
+                                if(
+                                    !selection_indexes.has(up) || -1 === up ||
+                                    !selection_indexes.has(right) || -1 === right ||
+                                    !selection_indexes.has(bottom) || -1 === bottom ||
+                                    !selection_indexes.has(left) || -1 === left
+                                ) {
+
+                                    pxls_of_the_border.add(pxl_index);
+                                }
+
+                                if(bold) {
+
+                                    if(
+                                        !selection_indexes.has(up_left) || -1 === up_left ||
+                                        !selection_indexes.has(up_right) || -1 === up_right ||
+                                        !selection_indexes.has(bottom_left) || -1 === bottom_left ||
+                                        !selection_indexes.has(bottom_right) || -1 === bottom_right
+                                    ) {
+
+                                        pxls_of_the_border.add(pxl_index);
+                                    }
+
+                                }
+                            }
+
+                        });
+
+                        return pxls_of_the_border;
+                    },
+                    from_path(path_indexes){
 
                         let path_context = new_canvas_context_2d(width, height);
 
@@ -588,7 +671,7 @@ const SuperState = {
                         get_shadow_indexes_from_canvas_context(path_context, path_indexes);
                         return path_indexes;
                     },
-                    from_line: function(from, to) {
+                    from_line(from, to) {
 
                         from = from | 0;
                         to = to | 0;
@@ -624,7 +707,7 @@ const SuperState = {
     
                         return pxl_indexes;
                     },
-                    from_rectangle: function(from, to) {
+                    from_rectangle(from, to) {
 
                         from = from | 0;
                         to = to | 0;
@@ -647,7 +730,7 @@ const SuperState = {
 
                         return pxl_indexes;
                     },
-                    from_ellipse: function(from, to) {
+                    from_ellipse(from, to) {
 
                         from = from | 0;
                         to = to | 0;

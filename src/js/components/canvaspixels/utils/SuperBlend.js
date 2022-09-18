@@ -1,5 +1,5 @@
 const SuperBlend = {
-    _blend_state: function(shadow_state, state, should_return_transparent, alpha_addition) {
+    _blend_state(shadow_state, state, should_return_transparent, alpha_addition) {
         "use strict";
         should_return_transparent = (should_return_transparent | 0) > 0;
         alpha_addition = (alpha_addition | 0) > 0;
@@ -135,7 +135,7 @@ const SuperBlend = {
 
         return mapped_colors;
     },
-    _build_state: function(layer_number, max_length) {
+    _build_state(layer_number, max_length) {
         "use strict";
         layer_number = layer_number | 0;
         max_length = max_length | 0;
@@ -159,7 +159,7 @@ const SuperBlend = {
 
         return state;
     },
-    _build_shadow_state: function (state, old_shadow_state) {
+    _build_shadow_state (state, old_shadow_state) {
 
         if(typeof old_shadow_state !== "undefined") {
 
@@ -185,7 +185,7 @@ const SuperBlend = {
 
         return shadow_state;
     },
-    _update_state: function(state, layer_number, max_length, _build_state) {
+    _update_state(state, layer_number, max_length, _build_state) {
         "use strict";
         layer_number = layer_number | 0;
         max_length = max_length | 0;
@@ -258,7 +258,7 @@ const SuperBlend = {
             return state;
         }
     },
-    _update_shadow_state: function (shadow_state, state) {
+    _update_shadow_state (shadow_state, state) {
 
         // Create a shadow state for computation
         shadow_state.mapped_colors.clear();
@@ -273,7 +273,7 @@ const SuperBlend = {
 
         return shadow_state;
     },
-    new: function(){
+    new(){
         "use strict";
         const blender = this._blend_state;
         const builder = this._build_state;
@@ -285,35 +285,35 @@ const SuperBlend = {
         let shadow_state = shadow_builder(state);
 
         return {
-            for: function(pixel_index) {
+            for(pixel_index) {
 
                 state.current_index = state.current_index + 1 | 0;
                 state.indexes_data_for_layers[state.current_index-1] = pixel_index | 0;
             },
-            stack: function(for_layer_index, ui32color, amount, is_hover) {
+            stack(for_layer_index, ui32color, amount, is_hover) {
 
                 for_layer_index = for_layer_index | 0;
                 state.colors_data_in_layers[for_layer_index].fill((ui32color | 0) >>> 0, state.current_index-1 | 0, state.current_index | 0);
                 state.amount_data_in_layers[for_layer_index].fill((amount * 255 | 0) >>> 0, state.current_index-1 | 0, state.current_index | 0);
                 state.hover_data_in_layers[for_layer_index].fill((is_hover | 0) >>> 0, state.current_index-1 | 0, state.current_index | 0);
             },
-            blend: function (should_return_transparent, alpha_addition ) {
+            blend (should_return_transparent, alpha_addition ) {
                 should_return_transparent = should_return_transparent | 0;
                 alpha_addition = alpha_addition | 0;
                 shadow_state = shadow_updater(shadow_state, state);
                 return blender(shadow_state, state, should_return_transparent, alpha_addition);
             },
-            build: function (layer_number, max_length) {
+            build (layer_number, max_length) {
                 state = builder(layer_number, max_length);
                 shadow_state = shadow_builder(state, shadow_state);
             },
-            update: function (layer_number, max_length) {
+            update (layer_number, max_length) {
 
                 const changed_layer_number = Boolean(state.layer_number !== layer_number);
                 state = updater(state, layer_number, max_length, builder);
                 if(changed_layer_number) { shadow_state = shadow_builder(state, shadow_state); }
             },
-            clear: function () {
+            clear() {
                 state = updater(state, 1, 1, builder);
             }
         };

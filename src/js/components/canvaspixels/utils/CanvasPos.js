@@ -1,6 +1,6 @@
 const CanvasPos = {
 
-    _get_init_state: function(pxl_width, pxl_height, default_scale, canvas_wrapper_padding, canvas_wrapper_border_width, perspective) {
+    _get_init_state(pxl_width, pxl_height, default_scale, canvas_wrapper_padding, canvas_wrapper_border_width, perspective) {
 
         return Object.assign({}, {
             canvas_event_target: "CANVAS_WRAPPER_OVERFLOW",
@@ -122,7 +122,7 @@ const CanvasPos = {
     _get_shadows(hex){
 
         const color_conversion = {
-            format_hex_color: function(hex) { // Supports #fff (short rgb), #fff0 (short rgba), #e2e2e2 (full rgb) and #e2e2e2ff (full rgba)
+            format_hex_color(hex) { // Supports #fff (short rgb), #fff0 (short rgba), #e2e2e2 (full rgb) and #e2e2e2ff (full rgba)
 
                 const l = hex.length | 0;
                 if(typeof hex === "undefined"){
@@ -154,10 +154,10 @@ const CanvasPos = {
                     return formatted;
                 }
             },
-            to_hex_from_rgba: function(rgba) {
+            to_hex_from_rgba(rgba) {
                 return "#".concat("00000000".concat(new Uint32Array(rgba.reverse().buffer)[0].toString(16)).slice(-8));
             },
-            to_rgba_from_hex: function(hex) {
+            to_rgba_from_hex(hex) {
                 return new Uint8ClampedArray(Uint32Array.of(parseInt(hex.slice(1), 16)).buffer).reverse();
             }
         };
@@ -205,7 +205,7 @@ const CanvasPos = {
     },
 
 
-    from: function(pxl_width, pxl_height, default_scale, canvas_wrapper_padding, canvas_wrapper_border_width, perspective){
+    from(pxl_width, pxl_height, default_scale, canvas_wrapper_padding, canvas_wrapper_border_width, perspective){
 
         const gszr = this._get_screen_zoom_ratio;
         const cis = this._get_init_state;
@@ -221,12 +221,12 @@ const CanvasPos = {
         let szr = gszr(s);
         let p = gp(s, szr);
         let notifiers = {
-            update: function(){},
-            menu: function(){},
-            move: function(){},
-            up: function(){},
-            down: function(){},
-            middle: function(){},
+            update(){},
+            menu(){},
+            move(){},
+            up(){},
+            down(){},
+            middle(){},
         };
 
         let msi = null;
@@ -269,7 +269,7 @@ const CanvasPos = {
             },
             get_pointer_state() {
 
-                return Object.assign({}, ps); // Warning
+                return ps; // Warning
             },
             get_perspective_state() {
 
@@ -722,10 +722,10 @@ const CanvasPos = {
                 szr = gszr(s);
                 p = gp(s, szr);
                 notifiers = {
-                    moved: function(){},
-                    menu: function(){},
-                    canvas: function(){},
-                    up: function(){}
+                    moved(){},
+                    menu(){},
+                    canvas(){},
+                    up(){}
                 };
             },
             destroy() {
