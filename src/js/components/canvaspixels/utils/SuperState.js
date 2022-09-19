@@ -27,15 +27,16 @@ const SuperState = {
                     break;
             }
 
-            return parseInt(formatted.slice(1), 16);;
+            return parseInt(formatted.slice(1), 16);
         }
     },
-    _build_state(props) {
-        "use strict";
-        let format_hex_color_getUin32 = this._format_hex_color_getUin32;
-        let _state = {
+    _get_build_state(props) {
+
+        let pxl_current_color_uint32 = this._format_hex_color_getUin32(props.pxl_current_color || "#00000000");
+
+        return {
             _id: String(parseInt(1000 * Math.random() * 1000).toString(16)),
-            className: props.className || null,
+                className: props.className || null,
             perspective: props.perspective || 0,
             animation: props.animation || true,
             animation_duration: props.animation_duration || 60,
@@ -54,7 +55,7 @@ const SuperState = {
             pxl_width: 32,
             pxl_height: 32,
             pxl_current_color: props.pxl_current_color || "#00000000",
-            pxl_current_color_uint32: format_hex_color_getUin32(props.pxl_current_color),
+            pxl_current_color_uint32: pxl_current_color_uint32,
             pxl_current_opacity: props.pxl_current_opacity || 1,
             bucket_threshold: props.bucket_threshold || 0,
             color_loss: props.color_loss || 0.25,
@@ -69,7 +70,6 @@ const SuperState = {
             show_original_image_in_background: props.show_original_image_in_background || false,
             show_transparent_image_in_background: props.show_transparent_image_in_background || false,
             hide_canvas_content: props.hide_canvas_content || false,
-            _did_hide_canvas_content: false,
             mine_player_direction: props.mine_player_direction || "UP",
             _mine_index: null,
             _previous_mine_player_index: null,
@@ -77,28 +77,21 @@ const SuperState = {
             _pencil_mirror_index: -1,
             _previous_pencil_mirror_axes_indexes: new Set(),
             _previous_pencil_mirror_axes_hover_indexes: new Set(),
-            _is_there_new_dimension: true,
             _base64_original_images: [],
             _original_image_index: -1,
-            _old_layers: [{id: Date.now(), name: "Layer 0", hidden: false, opacity: 1}],
             _layers: [{id: Date.now(), name: "Layer 0", hidden: false, opacity: 1}],
             _layers_defined_at: 0,
             _layer_index: 0,
-            _old_full_pxls: new Array(),
             _s_pxl_colors: [Uint32Array.of(0)],
             _s_pxls: [new Array((props.pxl_width || 32) * (props.pxl_height || 32)).fill(0)],
             _json_state_history: {history_position: 0, state_history: []},
             _saving_json_state_history_running: false,
-            _old_pxl_width: 0,
-            _old_pxl_height: 0,
-            _pxls_hovered: -1,
-            _old_pxls_hovered: new Set(),
+                _pxls_hovered: -1,
             _canvas_container: null,
             _canvas_wrapper: null,
             _canvas_wrapper_overflow: null,
             _state_history_length: 20,
             _last_action_timestamp: Date.now(),
-            _last_paint_timestamp: Date.now(),
             _lazy_lazy_compute_time_ms: 10 * 1000,
             _undo_buffer_time_ms: parseInt(parseInt(props.pxl_width || 32) + parseInt(props.pxl_height || 32) + 1000),
             _mouse_inside: false,
@@ -111,10 +104,8 @@ const SuperState = {
             _select_shape_index_a: -1,
             _shape_index_b: -1,
             _select_shape_index_b: -1,
-            _pxl_indexes_of_old_shape: new Set(),
             _pxl_indexes_of_selection: new Set(),
             _previous_pxl_indexes_of_selection: new Set(),
-            _pxl_indexes_of_selection_drawn: new Set(),
             _imported_image_previous_start_x: 0,
             _imported_image_previous_start_y: 0,
             _imported_image_start_x: 0,
@@ -129,10 +120,8 @@ const SuperState = {
             _is_on_resize_element: false,
             _imported_image_pxl_colors: [],
             _is_image_import_mode: false,
-            _previous_imported_image_pxls_positioned_keyset: new Set(),
             _previous_image_imported_resizer_index: -1,
             _selection_pair_highlight: true,
-            _old_selection_pair_highlight: true,
             _imported_image_move_from: [-1, -1],
             _updated_at: Date.now(),
             _notified_position_at: 0,
@@ -146,22 +135,33 @@ const SuperState = {
             _saving_json_state_history_ran_timestamp: 0,
             _processing_filters: false,
         };
+    },
+    _build_state(props) {
+        "use strict";
+        let _format_hex_color_getUin32 = this._format_hex_color_getUin32;
+        let _state = this._get_build_state(props);
 
         return {
-            get() {
-                return _state;
-            },
-            set(new_props) {
+            init() {
+                let state = _state;
+                return {
+                    get() {
+                        return state;
+                    },
+                    set(new_props) {
+                        return new Promise(function(resolve){
+                            Object.keys(new_props).forEach(function (key) {
 
-                Object.keys(new_props).forEach(function (key) {
+                                state[key] = new_props[key];
+                                if (key === "pxl_current_color") {
+                                    state["pxl_current_color_uint32"] = _format_hex_color_getUin32(new_props[key]);
+                                }
+                            });
 
-                    _state[key] = new_props[key];
-                    if (key === "pxl_current_color") {
-                        _state["pxl_current_color_uint32"] = format_hex_color_getUin32(new_props[key]);
+                            resolve();
+                        });
                     }
-                });
-
-                return true;
+                };
             }
         };
     },
@@ -235,7 +235,7 @@ const SuperState = {
     },
     from: function(props){
         "use strict";
-        let _state = this._build_state(props);
+        let _state = this._build_state(props).init();
         let _blend_rgba_colors = this._blend_rgba_colors;
         let _pxl_indexes = new Set();
 
@@ -287,9 +287,7 @@ const SuperState = {
             },
             set_state: function(new_props) {
                 "use strict";
-                return new Promise(function(resolve){
-                    resolve(_state.set(new_props));
-                });
+                return _state.set(new_props);
             },
             get_state: function() {
                 "use strict";
@@ -533,7 +531,7 @@ const SuperState = {
             create_shape: function() {
 
                 let new_canvas_context_2d = this.new_canvas_context_2d;
-                let state = this.get_state();
+                let state = _state.get();
                 let pxl_indexes = this.get_indexes();
                 let width = state.pxl_width | 0;
                 let height = state.pxl_height | 0;
