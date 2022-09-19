@@ -31,10 +31,10 @@ const SuperState = {
         }
     },
     _build_state(props) {
-
         "use strict";
-        return {
-            _id: String(parseInt(1000 * Math.random() * 1000 ).toString(16)),
+        let format_hex_color_getUin32 = this._format_hex_color_getUin32;
+        let _state = {
+            _id: String(parseInt(1000 * Math.random() * 1000).toString(16)),
             className: props.className || null,
             perspective: props.perspective || 0,
             animation: props.animation || true,
@@ -54,7 +54,7 @@ const SuperState = {
             pxl_width: 32,
             pxl_height: 32,
             pxl_current_color: props.pxl_current_color || "#00000000",
-            pxl_current_color_uint32: this._format_hex_color_getUin32(props.pxl_current_color),
+            pxl_current_color_uint32: format_hex_color_getUin32(props.pxl_current_color),
             pxl_current_opacity: props.pxl_current_opacity || 1,
             bucket_threshold: props.bucket_threshold || 0,
             color_loss: props.color_loss || 0.25,
@@ -66,8 +66,8 @@ const SuperState = {
             canvas_border_radius: props.canvas_border_radius || 0,
             canvas_wrapper_background_color: props.canvas_wrapper_background_color || "#020529",
             canvas_wrapper_border_radius: props.canvas_wrapper_border_radius || 4,
-            show_original_image_in_background: typeof props.show_original_image_in_background === "undefined" ? true: props.show_original_image_in_background,
-            show_transparent_image_in_background: typeof props.show_transparent_image_in_background === "undefined" ? true: props.show_transparent_image_in_background,
+            show_original_image_in_background: props.show_original_image_in_background || false,
+            show_transparent_image_in_background: props.show_transparent_image_in_background || false,
             hide_canvas_content: props.hide_canvas_content || false,
             _did_hide_canvas_content: false,
             mine_player_direction: props.mine_player_direction || "UP",
@@ -111,10 +111,10 @@ const SuperState = {
             _select_shape_index_a: -1,
             _shape_index_b: -1,
             _select_shape_index_b: -1,
-           _pxl_indexes_of_old_shape: new Set(),
-           _pxl_indexes_of_selection: new Set(),
+            _pxl_indexes_of_old_shape: new Set(),
+            _pxl_indexes_of_selection: new Set(),
             _previous_pxl_indexes_of_selection: new Set(),
-           _pxl_indexes_of_selection_drawn: new Set(),
+            _pxl_indexes_of_selection_drawn: new Set(),
             _imported_image_previous_start_x: 0,
             _imported_image_previous_start_y: 0,
             _imported_image_start_x: 0,
@@ -145,6 +145,24 @@ const SuperState = {
             _last_filters_hash: "",
             _saving_json_state_history_ran_timestamp: 0,
             _processing_filters: false,
+        };
+
+        return {
+            get() {
+                return _state;
+            },
+            set(new_props) {
+
+                Object.keys(new_props).forEach(function (key) {
+
+                    _state[key] = new_props[key];
+                    if (key === "pxl_current_color") {
+                        _state["pxl_current_color_uint32"] = format_hex_color_getUin32(new_props[key]);
+                    }
+                });
+
+                return true;
+            }
         };
     },
     _blend_rgba_colors: function(all_added_in_layers, amount, should_return_transparent, alpha_addition) {
@@ -218,14 +236,13 @@ const SuperState = {
     from: function(props){
         "use strict";
         let _state = this._build_state(props);
-        let _format_hex_color_getUin32 = this._format_hex_color_getUin32;
         let _blend_rgba_colors = this._blend_rgba_colors;
         let _pxl_indexes = new Set();
 
         return {
             paint_shape(pxl_indexes, color, opacity, s = {}, callback_function = function(){}) {
 
-                let state = this.get_state();
+                let state = _state.get();
                 let pxl_colors = Uint32Array.from(state._s_pxl_colors[state._layer_index]);
                 let pxls = Array.from(state._s_pxls[state._layer_index]);
 
@@ -259,8 +276,8 @@ const SuperState = {
                 }
 
                 let st = Object.assign(s, {
-                    _s_pxl_colors: _state._s_pxl_colors,
-                    _s_pxls: _state._s_pxls,
+                    _s_pxl_colors: state._s_pxl_colors,
+                    _s_pxls: state._s_pxls,
                 });
 
                 st._s_pxl_colors[state._layer_index] = Uint32Array.from(pxl_colors);
@@ -270,24 +287,13 @@ const SuperState = {
             },
             set_state: function(new_props) {
                 "use strict";
-                return new Promise(function(resolve, reject){
-
-                    Object.entries(new_props).forEach(function(entry){
-
-                        _state[entry[0]] = entry[1];
-
-                        if(entry[0] === "pxl_current_color") {
-
-                            _state["pxl_current_color_uint32"] = _format_hex_color_getUin32(entry[1]);
-                        }
-                    });
-
-                    resolve();
+                return new Promise(function(resolve){
+                    resolve(_state.set(new_props));
                 });
             },
             get_state: function() {
                 "use strict";
-                return _state;
+                return _state.get();
             },
             get_cursor: function(_is_on_resize_element, _is_image_import_mode, mouse_down, tool, select_mode, canvas_event_target) {
                 "use strict";
@@ -408,42 +414,43 @@ const SuperState = {
             },
             get_imported_image_data: function() {
 
-                if(_state._imported_image_pxls.length) {
+                let state = _state.get();
+                if(state._imported_image_pxls.length) {
 
-                    let canvas_ctx = this.new_canvas_context_2d(_state._imported_image_width, _state._imported_image_height);
-                    _state._imported_image_pxls.forEach((pxl, index) => {
+                    let canvas_ctx = this.new_canvas_context_2d(state._imported_image_width, state._imported_image_height);
+                    state._imported_image_pxls.forEach((pxl, index) => {
 
-                        const pos_x = index % _state._imported_image_width;
-                        const pos_y = (index - pos_x) / _state._imported_image_width;
-                        canvas_ctx.fillStyle = "#".concat("00000000".concat(_state._imported_image_pxl_colors[pxl].toString(16)).slice(-8));
+                        const pos_x = index % state._imported_image_width;
+                        const pos_y = (index - pos_x) / state._imported_image_width;
+                        canvas_ctx.fillStyle = "#".concat("00000000".concat(state._imported_image_pxl_colors[pxl].toString(16)).slice(-8));
                         canvas_ctx.fillRect(pos_x, pos_y, 1, 1);
                     });
 
-                    const scaled_width = _state._imported_image_width + _state._imported_image_scale_delta_x;
-                    const scaled_height = _state._imported_image_height + _state._imported_image_scale_delta_y;
+                    const scaled_width = state._imported_image_width + state._imported_image_scale_delta_x;
+                    const scaled_height = state._imported_image_height + state._imported_image_scale_delta_y;
 
                     let canvas_resized_ctx = this.new_canvas_context_2d(scaled_width, scaled_height);
-                    canvas_resized_ctx.drawImage(canvas_ctx.canvas, 0, 0, _state._imported_image_width, _state._imported_image_height, 0, 0, scaled_width, scaled_height);
+                    canvas_resized_ctx.drawImage(canvas_ctx.canvas, 0, 0, state._imported_image_width, state._imported_image_height, 0, 0, scaled_width, scaled_height);
                     let resized_image_data = canvas_resized_ctx.getImageData(0, 0, scaled_width, scaled_height);
                     const {new_pxls, new_pxl_colors} = this.get_pixels_palette_and_list_from_image_data(resized_image_data);
-                    _state._imported_image_width = scaled_width;
-                    _state._imported_image_height = scaled_height;
+                    state._imported_image_width = scaled_width;
+                    state._imported_image_height = scaled_height;
 
 
                     let pxls_positioned = new Object();
                     let image_imported_resizer_index = -1;
                     if (new_pxls.length > 0) {
 
-                        image_imported_resizer_index = _state._imported_image_start_x + scaled_width + (_state._imported_image_start_y + scaled_height) * _state.pxl_width | 0;
+                        image_imported_resizer_index = state._imported_image_start_x + scaled_width + (state._imported_image_start_y + scaled_height) * state.pxl_width | 0;
                         new_pxls.forEach(function(pxl, index) {
 
                             const pos_x = index % scaled_width;
                             const pos_y = (index - pos_x) / scaled_width;
-                            const current_pos_x_positioned = pos_x + _state._imported_image_start_x;
-                            const current_pos_y_positioned = pos_y + _state._imported_image_start_y;
-                            const imported_image_pxl_positioned_index = current_pos_y_positioned * _state.pxl_width + current_pos_x_positioned;
+                            const current_pos_x_positioned = pos_x + state._imported_image_start_x;
+                            const current_pos_y_positioned = pos_y + state._imported_image_start_y;
+                            const imported_image_pxl_positioned_index = current_pos_y_positioned * state.pxl_width + current_pos_x_positioned;
 
-                            if (current_pos_x_positioned >= 0 && current_pos_x_positioned < _state.pxl_width && current_pos_y_positioned >= 0 && current_pos_y_positioned < _state.pxl_height) {
+                            if (current_pos_x_positioned >= 0 && current_pos_x_positioned < state.pxl_width && current_pos_y_positioned >= 0 && current_pos_y_positioned < state.pxl_height) {
 
                                 pxls_positioned[imported_image_pxl_positioned_index] = pxl | 0;
                             }
@@ -562,7 +569,7 @@ const SuperState = {
                 return {
                     from_border: function(selection_indexes, inside = true, bold = false) {
 
-                        const { pxl_width, pxl_height } = this.get_state();
+                        const { pxl_width, pxl_height } = state;
 
                         let pxls_of_the_border = new Set();
 

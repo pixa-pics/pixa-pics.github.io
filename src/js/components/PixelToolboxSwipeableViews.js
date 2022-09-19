@@ -341,7 +341,7 @@ class PixelToolboxSwipeableViews extends React.Component {
             filters_thumbnail: props.filters_thumbnail,
             last_filters_hash: props.last_filters_hash,
             filters_preview_progression: props.filters_preview_progression,
-            _filter_ar_on_one: "1.0",
+            _filter_aspect_ratio: "1 / 1",
             _filter_thumbnail_changed: true,
         };
     };
@@ -421,23 +421,24 @@ class PixelToolboxSwipeableViews extends React.Component {
 
                 if (this.state._filters_changed) {
 
-                    let bmp, ar, all_processed = true;
+                    let bmp;
+                    let ar = "";
+                    let processed = false;
+
                     for (let i = 0; i < new_props.filters.length; i++) {
 
                         bmp = new_props.filters_thumbnail[new_props.filters[i]] || {};
 
-                        if (Boolean(bmp.width)) {
-                            ar = bmp.width / bmp.height;
-                        }else {
-
-                            all_processed = false;
+                        if (Boolean(bmp)) {
+                            ar = `${bmp.width} / ${bmp.height}`;
+                            processed = true;
                         }
                     }
 
-                    if (ar !== this.state._filter_ar_on_one && Boolean(ar)) {
+                    if (ar !== this.state._filter_aspect_ratio && processed) {
 
                         props_override._filters_changed = false;
-                        props_override._filter_ar_on_one = ar;
+                        props_override._filter_aspect_ratio = ar;
                     }
                 }
             }
@@ -822,7 +823,7 @@ class PixelToolboxSwipeableViews extends React.Component {
             select_mode,
             pencil_mirror_mode,
             is_something_selected,
-            _filter_ar_on_one,
+            _filter_aspect_ratio,
             filters_preview_progression,
             too_much_colors_no_vector
         } = this.state;
@@ -1509,8 +1510,8 @@ class PixelToolboxSwipeableViews extends React.Component {
                                 ref={(el) => {this._set_canvas_ref(el, bmp)}}
                                 width={bmp.width || 0}
                                 height={bmp.height || 0}
-                                style={{ zIndex: "-1", aspectRatio: `1000 / ${_filter_ar_on_one*1000 | 0}`, boxSizing: "border-box", height: "100%", minWidth: "100%", minHeight: (128 / _filter_ar_on_one) | 0, width: 128, boxShadow: "0px 1px 2px #3729c1a8", border: "4px solid #020529", borderRadius: 2, contain: "paint style size"}}
-                                key={"name-" + name + "-ratio-" + _filter_ar_on_one + "-over-" + (bmp.width || 0).toString() + "x" + String(bmp.height || 0) + "-preview-hash-" + last_filters_hash}
+                                style={{ zIndex: "-1", aspectRatio: _filter_aspect_ratio, boxSizing: "border-box", height: "100%", minWidth: "100%", width: 128, boxShadow: "0px 1px 2px #3729c1a8", border: "4px solid #020529", borderRadius: 2, contain: "paint style size"}}
+                                key={"name-" + name + "-ratio-" + _filter_aspect_ratio + "-over-" + (bmp.width || 0).toString() + "x" + String(bmp.height || 0) + "-preview-hash-" + last_filters_hash}
                                 />,
                             text: name,
                             text_style: {

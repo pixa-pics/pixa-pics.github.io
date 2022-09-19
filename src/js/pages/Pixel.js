@@ -1117,9 +1117,6 @@ class Pixel extends React.Component {
             file = null;
             a.remove();
 
-            if(_files_waiting_download.length === 0) {
-                pool.terminate();
-            }
             this.setState({_files_waiting_download}, () => {
 
                 this.forceUpdate();
@@ -2331,7 +2328,7 @@ class Pixel extends React.Component {
                                 tool={_tool}
                                 canvas_wrapper_padding={8}
                                 hide_canvas_content={_hide_canvas_content}
-                                show_original_image_in_background={_show_original_image_in_background}
+                                show_original_image_in_background={_show_original_image_in_background && true}
                                 show_transparent_image_in_background={_show_transparent_image_in_background}
                                 select_mode={_select_mode}
                                 pencil_mirror_mode={_pencil_mirror_mode}

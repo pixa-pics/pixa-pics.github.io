@@ -1,6 +1,7 @@
 const SuperMasterMeta = {
     new(super_state, super_canvas, super_blend, canvas_pos, color_conversion, sraf){
         "use strict";
+
         let meta = {
             super_state,
             super_canvas,
@@ -13,25 +14,31 @@ const SuperMasterMeta = {
             position(){},
             selection(){},
             color(){},
-            action(){}
+            action(){},
+            update(){}
         };
 
         return {
-            set_notifiers(callback_function_position = function(){}, callback_function_selection = function(){}, callback_function_color = function(){}, callback_function_action = function(){}) {
+            set_notifiers(callback_function_position = function(){}, callback_function_selection = function(){}, callback_function_color = function(){}, callback_function_action = function(){}, callback_function_update) {
 
                 notifiers = {
                     position: callback_function_position,
                     selection: callback_function_selection,
                     color: callback_function_color,
-                    action: callback_function_action
+                    action: callback_function_action,
+                    update: callback_function_update
                 };
             },
-            update_canvas(force_update = false, requested_at = Date.now()) {
+            update_canvas(force_update, requested_at) {
+                "use strict";
+
+                force_update = force_update || false;
+                requested_at = requested_at || Date.now();
 
                 return new Promise(function (resolve, reject) {
 
                     // Only operate on canvas context if existing
-                    if (Boolean(meta.super_canvas)) {
+                    if (meta.super_canvas.ok()) {
 
                         // Importing state variables
                         let {
@@ -53,7 +60,6 @@ const SuperMasterMeta = {
                             _old_pxls_hovered,
                             _pxls_hovered,
                             tool,
-                            _is_there_new_dimension,
                             _shape_index_a,
                             _select_shape_index_a,
                             _pxl_indexes_of_selection,
@@ -62,11 +68,14 @@ const SuperMasterMeta = {
                             _selection_pair_highlight,
                             _pxl_indexes_of_old_shape,
                             _previous_imported_image_pxls_positioned_keyset,
+                            _is_there_new_dimension
                         } = meta.super_state.get_state();
 
                         if (_last_paint_timestamp > requested_at) {
                             return;
                         }
+
+                        let indexed_changes = new Set();
                         const _layers_simplified = _layers.map(function (l) {
                             return {
                                 id: parseInt(l.id),
@@ -79,7 +88,7 @@ const SuperMasterMeta = {
 
                         // This is a list of color index that we explore
                         const full_pxls = Uint32Array.from(_s_pxls[_layer_index].map(function(pci){ return (_s_pxl_colors[_layer_index][pci] | 0) >>> 0}));
-                        const is_there_new_dimension = Boolean(_old_pxl_width !== pxl_width || _old_pxl_height !== pxl_height || _is_there_new_dimension);
+                        const is_there_new_dimension = Boolean(_old_pxl_width !== pxl_width || _old_pxl_height !== pxl_height);
                         let _pxl_indexes_of_current_shape = new Set();
 
                         if (Boolean(tool === "LINE" || tool === "RECTANGLE" || tool === "ELLIPSE" || tool === "TRIANGLE") && _shape_index_a !== -1 && _pxls_hovered !== -1) {
@@ -134,7 +143,7 @@ const SuperMasterMeta = {
                             return String(l.id).concat(String(l.hidden ? "h" : "v").concat(String(l.opacity)))
                         }).join(""));
 
-                        const clear_canvas = Boolean(_did_hide_canvas_content !== hide_canvas_content) || !has_shown_canvas_once || has_layers_visibility_or_opacity_changed || is_there_new_dimension;
+                        const clear_canvas = _did_hide_canvas_content !== hide_canvas_content || !has_shown_canvas_once || has_layers_visibility_or_opacity_changed || is_there_new_dimension || force_update;
                         const layers_length = _layers_simplified.length | 0;
 
                         const {imported_image_pxls_positioned, imported_image_pxl_colors, imported_image_pxls_positioned_keyset} = meta.super_state.get_imported_image_data();
@@ -144,7 +153,6 @@ const SuperMasterMeta = {
                         let pos_y = 0;
                         let opacity = 0;
                         let b = new DataView(new ArrayBuffer(9));
-                        let indexed_changes = new Set();
 
                         if(!hide_canvas_content){
 
@@ -176,7 +184,7 @@ const SuperMasterMeta = {
                                     number_to_paint++;
                                     meta.super_blend.for(index);
 
-                                    for (let i = 0; i < layers_length; i = i + 1 | 0) {
+                                    for (let i = 0; i < layers_length; i = (i + 1 | 0) >>> 0) {
 
                                         if(_layers_simplified[i].hidden) {
 
@@ -226,7 +234,7 @@ const SuperMasterMeta = {
 
                         if (indexed_changes.size > 0 || clear_canvas) {
 
-                            force_update = Boolean(indexed_changes.size * 1.05 > pxl_width * pxl_height || force_update || clear_canvas);
+                            force_update = indexed_changes.size * 1.05 > pxl_width * pxl_height || force_update || clear_canvas;
 
                             meta.super_canvas.pile(indexed_changes).then(function () {
                                 meta.super_canvas.unpile().then(function () {
@@ -235,28 +243,42 @@ const SuperMasterMeta = {
 
                                             if(hide_canvas_content) {
 
-                                                Promise.all([
+                                                Promise.all(Array.of(
+                                                    new Promise(function (resolve_update){
+                                                        if(_is_there_new_dimension !== is_there_new_dimension) {
+                                                            notifiers.update(false, false, resolve_update);
+                                                        }else {
+                                                            resolve_update();
+                                                        }
+                                                    }),
                                                     meta.super_canvas.clear(),
                                                     meta.super_state.set_state({
                                                         _pxl_indexes_of_selection_drawn: _pxl_indexes_of_selection_drawn,
                                                         _pxl_indexes_of_old_shape: _pxl_indexes_of_old_shape,
                                                         _old_selection_pair_highlight: _selection_pair_highlight && true,
                                                         _old_layers: _layers_simplified,
-                                                        _old_full_pxls: full_pxls,
+                                                        _old_full_pxls: new Uint32Array(full_pxls.length),
                                                         _old_pxl_width: pxl_width | 0,
                                                         _old_pxl_height: pxl_height | 0,
                                                         _old_pxls_hovered: _old_pxls_hovered,
-                                                        _last_paint_timestamp: requested_at | 0,
+                                                        _last_paint_timestamp: requested_at,
                                                         has_shown_canvas_once: true,
-                                                        _is_there_new_dimension: false,
+                                                        _is_there_new_dimension: is_there_new_dimension && true,
                                                         _did_hide_canvas_content: hide_canvas_content && true,
                                                         _previous_imported_image_pxls_positioned_keyset: imported_image_pxls_positioned_keyset
                                                     })
-                                                ]).then(resolve).catch(reject);
+                                                )).then(resolve).catch(reject);
 
                                             }else {
 
-                                                Promise.all([
+                                                Promise.all(Array.of(
+                                                    new Promise(function (resolve_update){
+                                                        if(_is_there_new_dimension !== is_there_new_dimension) {
+                                                            notifiers.update(false, false, resolve_update);
+                                                        }else {
+                                                            resolve_update();
+                                                        }
+                                                    }),
                                                     meta.super_canvas.render(enable_paint_type, bmp, bmp_x, bmp_y),
                                                     meta.super_state.set_state({
                                                         _pxl_indexes_of_selection_drawn: _pxl_indexes_of_selection_drawn,
@@ -267,16 +289,16 @@ const SuperMasterMeta = {
                                                         _old_pxl_width: pxl_width | 0,
                                                         _old_pxl_height: pxl_height | 0,
                                                         _old_pxls_hovered: _old_pxls_hovered,
-                                                        _last_paint_timestamp: requested_at | 0,
+                                                        _last_paint_timestamp: requested_at,
                                                         has_shown_canvas_once: true,
-                                                        _is_there_new_dimension: false,
+                                                        _is_there_new_dimension: is_there_new_dimension && true,
                                                         _did_hide_canvas_content: hide_canvas_content && true,
                                                         _previous_imported_image_pxls_positioned_keyset: imported_image_pxls_positioned_keyset
                                                     })
-                                                ]).then(resolve).catch(reject);
+                                                )).then(resolve).catch(reject);
                                             }
 
-                                        }, false, force_update, Date.now())
+                                        }, false, false, Date.now());
                                     });
                                 });
                             });
@@ -285,7 +307,7 @@ const SuperMasterMeta = {
                 });
             },
             _should_remove_not_perfect_second_latest_pixel_from_array(_paint_or_select_hover_pxl_indexes) {
-
+                "use strict";
                 const pxl_width = meta.super_state.get_state().pxl_width;
 
                 if(_paint_or_select_hover_pxl_indexes.size >= 3) {
@@ -323,6 +345,7 @@ const SuperMasterMeta = {
             },
             _handle_canvas_mouse_move(event) {
 
+                "use strict";
                 let { _pxl_indexes_of_selection, _imported_image_pxls, pxl_current_color_uint32, tool, pxl_width, pxl_height, _pxls_hovered, hide_canvas_content  } = meta.super_state.get_state();
                 const { event_button, mouse_down } = meta.canvas_pos.get_pointer_state();
                 const event_which = event_button+1;

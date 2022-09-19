@@ -1,4 +1,5 @@
 import workerpool from "workerpool";
+import pool from "../../../utils/worker-pool";
 
 let requestIdleCallback, cancelIdleCallback;
 if ('requestIdleCallback' in window) {
@@ -161,6 +162,9 @@ const SuperCanvas = {
 
         return {
             // Methods
+            ok: function (){
+                return s.canvas_context && true;
+            },
             clear: function() {
                 return new Promise(function (resolve){
 
@@ -175,12 +179,8 @@ const SuperCanvas = {
                         s.canvas_context.clearRect(b.bmp_x, b.bmp_y, b.bmp.width, b.bmp.height);
                         s.canvas_context.globalCompositeOperation = "source-over";
                         s.canvas_context.drawImage(b.bmp, b.bmp_x, b.bmp_y, b.bmp.width, b.bmp.height);
+
                         b.old_bmp.close();
-                        b.old_bmp = b.bmp;
-                        pr.top_left.x = s.width | 0;
-                        pr.top_left.y = s.height | 0;
-                        pr.bottom_right.x = 0;
-                        pr.bottom_right.y = 0;
 
                     } else if (enable_paint_type === "offscreen") {
 
@@ -209,16 +209,29 @@ const SuperCanvas = {
                         let new_bmp_x = pr.top_left.x | 0;
                         let new_bmp_y = pr.top_left.y | 0;
 
-                        pool.exec(bpro, Array.of(s.width | 0, pr.width | 0, pr.height | 0, pr.top_left.x | 0, pr.top_left.y | 0, fp.buffer)).catch(function () {
+                        if(b.old_bmp.width === 0) {
 
-                            return b(s.width | 0, pr.width | 0, pr.height | 0, pr.top_left.x | 0, pr.top_left.y | 0, fp.buffer);
-                        }).then(function(bitmap){
+                            pool.exec(bpro, Array.of(s.width | 0, pr.width | 0, pr.height | 0, pr.top_left.x | 0, pr.top_left.y | 0, fp.buffer)).catch(function () {
 
-                            b.bmp = bitmap;
-                            b.bmp_x = new_bmp_x | 0;
-                            b.bmp_y = new_bmp_y | 0;
+                                return b(s.width | 0, pr.width | 0, pr.height | 0, pr.top_left.x | 0, pr.top_left.y | 0, fp.buffer);
+                            }).then(function(bitmap){
+
+                                pr.top_left.x = s.width | 0;
+                                pr.top_left.y = s.height | 0;
+                                pr.bottom_right.x = 0;
+                                pr.bottom_right.y = 0;
+
+                                b.old_bmp = b.bmp;
+                                b.bmp = bitmap;
+                                b.bmp_x = new_bmp_x | 0;
+                                b.bmp_y = new_bmp_y | 0;
+
+                                resolve();
+                            }).catch(resolve);
+                        }else {
+
                             resolve();
-                        });
+                        }
 
                     }else if (s.is_offscreen) {
 
@@ -288,6 +301,7 @@ const SuperCanvas = {
                 return new Promise(function(resolve){
 
                     ic = new Map(Array.from(ic).concat(Array.from(indexed_changes)));
+                    indexed_changes.clear();
                     resolve();
                 });
             },

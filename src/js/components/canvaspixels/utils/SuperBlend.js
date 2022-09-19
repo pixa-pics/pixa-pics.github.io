@@ -44,7 +44,6 @@ const SuperBlend = {
         "use strict";
         if(typeof old_shadow_state !== "undefined") {
 
-            delete old_shadow_state.mapped_colors;
             delete old_shadow_state.base_rgba_colors_for_blending;
             for(let i = 0; i < old_shadow_state.rgba_colors_data_in_layers.length; i = i+1 | 0) {
                 delete old_shadow_state.rgba_colors_data_in_layers[i];
@@ -54,7 +53,6 @@ const SuperBlend = {
 
         // Create a shadow state for computation
         let shadow_state = {
-            mapped_colors: new Map(),
             base_rgba_colors_for_blending: new Uint8ClampedArray(0),
             rgba_colors_data_in_layers: new Array(state.layer_number)
         };
@@ -165,7 +163,6 @@ const SuperBlend = {
     _update_shadow_state (shadow_state, state) {
         "use strict";
         // Create a shadow state for computation
-        shadow_state.mapped_colors.clear();
         shadow_state.base_rgba_colors_for_blending = new Uint8ClampedArray(state.current_index * 4);
 
         // Slice uint32 colors and give them as uint8
@@ -192,8 +189,6 @@ const SuperBlend = {
         let base = new Uint8ClampedArray(base_buffer);
         let added_buffer = new ArrayBuffer(4);
         let added = new Uint8ClampedArray(added_buffer);
-        let mix_buffer = new ArrayBuffer(4);
-        let mix = new Uint8ClampedArray(mix_buffer);
         let float_variables = new DataView(new ArrayBuffer(6));
 
         return {
@@ -209,8 +204,10 @@ const SuperBlend = {
                 state.amount_data_in_layers_views[for_layer_index].setUint8((state.current_index-1 | 0) >>> 0,(amount | 0) >>> 0);
                 state.hover_data_in_layers_views[for_layer_index].setUint8((state.current_index-1 | 0) >>> 0, is_hover ? 1: 0);
             },
-            blend: function(should_return_transparent, alpha_addition ) {
+            blend: function(should_return_transparent, alpha_addition) {
                 "use strict";
+
+                let mapped_colors = new Map();
                 shadow_state = shadow_updater(shadow_state, state);
                 should_return_transparent = should_return_transparent | 0;
                 alpha_addition = alpha_addition | 0;
@@ -221,7 +218,7 @@ const SuperBlend = {
                 let start_layer_indexes_buffer = new ArrayBuffer(used_colors_length);
                 let start_layer_indexes = new Uint8ClampedArray(start_layer_indexes_buffer);
 
-                let {base_rgba_colors_for_blending, rgba_colors_data_in_layers, mapped_colors} = shadow_state;
+                let {base_rgba_colors_for_blending, rgba_colors_data_in_layers} = shadow_state;
                 let {hover_data_in_layers, amount_data_in_layers, indexes_data_for_layers} = state;
 
                 let start_layer = -1;
@@ -241,7 +238,7 @@ const SuperBlend = {
                             }
                         }
                     }
-                    start_layer_indexes.fill((start_layer+1 | 0) >>> 0, i1, i1+1);
+                    start_layer_indexes[i1] = (start_layer+1|0) >>> 0;
                 }
 
                 for(let i1 = 0, i4 = 0; i1 < used_colors_length; i1 = (i1+1 | 0) >>> 0, i4 = (i4+4|0) >>> 0) {
@@ -258,7 +255,7 @@ const SuperBlend = {
                         if(hover_data_in_layers[layer_n][i1] !== 0) {
 
                             // Get the color below current layer
-                            rgba.set(base, 0);
+                            rgba.set(base_buffer);
 
                             if((Math.max.apply(rgba.subarray(0, 3)) + Math.min.apply(rgba.subarray(0, 3) | 0) >>> 0) > 255) {
 
@@ -268,15 +265,15 @@ const SuperBlend = {
                                 color_bonus = +96;
                             }
 
-                            rgba.fill((color_bonus + rgba[0] | 0) >>> 0, 0, 1);
-                            rgba.fill((color_bonus + rgba[1] | 0) >>> 0, 1, 2);
-                            rgba.fill((color_bonus + rgba[2] | 0) >>> 0, 2, 3);
-                            rgba.fill(128 + 128 * amount_data_in_layers[layer_n][i1]/255, 3, 4);
+                            rgba[0] = Math.min(Math.max(0, color_bonus + rgba.at(0)), 255);
+                            rgba[1] = Math.min(Math.max(0, color_bonus + rgba.at(1)), 255);
+                            rgba[2] = Math.min(Math.max(0, color_bonus + rgba.at(2)), 255);
+                            rgba[3] = (128 + 128 * amount_data_in_layers[layer_n][i1]/255 | 0) >>> 0 & 0xFF;
 
                             rgba_colors_data_in_layers[layer_n].set(rgba, i4);
                         }
 
-                        float_variables.setUint8(5, (amount_data_in_layers[layer_n][i1] | 0) >>> 0);
+                        float_variables.setUint8(5, (amount_data_in_layers[layer_n][i1] | 0) & 0xFF);
                         added.set(rgba_colors_data_in_layers[layer_n].subarray(i4, (i4+4|0)>>>0), 0);
 
                         if(should_return_transparent && added.at(3) === 0 && float_variables.getUint8(5) === 255) {
@@ -284,44 +281,37 @@ const SuperBlend = {
                             base.fill( 0);
                         }else if(added.at(3) === 255 && float_variables.getUint8(5) === 255) {
 
-                            base.set(added, 0);
+                            base.set(added_buffer);
                         }else {
 
                             float_variables.setUint8(0, (base.at(3) | 0) >>> 0);
-                            float_variables.setUint8(1, ((added.at(3) * float_variables.getUint8(5)/255) | 0) >>> 0);
-
-                            mix.fill(0);
-                            float_variables.setUint8(2, 0);
+                            float_variables.setUint8(1, ((added.at(3) * float_variables.getUint8(5)/255) | 0) & 0xFF);
 
                             if (float_variables.getUint8(0) > 0 && float_variables.getUint8(1) > 0) {
 
-                                if(alpha_addition) { float_variables.setUint8(2, ((float_variables.getUint8(0) + float_variables.getUint8(1))/2 | 0) >>> 0); } else { float_variables.setUint8(2, (255 - (1 - float_variables.getUint8(1)/255) * (1 - float_variables.getUint8(0)/255) * 255 | 0) >>> 0);}
-                                float_variables.setUint8(3, (float_variables.getUint8(1) / float_variables.getUint8(2) * 255 | 0) >>> 0);
+                                if(alpha_addition) { float_variables.setUint8(2, ((float_variables.getUint8(0) + float_variables.getUint8(1))/2 | 0) & 0xFF); } else { float_variables.setUint8(2, (255 - (1 - float_variables.getUint8(1)/255) * (1 - float_variables.getUint8(0)/255) * 255 | 0) & 0xFF);}
+                                float_variables.setUint8(3, (float_variables.getUint8(1) / float_variables.getUint8(2) * 255 | 0) & 0xFF);
                                 float_variables.setUint8(4, (float_variables.getUint8(0) * (1 - float_variables.getUint8(1)/255) / (float_variables.getUint8(2)/255) | 0) >>> 0);
 
-                                mix.fill((added.at(0) * float_variables.getUint8(3)/255 + base.at(0) * float_variables.getUint8(4)/255 | 0) >>> 0, 0, 1);
-                                mix.fill((added.at(1) * float_variables.getUint8(3)/255 + base.at(1) * float_variables.getUint8(4)/255 | 0) >>> 0, 1, 2);
-                                mix.fill((added.at(2) * float_variables.getUint8(3)/255 + base.at(2) * float_variables.getUint8(4)/255 | 0) >>> 0, 2, 3);
+                                base[0] = (added.at(0) * float_variables.getUint8(3)/255 + base.at(0) * float_variables.getUint8(4)/255 | 0) & 0xFF;
+                                base[1] = (added.at(1) * float_variables.getUint8(3)/255 + base.at(1) * float_variables.getUint8(4)/255 | 0) & 0xFF;
+                                base[2] = (added.at(2) * float_variables.getUint8(3)/255 + base.at(2) * float_variables.getUint8(4)/255 | 0) & 0xFF;
+                                base[3] = float_variables.getUint8(2);
 
                             }else if(float_variables.getUint8(1) > 0) {
 
-                                float_variables.setUint8(2, (added.at(3) | 0) >>> 0);
-                                mix.set(added, 0);
+                                base.set(added_buffer);
                             }else {
 
-                                float_variables.setUint8(2, (base.at(3) | 0) >>> 0);
-                                mix.set(base, 0);
+                                base[3] = base.at(3);
                             }
-
-                            mix.fill((float_variables.getUint8(2) | 0) >>> 0, 3, 4);
-                            base.set(mix, 0);
                         }
                     }
                     base_rgba_colors_for_blending.set(base, i4);
                 }
 
                 // Map index and color as they are converted back in ui32
-                let colors = new Uint32Array(new Uint8ClampedArray(base_rgba_colors_for_blending.buffer).reverse().buffer).reverse();
+                let colors = new Uint32Array(base_rgba_colors_for_blending.reverse().buffer).reverse();
                 let colors_length = (colors.length | 0) >>> 0;
 
                 for(let i = 0; i < colors_length; i = (i+1 | 0) >>> 0) {

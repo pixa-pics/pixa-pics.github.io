@@ -33,7 +33,7 @@ const BMPLayer = {
                 
                 const full_pxls_length = pxls.length | 0;
                 const full_pxls = new Uint32Array(full_pxls_length);
-                for(var i = 0; i < full_pxls_length; i = i + 1 | 0) { full_pxls[i] = pxl_colors[pxls[i]] | 0; }
+                for(var i = 0; i < full_pxls_length; i = (i + 1 | 0) >>> 0) { full_pxls[i] = (pxl_colors[pxls[i]] | 0) >>> 0; }
                 let image_data = new ImageData(pxl_width, pxl_height);
                     image_data.data.set(new Uint8ClampedArray(full_pxls.reverse().buffer).reverse());
                 return createImageBitmap(image_data);
