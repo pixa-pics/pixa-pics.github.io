@@ -269,42 +269,51 @@ const SuperMasterMeta = {
                             indexed_changes = super_blend.blend(false, false);
                         }
 
-                        if (indexed_changes.size > 0 || clear_canvas) {
-
-                            force_update = indexed_changes.size * 1.05 > pxl_width * pxl_height || force_update || clear_canvas;
+                        if (indexed_changes.size > 0 || clear_canvas || is_there_new_dimension || force_update) {
 
                             meta.super_canvas.pile(indexed_changes).then(function () {
                                 meta.super_canvas.unpile().then(function () {
                                     meta.super_canvas.prender().then(function(b2){
+
+                                        let changed_size = _is_there_new_dimension !== is_there_new_dimension;
                                         meta.sraf.run_frame(function () {
+                                            meta.super_canvas.render(b2).then(function(){
 
-                                            meta.super_canvas.render(b2);
-                                            state = {
-                                                _pxl_indexes_of_selection_drawn: _pxl_indexes_of_selection_drawn,
-                                                _pxl_indexes_of_old_shape: _pxl_indexes_of_old_shape,
-                                                _old_selection_pair_highlight: _selection_pair_highlight && true,
-                                                _old_layers: _layers_simplified,
-                                                _old_full_pxls: full_pxls,
-                                                _old_pxl_width: pxl_width | 0,
-                                                _old_pxl_height: pxl_height | 0,
-                                                _old_pxls_hovered: _old_pxls_hovered,
-                                                _last_paint_timestamp: requested_at | 0,
-                                                _is_there_new_dimension: is_there_new_dimension && true,
-                                                _did_hide_canvas_content: hide_canvas_content && true,
-                                                _previous_imported_image_pxls_positioned_keyset: imported_image_pxls_positioned_keyset
-                                            };
+                                                state = {
+                                                    _pxl_indexes_of_selection_drawn: _pxl_indexes_of_selection_drawn,
+                                                    _pxl_indexes_of_old_shape: _pxl_indexes_of_old_shape,
+                                                    _old_selection_pair_highlight: _selection_pair_highlight && true,
+                                                    _old_layers: _layers_simplified,
+                                                    _old_full_pxls: full_pxls,
+                                                    _old_pxl_width: pxl_width | 0,
+                                                    _old_pxl_height: pxl_height | 0,
+                                                    _old_pxls_hovered: _old_pxls_hovered,
+                                                    _last_paint_timestamp: requested_at | 0,
+                                                    _is_there_new_dimension: is_there_new_dimension && true,
+                                                    _did_hide_canvas_content: hide_canvas_content && true,
+                                                    _previous_imported_image_pxls_positioned_keyset: imported_image_pxls_positioned_keyset
+                                                };
 
-                                            if(_is_there_new_dimension !== is_there_new_dimension) {
-                                                notifiers.update(false, force_update, resolve);
-                                            }else {
-                                                resolve();
-                                            }
+                                                if(changed_size) {
+                                                    notifiers.update(false, changed_size || force_update).then(resolve).catch(reject);
+                                                }else {
 
-                                        }, false, force_update);
+                                                    resolve();
+                                                }
+
+                                            }).catch(reject);
+
+                                        }, false, changed_size || force_update);
                                     });
                                 });
                             });
+                        }else {
+
+                            reject();
                         }
+                    }else {
+
+                        reject();
                     }
                 });
             },

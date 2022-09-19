@@ -252,7 +252,7 @@ class CanvasPixels extends React.PureComponent {
 
             this.super_state.set_state(new_props).then(() => {
 
-                this._request_force_update(false, false, () => {
+                this._request_force_update(false, false).then(() => {
 
                     this.super_master_meta.update_canvas();
                 });
@@ -1170,7 +1170,7 @@ class CanvasPixels extends React.PureComponent {
         let { pxl_width, pxl_height } = this.super_state.get_state();
         this.super_canvas.new(can, pxl_width, pxl_height);
 
-        this._request_force_update(false, false, () => {
+        this._request_force_update(false, false).then(() => {
 
             this.super_master_meta.update_canvas();
         });
@@ -1393,10 +1393,17 @@ class CanvasPixels extends React.PureComponent {
 
     _handle_canvas_middle = () => {
 
-        this._request_force_update(false, false, () => {
+        this._request_force_update(false, false)
+            .catch(() => {
 
-            this.super_master_meta.update_canvas(true);
-        });
+                setTimeout(this._handle_canvas_middle, 30);
+            }).then(() => {
+
+                this.super_master_meta.update_canvas(true).catch(() => {
+
+                    setTimeout(this._handle_canvas_middle, 30);
+                });
+        })
     };
 
     _maybe_save_state = (set_anyway_if_changes_callback = null, force = false, requested_at = Date.now()) => {
@@ -3492,28 +3499,14 @@ class CanvasPixels extends React.PureComponent {
         });
     };
 
-    _request_force_update = (can_be_cancelable = false, especially_dont_force = false, callback_function = () => {}) => {
+    _request_force_update = (can_be_cancelable = false, especially_dont_force = false) => {
 
-        const {_force_updated_timestamp } = this.super_state.get_state();
-        const now = Date.now();
-
-        const min_fps = this.sraf.get_state().is_mobile_or_tablet ? 25: 75;
-        const nevertheless_force = Boolean((_force_updated_timestamp + 1000 / min_fps) < now);
-        const nevertheless_for_sure_force = Boolean((_force_updated_timestamp + 1000 / (min_fps / 10)) < now);
-
-        if(can_be_cancelable && !nevertheless_force && !nevertheless_for_sure_force) {
-
-            return;
-        }
-
-        this.sraf.run_frame(() => {
-
-            this.forceUpdate(() => {
-
-                this.super_state.set_state({_force_updated_timestamp: now}).then(callback_function);
-            });
-        }, Boolean(!can_be_cancelable || nevertheless_force), Boolean(!especially_dont_force || nevertheless_force));
-    }
+        return new Promise((resolve, reject) => {
+            this.sraf.run_frame(() => {
+                this.forceUpdate(resolve)
+            }, Boolean(!can_be_cancelable), Boolean(!especially_dont_force)).catch(reject);
+        });
+    };
 
     _update_canvas_container_size = () => {
 

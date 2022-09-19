@@ -1387,7 +1387,8 @@ class PixelToolboxSwipeableViews extends React.Component {
                 tools: [
                     {
                         icon: <ImageSmoothIcon/>, text: "Smooth", sub: "Run smooth effect once", on_click: () => {
-                            canvas.smooth_adjust(1)
+                            canvas.smooth_adjust(1);
+                            this._handle_action_close();
                         }
                     },
                     {
@@ -1395,7 +1396,8 @@ class PixelToolboxSwipeableViews extends React.Component {
                         text: "To auto contrast",
                         sub: "Effect strength have an impact",
                         on_click: () => {
-                            canvas.auto_adjust_contrast(slider_value)
+                            canvas.auto_adjust_contrast(slider_value);
+                            this._handle_action_close();
                         }
                     },
                     {
@@ -1403,7 +1405,8 @@ class PixelToolboxSwipeableViews extends React.Component {
                         text: "To auto saturation",
                         sub: "Effect strength have an impact",
                         on_click: () => {
-                            canvas.auto_adjust_saturation(slider_value)
+                            canvas.auto_adjust_saturation(slider_value);
+                            this._handle_action_close();
                         }
                     },
                     {
@@ -1411,7 +1414,8 @@ class PixelToolboxSwipeableViews extends React.Component {
                         text: "To vignette",
                         sub: "Current color and effect strength have an impact",
                         on_click: () => {
-                            canvas.to_vignette(current_color, slider_value)
+                            canvas.to_vignette(current_color, slider_value);
+                            this._handle_action_close();
                         }
                     },
                     {
@@ -1419,7 +1423,8 @@ class PixelToolboxSwipeableViews extends React.Component {
                         text: "Less colors by strength",
                         sub: "Effect strength have an impact",
                         on_click: () => {
-                            canvas.to_less_color(slider_value / 5)
+                            canvas.to_less_color(slider_value / 5);
+                            this._handle_action_close();
                         }
                     },
                     {
@@ -1427,7 +1432,8 @@ class PixelToolboxSwipeableViews extends React.Component {
                         text: "Less colors by small steps",
                         sub: "Remove colors slowly",
                         on_click: () => {
-                            this._less_colors_stepped()
+                            this._less_colors_stepped();
+                            this._handle_action_close();
                         }
                     },
                     {
@@ -1435,7 +1441,8 @@ class PixelToolboxSwipeableViews extends React.Component {
                         text: "Less colors auto",
                         sub: "Apply to current layer",
                         on_click: () => {
-                            canvas.to_less_color("auto")
+                            canvas.to_less_color("auto");
+                            this._handle_action_close();
                         }
                     },
                     {
@@ -1443,7 +1450,8 @@ class PixelToolboxSwipeableViews extends React.Component {
                         text: "To dutone",
                         sub: "Current color and effect strength have an impact",
                         on_click: () => {
-                            canvas.to_dutone(slider_value, second_color, current_color)
+                            canvas.to_dutone(slider_value, second_color, current_color);
+                            this._handle_action_close();
                         }
                     },
                     {
@@ -1451,7 +1459,8 @@ class PixelToolboxSwipeableViews extends React.Component {
                         text: "To colorized",
                         sub: "Current color and effect strength have an impact",
                         on_click: () => {
-                            this._colorize()
+                            this._colorize();
+                            this._handle_action_close();
                         }
                     },
                     {
@@ -1459,7 +1468,8 @@ class PixelToolboxSwipeableViews extends React.Component {
                         text: "To alpha",
                         sub: "Current color and effect strength have an impact",
                         on_click: () => {
-                            canvas.to_alpha(current_color, slider_value)
+                            canvas.to_alpha(current_color, slider_value);
+                            this._handle_action_close();
                         }
                     },
                     {
@@ -1467,7 +1477,8 @@ class PixelToolboxSwipeableViews extends React.Component {
                         text: "Mirror vertical",
                         sub: "Apply to current layer",
                         on_click: () => {
-                            canvas.to_mirror(false)
+                            canvas.to_mirror(false);
+                            this._handle_action_close();
                         }
                     },
                     {
@@ -1475,19 +1486,22 @@ class PixelToolboxSwipeableViews extends React.Component {
                         text: "Mirror horizontal",
                         sub: "Apply to current layer",
                         on_click: () => {
-                            canvas.to_mirror(true)
+                            canvas.to_mirror(true);
+                            this._handle_action_close();
                         }
                     },
                     {
                         icon: <RotateRightIcon/>, text: "Rotate 90°", sub: "Apply to all layers", on_click: () => {
-                            canvas.to_rotation(true)
+                            canvas.to_rotation(true);
+                            this._handle_action_close();
                         }
                     },
                     {
                         icon: <RotateLeftIcon/>, text: "Rotate - 90°", sub: "Apply to all layers", on_click: () => {
-                            canvas.to_rotation(false)
+                            canvas.to_rotation(false);
+                            this._handle_action_close();
                         }
-                    },
+                    }
                 ]
             }
         ];
