@@ -61,14 +61,14 @@ const l = async(_l = null, callback_function = () => {}, time_ago = false) => {
     let l1 = "";
     if(Boolean(_l)) {
 
-        l1 = String(_l).toLowerCase();
+        l1 = _l.toLowerCase();
         document.documentElement.lang = l1;
     }else {
 
-        l1 = String(document.documentElement.lang);
+        l1 = document.documentElement.lang;
     }
 
-    if(String(window.LANG) !== l1) {
+    if(window.LANG !== l1) {
 
         window.LANG = l1;
 
@@ -107,7 +107,7 @@ const t = (path = "", variables = {}, parameters = {}) => {
                 option = "mini"
             }
 
-            return String(window.TIME_AGO.format(path, option) || "");
+            return window.TIME_AGO.format(path, option) || "";
         }
     }else if(typeof window.LANG_DIR !== "undefined") {
 

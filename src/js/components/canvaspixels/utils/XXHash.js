@@ -19,11 +19,14 @@ const XXHash = {
 
             try {
 
-                xxHash().then(({create32}) => {
+                xxHash().then(function(create){
 
-                    parseInt(create32(0xFADE).update(new Uint8Array(Buffer.from(Array.of(3, 69, 777, 666)))).digest());
+                    function test() { return create.create32(0xFADE).update(new Uint8Array(Buffer.from(Array.of(3, 69, 777, 666)))).digest();}
+
+                    test();
+
                     resolve({
-                        xxh_f: create32,
+                        xxh_f: create.create32,
                         xxh_v: "32",
                         xxh_t: "wasm",
                         xxh_tt: Date.now()
@@ -42,9 +45,6 @@ const XXHash = {
 
     new: function(){
 
-        const alphabet_58 = "123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ";
-        const base_58 = alphabet_58.length; // base is the length of the alphabet (58 in this case)
-
         let cs_32_js = this._get_32_js;
         let cs_32_wasm = this._get_32_wasm;
 
@@ -62,24 +62,30 @@ const XXHash = {
                    timestamp: s.xxh_tt
                 });
             },
-            int_that: function(array) {
+            int_that: function(array_buffer) {
+                "use strict";
+                array_buffer = array_buffer.buffer || Buffer.from(array_buffer);
 
-                return s.xxh_f(0xFADE).update(new Uint8Array(array.buffer || Buffer.from(array))).digest();
+                return (s.xxh_f(0xFADE).update(new Uint8Array(array_buffer)).digest() | 0) >>> 0;
             },
             base58_that: function (array) {
-                let num = this.int_that(array);
-                let encoded = new Array(5);
+                "use strict";
+                const alphabet_58 = "123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ";
+                const base_58 = alphabet_58.length; // base is the length of the alphabet (58 in this case)
+
+                let num = (this.int_that(array) | 0) >>> 0;
+                let encoded = "";
                 let remainder = 0;
                 let chain = 0;
 
-                while (num && chain < 5) {
-                    remainder = parseInt(num % base_58);
-                    num = num / base_58;
-                    encoded[chain] = alphabet_58[remainder].toString();
-                    chain++;
+                while (num > 0 && chain < 5) {
+                    remainder = (num % base_58 | 0) >>> 0;
+                    num = (num / base_58 | 0) >>> 0;
+                    encoded = encoded + alphabet_58.charAt(remainder);
+                    chain = (chain+1|0) >>> 0;
                 }
 
-                return encoded.join("");
+                return encoded;
             }
         };
     }

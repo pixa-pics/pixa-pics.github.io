@@ -100,16 +100,16 @@ class DrawerContent extends React.Component {
         super(props);
         this.state = {
             classes: props.classes,
-            language: String(props.language),
+            language: props.language,
             _history: HISTORY,
         };
     };
 
     componentWillReceiveProps(new_props) {
 
-        if(String(this.state.language) !== String(new_props.language)) {
+        if(this.state.language !== new_props.language) {
 
-            this.setState({language: String(new_props.language)}, () => {
+            this.setState({language: new_props.language}, () => {
 
                 this.forceUpdate();
             });

@@ -206,7 +206,7 @@ const SuperMasterMeta = {
                                             meta.super_blend.stack(layers_length, 0, 255, true);
                                         } else {
 
-                                            meta.super_blend.stack(layers_length, 0, 128, true);
+                                            meta.super_blend.stack(layers_length, 0, 192, true);
                                         }
 
                                     } else if (b.getUint8(4) !== 0) {
@@ -230,7 +230,7 @@ const SuperMasterMeta = {
 
                             meta.super_canvas.pile(indexed_changes).then(function () {
                                 meta.super_canvas.unpile().then(function () {
-                                    meta.super_canvas.prender().then(function () {
+                                    meta.super_canvas.prender().then(function (enable_paint_type, bmp, bmp_x, bmp_y) {
                                         meta.sraf.run_frame(function () {
 
                                             if(hide_canvas_content) {
@@ -257,7 +257,7 @@ const SuperMasterMeta = {
                                             }else {
 
                                                 Promise.all([
-                                                    meta.super_canvas.render(),
+                                                    meta.super_canvas.render(enable_paint_type, bmp, bmp_x, bmp_y),
                                                     meta.super_state.set_state({
                                                         _pxl_indexes_of_selection_drawn: _pxl_indexes_of_selection_drawn,
                                                         _pxl_indexes_of_old_shape: _pxl_indexes_of_old_shape,
@@ -512,12 +512,12 @@ const SuperMasterMeta = {
                             });
                         }
 
+                        let pxl_colors = Array.from(_s_pxl_colors[_layer_index]);
                         pixel_stack.forEach((pixel_pos) => {
 
                             const y = pixel_pos[1];
                             const x = pixel_pos[0];
 
-                            let pxl_colors = Array.from(_s_pxl_colors[_layer_index]);
                             if(x >= 0 && x < pxl_width && y >= 0 && y <= pxl_height) {
 
                                 const index = y * pxl_width + x;
@@ -530,9 +530,8 @@ const SuperMasterMeta = {
                                 if (!pxl_colors.includes(v_pxl_color_new)) { pxl_colors.push(v_pxl_color_new);}
                                 _s_pxls[_layer_index][index] = pxl_colors.indexOf(v_pxl_color_new);
                             }
-
-                            _s_pxl_colors[_layer_index] = Uint32Array.from(pxl_colors);
                         });
+                        _s_pxl_colors[_layer_index] = Uint32Array.from(pxl_colors);
 
                         // Update pixels list and pixel colours
                         meta.super_state.set_state({

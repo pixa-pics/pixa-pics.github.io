@@ -234,7 +234,7 @@ const CanvasPos = {
 
         return {
             // Methods
-            init_speed_interval() {
+            init_speed_interval: function() {
 
                 if(msi !== null){
 
@@ -245,44 +245,44 @@ const CanvasPos = {
                     msi = setInterval(this.set_move_speed_average_now, 20);
                 }
             },
-            set_canvas_wrapper(padding, border_width){
+            set_canvas_wrapper: function(padding, border_width){
                 s.canvas_wrapper = {padding, border_width};
                 szr = gszr(s);
                 p = gp(s, szr);
                 this.set_current_scale_default();
             },
-            set_canvas_container(top, left, height, width){
+            set_canvas_container: function(top, left, height, width){
                 s.canvas_container = {top, left, height, width};
                 szr = gszr(s);
                 p = gp(s, szr);
                 this.set_current_scale_default();
             },
-            set_sizes(width, height) {
+            set_sizes: function(width, height) {
                 s.sizes = {width, height};
                 s.scale.moves_speed_average_now = 16;
                 szr = gszr(s);
                 p = gp(s, szr);
             },
-            set_perspective(perspective) {
+            set_perspective: function(perspective) {
 
                 s.perspective = perspective;
             },
-            get_pointer_state() {
+            get_pointer_state: function() {
 
                 return ps; // Warning
             },
-            get_perspective_state() {
+            get_perspective_state: function() {
 
                 return Object.assign({
                     transform_rotate: "",
                     background_image: "",
                 }, pe);
             },
-            get_screen_zoom_ratio() {
+            get_screen_zoom_ratio: function() {
 
                 return parseFloat(szr);
             },
-            compute_perspective_from_pointer_event(pageX, pageY) {
+            compute_perspective_from_pointer_event: function(pageX, pageY) {
                 pageX = pageX | 0;
                 pageY = pageY | 0;
 
@@ -333,11 +333,11 @@ const CanvasPos = {
                     filter
                 };
             },
-            set_pointer_state(object) {
+            set_pointer_state: function(object) {
 
                 ps = Object.assign(ps, object);
             },
-            set_moves(new_scale_move_x, new_scale_move_y,  new_scale = null, callback_function = function(){}) {
+            set_moves: function(new_scale_move_x, new_scale_move_y,  new_scale = null, callback_function = function(){}) {
 
                 let new_scale_move_speed_timestamp = Date.now();
 
@@ -381,7 +381,7 @@ const CanvasPos = {
                 p = gp(s, szr);
                 this.notify_moved(callback_function);
             },
-            set_notifiers(callback_function_update = function(){}, callback_function_menu = function(){}, callback_function_move = function(){}, callback_function_up = function(){}, callback_function_down = function(){}, callback_function_middle = function(){}) {
+            set_notifiers: function(callback_function_update = function(){}, callback_function_menu = function(){}, callback_function_move = function(){}, callback_function_up = function(){}, callback_function_down = function(){}, callback_function_middle = function(){}) {
 
                 notifiers = {
                     update: callback_function_update,
@@ -392,33 +392,33 @@ const CanvasPos = {
                     middle: callback_function_middle
                 };
             },
-            notify_moved(callback_function) {
+            notify_moved: function(callback_function) {
                 notifiers.update(false, false, callback_function);
             },
-            notify_menu(event, timeout = 0) {
+            notify_menu: function(event, timeout = 0) {
 
                 setTimeout(function(){
 
                     notifiers.menu(event);
                 }, timeout);
             },
-            notify_move(event) {
+            notify_move: function(event) {
                 notifiers.move(event);
             },
-            notify_up(event) {
+            notify_up: function(event) {
                 notifiers.up(event);
             },
-            notify_down(event) {
+            notify_down: function(event) {
                 notifiers.down(event);
             },
-            notify_middle() {
+            notify_middle: function() {
                 notifiers.middle();
             },
-            set_shadow_color(hex) {
+            set_shadow_color: function(hex) {
 
                 sh = gsh(hex);
             },
-            set_zoom(of = 1, page_x, page_y , new_move_x = 0, new_move_y = 0, callback_function = function(){}){
+            set_zoom: function(of = 1, page_x, page_y , new_move_x = 0, new_move_y = 0, callback_function = function(){}){
 
                 const { scale, canvas_container, canvas_wrapper } = s;
                 const {current, move_y, move_x} = scale;
@@ -458,7 +458,7 @@ const CanvasPos = {
                     this.set_moves(new_scale_move_x_rigged, new_scale_move_y_rigged, new_scale, callback_function);
                 }
             },
-            handle_wheel({deltaY, pageY, pageX, movementX = 0, movementY = 0}) {
+            handle_wheel: function({deltaY, pageY, pageX, movementX = 0, movementY = 0}) {
 
                 const { canvas_container, canvas_wrapper } = this.get_pos();
                 const { move_x, move_y, current } = s.scale;
@@ -503,7 +503,7 @@ const CanvasPos = {
                     this.set_moves(new_scale_move_x_rigged, new_scale_move_y_rigged, new_scale);
                 }
             },
-            handle_move(latest_pointers_client_x_center, latest_pointers_client_y_center, to_x, to_y){
+            handle_move: function(latest_pointers_client_x_center, latest_pointers_client_y_center, to_x, to_y){
 
                 const {canvas_container, canvas_wrapper} = this.get_pos();
                 const {move_x, move_y} = s.scale;
@@ -526,10 +526,10 @@ const CanvasPos = {
 
                 this.set_moves(new_scale_move_x_rigged, new_scale_move_y_rigged);
             },
-            set_boolean_move_on_click(boolean) {
+            set_boolean_move_on_click: function(boolean) {
                 move_on_click = boolean;
             },
-            handle_pointer_down(event) {
+            handle_pointer_down: function(event) {
 
                 event.preventDefault();
                 event.stopImmediatePropagation();
@@ -578,7 +578,7 @@ const CanvasPos = {
                     this.notify_down(event)
                 }
             },
-            handle_pointer_up(event){
+            handle_pointer_up: function(event){
 
                 event.preventDefault();
                 event.stopImmediatePropagation();
@@ -606,7 +606,7 @@ const CanvasPos = {
                     this.notify_moved();
                 }
             },
-            handle_pointer_move(event){
+            handle_pointer_move: function(event){
 
                 event.preventDefault();
                 event.stopImmediatePropagation();
@@ -692,7 +692,7 @@ const CanvasPos = {
                     this.notify_move(event);
                 }
             },
-            _handle_canvas_move(diff_scale_move_x, diff_scale_move_y) {
+            _handle_canvas_move: function(diff_scale_move_x, diff_scale_move_y) {
 
                 const {canvas_container, canvas_wrapper} = this.get_pos();
                 const {move_x, move_y} = s.scale;
@@ -714,7 +714,7 @@ const CanvasPos = {
 
                 this.set_moves(new_scale_move_x_rigged, new_scale_move_y_rigged);
             },
-            new(pxl_width, pxl_height, default_scale, canvas_wrapper_padding, canvas_wrapper_border_width, perspective) {
+            new: function(pxl_width, pxl_height, default_scale, canvas_wrapper_padding, canvas_wrapper_border_width, perspective) {
 
                 sh = gsh("#020529");
                 ps = gips();
@@ -728,7 +728,7 @@ const CanvasPos = {
                     up(){}
                 };
             },
-            destroy() {
+            destroy: function() {
 
                 sh = null;
                 move_on_click = null;
@@ -737,25 +737,25 @@ const CanvasPos = {
                 p = null;
                 notifiers = null;
             },
-            get_pos() {
+            get_pos: function() {
 
                 return p;
             },
-            get_state() {
+            get_state: function() {
 
                 return s;
             },
-            get_style() {
+            get_style: function() {
 
                 const msan = s.scale.moves_speed_average_now;
                 const shadow_depth = msan < 0 ? Math.round(Math.abs(msan) / 2): msan;
-                return  {box_shadow: String(sh[shadow_depth])};
+                return  {box_shadow: sh[shadow_depth].toString()};
             },
-            get_pointer_state() {
+            get_pointer_state: function() {
 
                 return ps;
             },
-            get_canvas_pos_from_event(pageX, pageY) {
+            get_canvas_pos_from_event: function(pageX, pageY) {
 
                 const {canvas} = this.get_pos();
                 const {width, height} = s.sizes;
@@ -777,7 +777,7 @@ const CanvasPos = {
 
                 return [ pos_x, pos_y ];
             },
-            set_current_scale_default() {
+            set_current_scale_default: function() {
                 s = Object.assign(s, {scale: Object.assign(s.scale, {
                     current: parseFloat(s.scale.default)
                 })});
@@ -785,14 +785,14 @@ const CanvasPos = {
                 p = gp(s, szr);
                 this.set_canvas_moves_middle();
             },
-            set_canvas_moves_middle() {
+            set_canvas_moves_middle: function() {
 
                 const {canvas_container, canvas_wrapper} = this.get_pos();
                 const for_middle_x = parseInt(parseInt(canvas_container.width - canvas_wrapper.width) / 2);
                 const for_middle_y = parseInt(parseInt(canvas_container.height - canvas_wrapper.height) / 2);
                 this.set_moves(for_middle_x, for_middle_y, null, this.notify_middle);
             },
-            compute_canvas_event_target(pageX, pageY){
+            compute_canvas_event_target: function(pageX, pageY){
                 pageX = pageX | 0;
                 pageY = pageY | 0;
                 this.compute_perspective_from_pointer_event(pageX, pageY);
@@ -808,7 +808,7 @@ const CanvasPos = {
                     s.canvas_event_target = "CANVAS_WRAPPER_OVERFLOW";
                 }
             },
-            set_move_speed_average_now() {
+            set_move_speed_average_now: function() {
 
                 if(!Boolean(s)){ return; }
 

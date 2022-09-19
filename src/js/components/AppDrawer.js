@@ -89,7 +89,7 @@ class AppDrawer extends React.Component {
         super(props);
         this.state = {
             know_the_settings: props.know_the_settings,
-            language: String(props.language),
+            language: props.language,
             classes: props.classes,
         };
     };
@@ -108,7 +108,7 @@ class AppDrawer extends React.Component {
 
         if(this.state.language !== new_props.language || this.state.know_the_settings !== new_props.know_the_settings) {
 
-            this.setState({know_the_settings: new_props.know_the_settings, language: String(new_props.language)}, () => {
+            this.setState({know_the_settings: new_props.know_the_settings, language: new_props.language}, () => {
 
                 this.forceUpdate();
             });

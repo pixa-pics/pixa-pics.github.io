@@ -407,7 +407,7 @@ class Pixel extends React.Component {
         super(props);
         this.state = {
             classes: props.classes,
-            load_with: String(props.load_with) || "",
+            load_with: props.load_with + "",
             _history: HISTORY,
             _perspective: false,
             _library_dialog_open: false,
@@ -507,7 +507,7 @@ class Pixel extends React.Component {
         document.addEventListener("keydown", this._handle_keydown);
         document.addEventListener("keyup", this._handle_keyup);
         dispatcher.register(this._handle_events.bind(this));
-        this._try_load_with_payload(String(this.state.load_with || ""));
+        this._try_load_with_payload(this.state.load_with + "");
         this.setState({_h_svg: get_svg_in_b64(<HexGrid color={"#e5e5e5"}/>)});
         import("../utils/ressource_pixel").then((RESSOURCE_PIXELS) => {
 
@@ -519,9 +519,9 @@ class Pixel extends React.Component {
 
         if(new_props.load_with !== this.state.load_with) {
 
-            this.setState({load_with: String(new_props.load_with)}, ()  => {
+            this.setState({load_with: ""+new_props.load_with}, ()  => {
 
-                this._try_load_with_payload(String(new_props.load_with));
+                this._try_load_with_payload(""+new_props.load_with);
             });
         }
 
@@ -546,7 +546,7 @@ class Pixel extends React.Component {
 
             actions.trigger_sfx("alert_high-intensity");
             this._handle_load("image_preload");
-            base64_sanitize(String(load_with), (base64) => {
+            base64_sanitize(load_with.toString(), (base64) => {
 
                 let img = new Image();
                 img.addEventListener("load", () => {
@@ -558,13 +558,13 @@ class Pixel extends React.Component {
                         }else {
 
                             this.setState({_kb: 0, _saved_at: 1/0});
-                            this.state._canvas.set_canvas_from_image(img, String(base64), {}, true);
+                            this.state._canvas.set_canvas_from_image(img, base64.toString(), {}, true);
                             this._handle_load_complete("image_preload", {});
                         }
                     };
                     try_again();
                 }, {once: true, capture: true});
-                img.src = String(base64);
+                img.src = base64.toString();
 
             });
         }
@@ -1037,7 +1037,7 @@ class Pixel extends React.Component {
                     let { _files_waiting_download } = this.state;
                     _files_waiting_download.push({
                         name: `PXPS-${hash}-RAS_1x.png`,
-                        url: String(png_base64_in)
+                        url: png_base64_in.toString()
                     });
                     this.setState({_files_waiting_download}, () => {
 
@@ -1045,12 +1045,12 @@ class Pixel extends React.Component {
                     });
 
                     actions.trigger_voice("processing");
-                    base64png_to_xbrz_svg(String(png_base64_in), (image_base64) => {
+                    base64png_to_xbrz_svg(png_base64_in.toString(), (image_base64) => {
 
                         let { _files_waiting_download } = this.state;
                         _files_waiting_download.push({
                             name: `PXPS-${hash}-${using.toUpperCase()}_RAS_6x.png`,
-                            url: String(image_base64)
+                            url: image_base64.toString()
                         });
                         image_base64 = null;
                         this.setState({_files_waiting_download}, () => {
@@ -1063,7 +1063,7 @@ class Pixel extends React.Component {
                         let { _files_waiting_download } = this.state;
                         _files_waiting_download.push({
                             name: `PXPS-${hash}-${using.toUpperCase()}_VEC_6x.svg`,
-                            url: String(svg_base64)
+                            url: svg_base64.toString()
                         });
                         svg_base64 = null;
                         this.setState({_files_waiting_download}, () => {
@@ -1089,7 +1089,7 @@ class Pixel extends React.Component {
 
                         });
 
-                    }, Array.from(palette), String(using), Boolean(optimize_render_size));
+                    }, Array.from(palette), using, Boolean(optimize_render_size));
                     palette = null;
                     png_base64_in = null;
 
@@ -1109,8 +1109,8 @@ class Pixel extends React.Component {
             let file = _files_waiting_download.shift();
 
             let a = document.createElement("a"); //Create <a>
-            a.download = String(file.name); //File name Here
-            a.href = String(file.url);
+            a.download = file.name.toString(); //File name Here
+            a.href = file.url.toString();
             a.click();
             delete file.url;
             delete file.name;
@@ -1280,10 +1280,10 @@ class Pixel extends React.Component {
 
                                                                             this._handle_load_complete("image_ai", {});
                                                                             this.setState({_kb: 0, _saved_at: 1/0});
-                                                                            set_canvas_from_image(img, String(base64_resized), {}, true);
+                                                                            set_canvas_from_image(img, base64_resized.toString(), {}, true);
                                                                             base64_resized = null;
                                                                         }, {once: true, capture: true});
-                                                                        img.src = String(base64_final);
+                                                                        img.src = base64_final.toString();
                                                                         base64_final = null;
 
                                                                     });
@@ -1334,10 +1334,10 @@ class Pixel extends React.Component {
 
                                                                             this._handle_load_complete("image_ai", {});
                                                                             this.setState({_kb: 0, _saved_at: 1/0});
-                                                                            set_canvas_from_image(img, String(base64_resized), {}, true);
+                                                                            set_canvas_from_image(img, base64_resized.toString(), {}, true);
                                                                             base64_resized = null;
                                                                         }, {once: true, capture: true});
-                                                                        img.src = String(base64_final);
+                                                                        img.src = base64_final.toString();
                                                                         base64_final = null;
 
                                                                     });
@@ -1391,10 +1391,10 @@ class Pixel extends React.Component {
 
                                                                                 this._handle_load_complete("image_ai", {});
                                                                                 this.setState({_kb: 0, _saved_at: 1/0});
-                                                                                set_canvas_from_image(img, String(base64_resized), {}, true);
+                                                                                set_canvas_from_image(img, base64_resized.toString(), {}, true);
                                                                                 base64_resized = null;
                                                                             }, {once: true, capture: true});
-                                                                            img.src = String(base64_final);
+                                                                            img.src = base64_final.toString();
                                                                             base64_final = null;
 
                                                                         });
@@ -1486,10 +1486,10 @@ class Pixel extends React.Component {
 
                                                                             this._handle_load_complete("image_preload", {});
                                                                             this.setState({_kb: 0, _saved_at: 1/0});
-                                                                            set_canvas_from_image(img, String(base64_resized), {}, false);
+                                                                            set_canvas_from_image(img, base64_resized.toString(), {}, false);
                                                                             base64_resized = null;
                                                                         }, {once: true, capture: true});
-                                                                        img.src = String(base64_final);
+                                                                        img.src = base64_final.toString();
                                                                         base64_final = null;
 
                                                                     });
@@ -1739,7 +1739,7 @@ class Pixel extends React.Component {
 
     _revert_tool = () => {
 
-        this.setState({_tool: String(this.state._memory_tool)});
+        this.setState({_tool: this.state._memory_tool.toString});
     };
 
     _set_tool = (name, remember = true) => {
@@ -1802,7 +1802,7 @@ class Pixel extends React.Component {
             actions.trigger_voice("filtering");
         }
 
-        this.setState({_filters_thumbnail, _last_filters_hash, _filters_preview_progression: String(_filters_preview_progression)}, () => {
+        this.setState({_filters_thumbnail, _last_filters_hash, _filters_preview_progression: _filters_preview_progression.toString}, () => {
 
             this.forceUpdate();
         });
@@ -2577,8 +2577,8 @@ class Pixel extends React.Component {
 
                 <Backdrop className={classes.backdrop} open={_loading || _files_waiting_download.length > 0}>
                     <div className={classes.backdropTextContent} style={{ fontFamily: `"Jura"`, textTransform: "uppercase"}} onClick={this._continue_download}>
-                        {Boolean(_loading || _files_waiting_download.length > 0) && <h1><ShufflingSpanText key={_loading_process || String(_loading)} text={_loading_process === "browser" ? "Laboratory in DANGER!": "LABORATORY PROCESSING"} animation_delay_ms={0} animation_duration_ms={200}/></h1>}
-                        {_files_waiting_download.length > 0 && <h3><ShufflingSpanText key={String(_files_waiting_download[0].name)} text={`ACTION REQUIRED... ${String(_files_waiting_download[0].name)}`} animation_delay_ms={300} animation_duration_ms={500}/></h3>}
+                        {Boolean(_loading || _files_waiting_download.length > 0) && <h1><ShufflingSpanText key={_loading_process || _loading.toString()} text={_loading_process === "browser" ? "Laboratory in DANGER!": "LABORATORY PROCESSING"} animation_delay_ms={0} animation_duration_ms={200}/></h1>}
+                        {_files_waiting_download.length > 0 && <h3><ShufflingSpanText key={_files_waiting_download[0].name.toString()} text={`ACTION REQUIRED... ${String(_files_waiting_download[0].name)}`} animation_delay_ms={300} animation_duration_ms={500}/></h3>}
                         {_files_waiting_download.length > 0 && <div><img src={"/src/images/labostration/MOLECULE.svg"} style={{width: "min(75vw, 75vh)"}}/></div>}
                         {_files_waiting_download.length > 0 && <h4><ShufflingSpanText pre="[... " app=" ...]" style={{textShadow: "0px 0px 16px white"}} text={"CLICK ON THE SCREEN TO CONTINUE DOWNLOAD!"} animation_delay_ms={is_mobile_or_tablet ? 5000: 2500} animation_duration_ms={500}/></h4>}
                         {_files_waiting_download.length === 0 && _loading && _loading_process === "browser" && <h3><ShufflingSpanText text={"Doesn't feel like home for our dear code here."} animation_delay_ms={300} animation_duration_ms={500}/></h3>}

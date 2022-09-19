@@ -76,105 +76,88 @@ const SuperCanvas = {
             resolve();
         });
     },
-    from: function(c, pxl_width, pxl_height, max_fps = 30){
+    from: function(c, pxl_width, pxl_height){
 
         const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
         const bpro = AsyncFunction(
-            `var bpro = async function(width, height, array){
-            
-                width = width | 0;
-                height = height | 0;
+            `var bpro = async function(s_width, pr_width, pr_height, pr_top_left_x, pr_top_left_y, fp_buffer){
+                "use strict";
+                let fp_square = new Uint32Array(pr_width * pr_height);
+                let square_offset_start_length = pr_top_left_x | 0;
+                let current_offset_start_index = 0;
+                let fpa = new Uint32Array(fp_buffer);
+                for(let i = 0; i < pr_height ; i = (i + 1 | 0) >>> 0) {
+                    current_offset_start_index = (s_width * (i + pr_top_left_y) + square_offset_start_length | 0) >>> 0;
+                    fp_square.set(fpa.subarray(current_offset_start_index, (current_offset_start_index + pr_width|0) >>> 0), (i*pr_width|0) >>> 0);
+                }
                 
-                var image_data = new ImageData(width, height);
-                    image_data.data.set(new Uint8ClampedArray(array.reverse().buffer).reverse());
-
-                return createImageBitmap(image_data);
+                return createImageBitmap(new ImageData(new Uint8ClampedArray(fp_square.reverse().buffer).reverse(), pr_width, pr_height));
                  
             }; return bpro;`)();
 
         const pool = workerpool.pool({minWorkers: 1, maxWorkers: 1});
         const d2d = this.draw_2d;
-        const template = {
-            init: function(c, pxl_width, pxl_height, max_fps){
+        const template = function(c, pxl_width, pxl_height){
+
+            pxl_width = pxl_width | 0;
+            pxl_height = pxl_height | 0;
+
+            function cs(c, pxl_width, pxl_height) {
 
                 pxl_width = pxl_width | 0;
                 pxl_height = pxl_height | 0;
-                max_fps = max_fps | 0;
+                if(!Boolean(c)) { c = document.createElement("canvas"); }
+                c.width = pxl_width | 0;
+                c.height = pxl_height | 0;
 
-                function cs(c, pxl_width, pxl_height) {
+                let is_bitmap = Boolean('createImageBitmap' in window);
+                let is_offscreen =  Boolean('OffscreenCanvas' in window);
+                let cc2d;
+                let occ2d;
+                if (is_offscreen) {
 
-                    pxl_width = pxl_width | 0;
-                    pxl_height = pxl_height | 0;
-                    if(!Boolean(c)) { c = document.createElement("canvas"); }
-                    c.width = pxl_width | 0;
-                    c.height = pxl_height | 0;
-
-                    let is_bitmap = Boolean('createImageBitmap' in window);
-                    let is_offscreen =  Boolean('OffscreenCanvas' in window);
-                    let cc2d;
-                    let occ2d;
-                    if (is_offscreen) {
-
-                        occ2d = new OffscreenCanvas(pxl_width, pxl_height).getContext("2d", {willReadFrenquently: true});
-                        occ2d.imageSmoothingEnabled = false;
-                    }
-
-                    cc2d = c.getContext('2d', {desynchronized: true} );
-                    cc2d.imageSmoothingEnabled = false;
-                    cc2d.globalCompositeOperation = "copy";
-
-                    return {
-                        is_bitmap: is_bitmap,
-                        is_offscreen: is_offscreen,
-                        width: pxl_width | 0,
-                        height: pxl_height | 0,
-                        canvas_context: cc2d,
-                        offscreen_canvas_context: occ2d
-                    };
+                    occ2d = new OffscreenCanvas(pxl_width, pxl_height).getContext("2d", {willReadFrenquently: true});
+                    occ2d.imageSmoothingEnabled = false;
                 }
 
+                cc2d = c.getContext('2d', {desynchronized: true} );
+                cc2d.imageSmoothingEnabled = false;
+                cc2d.globalCompositeOperation = "copy";
+
                 return {
-                    s: cs(c, pxl_width, pxl_height),
-                    fp: new DataView(new ArrayBuffer(pxl_height * pxl_width * 4)),
-                    ic: new Map(),
-                    ic2: new Map(),
-                    v: {
-                        rt: Date.now() | 0,
-                        rs: 0,
-                        tbrt: (1000 / max_fps) | 0,
-                        pt: (1000 / max_fps) | 0,
-                        enable_paint_type: "",
-                        enable_prender: true,
-                        enable_paint: true,
-                        enable_unpile: true,
-                        skip_bitmap_and_offscreen: false,
-                        idle_id: 0,
-                    },
-                    b: {
-                        bmp_x: 0,
-                        bmp_y: 0,
-                        bmp: {close(){}, width: 0, height: 0},
-                        old_bmp: {close(){}, width: 0, height: 0},
-                    },
-                    pr: {
-                        top_left: {x:0, y:0},
-                        bottom_right: {x:0, y:0},
-                        width: 0,
-                        height: 0,
-                        fp_square: new Uint32Array(0)
-                    }
+                    is_bitmap: is_bitmap,
+                    is_offscreen: is_offscreen,
+                    width: pxl_width | 0,
+                    height: pxl_height | 0,
+                    canvas_context: cc2d,
+                    offscreen_canvas_context: occ2d
                 };
             }
+
+            return {
+                s: cs(c, pxl_width, pxl_height),
+                enable_paint_type: "",
+                fp: new DataView(new ArrayBuffer(pxl_height * pxl_width * 4)),
+                ic: new Map(),
+                ic2: new Map(),
+                b: {
+                    bmp_x: 0,
+                    bmp_y: 0,
+                    bmp: {close(){}, width: 0, height: 0},
+                    old_bmp: {close(){}, width: 0, height: 0},
+                },
+                pr: {
+                    top_left: {x:0, y:0},
+                    bottom_right: {x:0, y:0},
+                    width: 0,
+                    height: 0
+                }
+            };
         };
 
-        let state = Object.create(template).init(c, pxl_width, pxl_height, max_fps);
-        let s = state.s;
-        let fp = state.fp;
-        let ic = state.ic;
-        let ic2 = state.ic2;
-        let v = state.v;
-        let b = state.b;
-        let pr = state.pr;
+
+        let state = template(c, pxl_width, pxl_height);
+        let {s, fp, ic, ic2, enable_paint_type, b, pr} = state;
 
         return {
             // Methods
@@ -187,35 +170,22 @@ const SuperCanvas = {
             },
             render: function() {
                 return new Promise(function (resolve) {
-                    if (v.enable_paint_type === "bitmap") {
+                    if (enable_paint_type === "bitmap") {
 
                         s.canvas_context.clearRect(b.bmp_x, b.bmp_y, b.bmp.width, b.bmp.height);
                         s.canvas_context.globalCompositeOperation = "source-over";
                         s.canvas_context.drawImage(b.bmp, b.bmp_x, b.bmp_y, b.bmp.width, b.bmp.height);
-
-                        if (typeof b.old_bmp !== "undefined") {
-                            b.old_bmp.close();
-                        }
+                        b.old_bmp.close();
                         b.old_bmp = b.bmp;
                         pr.top_left.x = s.width | 0;
                         pr.top_left.y = s.height | 0;
                         pr.bottom_right.x = 0;
                         pr.bottom_right.y = 0;
 
-                        const paint_ended = Date.now();
-                        v.tbrt = paint_ended - v.rt;
-                        v.rt = paint_ended;
-                        v.rs--;
-
-                    } else if (v.enable_paint_type === "offscreen") {
+                    } else if (enable_paint_type === "offscreen") {
 
                         s.canvas_context.globalCompositeOperation = "copy";
                         s.canvas_context.drawImage(s.offscreen_canvas_context.canvas, 0, 0, s.width, s.height);
-
-                        const paint_ended = Date.now();
-                        v.tbrt = paint_ended - v.rt;
-                        v.rt = paint_ended;
-                        v.rs--;
                     }
 
                     d2d(s.canvas_context, ic2).then(function () {
@@ -224,10 +194,6 @@ const SuperCanvas = {
                             ic2.clear();
                         }
 
-                        const paint_ended = Date.now();
-                        v.tbrt = paint_ended - v.rt;
-                        v.rt = paint_ended;
-                        v.rs--;
                         resolve();
                     });
                 });
@@ -236,34 +202,21 @@ const SuperCanvas = {
 
                 return new Promise(function (resolve){
 
-                    const started = Date.now();
-                    if (v.enable_paint_type === "bitmap") {
+                    if (enable_paint_type === "bitmap") {
 
                         pr.width = 1 + pr.bottom_right.x - pr.top_left.x | 0;
                         pr.height = 1 + pr.bottom_right.y - pr.top_left.y | 0;
-                        pr.fp_square = new Uint32Array(pr.width * pr.height);
-
-                        let square_offset_start_length = pr.top_left.x | 0;
-                        let current_offset_start_index = 0;
-                        let fpa = new Uint32Array(fp.buffer)
-
-                        for(let i = 0; i < pr.height ; i = i + 1 | 0) {
-                            current_offset_start_index = s.width * (i + pr.top_left.y) + square_offset_start_length | 0;
-                            pr.fp_square.set(fpa.slice(current_offset_start_index, current_offset_start_index + pr.width|0), i*pr.width|0);
-                        }
-
                         let new_bmp_x = pr.top_left.x | 0;
                         let new_bmp_y = pr.top_left.y | 0;
 
-                        pool.exec(bpro, Array.of(pr.width, pr.height, pr.fp_square)).catch(function () {
+                        pool.exec(bpro, Array.of(s.width | 0, pr.width | 0, pr.height | 0, pr.top_left.x | 0, pr.top_left.y | 0, fp.buffer)).catch(function () {
 
-                            return b(pr.width, pr.height, pr.fp_square);
+                            return b(s.width | 0, pr.width | 0, pr.height | 0, pr.top_left.x | 0, pr.top_left.y | 0, fp.buffer);
                         }).then(function(bitmap){
 
                             b.bmp = bitmap;
                             b.bmp_x = new_bmp_x | 0;
                             b.bmp_y = new_bmp_y | 0;
-                            v.pt = Date.now() - started;
                             resolve();
                         });
 
@@ -272,13 +225,11 @@ const SuperCanvas = {
                         d2d(s.offscreen_canvas_context, ic2).then(function(){
 
                             ic2.clear();
-                            v.pt = Date.now() - started;
                             resolve();
                         });
 
                     }else {
 
-                        v.pt = Date.now() - started;
                         resolve();
                     }
                 });
@@ -294,34 +245,35 @@ const SuperCanvas = {
                         if (s.is_bitmap) {
 
                             let x, y;
+                            let {width, height} = s;
+                            let {top_left, bottom_right} = pr;
                             ic2.forEach(function (value, index) {
 
                                 index = index | 0;
-                                x = index % s.width | 0;
-                                y = (index - x) / s.width | 0;
+                                x = (index % width | 0) >>> 0;
+                                y = ((index - x) / width | 0) >>> 0;
 
-                                if(pr.top_left.x > x-16) { pr.top_left.x = Math.max(0, x-16 | 0) }
-                                if(pr.top_left.y > y-16) { pr.top_left.y = Math.max(0, y-16 | 0) | 0 }
-                                if(pr.bottom_right.x < x+16) { pr.bottom_right.x = Math.min(s.width, x+16 | 0) }
-                                if(pr.bottom_right.y < y+16) { pr.bottom_right.y = Math.min(s.height, y+16 | 0) }
+                                if(top_left.x > x-4) { top_left.x = Math.max(0, x-4 | 0) }
+                                if(top_left.y > y-4) { top_left.y = Math.max(0, y-4 | 0) | 0 }
+                                if(bottom_right.x < x+4) { bottom_right.x = Math.min(width, x+4 | 0) }
+                                if(bottom_right.y < y+4) { bottom_right.y = Math.min(height, y+4 | 0) }
                                 fp.setUint32((index*4|0) >>> 0, (value|0) >>> 0, true);
-
                             });
 
                             ic2.clear();
                             ic.clear();
-                            v.enable_paint_type = "bitmap";
+                            enable_paint_type = "bitmap";
                             resolve();
 
                         } else if (s.is_offscreen) {
 
                             ic.clear();
-                            v.enable_paint_type = "offscreen";
+                            enable_paint_type = "offscreen";
                             resolve();
                         }else {
 
                             ic.clear();
-                            v.enable_paint_type = "";
+                            enable_paint_type = "";
                             resolve();
                         }
 
@@ -343,24 +295,24 @@ const SuperCanvas = {
 
                 if(state.s.width !== w || state.s.height !== h) {
 
-                    state = Object.create(template).init(s.canvas_context.canvas, w, h);
+                    state = template(s.canvas_context.canvas, w, h);
                     s = state.s;
                     fp = state.fp;
                     ic = state.ic;
                     ic2 = state.ic2;
-                    v = state.v;
+                    enable_paint_type = state.enable_paint_type;
                     b = state.b;
                     pr = state.pr;
                 }
             },
             new: function(c, w, h) {
 
-                state = Object.create(template).init(c, w, h);
+                state = template(c, w, h);
                 s = state.s;
                 fp = state.fp;
                 ic = state.ic;
                 ic2 = state.ic2;
-                v = state.v;
+                enable_paint_type = state.enable_paint_type;
                 b = state.b;
                 pr = state.pr;
             },
@@ -380,8 +332,8 @@ const SuperCanvas = {
                 });
             },
             destroy: function() {
+                s, fp, ic, ic2, enable_paint_type, b, pr = null;
                 Object.keys(state).forEach(function (key) {delete state[key];});
-                s, fp, ic, ic2, v, b, pr = null;
             }
         };
     }

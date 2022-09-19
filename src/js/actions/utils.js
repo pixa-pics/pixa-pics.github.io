@@ -7,7 +7,7 @@ function load_with(b64 = "") {
 
         dispatcher.dispatch({
             type: "LOAD_WITH",
-            data: { b64: String(b64) }
+            data: { b64: b64.toString() }
         });
     }else {
 
@@ -212,7 +212,7 @@ function trigger_canvas_action(name) {
         dispatcher.dispatch({
             type: "TRIGGER_CANVAS_ACTION",
             data: {
-                name: String(name).toUpperCase()
+                name: name.toUpperCase()
             }
         });
     }else {

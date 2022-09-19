@@ -32,6 +32,7 @@ const SuperState = {
     },
     _build_state(props) {
 
+        "use strict";
         return {
             _id: String(parseInt(1000 * Math.random() * 1000 ).toString(16)),
             className: props.className || null,
@@ -146,8 +147,9 @@ const SuperState = {
             _processing_filters: false,
         };
     },
-    _blend_rgba_colors(all_added_in_layers, amount, should_return_transparent = 0, alpha_addition = 0) {
+    _blend_rgba_colors: function(all_added_in_layers, amount, should_return_transparent, alpha_addition) {
 
+        "use strict";
         should_return_transparent = should_return_transparent | 0 ;
         alpha_addition = alpha_addition | 0;
         let used_colors_length = all_added_in_layers[0].length / 4 | 0;
@@ -213,7 +215,7 @@ const SuperState = {
 
         return all_base;
     },
-    from(props){
+    from: function(props){
         "use strict";
         let _state = this._build_state(props);
         let _format_hex_color_getUin32 = this._format_hex_color_getUin32;
@@ -266,8 +268,8 @@ const SuperState = {
 
                 this.set_state(st).then(callback_function);
             },
-            set_state(new_props) {
-
+            set_state: function(new_props) {
+                "use strict";
                 return new Promise(function(resolve, reject){
 
                     Object.entries(new_props).forEach(function(entry){
@@ -283,12 +285,12 @@ const SuperState = {
                     resolve();
                 });
             },
-            get_state() {
-
+            get_state: function() {
+                "use strict";
                 return _state;
             },
-            get_cursor(_is_on_resize_element, _is_image_import_mode, mouse_down, tool, select_mode, canvas_event_target) {
-
+            get_cursor: function(_is_on_resize_element, _is_image_import_mode, mouse_down, tool, select_mode, canvas_event_target) {
+                "use strict";
                 _is_on_resize_element = Boolean(_is_on_resize_element);
                 _is_image_import_mode = Boolean(_is_image_import_mode);
                 mouse_down = Boolean(mouse_down);
@@ -400,11 +402,11 @@ const SuperState = {
                     return 'url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAAAAq0lEQVRYR+1WQQrAIAxb///oDmUOkc3W2kEG2XHQGpPURg6wTzLwqKr2fUQk3Ddc2AMogBqGgo2ARpkhGaKHZtMIKRmnjJLtrBBIU0O9QzvsjrUpyzUd0BgfvAdYWz3StzLUm7KBuWLEKzZPzHjqO8SWElXuX7UnLCCvTCvTFJYsAuarGswp270tQ77FIOQuY0BjQLOM+zuGVlbK7HIpLzXH3vIXGfIwlGXqE9034xUtxdxDAAAAAElFTkSuQmCC") 18 18, auto';
                 }
             },
-            get_indexes() {
+            get_indexes: function() {
 
                 return new Set(_pxl_indexes.keys());
             },
-            get_imported_image_data() {
+            get_imported_image_data: function() {
 
                 if(_state._imported_image_pxls.length) {
 
@@ -465,7 +467,7 @@ const SuperState = {
                     };
                 }
             },
-            get_pixels_palette_and_list_from_image_data (image_data) {
+            get_pixels_palette_and_list_from_image_data: function(image_data) {
 
                 function to_uint32_from_rgba(rgba) {
                     return new Uint32Array(rgba.reverse().buffer)[0];
@@ -495,7 +497,7 @@ const SuperState = {
                     new_pxls: Array.from(new_pxls),
                 };
             },
-            new_canvas_context_2d(width, height) {
+            new_canvas_context_2d: function(width, height) {
 
                 let canvas;
                 try {
@@ -521,7 +523,7 @@ const SuperState = {
 
                 return context;
             },
-            create_shape() {
+            create_shape: function() {
 
                 let new_canvas_context_2d = this.new_canvas_context_2d;
                 let state = this.get_state();
@@ -558,7 +560,7 @@ const SuperState = {
 
                 // TO DO --> GET PREVIOUS COMMIT OR FINISH THIS
                 return {
-                    from_border(selection_indexes, inside = true, bold = false) {
+                    from_border: function(selection_indexes, inside = true, bold = false) {
 
                         const { pxl_width, pxl_height } = this.get_state();
 
@@ -641,7 +643,7 @@ const SuperState = {
 
                         return pxls_of_the_border;
                     },
-                    from_path(path_indexes){
+                    from_path: function(path_indexes){
 
                         let path_context = new_canvas_context_2d(width, height);
 
@@ -671,7 +673,7 @@ const SuperState = {
                         get_shadow_indexes_from_canvas_context(path_context, path_indexes);
                         return path_indexes;
                     },
-                    from_line(from, to) {
+                    from_line: function(from, to) {
 
                         from = from | 0;
                         to = to | 0;
@@ -707,7 +709,7 @@ const SuperState = {
     
                         return pxl_indexes;
                     },
-                    from_rectangle(from, to) {
+                    from_rectangle: function(from, to) {
 
                         from = from | 0;
                         to = to | 0;
@@ -730,7 +732,7 @@ const SuperState = {
 
                         return pxl_indexes;
                     },
-                    from_ellipse(from, to) {
+                    from_ellipse: function(from, to) {
 
                         from = from | 0;
                         to = to | 0;

@@ -1493,7 +1493,7 @@ class PixelToolboxSwipeableViews extends React.Component {
         case "filters": return [
                 {
                     icon: <ImageFilterMagicIcon/>,
-                    progression: String(_filters_preview_progression_stepped),
+                    progression: _filters_preview_progression_stepped,
                     text: `Filters`,
                     style: {position: "relative"},
                     label: "primary",
@@ -1510,7 +1510,7 @@ class PixelToolboxSwipeableViews extends React.Component {
                                 width={bmp.width || 0}
                                 height={bmp.height || 0}
                                 style={{ zIndex: "-1", aspectRatio: `1000 / ${_filter_ar_on_one*1000 | 0}`, boxSizing: "border-box", height: "100%", minWidth: "100%", minHeight: (128 / _filter_ar_on_one) | 0, width: 128, boxShadow: "0px 1px 2px #3729c1a8", border: "4px solid #020529", borderRadius: 2, contain: "paint style size"}}
-                                key={"name-" + name + "-ratio-" + _filter_ar_on_one + "-over-" + String(bmp.width || 0) + "x" + String(bmp.height || 0) + "-preview-hash-" + last_filters_hash}
+                                key={"name-" + name + "-ratio-" + _filter_ar_on_one + "-over-" + (bmp.width || 0).toString() + "x" + String(bmp.height || 0) + "-preview-hash-" + last_filters_hash}
                                 />,
                             text: name,
                             text_style: {
@@ -1867,7 +1867,7 @@ class PixelToolboxSwipeableViews extends React.Component {
                         }
 
                         return (
-                            <List key={name} style={{willChange: String(Boolean(parseInt(_filters_preview_progression_stepped) === 0 || name !== "filters") ? "": "contents"), minHeight: "100%", contain: "style layout paint", overflow: "visible", contentVisibility: "visible", paddingTop: 0}}>
+                            <List key={name} style={{willChange: (Boolean(parseInt(_filters_preview_progression_stepped) === 0 || name !== "filters") ? "": "contents").toString(), minHeight: "100%", contain: "style layout paint", overflow: "visible", contentVisibility: "visible", paddingTop: 0}}>
 
                                 {this.get_before_action_panel(index)}
 
@@ -1921,7 +1921,7 @@ class PixelToolboxSwipeableViews extends React.Component {
                                                                     type="file"
                                                                     onChange={tool.on_click}
                                                                 />
-                                                                <ListItem component="label" key={index + String(tool.disabled ? "-0": "-1")} htmlFor={tool.for} button disabled={tool.disabled}>
+                                                                <ListItem component="label" key={index + (tool.disabled ? "-0": "-1").toString()} htmlFor={tool.for} button disabled={tool.disabled}>
                                                                     <ListItemIcon className={classes.listItemIcon} style={tool.style || {}}>
                                                                         {tool.icon}
                                                                     </ListItemIcon>

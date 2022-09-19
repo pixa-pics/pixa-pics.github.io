@@ -504,7 +504,7 @@ class Home extends React.Component {
                                 <img src={_image_name_infographics}
                                      alt="Image demo."
                                      style={first_image ? {aspectRatio: "1/1"}: {}}
-                                     className={String(first_image ? " pixelated ": _image_name_infographics.endsWith(".png") ? "pixelated ": " speed ")}
+                                     className={(first_image ? " pixelated ": _image_name_infographics.endsWith(".png") ? "pixelated ": " speed ").toString()}
                                 />
                             </div>
                         </Grow>}

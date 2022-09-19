@@ -38,10 +38,10 @@ const SuperBlend = {
             state.hover_data_in_layers_buffers.push(hover_data_in_layers_buffers);
         }
 
-        return state;
+        return Object.assign({}, state);
     },
     _build_shadow_state (state, old_shadow_state) {
-
+        "use strict";
         if(typeof old_shadow_state !== "undefined") {
 
             delete old_shadow_state.mapped_colors;
@@ -159,11 +159,11 @@ const SuperBlend = {
             state.layer_number = layer_number | 0;
             state.max_length = max_length | 0;
             state.current_index = 0;
-            return state;
+            return Object.assign({}, state);
         }
     },
     _update_shadow_state (shadow_state, state) {
-
+        "use strict";
         // Create a shadow state for computation
         shadow_state.mapped_colors.clear();
         shadow_state.base_rgba_colors_for_blending = new Uint8ClampedArray(state.current_index * 4);
@@ -175,50 +175,51 @@ const SuperBlend = {
 
         return shadow_state;
     },
-    new(){
+    new(lay_n, pxl_len){
         "use strict";
         const builder = this._build_state;
         const shadow_builder = this._build_shadow_state;
         const updater = this._update_state;
         const shadow_updater = this._update_shadow_state;
 
-        let state = builder(1, 1);
+        let state = builder(lay_n || 1, pxl_len || 1);
         let shadow_state = shadow_builder(state);
 
-        return {
-            for(pixel_index) {
+        let rgba_buffer = new ArrayBuffer(4);
+        let rgba = new Uint8ClampedArray(rgba_buffer);
+        let color_bonus = 64;
+        let base_buffer = new ArrayBuffer(4);
+        let base = new Uint8ClampedArray(base_buffer);
+        let added_buffer = new ArrayBuffer(4);
+        let added = new Uint8ClampedArray(added_buffer);
+        let mix_buffer = new ArrayBuffer(4);
+        let mix = new Uint8ClampedArray(mix_buffer);
+        let float_variables = new DataView(new ArrayBuffer(6));
 
+        return {
+            for: function(pixel_index) {
+                "use strict";
                 state.current_index = state.current_index + 1 | 0;
                 state.indexes_data_for_layers[state.current_index-1] = pixel_index | 0;
             },
-            stack(for_layer_index, ui32color, amount, is_hover) {
-
+            stack: function(for_layer_index, ui32color, amount, is_hover) {
+                "use strict";
                 for_layer_index = (for_layer_index | 0) >>> 0;
                 state.colors_data_in_layers_views[for_layer_index].setUint32(((state.current_index-1 | 0) * 4 | 0) >>> 0, (ui32color | 0) >>> 0, true);
                 state.amount_data_in_layers_views[for_layer_index].setUint8((state.current_index-1 | 0) >>> 0,(amount | 0) >>> 0);
                 state.hover_data_in_layers_views[for_layer_index].setUint8((state.current_index-1 | 0) >>> 0, is_hover ? 1: 0);
             },
-            blend (should_return_transparent, alpha_addition ) {
-
+            blend: function(should_return_transparent, alpha_addition ) {
+                "use strict";
+                shadow_state = shadow_updater(shadow_state, state);
                 should_return_transparent = should_return_transparent | 0;
                 alpha_addition = alpha_addition | 0;
-                shadow_state = shadow_updater(shadow_state, state);
 
                 let all_layers_length = state.layer_number | 0;
                 let used_colors_length = state.current_index | 0;
 
-                let rgba_buffer = new ArrayBuffer(4);
-                let rgba = new Uint8ClampedArray(rgba_buffer);
-                let color_bonus = 64;
                 let start_layer_indexes_buffer = new ArrayBuffer(used_colors_length);
-                let start_layer_indexes = new Int8Array(start_layer_indexes_buffer);
-                let base_buffer = new ArrayBuffer(4);
-                let base = new Uint8ClampedArray(base_buffer);
-                let added_buffer = new ArrayBuffer(4);
-                let added = new Uint8ClampedArray(added_buffer);
-                let mix_buffer = new ArrayBuffer(4);
-                let mix = new Uint8ClampedArray(mix_buffer);
-                let float_variables = new DataView(new ArrayBuffer(6));
+                let start_layer_indexes = new Uint8ClampedArray(start_layer_indexes_buffer);
 
                 let {base_rgba_colors_for_blending, rgba_colors_data_in_layers, mapped_colors} = shadow_state;
                 let {hover_data_in_layers, amount_data_in_layers, indexes_data_for_layers} = state;
@@ -240,18 +241,18 @@ const SuperBlend = {
                             }
                         }
                     }
-                    start_layer_indexes.fill((start_layer | 0) >>> 0, i1, i1+1);
+                    start_layer_indexes.fill((start_layer+1 | 0) >>> 0, i1, i1+1);
                 }
 
                 for(let i1 = 0, i4 = 0; i1 < used_colors_length; i1 = (i1+1 | 0) >>> 0, i4 = (i4+4|0) >>> 0) {
 
                     start_layer = (start_layer_indexes.at(i1) | 0) >>> 0;
                     // Get the first base color to sum up with colors atop of it
-                    if(start_layer === -1) { base.set(base_rgba_colors_for_blending.slice(i4, i4+4|0)>>>0, 0);
-                    }else {base.set(rgba_colors_data_in_layers[start_layer].slice(i4, (i4+4|0)>>>0), 0);}
+                    if(start_layer-1 < 0) { base.set(base_rgba_colors_for_blending.subarray(i4, (i4+4|0)>>>0), 0);
+                    }else {base.set(rgba_colors_data_in_layers[start_layer-1].subarray(i4, (i4+4|0)>>>0), 0);}
 
                     // Sum up all colors above
-                    for(let layer_n = start_layer+1|0; layer_n < all_layers_length; layer_n = (layer_n + 1 | 0) >>> 0) {
+                    for(let layer_n = start_layer|0; layer_n < all_layers_length; layer_n = (layer_n + 1 | 0) >>> 0) {
 
                         // Compute hover if hover color
                         if(hover_data_in_layers[layer_n][i1] !== 0) {
@@ -259,7 +260,7 @@ const SuperBlend = {
                             // Get the color below current layer
                             rgba.set(base, 0);
 
-                            if((Math.max.apply(rgba.slice(0, 3)) + Math.min.apply(rgba.slice(0, 3) | 0) >>> 0) > 255) {
+                            if((Math.max.apply(rgba.subarray(0, 3)) + Math.min.apply(rgba.subarray(0, 3) | 0) >>> 0) > 255) {
 
                                 color_bonus = -96;
                             }else {
@@ -276,7 +277,7 @@ const SuperBlend = {
                         }
 
                         float_variables.setUint8(5, (amount_data_in_layers[layer_n][i1] | 0) >>> 0);
-                        added.set(rgba_colors_data_in_layers[layer_n].slice(i4, (i4+4|0)>>>0), 0);
+                        added.set(rgba_colors_data_in_layers[layer_n].subarray(i4, (i4+4|0)>>>0), 0);
 
                         if(should_return_transparent && added.at(3) === 0 && float_variables.getUint8(5) === 255) {
 
@@ -329,17 +330,24 @@ const SuperBlend = {
 
                 return mapped_colors;
             },
-            build (layer_number, max_length) {
+            build: function(layer_number, max_length) {
+                "use strict";
+                layer_number = (layer_number | 0) >>> 0;
+                max_length = (max_length | 0) >>> 0;
+
                 state = builder(layer_number, max_length);
                 shadow_state = shadow_builder(state, shadow_state);
             },
-            update (layer_number, max_length) {
-
+            update: function(layer_number, max_length) {
+                "use strict";
+                layer_number = (layer_number | 0) >>> 0;
+                max_length = (max_length | 0) >>> 0;
                 const changed_layer_number = Boolean(state.layer_number !== layer_number);
                 state = updater(state, layer_number, max_length, builder);
                 if(changed_layer_number) { shadow_state = shadow_builder(state, shadow_state); }
             },
-            clear() {
+            clear: function() {
+                "use strict";
                 state = updater(state, 1, 1, builder);
             }
         };

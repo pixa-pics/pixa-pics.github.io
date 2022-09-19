@@ -16,8 +16,8 @@ import Index from "../js/pages/Index";
 
 api.init().then(function (response){
 
-    const _selected_locales_code = String(typeof response.locales !== "undefined" ? response.locales : "en-US");
-    const _language = String(_selected_locales_code.split("-")[0]);
+    const _selected_locales_code = (typeof response.locales !== "undefined" ? response.locales : "en-US").toString();
+    const _language = _selected_locales_code.split("-")[0].toString();
 
     l(_language, function(){
         document.body.setAttribute("datainitiated", "true");
