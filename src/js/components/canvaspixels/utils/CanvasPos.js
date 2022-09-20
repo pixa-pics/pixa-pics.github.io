@@ -749,7 +749,7 @@ const CanvasPos = {
 
                 const msan = s.scale.moves_speed_average_now;
                 const shadow_depth = msan < 0 ? Math.round(Math.abs(msan) / 2): msan;
-                return  {box_shadow: sh[shadow_depth].toString()};
+                return  {box_shadow: sh[shadow_depth]};
             },
             get_pointer_state: function() {
 

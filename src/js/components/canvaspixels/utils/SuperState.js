@@ -36,7 +36,7 @@ const SuperState = {
 
         return {
             _id: String(parseInt(1000 * Math.random() * 1000).toString(16)),
-                className: props.className || null,
+            className: props.className || null,
             perspective: props.perspective || 0,
             animation: props.animation || true,
             animation_duration: props.animation_duration || 60,

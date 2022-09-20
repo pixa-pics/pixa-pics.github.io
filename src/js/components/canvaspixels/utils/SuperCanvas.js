@@ -26,59 +26,64 @@ if ('requestIdleCallback' in window) {
 
 const SuperCanvas = {
     draw_2d: function (ctx2d, indexed_colors) {
+        "use strict";
+        return new Promise(function (resolve, reject){
 
-        return new Promise(function (resolve){
+            if(indexed_colors.size === 0) {
+                resolve();
+            }else {
 
-            let indexed_by_color_changes = new Map();
-            indexed_colors.forEach(function(colorUint32, index) {
+                let indexed_by_color_changes = new Map();
+                indexed_colors.forEach(function(colorUint32, index) {
 
-                colorUint32 = colorUint32 | 0;
-                index = index | 0;
+                    colorUint32 = colorUint32 | 0;
+                    index = index | 0;
 
-                if (!indexed_by_color_changes.has(colorUint32)) {
+                    if (!indexed_by_color_changes.has(colorUint32)) {
 
-                    let set = new Set();
-                    set.add(index);
-                    indexed_by_color_changes.set(colorUint32, set);
-                } else {
+                        let set = new Set();
+                        set.add(index);
+                        indexed_by_color_changes.set(colorUint32, set);
+                    } else {
 
-                    indexed_by_color_changes.get(colorUint32).add(index);
-                }
+                        indexed_by_color_changes.get(colorUint32).add(index);
+                    }
 
-            });
-
-            const indexed_by_color_paths = new Map();
-            let path = new Path2D();
-            let x = 0;
-            let y = 0;
-            let width = ctx2d.canvas.width | 0;
-            indexed_by_color_changes.forEach(function(set, colorUint32){
-
-                path = new Path2D();
-                set.forEach(function(i){
-                    x = i % width | 0;
-                    y = (i - x) / width | 0;
-                    path.rect(x, y, 1, 1);
                 });
-                indexed_by_color_paths.set("#".concat("00000000".concat((colorUint32 | 0).toString(16)).slice(-8)), path);
-            })
 
-            indexed_by_color_paths.forEach(function(path, style){
+                const indexed_by_color_paths = new Map();
+                let path = new Path2D();
+                let x = 0;
+                let y = 0;
+                let width = ctx2d.canvas.width | 0;
+                indexed_by_color_changes.forEach(function(set, colorUint32){
 
-                ctx2d.globalCompositeOperation = "destination-out";
-                ctx2d.fillStyle = "#ffffffff";
-                ctx2d.fill(path);
+                    path = new Path2D();
+                    set.forEach(function(i){
+                        x = i % width | 0;
+                        y = (i - x) / width | 0;
+                        path.rect(x, y, 1, 1);
+                    });
+                    indexed_by_color_paths.set("#".concat("00000000".concat((colorUint32 | 0).toString(16)).slice(-8)), path);
+                })
 
-                ctx2d.globalCompositeOperation = "source-over";
-                ctx2d.fillStyle = style;
-                ctx2d.fill(path);
-            });
+                indexed_by_color_paths.forEach(function(path, style){
 
-            resolve();
+                    ctx2d.globalCompositeOperation = "destination-out";
+                    ctx2d.fillStyle = "#ffffffff";
+                    ctx2d.fill(path);
+
+                    ctx2d.globalCompositeOperation = "source-over";
+                    ctx2d.fillStyle = style;
+                    ctx2d.fill(path);
+                });
+
+                resolve();
+            }
         });
     },
     from: function(c, pxl_width, pxl_height){
-
+        "use strict";
         const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
         const bpro = AsyncFunction(
             `var bpro = function(s_width, pr_width, pr_height, pr_top_left_x, pr_top_left_y, fp_buffer){
@@ -96,10 +101,11 @@ const SuperCanvas = {
 
         const pool = workerpool.pool({minWorkers: 1, maxWorkers: 1});
         const d2d = this.draw_2d;
-        const template = function(c, pxl_width, pxl_height){
+        const template = function(c, pxl_width, pxl_height, fp){
 
             pxl_width = pxl_width | 0;
             pxl_height = pxl_height | 0;
+            fp = fp || null;
 
             function cs(c, pxl_width, pxl_height) {
 
@@ -136,7 +142,7 @@ const SuperCanvas = {
             return {
                 s: cs(c, pxl_width, pxl_height),
                 enable_paint_type: "",
-                fp: new DataView(new ArrayBuffer(pxl_height * pxl_width * 4)),
+                fp: fp || new DataView(new ArrayBuffer(pxl_height * pxl_width * 4)),
                 ic: new Map(),
                 ic2: new Map(),
                 b: {
@@ -161,9 +167,11 @@ const SuperCanvas = {
         return {
             // Methods
             ok: function (){
-                return _state.s.canvas_context && true;
+                "use strict";
+                return Boolean(_state.s.canvas_context.canvas) && true;
             },
             clear: function() {
+                "use strict";
                 return new Promise(function (resolve){
 
                     _state.s.canvas_context.clearRect(0, 0, _state.s.width, _state.s.height);
@@ -171,8 +179,9 @@ const SuperCanvas = {
                 });
             },
             render: function(b2) {
+                "use strict";
+                return new Promise(function (resolve, reject) {
 
-                return new Promise(function (resolve) {
                     if (_state.enable_paint_type === "bitmap") {
 
                         b2 = typeof b2 !== "undefined" ? b2: _state.b;
@@ -193,16 +202,14 @@ const SuperCanvas = {
 
                         if (!_state.s.is_bitmap && !_state.s.is_offscreen) {
                             _state.ic2.clear();
-                            resolve();
-                        }else {
-
-                            resolve();
                         }
+
+                        resolve();
                     });
                 });
             },
             prender: function(){
-
+                "use strict";
                 return new Promise(function (resolve, reject){
 
                     if (_state.enable_paint_type === "bitmap") {
@@ -231,16 +238,25 @@ const SuperCanvas = {
                                     b2.bmp_x = new_bmp_x | 0;
                                     b2.bmp_y = new_bmp_y | 0;
 
+                                    _state.pr.top_left.x = _state.s.width | 0;
+                                    _state.pr.top_left.y = _state.s.height | 0;
+                                    _state.pr.bottom_right.x = 0;
+                                    _state.pr.bottom_right.y = 0;
+
                                     resolve(b2);
                                 }else {
 
-                                    resolve(_state.b);
+                                    reject(_state.b);
                                 }
 
                             }).catch(reject);
-                        }else {
+                        }else if(_state.bmp.width !== 0){
 
                             resolve(_state.b);
+                        }else {
+
+                            _state.old_bmp.close();
+                            reject();
                         }
 
 
@@ -258,60 +274,59 @@ const SuperCanvas = {
                     }
                 });
             },
-            unpile: function(){
-
-                return new Promise(function (resolve){
+            unpile: function(w, h){
+                "use strict";
+                return new Promise(function (resolve, reject){
 
                     if (_state.ic.size > 0) {
-
                         _state.ic2 = new Map(Array.from(_state.ic2).concat(Array.from(_state.ic)));
+                    }
 
-                        if (_state.s.is_bitmap) {
+                    let width = _state.s.width | 0;
+                    let height = _state.s.height | 0;
 
-                            let x, y;
-                            let width = _state.s.width | 0;
-                            let height = _state.s.height | 0;
-                            _state.ic2.forEach(function (value, index) {
+                    if(width !== w || height !== h){
 
-                                index = index | 0;
-                                x = (index % width | 0) >>> 0;
-                                y = ((index - x) / width | 0) >>> 0;
+                        reject();
+                    }else if (_state.s.is_bitmap) {
 
-                                if(_state.pr.top_left.x > x-4) {_state.pr.top_left.x = Math.max(0, x-4 | 0) }
-                                if(_state.pr.top_left.y > y-4) { _state.pr.top_left.y = Math.max(0, y-4 | 0) | 0 }
-                                if(_state.pr.bottom_right.x < x+4) { _state.pr.bottom_right.x = Math.min(width, x+4 | 0) }
-                                if(_state.pr.bottom_right.y < y+4) { _state.pr.bottom_right.y = Math.min(height, y+4 | 0) }
-                                _state.fp.setUint32((index*4|0) >>> 0, (value|0) >>> 0, false);
-                            });
+                        let x, y;
+                        _state.ic2.forEach(function (value, index) {
 
-                            _state.pr.width = 1 + _state.pr.bottom_right.x - _state.pr.top_left.x | 0;
-                            _state.pr.height = 1 + _state.pr.bottom_right.y - _state.pr.top_left.y | 0;
+                            index = index | 0;
+                            x = (index % width | 0) >>> 0;
+                            y = ((index - x) / width | 0) >>> 0;
 
-                            _state.ic2.clear();
-                            _state.ic.clear();
-                            _state.enable_paint_type = "bitmap";
-                            resolve();
+                            if(_state.pr.top_left.x > x-4) {_state.pr.top_left.x = Math.max(0, x-4 | 0) }
+                            if(_state.pr.top_left.y > y-4) { _state.pr.top_left.y = Math.max(0, y-4 | 0) | 0 }
+                            if(_state.pr.bottom_right.x < x+4) { _state.pr.bottom_right.x = Math.min(width, x+4 | 0) }
+                            if(_state.pr.bottom_right.y < y+4) { _state.pr.bottom_right.y = Math.min(height, y+4 | 0) }
+                            _state.fp.setUint32((index*4|0) >>> 0, (value|0) >>> 0, false);
+                        });
 
-                        } else if (_state.s.is_offscreen) {
+                        _state.pr.width = 1 + _state.pr.bottom_right.x - _state.pr.top_left.x | 0;
+                        _state.pr.height = 1 + _state.pr.bottom_right.y - _state.pr.top_left.y | 0;
 
-                            _state.ic.clear();
-                            _state.enable_paint_type = "offscreen";
-                            resolve();
-                        }else {
+                        _state.ic2.clear();
+                        _state.ic.clear();
+                        _state.enable_paint_type = "bitmap";
+                        resolve();
 
-                            _state.ic.clear();
-                            _state.enable_paint_type = "";
-                            resolve();
-                        }
+                    } else if (_state.s.is_offscreen) {
 
+                        _state.ic.clear();
+                        _state.enable_paint_type = "offscreen";
+                        resolve();
                     }else {
 
+                        _state.ic.clear();
+                        _state.enable_paint_type = "";
                         resolve();
                     }
                 });
             },
             pile: function(indexed_changes) {
-
+                "use strict";
                 return new Promise(function(resolve){
 
                     _state.ic = new Map(Array.from(_state.ic).concat(Array.from(indexed_changes)));
@@ -319,17 +334,27 @@ const SuperCanvas = {
                 });
             },
             set_dimensions: function(w, h) {
+                "use strict";
+                return new Promise(function (resolve, reject){
+                    if(_state.s.width !== w || _state.s.height !== h) {
 
-                if(_state.s.width !== w || _state.s.height !== h) {
+                        _state = template(_state.s.canvas_context.canvas, w, h);
+                        resolve();
+                    }else {
 
-                    _state = template(_state.s.canvas_context.canvas, w, h);
-                }
+                        resolve();
+                    }
+                });
             },
             new: function(c, w, h) {
-
-                _state = template(c, w, h);
+                "use strict";
+                return new Promise(function (resolve, reject){
+                    _state = template(c, w, h);
+                    resolve();
+                });
             },
             secure_context: function() {
+                "use strict";
                 _state.s.canvas_context.canvas.addEventListener("contextlost", function(){
 
                     let cc2d = _state.s.canvas_context.canvas.getContext('2d', {desynchronized: false});
