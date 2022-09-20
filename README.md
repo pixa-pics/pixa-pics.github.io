@@ -115,9 +115,6 @@ Lighthouse (google's webpage loading test) metrics of pixa.pics at left while th
 
 # G) How can it work thanks to sponsorship?
 
-![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/TECTARY.jpeg)
-
-
 > **Thanks for support!**
 
 ## G') Getting further with sponsorship and development
