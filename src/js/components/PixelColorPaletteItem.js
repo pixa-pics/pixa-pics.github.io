@@ -14,7 +14,7 @@ const styles = theme => ({
 });
 
 
-class PixelColorPaletteItem extends React.Component {
+class PixelColorPaletteItem extends React.PureComponent {
 
     constructor(props) {
         super(props);
@@ -31,27 +31,22 @@ class PixelColorPaletteItem extends React.Component {
 
     componentWillReceiveProps(new_props) {
 
-        this.setState(new_props);
-    }
-
-    shouldComponentUpdate(new_props) {
-
         const { selected, color, size, icon } = this.state;
+        const update = (selected !== new_props.selected || color !== new_props.color || size !== new_props.size || icon !== new_props.icon);
+        this.setState(new_props, () => {
 
-        if(selected !== new_props.selected || color !== new_props.color || size !== new_props.size || icon !== new_props.icon) {
+            if(update) {
 
-            return true;
-        }else {
-
-            return false;
-        }
+                this.forceUpdate();
+            }
+        });
     }
 
     render() {
 
         const { classes, full_width, selected, size, color, icon, style } = this.state;
 
-        let [r, g, b, a] = new Uint8ClampedArray(Uint32Array.of(parseInt(color.slice(1), 16)).buffer).reverse();
+        let [r, g, b, a] = new Uint8ClampedArray(Uint32Array.of(parseInt((color||"#ffffffff").slice(1), 16)).buffer).reverse();
 
         const is_color_dark = a > 96 && (r + g + b) * (255 - a) / 255 < 192 * 3;
 

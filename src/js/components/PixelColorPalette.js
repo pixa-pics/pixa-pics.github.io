@@ -24,7 +24,7 @@ const styles = theme => ({
 });
 
 
-class PixelColorPalette extends React.Component {
+class PixelColorPalette extends React.PureComponent {
 
     constructor(props) {
         super(props);
@@ -42,11 +42,14 @@ class PixelColorPalette extends React.Component {
 
     componentWillReceiveProps(new_props) {
 
-        this.setState(new_props);
-    }
+        const { colors, selected_colors } = this.state;
+        const update = (new_props.colors.length !== colors.length || (new_props.colors.selected_colors||[])[0] !== (selected_colors||[])[0]);
+        this.setState(new_props, () => {
 
-    shouldComponentUpdate(nextProps, nextState, nextContext) {
-        return true;
+            if(update){
+                this.forceUpdate();
+            }
+        });
     }
 
     _handle_color_item_click = (event, color) => {
@@ -60,7 +63,7 @@ class PixelColorPalette extends React.Component {
     render() {
 
         let { classes, colors, padding, gap, size, transparent, align, selected_colors } = this.state;
-        const selected_colors_set = new Set([...selected_colors]);
+        const selected_colors_set = new Set(selected_colors);
 
         return (
             <div className={classes.colorPalette} style={align === "center" ? {padding, gap}: align === "left" ? {justifyContent: "start", padding, gap}: {justifyContent: "start", padding, gap}}>

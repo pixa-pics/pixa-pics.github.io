@@ -549,10 +549,10 @@ const SuperState = {
                     let primary = {x:0, y:0};
                     let secondary = {x:0, y:0};
 
-                    secondary.x = to % width | 0;
-                    primary.x = from % width | 0;
-                    primary.y = (from -  primary.x) / width | 0;
-                    secondary.y = (to - secondary.y) / width | 0;
+                    secondary.x = (to % width) | 0;
+                    primary.x = (from % width) | 0;
+                    primary.y = ((from -  primary.x) / width) | 0;
+                    secondary.y = ((to - secondary.y)) / width | 0;
     
                     return {primary, secondary};
                 }
@@ -561,7 +561,7 @@ const SuperState = {
     
                     const ui32_colors = new Uint32Array(context.getImageData(0, 0, context.canvas.width, context.canvas.height).data.reverse().buffer).reverse();
                     const ui32_colors_length = ui32_colors.length | 0;
-                    for(let i = 0; i < ui32_colors_length; i = i + 1 | 0) {
+                    for(let i = 0; (i|0) < (ui32_colors_length|0); i = (i + 1 | 0)>>>0) {
     
                         if(ui32_colors[i] !== 0) { shadow_indexes.add(i);}
                     }
@@ -688,31 +688,31 @@ const SuperState = {
                         to = to | 0;
                         let c = get_opposite_coordinates(width, from, to);
 
-                        let dx = Math.abs(c.secondary.x - c.primary.x);
-                        let dy = Math.abs(c.secondary.y - c.primary.y);
+                        let dx = Math.abs(c.secondary.x - c.primary.x) | 0;
+                        let dy = Math.abs(c.secondary.y - c.primary.y) | 0;
                         let sx = (c.primary.x < c.secondary.x) ? 1 : -1;
                         let sy = (c.primary.y < c.secondary.y) ? 1 : -1;
-                        let err = dx - dy;
+                        let err = (dx - dy) | 0;
 
                         while(true){
 
-                            const current_pxl_index = c.primary.y * state.pxl_width + c.primary.x;
+                            const current_pxl_index = (c.primary.y * state.pxl_width + c.primary.x) | 0;
 
                             pxl_indexes.add(current_pxl_index);
 
                             if(c.primary.x === c.secondary.x && c.primary.y === c.secondary.y) { break; }
 
-                            const e2 = 2 * err;
+                            const e2 = (2 * err)|0;
 
-                            if (e2 > - dy) {
+                            if ((e2|0) > - (dy|0)) {
 
-                                err -= dy;
-                                c.primary.x  += sx;
+                                err = (err - dy) | 0;
+                                c.primary.x  = (c.primary.x+sx)|0;
                             }
-                            if (e2 < dx) {
+                            if ((e2|0) < (dx|0)) {
 
-                                err += dx;
-                                c.primary.y  += sy;
+                                err = (err + dy) | 0;
+                                c.primary.y  = (c.primary.y+sy)|0;
                             }
                         }
     

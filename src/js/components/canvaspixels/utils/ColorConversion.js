@@ -18,9 +18,9 @@ const ColorConversion = {
                 const uint8array_rgba = new Uint8ClampedArray(uint32_array.buffer);
                 let uint8array_subcolor = new Uint8ClampedArray(uint32_array.length);
 
-                for(let i = 0, i2 = 0; i2 < uint8array_rgba.length; i++, i2 += 4) {
+                for(let i = 0, i4 = 0; i4 < uint8array_rgba.length; i = (i+1)|0, i4 = ((i4+4)|0)>>>0) {
 
-                    uint8array_subcolor[i] = uint8array_rgba[i2+ci];
+                    uint8array_subcolor[i] = uint8array_rgba[i4+ci|0];
                 }
 
                 return uint8array_subcolor;
@@ -58,15 +58,7 @@ const ColorConversion = {
             },
             blend_colors: function(color_a, color_b, amount = 1, should_return_transparent = false, alpha_addition = false) {
 
-                if(amount === 0 && color_b !== "hover" && should_return_transparent) {return 0;}
-
-                if(color_b === "hover") {
-
-                    let hsla = this.to_hsla_from_rgba(this.to_rgba_from_uint32(color_a));
-                    hsla[2] = parseInt(hsla[2] >= 50 ? hsla[2]/2: hsla[2]*2);
-                    hsla[3] = Math.max(hsla[3], 100 * (amount/2));
-                    color_b = this.to_uint32_from_rgba(this.to_rgba_from_hsla(hsla));
-                }
+                if(amount === 0 && should_return_transparent) {return 0;}
 
                 // If the second color is transparent, return transparent
                 if(should_return_transparent && color_b === 0 && amount === 1) { return 0 }
@@ -116,7 +108,7 @@ const ColorConversion = {
                     mi3 /= 2;
                 }
 
-                mix[3] = mi3 * 255 | 0;
+                mix[3] = (mi3 * 255) | 0;
 
                 return this.to_uint32_from_rgba(mix);
             },
@@ -130,7 +122,8 @@ const ColorConversion = {
 
                 // Blend all color and special ones only starting from the last opaque layer
                 let base = new Uint8ClampedArray(4);
-                let added = new Uint8ClampedArray(4);
+                let added_buffer = new ArrayBuffer(4);
+                let added = new Uint8ClampedArray(added_buffer);
                 let mix_buffer = new ArrayBuffer(4);
                 let mix_view = new DataView(mix_buffer);
                 let mix = new Uint8ClampedArray(mix_buffer);
@@ -138,15 +131,15 @@ const ColorConversion = {
                     float_variables.setFloat32(20, (amount * 65535 | 0) / 65535);
                 let start_layer = 0;
 
-                for(let i1 = 0, i4 = 0; i1 < used_colors_length; i1 = i1+1|0, i4 = i4+4|0) {
+                for(let i1 = 0, i4 = 0; (i1|0) < (used_colors_length|0); i1 = ((i1+1)|0)>>>0, i4 = ((i4+4)|0)>>>0) {
 
                     start_layer = 0;
-                    base.set(all_added_in_layers[0].slice(i4, i4+4), 0);
+                    base.set(all_added_in_layers[0].slice(i4, i4+4|0), 0);
 
                     // Sum up all colors above
-                    for(let layer_n = 1; layer_n < all_layers_length; layer_n = layer_n + 1 | 0) {
+                    for(let layer_n = 1; (layer_n|0) < (all_layers_length|0); layer_n = (layer_n + 1) | 0) {
 
-                        added.set(all_added_in_layers[layer_n].slice(i4, i4+4), 0);
+                        added.set(all_added_in_layers[layer_n].slice(i4, i4+4|0), 0);
 
                         if(should_return_transparent !== 0 && added[3] === 0 && float_variables.getFloat32(20) === 1) {
 
@@ -180,7 +173,7 @@ const ColorConversion = {
                                 float_variables.setFloat32(2, float_variables.getFloat32(8) / 2);
                             } mix.fill(float_variables.getFloat32(8) * 255, 3, 4);
 
-                            base.set(mix, 0);
+                            base.set(mix);
                         }
                     }
                     all_base.set(base, i4);
@@ -189,6 +182,7 @@ const ColorConversion = {
                 return all_base;
             },
             to_hex_from_uint32: function(uint32){
+                uint32 = (uint32 | 0) & 0xFFFFFFFF;
                 return "#".concat("00000000".concat(uint32.toString(16)).slice(-8));
             },
             to_hex_from_rgba: function(rgba) {
@@ -198,6 +192,7 @@ const ColorConversion = {
                 return new Uint8ClampedArray(Uint32Array.of(parseInt(hex.slice(1), 16)).buffer).reverse();
             },
             to_rgba_from_uint32: function(uint32) {
+                uint32 = (uint32 | 0) & 0xFFFFFFFF;
                 return new Uint8ClampedArray(Uint32Array.of(uint32).buffer).reverse();
             },
             to_uint32_from_rgba: function(rgba) {
@@ -223,7 +218,7 @@ const ColorConversion = {
                     }
                     h /= 6;
                 }
-                return Array.of(parseInt(h * 360), parseInt(s * 100), parseInt(l * 100), parseInt(a * 100));
+                return Array.of((h * 360)|0, (s * 100)|0, (l * 100)|0, (a * 100)|0);
             },
             to_rgba_from_hsla: function(hsla) {
 
@@ -256,10 +251,12 @@ const ColorConversion = {
             },
             invert_uint32: function(uint32) {
                 const [r, g, b, a] = this.to_rgba_from_uint32(uint32);
-                return this.to_uint32_from_rgba(Uint8ClampedArray.of(255 - r, 255 - g, 255 - b, a));
+                return this.to_uint32_from_rgba(Uint8ClampedArray.of((255 - r) | 0, (255 - g) | 0, (255 - b) | 0, a|0));
             },
             match_color: function(color_a, color_b, threshold) {
 
+                color_a = (color_a | 0) & 0xFFFFFFFF;
+                color_b = (color_b | 0) & 0xFFFFFFFF;
                 threshold = typeof threshold === "undefined" ? null: threshold;
 
                 if(threshold === 1) {
@@ -270,42 +267,40 @@ const ColorConversion = {
                     return color_a === color_b;
                 }else {
 
-                    const threshold_256 = parseInt(threshold * 255);
+                    const threshold_256 = (threshold * 255) | 0;
 
                     const c_a = this.to_rgba_from_uint32(color_a);
                     const c_b = this.to_rgba_from_uint32(color_b);
 
-                    const a_diff = Math.abs(c_a[3] - c_b[3]);
-                    const r_diff = Math.abs(c_a[0] - c_b[0]);
-                    const g_diff = Math.abs(c_a[1] - c_b[1]);
-                    const b_diff = Math.abs(c_a[2] - c_b[2]);
-
-                    const a_diff_ratio = Math.abs(1 - a_diff / 255);
+                    const a_diff = Math.abs(c_a[3] - c_b[3]) | 0;
+                    const r_diff = Math.abs(c_a[0] - c_b[0]) | 0;
+                    const g_diff = Math.abs(c_a[1] - c_b[1]) | 0;
+                    const b_diff = Math.abs(c_a[2] - c_b[2]) | 0;
 
                     if(threshold !== null) {
 
-                        return Boolean(r_diff < threshold_256 && g_diff < threshold_256 && b_diff < threshold_256 && a_diff < threshold_256);
+                        return (r_diff < threshold_256 && g_diff < threshold_256 && b_diff < threshold_256 && a_diff < threshold_256);
                     }else {
 
-                        return parseFloat(parseInt(r_diff + g_diff + b_diff) / parseInt(255 * 3)) * a_diff_ratio;
+                        return ((r_diff + g_diff + b_diff | 0) / 765) * Math.abs(1 - a_diff / 255);
                     }
                 }
             },
             clean_duplicate_colors(_pxls, _pxl_colors) {
 
                 // Work with Hashtables and Typed Array so it is fast
-                var new_pxl_colors_map = new Map();
-                var _pxls_length = _pxls.length | 0;
-                var new_pxls = new Uint16Array(_pxls_length);
+                let new_pxl_colors_map = new Map();
+                const _pxls_length = _pxls.length | 0;
+                let new_pxls = new Uint16Array(_pxls_length);
+                let new_pxl_color_index;
+                let pxl_color_index = 0;
+                let color = 0;
 
-                var pxl_color_index = 0;
-                var color = 0;
-
-                for(var i = 0; i < _pxls_length; i = i + 1 | 0) {
+                for(let i = 0; (i|0) < (_pxls_length|0); i = (i + 1 | 0) >>> 0) {
 
                     pxl_color_index = _pxls[i] | 0;
-                    color = _pxl_colors[pxl_color_index] | 0;
-                    var new_pxl_color_index = new_pxl_colors_map.get(color)
+                    color = (_pxl_colors[pxl_color_index] | 0) & 0xFFFFFFFF;
+                    new_pxl_color_index = new_pxl_colors_map.get(color);
 
                     if(typeof new_pxl_color_index === "undefined") {
 
@@ -316,13 +311,13 @@ const ColorConversion = {
                     new_pxls[i] = new_pxl_color_index | 0;
                 }
 
-                var new_pxl_colors = new Array(new_pxl_colors_map.size);
-                for (var e of new_pxl_colors_map) {
+                let new_pxl_colors = new Uint32Array(new_pxl_colors_map.size);
+                for (let e of new_pxl_colors_map) {
 
-                    new_pxl_colors[e[1]] = e[0] | 0;
+                    new_pxl_colors[e[1]|0] = (e[0] | 0) & 0xFFFFFFFF;
                 }
 
-                return Array.of(new_pxls, Uint32Array.from(new_pxl_colors));
+                return Array.of(new_pxls, new_pxl_colors);
             }
         };
     }

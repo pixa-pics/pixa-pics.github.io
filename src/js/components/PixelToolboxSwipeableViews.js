@@ -561,9 +561,10 @@ class PixelToolboxSwipeableViews extends React.Component {
                                                     <PixelColorPalette
                                                         transparent={true}
                                                         padding="12px 0px"
+                                                        size={32}
                                                         gap="8px"
-                                                        colors={layer.colors}
-                                                        selected_colors={[current_color]}
+                                                        colors={Array.from(layer.colors)}
+                                                        selected_colors={Array.of(current_color)}
                                                         onColorClick={(event, color) => {
                                                             this._handle_current_color_change(color)
                                                         }}

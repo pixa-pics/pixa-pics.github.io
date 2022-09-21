@@ -379,7 +379,6 @@ const SuperMasterMeta = {
                 return false;
             },
             _handle_canvas_mouse_move(event) {
-
                 "use strict";
                 let { _pxl_indexes_of_selection, _imported_image_pxls, pxl_current_color_uint32, tool, pxl_width, pxl_height, _pxls_hovered, hide_canvas_content  } = meta.super_state.get_state();
                 const { event_button, mouse_down } = meta.canvas_pos.get_pointer_state();
@@ -464,12 +463,11 @@ const SuperMasterMeta = {
                     }else if((tool === "PENCIL" || tool === "PENCIL PERFECT" || tool === "CONTOUR") && event_which === 1 && mouse_down){
 
                         let { _paint_hover_old_pxls_snapshot, _last_action_timestamp, _paint_or_select_hover_pxl_indexes, _paint_or_select_hover_pxl_indexes_exception, _paint_or_select_hover_actions_latest_index, _s_pxls, _s_pxl_colors, _layer_index, pxl_current_opacity } = meta.super_state.get_state();
-                        const _paint_or_select_hover_pxl_indexes_copy = [..._paint_or_select_hover_pxl_indexes];
-
+                        const _paint_or_select_hover_pxl_indexes_copy = new Set(Array.from(_paint_or_select_hover_pxl_indexes));
                         // PAINT HACK: compute the pixel between the previous and latest paint by hover pixel (Bresenham’s Line Algorithm)
                         if(_paint_or_select_hover_actions_latest_index === -1) {
 
-                            _paint_or_select_hover_actions_latest_index = pxl_index;
+                            _paint_or_select_hover_actions_latest_index = pxl_index | 0;
                         }
 
                         let new_drawn_pxl_indexes =  meta.super_state.create_shape().from_line(_paint_or_select_hover_actions_latest_index, pxl_index);
@@ -531,7 +529,7 @@ const SuperMasterMeta = {
                         let pixel_stack = new Set(Array.of(_paint_or_select_hover_pxl_indexes)
                             .filter((index) => {
 
-                                return Boolean(!_paint_or_select_hover_pxl_indexes_copy.includes(index) && !_paint_or_select_hover_pxl_indexes_exception.has(index));
+                                return Boolean(!_paint_or_select_hover_pxl_indexes_copy.has(index) && !_paint_or_select_hover_pxl_indexes_exception.has(index));
                             })
                             .map((index) => {
 
@@ -1236,7 +1234,7 @@ const SuperMasterMeta = {
 
                         if(tool === "BORDER") {
 
-                            this.super_state.create_shape().from_border(colored_pxl_indexes).forEach((pxl_index) => {
+                            meta.super_state.create_shape().from_border(colored_pxl_indexes).forEach((pxl_index) => {
 
                                 color_pixel(pxl_index, true);
                             });
@@ -1274,8 +1272,8 @@ const SuperMasterMeta = {
 
                         }else if(tool === "BUCKET" || tool === "HUE BUCKET"){
 
-                            let {_s_pxls, _s_pxl_colors} = this.super_state.get_state();
-                            [_s_pxls[_layer_index], _s_pxl_colors[_layer_index]] = this.color_conversion.clean_duplicate_colors(pxls_copy, pxl_colors_copy);
+                            let {_s_pxls, _s_pxl_colors} = meta.super_state.get_state();
+                            [_s_pxls[_layer_index], _s_pxl_colors[_layer_index]] = meta.color_conversion.clean_duplicate_colors(pxls_copy, pxl_colors_copy);
 
                             // Update pixels list and pixel colours
                             meta.super_state.set_state({_s_pxls, _s_pxl_colors, _last_action_timestamp: Date.now()}).then(() => {

@@ -352,7 +352,7 @@ class CanvasPixels extends React.PureComponent {
             name: `${_layers[at_index].name} (copy)`,
             hidden: Boolean(_layers[at_index].hidden),
             opacity: parseFloat(_layers[at_index].opacity),
-            colors: new Uint32Array(_layers[at_index].colors.buffer),
+            colors: Array.from(_layers[at_index].colors),
             number_of_colors: parseInt(_layers[at_index].number_of_colors),
             thumbnail: _layers[at_index].thumbnail,
         });
@@ -1544,7 +1544,7 @@ class CanvasPixels extends React.PureComponent {
                                     }
                                     new_current_state._layers[index].hash = new_hash;
                                     new_current_state._layers[index].thumbnail = new_thumbnail;
-                                    new_current_state._layers[index].colors = pc.slice(0, 128).map(function(c){return "#".concat("00000000".concat(((c|0)>>>0).toString(16)).slice(-8))});
+                                    new_current_state._layers[index].colors = Array.from(pc.subarray(0, 128)).map(function(c){return "#".concat("00000000".concat(((c|0)>>>0).toString(16)).slice(-8))});
                                     new_current_state._layers[index].number_of_colors = parseInt(pc.length);
                                     all_layers_length++;
 
@@ -1565,7 +1565,7 @@ class CanvasPixels extends React.PureComponent {
                                     Boolean(new_current_state._layers[index].colors.length !== new_current_state._layers[index].number_of_colors)
                                 ) {
 
-                                    new_current_state._layers[index].colors = pc.slice(0, 128).map(function(c){return "#".concat("00000000".concat(((c|0)>>>0).toString(16)).slice(-8))});
+                                    new_current_state._layers[index].colors = Array.from(pc.subarray(0, 128)).map(function(c){return "#".concat("00000000".concat(((c|0)>>>0).toString(16)).slice(-8))});
                                     new_current_state._layers[index].number_of_colors = parseInt(pc.length);
                                 }
 
@@ -3182,13 +3182,20 @@ class CanvasPixels extends React.PureComponent {
         let pxl_colors_rgba = new Uint8Array(rgba_colors_length);
         let rgba = new Uint8ClampedArray(4);
 
+        function CLAMP_INT( x, min, max ) {
+
+            x = x|0; min = min|0; max = max|0;
+            x = (x - ((x - max) & ((max - x) >> 31))) | 0;
+            return (x - ((x - min) & ((x - min) >> 31))) | 0;
+        }
+
         if(name.toLowerCase() === "greyscale") {
 
             let average = 0;
             for(let i4 = 0; (i4|0) < (rgba_colors_length|0); i4 = (i4 + 4 | 0) >>> 0) {
 
-                rgba.set(old_pxl_colors_rgba.subarray(i4|0, i4+4|0), 0);
-                average = (rgba.subarray(0, 3).reduce(function(base, n){return base + n | 0}, 0) / 3) | 0;
+                rgba.set(old_pxl_colors_rgba.subarray(i4, i4+4|0), 0);
+                average = (rgba.subarray(0, 3).reduce(function(base, n){n = n|0; return (base + n) | 0}, 0) / 3) | 0;
                 rgba.fill(average, 0, 3);
                 pxl_colors_rgba.set(rgba, i4)
             }
@@ -3198,11 +3205,11 @@ class CanvasPixels extends React.PureComponent {
             let rgba = new Uint8ClampedArray(4);
             for(let i4 = 0; (i4|0) < (rgba_colors_length|0); i4 = (i4 + 4 | 0) >>> 0) {
 
-                rgba.set(old_pxl_colors_rgba.subarray(i4|0, i4+4|0), 0);
-                pxl_colors_rgba[i4|0] = ((rgba[0] * .393) + (rgba[1]  *.769) + (rgba[2] * .189)|0) & 0xFF;
-                pxl_colors_rgba[i4+1|0] = ((rgba[0]  * .349) + (rgba[1] *.686) + (rgba[2] * .168)|0) & 0xFF;
-                pxl_colors_rgba[i4+2|0] = ((rgba[0]  * .272) + (rgba[1] *.534) + (rgba[2] * .131)|0) & 0xFF;
-                pxl_colors_rgba[i4+3|0] = rgba[3] & 0xFF;
+                rgba.set(old_pxl_colors_rgba.subarray(i4, i4+4|0), 0);
+                pxl_colors_rgba[i4|0] = CLAMP_INT(((rgba[0] * .393) + (rgba[1]  *.769) + (rgba[2] * .189))|0, 0, 255) & 0xFF;
+                pxl_colors_rgba[(i4+1)|0] = CLAMP_INT(((rgba[0]  * .349) + (rgba[1] *.686) + (rgba[2] * .168))|0, 0, 255) & 0xFF;
+                pxl_colors_rgba[(i4+2)|0] = CLAMP_INT(((rgba[0]  * .272) + (rgba[1] *.534) + (rgba[2] * .131))|0, 0, 255) & 0xFF;
+                pxl_colors_rgba[(i4+3)|0] = rgba[3] & 0xFF;
             }
         }else {
 
@@ -3211,12 +3218,12 @@ class CanvasPixels extends React.PureComponent {
 
             for(let i4 = 0; (i4|0) < (rgba_colors_length|0); i4 = (i4 + 4 | 0) >>> 0) {
 
-                rgba.set(old_pxl_colors_rgba.subarray(i4|0, i4+4|0), 0);
+                rgba.set(old_pxl_colors_rgba.subarray(i4, i4+4|0), 0);
 
                 pxl_colors_rgba[i4|0] = filter["a"][filter["r"][rgba[0]]] & 0xFF;
-                pxl_colors_rgba[i4+1|0] = filter["a"][filter["g"][rgba[1]]] & 0xFF;
-                pxl_colors_rgba[i4+2|0] = filter["a"][filter["b"][rgba[2]]] & 0xFF;
-                pxl_colors_rgba[i4+3|0] = rgba[3] & 0xFF;
+                pxl_colors_rgba[(i4+1)|0] = filter["a"][filter["g"][rgba[1]]] & 0xFF;
+                pxl_colors_rgba[(i4+2)|0] = filter["a"][filter["b"][rgba[2]]] & 0xFF;
+                pxl_colors_rgba[(i4+3)|0] = rgba[3] & 0xFF;
             }
         }
 
