@@ -83,7 +83,7 @@ const SuperState = {
             _layers_defined_at: 0,
             _layer_index: 0,
             _s_pxl_colors: [Uint32Array.of(0)],
-            _s_pxls: [new Array((props.pxl_width || 32) * (props.pxl_height || 32)).fill(0)],
+            _s_pxls: [new Uint16Array((props.pxl_width || 32) * (props.pxl_height || 32)).fill(0)],
             _json_state_history: {history_position: 0, state_history: []},
             _saving_json_state_history_running: false,
                 _pxls_hovered: -1,
@@ -95,8 +95,8 @@ const SuperState = {
             _lazy_lazy_compute_time_ms: 10 * 1000,
             _undo_buffer_time_ms: parseInt(parseInt(props.pxl_width || 32) + parseInt(props.pxl_height || 32) + 1000),
             _mouse_inside: false,
-            _paint_hover_old_pxls_snapshot: new Array((props.pxl_width || 32) * (props.pxl_height || 32)).fill(0),
-            _select_hover_old_pxls_snapshot: new Array(),
+            _paint_hover_old_pxls_snapshot: new Uint16Array((props.pxl_width || 32) * (props.pxl_height || 32)).fill(0),
+            _select_hover_old_pxls_snapshot: new Uint16Array(),
             _paint_or_select_hover_actions_latest_index: -1,
             _paint_or_select_hover_pxl_indexes: new Set(),
             _paint_or_select_hover_pxl_indexes_exception: new Set(),
@@ -166,7 +166,6 @@ const SuperState = {
         };
     },
     _blend_rgba_colors: function(all_added_in_layers, amount, should_return_transparent, alpha_addition) {
-
         "use strict";
         should_return_transparent = should_return_transparent | 0 ;
         alpha_addition = alpha_addition | 0;
@@ -240,23 +239,27 @@ const SuperState = {
         let _pxl_indexes = new Set();
 
         return {
-            paint_shape(pxl_indexes, color, opacity, s = {}, callback_function = function(){}) {
+            paint_shape(pxl_indexes, color, opacity, s, callback_function) {
+                "use strict";
+
+                s = s || {};
+                callback_function = callback_function || function(){};
 
                 let state = _state.get();
-                let pxl_colors = Uint32Array.from(state._s_pxl_colors[state._layer_index]);
-                let pxls = Array.from(state._s_pxls[state._layer_index]);
+                let pxl_colors = new Uint32Array(state._s_pxl_colors[state._layer_index].buffer);
+                let pxls = new Uint16Array(state._s_pxls[state._layer_index].buffer);
 
-                let indexes = Array.from(pxl_indexes);
-                let colors = new Array(indexes.length);
-                for(let i = 0; i < indexes.length; i = i + 1 | 0) {
+                let indexes = Uint32Array.from(pxl_indexes);
+                let colors = new DataView(new ArrayBuffer(indexes.length*4));
+                for(let i = 0; i < indexes.length; i = (i + 1 | 0)>>>0) {
 
-                    colors[i] = pxl_colors[pxls[indexes[i]]];
+                    colors.setUint32((i*4|0)>>>0, (pxl_colors[pxls[(indexes[(i|0)>>>0]|0)>>>0]]|0)>>>0);
                 }
 
                 let new_ui32_colors = new Uint32Array(
                     _blend_rgba_colors(
                         Array.of(
-                            new Uint8ClampedArray(Uint32Array.from(colors).reverse().buffer).reverse(),
+                            new Uint8ClampedArray(colors.buffer),
                             new Uint8ClampedArray(new Uint32Array(indexes.length).fill(color).reverse().buffer).reverse(),
                         ),
                        opacity, false, false
@@ -264,15 +267,16 @@ const SuperState = {
                 ).reverse();
 
                 pxl_colors = Array.from(pxl_colors);
-                Array.from(new Set(new_ui32_colors)).forEach(function(c){
-                    if(!pxl_colors.includes(c)){
+                Uint32Array.from(new Set(new_ui32_colors)).forEach(function(c){
+                    if(!pxl_colors.includes((c|0)>>>0)){
 
-                        pxl_colors.push(c);
+                        pxl_colors.push((c|0)>>>0);
                     }
                 });
 
-                for(let i = 0; i < indexes.length; i = i + 1 | 0) {
-                    pxls[indexes[i]] = pxl_colors.indexOf(new_ui32_colors[i]) | 0;
+                pxl_colors = Uint32Array.from(pxl_colors);
+                for(let i = 0; i < indexes.length; i = (i + 1 | 0)>>>0) {
+                    pxls[(indexes[(i|0)>>>0]|0)>>>0] = (pxl_colors.indexOf(new_ui32_colors[(i|0)>>>0]) | 0)>>>0;
                 }
 
                 let st = Object.assign(s, {
@@ -280,8 +284,8 @@ const SuperState = {
                     _s_pxls: state._s_pxls,
                 });
 
-                st._s_pxl_colors[state._layer_index] = Uint32Array.from(pxl_colors);
-                st._s_pxls[state._layer_index] = Array.from(pxls);
+                st._s_pxl_colors[state._layer_index] = pxl_colors;
+                st._s_pxls[state._layer_index] = pxls;
 
                 this.set_state(st).then(callback_function);
             },

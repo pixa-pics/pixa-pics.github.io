@@ -75,8 +75,7 @@ var fu = async function(
             return this.to_uint32_from_rgba(mix) | 0;
         },
         to_rgba_from_uint32: function(uint32) {
-            uint32 = uint32 | 0;
-            return new Uint8ClampedArray(Uint32Array.of(uint32).buffer).reverse();
+            return new Uint8ClampedArray(Uint32Array.of((uint32 | 0)>>>0).buffer).reverse();
         },
         to_uint32_from_rgba: function(rgba) {
             return new Uint32Array(rgba.reverse().buffer)[0];
@@ -108,33 +107,33 @@ var fu = async function(
             // Work with Hashtables and Typed Array so it is fast
             var new_pxl_colors_map = new Map();
             var _pxls_length = _pxls.length | 0;
-            var new_pxls = new Array(_pxls_length);
+            var new_pxls = new Uint16Array(_pxls_length);
 
             var pxl_color_index = 0;
             var color = 0;
 
-            for(var i = 0; i < _pxls_length; i = i + 1 | 0) {
+            for(var i = 0; i < _pxls_length; i = (i + 1 | 0)>>>0) {
 
-                pxl_color_index = _pxls[i] | 0;
-                color = _pxl_colors[pxl_color_index] | 0;
-                var new_pxl_color_index = new_pxl_colors_map.get(color)
+                pxl_color_index = (_pxls[(i|0)>>>0] | 0)>>>0;
+                color = (_pxl_colors[pxl_color_index] | 0)>>>0;
+                var new_pxl_color_index = new_pxl_colors_map.get((color|0)>>>0)
 
                 if(typeof new_pxl_color_index === "undefined") {
 
-                    new_pxl_color_index = new_pxl_colors_map.size | 0;
-                    new_pxl_colors_map.set(color, new_pxl_color_index);
+                    new_pxl_color_index = (new_pxl_colors_map.size | 0)>>>0;
+                    new_pxl_colors_map.set((color|0)>>>0, (new_pxl_color_index|0)>>>0);
                 }
 
-                new_pxls[i] = new_pxl_color_index | 0;
+                new_pxls[(i|0)>>>0] = (new_pxl_color_index | 0)>>>0;
             }
 
-            var new_pxl_colors = new Array(new_pxl_colors_map.size);
+            var new_pxl_colors = new Uint32Array(new_pxl_colors_map.size);
             for (var e of new_pxl_colors_map) {
 
-                new_pxl_colors[e[1]] = e[0] | 0;
+                new_pxl_colors[(e[1]|0)>>>0] = (e[0] | 0)>>>0;
             }
 
-            return Array.of(new_pxls, Uint32Array.from(new_pxl_colors));
+            return Array.of(new_pxls, new_pxl_colors);
         }
     };
 
@@ -260,7 +259,7 @@ const ReducePalette = {
     ) {
 
         const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
-        const asyncs = `var t=async function(t,r,a,e,n,_,i){"use strict";var s={dv_match_8_bytes_uint8:new DataView(new ArrayBuffer(8)),blend_colors:function(t,r,a=1,e=!1,n=!1){if(t|=0,r|=0,0===a&&e)return 0;var _=this.to_rgba_from_uint32(t),i=this.to_rgba_from_uint32(r);if(255===i[3]&&1===a)return r;var s=_[3]/255,o=i[3]/255*a,h=new Uint8ClampedArray(4),u=0;if(s>0&&o>0){var c=o/(u=n?o+s:1-(1-o)*(1-s)),l=s*(1-o)/u;h.set(Uint8ClampedArray.of(i[0]*c+_[0]*l,i[1]*c+_[1]*l,i[2]*c+_[2]*l),0)}else o>0?(u=i[3]/255,h.set(i,0)):(u=_[3]/255,h.set(_,0));return n&&(u/=2),h.set(Uint8ClampedArray.of(255*u),3),0|this.to_uint32_from_rgba(h)},to_rgba_from_uint32:function(t){return t|=0,new Uint8ClampedArray(Uint32Array.of(t).buffer).reverse()},to_uint32_from_rgba:function(t){return new Uint32Array(t.reverse().buffer)[0]},match_color:function(t,r,a){return 255===(a=255*a|0)||(0===a?Boolean(t===r):(this.dv_match_8_bytes_uint8.setUint32(0,0|t),this.dv_match_8_bytes_uint8.setUint32(4,0|r),Boolean(Math.abs(this.dv_match_8_bytes_uint8.getUint8(3)-this.dv_match_8_bytes_uint8.getUint8(7))<a&&Math.abs(this.dv_match_8_bytes_uint8.getUint8(2)-this.dv_match_8_bytes_uint8.getUint8(6))<a&&Math.abs(this.dv_match_8_bytes_uint8.getUint8(1)-this.dv_match_8_bytes_uint8.getUint8(5))<a&&Math.abs(this.dv_match_8_bytes_uint8.getUint8(0)-this.dv_match_8_bytes_uint8.getUint8(4))<a)))},clean_duplicate_colors(t,r){for(var a=new Map,e=0|t.length,n=new Array(e),_=0,i=0;i<e;i=i+1|0){_=0|r[0|t[i]];var s=a.get(_);void 0===s&&(s=0|a.size,a.set(_,s)),n[i]=0|s}var o=new Array(a.size);for(var h of a)o[h[1]]=0|h[0];return Array.of(n,Uint32Array.from(o))}};return new Promise((function(o,h){var u="auto"===a,c=!u,l=15,f=new Set;((_=null!==_?_:Math.max(Math.sqrt(r.length)+n,100))<2||_+12>r.length)&&(c=!0);for(var v,d,m=1;!c||1===m;){m++,a=u?1/(l-2):a||i,e=e||parseInt(255*a),v=Array.from(t),d=Uint32Array.from(r);for(var b=new Set,y=new Map,g=1;g<=e;g+=1){var U=parseFloat(a*(g/e)),w=parseFloat(g/e);v.forEach((t=>{var r=y.get(t)||0;y.set(t,r+1)})),d.forEach(((t,r)=>{if(r|=0,t|=0,!b.has(r)){var a=y.get(r);d.forEach(((e,n)=>{if(e|=0,r!==(n|=0)&&!b.has(n)){var _=y.get(n),i=a>_,o=i?a/_:_/a,h=(U+U*(1-1/o)*w)/(1+w);if(s.match_color(t,e,h)){var u=i?s.blend_colors(d[r],d[n],1/o,!0,!1):s.blend_colors(d[n],d[r],1/o,!0,!1);d[r]=0|u,d[n]=0|u,b.add(r),b.add(n)}}}))}})),b.clear(),y.clear();var A=s.clean_duplicate_colors(v,d);v=A[0],d=A[1]}d.length+25>_&&d.length-25<_||!u||f.has(l)?c=!0:d.length>_?(f.add(l),l--):(f.add(l),l++)}o(s.clean_duplicate_colors(v,d)),v=null,d=null}))};`
+        const asyncs = `var t=async function(t,r,e,a,n,_,i){"use strict";var s={dv_match_8_bytes_uint8:new DataView(new ArrayBuffer(8)),blend_colors:function(t,r,e=1,a=!1,n=!1){if(t|=0,r|=0,0===e&&a)return 0;var _=this.to_rgba_from_uint32(t),i=this.to_rgba_from_uint32(r);if(255===i[3]&&1===e)return r;var s=_[3]/255,o=i[3]/255*e,h=new Uint8ClampedArray(4),u=0;if(s>0&&o>0){var c=o/(u=n?o+s:1-(1-o)*(1-s)),l=s*(1-o)/u;h.set(Uint8ClampedArray.of(i[0]*c+_[0]*l,i[1]*c+_[1]*l,i[2]*c+_[2]*l),0)}else o>0?(u=i[3]/255,h.set(i,0)):(u=_[3]/255,h.set(_,0));return n&&(u/=2),h.set(Uint8ClampedArray.of(255*u),3),0|this.to_uint32_from_rgba(h)},to_rgba_from_uint32:function(t){return new Uint8ClampedArray(Uint32Array.of((0|t)>>>0).buffer).reverse()},to_uint32_from_rgba:function(t){return new Uint32Array(t.reverse().buffer)[0]},match_color:function(t,r,e){return 255===(e=255*e|0)||(0===e?Boolean(t===r):(this.dv_match_8_bytes_uint8.setUint32(0,0|t),this.dv_match_8_bytes_uint8.setUint32(4,0|r),Boolean(Math.abs(this.dv_match_8_bytes_uint8.getUint8(3)-this.dv_match_8_bytes_uint8.getUint8(7))<e&&Math.abs(this.dv_match_8_bytes_uint8.getUint8(2)-this.dv_match_8_bytes_uint8.getUint8(6))<e&&Math.abs(this.dv_match_8_bytes_uint8.getUint8(1)-this.dv_match_8_bytes_uint8.getUint8(5))<e&&Math.abs(this.dv_match_8_bytes_uint8.getUint8(0)-this.dv_match_8_bytes_uint8.getUint8(4))<e)))},clean_duplicate_colors(t,r){for(var e=new Map,a=0|t.length,n=new Uint16Array(a),_=0,i=0;i<a;i=(i+1|0)>>>0){_=(0|r[(0|t[(0|i)>>>0])>>>0])>>>0;var s=e.get((0|_)>>>0);void 0===s&&(s=(0|e.size)>>>0,e.set((0|_)>>>0,(0|s)>>>0)),n[(0|i)>>>0]=(0|s)>>>0}var o=new Uint32Array(e.size);for(var h of e)o[(0|h[1])>>>0]=(0|h[0])>>>0;return Array.of(n,o)}};return new Promise((function(o){var h="auto"===e,u=!h,c=15,l=new Set;((_=null!==_?_:Math.max(Math.sqrt(r.length)+n,100))<2||_+12>r.length)&&(u=!0);for(var f,v,d=1;!u||1===d;){d++,e=h?1/(c-2):e||i,a=a||parseInt(255*e),f=Array.from(t),v=Uint32Array.from(r);for(var m=new Set,b=new Map,y=1;y<=a;y+=1){var g=parseFloat(e*(y/a)),U=parseFloat(y/a);f.forEach((t=>{var r=b.get(t)||0;b.set(t,r+1)})),v.forEach(((t,r)=>{if(r|=0,t|=0,!m.has(r)){var e=b.get(r);v.forEach(((a,n)=>{if(a|=0,r!==(n|=0)&&!m.has(n)){var _=b.get(n),i=e>_,o=i?e/_:_/e,h=(g+g*(1-1/o)*U)/(1+U);if(s.match_color(t,a,h)){var u=i?s.blend_colors(v[r],v[n],1/o,!0,!1):s.blend_colors(v[n],v[r],1/o,!0,!1);v[r]=0|u,v[n]=0|u,m.add(r),m.add(n)}}}))}})),m.clear(),b.clear();var w=s.clean_duplicate_colors(f,v);f=w[0],v=w[1]}v.length+25>_&&v.length-25<_||!h||l.has(c)?u=!0:v.length>_?(l.add(c),c--):(l.add(c),c++)}o(s.clean_duplicate_colors(f,v)),f=null,v=null}))};`
             + "return t;";
 
         return Object.assign({}, {

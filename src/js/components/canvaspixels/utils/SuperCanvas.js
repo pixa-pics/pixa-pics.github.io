@@ -215,9 +215,9 @@ const SuperCanvas = {
                     if (_state.enable_paint_type === "bitmap") {
 
                         if(_state.b.old_bmp.width === 0) {
-                            let new_bmp_t = Date.now();
-                            let new_bmp_x = _state.pr.top_left.x | 0;
-                            let new_bmp_y = _state.pr.top_left.y | 0;
+                            let new_bmp_t = Date.now()|0;
+                            let new_bmp_x = (_state.pr.top_left.x | 0) >>> 0;
+                            let new_bmp_y = (_state.pr.top_left.y | 0) >>> 0;
                             let s_width = (_state.s.width | 0) >>> 0;
                             let pr_width = (_state.pr.width | 0) >>> 0;
                             let pr_height = (_state.pr.height | 0) >>> 0;
@@ -234,12 +234,12 @@ const SuperCanvas = {
                                     let b2 = {};
                                     b2.old_bmp = _state.b.bmp;
                                     b2.bmp = bitmap;
-                                    b2.bmp_t = new_bmp_t | 0;
-                                    b2.bmp_x = new_bmp_x | 0;
-                                    b2.bmp_y = new_bmp_y | 0;
+                                    b2.bmp_t = (new_bmp_t | 0) >>> 0;
+                                    b2.bmp_x = (new_bmp_x | 0) >>> 0;
+                                    b2.bmp_y = (new_bmp_y | 0) >>> 0;
 
-                                    _state.pr.top_left.x = _state.s.width | 0;
-                                    _state.pr.top_left.y = _state.s.height | 0;
+                                    _state.pr.top_left.x = (_state.s.width | 0) >>> 0;
+                                    _state.pr.top_left.y = (_state.s.height | 0) >>> 0;
                                     _state.pr.bottom_right.x = 0;
                                     _state.pr.bottom_right.y = 0;
 
@@ -291,21 +291,31 @@ const SuperCanvas = {
                     }else if (_state.s.is_bitmap) {
 
                         let x, y;
+                        let pr = _state.pr;
+                        let pr_top_left_x = (pr.top_left.x | 0)>>>0;
+                        let pr_top_left_y = (pr.top_left.y | 0)>>>0;
+                        let pr_bottom_right_x = (pr.bottom_right.x | 0)>>>0;
+                        let pr_bottom_right_y = (pr.bottom_right.y | 0)>>>0;
                         _state.ic2.forEach(function (value, index) {
 
-                            index = index | 0;
                             x = (index % width | 0) >>> 0;
                             y = ((index - x) / width | 0) >>> 0;
 
-                            if(_state.pr.top_left.x > x-4) {_state.pr.top_left.x = Math.max(0, x-4 | 0) }
-                            if(_state.pr.top_left.y > y-4) { _state.pr.top_left.y = Math.max(0, y-4 | 0) | 0 }
-                            if(_state.pr.bottom_right.x < x+4) { _state.pr.bottom_right.x = Math.min(width, x+4 | 0) }
-                            if(_state.pr.bottom_right.y < y+4) { _state.pr.bottom_right.y = Math.min(height, y+4 | 0) }
+                            if(pr_top_left_x > x-4) {pr_top_left_x = (Math.max(0, (x-4|0)>>>0)|0)>>>0 }
+                            if(pr_top_left_y > y-4) { pr_top_left_y = (Math.max(0, (y-4|0)>>>0)|0)>>>0 }
+                            if(pr_bottom_right_x < x+4) { pr_bottom_right_x = (Math.min((width|0)>>>0, (x+4|0)>>>0)|0)>>>0 }
+                            if(pr_bottom_right_y < y+4) { pr_bottom_right_y = (Math.min((height|0)>>>0, (y+4|0)>>>0)|0)>>>0 }
                             _state.fp.setUint32((index*4|0) >>> 0, (value|0) >>> 0, false);
                         });
 
-                        _state.pr.width = 1 + _state.pr.bottom_right.x - _state.pr.top_left.x | 0;
-                        _state.pr.height = 1 + _state.pr.bottom_right.y - _state.pr.top_left.y | 0;
+                        pr.width = (1 + pr_bottom_right_x - pr_top_left_x | 0)>>>0;
+                        pr.height = (1 + pr_bottom_right_y - pr_top_left_y | 0)>>>0;
+
+                        pr.top_left.x = (pr_top_left_x | 0) >>>0;
+                        pr.top_left.y = (pr_top_left_y | 0) >>>0;
+                        pr.bottom_right.x = (pr_bottom_right_x | 0) >>>0;
+                        pr.bottom_right.y = (pr_bottom_right_y | 0) >>>0;
+                        _state.pr = pr;
 
                         _state.ic2.clear();
                         _state.ic.clear();

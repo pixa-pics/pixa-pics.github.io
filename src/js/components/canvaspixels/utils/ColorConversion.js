@@ -296,7 +296,7 @@ const ColorConversion = {
                 // Work with Hashtables and Typed Array so it is fast
                 var new_pxl_colors_map = new Map();
                 var _pxls_length = _pxls.length | 0;
-                var new_pxls = new Array(_pxls_length);
+                var new_pxls = new Uint16Array(_pxls_length);
 
                 var pxl_color_index = 0;
                 var color = 0;
