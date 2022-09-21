@@ -21,7 +21,7 @@ const BMPLayer = {
 
         const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
         const asyncs = `
-            var fun = function(
+            var fun = async function(
                 pxl_width,
                 pxl_height,
                 pxls,

@@ -206,15 +206,15 @@ const SuperMasterMeta = {
 
                                 for (let index = 0; index < full_pxls_length; index = (index + 1 | 0) >>> 0) {
 
-                                    bool_new_hover = ((_pxls_hovered|0)>>>0) === ((index|0)>>>0);
-                                    bool_old_hover = _old_pxls_hovered.has((index|0)>>>0);
-                                    bool_new_shape = _pxl_indexes_of_current_shape.has((index|0)>>>0);
-                                    bool_old_shape = _pxl_indexes_of_old_shape.has((index|0)>>>0);
-                                    bool_new_selection = _pxl_indexes_of_selection.has((index|0)>>>0);
-                                    bool_old_selection = _pxl_indexes_of_selection_drawn.has((index|0)>>>0);
-                                    bool_new_import = imported_image_pxls_positioned_keyset.has((index|0)>>>0);
-                                    bool_old_import = _previous_imported_image_pxls_positioned_keyset.has((index|0)>>>0);
-                                    bool_new_pixel = full_pxls[(index|0)>>>0] !== _old_full_pxls[(index|0)>>>0];
+                                    bool_new_hover = (_pxls_hovered|0) === (index|0);
+                                    bool_old_hover = _old_pxls_hovered.has(index|0);
+                                    bool_new_shape = _pxl_indexes_of_current_shape.has(index|0);
+                                    bool_old_shape = _pxl_indexes_of_old_shape.has(index|0);
+                                    bool_new_selection = _pxl_indexes_of_selection.has(index|0);
+                                    bool_old_selection = _pxl_indexes_of_selection_drawn.has(index|0);
+                                    bool_new_import = imported_image_pxls_positioned_keyset.has(index|0);
+                                    bool_old_import = _previous_imported_image_pxls_positioned_keyset.has(index|0);
+                                    bool_new_pixel = (full_pxls[index|0] & 0xFFFFFFFF) !== (_old_full_pxls[index|0] & 0xFFFFFFFF);
 
                                     if (
                                         clear_canvas ||
@@ -227,45 +227,45 @@ const SuperMasterMeta = {
                                         bool_new_pixel
                                     ) {
 
-                                        super_blend_for((index|0)>>>0);
+                                        super_blend_for(index|0);
 
                                         for (let i = 0; i < layers_length; i = (i + 1 | 0) >>> 0) {
 
-                                            if(_layers[(i|0)>>>0].hidden) {
+                                            if(_layers[i|0].hidden) {
 
-                                                super_blend_stack((i|0)>>>0, (_s_pxl_colors[(i|0)>>>0][_s_pxls[(i|0)>>>0][(index|0)>>>0]]|0)>>>0, 0, 0);
+                                                super_blend_stack(i|0, _s_pxl_colors[i|0][_s_pxls[i|0][index|0]] & 0xFFFFFFFF, 0, 0);
                                             }else {
 
-                                                super_blend_stack((i|0)>>>0, (_s_pxl_colors[(i|0)>>>0][_s_pxls[(i|0)>>>0][(index|0)>>>0]]|0)>>>0, (_layers[(i|0)>>>0].opacity * 255|0) >>> 0, false);
+                                                super_blend_stack(i|0, _s_pxl_colors[i|0][_s_pxls[i|0][index|0]]& 0xFFFFFFFF, _layers[i|0].opacity * 255 & 0xFF, false);
                                             }
                                         }
 
-                                        if(!bool_new_hover && bool_old_hover){_old_pxls_hovered.delete((index|0)>>>0);}
-                                        else if(bool_new_hover) {_old_pxls_hovered.add((index|0)>>>0);}
+                                        if(!bool_new_hover && bool_old_hover){_old_pxls_hovered.delete(index|0);}
+                                        else if(bool_new_hover) {_old_pxls_hovered.add(index|0);}
 
-                                        if (!bool_new_shape && bool_old_shape) {_pxl_indexes_of_old_shape.delete((index|0)>>>0);}
-                                        else if(bool_new_shape && !bool_old_shape) {_pxl_indexes_of_old_shape.add((index|0)>>>0)}
+                                        if (!bool_new_shape && bool_old_shape) {_pxl_indexes_of_old_shape.delete(index|0);}
+                                        else if(bool_new_shape && !bool_old_shape) {_pxl_indexes_of_old_shape.add(index|0)}
 
-                                        if (!bool_new_selection && bool_old_selection) {_pxl_indexes_of_selection_drawn.delete((index|0)>>>0);}
-                                        else if(bool_new_selection && !bool_old_selection) {_pxl_indexes_of_selection_drawn.add((index|0)>>>0);}
+                                        if (!bool_new_selection && bool_old_selection) {_pxl_indexes_of_selection_drawn.delete(index|0);}
+                                        else if(bool_new_selection && !bool_old_selection) {_pxl_indexes_of_selection_drawn.add(index|0);}
 
 
                                         if (bool_new_import) {
 
-                                            super_blend_stack((layers_length|0)>>>0, (imported_image_pxl_colors[imported_image_pxls_positioned[(index|0)>>>0]]|0)>>>0, 255, false);
+                                            super_blend_stack(layers_length|0, imported_image_pxl_colors[imported_image_pxls_positioned[index|0]] & 0xFFFFFFFF, 255, false);
                                         } else if (bool_new_hover) {
 
-                                            super_blend_stack((layers_length|0)>>>0, 0, 236, true);
+                                            super_blend_stack(layers_length|0, 0, 236, true);
 
                                         } else if(bool_new_shape) {
 
-                                            super_blend_stack((layers_length|0)>>>0, 0, 192, true);
+                                            super_blend_stack(layers_length|0, 0, 192, true);
                                         }else if (bool_new_selection) {
 
-                                            pos_x = (index % pxl_width | 0) >>> 0;
-                                            pos_y = ((index - pos_x) / pxl_width | 0) >>> 0;
+                                            pos_x = index % pxl_width | 0;
+                                            pos_y = (index - pos_x) / pxl_width | 0;
 
-                                            super_blend_stack((layers_length|0)>>>0, 0, 96 + ((((pos_x + pos_y + (_selection_pair_highlight ? 1 : 0) | 0) % 2) | 0) * 64) | 0 >>> 0, true);
+                                            super_blend_stack(layers_length|0, 0, 96 + ((((pos_x + pos_y + (_selection_pair_highlight ? 1 : 0) | 0) % 2) | 0) * 64) & 0xFF, true);
 
                                         }
                                     }

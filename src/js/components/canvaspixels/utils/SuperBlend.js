@@ -59,7 +59,7 @@ const SuperBlend = {
 
         // Slice uint32 colors and give them as uint8
         for(let layer_n = 0; layer_n < state.layer_number; layer_n = (layer_n + 1 | 0)>>>0) {
-            shadow_state.rgba_colors_data_in_layers[(layer_n|0)>>>0] = new Uint8ClampedArray(0);
+            shadow_state.rgba_colors_data_in_layers[layer_n|0] = new Uint8ClampedArray(0);
         }
 
         return shadow_state;
@@ -167,7 +167,7 @@ const SuperBlend = {
 
         // Slice uint32 colors and give them as uint8
         for(let layer_n = 0; layer_n < state.layer_number; layer_n = (layer_n + 1 | 0) >>> 0) {
-            shadow_state.rgba_colors_data_in_layers[(layer_n|0)>>>0] = new Uint8ClampedArray(state.colors_data_in_layers[(layer_n|0)>>>0].slice(0, (state.current_index|0)>>>0).buffer);
+            shadow_state.rgba_colors_data_in_layers[layer_n|0] = new Uint8ClampedArray(state.colors_data_in_layers[layer_n|0].slice(0, (state.current_index|0)>>>0).buffer);
         }
 
         return shadow_state;
@@ -184,9 +184,11 @@ const SuperBlend = {
 
         let bv = {};
         bv.rgba_buffer = new ArrayBuffer(4);
+        bv.rgba_view = new DataView(bv.rgba_buffer);
         bv.rgba = new Uint8ClampedArray(bv.rgba_buffer);
         bv.color_bonus = 64;
         bv.base_buffer = new ArrayBuffer(4);
+        bv.base_view = new DataView(bv.base_buffer);
         bv.base = new Uint8ClampedArray(bv.base_buffer);
         bv.added_buffer = new ArrayBuffer(4);
         bv.added = new Uint8ClampedArray(bv.added_buffer);
@@ -196,14 +198,16 @@ const SuperBlend = {
         return {
             for: function(pixel_index) {
                 "use strict";
-                state.current_index = (state.current_index + 1 | 0)>>>0;
-                state.indexes_data_for_layers[(state.current_index-1|0)>>>0] = (pixel_index | 0)>>>0;
+                state.current_index = state.current_index + 1 | 0;
+                state.indexes_data_for_layers[state.current_index-1|0] = pixel_index | 0;
             },
             stack: function(for_layer_index, ui32color, amount, is_hover) {
                 "use strict";
-                state.colors_data_in_layers_views[(for_layer_index|0)>>>0].setUint32(((state.current_index-1 | 0) * 4 | 0) >>> 0, (ui32color | 0) >>> 0);
-                state.amount_data_in_layers_views[(for_layer_index|0)>>>0].setUint8((state.current_index-1 | 0) >>> 0,(amount | 0) >>> 0);
-                state.hover_data_in_layers_views[(for_layer_index|0)>>>0].setUint8((state.current_index-1 | 0) >>> 0, is_hover ? 1: 0);
+
+                let index = state.current_index-1|0;
+                state.colors_data_in_layers_views[for_layer_index|0].setUint32(index * 4 | 0, ui32color & 0xFFFFFFFF);
+                state.amount_data_in_layers_views[for_layer_index|0].setUint8(index | 0, amount & 0xFF);
+                state.hover_data_in_layers_views[for_layer_index|0].setUint8(index | 0, is_hover ? 1: 0);
             },
             blend: function(should_return_transparent, alpha_addition) {
                 "use strict";
@@ -212,51 +216,51 @@ const SuperBlend = {
                 should_return_transparent = should_return_transparent | 0;
                 alpha_addition = alpha_addition | 0;
 
-                let all_layers_length = (state.layer_number | 0) >>> 0;
-                let used_colors_length = (state.current_index | 0) >>> 0;
-                let start_layer_indexes = new Uint8ClampedArray(new ArrayBuffer((used_colors_length|0)>>>0));
+                let all_layers_length = state.layer_number | 0;
+                let used_colors_length = state.current_index | 0;
+                let start_layer_indexes = new Uint8ClampedArray(new ArrayBuffer(used_colors_length|0));
 
                 let {base_rgba_colors_for_blending, rgba_colors_data_in_layers} = shadow_state;
                 let {hover_data_in_layers, amount_data_in_layers, indexes_data_for_layers} = state;
                 let mapped_colors = new Map();
 
-                let {rgba, color_bonus, base_buffer, base, added_buffer, added, float_variables, start_layer} = bv;
+                let {rgba, rgba_view, color_bonus, base_buffer, base, base_view, added_buffer, added, float_variables, start_layer} = bv;
                 
                 // Browse the full list of pixel colors encoded within 32 bytes of data
-                for(let i1 = 0, i4 = 0; i1 < used_colors_length; i1 = (i1+1 | 0) >>> 0, i4 = (i4+4|0) >>> 0) {
+                for(let i1 = 0, i4 = 0; (i1|0) < (used_colors_length|0); i1 = (i1+1 | 0) >>> 0, i4 = (i4+4|0) >>> 0) {
 
                     // Compute the layer to start the color addition
                     start_layer = -1;
-                    for (let layer_n = all_layers_length - 1; layer_n >= 0; layer_n = layer_n - 1 | 0) {
+                    for (let layer_n = all_layers_length - 1; (layer_n|0) >= 0; layer_n = layer_n - 1 | 0) {
 
                         if (start_layer === -1) {
 
-                            if (rgba_colors_data_in_layers[(layer_n|0)>>>0][(i4+3|0)>>>0] === 255 && amount_data_in_layers[(layer_n|0)>>>0][(i1|0)>>>0] === 255) {
+                            if ((rgba_colors_data_in_layers[layer_n|0][((i4+3|0)>>>0)>>>0]&0xFF) === 255 && (amount_data_in_layers[layer_n|0][(i1|0)]&0xFF) === 255) {
 
-                                start_layer = (layer_n | 0) >>> 0;
+                                start_layer = layer_n | 0;
                             }
                         }
                     }
-                    start_layer_indexes[(i1|0)>>>0] = (start_layer+1|0) >>> 0;
+                    start_layer_indexes[i1|0] = start_layer+1|0;
                 }
 
-                for(let i1 = 0, i4 = 0; i1 < used_colors_length; i1 = (i1+1 | 0) >>> 0, i4 = ((i4+4|0)>>>0) >>> 0) {
+                for(let i1 = 0, i4 = 0; (i1|0) < (used_colors_length|0); i1 = (i1+1 | 0) >>> 0, i4 = (i4+4|0) >>> 0) {
 
-                    start_layer = (start_layer_indexes.at((i1|0)>>>0) | 0) >>> 0;
+                    start_layer = start_layer_indexes.at((i1|0)) | 0;
                     // Get the first base color to sum up with colors atop of it
-                    if(start_layer-1 < 0) { base.set(base_rgba_colors_for_blending.subarray((i4|0)>>>0, (i4+4|0)>>>0), 0);
-                    }else {base.set(rgba_colors_data_in_layers[(start_layer-1|0)>>>0].subarray((i4|0)>>>0, (i4+4|0)>>>0), 0)}
+                    if(start_layer-1 < 0) { base.set(base_rgba_colors_for_blending.subarray(i4>>>0, (i4+4|0)>>>0), 0);
+                    }else {base.set(rgba_colors_data_in_layers[start_layer-1|0].subarray(i4>>>0, (i4+4|0)>>>0), 0)}
 
                     // Sum up all colors above
-                    for(let layer_n = (start_layer|0) >>> 0; layer_n < all_layers_length; layer_n = (layer_n + 1 | 0) >>> 0) {
+                    for(let layer_n = start_layer|0; (layer_n|0) < (all_layers_length|0); layer_n = layer_n+1|0) {
 
                         // Compute hover if hover color
-                        if(hover_data_in_layers[(layer_n|0)>>>0][(i1|0)>>>0] !== 0) {
+                        if((hover_data_in_layers[layer_n|0][i1|0]&0xFF) !== 0) {
 
                             // Get the color below current layer
                             rgba.set(base_buffer);
 
-                            if((Math.max.apply(rgba.subarray(0, 3)) + Math.min.apply(rgba.subarray(0, 3))|0) > 255) {
+                            if((Math.max.apply(rgba.subarray(0, 3)) + Math.min.apply(rgba.subarray(0, 3))|0) >= 255) {
 
                                 color_bonus = -96;
                             }else {
@@ -264,57 +268,57 @@ const SuperBlend = {
                                 color_bonus = +96;
                             }
 
-                            rgba[0] = Math.min(Math.max(0, color_bonus + rgba.at(0)|0)|0, 255) & 0xFF;
-                            rgba[1] = Math.min(Math.max(0, color_bonus + rgba.at(1)|0)|0, 255) & 0xFF;
-                            rgba[2] = Math.min(Math.max(0, color_bonus + rgba.at(2)|0)|0, 255) & 0xFF;
-                            rgba[3] = 128 + 128 * amount_data_in_layers[(layer_n|0)>>>0][(i1|0)>>>0]/255 & 0xFF;
+                            rgba_view.setUint8(0, Math.min(Math.max(0, color_bonus + rgba[0]|0)|0, 255) & 0xFF);
+                            rgba_view.setUint8(1,  Math.min(Math.max(0, color_bonus + rgba[1]|0)|0, 255) & 0xFF);
+                            rgba_view.setUint8(2, Math.min(Math.max(0, color_bonus + rgba[2]|0)|0, 255) & 0xFF);
+                            rgba_view.setUint8(3, 128 + 128 * amount_data_in_layers[layer_n|0][(i1|0)]/255 & 0xFF);
 
-                            rgba_colors_data_in_layers[(layer_n|0)>>>0].set(rgba, (i4|0)>>>0);
+                            rgba_colors_data_in_layers[layer_n|0].set(rgba, i4>>>0);
                         }
 
-                        float_variables[5] = amount_data_in_layers[(layer_n|0)>>>0][(i1|0)>>>0] & 0xFF;
-                        added.set(rgba_colors_data_in_layers[(layer_n|0)>>>0].subarray((i4|0)>>>0, (i4+4|0)>>>0), 0);
+                        float_variables[5] = amount_data_in_layers[layer_n|0][(i1|0)] & 0xFF;
+                        added.set(rgba_colors_data_in_layers[layer_n|0].subarray(i4>>>0, (i4+4|0)>>>0), 0);
 
-                        if(should_return_transparent && added.at(3) === 0 && float_variables[5] === 255) {
+                        if(should_return_transparent && (added[3] & 0xFF) === 0 && (float_variables[5]& 0xFF) === 255) {
 
                             base.fill( 0);
-                        }else if(added.at(3) === 255 && float_variables[5] === 255) {
+                        }else if((added[3]&0xFF) === 255 && (float_variables[5]& 0xFF) === 255) {
 
                             base.set(added_buffer);
                         }else {
 
-                            float_variables[0] = base.at(3) & 0xFF;
-                            float_variables[1] = added.at(3) * float_variables[5]/255 & 0xFF;
+                            float_variables[0] = base[3] & 0xFF;
+                            float_variables[1] = added[3] * float_variables[5]/255 & 0xFF;
 
-                            if (float_variables[0] !== 0 && float_variables[1] !== 0) {
+                            if ((float_variables[0]& 0xFF) !== 0 && (float_variables[1]& 0xFF) !== 0) {
 
-                                if(alpha_addition) { float_variables[2] = float_variables[0]/2 + float_variables[1]/2 & 0xFF; } else { float_variables[2] = 255 - (1 - float_variables[1]/255) * (1 - float_variables[0]/255) * 255 & 0xFF;}
+                                if(alpha_addition) { float_variables[2] = ((float_variables[0] + float_variables[1]) / 2 | 0) & 0xFF; } else { float_variables[2] = 255 - (1 - float_variables[1]/255) * (1 - float_variables[0]/255) * 255 & 0xFF;}
                                 float_variables[3] = float_variables[1] / float_variables[2] * 255 & 0xFF;
                                 float_variables[4] =  float_variables[0] * (1 - float_variables[1]/255) / (float_variables[2]/255) & 0xFF;
 
-                                base[0] = (added.at(0) * float_variables[3]/255 + base.at(0) * float_variables[4]/255 | 0) & 0xFF;
-                                base[1] = (added.at(1) * float_variables[3]/255 + base.at(1) * float_variables[4]/255 | 0) & 0xFF;
-                                base[2] = (added.at(2) * float_variables[3]/255 + base.at(2) * float_variables[4]/255 | 0) & 0xFF;
-                                base[3] = float_variables[2] & 0xFF;
+                                base_view.setUint8(0, added[0] * float_variables[3]/255 + base[0] * float_variables[4]/255 & 0xFF);
+                                base_view.setUint8(1, added[1] * float_variables[3]/255 + base[1] * float_variables[4]/255 & 0xFF);
+                                base_view.setUint8(2, added[2] * float_variables[3]/255 + base[2] * float_variables[4]/255 & 0xFF);
+                                base_view.setUint8(3,  float_variables[2] & 0xFF);
 
-                            }else if(float_variables[1] !== 0) {
+                            }else if((float_variables[1]&0xFF) !== 0) {
 
                                 base.set(added_buffer);
                             }else {
 
-                                base[3] = base.at(3) & 0xFF;
+                                base[3] = base[3] & 0xFF;
                             }
                         }
                     }
-                    base_rgba_colors_for_blending.set(base, (i4|0)>>>0);
+                    base_rgba_colors_for_blending.set(base, i4>>>0);
                 }
 
                 // Map index and color as they are converted back in ui32
                 let colors = new Uint32Array(base_rgba_colors_for_blending.reverse().buffer).reverse();
                 let colors_length = (colors.length | 0) >>> 0;
                 
-                for(let i = 0; i < colors_length; i = (i+1 | 0) >>> 0) {
-                    mapped_colors.set((indexes_data_for_layers[(i|0)>>>0]|0)>>>0, (colors[(i|0)>>>0]|0)>>>0);
+                for(let i = 0; (i|0) < (colors_length|0); i = (i+1|0) >>> 0) {
+                    mapped_colors.set(indexes_data_for_layers[i|0]|0, colors[(i|0)>>>0] & 0xFFFFFFFF);
                 }
 
                 return mapped_colors;

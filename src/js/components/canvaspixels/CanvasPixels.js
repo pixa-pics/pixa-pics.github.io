@@ -2588,14 +2588,11 @@ class CanvasPixels extends React.PureComponent {
         const { _s_pxls, pxl_width, pxl_height, _base64_original_images, _original_image_index, _pxl_indexes_of_selection, _shape_index_a, _select_shape_index_a, _layer_index } = this.super_state.get_state();
         let {_imported_image_pxls, _imported_image_width, _imported_image_height} = this.super_state.get_state();
 
-        let pxls =  new Uint16Array(_s_pxls[_layer_index].buffer);
-
+        let pxls =  Uint16Array.from(_s_pxls[_layer_index]);
         let new_pxl_indexes_of_selection = new Set();
-
         let new_shape_index_a = _shape_index_a;
         let new_select_shape_index_a = _select_shape_index_a;
-
-        let ns_pxls = [..._s_pxls];
+        let ns_pxls = Array.from(_s_pxls);
         let x_scale = 1;
         let y_scale = 1;
 
@@ -2605,7 +2602,7 @@ class CanvasPixels extends React.PureComponent {
 
                 let n_imported_image_pxls = new Uint16Array(_imported_image_pxls.length);
 
-                _imported_image_pxls.forEach((pxl, index) => {
+                _imported_image_pxls.forEach(function(pxl, index) {
 
                     let x = index % _imported_image_width;
                     let y = (index - x) / _imported_image_width;
@@ -2618,7 +2615,7 @@ class CanvasPixels extends React.PureComponent {
                 _imported_image_pxls = n_imported_image_pxls;
             }else {
 
-                _s_pxls[_layer_index].forEach((pxl, index) => {
+                ns_pxls[_layer_index].forEach(function(pxl, index) {
 
                     let x = index % pxl_width;
                     let y = (index - x) / pxl_width;
@@ -2656,7 +2653,7 @@ class CanvasPixels extends React.PureComponent {
 
                 let n_imported_image_pxls = new Uint16Array(_imported_image_pxls.length);
 
-                _imported_image_pxls.forEach((pxl, index) => {
+                _imported_image_pxls.forEach(function(pxl, index) {
 
                     let x = index % _imported_image_width;
                     let y = (index - x) / _imported_image_width;
@@ -2669,7 +2666,7 @@ class CanvasPixels extends React.PureComponent {
                 _imported_image_pxls = n_imported_image_pxls;
             }else {
 
-                _s_pxls[_layer_index].forEach((pxl, index) => {
+                ns_pxls[_layer_index].forEach(function(pxl, index) {
 
                     let x = index % pxl_width;
                     let y = (index - x) / pxl_width;
@@ -2909,7 +2906,7 @@ class CanvasPixels extends React.PureComponent {
             });
 
             let brand_new_pxl_colors = [];
-            new_pxls = new_pxls.map((pxl, index) => {
+            new_pxls = new_pxls.map(function(pxl, index) {
 
                 const pxl_color = new_pxl_colors[pxl];
                 const old_pxl_color = pxl_colors[pxls[index]];
@@ -3188,9 +3185,9 @@ class CanvasPixels extends React.PureComponent {
         if(name.toLowerCase() === "greyscale") {
 
             let average = 0;
-            for(let i4 = 0; i4 < rgba_colors_length; i4 = i4 + 4 | 0) {
+            for(let i4 = 0; (i4|0) < (rgba_colors_length|0); i4 = (i4 + 4 | 0) >>> 0) {
 
-                rgba.set(old_pxl_colors_rgba.subarray(i4, i4+4), 0);
+                rgba.set(old_pxl_colors_rgba.subarray(i4|0, i4+4|0), 0);
                 average = (rgba.subarray(0, 3).reduce(function(base, n){return base + n | 0}, 0) / 3) | 0;
                 rgba.fill(average, 0, 3);
                 pxl_colors_rgba.set(rgba, i4)
@@ -3199,29 +3196,27 @@ class CanvasPixels extends React.PureComponent {
         }else if(name.toLowerCase() === "sepia"){
 
             let rgba = new Uint8ClampedArray(4);
-            for(let i4 = 0; i4 < rgba_colors_length; i4 = i4 + 4 | 0) {
+            for(let i4 = 0; (i4|0) < (rgba_colors_length|0); i4 = (i4 + 4 | 0) >>> 0) {
 
-                rgba.set(old_pxl_colors_rgba.subarray(i4, i4+4), 0);
-                pxl_colors_rgba.set(Uint8ClampedArray.of(
-                    (rgba[0] * .393) + (rgba[1]  *.769) + (rgba[2] * .189),
-                    (rgba[0]  * .349) + (rgba[1] *.686) + (rgba[2] * .168),
-                    (rgba[0]  * .272) + (rgba[1] *.534) + (rgba[2] * .131),
-                    rgba[3]), i4);
+                rgba.set(old_pxl_colors_rgba.subarray(i4|0, i4+4|0), 0);
+                pxl_colors_rgba[i4|0] = (rgba[0] * .393) + (rgba[1]  *.769) + (rgba[2] * .189) & 0xFF;
+                pxl_colors_rgba[i4+1|0] = (rgba[0]  * .349) + (rgba[1] *.686) + (rgba[2] * .168) & 0xFF;
+                pxl_colors_rgba[i4+2|0] = (rgba[0]  * .272) + (rgba[1] *.534) + (rgba[2] * .131) & 0xFF;
+                pxl_colors_rgba[i4+3|0] = rgba[3] & 0xFF;
             }
         }else {
 
             const filters = this._get_filters();
             const filter = filters[name] || filters["1997"];
 
-            for(let i4 = 0; i4 < rgba_colors_length; i4 = i4 + 4 | 0) {
+            for(let i4 = 0; (i4|0) < (rgba_colors_length|0); i4 = (i4 + 4 | 0) >>> 0) {
 
-                rgba.set(old_pxl_colors_rgba.subarray(i4, i4+4), 0);
-                pxl_colors_rgba.set(Uint8ClampedArray.of(
-                    filter["a"][filter["r"][rgba[0]]],
-                    filter["a"][filter["g"][rgba[1]]],
-                    filter["a"][filter["b"][rgba[2]]],
-                    rgba[3]
-                ), i4);
+                rgba.set(old_pxl_colors_rgba.subarray(i4|0, i4+4|0), 0);
+
+                pxl_colors_rgba[i4|0] = filter["a"][filter["r"][rgba[0]]] & 0xFF;
+                pxl_colors_rgba[i4+1|0] = filter["a"][filter["g"][rgba[1]]] & 0xFF;
+                pxl_colors_rgba[i4+2|0] = filter["a"][filter["b"][rgba[2]]] & 0xFF;
+                pxl_colors_rgba[i4+3|0] = rgba[3] & 0xFF;
             }
         }
 
@@ -3259,8 +3254,7 @@ class CanvasPixels extends React.PureComponent {
 
     _to_rotation = (right = true) => {
 
-        const { pxl_width, pxl_height, _s_pxls, _pxl_indexes_of_selection, _select_shape_index_a, _shape_index_a, _base64_original_images, _original_image_index, _layer_index } = this.super_state.get_state();
-        const {_imported_image_pxls, _imported_image_width, _imported_image_height} = this.super_state.get_state();
+        const {_imported_image_pxls, _imported_image_width, _imported_image_height, pxl_width, pxl_height, _s_pxls, _pxl_indexes_of_selection, _select_shape_index_a, _shape_index_a, _base64_original_images, _original_image_index, _layer_index } = this.super_state.get_state();
 
         const new_imported_image_width = _imported_image_height;
         const new_imported_image_height = _imported_image_width;
@@ -3268,7 +3262,7 @@ class CanvasPixels extends React.PureComponent {
 
         const new_pxl_width = pxl_height;
         const new_pxl_height = pxl_width;
-        let ns_pxls = this.super_state.get_state()._s_pxls;
+        let ns_pxls = Array.from(_s_pxls);
 
         let new_pxl_indexes_of_selection = new Set();
         let new_select_shape_index_a = _select_shape_index_a;
@@ -3276,7 +3270,7 @@ class CanvasPixels extends React.PureComponent {
 
         if(_imported_image_pxls.length) {
 
-            _imported_image_pxls.forEach((pxl, index) => {
+            _imported_image_pxls.forEach(function(pxl, index) {
 
                 const x = index % _imported_image_width;
                 const y = (index - x) / _imported_image_width;
@@ -3295,7 +3289,7 @@ class CanvasPixels extends React.PureComponent {
 
                 let new_pxls = new Uint16Array(new_pxl_width * new_pxl_height);
 
-                _s_pxls[i].forEach((pxl, index) => {
+                ns_pxls[i].forEach(function(pxl, index) {
 
                     const x = index % pxl_width;
                     const y = (index - x) / pxl_width;
@@ -3378,7 +3372,7 @@ class CanvasPixels extends React.PureComponent {
 
                     this._request_force_update(false, false).then(() => {
 
-                        this.super_canvas.set_dimensions(pxl_width, pxl_height).then(() =>  {
+                        this.super_canvas.set_dimensions(new_pxl_width, new_pxl_height).then(() =>  {
                             this.super_master_meta.update_canvas(true);
                         });
                     });
@@ -3407,7 +3401,7 @@ class CanvasPixels extends React.PureComponent {
 
                 this._request_force_update(false, false).then(() => {
 
-                    this.super_canvas.set_dimensions(pxl_width, pxl_height).then(() => {
+                    this.super_canvas.set_dimensions(new_pxl_width, new_pxl_height).then(() =>  {
                         this.super_master_meta.update_canvas(true);
                     });
                 });

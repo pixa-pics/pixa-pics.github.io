@@ -86,16 +86,16 @@ const SuperCanvas = {
         "use strict";
         const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
         const bpro = AsyncFunction(
-            `var bpro = function(s_width, pr_width, pr_height, pr_top_left_x, pr_top_left_y, fp_buffer){
+            `var bpro = async function(s_width, pr_width, pr_height, pr_top_left_x, pr_top_left_y, fp_buffer){
                 "use strict";
-                var fp_square = new Uint8ClampedArray(pr_width * pr_height * 4);
-               
-                for(var i = 0; i < pr_height ; i = (i + 1 | 0) >>> 0) {
-                    var current_offset_start_index = (s_width * (i + pr_top_left_y) + pr_top_left_x | 0) >>> 0;
-                    fp_square.set(new Uint8ClampedArray(fp_buffer.slice(current_offset_start_index*4, ((current_offset_start_index + pr_width)*4|0) >>> 0)), (4*i*pr_width|0) >>> 0);
+                var fp_square = new Uint8ClampedArray(pr_width * pr_height * 4 | 0);
+                var current_offset_start_index = 0;
+                for(var i = 0; (i|0) < (pr_height|0) ; i = i + 1 | 0) {
+                    current_offset_start_index = s_width * (i + pr_top_left_y) + pr_top_left_x | 0;
+                    fp_square.set(new Uint8ClampedArray(fp_buffer.slice(current_offset_start_index*4|0, (current_offset_start_index + pr_width)*4|0)), 4*i*pr_width|0);
                 }
                 
-                return createImageBitmap(new ImageData(fp_square, pr_width, pr_height));
+                return createImageBitmap(new ImageData(fp_square, pr_width|0, pr_height|0));
                  
             }; return bpro;`)();
 
@@ -216,13 +216,13 @@ const SuperCanvas = {
 
                         if(_state.b.old_bmp.width === 0) {
                             let new_bmp_t = Date.now()|0;
-                            let new_bmp_x = (_state.pr.top_left.x | 0) >>> 0;
-                            let new_bmp_y = (_state.pr.top_left.y | 0) >>> 0;
-                            let s_width = (_state.s.width | 0) >>> 0;
-                            let pr_width = (_state.pr.width | 0) >>> 0;
-                            let pr_height = (_state.pr.height | 0) >>> 0;
-                            let pr_top_left_x = (_state.pr.top_left.x | 0) >>> 0;
-                            let pr_top_left_y = (_state.pr.top_left.y | 0) >>> 0;
+                            let new_bmp_x = _state.pr.top_left.x | 0;
+                            let new_bmp_y = _state.pr.top_left.y | 0;
+                            let s_width = _state.s.width | 0;
+                            let pr_width = _state.pr.width | 0;
+                            let pr_height = _state.pr.height | 0;
+                            let pr_top_left_x = _state.pr.top_left.x | 0;
+                            let pr_top_left_y = _state.pr.top_left.y | 0;
 
                             pool.exec(bpro, [s_width, pr_width, pr_height, pr_top_left_x, pr_top_left_y, _state.fp.buffer]).catch(function () {
 
@@ -234,12 +234,12 @@ const SuperCanvas = {
                                     let b2 = {};
                                     b2.old_bmp = _state.b.bmp;
                                     b2.bmp = bitmap;
-                                    b2.bmp_t = (new_bmp_t | 0) >>> 0;
-                                    b2.bmp_x = (new_bmp_x | 0) >>> 0;
-                                    b2.bmp_y = (new_bmp_y | 0) >>> 0;
+                                    b2.bmp_t = new_bmp_t | 0;
+                                    b2.bmp_x = new_bmp_x | 0;
+                                    b2.bmp_y = new_bmp_y | 0;
 
-                                    _state.pr.top_left.x = (_state.s.width | 0) >>> 0;
-                                    _state.pr.top_left.y = (_state.s.height | 0) >>> 0;
+                                    _state.pr.top_left.x = _state.s.width | 0;
+                                    _state.pr.top_left.y = _state.s.height | 0;
                                     _state.pr.bottom_right.x = 0;
                                     _state.pr.bottom_right.y = 0;
 
@@ -292,29 +292,27 @@ const SuperCanvas = {
 
                         let x, y;
                         let pr = _state.pr;
-                        let pr_top_left_x = (pr.top_left.x | 0)>>>0;
-                        let pr_top_left_y = (pr.top_left.y | 0)>>>0;
-                        let pr_bottom_right_x = (pr.bottom_right.x | 0)>>>0;
-                        let pr_bottom_right_y = (pr.bottom_right.y | 0)>>>0;
+                        let pr_top_left_x = pr.top_left.x | 0;
+                        let pr_top_left_y = pr.top_left.y | 0;
+                        let pr_bottom_right_x = pr.bottom_right.x | 0;
+                        let pr_bottom_right_y = pr.bottom_right.y | 0;
                         _state.ic2.forEach(function (value, index) {
 
-                            x = (index % width | 0) >>> 0;
-                            y = ((index - x) / width | 0) >>> 0;
+                            x = index % width | 0;
+                            y = (index - x) / width | 0;
 
-                            if(pr_top_left_x > x-4) {pr_top_left_x = (Math.max(0, (x-4|0)>>>0)|0)>>>0 }
-                            if(pr_top_left_y > y-4) { pr_top_left_y = (Math.max(0, (y-4|0)>>>0)|0)>>>0 }
-                            if(pr_bottom_right_x < x+4) { pr_bottom_right_x = (Math.min((width|0)>>>0, (x+4|0)>>>0)|0)>>>0 }
-                            if(pr_bottom_right_y < y+4) { pr_bottom_right_y = (Math.min((height|0)>>>0, (y+4|0)>>>0)|0)>>>0 }
-                            _state.fp.setUint32((index*4|0) >>> 0, (value|0) >>> 0, false);
+                            if((pr_top_left_x|0) > (x-24|0)) {pr_top_left_x = Math.max(0, x-24|0)|0 }else if((pr_bottom_right_x|0) < (x+24|0)) { pr_bottom_right_x = Math.min(width|0, x+24|0)|0 }
+                            if((pr_top_left_y|0) > (y-24|0)) { pr_top_left_y = Math.max(0, y-24|0)|0 }else if((pr_bottom_right_y|0) < (y+24|0)) { pr_bottom_right_y = Math.min(height|0, y+24|0)|0 }
+                            _state.fp.setUint32(index*4|0, value & 0xFFFFFFFF, false);
                         });
 
-                        pr.width = (1 + pr_bottom_right_x - pr_top_left_x | 0)>>>0;
-                        pr.height = (1 + pr_bottom_right_y - pr_top_left_y | 0)>>>0;
+                        pr.width = 1 + pr_bottom_right_x - pr_top_left_x | 0;
+                        pr.height = 1 + pr_bottom_right_y - pr_top_left_y | 0;
 
-                        pr.top_left.x = (pr_top_left_x | 0) >>>0;
-                        pr.top_left.y = (pr_top_left_y | 0) >>>0;
-                        pr.bottom_right.x = (pr_bottom_right_x | 0) >>>0;
-                        pr.bottom_right.y = (pr_bottom_right_y | 0) >>>0;
+                        pr.top_left.x = pr_top_left_x | 0;
+                        pr.top_left.y = pr_top_left_y | 0;
+                        pr.bottom_right.x = pr_bottom_right_x | 0;
+                        pr.bottom_right.y = pr_bottom_right_y | 0;
                         _state.pr = pr;
 
                         _state.ic2.clear();
