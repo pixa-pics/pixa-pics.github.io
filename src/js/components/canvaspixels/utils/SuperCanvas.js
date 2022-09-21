@@ -298,12 +298,15 @@ const SuperCanvas = {
                         let pr_bottom_right_y = pr.bottom_right.y | 0;
                         _state.ic2.forEach(function (value, index) {
 
-                            x = index % width | 0;
-                            y = (index - x) / width | 0;
+                            value = value & 0xFFFFFFFF;
+                            index = index | 0;
 
-                            if((pr_top_left_x|0) > (x-24|0)) {pr_top_left_x = Math.max(0, x-24|0)|0 }else if((pr_bottom_right_x|0) < (x+24|0)) { pr_bottom_right_x = Math.min(width|0, x+24|0)|0 }
-                            if((pr_top_left_y|0) > (y-24|0)) { pr_top_left_y = Math.max(0, y-24|0)|0 }else if((pr_bottom_right_y|0) < (y+24|0)) { pr_bottom_right_y = Math.min(height|0, y+24|0)|0 }
-                            _state.fp.setUint32(index*4|0, value & 0xFFFFFFFF, false);
+                            x = (index % width) | 0;
+                            y = ((index - x) / width) | 0;
+
+                            if((pr_top_left_x|0) > ((x-24)|0)) {pr_top_left_x = Math.max(0, (x-24)|0)|0 }else if((pr_bottom_right_x|0) < ((x+24)|0)) { pr_bottom_right_x = Math.min(width, (x+24)|0)|0 }
+                            if((pr_top_left_y|0) > ((y-24)|0)) { pr_top_left_y = Math.max(0, (y-24)|0)|0 }else if((pr_bottom_right_y|0) < ((y+24)|0)) { pr_bottom_right_y = Math.min(height, (y+24)|0)|0 }
+                            _state.fp.setUint32((index*4)|0, value, false);
                         });
 
                         pr.width = 1 + pr_bottom_right_x - pr_top_left_x | 0;
