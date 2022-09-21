@@ -274,7 +274,7 @@ const SuperBlend = {
                     for(let layer_n = start_layer|0; (layer_n|0) < (all_layers_length|0); layer_n = layer_n+1|0) {
 
                         // Compute hover if hover color
-                        if((hover_data_in_layers[layer_n][i1]&0xFF) != 0) {
+                        if((hover_data_in_layers[layer_n][i1]&0xFF) > 0) {
 
                             // Get the color below current layer
                             rgba.set(base_buffer);
@@ -296,33 +296,33 @@ const SuperBlend = {
                         }
 
                         float_variables[5] = amount_data_in_layers[layer_n][i1] & 0xFF;
-                        added.set(rgba_colors_data_in_layers[layer_n].subarray(i4, (i4+4)|0), 0);
+                        added.set(rgba_colors_data_in_layers[layer_n].slice(i4, (i4+4)|0), 0);
 
-                        if(should_return_transparent && (added[3] & 0xFF) == 0 && (float_variables[5]& 0xFF) == 255) {
+                        if(should_return_transparent && (added[3] & 0xFF) <= 0 && (float_variables[5]& 0xFF) >= 255) {
 
                             base.fill( 0);
-                        }else if((added[3]&0xFF) == 255 && (float_variables[5]& 0xFF) == 255) {
+                        }else if((added[3]&0xFF) >= 255 && (float_variables[5]&0xFF) >= 255) {
 
-                            base.set(added_buffer);
+                            base.set(added);
                         }else {
 
                             float_variables[0] = base[3] & 0xFF;
-                            float_variables[1] = (added[3] * float_variables[5]/255) & 0xFF;
+                            float_variables[1] = ((added[3] * float_variables[5]/255)|0) & 0xFF;
 
-                            if ((float_variables[0]&0xFF) != 0 && (float_variables[1]&0xFF) != 0) {
+                            if ((float_variables[0]&0xFF) > 0 && (float_variables[1]&0xFF) > 0) {
 
-                                if(alpha_addition) { float_variables[2] = ((float_variables[0] + float_variables[1]) / 2 | 0) & 0xFF; } else { float_variables[2] = (255 - (1 - float_variables[1]/255) * (1 - float_variables[0]/255) * 255) & 0xFF;}
-                                float_variables[3] = (float_variables[1] / float_variables[2] * 255) & 0xFF;
-                                float_variables[4] =  (float_variables[0] * (1 - float_variables[1]/255) / (float_variables[2]/255)) & 0xFF;
+                                if(alpha_addition) { float_variables[2] = ((float_variables[0] + float_variables[1]) / 2 | 0) & 0xFF; } else { float_variables[2] = ((255 - (1 - float_variables[1]/255) * (1 - float_variables[0]/255) * 255)|0) & 0xFF;}
+                                float_variables[3] = ((float_variables[1] / float_variables[2] * 255)|0) & 0xFF;
+                                float_variables[4] =  (float_variables[0] * (1 - float_variables[1]/255) / (float_variables[2]/255)|0) & 0xFF;
 
-                                base_view.setUint8(0, (added[0] * float_variables[3]/255 + base[0] * float_variables[4]/255) & 0xFF);
-                                base_view.setUint8(1, (added[1] * float_variables[3]/255 + base[1] * float_variables[4]/255) & 0xFF);
-                                base_view.setUint8(2, (added[2] * float_variables[3]/255 + base[2] * float_variables[4]/255) & 0xFF);
+                                base_view.setUint8(0, ((added[0] * float_variables[3]/255 + base[0] * float_variables[4]/255)|0) & 0xFF);
+                                base_view.setUint8(1, ((added[1] * float_variables[3]/255 + base[1] * float_variables[4]/255)|0) & 0xFF);
+                                base_view.setUint8(2, ((added[2] * float_variables[3]/255 + base[2] * float_variables[4]/255)|0) & 0xFF);
                                 base_view.setUint8(3,  float_variables[2] & 0xFF);
 
-                            }else if((float_variables[1]&0xFF) != 0) {
+                            }else if((float_variables[1]&0xFF) > 0) {
 
-                                base.set(added_buffer);
+                                base.set(added);
                             }else {
 
                                 base[3] = base[3] & 0xFF;

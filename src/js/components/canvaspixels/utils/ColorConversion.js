@@ -2,7 +2,7 @@ const ColorConversion = {
     new: function(){
         return {
             to_int_array_from_uint32_array_for_subcolor: function(uint32_array, subcolor) {
-
+                "use strict";
                 let ci;
                 switch (subcolor) {
                     case "r":
@@ -26,37 +26,48 @@ const ColorConversion = {
                 return uint8array_subcolor;
             },
             format_hex_color: function(hex) { // Supports #fff (short rgb), #fff0 (short rgba), #e2e2e2 (full rgb) and #e2e2e2ff (full rgba)
+                "use strict";
 
                 if(typeof hex === "undefined"){
 
                     return "#00000000";
                 } else {
 
+                    hex = hex.replace("#", "");
                     let a, b, c, d;
                     let formatted = "";
 
                     switch(hex.length) {
 
-                        case 9:
-                            formatted = hex;
+                        case 8:
+                            formatted = "#".concat(hex);
                             break;
-                        case 7:
-                            formatted = hex.concat("ff");
-                            break;
-                        case 5:
-                            a = hex.charAt(1), b = hex.charAt(2), c = hex.charAt(3), d = hex.charAt(4);
-                            formatted =  "#".concat(a, a, b, b, c, c, d, d);
+                        case 6:
+                            formatted = "#".concat(hex.concat("ff"));
                             break;
                         case 4:
-                            a = hex.charAt(1), b = hex.charAt(2), c = hex.charAt(3);
+                            a = hex.charAt(0), b = hex.charAt(1), c = hex.charAt(2), d = hex.charAt(3);
+                            formatted =  "#".concat(a, a, b, b, c, c, d, d);
+                            break;
+                        case 3:
+                            a = hex.charAt(0), b = hex.charAt(1), c = hex.charAt(2);
                             formatted = "#".concat(a, a, b, b, c, c, "ff");
+                            break;
+                        default:
+                            formatted = "#00000000";
                             break;
                     }
 
                     return formatted;
                 }
             },
-            blend_colors: function(color_a, color_b, amount = 1, should_return_transparent = false, alpha_addition = false) {
+            blend_colors: function(color_a, color_b, amount , should_return_transparent , alpha_addition ) {
+                "use strict";
+                color_a = color_a | 0;
+                color_b = color_b | 0;
+                amount = amount || 1;
+                should_return_transparent = should_return_transparent || false;
+                alpha_addition = alpha_addition || false;
 
                 if(amount === 0 && should_return_transparent) {return 0;}
 
@@ -112,8 +123,8 @@ const ColorConversion = {
 
                 return this.to_uint32_from_rgba(mix);
             },
-            blend_rgba_colors: function(all_added_in_layers, amount, should_return_transparent = 0, alpha_addition = 0) {
-
+            blend_rgba_colors: function(all_added_in_layers, amount, should_return_transparent, alpha_addition ) {
+                "use strict";
                 should_return_transparent = should_return_transparent | 0 ;
                 alpha_addition = alpha_addition | 0;
                 let used_colors_length = all_added_in_layers[0].length / 4 | 0;
@@ -182,26 +193,33 @@ const ColorConversion = {
                 return all_base;
             },
             to_hex_from_uint32: function(uint32){
-                uint32 = (uint32 | 0) & 0xFFFFFFFF;
+                "use strict";
+                uint32 = uint32 | 0;
                 return "#".concat("00000000".concat(uint32.toString(16)).slice(-8));
             },
             to_hex_from_rgba: function(rgba) {
+                "use strict";
                 return "#".concat("00000000".concat(new Uint32Array(rgba.reverse().buffer)[0].toString(16)).slice(-8));
             },
             to_rgba_from_hex: function(hex) {
+                "use strict";
                 return new Uint8ClampedArray(Uint32Array.of(parseInt(hex.slice(1), 16)).buffer).reverse();
             },
             to_rgba_from_uint32: function(uint32) {
-                uint32 = (uint32 | 0) & 0xFFFFFFFF;
+                "use strict";
+                uint32 = uint32 | 0;
                 return new Uint8ClampedArray(Uint32Array.of(uint32).buffer).reverse();
             },
             to_uint32_from_rgba: function(rgba) {
+                "use strict";
                 return new Uint32Array(rgba.reverse().buffer)[0];
             },
             to_uint32_from_hex: function(hex) {
+                "use strict";
                 return parseInt(hex.slice(1), 16);
             },
             to_hsla_from_rgba: function(rgba) {
+                "use strict";
                 let [r, g, b, a] = rgba;
                 r /= 255, g /= 255, b /= 255, a /= 255;
                 const max = Math.max(r, g, b), min = Math.min(r, g, b);
@@ -221,7 +239,7 @@ const ColorConversion = {
                 return Array.of((h * 360)|0, (s * 100)|0, (l * 100)|0, (a * 100)|0);
             },
             to_rgba_from_hsla: function(hsla) {
-
+                "use strict";
                 let [h, s, l, a] = hsla;
 
                 h /= 360;
@@ -250,11 +268,13 @@ const ColorConversion = {
                 return Uint8ClampedArray.of(parseInt(r * 255), parseInt(g * 255), parseInt(b * 255), parseInt(a * 255));
             },
             invert_uint32: function(uint32) {
+                "use strict";
+                uint32 = (uint32 | 0) & 0xFFFFFFFF;
                 const [r, g, b, a] = this.to_rgba_from_uint32(uint32);
-                return this.to_uint32_from_rgba(Uint8ClampedArray.of((255 - r) | 0, (255 - g) | 0, (255 - b) | 0, a|0));
+                return this.to_uint32_from_rgba(Uint8ClampedArray.of((255 - r) | 0, (255 - g) | 0, (255 - b) | 0, a | 0));
             },
             match_color: function(color_a, color_b, threshold) {
-
+                "use strict";
                 color_a = (color_a | 0) & 0xFFFFFFFF;
                 color_b = (color_b | 0) & 0xFFFFFFFF;
                 threshold = typeof threshold === "undefined" ? null: threshold;
@@ -287,7 +307,7 @@ const ColorConversion = {
                 }
             },
             clean_duplicate_colors(_pxls, _pxl_colors) {
-
+                "use strict";
                 // Work with Hashtables and Typed Array so it is fast
                 let new_pxl_colors_map = new Map();
                 const _pxls_length = _pxls.length | 0;

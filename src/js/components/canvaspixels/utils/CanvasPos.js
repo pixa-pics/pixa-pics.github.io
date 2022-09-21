@@ -1,7 +1,7 @@
 const CanvasPos = {
 
     _get_init_state(pxl_width, pxl_height, default_scale, canvas_wrapper_padding, canvas_wrapper_border_width, perspective) {
-
+        "use strict";
         return Object.assign({}, {
             canvas_event_target: "CANVAS_WRAPPER_OVERFLOW",
             canvas_container: {
@@ -33,7 +33,7 @@ const CanvasPos = {
         });
     },
     _get_screen_zoom_ratio(s) {
-
+        "use strict";
         if(s.canvas_container.width > s.canvas_container.height) {
 
             return (s.canvas_container.height - s.canvas_wrapper.padding / s.device_pixel_ratio * 2) / s.sizes.height;
@@ -43,7 +43,7 @@ const CanvasPos = {
         }
     },
     _get_pos(s, szr){
-
+        "use strict";
         const canvas_wrapper_border_box_extra_size = Math.round(s.canvas_wrapper.padding / s.device_pixel_ratio * s.scale.current + s.canvas_wrapper.border_width) * 2  | 0;
         const canvas_wrapper_width = Math.round(s.sizes.width * szr * s.scale.current) + canvas_wrapper_border_box_extra_size | 0;
         const canvas_wrapper_height = Math.round(s.sizes.height * szr * s.scale.current) + canvas_wrapper_border_box_extra_size | 0;
@@ -95,7 +95,7 @@ const CanvasPos = {
         });
     },
     _get_init_pointer_state() {
-
+        "use strict";
         return Object.assign({}, {
             event_button: null,
             mouse_down: false,
@@ -109,7 +109,7 @@ const CanvasPos = {
         });
     },
     _copy_event(event) {
-
+        "use strict";
         return Object.assign({}, {
             pointerId: event.pointerId | 0,
             clientX: event.clientX | 0,
@@ -123,7 +123,7 @@ const CanvasPos = {
 
         const color_conversion = {
             format_hex_color(hex) { // Supports #fff (short rgb), #fff0 (short rgba), #e2e2e2 (full rgb) and #e2e2e2ff (full rgba)
-
+                "use strict";
                 const l = hex.length | 0;
                 if(typeof hex === "undefined"){
 
@@ -155,15 +155,17 @@ const CanvasPos = {
                 }
             },
             to_hex_from_rgba(rgba) {
+                "use strict";
                 return "#".concat("00000000".concat(new Uint32Array(rgba.reverse().buffer)[0].toString(16)).slice(-8));
             },
             to_rgba_from_hex(hex) {
+                "use strict";
                 return new Uint8ClampedArray(Uint32Array.of(parseInt(hex.slice(1), 16)).buffer).reverse();
             }
         };
 
-        function create_shadow(...px){
-
+        function create_shadow(px){
+            "use strict";
             const RGBA = color_conversion.to_rgba_from_hex(color_conversion.format_hex_color(hex));
             let hex_umbra = color_conversion.to_hex_from_rgba(Uint8ClampedArray.of(RGBA[0], RGBA[1], RGBA[2], parseInt(0.56 * 255)));
             let hex_penumbra = color_conversion.to_hex_from_rgba(Uint8ClampedArray.of(RGBA[0], RGBA[1], RGBA[2], parseInt(0.36 * 255)));
@@ -177,36 +179,36 @@ const CanvasPos = {
 
         return Array.of(
             '',
-            create_shadow(0, 2, 1, -1, 0, 1, 1, 0, 0, 1, 3, 0),
-            create_shadow(0, 3, 1, -2, 0, 2, 2, 0, 0, 1, 5, 0),
-            create_shadow(0, 3, 3, -2, 0, 3, 4, 0, 0, 1, 8, 0),
-            create_shadow(0, 2, 4, -1, 0, 4, 5, 0, 0, 1, 10, 0),
-            create_shadow(0, 3, 5, -1, 0, 5, 8, 0, 0, 1, 14, 0),
-            create_shadow(0, 3, 5, -1, 0, 6, 10, 0, 0, 1, 18, 0),
-            create_shadow(0, 4, 5, -2, 0, 7, 10, 1, 0, 2, 16, 1),
-            create_shadow(0, 5, 5, -3, 0, 8, 10, 1, 0, 3, 14, 2),
-            create_shadow(0, 5, 6, -3, 0, 9, 12, 1, 0, 3, 16, 2),
-            create_shadow(0, 6, 6, -3, 0, 10, 14, 1, 0, 4, 18, 3),
-            create_shadow(0, 6, 7, -4, 0, 11, 15, 1, 0, 4, 20, 3),
-            create_shadow(0, 7, 8, -4, 0, 12, 17, 2, 0, 5, 22, 4),
-            create_shadow(0, 7, 8, -4, 0, 13, 19, 2, 0, 5, 24, 4),
-            create_shadow(0, 7, 9, -4, 0, 14, 21, 2, 0, 5, 26, 4),
-            create_shadow(0, 8, 9, -5, 0, 15, 22, 2, 0, 6, 28, 5),
-            create_shadow(0, 8, 10, -5, 0, 16, 24, 2, 0, 6, 30, 5),
-            create_shadow(0, 8, 11, -5, 0, 17, 26, 2, 0, 6, 32, 5),
-            create_shadow(0, 9, 11, -5, 0, 18, 28, 2, 0, 7, 34, 6),
-            create_shadow(0, 9, 12, -6, 0, 19, 29, 2, 0, 7, 36, 6),
-            create_shadow(0, 10, 13, -6, 0, 20, 31, 3, 0, 8, 38, 7),
-            create_shadow(0, 10, 13, -6, 0, 21, 33, 3, 0, 8, 40, 7),
-            create_shadow(0, 10, 14, -6, 0, 22, 35, 3, 0, 8, 42, 7),
-            create_shadow(0, 11, 14, -7, 0, 23, 36, 3, 0, 9, 44, 8),
-            create_shadow(0, 11, 15, -7, 0, 24, 38, 3, 0, 9, 46, 8),
+            create_shadow([0, 2, 1, -1, 0, 1, 1, 0, 0, 1, 3, 0]),
+            create_shadow([0, 3, 1, -2, 0, 2, 2, 0, 0, 1, 5, 0]),
+            create_shadow([0, 3, 3, -2, 0, 3, 4, 0, 0, 1, 8, 0]),
+            create_shadow([0, 2, 4, -1, 0, 4, 5, 0, 0, 1, 10, 0]),
+            create_shadow([0, 3, 5, -1, 0, 5, 8, 0, 0, 1, 14, 0]),
+            create_shadow([0, 3, 5, -1, 0, 6, 10, 0, 0, 1, 18, 0]),
+            create_shadow([0, 4, 5, -2, 0, 7, 10, 1, 0, 2, 16, 1]),
+            create_shadow([0, 5, 5, -3, 0, 8, 10, 1, 0, 3, 14, 2]),
+            create_shadow([0, 5, 6, -3, 0, 9, 12, 1, 0, 3, 16, 2]),
+            create_shadow([0, 6, 6, -3, 0, 10, 14, 1, 0, 4, 18, 3]),
+            create_shadow([0, 6, 7, -4, 0, 11, 15, 1, 0, 4, 20, 3]),
+            create_shadow([0, 7, 8, -4, 0, 12, 17, 2, 0, 5, 22, 4]),
+            create_shadow([0, 7, 8, -4, 0, 13, 19, 2, 0, 5, 24, 4]),
+            create_shadow([0, 7, 9, -4, 0, 14, 21, 2, 0, 5, 26, 4]),
+            create_shadow([0, 8, 9, -5, 0, 15, 22, 2, 0, 6, 28, 5]),
+            create_shadow([0, 8, 10, -5, 0, 16, 24, 2, 0, 6, 30, 5]),
+            create_shadow([0, 8, 11, -5, 0, 17, 26, 2, 0, 6, 32, 5]),
+            create_shadow([0, 9, 11, -5, 0, 18, 28, 2, 0, 7, 34, 6]),
+            create_shadow([0, 9, 12, -6, 0, 19, 29, 2, 0, 7, 36, 6]),
+            create_shadow([0, 10, 13, -6, 0, 20, 31, 3, 0, 8, 38, 7]),
+            create_shadow([0, 10, 13, -6, 0, 21, 33, 3, 0, 8, 40, 7]),
+            create_shadow([0, 10, 14, -6, 0, 22, 35, 3, 0, 8, 42, 7]),
+            create_shadow([0, 11, 14, -7, 0, 23, 36, 3, 0, 9, 44, 8]),
+            create_shadow([0, 11, 15, -7, 0, 24, 38, 3, 0, 9, 46, 8]),
         );
     },
 
 
     from(pxl_width, pxl_height, default_scale, canvas_wrapper_padding, canvas_wrapper_border_width, perspective){
-
+        "use strict";
         const gszr = this._get_screen_zoom_ratio;
         const cis = this._get_init_state;
         const gips = this._get_init_pointer_state;
@@ -235,7 +237,7 @@ const CanvasPos = {
         return {
             // Methods
             init_speed_interval: function() {
-
+                "use strict";
                 if(msi !== null){
 
                     setTimeout(this.set_move_speed_average_now, 5)
@@ -246,43 +248,47 @@ const CanvasPos = {
                 }
             },
             set_canvas_wrapper: function(padding, border_width){
+                "use strict";
                 s.canvas_wrapper = {padding, border_width};
                 szr = gszr(s);
                 p = gp(s, szr);
                 this.set_current_scale_default();
             },
             set_canvas_container: function(top, left, height, width){
+                "use strict";
                 s.canvas_container = {top, left, height, width};
                 szr = gszr(s);
                 p = gp(s, szr);
                 this.set_current_scale_default();
             },
             set_sizes: function(width, height) {
+                "use strict";
                 s.sizes = {width, height};
                 s.scale.moves_speed_average_now = 16;
                 szr = gszr(s);
                 p = gp(s, szr);
             },
             set_perspective: function(perspective) {
-
+                "use strict";
                 s.perspective = perspective;
             },
             get_pointer_state: function() {
-
+                "use strict";
                 return ps; // Warning
             },
             get_perspective_state: function() {
-
+                "use strict";
                 return Object.assign({
                     transform_rotate: "",
                     background_image: "",
                 }, pe);
             },
             get_screen_zoom_ratio: function() {
-
+                "use strict";
                 return parseFloat(szr);
             },
             compute_perspective_from_pointer_event: function(pageX, pageY) {
+                "use strict";
                 pageX = pageX | 0;
                 pageY = pageY | 0;
 
@@ -334,11 +340,13 @@ const CanvasPos = {
                 };
             },
             set_pointer_state: function(object) {
-
+                "use strict";
                 ps = Object.assign(ps, object);
             },
-            set_moves: function(new_scale_move_x, new_scale_move_y,  new_scale = null, callback_function = function(){}) {
-
+            set_moves: function(new_scale_move_x, new_scale_move_y,  new_scale, callback_function) {
+                "use strict";
+                new_scale = new_scale || null;
+                callback_function = callback_function || function(){};
                 let new_scale_move_speed_timestamp = Date.now();
 
                 const {scale, canvas_event_target} = s;
@@ -393,10 +401,12 @@ const CanvasPos = {
                 };
             },
             notify_moved: function(callback_function) {
+                "use strict";
                 notifiers.update(false, false, callback_function);
             },
-            notify_menu: function(event, timeout = 0) {
-
+            notify_menu: function(event, timeout ) {
+                "use strict";
+                timeout = timeout|0;
                 setTimeout(function(){
 
                     notifiers.menu(event);
@@ -504,7 +514,7 @@ const CanvasPos = {
                 }
             },
             handle_move: function(latest_pointers_client_x_center, latest_pointers_client_y_center, to_x, to_y){
-
+                "use strict";
                 const {canvas_container, canvas_wrapper} = this.get_pos();
                 const {move_x, move_y} = s.scale;
 
@@ -527,10 +537,11 @@ const CanvasPos = {
                 this.set_moves(new_scale_move_x_rigged, new_scale_move_y_rigged);
             },
             set_boolean_move_on_click: function(boolean) {
+                "use strict";
                 move_on_click = boolean;
             },
             handle_pointer_down: function(event) {
-
+                "use strict";
                 event.preventDefault();
                 event.stopImmediatePropagation();
                 event = ce(event);
@@ -579,7 +590,7 @@ const CanvasPos = {
                 }
             },
             handle_pointer_up: function(event){
-
+                "use strict";
                 event.preventDefault();
                 event.stopImmediatePropagation();
                 event = ce(event);
@@ -607,7 +618,7 @@ const CanvasPos = {
                 }
             },
             handle_pointer_move: function(event){
-
+                "use strict";
                 event.preventDefault();
                 event.stopImmediatePropagation();
                 event = ce(event);
@@ -693,7 +704,7 @@ const CanvasPos = {
                 }
             },
             _handle_canvas_move: function(diff_scale_move_x, diff_scale_move_y) {
-
+                "use strict";
                 const {canvas_container, canvas_wrapper} = this.get_pos();
                 const {move_x, move_y} = s.scale;
 
@@ -715,7 +726,7 @@ const CanvasPos = {
                 this.set_moves(new_scale_move_x_rigged, new_scale_move_y_rigged);
             },
             new: function(pxl_width, pxl_height, default_scale, canvas_wrapper_padding, canvas_wrapper_border_width, perspective) {
-
+                "use strict";
                 sh = gsh("#020529");
                 ps = gips();
                 s = cis(pxl_width, pxl_height, default_scale, canvas_wrapper_padding, canvas_wrapper_border_width, perspective);
@@ -729,7 +740,7 @@ const CanvasPos = {
                 };
             },
             destroy: function() {
-
+                "use strict";
                 sh = null;
                 move_on_click = null;
                 ps = null;
@@ -738,25 +749,21 @@ const CanvasPos = {
                 notifiers = null;
             },
             get_pos: function() {
-
+                "use strict";
                 return p;
             },
             get_state: function() {
-
+                "use strict";
                 return s;
             },
             get_style: function() {
-
+                "use strict";
                 const msan = s.scale.moves_speed_average_now;
                 const shadow_depth = msan < 0 ? Math.round(Math.abs(msan) / 2): msan;
                 return  {box_shadow: sh[shadow_depth]};
             },
-            get_pointer_state: function() {
-
-                return ps;
-            },
             get_canvas_pos_from_event: function(pageX, pageY) {
-
+                "use strict";
                 const {canvas} = this.get_pos();
                 const {width, height} = s.sizes;
 
@@ -778,6 +785,7 @@ const CanvasPos = {
                 return [ pos_x, pos_y ];
             },
             set_current_scale_default: function() {
+                "use strict";
                 s = Object.assign(s, {scale: Object.assign(s.scale, {
                     current: parseFloat(s.scale.default)
                 })});
@@ -786,13 +794,14 @@ const CanvasPos = {
                 this.set_canvas_moves_middle();
             },
             set_canvas_moves_middle: function() {
-
+                "use strict";
                 const {canvas_container, canvas_wrapper} = this.get_pos();
                 const for_middle_x = parseInt(parseInt(canvas_container.width - canvas_wrapper.width) / 2);
                 const for_middle_y = parseInt(parseInt(canvas_container.height - canvas_wrapper.height) / 2);
                 this.set_moves(for_middle_x, for_middle_y, null, this.notify_middle);
             },
             compute_canvas_event_target: function(pageX, pageY){
+                "use strict";
                 pageX = pageX | 0;
                 pageY = pageY | 0;
                 this.compute_perspective_from_pointer_event(pageX, pageY);
@@ -809,7 +818,7 @@ const CanvasPos = {
                 }
             },
             set_move_speed_average_now: function() {
-
+                "use strict";
                 if(!Boolean(s)){ return; }
 
                 const max_move_speed = Boolean(s.canvas_event_target !== "CANVAS_WRAPPER_OVERFLOW") ? 18: 24;

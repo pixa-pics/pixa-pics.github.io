@@ -81,7 +81,7 @@ const SmartRequestAnimationFrame = {
                 };
 
                 return new Promise(function(resolve, reject){
-
+                    "use strict";
                     if(requested_at_t <= s.lasts_raf_time) {
 
                         reject();

@@ -707,8 +707,9 @@ const SuperMasterMeta = {
 
                 }
             },
-            _notify_position_change (position, date = null) {
-
+            _notify_position_change (position, date) {
+                "use strict";
+                date = date || null;
                 const _notified_position_at = meta.super_state.get_state()._notified_position_at;
                 const now = Date.now();
 
@@ -733,7 +734,7 @@ const SuperMasterMeta = {
                 }
             },
             _handle_canvas_mouse_up(event) {
-
+                "use strict";
                 let { _paint_or_select_hover_pxl_indexes, tool, _imported_image_pxls, _pxl_indexes_of_selection, select_mode } = meta.super_state.get_state();
 
                 if(_imported_image_pxls.length > 0){
@@ -789,7 +790,7 @@ const SuperMasterMeta = {
                 }
             },
             _handle_canvas_mouse_down (event) {
-
+                "use strict";
                 const { pxl_current_color, pxl_current_color_uint32, hide_canvas_content, tool, pxl_width, pxl_height, pxl_current_opacity, bucket_threshold, select_mode } = meta.super_state.get_state();
                 const event_which = event.button + 1;
 
@@ -1093,8 +1094,9 @@ const SuperMasterMeta = {
                             }
                         }
 
-                        const color_pixel = (index, paint = true) => {
-
+                        const color_pixel = (index, paint) => {
+                            "use strict";
+                            paint = paint || true;
                             if((!colored_pxl_indexes.has(index) || paint) && index >= 0 && index < pxl_width * pxl_height) {
 
                                 if(tool === "HUE BUCKET") {
@@ -1318,7 +1320,7 @@ const SuperMasterMeta = {
                 }
             },
             _notify_is_something_selected() {
-
+                "use strict";
                 const _pxl_indexes_of_selection = meta.super_state.get_state()._pxl_indexes_of_selection;
 
                 if(Boolean(meta.super_state.get_state()._previous_pxl_indexes_of_selection.size) !== Boolean(_pxl_indexes_of_selection.size)) {
@@ -1333,7 +1335,7 @@ const SuperMasterMeta = {
                 }
             },
             get_pixel_color_from_pos(x, y) {
-
+                "use strict";
                 const { pxl_height, pxl_width, _s_pxls, _s_pxl_colors, _layers } = meta.super_state.get_state();
 
                 const pxl_index = y * pxl_width + x;

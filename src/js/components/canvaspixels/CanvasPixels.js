@@ -434,9 +434,9 @@ class CanvasPixels extends React.PureComponent {
             const top_layer_pxls =  new Uint16Array(_s_pxls[at_index].buffer);
             const bottom_layer_pxls =  new Uint16Array(_s_pxls[at_index - 1].buffer);
             const top_layer_pxl_colors = new Uint32Array(_s_pxl_colors[at_index].buffer);
-            const top_layer_opacity = parseFloat(_layers[at_index].opacity) * 255;
             const bottom_layer_pxl_colors = new Uint32Array(_s_pxl_colors[at_index - 1].buffer);
-            const bottom_layer_opacity = parseFloat(_layers[at_index-1].opacity) * 255;
+            const top_layer_opacity = ((_layers[at_index].opacity * 255) | 0) & 0xFF ;
+            const bottom_layer_opacity = ((_layers[at_index-1].opacity * 255) | 0) & 0xFF;
 
             const pxl_length = top_layer_pxls.length | 0;
 
@@ -447,23 +447,24 @@ class CanvasPixels extends React.PureComponent {
                 opacity: parseFloat(1),
             };
 
-            const super_blend = Object.create(SuperBlend).new(2, pxl_length);
+            const super_blend = Object.create(SuperBlend).new(3, pxl_length);
             for(let i = 0 ; i < pxl_length; i = (i+1|0)>>>0) {
 
                 super_blend.for(i);
-                super_blend.stack(0, bottom_layer_pxl_colors[bottom_layer_pxls[i]], bottom_layer_opacity, 0);
-                super_blend.stack(1, top_layer_pxl_colors[top_layer_pxls[i]], top_layer_opacity, 0);
+                super_blend.stack(0, 0, 1, 0);
+                super_blend.stack(1, bottom_layer_pxl_colors[bottom_layer_pxls[i]]|0, bottom_layer_opacity, 0);
+                super_blend.stack(2, top_layer_pxl_colors[top_layer_pxls[i]]|0, top_layer_opacity, 0);
             }
 
-            const ic = super_blend.blend(false, true);
+            const ic = super_blend.blend(false, false);
             const fp = new DataView(new ArrayBuffer(pxl_height * pxl_width * 4));
             ic.forEach(function (value, index) {
-
-                fp.setUint32((index*4|0) >>> 0, (value|0) >>> 0, true);
-
+                value = value | 0;
+                index = index | 0;
+                fp.setUint32(((index*4)|0) >>> 0, (value|0) & 0xFFFFFFFF);
             });
 
-            const image_data = new ImageData(new Uint8ClampedArray(new Uint32Array(fp.buffer).reverse().buffer).reverse(), pxl_width, pxl_height);
+            const image_data = new ImageData(new Uint8ClampedArray(fp.buffer), pxl_width, pxl_height);
             const {new_pxl_colors, new_pxls} = this._get_pixels_palette_and_list_from_image_data(image_data, true);
             super_blend.clear();
 
@@ -476,7 +477,7 @@ class CanvasPixels extends React.PureComponent {
                 _layers,
                 _s_pxls,
                 _s_pxl_colors,
-                _old_pxl_colors: new Uint32Array(0),
+                _old_pxl_colors: new Uint32Array(_s_pxl_colors[0].length),
                 _last_action_timestamp: Date.now(),
             }).then(() => {this._maybe_save_state(null, true)});
 
@@ -2530,7 +2531,7 @@ class CanvasPixels extends React.PureComponent {
         this._to_colorized(hue, strength, blend_with_a_saturation_of, blend_with_a_luminosity_of);
     }
 
-    to_vignette = (color = "#000000ff", intensity = 0) => {
+    to_vignette = (color, intensity) => {
 
         this._to_vignette(color, intensity);
     }
@@ -2908,21 +2909,21 @@ class CanvasPixels extends React.PureComponent {
 
     _pxl_to_vignette = (pxls, pxl_colors, color, intensity, callback_function) => {
 
+        const { pxl_current_color_uint32 } = this.super_state.get_state();
         const {pxl_width, pxl_height } = this.super_state.get_state();
-
         let [ctx, canvas] = this._get_new_ctx_from_canvas(pxl_width, pxl_height);
 
         // Create a radial gradient
         // The inner circle is at x=110, y=90, with radius=30
         // The outer circle is at x=100, y=100, with radius=70
         const max_width_height = Math.max(pxl_width, pxl_height);
-        const inverted_color = this.color_conversion.invert_uint32(color);
+        const inverted_color_uint32 = this.color_conversion.invert_uint32(pxl_current_color_uint32);
 
         let gradient = ctx.createRadialGradient(pxl_width / 2,pxl_height / 2,0, pxl_width / 2,pxl_height / 2, max_width_height / 2);
 
-        gradient.addColorStop(1, this.color_conversion.to_hex_from_uint32(color));
-        gradient.addColorStop(0.85, this.color_conversion.to_hex_from_uint32(this.color_conversion.blend_colors(color, inverted_color, 0.75)));
-        gradient.addColorStop(0, this.color_conversion.to_hex_from_uint32(inverted_color));
+        gradient.addColorStop(1, this.color_conversion.to_hex_from_uint32(pxl_current_color_uint32));
+        gradient.addColorStop(0.85, this.color_conversion.to_hex_from_uint32(this.color_conversion.blend_colors(pxl_current_color_uint32, inverted_color_uint32, 0.75)));
+        gradient.addColorStop(0, this.color_conversion.to_hex_from_uint32(inverted_color_uint32));
 
         // Fill with gradient
         ctx.fillStyle = gradient;
@@ -2936,28 +2937,27 @@ class CanvasPixels extends React.PureComponent {
 
         this._remove_close_pxl_colors(new_pxls, new_pxl_colors, 255/6/255, null, 18).then( ([new_pxls, new_pxl_colors]) => {
 
-            [new_pxls, new_pxl_colors] = this._pxl_colors_to_alpha(new_pxls, new_pxl_colors, inverted_color, 1);
+            [new_pxls, new_pxl_colors] = this._pxl_colors_to_alpha(new_pxls, new_pxl_colors, inverted_color_uint32, 1);
 
-            const [r, g, b] = this.color_conversion.to_rgba_from_uint32(color);
-            new_pxl_colors = new_pxl_colors.map((pxl_color, color_index) => {
+            const [r, g, b] = this.color_conversion.to_rgba_from_uint32(pxl_current_color_uint32);
+            new_pxl_colors = new_pxl_colors.map((pxl_color) => {
 
+                pxl_color = pxl_color|0;
                 const p_a = this.color_conversion.to_rgba_from_uint32(pxl_color)[3];
-                return this.color_conversion.to_uint32_from_rgba(Uint8ClampedArray.of(r, g, b, p_a));
+                return this.color_conversion.to_uint32_from_rgba(Uint8ClampedArray.of(r, g, b, p_a)) | 0;
             });
 
             let brand_new_pxl_colors = [];
-            new_pxls = new_pxls.map(function(pxl, index) {
+            new_pxls = new_pxls.map((pxl, index) => {
 
-                const pxl_color = new_pxl_colors[pxl];
-                const old_pxl_color = pxl_colors[pxls[index]];
+                pxl = pxl|0;
+                index = index|0;
+                const pxl_color = (new_pxl_colors[pxl]|0) | 0;
+                const old_pxl_color = (pxl_colors[pxls[index]]|0) | 0;
 
                 const new_color = this.color_conversion.blend_colors(old_pxl_color, pxl_color, intensity, false, false);
 
-                if (brand_new_pxl_colors.indexOf(new_color) === -1) {
-
-                    brand_new_pxl_colors.push(new_color);
-                }
-
+                if (brand_new_pxl_colors.indexOf(new_color) === -1) {brand_new_pxl_colors.push(new_color);}
                 const new_color_index = brand_new_pxl_colors.indexOf(new_color);
 
                 return new_color_index;
@@ -2965,7 +2965,7 @@ class CanvasPixels extends React.PureComponent {
 
             new_pxl_colors = brand_new_pxl_colors;
 
-            callback_function(Array.of(Array.from(new_pxls), Uint32Array.from(new_pxl_colors)));
+            callback_function(Array.of(Uint16Array.from(new_pxls), Uint32Array.from(new_pxl_colors)));
         });
     };
 

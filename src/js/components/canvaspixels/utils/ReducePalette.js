@@ -293,7 +293,7 @@ const ReducePalette = {
         return {
             // Methods
             new(pool, pxls, pxl_colors, bucket_threshold, threshold_steps, color_number_bonus, best_color_number, state_bucket_threshold) {
-
+                "use strict";
                 s = cs(pool, pxls, pxl_colors, bucket_threshold, threshold_steps, color_number_bonus, best_color_number, state_bucket_threshold);
             },
             destroy(callback_function = function(){}) {
@@ -305,7 +305,7 @@ const ReducePalette = {
                 }
             },
             compute(callback_function) {
-
+                "use strict";
                 if(s !== null) {
 
                     s.workerp.exec(
