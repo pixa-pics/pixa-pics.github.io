@@ -67,6 +67,7 @@ const base64codes = [
 ];
 
 function getBase64Code(charCode) {
+    "use strict";
     if (charCode >= base64codes.length) {
         throw new Error("Unable to parse base64 string.");
     }
@@ -78,6 +79,7 @@ function getBase64Code(charCode) {
 }
 
 export function bytesToBase64(bytes) {
+    "use strict";
     let result = '', i, l = bytes.length;
     for (i = 2; i < l; i += 3) {
         result += base64abc[bytes[i - 2] >> 2];
@@ -100,6 +102,7 @@ export function bytesToBase64(bytes) {
 }
 
 export function base64ToBytes(str) {
+    "use strict";
     if (str.length % 4 !== 0) {
         throw new Error("Unable to parse base64 string.");
     }

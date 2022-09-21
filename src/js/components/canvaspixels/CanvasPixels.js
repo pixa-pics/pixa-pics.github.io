@@ -1797,11 +1797,11 @@ class CanvasPixels extends React.PureComponent {
 
             sh._s_pxls = Array.from(sh._s_pxls).map(function(a){
 
-                return base64.bytesToBase64(new Uint8Array(Uint16Array.from(a).buffer));
+                return base64.bytesToBase64(new Uint8ClampedArray(Uint16Array.from(a).buffer));
             });
             sh._s_pxl_colors = Array.from(sh._s_pxl_colors).map(function(a){
 
-                return base64.bytesToBase64(new Uint8Array(Uint32Array.from(a).buffer));
+                return base64.bytesToBase64(new Uint8ClampedArray(Uint32Array.from(a).buffer));
             });
             return sh;
         });
@@ -1815,10 +1815,10 @@ class CanvasPixels extends React.PureComponent {
         input.state_history = input.state_history.map(function(sh){
 
             sh._s_pxls = Array.from(sh._s_pxls).map(function(a){
-                return new Uint16Array(base64.base64ToBytes(a).buffer);
+                return new Uint16Array(Uint8ClampedArray.from(base64.base64ToBytes(a)).buffer);
             });
             sh._s_pxl_colors = Array.from(sh._s_pxl_colors).map(function(a){
-                return new Uint32Array(base64.base64ToBytes(a).buffer);
+                return new Uint32Array(Uint8ClampedArray.from(base64.base64ToBytes(a)).buffer);
             });
             return sh;
         });
