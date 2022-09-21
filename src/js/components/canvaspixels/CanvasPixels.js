@@ -27,6 +27,7 @@ SOFTWARE.
 
 import React from "react";
 import pool from "../../utils/worker-pool";
+import * as base64 from "../../utils/base64";
 import B64PngCanvas from "../canvaspixels/utils/B64PngCanvas";
 import BMPLayer from "./utils/BMPLayer";
 import ReducePalette from "../canvaspixels/utils/ReducePalette";
@@ -1715,6 +1716,8 @@ class CanvasPixels extends React.PureComponent {
 
     import_JS_state = (js, callback_function) => {
 
+        js._json_state_history = this.transform_json_state_history_string_array_buffer(js._json_state_history);
+
         let _base64_original_images = Array.from(js._base64_original_images);
         let _json_state_history = Object.assign({}, {
             history_position: parseInt(js._json_state_history.history_position),
@@ -1723,8 +1726,8 @@ class CanvasPixels extends React.PureComponent {
                 pxl_width: parseInt(state.pxl_width),
                 pxl_height: parseInt(state.pxl_height),
                 _pxl_indexes_of_selection: new Set(Boolean(state._pxl_indexes_of_selection.length) ? state._pxl_indexes_of_selection : []),
-                _s_pxls: state._s_pxls.map(function(a){return Uint16Array.from(Object.values(a))}),
-                _s_pxl_colors: state._s_pxl_colors.map(function(a){return Uint32Array.from(Object.values(a))}),
+                _s_pxls: state._s_pxls,
+                _s_pxl_colors: state._s_pxl_colors,
                 _layers: Array.from(state._layers.map(function(l) {
                     return Object.assign({}, {
                         id: parseInt(l.id),
@@ -1786,6 +1789,43 @@ class CanvasPixels extends React.PureComponent {
         });
     };
 
+    // https://developer.mozilla.org/en-US/docs/Glossary/Base64#solution_1_%E2%80%93_escaping_the_string_before_encoding_it
+    transform_json_state_history_array_buffer_string = (input) => {
+        "use strict";
+
+        input.state_history = input.state_history.map(function(sh){
+
+            sh._s_pxls = Array.from(sh._s_pxls).map(function(a){
+
+                return base64.bytesToBase64(new Uint8Array(Uint16Array.from(a).buffer));
+            });
+            sh._s_pxl_colors = Array.from(sh._s_pxl_colors).map(function(a){
+
+                return base64.bytesToBase64(new Uint8Array(Uint32Array.from(a).buffer));
+            });
+            return sh;
+        });
+
+        return input;
+    };
+
+    transform_json_state_history_string_array_buffer = (input) => {
+        "use strict";
+
+        input.state_history = input.state_history.map(function(sh){
+
+            sh._s_pxls = Array.from(sh._s_pxls).map(function(a){
+                return new Uint16Array(base64.base64ToBytes(a).buffer);
+            });
+            sh._s_pxl_colors = Array.from(sh._s_pxl_colors).map(function(a){
+                return new Uint32Array(base64.base64ToBytes(a).buffer);
+            });
+            return sh;
+        });
+
+        return input;
+    };
+
     export_JS_state = (callback_function) => {
 
         this._maybe_save_state((_json_state_history) => {
@@ -1799,7 +1839,7 @@ class CanvasPixels extends React.PureComponent {
                     preview: base_64,
                     timestamp: Date.now(),
                     _base64_original_images: Array.from(this.super_state.get_state()._base64_original_images),
-                    _json_state_history: Object.assign({}, _json_state_history)
+                    _json_state_history: Object.assign({}, this.transform_json_state_history_array_buffer_string(_json_state_history))
                 });
             }, false, 5, 50, 75);
         }, true);

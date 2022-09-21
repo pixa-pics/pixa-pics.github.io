@@ -410,12 +410,14 @@ const SuperState = {
                     return 'url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAAAAq0lEQVRYR+1WQQrAIAxb///oDmUOkc3W2kEG2XHQGpPURg6wTzLwqKr2fUQk3Ddc2AMogBqGgo2ARpkhGaKHZtMIKRmnjJLtrBBIU0O9QzvsjrUpyzUd0BgfvAdYWz3StzLUm7KBuWLEKzZPzHjqO8SWElXuX7UnLCCvTCvTFJYsAuarGswp270tQ77FIOQuY0BjQLOM+zuGVlbK7HIpLzXH3vIXGfIwlGXqE9034xUtxdxDAAAAAElFTkSuQmCC") 18 18, auto';
                 }
             },
-            get_indexes: function() {
-
-                return new Set(_pxl_indexes.keys());
+            get_indexes: function(clear_before) {
+                "use strict";
+                clear_before = clear_before || false;
+                if(clear_before){_pxl_indexes.clear();}
+                return _pxl_indexes;
             },
             get_imported_image_data: function() {
-
+                "use strict";
                 let state = _state.get();
                 if(state._imported_image_pxls.length) {
 
@@ -477,7 +479,7 @@ const SuperState = {
                 }
             },
             get_pixels_palette_and_list_from_image_data: function(image_data) {
-
+                "use strict";
                 function to_uint32_from_rgba(rgba) {
                     return new Uint32Array(rgba.reverse().buffer)[0];
                 }
@@ -507,7 +509,7 @@ const SuperState = {
                 };
             },
             new_canvas_context_2d: function(width, height) {
-
+                "use strict";
                 let canvas;
                 try {
 
@@ -533,15 +535,15 @@ const SuperState = {
                 return context;
             },
             create_shape: function() {
-
+                "use strict";
                 let new_canvas_context_2d = this.new_canvas_context_2d;
                 let state = _state.get();
-                let pxl_indexes = this.get_indexes();
+                let pxl_indexes = this.get_indexes(true);
                 let width = state.pxl_width | 0;
                 let height = state.pxl_height | 0;
 
                 function get_opposite_coordinates(width, from, to) {
-
+                    "use strict";
                     width = width | 0;
                     from = from | 0;
                     to = to | 0;
@@ -558,7 +560,7 @@ const SuperState = {
                 }
     
                 function get_shadow_indexes_from_canvas_context(context, shadow_indexes) {
-    
+                    "use strict";
                     const ui32_colors = new Uint32Array(context.getImageData(0, 0, context.canvas.width, context.canvas.height).data.reverse().buffer).reverse();
                     const ui32_colors_length = ui32_colors.length | 0;
                     for(let i = 0; (i|0) < (ui32_colors_length|0); i = (i + 1 | 0)>>>0) {
@@ -569,8 +571,10 @@ const SuperState = {
 
                 // TO DO --> GET PREVIOUS COMMIT OR FINISH THIS
                 return {
-                    from_border: function(selection_indexes, inside = true, bold = false) {
-
+                    from_border: function(selection_indexes, inside, bold ) {
+                        "use strict";
+                        inside = inside || true;
+                        bold = bold || false;
                         const { pxl_width, pxl_height } = state;
 
                         let pxls_of_the_border = new Set();
@@ -653,7 +657,7 @@ const SuperState = {
                         return pxls_of_the_border;
                     },
                     from_path: function(path_indexes){
-
+                        "use strict";
                         let path_context = new_canvas_context_2d(width, height);
 
                         path_context.lineWidth = 0;
@@ -683,35 +687,33 @@ const SuperState = {
                         return path_indexes;
                     },
                     from_line: function(from, to) {
-
+                        "use strict";
                         from = from | 0;
                         to = to | 0;
                         let c = get_opposite_coordinates(width, from, to);
-
                         let dx = Math.abs(c.secondary.x - c.primary.x) | 0;
                         let dy = Math.abs(c.secondary.y - c.primary.y) | 0;
-                        let sx = (c.primary.x < c.secondary.x) ? 1 : -1;
-                        let sy = (c.primary.y < c.secondary.y) ? 1 : -1;
+                        let sx = ((c.primary.x|0) < (c.secondary.x|0)) ? 1 : -1;
+                        let sy = ((c.primary.y|0) < (c.secondary.y|0)) ? 1 : -1;
                         let err = (dx - dy) | 0;
+                        let e2 = 0;
 
                         while(true){
 
-                            const current_pxl_index = (c.primary.y * state.pxl_width + c.primary.x) | 0;
+                            pxl_indexes.add((c.primary.y * state.pxl_width + c.primary.x)|0);
 
-                            pxl_indexes.add(current_pxl_index);
+                            if((c.primary.x|0) == (c.secondary.x|0) && (c.primary.y|0) == (c.secondary.y|0)) { break; }
 
-                            if(c.primary.x === c.secondary.x && c.primary.y === c.secondary.y) { break; }
+                            e2 = (2 * err) | 0;
 
-                            const e2 = (2 * err)|0;
+                            if ((e2|0) > (-dy|0)) {
 
-                            if ((e2|0) > - (dy|0)) {
-
-                                err = (err - dy) | 0;
+                                err = (err-dy)|0;
                                 c.primary.x  = (c.primary.x+sx)|0;
                             }
                             if ((e2|0) < (dx|0)) {
 
-                                err = (err + dy) | 0;
+                                err = (err+dx)|0;
                                 c.primary.y  = (c.primary.y+sy)|0;
                             }
                         }
@@ -719,7 +721,7 @@ const SuperState = {
                         return pxl_indexes;
                     },
                     from_rectangle: function(from, to) {
-
+                        "use strict";
                         from = from | 0;
                         to = to | 0;
                         let c = get_opposite_coordinates(width, from, to);
@@ -742,7 +744,7 @@ const SuperState = {
                         return pxl_indexes;
                     },
                     from_ellipse: function(from, to) {
-
+                        "use strict";
                         from = from | 0;
                         to = to | 0;
                         let c = get_opposite_coordinates(width, from, to);
