@@ -78,6 +78,7 @@ Screenshot of the minima's laboratory of pixa.pics (which is a pixel art editor)
 
 ## E) Technology
 
+* Low-Level-JavaScript just like [asm.js](http://asmjs.org/) for blazing efficient color operation
 * Multi-threading (Web [Worker](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/js/utils/worker-pool.js))
 * GPU's optimisation (CSS3 Transform+will-change)
 * Fast Compression ([LZP3](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/js/utils/lzp3_json.js))
