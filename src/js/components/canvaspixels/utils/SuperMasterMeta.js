@@ -81,7 +81,7 @@ const SuperMasterMeta = {
 
                     let promise = this;
                     // Only operate on canvas context if existing
-                    if (meta.super_canvas.ok()) {
+                    if ((meta.super_canvas.ok()|0) <= 0) {
 
                         let {
                             _is_there_new_dimension,
@@ -206,7 +206,7 @@ const SuperMasterMeta = {
 
                                 for (let index = 0; (index|0) < (full_pxls_length|0); index = ((index + 1) | 0) >>> 0) {
 
-                                    bool_new_hover = (_pxls_hovered|0) == (index|0);
+                                    bool_new_hover = ((_pxls_hovered - index|0)>>>0) <= 0;
                                     bool_old_hover = _old_pxls_hovered.has(index);
                                     bool_new_shape = _pxl_indexes_of_current_shape.has(index);
                                     bool_old_shape = _pxl_indexes_of_old_shape.has(index);
@@ -220,8 +220,8 @@ const SuperMasterMeta = {
                                         clear_canvas ||
                                         bool_new_hover ||
                                         bool_old_hover ||
-                                        bool_new_shape != bool_old_shape ||
-                                        bool_new_selection != bool_old_selection ||
+                                        bool_new_shape !== bool_old_shape ||
+                                        bool_new_selection !== bool_old_selection ||
                                         bool_old_import ||
                                         bool_new_import ||
                                         bool_new_pixel
@@ -229,14 +229,14 @@ const SuperMasterMeta = {
 
                                         super_blend_for(index);
 
-                                        for (let i = 0; i < layers_length; i = ((i + 1) | 0) >>> 0) {
+                                        for (let i = 0; i < layers_length; i = (i+1|0) >>> 0) {
 
                                             if(_layers[i].hidden) {
 
-                                                super_blend_stack(i, _s_pxl_colors[i][_s_pxls[i][index]] & 0xFFFFFFFF, 0, 0);
+                                                super_blend_stack(i, (_s_pxl_colors[i][_s_pxls[i][index]]|0)& 0xFFFFFFFF, 0, 0);
                                             }else {
 
-                                                super_blend_stack(i, _s_pxl_colors[i][_s_pxls[i][index]]& 0xFFFFFFFF, (_layers[i].opacity * 255) & 0xFF, false);
+                                                super_blend_stack(i, (_s_pxl_colors[i][_s_pxls[i][index]]|0) & 0xFFFFFFFF, (_layers[i].opacity * 255|0) & 0xFF, false);
                                             }
                                         }
 
@@ -265,7 +265,7 @@ const SuperMasterMeta = {
                                             pos_x = (index % pxl_width) | 0;
                                             pos_y = ((index - pos_x) / pxl_width) | 0;
 
-                                            super_blend_stack(layers_length, 0, 96 + ((((pos_x + pos_y + (_selection_pair_highlight | 0) | 0) & 1) | 0) * 64) & 0xFF, true);
+                                            super_blend_stack(layers_length, 0, (96 + ((((pos_x + pos_y + (_selection_pair_highlight | 0) | 0) & 1) | 0) * 64)|0) & 0xFF, true);
 
                                         }
                                     }

@@ -1,5 +1,5 @@
 import XXH from "xxhashjs";
-import xxHash from "xxhash-wasm";
+import xxHash from "../../../utils/xxhash";
 
 const XXHash = {
 
@@ -52,7 +52,6 @@ const XXHash = {
 
         const alphabet_58 = "123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ";
         const base_58 = alphabet_58.length | 0; // base is the length of the alphabet (58 in this case
-
         return {
             // Methods
             get_info: function() {
@@ -65,7 +64,6 @@ const XXHash = {
             },
             int_that: function(buffer) {
                 "use strict";
-
                 return (s.xxh_f(0xFADE).update(new Uint8ClampedArray(buffer)).digest() | 0) >>> 0;
             },
             base58_that: function (array_buffer) {
@@ -76,13 +74,12 @@ const XXHash = {
                 let remainder = 0;
                 let chain = 0;
 
-                while (num > 0 && chain < 5) {
+                while ((num|0) > 0 && (chain|0) < 5) {
                     remainder = ((num % base_58 )| 0) >>> 0;
                     num = ((num / base_58) | 0) >>> 0;
                     encoded = encoded + alphabet_58.charAt(remainder);
                     chain = (chain+1)|0;
                 }
-
                 return encoded;
             }
         };

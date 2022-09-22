@@ -161,14 +161,16 @@ const SuperCanvas = {
             };
         };
 
-
         let _state = template(c, pxl_width, pxl_height);
+
+        function MAX_INT(a, b) {return a - ((a - b) & ((a - b) >> 31));}
+        function MIN_INT(a, b) {return a - ((a - b) & ((b - a) >> 31));}
 
         return {
             // Methods
             ok: function (){
                 "use strict";
-                return Boolean(_state.s.canvas_context.canvas) && true;
+                return _state.s.canvas_context.canvas.width & 1;
             },
             clear: function() {
                 "use strict";
@@ -296,6 +298,7 @@ const SuperCanvas = {
                         let pr_top_left_y = pr.top_left.y | 0;
                         let pr_bottom_right_x = pr.bottom_right.x | 0;
                         let pr_bottom_right_y = pr.bottom_right.y | 0;
+
                         _state.ic2.forEach(function (value, index) {
 
                             value = value & 0xFFFFFFFF;
@@ -304,9 +307,9 @@ const SuperCanvas = {
                             x = (index % width) | 0;
                             y = ((index - x) / width) | 0;
 
-                            if((pr_top_left_x|0) > ((x-12)|0)) {pr_top_left_x = Math.max(0, (x-12)|0)|0 }else if((pr_bottom_right_x|0) < ((x+12)|0)) { pr_bottom_right_x = Math.min(width, (x+12)|0)|0 }
-                            if((pr_top_left_y|0) > ((y-12)|0)) { pr_top_left_y = Math.max(0, (y-12)|0)|0 }else if((pr_bottom_right_y|0) < ((y+12)|0)) { pr_bottom_right_y = Math.min(height, (y+12)|0)|0 }
-                            _state.fp.setUint32((index*4)|0, value, false);
+                            if((pr_top_left_x|0) > ((x-12)|0)) {pr_top_left_x = MAX_INT(0, (x-12)|0)|0 }else if((pr_bottom_right_x|0) < ((x+12)|0)) { pr_bottom_right_x = MIN_INT(width, (x+12)|0)|0 }
+                            if((pr_top_left_y|0) > ((y-12)|0)) { pr_top_left_y = MAX_INT(0, (y-12)|0)|0 }else if((pr_bottom_right_y|0) < ((y+12)|0)) { pr_bottom_right_y = MIN_INT(height, (y+12)|0)|0 }
+                            _state.fp.setUint32(index*4|0, value, false);
                         });
 
                         pr.width = 1 + pr_bottom_right_x - pr_top_left_x | 0;
