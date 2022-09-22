@@ -20,6 +20,15 @@ module.exports = {
                         eval: true,
                         reserved: [
                             'Object',
+                            'canvas',
+                            'getUint8',
+                            'setUint8',
+                            'getUint16',
+                            'setUint16',
+                            'getUint32',
+                            'setUint32',
+                            'getFloat32',
+                            'setFloat32',
                             'Uint8ClampedArray',
                             'Uint32Array',
                             'Int32Array',
@@ -86,7 +95,7 @@ module.exports = {
                         inline: true,
                         reduce_vars: true,
                         collapse_vars: true,
-                        passes: 12,
+                        passes: 6,
                     },
                     output: {
                         comments: false,
@@ -145,7 +154,7 @@ module.exports = {
                                         "ios": "10",
                                         "safari": "10"
                                     },
-                                    forceAllTransforms: true,
+                                    forceAllTransforms: false,
                                     shippedProposals: true,
                                     bugfixes: true,
                                     useBuiltIns: "usage"

@@ -206,7 +206,7 @@ const SuperMasterMeta = {
 
                                 for (let index = 0; (index|0) < (full_pxls_length|0); index = ((index + 1) | 0) >>> 0) {
 
-                                    bool_new_hover = ((_pxls_hovered - index|0)>>>0) <= 0;
+                                    bool_new_hover = ((_pxls_hovered - index|0)>>>0) === 1;
                                     bool_old_hover = _old_pxls_hovered.has(index);
                                     bool_new_shape = _pxl_indexes_of_current_shape.has(index);
                                     bool_old_shape = _pxl_indexes_of_old_shape.has(index);
@@ -214,7 +214,7 @@ const SuperMasterMeta = {
                                     bool_old_selection = _pxl_indexes_of_selection_drawn.has(index);
                                     bool_new_import = imported_image_pxls_positioned_keyset.has(index);
                                     bool_old_import = _previous_imported_image_pxls_positioned_keyset.has(index);
-                                    bool_new_pixel = (full_pxls[index] & 0xFFFFFFFF) !== (_old_full_pxls[index] & 0xFFFFFFFF);
+                                    bool_new_pixel = ((full_pxls[index] -_old_full_pxls[index] | 0)>>>0) > 0;
 
                                     if (
                                         clear_canvas ||
