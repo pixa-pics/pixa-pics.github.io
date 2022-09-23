@@ -79,99 +79,121 @@ var operators = {
 };
 
 // Number object with 4 times 0-255
-var SIMDopeUint8x4 = function(a, b, c, d){
+var SIMDopeUint8x4 = function(with_buffer){
     if (!(this instanceof SIMDopeUint8x4)) {
-        return new SIMDopeUint8x4(a, b, c, d);
+        return new SIMDopeUint8x4(with_buffer);
     }
-    this.storage_buffer_ = new ArrayBuffer(4);
-    this.storage_dataview = new DataView(this.storage_buffer_);
-    this.storage_uint8c_ = new Uint8ClampedArray(this.storage_buffer_);
-    this.storage_uint8c_[0] = operators.clamp_uint8(a);
-    this.storage_uint8c_[1] = operators.clamp_uint8(b);
-    this.storage_uint8c_[2] = operators.clamp_uint8(c);
-    this.storage_uint8c_[3] = operators.clamp_uint8(d);
-}
+    this.storage_ = new Uint8ClampedArray(with_buffer.buffer);
+};
 
 // Number object other means of construct
 SIMDopeUint8x4.new_zero = function() {
-    return SIMDopeUint8x4(0, 0, 0, 0);
-}
+    var uint8ca = new Uint8ClampedArray(4);
+    return SIMDopeUint8x4(uint8ca);
+};
 SIMDopeUint8x4.new_splat = function(n) {
-    return SIMDopeUint8x4(n, n, n, n);
-}
-SIMDopeUint8x4.new_set_of = function(a, b, c, d) {
-    return SIMDopeUint8x4(a, b, c, d);
-}
+    var uint8ca = new Uint8ClampedArray(4);
+        uint8ca[0] = n;
+        uint8ca[1] = n;
+        uint8ca[2] = n;
+        uint8ca[3] = n;
+    return SIMDopeUint8x4(uint8ca);
+};
+SIMDopeUint8x4.new_of = function(a, b, c, d) {
+    var uint8ca = new Uint8ClampedArray(4);
+        uint8ca[0] = a;
+        uint8ca[1] = b;
+        uint8ca[2] = c;
+        uint8ca[3] = d;
+    return SIMDopeUint8x4(uint8ca);
+};
+SIMDopeUint8x4.new_safe_of = function(a, b, c, d) {
+    var uint8ca = new Uint8ClampedArray(4);
+        uint8ca[0] = operators.clamp_uint8(a);uint8ca[1] = operators.clamp_uint8(b);uint8ca[2] = operators.clamp_uint8(c);uint8ca[3] = operators.clamp_uint8(d);
+    return SIMDopeUint8x4(uint8ca);
+};
 SIMDopeUint8x4.new_from = function(other) {
-    return SIMDopeUint8x4(other.a, other.b, other.c, other.d);
-}
-SIMDopeUint8x4.new_set_of_safe = function(a, b, c, d) {
-    return SIMDopeUint8x4(operators.clamp_uint8(a), operators.clamp_uint8(b),operators.clamp_uint8(c),operators.clamp_uint8(d));
-}
-SIMDopeUint8x4.new_from_safe = function(other) {
-    return SIMDopeUint8x4(operators.clamp_uint8(other.a), operators.clamp_uint8(other.b),operators.clamp_uint8(other.c),operators.clamp_uint8(other.d));
-}
+    return SIMDopeUint8x4(other);
+};
 
-SIMDopeUint8x4.new_set_from = function(array) {
-    return SIMDopeUint8x4(array[0], array[1], array[2], array[3]);
-}
+SIMDopeUint8x4.new_array = function(array) {
+    var uint8ca = new Uint8ClampedArray(4);
+        uint8ca[0] = array[0];
+        uint8ca[1] = array[1];
+        uint8ca[2] = array[2];
+        uint8ca[3] = array[3];
+    return SIMDopeUint8x4(uint8ca);
+};
+
+SIMDopeUint8x4.new_array_safe = function(array) {
+    var uint8ca = new Uint8ClampedArray(4);
+        uint8ca[0] = operators.clamp_uint8(array[0]);
+        uint8ca[1] = operators.clamp_uint8(array[1]);
+        uint8ca[2] = operators.clamp_uint8(array[2]);
+        uint8ca[3] = operators.clamp_uint8(array[3]);
+    return SIMDopeUint8x4(uint8ca);
+};
 
 SIMDopeUint8x4.new_bool = function(a, b, c, d) {
-    return SIMDopeUint8x4(
-        a ? 0x1 : 0x0,
-        b ? 0x1 : 0x0,
-        c ? 0x1 : 0x0,
-        d ? 0x1 : 0x0
-    );
+    var uint8ca = new Uint8ClampedArray(4);
+        uint8ca[0] = a ? 0x1 : 0x0;
+        uint8ca[1] = b ? 0x1 : 0x0;
+        uint8ca[2] = c ? 0x1 : 0x0;
+        uint8ca[3] = d ? 0x1 : 0x0;
+    return SIMDopeUint8x4(uint8ca);
 }
 
 // Properties of number object
 Object.defineProperty(SIMDopeUint8x4.prototype, 'a', {
-    get: function() { return this.storage_uint8c_[0]; },
+    get: function() { return this.storage_[0]; },
 });
 Object.defineProperty(SIMDopeUint8x4.prototype, 'b', {
-    get: function() { return this.storage_uint8c_[1]; },
+    get: function() { return this.storage_[1]; },
 });
 Object.defineProperty(SIMDopeUint8x4.prototype, 'c', {
-    get: function() { return this.storage_uint8c_[2]; },
+    get: function() { return this.storage_[2]; },
 });
 Object.defineProperty(SIMDopeUint8x4.prototype, 'd', {
-    get: function() { return this.storage_uint8c_[3]; },
+    get: function() { return this.storage_[3]; },
 });
 
 Object.defineProperty(SIMDopeUint8x4.prototype, 'uint32', {
-    get: function() { return this.storage_dataview.getUint32(0); },
-});
-
-Object.defineProperty(SIMDopeUint8x4.prototype, 'array', {
-    get: function() { return this.storage_uint8c_; }
+    get: function() {return (this.storage_[0] >> 24) | (this.storage_[1] >> 16) | (this.storage_[2] >> 8) | this.storage_[3];}
 });
 
 Object.defineProperty(SIMDopeUint8x4.prototype, 'buffer', {
-    get: function() { return this.storage_buffer_; },
-    set: function(b) {
-        this.storage_buffer_ = b;
-        this.storage_uint8c_.set(this.storage_buffer_); 
-        this.storage_dataview = new DataView(this.storage_buffer_)
-    }
+    get: function() { return this.storage_.buffer; }
 });
 
 
 // get a the number object wile modifying property values
 SIMDopeUint8x4.with_a = function(t, a) {
-    return SIMDopeUint8x4(a, t.b, t.c, t.d);
+    var uint8ca = new Uint8ClampedArray(t.buffer);
+    uint8ca[0] = a;
+    return SIMDopeUint8x4(uint8ca);
 };
 SIMDopeUint8x4.with_b = function(t, b) {
-    return SIMDopeUint8x4(t.a, b, t.c, t.d);
+    var uint8ca = new Uint8ClampedArray(t.buffer);
+    uint8ca[1] = b;
+    return SIMDopeUint8x4(uint8ca);
 };
 SIMDopeUint8x4.with_c = function(t, c) {
-    return SIMDopeUint8x4(t.a, t.b, c, t.d);
+    var uint8ca = new Uint8ClampedArray(t.buffer);
+    uint8ca[2] = c;
+    return SIMDopeUint8x4(uint8ca);
 };
 SIMDopeUint8x4.with_d = function(t, d) {
-    return SIMDopeUint8x4(t.a, t.b, t.c, d);
+    var uint8ca = new Uint8ClampedArray(t.buffer);
+    uint8ca[3] = d;
+    return SIMDopeUint8x4(uint8ca);
 };
 
 // Get various operation on number object
+SIMDopeUint8x4.sumarray = function(other, start, end) {
+    start = start | 0;
+    end = end | 4;
+    return new Uint8ClampedArray(other.buffer).slice(start, end).reduce(operators.plus_uint, 0);
+};
 SIMDopeUint8x4.subarray = function(other, start, end) {
     start = start | 0;
     end = end | 4;
@@ -228,28 +250,52 @@ SIMDopeUint8x4.is_less_equal = function(t, other) {
 
 // From a given operation and number object perform the operation and return a the number object
 SIMDopeUint8x4.plus = function(t, other) {
-    return SIMDopeUint8x4(
-        operators.clamp_uint8(operators.min_int(255, operators.plus_int(t.a, other.a))),
-        operators.clamp_uint8(operators.min_int(255, operators.plus_int(t.b, other.b))),
-        operators.clamp_uint8(operators.min_int(255, operators.plus_int(t.c, other.c))),
-        operators.clamp_uint8(operators.min_int(255, operators.plus_int(t.d, other.d)))
-    );
+    var temp = new Uint8ClampedArray(t.buffer);
+    temp[0] = operators.clamp_uint8(operators.min_int(255, operators.plus_int(t.a, other.a)));
+    temp[1] = operators.clamp_uint8(operators.min_int(255, operators.plus_int(t.b, other.b)));
+    temp[2] = operators.clamp_uint8(operators.min_int(255, operators.plus_int(t.c, other.c)));
+    temp[3] = operators.clamp_uint8(operators.min_int(255, operators.plus_int(t.d, other.d)));
+    return SIMDopeUint8x4(temp)
 }
 SIMDopeUint8x4.minus = function(t, other) {
-    return SIMDopeUint8x4(
-        operators.clamp_uint8(operators.max_int(0, operators.minus_int(t.a, other.a))),
-        operators.clamp_uint8(operators.max_int(0, operators.minus_int(t.b, other.b))),
-        operators.clamp_uint8(operators.max_int(0, operators.minus_int(t.c, other.c))),
-        operators.clamp_uint8(operators.max_int(0, operators.minus_int(t.d, other.d)))
-    );
+    var temp = new Uint8ClampedArray(t.buffer);
+    temp[0] = operators.clamp_uint8(operators.max_int(0, operators.minus_int(t.a, other.a)));
+    temp[1] = operators.clamp_uint8(operators.max_int(0, operators.minus_int(t.b, other.b)));
+    temp[2] = operators.clamp_uint8(operators.max_int(0, operators.minus_int(t.c, other.c)));
+    temp[3] = operators.clamp_uint8(operators.max_int(0, operators.minus_int(t.d, other.d)));
+    return SIMDopeUint8x4(temp)
 }
 SIMDopeUint8x4.average = function(t, other) {
-    return SIMDopeUint8x4(
-        operators.clamp_uint8(operators.divide_uint(operators.plus_int(t.a, other.a), 2)),
-        operators.clamp_uint8(operators.divide_uint(operators.plus_int(t.b, other.b), 2)),
-        operators.clamp_uint8(operators.divide_uint(operators.plus_int(t.c, other.c), 2)),
-        operators.clamp_uint8(operators.divide_uint(operators.plus_int(t.d, other.d), 2))
-    );
+    var temp = new Uint8ClampedArray(t.buffer);
+    temp[0] = operators.clamp_uint8(operators.divide_uint(operators.plus_int(t.a, other.a), 2));
+    temp[1] = operators.clamp_uint8(operators.divide_uint(operators.plus_int(t.b, other.b), 2));
+    temp[2] = operators.clamp_uint8(operators.divide_uint(operators.plus_int(t.c, other.c), 2));
+    temp[3] = operators.clamp_uint8(operators.divide_uint(operators.plus_int(t.d, other.d), 2));
+    return SIMDopeUint8x4(temp)
+}
+SIMDopeUint8x4.scale_of = function(t, of) {
+    var temp = new Uint8ClampedArray(4);
+    temp[0] = operators.clamp_uint8(operators.multiply_uint(t.a, of));
+    temp[1] = operators.clamp_uint8(operators.multiply_uint(t.b, of));
+    temp[2] = operators.clamp_uint8(operators.multiply_uint(t.c, of));
+    temp[3] = operators.clamp_uint8(operators.multiply_uint(t.d, of));
+    return SIMDopeUint8x4(temp)
+}
+SIMDopeUint8x4.merge_scale_of = function(t1, of1, t2, of2) {
+    var temp = new Uint8ClampedArray(4);
+    temp[0] = operators.clamp_uint8(operators.divide_uint(operators.plus_uint(operators.multiply_uint(t1.a, of1), operators.multiply_uint(t2.a, of2))));
+    temp[1] = operators.clamp_uint8(operators.divide_uint(operators.plus_uint(operators.multiply_uint(t1.b, of1), operators.multiply_uint(t2.b, of2))));
+    temp[2] = operators.clamp_uint8(operators.divide_uint(operators.plus_uint(operators.multiply_uint(t1.c, of1), operators.multiply_uint(t2.c, of2))));
+    temp[3] = operators.clamp_uint8(operators.divide_uint(operators.plus_uint(operators.multiply_uint(t1.d, of1), operators.multiply_uint(t2.d, of2))));
+    return SIMDopeUint8x4(temp)
+}
+SIMDopeUint8x4.scale_safe_of = function(t, of_a, of_b, of_c, of_d) {
+    var temp = new Uint8ClampedArray(4);
+    temp[0] = operators.clamp_uint8(operators.multiply_uint(t.a, of_a), 0, 255);
+    temp[1] = operators.clamp_uint8(operators.multiply_uint(t.b, of_b), 0, 255);
+    temp[2] = operators.clamp_uint8(operators.multiply_uint(t.c, of_c), 0, 255);
+    temp[3] = operators.clamp_uint8(operators.multiply_uint(t.d, of_d), 0, 255);
+    return SIMDopeUint8x4(temp)
 }
 
 var SIMDope = {};

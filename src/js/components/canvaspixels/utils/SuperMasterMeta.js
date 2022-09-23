@@ -259,17 +259,17 @@ const SuperMasterMeta = {
                                             super_blend_stack(layers_length, imported_image_pxl_colors[imported_image_pxls_positioned[index]], 255, false);
                                         } else if (bool_new_hover) {
 
-                                            super_blend_stack(layers_length, 0, 236, true);
+                                            super_blend_stack(layers_length, 0, 96, true);
 
                                         } else if(bool_new_shape) {
 
-                                            super_blend_stack(layers_length, 0, 192, true);
+                                            super_blend_stack(layers_length, 0, 72, true);
                                         }else if (bool_new_selection) {
 
                                             pos_x = (index % pxl_width) | 0;
                                             pos_y = ((index - pos_x) / pxl_width) | 0;
 
-                                            super_blend_stack(layers_length, 0, 96 + ((((pos_x + pos_y + (_selection_pair_highlight | 0) | 0) & 1) | 0) * 64)|0, true);
+                                            super_blend_stack(layers_length, 0, 32 + ((((pos_x + pos_y + (_selection_pair_highlight | 0) | 0) & 1) | 0) * 24)|0, true);
                                         }else {
 
                                             super_blend_stack(layers_length, 0, 0, false);
