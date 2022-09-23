@@ -1,5 +1,4 @@
 import SIMDope from "../../../utils/SIMDope";
-import {simpleCheckForValidColor} from "react-color/lib/helpers";
 const simdope = SIMDope();
 
 const SuperMasterMeta = {
@@ -7,6 +6,7 @@ const SuperMasterMeta = {
         "use strict";
 
         let state = {
+            indexed_changes: new Map(),
             _pxl_indexes_of_selection_drawn: new Set(),
             _pxl_indexes_of_old_shape: new Set(),
             _old_selection_pair_highlight: true,
@@ -88,6 +88,7 @@ const SuperMasterMeta = {
                     if (meta.super_canvas.ok()) {
 
                         let {
+                            indexed_changes,
                             _is_there_new_dimension,
                             _old_layers_string_id,
                             _last_paint_timestamp,
@@ -96,7 +97,6 @@ const SuperMasterMeta = {
                             _old_pxl_width,
                             _old_pxl_height,
                             _old_pxls_hovered,
-                            _selection_pair_highlight,
                             _pxl_indexes_of_old_shape,
                             _pxl_indexes_of_selection_drawn,
                             _previous_imported_image_pxls_positioned_keyset,
@@ -117,7 +117,8 @@ const SuperMasterMeta = {
                             _shape_index_a,
                             _select_shape_index_a,
                             _pxl_indexes_of_selection,
-                            _paint_or_select_hover_pxl_indexes
+                            _paint_or_select_hover_pxl_indexes,
+                            _selection_pair_highlight
                         } = meta.super_state.get_state();
 
                         const sizes = meta.canvas_pos.get_state().sizes;
@@ -139,7 +140,6 @@ const SuperMasterMeta = {
                             }
                         }else {
 
-                            let indexed_changes = new Map();
                             // This is a list of color index that we explore
                             const full_pxls = Uint32Array.from(_s_pxls[_layer_index].map(function(pci){ return simdope.clamp_uint32(_s_pxl_colors[_layer_index][pci]); }));
                             let _pxl_indexes_of_current_shape = new Set();
@@ -208,7 +208,7 @@ const SuperMasterMeta = {
                                 let super_blend_for = meta.super_blend.for;
                                 let super_blend_stack = meta.super_blend.stack;
 
-                                for (let index = 0; simdope.int_not_equal(index, full_pxls_length); index = simdope.plus_uint(index, 1)) {
+                                for (let index = 0; simdope.int_less(index, full_pxls_length); index = simdope.plus_uint(index, 1)) {
 
                                     bool_new_hover = simdope.int_equal(_pxls_hovered, index);
                                     bool_old_hover = _old_pxls_hovered.has(index);
@@ -224,8 +224,8 @@ const SuperMasterMeta = {
                                         clear_canvas ||
                                         bool_new_hover ||
                                         bool_old_hover ||
-                                        simdope.binary_not_equal(bool_new_shape, bool_old_shape) ||
-                                        simdope.binary_not_equal(bool_new_selection, bool_old_selection) ||
+                                        bool_new_shape !== bool_old_shape ||
+                                        bool_new_selection !== bool_old_selection ||
                                         bool_old_import ||
                                         bool_new_import ||
                                         bool_new_pixel
@@ -233,14 +233,14 @@ const SuperMasterMeta = {
 
                                         super_blend_for(index);
 
-                                        for (let i = 0; i < layers_length; i = (i+1|0) >>> 0) {
+                                        for (let i = 0; simdope.int_less(i, layers_length); i = simdope.plus_uint(i,1)) {
 
                                             if(_layers[i].hidden) {
 
                                                 super_blend_stack(i, _s_pxl_colors[i][_s_pxls[i][index]], 0, 0);
                                             }else {
 
-                                                super_blend_stack(i, _s_pxl_colors[i][_s_pxls[i][index]], (_layers[i].opacity * 255|0) & 0xFF, false);
+                                                super_blend_stack(i, _s_pxl_colors[i][_s_pxls[i][index]], simdope.clamp_uint8(simdope.multiply_uint(_layers[i].opacity, 255)), false);
                                             }
                                         }
 
@@ -270,7 +270,9 @@ const SuperMasterMeta = {
                                             pos_y = ((index - pos_x) / pxl_width) | 0;
 
                                             super_blend_stack(layers_length, 0, 96 + ((((pos_x + pos_y + (_selection_pair_highlight | 0) | 0) & 1) | 0) * 64)|0, true);
+                                        }else {
 
+                                            super_blend_stack(layers_length, 0, 0, false);
                                         }
                                     }
                                 }
@@ -285,22 +287,20 @@ const SuperMasterMeta = {
                                         meta.super_canvas.prender().then(function(b2){
                                             meta.sraf.run_frame(function () {
                                                 meta.super_canvas.render(b2).then(function(){
-
                                                     state = {
+                                                        _previous_imported_image_pxls_positioned_keyset: imported_image_pxls_positioned_keyset,
                                                         _pxl_indexes_of_selection_drawn: _pxl_indexes_of_selection_drawn,
                                                         _pxl_indexes_of_old_shape: _pxl_indexes_of_old_shape,
-                                                        _old_selection_pair_highlight: _selection_pair_highlight,
+                                                        _old_pxls_hovered: _old_pxls_hovered,
+                                                        _old_selection_pair_highlight: _selection_pair_highlight && true,
                                                         _old_layers_string_id: old_layers_string_id,
                                                         _old_full_pxls: full_pxls,
                                                         _old_pxl_width: pxl_width | 0,
                                                         _old_pxl_height: pxl_height | 0,
-                                                        _old_pxls_hovered: _old_pxls_hovered,
-                                                        _last_paint_timestamp: requested_at | 0,
-                                                        _is_there_new_dimension: is_there_new_dimension,
-                                                        _did_hide_canvas_content: hide_canvas_content,
-                                                        _previous_imported_image_pxls_positioned_keyset: imported_image_pxls_positioned_keyset
+                                                        _last_paint_timestamp: requested_at,
+                                                        _is_there_new_dimension: is_there_new_dimension && true,
+                                                        _did_hide_canvas_content: hide_canvas_content && true
                                                     };
-
                                                     if(is_there_new_dimension !== _is_there_new_dimension || is_there_different_dimension) {
 
                                                         state._is_there_new_dimension = is_there_different_dimension;

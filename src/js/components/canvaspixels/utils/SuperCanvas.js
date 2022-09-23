@@ -1,5 +1,6 @@
 import workerpool from "workerpool";
-import pool from "../../../utils/worker-pool";
+import SIMDope from "../../../utils/SIMDope";
+const simdope = SIMDope();
 
 let requestIdleCallback, cancelIdleCallback;
 if ('requestIdleCallback' in window) {
@@ -182,14 +183,12 @@ const SuperCanvas = {
 
                     if (_state.enable_paint_type === "bitmap") {
 
-                        b2 = typeof b2 !== "undefined" ? b2: _state.b;
-
-                        _state.s.canvas_context.clearRect(b2.bmp_x, b2.bmp_y, b2.bmp.width, b2.bmp.height);
-                        _state.s.canvas_context.globalCompositeOperation = "source-over";
-                        _state.s.canvas_context.drawImage(b2.bmp, b2.bmp_x, b2.bmp_y, b2.bmp.width, b2.bmp.height);
-                        _state.b = b2;
+                        let b = typeof b2 !== "undefined" ? b2: _state.b;
+                        _state.b = b;
                         _state.b.old_bmp.close();
-
+                        _state.s.canvas_context.clearRect(b.bmp_x, b.bmp_y, b.bmp.width, b.bmp.height);
+                        _state.s.canvas_context.globalCompositeOperation = "source-over";
+                        _state.s.canvas_context.drawImage(b.bmp, b.bmp_x, b.bmp_y, b.bmp.width, b.bmp.height);
                     } else if (_state.enable_paint_type === "offscreen") {
 
                         _state.s.canvas_context.globalCompositeOperation = "copy";
@@ -204,6 +203,7 @@ const SuperCanvas = {
 
                         resolve();
                     });
+
                 });
             },
             prender: function(){
@@ -297,15 +297,18 @@ const SuperCanvas = {
 
                         _state.ic2.forEach(function (value, index) {
 
-                            value = value & 0xFFFFFFFF;
-                            index = (index | 0) >>> 0;
+                            value = simdope.clamp_uint32(value);
+                            index = (index|0) >>> 0;
 
-                            x = (index % width) | 0;
-                            y = ((index - x) / width) | 0;
+                            x = simdope.modulo_uint(index, width);
+                            y = simdope.divide_uint(simdope.minus_uint(index, x), width);
 
-                            if((pr_top_left_x|0) > ((x-12)|0)) {pr_top_left_x = Math.max(0, x-12|0)|0 }else if((pr_bottom_right_x|0) < ((x+12)|0)) { pr_bottom_right_x = Math.min(width, x+12|0)|0 }
-                            if((pr_top_left_y|0) > ((y-12)|0)) { pr_top_left_y = Math.max(0, y-12|0)|0 }else if((pr_bottom_right_y|0) < ((y+12)|0)) { pr_bottom_right_y = Math.min(height, y+12|0)|0 }
-                            _state.fp.setUint32((index*4|0)>>>0, value, false);
+                            if(simdope.uint_greater(pr_top_left_x, simdope.minus_uint(x, 12))) {pr_top_left_x = simdope.max_int(0, simdope.minus_uint(x, 12));}
+                            else if(simdope.uint_less(pr_bottom_right_x, simdope.plus_uint(x, 12))) {pr_bottom_right_x = simdope.min_int(width,  simdope.plus_uint(x, 12)); }
+                            if(simdope.uint_greater(pr_top_left_y, simdope.minus_uint(y, 12))) {pr_top_left_y = simdope.max_int(0, simdope.minus_uint(y, 12));}
+                            else if(simdope.uint_less(pr_bottom_right_y, simdope.plus_uint(y, 12))) {pr_bottom_right_y = simdope.min_int(height, simdope.plus_uint(y,12)); }
+
+                            _state.fp.setUint32(simdope.multiply_uint(index,4), value, false);
                         });
 
                         pr.width = 1 + pr_bottom_right_x - pr_top_left_x | 0;
@@ -340,6 +343,7 @@ const SuperCanvas = {
                 return new Promise(function(resolve){
 
                     _state.ic = new Map(Array.from(_state.ic).concat(Array.from(indexed_changes)));
+                    indexed_changes.clear();
                     resolve();
                 });
             },

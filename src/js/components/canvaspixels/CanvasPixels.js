@@ -2900,10 +2900,9 @@ class CanvasPixels extends React.PureComponent {
 
     _auto_adjust_smoothness = () => {
 
-        const { _layer_index } = this.super_state.get_state();
-        let { _s_pxls, _s_pxl_colors } = this.super_state.get_state();
+        let { _layer_index,  _s_pxls, _s_pxl_colors, pxl_width, pxl_height } = this.super_state.get_state();
 
-        [ _s_pxls[_layer_index], _s_pxl_colors[_layer_index] ] = this._pxl_adjust_smoothness(_s_pxls[_layer_index], _s_pxl_colors[_layer_index]);
+        [ _s_pxls[_layer_index], _s_pxl_colors[_layer_index] ] = this._pxl_adjust_smoothness(_s_pxls[_layer_index], _s_pxl_colors[_layer_index], pxl_width, pxl_height);
 
 
         this.super_state.set_state({_s_pxls, _s_pxl_colors, _last_action_timestamp: Date.now()}).then(this.super_master_meta.update_canvas);
@@ -3294,13 +3293,14 @@ class CanvasPixels extends React.PureComponent {
 
     };
 
-    _pxl_adjust_smoothness = (pxls, pxl_colors, rounds = 1) => {
+    _pxl_adjust_smoothness = (pxls, pxl_colors, pxl_width, pxl_height, rounds) => {
 
-        const {pxl_width, pxl_height} = this.super_state.get_state();
-
+        pxl_width = pxl_width | 0;
+        pxl_height = pxl_height | 0;
+        rounds = rounds || 1;
         for(let round = 0; round < rounds; round++) {
 
-            pxls.forEach((pxl, i) => {
+            Array.from(pxls).forEach((pxl, i) => {
 
                 let up, right, bottom, left;
 

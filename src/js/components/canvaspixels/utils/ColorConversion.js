@@ -1,5 +1,4 @@
 import SIMDope from "../../../utils/SIMDope";
-import _createForOfIteratorHelperLoose from "javascript-time-ago/modules/TimeAgo";
 const simdope = SIMDope();
 
 const ColorConversion = {
@@ -22,9 +21,9 @@ const ColorConversion = {
                 const uint8array_rgba = new Uint8ClampedArray(uint32_array.buffer);
                 let uint8array_subcolor = new Uint8ClampedArray(uint32_array.length);
 
-                for(let i = 0, i4 = 0; i4 < uint8array_rgba.length; i = (i+1)|0, i4 = ((i4+4)|0)>>>0) {
+                for(let i4 = 0; simdope.uint_less(i4, uint8array_rgba.length); i4 = simdope.plus_uint(i4,4)) {
 
-                    uint8array_subcolor[i] = uint8array_rgba[i4+ci|0];
+                    uint8array_subcolor[simdope.divide_four_uint(i4)] = uint8array_rgba[simdope.plus_uint(i4,ci)];
                 }
 
                 return uint8array_subcolor;
@@ -269,7 +268,7 @@ const ColorConversion = {
                     g = hue_to_rgb(p, q, h);
                     b = hue_to_rgb(p, q, h - 1 / 3);
                 }
-                return Uint8ClampedArray.of(parseInt(r * 255), parseInt(g * 255), parseInt(b * 255), parseInt(a * 255));
+                return Uint8ClampedArray.of(simdope.format_uint(r * 255), simdope.format_uint(g * 255), simdope.format_uint(b * 255), simdope.format_uint(a * 255));
             },
             invert_uint32: function(uint32) {
                 "use strict";
@@ -320,18 +319,19 @@ const ColorConversion = {
                 let pxl_color_index = 0;
                 let color = 0;
 
-                for(let i = 0; (i|0) < (_pxls_length|0); i = (i + 1 | 0) >>> 0) {
+                for(let i = 0; simdope.uint_less(i,_pxls_length); i = simdope.plus_uint(i, 1)) {
 
-                    pxl_color_index = _pxls[i] | 0;
+                    pxl_color_index = simdope.format_uint(_pxls[i]);
                     color = simdope.clamp_uint32(_pxl_colors[pxl_color_index]);
+                    new_pxl_color_index = new_pxl_colors_map.get(color);
 
-                    if(new_pxl_colors_map.has(color)) {
+                    if(typeof new_pxl_color_index === "undefined") {
 
-                        new_pxl_color_index = new_pxl_colors_map.size | 0;
+                        new_pxl_color_index = simdope.format_uint(new_pxl_colors_map.size);
                         new_pxl_colors_map.set(color, new_pxl_color_index);
                     }
 
-                    new_pxls[i] = new_pxl_colors_map.get(color)|0;
+                    new_pxls[i] = simdope.format_uint(new_pxl_color_index);
                 }
 
                 let new_pxl_colors = new Uint32Array(new_pxl_colors_map.size);

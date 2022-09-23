@@ -1,5 +1,6 @@
 "use strict";
 var SIMDope = function() { return {
+    boolean_and(a, b) { return a && b; },
     binary_and(a, b) { return a & b; },
     binary_or(a, b) { return a | b; },
     binary_xor(a, b) { return a ^ b; },
@@ -16,12 +17,20 @@ var SIMDope = function() { return {
     binary_shift_left(a, bits) { return a << bits; },
     binary_shift_right_arithmetic(a, bits) { return a >> bits; },
     binary_shift_right_logical(a, bits) { return a >>> bits; },
+    min_num(x, y){return x != x ? y : y != y ? x : Math.min(x, y);},
+    max_num(x, y){return x != x ? y : y != y ? x : Math.max(x, y);},
+    modulo_int(a, b) {return a%b|0; },
+    modulo_uint(a, b) { return (a%b|0)>>>0; },
     plus_int(a, b) {return a+b|0; },
     minus_int(a, b) { return a-b|0; },
     plus_uint(a, b) {return (a+b|0)>>>0; },
     minus_uint(a, b) { return (a-b|0)>>>0; },
+    multiply_int(a, b) {return a*b|0; },
+    divide_int(a, b) { return a/b|0; },
+    multiply_uint(a, b) {return (a*b|0)>>>0; },
+    divide_uint(a, b) { return (a/b|0)>>>0; },
     divide_four_uint(n) { return (n>>2|0)>>>0; },
-    abs_int(n) {return (n ^ (n >> 31)) - (n >> 31); },
+    abs_int(n) {return (n|0) < 0 ? (-n|0)>>>0: (n|0)>>>0; },
     max_int(a, b) {return (a|0) > (b|0) ? b: a; },
     min_int(a, b) {return (a|0) > (b|0) ? a: b; },
     clamp_int( x, min, max ) {x = x - ((x - max) & ((max - x) >> 31));return x - ((x - min) & ((x - min) >> 31)); },
@@ -33,6 +42,14 @@ var SIMDope = function() { return {
     int_less_equal(a, b) { return (a|0) <= (b|0); },
     int_greater(a, b) { return (a|0) > (b|0); },
     int_greater_equal(a, b) { return (a|0) >= (b|0); },
+    uint_equal(a, b) { return ((a|0)>>>0) == ((b|0)>>>0); },
+    uint_not_equal(a, b) { return ((a|0)>>>0) != ((b|0)>>>0); },
+    uint_less(a, b) { return ((a|0)>>>0) < ((b|0)>>>0); },
+    uint_less_equal(a, b) { return ((a|0)>>>0) <= ((b|0)>>>0); },
+    uint_greater(a, b) { return ((a|0)>>>0) > ((b|0)>>>0); },
+    uint_greater_equal(a, b) { return ((a|0)>>>0) >= ((b|0)>>>0); },
+    format_int(n) {return (n|0);},
+    format_uint(n) {return (n|0)>>>0;},
 }};
 
 module.exports = SIMDope;
