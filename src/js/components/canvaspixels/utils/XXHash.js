@@ -2,18 +2,17 @@ import XXH from "xxhashjs";
 import xxHash from "../../../utils/xxhash";
 
 const XXHash = {
-
-    _get_32_js: function() {
+    _get_32_js() {
 
         return {
             // Compute properties
-            xxh_f: XXH.h32,
+            xxh_f: {create32(seed){return XXH.h32(seed)}},
             xxh_v: "32",
             xxh_t: "js",
             xxh_tt: Date.now()
         };
     },
-    _get_32_wasm: function() {
+    _get_32_wasm() {
 
         return new Promise(function(resolve, reject){
 
@@ -21,12 +20,8 @@ const XXHash = {
 
                 xxHash().then(function(create){
 
-                    function test() { return create.create32(0xFADE).update(Uint32Array.from(Array.of(3, 69, 777, 666)).buffer).digest();}
-
-                    test();
-
                     resolve({
-                        xxh_f: create.create32,
+                        xxh_f: create,
                         xxh_v: "32",
                         xxh_t: "wasm",
                         xxh_tt: Date.now()
@@ -42,8 +37,7 @@ const XXHash = {
             }
         });
     },
-
-    new: function(){
+    new(){
 
         let cs_32_js = this._get_32_js;
         let cs_32_wasm = this._get_32_wasm;
@@ -51,6 +45,8 @@ const XXHash = {
         let s = cs_32_js();
         cs_32_wasm().then(function(r){
             s = r;
+        }).catch(function(e){
+            s = cs_32_js();
         });
 
         return {
@@ -66,7 +62,7 @@ const XXHash = {
                 "use strict";
                 array_buffer = array_buffer.buffer || Buffer.from(array_buffer);
 
-                return (s.xxh_f(0xFADE).update(array_buffer).digest() | 0) >>> 0;
+                return (s.xxh_f.create32(0xFADE).update(array_buffer).digest() | 0) >>> 0;
             },
             base58_that: function (array) {
                 "use strict";

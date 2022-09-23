@@ -1,5 +1,5 @@
 const SuperMasterMeta = {
-    new(super_state, super_canvas, super_blend, canvas_pos, color_conversion, sraf){
+    init(super_state, super_canvas, super_blend, canvas_pos, color_conversion, sraf){
         "use strict";
 
         let state = {
@@ -137,7 +137,7 @@ const SuperMasterMeta = {
 
                             let indexed_changes = new Map();
                             // This is a list of color index that we explore
-                            const full_pxls = Uint32Array.from(_s_pxls[_layer_index].map(function(pci){ pci = pci|0; return (_s_pxl_colors[_layer_index][pci] | 0) & 0xFFFFFFFF; }));
+                            const full_pxls = Uint32Array.from(_s_pxls[_layer_index].map(function(pci){ pci = pci|0; return _s_pxl_colors[_layer_index][pci] & 0xFFFFFFFF; }));
                             let _pxl_indexes_of_current_shape = new Set();
 
                             if (Boolean(tool === "LINE" || tool === "RECTANGLE" || tool === "ELLIPSE" || tool === "TRIANGLE") && _shape_index_a !== -1 && _pxls_hovered !== -1) {
@@ -194,13 +194,13 @@ const SuperMasterMeta = {
 
                             const {imported_image_pxls_positioned, imported_image_pxl_colors, imported_image_pxls_positioned_keyset} = meta.super_state.get_imported_image_data();
                             let {bool_new_hover, bool_old_hover, bool_new_shape, bool_old_shape, bool_new_selection, bool_old_selection, bool_new_import, bool_old_import, bool_new_pixel} = boolean_work_variables;
-                            let full_pxls_length = full_pxls.length | 0;
+                            let full_pxls_length = (full_pxls.length | 0)>>>0;
                             let pos_x = 0;
                             let pos_y = 0;
 
                             if(!hide_canvas_content && !is_there_different_dimension){
 
-                                meta.super_blend.update((_layers.length + 1)|0, full_pxls_length);
+                                meta.super_blend.update((_layers.length + 1|0)>>>0, full_pxls_length);
                                 let super_blend_for = meta.super_blend.for;
                                 let super_blend_stack = meta.super_blend.stack;
 
@@ -233,10 +233,10 @@ const SuperMasterMeta = {
 
                                             if(_layers[i].hidden) {
 
-                                                super_blend_stack(i, (_s_pxl_colors[i][_s_pxls[i][index]]|0)& 0xFFFFFFFF, 0, 0);
+                                                super_blend_stack(i, _s_pxl_colors[i][_s_pxls[i][index]] & 0xFFFFFFFF, 0, 0);
                                             }else {
 
-                                                super_blend_stack(i, (_s_pxl_colors[i][_s_pxls[i][index]]|0) & 0xFFFFFFFF, (_layers[i].opacity * 255|0) & 0xFF, false);
+                                                super_blend_stack(i, _s_pxl_colors[i][_s_pxls[i][index]] & 0xFFFFFFFF, (_layers[i].opacity * 255|0) & 0xFF, false);
                                             }
                                         }
 

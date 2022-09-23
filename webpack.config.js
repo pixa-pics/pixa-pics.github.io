@@ -154,7 +154,7 @@ module.exports = {
                                         "ios": "10",
                                         "safari": "10"
                                     },
-                                    forceAllTransforms: false,
+                                    forceAllTransforms: true,
                                     shippedProposals: true,
                                     bugfixes: true,
                                     useBuiltIns: "usage"

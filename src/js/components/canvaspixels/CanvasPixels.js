@@ -50,13 +50,13 @@ class CanvasPixels extends React.PureComponent {
             this.xxhash = Object.create(XXHash).new();
             this.bmp_layer = Object.create(BMPLayer).from(pool);
             this.color_conversion = Object.create(ColorConversion).new();
-            this.super_blend = Object.create(SuperBlend).new();
+            this.super_blend = Object.create(SuperBlend).init();
             this.super_canvas = Object.create(SuperCanvas).from(null, 32, 32);
             this.canvas_pos = Object.create(CanvasPos).from(32,  32,  0.9,  32, 0, 0);
-            this.sraf = Object.create(SmartRequestAnimationFrame).new();
+            this.sraf = Object.create(SmartRequestAnimationFrame).init();
             this.canvas_filters = Object.create(CanvasFilters).init(this.color_conversion);
             this.sraf.start_timer();
-            this.super_master_meta = Object.create(SuperMasterMeta).new(this.super_state, this.super_canvas, this.super_blend, this.canvas_pos, this.color_conversion, this.sraf);
+            this.super_master_meta = Object.create(SuperMasterMeta).init(this.super_state, this.super_canvas, this.super_blend, this.canvas_pos, this.color_conversion, this.sraf);
             this.hasnt_been_mount = true;
         }
     };
@@ -508,7 +508,7 @@ class CanvasPixels extends React.PureComponent {
 
             const p = _s_pxls[_layer_index];
             const pc = _s_pxl_colors[_layer_index];
-            const hash = this.xxhash.base58_that(Uint32Array.from(p.map(function(pci){ pci = pci|0; return (pc[pci] | 0) & 0xFFFFFFFF; })));
+            const hash = this.xxhash.base58_that(Uint32Array.from(p.map(function(pci){ pci = pci|0; return (pc[pci]|0)&0xFFFFFFFF; })));
             if (_last_filters_hash !== hash || _processing_filters === false) {
 
                 let thumbnails = _filter_thumbnails || new Map()
@@ -1230,16 +1230,16 @@ class CanvasPixels extends React.PureComponent {
         if(element === null) {return}
 
         let super_master_meta = this.super_master_meta;
-            super_master_meta.set_notifiers(
-                this.props.onPositionChange,
-                this.props.onSomethingSelectedChange,
-                this.props.onCurrentColorChange,
-                this.props.onRelevantActionEvent,
-                this._request_force_update
-            );
+        super_master_meta.set_notifiers(
+            this.props.onPositionChange,
+            this.props.onSomethingSelectedChange,
+            this.props.onCurrentColorChange,
+            this.props.onRelevantActionEvent,
+            this._request_force_update
+        );
 
         let canvas_pos = this.canvas_pos;
-            canvas_pos.set_notifiers(
+        canvas_pos.set_notifiers(
             this._request_force_update,
             this._handle_canvas_wrapper_overflow_context_menu,
             function(event){super_master_meta._handle_canvas_mouse_move(event)},
@@ -1531,7 +1531,7 @@ class CanvasPixels extends React.PureComponent {
 
                             const p =  new_current_state._s_pxls[index];
                             const pc = new_current_state._s_pxl_colors[index];
-                            const new_hash = xxhash.base58_that(Uint32Array.from(p.map(function(pci){ pci = pci|0; return (pc[pci] | 0) & 0xFFFFFFFF; })));
+                            const new_hash = xxhash.base58_that(Uint32Array.from(p.map(function(pci){ pci = pci | 0; return (pc[pci]|0)&0xFFFFFFFF; })));
                             const old_layer = Object.assign({}, (old_current_state._layers || new Array())[index]);
                             const old_thumbnail = old_layer.thumbnail || "";
                             const old_hash = old_layer.hash || "";

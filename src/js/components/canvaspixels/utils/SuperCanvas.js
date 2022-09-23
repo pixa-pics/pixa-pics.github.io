@@ -88,11 +88,11 @@ const SuperCanvas = {
         const bpro = AsyncFunction(
             `var bpro = async function(s_width, pr_width, pr_height, pr_top_left_x, pr_top_left_y, fp_buffer){
                 "use strict";
-                var fp_square = new Uint8ClampedArray(pr_width * pr_height * 4 | 0);
+                var fp_square = new Uint8ClampedArray((pr_width * pr_height * 4 | 0)>>>0);
                 var current_offset_start_index = 0;
-                for(var i = 0; (i|0) < (pr_height|0) ; i = i + 1 | 0) {
+                for(var i = 0; (i|0) < (pr_height|0) ; i = (i + 1 | 0)>>>0) {
                     current_offset_start_index = s_width * (i + pr_top_left_y) + pr_top_left_x | 0;
-                    fp_square.set(new Uint8ClampedArray(fp_buffer.slice(current_offset_start_index*4|0, (current_offset_start_index + pr_width)*4|0)), 4*i*pr_width|0);
+                    fp_square.set(new Uint8ClampedArray(fp_buffer.slice((current_offset_start_index*4|0)>>>0, ((current_offset_start_index + pr_width)*4|0)>>>0)), (4*i*pr_width|0)>>>0);
                 }
                 
                 return createImageBitmap(new ImageData(fp_square, pr_width|0, pr_height|0));
@@ -101,11 +101,10 @@ const SuperCanvas = {
 
         const pool = workerpool.pool({minWorkers: 1, maxWorkers: 1});
         const d2d = this.draw_2d;
-        const template = function(c, pxl_width, pxl_height, fp){
+        const template = function(c, pxl_width, pxl_height){
 
             pxl_width = pxl_width | 0;
             pxl_height = pxl_height | 0;
-            fp = fp || null;
 
             function cs(c, pxl_width, pxl_height) {
 
@@ -142,7 +141,7 @@ const SuperCanvas = {
             return {
                 s: cs(c, pxl_width, pxl_height),
                 enable_paint_type: "",
-                fp: fp || new DataView(new ArrayBuffer(pxl_height * pxl_width * 4)),
+                fp: new DataView(new ArrayBuffer(pxl_height * pxl_width * 4)),
                 ic: new Map(),
                 ic2: new Map(),
                 b: {
@@ -302,14 +301,14 @@ const SuperCanvas = {
                         _state.ic2.forEach(function (value, index) {
 
                             value = value & 0xFFFFFFFF;
-                            index = index | 0;
+                            index = (index | 0) >>> 0;
 
                             x = (index % width) | 0;
                             y = ((index - x) / width) | 0;
 
-                            if((pr_top_left_x|0) > ((x-12)|0)) {pr_top_left_x = MAX_INT(0, (x-12)|0)|0 }else if((pr_bottom_right_x|0) < ((x+12)|0)) { pr_bottom_right_x = MIN_INT(width, (x+12)|0)|0 }
-                            if((pr_top_left_y|0) > ((y-12)|0)) { pr_top_left_y = MAX_INT(0, (y-12)|0)|0 }else if((pr_bottom_right_y|0) < ((y+12)|0)) { pr_bottom_right_y = MIN_INT(height, (y+12)|0)|0 }
-                            _state.fp.setUint32(index*4|0, value, false);
+                            if((pr_top_left_x|0) > ((x-12)|0)) {pr_top_left_x = MAX_INT(0, x-12|0)|0 }else if((pr_bottom_right_x|0) < ((x+12)|0)) { pr_bottom_right_x = MIN_INT(width, x+12|0)|0 }
+                            if((pr_top_left_y|0) > ((y-12)|0)) { pr_top_left_y = MAX_INT(0, y-12|0)|0 }else if((pr_bottom_right_y|0) < ((y+12)|0)) { pr_bottom_right_y = MIN_INT(height, y+12|0)|0 }
+                            _state.fp.setUint32((index*4|0)>>>0, value, false);
                         });
 
                         pr.width = 1 + pr_bottom_right_x - pr_top_left_x | 0;
