@@ -1,3 +1,7 @@
+import SIMDope from "../../../utils/SIMDope";
+import _createForOfIteratorHelperLoose from "javascript-time-ago/modules/TimeAgo";
+const simdope = SIMDope();
+
 const ColorConversion = {
     new: function(){
         return {
@@ -319,22 +323,21 @@ const ColorConversion = {
                 for(let i = 0; (i|0) < (_pxls_length|0); i = (i + 1 | 0) >>> 0) {
 
                     pxl_color_index = _pxls[i] | 0;
-                    color = (_pxl_colors[pxl_color_index] | 0) & 0xFFFFFFFF;
-                    new_pxl_color_index = new_pxl_colors_map.get(color);
+                    color = simdope.clamp_uint32(_pxl_colors[pxl_color_index]);
 
-                    if(typeof new_pxl_color_index === "undefined") {
+                    if(new_pxl_colors_map.has(color)) {
 
                         new_pxl_color_index = new_pxl_colors_map.size | 0;
                         new_pxl_colors_map.set(color, new_pxl_color_index);
                     }
 
-                    new_pxls[i] = new_pxl_color_index | 0;
+                    new_pxls[i] = new_pxl_colors_map.get(color)|0;
                 }
 
                 let new_pxl_colors = new Uint32Array(new_pxl_colors_map.size);
                 for (let e of new_pxl_colors_map) {
 
-                    new_pxl_colors[e[1]|0] = (e[0] | 0) & 0xFFFFFFFF;
+                    new_pxl_colors[e[1]] = simdope.clamp_uint32(e[0]);
                 }
 
                 return Array.of(new_pxls, new_pxl_colors);
