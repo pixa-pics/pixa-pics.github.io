@@ -1,3 +1,7 @@
+import SIMDope from "../../../utils/SIMDope";
+import {simpleCheckForValidColor} from "react-color/lib/helpers";
+const simdope = SIMDope();
+
 const SuperMasterMeta = {
     init(super_state, super_canvas, super_blend, canvas_pos, color_conversion, sraf){
         "use strict";
@@ -81,7 +85,7 @@ const SuperMasterMeta = {
 
                     let promise = this;
                     // Only operate on canvas context if existing
-                    if ((meta.super_canvas.ok()|0) <= 0) {
+                    if (meta.super_canvas.ok()) {
 
                         let {
                             _is_there_new_dimension,
@@ -137,7 +141,7 @@ const SuperMasterMeta = {
 
                             let indexed_changes = new Map();
                             // This is a list of color index that we explore
-                            const full_pxls = Uint32Array.from(_s_pxls[_layer_index].map(function(pci){ pci = pci|0; return _s_pxl_colors[_layer_index][pci] & 0xFFFFFFFF; }));
+                            const full_pxls = Uint32Array.from(_s_pxls[_layer_index].map(function(pci){ return simdope.clamp_uint32(_s_pxl_colors[_layer_index][pci]); }));
                             let _pxl_indexes_of_current_shape = new Set();
 
                             if (Boolean(tool === "LINE" || tool === "RECTANGLE" || tool === "ELLIPSE" || tool === "TRIANGLE") && _shape_index_a !== -1 && _pxls_hovered !== -1) {
@@ -194,19 +198,19 @@ const SuperMasterMeta = {
 
                             const {imported_image_pxls_positioned, imported_image_pxl_colors, imported_image_pxls_positioned_keyset} = meta.super_state.get_imported_image_data();
                             let {bool_new_hover, bool_old_hover, bool_new_shape, bool_old_shape, bool_new_selection, bool_old_selection, bool_new_import, bool_old_import, bool_new_pixel} = boolean_work_variables;
-                            let full_pxls_length = (full_pxls.length | 0)>>>0;
+                            let full_pxls_length = full_pxls.length | 0;
                             let pos_x = 0;
                             let pos_y = 0;
 
                             if(!hide_canvas_content && !is_there_different_dimension){
 
-                                meta.super_blend.update((_layers.length + 1|0)>>>0, full_pxls_length);
+                                meta.super_blend.update(simdope.plus_uint(_layers.length, 1), full_pxls_length);
                                 let super_blend_for = meta.super_blend.for;
                                 let super_blend_stack = meta.super_blend.stack;
 
-                                for (let index = 0; (index|0) < (full_pxls_length|0); index = ((index + 1) | 0) >>> 0) {
+                                for (let index = 0; simdope.int_not_equal(index, full_pxls_length); index = simdope.plus_uint(index, 1)) {
 
-                                    bool_new_hover = ((_pxls_hovered - index|0)>>>0) < 1;
+                                    bool_new_hover = simdope.int_equal(_pxls_hovered, index);
                                     bool_old_hover = _old_pxls_hovered.has(index);
                                     bool_new_shape = _pxl_indexes_of_current_shape.has(index);
                                     bool_old_shape = _pxl_indexes_of_old_shape.has(index);
@@ -214,14 +218,14 @@ const SuperMasterMeta = {
                                     bool_old_selection = _pxl_indexes_of_selection_drawn.has(index);
                                     bool_new_import = imported_image_pxls_positioned_keyset.has(index);
                                     bool_old_import = _previous_imported_image_pxls_positioned_keyset.has(index);
-                                    bool_new_pixel = ((full_pxls[index] - _old_full_pxls[index]|0)>>>0) > 0;
+                                    bool_new_pixel = simdope.int_not_equal(full_pxls[index], _old_full_pxls[index]);
 
                                     if (
                                         clear_canvas ||
                                         bool_new_hover ||
                                         bool_old_hover ||
-                                        bool_new_shape !== bool_old_shape ||
-                                        bool_new_selection !== bool_old_selection ||
+                                        simdope.binary_not_equal(bool_new_shape, bool_old_shape) ||
+                                        simdope.binary_not_equal(bool_new_selection, bool_old_selection) ||
                                         bool_old_import ||
                                         bool_new_import ||
                                         bool_new_pixel
@@ -233,10 +237,10 @@ const SuperMasterMeta = {
 
                                             if(_layers[i].hidden) {
 
-                                                super_blend_stack(i, _s_pxl_colors[i][_s_pxls[i][index]] & 0xFFFFFFFF, 0, 0);
+                                                super_blend_stack(i, _s_pxl_colors[i][_s_pxls[i][index]], 0, 0);
                                             }else {
 
-                                                super_blend_stack(i, _s_pxl_colors[i][_s_pxls[i][index]] & 0xFFFFFFFF, (_layers[i].opacity * 255|0) & 0xFF, false);
+                                                super_blend_stack(i, _s_pxl_colors[i][_s_pxls[i][index]], (_layers[i].opacity * 255|0) & 0xFF, false);
                                             }
                                         }
 
@@ -252,7 +256,7 @@ const SuperMasterMeta = {
 
                                         if (bool_new_import) {
 
-                                            super_blend_stack(layers_length, imported_image_pxl_colors[imported_image_pxls_positioned[index]] & 0xFFFFFFFF, 255, false);
+                                            super_blend_stack(layers_length, imported_image_pxl_colors[imported_image_pxls_positioned[index]], 255, false);
                                         } else if (bool_new_hover) {
 
                                             super_blend_stack(layers_length, 0, 236, true);
@@ -265,7 +269,7 @@ const SuperMasterMeta = {
                                             pos_x = (index % pxl_width) | 0;
                                             pos_y = ((index - pos_x) / pxl_width) | 0;
 
-                                            super_blend_stack(layers_length, 0, (96 + ((((pos_x + pos_y + (_selection_pair_highlight | 0) | 0) & 1) | 0) * 64)|0) & 0xFF, true);
+                                            super_blend_stack(layers_length, 0, 96 + ((((pos_x + pos_y + (_selection_pair_highlight | 0) | 0) & 1) | 0) * 64)|0, true);
 
                                         }
                                     }

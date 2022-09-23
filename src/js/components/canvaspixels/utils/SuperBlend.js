@@ -192,7 +192,7 @@ const SuperBlend = {
 
         // Slice uint32 colors and give them as uint8
         for(let layer_n = 0; layer_n < state.layer_number; layer_n = (layer_n + 1 | 0) >>> 0) {
-            shadow_state.rgba_colors_data_in_layers[layer_n] = state.colors_data_in_layers_uint8[layer_n].slice(0, shadow_state.used_colors_length_4|0);
+            shadow_state.rgba_colors_data_in_layers[layer_n] = state.colors_data_in_layers_uint8[layer_n].subarray(0, shadow_state.used_colors_length_4|0);
         }
 
         return shadow_state;
@@ -305,7 +305,7 @@ const SuperBlend = {
                             float_variables[0] = base[3];
                             float_variables[1] = simdope.clamp_uint8(added[3] * float_variables[5]/255);
 
-                            if ((float_variables[0]|0) > 0 && (float_variables[1]|0) > 0) {
+                            if (simdope.int_not_equal(float_variables[0], 0) > 0 && simdope.int_not_equal(float_variables[1], 0)) {
 
                                 if((alpha_addition|0) > 0) { float_variables[2] = simdope.clamp_uint8((float_variables[0] + float_variables[1]) / 2); } else { float_variables[2] = simdope.clamp_uint8(255 - (1 - float_variables[1]/255) * (1 - float_variables[0]/255) * 255);}
                                 float_variables[3] = simdope.clamp_uint8(float_variables[1] / float_variables[2] * 255);
