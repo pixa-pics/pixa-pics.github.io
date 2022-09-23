@@ -1,5 +1,5 @@
 import SIMDope from "../../../utils/SIMDope";
-const simdope = SIMDope();
+const simdops = SIMDope.simdops;
 
 const SuperMasterMeta = {
     init(super_state, super_canvas, super_blend, canvas_pos, color_conversion, sraf){
@@ -141,7 +141,7 @@ const SuperMasterMeta = {
                         }else {
 
                             // This is a list of color index that we explore
-                            const full_pxls = Uint32Array.from(_s_pxls[_layer_index].map(function(pci){ return simdope.clamp_uint32(_s_pxl_colors[_layer_index][pci]); }));
+                            const full_pxls = Uint32Array.from(_s_pxls[_layer_index].map(function(pci){ return simdops.clamp_uint32(_s_pxl_colors[_layer_index][pci]); }));
                             let _pxl_indexes_of_current_shape = new Set();
 
                             if (Boolean(tool === "LINE" || tool === "RECTANGLE" || tool === "ELLIPSE" || tool === "TRIANGLE") && _shape_index_a !== -1 && _pxls_hovered !== -1) {
@@ -204,13 +204,13 @@ const SuperMasterMeta = {
 
                             if(!hide_canvas_content && !is_there_different_dimension){
 
-                                meta.super_blend.update(simdope.plus_uint(_layers.length, 1), full_pxls_length);
+                                meta.super_blend.update(simdops.plus_uint(_layers.length, 1), full_pxls_length);
                                 let super_blend_for = meta.super_blend.for;
                                 let super_blend_stack = meta.super_blend.stack;
 
-                                for (let index = 0; simdope.int_less(index, full_pxls_length); index = simdope.plus_uint(index, 1)) {
+                                for (let index = 0; simdops.int_less(index, full_pxls_length); index = simdops.plus_uint(index, 1)) {
 
-                                    bool_new_hover = simdope.int_equal(_pxls_hovered, index);
+                                    bool_new_hover = simdops.int_equal(_pxls_hovered, index);
                                     bool_old_hover = _old_pxls_hovered.has(index);
                                     bool_new_shape = _pxl_indexes_of_current_shape.has(index);
                                     bool_old_shape = _pxl_indexes_of_old_shape.has(index);
@@ -218,7 +218,7 @@ const SuperMasterMeta = {
                                     bool_old_selection = _pxl_indexes_of_selection_drawn.has(index);
                                     bool_new_import = imported_image_pxls_positioned_keyset.has(index);
                                     bool_old_import = _previous_imported_image_pxls_positioned_keyset.has(index);
-                                    bool_new_pixel = simdope.int_not_equal(full_pxls[index], _old_full_pxls[index]);
+                                    bool_new_pixel = simdops.int_not_equal(full_pxls[index], _old_full_pxls[index]);
 
                                     if (
                                         clear_canvas ||
@@ -233,14 +233,14 @@ const SuperMasterMeta = {
 
                                         super_blend_for(index);
 
-                                        for (let i = 0; simdope.int_less(i, layers_length); i = simdope.plus_uint(i,1)) {
+                                        for (let i = 0; simdops.int_less(i, layers_length); i = simdops.plus_uint(i,1)) {
 
                                             if(_layers[i].hidden) {
 
                                                 super_blend_stack(i, _s_pxl_colors[i][_s_pxls[i][index]], 0, 0);
                                             }else {
 
-                                                super_blend_stack(i, _s_pxl_colors[i][_s_pxls[i][index]], simdope.clamp_uint8(simdope.multiply_uint(_layers[i].opacity, 255)), false);
+                                                super_blend_stack(i, _s_pxl_colors[i][_s_pxls[i][index]], simdops.clamp_uint8(simdops.multiply_uint(_layers[i].opacity, 255)), false);
                                             }
                                         }
 
@@ -287,20 +287,16 @@ const SuperMasterMeta = {
                                         meta.super_canvas.prender().then(function(b2){
                                             meta.sraf.run_frame(function () {
                                                 meta.super_canvas.render(b2).then(function(){
-                                                    state = {
-                                                        _previous_imported_image_pxls_positioned_keyset: imported_image_pxls_positioned_keyset,
-                                                        _pxl_indexes_of_selection_drawn: _pxl_indexes_of_selection_drawn,
-                                                        _pxl_indexes_of_old_shape: _pxl_indexes_of_old_shape,
-                                                        _old_pxls_hovered: _old_pxls_hovered,
-                                                        _old_selection_pair_highlight: _selection_pair_highlight && true,
+                                                    state = Object.assign(state, {
+                                                        _old_selection_pair_highlight: _selection_pair_highlight,
                                                         _old_layers_string_id: old_layers_string_id,
                                                         _old_full_pxls: full_pxls,
                                                         _old_pxl_width: pxl_width | 0,
                                                         _old_pxl_height: pxl_height | 0,
                                                         _last_paint_timestamp: requested_at,
-                                                        _is_there_new_dimension: is_there_new_dimension && true,
-                                                        _did_hide_canvas_content: hide_canvas_content && true
-                                                    };
+                                                        _is_there_new_dimension: is_there_new_dimension,
+                                                        _did_hide_canvas_content: hide_canvas_content
+                                                    });
                                                     if(is_there_new_dimension !== _is_there_new_dimension || is_there_different_dimension) {
 
                                                         state._is_there_new_dimension = is_there_different_dimension;

@@ -1,5 +1,5 @@
 import SIMDope from "../../../utils/SIMDope";
-const simdope = SIMDope();
+const simdops = SIMDope.simdops;
 
 const ColorConversion = {
     new: function(){
@@ -21,9 +21,9 @@ const ColorConversion = {
                 const uint8array_rgba = new Uint8ClampedArray(uint32_array.buffer);
                 let uint8array_subcolor = new Uint8ClampedArray(uint32_array.length);
 
-                for(let i4 = 0; simdope.uint_less(i4, uint8array_rgba.length); i4 = simdope.plus_uint(i4,4)) {
+                for(let i4 = 0; simdops.uint_less(i4, uint8array_rgba.length); i4 = simdops.plus_uint(i4,4)) {
 
-                    uint8array_subcolor[simdope.divide_four_uint(i4)] = uint8array_rgba[simdope.plus_uint(i4,ci)];
+                    uint8array_subcolor[simdops.divide_four_uint(i4)] = uint8array_rgba[simdops.plus_uint(i4,ci)];
                 }
 
                 return uint8array_subcolor;
@@ -268,7 +268,7 @@ const ColorConversion = {
                     g = hue_to_rgb(p, q, h);
                     b = hue_to_rgb(p, q, h - 1 / 3);
                 }
-                return Uint8ClampedArray.of(simdope.format_uint(r * 255), simdope.format_uint(g * 255), simdope.format_uint(b * 255), simdope.format_uint(a * 255));
+                return Uint8ClampedArray.of(simdops.format_uint(r * 255), simdops.format_uint(g * 255), simdops.format_uint(b * 255), simdops.format_uint(a * 255));
             },
             invert_uint32: function(uint32) {
                 "use strict";
@@ -319,25 +319,25 @@ const ColorConversion = {
                 let pxl_color_index = 0;
                 let color = 0;
 
-                for(let i = 0; simdope.uint_less(i,_pxls_length); i = simdope.plus_uint(i, 1)) {
+                for(let i = 0; simdops.uint_less(i,_pxls_length); i = simdops.plus_uint(i, 1)) {
 
-                    pxl_color_index = simdope.format_uint(_pxls[i]);
-                    color = simdope.clamp_uint32(_pxl_colors[pxl_color_index]);
+                    pxl_color_index = simdops.format_uint(_pxls[i]);
+                    color = simdops.clamp_uint32(_pxl_colors[pxl_color_index]);
                     new_pxl_color_index = new_pxl_colors_map.get(color);
 
                     if(typeof new_pxl_color_index === "undefined") {
 
-                        new_pxl_color_index = simdope.format_uint(new_pxl_colors_map.size);
+                        new_pxl_color_index = simdops.format_uint(new_pxl_colors_map.size);
                         new_pxl_colors_map.set(color, new_pxl_color_index);
                     }
 
-                    new_pxls[i] = simdope.format_uint(new_pxl_color_index);
+                    new_pxls[i] = simdops.format_uint(new_pxl_color_index);
                 }
 
                 let new_pxl_colors = new Uint32Array(new_pxl_colors_map.size);
                 for (let e of new_pxl_colors_map) {
 
-                    new_pxl_colors[e[1]] = simdope.clamp_uint32(e[0]);
+                    new_pxl_colors[e[1]] = simdops.clamp_uint32(e[0]);
                 }
 
                 return Array.of(new_pxls, new_pxl_colors);

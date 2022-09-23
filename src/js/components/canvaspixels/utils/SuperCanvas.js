@@ -1,6 +1,6 @@
 import workerpool from "workerpool";
 import SIMDope from "../../../utils/SIMDope";
-const simdope = SIMDope();
+const simdops = SIMDope.simdops;
 
 let requestIdleCallback, cancelIdleCallback;
 if ('requestIdleCallback' in window) {
@@ -297,18 +297,18 @@ const SuperCanvas = {
 
                         _state.ic2.forEach(function (value, index) {
 
-                            value = simdope.clamp_uint32(value);
+                            value = simdops.clamp_uint32(value);
                             index = (index|0) >>> 0;
 
-                            x = simdope.modulo_uint(index, width);
-                            y = simdope.divide_uint(simdope.minus_uint(index, x), width);
+                            x = simdops.modulo_uint(index, width);
+                            y = simdops.divide_uint(simdops.minus_uint(index, x), width);
 
-                            if(simdope.uint_greater(pr_top_left_x, simdope.minus_uint(x, 12))) {pr_top_left_x = simdope.max_int(0, simdope.minus_uint(x, 12));}
-                            else if(simdope.uint_less(pr_bottom_right_x, simdope.plus_uint(x, 12))) {pr_bottom_right_x = simdope.min_int(width,  simdope.plus_uint(x, 12)); }
-                            if(simdope.uint_greater(pr_top_left_y, simdope.minus_uint(y, 12))) {pr_top_left_y = simdope.max_int(0, simdope.minus_uint(y, 12));}
-                            else if(simdope.uint_less(pr_bottom_right_y, simdope.plus_uint(y, 12))) {pr_bottom_right_y = simdope.min_int(height, simdope.plus_uint(y,12)); }
+                            if(simdops.uint_greater(pr_top_left_x, simdops.minus_uint(x, 12))) {pr_top_left_x = simdops.max_int(0, simdops.minus_uint(x, 12));}
+                            else if(simdops.uint_less(pr_bottom_right_x, simdops.plus_uint(x, 12))) {pr_bottom_right_x = simdops.min_int(width,  simdops.plus_uint(x, 12)); }
+                            if(simdops.uint_greater(pr_top_left_y, simdops.minus_uint(y, 12))) {pr_top_left_y = simdops.max_int(0, simdops.minus_uint(y, 12));}
+                            else if(simdops.uint_less(pr_bottom_right_y, simdops.plus_uint(y, 12))) {pr_bottom_right_y = simdops.min_int(height, simdops.plus_uint(y,12)); }
 
-                            _state.fp.setUint32(simdope.multiply_uint(index,4), value, false);
+                            _state.fp.setUint32(simdops.multiply_uint(index,4), value, false);
                         });
 
                         pr.width = 1 + pr_bottom_right_x - pr_top_left_x | 0;
