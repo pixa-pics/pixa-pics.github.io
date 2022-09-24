@@ -1,6 +1,7 @@
 import SIMDope from "../../../utils/SIMDope";
 const simdops = SIMDope.simdops;
 const SIMDope_uint8_rgba = SIMDope.SIMDope_uint8_rgba;
+const SIMDope_uint8_rgba_array = SIMDope.SIMDope_uint8_rgba_array;
 const SuperBlend = {
     _build_state(layer_number, max_length) {
         "use strict";
@@ -59,7 +60,6 @@ const SuperBlend = {
             base_rgba_colors_for_blending: new Uint32Array(0),
             uint32_rgba_colors_data_in_layers: new Array(state.layer_number),
             start_layer_indexes: new Uint8ClampedArray(0),
-            mapped_colors: new Map(),
             all_layers_length: 0,
             used_colors_length: 0,
             bv: {}
@@ -67,10 +67,8 @@ const SuperBlend = {
 
         shadow_state.bv.color_less_uint8x4 = SIMDope_uint8_rgba.new_splat(64);
         shadow_state.bv.color_full_uint8x4 = SIMDope_uint8_rgba.new_splat(192);
-        shadow_state.bv.hover_uint8x4 = SIMDope_uint8_rgba.new_zero();
         shadow_state.bv.base_uint8x4 = SIMDope_uint8_rgba.new_zero();
         shadow_state.bv.added_uint8x4 = SIMDope_uint8_rgba.new_zero();
-        shadow_state.bv.float_variables = new Uint8ClampedArray(new ArrayBuffer(6));
         shadow_state.bv.start_layer = 0;
 
         // Slice uint32 colors and give them as uint8
@@ -183,7 +181,6 @@ const SuperBlend = {
         shadow_state.used_colors_length = state.current_index | 0;
         shadow_state.base_rgba_colors_for_blending = new Uint32Array(shadow_state.used_colors_length);
         shadow_state.start_layer_indexes = new Uint8ClampedArray(shadow_state.used_colors_length);
-        shadow_state.mapped_colors.clear()
 
         // Slice uint32 colors and give them as uint8
         for(let layer_n = 0; simdops.uint_less(layer_n, state.layer_number); layer_n = simdops.plus_uint(layer_n, 1)) {
@@ -233,8 +230,11 @@ const SuperBlend = {
 
                 shadow_state = shadow_updater(shadow_state, state);
                 let {hover_data_in_layers, amount_data_in_layers, indexes_data_for_layers} = state;
-                let {base_rgba_colors_for_blending, uint32_rgba_colors_data_in_layers, start_layer_indexes, mapped_colors, all_layers_length, used_colors_length, bv} = shadow_state;
-                let {color_less_uint8x4, color_full_uint8x4, hover_uint8x4, base_uint8x4, added_uint8x4, float_variables, start_layer} = bv;
+                let {base_rgba_colors_for_blending, uint32_rgba_colors_data_in_layers, start_layer_indexes, all_layers_length, used_colors_length, bv} = shadow_state;
+                let {color_less_uint8x4, color_full_uint8x4, base_uint8x4, added_uint8x4, start_layer} = bv;
+
+                let SIMDope_layers_with_colors = uint32_rgba_colors_data_in_layers.map(function (uint32_array){ return SIMDope_uint8_rgba_array(uint32_array.buffer); });
+                let SIMDope_final_with_colors = SIMDope_uint8_rgba_array(base_rgba_colors_for_blending);
 
                 // Browse the full list of pixel colors encoded within 32 bytes of data
                 for(let i = 0; simdops.int_less(i, used_colors_length); i = simdops.plus_uint(i,1)) {
@@ -245,7 +245,7 @@ const SuperBlend = {
 
                         if (simdops.int_equal(start_layer, -1)) {
 
-                            base_uint8x4 = SIMDope_uint8_rgba.new_uint32(uint32_rgba_colors_data_in_layers[layer_n][simdops.plus_uint(i)]);
+                            base_uint8x4 = SIMDope_layers_with_colors[layer_n].get_new_element(i);
                             if (simdops.int_equal(base_uint8x4.a, 255) && simdops.int_equal(amount_data_in_layers[layer_n][i], 255)) {
 
                                 start_layer = layer_n|0;
@@ -261,9 +261,9 @@ const SuperBlend = {
 
                     // Get the first base color to sum up with colors atop of it
                     if(simdops.int_less_equal(start_layer, 0)) {
-                        base_uint8x4 = SIMDope_uint8_rgba(base_rgba_colors_for_blending.buffer, i);
+                        base_uint8x4 = SIMDope_final_with_colors.get_element(i);
                     }else {
-                        base_uint8x4 = SIMDope_uint8_rgba.new_uint32(uint32_rgba_colors_data_in_layers[simdops.minus_int(start_layer,1)][i]);
+                        base_uint8x4 = SIMDope_layers_with_colors[simdops.minus_int(start_layer,1)].get_new_element(i);
                     }
 
                     // Sum up all colors above
@@ -273,20 +273,20 @@ const SuperBlend = {
                         if(simdops.uint_not_equal(hover_data_in_layers[layer_n][i], 0)) {
 
                             // Get the color below current layer and compute hover color
-                            added_uint8x4 = SIMDope_uint8_rgba.average(base_uint8x4, simdops.uint_greater_equal(SIMDope_uint8_rgba.sumarray(base_uint8x4, 0, 3), 384) ? color_full_uint8x4: color_less_uint8x4);
+                            added_uint8x4 = SIMDope_uint8_rgba.average(base_uint8x4, simdops.uint_greater_equal(base_uint8x4.sum_rgb(), 384) ? color_full_uint8x4: color_less_uint8x4);
                             added_uint8x4.set_a(simdops.plus_uint(128, simdops.divide_uint(amount_data_in_layers[layer_n][i], 2)));
                         }else {
 
-                            added_uint8x4 = SIMDope_uint8_rgba.new_uint32(uint32_rgba_colors_data_in_layers[layer_n][i]);
+                            added_uint8x4 = SIMDope_layers_with_colors[layer_n].get_new_element(i);
                         }
 
                         base_uint8x4.blend_with(added_uint8x4, amount_data_in_layers[layer_n][i], should_return_transparent, alpha_addition)
                     }
 
-                    base_rgba_colors_for_blending[i] = base_uint8x4.uint32;
+                    SIMDope_final_with_colors.set_element(i, base_uint8x4);
                 }
 
-                return Array.of(indexes_data_for_layers.slice(0, base_rgba_colors_for_blending.length), base_rgba_colors_for_blending);
+                return Array.of(indexes_data_for_layers.slice(0, SIMDope_final_with_colors.length), SIMDope_final_with_colors.subarray_uint32(0, SIMDope_final_with_colors.length));
             },
             build: function(layer_number, max_length) {
                 "use strict";
