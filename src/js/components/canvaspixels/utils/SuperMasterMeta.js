@@ -6,7 +6,8 @@ const SuperMasterMeta = {
         "use strict";
 
         let state = {
-            indexed_changes: new Map(),
+            index_changes: new Uint32Array(0),
+            color_changes: new Uint32Array(0),
             _pxl_indexes_of_selection_drawn: new Set(),
             _pxl_indexes_of_old_shape: new Set(),
             _old_selection_pair_highlight: true,
@@ -88,7 +89,8 @@ const SuperMasterMeta = {
                     if (meta.super_canvas.ok()) {
 
                         let {
-                            indexed_changes,
+                            index_changes,
+                            color_changes,
                             _is_there_new_dimension,
                             _old_layers_string_id,
                             _last_paint_timestamp,
@@ -277,12 +279,12 @@ const SuperMasterMeta = {
                                     }
                                 }
 
-                                indexed_changes = meta.super_blend.blend(false, false);
+                                [index_changes, color_changes] = meta.super_blend.blend(false, false);
                             }
 
-                            if (indexed_changes.size > 0 || clear_canvas || is_there_new_dimension || force_update) {
+                            if (index_changes.length > 0 || clear_canvas || is_there_new_dimension || force_update) {
 
-                                meta.super_canvas.pile(indexed_changes).then(function () {
+                                meta.super_canvas.pile(index_changes, color_changes).then(function () {
                                     meta.super_canvas.unpile(pxl_width, pxl_height).then(function () {
                                         meta.super_canvas.prender().then(function(b2){
                                             meta.sraf.run_frame(function () {

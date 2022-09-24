@@ -338,12 +338,14 @@ const SuperCanvas = {
                     }
                 });
             },
-            pile: function(indexed_changes) {
+            pile: function(index_changes, color_changes) {
                 "use strict";
                 return new Promise(function(resolve){
 
-                    _state.ic = new Map(Array.from(_state.ic).concat(Array.from(indexed_changes)));
-                    indexed_changes.clear();
+                    let length = index_changes.length|0;
+                    for(let i = 0; simdops.int_less(i, length); i = simdops.plus_uint(i, 1)) {
+                        _state.ic.set(simdops.clamp_uint32(index_changes[i]), simdops.clamp_uint32(color_changes[i]));
+                    }
                     resolve();
                 });
             },

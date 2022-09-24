@@ -40,7 +40,8 @@ import SmartRequestAnimationFrame from "../canvaspixels/utils/SmartRequestAnimat
 import XXHash from "../canvaspixels/utils/XXHash";
 import CanvasPos from "../canvaspixels/utils/CanvasPos"
 import CanvasFilters from "../canvaspixels/utils/CanvasFilters"
-
+import SIMDope from "../../utils/SIMDope";
+const simdops = SIMDope.simdops;
 class CanvasPixels extends React.PureComponent {
 
     constructor(props) {
@@ -458,13 +459,13 @@ class CanvasPixels extends React.PureComponent {
                 super_blend.stack(2, top_layer_pxl_colors[top_layer_pxls[i]]|0, top_layer_opacity, 0);
             }
 
-            const ic = super_blend.blend(false, false);
+            const [index_changes, color_changes] = super_blend.blend(false, false);
             const fp = new DataView(new ArrayBuffer(pxl_height * pxl_width * 4));
-            ic.forEach(function (value, index) {
-                value = value | 0;
-                index = index | 0;
-                fp.setUint32(((index*4)|0) >>> 0, (value|0) & 0xFFFFFFFF);
-            });
+
+            let length = index_changes.length|0;
+            for(let i = 0; simdops.int_less(i, length); i = simdops.plus_uint(i, 1)) {
+                fp.setUint32(simdops.multiply_uint(index_changes[i], 4), color_changes[i]);
+            }
 
             const image_data = new ImageData(new Uint8ClampedArray(fp.buffer), pxl_width, pxl_height);
             const {new_pxl_colors, new_pxls} = this._get_pixels_palette_and_list_from_image_data(image_data, true);
