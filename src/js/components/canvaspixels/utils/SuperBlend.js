@@ -245,7 +245,8 @@ const SuperBlend = {
 
                         if (simdops.int_equal(start_layer, -1)) {
 
-                            if (simdops.int_equal(simdops.clamp_uint8(uint32_rgba_colors_data_in_layers[layer_n][simdops.plus_uint(i, 3)]), 255) && simdops.int_equal(simdops.clamp_uint8(amount_data_in_layers[layer_n][i]), 255)) {
+                            base_uint8x4 = SIMDopeColorUint8x4.new_uint32(uint32_rgba_colors_data_in_layers[layer_n][simdops.plus_uint(i)]);
+                            if (simdops.int_equal(base_uint8x4.a, 255) && simdops.int_equal(amount_data_in_layers[layer_n][i], 255)) {
 
                                 start_layer = layer_n|0;
                             }
@@ -259,7 +260,7 @@ const SuperBlend = {
                     start_layer = start_layer_indexes[i];
                     // Get the first base color to sum up with colors atop of it
                     if(simdops.int_less_equal(start_layer, 0)) { base_uint8x4 = SIMDopeColorUint8x4(base_rgba_colors_for_blending.buffer, i);
-                    }else {base_uint8x4 = SIMDopeColorUint8x4(uint32_rgba_colors_data_in_layers[simdops.minus_int(start_layer,1)].buffer, i);}
+                    }else {base_uint8x4 = SIMDopeColorUint8x4.new_uint32(uint32_rgba_colors_data_in_layers[simdops.minus_int(start_layer,1)][i]);}
 
                     // Sum up all colors above
                     for(let layer_n = start_layer|0; simdops.int_less(layer_n, all_layers_length); layer_n = simdops.plus_uint(layer_n, 1)) {
@@ -285,7 +286,8 @@ const SuperBlend = {
                             added_uint8x4 = SIMDopeColorUint8x4.new_uint32(uint32_rgba_colors_data_in_layers[layer_n][i]);
                         }
 
-                        float_variables[5] = amount_data_in_layers[layer_n][i];
+                        base_uint8x4 = SIMDopeColorUint8x4.blend(base_uint8x4, added_uint8x4, amount_data_in_layers[layer_n][i], should_return_transparent, alpha_addition)
+                        /*float_variables[5] = amount_data_in_layers[layer_n][i];
 
                         if(should_return_transparent && simdops.uint_equal(added_uint8x4.a, 0) && simdops.uint_equal(float_variables[5], 255)) {
 
@@ -313,7 +315,7 @@ const SuperBlend = {
 
                                 base_uint8x4 = SIMDopeColorUint8x4.with_a(base_uint8x4, base_uint8x4.a);
                             }
-                        }
+                        }*/
                     }
                     base_rgba_colors_for_blending[i] = base_uint8x4.uint32;
                 }
