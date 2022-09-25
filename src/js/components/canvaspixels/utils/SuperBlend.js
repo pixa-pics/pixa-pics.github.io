@@ -65,8 +65,8 @@ const SuperBlend = {
             bv: {}
         };
 
-        shadow_state.bv.color_less_uint8x4 = SIMDope_uint8_rgba.new_splat(64);
-        shadow_state.bv.color_full_uint8x4 = SIMDope_uint8_rgba.new_splat(192);
+        shadow_state.bv.color_less_uint8x4 = SIMDope_uint8_rgba.new_splat(224);
+        shadow_state.bv.color_full_uint8x4 = SIMDope_uint8_rgba.new_splat(32);
         shadow_state.bv.base_uint8x4 = SIMDope_uint8_rgba.new_zero();
         shadow_state.bv.added_uint8x4 = SIMDope_uint8_rgba.new_zero();
         shadow_state.bv.start_layer = 0;
@@ -261,7 +261,7 @@ const SuperBlend = {
 
                     // Get the first base color to sum up with colors atop of it
                     if(simdops.int_less_equal(start_layer, 0)) {
-                        base_uint8x4 = SIMDope_final_with_colors.get_element(i);
+                        base_uint8x4.set(SIMDope_final_with_colors.get_element(i).buffer);
                     }else {
                         base_uint8x4 = SIMDope_layers_with_colors[simdops.minus_int(start_layer,1)].get_new_element(i);
                     }
@@ -273,7 +273,7 @@ const SuperBlend = {
                         if(simdops.uint_not_equal(hover_data_in_layers[layer_n][i], 0)) {
 
                             // Get the color below current layer and compute hover color
-                            added_uint8x4 = SIMDope_uint8_rgba.average(base_uint8x4, simdops.uint_greater_equal(base_uint8x4.sum_rgb(), 384) ? color_full_uint8x4: color_less_uint8x4);
+                            added_uint8x4 = SIMDope_uint8_rgba.average(base_uint8x4,base_uint8x4.is_dark() ? color_less_uint8x4: color_full_uint8x4);
                             added_uint8x4.set_a(simdops.plus_uint(128, simdops.divide_uint(amount_data_in_layers[layer_n][i], 2)));
                         }else {
 

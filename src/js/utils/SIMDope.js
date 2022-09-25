@@ -255,8 +255,13 @@ var SIMDope_uint8_rgba = function(with_main_buffer, offset_4bytes){
         return new SIMDope_uint8_rgba(with_main_buffer, offset_4bytes);
     }
 
-    this.buffer_ = "buffer" in with_main_buffer ? with_main_buffer.buffer: with_main_buffer
-    this.storage_uint8_ = new Uint8ClampedArray(this.buffer_, multiply_uint(offset_4bytes, 4),4);
+    if(!with_main_buffer instanceof Uint8ClampedArray) {
+
+        this.storage_uint8_ = new Uint8ClampedArray("buffer" in with_main_buffer ? with_main_buffer.buffer: with_main_buffer, multiply_uint(offset_4bytes, 4),4);
+    }else {
+
+        this.storage_uint8_ = new Uint8ClampedArray(with_main_buffer, multiply_uint(offset_4bytes, 4));
+    }
 };
 
 // NEW PARTICULAR : Number object other means of varruct
@@ -268,7 +273,7 @@ SIMDope_uint8_rgba.new_splat = function(n) {
     "use strict";
     var uint8ca = new Uint8ClampedArray(4);
     uint8ca.fill(clamp_uint8(n));
-    return SIMDope_uint8_rgba(uint8ca.buffer);
+    return SIMDope_uint8_rgba(uint8ca);
 };
 SIMDope_uint8_rgba.new_of = function(r, g, b, a) {
     "use strict";
@@ -277,7 +282,7 @@ SIMDope_uint8_rgba.new_of = function(r, g, b, a) {
     uint8ca[1] = clamp_uint8(g);
     uint8ca[2] = clamp_uint8(b);
     uint8ca[3] = clamp_uint8(a);
-    return SIMDope_uint8_rgba(uint8ca.buffer);
+    return SIMDope_uint8_rgba(uint8ca);
 };
 SIMDope_uint8_rgba.new_safe_of = function(r, g, b, a) {
     "use strict";
@@ -286,11 +291,11 @@ SIMDope_uint8_rgba.new_safe_of = function(r, g, b, a) {
     uint8ca[1] = clamp_int(g, 0, 255);
     uint8ca[2] = clamp_int(b, 0, 255);
     uint8ca[3] = clamp_int(a, 0, 255);
-    return SIMDope_uint8_rgba(uint8ca.buffer);
+    return SIMDope_uint8_rgba(uint8ca);
 };
 SIMDope_uint8_rgba.new_from = function(other) {
     "use strict";
-    return SIMDope_uint8_rgba(other.buffer);
+    return SIMDope_uint8_rgba(other);
 };
 
 SIMDope_uint8_rgba.new_array = function(array) {
@@ -300,7 +305,7 @@ SIMDope_uint8_rgba.new_array = function(array) {
     uint8ca[1] = clamp_uint8(array[1]);
     uint8ca[2] = clamp_uint8(array[2]);
     uint8ca[3] = clamp_uint8(array[3]);
-    return SIMDope_uint8_rgba(uint8ca.buffer);
+    return SIMDope_uint8_rgba(uint8ca);
 };
 
 SIMDope_uint8_rgba.new_array_safe = function(array) {
@@ -310,7 +315,7 @@ SIMDope_uint8_rgba.new_array_safe = function(array) {
     uint8ca[1] = clamp_uint8(clamp_int(array[1], 0, 255));
     uint8ca[2] = clamp_uint8(clamp_int(array[2], 0, 255));
     uint8ca[3] = clamp_uint8(clamp_int(array[3], 0, 255));
-    return SIMDope_uint8_rgba(uint8ca.buffer);
+    return SIMDope_uint8_rgba(uint8ca);
 };
 
 SIMDope_uint8_rgba.new_bool = function(r, g, b, a) {
@@ -320,14 +325,17 @@ SIMDope_uint8_rgba.new_bool = function(r, g, b, a) {
     uint8ca[1] = (g|0) > 0 ? 0x1 : 0x0;
     uint8ca[2] = (b|0) > 0 ? 0x1 : 0x0;
     uint8ca[3] = (a|0) > 0 ? 0x1 : 0x0;
-    return SIMDope_uint8_rgba(uint8ca.buffer);
+    return SIMDope_uint8_rgba(uint8ca);
 };
 
-SIMDope_uint8_rgba.new_uint32 = function(uint32) {
+SIMDope_uint8_rgba.new_uint32 = function(n) {
     "use strict";
-    var dv = new DataView(new ArrayBuffer(4));
-    dv.setUint32(0, clamp_uint32(uint32), true);
-    return SIMDope_uint8_rgba(dv.buffer);
+    var uint8ca = new Uint8ClampedArray(4);
+    uint8ca[3] = n & 0xff;
+    uint8ca[2] = (n >>> 8) & 0xff;
+    uint8ca[1] = (n >>> 16) & 0xff;
+    uint8ca[0] = (n >>> 24) & 0xff;
+    return SIMDope_uint8_rgba(uint8ca);
 };
 
 SIMDope_uint8_rgba.new_hsla = function(h, s, l, a) {
@@ -381,7 +389,13 @@ Object.defineProperty(SIMDope_uint8_rgba.prototype, 'a', {
 });
 
 Object.defineProperty(SIMDope_uint8_rgba.prototype, 'uint32', {
-    get: function() { "use strict"; return clamp_uint32(new DataView(this.storage_uint8_.buffer).getUint32(0));}
+    get: function() { "use strict";
+
+        return (this.storage_uint8_[0] << 24) |	// alpha
+            (this.storage_uint8_[1] << 16) |	// blue
+            (this.storage_uint8_[2] <<  8) |	// green
+            this.storage_uint8_[3];
+    }
 });
 
 Object.defineProperty(SIMDope_uint8_rgba.prototype, 'hex', {
@@ -502,6 +516,10 @@ SIMDope_uint8_rgba.prototype.sum_rgb = function() {
     return plus_uint(plus_uint(this.r, this.g), this.b);
 };
 
+SIMDope_uint8_rgba.prototype.is_dark = function() {
+    return !!uint_less_equal(this.sum_rgb(), 384);
+};
+
 SIMDope_uint8_rgba.prototype.match_with = function(added_uint8x4, threshold_255) {
     "use strict";
 
@@ -530,24 +548,24 @@ SIMDope_uint8_rgba.prototype.match_with = function(added_uint8x4, threshold_255)
 }
 
 SIMDope_uint8_rgba.prototype.set_r = function(r) {
-    "use strict"; var dv = new DataView(this.buffer)
-    dv.setUint8(0, clamp_uint8(r));
-    return this;
+    "use strict";
+    var uint8a = new Uint8ClampedArray(this.buffer)
+    uint8a[0] = clamp_uint8(r);
 };
 SIMDope_uint8_rgba.prototype.set_g = function(g) {
-    "use strict"; var dv = new DataView(this.buffer)
-    dv.setUint8(1, clamp_uint8(g));
-    return this;
+    "use strict";
+    var uint8a = new Uint8ClampedArray(this.buffer)
+    uint8a[1] = clamp_uint8(g);
 };
 SIMDope_uint8_rgba.prototype.set_b = function(b) {
-    "use strict"; var dv = new DataView(this.buffer)
-    dv.setUint8(2, clamp_uint8(b));
-    return this;
+    "use strict";
+    var uint8a = new Uint8ClampedArray(this.buffer)
+    uint8a[2] = clamp_uint8(b);
 };
 SIMDope_uint8_rgba.prototype.set_a = function(a) {
-    "use strict"; var dv = new DataView(this.buffer)
-    dv.setUint8(3, clamp_uint8(a));
-    return this;
+    "use strict";
+    var uint8a = new Uint8ClampedArray(this.buffer)
+    uint8a[3] = clamp_uint8(a);
 };
 
 // get a the number object wile modifying property values
@@ -555,25 +573,34 @@ SIMDope_uint8_rgba.with_r = function(t, r) {
     "use strict";
     var ta = t.slice(0, 4);
     ta[0] = clamp_uint8(r);
-    return SIMDope_uint8_rgba(ta.buffer);
+    return SIMDope_uint8_rgba(ta);
 };
 SIMDope_uint8_rgba.with_g = function(t, g) {
     "use strict";
     var ta = t.slice(0, 4);
     ta[1] = clamp_uint8(g);
-    return SIMDope_uint8_rgba(ta.buffer);
+    return SIMDope_uint8_rgba(ta);
 };
 SIMDope_uint8_rgba.with_b = function(t, b) {
     "use strict";
     var ta = t.slice(0, 4);
     ta[2] = clamp_uint8(b);
-    return SIMDope_uint8_rgba(ta.buffer);
+    return SIMDope_uint8_rgba(ta);
 };
 SIMDope_uint8_rgba.with_a = function(t, a) {
     "use strict";
     var ta = t.slice(0, 4);
     ta[3] = clamp_uint8(a);
-    return SIMDope_uint8_rgba(ta.buffer);
+    return SIMDope_uint8_rgba(ta);
+};
+SIMDope_uint8_rgba.with_inverse = function(t) {
+    "use strict";
+    var ta = t.slice(0, 4);
+    ta[0] = minus_uint(255 - ta[0]);
+    ta[1] = minus_uint(255 - ta[1]);
+    ta[2] = minus_uint(255 - ta[2]);
+    ta[3] = minus_uint(255 - ta[3]);
+    return SIMDope_uint8_rgba(ta);
 };
 
 // Get various operation on number object
@@ -713,14 +740,29 @@ Object.defineProperty(SIMDope_uint8_rgba_array.prototype, 'length', {
 Object.defineProperty(SIMDope_uint8_rgba_array.prototype, 'buffer', {
     get: function() { "use strict"; return this.storage_uint8_array_.buffer; }
 });
-Object.defineProperty(SIMDope_uint8_rgba_array.prototype, 'dataview_setUint8', {
-    get: function() { "use strict"; return function (i, n) { return this.storage_data_view_.setUint8(i, n); }}
+Object.defineProperty(SIMDope_uint8_rgba_array.prototype, 'buffer_setUint8', {
+    get: function() { "use strict"; return function (i, n) {
+        return this.storage_uint8_array_[format_uint(i)] = clamp_uint8(n);
+    }}
 });
-Object.defineProperty(SIMDope_uint8_rgba_array.prototype, 'dataview_setUint32', {
-    get: function() { "use strict"; return function (i, n) { return this.storage_data_view_.setUint32(i, n, true); }}
+Object.defineProperty(SIMDope_uint8_rgba_array.prototype, 'buffer_setUint32', {
+    get: function() { "use strict"; return function (i, n) {
+
+        n = clamp_uint32(n);
+        this.storage_uint8_array_[plus_uint(i, 0)] = n & 0xff;
+        this.storage_uint8_array_[plus_uint(i, 1)] = (n >>> 8) & 0xff;
+        this.storage_uint8_array_[plus_uint(i, 2)] = (n >>> 16) & 0xff;
+        this.storage_uint8_array_[plus_uint(i, 3)] = (n >>> 24) & 0xff;
+    }}
 });
-Object.defineProperty(SIMDope_uint8_rgba_array.prototype, 'dataview_getUint32', {
-    get: function() { "use strict"; return function (i) { return this.storage_data_view_.getUint32(i, true); }}
+Object.defineProperty(SIMDope_uint8_rgba_array.prototype, 'buffer_getUint32', {
+    get: function() { "use strict"; return function (i) {
+
+        return  (this.storage_uint8_array_[plus_uint(i, 3)] << 24) |	// alpha
+                (this.storage_uint8_array_[plus_uint(i, 2)] << 16) |	// blue
+                (this.storage_uint8_array_[plus_uint(i, 1)] <<  8) |	// green
+                 this.storage_uint8_array_[plus_uint(i, 0)];
+    }}
 });
 Object.defineProperty(SIMDope_uint8_rgba_array.prototype, 'subarray_uint32', {
     get: function() { "use strict"; return function (start, end){ return new Uint32Array(this.storage_uint8_array_.subarray(multiply_uint(start, 4), multiply_uint(end, 4)).reverse().buffer).reverse(); }}
@@ -743,10 +785,10 @@ SIMDope_uint8_rgba_array.prototype.get_element = function (i) {
 SIMDope_uint8_rgba_array.prototype.set_element = function (i, el) {
 
     i = multiply_uint(i, 4);
-    this.dataview_setUint8(i, el.r);
-    this.dataview_setUint8(plus_uint(i, 1), el.g);
-    this.dataview_setUint8(plus_uint(i, 2), el.b);
-    this.dataview_setUint8(plus_uint(i, 3), el.a);
+    this.buffer_setUint8(i, el.r);
+    this.buffer_setUint8(plus_uint(i, 1), el.g);
+    this.buffer_setUint8(plus_uint(i, 2), el.b);
+    this.buffer_setUint8(plus_uint(i, 3), el.a);
 }
 
 SIMDope_uint8_rgba_array.prototype.get_new_element = function (i) {
@@ -757,12 +799,12 @@ SIMDope_uint8_rgba_array.prototype.get_new_element = function (i) {
 
 SIMDope_uint8_rgba_array.prototype.set_uint32_element = function (i, uint32) {
 
-    this.dataview_setUint32(multiply_uint(i, 4), clamp_uint32(uint32), true);
+    this.buffer_setUint32(multiply_uint(i, 4), clamp_uint32(uint32), true);
 }
 
 SIMDope_uint8_rgba_array.prototype.get_uint32_element = function (i) {
 
-    return this.dataview_getUint32(multiply_uint(i, 4));
+    return this.buffer_getUint32(multiply_uint(i, 4));
 }
 
 
