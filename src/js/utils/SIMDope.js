@@ -255,12 +255,12 @@ var SIMDope_uint8_rgba = function(with_main_buffer, offset_4bytes){
         return new SIMDope_uint8_rgba(with_main_buffer, offset_4bytes);
     }
 
-    if(!with_main_buffer instanceof Uint8ClampedArray) {
+    if(with_main_buffer instanceof Uint8ClampedArray) {
 
-        this.storage_uint8_ = new Uint8ClampedArray("buffer" in with_main_buffer ? with_main_buffer.buffer: with_main_buffer, multiply_uint(offset_4bytes, 4),4);
+        this.storage_uint8_ =  with_main_buffer;
     }else {
 
-        this.storage_uint8_ = new Uint8ClampedArray(with_main_buffer, multiply_uint(offset_4bytes, 4));
+        this.storage_uint8_ = new Uint8ClampedArray("buffer" in with_main_buffer ? with_main_buffer.buffer: with_main_buffer, multiply_uint(offset_4bytes, 4));
     }
 };
 
