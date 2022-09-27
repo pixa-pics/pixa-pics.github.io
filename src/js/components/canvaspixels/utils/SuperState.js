@@ -86,7 +86,7 @@ const SuperState = {
             _s_pxls: [new Uint16Array((props.pxl_width || 32) * (props.pxl_height || 32)).fill(0)],
             _json_state_history: {history_position: 0, state_history: []},
             _saving_json_state_history_running: false,
-                _pxls_hovered: -1,
+            _pxls_hovered: -1,
             _canvas_container: null,
             _canvas_wrapper: null,
             _canvas_wrapper_overflow: null,
@@ -262,7 +262,7 @@ const SuperState = {
                             new Uint8ClampedArray(colors.buffer),
                             new Uint8ClampedArray(new Uint32Array(indexes.length).fill(color).reverse().buffer).reverse(),
                         ),
-                       opacity, false, false
+                        opacity, false, false
                     ).reverse().buffer
                 ).reverse();
 
@@ -555,16 +555,16 @@ const SuperState = {
                     primary.x = (from % width) | 0;
                     primary.y = ((from -  primary.x) / width) | 0;
                     secondary.y = ((to - secondary.y)) / width | 0;
-    
+
                     return {primary, secondary};
                 }
-    
+
                 function get_shadow_indexes_from_canvas_context(context, shadow_indexes) {
                     "use strict";
                     const ui32_colors = new Uint32Array(context.getImageData(0, 0, context.canvas.width, context.canvas.height).data.reverse().buffer).reverse();
                     const ui32_colors_length = ui32_colors.length | 0;
                     for(let i = 0; (i|0) < (ui32_colors_length|0); i = (i + 1 | 0)>>>0) {
-    
+
                         if(ui32_colors[i] !== 0) { shadow_indexes.add(i);}
                     }
                 }
@@ -717,7 +717,7 @@ const SuperState = {
                                 c.primary.y  = (c.primary.y+sy)|0;
                             }
                         }
-    
+
                         return pxl_indexes;
                     },
                     from_rectangle: function(from, to) {
@@ -735,7 +735,7 @@ const SuperState = {
                         let inside_rectangle_x = 0;
                         let inside_rectangle_y = 0;
                         for(let i = 0; i < pixel_number_in_rectangle; i = i + 1 | 0) {
-    
+
                             inside_rectangle_x = i % rectangle_width | 0;
                             inside_rectangle_y = (i - inside_rectangle_x) / rectangle_width | 0;
                             pxl_indexes.add((rectangle_top_left_y + inside_rectangle_y) * state.pxl_width + (rectangle_top_left_x + inside_rectangle_x) | 0);
@@ -752,22 +752,22 @@ const SuperState = {
                         let ellipse_height = Math.abs(c.primary.y - c.secondary.y) + 1 | 0;
                         const ellipse_top_left_x = Math.max(c.primary.x, c.secondary.x) - (ellipse_width - 1) | 0;
                         const ellipse_top_left_y = Math.max(c.primary.y, c.secondary.y) - (ellipse_height - 1) | 0;
-    
+
                         let ellipse_rayon_x = ellipse_width / 2;
                         let ellipse_rayon_y = ellipse_height / 2;
                         const ellipse_middle_x = ellipse_rayon_x + ellipse_top_left_x | 0;
                         const ellipse_middle_y = ellipse_rayon_y + ellipse_top_left_y | 0;
-    
+
                         let ellipse_context = new_canvas_context_2d(width, height);
-                            ellipse_context.save();
-                            ellipse_context.translate(ellipse_middle_x, ellipse_middle_y);
-                            ellipse_context.rotate(0);
-                            ellipse_context.scale(ellipse_rayon_x, ellipse_rayon_y);
-                            ellipse_context.arc(0, 0, 1, 0, 2 * Math.PI);
-                            ellipse_context.restore();
-                            ellipse_context.fillStyle = "#ffffffff";
-                            ellipse_context.fill();
-    
+                        ellipse_context.save();
+                        ellipse_context.translate(ellipse_middle_x, ellipse_middle_y);
+                        ellipse_context.rotate(0);
+                        ellipse_context.scale(ellipse_rayon_x, ellipse_rayon_y);
+                        ellipse_context.arc(0, 0, 1, 0, 2 * Math.PI);
+                        ellipse_context.restore();
+                        ellipse_context.fillStyle = "#ffffffff";
+                        ellipse_context.fill();
+
                         get_shadow_indexes_from_canvas_context(ellipse_context, pxl_indexes);
                         return pxl_indexes;
                     }
