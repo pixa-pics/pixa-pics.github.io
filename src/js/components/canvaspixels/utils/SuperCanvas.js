@@ -179,16 +179,19 @@ const SuperCanvas = {
             },
             render: function(b2) {
                 "use strict";
+
                 return new Promise(function (resolve, reject) {
 
                     if (_state.enable_paint_type === "bitmap") {
 
                         let b = typeof b2 !== "undefined" ? b2: _state.b;
-                        _state.b = b;
-                        _state.b.old_bmp.close();
+
                         _state.s.canvas_context.clearRect(b.bmp_x, b.bmp_y, b.bmp.width, b.bmp.height);
                         _state.s.canvas_context.globalCompositeOperation = "source-over";
                         _state.s.canvas_context.drawImage(b.bmp, b.bmp_x, b.bmp_y, b.bmp.width, b.bmp.height);
+
+                        b.old_bmp.close();
+                        _state.b = b;
                     } else if (_state.enable_paint_type === "offscreen") {
 
                         _state.s.canvas_context.globalCompositeOperation = "copy";
@@ -213,7 +216,7 @@ const SuperCanvas = {
                     if (_state.enable_paint_type === "bitmap") {
 
                         if(_state.b.old_bmp.width === 0) {
-                            let new_bmp_t = Date.now()|0;
+                            let new_bmp_t = Date.now();
                             let new_bmp_x = _state.pr.top_left.x | 0;
                             let new_bmp_y = _state.pr.top_left.y | 0;
                             let s_width = _state.s.width | 0;
@@ -226,6 +229,7 @@ const SuperCanvas = {
 
                                 return b(s_width, pr_width, pr_height, pr_top_left_x, pr_top_left_y, _state.fp.buffer);
                             }).then(function(bitmap){
+
 
                                 if(_state.b.bmp_t < new_bmp_t) {
 
@@ -346,6 +350,7 @@ const SuperCanvas = {
                     for(let i = 0; simdops.int_less(i, length); i = simdops.plus_uint(i, 1)) {
                         _state.ic.set(simdops.clamp_uint32(index_changes[i]), simdops.clamp_uint32(color_changes[i]));
                     }
+
                     resolve();
                 });
             },

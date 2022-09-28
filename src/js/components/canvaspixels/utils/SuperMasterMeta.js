@@ -287,7 +287,8 @@ const SuperMasterMeta = {
                                 meta.super_canvas.pile(index_changes, color_changes).then(function () {
                                     meta.super_canvas.unpile(pxl_width, pxl_height).then(function () {
                                         meta.super_canvas.prender().then(function(b2){
-                                            meta.sraf.run_frame(function () {
+
+                                            meta.sraf.run_frame( () => {
                                                 meta.super_canvas.render(b2).then(function(){
                                                     state = Object.assign(state, {
                                                         _old_selection_pair_highlight: _selection_pair_highlight,

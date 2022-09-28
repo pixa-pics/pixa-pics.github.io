@@ -451,7 +451,13 @@ Object.defineProperty(SIMDope_uint8_rgba.prototype, 'set', {
 
         if(with_buffer instanceof SIMDope_uint8_rgba) {
 
-            this.storage_uint8_.set(with_buffer.sub_uint8a());
+            this.storage_uint8_.set(with_buffer.copy_uint8a(0, 4));
+        }else if("slice" in with_buffer) {
+
+            this.storage_uint8_.set(with_buffer.slice(0, 4));
+        }else if("buffer" in with_buffer) {
+
+            this.storage_uint8_.set(with_buffer.buffer);
         }else {
 
             this.storage_uint8_.set(with_buffer);
@@ -467,20 +473,21 @@ Object.defineProperty(SIMDope_uint8_rgba.prototype, 'slice', {
 
 SIMDope_uint8_rgba.prototype.set_scale_of_on_255 = function(of_r, of_g, of_b, of_a) {
     var temp = Uint8ClampedArray.of(
-    divide_uint(multiply_uint(this.r, of_r), 255),
-        divide_uint(multiply_uint(this.g, of_g), 255),
-        divide_uint(multiply_uint(this.b, of_b), 255),
-        divide_uint(multiply_uint(this.a, of_a), 255)
+        divide_255(multiply_uint(this.r, of_r)),
+        divide_255(multiply_uint(this.g, of_g)),
+        divide_255(multiply_uint(this.b, of_b)),
+        divide_255(multiply_uint(this.a, of_a))
     );
     this.set(temp);
+    return this;
 }
 
 SIMDope_uint8_rgba.prototype.scale_of_on_255 = function(of_r, of_g, of_b, of_a) {
     var temp = Uint8ClampedArray.of(
-        divide_uint(multiply_uint(this.r, of_r), 255),
-        divide_uint(multiply_uint(this.g, of_g), 255),
-        divide_uint(multiply_uint(this.b, of_b), 255),
-        divide_uint(multiply_uint(this.a, of_a), 255)
+        divide_255(multiply_uint(this.r, of_r)),
+        divide_255(multiply_uint(this.g, of_g)),
+        divide_255(multiply_uint(this.b, of_b)),
+        divide_255(multiply_uint(this.a, of_a))
     );
     return SIMDope_uint8_rgba(temp);
 }
@@ -492,24 +499,18 @@ SIMDope_uint8_rgba.prototype.blend_with = function(added_uint8x4, amount_alpha, 
     alpha_addition = alpha_addition || false;
 
     var added_uint8x4b = added_uint8x4.copy().multiply_a_255(amount_alpha);
-    if(should_return_transparent && added_uint8x4.is_fully_transparent()) {
+    if(should_return_transparent && added_uint8x4b.is_fully_transparent()) {
 
         this.set(new ArrayBuffer(4));
     }else if (this.is_not_fully_transparent() && added_uint8x4b.is_not_fully_opaque()) {
 
-        let inverse_amount_alpha_float = inverse_255(amount_alpha);
-        let inverse_base_alpha_float = inverse_255(this.a);
-        let second_amount = 0;
-
-        if(alpha_addition) {
-            second_amount = divide_uint(plus_uint(this.a, amount_alpha), 2);
-        } else {
-            second_amount = inverse_255(divide_255(multiply_uint(inverse_amount_alpha_float, inverse_base_alpha_float)));
-        }
+        let second_amount = alpha_addition ?
+            divide_uint(plus_uint(this.a, amount_alpha), 2):
+            inverse_255(divide_255(multiply_uint(inverse_255(amount_alpha), inverse_255(this.a))));
 
         this.set(SIMDope_uint8_rgba.merge_scale_of_255(
             added_uint8x4b, divide_uint(multiply_uint(amount_alpha, 255), second_amount),
-            this, divide_uint(multiply_uint(this.a, inverse_amount_alpha_float), second_amount)
+            this, divide_uint(multiply_uint(this.a, inverse_255(amount_alpha)), second_amount)
         ).set_a(second_amount));
     }else {
 
@@ -606,7 +607,7 @@ SIMDope_uint8_rgba.prototype.set_a = function(a) {
 SIMDope_uint8_rgba.prototype.multiply_a_255 = function(n) {
     "use strict";
     var uint8a = new Uint8ClampedArray(this.buffer)
-    uint8a[0] = clamp_uint8(divide_uint(multiply_uint(uint8a[0], 255), 255));
+    uint8a[0] = clamp_uint8(divide_255(multiply_uint(uint8a[0], n)));
     return this;
 };
 SIMDope_uint8_rgba.prototype.copy = function(a) {
@@ -765,10 +766,10 @@ SIMDope_uint8_rgba.merge_scale_of_255 = function(t1, of1, t2, of2) {
 
 SIMDope_uint8_rgba.scale_of_on_255 = function(t, of_r, of_g, of_b, of_a) {
     var temp = new Uint8ClampedArray(4);
-    temp[3] = clamp_int(divide_uint(multiply_uint(t.r, of_r), 255), 0, 255);
-    temp[2] = clamp_int(divide_uint(multiply_uint(t.g, of_g), 255), 0, 255);
-    temp[1] = clamp_int(divide_uint(multiply_uint(t.b, of_b), 255), 0, 255);
-    temp[0] = clamp_int(divide_uint(multiply_uint(t.a, of_a), 255), 0, 255);
+    temp[3] = clamp_int(divide_255(multiply_uint(t.r, of_r)), 0, 255);
+    temp[2] = clamp_int(divide_255(multiply_uint(t.g, of_g)), 0, 255);
+    temp[1] = clamp_int(divide_255(multiply_uint(t.b, of_b)), 0, 255);
+    temp[0] = clamp_int(divide_255(multiply_uint(t.a, of_a)), 0, 255);
     return SIMDope_uint8_rgba(temp);
 }
 
