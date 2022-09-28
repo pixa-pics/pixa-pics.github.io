@@ -504,14 +504,15 @@ SIMDope_uint8_rgba.prototype.blend_with = function(added_uint8x4, amount_alpha, 
         this.set(new ArrayBuffer(4));
     }else if (this.is_not_fully_transparent() && added_uint8x4b.is_not_fully_opaque()) {
 
-        let second_amount = alpha_addition ?
+        let alpha = alpha_addition ?
             divide_uint(plus_uint(this.a, amount_alpha), 2):
-            inverse_255(divide_255(multiply_uint(inverse_255(amount_alpha), inverse_255(this.a))));
+            inverse_255(divide_255(multiply_uint(inverse_255(added_uint8x4b.a), inverse_255(this.a))));
 
         this.set(SIMDope_uint8_rgba.merge_scale_of_255(
-            added_uint8x4b, divide_uint(multiply_uint(amount_alpha, 255), second_amount),
-            this, divide_uint(multiply_uint(this.a, inverse_255(amount_alpha)), second_amount)
-        ).set_a(second_amount));
+            added_uint8x4b, divide_uint(multiply_uint(added_uint8x4b.a, 255), alpha),
+            this, divide_255(multiply_uint(this.a, divide_uint(multiply_uint(inverse_255(added_uint8x4b.a), 255), alpha)))
+            ).set_a(alpha)
+        );
     }else {
 
         this.set(added_uint8x4b);
