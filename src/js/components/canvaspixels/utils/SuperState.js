@@ -1,7 +1,7 @@
 import SIMDope from "../../../utils/SIMDope";
 const simdops = SIMDope.simdops;
-const SIMDope_uint8_rgba_array = SIMDope.SIMDope_uint8_rgba_array;
-const SIMDope_uint8_rgba = SIMDope.SIMDope_uint8_rgba;
+const SIMDope_colors = SIMDope.SIMDope_colors;
+const SIMDope_color = SIMDope.SIMDope_color;
 
 const SuperState = {
     _format_hex_color_getUin32(hex) { // Supports #fff (short rgb), #fff0 (short rgba), #e2e2e2 (full rgb) and #e2e2e2ff (full rgba)
@@ -170,77 +170,9 @@ const SuperState = {
             }
         };
     },
-    _blend_rgba_colors: function(all_added_in_layers, amount, should_return_transparent, alpha_addition) {
-        "use strict";
-        should_return_transparent = should_return_transparent | 0 ;
-        alpha_addition = alpha_addition | 0;
-        let used_colors_length = all_added_in_layers[0].length / 4 | 0;
-        let all_layers_length = all_added_in_layers.length | 0;
-        let all_base = new Uint8ClampedArray(all_added_in_layers[0].length);
-
-        // Blend all color and special ones only starting from the last opaque layer
-        let base = new Uint8ClampedArray(4);
-        let added = new Uint8ClampedArray(4);
-        let mix = new Uint8ClampedArray(4);
-        let float_variables = new Float32Array(6); // ba3, ad3, mi3, ao, bo;
-        float_variables.fill((amount * 65535 | 0) / 65535, 5, 6);
-        let start_layer = 0;
-
-        for(let i1 = 0, i4 = 0; i1 < used_colors_length; i1 = i1+1|0, i4 = i4+4|0) {
-
-            start_layer = 0;
-            base.set(all_added_in_layers[0].slice(i4, i4+4), 0);
-
-            // Sum up all colors above
-            for(let layer_n = 1; layer_n < all_layers_length; layer_n = layer_n + 1 | 0) {
-
-                added.set(all_added_in_layers[layer_n].slice(i4, i4+4), 0);
-
-                if(should_return_transparent > 0 && added[3] === 0 && float_variables[5] === 1) {
-
-                    base.fill( 0);
-                }else if(added[3] === 255 && float_variables[5] === 1) {
-
-                    base.set(added, 0);
-                }else {
-
-                    float_variables.fill(base[3] / 255, 0, 1);
-                    float_variables.fill(added[3] / 255 * float_variables[5], 1, 2);
-
-                    mix.fill(0);
-                    float_variables.fill(0, 2, 3);
-                    if (float_variables[0] > 0 && float_variables[1] > 0) {
-                        if(alpha_addition > 0) { float_variables.fill(float_variables[0] + float_variables[1], 2, 3); } else { float_variables.fill(1 - (1 - float_variables[1]) * (1 - float_variables[0]), 2, 3);}
-                        float_variables.fill(float_variables[1] / float_variables[2], 3, 4);
-                        float_variables.fill(float_variables[0] * (1 - float_variables[1]) / float_variables[2], 4, 5);
-                        mix.set(Uint8ClampedArray.of(
-                            added[0] * float_variables[3] + base[0] * float_variables[4], // red
-                            added[1] * float_variables[3] + base[1] * float_variables[4], // green
-                            added[2] * float_variables[3] + base[2] * float_variables[4]
-                        ), 0);// blue
-                    }else if(float_variables[1] > 0) {
-                        float_variables.fill(added[3] / 255, 2, 3);
-                        mix.set(added, 0);
-                    }else {
-                        float_variables.fill(base[3] / 255, 2, 3);
-                        mix.set(base, 0);
-                    }
-                    if(alpha_addition) {
-                        float_variables.fill(float_variables[2] / 2, 2, 3);
-                    } mix.fill(float_variables[2] * 255, 3, 4);
-
-                    base.set(mix, 0);
-                }
-            }
-            all_base.set(base, i4);
-        }
-
-        return all_base;
-    },
     from: function(props){
         "use strict";
         let _state = this._build_state(props).init();
-        let _blend_rgba_colors = this._blend_rgba_colors;
         let _pxl_indexes = new Set();
 
         return {
@@ -255,11 +187,11 @@ const SuperState = {
                 let pxls = new Uint16Array(state._s_pxls[state._layer_index].buffer);
 
                 let indexes = Uint32Array.from(pxl_indexes);
-                let sd_color = SIMDope_uint8_rgba.new_uint32(color);
-                let sd_colors = SIMDope_uint8_rgba_array(new Uint32Array(indexes.length));
+                let sd_color = SIMDope_color.new_uint32(color);
+                let sd_colors = SIMDope_colors(new Uint32Array(indexes.length));
                 for(let i = 0; i < indexes.length; i = (i + 1 | 0)>>>0) {
                     sd_colors.set_element(i,
-                        SIMDope_uint8_rgba
+                        SIMDope_color
                             .new_uint32(pxl_colors[pxls[indexes[i]]])
                             .blend_with(sd_color, opacity*255, false, false)
                         );
