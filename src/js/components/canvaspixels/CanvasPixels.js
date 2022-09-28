@@ -450,7 +450,7 @@ class CanvasPixels extends React.PureComponent {
                 opacity: parseFloat(1),
             };
 
-            const super_blend = Object.create(SuperBlend).new(3, pxl_length);
+            const super_blend = Object.create(SuperBlend).init(3, pxl_length);
             for(let i = 0 ; i < pxl_length; i = (i+1|0)>>>0) {
 
                 super_blend.for(i);

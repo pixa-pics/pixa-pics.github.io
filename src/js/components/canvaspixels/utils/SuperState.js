@@ -1,3 +1,8 @@
+import SIMDope from "../../../utils/SIMDope";
+const simdops = SIMDope.simdops;
+const SIMDope_uint8_rgba_array = SIMDope.SIMDope_uint8_rgba_array;
+const SIMDope_uint8_rgba = SIMDope.SIMDope_uint8_rgba;
+
 const SuperState = {
     _format_hex_color_getUin32(hex) { // Supports #fff (short rgb), #fff0 (short rgba), #e2e2e2 (full rgb) and #e2e2e2ff (full rgba)
 
@@ -250,21 +255,17 @@ const SuperState = {
                 let pxls = new Uint16Array(state._s_pxls[state._layer_index].buffer);
 
                 let indexes = Uint32Array.from(pxl_indexes);
-                let colors = new DataView(new ArrayBuffer(indexes.length*4));
+                let sd_color = SIMDope_uint8_rgba.new_uint32(color);
+                let sd_colors = SIMDope_uint8_rgba_array(new Uint32Array(indexes.length));
                 for(let i = 0; i < indexes.length; i = (i + 1 | 0)>>>0) {
-
-                    colors.setUint32((i*4|0)>>>0, (pxl_colors[pxls[(indexes[(i|0)>>>0]|0)>>>0]]|0)>>>0);
+                    sd_colors.set_element(i,
+                        SIMDope_uint8_rgba
+                            .new_uint32(pxl_colors[pxls[indexes[i]]])
+                            .blend_with(sd_color, opacity*255, false, false)
+                        );
                 }
 
-                let new_ui32_colors = new Uint32Array(
-                    _blend_rgba_colors(
-                        Array.of(
-                            new Uint8ClampedArray(colors.buffer),
-                            new Uint8ClampedArray(new Uint32Array(indexes.length).fill(color).reverse().buffer).reverse(),
-                        ),
-                        opacity, false, false
-                    ).reverse().buffer
-                ).reverse();
+                let new_ui32_colors = sd_colors.subarray_uint32(0, indexes.length);
 
                 pxl_colors = Array.from(pxl_colors);
                 Uint32Array.from(new Set(new_ui32_colors)).forEach(function(c){
