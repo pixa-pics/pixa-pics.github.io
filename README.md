@@ -114,7 +114,7 @@ Look! On the STEEM blockchain you can post base64 text, transactions are rigged 
 ![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/doc/screenshots/pagespeed.web.dev.png?v=1)
 Lighthouse (google's webpage loading test) metrics of pixa.pics at left while those of instagram at right
 
-More than that our application has been optimized in order to consume the less **Random Access Memory** possible, while you will see around 150-200 Mb consumed by the Soundcloud + Facebook & companies like that as a single chrome tab, pixa.pics run with some 20-35Mb, it is **great up to 1000% less than "them"**. This is thanks to coding style and architecture of our modules which looks like ASM.JS and SIMD.JS, which we derived one for color computation being called SIMDope.js, you'll find it in source code.
+More than that our application has been optimized in order to consume the less **Random Access Memory** possible, while you will see around 150-200 Mb consumed by the Soundcloud + Facebook & companies like that as a single chrome tab, pixa.pics run with some 20-35Mb, it is **great up to 1000% less than "them"**. This is thanks to coding style and architecture of our modules which looks like ASM.JS and SIMD.JS, which we derived one for color computation being called simdope.js, you'll find it in source code.
 
 # G) How can it work thanks to sponsorship?
 

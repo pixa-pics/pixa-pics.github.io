@@ -40,7 +40,7 @@ import SmartRequestAnimationFrame from "../canvaspixels/utils/SmartRequestAnimat
 import XXHash from "../canvaspixels/utils/XXHash";
 import CanvasPos from "../canvaspixels/utils/CanvasPos"
 import CanvasFilters from "../canvaspixels/utils/CanvasFilters"
-import SIMDope from "../../utils/SIMDope";
+import SIMDope from "../../utils/simdope/simdope";
 const simdops = SIMDope.simdops;
 class CanvasPixels extends React.PureComponent {
 
