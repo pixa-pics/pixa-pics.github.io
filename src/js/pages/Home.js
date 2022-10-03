@@ -515,7 +515,7 @@ class Home extends React.Component {
                         </h2>
                     </div>
                 </div>
-                <div className={classes.headerContainer} style={{color: THEME_DAY && !IS_EVENING? "#ffffffff": "#fff"}}>
+                <div className={classes.headerContainer} style={{backgroundColor: THEME_DAY && !IS_EVENING? "#ffffff22": "none", textShadow: THEME_DAY && !IS_EVENING? "0px 0px 9px #57bbff": "none"}}>
                     <h1 className={classes.titleh1} style={{color: THEME_DAY && !IS_EVENING ? "#000639": "#fff"}}>
                         <img src={"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAXCAMAAABUMB2pAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAABRUExURUdwTM8gNGYm6NaEj+///IEMPZe2wwAAALELMsnk6OuhpA/ghUoGKbLt7/dRTgRMpCoBgwahkvPDxN3193CGk/rX1RYCK6HP3AjQ4rz/yZCgsNNpsAgAAAABdFJOUwBA5thmAAABFElEQVQoz4WTi26DMAxF40DsOGl4tmu7///Q2XltqoBdQZDg6PraMsZ0kcpcSb6D6oIjwn3jiRXzJxjh+BizBu/BAx0zosem5waKHVC0j7+Sku6Aohi5IdPILPX8ZzBa3u+5QZtAkktVsNot2TWu3YpFPnt5rUneO30sbG2cOwMs7wGql0JC0WK+1jhr9p0DZycxci5jSt4KJE5cFQJoJpcvudXGNCfuFE+ayDn10lKlOWNihQIHAEY1aKqTIGvtit2JcVBEWpfzdmvQYlfboTBNQ2nbkCB9pPR6IRYqfCP6yugg/4zcWsSCoTLQoI9tSiljmEudLBTd0xNxEKqEPtvMe0pDeuam6WrHteX/fgVz/rP8ADUeDr4tHJI9AAAAAElFTkSuQmCC"}
                              alt="pixa-pics-logo" style={{height: "1.25em", width: "auto", verticalAlign: "baseline", margin:"8px 32px 0px 16px"}} className="pixelated shiny emoji-150"/>

@@ -1,7 +1,7 @@
 import SIMDope from "../../../utils/simdope/simdope";
 const simdops = SIMDope.simdops;
-const SIMDope_colors = SIMDope.SIMDope_colors;
-const SIMDope_color = SIMDope.SIMDope_color;
+const SIMDopeColors = SIMDope.SIMDopeColors;
+const SIMDopeColor = SIMDope.SIMDopeColor;
 
 const SuperState = {
     _format_hex_color_getUin32(hex) { // Supports #fff (short rgb), #fff0 (short rgba), #e2e2e2 (full rgb) and #e2e2e2ff (full rgba)
@@ -187,11 +187,11 @@ const SuperState = {
                 let pxls = new Uint16Array(state._s_pxls[state._layer_index].buffer);
 
                 let indexes = Uint32Array.from(pxl_indexes);
-                let sd_color = SIMDope_color.new_uint32(color);
-                let sd_colors = SIMDope_colors(new Uint32Array(indexes.length));
+                let sd_color = SIMDopeColor.new_uint32(color);
+                let sd_colors = SIMDopeColors(new Uint32Array(indexes.length));
                 for(let i = 0; i < indexes.length; i = (i + 1 | 0)>>>0) {
                     sd_colors.set_element(i,
-                        SIMDope_color
+                        SIMDopeColor
                             .new_uint32(pxl_colors[pxls[indexes[i]]])
                             .blend_with(sd_color, opacity*255, false, false)
                         );

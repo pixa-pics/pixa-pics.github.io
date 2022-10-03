@@ -583,7 +583,7 @@ const SuperMasterMeta = {
 
                                 const v_pxl_color_index = _s_pxls[_layer_index][index];
                                 const v_pxl_color = _s_pxl_colors[_layer_index][v_pxl_color_index];
-                                const v_pxl_color_new = SIMDope.SIMDope_color.new_uint32(v_pxl_color).blend_with(SIMDope.SIMDope_color.new_uint32(pxl_current_color_uint32), pxl_current_opacity*255, true, false);
+                                const v_pxl_color_new = SIMDope.SIMDopeColor.new_uint32(v_pxl_color).blend_with(SIMDope.SIMDopeColor.new_uint32(pxl_current_color_uint32), pxl_current_opacity*255, true, false);
 
                                 // Eventually add current color to color list
                                 if (!pxl_colors.includes(v_pxl_color_new)) { pxl_colors.push(v_pxl_color_new);}

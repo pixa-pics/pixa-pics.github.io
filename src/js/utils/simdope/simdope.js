@@ -23,12 +23,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
  */
-var CONFIG_UINT8X4 = "rgba";
-/**
- X11 color names
 
- http://www.w3.org/TR/css3-color/#svg-color
- */
+// Order of the color component stored (in order to not meld with endianness when creating a list from a buffer, it is mostly like "reversed")
+var CONFIG_UINT8X4 = "rgba";
+
+// X11 color names
 var WX3 = {
         aliceblue: '#f0f8ff',
         antiquewhite: '#faebd7',
@@ -187,6 +186,7 @@ var WX3 = {
         yellowgreen: '#9acd32'
     };
 
+// Format hexadecimal
 var F_HEX = function(hex) { // Supports #fff (short rgb), #fff0 (short rgba), #e2e2e2 (full rgb) and #e2e2e2ff (full rgba)
     "use strict";
     const l = hex.length | 0;
@@ -452,11 +452,11 @@ var {
 } = operators;
 
 // NEW BASIC : Number object with 4 times 0-255
-var SIMDope_color = function(with_main_buffer, offset_4bytes){
+var SIMDopeColor = function(with_main_buffer, offset_4bytes){
     "use strict";
     offset_4bytes = offset_4bytes || 0;
-    if (!(this instanceof SIMDope_color)) {
-        return new SIMDope_color(with_main_buffer, offset_4bytes);
+    if (!(this instanceof SIMDopeColor)) {
+        return new SIMDopeColor(with_main_buffer, offset_4bytes);
     }
 
     if(with_main_buffer instanceof Uint8ClampedArray) {
@@ -469,80 +469,80 @@ var SIMDope_color = function(with_main_buffer, offset_4bytes){
 };
 
 // NEW PARTICULAR : Number object other means of varruct
-SIMDope_color.new_zero = function() {
+SIMDopeColor.new_zero = function() {
     "use strict";
-    return SIMDope_color(new ArrayBuffer(4));
+    return SIMDopeColor(new ArrayBuffer(4));
 };
-SIMDope_color.new_splat = function(n) {
+SIMDopeColor.new_splat = function(n) {
     "use strict";
     var uint8ca = new Uint8ClampedArray(4);
     uint8ca.fill(clamp_uint8(n));
-    return SIMDope_color(uint8ca);
+    return SIMDopeColor(uint8ca);
 };
-SIMDope_color.new_of = function(r, g, b, a) {
+SIMDopeColor.new_of = function(r, g, b, a) {
     "use strict";
     var uint8ca = new Uint8ClampedArray(4);
     uint8ca[3] = clamp_uint8(r);
     uint8ca[2] = clamp_uint8(g);
     uint8ca[1] = clamp_uint8(b);
     uint8ca[0] = clamp_uint8(a);
-    return SIMDope_color(uint8ca);
+    return SIMDopeColor(uint8ca);
 };
-SIMDope_color.new_safe_of = function(r, g, b, a) {
+SIMDopeColor.new_safe_of = function(r, g, b, a) {
     "use strict";
     var uint8ca = new Uint8ClampedArray(4);
     uint8ca[3] = clamp_int(r, 0, 255);
     uint8ca[2] = clamp_int(g, 0, 255);
     uint8ca[1] = clamp_int(b, 0, 255);
     uint8ca[0] = clamp_int(a, 0, 255);
-    return SIMDope_color(uint8ca);
+    return SIMDopeColor(uint8ca);
 };
-SIMDope_color.new_from = function(other) {
+SIMDopeColor.new_from = function(other) {
     "use strict";
-    return SIMDope_color(other);
+    return SIMDopeColor(other);
 };
 
-SIMDope_color.new_array = function(array) {
+SIMDopeColor.new_array = function(array) {
     "use strict";
     var uint8ca = new Uint8ClampedArray(4);
     uint8ca[3] = clamp_uint8(array[0]);
     uint8ca[2] = clamp_uint8(array[1]);
     uint8ca[1] = clamp_uint8(array[2]);
     uint8ca[0] = clamp_uint8(array[3]);
-    return SIMDope_color(uint8ca);
+    return SIMDopeColor(uint8ca);
 };
 
-SIMDope_color.new_array_safe = function(array) {
+SIMDopeColor.new_array_safe = function(array) {
     "use strict";
     var uint8ca = new Uint8ClampedArray(4);
     uint8ca[3] = clamp_uint8(clamp_int(array[0], 0, 255));
     uint8ca[2] = clamp_uint8(clamp_int(array[1], 0, 255));
     uint8ca[1] = clamp_uint8(clamp_int(array[2], 0, 255));
     uint8ca[0] = clamp_uint8(clamp_int(array[3], 0, 255));
-    return SIMDope_color(uint8ca);
+    return SIMDopeColor(uint8ca);
 };
 
-SIMDope_color.new_bool = function(r, g, b, a) {
+SIMDopeColor.new_bool = function(r, g, b, a) {
     "use strict";
     var uint8ca = new Uint8ClampedArray(4);
     uint8ca[3] = (r|0) > 0 ? 0x1 : 0x0;
     uint8ca[2] = (g|0) > 0 ? 0x1 : 0x0;
     uint8ca[1] = (b|0) > 0 ? 0x1 : 0x0;
     uint8ca[0] = (a|0) > 0 ? 0x1 : 0x0;
-    return SIMDope_color(uint8ca);
+    return SIMDopeColor(uint8ca);
 };
 
-SIMDope_color.new_uint32 = function(n) {
+SIMDopeColor.new_uint32 = function(n) {
     "use strict";
     var uint8ca = new Uint8ClampedArray(4);
     uint8ca[0] = n & 0xff;
     uint8ca[1] = (n >>> 8) & 0xff;
     uint8ca[2] = (n >>> 16) & 0xff;
     uint8ca[3] = (n >>> 24) & 0xff;
-    return SIMDope_color(uint8ca);
+    return SIMDopeColor(uint8ca);
 };
 
-SIMDope_color.new_hsla = function(h, s, l, a) {
+SIMDopeColor.new_hsla = function(h, s, l, a) {
     "use strict";
 
     h = divide_uint(h, 360);
@@ -570,40 +570,40 @@ SIMDope_color.new_hsla = function(h, s, l, a) {
         b = hue_to_rgb(p, q, h - 1 / 3);
     }
 
-    return SIMDope_color.new_of(multiply_uint(r, 255), multiply_uint(g, 255), multiply_uint(b, 255), multiply_uint(a, 255));
+    return SIMDopeColor.new_of(multiply_uint(r, 255), multiply_uint(g, 255), multiply_uint(b, 255), multiply_uint(a, 255));
 };
 
-SIMDope_color.new_hex = function (hex) {
+SIMDopeColor.new_hex = function (hex) {
 
     hex = F_HEX(hex);
-    SIMDope_color.new_uint32(parseInt(hex.slice(1), 16));
+    SIMDopeColor.new_uint32(parseInt(hex.slice(1), 16));
 }
 
 // Properties of number object
-Object.defineProperty(SIMDope_color.prototype, 'r', {
+Object.defineProperty(SIMDopeColor.prototype, 'r', {
     get: function() { "use strict"; return clamp_uint8(this.storage_uint8_[3]); },
 });
-Object.defineProperty(SIMDope_color.prototype, 'g', {
+Object.defineProperty(SIMDopeColor.prototype, 'g', {
     get: function() { "use strict"; return clamp_uint8(this.storage_uint8_[2]); },
 });
-Object.defineProperty(SIMDope_color.prototype, 'b', {
+Object.defineProperty(SIMDopeColor.prototype, 'b', {
     get: function() { "use strict"; return clamp_uint8(this.storage_uint8_[1]); },
 });
-Object.defineProperty(SIMDope_color.prototype, 'a', {
+Object.defineProperty(SIMDopeColor.prototype, 'a', {
     get: function() { "use strict"; return clamp_uint8(this.storage_uint8_[0]); },
 });
 
-Object.defineProperty(SIMDope_color.prototype, 'uint32', {
+Object.defineProperty(SIMDopeColor.prototype, 'uint32', {
     get: function() { "use strict";
         return (this.storage_uint8_[3] << 24) | (this.storage_uint8_[2] << 16) | (this.storage_uint8_[1] <<  8) | this.storage_uint8_[0];
     }
 });
 
-Object.defineProperty(SIMDope_color.prototype, 'hex', {
+Object.defineProperty(SIMDopeColor.prototype, 'hex', {
     get: function() { "use strict"; return "#".concat("00000000".concat(clamp_uint32(this.storage_uint8_.getUint32(0)).toString(16)).slice(-8));}
 });
 
-Object.defineProperty(SIMDope_color.prototype, 'hsl', {
+Object.defineProperty(SIMDopeColor.prototype, 'hsl', {
     get: function() {
         "use strict";
         var r = clamp_uint8(this.storage_uint8_[3]);
@@ -631,18 +631,18 @@ Object.defineProperty(SIMDope_color.prototype, 'hsl', {
     }
 });
 
-Object.defineProperty(SIMDope_color.prototype, 'offset', {
+Object.defineProperty(SIMDopeColor.prototype, 'offset', {
     get: function() {"use strict"; return divide_four_uint(this.storage_uint8_.byteOffset);}
 });
 
-Object.defineProperty(SIMDope_color.prototype, 'buffer', {
+Object.defineProperty(SIMDopeColor.prototype, 'buffer', {
     get: function() { "use strict"; return this.storage_uint8_.buffer; }
 });
 
-Object.defineProperty(SIMDope_color.prototype, 'set', {
+Object.defineProperty(SIMDopeColor.prototype, 'set', {
     get: function() { "use strict"; return function(with_buffer) {
 
-        if(with_buffer instanceof SIMDope_color) {
+        if(with_buffer instanceof SIMDopeColor) {
 
             this.storage_uint8_.set(with_buffer.subarray(0, 4));
         }else if("subarray" in with_buffer) {
@@ -660,14 +660,14 @@ Object.defineProperty(SIMDope_color.prototype, 'set', {
         }
     }}
 });
-Object.defineProperty(SIMDope_color.prototype, 'subarray', {
+Object.defineProperty(SIMDopeColor.prototype, 'subarray', {
     get: function() { "use strict"; return function(start, end) { return this.storage_uint8_.subarray(start, end); }}
 });
-Object.defineProperty(SIMDope_color.prototype, 'slice', {
+Object.defineProperty(SIMDopeColor.prototype, 'slice', {
     get: function() { "use strict"; return function(start, end) { return this.storage_uint8_.slice(start, end); }}
 });
 
-SIMDope_color.prototype.set_scale_of_on_255 = function(of_r, of_g, of_b, of_a) {
+SIMDopeColor.prototype.set_scale_of_on_255 = function(of_r, of_g, of_b, of_a) {
     var temp = Uint8ClampedArray.of(
         divide_255(multiply_uint(this.r, of_r)),
         divide_255(multiply_uint(this.g, of_g)),
@@ -678,17 +678,17 @@ SIMDope_color.prototype.set_scale_of_on_255 = function(of_r, of_g, of_b, of_a) {
     return this;
 }
 
-SIMDope_color.prototype.scale_of_on_255 = function(of_r, of_g, of_b, of_a) {
+SIMDopeColor.prototype.scale_of_on_255 = function(of_r, of_g, of_b, of_a) {
     var temp = Uint8ClampedArray.of(
         divide_255(multiply_uint(this.r, of_r)),
         divide_255(multiply_uint(this.g, of_g)),
         divide_255(multiply_uint(this.b, of_b)),
         divide_255(multiply_uint(this.a, of_a))
     );
-    return SIMDope_color(temp);
+    return SIMDopeColor(temp);
 }
 
-SIMDope_color.prototype.blend_with = function(added_uint8x4, amount_alpha, should_return_transparent, alpha_addition) {
+SIMDopeColor.prototype.blend_with = function(added_uint8x4, amount_alpha, should_return_transparent, alpha_addition) {
 
     amount_alpha = clamp_uint8(amount_alpha);
     should_return_transparent = should_return_transparent || false;
@@ -704,7 +704,7 @@ SIMDope_color.prototype.blend_with = function(added_uint8x4, amount_alpha, shoul
             divide_uint(plus_uint(this.a, amount_alpha), 2):
             inverse_255(divide_255(multiply_uint(inverse_255(added_uint8x4.a), inverse_255(this.a))));
 
-        this.set(SIMDope_color.merge_scale_of_255(
+        this.set(SIMDopeColor.merge_scale_of_255(
             added_uint8x4, divide_uint(multiply_uint(added_uint8x4.a, 255), alpha),
             this, divide_255(multiply_uint(this.a, divide_uint(multiply_uint(inverse_255(added_uint8x4.a), 255), alpha)))
             ).set_a(alpha)
@@ -717,8 +717,8 @@ SIMDope_color.prototype.blend_with = function(added_uint8x4, amount_alpha, shoul
     return this;
 };
 
-SIMDope_color.prototype.get_difference_with = function(other) {
-    return SIMDope_color.new_of(
+SIMDopeColor.prototype.get_difference_with = function(other) {
+    return SIMDopeColor.new_of(
         abs_int(this.r, other.r),
         abs_int(this.g, other.g),
         abs_int(this.b, other.b),
@@ -726,31 +726,31 @@ SIMDope_color.prototype.get_difference_with = function(other) {
     );
 };
 
-SIMDope_color.prototype.sum_rgba = function() {
+SIMDopeColor.prototype.sum_rgba = function() {
     return plus_uint(plus_uint(this.r, this.g), plus_uint(this.b, this.a));
 };
 
-SIMDope_color.prototype.sum_rgb = function() {
+SIMDopeColor.prototype.sum_rgb = function() {
     return plus_uint(plus_uint(this.r, this.g), this.b);
 };
 
-SIMDope_color.prototype.is_dark = function() {
+SIMDopeColor.prototype.is_dark = function() {
     return uint_less_equal(this.sum_rgb(), 384);
 };
-SIMDope_color.prototype.is_fully_transparent = function() {
+SIMDopeColor.prototype.is_fully_transparent = function() {
     return uint_equal(this.a, 0);
 };
-SIMDope_color.prototype.is_fully_opaque = function() {
+SIMDopeColor.prototype.is_fully_opaque = function() {
     return uint_equal(this.a, 255);
 };
-SIMDope_color.prototype.is_not_fully_transparent = function() {
+SIMDopeColor.prototype.is_not_fully_transparent = function() {
     return !this.is_fully_transparent();
 };
-SIMDope_color.prototype.is_not_fully_opaque = function() {
+SIMDopeColor.prototype.is_not_fully_opaque = function() {
     return !this.is_fully_opaque();
 };
 
-SIMDope_color.prototype.match_with = function(added_uint8x4, threshold_255) {
+SIMDopeColor.prototype.match_with = function(added_uint8x4, threshold_255) {
     "use strict";
 
     threshold_255 = typeof threshold_255 === "undefined" ? -1: clamp_uint8(threshold_255);
@@ -777,77 +777,77 @@ SIMDope_color.prototype.match_with = function(added_uint8x4, threshold_255) {
     }
 }
 
-SIMDope_color.prototype.set_r = function(r) {
+SIMDopeColor.prototype.set_r = function(r) {
     "use strict";
     var uint8a = this.subarray();
     uint8a[3] = clamp_uint8(r);
     return this;
 };
-SIMDope_color.prototype.set_g = function(g) {
+SIMDopeColor.prototype.set_g = function(g) {
     "use strict";
     var uint8a = this.subarray();
     uint8a[2] = clamp_uint8(g);
     return this;
 };
-SIMDope_color.prototype.set_b = function(b) {
+SIMDopeColor.prototype.set_b = function(b) {
     "use strict";
     var uint8a = this.subarray();
     uint8a[1] = clamp_uint8(b);
     return this;
 };
-SIMDope_color.prototype.set_a = function(a) {
+SIMDopeColor.prototype.set_a = function(a) {
     "use strict";
     var uint8a = this.subarray();
     uint8a[0] = clamp_uint8(a);
     return this;
 };
-SIMDope_color.prototype.multiply_a_255 = function(n) {
+SIMDopeColor.prototype.multiply_a_255 = function(n) {
     "use strict";
     var uint8a = this.subarray();
     uint8a[0] = clamp_uint8(divide_255(multiply_uint(uint8a[0], n)));
     return this;
 };
-SIMDope_color.prototype.copy = function(a) {
+SIMDopeColor.prototype.copy = function(a) {
     "use strict";
-    return SIMDope_color(this.slice(0, 4));
+    return SIMDopeColor(this.slice(0, 4));
 };
 // get a the number object wile modifying property values
-SIMDope_color.with_r = function(t, r) {
+SIMDopeColor.with_r = function(t, r) {
     "use strict";
     var ta = t.slice(0, 4);
     ta[3] = clamp_uint8(r);
-    return SIMDope_color(ta);
+    return SIMDopeColor(ta);
 };
-SIMDope_color.with_g = function(t, g) {
+SIMDopeColor.with_g = function(t, g) {
     "use strict";
     var ta = t.slice(0, 4);
     ta[2] = clamp_uint8(g);
-    return SIMDope_color(ta);
+    return SIMDopeColor(ta);
 };
-SIMDope_color.with_b = function(t, b) {
+SIMDopeColor.with_b = function(t, b) {
     "use strict";
     var ta = t.slice(0, 4);
     ta[1] = clamp_uint8(b);
-    return SIMDope_color(ta);
+    return SIMDopeColor(ta);
 };
-SIMDope_color.with_a = function(t, a) {
+SIMDopeColor.with_a = function(t, a) {
     "use strict";
     var ta = t.slice(0, 4);
     ta[0] = clamp_uint8(a);
-    return SIMDope_color(ta);
+    return SIMDopeColor(ta);
 };
-SIMDope_color.with_inverse = function(t) {
+SIMDopeColor.with_inverse = function(t) {
     "use strict";
     var ta = t.slice(0, 4);
     ta[3] = minus_uint(255 - ta[3]);
     ta[2] = minus_uint(255 - ta[2]);
     ta[1] = minus_uint(255 - ta[1]);
     ta[0] = minus_uint(255 - ta[0]);
-    return SIMDope_color(ta);
+    return SIMDopeColor(ta);
 };
 
 // Get various operation on number object
-SIMDope_color.sumarray = function(other, start, end) {
+SIMDopeColor.sumarray = function(other, start, end) {
     "use strict";
     start = start | 0;
     start = min_uint(start, 3);
@@ -862,40 +862,40 @@ SIMDope_color.sumarray = function(other, start, end) {
 };
 
 // from a given number object and a second one, test values and return boolean
-SIMDope_color.row_is_equal = function(t, other) {
-    return SIMDope_color.new_bool(
+SIMDopeColor.row_is_equal = function(t, other) {
+    return SIMDopeColor.new_bool(
         uint_equal(t.r, other.r),
         uint_equal(t.g, other.g),
         uint_equal(t.b, other.b),
         uint_equal(t.a, other.a),
     );
 };
-SIMDope_color.row_is_greater = function(t, other) {
-    return SIMDope_color.new_bool(
+SIMDopeColor.row_is_greater = function(t, other) {
+    return SIMDopeColor.new_bool(
         uint_greater(t.r, other.r),
         uint_greater(t.g, other.g),
         uint_greater(t.b, other.b),
         uint_greater(t.a, other.a),
     );
 };
-SIMDope_color.row_is_less = function(t, other) {
-    return SIMDope_color.new_bool(
+SIMDopeColor.row_is_less = function(t, other) {
+    return SIMDopeColor.new_bool(
         uint_less(t.r, other.r),
         uint_less(t.g, other.g),
         uint_less(t.b, other.b),
         uint_less(t.a, other.a),
     );
 };
-SIMDope_color.row_is_greater_equal = function(t, other) {
-    return SIMDope_color.new_bool(
+SIMDopeColor.row_is_greater_equal = function(t, other) {
+    return SIMDopeColor.new_bool(
         uint_greater_equal(t.r, other.r),
         uint_greater_equal(t.g, other.g),
         uint_greater_equal(t.b, other.b),
         uint_greater_equal(t.a, other.a),
     );
 };
-SIMDope_color.row_is_less_equal = function(t, other) {
-    return SIMDope_color.new_bool(
+SIMDopeColor.row_is_less_equal = function(t, other) {
+    return SIMDopeColor.new_bool(
         uint_less_equal(t.r, other.r),
         uint_less_equal(t.g, other.g),
         uint_less_equal(t.b, other.b),
@@ -903,8 +903,8 @@ SIMDope_color.row_is_less_equal = function(t, other) {
     );
 };
 
-SIMDope_color.row_get_difference = function(t, other) {
-    return SIMDope_color.new_of(
+SIMDopeColor.row_get_difference = function(t, other) {
+    return SIMDopeColor.new_of(
         abs_int(t.r, other.r),
         abs_int(t.g, other.g),
         abs_int(t.b, other.b),
@@ -912,93 +912,93 @@ SIMDope_color.row_get_difference = function(t, other) {
     );
 };
 
-SIMDope_color.match = function(base_uint8x4, added_uint8x4, threshold_255) {
+SIMDopeColor.match = function(base_uint8x4, added_uint8x4, threshold_255) {
     "use strict";
 
     return base_uint8x4.match_with(added_uint8x4, threshold_255);
 }
 
-SIMDope_color.blend = function(base_uint8x4, added_uint8x4, amount_alpha, should_return_transparent, alpha_addition) {
+SIMDopeColor.blend = function(base_uint8x4, added_uint8x4, amount_alpha, should_return_transparent, alpha_addition) {
 
     return base_uint8x4.copy().blend_with(added_uint8x4, amount_alpha, should_return_transparent, alpha_addition);
 };
 
 // From a given operation and number object perform the operation and return a the number object
-SIMDope_color.plus = function(t, other) {
+SIMDopeColor.plus = function(t, other) {
     var temp = new Uint8ClampedArray(4);
     temp[3] = clamp_uint8(min_int(255, plus_int(t.r, other.r)));
     temp[2] = clamp_uint8(min_int(255, plus_int(t.g, other.g)));
     temp[1] = clamp_uint8(min_int(255, plus_int(t.b, other.b)));
     temp[0] = clamp_uint8(min_int(255, plus_int(t.a, other.a)));
-    return SIMDope_color(temp);
+    return SIMDopeColor(temp);
 }
-SIMDope_color.minus = function(t, other) {
+SIMDopeColor.minus = function(t, other) {
     var temp = new Uint8ClampedArray(4);
     temp[3] = clamp_uint8(max_int(0, minus_int(t.r, other.r)));
     temp[2] = clamp_uint8(max_int(0, minus_int(t.g, other.g)));
     temp[1] = clamp_uint8(max_int(0, minus_int(t.b, other.b)));
     temp[0] = clamp_uint8(max_int(0, minus_int(t.a, other.a)));
-    return SIMDope_color(temp);
+    return SIMDopeColor(temp);
 }
-SIMDope_color.average = function(t, other) {
+SIMDopeColor.average = function(t, other) {
     var temp = new Uint8ClampedArray(4);
     temp[3] = clamp_uint8(divide_uint(plus_int(t.r, other.r), 2));
     temp[2] = clamp_uint8(divide_uint(plus_int(t.g, other.g), 2));
     temp[1] = clamp_uint8(divide_uint(plus_int(t.b, other.b), 2));
     temp[0] = clamp_uint8(divide_uint(plus_int(t.a, other.a), 2));
-    return SIMDope_color(temp);
+    return SIMDopeColor(temp);
 }
-SIMDope_color.merge_scale_of_255 = function(t1, of1, t2, of2) {
+SIMDopeColor.merge_scale_of_255 = function(t1, of1, t2, of2) {
 
-    return SIMDope_color.merge(SIMDope_color.scale_of_on_255(t1, of1, of1, of1, of1), SIMDope_color.scale_of_on_255(t2, of2, of2, of2, of2));
+    return SIMDopeColor.merge(SIMDopeColor.scale_of_on_255(t1, of1, of1, of1, of1), SIMDopeColor.scale_of_on_255(t2, of2, of2, of2, of2));
 }
 
-SIMDope_color.scale_of_on_255 = function(t, of_r, of_g, of_b, of_a) {
+SIMDopeColor.scale_of_on_255 = function(t, of_r, of_g, of_b, of_a) {
     var temp = new Uint8ClampedArray(4);
     temp[3] = clamp_int(divide_255(multiply_uint(t.r, of_r)), 0, 255);
     temp[2] = clamp_int(divide_255(multiply_uint(t.g, of_g)), 0, 255);
     temp[1] = clamp_int(divide_255(multiply_uint(t.b, of_b)), 0, 255);
     temp[0] = clamp_int(divide_255(multiply_uint(t.a, of_a)), 0, 255);
-    return SIMDope_color(temp);
+    return SIMDopeColor(temp);
 }
 
-SIMDope_color.merge = function(t1, t2) {
+SIMDopeColor.merge = function(t1, t2) {
     var temp = new Uint8ClampedArray(4);
     temp[3] = clamp_int(plus_uint(t1.r, t2.r), 0, 255);
     temp[2] = clamp_int(plus_uint(t1.g, t2.g), 0, 255);
     temp[1] = clamp_int(plus_uint(t1.b, t2.b),  0, 255);
     temp[0] = clamp_int(plus_uint(t1.a, t2.a),  0, 255);
-    return SIMDope_color(temp);
+    return SIMDopeColor(temp);
 }
 
-var SIMDope_colors = function(with_main_buffer){
+var SIMDopeColors = function(with_main_buffer){
     "use strict";
 
-    if (!(this instanceof SIMDope_colors)) {
-        return new SIMDope_colors(with_main_buffer);
+    if (!(this instanceof SIMDopeColors)) {
+        return new SIMDopeColors(with_main_buffer);
     }
 
     this.storage_uint8_array_ = new Uint8ClampedArray(("buffer" in with_main_buffer) ? with_main_buffer.buffer: with_main_buffer);
     this.storage_uint32_array_ = new Uint32Array(("buffer" in with_main_buffer) ? with_main_buffer.buffer: with_main_buffer);
 };
 
-Object.defineProperty(SIMDope_colors.prototype, 'length', {
+Object.defineProperty(SIMDopeColors.prototype, 'length', {
     get: function() { "use strict"; return divide_four_uint(this.storage_uint8_array_.length); }
 });
-Object.defineProperty(SIMDope_colors.prototype, 'buffer', {
+Object.defineProperty(SIMDopeColors.prototype, 'buffer', {
     get: function() { "use strict"; return this.storage_uint8_array_.buffer; }
 });
-Object.defineProperty(SIMDope_colors.prototype, 'buffer_setUint8', {
+Object.defineProperty(SIMDopeColors.prototype, 'buffer_setUint8', {
     get: function() { "use strict"; return function (i, n) {
         return this.storage_uint8_array_[i] = clamp_uint8(n);
     }}
 });
-Object.defineProperty(SIMDope_colors.prototype, 'buffer_getUint8', {
+Object.defineProperty(SIMDopeColors.prototype, 'buffer_getUint8', {
     get: function() { "use strict"; return function (i) {
         return this.storage_uint8_array_[i];
     }}
 });
-Object.defineProperty(SIMDope_colors.prototype, 'buffer_getUint8a', {
+Object.defineProperty(SIMDopeColors.prototype, 'buffer_getUint8a', {
     get: function() { "use strict"; return function (i, n) {
         i = i|0;
         n = n|1;
@@ -1006,53 +1006,53 @@ Object.defineProperty(SIMDope_colors.prototype, 'buffer_getUint8a', {
         return this.storage_uint8_array_.subarray(i, n);
     }}
 });
-Object.defineProperty(SIMDope_colors.prototype, 'buffer_setUint32', {
+Object.defineProperty(SIMDopeColors.prototype, 'buffer_setUint32', {
     get: function() { "use strict"; return function (i, n) {
         this.storage_uint32_array_[i|0] = clamp_uint32(n);
     }}
 });
-Object.defineProperty(SIMDope_colors.prototype, 'buffer_getUint32', {
+Object.defineProperty(SIMDopeColors.prototype, 'buffer_getUint32', {
     get: function() { "use strict"; return function (i) {
         return  this.storage_uint32_array_[i|0];
     }}
 });
-Object.defineProperty(SIMDope_colors.prototype, 'subarray_uint32', {
+Object.defineProperty(SIMDopeColors.prototype, 'subarray_uint32', {
     get: function() { "use strict"; return function (start, end){ start = start|0; end = end || this.length; return this.storage_uint32_array_.subarray(start, end); }}
 });
-Object.defineProperty(SIMDope_colors.prototype, 'slice_uint32', {
+Object.defineProperty(SIMDopeColors.prototype, 'slice_uint32', {
     get: function() { "use strict"; return function (start, end){ start = start|0; end = end || this.length; return this.storage_uint32_array_.slice(start, end); }}
 });
-Object.defineProperty(SIMDope_colors.prototype, 'subarray_uint8', {
+Object.defineProperty(SIMDopeColors.prototype, 'subarray_uint8', {
     get: function() { "use strict"; return function (start, end){ return this.storage_uint8_array_.subarray(multiply_uint(start, 4), multiply_uint(end, 4)); }}
 });
-Object.defineProperty(SIMDope_colors.prototype, 'slice_uint8', {
+Object.defineProperty(SIMDopeColors.prototype, 'slice_uint8', {
     get: function() { "use strict"; return function (start, end){ return this.storage_uint8_array_.slice(multiply_uint(start, 4), multiply_uint(end, 4)); }}
 });
 
-SIMDope_colors.prototype.get_element = function (i) {
-    return SIMDope_color(this.buffer, i);
+SIMDopeColors.prototype.get_element = function (i) {
+    return SIMDopeColor(this.buffer, i);
 }
-SIMDope_colors.prototype.subarray = function (i, n) {
+SIMDopeColors.prototype.subarray = function (i, n) {
     return this.buffer_getUint8a(i, n);
 }
 
-SIMDope_colors.prototype.set_element = function (i, el) {
+SIMDopeColors.prototype.set_element = function (i, el) {
 
     this.buffer_setUint32(i, el.uint32);
 }
-SIMDope_colors.prototype.set_uint32_element = function (i, uint32) {
+SIMDopeColors.prototype.set_uint32_element = function (i, uint32) {
     this.buffer_setUint32(i, uint32);
 }
-SIMDope_colors.prototype.get_uint32_element = function (i) {
+SIMDopeColors.prototype.get_uint32_element = function (i) {
     return this.buffer_getUint32(i|0);
 }
-SIMDope_colors.prototype.get_sub_uint8a = function (i, n) {
+SIMDopeColors.prototype.get_sub_uint8a = function (i, n) {
     return this.buffer_getUint8a(multiply_uint(i, 4), n);
 }
-SIMDope_colors.prototype.get_slice_uint8a = function (i, n) {
+SIMDopeColors.prototype.get_slice_uint8a = function (i, n) {
     return this.buffer_getUint8a(multiply_uint(i, 4), n).slice(0, multiply_uint(n||1, 4));
 }
-SIMDope_colors.prototype.get_buffer = function (i, n) {
+SIMDopeColors.prototype.get_buffer = function (i, n) {
     return this.buffer_getUint8a(multiply_uint(i, 4), n).buffer;
 }
 
@@ -1060,8 +1060,8 @@ SIMDope_colors.prototype.get_buffer = function (i, n) {
 
 var SIMDope = {};
 SIMDope.simdops = operators;
-SIMDope.SIMDope_color = SIMDope_color;
-SIMDope.SIMDope_colors = SIMDope_colors;
+SIMDope.SIMDopeColor = SIMDopeColor;
+SIMDope.SIMDopeColors = SIMDopeColors;
 
 
 

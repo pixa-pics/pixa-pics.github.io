@@ -438,8 +438,8 @@ class CanvasPixels extends React.PureComponent {
             const bottom_layer_pxls =  new Uint16Array(_s_pxls[at_index - 1].buffer);
             const top_layer_pxl_colors = new Uint32Array(_s_pxl_colors[at_index].buffer);
             const bottom_layer_pxl_colors = new Uint32Array(_s_pxl_colors[at_index - 1].buffer);
-            const top_layer_opacity = ((_layers[at_index].opacity * 255) | 0) & 0xFF ;
-            const bottom_layer_opacity = ((_layers[at_index-1].opacity * 255) | 0) & 0xFF;
+            const top_layer_opacity = (parseFloat(_layers[at_index].opacity) * 255 | 0) & 0xFF ;
+            const bottom_layer_opacity = (parseFloat(_layers[at_index-1].opacity) * 255 | 0) & 0xFF;
 
             const pxl_length = top_layer_pxls.length | 0;
 

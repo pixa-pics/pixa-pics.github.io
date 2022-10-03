@@ -1,5 +1,5 @@
-import SIMDope from "../../../utils/simdope/simdope";
-const simdops = SIMDope.simdops
+import {simdops, SIMDopeColor, SIMDopeColors} from "../../../utils/simdope/simdope";
+
 const {
     plus_int,
     minus_int,
@@ -21,8 +21,6 @@ const {
     uint_less_equal,
 } = simdops;
 
-const SIMDope_color = SIMDope.SIMDope_color;
-const SIMDope_colors = SIMDope.SIMDope_colors;
 const SuperBlend = {
     _build_state(layer_number, max_length) {
         "use strict";
@@ -80,10 +78,10 @@ const SuperBlend = {
             bv: {}
         };
 
-        shadow_state.bv.color_less_uint8x4 = SIMDope_color.new_of(255, 255, 255, 255);
-        shadow_state.bv.color_full_uint8x4 = SIMDope_color.new_of(0, 0, 0, 255);
-        shadow_state.bv.base_uint8x4 = SIMDope_color.new_zero();
-        shadow_state.bv.temp_uint8x4 = SIMDope_color.new_zero();
+        shadow_state.bv.color_less_uint8x4 = SIMDopeColor.new_of(255, 255, 255, 255);
+        shadow_state.bv.color_full_uint8x4 = SIMDopeColor.new_of(0, 0, 0, 255);
+        shadow_state.bv.base_uint8x4 = SIMDopeColor.new_zero();
+        shadow_state.bv.temp_uint8x4 = SIMDopeColor.new_zero();
         shadow_state.bv.start_layer = 0;
 
         // Slice uint32 colors and give them as uint8
@@ -240,8 +238,8 @@ const SuperBlend = {
                 let {base_rgba_colors_for_blending, uint32_rgba_colors_data_in_layers, start_layer_indexes, all_layers_length, used_colors_length, bv} = shadow_state;
                 let {color_less_uint8x4, color_full_uint8x4, base_uint8x4, temp_uint8x4, start_layer} = bv;
 
-                let SIMDope_layers_with_colors = uint32_rgba_colors_data_in_layers.map(function (uint32_array){ return SIMDope_colors(uint32_array.buffer); });
-                let SIMDope_final_with_colors = SIMDope_colors(base_rgba_colors_for_blending);
+                let SIMDope_layers_with_colors = uint32_rgba_colors_data_in_layers.map(function (uint32_array){ return SIMDopeColors(uint32_array.buffer); });
+                let SIMDope_final_with_colors = SIMDopeColors(base_rgba_colors_for_blending);
                 let i = 0;
                 
                 // Browse the full list of pixel colors encoded within 32 bytes of data
@@ -280,7 +278,7 @@ const SuperBlend = {
                         base_uint8x4.blend_with(
                             uint_equal(hover_data_in_layers[layer_n][i], 0) ?
                                 SIMDope_layers_with_colors[layer_n].get_element(i)
-                                : SIMDope_color.with_a(SIMDope_color.average(base_uint8x4, (base_uint8x4.is_dark() ? color_less_uint8x4: color_full_uint8x4)), plus_uint(192, divide_uint(amount_data_in_layers[layer_n][i], 4)))
+                                : SIMDopeColor.with_a(SIMDopeColor.average(base_uint8x4, (base_uint8x4.is_dark() ? color_less_uint8x4: color_full_uint8x4)), plus_uint(192, divide_uint(amount_data_in_layers[layer_n][i], 4)))
                         , amount_data_in_layers[layer_n][i], should_return_transparent, alpha_addition);
                     }
 
