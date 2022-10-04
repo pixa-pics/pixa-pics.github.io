@@ -341,10 +341,10 @@ var operators = {
         return ((255 - n | 0) >>> 0) & 0xFF;
     },
     divide_255(n) {
-        return (((n|0) / 255) >>> 0) & 0xFF;
+        return ((n / 255 | 0) >>> 0) & 0xFF;
     },
     clamp_uint32(n) {
-        return ((n | 0) >>> 0) & 0xFFFFFFFF;
+        return ((n|0) >>> 0) & 0xFFFFFFFF;
     },
     int_equal(a, b) {
         return (a | 0) == (b | 0);
