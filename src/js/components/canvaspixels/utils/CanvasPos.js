@@ -299,13 +299,13 @@ const CanvasPos = {
 
                 const x = s.perspective * (pos_x_in_canvas_container - p.canvas_container.width / 2) / (p.canvas_container.width / 2);
                 const y = -s.perspective * (pos_y_in_canvas_container - p.canvas_container.height / 2) / (p.canvas_container.height / 2);
-                const p_x = x > s.perspective ? x : x * 2 | 0;
-                const p_y = y < 0 ? y : 2 * y | 0;
-                const p_x_things = 255 - p_x / 2 * 255 | 0;
-                const p_y_things = p_y / 2 * 255 | 0;
+                const p_x = x > s.perspective ? x : x * 2;
+                const p_y = y < 0 ? y : 2 * y;
+                const p_x_things = 255 - p_x / 2 * 255;
+                const p_y_things = p_y / 2 * 255;
 
-                const rotate_y = p_x * 1.25 / s.scale.current * 1000 | 0 / 1000;
-                const rotate_x = p_y * 1.25 / s.scale.current * 1000 | 0 / 1000;
+                const rotate_y = (p_x * 1.25 / s.scale.current * 1000 | 0) / 1000;
+                const rotate_x = (p_y * 1.25 / s.scale.current * 1000 | 0) / 1000;
                 const any_rotation = Boolean(rotate_x || rotate_y);
 
                 const transform_rotate = any_rotation ? `rotateX(${rotate_x}deg) rotateY(${rotate_y}deg)`: ``

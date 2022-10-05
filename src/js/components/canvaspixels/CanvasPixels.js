@@ -1252,7 +1252,7 @@ class CanvasPixels extends React.PureComponent {
         element.addEventListener("pointerdown", function(event){canvas_pos.handle_pointer_down(event)}, {capture: true});
         element.addEventListener("pointermove", function(event){canvas_pos.handle_pointer_move(event)}, {capture: true});
         element.addEventListener("pointerup", function(event){canvas_pos.handle_pointer_up(event)}, {capture: true});
-        element.addEventListener("pointercancel", function(event){canvas_pos.handle_pointer_up(event)}, {capture: true});
+        //element.addEventListener("pointercancel", function(event){canvas_pos.handle_pointer_up(event)}, {capture: true});
         element.addEventListener("pointerout", function(event){canvas_pos.handle_pointer_up(event)}, {capture: true});
         element.addEventListener("pointerleave", function(event){canvas_pos.handle_pointer_up(event)}, {capture: true});
 
@@ -2450,6 +2450,7 @@ class CanvasPixels extends React.PureComponent {
         const {imported_image_pxls_positioned, imported_image_pxl_colors} = this.super_state.get_imported_image_data()
         let { _s_pxls, _s_pxl_colors, _layer_index } = this.super_state.get_state();
 
+        let pxl_colors = Array.from(_s_pxl_colors[_layer_index]);
         Object.entries(imported_image_pxls_positioned).forEach((entry) => {
 
             const [pixel_index, color_index] = entry;
@@ -2459,17 +2460,14 @@ class CanvasPixels extends React.PureComponent {
             const top_pixel_color_hex = imported_image_pxl_colors[color_index];
             const new_pixel_color_hex = this.color_conversion.blend_colors(old_pixel_color_hex, top_pixel_color_hex, 1, false, false);
 
-            let pxl_colors = Array.from(_s_pxl_colors[_layer_index]);
-            if(!_s_pxl_colors[_layer_index].includes(new_pixel_color_hex)) {
 
+            if(!pxl_colors.includes(new_pixel_color_hex)) {
                 pxl_colors.push(new_pixel_color_hex);
             }
-            _s_pxl_colors[_layer_index] = Uint32Array.from(pxl_colors);
 
-            const new_pixel_color_index = _s_pxl_colors[_layer_index].indexOf(new_pixel_color_hex);
-            _s_pxls[_layer_index][pixel_index] = new_pixel_color_index;
-
+            _s_pxls[_layer_index][pixel_index] = pxl_colors.indexOf(new_pixel_color_hex);
         });
+        _s_pxl_colors[_layer_index] = Uint32Array.from(pxl_colors);
 
         this.super_state.set_state({
             _s_pxls,
@@ -3480,6 +3478,7 @@ class CanvasPixels extends React.PureComponent {
                              transform: `translate(${Math.round(scale.move_x * 100) / 100}px, ${Math.round(scale.move_y * 100) / 100}px) ${perspective ? transform_rotate: ""}`,
                              willChange: "transform, box-shadow",
                              transformOrigin: "center middle",
+                             mixBlendMode: "screen",
                              boxSizing: "content-box",
                              touchAction: "none",
                              pointerEvents: "none",

@@ -76,7 +76,7 @@ const SmartRequestAnimationFrame = {
                         reject();
                     }else {
 
-                        let skip_frame_rate = s.is_mobile_or_tablet ? 27: 44;
+                        let skip_frame_rate = s.is_mobile_or_tablet ? 45: 60;
 
                         let running_smoothly = true;
 

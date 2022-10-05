@@ -363,7 +363,6 @@ class AppToolbar extends React.Component {
                         <p style={{fontSize: "0.777em"}}>Cutting off annoying details is free while on the journey! Easily becoming a lighter adventure, using a sanitized online-self's image tends to honor one's real beauty stronger.<br/><br/>THIS APP: Is in your hands only, doesn't sniff network requests, and is neutral just like Switzerland.</p>
                         <h4 style={{color: "#ffffffff", marginBottom: 0}}>Online-self image matters! This isn't madness; This is Pixaaaaa! ... Pics</h4>
                     </div>
-                    <Button onClick={ () => {window.open("https://paypal.me/pixamatias")}} fullWidth small className={classes.donateButton}>Donate (PayPal)</Button>
                 </SwipeableDrawer>
                 <AppBar position="fixed" className={classes.appBar}>
                     <Toolbar>

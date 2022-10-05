@@ -1,6 +1,6 @@
 import workerpool from "workerpool";
 import SIMDope from "../../../utils/simdope/simdope";
-const simdops = SIMDope.simdops;
+const {clamp_uint32, modulo_uint, divide_uint, minus_uint, uint_greater, uint_less, plus_uint, max_int, min_int, int_less, multiply_uint} = SIMDope.simdops;
 
 let requestIdleCallback, cancelIdleCallback;
 if ('requestIdleCallback' in window) {
@@ -198,10 +198,10 @@ const SuperCanvas = {
                         _state.s.canvas_context.drawImage(_state.s.offscreen_canvas_context.canvas, 0, 0, _state.s.width, _state.s.height);
                     }
 
-                    d2d(_state.s.canvas_context, _state.ic2).then(function () {
+                    d2d(_state.s.canvas_context, _state.ic).then(function () {
 
                         if (!_state.s.is_bitmap && !_state.s.is_offscreen) {
-                            _state.ic2.clear();
+                            _state.ic.clear();
                         }
 
                         resolve();
@@ -262,7 +262,7 @@ const SuperCanvas = {
                         }
 
 
-                    }else if (_state.s.is_offscreen) {
+                    }else if (_state.enable_paint_type === "offscreen") {
 
                         d2d(_state.s.offscreen_canvas_context, _state.ic2).then(function(){
 
@@ -280,17 +280,13 @@ const SuperCanvas = {
                 "use strict";
                 return new Promise(function (resolve, reject){
 
-                    if (_state.ic.size > 0) {
-                        _state.ic2 = new Map(Array.from(_state.ic2).concat(Array.from(_state.ic)));
-                    }
-
                     let width = _state.s.width | 0;
                     let height = _state.s.height | 0;
 
                     if(width !== w || height !== h){
 
                         reject();
-                    }else if (_state.s.is_bitmap) {
+                    }else if (_state.s.is_bitmap && _state.ic.size > 16) {
 
                         let x, y;
                         let pr = _state.pr;
@@ -299,20 +295,20 @@ const SuperCanvas = {
                         let pr_bottom_right_x = pr.bottom_right.x | 0;
                         let pr_bottom_right_y = pr.bottom_right.y | 0;
 
-                        _state.ic2.forEach(function (value, index) {
+                        _state.ic.forEach(function (value, index) {
 
-                            value = simdops.clamp_uint32(value);
+                            value = clamp_uint32(value);
                             index = (index|0) >>> 0;
 
-                            x = simdops.modulo_uint(index, width);
-                            y = simdops.divide_uint(simdops.minus_uint(index, x), width);
+                            x = modulo_uint(index, width);
+                            y = divide_uint(minus_uint(index, x), width);
 
-                            if(simdops.uint_greater(pr_top_left_x, simdops.minus_uint(x, 12))) {pr_top_left_x = simdops.max_int(0, simdops.minus_uint(x, 12));}
-                            else if(simdops.uint_less(pr_bottom_right_x, simdops.plus_uint(x, 12))) {pr_bottom_right_x = simdops.min_int(width,  simdops.plus_uint(x, 12)); }
-                            if(simdops.uint_greater(pr_top_left_y, simdops.minus_uint(y, 12))) {pr_top_left_y = simdops.max_int(0, simdops.minus_uint(y, 12));}
-                            else if(simdops.uint_less(pr_bottom_right_y, simdops.plus_uint(y, 12))) {pr_bottom_right_y = simdops.min_int(height, simdops.plus_uint(y,12)); }
+                            if(uint_greater(pr_top_left_x, minus_uint(x, 12))) {pr_top_left_x = max_int(0, minus_uint(x, 12));}
+                            else if(uint_less(pr_bottom_right_x, plus_uint(x, 12))) {pr_bottom_right_x = min_int(width,  plus_uint(x, 12)); }
+                            if(uint_greater(pr_top_left_y, minus_uint(y, 12))) {pr_top_left_y = max_int(0, minus_uint(y, 12));}
+                            else if(uint_less(pr_bottom_right_y, plus_uint(y, 12))) {pr_bottom_right_y = min_int(height, plus_uint(y,12)); }
 
-                            _state.fp.setUint32(simdops.multiply_uint(index,4), value, false);
+                            _state.fp.setUint32(multiply_uint(index,4), value, false);
                         });
 
                         pr.width = 1 + pr_bottom_right_x - pr_top_left_x | 0;
@@ -324,19 +320,22 @@ const SuperCanvas = {
                         pr.bottom_right.y = pr_bottom_right_y | 0;
                         _state.pr = pr;
 
-                        _state.ic2.clear();
                         _state.ic.clear();
                         _state.enable_paint_type = "bitmap";
                         resolve();
 
-                    } else if (_state.s.is_offscreen) {
+                    } else if (_state.s.is_offscreen && _state.ic.size > 16) {
 
                         _state.ic.clear();
                         _state.enable_paint_type = "offscreen";
                         resolve();
-                    }else {
+                    }else if(_state.ic.size > 16){
 
                         _state.ic.clear();
+                        _state.enable_paint_type = "";
+                        resolve();
+                    }else {
+
                         _state.enable_paint_type = "";
                         resolve();
                     }
@@ -347,8 +346,8 @@ const SuperCanvas = {
                 return new Promise(function(resolve){
 
                     let length = index_changes.length|0;
-                    for(let i = 0; simdops.int_less(i, length); i = simdops.plus_uint(i, 1)) {
-                        _state.ic.set(simdops.clamp_uint32(index_changes[i]), simdops.clamp_uint32(color_changes[i]));
+                    for(let i = 0; int_less(i, length); i = plus_uint(i, 1)) {
+                        _state.ic.set(clamp_uint32(index_changes[i]), clamp_uint32(color_changes[i]));
                     }
 
                     resolve();

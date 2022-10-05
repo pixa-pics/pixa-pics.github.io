@@ -137,7 +137,6 @@ class AppDrawer extends React.Component {
                             </div>
                         </Fade>
                     </div>
-                    <Button onClick={() =>   {window.open("https://paypal.me/pixamatias")}} fullWidth small className={classes.donateButton}>Donate (PayPal)</Button>
                 </Drawer>
             </Box>
         );
