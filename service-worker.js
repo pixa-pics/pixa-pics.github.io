@@ -189,7 +189,7 @@ self.addEventListener("fetch", function(event) {
         event.respondWith(
             useful_cache.then(function (cache) {
                 return cache.match(url).then(function (response) {
-                    return response.clone();
+                    return response;
                 }).catch(function() {
 
                     return fetch(url).then(function (response) { // Fetch, clone, and serve
@@ -204,7 +204,7 @@ self.addEventListener("fetch", function(event) {
         event.respondWith(
             static_cache.then(function (cache) {
                 return cache.match(url).then(function (response) {
-                    return response.clone();
+                    return response;
                 }).catch(function (reason) {
 
                     return fetch(url).then(function (response) { // Fetch, clone, and serve
@@ -219,7 +219,7 @@ self.addEventListener("fetch", function(event) {
         event.respondWith(
             useful_cache.then(function (cache) {
                 return cache.match(url).then(function (response) {
-                    return response.clone();
+                    return response;
                 }).catch(function (reason) {
 
                     return fetch(url).then(function (response) { // Fetch, clone, and serve
@@ -234,7 +234,7 @@ self.addEventListener("fetch", function(event) {
         event.respondWith(
             required_cache.then(function (cache) {
                 return cache.match("/chunk_norris.min.js").then(function (response) {
-                    return response.clone();
+                    return response;
                 }).catch(function(reason){
 
                     return fetch("/chunk_norris.min.js").then(function (response) { // Fetch, clone, and serve
@@ -250,7 +250,7 @@ self.addEventListener("fetch", function(event) {
         event.respondWith(
             required_cache.then(function (cache) {
                 return cache.match(`/chunk_${middle_name}.min.js`).then(function (response) {
-                    return response.clone();
+                    return response;
                 }).catch(function(reason) {
 
                     return fetch(`/chunk_${middle_name}.min.js`).then(function (response) { // Fetch, clone, and serve
@@ -266,7 +266,7 @@ self.addEventListener("fetch", function(event) {
         event.respondWith(
             required_cache.then(function (cache) {
                 return cache.match(`/chunk_${middle_name}.min.js`).then(function (response) {
-                    return response.clone();
+                    return response;
                 }).catch(function(reason) {
 
                     return fetch(`/chunk_${middle_name}.min.js`).then(function (response) { // Fetch, clone, and serve
@@ -282,12 +282,12 @@ self.addEventListener("fetch", function(event) {
 
             required_cache.then(function (cache) {
                 return cache.match(`/`).then(function (response) {
-                    return response.clone();
+                    return response;
                 }).catch(function (reason) {
 
                     return fetch(`/`).then(function (response) { // Fetch, clone, and serve
                         return cache.put(`/`, response.clone()).then(function () {
-                            return response.clone();
+                            return response;
                         });
                     })
                 })
