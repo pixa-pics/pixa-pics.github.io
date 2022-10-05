@@ -65,10 +65,9 @@ const XXHash = {
             },
             base58_that: function (array_buffer) {
                 "use strict";
-                array_buffer = array_buffer.buffer || Buffer.from(array_buffer);
                 const alphabet_58 = "123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ";
                 const base_58 = alphabet_58.length; // base is the length of the alphabet (58 in this case)
-                let num = (this.int_that(array_buffer) | 0) >>> 0;
+                let num = this.int_that("buffer" in array_buffer ? array_buffer.buffer: Buffer.from(array_buffer));
                 let encoded = "";
                 let remainder = 0;
                 let chain = 0;

@@ -37,8 +37,8 @@ const SuperCanvas = {
                 let indexed_by_color_changes = new Map();
                 indexed_colors.forEach(function(colorUint32, index) {
 
-                    colorUint32 = colorUint32 | 0;
-                    index = index | 0;
+                    colorUint32 = (colorUint32 | 0) >>> 0;
+                    index = (index | 0) >>> 0;
 
                     if (!indexed_by_color_changes.has(colorUint32)) {
 
@@ -54,10 +54,13 @@ const SuperCanvas = {
 
                 const indexed_by_color_paths = new Map();
                 let path = new Path2D();
+                let sum_path = new Path2D();
                 let x = 0;
                 let y = 0;
                 let width = ctx2d.canvas.width | 0;
                 indexed_by_color_changes.forEach(function(set, colorUint32){
+
+                    colorUint32 = (colorUint32 | 0) >>> 0;
 
                     path = new Path2D();
                     set.forEach(function(i){
@@ -65,14 +68,16 @@ const SuperCanvas = {
                         y = (i - x) / width | 0;
                         path.rect(x, y, 1, 1);
                     });
-                    indexed_by_color_paths.set("#".concat("00000000".concat((colorUint32 | 0).toString(16)).slice(-8)), path);
+                    sum_path.addPath(path);
+                    indexed_by_color_paths.set("#".concat("00000000".concat(colorUint32.toString(16)).slice(-8)), path);
                 })
 
-                indexed_by_color_paths.forEach(function(path, style){
 
-                    ctx2d.globalCompositeOperation = "destination-out";
-                    ctx2d.fillStyle = "#ffffffff";
-                    ctx2d.fill(path);
+                ctx2d.globalCompositeOperation = "destination-out";
+                ctx2d.fillStyle = "#ffffffff";
+                ctx2d.fill(sum_path);
+
+                indexed_by_color_paths.forEach(function(path, style){
 
                     ctx2d.globalCompositeOperation = "source-over";
                     ctx2d.fillStyle = style;
@@ -125,7 +130,7 @@ const SuperCanvas = {
                     occ2d.imageSmoothingEnabled = false;
                 }
 
-                cc2d = c.getContext('2d', {desynchronized: false} );
+                cc2d = c.getContext('2d', {desynchronized: true} );
                 cc2d.imageSmoothingEnabled = false;
                 cc2d.globalCompositeOperation = "copy";
 
@@ -144,7 +149,6 @@ const SuperCanvas = {
                 enable_paint_type: "",
                 fp: new DataView(new ArrayBuffer(pxl_height * pxl_width * 4)),
                 ic: new Map(),
-                ic2: new Map(),
                 b: {
                     bmp_x: 0,
                     bmp_y: 0,
@@ -182,16 +186,14 @@ const SuperCanvas = {
 
                 return new Promise(function (resolve, reject) {
 
-                    if (_state.enable_paint_type === "bitmap") {
+                    if (_state.enable_paint_type === "bitmap" && typeof b2 !== "undefined") {
 
-                        let b = typeof b2 !== "undefined" ? b2: _state.b;
-
-                        _state.s.canvas_context.clearRect(b.bmp_x, b.bmp_y, b.bmp.width, b.bmp.height);
+                        _state.s.canvas_context.clearRect(b2.bmp_x, b2.bmp_y, b2.bmp.width, b2.bmp.height);
                         _state.s.canvas_context.globalCompositeOperation = "source-over";
-                        _state.s.canvas_context.drawImage(b.bmp, b.bmp_x, b.bmp_y, b.bmp.width, b.bmp.height);
+                        _state.s.canvas_context.drawImage(b2.bmp, b2.bmp_x, b2.bmp_y, b2.bmp.width, b2.bmp.height);
 
-                        b.old_bmp.close();
-                        _state.b = b;
+                        b2.old_bmp.close();
+                        _state.b = b2;
                     } else if (_state.enable_paint_type === "offscreen") {
 
                         _state.s.canvas_context.globalCompositeOperation = "copy";
@@ -264,9 +266,9 @@ const SuperCanvas = {
 
                     }else if (_state.enable_paint_type === "offscreen") {
 
-                        d2d(_state.s.offscreen_canvas_context, _state.ic2).then(function(){
+                        d2d(_state.s.offscreen_canvas_context, _state.ic).then(function(){
 
-                            _state.ic2.clear();
+                            _state.ic.clear();
                             resolve();
                         });
 
@@ -286,7 +288,7 @@ const SuperCanvas = {
                     if(width !== w || height !== h){
 
                         reject();
-                    }else if (_state.s.is_bitmap && _state.ic.size > 16) {
+                    }else if (_state.s.is_bitmap) {
 
                         let x, y;
                         let pr = _state.pr;
@@ -320,19 +322,24 @@ const SuperCanvas = {
                         pr.bottom_right.y = pr_bottom_right_y | 0;
                         _state.pr = pr;
 
-                        _state.ic.clear();
-                        _state.enable_paint_type = "bitmap";
+                        if(_state.ic.size > 16) {
+                            _state.ic.clear();
+                            _state.enable_paint_type = "bitmap";
+                        }else {
+                            _state.enable_paint_type = "";
+                        }
+
                         resolve();
 
-                    } else if (_state.s.is_offscreen && _state.ic.size > 16) {
+                    } else if (_state.s.is_offscreen) {
 
-                        _state.ic.clear();
-                        _state.enable_paint_type = "offscreen";
-                        resolve();
-                    }else if(_state.ic.size > 16){
+                        if(_state.ic.size > 16) {
+                            _state.ic.clear();
+                            _state.enable_paint_type = "offscreen";
+                        }else {
+                            _state.enable_paint_type = "";
+                        }
 
-                        _state.ic.clear();
-                        _state.enable_paint_type = "";
                         resolve();
                     }else {
 

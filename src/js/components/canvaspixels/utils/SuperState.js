@@ -201,15 +201,14 @@ const SuperState = {
 
                 pxl_colors = Array.from(pxl_colors);
                 Uint32Array.from(new Set(new_ui32_colors)).forEach(function(c){
-                    if(!pxl_colors.includes((c|0)>>>0)){
-
-                        pxl_colors.push((c|0)>>>0);
+                    if(!pxl_colors.includes(c)){
+                        pxl_colors.push(c);
                     }
                 });
 
                 pxl_colors = Uint32Array.from(pxl_colors);
                 for(let i = 0; i < indexes.length; i = (i + 1 | 0)>>>0) {
-                    pxls[(indexes[(i|0)>>>0]|0)>>>0] = (pxl_colors.indexOf(new_ui32_colors[(i|0)>>>0]) | 0)>>>0;
+                    pxls[indexes[i]] = pxl_colors.indexOf(new_ui32_colors[i]);
                 }
 
                 let st = Object.assign(s, {

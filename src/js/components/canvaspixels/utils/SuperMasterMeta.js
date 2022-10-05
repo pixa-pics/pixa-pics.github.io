@@ -583,7 +583,7 @@ const SuperMasterMeta = {
 
                                 const v_pxl_color_index = _s_pxls[_layer_index][index];
                                 const v_pxl_color = _s_pxl_colors[_layer_index][v_pxl_color_index];
-                                const v_pxl_color_new = SIMDope.SIMDopeColor.new_uint32(v_pxl_color).blend_with(SIMDope.SIMDopeColor.new_uint32(pxl_current_color_uint32), pxl_current_opacity*255, true, false);
+                                const v_pxl_color_new = SIMDope.SIMDopeColor.new_uint32(v_pxl_color).blend_with(SIMDope.SIMDopeColor.new_uint32(pxl_current_color_uint32), pxl_current_opacity*255, true, false).uint32;
 
                                 // Eventually add current color to color list
                                 if (!pxl_colors.includes(v_pxl_color_new)) { pxl_colors.push(v_pxl_color_new);}
@@ -885,7 +885,7 @@ const SuperMasterMeta = {
                                     break;
                             }
 
-                            meta.super_state.paint_shape(pxl_indexes, pxl_current_color_uint32, pxl_current_opacity, {_shape_index_a: -1, _last_action_timestamp: Date.now()}, this.update_canvas());
+                            meta.super_state.paint_shape(pxl_indexes, pxl_current_color_uint32, pxl_current_opacity, {_shape_index_a: -1, _last_action_timestamp: Date.now()}, this.update_canvas);
                             this._notify_relevant_action_event(event, "#ffffffff", .6);
                         }
 
@@ -977,13 +977,6 @@ const SuperMasterMeta = {
 
                     }else if((tool === "PENCIL" || tool === "PENCIL PERFECT" || tool === "CONTOUR") && event_which === 1) {
 
-                        const pxl_color_new = meta.color_conversion.blend_colors(pxl_color, pxl_current_color_uint32, pxl_current_opacity, true, false);
-                        let new_color_index = pxl_colors_copy.indexOf(pxl_color_new);
-                        if(new_color_index === -1){
-
-                            new_color_index = pxl_colors_copy.push(pxl_color_new);
-                        }
-
                         const { pencil_mirror_mode, _pencil_mirror_index } = meta.super_state.get_state();
                         const pencil_mirror_x = _pencil_mirror_index % pxl_width;
                         const pencil_mirror_y = (_pencil_mirror_index - pencil_mirror_x) / pxl_width;
@@ -1041,23 +1034,13 @@ const SuperMasterMeta = {
                         }
 
                         // Pixel index Z is of the color index associated
-                        pxls_copy[pxl_index] = new_color_index;
-
-                        let ns_pxl_colors = meta.super_state.get_state()._s_pxl_colors;
-                        ns_pxl_colors[_layer_index] = Uint32Array.from(pxl_colors_copy);
-
-                        let ns_pxls = meta.super_state.get_state()._s_pxls;
-                        ns_pxls[_layer_index] = new Uint16Array(pxls_copy.buffer);
-
-                        // Update pixels list and pixel colours
-                        meta.super_state.set_state({
-                            _s_pxls: ns_pxls,
-                            _s_pxl_colors: ns_pxl_colors,
-                            _paint_or_select_hover_pxl_indexes: new Set([pxl_index]),
-                            _paint_or_select_hover_actions_latest_index: pxl_index,
-                            _paint_hover_old_pxls_snapshot: new Uint16Array(meta.super_state.get_state()._s_pxls[_layer_index].buffer),
-                            _last_action_timestamp: Date.now()
-                        }).then(this.update_canvas);
+                        meta.super_state.paint_shape(new Set(Array.of(pxl_index)), pxl_current_color_uint32, pxl_current_opacity,
+                            {
+                                _paint_or_select_hover_pxl_indexes: new Set([pxl_index]),
+                                _paint_or_select_hover_actions_latest_index: pxl_index,
+                                _paint_hover_old_pxls_snapshot: new Uint16Array(meta.super_state.get_state()._s_pxls[_layer_index].buffer),
+                                _last_action_timestamp: Date.now()
+                            }, this.update_canvas);
 
                     }else if ((tool === "BUCKET" || tool === "HUE BUCKET" || tool === "SELECT COLOR THRESHOLD" || tool === "BORDER") && event_which === 1) {
 
