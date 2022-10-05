@@ -9,7 +9,7 @@
  * **Compress 100x-1000x** a visual scene into less than 16 Kb PNGs that scales HD.
  * **Do more, without less**... This is pixaaaaa! (pics)
  
-![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/GRODITNOW.png)
+![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/EDITOR_1.png)
 
 ### 1) What does it cost?
 
@@ -59,9 +59,6 @@ We strongly believe bold the following recklessly for a while. The Internet has 
 
 As a team we have a commitment to work collaboratively, and participate with maximum transparency and thus lastly, we also supports free speech, anti-corruption and net neutrality facing it with **the swords of code we are forging to improve the third web’s major update.**
 
-![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/manifest/PXPS_FEDPOL.png)
-
-> What they (Switzerland's forces for order enforcement by the rule of the law in this country) had to say in 2008. It was a long time ago yes for sure and we, the people, didn't have yet the testimony or revelation we might call it like that of Mr. Edward Joseph Snowden about the tools that can be used against the online-self or the self as a whole or individually, this is very impressive.
 
 ## D) Special features
 
