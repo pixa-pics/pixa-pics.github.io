@@ -649,10 +649,10 @@ class Pixel extends React.Component {
             if(!err) {
 
                 actions.trigger_snackbar("DELETION, Successful!", 2000);
+                actions.trigger_sfx("alert_high-intensity");
                 let ap = Object.assign({}, this.state._attachment_previews);
-                delete ap[id];
-                this.setState({_attachment_previews, ap}, () => {
-
+                delete ap["json_state-ID" + id + ".json.lzp3"];
+                this.setState({_attachment_previews: ap}, () => {
                     this.forceUpdate();
                 });
             }else {

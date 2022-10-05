@@ -230,22 +230,10 @@ class Index extends React.Component {
 
     _trigger_sound = (category, pack, name, volume, global) => {
 
-        const { _know_the_settings } = this.settings;
+        import("../utils/sound-api").then((sound_api) => {
 
-        if(_know_the_settings){
-
-            import("../utils/sound-api").then((sound_api) => {
-
-                sound_api.play_sound(category, pack, name, volume, global);
-            });
-        }else {
-
-            setTimeout(() => {
-
-                this._trigger_sound(category, pack, name, volume, global);
-
-            }, 25);
-        }
+            sound_api.play_sound(category, pack, name, volume, global);
+        });
     }
 
     _stop_sound = () => {
@@ -260,71 +248,82 @@ class Index extends React.Component {
 
         const { _history } = this.state;
         const { _sfx_enabled, _voice_enabled, _music_enabled, _know_the_settings } = this.settings;
-        let global = null;
 
         // Make different actions send from a dispatcher bounded to this function
-        switch(event.type) {
 
-            case "TRIGGER_SFX":
-                global = false;
-                if(_sfx_enabled) { this._trigger_sound("sfx", event.data.pack, event.data.name, event.data.volume, global); }
-                break;
+        if(_know_the_settings) {
 
-            case "LOAD_WITH":
-                _history.push("/pixel");
-                 this.setState({_load_with: event.data.b64}, () => {this.forceUpdate()});
-                break;
+            switch (event.type) {
 
-            case "TRIGGER_VOICE":
-                global = false;
-                if(_voice_enabled) { this._trigger_sound("voice", event.data.pack, event.data.name, event.data.volume, global); }
-                break;
+                case "TRIGGER_SFX":
+                    if (_sfx_enabled) {
+                        this._trigger_sound("sfx", event.data.pack, event.data.name, event.data.volume, false);
+                    }
+                    break;
 
-            case "TRIGGER_MUSIC":
-                global = true;
-                if(_music_enabled) { this._trigger_sound("music", event.data.pack, event.data.name, event.data.volume, global); }
-                break;
+                case "LOAD_WITH":
+                    _history.push("/pixel");
+                    this.setState({_load_with: event.data.b64}, () => {
+                        this.forceUpdate()
+                    });
+                    break;
 
-            case "STOP_SOUND":
-                this._stop_sound();
-                break;
+                case "TRIGGER_VOICE":
+                    if (_voice_enabled) {
+                        this._trigger_sound("voice", event.data.pack, event.data.name, event.data.volume, false);
+                    }
+                    break;
 
-            case "TRIGGER_SHARE":
-                this._handle_share_dialog_open();
-                break;
+                case "TRIGGER_MUSIC":
+                    if (_music_enabled) {
+                        this._trigger_sound("music", event.data.pack, event.data.name, event.data.volume, true);
+                    }
+                    break;
 
-            case "SNACKBAR":
-                this._trigger_snackbar(event.data.message, event.data.auto_hide_duration);
-                break;
+                case "STOP_SOUND":
+                    this._stop_sound();
+                    break;
 
-            case "JAMY_UPDATE":
-                this._update_jamy(event.data.state_of_mind, event.data.duration);
-                break;
+                case "TRIGGER_SHARE":
+                    this._handle_share_dialog_open();
+                    break;
 
-            case "SETTINGS_UPDATE":
+                case "SNACKBAR":
+                    this._trigger_snackbar(event.data.message, event.data.auto_hide_duration);
+                    break;
 
-                if(_know_the_settings) {
+                case "JAMY_UPDATE":
+                    this._update_jamy(event.data.state_of_mind, event.data.duration);
+                    break;
 
-                    this._update_settings();
-                }
-                break;
+                case "SETTINGS_UPDATE":
 
-            case "LOADING_UPDATE":
-                this.setState({_loaded_progress_percent: event.data.percent}, () => {
+                    if (_know_the_settings) {
 
-                    this.forceUpdate();
-                });
-                break;
+                        this._update_settings();
+                    }
+                    break;
 
-            case "PAGE_RENDER_COMPLETE":
+                case "LOADING_UPDATE":
+                    this.setState({_loaded_progress_percent: event.data.percent}, () => {
 
-                if(this.state._datasyncserviceworkerallfiles === 0) {
+                        this.forceUpdate();
+                    });
+                    break;
 
-                    const time = 7777 * 10;
-                    this.setState({_datasyncserviceworkerallfiles: Date.now() + time});
-                    setTimeout(() => {fetch("data:,all").then(function(r){})}, time);
-                }
-                break;
+                case "PAGE_RENDER_COMPLETE":
+
+                    if (this.state._datasyncserviceworkerallfiles === 0) {
+
+                        const time = 7777 * 10;
+                        this.setState({_datasyncserviceworkerallfiles: Date.now() + time});
+                        setTimeout(() => {
+                            fetch("data:,all").then(function (r) {
+                            })
+                        }, time);
+                    }
+                    break;
+            }
         }
     }
 
@@ -351,9 +350,8 @@ class Index extends React.Component {
                 document.body.setAttribute("class", "loaded");
             });
 
-            if(_music_enabled === true && was_music_enabled === false) { setTimeout(() => {this._should_play_music_pathname(this.state.pathname);}, 1000)}
             if(!was_the_settings_known) {
-
+                this._should_play_music_pathname(this.state.pathname);
                 this._set_analytics(15 * 1000);
             }
 
@@ -451,6 +449,7 @@ class Index extends React.Component {
 
             // Set pathname
             this._set_meta_title(new_pathname);
+            this._should_play_music_pathname(new_pathname);
             this.setState({pathname: new_pathname}, () => {
 
                 this.forceUpdate();

@@ -385,11 +385,21 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
                                                         callback_function_info(null, _merge_object({}, window._pixa_settings));
                                                     }
                                                 }
+
+                                                if(callback_function_attachment !== null) {
+
+                                                    callback_function_attachment(null, true);
+                                                }
                                             }else {
 
                                                 if(callback_function_info !== null) {
 
                                                     callback_function_info("DB error post", null);
+                                                }
+
+                                                if(callback_function_attachment !== null) {
+
+                                                    callback_function_attachment("DB error post", false);
                                                 }
                                             }
 
