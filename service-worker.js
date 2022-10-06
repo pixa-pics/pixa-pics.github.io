@@ -193,7 +193,7 @@ self.addEventListener("fetch", function(event) {
                 }).catch(function() {
 
                     return fetch(url).then(function (response) { // Fetch, clone, and serve
-                        return cache.put(url, response).then(function () {return response.clone()});
+                        return cache.put(url, response.clone()).then(function () {return response.clone()});
                     });
                 });
             }),
@@ -208,7 +208,7 @@ self.addEventListener("fetch", function(event) {
                 }).catch(function (reason) {
 
                     return fetch(url).then(function (response) { // Fetch, clone, and serve
-                        return cache.put(url, response).then(function () {return response.clone()});
+                        return cache.put(url, response.clone()).then(function () {return response.clone()});
                     });
                 });
             }),
@@ -223,7 +223,7 @@ self.addEventListener("fetch", function(event) {
                 }).catch(function (reason) {
 
                     return fetch(url).then(function (response) { // Fetch, clone, and serve
-                        return cache.put(url, response).then(function () {return response.clone()});
+                        return cache.put(url, response.clone()).then(function () {return response.clone()});
                     });
                 });
             }),
@@ -238,7 +238,7 @@ self.addEventListener("fetch", function(event) {
                 }).catch(function(reason){
 
                     return fetch("/chunk_norris.min.js").then(function (response) { // Fetch, clone, and serve
-                        return cache.put("/chunk_norris.min.js", response).then(function () {return response.clone()});
+                        return cache.put("/chunk_norris.min.js", response.clone()).then(function () {return response.clone()});
                     });
                 });
             })
@@ -254,7 +254,7 @@ self.addEventListener("fetch", function(event) {
                 }).catch(function(reason) {
 
                     return fetch(`/chunk_${middle_name}.min.js`).then(function (response) { // Fetch, clone, and serve
-                        return cache.put(`/chunk_${middle_name}.min.js`, response).then(function () {return response.clone()});
+                        return cache.put(`/chunk_${middle_name}.min.js`, response.clone()).then(function () {return response.clone()});
                     });
                 });
             })
@@ -270,7 +270,7 @@ self.addEventListener("fetch", function(event) {
                 }).catch(function(reason) {
 
                     return fetch(`/chunk_${middle_name}.min.js`).then(function (response) { // Fetch, clone, and serve
-                        return cache.put(`/chunk_${middle_name}.min.js`, response).then(function () {return response.clone()});
+                        return cache.put(`/chunk_${middle_name}.min.js`, response.clone()).then(function () {return response.clone()});
                     });
                 });
             })
@@ -317,7 +317,7 @@ self.addEventListener("fetch", function(event) {
 
                     useful_cache.then(function (cache) {
 
-                        cache.put(url, response).then(function () {return response.clone()});
+                        cache.put(url, response.clone()).then(function () {return response.clone()});
                     });
                 })
             ])
