@@ -352,7 +352,7 @@ class Index extends React.Component {
 
             if(!was_the_settings_known) {
                 this._should_play_music_pathname(this.state.pathname);
-                this._set_analytics(15 * 1000);
+                this._set_analytics( 500);
             }
 
         }else {
@@ -360,7 +360,7 @@ class Index extends React.Component {
         }
     };
 
-    _set_analytics(wait = 10 * 1000) {
+    _set_analytics(wait = 0) {
 
         /* MATOMO TAG MANAGER (ADDON) */
         var _mtm = window._mtm = window._mtm || [];

@@ -387,7 +387,7 @@ class PixelToolboxSwipeableViews extends React.Component {
             view_name_index !== new_props.view_name_index ||
             previous_view_name_index !== new_props.previous_view_name_index ||
             view_names !== new_props.view_names ||
-            Array.from(layers).map(function(l){return l.hash}).join("-") !== Array.from(new_props.layers).map(function(l){return l.hash}).join("-") ||
+            JSON.stringify(layers) !== JSON.stringify(new_props.layers) ||
             parseInt(layer_index) !== parseInt(new_props.layer_index) ||
             is_image_import_mode !== new_props.is_image_import_mode ||
             hide_canvas_content !== new_props.hide_canvas_content ||

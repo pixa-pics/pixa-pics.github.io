@@ -186,7 +186,7 @@ const SuperCanvas = {
 
                 return new Promise(function (resolve, reject) {
 
-                    if (_state.enable_paint_type === "bitmap" && typeof b2 !== "undefined") {
+                    if (typeof b2 !== "undefined") {
 
                         _state.s.canvas_context.clearRect(b2.bmp_x, b2.bmp_y, b2.bmp.width, b2.bmp.height);
                         _state.s.canvas_context.globalCompositeOperation = "source-over";
@@ -250,7 +250,7 @@ const SuperCanvas = {
                                     resolve(b2);
                                 }else {
 
-                                    reject(_state.b);
+                                    resolve(_state.b);
                                 }
 
                             }).catch(reject);
@@ -326,20 +326,14 @@ const SuperCanvas = {
                             _state.ic.clear();
                             _state.enable_paint_type = "bitmap";
                         }else {
-                            _state.enable_paint_type = "";
+                            _state.enable_paint_type = "bitmap";
                         }
 
                         resolve();
 
                     } else if (_state.s.is_offscreen) {
 
-                        if(_state.ic.size > 16) {
-                            _state.ic.clear();
-                            _state.enable_paint_type = "offscreen";
-                        }else {
-                            _state.enable_paint_type = "";
-                        }
-
+                        _state.enable_paint_type = "offscreen";
                         resolve();
                     }else {
 

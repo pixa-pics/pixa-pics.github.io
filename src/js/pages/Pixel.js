@@ -1736,7 +1736,7 @@ class Pixel extends React.Component {
 
     _revert_tool = () => {
 
-        this.setState({_tool: this.state._memory_tool.toString});
+        this.setState({_tool: this.state._memory_tool.toString()});
     };
 
     _set_tool = (name, remember = true) => {

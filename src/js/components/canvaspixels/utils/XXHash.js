@@ -1,4 +1,4 @@
-import XXH from "xxhashjs";
+import XXH from "../../../utils/llxxhashjs/index";
 import xxHash from "xxhash-wasm";
 
 const XXHash = {
@@ -39,6 +39,9 @@ const XXHash = {
     },
     new(){
 
+        const alphabet_58 = "123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ";
+        const base_58 = alphabet_58.length; // base is the length of the alphabet (58 in this case)
+
         let cs_32_js = this._get_32_js;
         let cs_32_wasm = this._get_32_wasm;
 
@@ -65,14 +68,12 @@ const XXHash = {
             },
             base58_that: function (array_buffer) {
                 "use strict";
-                const alphabet_58 = "123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ";
-                const base_58 = alphabet_58.length; // base is the length of the alphabet (58 in this case)
                 let num = this.int_that(typeof array_buffer === "string" ? Buffer.from(array_buffer): "buffer" in array_buffer ? array_buffer.buffer: array_buffer);
                 let encoded = "";
                 let remainder = 0;
                 let chain = 0;
 
-                while (num > 0 && chain < 5) {
+                while (num > 0) {
                     remainder = (num % base_58 | 0) >>> 0;
                     num = (num / base_58 | 0) >>> 0;
                     encoded = encoded + alphabet_58.charAt(remainder);

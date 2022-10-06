@@ -204,7 +204,7 @@ const SuperMasterMeta = {
                             let pos_x = 0;
                             let pos_y = 0;
 
-                            if(!hide_canvas_content && !is_there_different_dimension){
+                            if(!is_there_different_dimension){
 
                                 meta.super_blend.update(simdops.plus_uint(_layers.length, 1), full_pxls_length);
                                 let super_blend_for = meta.super_blend.for;
@@ -237,9 +237,9 @@ const SuperMasterMeta = {
 
                                         for (let i = 0; simdops.int_less(i, layers_length); i = simdops.plus_uint(i,1)) {
 
-                                            if(_layers[i].hidden) {
+                                            if(_layers[i].hidden || hide_canvas_content) {
 
-                                                super_blend_stack(i, _s_pxl_colors[i][_s_pxls[i][index]], 0, 0);
+                                                super_blend_stack(i, 0, 0, 0);
                                             }else {
 
                                                 super_blend_stack(i, _s_pxl_colors[i][_s_pxls[i][index]], simdops.clamp_uint8(simdops.multiply_uint(_layers[i].opacity, 255)), false);
