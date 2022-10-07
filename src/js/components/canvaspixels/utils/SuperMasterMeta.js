@@ -1,5 +1,6 @@
 import SIMDope from "../../../utils/simdope/simdope";
 const simdops = SIMDope.simdops;
+const SIMDopeColor = SIMDope.SIMDopeColor;
 
 const SuperMasterMeta = {
     init(super_state, super_canvas, super_blend, canvas_pos, color_conversion, sraf){
@@ -1339,9 +1340,8 @@ const SuperMasterMeta = {
 
                     const layer_pixel_color = _s_pxl_colors[i][_s_pxls[i][pxl_index]];
                     layer_pixel_colors[i] = layer_pixel_color;
-                    const [r, g, b, a] = meta.color_conversion.to_rgba_from_uint32(layer_pixel_color);
 
-                    if(a === 255) {
+                    if(SIMDopeColor.new_uint32(layer_pixel_color).is_fully_opaque() && !_layers[i].hidden) {
 
                         start_i = i;
                         break;
@@ -1349,19 +1349,17 @@ const SuperMasterMeta = {
 
                 }
 
-                let pixel_color_uint32 = 0;
+                let pixel_color_uint32 = SIMDopeColor.new_zero();
 
                 for (let i = start_i; i < _s_pxl_colors.length ; i++) {
 
                     if(!_layers[i].hidden) {
 
-                        const layer_pixel_color = layer_pixel_colors[i];
-
-                        pixel_color_uint32 = meta.color_conversion.blend_colors(pixel_color_uint32, layer_pixel_color, parseFloat(_layers[i].opacity), false, false);
+                        pixel_color_uint32.blend_with(SIMDopeColor.new_uint32(layer_pixel_colors[i]), parseFloat(_layers[i].opacity) * 255, false, false);
                     }
                 }
 
-                return meta.color_conversion.to_hex_from_uint32(pixel_color_uint32);
+                return pixel_color_uint32.hex;
             },
             _notify_current_color_change (color, event = null) {
 

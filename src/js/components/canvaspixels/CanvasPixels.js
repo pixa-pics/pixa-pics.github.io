@@ -552,6 +552,11 @@ class CanvasPixels extends React.PureComponent {
         }
     };
 
+    get_pixel_color_from_pos = (x, y) => {
+
+        return this.super_master_meta.get_pixel_color_from_pos(x, y);
+    };
+
     get_layer_bitmap_image = (pxl_width, pxl_height, pxls, pxl_colors, callback_function) => {
 
         this.bmp_layer.define(pxl_width, pxl_height, pxls, pxl_colors);
@@ -1333,7 +1338,7 @@ class CanvasPixels extends React.PureComponent {
         const pxl_color_index = pxl_colors_copy.indexOf(this.color_conversion.to_uint32_from_hex(this.color_conversion.format_hex_color(old_color)));
 
         const pxl_color = pxl_colors_copy[pxl_color_index];
-        const pxl_color_new = this.color_conversion.blend_colors(pxl_color, new_color, 1, true, false);
+        const pxl_color_new = this.color_conversion.blend_colors(pxl_color, this.color_conversion.to_uint32_from_hex(new_color), 1, true, false);
 
         // Eventually add current color to color list
         if(!pxl_colors_copy.includes(pxl_color_new)){
@@ -2057,7 +2062,7 @@ class CanvasPixels extends React.PureComponent {
 
     get_average_color_of_selection = () => {
 
-        return this._get_average_color_of_selection();
+        return this.color_conversion.to_hex_from_uint32(this._get_average_color_of_selection());
     };
 
     _get_average_color_of_selection = (_pxl_indexes_of_selection, pxls, pxl_colors ) => {
@@ -2079,8 +2084,7 @@ class CanvasPixels extends React.PureComponent {
 
         _pxl_indexes_of_selection.forEach((pxl_index) => {
 
-            const current_pxl_color_index = pxls[pxl_index];
-            colors_in_selection_with_occurrence[current_pxl_color_index] ++;
+            colors_in_selection_with_occurrence[pxls[pxl_index]] ++;
         });
 
         let colors_total_occurrence = 0;
@@ -2093,7 +2097,7 @@ class CanvasPixels extends React.PureComponent {
         Object.entries(colors_in_selection_with_occurrence).forEach((entry) => {
 
             const [current_color_index, occurrence] = entry;
-            average_color = this.color_conversion.blend_colors(average_color, pxl_colors[current_color_index], occurrence / colors_total_occurrence, true, true);
+            average_color = this.color_conversion.blend_colors(average_color, pxl_colors[current_color_index], occurrence / colors_total_occurrence, false, false);
         });
 
         return average_color;
@@ -2112,7 +2116,7 @@ class CanvasPixels extends React.PureComponent {
         const average_color = this._get_average_color_of_selection();
         const [ac_r, ac_g, ac_b, ac_a] = this.color_conversion.to_rgba_from_uint32(average_color)
         const [ac_h, ac_s, ac_l, ac_o] = this.color_conversion.to_hsla_from_rgba(Uint8ClampedArray.of(ac_r, ac_g, ac_b, ac_a));
-        const global_hue_diff = hue - ac_h | 0;
+        const global_hue_diff = ac_h - hue;
 
         _pxl_indexes_of_selection.forEach((pxl_index, iteration, array) => {
 
@@ -2121,7 +2125,7 @@ class CanvasPixels extends React.PureComponent {
 
             const [c_r, c_g, c_b, c_a] = this.color_conversion.to_rgba_from_uint32(current_pxl_color);
             let [c_hue, c_saturation, c_luminosity, c_opacity] = this.color_conversion.to_hsla_from_rgba(Uint8ClampedArray.of(c_r, c_g, c_b, c_a));
-            const c_new_hue = (360 +  global_hue_diff - c_hue) % 360; // Boolean(c_hue + global_hue_diff < 0 ) ? parseInt(parseInt(360 + c_hue + global_hue_diff) % 360): parseInt(parseInt(c_hue + global_hue_diff) % 360);
+            const c_new_hue = Boolean(c_hue + global_hue_diff < 0 ) ? (360 + c_hue + global_hue_diff) % 360: (c_hue + global_hue_diff) % 360;
 
             let added = [saturation, luminosity, 1];
             let base = [c_saturation, c_luminosity, 1];
@@ -2129,9 +2133,9 @@ class CanvasPixels extends React.PureComponent {
 
             if (c_a !== 0 && change_not_only_hue) {
 
-                mix[2] = 1 - (1 - added[2]) * (1 - base[2]); // alpha
-                mix[0] = Math.round((added[0] * added[2] / mix[2]) + (base[0] * base[2] * (1 - added[2]) / mix[2])); // red
-                mix[1] = Math.round((added[1] * added[2] / mix[2]) + (base[1] * base[2] * (1 - added[2]) / mix[2])); // green
+                mix[2] = 1 - (1 - added[2]) * (1 - base[2]);
+                mix[0] = Math.round((added[0] * added[2] / mix[2]) + (base[0] * base[2] * (1 - added[2]) / mix[2]));
+                mix[1] = Math.round((added[1] * added[2] / mix[2]) + (base[1] * base[2] * (1 - added[2]) / mix[2]));
             }else {
 
                 mix = [c_saturation, c_luminosity];

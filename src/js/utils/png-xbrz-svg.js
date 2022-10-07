@@ -49,17 +49,17 @@ const base64png_to_xbrz_svg = (base64png, callback_function_for_image, callback_
                     layering : 0,
 
                     // SVG rendering
-                    strokewidth : 3,
+                    strokewidth : 4,
                     linefilter : true,
                     scale : 1,
-                    roundcoords : 0,
+                    roundcoords : 2,
                     viewbox : true,
                     desc : false,
                     lcpr : 0,
                     qcpr : 0,
 
                     // Blur
-                    blurradius : 0,
+                    blurradius : 5,
                     blurdelta : 20
 
                 }, pool).then((svg_source) => {
