@@ -1716,8 +1716,9 @@ class CanvasPixels extends React.PureComponent {
 
     _notify_can_undo_redo_change = () => {
 
-        const can_undo = this._can_undo(this.super_state.get_state()._json_state_history);
-        const can_redo = this._can_redo(this.super_state.get_state()._json_state_history);
+        const _json_state_history = this.super_state.get_state()._json_state_history;
+        const can_undo = this._can_undo(_json_state_history);
+        const can_redo = this._can_redo(_json_state_history);
 
         if(this.props.onCanUndoRedoChange) { this.props.onCanUndoRedoChange(can_undo, can_redo); }
     };
@@ -1812,37 +1813,39 @@ class CanvasPixels extends React.PureComponent {
     transform_json_state_history_array_buffer_string = (input) => {
         "use strict";
 
-        input.state_history = input.state_history.map(function(sh){
+        let output = {history_position: parseInt(input.history_position)};
+        output.state_history = Array.from(input.state_history.map(function(sh){
 
-            sh._s_pxls = Array.from(sh._s_pxls).map(function(a){
+            sh._s_pxls = Array.from(sh._s_pxls.map(function(a){
 
-                return base64.bytesToBase64(new Uint8ClampedArray(Uint16Array.from(a).buffer));
-            });
-            sh._s_pxl_colors = Array.from(sh._s_pxl_colors).map(function(a){
+                return base64.bytesToBase64(new Uint8ClampedArray(a.slice(0, a.length).buffer));
+            }));
+            sh._s_pxl_colors = Array.from(sh._s_pxl_colors.map(function(a){
 
-                return base64.bytesToBase64(new Uint8ClampedArray(Uint32Array.from(a).buffer));
-            });
-            return sh;
-        });
+                return base64.bytesToBase64(new Uint8ClampedArray(a.slice(0, a.length).buffer));
+            }));
+            return Object.assign({}, sh);
+        }));
 
-        return input;
+        return output;
     };
 
     transform_json_state_history_string_array_buffer = (input) => {
         "use strict";
 
-        input.state_history = input.state_history.map(function(sh){
+        let output = {history_position: parseInt(input.history_position)};
+        output.state_history = Array.from(input.state_history.map(function(sh){
 
-            sh._s_pxls = Array.from(sh._s_pxls).map(function(a){
-                return new Uint16Array(Uint8ClampedArray.from(base64.base64ToBytes(a)).buffer);
-            });
-            sh._s_pxl_colors = Array.from(sh._s_pxl_colors).map(function(a){
-                return new Uint32Array(Uint8ClampedArray.from(base64.base64ToBytes(a)).buffer);
-            });
-            return sh;
-        });
+            sh._s_pxls = Array.from(sh._s_pxls.map(function(a){
+                return new Uint16Array(base64.base64ToBytes(a).buffer);
+            }));
+            sh._s_pxl_colors = Array.from(sh._s_pxl_colors.map(function(a){
+                return new Uint32Array(base64.base64ToBytes(a).buffer);
+            }));
+            return Object.assign({}, sh);
+        }));
 
-        return input;
+        return output;
     };
 
     export_JS_state = (callback_function) => {
@@ -1858,10 +1861,10 @@ class CanvasPixels extends React.PureComponent {
                     preview: base_64,
                     timestamp: Date.now(),
                     _base64_original_images: Array.from(this.super_state.get_state()._base64_original_images),
-                    _json_state_history: Object.assign({}, this.transform_json_state_history_array_buffer_string(_json_state_history))
+                    _json_state_history: this.transform_json_state_history_array_buffer_string(_json_state_history)
                 });
             }, false, 5, 50, 75);
-        }, true);
+        });
     };
 
     _can_undo = (_json_state_history) => {

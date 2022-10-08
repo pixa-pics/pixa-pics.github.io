@@ -85,7 +85,7 @@ export function base64ToBytes(str) {
     }
     let missingOctets = str.endsWith("==") ? 2 : str.endsWith("=") ? 1 : 0,
         n = str.length,
-        result = new Uint8Array(3 * (n / 4)),
+        result = new Uint8ClampedArray(3 * (n / 4)),
         buffer;
     for (let i = 0, j = 0; (i|0) < (n|0); i = (i+4 | 0) >>> 0, j = (j+3 | 0) >>> 0) {
         buffer =
@@ -97,7 +97,7 @@ export function base64ToBytes(str) {
         result[j + 1 | 0] = (buffer >> 8) & 0xFF;
         result[j + 2 | 0] = buffer & 0xFF;
     }
-    return result.subarray(0, result.length - missingOctets);
+    return result.slice(0, result.length - missingOctets);
 }
 
 export function base64encode(str, encoder = new TextEncoder()) {

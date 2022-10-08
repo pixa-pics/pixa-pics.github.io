@@ -321,6 +321,9 @@ class Index extends React.PureComponent {
                     }
                     break;
             }
+        }else {
+
+            setTimeout(this._handle_events, 30, event);
         }
     }
 
@@ -350,7 +353,6 @@ class Index extends React.PureComponent {
                 this.forceUpdate(function(){
                     document.body.setAttribute("class", "loaded");
                 });
-                this._should_play_music_pathname(this.state.pathname);
                 this._set_analytics( 500);
             }else if(_selected_locales_code !== this.settings._selected_locales_code) {
 
@@ -474,9 +476,9 @@ class Index extends React.PureComponent {
 
             actions.trigger_music(`Tesla_Numbers_15m_session`, 1, "tesla");
 
-        }else if(pathname.match(/\/$/)) {
+        }else if(pathname.match(/(\/)?$/)) {
 
-            const { _has_played_index_music_counter, _know_the_settings } = this.settings;
+            const { _has_played_index_music_counter } = this.settings;
             actions.trigger_music(`track_${Boolean(navigator.onLine && _has_played_index_music_counter > 0) ? Math.ceil(Math.random() * 12).toString(10).padStart(2, "0"): "09"}`, 1, "redeclipse");
             this.settings = Object.assign(this.settings, {_has_played_index_music_counter: _has_played_index_music_counter+1});
         }else {
