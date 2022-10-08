@@ -517,26 +517,26 @@ class Home extends React.Component {
                 </div>
                 <div className={classes.headerContainer} style={{textShadow: THEME_DAY && !IS_EVENING? "0px 0px 9px #57bbff": "none"}}>
                     <h1 className={classes.titleh1}>
-                        <span className={classes.revelantText} style={{color: THEME_DAY && !IS_EVENING ? "#ffffff": "#008eff"}}>1 > From PICTURES to PIXEL ART and ~12Kb NFTs.</span>
+                        <span className={classes.revelantText} style={{color: THEME_DAY && !IS_EVENING ? "#ffffff": "#008eff", backgroundColor: THEME_DAY && !IS_EVENING ? "black": "transparent"}}>From PICTURES to PIXEL ART and ~12Kb NFTs.</span>
                     </h1>
                     <h2 className={classes.titleh2} style={{color: THEME_DAY && !IS_EVENING ? "#000639": "#fff"}}>
-                        <span className={classes.revelantText} style={{color: THEME_DAY && !IS_EVENING ? "#000639": "#008eff"}}>Get the MAXIMA of PRIVACY fashionably for real and for the ONLINE-SELF...</span>
+                        <span className={classes.revelantText} style={{color: THEME_DAY && !IS_EVENING ? "#fff": "#008eff", backgroundColor: THEME_DAY && !IS_EVENING ? "black": "transparent"}}>Get the MAXIMA of PRIVACY fashionably for real and for the ONLINE-SELF...</span>
                         <br/>
                         <span>Use effects immediately in the laboratory? Yes or No?</span>
                     </h2>
                     <h2 className={classes.titleh2} style={{color: THEME_DAY && !IS_EVENING ? "#000639": "#fff"}}>
                         <span className={classes.stepPoints} style={{color: THEME_DAY && !IS_EVENING ? "#000639": "#008eff"}}>2 >> </span>
                         <JacketEmojiSvg alt="scientist-jacket-tweemoji" className="emoji-150"/>
-                        <span className={classes.revelantText} style={{color: THEME_DAY && !IS_EVENING ? "#000639": "#008eff"}}> WHILE DRAWING/EDITING</span>
+                        <span className={classes.revelantText} style={{color: THEME_DAY && !IS_EVENING ? "#fff": "#008eff", backgroundColor: THEME_DAY && !IS_EVENING ? "black": "transparent"}}> WHILE DRAWING/EDITING</span>
                         <span> an ARTWORK in MINIMA, </span>
-                        <span className={classes.revelantText}> you can use 55+ tools for pixel art within 7 panels</span>
+                        <span className={classes.revelantText} style={{color: THEME_DAY && !IS_EVENING ? "#fff": "#008eff", backgroundColor: THEME_DAY && !IS_EVENING ? "black": "transparent"}}> you can use 55+ tools for pixel art within 7 panels</span>
                         <span> such as : layer's option, filters, selections, shapes, and effects.</span>
                     </h2>
                     <h2 className={classes.titleh2} style={{color: THEME_DAY && !IS_EVENING ? "#000639": "#fff"}}>
                         <span className={classes.stepPoints} style={{color: THEME_DAY && !IS_EVENING ? "#000639": "#008eff"}}>3 >>></span>
                         <GlassesEmojiSvg alt="scientist-jacket-tweemoji" style={{verticalAlign: "middle"}} className="emoji-150"/>
-                        <span className={classes.revelantText} style={{color: THEME_DAY && !IS_EVENING ? "#000639": "#008eff"}}> RENDER UNLIMITED PIXEL ART </span>
-                        <span className={classes.revelantText}>in 4K Ultra HD images</span>
+                        <span className={classes.revelantText} style={{color: THEME_DAY && !IS_EVENING ? "#fff": "#008eff", backgroundColor: THEME_DAY && !IS_EVENING ? "black": "transparent"}}> RENDER UNLIMITED PIXEL ART </span>
+                        <span className={classes.revelantText} style={{color: THEME_DAY && !IS_EVENING ? "#fff": "#008eff", backgroundColor: THEME_DAY && !IS_EVENING ? "black": "transparent"}}>in 4K Ultra HD images</span>
                         <span> or in </span>
                         <span>humanized ∞ %<sup> Scalable</sup> shapes </span>
                         <span> of vectors using its PIXEL-MATRIX to get it majestically in SVG.</span>

@@ -187,7 +187,7 @@
             var _REGISTER_SERVICE_WORKER = function() {
                 return new Promise(function(resolve, reject){
                     if ("serviceWorker" in navigator) {
-                        return navigator.serviceWorker.register("/service-worker.js", {
+                        navigator.serviceWorker.register("/service-worker.js", {
                             scope: "/"
                         }).then(function(r) {
                             var sw = r.installing || r.waiting || r.active || null;
@@ -197,7 +197,6 @@
                                 });
                                 if(sw.state === "activated") { _LET_FIRE_IT(true).then(function(){resolve();}); }
                             }else { _LET_FIRE_IT(false).then(function(){resolve();}); }
-                            return true;
                         });
                     }else { _LET_FIRE_IT(false).then(function(){resolve();}); }
                 });

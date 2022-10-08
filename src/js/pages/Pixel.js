@@ -1054,8 +1054,6 @@ class Pixel extends React.PureComponent {
 
         const { get_base64_png_data_url, xxhashthat } = this.state._canvas;
 
-        using === "xbrz" ? window.dispatchEvent(new Event("art-download-vectorxbrz")): window.dispatchEvent(new Event("art-download-vectoromni"));
-
         actions.trigger_voice("please_wait");
         actions.trigger_snackbar("Please wait... Files will download in a few seconds.", 5700);
         actions.jamy_update("happy");
@@ -1079,11 +1077,11 @@ class Pixel extends React.PureComponent {
                     });
 
                     actions.trigger_voice("processing");
-                    base64png_to_xbrz_svg(png_base64_in.toString(), (image_base64) => {
+                    base64png_to_xbrz_svg(png_base64_in.toString(), (image_base64, size) => {
 
                         let { _files_waiting_download } = this.state;
                         _files_waiting_download.push({
-                            name: `PIXAPICS-${hash}-${using.toUpperCase()}-6x_RAS.png`,
+                            name: `PIXAPICS-${hash}-${using.toUpperCase()}-${size}x_RAS.png`,
                             url: image_base64.toString()
                         });
                         image_base64 = null;
@@ -1092,13 +1090,13 @@ class Pixel extends React.PureComponent {
                             this.forceUpdate();
                         });
 
-                    }, (svg_base64) => {
+                    }, (svg_base64, size) => {
 
                         if(svg_base64.length > 0) {
 
                             let { _files_waiting_download } = this.state;
                             _files_waiting_download.push({
-                                name: `PIXAPICS-${hash}-${using.toUpperCase()}-6x_VEC.svg`,
+                                name: `PIXAPICS-${hash}-${using.toUpperCase()}-${size}x_VEC.svg`,
                                 url: svg_base64.toString()
                             });
                             svg_base64 = null;

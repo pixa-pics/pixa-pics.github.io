@@ -51,7 +51,7 @@ const base64png_to_xbrz_svg = (base64png, callback_function_for_image, callback_
                         layering : 0,
 
                         // SVG rendering
-                        strokewidth : 4,
+                        strokewidth : Math.ceil(scale/2),
                         linefilter : true,
                         scale : 1,
                         roundcoords : 2,
@@ -61,8 +61,8 @@ const base64png_to_xbrz_svg = (base64png, callback_function_for_image, callback_
                         qcpr : 0,
 
                         // Blur
-                        blurradius : 5,
-                        blurdelta : 20
+                        blurradius : scale,
+                        blurdelta : scale*4
 
                     }, pool).then((svg_source) => {
 
@@ -79,20 +79,20 @@ const base64png_to_xbrz_svg = (base64png, callback_function_for_image, callback_
                                     plugin: ["mergePaths"],
                                 }).data;
 
-                                callback_function_for_svg("data:image/svg+xml;base64," + window.btoa(svg_source));
+                                callback_function_for_svg("data:image/svg+xml;base64," + window.btoa(svg_source), scale);
                                 svg_source = null;
 
                             });
                         }else {
 
-                            callback_function_for_svg("data:image/svg+xml;base64," + window.btoa(svg_source));
+                            callback_function_for_svg("data:image/svg+xml;base64," + window.btoa(svg_source), scale);
                             svg_source = null;
                         }
                     });
                 });
             }else {
 
-                callback_function_for_svg("");
+                callback_function_for_svg("", 0);
             }
         }
 
@@ -121,13 +121,50 @@ const base64png_to_xbrz_svg = (base64png, callback_function_for_image, callback_
 
                             png_quant(base64_out, 40, 50, 6, pool).then((base64_out_second) => {
 
-                                callback_function_for_image(base64_out_second);
+                                callback_function_for_image(base64_out_second, first_scale_size);
                                 base64_out = null;
                             });
                         });
                     }else {
 
-                        callback_function_for_image(base64_out);
+                        callback_function_for_image(base64_out, first_scale_size);
+                    }
+
+                });
+            });
+
+        }else if(using === "hqnx") {
+
+            import("../utils/hqnx").then(({hqnx}) => {
+
+                const first_scale_size = 4;
+
+                hqnx(image_data, first_scale_size, pool).then((second_image_data) => {
+
+                    image_data = null;
+                    let third_canvas = document.createElement("canvas");
+                    third_canvas.width = second_image_data.width;
+                    third_canvas.height = second_image_data.height;
+                    let third_canvas_ctx = third_canvas.getContext("2d");
+                    third_canvas_ctx.putImageData(second_image_data, 0, 0);
+                    let base64_out = third_canvas_ctx.canvas.toDataURL("image/png");
+                    third_canvas_ctx = null; third_canvas = null;
+                    process_svg(second_image_data, first_scale_size);
+                    second_image_data = null;
+
+                    if(optimize_render_size) {
+
+                        import("../utils/png_quant").then(({png_quant}) => {
+
+                            png_quant(base64_out, 40, 50, 6, pool).then((base64_out_second) => {
+
+                                callback_function_for_image(base64_out_second, first_scale_size);
+                                base64_out = null;
+                            });
+                        });
+                    }else {
+
+                        callback_function_for_image(base64_out, first_scale_size);
                     }
 
                 });
@@ -158,12 +195,12 @@ const base64png_to_xbrz_svg = (base64png, callback_function_for_image, callback_
                             png_quant(base64_out, 40, 50, 6, pool).then((base64_out_second) => {
 
                                 base64_out = null;
-                                callback_function_for_image(base64_out_second);
+                                callback_function_for_image(base64_out_second, first_scale_size);
                             });
                         });
                     }else {
 
-                        callback_function_for_image(base64_out);
+                        callback_function_for_image(base64_out, first_scale_size);
                     }
                 });
             });

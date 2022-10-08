@@ -851,6 +851,22 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                     },
                     {
                         icon: <FileDownloadIcon/>,
+                        text: "Render (2x size)",
+                        sub: "Upscale 2x",
+                        on_click: () => {
+                            this._download_png(2)
+                        }
+                    },
+                    {
+                        icon: <FileDownloadIcon/>,
+                        text: "Render (4x size)",
+                        sub: "Upscale 4x",
+                        on_click: () => {
+                            this._download_png(4)
+                        }
+                    },
+                    {
+                        icon: <FileDownloadIcon/>,
                         text: "Render (6x size)",
                         sub: "Upscale 6x",
                         on_click: () => {
@@ -882,7 +898,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                 tools: [
                     {
                         icon: <FileDownloadIcon/>,
-                        text: "OMNI",
+                        text: "Omni",
                         sub: "Upscale by 6x using Omniscale",
                         disabled: too_much_colors_no_vector,
                         on_click: () => {
@@ -896,6 +912,15 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                         disabled: too_much_colors_no_vector,
                         on_click: () => {
                             this._download_svg("xbrz", _compressed, _vectorized)
+                        }
+                    },
+                    {
+                        icon: <FileDownloadIcon/>,
+                        text: "hqNx",
+                        sub: "Upscale by 4x using hqNx",
+                        disabled: too_much_colors_no_vector,
+                        on_click: () => {
+                            this._download_svg("hqnx", _compressed, _vectorized)
                         }
                     },
                     {
