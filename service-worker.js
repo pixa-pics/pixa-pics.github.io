@@ -153,7 +153,6 @@ self.addEventListener("fetch", function(event) {
                         "/client/chunk_27.min.js",
                         "/client/chunk_28.min.js",
                         "/client/chunk_29.min.js",
-                        "/client/chunk_30.min.js",
                     ]);
                 }),
                 static_cache.then(function (cache) {
