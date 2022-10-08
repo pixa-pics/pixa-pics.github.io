@@ -100,7 +100,7 @@ const base64png_to_xbrz_svg = (base64png, callback_function_for_image, callback_
 
             import("../utils/omniscale").then(({omniscale}) => {
 
-                const first_scale_size = 6;
+                const first_scale_size = 8;
 
                 omniscale(image_data, first_scale_size, pool).then((second_image_data) => {
 
@@ -140,6 +140,43 @@ const base64png_to_xbrz_svg = (base64png, callback_function_for_image, callback_
                 const first_scale_size = 4;
 
                 hqnx(image_data, first_scale_size, pool).then((second_image_data) => {
+
+                    image_data = null;
+                    let third_canvas = document.createElement("canvas");
+                    third_canvas.width = second_image_data.width;
+                    third_canvas.height = second_image_data.height;
+                    let third_canvas_ctx = third_canvas.getContext("2d");
+                    third_canvas_ctx.putImageData(second_image_data, 0, 0);
+                    let base64_out = third_canvas_ctx.canvas.toDataURL("image/png");
+                    third_canvas_ctx = null; third_canvas = null;
+                    process_svg(second_image_data, first_scale_size);
+                    second_image_data = null;
+
+                    if(optimize_render_size) {
+
+                        import("../utils/png_quant").then(({png_quant}) => {
+
+                            png_quant(base64_out, 40, 50, 6, pool).then((base64_out_second) => {
+
+                                callback_function_for_image(base64_out_second, first_scale_size);
+                                base64_out = null;
+                            });
+                        });
+                    }else {
+
+                        callback_function_for_image(base64_out, first_scale_size);
+                    }
+
+                });
+            });
+
+        }else if(using === "epx") {
+
+            import("../utils/EPX").then(({epx}) => {
+
+                const first_scale_size = 4;
+
+                epx(image_data, first_scale_size, pool).then((second_image_data) => {
 
                     image_data = null;
                     let third_canvas = document.createElement("canvas");

@@ -875,9 +875,24 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                     },
                     {
                         icon: <FileDownloadIcon/>,
+                        text: "Render (8x size)",
+                        sub: "Upscale 8x",
+                        on_click: () => {
+                            this._download_png(8)
+                        }
+                    },
+                    {
+                        icon: <FileDownloadIcon/>,
                         text: "Render (12x size)",
                         sub: "[CTRL + S]", on_click: () => {
                             this._download_png(12)
+                        }
+                    },
+                    {
+                        icon: <FileDownloadIcon/>,
+                        text: "Render (16x size)",
+                        sub: "Upscale 16x", on_click: () => {
+                            this._download_png(16)
                         }
                     },
                     {
@@ -899,7 +914,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                     {
                         icon: <FileDownloadIcon/>,
                         text: "Omni",
-                        sub: "Upscale by 6x using Omniscale",
+                        sub: "Upscale by 8x using Omniscale",
                         disabled: too_much_colors_no_vector,
                         on_click: () => {
                             this._download_svg("omniscale", _compressed, _vectorized)
@@ -921,6 +936,15 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                         disabled: too_much_colors_no_vector,
                         on_click: () => {
                             this._download_svg("hqnx", _compressed, _vectorized)
+                        }
+                    },
+                    {
+                        icon: <FileDownloadIcon/>,
+                        text: "EPX",
+                        sub: "Upscale by 4x using EPX",
+                        disabled: too_much_colors_no_vector,
+                        on_click: () => {
+                            this._download_svg("epx", _compressed, _vectorized)
                         }
                     },
                     {
