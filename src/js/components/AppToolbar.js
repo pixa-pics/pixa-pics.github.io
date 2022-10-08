@@ -1,5 +1,5 @@
 import React from "react";
-import {Button, withStyles} from "@material-ui/core";
+import {withStyles} from "@material-ui/core";
 
 import { t } from "../utils/t";
 
@@ -179,7 +179,7 @@ const styles = theme => ({
     }
 });
 
-class AppToolbar extends React.Component {
+class AppToolbar extends React.PureComponent {
 
     constructor(props) {
         super(props);
@@ -209,29 +209,56 @@ class AppToolbar extends React.Component {
 
     componentWillReceiveProps(new_props) {
 
-        this.setState(new_props);
+        const update = Boolean(
+            new_props.pathname !== this.state.pathname ||
+            new_props.language !== this.state.language ||
+            new_props.know_the_settings !== this.state.know_the_settings ||
+            new_props.jamy_state_of_mind !== this.state.jamy_state_of_mind ||
+            new_props.jamy_enabled !== this.state.jamy_enabled ||
+            new_props.music_enabled !== this.state.music_enabled
+        );
+
+        this.setState(new_props, () => {
+
+            if(update) {
+
+                this.forceUpdate();
+            }
+        });
     }
 
     _handle_open_swipeable_app_drawer = () => {
-        
-        this.setState({_swipeable_app_drawer_open: true});
+
+        this.setState({_swipeable_app_drawer_open: true}, ( ) => {
+
+            this.forceUpdate();
+        });
         actions.trigger_sfx("navigation_transition-left");
     };
 
     _handle_close_swipeable_app_drawer = () => {
 
-        this.setState({_swipeable_app_drawer_open: false});
+        this.setState({_swipeable_app_drawer_open: false}, ( ) => {
+
+            this.forceUpdate();
+        });
         actions.trigger_sfx("navigation_transition-left");
     };
 
     _open_account_menu = (event) => {
-      
-        this.setState({_account_menu_anchor_element: event.currentTarget});
+
+        this.setState({_account_menu_anchor_element: event.currentTarget}, ( ) => {
+
+            this.forceUpdate();
+        });
     };
 
     _close_account_menu = () => {
 
-        this.setState({_account_menu_anchor_element: null, _is_pre_reset: false});
+        this.setState({_account_menu_anchor_element: null, _is_pre_reset: false}, ( ) => {
+
+            this.forceUpdate();
+        });
     };
 
     _open_home = () => {
@@ -290,7 +317,6 @@ class AppToolbar extends React.Component {
                             actions.trigger_snackbar(t( "sentences.take a picture it last longer"));
                         });
                     }
-
                 }, 7100)
             });
         }
@@ -307,7 +333,7 @@ class AppToolbar extends React.Component {
                 setTimeout(() => {
 
                     this.setState({_click_much_jamy: false});
-                }, 6000)
+                }, 6000);
             });
         }
     };
@@ -325,9 +351,11 @@ class AppToolbar extends React.Component {
 
     _pre_reset_toggle = () => {
 
-        const {_is_pre_reset} = this.state;
-        this.setState({_is_pre_reset: !_is_pre_reset});
-    }
+        this.setState({_is_pre_reset: !this.state._is_pre_reset}, () => {
+
+            this.forceUpdate();
+        });
+    };
 
     render() {
 

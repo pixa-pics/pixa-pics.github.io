@@ -94,7 +94,7 @@ const styles = theme => ({
     }
 });
 
-class DrawerContent extends React.Component {
+class DrawerContent extends React.PureComponent {
 
     constructor(props) {
         super(props);
@@ -114,11 +114,6 @@ class DrawerContent extends React.Component {
                 this.forceUpdate();
             });
         }
-    }
-
-    shouldComponentUpdate() {
-
-        return false;
     }
 
     _open_pixel_page = () => {

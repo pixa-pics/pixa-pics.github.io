@@ -183,7 +183,7 @@ const styles = theme => ({
     }
 });
 
-class InnerToolbar extends React.Component {
+class InnerToolbar extends React.PureComponent {
 
     constructor(props) {
         super(props);
@@ -212,12 +212,16 @@ class InnerToolbar extends React.Component {
 
         if(this.state.ret >= 1 || this.state.camo >= 1) {
 
-            import("../utils/custom_toolbar").then(({RETS, CAMS}) => {
+            if(this.state._rets.length <= 1) {
+                import("../utils/custom_toolbar").then(({RETS, CAMS}) => {
 
-                this.setState({_rets: Array.from(RETS), _cams: Array.from(CAMS)});
-            });
-        };
+                    this.setState({_rets: Array.from(RETS), _cams: Array.from(CAMS)}, ( )=> {
 
+                        this.forceUpdate();
+                    });
+                });
+            }
+        }
     }
 
     componentWillReceiveProps(new_props) {
@@ -227,9 +231,24 @@ class InnerToolbar extends React.Component {
             _is_info_bar_active: new_props.pathname.includes("pixel") ? this.state._is_info_bar_active: false
         };
 
+        const update = Boolean(
+            this.state._is_info_bar_active !== state._is_info_bar_active ||
+            this.state.pathname !== state.pathname ||
+            this.state.camo !== state.camo ||
+            this.state.ret !== state.ret ||
+            this.state.logged_account !== state.logged_account ||
+            this.state.know_if_logged !== state.know_if_logged ||
+            this.state.loaded_progress_percent !== state.loaded_progress_percent ||
+            this.state.music_enabled !== state.music_enabled
+        );
+
         this.setState(state, () => {
 
-            this._load_accessories();
+            if(update) {
+
+                this.forceUpdate();
+                this._load_accessories();
+            }
         });
     }
 
@@ -240,7 +259,10 @@ class InnerToolbar extends React.Component {
 
             window.dispatchEvent(new Event("art-action-gethelp"));
         }
-        this.setState({_is_info_bar_active: !_is_info_bar_active});
+        this.setState({_is_info_bar_active: !_is_info_bar_active}, () => {
+
+            this.forceUpdate();
+        });
     };
 
     _trigger_tip = (text) => {
@@ -285,8 +307,11 @@ class InnerToolbar extends React.Component {
         }
 
         const settings = { music_enabled: !checked };
-        this.setState({music_enabled: !checked});
-        api.set_settings(settings,  this._on_settings_changed);
+        this.setState(settings, () => {
+
+            api.set_settings(settings,  this._on_settings_changed);
+        });
+
     };
 
     render() {

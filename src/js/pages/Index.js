@@ -17,23 +17,6 @@ const Pixel = React.lazy(() => import("../pages/Pixel"));
 const Unknown = React.lazy(() => import("../pages/Unknown"));
 const Settings = React.lazy(() => import("../pages/Settings"));
 
-const PAGE_COMPONENTS = (name, pathname, settings = JSON.stringify("{}"), load_with = "") => {
-
-    switch (name) {
-        case "home":
-            return <Home settings={settings} />;
-        case "pixel":
-
-            return <Suspense fallback={<div/>}><Pixel load_with={load_with} settings={settings}/></Suspense>;
-        case "unknown":
-
-            return <Suspense fallback={<div/>}><Unknown /></Suspense>;
-        case "settings":
-
-            return <Suspense fallback={<div/>}><Settings settings={settings} /></Suspense>;
-    }
-};
-
 import JamyAngry from "../icons/JamyAngry";
 import JamyAnnoyed from "../icons/JamyAnnoyed";
 import JamyFlirty from "../icons/JamyFlirty";
@@ -104,7 +87,7 @@ const styles = theme => ({
     },
 });
 
-class Index extends React.Component {
+class Index extends React.PureComponent {
 
     constructor(props) {
         super(props);
@@ -123,7 +106,10 @@ class Index extends React.Component {
             _database_attempt: 0,
             _is_share_dialog_open: false,
             _datasyncserviceworkerallfiles: 0,
-            _history_unlisten: null
+            _history_unlisten: function(){},
+            _did_mount: false,
+            _page_routes: PAGE_ROUTES,
+            _page_component: null
         };
         this.settings = {
             _language: null,
@@ -138,17 +124,8 @@ class Index extends React.Component {
             _know_the_settings: false,
             _has_played_index_music_counter: 0,
         };
+        this.all_settings = JSON.stringify({});
     };
-
-    componentWillReceiveProps(new_props) {
-
-        this.setState({_history: props.history, init_pathname: props.history.location.pathname});
-    }
-
-    shouldComponentUpdate() {
-
-        return false;
-    }
 
     componentWillMount() {
 
@@ -158,6 +135,7 @@ class Index extends React.Component {
 
     componentDidMount() {
 
+        this.setState({_did_mount: true});
         const _history_unlisten = this.state._history.listen((location, action) => {
             // location is an object like window.location
             this._set_new_pathname_or_redirect(location.location.pathname);
@@ -173,7 +151,10 @@ class Index extends React.Component {
                     const { is_online } = this.state;
                     if(navigator.onLine !== is_online){
 
-                        this.setState({is_online: navigator.onLine});
+                        this.setState({is_online: navigator.onLine}, () => {
+
+                            this.forceUpdate();
+                        });
                         actions.jamy_update(navigator.onLine ? "happy": "sad");
                     }
                 }, 1000),
@@ -208,7 +189,7 @@ class Index extends React.Component {
                 }, 1000)
             ];
 
-            this.setState({_intervals: intervals, _history_unlisten: _history_unlisten});
+            this.setState({_intervals: intervals});
         }, 5000);
 
         setTimeout(async() => {
@@ -226,6 +207,23 @@ class Index extends React.Component {
                 clearInterval(itrvl);
             });
         } catch(e) {}
+    }
+
+    _get_page_component(name, settings, load_with = ""){
+
+        switch (name) {
+            case "home":
+                return <Home settings={settings} />;
+            case "pixel":
+
+                return <Suspense fallback={<div/>}><Pixel load_with={load_with} settings={settings}/></Suspense>;
+            case "unknown":
+
+                return <Suspense fallback={<div/>}><Unknown /></Suspense>;
+            case "settings":
+
+                return <Suspense fallback={<div/>}><Settings settings={settings} /></Suspense>;
+        }
     }
 
     _trigger_sound = (category, pack, name, volume, global) => {
@@ -246,12 +244,11 @@ class Index extends React.Component {
 
     _handle_events = (event) => {
 
-        const { _history } = this.state;
+        const { _history, _did_mount } = this.state;
         const { _sfx_enabled, _voice_enabled, _music_enabled, _know_the_settings } = this.settings;
 
         // Make different actions send from a dispatcher bounded to this function
-
-        if(_know_the_settings) {
+        if(_know_the_settings && _did_mount) {
 
             switch (event.type) {
 
@@ -346,17 +343,19 @@ class Index extends React.Component {
 
 
             this.settings = Object.assign({}, { _language, _ret, _camo, _voice_enabled, _sfx_enabled, _music_enabled, _jamy_enabled, _selected_locales_code, _know_the_settings: true, _has_played_index_music_counter: parseInt(Boolean(!this.settings._know_the_settings && _music_enabled) ? 1: this.settings._has_played_index_music_counter )});;
-            this.forceUpdate(function() {
-                document.body.setAttribute("class", "loaded");
-            });
+            this.all_settings = JSON.stringify({_ret, _camo, _sfx_enabled, _music_enabled, _voice_enabled, _jamy_enabled, _selected_locales_code, _language, _know_the_settings: true});
 
             if(!was_the_settings_known) {
+
+                this.forceUpdate(function(){
+                    document.body.setAttribute("class", "loaded");
+                });
                 this._should_play_music_pathname(this.state.pathname);
                 this._set_analytics( 500);
             }
 
         }else {
-            setTimeout(this._update_settings, 5);
+            setTimeout(this._update_settings, 30);
         }
     };
 
@@ -437,7 +436,7 @@ class Index extends React.Component {
 
     _set_new_pathname_or_redirect (neo_pathname) {
 
-        const { _history } = this.state;
+        const { _history, _page_routes, _load_with } = this.state;
 
         const new_pathname = String(neo_pathname || _history.location.pathname);
         const old_pathname = String(this.state.pathname);
@@ -450,7 +449,16 @@ class Index extends React.Component {
             // Set pathname
             this._set_meta_title(new_pathname);
             this._should_play_music_pathname(new_pathname);
-            this.setState({pathname: new_pathname}, () => {
+
+            let _page_component = this.state._page_component;
+            for(let i = 0; i < _page_routes.length; i++) {
+                const page_route = _page_routes[i];
+                if(new_pathname.match(page_route.page_regex)){
+                    _page_component = this._get_page_component(page_route.page_name, this.all_settings, _load_with);
+                }
+            }
+
+            this.setState({pathname: new_pathname, _page_component}, () => {
 
                 this.forceUpdate();
             });
@@ -465,10 +473,9 @@ class Index extends React.Component {
 
         }else if(pathname.match(/\/$/)) {
 
-            const { _has_played_index_music_counter } = this.settings;
+            const { _has_played_index_music_counter, _know_the_settings } = this.settings;
             actions.trigger_music(`track_${Boolean(navigator.onLine && _has_played_index_music_counter > 0) ? Math.ceil(Math.random() * 12).toString(10).padStart(2, "0"): "09"}`, 1, "redeclipse");
-
-            this.setState({_has_played_index_music_counter: _has_played_index_music_counter+1})
+            this.settings = Object.assign(this.settings, {_has_played_index_music_counter: _has_played_index_music_counter+1});
         }else {
 
             actions.stop_sound();
@@ -495,7 +502,10 @@ class Index extends React.Component {
 
             setTimeout(() => {
 
-                this.setState({_jamy_state_of_mind: js.som}, this.forceUpdate);
+                this.setState({_jamy_state_of_mind: js.som}, () => {
+
+                    this.forceUpdate();
+                });
             }, js.dur)
         });
     }
@@ -508,13 +518,16 @@ class Index extends React.Component {
 
             this.setState({_snackbar_open: false}, () => {
 
-                setTimeout(() => {
+                this.forceUpdate(() => {
 
-                    this.setState({_snackbar_message, _snackbar_auto_hide_duration, _snackbar_open: true}, () => {
+                    setTimeout(() => {
 
-                        this.forceUpdate();
-                    });
-                }, 500);
+                        this.setState({_snackbar_message, _snackbar_auto_hide_duration, _snackbar_open: true}, () => {
+
+                            this.forceUpdate();
+                        });
+                    }, 500);
+                });
             });
         }else {
 
@@ -559,13 +572,11 @@ class Index extends React.Component {
 
     render() {
 
-        const { pathname, classes} = this.state;
+        const { pathname, classes, _page_component} = this.state;
         const { _snackbar_open, _snackbar_message, _snackbar_auto_hide_duration } = this.state;
-        const {  _is_share_dialog_open, _load_with } = this.state;
+        const {  _is_share_dialog_open } = this.state;
         const { _know_if_logged, _loaded_progress_percent, _jamy_state_of_mind } = this.state;
-
-        const {_ret, _camo, _onboarding_enabled, _sfx_enabled, _music_enabled, _voice_enabled, _jamy_enabled, _selected_locales_code, _language, _selected_currency, _know_the_settings} = this.settings;
-        const all_settings = Object.assign({}, {_ret, _camo, _onboarding_enabled, _sfx_enabled, _music_enabled, _voice_enabled, _jamy_enabled, _selected_locales_code, _language, _selected_currency, _know_the_settings});
+        const {_ret, _camo, _music_enabled, _jamy_enabled, _language, _know_the_settings} = this.settings;
 
         const JAMY = {
             angry: <JamyAngry className={classes.jamy} />,
@@ -575,22 +586,7 @@ class Index extends React.Component {
             sad: <JamySad className={classes.jamy} />,
             shocked: <JamyShocked className={classes.jamy} />,
             suspicious: <JamySuspicious className={classes.jamy} />,
-        }
-
-        // This is the custom router
-        let page_component = null;
-        let page_name = "";
-
-        for(let i = 0; i < PAGE_ROUTES.length; i++) {
-
-            const page_route = PAGE_ROUTES[i];
-
-            if(pathname.match(page_route.page_regex)){
-
-                page_name = page_route.page_name;
-                page_component = PAGE_COMPONENTS(page_name, pathname, JSON.stringify(all_settings), _load_with);
-            }
-        }
+        };
 
         return (
             <React.Fragment>
@@ -611,7 +607,7 @@ class Index extends React.Component {
                         language={_language}/>
                     <Toolbar />
                     <main className={classes.content}>
-                        {_know_the_settings && page_component}
+                        {_know_the_settings && _page_component}
                     </main>
                     <Snackbar
                         className={classes.snackbar}
@@ -622,7 +618,7 @@ class Index extends React.Component {
                         }}
                         message={<div>
                             {_jamy_enabled ? <span className={classes.jamyContainer}>{JAMY[_jamy_state_of_mind]}</span>: null}
-                            <span>{String(_snackbar_message)}</span>
+                            <span>{_snackbar_message.toString()}</span>
                         </div>}
                         action={
                             <IconButton size="small" aria-label="close" color="inherit" onClick={this._close_snackbar}>

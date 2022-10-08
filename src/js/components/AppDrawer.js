@@ -83,7 +83,7 @@ const styles = theme => ({
 });
 
 
-class AppDrawer extends React.Component {
+class AppDrawer extends React.PureComponent {
     
     constructor(props) {
         super(props);
@@ -93,11 +93,6 @@ class AppDrawer extends React.Component {
             classes: props.classes,
         };
     };
-
-    shouldComponentUpdate() {
-
-        return false;
-    }
 
     componentDidMount() {
 

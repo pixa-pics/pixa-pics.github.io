@@ -14,7 +14,7 @@ const styles = theme => ({
 });
 
 
-class ShufflingSpanText extends React.Component {
+class ShufflingSpanText extends React.PureComponent {
 
     constructor(props) {
         super(props);
@@ -46,11 +46,6 @@ class ShufflingSpanText extends React.Component {
                 this._run_animation();
             });
         }
-    }
-
-    shouldComponentUpdate() {
-
-        return false;
     }
 
     componentDidMount() {

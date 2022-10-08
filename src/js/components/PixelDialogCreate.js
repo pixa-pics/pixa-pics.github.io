@@ -64,7 +64,7 @@ const styles = theme => ({
 });
 
 
-class PixelDialogCreate extends React.Component {
+class PixelDialogCreate extends React.PureComponent {
 
     constructor(props) {
         super(props);
@@ -95,11 +95,6 @@ class PixelDialogCreate extends React.Component {
                 this.forceUpdate();
             });
         }
-    }
-
-    shouldComponentUpdate() {
-
-        return false;
     }
 
     _notify_size_from_slider = (event, value) => {
