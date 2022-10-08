@@ -118,8 +118,10 @@
     "dev": "NODE_ENV=development webpack-dev-server",
     "build": "NODE_ENV=production webpack --node-env \"production\"",
     "dist": "build --tasks win-x86,win-x64,linux-x86,linux-x64,mac-x64 --mirror https://dl.nwjs.io/ .",
-    "optimize-svg": "svgo  -f ./src/js/twemoji/original",
-    "convert-svg": "svgr ./src/js/twemoji/original -d ./src/js/twemoji/react"
+    "build-twemoji": "svgr ./src/js/twemoji/original -d ./src/js/twemoji/react",
+    "optimize-twemoji": "svgo  -f ./src/js/twemoji/original",
+    "build-notoemoji": "svgr ./src/js/notoemoji/original -d ./src/js/notoemoji/react",
+    "optimize-notoemoji": "svgo  -f ./src/js/notoemoji/original"
   },
   "author": "VIPERTECH",
   "license": "MIT"

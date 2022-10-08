@@ -3,6 +3,7 @@ node_modules/
 libs/
 /dist/
 /src/js/twemoji/react/
+/src/js/notoemoji/react/
 npm-debug.log*
 # Editor directories and files
 .idea

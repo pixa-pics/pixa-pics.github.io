@@ -151,7 +151,7 @@ Please email-us at: [pixa.pics@protonmail.com](mailto:pixa.pics@protonmail.com)
 
 ## Z) Legal concerns and acknowledgment
 
-* All splendid emoji named Tweemoji by Twitter.
+* All splendid emoji named Notoemoji from Google (Android) and Tweemoji by Twitter (free and open-source yet with mention).
 * Illustrations magically found on Undraw and ManyPixels to shine in those passionate forms and functions.
 * Most awesome sound effects by Google, simply not evil.
 * Great music on home page arrival by Red Eclipse (video game) and piano melody in the editor by long time dead Tesla Nikola (inventor).

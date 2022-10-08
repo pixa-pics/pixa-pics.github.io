@@ -17,7 +17,7 @@ const init = () => {
                     window._pixa_settings = _merge_object({}, _get_default_settings());
                     resolve(_merge_object({}, window._pixa_settings));
 
-                    setTimeout(() => {
+                    setTimeout(async() => {
 
                         window.settings_db.post({
                             info: JSON.stringify(_merge_object({}, window._pixa_settings)),
@@ -44,7 +44,7 @@ const init = () => {
                 descending: false,
                 attachments: false,
                 binary: false
-            }).then(function (response) {
+            }).then(async function (response) {
 
                 let settings_docs = response.rows.map((row) => {
                     return row.doc;
@@ -83,7 +83,7 @@ const _get_default_settings = () => {
         sfx_enabled: true,
         jamy_enabled: true,
         voice_enabled: true,
-        music_enabled: false,
+        music_enabled: true,
         attachment_previews: {},
     };
 };

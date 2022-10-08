@@ -352,6 +352,9 @@ class Index extends React.PureComponent {
                 });
                 this._should_play_music_pathname(this.state.pathname);
                 this._set_analytics( 500);
+            }else if(_selected_locales_code !== this.settings._selected_locales_code) {
+
+                this.forceUpdate();
             }
 
         }else {

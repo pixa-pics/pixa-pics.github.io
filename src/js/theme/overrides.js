@@ -105,6 +105,12 @@ const overrides = {
                     }
                 }
             },
+            ".emoji-100": {
+                verticalAlign: "inherit",
+                height: "1em",
+                width: "1.5em",
+                transform: "scale(1.5)",
+            },
             ".emoji-150": {
                 verticalAlign: "inherit",
                 height: "1.5em",

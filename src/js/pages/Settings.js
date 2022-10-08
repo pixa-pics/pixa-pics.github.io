@@ -9,9 +9,9 @@ import {Autocomplete} from "@material-ui/lab";
 import { LANGUAGES, CURRENCY_COUNTRIES } from "../utils/constants";
 import LOCALES from "../utils/constant_locales";
 
-import SwissTweemoji from "../twemoji/react/1F1E81F1Ed";
-import DangerTweemoji from "../twemoji/react/26A0";
-import ShieldTweemoji from "../twemoji/react/1F6E1";
+import SwissTweemoji from "../notoemoji/react/EmojiU1F1E81F1Ed";
+import DangerTweemoji from "../notoemoji/react/EmojiU26A0";
+import ShieldTweemoji from "../notoemoji/react/EmojiU1F6E1";
 import get_svg_in_b64 from "../utils/svgToBase64";
 
 import api from "../utils/api";
