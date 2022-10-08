@@ -1616,9 +1616,9 @@ class CanvasPixels extends React.PureComponent {
                                 while(dsh.length) { // Yet inbetween state history get added the reverse order to not break timeline of changes
 
                                     if(dshi === 0){
-                                        _json_state_history.state_history.push(dsh.shift());
+                                        _json_state_history.state_history.push(dsh.pop());
                                     }else {
-                                        _json_state_history.state_history.push(dsh.shift());
+                                        _json_state_history.state_history.push(dsh.pop());
                                     }
                                     dshi++;
 
@@ -2531,7 +2531,7 @@ class CanvasPixels extends React.PureComponent {
         this._to_colorized(null, opacity);
     }
 
-    to_color = (hue = 0, strength, blend_with_a_saturation_of = null, blend_with_a_luminosity_of = null) => {
+    to_color = (hue = 0, strength = 0, blend_with_a_saturation_of = null, blend_with_a_luminosity_of = null) => {
 
         this._to_colorized(hue, strength, blend_with_a_saturation_of, blend_with_a_luminosity_of);
     }
@@ -2926,7 +2926,7 @@ class CanvasPixels extends React.PureComponent {
         let gradient = ctx.createRadialGradient(pxl_width / 2,pxl_height / 2,0, pxl_width / 2,pxl_height / 2, max_width_height / 2);
 
         gradient.addColorStop(1, this.color_conversion.to_hex_from_uint32(pxl_current_color_uint32));
-        gradient.addColorStop(0.85, this.color_conversion.to_hex_from_uint32(this.color_conversion.blend_colors(pxl_current_color_uint32, inverted_color_uint32, 0.75)));
+        gradient.addColorStop(0.8, this.color_conversion.to_hex_from_uint32(this.color_conversion.blend_colors(pxl_current_color_uint32, inverted_color_uint32, 0.6)));
         gradient.addColorStop(0, this.color_conversion.to_hex_from_uint32(inverted_color_uint32));
 
         // Fill with gradient
@@ -2998,23 +2998,23 @@ class CanvasPixels extends React.PureComponent {
         const _new_pxl_colors = _s_pxl_colors[_layer_index].map((color) => {
 
             const [r, g, b, a] = this.color_conversion.to_rgba_from_uint32(color);
-            let [hue, saturation, luminosity, op] = this.color_conversion.to_hsla_from_rgba(Uint8ClampedArray.of(r, g, b, a));
+            let [hue2, saturation2, luminosity2, op2] = this.color_conversion.to_hsla_from_rgba(Uint8ClampedArray.of(r, g, b, a));
 
             let added = [blend_with_a_saturation_of, blend_with_a_luminosity_of, opacity];
-            let base = [saturation, luminosity, op];
+            let base = [saturation2, luminosity2, op2/100];
             let mix = [];
 
             if (opacity !== 0) {
 
                 mix[2] = 1 - (1 - added[2]) * (1 - base[2]); // alpha
-                mix[0] = Math.round((added[0] * added[2] / mix[2]) + (base[0] * base[2] * (1 - added[2]) / mix[2])); // red
-                mix[1] = Math.round((added[1] * added[2] / mix[2]) + (base[1] * base[2] * (1 - added[2]) / mix[2])); // green
+                mix[0] = Math.round((added[0] * added[2] / mix[2]) + Math.round(base[0] * base[2] * (1 - added[2]) / mix[2])); // saturation
+                mix[1] = Math.round((added[1] * added[2] / mix[2]) + Math.round(base[1] * base[2] * (1 - added[2]) / mix[2])); // luminosity
             }else {
 
-                mix = [saturation, luminosity];
+                mix = [saturation2, luminosity2];
             }
 
-            const [h_r, h_g, h_b, h_a] = this.color_conversion.to_rgba_from_hsla(Array.of(hue, mix[0], mix[1], mix[2]));
+            const [h_r, h_g, h_b, h_a] = this.color_conversion.to_rgba_from_hsla(Array.of(hue, mix[0], mix[1], mix[2]*100));
 
             if (a === 0) {
 

@@ -4,7 +4,7 @@ import { withStyles } from "@material-ui/core";
 
 const styles = theme => ({});
 
-class WhatsApp extends React.Component {
+class WhatsApp extends React.PureComponent {
 
     constructor(props) {
         super(props);

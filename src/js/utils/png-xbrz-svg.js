@@ -1,6 +1,6 @@
 import pool from "../utils/worker-pool";
 
-const base64png_to_xbrz_svg = (base64png, callback_function_for_image, callback_function_for_svg, pal= [], using = "xbrz", optimize_render_size = false) => {
+const base64png_to_xbrz_svg = (base64png, callback_function_for_image, callback_function_for_svg, pal= [], using = "xbrz", optimize_render_size = false, download_svg = false) => {
 
     let image = new Image();
     image.onload = () => {
@@ -17,80 +17,83 @@ const base64png_to_xbrz_svg = (base64png, callback_function_for_image, callback_
 
         const process_svg = (image_data, scale) => {
 
-            import("../utils/image_tracer").then(({image_tracer}) => {
+            if(download_svg) {
 
-                image_tracer(image_data, {
+                import("../utils/image_tracer").then(({image_tracer}) => {
 
-                    // Palette
-                    pal: pal.map((c) => {
+                    image_tracer(image_data, {
 
-                        const r = parseInt(c.slice(1, 3), 16);
-                        const g = parseInt(c.slice(3, 5), 16);
-                        const b = parseInt(c.slice(5, 7), 16);
-                        const a = parseInt(c.slice(7, 9), 16);
+                        // Palette
+                        pal: pal.map((c) => {
 
-                        return {r, g, b, a};
-                    }),
+                            const r = parseInt(c.slice(1, 3), 16);
+                            const g = parseInt(c.slice(3, 5), 16);
+                            const b = parseInt(c.slice(5, 7), 16);
+                            const a = parseInt(c.slice(7, 9), 16);
 
-                    // Tracing
-                    corsenabled : false,
-                    ltres : scale,
-                    qtres : scale,
-                    pathomit : scale,
-                    rightangleenhance : false,
+                            return {r, g, b, a};
+                        }),
 
-                    // Color quantization
-                    colorsampling : 2,
-                    numberofcolors : 512,
-                    mincolorratio : 0,
-                    colorquantcycles : 1,
+                        // Tracing
+                        corsenabled : false,
+                        ltres : scale,
+                        qtres : scale,
+                        pathomit : scale,
+                        rightangleenhance : false,
 
-                    // Layering method
-                    layering : 0,
+                        // Color quantization
+                        colorsampling : 2,
+                        numberofcolors : 512,
+                        mincolorratio : 0,
+                        colorquantcycles : 1,
 
-                    // SVG rendering
-                    strokewidth : 4,
-                    linefilter : true,
-                    scale : 1,
-                    roundcoords : 2,
-                    viewbox : true,
-                    desc : false,
-                    lcpr : 0,
-                    qcpr : 0,
+                        // Layering method
+                        layering : 0,
 
-                    // Blur
-                    blurradius : 5,
-                    blurdelta : 20
+                        // SVG rendering
+                        strokewidth : 4,
+                        linefilter : true,
+                        scale : 1,
+                        roundcoords : 2,
+                        viewbox : true,
+                        desc : false,
+                        lcpr : 0,
+                        qcpr : 0,
 
-                }, pool).then((svg_source) => {
+                        // Blur
+                        blurradius : 5,
+                        blurdelta : 20
 
-                    image_data = null;
-                    if(optimize_render_size) {
+                    }, pool).then((svg_source) => {
 
-                        import("svgo/dist/svgo.browser").then(({optimize}) => {
+                        image_data = null;
+                        if(optimize_render_size) {
 
-                            svg_source = optimize(svg_source, {
-                                // optional but recommended field
-                                path: 'path-to.svg',
-                                // all config fields are also available here
-                                multipass: true,
-                                plugin: ["mergePaths"],
-                            }).data;
+                            import("svgo/dist/svgo.browser").then(({optimize}) => {
 
-                            let svg_b64_str = "data:image/svg+xml;base64," + window.btoa(svg_source);
+                                svg_source = optimize(svg_source, {
+                                    // optional but recommended field
+                                    path: 'path-to.svg',
+                                    // all config fields are also available here
+                                    multipass: true,
+                                    plugin: ["mergePaths"],
+                                }).data;
+
+                                callback_function_for_svg("data:image/svg+xml;base64," + window.btoa(svg_source));
+                                svg_source = null;
+
+                            });
+                        }else {
+
+                            callback_function_for_svg("data:image/svg+xml;base64," + window.btoa(svg_source));
                             svg_source = null;
-                            callback_function_for_svg(String(svg_b64_str));
-                            svg_b64_str = null;
-                        });
-                    }else {
-
-                        let svg_b64_str = "data:image/svg+xml;base64," + window.btoa(svg_source);
-                        svg_source = null;
-                        callback_function_for_svg(String(svg_b64_str));
-                        svg_b64_str = null;
-                    }
+                        }
+                    });
                 });
-            });
+            }else {
+
+                callback_function_for_svg("");
+            }
         }
 
         if(using === "omniscale") {

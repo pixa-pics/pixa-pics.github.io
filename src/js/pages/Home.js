@@ -517,7 +517,7 @@ class Home extends React.Component {
                 </div>
                 <div className={classes.headerContainer} style={{textShadow: THEME_DAY && !IS_EVENING? "0px 0px 9px #57bbff": "none"}}>
                     <h1 className={classes.titleh1}>
-                        <span className={classes.revelantText} style={{color: THEME_DAY && !IS_EVENING ? "#ffffff": "#008eff"}}>1 > From PICTURES to PIXEL ART and NFTs.</span>
+                        <span className={classes.revelantText} style={{color: THEME_DAY && !IS_EVENING ? "#ffffff": "#008eff"}}>1 > From PICTURES to PIXEL ART and ~12Kb NFTs.</span>
                     </h1>
                     <h2 className={classes.titleh2} style={{color: THEME_DAY && !IS_EVENING ? "#000639": "#fff"}}>
                         <span className={classes.revelantText} style={{color: THEME_DAY && !IS_EVENING ? "#000639": "#008eff"}}>Get the MAXIMA of PRIVACY fashionably for real and for the ONLINE-SELF...</span>

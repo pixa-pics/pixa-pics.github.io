@@ -4,7 +4,7 @@ import { withStyles } from "@material-ui/core";
 
 const styles = theme => ({});
 
-class Twitter extends React.Component {
+class Twitter extends React.PureComponent {
 
     constructor(props) {
         super(props);

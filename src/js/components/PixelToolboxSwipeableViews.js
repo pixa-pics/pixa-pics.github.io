@@ -75,7 +75,10 @@ import SelectInvertIcon from "../icons/SelectInvert";
 import CopyIcon from "@material-ui/icons/FileCopy";
 import CutIcon from "../icons/Cut";
 import EraserIcon from "../icons/Eraser";
+import CheckedIcon from "@material-ui/icons/CheckBoxOutlined";
+import UncheckedIcon from "@material-ui/icons/CheckBoxOutlineBlankOutlined";
 
+import TimeIcon from "@material-ui/icons/Timer";
 import AlphaIcon from "../icons/Alpha";
 import ColorizedIcon from "../icons/Colorized";
 import ContrastCircleIcon from "../icons/ContrastCircle";
@@ -90,7 +93,6 @@ import SwapHorizontalIcon from "../icons/SwapHorizontal";
 import SwapVerticalIcon from "../icons/SwapVertical";
 
 import ColorConversion from "../components/canvaspixels/utils/ColorConversion";
-import {TimeIcon} from "@material-ui/pickers/_shared/icons/TimeIcon";
 const color_conversion = Object.create(ColorConversion).new();
 
 const styles = theme => ({
@@ -343,6 +345,8 @@ class PixelToolboxSwipeableViews extends React.Component {
             filters_preview_progression: props.filters_preview_progression,
             _filter_aspect_ratio: "1 / 1",
             _filter_thumbnail_changed: true,
+            _compressed: false,
+            _vectorized: false,
         };
     };
 
@@ -826,7 +830,9 @@ class PixelToolboxSwipeableViews extends React.Component {
             is_something_selected,
             _filter_aspect_ratio,
             filters_preview_progression,
-            too_much_colors_no_vector
+            too_much_colors_no_vector,
+            _compressed,
+            _vectorized,
         } = this.state;
 
         const _filters_preview_progression_stepped = Math.round(parseFloat(filters_preview_progression / 7) * 7);
@@ -880,38 +886,38 @@ class PixelToolboxSwipeableViews extends React.Component {
                 tools: [
                     {
                         icon: <FileDownloadIcon/>,
-                        text: "Fast OMNI",
+                        text: "OMNI",
                         sub: "Upscale by 6x using Omniscale",
                         disabled: too_much_colors_no_vector,
                         on_click: () => {
-                            this._download_svg("omniscale", false)
+                            this._download_svg("omniscale", _compressed, _vectorized)
                         }
                     },
                     {
                         icon: <FileDownloadIcon/>,
-                        text: "Opt. OMNI",
-                        sub: "Upscale by 6x using Omniscale +compress",
-                        disabled: too_much_colors_no_vector,
-                        on_click: () => {
-                            this._download_svg("omniscale", true)
-                        }
-                    },
-                    {
-                        icon: <FileDownloadIcon/>,
-                        text: "Fast xBRZ",
+                        text: "xBRZ",
                         sub: "Upscale by 6x using xBRZ",
                         disabled: too_much_colors_no_vector,
                         on_click: () => {
-                            this._download_svg("xbrz", false)
+                            this._download_svg("xbrz", _compressed, _vectorized)
                         }
                     },
                     {
-                        icon: <FileDownloadIcon/>,
-                        text: "Opt. xBRZ",
-                        sub: "Upscale by 6x using xBRZ +compress",
-                        disabled: too_much_colors_no_vector,
+                        icon: _compressed ? <CheckedIcon/>: <UncheckedIcon/>,
+                        text: "Compressed",
+                        sub: "Reduce file weight",
+                        disabled: false,
                         on_click: () => {
-                            this._download_svg("xbrz", true)
+                            this._toggle_compressed()
+                        }
+                    },
+                    {
+                        icon: _vectorized ? <CheckedIcon/>: <UncheckedIcon/>,
+                        text: "Vectorized",
+                        sub: "Download an SVG file with it",
+                        disabled: false,
+                        on_click: () => {
+                            this._toggle_vectorized()
                         }
                     },
                 ]
@@ -1617,11 +1623,27 @@ class PixelToolboxSwipeableViews extends React.Component {
         }
     };
 
-    _download_svg = (using = "xbrz", optimize_render_size = false) => {
+    _toggle_compressed = () => {
+
+        this.setState({_compressed: !this.state._compressed}, () => {
+
+            this.forceUpdate();
+        });
+    }
+
+    _toggle_vectorized = () => {
+
+        this.setState({_vectorized: !this.state._vectorized}, () => {
+
+            this.forceUpdate();
+        });
+    }
+
+    _download_svg = (using = "xbrz", optimize_render_size = false, download_svg = false) => {
 
         if(this.props.on_download_svg) {
 
-            this.props.on_download_svg(using, optimize_render_size);
+            this.props.on_download_svg(using, optimize_render_size, download_svg);
         }
     };
 
@@ -1636,8 +1658,7 @@ class PixelToolboxSwipeableViews extends React.Component {
         const { current_color, slider_value } = this.state;
         const { to_color } = this.state.canvas;
 
-        const [r, g, b, a] = color_conversion.to_rgba_from_hex(current_color);
-        const [h, s, l, o] = color_conversion.to_hsla_from_rgba(r, g, b, a);
+        const [h, s, l, o] = color_conversion.to_hsla_from_rgba(color_conversion.to_rgba_from_hex(current_color));
 
         to_color(h, slider_value, s === 0 ? null: s, l === 0 ? null: l);
     }

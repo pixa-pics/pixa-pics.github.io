@@ -197,7 +197,7 @@ const ColorConversion = {
             },
             to_hex_from_uint32: function(uint32){
                 "use strict";
-                uint32 = uint32 | 0;
+                uint32 = (uint32 | 0) >>> 0;
                 return "#".concat("00000000".concat(uint32.toString(16)).slice(-8));
             },
             to_hex_from_rgba: function(rgba) {
@@ -210,16 +210,16 @@ const ColorConversion = {
             },
             to_rgba_from_uint32: function(uint32) {
                 "use strict";
-                uint32 = uint32 | 0;
+                uint32 = (uint32 | 0) >>> 0;
                 return new Uint8ClampedArray(Uint32Array.of(uint32).buffer).reverse();
             },
             to_uint32_from_rgba: function(rgba) {
                 "use strict";
-                return new Uint32Array(rgba.reverse().buffer)[0];
+                return (new Uint32Array(rgba.reverse().buffer)[0] | 0) >>> 0;
             },
             to_uint32_from_hex: function(hex) {
                 "use strict";
-                return parseInt(hex.slice(1), 16);
+                return (parseInt(hex.slice(1), 16) | 0) >>> 0;
             },
             to_hsla_from_rgba: function(rgba) {
                 "use strict";
@@ -272,14 +272,14 @@ const ColorConversion = {
             },
             invert_uint32: function(uint32) {
                 "use strict";
-                uint32 = (uint32 | 0) & 0xFFFFFFFF;
+                uint32 = (uint32 | 0) >>> 0;
                 const [r, g, b, a] = this.to_rgba_from_uint32(uint32);
                 return this.to_uint32_from_rgba(Uint8ClampedArray.of((255 - r) | 0, (255 - g) | 0, (255 - b) | 0, a | 0));
             },
             match_color: function(color_a, color_b, threshold) {
                 "use strict";
-                color_a = (color_a | 0) & 0xFFFFFFFF;
-                color_b = (color_b | 0) & 0xFFFFFFFF;
+                color_a = (color_a | 0) >>> 0;
+                color_b = (color_b | 0) >>> 0;
                 threshold = typeof threshold === "undefined" ? null: threshold;
 
                 if(threshold === 1) {

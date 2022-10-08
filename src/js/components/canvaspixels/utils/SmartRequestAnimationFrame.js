@@ -41,10 +41,10 @@ const SmartRequestAnimationFrame = {
                 fps_intereval = setInterval(function() {
 
                     s.second_previous_cpaf_fps = parseInt(s.previous_cpaf_fps);
-                    s.previous_cpaf_fps = s.cpaf_frames * 4;
+                    s.previous_cpaf_fps = s.cpaf_frames * 3;
                     s.cpaf_frames = 0;
-                    nfpsc(parseInt(parseInt(s.second_previous_cpaf_fps + s.previous_cpaf_fps) / 2));
-                }, 250);
+                    nfpsc((s.second_previous_cpaf_fps + s.previous_cpaf_fps | 0) / 2 | 0);
+                }, 333);
             },
             set_notify_fps_callback(notify_fps_callback = function(){}) {
 

@@ -4,7 +4,7 @@ import { withStyles } from "@material-ui/core";
 
 const styles = theme => ({});
 
-class SwapVertical extends React.Component {
+class SwapVertical extends React.PureComponent {
 
     constructor(props) {
         super(props);

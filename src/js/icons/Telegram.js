@@ -4,7 +4,7 @@ import { withStyles } from "@material-ui/core";
 
 const styles = theme => ({});
 
-class Telegram extends React.Component {
+class Telegram extends React.PureComponent {
 
     constructor(props) {
         super(props);

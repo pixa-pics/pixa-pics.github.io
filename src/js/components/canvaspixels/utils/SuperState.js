@@ -503,22 +503,21 @@ const SuperState = {
 
                 // TO DO --> GET PREVIOUS COMMIT OR FINISH THIS
                 return {
-                    from_border: function(selection_indexes, inside, bold ) {
+                    from_border: function(selection, inside, bold ) {
                         "use strict";
                         inside = inside || true;
                         bold = bold || false;
-                        const { pxl_width, pxl_height } = state;
 
                         let pxls_of_the_border = new Set();
 
-                        selection_indexes.forEach((pxl_index, iteration) => {
+                        selection.forEach((pxl_index, iteration) => {
 
                             let up, right, bottom, left;
 
-                            up = pxl_index - pxl_width; up = up < 0 ? -1: up;
-                            right = pxl_index + 1; right = right % pxl_width === 0 ? -1: right;
-                            bottom = pxl_index + pxl_width; bottom = bottom > (pxl_width * pxl_height) ? -1: bottom;
-                            left = pxl_index - 1; left = left % pxl_width === pxl_width - 1 ? -1: left;
+                            up = pxl_index - width; up = up < 0 ? -1: up;
+                            right = pxl_index + 1; right = right % width === 0 ? -1: right;
+                            bottom = pxl_index + width; bottom = bottom > (width * height) ? -1: bottom;
+                            left = pxl_index - 1; left = left % width === width - 1 ? -1: left;
 
                             let up_left, up_right, bottom_left, bottom_right;
 
@@ -529,41 +528,41 @@ const SuperState = {
 
                             if(!inside) {
 
-                                if(!selection_indexes.has(up)){
+                                if(!selection.has(up)){
                                     pxls_of_the_border.add(up)
                                 }
-                                if(!selection_indexes.has(right)){
+                                if(!selection.has(right)){
                                     pxls_of_the_border.add(right)
                                 }
-                                if(!selection_indexes.has(bottom)){
+                                if(!selection.has(bottom)){
                                     pxls_of_the_border.add(bottom)
                                 }
-                                if(!selection_indexes.has(left)){
+                                if(!selection.has(left)){
                                     pxls_of_the_border.add(left)
                                 }
 
                                 if(bold) {
 
-                                    if(!selection_indexes.has(up_left)){
+                                    if(!selection.has(up_left)){
                                         pxls_of_the_border.add(up_left)
                                     }
-                                    if(!selection_indexes.has(up_right)){
+                                    if(!selection.has(up_right)){
                                         pxls_of_the_border.add(up_right)
                                     }
-                                    if(!selection_indexes.has(bottom_left)){
+                                    if(!selection.has(bottom_left)){
                                         pxls_of_the_border.add(bottom_left)
                                     }
-                                    if(!selection_indexes.has(bottom_right)){
+                                    if(!selection.has(bottom_right)){
                                         pxls_of_the_border.add(bottom_right)
                                     }
                                 }
 
                             }else {
                                 if(
-                                    !selection_indexes.has(up) || -1 === up ||
-                                    !selection_indexes.has(right) || -1 === right ||
-                                    !selection_indexes.has(bottom) || -1 === bottom ||
-                                    !selection_indexes.has(left) || -1 === left
+                                    !selection.has(up) || -1 === up ||
+                                    !selection.has(right) || -1 === right ||
+                                    !selection.has(bottom) || -1 === bottom ||
+                                    !selection.has(left) || -1 === left
                                 ) {
 
                                     pxls_of_the_border.add(pxl_index);
@@ -572,10 +571,10 @@ const SuperState = {
                                 if(bold) {
 
                                     if(
-                                        !selection_indexes.has(up_left) || -1 === up_left ||
-                                        !selection_indexes.has(up_right) || -1 === up_right ||
-                                        !selection_indexes.has(bottom_left) || -1 === bottom_left ||
-                                        !selection_indexes.has(bottom_right) || -1 === bottom_right
+                                        !selection.has(up_left) || -1 === up_left ||
+                                        !selection.has(up_right) || -1 === up_right ||
+                                        !selection.has(bottom_left) || -1 === bottom_left ||
+                                        !selection.has(bottom_right) || -1 === bottom_right
                                     ) {
 
                                         pxls_of_the_border.add(pxl_index);
@@ -632,7 +631,7 @@ const SuperState = {
 
                         while(true){
 
-                            pxl_indexes.add((c.primary.y * state.pxl_width + c.primary.x)|0);
+                            pxl_indexes.add((c.primary.y * width + c.primary.x)|0);
 
                             if((c.primary.x|0) == (c.secondary.x|0) && (c.primary.y|0) == (c.secondary.y|0)) { break; }
 
@@ -670,7 +669,7 @@ const SuperState = {
 
                             inside_rectangle_x = i % rectangle_width | 0;
                             inside_rectangle_y = (i - inside_rectangle_x) / rectangle_width | 0;
-                            pxl_indexes.add((rectangle_top_left_y + inside_rectangle_y) * state.pxl_width + (rectangle_top_left_x + inside_rectangle_x) | 0);
+                            pxl_indexes.add((rectangle_top_left_y + inside_rectangle_y) * width + (rectangle_top_left_x + inside_rectangle_x) | 0);
                         }
 
                         return pxl_indexes;

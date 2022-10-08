@@ -53,13 +53,13 @@ import {file_to_base64, base64_sanitize, base64_to_bitmap, bitmap_to_imagedata, 
 
 import {postJSON} from "../utils/load-json";
 
-import ColorsTweemoji from "../twemoji/react/1F3A8";
-import ImageTweemoji from "../twemoji/react/1F5Bc";
-import LayersTweemoji from "../twemoji/react/1F5C3";
-import ToolsTweemoji from "../twemoji/react/1F58C";
-import SelectTweemoji from "../twemoji/react/1Fa84";
-import EffectsTweemoji from "../twemoji/react/2B50";
-import FiltersTweemoji from "../twemoji/react/1F984";
+import PaletteIcon from "../icons/Palette";
+import FolderImageIcon from "../icons/FolderImage";
+import FolderIcon from "@material-ui/icons/Folder";
+import DrawIcon from "../icons/Draw";
+import SelectDragIcon from "../icons/SelectDrag";
+import TuneIcon from "../icons/Tune";
+import ImageAutoAdjustIcon from "../icons/ImageAutoAdjust";
 
 import HexGrid from "../icons/HexGrid";
 import get_svg_in_b64 from "../utils/svgToBase64";
@@ -265,8 +265,6 @@ const styles = theme => ({
         "& .MuiTab-wrapper svg": {
             width: 32,
             height: 32,
-            filter: "sepia(1) hue-rotate(180deg) saturate(2.5) brightness(0.70) contrast(2.75)",
-            webkitFilter: "sepia(1) hue-rotate(180deg) saturate(2.5) brightness(0.70) contrast(2.75)",
             contentVisibility: "auto",
         }
     },
@@ -290,12 +288,13 @@ const styles = theme => ({
             width: 32,
             height: 32,
             display: "none",
+            color: "#181063",
         }
     },
     backdrop: {
         zIndex: 2000,
         color: "#fff",
-        background: "radial-gradient(#050c6af2 10%, #03067044)",
+        background: "radial-gradient(farthest-corner, #20079d 20%, #0d168788 70%, #5f69ff66)",
         contain: "layout paint size style",
         userSelect: "none",
     },
@@ -478,6 +477,11 @@ class Pixel extends React.Component {
         };
     };
 
+    shouldComponentUpdate() {
+
+        return false;
+    }
+
     componentWillMount() {
 
         actions.trigger_loading_update(0);
@@ -557,7 +561,10 @@ class Pixel extends React.Component {
                             setTimeout(() => {try_again()}, 100);
                         }else {
 
-                            this.setState({_kb: 0, _saved_at: 1/0});
+                            this.setState({_kb: 0, _saved_at: 1/0}, () => {
+
+                                this.forceUpdate();
+                            });
                             this.state._canvas.set_canvas_from_image(img, base64.toString(), {}, true);
                             this._handle_load_complete("image_preload", {});
                         }
@@ -685,32 +692,34 @@ class Pixel extends React.Component {
 
     _handle_menu_close = () => {
 
-        this.setState({_menu_mouse_x: null, _menu_mouse_y: null});
+        this.setState({_menu_mouse_x: null, _menu_mouse_y: null}, () => {
+
+            this.forceUpdate();
+        });
     };
 
     _handle_right_click = (event, data) => {
 
         const { get_pixel_color_from_pos } = this.state._canvas;
+        data.pxl_color = get_pixel_color_from_pos(data.pos_x, data.pos_y);
 
         this.setState({
             _menu_mouse_x: event.clientX - 2,
             _menu_mouse_y: event.clientY - 4,
             _menu_data: data,
             _menu_event: event,
+        }, () => {
+
+            this.forceUpdate();
         });
-
-        setTimeout(() => {
-
-            data.pxl_color = get_pixel_color_from_pos(data.pos_x, data.pos_y);
-            this.setState({_menu_data: data});
-
-        }, 100);
-
     };
 
     _set_cursor_fuck_you = (is_active) => {
 
-        this.setState({_is_cursor_fuck_you_active: is_active});
+        this.setState({_is_cursor_fuck_you_active: is_active}, () => {
+
+            this.forceUpdate();
+        });
         actions.jamy_update("happy", 2500);
     }
 
@@ -744,11 +753,17 @@ class Pixel extends React.Component {
 
         }else {
 
-            this.setState({_kb: data.kb, _saved_at: Date.now()});
+            this.setState({_kb: data.kb, _saved_at: Date.now()}, () => {
+
+                this.forceUpdate();
+            });
 
             import_JS_state(data, () => {
 
-                this.setState({ _is_pixel_dialog_create_open: false, _attachment_previews: {}});
+                this.setState({ _is_pixel_dialog_create_open: false, _attachment_previews: {}}, () => {
+
+                    this.forceUpdate();
+                });
             });
             data = null;
         }
@@ -772,7 +787,10 @@ class Pixel extends React.Component {
 
         _toolbox_container_ref.scrollTop = 0;
 
-        this.setState({_previous_view_name_index: previous_name_index || this.state._view_name_index, _view_name_index});
+        this.setState({_previous_view_name_index: previous_name_index || this.state._view_name_index, _view_name_index}, () => {
+
+            this.forceUpdate();
+        });
     };
 
     _handle_view_name_switch = (event, view_name_index,  previous_name_index = null) => {
@@ -795,7 +813,10 @@ class Pixel extends React.Component {
 
             _toolbox_container_ref.scrollTop = 0;
 
-            this.setState({_previous_view_name_index: previous_name_index || this.state._view_name_index, _view_name_index});
+            this.setState({_previous_view_name_index: previous_name_index || this.state._view_name_index, _view_name_index}, () => {
+
+                this.forceUpdate();
+            });
         }
     };
 
@@ -1000,7 +1021,7 @@ class Pixel extends React.Component {
             const hash = xxhashthat(base_64);
 
             let a = document.createElement("a"); //Create <a>
-            a.download = `PXPS-${hash}-RAS_${size}x.png`; //File name Here
+            a.download = `PIXAPICS-${hash}-PIXELATED-${size}x_RAS.png`; //File name Here
             a.href = base_64;
             a.click();
             a.remove();
@@ -1016,7 +1037,7 @@ class Pixel extends React.Component {
         }, false, 1, 100, 100);
     };
 
-    _download_svg = (using = "xbrz", optimize_render_size = false) => {
+    _download_svg = (using = "xbrz", optimize_render_size = false, download_svg = false) => {
 
         const { get_base64_png_data_url, xxhashthat } = this.state._canvas;
 
@@ -1036,7 +1057,7 @@ class Pixel extends React.Component {
 
                     let { _files_waiting_download } = this.state;
                     _files_waiting_download.push({
-                        name: `PXPS-${hash}-RAS_1x.png`,
+                        name: `PIXAPICS-${hash}-PIXELATED-1x_RAS.png`,
                         url: png_base64_in.toString()
                     });
                     this.setState({_files_waiting_download}, () => {
@@ -1049,7 +1070,7 @@ class Pixel extends React.Component {
 
                         let { _files_waiting_download } = this.state;
                         _files_waiting_download.push({
-                            name: `PXPS-${hash}-${using.toUpperCase()}_RAS_6x.png`,
+                            name: `PIXAPICS-${hash}-${using.toUpperCase()}-6x_RAS.png`,
                             url: image_base64.toString()
                         });
                         image_base64 = null;
@@ -1060,16 +1081,19 @@ class Pixel extends React.Component {
 
                     }, (svg_base64) => {
 
-                        let { _files_waiting_download } = this.state;
-                        _files_waiting_download.push({
-                            name: `PXPS-${hash}-${using.toUpperCase()}_VEC_6x.svg`,
-                            url: svg_base64.toString()
-                        });
-                        svg_base64 = null;
-                        this.setState({_files_waiting_download}, () => {
+                        if(svg_base64.length > 0) {
 
-                            this.forceUpdate();
-                        });
+                            let { _files_waiting_download } = this.state;
+                            _files_waiting_download.push({
+                                name: `PIXAPICS-${hash}-${using.toUpperCase()}-6x_VEC.svg`,
+                                url: svg_base64.toString()
+                            });
+                            svg_base64 = null;
+                            this.setState({_files_waiting_download}, () => {
+
+                                this.forceUpdate();
+                            });
+                        }
 
                         this.setState({_loading: false, _loading_process: ""}, () => {
 
@@ -1089,7 +1113,7 @@ class Pixel extends React.Component {
 
                         });
 
-                    }, Array.from(palette), using, Boolean(optimize_render_size));
+                    }, Array.from(palette), using, Boolean(optimize_render_size), Boolean(download_svg));
                     palette = null;
                     png_base64_in = null;
 
@@ -1155,12 +1179,18 @@ class Pixel extends React.Component {
 
     _upload_image_library = () => {
 
-        this.setState({_library_dialog_open: true, _library_type: "open"});
+        this.setState({_library_dialog_open: true, _library_type: "open"}, () => {
+
+            this.forceUpdate();
+        });
     };
 
     _close_library = () => {
 
-        this.setState({_library_dialog_open: false});
+        this.setState({_library_dialog_open: false}, () => {
+
+            this.forceUpdate();
+        });
     };
 
     _from_library = (base64) => {
@@ -1174,7 +1204,10 @@ class Pixel extends React.Component {
 
             if(_library_type === "open") {
 
-                this.setState({_kb: 0, _saved_at: 1/0});
+                this.setState({_kb: 0, _saved_at: 1/0}, () => {
+
+                    this.forceUpdate();
+                });
                 set_canvas_from_image(img);
             }else if(_library_type === "import"){
 
@@ -1564,13 +1597,19 @@ class Pixel extends React.Component {
 
     _import_image_library = () => {
 
-        this.setState({_library_dialog_open: true, _library_type: "import"});
+        this.setState({_library_dialog_open: true, _library_type: "import"}, () => {
+
+            this.forceUpdate();
+        });
     };
 
     _handle_load = (process) => {
 
         actions.trigger_loading_update(0);
-        this.setState({_loading: true, _loading_process: process});
+        this.setState({_loading: true, _loading_process: process}, () => {
+
+            this.forceUpdate();
+        });
 
         if(process === "image_preload"){
 
@@ -1583,7 +1622,10 @@ class Pixel extends React.Component {
     _handle_load_complete = (process, data) => {
 
         actions.trigger_loading_update(100);
-        this.setState({_loading: false, _loading_process: process});
+        this.setState({_loading: false, _loading_process: process}, () => {
+
+            this.forceUpdate();
+        });
 
         if(process === "less_color" || process === "less_color_auto") {
 
@@ -1643,12 +1685,21 @@ class Pixel extends React.Component {
 
     _handle_position_change = (position, fps) => {
 
-        this.setState({_x: position.x, _y: position.y, _fps: parseInt(fps)});
+        this.setState({_x: position.x, _y: position.y, _fps: parseInt(fps)}, () => {
+
+            if(!this.state._less_than_1280w){
+
+                this.forceUpdate();
+            }
+        });
     }
 
     _handle_can_undo_redo_change = (_can_undo, _can_redo) => {
 
-        this.setState({_can_undo, _can_redo})
+        this.setState({_can_undo, _can_redo}, () => {
+
+            this.forceUpdate();
+        })
     }
 
     _handle_size_change = (_width, _height) => {
@@ -1701,7 +1752,10 @@ class Pixel extends React.Component {
 
     _handle_something_selected_change = (is_something_selected) => {
 
-        this.setState({_is_something_selected: is_something_selected});
+        this.setState({_is_something_selected: is_something_selected}, () => {
+
+            this.forceUpdate();
+        });
     };
 
     _set_value_from_slider_with_update = (event, value) => {
@@ -1741,48 +1795,75 @@ class Pixel extends React.Component {
 
     _set_tool = (name, remember = true) => {
 
-        this.setState({_tool: name.toUpperCase()});
+        this.setState({_tool: name.toUpperCase()}, () => {
+
+            this.forceUpdate();
+        });
 
         if(remember) {
 
-            this.setState({_memory_tool: name.toUpperCase()});
+            this.setState({_memory_tool: name.toUpperCase()}, () => {
+
+                this.forceUpdate();
+            });
         }
     }
 
     _set_select_mode = (mode) => {
 
-        this.setState({_select_mode: mode.toUpperCase()});
+        this.setState({_select_mode: mode.toUpperCase()}, () => {
+
+            this.forceUpdate();
+        });
     }
 
     _set_pencil_mirror_mode = (mode) => {
 
-        this.setState({_pencil_mirror_mode: mode.toUpperCase()});
+        this.setState({_pencil_mirror_mode: mode.toUpperCase()}, () => {
+
+            this.forceUpdate();
+        });
     }
 
     _switch_with_second_color = () => {
 
         const {_current_color, _second_color } = this.state;
-        this.setState({_current_color: _second_color, _second_color: _current_color});
+        this.setState({_current_color: _second_color, _second_color: _current_color}, () => {
+
+            this.forceUpdate();
+        });
     };
 
     _show_hide_canvas_content = () => {
 
-        this.setState({_hide_canvas_content: !this.state._hide_canvas_content});
+        this.setState({_hide_canvas_content: !this.state._hide_canvas_content}, () => {
+
+            this.forceUpdate();
+        });
     }
 
     _show_hide_background_image = () => {
 
-        this.setState({_show_original_image_in_background: !this.state._show_original_image_in_background});
+        this.setState({_show_original_image_in_background: !this.state._show_original_image_in_background}, () => {
+
+            this.forceUpdate();
+        });
     }
 
     _show_hide_transparent_image = () => {
 
-        this.setState({_show_transparent_image_in_background: !this.state._show_transparent_image_in_background});
+        this.setState({_show_transparent_image_in_background: !this.state._show_transparent_image_in_background}, () => {
+
+            this.forceUpdate();
+        });
     }
 
     _handle_image_import_mode_change = (is_image_import_mode) => {
 
-        this.setState({_is_image_import_mode: is_image_import_mode});
+        this.setState({_is_image_import_mode: is_image_import_mode}, () => {
+
+            this.forceUpdate();
+        });
     };
 
     _handle_layers_change = (_layer_index, _layers) => {
@@ -1866,7 +1947,10 @@ class Pixel extends React.Component {
     _set_current_color = (_current_color) => {
 
         this._handle_menu_close();
-        this.setState({_current_color});
+        this.setState({_current_color}, () => {
+
+            this.forceUpdate();
+        });
     };
 
     _exchange_pixel_colors = (old_pixel_color, new_pixel_color) => {
@@ -2031,14 +2115,6 @@ class Pixel extends React.Component {
     _smooth_adjust = (run = 1) => {
         const { smooth_adjust } = this.state._canvas;
         smooth_adjust(run);
-    }
-
-    _handle_fps_change = (_fps) => {
-
-        this.setState({_fps}, () => {
-
-            this.forceUpdate();
-        });
     }
 
     render() {
@@ -2215,8 +2291,7 @@ class Pixel extends React.Component {
                             <div className={classes.drawerHeader}>
                                             <span className={classes.coordinate}>
                                                 <span>{`FPS: ${_fps}`}</span>
-                                                <span>{` | X: ${x}, Y: ${y} | `}</span>
-                                                <span onClick={this._backup_state} style={{cursor: "pointer"}} className={_kb < 64 ? classes.green: classes.red}>{`[~${_kb < 1 ? "?": Math.round(_kb * 100) / 100} kB] ${t(_saved_at, {mini: true})}`}</span>
+                                                <span>{` | X: ${x}, Y: ${y} `}</span>
                                             </span>
                                 <Typography className={classes.effectSliderText} id="strength-slider" gutterBottom>
                                     Effect strength :
@@ -2238,13 +2313,13 @@ class Pixel extends React.Component {
                                   selectionFollowsFocus={false}
                                   value={_view_name_index}
                                   onChange={(event, index) => {this._handle_view_name_change(index)}}>
-                                <Tab className={classes.tab} label={"colors"} icon={<ColorsTweemoji />} />
-                                <Tab className={classes.tab} label={"image"} icon={<ImageTweemoji />} />
-                                <Tab className={classes.tab} label={"layers"} icon={<LayersTweemoji />} />
-                                <Tab className={classes.tab} label={"tools"} icon={<ToolsTweemoji />} />
-                                <Tab className={classes.tab} label={"select"} icon={<SelectTweemoji />} />
-                                <Tab className={classes.tab} label={"effects"} icon={<EffectsTweemoji />} />
-                                <Tab className={classes.tab} label={"filters"} icon={<FiltersTweemoji />} />
+                                <Tab className={classes.tab} label={"colors"} icon={<PaletteIcon />} />
+                                <Tab className={classes.tab} label={"image"} icon={<FolderImageIcon />} />
+                                <Tab className={classes.tab} label={"layers"} icon={<FolderIcon />} />
+                                <Tab className={classes.tab} label={"tools"} icon={<DrawIcon />} />
+                                <Tab className={classes.tab} label={"select"} icon={<SelectDragIcon />} />
+                                <Tab className={classes.tab} label={"effects"} icon={<TuneIcon />} />
+                                <Tab className={classes.tab} label={"filters"} icon={<ImageAutoAdjustIcon />} />
                             </Tabs>
                         </div>
                         <div className={classes.drawerContainer} ref={this._set_toolbox_container_ref}>
@@ -2343,7 +2418,6 @@ class Pixel extends React.Component {
                                 onCurrentColorChange={this._handle_current_color_change}
                                 onSomethingSelectedChange={this._handle_something_selected_change}
                                 onImageImportModeChange={this._handle_image_import_mode_change}
-                                on_fps_change={this._handle_fps_change}
                                 onPositionChange={this._handle_position_change}
                                 onLayersChange={this._handle_layers_change}
                                 onFiltersThumbnailChange={this._handle_filters_thumbnail_change}
@@ -2537,13 +2611,13 @@ class Pixel extends React.Component {
                           textColor="primary"
                           selectionFollowsFocus={true}
                           value={_view_name_index} onChange={(event, index) => {this._handle_edit_drawer_open(event, index)}}>>
-                        <Tab onPointerEnter={(e) => {this._handle_view_name_switch(e, 0)}} className={classes.tab} label={"colors"} icon={<ColorsTweemoji />} />
-                        <Tab onPointerEnter={(e) => {this._handle_view_name_switch(e, 1)}} className={classes.tab} label={"image"} icon={<ImageTweemoji />} />
-                        <Tab onPointerEnter={(e) => {this._handle_view_name_switch(e, 2)}} className={classes.tab} label={"layers"} icon={<LayersTweemoji />} />
-                        <Tab onPointerEnter={(e) => {this._handle_view_name_switch(e, 3)}} className={classes.tab} label={"tools"} icon={<ToolsTweemoji />} />
-                        <Tab onPointerEnter={(e) => {this._handle_view_name_switch(e, 4)}} className={classes.tab} label={"select"} icon={<SelectTweemoji />} />
-                        <Tab onPointerEnter={(e) => {this._handle_view_name_switch(e, 5)}} className={classes.tab} label={"effects"} icon={<EffectsTweemoji />} />
-                        <Tab onPointerEnter={(e) => {this._handle_view_name_switch(e, 6)}}  className={classes.tab} label={"filters"} icon={<FiltersTweemoji />} />
+                        <Tab onPointerEnter={(e) => {this._handle_view_name_switch(e, 0)}} className={classes.tab} label={"colors"} icon={<PaletteIcon />} />
+                        <Tab onPointerEnter={(e) => {this._handle_view_name_switch(e, 1)}} className={classes.tab} label={"image"} icon={<FolderImageIcon />} />
+                        <Tab onPointerEnter={(e) => {this._handle_view_name_switch(e, 2)}} className={classes.tab} label={"layers"} icon={<FolderIcon />} />
+                        <Tab onPointerEnter={(e) => {this._handle_view_name_switch(e, 3)}} className={classes.tab} label={"tools"} icon={<DrawIcon />} />
+                        <Tab onPointerEnter={(e) => {this._handle_view_name_switch(e, 4)}} className={classes.tab} label={"select"} icon={<SelectDragIcon />} />
+                        <Tab onPointerEnter={(e) => {this._handle_view_name_switch(e, 5)}} className={classes.tab} label={"effects"} icon={<TuneIcon />} />
+                        <Tab onPointerEnter={(e) => {this._handle_view_name_switch(e, 6)}}  className={classes.tab} label={"filters"} icon={<ImageAutoAdjustIcon />} />
                     </Tabs>
                 </div>
 

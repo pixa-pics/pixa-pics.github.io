@@ -330,7 +330,7 @@ const CanvasPos = {
                             ${p_y_things}, 
                             ${(Math.abs(p_y  * 0.25) / (s.perspective*2)).toFixed(2)}
                             ))`: ``;
-                const filter_force = (1 + (-rotate_y + rotate_x) / 40).toFixed(2);
+                const filter_force = (1 + (-rotate_y + rotate_x) / 80).toFixed(2);
                 const filter = any_rotation ? `brightness(${filter_force}) contrast(${filter_force})`: "";
 
                 pe = {
@@ -546,7 +546,6 @@ const CanvasPos = {
                 event.stopImmediatePropagation();
                 event = ce(event);
 
-                this.compute_canvas_event_target(parseInt(event.pageX), parseInt(event.pageY));
                 const {canvas_event_target} = s;
                 const pointer_state = this.get_pointer_state();
                 let {
@@ -561,10 +560,10 @@ const CanvasPos = {
                 const old_previous_single_pointer_down_timestamp = parseInt(previous_single_pointer_down_timestamp);
                 const old_previous_double_pointer_down_timestamp = parseInt(previous_double_pointer_down_timestamp);
                 pointer_events.set(event.pointerId, event);
-                const one_pointer = Boolean(pointer_events.size !== 2);
+                const one_pointer = Boolean(pointer_events.size === 1);
                 const two_pointer = Boolean(pointer_events.size === 2);
-                previous_single_pointer_down_timestamp = one_pointer ? Date.now(): 0;
-                previous_double_pointer_down_timestamp = two_pointer ? Date.now(): 0;
+                previous_single_pointer_down_timestamp = one_pointer ? Date.now(): old_previous_single_pointer_down_timestamp;
+                previous_double_pointer_down_timestamp = two_pointer ? Date.now(): old_previous_double_pointer_down_timestamp;
                 const mouse_down = true;
 
                 this.set_pointer_state({
@@ -583,7 +582,7 @@ const CanvasPos = {
                    this.notify_menu(event, 180);
                 }else if(one_pointer && old_previous_double_pointer_down_timestamp + 200 > Date.now()) {
 
-                    return;
+
                 }else if(Boolean(one_pointer || event.pointerType === "mouse") && canvas_event_target === "CANVAS" ) {
 
                     this.notify_down(event)
@@ -595,7 +594,6 @@ const CanvasPos = {
                 event.stopImmediatePropagation();
                 event = ce(event);
 
-                this.compute_canvas_event_target(parseInt(event.pageX), parseInt(event.pageY));
                 const {canvas_event_target} = s;
                 let {
                     pointer_events,

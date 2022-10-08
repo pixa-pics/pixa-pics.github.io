@@ -292,6 +292,7 @@ const SuperMasterMeta = {
                                             meta.sraf.run_frame( () => {
                                                 meta.super_canvas.render(b2).then(function(){
                                                     state = Object.assign(state, {
+                                                        _previous_imported_image_pxls_positioned_keyset: imported_image_pxls_positioned_keyset,
                                                         _old_selection_pair_highlight: _selection_pair_highlight,
                                                         _old_layers_string_id: old_layers_string_id,
                                                         _old_full_pxls: full_pxls,
@@ -856,7 +857,7 @@ const SuperMasterMeta = {
                     }else if (tool === "EXCHANGE" && event_which === 1) {
 
                         const pixel_color_uint32 = _s_pxl_colors[_layer_index][pxl_color_index];
-                        this._exchange_pixel_color(pixel_color_uint32, pxl_current_color_uint32);
+                        this.exchange_pixel_color(pixel_color_uint32, pxl_current_color_uint32);
                         this._notify_relevant_action_event(event, pxl_current_color_uint32, 1);
 
                     }else if(tool === "LINE" || tool === "RECTANGLE" || tool === "ELLIPSE"){
@@ -1083,7 +1084,7 @@ const SuperMasterMeta = {
 
                         const color_pixel = (index, paint) => {
                             "use strict";
-                            paint = paint || true;
+                            paint = paint || false;
                             if((!colored_pxl_indexes.has(index) || paint) && index >= 0 && index < pxl_width * pxl_height) {
 
                                 if(tool === "HUE BUCKET") {
@@ -1223,7 +1224,7 @@ const SuperMasterMeta = {
 
                         if(tool === "BORDER") {
 
-                            meta.super_state.create_shape().from_border(colored_pxl_indexes).forEach((pxl_index) => {
+                            meta.super_state.create_shape().from_border(colored_pxl_indexes, true, true).forEach((pxl_index) => {
 
                                 color_pixel(pxl_index, true);
                             });
@@ -1378,6 +1379,42 @@ const SuperMasterMeta = {
 
                     notifiers.action(event, meta.color_conversion.format_hex_color(color), opacity);
                 }
+            },
+            exchange_pixel_color (old_color, new_color) {
+
+                const { _s_pxl_colors, _s_pxls, _layer_index } = meta.super_state.get_state();
+
+
+                let pxl_colors_copy = Array.from(_s_pxl_colors[_layer_index]);
+                let pxls_copy =  new Uint16Array(_s_pxls[_layer_index].buffer);
+
+                const pxl_color_index = pxl_colors_copy.indexOf(old_color);
+
+                const pxl_color = pxl_colors_copy[pxl_color_index];
+                const pxl_color_new = meta.color_conversion.blend_colors(pxl_color, new_color, 1, true, false);
+
+                // Eventually add current color to color list
+                if(!pxl_colors_copy.includes(pxl_color_new)){
+
+                    pxl_colors_copy.push(pxl_color_new);
+                }
+
+                const new_color_index = pxl_colors_copy.indexOf(pxl_color_new);
+
+                pxls_copy = pxls_copy.map((pxl) => {
+
+                    return pxl === pxl_color_index ? new_color_index: pxl;
+                });
+
+                [pxls_copy, pxl_colors_copy] = meta.color_conversion.clean_duplicate_colors(pxls_copy, Uint32Array.from(pxl_colors_copy));
+
+                let ns_pxl_colors = meta.super_state.get_state()._s_pxl_colors;
+                ns_pxl_colors[_layer_index] = pxl_colors_copy;
+
+                let ns_pxls = meta.super_state.get_state()._s_pxls;
+                ns_pxls[_layer_index] = pxls_copy;
+
+                meta.super_state.set_state({_s_pxls: ns_pxls, _s_pxl_colors: ns_pxl_colors, _last_action_timestamp: Date.now()}).then(this.update_canvas);
             }
         }
     }

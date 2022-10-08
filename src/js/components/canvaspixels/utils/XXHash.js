@@ -61,14 +61,14 @@ const XXHash = {
                     timestamp: s.xxh_tt
                 });
             },
-            int_that: function(buffer) {
+            int_that: function(array_buffer) {
                 "use strict";
 
-                return (s.xxh_f.create32(0xFADE).update(new Uint8ClampedArray(buffer)).digest() | 0) >>> 0;
+                return (s.xxh_f.create32(0xFADE).update(new Uint8ClampedArray(typeof array_buffer === "string" ? Buffer.from(array_buffer): "buffer" in array_buffer ? array_buffer.buffer.slice(0, array_buffer.buffer.byteLength): array_buffer.slice(0, array_buffer.byteLength))).digest() | 0) >>> 0;
             },
             base58_that: function (array_buffer) {
                 "use strict";
-                let num = this.int_that(typeof array_buffer === "string" ? Buffer.from(array_buffer): "buffer" in array_buffer ? array_buffer.buffer: array_buffer);
+                let num = this.int_that(array_buffer);
                 let encoded = "";
                 let remainder = 0;
                 let chain = 0;
