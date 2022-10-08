@@ -2,11 +2,12 @@
 
 ## A) LET US SAY 
 
-**You can do selfies to pixel art back to HD image (as a painting) very easily!** #NFTs #ARTWORK #ANON #NOCOPYLEFT
-
- * **Shift copyright** to left (as it recreate a drawing from an image it removes it).
- * **Anonymize selfies** (keep details masked).
- * **Compress 100x-1000x** a visual scene into less than 16 Kb PNGs that scales HD.
+**You can easily convert selfies and other pictures into pixel art going back then to an HD image (but as a painting) very easily!**
+> Yet many drawing tools and selection mode enables you to be creative (and decentralize everything)!
+> 
+ * **Copyleft** and copyright can get shifted!
+ * **Anonymize selfies** (keep details masked, reduce entropy of data).
+ * **Compress 100x-1000x** a visual scene into less than 12 Kb PNGs that scales in HD.
  * **Do more, without less**... This is pixaaaaa! (pics)
  
 ![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/EDITOR_1.png)
@@ -15,7 +16,7 @@
 
 **Permission is hereby granted, free of charge, to any person to use this software.**
 
-The aforementioned project (i.e. https://pixa.pics/) whose source code is said to be "open" (visible on: https://github.com/pixa-pics/pixa-pics .github.io) needs for the coming year an amount of 75000 US dollar to operate as drawing software in the field of pixelart and digital-painting (art) among others NFTs ( so-called digital cryptographic tokens) being free and open-source.
+Nevertheless, the aforementioned project (i.e. https://pixa.pics/) whose source code is said to be "open" (visible on: https://github.com/pixa-pics/pixa-pics .github.io) needs for the coming year an amount of 75000 US dollar to operate as drawing software in the field of pixelart and digital-painting (art) among others NFTs ( so-called digital cryptographic tokens) being free and open-source.
 
 ### 2) Anonymization of visual subjects
 This project allows anonymization of the target visual subject directly on import by reducing the number of colors and the number of pixels present in the raster image (which is just a pixel grid with a few bonus colors) and allowing retouching of it in an interface made in Switzerland, which offers tools for drawing and retouching tints and colors as well as shapes via functions and algorithms on clicking certain buttons inside this software, available under simply "MIT" license via the WEB...
@@ -25,8 +26,6 @@ A person can preserve details of their private life and still publish digital pa
 
 ### 4) Preserving yourself as your own hero
 It is useful in the field of the protection of the private sphere and the online-self, in the field of drawing and image editing, also in the creation of so-called "intelligent" NFTs as well as in the artistic field quite simply. Meanwhile, also between the search and identification of missing persons and the anonymization and copyleft (un-copyright) of visual subjects... A real tool for the creation of "artistic situations being safer than safe".
-
-**Watch?!** --> Know how it relates to NFTs and the American Dream! https://www.youtube.com/watch?v=Ag_V4RyTIEE
 
 ## B) Tomorrow is knocking!
 
@@ -75,17 +74,18 @@ Screenshot of the minima's laboratory of pixa.pics (which is a pixel art editor)
 
 ## E) Technology
 
-* Low-Level-JavaScript just like [asm.js](http://asmjs.org/) for blazing efficient color operation
+* Low-Level-JavaScript just like [asm.js](http://asmjs.org/) or SIMD.js for blazing efficient color operation
 * Multi-threading (Web [Worker](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/js/utils/worker-pool.js))
 * GPU's optimisation (CSS3 Transform+will-change)
 * Fast Compression ([LZP3](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/js/utils/lzp3_json.js))
 * Offline Cache & Auto Save ([PouchDB](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/js/utils/api.js))
 * AI Processing (Deepai.org, !remote!)
-* Up-Scaling 6 times ([xBRZ](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/js/utils/xBRZ.js))*
-* Vectorized ([ImageTracerJS](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/js/utils/image_tracer.js))
+* 4 algorithm up-Scaling artwork up to 4-8x as painting ([xBRZ](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/js/utils/xBRZ.js), Omniscale, hqNx, EPX)*
+* Vectorized (output an infinitely high definition SVG file) ([ImageTracerJS](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/js/utils/image_tracer.js))
 * Color Quantization ([RGBQuant](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/js/utils/rgb_quant.js) + [Custom](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/js/components/canvaspixels/utils/ReducePalette.js))
-* Always encode well Portable Network Graphics in type of palette ([PNGQuant](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/js/utils/png_quant.js))
+* Always encode well Portable Network Graphics in type of palette (we save 70% of size) ([PNGQuant](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/js/utils/png_quant.js))
 * Chunk ("norris") [webpack system](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/webpack.config.js) for dropping script evaluation cost within CPU
+* WASM Hashing function for detecting change in history of editing (XXHash)
 
 
 ![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/doc/screenshots/RAS_1x.png)

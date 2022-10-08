@@ -119,7 +119,7 @@ const base64png_to_xbrz_svg = (base64png, callback_function_for_image, callback_
 
                         import("../utils/png_quant").then(({png_quant}) => {
 
-                            png_quant(base64_out, 40, 50, 6, pool).then((base64_out_second) => {
+                            png_quant(base64_out, 70, 80, 5, pool).then((base64_out_second) => {
 
                                 callback_function_for_image(base64_out_second, first_scale_size);
                                 base64_out = null;
@@ -156,7 +156,7 @@ const base64png_to_xbrz_svg = (base64png, callback_function_for_image, callback_
 
                         import("../utils/png_quant").then(({png_quant}) => {
 
-                            png_quant(base64_out, 40, 50, 6, pool).then((base64_out_second) => {
+                            png_quant(base64_out, 70, 80, 5, pool).then((base64_out_second) => {
 
                                 callback_function_for_image(base64_out_second, first_scale_size);
                                 base64_out = null;
@@ -193,7 +193,7 @@ const base64png_to_xbrz_svg = (base64png, callback_function_for_image, callback_
 
                         import("../utils/png_quant").then(({png_quant}) => {
 
-                            png_quant(base64_out, 40, 50, 6, pool).then((base64_out_second) => {
+                            png_quant(base64_out, 70, 80, 5, pool).then((base64_out_second) => {
 
                                 callback_function_for_image(base64_out_second, first_scale_size);
                                 base64_out = null;
@@ -229,7 +229,7 @@ const base64png_to_xbrz_svg = (base64png, callback_function_for_image, callback_
 
                         import("../utils/png_quant").then(({png_quant}) => {
 
-                            png_quant(base64_out, 40, 50, 6, pool).then((base64_out_second) => {
+                            png_quant(base64_out, 70, 80, 5, pool).then((base64_out_second) => {
 
                                 base64_out = null;
                                 callback_function_for_image(base64_out_second, first_scale_size);
