@@ -4,7 +4,7 @@ import { withStyles } from "@material-ui/core";
 
 const styles = theme => ({});
 
-class CheckBold extends React.Component {
+class CheckBold extends React.PureComponent {
 
     constructor(props) {
         super(props);

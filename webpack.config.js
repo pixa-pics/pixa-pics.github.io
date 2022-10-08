@@ -156,7 +156,7 @@ module.exports = {
         ]
     },
     output: {
-        path: path.join(__dirname),
+        path: path.join(__dirname, 'client'),
         filename: "chunk_norris.min.js",
         chunkFilename: "chunk_[id].min.js",
     },

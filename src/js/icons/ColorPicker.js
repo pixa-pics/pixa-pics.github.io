@@ -4,7 +4,7 @@ import { withStyles } from "@material-ui/core";
 
 const styles = theme => ({});
 
-class ColorPicker extends React.Component {
+class ColorPicker extends React.PureComponent {
 
     constructor(props) {
         super(props);

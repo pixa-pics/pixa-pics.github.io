@@ -4,7 +4,7 @@ import { withStyles } from "@material-ui/core";
 
 const styles = theme => ({});
 
-class Eraser extends React.Component {
+class Eraser extends React.PureComponent {
 
     constructor(props) {
         super(props);

@@ -4,7 +4,7 @@ import { withStyles } from "@material-ui/core";
 
 const styles = theme => ({});
 
-class RotateRight extends React.Component {
+class RotateRight extends React.PureComponent {
 
     constructor(props) {
         super(props);

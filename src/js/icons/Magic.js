@@ -4,7 +4,7 @@ import { withStyles } from "@material-ui/core";
 
 const styles = theme => ({});
 
-class Magic extends React.Component {
+class Magic extends React.PureComponent {
 
     constructor(props) {
         super(props);

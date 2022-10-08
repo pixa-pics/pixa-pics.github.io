@@ -4,7 +4,7 @@ import { withStyles } from "@material-ui/core";
 
 const styles = theme => ({});
 
-class MagnifyMinus extends React.Component {
+class MagnifyMinus extends React.PureComponent {
 
     constructor(props) {
         super(props);

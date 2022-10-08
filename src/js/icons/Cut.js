@@ -4,7 +4,7 @@ import { withStyles } from "@material-ui/core";
 
 const styles = theme => ({});
 
-class Cut extends React.Component {
+class Cut extends React.PureComponent {
 
     constructor(props) {
         super(props);

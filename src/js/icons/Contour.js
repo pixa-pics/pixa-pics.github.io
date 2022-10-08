@@ -4,7 +4,7 @@ import { withStyles } from "@material-ui/core";
 
 const styles = theme => ({});
 
-class Contour extends React.Component {
+class Contour extends React.PureComponent {
 
     constructor(props) {
         super(props);

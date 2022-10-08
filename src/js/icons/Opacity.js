@@ -4,7 +4,7 @@ import { withStyles } from "@material-ui/core";
 
 const styles = theme => ({});
 
-class Opacity extends React.Component {
+class Opacity extends React.PureComponent {
 
     constructor(props) {
         super(props);

@@ -4,7 +4,7 @@ import { withStyles } from "@material-ui/core";
 
 const styles = theme => ({});
 
-class Dutone extends React.Component {
+class Dutone extends React.PureComponent {
 
     constructor(props) {
         super(props);

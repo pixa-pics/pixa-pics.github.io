@@ -4,7 +4,7 @@ import { withStyles } from "@material-ui/core";
 
 const styles = theme => ({});
 
-class Facebook extends React.Component {
+class Facebook extends React.PureComponent {
 
     constructor(props) {
         super(props);

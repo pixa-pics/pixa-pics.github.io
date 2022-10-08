@@ -4,7 +4,7 @@ import { withStyles } from "@material-ui/core";
 
 const styles = theme => ({});
 
-class ImageMove extends React.Component {
+class ImageMove extends React.PureComponent {
 
     constructor(props) {
         super(props);

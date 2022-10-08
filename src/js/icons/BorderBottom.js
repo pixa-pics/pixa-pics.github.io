@@ -5,7 +5,7 @@ import { withStyles } from "@material-ui/core";
 
 const styles = theme => ({});
 
-class BorderBottom extends React.Component {
+class BorderBottom extends React.PureComponent {
 
     constructor(props) {
         super(props);

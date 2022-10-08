@@ -450,22 +450,29 @@ const CanvasPos = {
                         pos_y_in_canvas_container = canvas_container.height / 2 | 0;
                     }
 
-                    let new_scale_move_x = (move_x - (pos_x_in_canvas_container * ratio)) * ratio2 + new_move_x | 0;
-                    let new_scale_move_y = (move_y - (pos_y_in_canvas_container * ratio)) * ratio2 + new_move_y | 0;
+                    if(new_move_x === 0 && new_move_y === 0) {
 
-                    const for_middle_x = (canvas_container.width - canvas_wrapper.width) / 2 | 0;
-                    const for_middle_y = (canvas_container.height - canvas_wrapper.height) / 2 | 0;
+                        this.set_moves(move_x, move_y, new_scale, callback_function);
 
-                    const scale_move_x_max = 3/4 * canvas_wrapper.width + for_middle_x;
-                    const scale_move_y_max = 3/4 * canvas_wrapper.height + for_middle_y;
+                    }else {
 
-                    new_scale_move_y -= for_middle_y;
-                    new_scale_move_x -= for_middle_x;
+                        let new_scale_move_x = (move_x - (pos_x_in_canvas_container * ratio)) * ratio2 + new_move_x | 0;
+                        let new_scale_move_y = (move_y - (pos_y_in_canvas_container * ratio)) * ratio2 + new_move_y | 0;
 
-                    let new_scale_move_x_rigged = Math.min(Math.abs(new_scale_move_x), scale_move_x_max) * (new_scale_move_x < 0 ? -1: 1) + for_middle_x;
-                    let new_scale_move_y_rigged = Math.min(Math.abs(new_scale_move_y), scale_move_y_max) * (new_scale_move_y < 0 ? -1: 1) + for_middle_y;
+                        const for_middle_x = (canvas_container.width - canvas_wrapper.width) / 2 | 0;
+                        const for_middle_y = (canvas_container.height - canvas_wrapper.height) / 2 | 0;
 
-                    this.set_moves(new_scale_move_x_rigged, new_scale_move_y_rigged, new_scale, callback_function);
+                        const scale_move_x_max = 3/4 * canvas_wrapper.width + for_middle_x;
+                        const scale_move_y_max = 3/4 * canvas_wrapper.height + for_middle_y;
+
+                        new_scale_move_y -= for_middle_y;
+                        new_scale_move_x -= for_middle_x;
+
+                        let new_scale_move_x_rigged = Math.min(Math.abs(new_scale_move_x), scale_move_x_max) * (new_scale_move_x < 0 ? -1: 1) + for_middle_x;
+                        let new_scale_move_y_rigged = Math.min(Math.abs(new_scale_move_y), scale_move_y_max) * (new_scale_move_y < 0 ? -1: 1) + for_middle_y;
+
+                        this.set_moves(new_scale_move_x_rigged, new_scale_move_y_rigged, new_scale, callback_function);
+                    }
                 }
             },
             handle_wheel: function({deltaY, pageY, pageX, movementX = 0, movementY = 0}) {

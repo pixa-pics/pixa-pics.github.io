@@ -4,7 +4,7 @@ import { withStyles } from "@material-ui/core";
 
 const styles = theme => ({});
 
-class Ellipse extends React.Component {
+class Ellipse extends React.PureComponent {
 
     constructor(props) {
         super(props);

@@ -4,7 +4,7 @@ import { withStyles } from "@material-ui/core";
 
 const styles = theme => ({});
 
-class FileDownload extends React.Component {
+class FileDownload extends React.PureComponent {
 
     constructor(props) {
         super(props);

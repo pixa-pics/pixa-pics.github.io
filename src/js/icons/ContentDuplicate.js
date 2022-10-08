@@ -4,7 +4,7 @@ import { withStyles } from "@material-ui/core";
 
 const styles = theme => ({});
 
-class ContentDuplicate extends React.Component {
+class ContentDuplicate extends React.PureComponent {
 
     constructor(props) {
         super(props);

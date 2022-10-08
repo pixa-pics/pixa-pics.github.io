@@ -4,7 +4,7 @@ import { withStyles } from "@material-ui/core";
 
 const styles = theme => ({});
 
-class Pinterest extends React.Component {
+class Pinterest extends React.PureComponent {
 
     constructor(props) {
         super(props);

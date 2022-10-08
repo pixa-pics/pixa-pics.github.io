@@ -1,7 +1,7 @@
 "use strict";
-var REQUIRED_CACHE = "unless-update-cache-v423-required";
-var USEFUL_CACHE = "unless-update-cache-v423-useful";
-var STATIC_CACHE = "unless-update-cache-v423-static";
+var REQUIRED_CACHE = "unless-update-cache-v424-required";
+var USEFUL_CACHE = "unless-update-cache-v424-useful";
+var STATIC_CACHE = "unless-update-cache-v424-static";
 var MAIN_CHILD_CHUNK_REGEX = /chunk_(main_[a-z0-9]+)\.min\.js/i;
 var CHILD_CHUNK_REGEX = /chunk_([0-9]+)\.min\.js/i;
 
@@ -60,11 +60,11 @@ self.addEventListener("install", function(event) {
 
     required_cache.then(function (cache) {
         cache.addAll([
-            "/chunk_main_253ae210.min.js",
-            "/chunk_main_678f84af.min.js",
-            "/chunk_main_690b702c.min.js",
-            "/chunk_main_748942c6.min.js",
-            "/chunk_norris.min.js",
+            "/client/chunk_main_253ae210.min.js",
+            "/client/chunk_main_678f84af.min.js",
+            "/client/chunk_main_690b702c.min.js",
+            "/client/chunk_main_748942c6.min.js",
+            "/client/chunk_norris.min.js",
             "/"
         ])
     });
@@ -124,35 +124,35 @@ self.addEventListener("fetch", function(event) {
                 required_cache.then(function (cache) {
                     return cache.addAll([
                         "/",
-                        "/chunk_0.min.js",
-                        "/chunk_1.min.js",
-                        "/chunk_2.min.js",
-                        "/chunk_3.min.js",
-                        "/chunk_4.min.js",
-                        "/chunk_5.min.js",
-                        "/chunk_6.min.js",
-                        "/chunk_7.min.js",
-                        "/chunk_8.min.js",
-                        "/chunk_9.min.js",
-                        "/chunk_10.min.js",
-                        "/chunk_11.min.js",
-                        "/chunk_12.min.js",
-                        "/chunk_13.min.js",
-                        "/chunk_14.min.js",
-                        "/chunk_15.min.js",
-                        "/chunk_16.min.js",
-                        "/chunk_17.min.js",
-                        "/chunk_18.min.js",
-                        "/chunk_19.min.js",
-                        "/chunk_20.min.js",
-                        "/chunk_21.min.js",
-                        "/chunk_22.min.js",
-                        "/chunk_23.min.js",
-                        "/chunk_24.min.js",
-                        "/chunk_25.min.js",
-                        "/chunk_26.min.js",
-                        "/chunk_27.min.js",
-                        "/chunk_28.min.js",
+                        "/client/chunk_0.min.js",
+                        "/client/chunk_1.min.js",
+                        "/client/chunk_2.min.js",
+                        "/client/chunk_3.min.js",
+                        "/client/chunk_4.min.js",
+                        "/client/chunk_5.min.js",
+                        "/client/chunk_6.min.js",
+                        "/client/chunk_7.min.js",
+                        "/client/chunk_8.min.js",
+                        "/client/chunk_9.min.js",
+                        "/client/chunk_10.min.js",
+                        "/client/chunk_11.min.js",
+                        "/client/chunk_12.min.js",
+                        "/client/chunk_13.min.js",
+                        "/client/chunk_14.min.js",
+                        "/client/chunk_15.min.js",
+                        "/client/chunk_16.min.js",
+                        "/client/chunk_17.min.js",
+                        "/client/chunk_18.min.js",
+                        "/client/chunk_19.min.js",
+                        "/client/chunk_20.min.js",
+                        "/client/chunk_21.min.js",
+                        "/client/chunk_22.min.js",
+                        "/client/chunk_23.min.js",
+                        "/client/chunk_24.min.js",
+                        "/client/chunk_25.min.js",
+                        "/client/chunk_26.min.js",
+                        "/client/chunk_27.min.js",
+                        "/client/chunk_28.min.js",
                     ]);
                 }),
                 static_cache.then(function (cache) {
@@ -224,9 +224,9 @@ self.addEventListener("fetch", function(event) {
 
         event.respondWith(
             required_cache.then(function (cache) {
-                return cache.match("/chunk_norris.min.js").then(function (response) {
-                    return response || fetch("/chunk_norris.min.js").then(function (response) { // Fetch, clone, and serve
-                        return cache.put("/chunk_norris.min.js", response.clone()).then(function () {return response.clone()});
+                return cache.match("/client/chunk_norris.min.js").then(function (response) {
+                    return response || fetch("/client/chunk_norris.min.js").then(function (response) { // Fetch, clone, and serve
+                        return cache.put("/client/chunk_norris.min.js", response.clone()).then(function () {return response.clone()});
                     });
                 });
             })
@@ -237,9 +237,9 @@ self.addEventListener("fetch", function(event) {
         const middle_name = url.match(MAIN_CHILD_CHUNK_REGEX)[1];
         event.respondWith(
             required_cache.then(function (cache) {
-                return cache.match(`/chunk_${middle_name}.min.js`).then(function (response) {
-                    return response || fetch(`/chunk_${middle_name}.min.js`).then(function (response) { // Fetch, clone, and serve
-                        return cache.put(`/chunk_${middle_name}.min.js`, response.clone()).then(function () {return response.clone()});
+                return cache.match(`/client/chunk_${middle_name}.min.js`).then(function (response) {
+                    return response || fetch(`/client/chunk_${middle_name}.min.js`).then(function (response) { // Fetch, clone, and serve
+                        return cache.put(`/client/chunk_${middle_name}.min.js`, response.clone()).then(function () {return response.clone()});
                     });
                 });
             })
@@ -250,9 +250,9 @@ self.addEventListener("fetch", function(event) {
         const middle_name = url.match(CHILD_CHUNK_REGEX)[1];
         event.respondWith(
             required_cache.then(function (cache) {
-                return cache.match(`/chunk_${middle_name}.min.js`).then(function (response) {
-                    return response || fetch(`/chunk_${middle_name}.min.js`).then(function (response) { // Fetch, clone, and serve
-                        return cache.put(`/chunk_${middle_name}.min.js`, response.clone()).then(function () {return response.clone()});
+                return cache.match(`/client/chunk_${middle_name}.min.js`).then(function (response) {
+                    return response || fetch(`/client/chunk_${middle_name}.min.js`).then(function (response) { // Fetch, clone, and serve
+                        return cache.put(`/client/chunk_${middle_name}.min.js`, response.clone()).then(function () {return response.clone()});
                     });
                 });
             })

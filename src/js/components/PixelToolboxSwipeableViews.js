@@ -71,6 +71,7 @@ import SquareSmallIcon from "../icons/SquareSmall";
 import SelectionRectangleIcon from "../icons/SelectionRectangle";
 import SelectionEllipseIcon from "../icons/SelectionEllipse";
 import ImageMoveIcon from "../icons/ImageMove";
+import MoveIcon from "../icons/Move";
 import SelectInvertIcon from "../icons/SelectInvert";
 import CopyIcon from "@material-ui/icons/FileCopy";
 import CutIcon from "../icons/Cut";
@@ -299,7 +300,7 @@ const styles = theme => ({
 });
 
 
-class PixelToolboxSwipeableViews extends React.Component {
+class PixelToolboxSwipeableViews extends React.PureComponent {
 
     constructor(props) {
         super(props);
@@ -456,11 +457,6 @@ class PixelToolboxSwipeableViews extends React.Component {
 
             return false;
         }
-    }
-
-    shouldComponentUpdate(new_props) {
-
-        return false;
     }
 
     compute_filters_preview = () => {
@@ -1048,6 +1044,15 @@ class PixelToolboxSwipeableViews extends React.Component {
                         sub: "[M]",
                         on_click: () => {
                             this._set_tool("SET PENCIL MIRROR")
+                        }
+                    },
+                    {
+                        icon: <MoveIcon/>,
+                        disabled: tool === "MOVE",
+                        text: "Move",
+                        sub: "Middle mouse click moves it too...",
+                        on_click: () => {
+                            this._set_tool("MOVE")
                         }
                     },
                 ]

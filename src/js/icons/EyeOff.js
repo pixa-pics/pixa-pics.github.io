@@ -4,7 +4,7 @@ import { withStyles } from "@material-ui/core";
 
 const styles = theme => ({});
 
-class EyeOff extends React.Component {
+class EyeOff extends React.PureComponent {
 
     constructor(props) {
         super(props);

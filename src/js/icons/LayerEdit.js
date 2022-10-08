@@ -4,7 +4,7 @@ import { withStyles } from "@material-ui/core";
 
 const styles = theme => ({});
 
-class LayerEdit extends React.Component {
+class LayerEdit extends React.PureComponent {
 
     constructor(props) {
         super(props);

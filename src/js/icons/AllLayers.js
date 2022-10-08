@@ -4,7 +4,7 @@ import { withStyles } from "@material-ui/core";
 
 const styles = theme => ({});
 
-class AllLayers extends React.Component {
+class AllLayers extends React.PureComponent {
 
     constructor(props) {
         super(props);

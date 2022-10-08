@@ -4,7 +4,7 @@ import { withStyles } from "@material-ui/core";
 
 const styles = theme => ({});
 
-class Colorized extends React.Component {
+class Colorized extends React.PureComponent {
 
     constructor(props) {
         super(props);

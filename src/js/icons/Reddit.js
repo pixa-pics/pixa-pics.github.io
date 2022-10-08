@@ -4,7 +4,7 @@ import { withStyles } from "@material-ui/core";
 
 const styles = theme => ({});
 
-class Reddit extends React.Component {
+class Reddit extends React.PureComponent {
 
     constructor(props) {
         super(props);

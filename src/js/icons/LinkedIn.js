@@ -4,7 +4,7 @@ import { withStyles } from "@material-ui/core";
 
 const styles = theme => ({});
 
-class LinkedIn extends React.Component {
+class LinkedIn extends React.PureComponent {
 
     constructor(props) {
         super(props);

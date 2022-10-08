@@ -4,7 +4,7 @@ import { withStyles } from "@material-ui/core";
 
 const styles = theme => ({});
 
-class PencilPerfect extends React.Component {
+class PencilPerfect extends React.PureComponent {
 
     constructor(props) {
         super(props);

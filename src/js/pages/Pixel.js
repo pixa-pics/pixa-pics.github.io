@@ -66,6 +66,8 @@ import get_svg_in_b64 from "../utils/svgToBase64";
 import { l, t } from "../utils/t";
 
 import ColorConversion from "../components/canvaspixels/utils/ColorConversion";
+import ZoomIn from "@material-ui/icons/ZoomIn";
+import ZoomOut from "@material-ui/icons/ZoomOut";
 const color_conversion = Object.create(ColorConversion).new();
 
 const styles = theme => ({
@@ -374,7 +376,23 @@ const styles = theme => ({
         left: 16,
         bottom: 16,
         [theme.breakpoints.down("md")]: {
-            right: 88,
+            bottom: 88,
+        },
+    },
+    zoomInButton: {
+        position: "absolute",
+        left: 16,
+        bottom: 60,
+        [theme.breakpoints.down("md")]: {
+            bottom: 132,
+        },
+    },
+    zoomOutButton: {
+        position: "absolute",
+        left: 16,
+        bottom: 104,
+        [theme.breakpoints.down("md")]: {
+            bottom: 176,
         },
     },
     redoButton: {
@@ -400,7 +418,7 @@ const styles = theme => ({
 });
 
 
-class Pixel extends React.Component {
+class Pixel extends React.PureComponent {
 
     constructor(props) {
         super(props);
@@ -476,11 +494,6 @@ class Pixel extends React.Component {
             ...JSON.parse(props.settings)
         };
     };
-
-    shouldComponentUpdate() {
-
-        return false;
-    }
 
     componentWillMount() {
 
@@ -2592,6 +2605,14 @@ class Pixel extends React.Component {
 
                 <IconButton disabled={!_is_image_import_mode} className={classes.confirmImportButton} color={"primary"} size={"small"} onClick={() => {_canvas.confirm_import()}}>
                    <FileImportIcon/>
+                </IconButton>
+
+                <IconButton className={classes.zoomInButton} color={"primary"} size={"small"} onClick={() => {_canvas.zoom_in()}}>
+                   <ZoomIn/>
+                </IconButton>
+
+                <IconButton className={classes.zoomOutButton} color={"primary"} size={"small"} onClick={() => {_canvas.zoom_out()}}>
+                   <ZoomOut/>
                 </IconButton>
 
                 <Button disabled={!_can_redo} variant={"text"} color={"primary"} size={"small"}className={classes.redoButton} onClick={(event) => {_canvas.redo()}}>

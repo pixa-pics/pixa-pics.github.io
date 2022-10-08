@@ -4,7 +4,7 @@ import { withStyles } from "@material-ui/core";
 
 const styles = theme => ({});
 
-class QrCodeScan extends React.Component {
+class QrCodeScan extends React.PureComponent {
 
     constructor(props) {
         super(props);

@@ -282,6 +282,16 @@ class CanvasPixels extends React.PureComponent {
         }
     }
 
+    zoom_in = () => {
+
+        this.canvas_pos.set_zoom(1.33);
+    };
+
+    zoom_out = () => {
+
+        this.canvas_pos.set_zoom(0.75);
+    };
+
     current_layer_up = () => {
 
         let { _layers, _layer_index, _s_pxl_colors, _s_pxls, pxl_width, pxl_height } = this.super_state.get_state();

@@ -4,7 +4,7 @@ import { withStyles } from "@material-ui/core";
 
 const styles = theme => ({});
 
-class ImageOffOutline extends React.Component {
+class ImageOffOutline extends React.PureComponent {
 
     constructor(props) {
         super(props);

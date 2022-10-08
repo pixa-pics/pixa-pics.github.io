@@ -4,7 +4,7 @@ import { withStyles } from "@material-ui/core";
 
 const styles = theme => ({});
 
-class Blogger extends React.Component {
+class Blogger extends React.PureComponent {
 
     constructor(props) {
         super(props);

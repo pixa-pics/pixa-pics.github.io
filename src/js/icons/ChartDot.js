@@ -4,7 +4,7 @@ import { withStyles } from "@material-ui/core";
 
 const styles = theme => ({});
 
-class ChartDot extends React.Component {
+class ChartDot extends React.PureComponent {
 
     constructor(props) {
         super(props);

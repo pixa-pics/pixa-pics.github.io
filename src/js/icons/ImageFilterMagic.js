@@ -4,7 +4,7 @@ import { withStyles } from "@material-ui/core";
 
 const styles = theme => ({});
 
-class ImageFilter extends React.Component {
+class ImageFilter extends React.PureComponent {
 
     constructor(props) {
         super(props);

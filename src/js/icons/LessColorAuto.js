@@ -4,7 +4,7 @@ import { withStyles } from "@material-ui/core";
 
 const styles = theme => ({});
 
-class LessColorAuto extends React.Component {
+class LessColorAuto extends React.PureComponent {
 
     constructor(props) {
         super(props);
