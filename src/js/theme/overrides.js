@@ -105,6 +105,9 @@ const overrides = {
                     }
                 }
             },
+            ".lf-player-container":{
+                display: "inline-block",
+            },
             ".emoji-100": {
                 verticalAlign: "inherit",
                 height: "1em",

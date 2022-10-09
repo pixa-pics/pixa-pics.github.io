@@ -1,6 +1,7 @@
 import React from "react";
 import {withStyles} from "@material-ui/core";
 
+
 import { t } from "../utils/t";
 
 import {AppBar, Toolbar, Divider, SwipeableDrawer, ListItemIcon, ListItemText, IconButton, MenuItem, Menu, Tooltip} from "@material-ui/core";
@@ -23,6 +24,7 @@ import JamyHappy from "../icons/JamyHappy";
 import JamySad from "../icons/JamySad";
 import JamyShocked from "../icons/JamyShocked";
 import JamySuspicious from "../icons/JamySuspicious";
+import ExplosionEmojiSvg from "../notoemoji/react/EmojiU1F4A5";
 
 const styles = theme => ({
     appBar: {
@@ -204,8 +206,24 @@ class AppToolbar extends React.PureComponent {
             _jamy_mouse_hover_click: 0,
             _click_much_jamy: false,
             _is_pre_reset: false,
+            _explosion: <ExplosionEmojiSvg className="emoji-100" style={{ height: '150px', width: '150px' }} />
         };
     };
+
+    componentDidMount() {
+
+        import("@lottiefiles/react-lottie-player").then(({Player}) => {
+
+            this.setState({
+                _explosion: <Player
+                    loop={true}
+                    autoplay={true}
+                    onClick={this._exit_to_app}
+                    src="/src/js/notoemoji/lottie/1f4a5.json"
+                    style={{ height: '150px', width: '150px' }}/>
+            })
+        });
+    }
 
     componentWillReceiveProps(new_props) {
 
@@ -359,7 +377,7 @@ class AppToolbar extends React.PureComponent {
 
     render() {
 
-        const { classes, ret, camo, _is_pre_reset, pathname, language, loaded_progress_percent, know_the_settings, _swipeable_app_drawer_open, _account_menu_anchor_element, logged_account, jamy_state_of_mind, jamy_enabled, music_enabled } = this.state;
+        const { classes, ret, camo, _is_pre_reset, pathname, language, loaded_progress_percent, know_the_settings, _swipeable_app_drawer_open, _account_menu_anchor_element, logged_account, jamy_state_of_mind, jamy_enabled, music_enabled, _explosion } = this.state;
 
         const JAMY = {
             angry: <JamyAngry className={classes.jamy} />,
@@ -439,9 +457,7 @@ class AppToolbar extends React.PureComponent {
                             </MenuItem>
                             <div>
                                 <Divider />
-                                {
-                                    _is_pre_reset && <img style={{width: "150px", cursor: "pointer"}} onClick={this._exit_to_app} src={"/src/images/infographics/Explosion.svg"} />
-                                }
+                                {_is_pre_reset ? _explosion: null}
                                 <MenuItem onClick={this._pre_reset_toggle}>
                                     <ListItemIcon>
                                         <SecurityIcon fontSize="small" />

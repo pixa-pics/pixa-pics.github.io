@@ -1,7 +1,7 @@
 "use strict";
-var REQUIRED_CACHE = "unless-update-cache-v431-required";
-var USEFUL_CACHE = "unless-update-cache-v431-useful";
-var STATIC_CACHE = "unless-update-cache-v431-static";
+var REQUIRED_CACHE = "unless-update-cache-v432-required";
+var USEFUL_CACHE = "unless-update-cache-v432-useful";
+var STATIC_CACHE = "unless-update-cache-v432-static";
 var MAIN_CHILD_CHUNK_REGEX = /chunk_(main_[a-z0-9]+)\.min\.js/i;
 var CHILD_CHUNK_REGEX = /chunk_([0-9]+)\.min\.js/i;
 
@@ -60,6 +60,7 @@ self.addEventListener("install", function(event) {
 
     required_cache.then(function (cache) {
         cache.addAll([
+            "/client/chunk_main_7a2ee6b6.min.js",
             "/client/chunk_main_253ae210.min.js",
             "/client/chunk_main_690b702c.min.js",
             "/client/chunk_main_748942c6.min.js",
@@ -154,6 +155,7 @@ self.addEventListener("fetch", function(event) {
                         "/client/chunk_28.min.js",
                         "/client/chunk_29.min.js",
                         "/client/chunk_30.min.js",
+                        "/client/chunk_31.min.js",
                     ]);
                 }),
                 static_cache.then(function (cache) {
@@ -184,7 +186,7 @@ self.addEventListener("fetch", function(event) {
                 .catch(function(){return new Response("all", {status: 500})})
         );
 
-    }else if(Boolean(url.endsWith(".png") || url.endsWith(".svg") || url.endsWith(".jpg") || url.endsWith(".jpeg") || url.endsWith(".gif") || url.endsWith(".ico")) && same_site) {
+    }else if(Boolean(url.endsWith(".png") || url.endsWith(".json") || url.endsWith(".svg") || url.endsWith(".jpg") || url.endsWith(".jpeg") || url.endsWith(".gif") || url.endsWith(".ico")) && same_site) {
 
         // Serve cached image if doesn't fail
         event.respondWith(

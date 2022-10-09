@@ -285,6 +285,7 @@ class Home extends React.Component {
             _infographics_in: true,
             _bii3_opacity: 1,
             _join_now_button_update: 0,
+            _brainplode: <BrainplodeEmojiSvg className="emoji-100"/>,
         };
     };
 
@@ -296,6 +297,18 @@ class Home extends React.Component {
 
             actions.trigger_loading_update(100);
         }, 300);
+
+        import("@lottiefiles/react-lottie-player").then(({Player}) => {
+
+            this.setState({
+                _brainplode: <Player
+                    loop={true}
+                    autoplay={true}
+                    onClick={this._exit_to_app}
+                    src="/src/js/notoemoji/lottie/1f92f.json"
+                    style={{ height: '51px', width: '51px' }}/>
+            })
+        });
     }
 
     componentDidMount() {
@@ -424,7 +437,7 @@ class Home extends React.Component {
 
     render() {
 
-        const { classes, _bii3_opacity, _infographics_fadein_time, _infographics_in, _selected_locales_code } = this.state;
+        const { classes, _brainplode, _infographics_fadein_time, _infographics_in, _selected_locales_code } = this.state;
         let { _image_name_infographics, _join_now_button_update } = this.state;
 
         function get_now_hours24_with_locale(lc) {
@@ -521,7 +534,7 @@ class Home extends React.Component {
                 </div>
                 <div className={classes.headerContainer} style={{textShadow: THEME_DAY && !IS_EVENING? "0px 0px 9px #57bbff": "none"}}>
                     <h1 className={classes.titleh1}>
-                        <span className={classes.revelantText} style={{color: THEME_DAY && !IS_EVENING ? "#ffffff": "#008eff", backgroundColor: THEME_DAY && !IS_EVENING ? "black": "transparent"}}>From <PictureEmojiSvg className="emoji-100"/> PICs into <BrainplodeEmojiSvg className="emoji-100"/> PIXELARTs and <UnicornEmojiSvg className="emoji-100"/> NFTs.</span>
+                        <span className={classes.revelantText} style={{color: THEME_DAY && !IS_EVENING ? "#ffffff": "#008eff", backgroundColor: THEME_DAY && !IS_EVENING ? "black": "transparent"}}>From <PictureEmojiSvg className="emoji-100"/> PICs into {_brainplode} PIXELARTs and <UnicornEmojiSvg className="emoji-100"/> NFTs.</span>
                     </h1>
                     <h2 className={classes.titleh2} style={{color: THEME_DAY && !IS_EVENING ? "#000639": "#fff"}}>
                         <span className={classes.revelantText} style={{color: THEME_DAY && !IS_EVENING ? "#fff": "#008eff", backgroundColor: THEME_DAY && !IS_EVENING ? "black": "transparent"}}>Get the MAXIMA of PRIVACY fashionably for real and for the ONLINE-SELF...</span>

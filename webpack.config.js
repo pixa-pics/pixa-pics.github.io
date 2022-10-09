@@ -85,11 +85,14 @@ module.exports = {
                         drop_console: true,
                         passes: 3,
                     },
+                    safari10: true,
                     output: {
                         comments: false,
                         beautify: false,
-                        webkit: true
-                    }
+                        webkit: true,
+                        ast: true,
+                        code: true
+                    },
                 }
             })
         ],
