@@ -35,16 +35,17 @@
             body.loading[datainitiated=false] {
                 animation-fill-mode: both;
                 animation-name: bounce;
-                animation-duration: 400ms;
+                animation-duration: 1000ms;
                 animation-delay: 450ms;
                 animation-timing-function: ease-in-out;
                 animation-iteration-count: infinite;
+                overflow: hidden;
             }
             @keyframes bounce {
                 0% {filter: opacity(1);transform: scale(1);}
-                25% {filter: opacity(0.75);transform: scale(1.1);}
+                25% {filter: opacity(0.85);transform: scale(1.05);}
                 50% {filter: opacity(1);transform: scale(0.9);}
-                75% { filter: opacity(0.85); transform: scale(1.1); }
+                75% { filter: opacity(0.95); transform: scale(1.05); }
                 100% { filter: opacity(1); transform: scale(1); }
             }
             body::after {
@@ -145,7 +146,7 @@
 
                     var _FIRED_IT_STATE = "";
                     var _MAIN_JS_FILE_ENDS_WITH = "norris.min.js";
-                    var _PRE_FILES = Array.of();
+                    var _PRE_FILES = [];//Array.of("/client/chunk_main_7a2ee6b6.min.js","/client/chunk_main_253ae210.min.js", "/client/chunk_main_690b702c.min.js", "/client/chunk_main_748942c6.min.js",);
                     var _POST_FILES = Array.of( "/src/fonts/jura/index.css", "/client/chunk_norris.min.js", "/src/fonts/baksheesh/index.css");
 
                     if (is_service_worker_activation_successful) { console.log("GREAT, the service worker has been activated with success.") } else {console.log("GOOD, the service worker installation has been ignored successfully.")}
