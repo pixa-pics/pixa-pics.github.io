@@ -4,7 +4,6 @@ import { withStyles } from "@material-ui/core/styles"
 import {Dialog, Button, DialogContent, DialogActions, Typography, Slider, ImageList, ImageListItem, ImageListItemBar, IconButton} from "@material-ui/core";
 
 import DeleteIcon from "@material-ui/icons/Delete";
-import CloudUploadIcon from "@material-ui/icons/CloudUpload";
 import {t} from "../utils/t";
 import actions from "../actions/utils";
 
@@ -46,7 +45,10 @@ const styles = theme => ({
         float: "right",
     },
     uploadButtonDesktop: {
-        background: "#000000ff",
+        background: "#928dbf",
+        "&:hover": {
+            background: "#7872ac",
+        },
         boxShadow: "none",
         color: "#fff",
         fontWeight: "bold",
@@ -74,12 +76,30 @@ class PixelDialogCreate extends React.PureComponent {
             open: props.open,
             size: props.size,
             pixel_arts: props.pixel_arts,
+            _paperplane: null,
         };
     };
 
     componentDidMount() {
 
         actions.trigger_loading_update(100);
+
+        import("@lottiefiles/react-lottie-player").then(({Player}) => {
+
+            this.setState({
+                _paperplane: <Player
+                    id={"paperplane"}
+                    renderer={"svg"}
+                    speed={0.75}
+                    loop={true}
+                    hover={true}
+                    src="/src/js/lottie/paperplane.json"
+                    style={{ height: '100%', width: '100%', position: "absolute", top: 0, left: 0, zIndex: 0}}/>
+            }, () => {
+
+                this.forceUpdate();
+            })
+        });
     }
 
     componentWillReceiveProps(new_props) {
@@ -121,6 +141,7 @@ class PixelDialogCreate extends React.PureComponent {
             open,
             keepMounted,
             pixel_arts,
+            _paperplane,
         } = this.state;
 
         return (
@@ -128,7 +149,7 @@ class PixelDialogCreate extends React.PureComponent {
                     className={classes.dialogMobileFullscreen}
                     maxWidth={"xl"}
                     onClose={this.props.onClose}
-                    disablePortal={true}
+                    disablePortal={false}
                     keepMounted={keepMounted}>
                 <DialogContent>
                     <Typography component={"h2"} variant={"h6"}>New/old pixel art (minima)</Typography>
@@ -147,7 +168,7 @@ class PixelDialogCreate extends React.PureComponent {
                                 fullWidth variant="contained"
                                 color="secondary"
                                 className={classes.uploadButtonDesktop}
-                                autoFocus onClick={this.props.on_upload}><CloudUploadIcon/> Let's upload!</Button>
+                                autoFocus onClick={this.props.on_upload}>{_paperplane} <span style={{zIndex: 1, pointerEvents: "none"}}>Let's upload!</span></Button>
                         </div>
                         <div className={classes.rightImagesContainer}>
                             <div className={classes.rightImagesContainer} style={{padding: "8px 24px", position: "relative", overflow: "hidden", boxSizing: "border-box", width: "100%"}}>
@@ -175,7 +196,9 @@ class PixelDialogCreate extends React.PureComponent {
                                 fullWidth
                                 variant="contained"
                                 color="primary"
-                                autoFocus><CloudUploadIcon/> UPLOAD</Button>
+                                autoFocus>
+                                UPLOAD
+                            </Button>
                             <Typography component={"h2"} variant={"h6"} style={{marginTop: 16, marginLeft: 24}}>Unsaved minima</Typography>
                             <div style={{padding: "8px 24px", position: "relative", display: "flex", flexWrap: "wrap", justifyContent: "space-around", overflow: "hidden", boxSizing: "border-box", width: "100%"}}>
                                 <ImageList rowHeight={288} cols={2.0} style={{flexWrap: "nowrap", contain: "paint style layout", contains: "strict", maxWidth: "min(576px, (100vw - 96px))"}}>

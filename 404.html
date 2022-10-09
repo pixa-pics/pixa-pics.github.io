@@ -32,6 +32,21 @@
                 will-change: auto;
                 content-visibility: hidden;
             }
+            body.loading[datainitiated=true] {
+                animation-fill-mode: both;
+                animation-name: bounce;
+                animation-duration: 400ms;
+                animation-delay: 50ms;
+                animation-timing-function: ease-in-out;
+                animation-iteration-count: infinite;
+            }
+            @keyframes bounce {
+                0% {filter: opacity(1);transform: scale(1);}
+                25% {filter: opacity(0.75);transform: scale(1.1);}
+                50% {filter: opacity(1);transform: scale(0.9);}
+                75% { filter: opacity(0.85); transform: scale(1.1); }
+                100% { filter: opacity(1); transform: scale(1); }
+            }
             body::after {
                 content-visibility: auto;
                 pointer-events: none;

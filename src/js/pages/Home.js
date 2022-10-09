@@ -10,9 +10,9 @@ import CrownEmojiSvg from "../notoemoji/react/EmojiU1F451";
 import LightingEmojiSvg from "../notoemoji/react/EmojiU26A1";
 import GlassesEmojiSvg from "../notoemoji/react/EmojiU1F97D";
 import JacketEmojiSvg from "../notoemoji/react/EmojiU1F97C";
-import UnicornEmojiSvg from "../notoemoji/react/EmojiU1F984";
 import BrainplodeEmojiSvg from "../notoemoji/react/EmojiU1F92F";
-import PictureEmojiSvg from "../notoemoji/react/EmojiU1F4F8";
+import EyesEmojiSvg from "../notoemoji/react/EmojiU1F440";
+import DiamondEmojiSvg from "../notoemoji/react/EmojiU1F48E";
 import ScientistEmojiSvg from "../notoemoji/react/EmojiU1F4681F3Fd200D1F52C";
 import ShufflingSpanText from "../components/ShufflingSpanText";
 
@@ -271,7 +271,7 @@ const styles = theme => ({
 });
 
 
-class Home extends React.Component {
+class Home extends React.PureComponent {
 
     constructor(props) {
         super(props);
@@ -285,7 +285,9 @@ class Home extends React.Component {
             _infographics_in: true,
             _bii3_opacity: 1,
             _join_now_button_update: 0,
-            _brainplode: <BrainplodeEmojiSvg className="emoji-100"/>,
+            _brainplode: <BrainplodeEmojiSvg style={{ height: '56px', width: '56px' }}/>,
+            _diamond: <DiamondEmojiSvg style={{ height: '56px', width: '56px' }}/>,
+            _eyes: <EyesEmojiSvg style={{ height: '56px', width: '56px' }}/>,
         };
     };
 
@@ -302,11 +304,26 @@ class Home extends React.Component {
 
             this.setState({
                 _brainplode: <Player
+                    id={"brainplode"}
                     loop={true}
                     autoplay={true}
-                    onClick={this._exit_to_app}
                     src="/src/js/notoemoji/lottie/1f92f.json"
-                    style={{ height: '51px', width: '51px' }}/>
+                    style={{ height: '56px', width: '56px' }}/>,
+                _diamond: <Player
+                    id={"diamond"}
+                    loop={true}
+                    autoplay={true}
+                    src="/src/js/notoemoji/lottie/1f48e.json"
+                    style={{ height: '56px', width: '56px' }}/>,
+                _eyes: <Player
+                    id={"eyes"}
+                    loop={true}
+                    autoplay={true}
+                    src="/src/js/notoemoji/lottie/1f440.json"
+                    style={{ height: '56px', width: '56px' }}/>,
+            }, () => {
+
+                this.forceUpdate();
             })
         });
     }
@@ -422,22 +439,9 @@ class Home extends React.Component {
         }
     };
 
-    _open_link = (event, url) =>{
-
-        window.open(url);
-    };
-
-    _toggle_bii3_opacity = () => {
-
-        this.setState({_bii3_opacity: this.state._bii3_opacity === 0 ? 1 : 0}, () => {
-
-            this.forceUpdate();
-        });
-    };
-
     render() {
 
-        const { classes, _brainplode, _infographics_fadein_time, _infographics_in, _selected_locales_code } = this.state;
+        const { classes, _brainplode, _diamond, _eyes, _infographics_fadein_time, _infographics_in, _selected_locales_code } = this.state;
         let { _image_name_infographics, _join_now_button_update } = this.state;
 
         function get_now_hours24_with_locale(lc) {
@@ -531,41 +535,41 @@ class Home extends React.Component {
                             <span style={{fontSize: "1em", color: "#22ff00", filter: "drop-shadow(0px 0px 4px darkgreen)"}}>TRY IT RIGHT «NOW»!</span>
                         </h2>
                     </div>
-                </div>
-                <div className={classes.headerContainer} style={{textShadow: THEME_DAY && !IS_EVENING? "0px 0px 9px #57bbff": "none"}}>
-                    <h1 className={classes.titleh1}>
-                        <span className={classes.revelantText} style={{color: THEME_DAY && !IS_EVENING ? "#ffffff": "#008eff", backgroundColor: THEME_DAY && !IS_EVENING ? "black": "transparent"}}>From <PictureEmojiSvg className="emoji-100"/> PICs into {_brainplode} PIXELARTs and <UnicornEmojiSvg className="emoji-100"/> NFTs.</span>
-                    </h1>
-                    <h2 className={classes.titleh2} style={{color: THEME_DAY && !IS_EVENING ? "#000639": "#fff"}}>
-                        <span className={classes.revelantText} style={{color: THEME_DAY && !IS_EVENING ? "#fff": "#008eff", backgroundColor: THEME_DAY && !IS_EVENING ? "black": "transparent"}}>Get the MAXIMA of PRIVACY fashionably for real and for the ONLINE-SELF...</span>
-                        <br/>
-                        <span>Use effects immediately in the laboratory? Yes or No?</span>
-                    </h2>
-                    <h2 className={classes.titleh2} style={{color: THEME_DAY && !IS_EVENING ? "#000639": "#fff"}}>
-                        <span className={classes.stepPoints} style={{color: THEME_DAY && !IS_EVENING ? "#000639": "#008eff"}}>2 >> </span>
-                        <span className={classes.revelantText} style={{color: THEME_DAY && !IS_EVENING ? "#fff": "#008eff", backgroundColor: THEME_DAY && !IS_EVENING ? "black": "transparent"}}> WHILE DRAWING/EDITING</span>
-                        <JacketEmojiSvg alt="scientist-jacket-tweemoji" className="emoji-150"/>
-                        <span className={classes.revelantText} style={{color: THEME_DAY && !IS_EVENING ? "#fff": "#008eff", backgroundColor: THEME_DAY && !IS_EVENING ? "black": "transparent"}}> you can use 55+ tools for pixel art within 7 panels</span>
-                        <span> such as : layer's option, filters, selections, shapes, and effects.</span>
-                    </h2>
-                    <h2 className={classes.titleh2} style={{color: THEME_DAY && !IS_EVENING ? "#000639": "#fff"}}>
-                        <span className={classes.stepPoints} style={{color: THEME_DAY && !IS_EVENING ? "#000639": "#008eff"}}>3 >>></span>
-                        <span className={classes.revelantText} style={{color: THEME_DAY && !IS_EVENING ? "#fff": "#008eff", backgroundColor: THEME_DAY && !IS_EVENING ? "black": "transparent"}}> RENDER UNLIMITED PIXEL ART </span>
-                        <GlassesEmojiSvg alt="scientist-jacket-tweemoji" style={{verticalAlign: "middle"}} className="emoji-150"/>
-                        <span className={classes.revelantText} style={{color: THEME_DAY && !IS_EVENING ? "#fff": "#008eff", backgroundColor: THEME_DAY && !IS_EVENING ? "black": "transparent"}}>in 4K Ultra HD images</span>
-                        <span> or in </span>
-                        <span>humanized ∞ %<sup> Scalable</sup> shapes </span>
-                        <span> of vectors using its PIXEL-MATRIX to get it majestically in SVG.</span>
-                    </h2>
-                    <Button key={_join_now_button_update} className={classes.homeCTAuseit} variant={"contained"} size={"large"} color="primary" onClick={this._go_to_editor}>
-                        <ShufflingSpanText placeholder={_join_now_button_update % 5 ? "START " : "JOIN LAB "} text={_join_now_button_update % 5 ? "START " : "JOIN LAB "} animation_delay_ms={_join_now_button_update === 0 ? 3000: 0} animation_duration_ms={1000} />
+                    <div className={classes.headerContainer} style={{textShadow: THEME_DAY && !IS_EVENING? "0px 0px 9px #57bbff": "none"}}>
+                        <h1 className={classes.titleh1}>
+                            <span className={classes.revelantText} style={{color: THEME_DAY && !IS_EVENING ? "#ffffff": "#008eff", backgroundColor: THEME_DAY && !IS_EVENING ? "black": "transparent"}}>From {_eyes} PICs into {_brainplode} PIXELARTs and {_diamond} NFTs.</span>
+                        </h1>
+                        <h2 className={classes.titleh2} style={{color: THEME_DAY && !IS_EVENING ? "#000639": "#fff"}}>
+                            <span className={classes.revelantText} style={{color: THEME_DAY && !IS_EVENING ? "#fff": "#008eff", backgroundColor: THEME_DAY && !IS_EVENING ? "black": "transparent"}}>Get the MAXIMA of PRIVACY fashionably for real and for the ONLINE-SELF...</span>
+                            <br/>
+                            <span>Use effects immediately in the laboratory? Yes or No?</span>
+                        </h2>
+                        <h2 className={classes.titleh2} style={{color: THEME_DAY && !IS_EVENING ? "#000639": "#fff"}}>
+                            <span className={classes.stepPoints} style={{color: THEME_DAY && !IS_EVENING ? "#000639": "#008eff"}}>2 >> </span>
+                            <span className={classes.revelantText} style={{color: THEME_DAY && !IS_EVENING ? "#fff": "#008eff", backgroundColor: THEME_DAY && !IS_EVENING ? "black": "transparent"}}> WHILE DRAWING/EDITING</span>
+                            <JacketEmojiSvg alt="scientist-jacket-tweemoji" className="emoji-150"/>
+                            <span className={classes.revelantText} style={{color: THEME_DAY && !IS_EVENING ? "#fff": "#008eff", backgroundColor: THEME_DAY && !IS_EVENING ? "black": "transparent"}}> you can use 55+ tools for pixel art within 7 panels</span>
+                            <span> such as : layer's option, filters, selections, shapes, and effects.</span>
+                        </h2>
+                        <h2 className={classes.titleh2} style={{color: THEME_DAY && !IS_EVENING ? "#000639": "#fff"}}>
+                            <span className={classes.stepPoints} style={{color: THEME_DAY && !IS_EVENING ? "#000639": "#008eff"}}>3 >>></span>
+                            <span className={classes.revelantText} style={{color: THEME_DAY && !IS_EVENING ? "#fff": "#008eff", backgroundColor: THEME_DAY && !IS_EVENING ? "black": "transparent"}}> RENDER UNLIMITED PIXEL ART </span>
+                            <GlassesEmojiSvg alt="scientist-jacket-tweemoji" style={{verticalAlign: "middle"}} className="emoji-150"/>
+                            <span className={classes.revelantText} style={{color: THEME_DAY && !IS_EVENING ? "#fff": "#008eff", backgroundColor: THEME_DAY && !IS_EVENING ? "black": "transparent"}}>in 4K Ultra HD images</span>
+                            <span> or in </span>
+                            <span>humanized ∞ %<sup> Scalable</sup> shapes </span>
+                            <span> of vectors using its PIXEL-MATRIX to get it majestically in SVG.</span>
+                        </h2>
+                        <Button key={_join_now_button_update} className={classes.homeCTAuseit} variant={"contained"} size={"large"} color="primary" onClick={this._go_to_editor}>
+                            <ShufflingSpanText placeholder={_join_now_button_update % 5 ? "START " : "JOIN LAB "} text={_join_now_button_update % 5 ? "START " : "JOIN LAB "} animation_delay_ms={_join_now_button_update === 0 ? 3000: 0} animation_duration_ms={1000} />
                             <ScientistEmojiSvg alt="Laboratory decoration" width={24} height={24} style={{transform: "scale(3.5)", width: 24, height: 24, marginRight: "2em", marginLeft: "2em", filter: "drop-shadow(white 0px 0px 6px)", webkitFilter: "drop-shadow(white 0px 0px 6px)"}} className="emoji-150" />
-                        <ShufflingSpanText placeholder={_join_now_button_update % 5 ? " SOON" : " NOW"} text={_join_now_button_update % 5 ? " NOW" : " SOON"} app="..." animation_delay_ms={_join_now_button_update === 0 ? 3000: 500} animation_duration_ms={1000} />
-                    </Button>
-                    <p className={classes.subtitleButton}><span><CrownEmojiSvg alt="king-crown-tweemoji" className="emoji"/> Free For Everyone <LightingEmojiSvg alt="sky-lightning-tweemoji" className="emoji"/> Forever Open-Source</span></p>
-                    <Button className={classes.homeCTAsendit} variant={"contained"} size={"large"} color="primary" onClick={(event) => {this._handle_speed_dial_action(event, "share")}}>
-                        <ShufflingSpanText pre="[ " app="! ]" placeholder={_join_now_button_update % 3 ? "SEND IT" : "SHARE NOW"} text={_join_now_button_update % 3 ? "SEND IT" : "SHARE NOW"} animation_delay_ms={_join_now_button_update === 0 ? 3000: 750} animation_duration_ms={750} />
-                    </Button>
+                            <ShufflingSpanText placeholder={_join_now_button_update % 5 ? " SOON" : " NOW"} text={_join_now_button_update % 5 ? " NOW" : " SOON"} app="..." animation_delay_ms={_join_now_button_update === 0 ? 3000: 500} animation_duration_ms={1000} />
+                        </Button>
+                        <p className={classes.subtitleButton}><span><CrownEmojiSvg alt="king-crown-tweemoji" className="emoji"/> Free For Everyone <LightingEmojiSvg alt="sky-lightning-tweemoji" className="emoji"/> Forever Open-Source</span></p>
+                        <Button className={classes.homeCTAsendit} variant={"contained"} size={"large"} color="primary" onClick={(event) => {this._handle_speed_dial_action(event, "share")}}>
+                            <ShufflingSpanText pre="[ " app="! ]" placeholder={_join_now_button_update % 3 ? "SEND IT" : "SHARE NOW"} text={_join_now_button_update % 3 ? "SEND IT" : "SHARE NOW"} animation_delay_ms={_join_now_button_update === 0 ? 3000: 750} animation_duration_ms={750} />
+                        </Button>
+                    </div>
                 </div>
             </div>
         );

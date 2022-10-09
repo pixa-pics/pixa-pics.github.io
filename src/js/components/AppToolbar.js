@@ -216,6 +216,7 @@ class AppToolbar extends React.PureComponent {
 
             this.setState({
                 _explosion: <Player
+                    id={"explosion"}
                     loop={true}
                     autoplay={true}
                     onClick={this._exit_to_app}

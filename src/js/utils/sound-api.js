@@ -18,6 +18,7 @@ function play_sound(category, pack, name, volume_optional, global_optional) {
             volume,
             onplayerror: function() {
                 window._sound_object_music.once('unlock', function() {
+                    window._sound_object_music.stop();
                     window._sound_object_music.play();
                 });
             }
