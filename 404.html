@@ -172,7 +172,7 @@
                             if (ss.endsWith(".js")) {
 
                                 document.querySelectorAll('script[src$="' + hrefs[i] + '"]').forEach(function (node) {node.remove();});
-                                e = document.createElement("script"); e.setAttribute("src", ss); e.setAttribute("type", "text/javascript"); e.setAttribute(ss.endsWith(_MAIN_JS_FILE_ENDS_WITH) ? "defer" : "defer", "true");
+                                e = document.createElement("script"); e.setAttribute("src", ss); e.setAttribute("type", "text/javascript"); e.setAttribute(ss.endsWith(_MAIN_JS_FILE_ENDS_WITH) ? "async" : "defer", "true");
                                 document.body.appendChild(e);
 
                             } else if (ss.endsWith(".css")) {
