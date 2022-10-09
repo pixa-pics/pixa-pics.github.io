@@ -217,7 +217,6 @@ class AppToolbar extends React.PureComponent {
                 id={"explosion"}
                 loop={true}
                 autoplay={true}
-                onClick={this._exit_to_app}
                 src="/src/js/notoemoji/lottie/1f4a5.json"
                 style={{ height: '150px', width: '150px' }}/>
         })

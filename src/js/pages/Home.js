@@ -242,17 +242,7 @@ const styles = theme => ({
             fontWeight: "bold",
         },
         [theme.breakpoints.down("md")]: {
-            "& > span": {display: "none"},
-            fontSize: "24px",
-        },
-        [theme.breakpoints.down("sm")]: {
-            fontSize: "18px",
-            "& > span": {display: "none"},
-            "& sup": {
-                fontSize: "0.6em",
-                opacity: "1",
-                fontWeight: "bold",
-            },
+            display: "none"
         },
     },
     titleSubTitle: {

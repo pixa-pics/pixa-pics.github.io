@@ -147,7 +147,7 @@ module.exports = {
                                     forceAllTransforms: true,
                                     shippedProposals: true,
                                     bugfixes: true,
-                                    useBuiltIns: "entry"
+                                    useBuiltIns: "usage"
                                 }],
                                 'stage-0'
                             ]
