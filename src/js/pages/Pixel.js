@@ -5,10 +5,11 @@ window.mobileAndTabletCheck = function() {
     return check;
 };
 
+import JSLoader from "../utils/JSLoader";
 let is_mobile_or_tablet = window.mobileAndTabletCheck();
 import React, { Suspense } from "react";
 import dispatcher from "../dispatcher";
-const CanvasPixels = React.lazy(() => import("../components/canvaspixels/CanvasPixels"));
+const CanvasPixels = React.lazy(() => JSLoader(import("../components/canvaspixels/CanvasPixels")));
 import {Button, IconButton, withStyles} from "@material-ui/core";
 import pool from "../utils/worker-pool";
 import {ListItem, Typography, Backdrop, Slider, SwipeableDrawer, Drawer, Tabs, Tab, Menu, ListSubheader, ListItemText, ListItemIcon} from "@material-ui/core";
@@ -67,7 +68,6 @@ import { l, t } from "../utils/t";
 import ColorConversion from "../components/canvaspixels/utils/ColorConversion";
 import ZoomIn from "@material-ui/icons/ZoomIn";
 import ZoomOut from "@material-ui/icons/ZoomOut";
-import JSLoader from "../utils/JSLoader";
 const color_conversion = Object.create(ColorConversion).new();
 
 const styles = theme => ({

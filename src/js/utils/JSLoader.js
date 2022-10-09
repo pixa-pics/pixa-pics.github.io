@@ -1,4 +1,4 @@
-export default function JSLoader(comp, attempts_left = 20) {
+export default function JSLoader(comp, attempts_left = 50) {
     return new Promise((resolve, reject) => {
         comp
             .then(resolve)
@@ -10,7 +10,7 @@ export default function JSLoader(comp, attempts_left = 20) {
                         return;
                     }
                     JSLoader(comp, attempts_left - 1).then(resolve, reject);
-                }, 60);
+                }, 100);
             });
     });
 }

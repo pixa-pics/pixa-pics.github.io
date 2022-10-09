@@ -14,9 +14,9 @@ import dispatcher from "../dispatcher";
 import actions from "../actions/utils";
 
 import Home from "./Home";
-const Pixel = React.lazy(() => import("../pages/Pixel"));
-const Unknown = React.lazy(() => import("../pages/Unknown"));
-const Settings = React.lazy(() => import("../pages/Settings"));
+const Pixel = React.lazy(() => JSLoader(import("../pages/Pixel")));
+const Unknown = React.lazy(() => JSLoader(import("../pages/Unknown")));
+const Settings = React.lazy(() => JSLoader(import("../pages/Settings")));
 
 import JamyAngry from "../icons/JamyAngry";
 import JamyAnnoyed from "../icons/JamyAnnoyed";
