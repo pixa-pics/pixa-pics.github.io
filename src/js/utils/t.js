@@ -1,17 +1,19 @@
+import JSLoader from "./JSLoader";
+
 const PARAM_PROPS_NAME = ["faw", "fluc", "flc", "fllc", "tuc", "tlc", "aed", "ated"];
 
-const lang_import_en = async() => { return import(`../locales/en`)};
-const lang_import_fr = async() => { return import(`../locales/fr`)};
-const lang_import_id = async() => { return import(`../locales/id`)};
-const lang_import_pt = async() => { return import(`../locales/pt`)};
-const lang_import_it = async() => { return import(`../locales/it`)};
-const lang_import_de = async() => { return import(`../locales/de`)};
-const lang_import_ja = async() => { return import(`../locales/ja`)};
-const lang_import_zh = async() => { return import(`../locales/zh`)};
-const lang_import_ko = async() => { return import(`../locales/ko`)};
-const lang_import_ru = async() => { return import(`../locales/ru`)};
-const lang_import_hi = async() => { return import(`../locales/hi`)};
-const lang_import_es = async() => { return import(`../locales/es`)};
+const lang_import_en = async() => { return JSLoader(import(`../locales/en`))};
+const lang_import_fr = async() => { return JSLoader(import(`../locales/fr`))};
+const lang_import_id = async() => { return JSLoader(import(`../locales/id`))};
+const lang_import_pt = async() => { return JSLoader(import(`../locales/pt`))};
+const lang_import_it = async() => { return JSLoader(import(`../locales/it`))};
+const lang_import_de = async() => { return JSLoader(import(`../locales/de`))};
+const lang_import_ja = async() => { return JSLoader(import(`../locales/ja`))};
+const lang_import_zh = async() => { return JSLoader(import(`../locales/zh`))};
+const lang_import_ko = async() => { return JSLoader(import(`../locales/ko`))};
+const lang_import_ru = async() => { return JSLoader(import(`../locales/ru`))};
+const lang_import_hi = async() => { return JSLoader(import(`../locales/hi`))};
+const lang_import_es = async() => { return JSLoader(import(`../locales/es`))};
 
 const get_lang_lib = async (name) => {
 
@@ -79,7 +81,7 @@ const l = async(_l = null, callback_function = () => {}, time_ago = false) => {
         window.LANG_DIR = Object.assign({}, ld);
 
         if(time_ago) {
-            import("javascript-time-ago/bundle/javascript-time-ago").then(function(TimeAgo) {
+            JSLoader(import("javascript-time-ago/bundle/javascript-time-ago")).then(function(TimeAgo) {
 
                 TimeAgo.default.addDefaultLocale(window.LANG_DIR["_time_ago"]);
                 window.TIME_AGO = new TimeAgo.default(window.LANG);

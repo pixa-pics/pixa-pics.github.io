@@ -12,6 +12,7 @@ const styles = theme => ({
         backgroundPosition: "center center",
         backgroundRepeat: "no-repeat",
         backgroundOrigin: "content-box",
+        textAlign: "center",
         padding: theme.spacing(4)
     }
 });
@@ -57,7 +58,7 @@ class Unknown extends React.Component {
                         loop={true}
                         autoplay={true}
                         src="/src/js/lottie/404.json"
-                        style={{ height: '100%', width: '100%' }}/>
+                        style={{ height: '100%' }}/>
                 </div>
             </div>
         );

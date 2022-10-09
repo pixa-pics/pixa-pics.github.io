@@ -1,4 +1,5 @@
 import React, { Suspense } from "react";
+import JSLoader from "../utils/JSLoader";
 import { withStyles } from "@material-ui/core";
 
 import {Snackbar, IconButton, Toolbar} from "@material-ui/core";
@@ -93,8 +94,6 @@ class Index extends React.PureComponent {
         super(props);
         this.state = {
             _history: props.history,
-            init_pathname: props.history.location.pathname,
-            pathname: "",
             _load_with: "",
             _intervals: [],
             _jamy_state_of_mind: "shocked",
@@ -108,11 +107,11 @@ class Index extends React.PureComponent {
             _datasyncserviceworkerallfiles: 0,
             _history_unlisten: function(){},
             _did_mount: false,
-            _page_routes: PAGE_ROUTES,
-            _page_component: null
+            _page_routes: PAGE_ROUTES
         };
         this.settings = {
-            _language: null,
+            _unset: true,
+            _language: "en",
             _theme_day: false,
             _ret: 0,
             _camo: 0,
@@ -125,6 +124,8 @@ class Index extends React.PureComponent {
             _know_the_settings: false,
             _has_played_index_music_counter: 0,
         };
+        this.pathname = "";
+        this._page_component = null;
     };
 
     componentWillMount() {
@@ -211,7 +212,6 @@ class Index extends React.PureComponent {
 
     _get_page_component(name, settings, load_with = ""){
 
-        settings = JSON.stringify(settings);
         switch (name) {
             case "home":
                 return <Home settings={settings} />;
@@ -229,7 +229,7 @@ class Index extends React.PureComponent {
 
     _trigger_sound = (category, pack, name, volume, global) => {
 
-        import("../utils/sound-api").then((sound_api) => {
+        JSLoader(import("../utils/sound-api")).then((sound_api) => {
 
             sound_api.play_sound(category, pack, name, volume, global);
         });
@@ -237,7 +237,7 @@ class Index extends React.PureComponent {
 
     _stop_sound = () => {
 
-        import("../utils/sound-api").then((sound_api) => {
+        JSLoader(import("../utils/sound-api")).then((sound_api) => {
 
             sound_api.stop_sound();
         });
@@ -346,7 +346,6 @@ class Index extends React.PureComponent {
             return Boolean(h < 22 && h > 6);
         }
 
-        settings = Object.assign({}, settings);
         if(!Boolean(error) && Boolean(settings.locales)) {
 
             const was_music_enabled = Boolean(this.settings._music_enabled);
@@ -363,19 +362,17 @@ class Index extends React.PureComponent {
             const _theme_day = is_day(_selected_locales_code.split("-")[1]);
 
             let force_update = Boolean(_selected_locales_code !== this.settings._selected_locales_code);
-            this.settings = Object.assign(this.settings, { _theme_day, _language, _ret, _camo, _voice_enabled, _sfx_enabled, _music_enabled, _jamy_enabled, _selected_locales_code, _know_the_settings: true, _has_played_index_music_counter: parseInt(Boolean(!this.settings._know_the_settings && _music_enabled) ? 1: this.settings._has_played_index_music_counter )});;
+            this.settings =  { _unset: false, _theme_day, _language, _ret, _camo, _voice_enabled, _sfx_enabled, _music_enabled, _jamy_enabled, _selected_locales_code, _know_the_settings: true, _has_played_index_music_counter: parseInt(Boolean(!this.settings._know_the_settings && _music_enabled) ? 1: Boolean(this.settings._has_played_index_music_counter) )};
             if(!was_the_settings_known) {
 
-                this.forceUpdate(function(){
-                    document.body.setAttribute("class", "loaded");
-                });
+                this.forceUpdate(function(){document.body.setAttribute("class", "loaded");});
                 this._set_analytics( 500);
             }else if(force_update){
                 this.forceUpdate();
             }
 
         }else {
-            setTimeout(this._update_settings, 30);
+            setTimeout(this._update_settings, 5);
         }
     };
 
@@ -456,32 +453,29 @@ class Index extends React.PureComponent {
 
     _set_new_pathname_or_redirect = (neo_pathname) => {
 
-        const { _history, _page_routes, _load_with } = this.state;
+        const { _history, _page_routes, _load_with, _did_mount } = this.state;
 
         const new_pathname = String(neo_pathname || _history.location.pathname);
-        const old_pathname = String(this.state.pathname);
+        const old_pathname = String(this.pathname);
 
         if(new_pathname === "/index.html") {
 
             _history.push("/");
-        }else if(new_pathname !== old_pathname) {
+        }else if(new_pathname !== old_pathname || Boolean(new_pathname === "" && old_pathname === "")) {
 
             // Set pathname
             this._set_meta_title(new_pathname);
             this._should_play_music_pathname(new_pathname);
 
-            let _page_component = this.state._page_component;
             for(let i = 0; i < _page_routes.length; i++) {
                 const page_route = _page_routes[i];
                 if(new_pathname.match(page_route.page_regex)){
-                    _page_component = this._get_page_component(page_route.page_name, this.settings, _load_with);
+                    this._page_component = this._get_page_component(page_route.page_name, JSON.stringify(this.settings), _load_with);
                 }
             }
 
-            this.setState({pathname: new_pathname, _page_component}, () => {
-
-                this.forceUpdate();
-            });
+            this.pathname = new_pathname;
+            this.forceUpdate();
         }
     };
 
@@ -592,7 +586,7 @@ class Index extends React.PureComponent {
 
     render() {
 
-        const { pathname, classes, _page_component} = this.state;
+        const { classes } = this.state;
         const { _snackbar_open, _snackbar_message, _snackbar_auto_hide_duration } = this.state;
         const {  _is_share_dialog_open } = this.state;
         const { _know_if_logged, _loaded_progress_percent, _jamy_state_of_mind } = this.state;
@@ -618,7 +612,7 @@ class Index extends React.PureComponent {
                         loaded_progress_percent={_loaded_progress_percent}
                         know_if_logged={_know_if_logged}
                         know_the_settings={_know_the_settings}
-                        pathname={pathname}
+                        pathname={this.pathname}
                         music_enabled={_music_enabled}
                         jamy_enabled={_jamy_enabled}
                         jamy_state_of_mind={_jamy_state_of_mind}/>
@@ -627,7 +621,7 @@ class Index extends React.PureComponent {
                         language={_language}/>
                     <Toolbar />
                     <main className={classes.content}>
-                        {_know_the_settings && _page_component}
+                        {_know_the_settings && this._page_component}
                     </main>
                     <Snackbar
                         className={classes.snackbar}

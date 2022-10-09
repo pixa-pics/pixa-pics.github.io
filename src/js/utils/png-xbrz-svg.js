@@ -1,4 +1,5 @@
 import pool from "../utils/worker-pool";
+import JSLoader from "./JSLoader";
 
 const base64png_to_xbrz_svg = (base64png, callback_function_for_image, callback_function_for_svg, pal= [], using = "xbrz", optimize_render_size = false, download_svg = false) => {
 
@@ -19,7 +20,7 @@ const base64png_to_xbrz_svg = (base64png, callback_function_for_image, callback_
 
             if(download_svg) {
 
-                import("../utils/image_tracer").then(({image_tracer}) => {
+                JSLoader(import("../utils/image_tracer")).then(({image_tracer}) => {
 
                     image_tracer(image_data, {
 
@@ -69,7 +70,7 @@ const base64png_to_xbrz_svg = (base64png, callback_function_for_image, callback_
                         image_data = null;
                         if(optimize_render_size) {
 
-                            import("svgo/dist/svgo.browser").then(({optimize}) => {
+                            JSLoader(import("svgo/dist/svgo.browser")).then(({optimize}) => {
 
                                 svg_source = optimize(svg_source, {
                                     // optional but recommended field
@@ -98,7 +99,7 @@ const base64png_to_xbrz_svg = (base64png, callback_function_for_image, callback_
 
         if(using === "omniscale") {
 
-            import("../utils/omniscale").then(({omniscale}) => {
+            JSLoader(import("../utils/omniscale")).then(({omniscale}) => {
 
                 const first_scale_size = 8;
 
@@ -117,7 +118,7 @@ const base64png_to_xbrz_svg = (base64png, callback_function_for_image, callback_
 
                     if(optimize_render_size) {
 
-                        import("../utils/png_quant").then(({png_quant}) => {
+                        JSLoader(import("../utils/png_quant")).then(({png_quant}) => {
 
                             png_quant(base64_out, 70, 80, 5, pool).then((base64_out_second) => {
 
@@ -135,7 +136,7 @@ const base64png_to_xbrz_svg = (base64png, callback_function_for_image, callback_
 
         }else if(using === "hqnx") {
 
-            import("../utils/hqnx").then(({hqnx}) => {
+            JSLoader(import("../utils/hqnx")).then(({hqnx}) => {
 
                 const first_scale_size = 4;
 
@@ -154,7 +155,7 @@ const base64png_to_xbrz_svg = (base64png, callback_function_for_image, callback_
 
                     if(optimize_render_size) {
 
-                        import("../utils/png_quant").then(({png_quant}) => {
+                        JSLoader(import("../utils/png_quant")).then(({png_quant}) => {
 
                             png_quant(base64_out, 70, 80, 5, pool).then((base64_out_second) => {
 
@@ -172,7 +173,7 @@ const base64png_to_xbrz_svg = (base64png, callback_function_for_image, callback_
 
         }else if(using === "epx") {
 
-            import("../utils/EPX").then(({epx}) => {
+            JSLoader(import("../utils/EPX")).then(({epx}) => {
 
                 const first_scale_size = 4;
 
@@ -191,7 +192,7 @@ const base64png_to_xbrz_svg = (base64png, callback_function_for_image, callback_
 
                     if(optimize_render_size) {
 
-                        import("../utils/png_quant").then(({png_quant}) => {
+                        JSLoader(import("../utils/png_quant")).then(({png_quant}) => {
 
                             png_quant(base64_out, 70, 80, 5, pool).then((base64_out_second) => {
 
@@ -209,7 +210,7 @@ const base64png_to_xbrz_svg = (base64png, callback_function_for_image, callback_
 
         }else {
 
-            import("../utils/xBRZ").then(({xbrz}) => {
+            JSLoader(import("../utils/xBRZ")).then(({xbrz}) => {
 
                 const first_scale_size = 6;
                 xbrz(image_data, first_scale_size, pool).then((second_image_data) => {
@@ -227,7 +228,7 @@ const base64png_to_xbrz_svg = (base64png, callback_function_for_image, callback_
 
                     if(optimize_render_size) {
 
-                        import("../utils/png_quant").then(({png_quant}) => {
+                        JSLoader(import("../utils/png_quant")).then(({png_quant}) => {
 
                             png_quant(base64_out, 70, 80, 5, pool).then((base64_out_second) => {
 

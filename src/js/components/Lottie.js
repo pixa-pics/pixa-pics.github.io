@@ -1,4 +1,5 @@
 import React from "react";
+import JSLoader from "../utils/JSLoader";
 import { withStyles } from "@material-ui/core";
 const styles = theme => ({
     player: {
@@ -26,7 +27,7 @@ class Lottie extends React.PureComponent {
 
         const {loop, autoplay, path, hover, id} = this.state;
 
-        import("lottie-web/build/player/lottie_svg").then((lottie) => {
+        JSLoader(import("lottie-web/build/player/lottie_svg")).then((lottie) => {
             lottie.loadAnimation({
                 container: comp,
                 loop: loop,
@@ -39,7 +40,7 @@ class Lottie extends React.PureComponent {
 
     componentWillUnmount() {
 
-        import("lottie-web/build/player/lottie_svg").then((lottie) => {
+        JSLoader(import("lottie-web/build/player/lottie_svg")).then((lottie) => {
 
             lottie.destroy(this.state.id);
         });

@@ -25,7 +25,7 @@ api.init().then(function (response){
 });
 
 let element = document.getElementById("app");
-if(element === null) {
+if(!Boolean(element)) {
 
     element = document.createElement("div");
     element.setAttribute("id", "app");
