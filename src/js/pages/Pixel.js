@@ -488,10 +488,9 @@ class Pixel extends React.PureComponent {
             _last_filters_hash: "",
             _filters_preview_progression: "0",
             _toolbox_container_ref: null,
-            settings: props.settings,
             _files_waiting_download: [],
             _time_ago_initiated: false,
-            ...JSON.parse(props.settings)
+            _settings: JSON.parse(props.settings)
         };
     };
 
@@ -536,19 +535,14 @@ class Pixel extends React.PureComponent {
 
         if(new_props.load_with !== this.state.load_with) {
 
-            this.setState({load_with: ""+new_props.load_with}, ()  => {
+            this.setState({load_with: ""+new_props.load_with, _settings: JSON.parse(new_props.settings)}, ()  => {
 
                 this._try_load_with_payload(""+new_props.load_with);
             });
         }
 
-        if(new_props.settings !== this.state.settings) {
-
-            this.setState({settings: new_props.settings, ...JSON.parse(new_props.settings)}, ()  => {
-
-                this.forceUpdate();
-            });
-        }
+        this.setState(new_props);
+        
     }
 
     _try_load_with_payload = (load_with) => {
@@ -2181,6 +2175,7 @@ class Pixel extends React.PureComponent {
             _perspective,
             _files_waiting_download,
             _time_ago_initiated,
+            _settings
         } = this.state;
 
         let x = _x === -1 ? "out": _x + 1;
@@ -2650,6 +2645,7 @@ class Pixel extends React.PureComponent {
 
 
                 <PixelDialogCreate keepMounted={true}
+                                   theme_day={_settings._theme_day}
                                    open={_is_pixel_dialog_create_open}
                                    pixel_arts={_time_ago_initiated ? _attachment_previews: {}}
                                    size={_import_size}

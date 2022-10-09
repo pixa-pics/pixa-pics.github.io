@@ -14,11 +14,9 @@ class Lottie extends React.PureComponent {
         this.state = {
             classes: props.classes,
             style: props.style,
-            renderer: props.renderer || "svg",
             loop: props.loop || false,
             hover: props.hover || false,
             autoplay: props.autoplay || false,
-            useWebWorker: props.useWebWorker || false,
             path: props.path  || props.src || "",
             id: props.id || Date.now().toString(16),
         };
@@ -26,24 +24,22 @@ class Lottie extends React.PureComponent {
 
     _set_ref = (comp) => {
 
-        const {loop, autoplay, useWebWorker, path, hover, renderer, id} = this.state;
+        const {loop, autoplay, path, hover, id} = this.state;
 
-        import("lottie-web/build/player/lottie_light").then((lottie) => {
+        import("lottie-web/build/player/lottie_svg").then((lottie) => {
             lottie.loadAnimation({
                 container: comp,
                 loop: loop,
                 autoplay: autoplay,
-                useWebWorker: useWebWorker,
                 path: path,
-                hover: hover,
-                renderer: renderer,
+                hover: hover
             });
         });
     }
 
     componentWillUnmount() {
 
-        import("lottie-web/build/player/lottie_light").then((lottie) => {
+        import("lottie-web/build/player/lottie_svg").then((lottie) => {
 
             lottie.destroy(this.state.id);
         });

@@ -90,7 +90,6 @@ module.exports = {
                         comments: false,
                         beautify: false,
                         webkit: true,
-                        ast: true,
                         code: true
                     },
                 }
@@ -148,7 +147,7 @@ module.exports = {
                                     forceAllTransforms: true,
                                     shippedProposals: true,
                                     bugfixes: true,
-                                    useBuiltIns: "usage"
+                                    useBuiltIns: "entry"
                                 }],
                                 'stage-0'
                             ]

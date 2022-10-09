@@ -2,11 +2,11 @@ import React from "react";
 import { withStyles } from "@material-ui/core";
 
 import actions from "../actions/utils";
+import Lottie from "../components/Lottie";
 
 const styles = theme => ({
     backgroundImage: {
         minHeight: "calc(100vh - 64px)",
-        backgroundImage: "url(/src/images/Error.svg)",
         position: "relative",
         backgroundSize: "contain",
         backgroundPosition: "center center",
@@ -52,6 +52,12 @@ class Unknown extends React.Component {
         return (
             <div className={classes.root}>
                 <div className={classes.backgroundImage}>
+                    <Lottie
+                        id={"brainplode"}
+                        loop={true}
+                        autoplay={true}
+                        src="/src/js/lottie/404.json"
+                        style={{ height: '100%', width: '100%' }}/>
                 </div>
             </div>
         );

@@ -27,7 +27,7 @@ import JamySuspicious from "../icons/JamySuspicious";
 
 import api from "../utils/api";
 import { update_meta_title } from "../utils/meta-tags";
-import { PAGE_ROUTES } from "../utils/constants";
+import {PAGE_ROUTES, UTC_OFFSET_PER_COUNTRIES} from "../utils/constants";
 
 const styles = theme => ({
     root: {
@@ -113,6 +113,7 @@ class Index extends React.PureComponent {
         };
         this.settings = {
             _language: null,
+            _theme_day: false,
             _ret: 0,
             _camo: 0,
             _sfx_enabled: true,
@@ -124,7 +125,6 @@ class Index extends React.PureComponent {
             _know_the_settings: false,
             _has_played_index_music_counter: 0,
         };
-        this.all_settings = JSON.stringify({});
     };
 
     componentWillMount() {
@@ -211,6 +211,7 @@ class Index extends React.PureComponent {
 
     _get_page_component(name, settings, load_with = ""){
 
+        settings = JSON.stringify(settings);
         switch (name) {
             case "home":
                 return <Home settings={settings} />;
@@ -329,6 +330,22 @@ class Index extends React.PureComponent {
 
     _process_settings_query_result = (error, settings) => {
 
+        function get_now_hours24_with_locale(lc) {
+
+            const offset = UTC_OFFSET_PER_COUNTRIES[lc];
+            const d = new Date(Date.now());
+            const utc = d.getTime() - (d.getTimezoneOffset() * 60 * 1000);
+            const d2 = new Date(utc + (60 * 60 * 1000 * offset));
+
+            return d2.getHours();
+        }
+
+        function is_day(lc) {
+
+            const h = get_now_hours24_with_locale(lc);
+            return Boolean(h < 22 && h > 6);
+        }
+
         settings = Object.assign({}, settings);
         if(!Boolean(error) && Boolean(settings.locales)) {
 
@@ -339,23 +356,21 @@ class Index extends React.PureComponent {
             const _music_enabled = Boolean(typeof settings.music_enabled !== "undefined" ? settings.music_enabled: false);
             const _voice_enabled = Boolean(typeof settings.voice_enabled !== "undefined" ? settings.voice_enabled: false);
             const _jamy_enabled = Boolean(typeof settings.jamy_enabled !== "undefined" ? settings.jamy_enabled: true);
-            const _selected_locales_code =  String(typeof settings.locales !== "undefined" ? settings.locales: "en-US");
-            const _language = String(_selected_locales_code.split("-")[0]);
+            const _selected_locales_code =  typeof settings.locales !== "undefined" ? settings.locales: "en-US";
+            const _language = _selected_locales_code.split("-")[0];
             const _ret = parseInt(typeof settings.ret !== "undefined" ? settings.ret: 0);
             const _camo = parseInt(typeof settings.camo !== "undefined" ? settings.camo: 0);
+            const _theme_day = is_day(_selected_locales_code.split("-")[1]);
 
-
-            this.settings = Object.assign({}, { _language, _ret, _camo, _voice_enabled, _sfx_enabled, _music_enabled, _jamy_enabled, _selected_locales_code, _know_the_settings: true, _has_played_index_music_counter: parseInt(Boolean(!this.settings._know_the_settings && _music_enabled) ? 1: this.settings._has_played_index_music_counter )});;
-            this.all_settings = JSON.stringify({_ret, _camo, _sfx_enabled, _music_enabled, _voice_enabled, _jamy_enabled, _selected_locales_code, _language, _know_the_settings: true});
-
+            let force_update = Boolean(_selected_locales_code !== this.settings._selected_locales_code);
+            this.settings = Object.assign(this.settings, { _theme_day, _language, _ret, _camo, _voice_enabled, _sfx_enabled, _music_enabled, _jamy_enabled, _selected_locales_code, _know_the_settings: true, _has_played_index_music_counter: parseInt(Boolean(!this.settings._know_the_settings && _music_enabled) ? 1: this.settings._has_played_index_music_counter )});;
             if(!was_the_settings_known) {
 
                 this.forceUpdate(function(){
                     document.body.setAttribute("class", "loaded");
                 });
                 this._set_analytics( 500);
-            }else if(_selected_locales_code !== this.settings._selected_locales_code) {
-
+            }else if(force_update){
                 this.forceUpdate();
             }
 
@@ -439,7 +454,7 @@ class Index extends React.PureComponent {
         api.get_settings(this._process_settings_query_result);
     }
 
-    _set_new_pathname_or_redirect (neo_pathname) {
+    _set_new_pathname_or_redirect = (neo_pathname) => {
 
         const { _history, _page_routes, _load_with } = this.state;
 
@@ -459,7 +474,7 @@ class Index extends React.PureComponent {
             for(let i = 0; i < _page_routes.length; i++) {
                 const page_route = _page_routes[i];
                 if(new_pathname.match(page_route.page_regex)){
-                    _page_component = this._get_page_component(page_route.page_name, this.all_settings, _load_with);
+                    _page_component = this._get_page_component(page_route.page_name, this.settings, _load_with);
                 }
             }
 
@@ -468,7 +483,7 @@ class Index extends React.PureComponent {
                 this.forceUpdate();
             });
         }
-    }
+    };
 
     _should_play_music_pathname = (pathname = "/") => {
 

@@ -45,10 +45,23 @@ const styles = theme => ({
     rightImagesContainer: {
         float: "right",
     },
-    uploadButtonDesktop: {
+    uploadButtonDesktopPaperplane: {
         background: "#adafd9",
         "&:hover": {
-            background: "#8992bd",
+            background: "#a5b2d4",
+        },
+        boxShadow: "none",
+        color: "#000000",
+        fontWeight: "bold",
+        fontSize: "2.5em",
+        "& .MuiSvgIcon-root": {
+            marginRight: "1em",
+        },
+    },
+    uploadButtonDesktopUfo: {
+        background: "#010218",
+        "&:hover": {
+            background: "#000000",
         },
         boxShadow: "none",
         color: "#fff",
@@ -77,6 +90,7 @@ class PixelDialogCreate extends React.PureComponent {
             open: props.open,
             size: props.size,
             pixel_arts: props.pixel_arts,
+            theme_day: props.theme_day,
             _paperplane: null,
             _painting: null,
         };
@@ -92,6 +106,12 @@ class PixelDialogCreate extends React.PureComponent {
                 loop={true}
                 autoplay={true}
                 src="/src/js/lottie/paperplane.json"
+                style={{ height: '100%', width: '100%', position: "absolute", top: 0, left: 0, zIndex: 0}}/>,
+            _ufo: <Lottie
+                id={"ufo"}
+                loop={true}
+                autoplay={true}
+                src="/src/js/lottie/ufo.json"
                 style={{ height: '100%', width: '100%', position: "absolute", top: 0, left: 0, zIndex: 0}}/>,
             _painting: <Lottie
                 id={"painting"}
@@ -144,9 +164,13 @@ class PixelDialogCreate extends React.PureComponent {
             open,
             keepMounted,
             pixel_arts,
+            theme_day,
             _paperplane,
+            _ufo,
             _painting,
         } = this.state;
+
+        const _is_ufo = !theme_day;
 
         return (
             <Dialog open={open}
@@ -171,8 +195,8 @@ class PixelDialogCreate extends React.PureComponent {
                                 htmlFor="button-file-dialog-primary"
                                 fullWidth variant="contained"
                                 color="secondary"
-                                className={classes.uploadButtonDesktop}
-                                autoFocus onClick={this.props.on_upload}>{_paperplane} <span style={{zIndex: 1, pointerEvents: "none"}}>Let's upload!</span></Button>
+                                className={_is_ufo ? classes.uploadButtonDesktopUfo: classes.uploadButtonDesktopPaperplane}
+                                autoFocus onClick={this.props.on_upload}>{_is_ufo ? _ufo: _paperplane} <span style={{zIndex: 1, pointerEvents: "none"}}>Let's upload!</span></Button>
                         </div>
                         <div className={classes.rightImagesContainer}>
                             <div className={classes.rightImagesContainer} style={{padding: "8px 24px", position: "relative", overflow: "hidden", boxSizing: "border-box", width: "100%"}}>
