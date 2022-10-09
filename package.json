@@ -5,7 +5,7 @@
   "main": "/index.html",
   "dependencies": {
     "@jsquash/oxipng": "^1.0.0",
-    "@lottiefiles/react-lottie-player": "~3.4.7",
+    "@lottiefiles/jlottie": "~1.2.1",
     "@material-ui/core": "~4.12.3",
     "@material-ui/icons": "^4.11.2",
     "@material-ui/lab": "~4.0.0-alpha.57",
@@ -18,6 +18,7 @@
     "history": "^5.2.0",
     "howler": "^2.2.3",
     "javascript-time-ago": "~2.5.6",
+    "lottie-web": "~5.9.6",
     "pouchdb-adapter-idb": "^7.3.0",
     "pouchdb-adapter-memory": "^7.3.0",
     "pouchdb-core": "^7.3.0",

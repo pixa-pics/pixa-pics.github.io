@@ -105,10 +105,6 @@ const overrides = {
                     }
                 }
             },
-            ".lf-player-container":{
-                display: "inline-flex",
-                verticalAlign: "inherit",
-            },
             ".emoji-100": {
                 verticalAlign: "inherit",
                 height: "1em",

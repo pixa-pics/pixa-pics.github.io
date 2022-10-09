@@ -1,7 +1,7 @@
 import React from "react";
 import {withStyles} from "@material-ui/core";
 
-
+import Lottie from "../components/Lottie";
 import { t } from "../utils/t";
 
 import {AppBar, Toolbar, Divider, SwipeableDrawer, ListItemIcon, ListItemText, IconButton, MenuItem, Menu, Tooltip} from "@material-ui/core";
@@ -212,18 +212,15 @@ class AppToolbar extends React.PureComponent {
 
     componentDidMount() {
 
-        import("@lottiefiles/react-lottie-player").then(({Player}) => {
-
-            this.setState({
-                _explosion: <Player
-                    id={"explosion"}
-                    loop={true}
-                    autoplay={true}
-                    onClick={this._exit_to_app}
-                    src="/src/js/notoemoji/lottie/1f4a5.json"
-                    style={{ height: '150px', width: '150px' }}/>
-            })
-        });
+        this.setState({
+            _explosion: <Lottie
+                id={"explosion"}
+                loop={true}
+                autoplay={true}
+                onClick={this._exit_to_app}
+                src="/src/js/notoemoji/lottie/1f4a5.json"
+                style={{ height: '150px', width: '150px' }}/>
+        })
     }
 
     componentWillReceiveProps(new_props) {

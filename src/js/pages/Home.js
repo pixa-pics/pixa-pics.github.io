@@ -3,6 +3,8 @@ import { withStyles } from "@material-ui/core";
 
 import { HISTORY, UTC_OFFSET_PER_COUNTRIES } from "../utils/constants";
 
+import Lottie from "../components/Lottie";
+
 import {Button, Grow} from "@material-ui/core";
 import actions from "../actions/utils";
 
@@ -300,32 +302,29 @@ class Home extends React.PureComponent {
             actions.trigger_loading_update(100);
         }, 300);
 
-        import("@lottiefiles/react-lottie-player").then(({Player}) => {
+        this.setState({
+            _brainplode: <Lottie
+                id={"brainplode"}
+                loop={true}
+                autoplay={true}
+                src="/src/js/notoemoji/lottie/1f92f.json"
+                style={{ height: '56px', width: '56px' }}/>,
+            _diamond: <Lottie
+                id={"diamond"}
+                loop={true}
+                autoplay={true}
+                src="/src/js/notoemoji/lottie/1f48e.json"
+                style={{ height: '56px', width: '56px' }}/>,
+            _eyes: <Lottie
+                id={"eyes"}
+                loop={true}
+                autoplay={true}
+                src="/src/js/notoemoji/lottie/1f440.json"
+                style={{ height: '56px', width: '56px' }}/>,
+        }, () => {
 
-            this.setState({
-                _brainplode: <Player
-                    id={"brainplode"}
-                    loop={true}
-                    autoplay={true}
-                    src="/src/js/notoemoji/lottie/1f92f.json"
-                    style={{ height: '56px', width: '56px' }}/>,
-                _diamond: <Player
-                    id={"diamond"}
-                    loop={true}
-                    autoplay={true}
-                    src="/src/js/notoemoji/lottie/1f48e.json"
-                    style={{ height: '56px', width: '56px' }}/>,
-                _eyes: <Player
-                    id={"eyes"}
-                    loop={true}
-                    autoplay={true}
-                    src="/src/js/notoemoji/lottie/1f440.json"
-                    style={{ height: '56px', width: '56px' }}/>,
-            }, () => {
-
-                this.forceUpdate();
-            })
-        });
+            this.forceUpdate();
+        })
     }
 
     componentDidMount() {

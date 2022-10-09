@@ -1,6 +1,7 @@
 import React from "react";
 import { withStyles } from "@material-ui/core/styles"
 
+import Lottie from "../components/Lottie";
 import {Dialog, Button, DialogContent, DialogActions, Typography, Slider, ImageList, ImageListItem, ImageListItemBar, IconButton} from "@material-ui/core";
 
 import DeleteIcon from "@material-ui/icons/Delete";
@@ -45,9 +46,9 @@ const styles = theme => ({
         float: "right",
     },
     uploadButtonDesktop: {
-        background: "#928dbf",
+        background: "#adafd9",
         "&:hover": {
-            background: "#7872ac",
+            background: "#8992bd",
         },
         boxShadow: "none",
         color: "#fff",
@@ -77,6 +78,7 @@ class PixelDialogCreate extends React.PureComponent {
             size: props.size,
             pixel_arts: props.pixel_arts,
             _paperplane: null,
+            _painting: null,
         };
     };
 
@@ -84,22 +86,23 @@ class PixelDialogCreate extends React.PureComponent {
 
         actions.trigger_loading_update(100);
 
-        import("@lottiefiles/react-lottie-player").then(({Player}) => {
+        this.setState({
+            _paperplane: <Lottie
+                id={"paperplane"}
+                loop={true}
+                autoplay={true}
+                src="/src/js/lottie/paperplane.json"
+                style={{ height: '100%', width: '100%', position: "absolute", top: 0, left: 0, zIndex: 0}}/>,
+            _painting: <Lottie
+                id={"painting"}
+                loop={true}
+                autoplay={true}
+                src="/src/js/lottie/painting.json"
+                style={{width: "100%", height: "140%", cursor: "pointer"}}/>
+        }, () => {
 
-            this.setState({
-                _paperplane: <Player
-                    id={"paperplane"}
-                    renderer={"svg"}
-                    speed={0.75}
-                    loop={true}
-                    hover={true}
-                    src="/src/js/lottie/paperplane.json"
-                    style={{ height: '100%', width: '100%', position: "absolute", top: 0, left: 0, zIndex: 0}}/>
-            }, () => {
-
-                this.forceUpdate();
-            })
-        });
+            this.forceUpdate();
+        })
     }
 
     componentWillReceiveProps(new_props) {
@@ -142,6 +145,7 @@ class PixelDialogCreate extends React.PureComponent {
             keepMounted,
             pixel_arts,
             _paperplane,
+            _painting,
         } = this.state;
 
         return (
@@ -202,13 +206,8 @@ class PixelDialogCreate extends React.PureComponent {
                             <Typography component={"h2"} variant={"h6"} style={{marginTop: 16, marginLeft: 24}}>Unsaved minima</Typography>
                             <div style={{padding: "8px 24px", position: "relative", display: "flex", flexWrap: "wrap", justifyContent: "space-around", overflow: "hidden", boxSizing: "border-box", width: "100%"}}>
                                 <ImageList rowHeight={288} cols={2.0} style={{flexWrap: "nowrap", contain: "paint style layout", contains: "strict", maxWidth: "min(576px, (100vw - 96px))"}}>
-                                    {Boolean(Object.keys(pixel_arts).length === 0) && <ImageListItem style={{maxWidth: "100%", display: "inline-block", width: "auto", userSelect: "none"}}
-                                                    className={"pixelated"} key={"new"}>
-                                        <img
-                                            src={"/src/images/laboratory.svg"}
-                                            alt={"Create new"}
-                                            style={{width: "100%", height: "auto", cursor: "pointer"}}
-                                            onClick={this.props.onClose}/>
+                                    {Boolean(Object.keys(pixel_arts).length === 0) && <ImageListItem onClick={this.props.onClose} style={{maxWidth: "100%", display: "inline-block", width: "auto", userSelect: "none"}} className={"pixelated"} key={"new"}>
+                                        {_painting}
                                         <ImageListItemBar
                                             title={"Create new painting"}
                                         />
