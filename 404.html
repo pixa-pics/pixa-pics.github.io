@@ -213,6 +213,8 @@
                                 });
                                 if(sw.state === "activated") { _LET_FIRE_IT(true).then(function(){resolve();}); }
                             }else { _LET_FIRE_IT(false).then(function(){resolve();}); }
+                        }).catch(function(){
+                            _LET_FIRE_IT(false).then(function(){resolve();});
                         });
                     }else { _LET_FIRE_IT(false).then(function(){resolve();}); }
                 });
