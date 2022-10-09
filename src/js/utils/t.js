@@ -92,6 +92,9 @@ const l = async(_l = null, callback_function = () => {}, time_ago = false) => {
 
             callback_function(true);
         }
+    }).catch(function(){
+
+        callback_function(false);
     });
 };
 

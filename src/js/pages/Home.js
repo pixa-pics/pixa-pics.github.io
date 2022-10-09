@@ -44,6 +44,16 @@ const styles = theme => ({
         filter: "drop-shadow(0px 0px 3px #000080a8)",
         webkitFilter: "drop-shadow(0px 0px 3px #000080a8)",
     },
+    revelantTextDesktop: {
+        fontWeight: "bold",
+        display: "inline !important",
+        color: "#ffffffff",
+        filter: "drop-shadow(0px 0px 3px #000080a8)",
+        webkitFilter: "drop-shadow(0px 0px 3px #000080a8)",
+        [theme.breakpoints.down("sm")]: {
+            display: "none",
+        },
+    },
     homeCTAuseit: {
         imageRendering: "initial",
         boxShadow: "none !important",
@@ -539,25 +549,19 @@ class Home extends React.PureComponent {
                             <span className={classes.revelantText} style={{color: THEME_DAY && !IS_EVENING ? "#ffffff": "#008eff", backgroundColor: THEME_DAY && !IS_EVENING ? "black": "transparent"}}>From {_eyes} PICs into {_brainplode} PIXELARTs and {_diamond} NFTs.</span>
                         </h1>
                         <h2 className={classes.titleh2} style={{color: THEME_DAY && !IS_EVENING ? "#000639": "#fff"}}>
-                            <span className={classes.revelantText} style={{color: THEME_DAY && !IS_EVENING ? "#fff": "#008eff", backgroundColor: THEME_DAY && !IS_EVENING ? "black": "transparent"}}>Get the MAXIMA of PRIVACY fashionably for real and for the ONLINE-SELF...</span>
+                            <span className={classes.revelantTextDesktop} style={{color: THEME_DAY && !IS_EVENING ? "#fff": "#008eff", backgroundColor: THEME_DAY && !IS_EVENING ? "black": "transparent"}}>Get the MAXIMA of PRIVACY fashionably for real and for the ONLINE-SELF...</span>
                             <br/>
                             <span>Use effects immediately in the laboratory? Yes or No?</span>
                         </h2>
                         <h2 className={classes.titleh2} style={{color: THEME_DAY && !IS_EVENING ? "#000639": "#fff"}}>
-                            <span className={classes.stepPoints} style={{color: THEME_DAY && !IS_EVENING ? "#000639": "#008eff"}}>2 >> </span>
-                            <span className={classes.revelantText} style={{color: THEME_DAY && !IS_EVENING ? "#fff": "#008eff", backgroundColor: THEME_DAY && !IS_EVENING ? "black": "transparent"}}> WHILE DRAWING/EDITING</span>
                             <JacketEmojiSvg alt="scientist-jacket-tweemoji" className="emoji-150"/>
+                            <span className={classes.revelantText} style={{color: THEME_DAY && !IS_EVENING ? "#fff": "#008eff", backgroundColor: THEME_DAY && !IS_EVENING ? "black": "transparent"}}> WHILE DRAWING/EDITING</span>
                             <span className={classes.revelantText} style={{color: THEME_DAY && !IS_EVENING ? "#fff": "#008eff", backgroundColor: THEME_DAY && !IS_EVENING ? "black": "transparent"}}> you can use 55+ tools for pixel art within 7 panels</span>
-                            <span> such as : layer's option, filters, selections, shapes, and effects.</span>
                         </h2>
                         <h2 className={classes.titleh2} style={{color: THEME_DAY && !IS_EVENING ? "#000639": "#fff"}}>
-                            <span className={classes.stepPoints} style={{color: THEME_DAY && !IS_EVENING ? "#000639": "#008eff"}}>3 >>></span>
-                            <span className={classes.revelantText} style={{color: THEME_DAY && !IS_EVENING ? "#fff": "#008eff", backgroundColor: THEME_DAY && !IS_EVENING ? "black": "transparent"}}> RENDER UNLIMITED PIXEL ART </span>
                             <GlassesEmojiSvg alt="scientist-jacket-tweemoji" style={{verticalAlign: "middle"}} className="emoji-150"/>
+                            <span className={classes.revelantText} style={{color: THEME_DAY && !IS_EVENING ? "#fff": "#008eff", backgroundColor: THEME_DAY && !IS_EVENING ? "black": "transparent"}}> RENDER UNLIMITED PIXEL ART </span>
                             <span className={classes.revelantText} style={{color: THEME_DAY && !IS_EVENING ? "#fff": "#008eff", backgroundColor: THEME_DAY && !IS_EVENING ? "black": "transparent"}}>in 4K Ultra HD images</span>
-                            <span> or in </span>
-                            <span>humanized ∞ %<sup> Scalable</sup> shapes </span>
-                            <span> of vectors using its PIXEL-MATRIX to get it majestically in SVG.</span>
                         </h2>
                         <Button key={_join_now_button_update} className={classes.homeCTAuseit} variant={"contained"} size={"large"} color="primary" onClick={this._go_to_editor}>
                             <ShufflingSpanText placeholder={_join_now_button_update % 5 ? "START " : "JOIN LAB "} text={_join_now_button_update % 5 ? "START " : "JOIN LAB "} animation_delay_ms={_join_now_button_update === 0 ? 3000: 0} animation_duration_ms={1000} />
@@ -566,7 +570,7 @@ class Home extends React.PureComponent {
                         </Button>
                         <p className={classes.subtitleButton}><span><CrownEmojiSvg alt="king-crown-tweemoji" className="emoji"/> Free For Everyone <LightingEmojiSvg alt="sky-lightning-tweemoji" className="emoji"/> Forever Open-Source</span></p>
                         <Button className={classes.homeCTAsendit} variant={"contained"} size={"large"} color="primary" onClick={(event) => {this._handle_speed_dial_action(event, "share")}}>
-                            <ShufflingSpanText pre="[ " app="! ]" placeholder={_join_now_button_update % 3 ? "SEND IT" : "SHARE NOW"} text={_join_now_button_update % 3 ? "SEND IT" : "SHARE NOW"} animation_delay_ms={_join_now_button_update === 0 ? 3000: 750} animation_duration_ms={750} />
+                            <ShufflingSpanText placeholder={_join_now_button_update % 3 ? "SEND IT" : "SHARE NOW"} text={_join_now_button_update % 3 ? "SEND IT" : "SHARE NOW"} animation_delay_ms={_join_now_button_update === 0 ? 3000: 750} animation_duration_ms={750} />
                         </Button>
                     </div>
                 </div>
