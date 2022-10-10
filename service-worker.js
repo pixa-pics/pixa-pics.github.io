@@ -59,15 +59,13 @@ self.addEventListener("install", function(event) {
             "/"
         ])
     });
-    useful_cache.then(function (cache) {
+    event.waitUntil(useful_cache.then(function (cache) {
         return cache.addAll([
             "/src/images/favicon.ico",
             "/src/images/manifest/logo-white.png",
             "/src/fonts/jura/index.css",
         ]);
-    });
-
-    return true;
+    }));
 });
 
 self.addEventListener("fetch", function(event) {
