@@ -25,9 +25,9 @@ const base64abc = [
     "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m",
     "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z",
     "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "+", "/"
-];
+].join("");
 
-const base64codes = Uint8Array.of(
+const base64codes = Uint8ClampedArray.of(
     255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
     255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
     255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 62, 255, 255, 255, 63,
@@ -37,14 +37,16 @@ const base64codes = Uint8Array.of(
     255, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
     41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51
 );
+const base64codes_length = base64codes.length|0;
 
 function getBase64Code(charCode) {
     "use strict";
-    if (charCode >= base64codes.length) {
+    charCode = (charCode | 0) >>> 0;
+    if ((charCode|0) >= (base64codes_length|0)) {
         throw new Error("Unable to parse base64 string.");
     }
-    const code = base64codes[charCode];
-    if (code === 255) {
+    const code = (base64codes[charCode] | 0) >>> 0;
+    if ((code|0) == (255|0)) {
         throw new Error("Unable to parse base64 string.");
     }
     return code;
@@ -52,23 +54,25 @@ function getBase64Code(charCode) {
 
 export function bytesToBase64(bytes) {
     "use strict";
-    let result = '', i, l = bytes.length;
+    let result = '';
+    let i = 2;
+    let l = bytes.length | 0;
 
-    for (i = 2; (i|0) < (l|0); i = i+3|0) {
-        result += base64abc[bytes[i - 2 | 0] >> 2];
-        result += base64abc[((bytes[i - 2 | 0] & 0x03) << 4) | (bytes[i - 1 | 0] >> 4)];
-        result += base64abc[((bytes[i - 1 | 0] & 0x0F) << 2) | (bytes[i] >> 6)];
-        result += base64abc[bytes[i] & 0x3F];
+    for (i = 2; (i|0) < (l|0); i = (i+3|0)>>>0) {
+        result += base64abc.charAt(bytes[i - 2 | 0] >> 2);
+        result += base64abc.charAt(((bytes[i - 2 | 0] & 0x03) << 4) | (bytes[i - 1 | 0] >> 4));
+        result += base64abc.charAt(((bytes[i - 1 | 0] & 0x0F) << 2) | (bytes[i] >> 6));
+        result += base64abc.charAt(bytes[i] & 0x3F);
     }
-    if (i === l + 1) { // 1 octet yet to write
-        result += base64abc[bytes[i - 2 | 0] >> 2];
-        result += base64abc[(bytes[i - 2 | 0] & 0x03) << 4];
+    if ((i|0) == (l + 1 | 0)) { // 1 octet yet to write
+        result += base64abc.charAt(bytes[i - 2 | 0] >> 2);
+        result += base64abc.charAt((bytes[i - 2 | 0] & 0x03) << 4);
         result += "==";
     }
-    if (i === l) { // 2 octets yet to write
-        result += base64abc[bytes[i - 2 | 0] >> 2];
-        result += base64abc[((bytes[i - 2 | 0] & 0x03) << 4) | (bytes[i - 1 | 0] >> 4)];
-        result += base64abc[(bytes[i - 1 | 0] & 0x0F) << 2];
+    if ((i|0) == (l|0)) { // 2 octets yet to write
+        result += base64abc.charAt(bytes[i - 2 | 0] >> 2);
+        result += base64abc.charAt(((bytes[i - 2 | 0] & 0x03) << 4) | (bytes[i - 1 | 0] >> 4));
+        result += base64abc.charAt((bytes[i - 1 | 0] & 0x0F) << 2);
         result += "=";
     }
     return result;
@@ -87,17 +91,24 @@ export function base64ToBytes(str) {
         n = str.length,
         result = new Uint8ClampedArray(3 * (n / 4)),
         buffer;
-    for (let i = 0, j = 0; (i|0) < (n|0); i = (i+4 | 0) >>> 0, j = (j+3 | 0) >>> 0) {
+    let i = 0;
+    let j = 0;
+    for (i = 0, j = 0; (i|0) < (n|0); i = (i+4 | 0) >>> 0, j = (j+3 | 0) >>> 0) {
         buffer =
             getBase64Code(str.charCodeAt(i)) << 18 |
             getBase64Code(str.charCodeAt(i + 1 | 0)) << 12 |
             getBase64Code(str.charCodeAt(i + 2 | 0)) << 6 |
             getBase64Code(str.charCodeAt(i + 3 | 0));
-        result[j] = buffer >> 16;
+        result[j] = buffer >> 16 & 0xFF;
         result[j + 1 | 0] = (buffer >> 8) & 0xFF;
         result[j + 2 | 0] = buffer & 0xFF;
     }
-    return result.slice(0, result.length - missingOctets);
+    if((missingOctets|0) == (0|0)){
+        return result;
+    }else {
+
+        return result.slice(0, result.length - missingOctets);
+    }
 }
 
 export function base64encode(str, encoder = new TextEncoder()) {
