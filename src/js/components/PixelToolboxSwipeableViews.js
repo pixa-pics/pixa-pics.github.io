@@ -203,6 +203,9 @@ const styles = theme => ({
         "&.filters": {
             "& .MuiListItem-root": {
                 width: 128,
+                display: "inline-flex",
+                height: "100%",
+                contain: "paint style layout",
                 margin: "8px !important",
                 padding: "0px !important",
             },
@@ -212,12 +215,12 @@ const styles = theme => ({
         "&.filters > .MuiListItem-root:hover > .MuiListItemText-root": {
             background: "linear-gradient(to top, #00000080 100%, #ffffff00)",
             opacity: "1",
-            transition: "opacity background cubic-bezier(0.4, 0, 0.2, 1) 225ms",
+            transition: "opacity, background 375ms ease-in 0ms",
         },
-        "&.filters .MuiListItemText-root": {
+        "&.filters > .MuiListItem-root > .MuiListItemText-root": {
             background: "linear-gradient(to top, #00000040 75%, #ffffff00)",
             opacity: ".75",
-            transition: "opacity background cubic-bezier(0.4, 0, 0.2, 1) 150ms",
+            transition: "opacity, background 250ms ease-out 0ms",
         },
         "& .MuiFormGroup-root": {
             flexWrap: "nowrap",
@@ -232,9 +235,11 @@ const styles = theme => ({
             width: "96px",
             padding: "8px !important",
             textAlign: "center",
-            boxSizing: "border-box",
+            boxSizing: "content-box",
+            contain: "paint style layout",
             "& .MuiListItemIcon-root": {
                 minWidth: 0,
+                contain: "paint style layout",
             },
             "& .MuiListItemText-root": {
                 "& .MuiListItemText-primary": {
@@ -263,6 +268,7 @@ const styles = theme => ({
                 textAlign: "center",
                 "& .MuiListItemIcon-root": {
                     minWidth: 0,
+                    contain: "paint style layout",
                 },
                 "& .MuiListItemText-root": {
                     "& .MuiListItemText-primary": {
@@ -272,6 +278,11 @@ const styles = theme => ({
                         display: "none",
                     },
                 }
+            },
+            "&.filters": {
+                "& .MuiListItem-root": {
+                    display: "inline-flex",
+                },
             },
         },
     },
@@ -1579,7 +1590,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
                         const bmp = filters_thumbnail.get(name) || new Object();
                         return {
-                            style: {position: "relative", minWidth: "100%" },
+                            style: {position: "relative", width: "100%", height: "100%" },
                             icon: <canvas
                                 className={"pixelated"}
                                 ref={(el) => {this._set_canvas_ref(el, bmp)}}
@@ -1593,8 +1604,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                                 flex: "1 1",
                                 bottom: 16,
                                 left: 8,
-                                width: 128,
-                                minWidth: "100%",
+                                width: "100%",
                                 right: 24,
                                 color: "white",
                                 padding: 8,

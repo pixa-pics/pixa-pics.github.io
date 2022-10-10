@@ -128,7 +128,7 @@ const styles = theme => ({
     },
     linearProgressVisible: {
         "& .MuiLinearProgress-barColorPrimary": {
-            background: "linear-gradient(90deg, #0056ce 0%, #0056ce 100%)",
+            background: "linear-gradient(90deg, #0033ff 0%, #0033ff 100%)",
             zIndex: -1,
         },
         zIndex: 1,

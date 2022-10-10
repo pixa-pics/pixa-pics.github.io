@@ -211,11 +211,16 @@ class CanvasPixels extends React.PureComponent {
 
     _notify_export_state = () => {
 
-        if(this.props.on_export_state) {
+        if(this.props.on_state_export) {
+
+            this.props.on_state_export();
+        }
+
+        if(this.props.on_state_exported) {
 
             this.export_JS_state((state) => {
 
-                this.props.on_export_state(state);
+                this.props.on_state_exported(state);
             });
         }
     };

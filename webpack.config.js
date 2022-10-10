@@ -152,10 +152,7 @@ module.exports = {
                                     forceAllTransforms: true,
                                     shippedProposals: true,
                                     bugfixes: true,
-                                    useBuiltIns: "usage",
-                                    production: {
-                                        presets: ["minify"]
-                                    }
+                                    useBuiltIns: "usage"
                                 }],
                                 'stage-0'
                             ]
@@ -182,18 +179,24 @@ module.exports = {
     plugins: process.env.NODE_ENV === "development" ? [
         new HtmlWebpackPlugin({
             template: "./index.html",
-            filename: "index.html"
+            filename: "index.html",
+            publicPath: "/client",
+            inject: true,
+            cache: false,
         }),
         new BundleAnalyzerPlugin()
     ]: [
         new BundleAnalyzerPlugin()
     ],
     devServer: {
+        devMiddleware: {
+            publicPath: "/client"
+        },
         static: {
             directory: path.join(__dirname, "/"),
         },
         client: {
-            reconnect: false,
+            reconnect: true,
         },
         hot: false,
         liveReload: false,

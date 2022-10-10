@@ -182,6 +182,7 @@ const styles = theme => ({
         contain: "layout paint size style",
     },
     drawerContainer: {
+        transform: "translateZ(0px)",
         scrollBehavior: "smooth",
         contain: "size style paint layout",
         height: "100% !important",
@@ -382,17 +383,17 @@ const styles = theme => ({
     zoomInButton: {
         position: "absolute",
         left: 16,
-        bottom: 60,
+        bottom: 104,
         [theme.breakpoints.down("md")]: {
-            bottom: 132,
+            bottom: 176,
         },
     },
     zoomOutButton: {
         position: "absolute",
         left: 16,
-        bottom: 104,
+        bottom: 60,
         [theme.breakpoints.down("md")]: {
-            bottom: 176,
+            bottom: 132,
         },
     },
     redoButton: {
@@ -648,14 +649,14 @@ class Pixel extends React.PureComponent {
 
         actions.trigger_loading_update(0);
         actions.jamy_update("suspicious");
-        actions.trigger_snackbar("Saving current artwork.", 1500);
+        actions.trigger_snackbar("Ok diddy! Saving yours.", 1500);
     };
 
     _handle_canvas_state_exported = (current_state) => {
 
-        actions.trigger_loading_update(66);
+        actions.trigger_loading_update(75);
         actions.jamy_update("flirty");
-        actions.trigger_snackbar("Compressing saved artwork.", 1500);
+        actions.trigger_snackbar("Hold on! Compressing...", 1750);
         if(current_state.kb > 1) {
 
             let attachment_array = {};
@@ -677,7 +678,10 @@ class Pixel extends React.PureComponent {
                         actions.trigger_loading_update(100);
                         if(!err) {
 
-                            actions.trigger_snackbar("Laboratory artwork successfully saved!", 2000);
+                            setTimeout(() => {
+                                actions.trigger_snackbar("Success! Laboratory's artwork saved!", 2000);
+                            }, 2000);
+
                             actions.jamy_update("happy");
                         }else {
 
@@ -691,6 +695,11 @@ class Pixel extends React.PureComponent {
                     actions.jamy_update("angry");
                 });
             });
+        }else {
+
+            setTimeout(() => {
+                actions.trigger_snackbar("Huh, we don't store nearly empty file up here, diddy.", 2000);
+            }, 2000);
         }
     };
 
@@ -932,14 +941,10 @@ class Pixel extends React.PureComponent {
                 this._handle_view_name_change(6);
             }else if(event.ctrlKey && event.key === "z") {
 
-                const { undo } = this.state._canvas;
-
-                undo();
+                this._undo();
             }else if(event.ctrlKey && event.key === "y") {
 
-                const { redo } = this.state._canvas;
-
-                redo();
+                this._redo();
             }else if(event.ctrlKey && event.key === "m") {
 
                 this._set_tool("MINE");
@@ -1050,6 +1055,46 @@ class Pixel extends React.PureComponent {
         }
     };
 
+    _undo = () => {
+
+        if((Math.random()*100|0) > 90) {
+
+            actions.trigger_snackbar("That was a nice undo!")
+        }
+
+        this.state._canvas.undo()
+    }
+    _redo = () => {
+
+        if((Math.random()*100|0) > 95) {
+
+            actions.jamy_update("suspicious");
+            actions.trigger_snackbar("Even nicer redo! Doo,doo,doo...", 2500);
+
+            setTimeout(() =>  {
+
+                actions.jamy_update("annoyed");
+                actions.trigger_snackbar("Did I already said that today? I won't feel much smarter today.", 3500);
+
+                setTimeout(() =>  {
+
+                    actions.jamy_update("shocked");
+                    actions.trigger_snackbar("No, huh!? I have feelings.", 2500);
+
+                    setTimeout(() =>  {
+
+                        actions.jamy_update("flirty");
+                        actions.trigger_snackbar("I am a real booooy! Yuhhh!");
+
+                    }, 3000);
+
+                }, 4000);
+
+            }, 3000);
+        }
+
+        this.state._canvas.redo()
+    }
     _backup_state = () => {
 
         const { export_state } = this.state._canvas;
@@ -2585,18 +2630,17 @@ class Pixel extends React.PureComponent {
                    <FileImportIcon/>
                 </IconButton>
 
-                <IconButton className={classes.zoomInButton} color={"primary"} size={"small"} onClick={() => {_canvas.zoom_in()}}>
-                   <ZoomIn/>
-                </IconButton>
-
                 <IconButton className={classes.zoomOutButton} color={"primary"} size={"small"} onClick={() => {_canvas.zoom_out()}}>
-                   <ZoomOut/>
+                    <ZoomOut/>
+                </IconButton>
+                <IconButton className={classes.zoomInButton} color={"primary"} size={"small"} onClick={() => {_canvas.zoom_in()}}>
+                    <ZoomIn/>
                 </IconButton>
 
-                <Button disabled={!_can_redo} variant={"text"} color={"primary"} size={"small"}className={classes.redoButton} onClick={(event) => {_canvas.redo()}}>
+                <Button disabled={!_can_redo} variant={"text"} color={"primary"} size={"small"}className={classes.redoButton} onClick={(event) => {this._redo()}}>
                     {`${-_can_redo || ""} Redo`} <ChangeHistoryOutlined style={{transition: "ease-out 225ms transform 25m", transform: `rotate(+${_can_redo*360+90}deg)`}}/>
                 </Button>
-                <Button disabled={!_can_undo} variant={"text"} color={"primary"} size={"small"} className={classes.undoButton} onClick={(event) => {_canvas.undo()}}>
+                <Button disabled={!_can_undo} variant={"text"} color={"primary"} size={"small"} className={classes.undoButton} onClick={(event) => {this._undo()}}>
                     <ChangeHistoryOutlined style={{transition: "ease-out 225ms transform 25ms", transform: `rotate(-${_can_undo*360+90}deg)`}}/>{`${+_can_undo || ""} Undo`}
                 </Button>
 

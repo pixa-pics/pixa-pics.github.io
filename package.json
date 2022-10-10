@@ -40,7 +40,6 @@
     "babel-core": "^6.26.3",
     "babel-loader": "^7.1.5",
     "babel-preset-env": "^1.7.0",
-    "babel-preset-minify": "~0.5.2",
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-0": "^6.24.1",
     "classnames": "^2.2.5",
@@ -118,8 +117,8 @@
     ]
   },
   "scripts": {
-    "dev": "NODE_ENV=development BABEL_ENV=development webpack-dev-server",
-    "build": "NODE_ENV=production BABEL_ENV=production webpack --node-env \"production\"",
+    "dev": "NODE_ENV=development webpack-dev-server",
+    "build": "NODE_ENV=production webpack --node-env \"production\"",
     "dist": "build --tasks win-x86,win-x64,linux-x86,linux-x64,mac-x64 --mirror https://dl.nwjs.io/ .",
     "build-twemoji": "svgr ./src/js/twemoji/original -d ./src/js/twemoji/react",
     "optimize-twemoji": "svgo  -f ./src/js/twemoji/original",
