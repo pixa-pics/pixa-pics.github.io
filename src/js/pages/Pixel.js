@@ -513,10 +513,39 @@ class Pixel extends React.PureComponent {
 
     componentDidMount() {
 
-        //actions.trigger_snackbar(`This is PIXAAAAAA and beyond! Here, ideas easily find a new sunshine!`, 5000);
+        actions.trigger_snackbar(`Awesome diddy! Welcome back to the laboratory.`, 3500);
 
-        actions.trigger_snackbar("Looks like some of the LAB operations can be no more functional, waiting to be reengineered for 'PERFS' within hours...", 777 * 10);
-        actions.jamy_update("sad");
+        setTimeout(() => {
+
+            if(this.state._is_pixel_dialog_create_open){
+
+                actions.trigger_snackbar("Right here! Let's upload a picture now to create a new artwork.", 6000);
+
+                setTimeout(() => {
+
+                    if(this.state._is_pixel_dialog_create_open){
+
+                        actions.trigger_snackbar("By the way, ...", 1000);
+
+                        setTimeout(() => {
+
+                            if(this.state._is_pixel_dialog_create_open){
+
+                                actions.trigger_snackbar("Huh, let me take my breath! ...", 1500);
+                                setTimeout(() => {
+
+                                    if(this.state._is_pixel_dialog_create_open){
+
+                                        actions.trigger_snackbar("You can set the size of your artwork before uploading your picture.", 10000);
+                                    }
+                                }, 3000);
+                            }
+                        }, 1500);
+                    }
+                }, 8500);
+            }
+        }, 4000);
+        actions.jamy_update("happy");
 
         window.addEventListener("resize", this._updated_dimensions);
         this._updated_dimensions();
@@ -737,8 +766,6 @@ class Pixel extends React.PureComponent {
 
             // Set new settings from query result
             const _attachment_previews = typeof settings.attachment_previews !== "undefined" ? settings.attachment_previews: {};
-
-            actions.trigger_sfx("hero_decorative-celebration-02");
 
             this.setState({_attachment_previews}, () => {
 
@@ -2027,67 +2054,14 @@ class Pixel extends React.PureComponent {
 
     _handle_pixel_dialog_create_open = () => {
 
+        if(this.state._is_pixel_dialog_create_open === false) {
+            actions.trigger_sfx("hero_decorative-celebration-02");
+        }
         this.setState({_is_pixel_dialog_create_open: true}, () => {
 
             api.get_settings(this._process_settings_info_result);
         });
     };
-
-    _get_OS = () => {
-        let userAgent = window.navigator.userAgent,
-            platform = ((window.navigator || {}).userAgentData || {}).platform || window.navigator.platform,
-            macosPlatforms = ["Macintosh", "MacIntel", "MacPPC", "Mac68K"],
-            windowsPlatforms = ["Win32", "Win64", "Windows", "WinCE"],
-            iosPlatforms = ["iPhone", "iPad", "iPod"],
-            os = null;
-
-        if (macosPlatforms.indexOf(platform) !== -1) {
-            os = "Mac OS";
-        } else if (iosPlatforms.indexOf(platform) !== -1) {
-            os = "iOS";
-        } else if (windowsPlatforms.indexOf(platform) !== -1) {
-            os = "Windows";
-        } else if (/Android/.test(userAgent)) {
-            os = "Android";
-        } else if (!os && /Linux/.test(platform)) {
-            os = "Linux";
-        }
-
-        return os;
-    };
-
-    _get_advanced_browser = () => {
-
-
-
-        actions.jamy_update("suspicious");
-        actions.trigger_snackbar("Ho great, the lab will be safe there...", 5000)
-
-        setTimeout(() => {
-
-            actions.trigger_sfx("hero_decorative-celebration-02");
-            actions.jamy_update("happy");
-
-            setTimeout(() => {
-
-                this._handle_load_complete("browser", {});
-                const { _history } = this.state;
-                _history.push("/");
-
-                const os = this._get_OS();
-                if(["Linux", "Windows"].includes(os)) {
-
-                    window.open("https://www.microsoft.com/edge");
-                }else {
-
-                    window.open("https://www.google.com/chrome/");
-                }
-
-            }, 1750);
-
-        }, 1250);
-    }
-
 
     _set_toolbox_container_ref = (element) => {
 
@@ -2183,8 +2157,6 @@ class Pixel extends React.PureComponent {
 
         _menu_data.pos_x = _menu_data.pos_x === -1 ? "out": _menu_data.pos_x;
         _menu_data.pos_y = _menu_data.pos_y === -1 ? "out": _menu_data.pos_y;
-
-        const os = this._get_OS();
 
         const drawer_mobile = _less_than_1280w &&
             (
@@ -2668,7 +2640,6 @@ class Pixel extends React.PureComponent {
                         {_files_waiting_download.length > 0 && <div><img src={"/src/images/labostration/MOLECULE.svg"} style={{width: "min(75vw, 75vh)"}}/></div>}
                         {_files_waiting_download.length > 0 && <h4><ShufflingSpanText pre="[... " app=" ...]" style={{textShadow: "0px 0px 16px white"}} text={"CLICK ON THE SCREEN TO CONTINUE DOWNLOAD!"} animation_delay_ms={is_mobile_or_tablet ? 5000: 2500} animation_duration_ms={500}/></h4>}
                         {_files_waiting_download.length === 0 && _loading && _loading_process === "browser" && <h3><ShufflingSpanText text={"Doesn't feel like home for our dear code here."} animation_delay_ms={300} animation_duration_ms={500}/></h3>}
-                        {_files_waiting_download.length === 0 && _loading  && _loading_process === "browser" && <div onClick={this._get_advanced_browser}><img src={["Linux", "Windows"].includes(os) ? "/src/images/EdgeGreatDownload.svg": "/src/images/ChromeGreatDownload.svg"} style={{width: "min(75vw, 75vh)"}}/></div>}
                         {_files_waiting_download.length === 0 && _loading  && _loading_process === "browser" && <h4><ShufflingSpanText pre="[... " app=" ...]" text={"It can take a while, please download an advanced browser."} animation_delay_ms={is_mobile_or_tablet ? 5000: 2500} animation_duration_ms={500}/></h4>}
                         {_files_waiting_download.length === 0 && _loading  && _loading_process === "image_ai" && <h3><ShufflingSpanText text={"AI processing your image"} animation_delay_ms={300} animation_duration_ms={500}/></h3>}
                         {_files_waiting_download.length === 0 && _loading  && _loading_process === "image_ai" && <div><img src="/src/images/labostration/MOLECULE.svg" style={{width: "min(75vw, 75vh)"}}/></div>}

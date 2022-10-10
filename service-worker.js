@@ -1,9 +1,9 @@
 "use strict";
-var REQUIRED_CACHE = "unless-update-cache-v440-required";
-var USEFUL_CACHE = "unless-update-cache-v440-useful";
-var STATIC_CACHE = "unless-update-cache-v440-static";
-var MAIN_CHILD_CHUNK_REGEX = /chunk_(main_[a-z0-9]+)\.min\.js/i;
-var CHILD_CHUNK_REGEX = /chunk_([0-9]+)\.min\.js/i;
+var REQUIRED_CACHE = "unless-update-cache-v441-required";
+var USEFUL_CACHE = "unless-update-cache-v441-useful";
+var STATIC_CACHE = "unless-update-cache-v441-static";
+var MAIN_CHILD_CHUNK_REGEX = /chunk_(main_[a-z0-9]+)\.min\.js$/i;
+var CHILD_CHUNK_REGEX = /chunk_([0-9]+)\.min\.js$/i;
 
 var required_cache_object = {};
 var required_cache = new Promise(function(resolve, reject){
@@ -192,7 +192,7 @@ self.addEventListener("fetch", function(event) {
         event.respondWith(
             useful_cache.then(function (cache) {
                 return cache.match(url).then(function (response) {
-                    return response || fetch(url).then(function (response) { // Fetch, clone, and serve
+                    return response.ok ? response: fetch(url).then(function (response) { // Fetch, clone, and serve
                         return cache.put(url, response.clone()).then(function () {return response.clone()});
                     });
                 }).catch(function(){
@@ -208,7 +208,7 @@ self.addEventListener("fetch", function(event) {
         event.respondWith(
             static_cache.then(function (cache) {
                 return cache.match(url).then(function (response) {
-                    return response || fetch(url).then(function (response) { // Fetch, clone, and serve
+                    return response.ok ? response: fetch(url).then(function (response) { // Fetch, clone, and serve
                         return cache.put(url, response.clone()).then(function () {return response.clone()});
                     });
                 }).catch(function(){
@@ -224,7 +224,7 @@ self.addEventListener("fetch", function(event) {
         event.respondWith(
             useful_cache.then(function (cache) {
                 return cache.match(url).then(function (response) {
-                    return response || fetch(url).then(function (response) { // Fetch, clone, and serve
+                    return response.ok ? response: fetch(url).then(function (response) { // Fetch, clone, and serve
                         return cache.put(url, response.clone()).then(function () {return response.clone()});
                     });
                 }).catch(function(){
@@ -240,7 +240,7 @@ self.addEventListener("fetch", function(event) {
         event.respondWith(
             required_cache.then(function (cache) {
                 return cache.match("/client/chunk_norris.min.js").then(function (response) {
-                    return response || fetch("/client/chunk_norris.min.js").then(function (response) { // Fetch, clone, and serve
+                    return response.ok ? response: fetch("/client/chunk_norris.min.js").then(function (response) { // Fetch, clone, and serve
                         return cache.put("/client/chunk_norris.min.js", response.clone()).then(function () {return response.clone()});
                     });
                 }).catch(function(){
@@ -257,7 +257,7 @@ self.addEventListener("fetch", function(event) {
         event.respondWith(
             required_cache.then(function (cache) {
                 return cache.match(`/client/chunk_${middle_name}.min.js`).then(function (response) {
-                    return response || fetch(`/client/chunk_${middle_name}.min.js`).then(function (response) { // Fetch, clone, and serve
+                    return response.ok ? response: fetch(`/client/chunk_${middle_name}.min.js`).then(function (response) { // Fetch, clone, and serve
                         return cache.put(`/client/chunk_${middle_name}.min.js`, response.clone()).then(function () {return response.clone()});
                     });
                 }).catch(function(){
@@ -274,7 +274,7 @@ self.addEventListener("fetch", function(event) {
         event.respondWith(
             required_cache.then(function (cache) {
                 return cache.match(`/client/chunk_${middle_name}.min.js`).then(function (response) {
-                    return response || fetch(`/client/chunk_${middle_name}.min.js`).then(function (response) { // Fetch, clone, and serve
+                    return response.ok ? response: fetch(`/client/chunk_${middle_name}.min.js`).then(function (response) { // Fetch, clone, and serve
                         return cache.put(`/client/chunk_${middle_name}.min.js`, response.clone()).then(function () {return response.clone()});
                     });
                 }).catch(function(){
@@ -291,7 +291,7 @@ self.addEventListener("fetch", function(event) {
 
             required_cache.then(function (cache) {
                 return cache.match(`/`).then(function (response) {
-                    return response || fetch(`/`).then(function (response) { // Fetch, clone, and serve
+                    return response.ok ? response: fetch(`/`).then(function (response) { // Fetch, clone, and serve
                         return cache.put(`/`, response.clone()).then(function () {return response.clone()});
                     });
                 }).catch(function(){

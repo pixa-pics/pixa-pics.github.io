@@ -193,10 +193,28 @@ class Index extends React.PureComponent {
             this.setState({_intervals: intervals});
         }, 5000);
 
-        setTimeout(async() => {
+        setTimeout(() => {
 
-            actions.trigger_snackbar("Hello, I am Jamy! Let's take a look to our laboratory to process images, wanna give it a try?", 7000)
-        }, 3000);
+            if(this.pathname === "/" || this.pathname === "") {
+                actions.trigger_snackbar("Hello, I am Jamy!", 1500)
+            }
+
+            setTimeout(() => {
+
+                if(this.pathname === "/" || this.pathname === "") {
+                    actions.trigger_snackbar("Let's take a look to our laboratory processing images.", 4500)
+                }
+
+                setTimeout(() => {
+
+                    if(this.pathname === "/" || this.pathname === "") {
+                        actions.trigger_snackbar("Wanna give it a try?", 2500)
+                    }
+                }, 5000);
+
+            }, 2000);
+
+        }, 6000);
     }
 
     componentWillUnmount() {

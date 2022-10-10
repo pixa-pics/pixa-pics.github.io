@@ -278,7 +278,13 @@ class Home extends React.PureComponent {
             _join_now_button_update: 0,
             _brainplode: <BrainplodeEmojiSvg style={{ height: '56px', width: '56px' }}/>,
             _diamond: <DiamondEmojiSvg style={{ height: '56px', width: '56px' }}/>,
-            _camera: <CameraEmojiSvg style={{ height: '56px', width: '56px' }}/>,
+            _camera: <Lottie
+                id={"camera"}
+                className={"fade-in-500-500"}
+                loop={true}
+                autoplay={true}
+                src="/src/js/lottie/camera.json"
+                style={{ height: '56px', width: '56px' }}/>
         };
     };
 
@@ -291,29 +297,34 @@ class Home extends React.PureComponent {
             actions.trigger_loading_update(100);
         }, 300);
 
-        this.setState({
-            _brainplode: <Lottie
-                id={"brainplode"}
-                loop={true}
-                autoplay={true}
-                src="/src/js/notoemoji/lottie/1f92f.json"
-                style={{ height: '56px', width: '56px' }}/>,
-            _diamond: <Lottie
-                id={"diamond"}
-                loop={true}
-                autoplay={true}
-                src="/src/js/notoemoji/lottie/1f48e.json"
-                style={{ height: '56px', width: '56px' }}/>,
-            _camera: <Lottie
-                id={"camera"}
-                loop={true}
-                autoplay={true}
-                src="/src/js/lottie/camera.json"
-                style={{ height: '56px', width: '56px' }}/>,
-        }, () => {
+        setTimeout(() => {
+            this.setState({
+                _brainplode: <Lottie
+                    id={"brainplode"}
+                    loop={true}
+                    autoplay={true}
+                    initialSegment={[27, 174]}
+                    src="/src/js/notoemoji/lottie/1f92f.json"
+                    style={{ height: '56px', width: '56px' }}/>
+            }, () => {
 
-            this.forceUpdate();
-        })
+                this.forceUpdate();
+            });
+        }, 1500);
+
+        setTimeout(() => {
+            this.setState({
+                _diamond: <Lottie
+                    id={"diamond"}
+                    loop={true}
+                    autoplay={true}
+                    src="/src/js/notoemoji/lottie/1f48e.json"
+                    style={{ height: '56px', width: '56px' }}/>
+            }, () => {
+
+                this.forceUpdate();
+            });
+        }, 3000);
     }
 
     componentDidMount() {

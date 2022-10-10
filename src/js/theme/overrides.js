@@ -72,6 +72,20 @@ const overrides = {
             ".pixelated, .pixelated *, .pixelated:not(g), .pixelated:not(g) *": {
                 imageRendering: "pixelated",
             },
+            ".fade-in-500-500": {
+                verticalAlign: "inherit",
+                animationName: "$bounce",
+                animationDuration: "500ms",
+                animationTimingFunction: "cubic-bezier(0.280, 0.840, 0.420, 1)",
+                animationFillMode: "both",
+                animationDelay: "500ms",
+                "@global": {
+                    "@keyframes bounce": {
+                        "0%": {filter: "opacity(0)"},
+                        "100%": {filter: "opacity(1)"},
+                    }
+                }
+            },
             ".emoji": {
                 verticalAlign: "inherit",
                 height: "1em",
