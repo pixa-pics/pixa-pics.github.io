@@ -644,11 +644,20 @@ class Pixel extends React.PureComponent {
         }
     }
 
-    _handle_canvas_state_export = (current_state) => {
+    _handle_canvas_state_will_export = () => {
 
+        actions.trigger_loading_update(0);
+        actions.jamy_update("suspicious");
+        actions.trigger_snackbar("Saving current artwork.", 1500);
+    };
+
+    _handle_canvas_state_exported = (current_state) => {
+
+        actions.trigger_loading_update(66);
+        actions.jamy_update("flirty");
+        actions.trigger_snackbar("Compressing saved artwork.", 1500);
         if(current_state.kb > 1) {
 
-            actions.trigger_snackbar("Saving current work...!", 2000);
             let attachment_array = {};
             attachment_array["json_state-ID" + current_state.id + ".json.lzp3"] = current_state;
 
@@ -659,18 +668,21 @@ class Pixel extends React.PureComponent {
                     api.set_settings({}, (err, res) => {
 
                         if(err) {
-
+                            actions.trigger_loading_update(100);
                             actions.trigger_snackbar("Looks like I can't save your file as our compression module can't load.", 5700);
                             actions.jamy_update("angry");
                         }
                     }, attachment_array, LZP3, pool, (err, res) => {
 
+                        actions.trigger_loading_update(100);
                         if(!err) {
 
-                            actions.trigger_snackbar("SAVING, Successful!", 2000);
+                            actions.trigger_snackbar("Laboratory artwork successfully saved!", 2000);
+                            actions.jamy_update("happy");
                         }else {
 
-                            actions.trigger_snackbar("SAVING, Failed!", 2000);
+                            actions.trigger_snackbar("Laboratory artwork failed to save.", 2000);
+                            actions.jamy_update("sad");
                         }
                     });
                 }).catch(() => {
@@ -2372,7 +2384,8 @@ class Pixel extends React.PureComponent {
                         <Suspense fallback={<div className={classes.contentCanvas}/>}>
                             <CanvasPixels
                                 perspective={_perspective ? 2: 0}
-                                on_export_state={this._handle_canvas_state_export}
+                                on_state_export={this._handle_canvas_state_will_export}
+                                on_state_exported={this._handle_canvas_state_exported}
                                 export_state_every_ms={is_mobile_or_tablet ? 5 * 60 * 1000: 3.5 * 60 * 1000}
                                 shadow_size={is_mobile_or_tablet ? 0: 1.5}
                                 key={"canvas"}
