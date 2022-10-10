@@ -1,7 +1,7 @@
 "use strict";
-var REQUIRED_CACHE = "unless-update-cache-v441-required";
-var USEFUL_CACHE = "unless-update-cache-v441-useful";
-var STATIC_CACHE = "unless-update-cache-v441-static";
+var REQUIRED_CACHE = "unless-update-cache-v442-required";
+var USEFUL_CACHE = "unless-update-cache-v442-useful";
+var STATIC_CACHE = "unless-update-cache-v442-static";
 var MAIN_CHILD_CHUNK_REGEX = /chunk_(main_[a-z0-9]+)\.min\.js$/i;
 var CHILD_CHUNK_REGEX = /chunk_([0-9]+)\.min\.js$/i;
 
@@ -49,15 +49,6 @@ self.addEventListener("install", function(event) {
 
         return true;
     }
-
-    event.waitUntil(useful_cache.then(function (cache) {
-        return cache.addAll([
-            "/src/images/favicon.ico",
-            "/src/images/manifest/logo-white.png",
-            "/src/fonts/jura/index.css",
-        ]);
-    }));
-
     required_cache.then(function (cache) {
         cache.addAll([
             "/client/chunk_main_7a2ee6b6.min.js",
@@ -68,6 +59,15 @@ self.addEventListener("install", function(event) {
             "/"
         ])
     });
+    useful_cache.then(function (cache) {
+        return cache.addAll([
+            "/src/images/favicon.ico",
+            "/src/images/manifest/logo-white.png",
+            "/src/fonts/jura/index.css",
+        ]);
+    });
+
+    return true;
 });
 
 self.addEventListener("fetch", function(event) {
@@ -196,7 +196,7 @@ self.addEventListener("fetch", function(event) {
                         return cache.put(url, response.clone()).then(function () {return response.clone()});
                     });
                 }).catch(function(){
-                    fetch(url).then(function (response) { // Fetch, clone, and serve
+                    fetch(event.request).then(function (response) { // Fetch, clone, and serve
                         return cache.put(url, response.clone()).then(function () {return response.clone()});
                     });
                 });
@@ -212,7 +212,7 @@ self.addEventListener("fetch", function(event) {
                         return cache.put(url, response.clone()).then(function () {return response.clone()});
                     });
                 }).catch(function(){
-                    fetch(url).then(function (response) { // Fetch, clone, and serve
+                    fetch(event.request).then(function (response) { // Fetch, clone, and serve
                         return cache.put(url, response.clone()).then(function () {return response.clone()});
                     });
                 });
@@ -228,7 +228,7 @@ self.addEventListener("fetch", function(event) {
                         return cache.put(url, response.clone()).then(function () {return response.clone()});
                     });
                 }).catch(function(){
-                    fetch(url).then(function (response) { // Fetch, clone, and serve
+                    fetch(event.request).then(function (response) { // Fetch, clone, and serve
                         return cache.put(url, response.clone()).then(function () {return response.clone()});
                     });
                 });
@@ -321,7 +321,7 @@ self.addEventListener("fetch", function(event) {
                         if(response) { return response }
                     });
                 }),
-                fetch(url).then(function (response) { // Fetch and serve
+                fetch(event.request).then(function (response) { // Fetch and serve
 
                     useful_cache.then(function (cache) {
 
