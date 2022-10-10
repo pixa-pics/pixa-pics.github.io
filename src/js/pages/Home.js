@@ -278,13 +278,7 @@ class Home extends React.PureComponent {
             _join_now_button_update: 0,
             _brainplode: <BrainplodeEmojiSvg style={{ height: '56px', width: '56px' }}/>,
             _diamond: <DiamondEmojiSvg style={{ height: '56px', width: '56px' }}/>,
-            _camera: <Lottie
-                id={"camera"}
-                className={"fade-in-500-500"}
-                loop={true}
-                autoplay={true}
-                src="/src/js/lottie/camera.json"
-                style={{ height: '56px', width: '56px' }}/>
+            _camera: null
         };
     };
 
@@ -296,6 +290,18 @@ class Home extends React.PureComponent {
 
             actions.trigger_loading_update(100);
         }, 300);
+
+        this.setState({
+            _camera: <Lottie
+                id={"camera"}
+                className={"fade-in-500-500"}
+                loop={true}
+                autoplay={true}
+                src="/src/js/lottie/camera.json"
+                style={{ height: '56px', width: '56px' }}/>
+                }, () => {
+            this.forceUpdate();
+        });
 
         setTimeout(() => {
             this.setState({
