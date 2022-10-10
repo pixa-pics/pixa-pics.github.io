@@ -82,14 +82,19 @@ module.exports = {
                     },
                     compress: {
                         toplevel: true,
+                        unsafe: true,
                         drop_console: true,
+                        drop_debugger: true,
+                        evaluate: "eager",
+                        hoist_funs: true,
                         passes: 3,
                     },
-                    safari10: true,
+                    v8: true,
+                    ie: true,
+                    webkit: true,
                     output: {
                         comments: false,
                         beautify: false,
-                        webkit: true,
                         code: true
                     },
                 }
@@ -147,7 +152,10 @@ module.exports = {
                                     forceAllTransforms: true,
                                     shippedProposals: true,
                                     bugfixes: true,
-                                    useBuiltIns: "usage"
+                                    useBuiltIns: "usage",
+                                    production: {
+                                        presets: ["minify"]
+                                    }
                                 }],
                                 'stage-0'
                             ]

@@ -29,7 +29,7 @@ class Lottie extends React.PureComponent {
 
         const {loop, autoplay, path, hover, initialSegment, id} = this.state;
 
-        JSLoader( () => import("lottie-web/build/player/lottie_svg")).then((lottie) => {
+        JSLoader( () => import("../utils/lottie_light_svg")).then((lottie) => {
             lottie.loadAnimation({
                 container: comp,
                 loop: loop,
@@ -44,7 +44,7 @@ class Lottie extends React.PureComponent {
 
     componentWillUnmount() {
 
-        JSLoader( () => import("lottie-web/build/player/lottie_svg")).then((lottie) => {
+        JSLoader( () => import("../utils/lottie_light_svg")).then((lottie) => {
 
             lottie.destroy(this.state.id);
         });

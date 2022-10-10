@@ -1,7 +1,7 @@
 "use strict";
-var REQUIRED_CACHE = "unless-update-cache-v442-required";
-var USEFUL_CACHE = "unless-update-cache-v442-useful";
-var STATIC_CACHE = "unless-update-cache-v442-static";
+var REQUIRED_CACHE = "unless-update-cache-v444-required";
+var USEFUL_CACHE = "unless-update-cache-v444-useful";
+var STATIC_CACHE = "unless-update-cache-v444-static";
 var MAIN_CHILD_CHUNK_REGEX = /chunk_(main_[a-z0-9]+)\.min\.js$/i;
 var CHILD_CHUNK_REGEX = /chunk_([0-9]+)\.min\.js$/i;
 
@@ -56,7 +56,9 @@ self.addEventListener("install", function(event) {
             "/client/chunk_main_690b702c.min.js",
             "/client/chunk_main_748942c6.min.js",
             "/client/chunk_norris.min.js",
-            "/"
+            "/client/chunk_0.min.js",
+            "/client/chunk_1.min.js",
+            "/",
         ])
     });
     event.waitUntil(useful_cache.then(function (cache) {
