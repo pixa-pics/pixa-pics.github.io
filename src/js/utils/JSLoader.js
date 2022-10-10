@@ -1,6 +1,6 @@
-export default function JSLoader(comp, attempts_left = 50) {
+export default function JSLoader(comp, attempts_left = 300) {
     return new Promise((resolve, reject) => {
-        comp
+        comp()
             .then(resolve)
             .catch((error) => {
                 // let us retry after 1500 ms
@@ -10,7 +10,7 @@ export default function JSLoader(comp, attempts_left = 50) {
                         return;
                     }
                     JSLoader(comp, attempts_left - 1).then(resolve, reject);
-                }, 100);
+                }, 33);
             });
     });
 }

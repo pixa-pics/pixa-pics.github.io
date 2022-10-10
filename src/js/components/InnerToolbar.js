@@ -213,7 +213,7 @@ class InnerToolbar extends React.PureComponent {
         if(this.state.ret >= 1 || this.state.camo >= 1) {
 
             if(this.state._rets.length <= 1) {
-                JSLoader(import("../utils/custom_toolbar")).then(({RETS, CAMS}) => {
+                JSLoader( () => import("../utils/custom_toolbar")).then(({RETS, CAMS}) => {
 
                     this.setState({_rets: Array.from(RETS), _cams: Array.from(CAMS)}, ( )=> {
 

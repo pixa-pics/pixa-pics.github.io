@@ -594,7 +594,7 @@ class CanvasPixels extends React.PureComponent {
 
             if(with_compression_speed !== 0) {
 
-                JSLoader(import("../../utils/png_quant")).then(({png_quant}) => {
+                JSLoader( () => import("../../utils/png_quant")).then(({png_quant}) => {
 
                     png_quant(Object.values(result)[0], with_compression_quality_min, with_compression_quality_max, with_compression_speed, pool).then((base_64_out) => {
 

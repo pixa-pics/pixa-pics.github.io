@@ -9,7 +9,7 @@ import JSLoader from "../utils/JSLoader";
 let is_mobile_or_tablet = window.mobileAndTabletCheck();
 import React, { Suspense } from "react";
 import dispatcher from "../dispatcher";
-const CanvasPixels = React.lazy(() => JSLoader(import("../components/canvaspixels/CanvasPixels")));
+const CanvasPixels = React.lazy(() => JSLoader( () => import("../components/canvaspixels/CanvasPixels")));
 import {Button, IconButton, withStyles} from "@material-ui/core";
 import pool from "../utils/worker-pool";
 import {ListItem, Typography, Backdrop, Slider, SwipeableDrawer, Drawer, Tabs, Tab, Menu, ListSubheader, ListItemText, ListItemIcon} from "@material-ui/core";
@@ -525,7 +525,7 @@ class Pixel extends React.PureComponent {
         dispatcher.register(this._handle_events.bind(this));
         this._try_load_with_payload(this.state.load_with + "");
         this.setState({_h_svg: get_svg_in_b64(<HexGrid color={"#e5e5e5"}/>)});
-        JSLoader(import("../utils/ressource_pixel")).then((RESSOURCE_PIXELS) => {
+        JSLoader( () => import("../utils/ressource_pixel")).then((RESSOURCE_PIXELS) => {
 
             this.setState({_library: RESSOURCE_PIXELS});
         });
@@ -625,7 +625,7 @@ class Pixel extends React.PureComponent {
 
             this.setState({_kb: current_state.kb, _saved_at: Date.now()}, () => {
 
-                JSLoader(import("../utils/lzp3_json")).then(({LZP3}) => {
+                JSLoader( () => import("../utils/lzp3_json")).then(({LZP3}) => {
 
                     api.set_settings({}, (err, res) => {
 
@@ -1275,7 +1275,7 @@ class Pixel extends React.PureComponent {
                         bitmap_to_imagedata(bitmap_input, resize_original_to, (imagedata) => {
 
                             bitmap_input = null;
-                            JSLoader(import("../utils/rgb_quant")).then(({rgb_quant}) => {
+                            JSLoader( () => import("../utils/rgb_quant")).then(({rgb_quant}) => {
 
                                 if(_import_colorize === "1") {
 
@@ -1558,7 +1558,7 @@ class Pixel extends React.PureComponent {
 
     _handle_import_json_state_id = (id) => {
 
-        JSLoader(import("../utils/lzp3_json")).then(({LZP3}) => {
+        JSLoader( () => import("../utils/lzp3_json")).then(({LZP3}) => {
 
             this._handle_load("image_preload");
             actions.trigger_voice("accessing_memory");

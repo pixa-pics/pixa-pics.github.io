@@ -14,9 +14,9 @@ import dispatcher from "../dispatcher";
 import actions from "../actions/utils";
 
 import Home from "./Home";
-const Pixel = React.lazy(() => JSLoader(import("../pages/Pixel")));
-const Unknown = React.lazy(() => JSLoader(import("../pages/Unknown")));
-const Settings = React.lazy(() => JSLoader(import("../pages/Settings")));
+const Pixel = React.lazy(() => JSLoader( () => import("../pages/Pixel")));
+const Unknown = React.lazy(() => JSLoader( () => import("../pages/Unknown")));
+const Settings = React.lazy(() => JSLoader( () => import("../pages/Settings")));
 
 import JamyAngry from "../icons/JamyAngry";
 import JamyAnnoyed from "../icons/JamyAnnoyed";
@@ -229,7 +229,7 @@ class Index extends React.PureComponent {
 
     _trigger_sound = (category, pack, name, volume, global) => {
 
-        JSLoader(import("../utils/sound-api")).then((sound_api) => {
+        JSLoader( () => import("../utils/sound-api")).then((sound_api) => {
 
             sound_api.play_sound(category, pack, name, volume, global);
         });
@@ -237,7 +237,7 @@ class Index extends React.PureComponent {
 
     _stop_sound = () => {
 
-        JSLoader(import("../utils/sound-api")).then((sound_api) => {
+        JSLoader( () => import("../utils/sound-api")).then((sound_api) => {
 
             sound_api.stop_sound();
         });
