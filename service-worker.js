@@ -1,7 +1,7 @@
 "use strict";
-var REQUIRED_CACHE = "unless-update-cache-v449-required";
-var USEFUL_CACHE = "unless-update-cache-v449-useful";
-var STATIC_CACHE = "unless-update-cache-v449-static";
+var REQUIRED_CACHE = "unless-update-cache-v450-required";
+var USEFUL_CACHE = "unless-update-cache-v450-useful";
+var STATIC_CACHE = "unless-update-cache-v450-static";
 var MAIN_CHILD_CHUNK_REGEX = /chunk_(main_[a-z0-9]+)\.min\.js$/i;
 var CHILD_CHUNK_REGEX = /chunk_([0-9]+)\.min\.js$/i;
 
@@ -193,11 +193,11 @@ self.addEventListener("fetch", function(event) {
             useful_cache.then(function (cache) {
                 return cache.match(url).then(function (response) {
                     return response.ok ? response: fetch(url).then(function (response) { // Fetch, clone, and serve
-                        return cache.put(url, response.clone()).then(function () {return response.clone()});
+                        cache.put(url, response); return Promise.resolve(response.clone());
                     });
                 }).catch(function(){
                     fetch(event.request).then(function (response) { // Fetch, clone, and serve
-                        return cache.put(url, response.clone()).then(function () {return response.clone()});
+                        cache.put(url, response); return Promise.resolve(response.clone());
                     });
                 });
             })
@@ -209,11 +209,11 @@ self.addEventListener("fetch", function(event) {
             static_cache.then(function (cache) {
                 return cache.match(url).then(function (response) {
                     return response.ok ? response: fetch(url).then(function (response) { // Fetch, clone, and serve
-                        return cache.put(url, response.clone()).then(function () {return response.clone()});
+                        cache.put(url, response); return Promise.resolve(response.clone());
                     });
                 }).catch(function(){
                     fetch(event.request).then(function (response) { // Fetch, clone, and serve
-                        return cache.put(url, response.clone()).then(function () {return response.clone()});
+                        cache.put(url, response); return Promise.resolve(response.clone());
                     });
                 });
             })
@@ -225,11 +225,11 @@ self.addEventListener("fetch", function(event) {
             useful_cache.then(function (cache) {
                 return cache.match(url).then(function (response) {
                     return response.ok ? response: fetch(url).then(function (response) { // Fetch, clone, and serve
-                        return cache.put(url, response.clone()).then(function () {return response.clone()});
+                        cache.put(url, response); return Promise.resolve(response.clone());
                     });
                 }).catch(function(){
                     fetch(event.request).then(function (response) { // Fetch, clone, and serve
-                        return cache.put(url, response.clone()).then(function () {return response.clone()});
+                        cache.put(url, response); return Promise.resolve(response.clone());
                     });
                 });
             })
@@ -241,11 +241,11 @@ self.addEventListener("fetch", function(event) {
             required_cache.then(function (cache) {
                 return cache.match("/client/chunk_norris.min.js").then(function (response) {
                     return response.ok ? response: fetch("/client/chunk_norris.min.js").then(function (response) { // Fetch, clone, and serve
-                        return cache.put("/client/chunk_norris.min.js", response.clone()).then(function () {return response.clone()});
+                        cache.put("/client/chunk_norris.min.js", response); return Promise.resolve(response.clone());
                     });
                 }).catch(function(){
                     fetch(`/client/chunk_norris.min.js`).then(function (response) { // Fetch, clone, and serve
-                        return cache.put(`/client/chunk_norris.min.js`, response.clone()).then(function () {return response.clone()});
+                        cache.put("/client/chunk_norris.min.js", response); return Promise.resolve(response.clone());
                     });
                 });
             })
@@ -258,11 +258,11 @@ self.addEventListener("fetch", function(event) {
             required_cache.then(function (cache) {
                 return cache.match(`/client/chunk_${middle_name}.min.js`).then(function (response) {
                     return response.ok ? response: fetch(`/client/chunk_${middle_name}.min.js`).then(function (response) { // Fetch, clone, and serve
-                        return cache.put(`/client/chunk_${middle_name}.min.js`, response.clone()).then(function () {return response.clone()});
+                        cache.put(`/client/chunk_${middle_name}.min.js`, response); return Promise.resolve(response.clone());
                     });
                 }).catch(function(){
                     fetch(`/client/chunk_${middle_name}.min.js`).then(function (response) { // Fetch, clone, and serve
-                        return cache.put(`/client/chunk_${middle_name}.min.js`, response.clone()).then(function () {return response.clone()});
+                        cache.put(`/client/chunk_${middle_name}.min.js`, response); return Promise.resolve(response.clone());
                     });
                 });
             })
@@ -274,14 +274,12 @@ self.addEventListener("fetch", function(event) {
         event.respondWith(
             required_cache.then(function (cache) {
                 return cache.match(`/client/chunk_${middle_name}.min.js`).then(function (response) {
-
                     return response.ok ? response: fetch(`/client/chunk_${middle_name}.min.js`).then(function (response) { // Fetch, clone, and serve
-                        console.log(response)
-                        return cache.put(`/client/chunk_${middle_name}.min.js`, response.clone()).then(function () {return response.clone()});
+                        cache.put(`/client/chunk_${middle_name}.min.js`, response); return Promise.resolve(response.clone());
                     });
                 }).catch(function(){
                     fetch(`/client/chunk_${middle_name}.min.js`).then(function (response) { // Fetch, clone, and serve
-                        return cache.put(`/client/chunk_${middle_name}.min.js`, response.clone()).then(function () {return response.clone()});
+                        cache.put(`/client/chunk_${middle_name}.min.js`, response); return Promise.resolve(response.clone());
                     });
                 });
             })
@@ -294,11 +292,11 @@ self.addEventListener("fetch", function(event) {
             required_cache.then(function (cache) {
                 return cache.match(`/`).then(function (response) {
                     return response.ok ? response: fetch(`/`).then(function (response) { // Fetch, clone, and serve
-                        return cache.put(`/`, response.clone()).then(function () {return response.clone()});
+                        cache.put(`/`, response); return Promise.resolve(response.clone());
                     });
                 }).catch(function(){
                     fetch(`/`).then(function (response) { // Fetch, clone, and serve
-                        return cache.put(`/`, response.clone()).then(function () {return response.clone()});
+                        cache.put(`/`, response); return Promise.resolve(response.clone());
                     });
                 });
             })
@@ -324,10 +322,8 @@ self.addEventListener("fetch", function(event) {
                     });
                 }),
                 fetch(event.request).then(function (response) { // Fetch and serve
-
                     useful_cache.then(function (cache) {
-
-                        cache.put(url, response.clone()).then(function () {return response.clone()});
+                        cache.put(url, response); return Promise.resolve(response.clone());
                     });
                 })
             ])

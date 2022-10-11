@@ -10,7 +10,7 @@
  * **Compress 100x-1000x** a visual scene into less than 12 Kb PNGs that scales in HD.
  * **Do more, without less**... This is pixaaaaa! (pics)
  
-![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/EDITOR_1.png)
+![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/SCREENSHOTS_GRID_pngquant.png)
 
 ### 1) What does it cost?
 
@@ -31,8 +31,6 @@ It is useful in the field of the protection of the private sphere and the online
 
 Pixa.Pics stands in favor of the freedom of expression, communication, education; **respect for the privacy of citizens and civil rights in general**. We defend the free flow of ideas, knowledge and culture as the software is completely free and open-source. 
 
-![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/doc/screenshots/home_page_view_dark.png?v=1)
-
 > IT CLAIMS TO BE THE UNBREAKABLE, UNCHANGABLE, UNSTOPPABLE Ace of Automatic Information; Blockchain is a list of transactions grouped into multiple blocks that constitute a state in a machine that changes according to a cryptography-based agreement AND between its participating terminals through a data network. This technology allows you to save and keep a structured data set for centuries flawlessly.
 
 We strongly believe bold the following recklessly for a while. The Internet has become an oligopoly Disneyland with little innovation. The central banks have corrupted money - the operating system of society. We see blockchain as a new computing platform with novel features, that could both, bring a new phase of innovation, and redefine the existing monetary systems. We want to contribute to bringing a better future sooner. Hence, ten months ago, we founded pixa pics.
@@ -48,8 +46,6 @@ We strongly believe bold the following recklessly for a while. The Internet has 
  * **Staying on the front line of dropping cost as it is a FOSS.**
  * **Getting to openly fight what misses being just great, while boring good exists.** 
  * **Staying modern without paying anything for useless and toxic ultra-simplification tools.**
- 
-![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/doc/screenshots/editor_view_mobile.png?v=1)
 
 **Does https://pixa.pics/pixel get?**
 
@@ -61,16 +57,11 @@ As a team we have a commitment to work collaboratively, and participate with max
 
 ## D) Special features
 
-![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/doc/screenshots/editor_view_start.png?v=1)
-
 Screenshot of the minima's laboratory of pixa.pics (which is a pixel art editor).
 
  * Create pixel art from your pictures and draw, cut, select, do anything.
  * Have fun with NFTs weighting as low as ~10-100Kb.
  * Restore and colorize B/W while scaling up to 12x images.
-
-![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/doc/screenshots/editor_view_filter.png?v=1)
-
 
 ## E) Technology
 
@@ -87,37 +78,15 @@ Screenshot of the minima's laboratory of pixa.pics (which is a pixel art editor)
 * Chunk ("norris") [webpack system](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/webpack.config.js) for dropping script evaluation cost within CPU
 * WASM Hashing function for detecting change in history of editing (XXHash)
 
-
-![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/doc/screenshots/RAS_1x.png)
-Source file #0 in png : 5.0Kb (Perfectly fits into some blockchains entirely!)
-
-![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/doc/screenshots/RAS_6x.png)
-Output file #1.1 in png : 1020x576 (6 times bigger compared to the source file, good for social media post)
-
-![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/doc/screenshots/XBRZ_RAS_6x.png)
-Output file #1.2 in png : 1020x576 (6 times bigger (using xBRZ) compared to the source file, good for social media post)
-
-![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/doc/screenshots/XBRZ_VEC_6x.svg)
-Output file in svg from #1.2, good for printing
-
 Demo Ultra HD rendering : https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/doc/screenshots/yakuza.png
 
 Look! On the STEEM blockchain you can post base64 text, transactions are rigged to 73Kb at maxima but STEEM is now kinda old for a blockchain.
 
-## F) Performance
-
-**70-99 / 100 of performance (Lighthouse metrics....)**
-
-![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/doc/screenshots/pagespeed.web.dev.png?v=1)
-Lighthouse (google's webpage loading test) metrics of pixa.pics at left while those of instagram at right
-
-More than that our application has been optimized in order to consume the less **Random Access Memory** possible, while you will see around 150-200 Mb consumed by the Soundcloud + Facebook & companies like that as a single chrome tab, pixa.pics run with some 20-35Mb, it is **great up to 1000% less than "them"**. This is thanks to coding style and architecture of our modules which looks like ASM.JS and SIMD.JS, which we derived one for color computation being called simdope.js, you'll find it in source code.
-
-# G) How can it work thanks to sponsorship?
+# F) How can it work thanks to sponsorship?
 
 > **Thanks for support!**
 
-## G') Getting further with sponsorship and development
+## F') Getting further with sponsorship and development
 
 **Great is this king, the king kills that is good, you can't kill what is good, but you can kill the king!**
 The king is the newest being an amount of funds along with some specifications to create a new feature that kill one.
@@ -141,7 +110,7 @@ Always while a new checkpoint is set the king, once it lived only then, it can b
 * Rebuild some functionalities again.
 * Audit what users need and list the ideas found.
 
-## G") Get started and fund a king functionality now
+## F") Get started and fund a king functionality now
 
 **INTERESTED INTO SPONSORING a good cause? **
 

@@ -209,7 +209,7 @@ const styles = theme => ({
         whiteSpace: "break-spaces",
         maxWidth: "1200px",
         fontWeight: "bold",
-        fontSize: "72px",
+        fontSize: "64px",
         "& sup": {
             fontSize: "0.3em",
             opacity: "0.6",
@@ -217,11 +217,11 @@ const styles = theme => ({
         },
         [theme.breakpoints.down("md")]: {
             "& > span": {display: "none"},
-            fontSize: "64px",
+            fontSize: "52px",
         },
         [theme.breakpoints.down("sm")]: {
             "& > span": {display: "none"},
-            fontSize: "48px",
+            fontSize: "40px",
             "& sup": {
                 fontSize: "0.5em",
                 opacity: "0.8",
