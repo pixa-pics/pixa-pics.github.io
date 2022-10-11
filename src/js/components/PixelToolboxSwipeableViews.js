@@ -2,7 +2,6 @@ import React from "react";
 
 import {
     withStyles,
-    Avatar,
     List,
     ListItem,
     ListItemAvatar,
@@ -318,6 +317,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
         this.state = {
             classes: props.classes,
             canvas: props.canvas,
+            is_mobile: props.is_mobile || false,
             view_names: props.view_names,
             view_name_index: props.view_name_index,
             current_color: props.current_color,
@@ -392,7 +392,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
         } = this.state;
 
         const _history_changed = Boolean(can_undo !== new_props.can_undo) ||  Boolean(can_redo !== new_props.can_redo);
-        const must_compute_filter = Boolean(view_name_index !== new_props.view_name_index || _history_changed) && Boolean(new_props.view_name_index === 6);
+        const must_compute_filter = Boolean(Boolean(view_name_index !== new_props.view_name_index || _history_changed) && Boolean(new_props.view_name_index === 6));
 
         let layers_colors_max = 0;
         Array.from(new_props.layers).forEach(function(l){ if(layers_colors_max < parseInt(l.number_of_colors)) { layers_colors_max = parseInt(l.number_of_colors);}});
@@ -475,8 +475,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
         try {
             this.setState({_filters_changed: true}, () => {
 
-                this.state.canvas.compute_filters_preview(true);
-                this.forceUpdate();
+                this.state.canvas.compute_filters_preview();
             });
         } catch (e) {}
     };
@@ -484,6 +483,9 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
     _to_filter = (name) => {
 
         this.state.canvas.to_filter(name, this.state.slider_value);
+        if(!this.is_mobile) {
+            this.compute_filters_preview();
+        }
     };
 
     get_action_panel_names = () => {
@@ -811,7 +813,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
         if(can === null) {return}
         if(typeof can.width === "undefined") {return}
         if(can.width === null) {return}
-        let ctx = can.getContext("2d");
+        let ctx = can.getContext("2d", {desynchronized: true});
         ctx.globalCompositeOperation = "copy"
         ctx.drawImage(bmp, 0, 0);
     };
@@ -1577,7 +1579,9 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                 ]
             }
         ];
-        case "filters": return [
+        case "filters":
+            const {height, width} = filters_thumbnail.get(filters[0]) || new Object();
+            return [
                 {
                     icon: <ImageFilterMagicIcon/>,
                     progression: _filters_preview_progression_stepped,
@@ -1588,16 +1592,17 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                     sub: "The strength selected matters meanwhile preview are only shown at 100% intensity. To cancel any operation, use 'undo'.",
                     tools: filters.map((name, name_index) => {
 
+
                         const bmp = filters_thumbnail.get(name) || new Object();
                         return {
                             style: {position: "relative", width: "100%", height: "100%" },
                             icon: <canvas
                                 className={"pixelated"}
                                 ref={(el) => {this._set_canvas_ref(el, bmp)}}
-                                width={bmp.width || 0}
-                                height={bmp.height || 0}
+                                width={width | 0}
+                                height={height | 0}
                                 style={{ zIndex: "-1", aspectRatio: _filter_aspect_ratio, boxSizing: "border-box", height: "100%", minWidth: "100%", width: 128, boxShadow: "0px 1px 2px #3729c1a8", border: "4px solid #020529", borderRadius: 2, contain: "paint style size"}}
-                                key={"name-" + name + "-ratio-" + _filter_aspect_ratio + "-over-" + (bmp.width || 0).toString() + "x" + String(bmp.height || 0) + "-preview-hash-" + last_filters_hash}
+                                key={"name-" + name + "-ratio-" + _filter_aspect_ratio + "-over-" + (bmp.width || 0).toString() + "x" + (bmp.height || 0).toString() + "-preview-hash-" + last_filters_hash}
                                 />,
                             text: name,
                             text_style: {
@@ -1619,7 +1624,6 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                             },
                             on_click: () => {
                                 this._to_filter(name);
-                                this.compute_filters_preview();
                                 this._handle_action_close();
                             }
                         };

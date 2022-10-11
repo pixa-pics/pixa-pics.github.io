@@ -209,7 +209,7 @@ const styles = theme => ({
         whiteSpace: "break-spaces",
         maxWidth: "1200px",
         fontWeight: "bold",
-        fontSize: "48px",
+        fontSize: "72px",
         "& sup": {
             fontSize: "0.3em",
             opacity: "0.6",
@@ -217,11 +217,11 @@ const styles = theme => ({
         },
         [theme.breakpoints.down("md")]: {
             "& > span": {display: "none"},
-            fontSize: "36px",
+            fontSize: "64px",
         },
         [theme.breakpoints.down("sm")]: {
             "& > span": {display: "none"},
-            fontSize: "32px",
+            fontSize: "48px",
             "& sup": {
                 fontSize: "0.5em",
                 opacity: "0.8",
@@ -275,8 +275,8 @@ class Home extends React.PureComponent {
             _infographics_in: true,
             _bii3_opacity: 1,
             _join_now_button_update: 0,
-            _brainplode: <BrainplodeEmojiSvg style={{ height: '56px', width: '56px' }}/>,
-            _diamond: <DiamondEmojiSvg style={{ height: '56px', width: '56px' }}/>,
+            _brainplode: <BrainplodeEmojiSvg style={{ height: '1.5em', width: '1.5em' }}/>,
+            _diamond: <DiamondEmojiSvg style={{ height: '1.5em', width: '1.5em' }}/>,
             _camera: null
         };
     };
@@ -297,7 +297,7 @@ class Home extends React.PureComponent {
                 loop={true}
                 autoplay={true}
                 src="/src/js/lottie/camera.json"
-                style={{ height: '56px', width: '56px' }}/>
+                style={{ height: '1.5em', width: '1.5em' }}/>
                 }, () => {
             this.forceUpdate();
         });
@@ -310,7 +310,7 @@ class Home extends React.PureComponent {
                     autoplay={true}
                     initialSegment={[27, 174]}
                     src="/src/js/notoemoji/lottie/1f92f.json"
-                    style={{ height: '56px', width: '56px' }}/>
+                    style={{ height: '1.5em', width: '1.5em' }}/>
             }, () => {
 
                 this.forceUpdate();
@@ -324,7 +324,7 @@ class Home extends React.PureComponent {
                     loop={true}
                     autoplay={true}
                     src="/src/js/notoemoji/lottie/1f48e.json"
-                    style={{ height: '56px', width: '56px' }}/>
+                    style={{ height: '1.5em', width: '1.5em' }}/>
             }, () => {
 
                 this.forceUpdate();
@@ -491,7 +491,7 @@ class Home extends React.PureComponent {
                     </div>
                     <div className={classes.headerContainer} style={{textShadow: "0px 0px 9px #57bbff"}}>
                         <h1 className={classes.titleh1}>
-                            <span className={classes.revelantText} style={{color: "#ffffff", backgroundColor: "black"}}>From PICS {_camera} right to PIXELARTS {_brainplode} and NFTs {_diamond}.</span>
+                            <span className={classes.revelantText} style={{color: "#ffffff", backgroundColor: "black"}}>From PICS {_camera} into PIXELARTS {_brainplode} and NFTs {_diamond}.</span>
                         </h1>
                         <h2 className={classes.titleh2} style={{color: "#000639"}}>
                             <span className={classes.revelantTextDesktop} style={{color: "#fff", backgroundColor: "black"}}>Get the MAXIMA of PRIVACY fashionably for real and for the ONLINE-SELF...</span>

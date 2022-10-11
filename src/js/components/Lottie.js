@@ -21,42 +21,49 @@ class Lottie extends React.PureComponent {
             autoplay: props.autoplay || false,
             path: props.path  || props.src || "",
             initialSegment: props.initialSegment,
-            id: props.id || Date.now().toString(16),
+            id: "n"+props.id || "n"+(Math.random()*10000|0).toString(16),
         };
+        this._lottie;
     };
 
-    _set_ref = (comp) => {
-
-        const {loop, autoplay, path, hover, initialSegment, id} = this.state;
+    componentDidMount() {
 
         JSLoader( () => import("lottie-web/build/player/lottie_svg")).then((lottie) => {
-            lottie.loadAnimation({
-                container: comp,
-                loop: loop,
-                autoplay: autoplay,
-                quality: "medium",
-                path: path,
-                hover: hover,
-                initialSegment: initialSegment
-            });
+            this._lottie = lottie;
+            this._play_lottie();
         });
     }
 
+    _play_lottie() {
+
+        const {loop, autoplay, path, hover, initialSegment, id} = this.state;
+
+        this._lottie.loadAnimation({
+            container: document.getElementById(id),
+            loop: loop,
+            autoplay: autoplay,
+            quality: "low",
+            path: path,
+            name: id,
+            hover: hover,
+            initialSegment: initialSegment
+        });
+    };
+
     componentWillUnmount() {
 
-        JSLoader( () => import("lottie-web/build/player/lottie_svg")).then((lottie) => {
-
-            lottie.destroy(this.state.id);
-        });
+        this._lottie.destroy(this.state.id);
+        delete this._lottie;
     }
 
     render() {
 
-        const { classes, className, style } = this.state;
-        const { id } = this.state;
+        const { classes, className, style, loop, path, id } = this.state;
 
         return (
-            <div className={classes.player + " " + className} style={style} ref={this._set_ref} id={id}></div>
+            <div className={classes.player + " " + (Boolean(className) ? "." + className: "").toString() + " .lottie"}
+                 style={style}
+                 id={id}></div>
         );
     }
 }

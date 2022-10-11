@@ -2261,6 +2261,7 @@ class Pixel extends React.PureComponent {
                                 should_update={_is_edit_drawer_open}
                                 onActionClose={this._handle_edit_drawer_close}
                                 canvas={_canvas}
+                                is_mobile={is_mobile_or_tablet}
                                 view_class={classes.listOfTools}
                                 view_name_index={_view_name_index}
                                 previous_view_name_index={_previous_view_name_index}
@@ -2364,6 +2365,7 @@ class Pixel extends React.PureComponent {
                                 should_update={true}
                                 canvas={_canvas}
                                 view_class={classes.listOfTools}
+                                is_mobile={is_mobile_or_tablet}
                                 view_name_index={_view_name_index}
                                 previous_view_name_index={_previous_view_name_index}
                                 view_names={_view_names}
