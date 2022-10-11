@@ -101,6 +101,11 @@ XXH64.prototype.init = init
 XXH64.prototype.update = function (input) {
 	var isArrayBuffer
 
+	if ("buffer" in input) {
+		input = input.buffer;
+		isArrayBuffer = true;
+	}
+
 	// Convert all strings to utf-8 first (issue #5)
 	if (typeof input == 'string') {
 		input = toUTF8Array(input)

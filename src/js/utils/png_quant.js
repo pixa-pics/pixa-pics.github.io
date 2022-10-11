@@ -732,18 +732,17 @@ Xu=zu>>>0<10,Gu=0==(0|ju),qu=Gu&Xu,Ju=Wu|qu,Ju&Ku&&(Qu=b>>>0>30,Zu=Iu>>>b,$u=0==
         var mime = arr[0].match(/:(.*?);/)[1];
         var bstr = atob(arr[1]);
         arr = null;
-        var n = bstr.length;
+        var n = bstr.length | 0;
+        var i = 0;
         var u8arr = new Uint8Array(n);
-        while (n--) {
-            u8arr[n] = bstr.charCodeAt(n);
+        for (i = 0; (i|0) < (n|0); i = (i+1|0)>>>0) {
+            u8arr[i] = bstr.charCodeAt(i);
         }
         bstr = null;
         return u8arr;
     }
     
-    var result = pngquant(dataURLtoUint8(dataurl), options, function(){}).data;
-    var blob = new Blob(Array.of(result), { type: "image/png" });
-    result = null;
+    var blob = new Blob(Array.of(pngquant(dataURLtoUint8(dataurl), options, function(){}).data), { type: "image/png" });
     
     try {
         
