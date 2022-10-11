@@ -13,7 +13,6 @@ import LightingEmojiSvg from "../notoemoji/react/EmojiU26A1";
 import GlassesEmojiSvg from "../notoemoji/react/EmojiU1F97D";
 import JacketEmojiSvg from "../notoemoji/react/EmojiU1F97C";
 import BrainplodeEmojiSvg from "../notoemoji/react/EmojiU1F92F";
-import CameraEmojiSvg from "../notoemoji/react/EmojiU1F4F7";
 import DiamondEmojiSvg from "../notoemoji/react/EmojiU1F48E";
 import ScientistEmojiSvg from "../notoemoji/react/EmojiU1F4681F3Fd200D1F52C";
 import ShufflingSpanText from "../components/ShufflingSpanText";

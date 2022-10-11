@@ -3,6 +3,9 @@ var path = require('path');
 var UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 var BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 var HtmlWebpackPlugin = require("html-webpack-plugin");
+var MiniCssExtractPlugin = require("mini-css-extract-plugin");
+var CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
+
 
 module.exports = {
     devtool: process.env.NODE_ENV === 'production' ? "inline-source-map": false,
@@ -98,6 +101,9 @@ module.exports = {
                         code: true
                     },
                 }
+            }),
+            new CssMinimizerPlugin({
+                minimizerOptions: {"name": "pixa-pics", "preset": ["advanced", {autoprefixer: {add: true}}]}
             })
         ],
         chunkIds: 'named',
@@ -184,8 +190,10 @@ module.exports = {
             inject: true,
             cache: false,
         }),
+        new MiniCssExtractPlugin(),
         new BundleAnalyzerPlugin()
     ]: [
+        new MiniCssExtractPlugin(),
         new BundleAnalyzerPlugin()
     ],
     devServer: {
