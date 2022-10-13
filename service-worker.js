@@ -72,12 +72,12 @@ self.addEventListener("install", function(event) {
 
 self.addEventListener("fetch", function(event) {
 
-    const url = event.request.url.toString();
+    const url = event.request.url;
     const same_site = true //event.request.referrer.startsWith(U.hostname);
 
     if(url.startsWith("data:image") || url.startsWith("blob:http") || url.startsWith("data:application")) {
 
-        event.respondWith(fetch(event.request));
+        event.respondWith(fetch(url));
 
     }else if(url.startsWith("data:,all")) {
 
@@ -196,7 +196,7 @@ self.addEventListener("fetch", function(event) {
                         cache.put(url, response); return Promise.resolve(response.clone());
                     });
                 }).catch(function(){
-                    fetch(event.request).then(function (response) { // Fetch, clone, and serve
+                    fetch(url).then(function (response) { // Fetch, clone, and serve
                         cache.put(url, response); return Promise.resolve(response.clone());
                     });
                 });
@@ -212,7 +212,7 @@ self.addEventListener("fetch", function(event) {
                         cache.put(url, response); return Promise.resolve(response.clone());
                     });
                 }).catch(function(){
-                    fetch(event.request).then(function (response) { // Fetch, clone, and serve
+                    fetch(url).then(function (response) { // Fetch, clone, and serve
                         cache.put(url, response); return Promise.resolve(response.clone());
                     });
                 });
@@ -228,7 +228,7 @@ self.addEventListener("fetch", function(event) {
                         cache.put(url, response); return Promise.resolve(response.clone());
                     });
                 }).catch(function(){
-                    fetch(event.request).then(function (response) { // Fetch, clone, and serve
+                    fetch(url).then(function (response) { // Fetch, clone, and serve
                         cache.put(url, response); return Promise.resolve(response.clone());
                     });
                 });
@@ -321,7 +321,7 @@ self.addEventListener("fetch", function(event) {
                         if(response) { return response }
                     });
                 }),
-                fetch(event.request).then(function (response) { // Fetch and serve
+                fetch(url).then(function (response) { // Fetch and serve
                     useful_cache.then(function (cache) {
                         cache.put(url, response); return Promise.resolve(response.clone());
                     });
@@ -330,7 +330,7 @@ self.addEventListener("fetch", function(event) {
         );
     }else {
 
-        return;
+        return Promise.resolve(new Response(new ArrayBuffer(0), {status: 404, statusText: "Not found"}));
     }
 });
 
