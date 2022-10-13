@@ -116,6 +116,8 @@ Always while a new checkpoint is set the king, once it lived only then, it can b
 
 Please email-us at: [pixa.pics@protonmail.com](mailto:pixa.pics@protonmail.com)
 
+### Sponsor-kit : [Pixelarts_NFTs_PixaPics.pdf](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/Pixelarts_NFTs_PixaPics.pdf)
+
 ---
 
 ## Z) Legal concerns and acknowledgment
