@@ -78,7 +78,8 @@ const _get_default_settings = () => {
     return {
         locales: locales,
         currency: _get_currency_by_locales(locales),
-        ret: 0,
+        bdi: 1,
+        ret: 5,
         camo: 0,
         sfx_enabled: true,
         jamy_enabled: true,

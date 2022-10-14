@@ -115,6 +115,7 @@ class Index extends React.PureComponent {
             _theme_day: false,
             _ret: 0,
             _camo: 0,
+            _bdi: 0,
             _sfx_enabled: true,
             _voice_enabled: true,
             _music_enabled: false,
@@ -202,13 +203,13 @@ class Index extends React.PureComponent {
             setTimeout(() => {
 
                 if(this.pathname === "/" || this.pathname === "") {
-                    actions.trigger_snackbar("Let's take a look to our laboratory processing sharp images.", 4500)
+                    actions.trigger_snackbar("Let's take a look to our laboratory processing very sharp, crisp-edges images, do you want it?", 5500)
                 }
 
                 setTimeout(() => {
 
                     if(this.pathname === "/" || this.pathname === "") {
-                        actions.trigger_snackbar("Wanna give it a try, my little diddy?", 2500)
+                        actions.trigger_snackbar("I mean, don't you want to give a try? My dear, welcome!", 3500)
                     }
 
                     setTimeout(() => {
@@ -221,17 +222,17 @@ class Index extends React.PureComponent {
 
                                 if(this.pathname === "/" || this.pathname === "") {
                                     actions.jamy_update("annoyed")
-                                    actions.trigger_snackbar("That makes you wanna hurt me, should I be wrong?", 6000)
+                                    actions.trigger_snackbar("That makes you wanna hurt me, am I wrong my lit' diddy?", 6000)
                                 }
                             }, 8000);
                         }
                     }, 10000);
 
-                }, 5000);
+                }, 6000);
 
             }, 2500);
 
-        }, 6000);
+        }, 9000);
     }
 
     componentWillUnmount() {
@@ -394,10 +395,11 @@ class Index extends React.PureComponent {
             const _language = _selected_locales_code.split("-")[0];
             const _ret = parseInt(typeof settings.ret !== "undefined" ? settings.ret: 0);
             const _camo = parseInt(typeof settings.camo !== "undefined" ? settings.camo: 0);
+            const _bdi = parseInt(typeof settings.bdi !== "undefined" ? settings.bdi: 0);
             const _theme_day = is_day(_selected_locales_code.split("-")[1]);
 
             let force_update = Boolean(_selected_locales_code !== this.settings._selected_locales_code);
-            this.settings =  { _unset: false, _theme_day, _language, _ret, _camo, _voice_enabled, _sfx_enabled, _music_enabled, _jamy_enabled, _selected_locales_code, _know_the_settings: true, _has_played_index_music_counter: parseInt(Boolean(!this.settings._know_the_settings && _music_enabled) ? 1: Boolean(this.settings._has_played_index_music_counter) )};
+            this.settings =  { _unset: false, _theme_day, _language, _ret, _camo, _bdi, _voice_enabled, _sfx_enabled, _music_enabled, _jamy_enabled, _selected_locales_code, _know_the_settings: true, _has_played_index_music_counter: parseInt(Boolean(!this.settings._know_the_settings && _music_enabled) ? 1: Boolean(this.settings._has_played_index_music_counter) )};
             if(!was_the_settings_known) {
 
                 this.forceUpdate(function(){document.body.setAttribute("class", "loaded");});
@@ -625,7 +627,7 @@ class Index extends React.PureComponent {
         const { _snackbar_open, _snackbar_message, _snackbar_auto_hide_duration } = this.state;
         const {  _is_share_dialog_open } = this.state;
         const { _know_if_logged, _loaded_progress_percent, _jamy_state_of_mind } = this.state;
-        const {_ret, _camo, _music_enabled, _jamy_enabled, _language, _know_the_settings} = this.settings;
+        const {_ret, _camo, _bdi, _music_enabled, _jamy_enabled, _language, _know_the_settings} = this.settings;
 
         const JAMY = {
             angry: <JamyAngry className={classes.jamy} />,
@@ -652,32 +654,33 @@ class Index extends React.PureComponent {
                         jamy_enabled={_jamy_enabled}
                         jamy_state_of_mind={_jamy_state_of_mind}/>
                     <AppDrawer
+                        bdi={_bdi}
                         know_the_settings={_know_the_settings}
                         language={_language}/>
                     <Toolbar />
                     <main className={classes.content}>
                         {_know_the_settings && this._page_component}
                     </main>
-                    <Snackbar
-                        className={classes.snackbar}
-                        open={_snackbar_open}
-                        anchorOrigin={{
-                            vertical: "top",
-                            horizontal: "center",
-                        }}
-                        message={<div>
-                            {_jamy_enabled ? <span className={classes.jamyContainer}>{JAMY[_jamy_state_of_mind]}</span>: null}
-                            <span>{_snackbar_message.toString()}</span>
-                        </div>}
-                        action={
-                            <IconButton size="small" aria-label="close" color="inherit" onClick={this._close_snackbar}>
-                                <CloseIcon fontSize="small" />
-                            </IconButton>
-                        }
-                        autoHideDuration={_snackbar_auto_hide_duration}
-                        onClose={this._close_snackbar}
-                    />
                 </div>
+                <Snackbar
+                    className={classes.snackbar}
+                    open={_snackbar_open}
+                    anchorOrigin={{
+                        vertical: "top",
+                        horizontal: "center",
+                    }}
+                    message={<div>
+                        {_jamy_enabled ? <span className={classes.jamyContainer}>{JAMY[_jamy_state_of_mind]}</span>: null}
+                        <span>{_snackbar_message.toString()}</span>
+                    </div>}
+                    action={
+                        <IconButton size="small" aria-label="close" color="inherit" onClick={this._close_snackbar}>
+                            <CloseIcon fontSize="small" />
+                        </IconButton>
+                    }
+                    autoHideDuration={_snackbar_auto_hide_duration}
+                    onClose={this._close_snackbar}
+                />
                 {_language && <ShareDialog
                     open={_is_share_dialog_open}
                     onClose={this._handle_share_dialog_close}/>}

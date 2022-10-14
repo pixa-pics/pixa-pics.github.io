@@ -21,8 +21,9 @@ const overrides = {
             "body > #app": {
                 height: "100%",
             },
-            "body > #app > div": {
+            "body > #app > div:first-child": {
                 height: "100%",
+                contain: "paint size style layout"
             },
             blockquote: {
                 color: "#666"

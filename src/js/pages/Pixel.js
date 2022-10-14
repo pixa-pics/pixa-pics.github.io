@@ -545,7 +545,7 @@ class Pixel extends React.PureComponent {
                     }
                 }, 8500);
             }
-        }, 4000);
+        }, 9000);
         actions.jamy_update("happy");
 
         window.addEventListener("resize", this._updated_dimensions);

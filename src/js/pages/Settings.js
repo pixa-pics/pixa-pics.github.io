@@ -221,9 +221,18 @@ class Settings extends React.Component {
         });
     };
 
+    _set_bdi_from_slider = (event, value) => {
+
+        const index = parseInt(value);
+        this.setState({_bdi: index}, () => {
+
+            api.set_settings({bdi: index},  this._on_settings_changed);
+        });
+    };
+
     render() {
 
-        const { _voice_enabled, _locales,  _sfx_enabled, _music_enabled, _jamy_enabled, _currency_countries, _selected_locales_code, classes, _camo, _ret } = this.state;
+        const { _voice_enabled, _locales,  _sfx_enabled, _music_enabled, _jamy_enabled, _currency_countries, _selected_locales_code, classes, _camo, _ret, _bdi } = this.state;
 
         let locales = _locales[0];
 
@@ -317,8 +326,17 @@ class Settings extends React.Component {
                             <CardHeader title={"Visuals"} />
                             <CardContent>
                                 <div className={classes.sliderContainer}>
+                                    <Typography className={classes.sliderLabel} id="bdi-slider"
+                                                gutterBottom>Drawer's background</Typography>
+                                    <Slider defaultValue={_bdi} step={1}
+                                            valueLabelFormat={(value) => { return Array.of("no", "plm", "rid", "bmb")[value]}}
+                                            valueLabelDisplay="auto" min={0} max={3}
+                                            onChangeCommitted={this._set_bdi_from_slider}
+                                            aria-labelledby="bdi-slider"/>
+                                </div>
+                                <div className={classes.sliderContainer}>
                                     <Typography className={classes.sliderLabel} id="ret-slider"
-                                                gutterBottom>Symbol</Typography>
+                                                gutterBottom>Toolbar's symbol</Typography>
                                     <Slider defaultValue={_ret} step={1}
                                             valueLabelFormat={(value) => { return Array.of("no", "hnd", "sly", "sun", "bhz", "evl", "ptn", "skl", "ncl", "ufo", "msc", "tgr", "rvn")[value]}}
                                             valueLabelDisplay="auto" min={0} max={12}
@@ -327,7 +345,7 @@ class Settings extends React.Component {
                                 </div>
                                 <div className={classes.sliderContainer}>
                                     <Typography className={classes.sliderLabel} id="camo-slider"
-                                                gutterBottom>Toolbar</Typography>
+                                                gutterBottom>Toolbar's skin</Typography>
                                     <Slider defaultValue={_camo} step={1}
                                             valueLabelFormat={(value) => { return Array.of("no", "dgt", "jgl", "snd", "cns", "mny", "rpt", "mgk", "npn", "lf", "dth", "fr", "blt")[value]}}
                                             valueLabelDisplay="auto" min={0} max={12}
