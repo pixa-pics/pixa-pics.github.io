@@ -126,12 +126,12 @@ const SuperCanvas = {
                 let occ2d;
                 if (is_offscreen) {
 
-                    occ2d = new OffscreenCanvas(pxl_width, pxl_height).getContext("2d", {willReadFrequently: true});
+                    occ2d = new OffscreenCanvas(pxl_width, pxl_height).getContext("2d", {willReadFrequently: false});
                     occ2d.imageSmoothingEnabled = false;
                     occ2d.webkitImageSmoothingEnabled = false;
                 }
 
-                cc2d = c.getContext('2d', {desynchronized: true, willReadFrequently: true} );
+                cc2d = c.getContext('2d', {desynchronized: false, willReadFrequently: false} );
                 cc2d.imageSmoothingEnabled = false;
                 cc2d.webkitImageSmoothingEnabled = false;
                 cc2d.globalCompositeOperation = "copy";
@@ -380,7 +380,7 @@ const SuperCanvas = {
                 "use strict";
                 _state.s.canvas_context.canvas.addEventListener("contextlost", function(){
 
-                    let cc2d = _state.s.canvas_context.canvas.getContext('2d', {desynchronized: true, willReadFrequently: true});
+                    let cc2d = _state.s.canvas_context.canvas.getContext('2d', {desynchronized: false, willReadFrequently: false});
                     cc2d.imageSmoothingEnabled = false;
                     cc2d.webkitImageSmoothingEnabled = false;
                     cc2d.globalCompositeOperation = "copy";
@@ -388,7 +388,7 @@ const SuperCanvas = {
                 });
                 _state.s.offscreen_canvas_context.canvas.addEventListener("contextlost", function(){
 
-                    let occ2d = _state.s.offscreen_canvas_context.canvas.getContext("2d", {willReadFrequently: true});
+                    let occ2d = _state.s.offscreen_canvas_context.canvas.getContext("2d", {willReadFrequently: false});
                     occ2d.imageSmoothingEnabled = false;
                     occ2d.webkitImageSmoothingEnabled = false;
                     _state.s.offscreen_canvas_context = occ2d;

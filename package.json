@@ -7,7 +7,7 @@
     "@jsquash/oxipng": "^1.0.0",
     "@lottiefiles/jlottie": "~1.2.1",
     "@material-ui/core": "~4.12.3",
-    "@material-ui/icons": "^4.11.2",
+    "@material-ui/icons": "~4.11.3",
     "@material-ui/lab": "~4.0.0-alpha.57",
     "@material-ui/pickers": "^3.3.10",
     "buffer": "~6.0.3",
@@ -50,7 +50,7 @@
     "nwjs-builder-phoenix": "~1.15.0",
     "svgo": "~2.8.0",
     "uglifyjs-webpack-plugin": "~2.2.0",
-    "webpack": "~4.9.2",
+    "webpack": "~4.37.0",
     "webpack-bundle-analyzer": "~4.6.1",
     "webpack-cli": "~4.9.2",
     "webpack-dev-server": "~4.9.2"

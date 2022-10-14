@@ -24,6 +24,7 @@ const base64error_code = 255;
 const base64codes = Uint8ClampedArray.of(255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 62, 255, 255, 255, 63, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 255, 255, 255, 0, 255, 255, 255, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 255, 255, 255, 255, 255, 255, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51);
 const base64codes_length = base64codes.length | 0;
 
+
 function getBase64Code(char_code) {
 
     char_code = (char_code | 0) >>> 0;
@@ -41,26 +42,28 @@ function getBase64CodesBufferResults(buffer) {
     return Uint8ClampedArray.of( buffer >> 16, (buffer >> 8) & 0xFF, buffer & 0xFF)
 }
 function fewBytesToBase64Array(bytes) {
-    return Array.of( base64abcCC[bytes[0] >> 2], base64abcCC[((bytes[0] & 0x03) << 4) | (bytes[1] >> 4)], base64abcCC[((bytes[1] & 0x0F) << 2) | (bytes[2] >> 6)], base64abcCC[bytes[2] & 0x3F])
+    return Uint8ClampedArray.of( base64abcCC[bytes[0] >> 2], base64abcCC[((bytes[0] & 0x03) << 4) | (bytes[1] >> 4)], base64abcCC[((bytes[1] & 0x0F) << 2) | (bytes[2] >> 6)], base64abcCC[bytes[2] & 0x3F])
 }
 
 export function bytesToBase64(bytes) {
-    let result = new Array(), i = 2, l = bytes.length | 0;
-    for (; (i|0) < (l|0); i = (i+3|0)>>>0) {
-        result = result.concat(fewBytesToBase64Array(bytes.subarray(i-2|0, i+1|0)));
+    "use strict";
+    let i = 2, l = bytes.length | 0;
+    let length = 0;
+
+    for (; (i|0) < (l|0); i = i+3|0) {length = length + 4 | 0;}
+    if (i === l + 1) { length = length + 4 | 0;}
+    if (i === l) {length = length + 4 | 0;}
+    let result = new Uint8ClampedArray(length);
+
+    for (i = 2; (i|0) < (l|0); i = i+3|0) {
+        result.set(fewBytesToBase64Array(bytes.subarray(i-2|0, i+1|0)), (i-2)/3*4|0);
     }
-    if ((i|0) == (l + 1 | 0)) { // 1 octet yet to write
-        result.push(base64abcCC[bytes[i - 2] >> 2]);
-        result.push(base64abcCC[(bytes[i - 2] & 0x03) << 4]);
-        result.push("=".charCodeAt(0));
-        result.push("=".charCodeAt(0));
+    if (i === l + 1) { // 1 octet yet to write
+        result.set(Uint8ClampedArray.of(base64abcCC[bytes[i - 2 | 0] >> 2], base64abcCC[(bytes[i - 2 | 0] & 0x03) << 4], "=".charCodeAt(0), "=".charCodeAt(0)), (i-2)/3*4|0);
+    }else if (i === l) { // 2 octets yet to write
+        result.set(Uint8ClampedArray.of(base64abcCC[bytes[i - 2 | 0] >> 2], base64abcCC[((bytes[i - 2 | 0] & 0x03) << 4) | (bytes[i - 1 | 0] >> 4)], base64abcCC[(bytes[i - 1 | 0] & 0x0F) << 2], "=".charCodeAt(0)), (i-2)/3*4|0);
     }
-    if ((i|0) == (l|0)) { // 2 octets yet to write
-        result.push(base64abcCC[bytes[i - 2] >> 2]);
-        result.push(base64abcCC[((bytes[i - 2] & 0x03) << 4) | (bytes[i - 1] >> 4)]);
-        result.push(base64abcCC[(bytes[i - 1] & 0x0F) << 2]);
-        result.push("=".charCodeAt(0));
-    }
+
     return result.map(function(cc){return String.fromCharCode(cc)}).join("");
 }
 
