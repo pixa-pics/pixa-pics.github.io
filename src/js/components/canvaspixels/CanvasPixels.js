@@ -1530,7 +1530,7 @@ class CanvasPixels extends React.PureComponent {
 
                                 if(onLayersChange) {onLayersChange(super_state.get_state()._layer_index,  Array.from(new_current_state._layers))}
 
-                                if(Boolean(has_changed || has_updated) && leading_change && current_state_not_empty) {
+                                if(Boolean(has_changed || has_updated) && current_state_not_empty) {
 
                                     if (callback_function !== null) {
                                         callback_function(super_state.get_state()._layers, super_state.get_state()._layer_index, has_changed, current_state)
@@ -1546,7 +1546,7 @@ class CanvasPixels extends React.PureComponent {
 
                         const old_timestamp = parseInt(old_current_state._timestamp) || Date.now();
                         const new_timestamp = parseInt(new_current_state._timestamp);
-                        let timestamp = old_timestamp;
+                        let timestamp = parseInt(old_timestamp);
                         let has_changed = false;
                         let has_updated = false;
 
@@ -1567,7 +1567,7 @@ class CanvasPixels extends React.PureComponent {
                                     if(old_hash !== new_hash || !Boolean(old_hash)) {
 
                                         has_changed = true;
-                                        timestamp = new_timestamp;
+                                        timestamp = parseInt(new_timestamp);
                                     }
                                     new_current_state._layers[index].hash = new_hash;
                                     new_current_state._layers[index].thumbnail = new_thumbnail;
@@ -1649,9 +1649,9 @@ class CanvasPixels extends React.PureComponent {
                         } else {
 
                             // History states just got shuffled and we need to update the right moment in time (in the not-now-that-is-now)
-                            for(let i = 0; i < _json_state_history.state_history.length; i++) {
+                            for (let i = 0; i < _json_state_history.state_history.length; i++) {
 
-                                if(_json_state_history.state_history[i]._timestamp === new_current_state._timestamp) {
+                                if (_json_state_history.state_history[i]._timestamp === new_current_state._timestamp) {
 
                                     _json_state_history.state_history[i] = new_current_state;
                                     _saving_json_state_history_ran_timestamp = now;

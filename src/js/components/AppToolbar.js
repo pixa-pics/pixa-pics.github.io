@@ -24,7 +24,6 @@ import JamyHappy from "../icons/JamyHappy";
 import JamySad from "../icons/JamySad";
 import JamyShocked from "../icons/JamyShocked";
 import JamySuspicious from "../icons/JamySuspicious";
-import ExplosionEmojiSvg from "../notoemoji/react/EmojiU1F4A5";
 
 const styles = theme => ({
     appBar: {
@@ -206,7 +205,7 @@ class AppToolbar extends React.PureComponent {
             _jamy_mouse_hover_click: 0,
             _click_much_jamy: false,
             _is_pre_reset: false,
-            _explosion: <ExplosionEmojiSvg className="emoji-100" style={{ height: '150px', width: '150px' }} />
+            _explosion: null
         };
     };
 
@@ -214,11 +213,12 @@ class AppToolbar extends React.PureComponent {
 
         this.setState({
             _explosion: <Lottie
+                onClick={this._exit_to_app}
                 id={"explosion"}
                 loop={true}
                 autoplay={true}
                 src="/src/js/notoemoji/lottie/1f4a5.json"
-                style={{ height: '150px', width: '150px' }}/>
+                style={{ height: '150px', width: '150px', cursor: "pointer" }}/>
         })
     }
 
@@ -455,11 +455,12 @@ class AppToolbar extends React.PureComponent {
                             <div>
                                 <Divider />
                                 {_is_pre_reset ? _explosion: null}
+                                {_is_pre_reset ? <Divider />: null}
                                 <MenuItem onClick={this._pre_reset_toggle}>
                                     <ListItemIcon>
                                         <SecurityIcon fontSize="small" />
                                     </ListItemIcon>
-                                    <ListItemText primary={t( "words.reset", {TUC: true})}/>
+                                    <ListItemText primary={_is_pre_reset ?  t( "words.cancel", {TUC: true}): t( "words.reset", {TUC: true})}/>
                                 </MenuItem>
                             </div>
                         </Menu>

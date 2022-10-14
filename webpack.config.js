@@ -197,9 +197,6 @@ module.exports = {
         new BundleAnalyzerPlugin()
     ],
     devServer: {
-        devMiddleware: {
-            publicPath: "/client"
-        },
         static: {
             directory: path.join(__dirname, "/"),
         },
