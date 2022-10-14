@@ -1,7 +1,7 @@
 /*
 MIT License
 Copyright (c) 2020 Egor Nepomnyaschih
-Copyright (c) 2022 Matias Affolter (rewrote it in low level JS)
+Copyright (c) 2022 Affolter Matias
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
@@ -19,90 +19,74 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-var base64abc = [
-    "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M",
-    "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
-    "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m",
-    "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z",
-    "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "+", "/"
-];
+const base64abcCC = Uint8ClampedArray.of(65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 43, 47);
+const base64error_code = 255;
+const base64codes = Uint8ClampedArray.of(255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 62, 255, 255, 255, 63, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 255, 255, 255, 0, 255, 255, 255, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 255, 255, 255, 255, 255, 255, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51);
+const base64codes_length = base64codes.length | 0;
 
-var base64codes = Uint8ClampedArray.of(
-    255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
-    255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
-    255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 62, 255, 255, 255, 63,
-    52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 255, 255, 255, 0, 255, 255,
-    255, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,
-    15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 255, 255, 255, 255, 255,
-    255, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
-    41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51
-);
+function getBase64Code(char_code) {
 
-function getBase64CodesBuffer(str) {
-    "use strict";
-    return (
-        base64codes[str[0]] << 18 |
-        base64codes[str[1]] << 12 |
-        base64codes[str[2]] << 6 |
-        base64codes[str[3]] << 0
-    ) >>> 0;
+    char_code = (char_code | 0) >>> 0;
+
+    if (((char_code|0)>>>0) >= ((base64codes_length|0)>>>0)) {throw new Error("Unable to parse base64 string.");}
+    const code = (base64codes[char_code] | 0) >>> 0;
+    if (((code|0)>>>0) == ((base64error_code|0)>>>0)) {throw new Error("Unable to parse base64 string.");}
+    return code;
 }
 
-function getBase64abcA(bytes) {
-    "use strict";
-    return ""
-        .concat(base64abc[bytes[0] >> 2])
-        .concat(base64abc[((bytes[0] & 0x03) << 4) | (bytes[1] >> 4)])
-        .concat(base64abc[((bytes[1] & 0x0F) << 2) | (bytes[2] >> 6)])
-        .concat(base64abc[bytes[2] & 0x3F]);
+function getBase64CodesBuffer(str_char_codes) {
+    return getBase64Code(str_char_codes[0]) << 18 | getBase64Code(str_char_codes[1]) << 12 | getBase64Code(str_char_codes[2]) << 6 | getBase64Code(str_char_codes[3]);
+}
+function getBase64CodesBufferResults(buffer) {
+    return Uint8ClampedArray.of( buffer >> 16, (buffer >> 8) & 0xFF, buffer & 0xFF)
+}
+function fewBytesToBase64Array(bytes) {
+    return Array.of( base64abcCC[bytes[0] >> 2], base64abcCC[((bytes[0] & 0x03) << 4) | (bytes[1] >> 4)], base64abcCC[((bytes[1] & 0x0F) << 2) | (bytes[2] >> 6)], base64abcCC[bytes[2] & 0x3F])
 }
 
 export function bytesToBase64(bytes) {
-    "use strict";
-    var result = '', i = 0, j = 4;
-    var l = bytes.length | 0;
-
-    for (;(i|0) < (l|0); i = (i+3|0)>>>0, j = (j+3|0)>>>0) {
-        result = result.concat(getBase64abcA(bytes.subarray(i, j)));
+    let result = new Array(), i = 2, l = bytes.length | 0;
+    for (; (i|0) < (l|0); i = (i+3|0)>>>0) {
+        result = result.concat(fewBytesToBase64Array(bytes.subarray(i-2|0, i+1|0)));
     }
-
-    i = i+2|0;
     if ((i|0) == (l + 1 | 0)) { // 1 octet yet to write
-        result += base64abc[bytes[i - 2 | 0] >> 2];
-        result += base64abc[(bytes[i - 2 | 0] & 0x03) << 4];
-        result += "==";
+        result.push(base64abcCC[bytes[i - 2] >> 2]);
+        result.push(base64abcCC[(bytes[i - 2] & 0x03) << 4]);
+        result.push("=".charCodeAt(0));
+        result.push("=".charCodeAt(0));
     }
     if ((i|0) == (l|0)) { // 2 octets yet to write
-        result += base64abc[bytes[i - 2 | 0] >> 2];
-        result += base64abc[((bytes[i - 2 | 0] & 0x03) << 4) | (bytes[i - 1 | 0] >> 4)];
-        result += base64abc[(bytes[i - 1 | 0] & 0x0F) << 2];
-        result += "=";
+        result.push(base64abcCC[bytes[i - 2] >> 2]);
+        result.push(base64abcCC[((bytes[i - 2] & 0x03) << 4) | (bytes[i - 1] >> 4)]);
+        result.push(base64abcCC[(bytes[i - 1] & 0x0F) << 2]);
+        result.push("=".charCodeAt(0));
     }
-    return result;
-}
-
-function getAggregatedBuffer(buffer) {
-    return Uint8ClampedArray.of((buffer >> 16) & 0xFF, (buffer >> 8) & 0xFF, (buffer >> 0) & 0xFF);
+    return result.map(function(cc){return String.fromCharCode(cc)}).join("");
 }
 
 export function base64ToBytes(str) {
-    "use strict";
-    var missingOctets = str.endsWith("==") ? 2 : str.endsWith("=") ? 1 : 0,
-        n = str.length | 0,
-        result = new Uint8ClampedArray(3 * (n / 4)),
-        i = 0,
-        j = 0;
-    str = Uint8ClampedArray.from(str.split("").map(function(x){return x.charCodeAt(0)}));
-
-    for (i = 0, j = 0; (i|0) < (n|0); i = (i+4 | 0) >>> 0, j = (j+3 | 0) >>> 0) {
-        result.set(getAggregatedBuffer(getBase64CodesBuffer(str.subarray(i, i+5|0))), j);
-
+    if ((str.length % 4 | 0) > 0) {
+        throw new Error("Unable to parse base64 string.");
     }
-    if((missingOctets|0) == (0|0)){
+    const index = str.indexOf("=") | 0;
+    if ((index|0) > -1 && (index|0) < (str.length - 2 | 0)) {
+        throw new Error("Unable to parse base64 string.");
+    }
+
+    let str_char_code = Uint8ClampedArray.from(str.split("").map(function(sub_str){ return sub_str.charCodeAt(0)}));
+    let missingOctets = str.endsWith("==") ? 2 : str.endsWith("=") ? 1 : 0,
+        n = str.length | 0,
+        result = new Uint8ClampedArray(3 * (n / 4));
+
+    let i = 0, j = 0;
+    for (;(i|0) < (n|0); i = (i+4|0)>>>0, j = (j+3|0)>>>0) {
+        result.set(getBase64CodesBufferResults(getBase64CodesBuffer(str_char_code.subarray(i, i+4|0))), j);
+    }
+    if((missingOctets|0) < 1) {
         return result;
     }else {
 
-        return result.slice(0, result.length - missingOctets);
+        return result.slice(0, result.length - missingOctets | 0);
     }
 }
 
