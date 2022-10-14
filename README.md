@@ -76,7 +76,7 @@ Screenshot of the minima's laboratory of pixa.pics (which is a pixel art editor)
 * 4 algorithm up-Scaling artwork up to 4-8x as painting ([xBRZ](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/js/utils/xBRZ.js), Omniscale, hqNx, EPX)*
 * Vectorized (output an infinitely high definition SVG file) ([ImageTracerJS](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/js/utils/image_tracer.js))
 * Color Quantization ([RGBQuant](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/js/utils/rgb_quant.js) + [Custom](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/js/components/canvaspixels/utils/ReducePalette.js))
-* Always encode well Portable Network Graphics in type of palette (we save 70% of size) ([PNGQuant](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/js/utils/png_quant.js))
+* Always encode well Portable Network Graphics in type of palette (we save 70% of size) ([PNGQuant](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/js/utils/png_quant.js), + OXIPNG)
 * Chunk ("norris") [webpack system](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/webpack.config.js) for dropping script evaluation cost within CPU
 * WASM Hashing function for detecting change in history of editing (XXHash)
 
