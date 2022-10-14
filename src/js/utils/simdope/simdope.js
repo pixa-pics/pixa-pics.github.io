@@ -716,7 +716,7 @@ SIMDopeColor.prototype.blend_with = function(added_uint8x4, amount_alpha, should
         this.set(SIMDopeColor.merge_scale_of_255(
             added_uint8x4, divide_uint(multiply_uint(added_uint8x4.a, 255), alpha),
             this, divide_255(multiply_uint(this.a, divide_uint(multiply_uint(inverse_255(added_uint8x4.a), 255), alpha)))
-            ).set_a(alpha).subarray(0, 4)
+            ).set_a(alpha)
         );
     }else {
 

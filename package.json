@@ -52,8 +52,8 @@
     "uglifyjs-webpack-plugin": "~2.2.0",
     "webpack": "~4.37.0",
     "webpack-bundle-analyzer": "~4.6.1",
-    "webpack-cli": "~4.9.2",
-    "webpack-dev-server": "~4.9.2"
+    "webpack-cli": "~4.10.0",
+    "webpack-dev-server": "~4.11.1"
   },
   "build": {
     "appId": "pixapics",
@@ -116,7 +116,7 @@
     ]
   },
   "scripts": {
-    "dev": "NODE_ENV=development webpack-dev-server",
+    "dev": "NODE_ENV=development webpack-dev-server && ECHO 'You need to delete /client folder'",
     "build": "NODE_ENV=production webpack --node-env \"production\"",
     "dist": "build --tasks win-x86,win-x64,linux-x86,linux-x64,mac-x64 --mirror https://dl.nwjs.io/ .",
     "build-twemoji": "svgr ./src/js/twemoji/original -d ./src/js/twemoji/react",

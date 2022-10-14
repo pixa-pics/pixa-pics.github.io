@@ -434,12 +434,12 @@ class InnerToolbar extends React.PureComponent {
             <a key="tip-contrast"
                onClick={() => {this._trigger_canvas_action("contrast")}}
                className={_actions_triggered.has("contrast") ?  classes.linkDone:  classes.link}>
-                &nbsp;1a)&nbsp;Contrasts&nbsp;→&nbsp;
+                &nbsp;1a)&nbsp;Contrast&nbsp;→&nbsp;
             </a>,
             <a key="tip-contrast"
                onClick={() => {this._trigger_canvas_action("saturation")}}
                className={_actions_triggered.has("saturation") ?  classes.linkDone:  classes.link}>
-                &nbsp;1b)&nbsp;Contrasts&nbsp;→&nbsp;
+                &nbsp;1b)&nbsp;Saturation&nbsp;→&nbsp;
             </a>,
             <a key="tip-colors"
                onClick={() => {this._trigger_canvas_action("palette")}}

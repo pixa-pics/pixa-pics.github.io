@@ -31,29 +31,11 @@ const SuperBlend = {
             layer_number: layer_number | 0,
             max_length: max_length | 0,
             current_index: 0,
+            hover_data_in_layer: new Uint8Array(new ArrayBuffer(max_length)),
             indexes_data_for_layers: new Uint32Array(max_length),
-            colors_data_in_layers_buffers: new Array(),
-            colors_data_in_layers_uint32: new Array(),
-            amount_data_in_layers_buffers: new Array(),
-            amount_data_in_layers: new Array(),
-            hover_data_in_layers_buffers: new Array(),
-            hover_data_in_layers: new Array(),
+            colors_data_in_layers_uint32: new Uint32Array(max_length*layer_number),
+            amount_data_in_layers: new Uint8Array(max_length*layer_number),
         };
-
-        for(let i= 0; i < layer_number; i = i+1|0) {
-
-            let colors_data_in_layers_buffers = new ArrayBuffer((max_length*4|0)>>>0);
-            state.colors_data_in_layers_uint32.push(new Uint32Array(colors_data_in_layers_buffers));
-            state.colors_data_in_layers_buffers.push(colors_data_in_layers_buffers);
-
-            let amount_data_in_layers_buffers = new ArrayBuffer(max_length);
-            state.amount_data_in_layers.push(new Uint8Array(amount_data_in_layers_buffers));
-            state.amount_data_in_layers_buffers.push(amount_data_in_layers_buffers);
-
-            let hover_data_in_layers_buffers = new ArrayBuffer(max_length);
-            state.hover_data_in_layers.push(new Uint8Array(hover_data_in_layers_buffers));
-            state.hover_data_in_layers_buffers.push(hover_data_in_layers_buffers);
-        }
 
         return Object.assign({}, state);
     },
@@ -62,16 +44,13 @@ const SuperBlend = {
         if(typeof old_shadow_state !== "undefined") {
 
             delete old_shadow_state.base_rgba_colors_for_blending;
-            for(let i = 0; i < old_shadow_state.uint32_rgba_colors_data_in_layers.length; i = (i+1 | 0)>>>0) {
-                delete old_shadow_state.uint32_rgba_colors_data_in_layers[(i|0)>>>0];
-            }
             delete old_shadow_state.uint32_rgba_colors_data_in_layers;
         }
 
         // Create a shadow state for computation
         let shadow_state = {
             base_rgba_colors_for_blending: new Uint32Array(0),
-            uint32_rgba_colors_data_in_layers: new Array(state.layer_number),
+            uint32_rgba_colors_data_in_layers: new Uint32Array(state.layer_number * state.max_length),
             start_layer_indexes: new Uint8Array(0),
             all_layers_length: 0,
             used_colors_length: 0,
@@ -83,12 +62,6 @@ const SuperBlend = {
         shadow_state.bv.base_uint8x4 = SIMDopeColor.new_zero();
         shadow_state.bv.temp_uint8x4 = SIMDopeColor.new_zero();
         shadow_state.bv.start_layer = 0;
-
-        // Slice uint32 colors and give them as uint8
-        let layer_n = 0;
-        for(layer_n = 0; layer_n < state.layer_number; layer_n = (layer_n + 1 | 0)>>>0) {
-            shadow_state.uint32_rgba_colors_data_in_layers[layer_n] = new Uint32Array(0);
-        }
 
         return shadow_state;
     },
@@ -108,68 +81,21 @@ const SuperBlend = {
             let layer_number_difference = minus_int(layer_number, state.layer_number);
             let redefine_it_up_to_layer_n = state.layer_number | 0;
 
-            // Add or remove layers
-            if(int_not_equal(layer_number_difference, 0)) {
-
-                if(layer_number_difference > 0) { // Must add some layers
-
-                    // Add layers within data array
-                    for(let i = 1; int_less_equal(i, abs_int(layer_number_difference)); i = plus_uint(i, 1)) {
-
-                        let colors_data_in_layers_buffers = new ArrayBuffer(multiply_uint(max_length, 4));
-                        state.colors_data_in_layers_uint32.push(new Uint32Array(colors_data_in_layers_buffers));
-                        state.colors_data_in_layers_buffers.push(colors_data_in_layers_buffers);
-
-                        let amount_data_in_layers_buffers = new ArrayBuffer(max_length);
-                        state.amount_data_in_layers.push(new Uint8Array(amount_data_in_layers_buffers));
-                        state.amount_data_in_layers_buffers.push(amount_data_in_layers_buffers);
-
-                        let hover_data_in_layers_buffers = new ArrayBuffer(max_length);
-                        state.hover_data_in_layers.push(new Uint8Array(hover_data_in_layers_buffers));
-                        state.hover_data_in_layers_buffers.push(hover_data_in_layers_buffers);
-                    }
-
-                }else if(int_less(layer_number_difference, 0)){ // Must remove some layers
-
-                    // Delete layers within data array
-                    for(let i = 1; int_less(i, abs_int(layer_number_difference)); i = plus_uint(i, 1)) {
-
-                        let index = minus_uint(state.layer_number,i);
-                        delete state.colors_data_in_layers_uint32[index];
-                        delete state.colors_data_in_layers_buffers[index];
-                        delete state.amount_data_in_layers[index];
-                        delete state.amount_data_in_layers_buffers[index];
-                        delete state.hover_data_in_layers[index];
-                        delete state.hover_data_in_layers_buffers[index];
-                    }
-                }
-                layer_number_difference = 0;
-            }
-
             // Flooding or recreate existing layers
             if (int_not_equal(layer_number_difference, 0) || int_not_equal(state.max_length, max_length)) {
 
                 if (int_not_equal(state.max_length, max_length) || typeof state.colors_data_in_layers_uint32[minus_int(redefine_it_up_to_layer_n, 1)] === "undefined") {
 
                     state.indexes_data_for_layers = new Uint32Array(max_length);
-                    for (let i = 0; uint_less(i, redefine_it_up_to_layer_n); i = plus_uint(i, 1)) {
-
-                        state.colors_data_in_layers_buffers[i] = new ArrayBuffer(multiply_uint(max_length,4));
-                        state.colors_data_in_layers_uint32[i] = new Uint32Array(state.colors_data_in_layers_buffers[i]);
-                        state.amount_data_in_layers_buffers[i] = new ArrayBuffer(max_length);
-                        state.amount_data_in_layers[i] = new Uint8Array(state.amount_data_in_layers_buffers[i]);
-                        state.hover_data_in_layers_buffers[i] = new ArrayBuffer(max_length);
-                        state.hover_data_in_layers[i] = new Uint8Array(state.hover_data_in_layers_buffers[i]);
-                    }
+                    state.hover_data_in_layer = new Uint8Array(max_length);
+                    state.colors_data_in_layers_uint32 = new Uint32Array(max_length*layer_number);
+                    state.amount_data_in_layers = new Uint8Array(max_length*layer_number);
                 } else {
 
                     state.indexes_data_for_layers.fill(0);
-                    for (let i = 0; uint_less(i, redefine_it_up_to_layer_n); i = plus_uint(i, 1)) {
-
-                        state.colors_data_in_layers_uint32[i].fill(0);
-                        state.amount_data_in_layers[i].fill(0);
-                        state.hover_data_in_layers[i].fill(0);
-                    }
+                    state.hover_data_in_layer.fill(0);
+                    state.colors_data_in_layers_uint32.fill(0);
+                    state.amount_data_in_layers.fill(0);
                 }
             }
 
@@ -183,14 +109,16 @@ const SuperBlend = {
         "use strict";
         // Create a shadow state for computation
         shadow_state.all_layers_length = state.layer_number | 0;
+        shadow_state.max_used_colors_length = state.max_length | 0;
         shadow_state.used_colors_length = state.current_index | 0;
         shadow_state.base_rgba_colors_for_blending = new Uint32Array(shadow_state.used_colors_length);
         shadow_state.start_layer_indexes = new Uint8Array(shadow_state.used_colors_length);
 
-        // Slice uint32 colors and give them as uint8
-        for(let layer_n = 0; uint_less(layer_n, state.layer_number); layer_n = plus_uint(layer_n, 1)) {
-            shadow_state.uint32_rgba_colors_data_in_layers[layer_n] = state.colors_data_in_layers_uint32[layer_n].subarray(0, shadow_state.used_colors_length);
+        if(state.layer_number * state.max_length !== shadow_state.uint32_rgba_colors_data_in_layers.length) {
+            shadow_state.uint32_rgba_colors_data_in_layers = new Uint32Array(state.layer_number * state.max_length);
         }
+        // Slice uint32 colors and give them as uint8
+        shadow_state.uint32_rgba_colors_data_in_layers.set(state.colors_data_in_layers_uint32);
 
         return shadow_state;
     },
@@ -211,7 +139,7 @@ const SuperBlend = {
                 "use strict";
 
                 pixel_index = (pixel_index|0)>>>0;
-                state.indexes_data_for_layers[state.current_index|0] = (pixel_index | 0) >>> 0;
+                state.indexes_data_for_layers[state.current_index] = (pixel_index | 0) >>> 0;
                 state.current_index = plus_uint(state.current_index, 1);
                 bytes_index = plus_int(bytes_index,1);
             },
@@ -223,9 +151,9 @@ const SuperBlend = {
                 amount = clamp_uint8(amount);
                 is_hover = clamp_uint8(is_hover);
 
-                state.colors_data_in_layers_uint32[for_layer_index][bytes_index] = ui32color;
-                state.amount_data_in_layers[for_layer_index][bytes_index] = amount;
-                state.hover_data_in_layers[for_layer_index][bytes_index] = is_hover;
+                state.colors_data_in_layers_uint32[plus_uint(multiply_uint(for_layer_index, state.max_length), bytes_index)] = ui32color;
+                state.amount_data_in_layers[plus_uint(multiply_uint(for_layer_index, state.max_length), bytes_index)] = amount;
+                state.hover_data_in_layer[bytes_index] = is_hover ? for_layer_index+1|0: 0;
             },
             blend: function(should_return_transparent, alpha_addition) {
                 "use strict";
@@ -234,11 +162,11 @@ const SuperBlend = {
                 alpha_addition = alpha_addition | 0;
 
                 shadow_state = shadow_updater(shadow_state, state);
-                let {hover_data_in_layers, amount_data_in_layers, indexes_data_for_layers} = state;
-                let {base_rgba_colors_for_blending, uint32_rgba_colors_data_in_layers, start_layer_indexes, all_layers_length, used_colors_length, bv} = shadow_state;
+                let {hover_data_in_layer, amount_data_in_layers, indexes_data_for_layers} = state;
+                let {base_rgba_colors_for_blending, uint32_rgba_colors_data_in_layers, start_layer_indexes, all_layers_length, used_colors_length, max_used_colors_length, bv} = shadow_state;
                 let {color_less_uint8x4, color_full_uint8x4, base_uint8x4, temp_uint8x4, start_layer} = bv;
 
-                let SIMDope_layers_with_colors = uint32_rgba_colors_data_in_layers.map(function (uint32_array){ return SIMDopeColors(uint32_array.buffer); });
+                let SIMDope_layers_with_colors = SIMDopeColors(uint32_rgba_colors_data_in_layers.buffer);
                 let SIMDope_final_with_colors = SIMDopeColors(base_rgba_colors_for_blending);
                 let i = 0;
                 
@@ -251,7 +179,7 @@ const SuperBlend = {
 
                         if (int_equal(start_layer, 0)) {
 
-                            if (uint_equal(SIMDope_layers_with_colors[layer_n].buffer_getUint8(plus_uint(multiply_uint(i, 4), 3)), 255) && int_equal(amount_data_in_layers[layer_n][i], 255)) {
+                            if (SIMDope_layers_with_colors.get_element(plus_uint(multiply_uint(layer_n, max_used_colors_length), i)).is_not_fully_opaque() && int_equal(amount_data_in_layers[layer_n][i], 255)) {
 
                                 start_layer = layer_n | 0;
                             }
@@ -265,27 +193,31 @@ const SuperBlend = {
                     start_layer = start_layer_indexes[i];
 
                     // Get the first base color to sum up with colors atop of it
-                    base_uint8x4.set(uint_not_equal(start_layer, 0) ?
-                        SIMDope_layers_with_colors[minus_uint(start_layer, 1)].get_element(i):
-                        SIMDope_final_with_colors.get_element(i)
-                    );
+                    base_uint8x4.set(SIMDope_final_with_colors.get_element(i).buffer);
 
+                    if(uint_not_equal(start_layer, 0)) {
+
+                        base_uint8x4.set(SIMDope_layers_with_colors.get_element(plus_uint(multiply_uint(minus_uint(start_layer, 1), max_used_colors_length), i)).buffer);
+                    }
                     // Sum up all colors above
                     for(let layer_n = minus_uint(start_layer, 1); int_less(layer_n, all_layers_length); layer_n = plus_int(layer_n, 1)) {
 
                         // Compute hover if hover color
                         // Get the color below current layer and compute hover color
                         base_uint8x4.blend_with(
-                            uint_equal(hover_data_in_layers[layer_n][i], 0) ?
-                                SIMDope_layers_with_colors[layer_n].get_element(i)
-                                : SIMDopeColor.with_a(SIMDopeColor.average(base_uint8x4, (base_uint8x4.is_dark() ? color_less_uint8x4: color_full_uint8x4)), plus_uint(192, divide_uint(amount_data_in_layers[layer_n][i], 4)))
-                        , amount_data_in_layers[layer_n][i], should_return_transparent, alpha_addition);
+                uint_not_equal(hover_data_in_layer[i], layer_n+1|0) ?
+                                SIMDope_layers_with_colors.get_element(plus_uint(multiply_uint(layer_n, max_used_colors_length), i))
+                                :SIMDopeColor.average(base_uint8x4, (base_uint8x4.is_dark() ? color_less_uint8x4: color_full_uint8x4)).set_a(plus_uint(192, divide_uint(amount_data_in_layers[layer_n][i], 4)))
+                            , amount_data_in_layers[plus_uint(multiply_uint(layer_n, max_used_colors_length), i)],
+                            should_return_transparent,
+                            alpha_addition
+                        );
                     }
 
                     SIMDope_final_with_colors.set_element(i, base_uint8x4);
                 }
 
-                return Array.of(indexes_data_for_layers.slice(0, SIMDope_final_with_colors.length), SIMDope_final_with_colors.subarray_uint32(0, SIMDope_final_with_colors.length));
+                return Array.of(indexes_data_for_layers.subarray(0, SIMDope_final_with_colors.length), SIMDope_final_with_colors.subarray_uint32(0, SIMDope_final_with_colors.length));
             },
             build: function(layer_number, max_length) {
                 "use strict";
