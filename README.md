@@ -9,8 +9,8 @@
  * **Anonymize selfies** (keep details masked, reduce entropy of data).
  * **Compress 100x-1000x** a visual scene into less than 12 Kb PNGs that scales in HD.
  * **Do more, without less**... This is pixaaaaa! (pics)
- 
-![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/SCREENSHOTS_GRID_pngquant.png)
+
+![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/AWESOMAPIXAPICS.png)
 
 ### 1) What does it cost?
 
@@ -30,6 +30,8 @@ It is useful in the field of the protection of the private sphere and the online
 ## B) Tomorrow is knocking!
 
 Pixa.Pics stands in favor of the freedom of expression, communication, education; **respect for the privacy of citizens and civil rights in general**. We defend the free flow of ideas, knowledge and culture as the software is completely free and open-source. 
+
+![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/SCREENSHOTS_GRID_pngquant.png)
 
 > IT CLAIMS TO BE THE UNBREAKABLE, UNCHANGABLE, UNSTOPPABLE Ace of Automatic Information; Blockchain is a list of transactions grouped into multiple blocks that constitute a state in a machine that changes according to a cryptography-based agreement AND between its participating terminals through a data network. This technology allows you to save and keep a structured data set for centuries flawlessly.
 
