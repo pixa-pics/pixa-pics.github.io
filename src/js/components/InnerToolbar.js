@@ -21,6 +21,22 @@ const styles = theme => ({
         "75%": { transform: "translateX(50%)"},
         "100%": { transform: "translateX(75%)"}
     },
+    glow: {
+        animationFillMode: "both",
+        animationName: "$glow",
+        animationDuration: "777ms",
+        animationTimingFunction: "linear",
+        animationDirection: "alternate",
+        animationIterationCount: "infinite",
+        animationDelay: "75ms",
+    },
+    "@keyframes glow": {
+        "0%": { filter: "drop-shadow(0px 0px 2px currentColor) drop-shadow(0px 0px 5px currentColor)"},
+        "25%": { filter: "drop-shadow(0px 0px 1px currentColor) drop-shadow(0px 0px 4px currentColor)"},
+        "50%": { filter: "drop-shadow(0px 0px 3px currentColor) drop-shadow(0px 0px 5px currentColor)"},
+        "75%": { filter: "drop-shadow(0px 0px 6px currentColor) drop-shadow(0px 0px 8px currentColor)"},
+        "100%": { filter: "drop-shadow(0px 0px 4px currentColor) drop-shadow(0px 0px 6px currentColor)"}
+    },
     root: {
         display: "flex",
         position: "relative",
@@ -78,6 +94,18 @@ const styles = theme => ({
         lineHeight: "100%",
         display: "inline-block",
         fontSize: "15px"
+    },
+    linkDone: {
+        color: "#7479b4",
+        textDecoration: "line-through",
+        height: "100%",
+        lineHeight: "100%",
+        display: "inline-block",
+        fontSize: "15px",
+        "&::after": {
+            content: "&nbsp;&#10004;&nbsp;",
+            color: "#96ff96"
+        }
     },
     linkIcon: {
         color: "#7479b4",
@@ -197,6 +225,7 @@ class InnerToolbar extends React.PureComponent {
             music_enabled: props.music_enabled,
             classes: props.classes,
             _is_info_bar_active: false,
+            _actions_triggered: new Set(new Array(0)),
             _history: HISTORY,
             _cams: [""],
             _rets: [
@@ -242,12 +271,13 @@ class InnerToolbar extends React.PureComponent {
 
         const state = {
             ...new_props,
+            _actions_triggered: this.state._actions_triggered,
             _is_info_bar_active: new_props.pathname.includes("pixel") ? this.state._is_info_bar_active: false
         };
 
+        const update_info_bar = this.state._is_info_bar_active !== state._is_info_bar_active || this.state.pathname !== state.pathname;
         const update = Boolean(
-            this.state._is_info_bar_active !== state._is_info_bar_active ||
-            this.state.pathname !== state.pathname ||
+            update_info_bar ||
             this.state.camo !== state.camo ||
             this.state.ret !== state.ret ||
             this.state.logged_account !== state.logged_account ||
@@ -255,6 +285,10 @@ class InnerToolbar extends React.PureComponent {
             this.state.loaded_progress_percent !== state.loaded_progress_percent ||
             this.state.music_enabled !== state.music_enabled
         );
+
+        if(update_info_bar) {
+            state._actions_triggered.clear();
+        }
 
         this.setState(state, () => {
 
@@ -279,15 +313,53 @@ class InnerToolbar extends React.PureComponent {
         });
     };
 
-    _trigger_tip = (text) => {
-
-        actions.trigger_snackbar(text, 60 * 1000);
-        actions.trigger_sfx("navigation_selection-complete-celebration");
-    };
-
     _trigger_canvas_action = (name) => {
 
-        actions.trigger_canvas_action(name);
+        let _actions_triggered = this.state._actions_triggered;
+            _actions_triggered.add(name);
+
+        this.setState({_actions_triggered}, () => {
+
+            this.forceUpdate(() => {
+
+                actions.trigger_canvas_action(name);
+
+                if(_actions_triggered.size === 6) {
+
+                    setTimeout(() => {
+
+                        _actions_triggered.clear();
+                        this.setState({_actions_triggered, _is_info_bar_active: false}, () => {
+
+                            setTimeout(() => {
+
+                                actions.trigger_snackbar("All laboratory's processes done! You learn pretty quick...");
+                                setTimeout(() => {
+                                    actions.jamy_update("happy");
+                                }, 750);
+
+                                setTimeout(() => {
+
+                                    actions.trigger_snackbar("Your creation is much better now, such greater!")
+                                    setTimeout(() => {
+                                        actions.jamy_update("flirty");
+                                    }, 750);
+
+                                    setTimeout(() => {
+
+                                        actions.trigger_snackbar("Laboratory's swag is yield strong, ready for rendering!", 4500)
+                                        setTimeout(() => {
+                                            actions.jamy_update("angry", 1250);
+                                        }, 750);
+                                    }, 4000);
+
+                                }, 4000);
+                            }, 1000);
+                        });
+                    }, 1000);
+                }
+            });
+        });
     };
 
     _go_to = (url) => {
@@ -330,7 +402,7 @@ class InnerToolbar extends React.PureComponent {
 
     render() {
 
-        const { classes, pathname, logged_account, know_if_logged, loaded_progress_percent, _is_info_bar_active, music_enabled } = this.state;
+        const { classes, pathname, logged_account, know_if_logged, loaded_progress_percent, _is_info_bar_active, music_enabled, _actions_triggered } = this.state;
 
         let { _cams, camo, _rets, ret } = this.state;
         _cams = _cams.length > 0 ? _cams: [""];
@@ -359,11 +431,36 @@ class InnerToolbar extends React.PureComponent {
         const usrnm = (know_if_logged ? logged_account ? logged_account.name: t( "components.inner_toolbar.guest"): "");
 
         const tip_items = _is_info_bar_active ? [
-            <a key="tip-contrast" onClick={() => {this._trigger_canvas_action("contrast")}} className={classes.link}>&nbsp;1)&nbsp;Contrasts&nbsp;→&nbsp;</a>,
-            <a key="tip-colors" onClick={() => {this._trigger_canvas_action("palette")}} className={classes.link}>&nbsp;2)&nbsp;Palette*&nbsp;→&nbsp;</a>,
-            <a key="tip-smooth" onClick={() => {this._trigger_canvas_action("smooth")}} className={classes.link}>&nbsp;3)&nbsp;Smooth&nbsp;→&nbsp;</a>,
-            <a key="tip-filters" onClick={() => {this._trigger_canvas_action("filter")}} className={classes.link}>&nbsp;4)&nbsp;Filters&nbsp;→&nbsp;</a>,
-            <a key="tip-export" onClick={() => {this._trigger_canvas_action("render")}} className={classes.link}>&nbsp;5)&nbsp;Render*&nbsp;</a>,
+            <a key="tip-contrast"
+               onClick={() => {this._trigger_canvas_action("contrast")}}
+               className={_actions_triggered.has("contrast") ?  classes.linkDone:  classes.link}>
+                &nbsp;1a)&nbsp;Contrasts&nbsp;→&nbsp;
+            </a>,
+            <a key="tip-contrast"
+               onClick={() => {this._trigger_canvas_action("saturation")}}
+               className={_actions_triggered.has("saturation") ?  classes.linkDone:  classes.link}>
+                &nbsp;1b)&nbsp;Contrasts&nbsp;→&nbsp;
+            </a>,
+            <a key="tip-colors"
+               onClick={() => {this._trigger_canvas_action("palette")}}
+               className={_actions_triggered.has("palette") ?  classes.linkDone:  classes.link}>
+                &nbsp;2)&nbsp;Palette*&nbsp;→&nbsp;
+            </a>,
+            <a key="tip-smooth"
+               onClick={() => {this._trigger_canvas_action("smooth")}}
+               className={_actions_triggered.has("smooth") ?  classes.linkDone:  classes.link}>
+                &nbsp;3)&nbsp;Smooth&nbsp;→&nbsp;
+            </a>,
+            <a key="tip-filters"
+               onClick={() => {this._trigger_canvas_action("filter")}}
+               className={_actions_triggered.has("filter") ?  classes.linkDone:  classes.link}>
+                &nbsp;4)&nbsp;Filters&nbsp;→&nbsp;
+            </a>,
+            <a key="tip-export"
+               onClick={() => {this._trigger_canvas_action("render")}}
+               className={_actions_triggered.has("render") ?  classes.linkDone:  classes.link}>
+                &nbsp;5)&nbsp;Render*&nbsp;
+            </a>,
     ]: null;
 
         return (
@@ -399,7 +496,7 @@ class InnerToolbar extends React.PureComponent {
                     </span>
                 </Button>
                 <IconButton aria-label="main-account-button" style={pathname.includes("/pixel") ? {}: {display: "none"}} className={classes.infoIcon} onClick={this._toggle_info_bar_activation}>
-                    {_is_info_bar_active ? <CloseIcon />: <InfoIcon />}
+                    {_is_info_bar_active ? <CloseIcon />: <InfoIcon className={classes.glow} />}
                 </IconButton>
                 <IconButton aria-label="current-page-options-button" style={pathname === "/" ? {}: {display: "none"}} className={classes.infoIcon} onClick={this._handle_music_enabled_switch_change}>
                     {music_enabled ? <VolumeOffIcon />: <VolumeUpIcon />}

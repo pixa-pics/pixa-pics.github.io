@@ -623,6 +623,9 @@ class Pixel extends React.PureComponent {
                 case "CONTRAST":
                     this._to_auto_medium_more_contrast();
                     break;
+                case "SATURATION":
+                    this._to_auto_medium_more_saturation();
+                    break;
                 case "PALETTE":
                     this._less_colors_auto();
                     break;
