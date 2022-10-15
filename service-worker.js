@@ -1,7 +1,7 @@
 "use strict";
-var REQUIRED_CACHE = "unless-update-cache-v460-required";
-var USEFUL_CACHE = "unless-update-cache-v460-useful";
-var STATIC_CACHE = "unless-update-cache-v460-static";
+var REQUIRED_CACHE = "unless-update-cache-v461-required";
+var USEFUL_CACHE = "unless-update-cache-v461-useful";
+var STATIC_CACHE = "unless-update-cache-v461-static";
 var MAIN_CHILD_CHUNK_REGEX = /chunk_(main_[a-z0-9]+)\.min\.js$/i;
 var CHILD_CHUNK_REGEX = /chunk_([0-9]+)\.min\.js$/i;
 
@@ -51,8 +51,6 @@ self.addEventListener("install", function(event) {
     }
     required_cache.then(function (cache) {
         cache.addAll([
-            "/client/chunk_main_7a2ee6b6.min.js",
-            "/client/chunk_main_253ae210.min.js",
             "/client/chunk_main_690b702c.min.js",
             "/client/chunk_main_748942c6.min.js",
             "/client/chunk_norris.min.js",
@@ -77,7 +75,7 @@ self.addEventListener("fetch", function(event) {
 
     if(url.startsWith("data:image") || url.startsWith("blob:http") || url.startsWith("data:application")) {
 
-        event.respondWith(fetch(url));
+        event.respondWith(Promise.resolve(fetch(url)));
 
     }else if(url.startsWith("data:,all")) {
 

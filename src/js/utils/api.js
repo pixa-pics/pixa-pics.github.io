@@ -116,7 +116,7 @@ const reset_all_databases = (callback_function) => {
     });
 }
 
-const get_settings = (callback_function_info = null, attachment_ids = [], callback_function_attachment = null, LZP3 = null, POOL = null ) => {
+const get_settings = (callback_function_info = null, attachment_ids = [], callback_function_attachment = null, ZSTD = null, POOL = null ) => {
 
     if(typeof window._pixa_settings !== "undefined" && window._pixa_settings !== null) {
 
@@ -188,7 +188,7 @@ const get_settings = (callback_function_info = null, attachment_ids = [], callba
 
                                             try {
 
-                                                LZP3(new Uint8Array(array_buffer), "DECOMPRESS_UINT8A", POOL).then((obj) => {
+                                                ZSTD(new Uint8Array(array_buffer), "DECOMPRESS_UINT8A", POOL).then((obj) => {
 
                                                     callback_function_attachment(null, Object.assign({}, obj));
                                                     obj = null;
@@ -197,7 +197,7 @@ const get_settings = (callback_function_info = null, attachment_ids = [], callba
 
                                             } catch (e) {
 
-                                                console.log(e); callback_function_attachment("LZP3 not working", null);
+                                                console.log(e); callback_function_attachment("ZSTD not working", null);
                                             }
                                         }).catch((e) => {
 
@@ -284,7 +284,7 @@ const get_settings = (callback_function_info = null, attachment_ids = [], callba
     });
 }
 
-const set_settings = (info = {}, callback_function_info = () => {}, attachment_array = {}, LZP3 = null, POOL = null, callback_function_attachment = null) => {
+const set_settings = (info = {}, callback_function_info = () => {}, attachment_array = {}, ZSTD = null, POOL = null, callback_function_attachment = null) => {
 
     window.settings_db.allDocs({
         include_docs: true,
@@ -327,7 +327,7 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
 
                                 try {
 
-                                    LZP3(data, "COMPRESS_OBJECT", POOL).then((uint8a) => {
+                                    ZSTD(data, "COMPRESS_OBJECT", POOL).then((uint8a) => {
 
                                         settings_doc._attachments = settings_doc._attachments || {};
                                         settings_doc._attachments[name_id] = {
@@ -344,7 +344,7 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
                                 } catch (e) {
 
                                     console.log(e);
-                                    callback_function_info("LZP3 not working", null);
+                                    callback_function_info("ZSTD not working", null);
                                     return false;
                                 }
 
@@ -524,7 +524,7 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
 
                     try {
 
-                        LZP3(data, "COMPRESS_OBJECT", POOL).then((uint8a) => {
+                        ZSTD(data, "COMPRESS_OBJECT", POOL).then((uint8a) => {
 
                             attachments[name_id] = {
                                 content_type: "application/octet-stream",
@@ -541,7 +541,7 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
                     } catch (e) {
 
                         console.log(e);
-                        callback_function_info("LZP3 not working", null);
+                        callback_function_info("ZSTD not working", null);
                         return false;
                     }
 

@@ -1,22 +1,29 @@
 var webpack = require('webpack');
 var path = require('path');
-var UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+var TerserPlugin = require('terser-webpack-plugin');
 var BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 var HtmlWebpackPlugin = require("html-webpack-plugin");
-var MiniCssExtractPlugin = require("mini-css-extract-plugin");
-var CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 
 
 module.exports = {
-    devtool: process.env.NODE_ENV === 'production' ? "inline-source-map": false,
+    devtool: process.env.NODE_ENV === 'production' ? false: false,
     entry: path.join(__dirname, "src/js/client.js"),
     mode: process.env.NODE_ENV,
     optimization: process.env.NODE_ENV === 'production' ? {
         minimize: true,
         minimizer: [
-            new UglifyJsPlugin({
-                uglifyOptions: {
+            new TerserPlugin({
+                terserOptions: {
+                    ecma: undefined,
+                    parse: {},
+                    module: false,
+                    format: null,
                     toplevel: true,
+                    nameCache: null,
+                    ie8: true,
+                    keep_classnames: false,
+                    keep_fnames: false,
+                    safari10: true,
                     extractComments: false,
                     mangle: {
                         toplevel: true,
@@ -101,16 +108,13 @@ module.exports = {
                         code: true
                     },
                 }
-            }),
-            new CssMinimizerPlugin({
-                minimizerOptions: {"name": "pixa-pics", "preset": ["advanced", {autoprefixer: {add: true}}]}
             })
         ],
         chunkIds: 'named',
         splitChunks: {
             chunks: 'async',
             minSize: 384 * 1024,
-            maxSize: 960 * 1024,
+            maxSize: 2048 * 1024,
             minChunks: 2,
             maxAsyncRequests: 12,
             maxInitialRequests: 4,
@@ -165,7 +169,19 @@ module.exports = {
                         }
                     }
                 ]
-            }
+            }/*,
+            {
+                test: /\.(wasm)$/i,
+                exclude: [],
+                use: [
+                    {
+                        loader: 'url-loader',
+                        options: {
+                            limit: 2048 * 1024,
+                        },
+                    },
+                ],
+            }*/
         ]
     },
     output: {
@@ -190,10 +206,8 @@ module.exports = {
             inject: true,
             cache: false,
         }),
-        new MiniCssExtractPlugin(),
         new BundleAnalyzerPlugin()
     ]: [
-        new MiniCssExtractPlugin(),
         new BundleAnalyzerPlugin()
     ],
     devServer: {

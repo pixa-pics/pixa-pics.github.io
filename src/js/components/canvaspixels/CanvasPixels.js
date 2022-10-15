@@ -1746,7 +1746,7 @@ class CanvasPixels extends React.PureComponent {
         js._json_state_history = this.transform_json_state_history_string_array_buffer(js._json_state_history);
 
         let _base64_original_images = Array.from(js._base64_original_images);
-        let _json_state_history = Object.assign({}, {
+        let _json_state_history = {
             history_position: parseInt(js._json_state_history.history_position),
             state_history: js._json_state_history.state_history.map((state) => Object.assign({}, {
                 _original_image_index: parseInt(state._original_image_index),
@@ -1768,7 +1768,7 @@ class CanvasPixels extends React.PureComponent {
                 _pencil_mirror_index: parseInt(state._pencil_mirror_index),
                 _id: state._id.toString()
             }))
-        });
+        };
 
         js = null;
 

@@ -1,4 +1,4 @@
-import XXHashJS from "../../../utils/llxxhashjs/index";
+import XXHashJS from "../../../utils/xxhash";
 import XXHashWASM from "xxhash-wasm";
 
 const XXHash = {
