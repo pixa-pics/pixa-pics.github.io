@@ -70,7 +70,7 @@ Screenshot of the minima's laboratory of pixa.pics (which is a pixel art editor)
 * Low-Level-JavaScript just like [asm.js](http://asmjs.org/) or SIMD.js for blazing efficient color operation
 * Multi-threading (Web [Worker](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/js/utils/worker-pool.js))
 * GPU's optimisation (CSS3 Transform+will-change)
-* Fast Compression ([LZP3](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/js/utils/lzp3_json.js))
+* Fast Compression (LZ4-WASM + [LZP3](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/js/utils/lzp3_json.js))
 * Offline Cache & Auto Save ([PouchDB](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/js/utils/api.js))
 * AI Processing (Deepai.org, !remote!)
 * 4 algorithm up-Scaling artwork up to 4-8x as painting ([xBRZ](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/js/utils/xBRZ.js), Omniscale, hqNx, EPX)*

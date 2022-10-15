@@ -663,11 +663,11 @@ class Pixel extends React.PureComponent {
         if(current_state.kb > 1) {
 
             let attachment_array = {};
-            attachment_array["json_state-ID" + current_state.id + ".json.lzp3"] = current_state;
+            attachment_array["json_state-ID" + current_state.id + ".json.lz"] = current_state;
 
             this.setState({_kb: current_state.kb, _saved_at: Date.now()}, () => {
 
-                JSLoader( () => import("../utils/lzp3_json")).then(({LZP3}) => {
+                JSLoader( () => import("../utils/lz_json")).then(({LZP3}) => {
 
                     api.set_settings({}, (err, res) => {
 
@@ -683,10 +683,10 @@ class Pixel extends React.PureComponent {
                         if(!err) {
 
                             setTimeout(() => {
-                                actions.trigger_snackbar("Success! Laboratory's artwork saved!", 2000);
-                            }, 2000);
+                                actions.jamy_update("happy");
+                            }, 250);
+                            actions.trigger_snackbar("Success! Laboratory's artwork saved!", 2000);
 
-                            actions.jamy_update("happy");
                         }else {
 
                             actions.trigger_snackbar("Laboratory artwork failed to save.", 2000);
@@ -711,7 +711,7 @@ class Pixel extends React.PureComponent {
     _delete_unsaved_pixel_art = (id) => {
 
         const attachments = {};
-        attachments["json_state-ID" + id + ".json.lzp3"] = "delete";
+        attachments["json_state-ID" + id + ".json.lz"] = "delete";
 
         api.set_settings({}, this._process_settings_info_result, attachments, null, null, (err, res) => {
 
@@ -720,7 +720,7 @@ class Pixel extends React.PureComponent {
                 actions.trigger_snackbar("DELETION, Successful!", 2000);
                 actions.trigger_sfx("alert_high-intensity");
                 let ap = Object.assign({}, this.state._attachment_previews);
-                delete ap["json_state-ID" + id + ".json.lzp3"];
+                delete ap["json_state-ID" + id + ".json.lz"];
                 this.setState({_attachment_previews: ap}, () => {
                     this.forceUpdate();
                 });
@@ -1647,11 +1647,11 @@ class Pixel extends React.PureComponent {
 
     _handle_import_json_state_id = (id) => {
 
-        JSLoader( () => import("../utils/lzp3_json")).then(({LZP3}) => {
+        JSLoader( () => import("../utils/lz_json")).then(({LZP3}) => {
 
             this._handle_load("image_preload");
             actions.trigger_voice("accessing_memory");
-            api.get_settings(() => {}, ["json_state-ID" + id + ".json.lzp3"], this._process_settings_attachment_result, LZP3, pool);
+            api.get_settings(() => {}, ["json_state-ID" + id + ".json.lz"], this._process_settings_attachment_result, LZP3, pool);
         }).catch(() => {
 
             actions.trigger_snackbar("Looks like I can't get your file as our compression module can't load.", 5700);

@@ -1,7 +1,7 @@
 "use strict";
-var REQUIRED_CACHE = "unless-update-cache-v458-required";
-var USEFUL_CACHE = "unless-update-cache-v458-useful";
-var STATIC_CACHE = "unless-update-cache-v458-static";
+var REQUIRED_CACHE = "unless-update-cache-v459-required";
+var USEFUL_CACHE = "unless-update-cache-v459-useful";
+var STATIC_CACHE = "unless-update-cache-v459-static";
 var MAIN_CHILD_CHUNK_REGEX = /chunk_(main_[a-z0-9]+)\.min\.js$/i;
 var CHILD_CHUNK_REGEX = /chunk_([0-9]+)\.min\.js$/i;
 
@@ -187,7 +187,7 @@ self.addEventListener("fetch", function(event) {
                 .catch(function(){return new Response("all", {status: 500})})
         );
 
-    }else if(Boolean(url.endsWith(".png") || url.endsWith(".json") || url.endsWith(".svg") || url.endsWith(".jpg") || url.endsWith(".jpeg") || url.endsWith(".gif") || url.endsWith(".ico")) && same_site) {
+    }else if(Boolean(url.endsWith(".wasm") || url.endsWith(".png") || url.endsWith(".json") || url.endsWith(".svg") || url.endsWith(".jpg") || url.endsWith(".jpeg") || url.endsWith(".gif") || url.endsWith(".ico")) && same_site) {
 
         // Serve cached image if doesn't fail
         event.respondWith(

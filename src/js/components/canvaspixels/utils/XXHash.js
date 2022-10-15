@@ -39,7 +39,7 @@ const XXHash = {
     },
     new(){
 
-        const alphabet_58 = "123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ";
+        const alphabet_58 = Uint8Array.from("123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ".split("").map(function(v){return v.charCodeAt(0)}));
         const base_58 = BigInt(alphabet_58.length); // base is the length of the alphabet (58 in this case)
 
         let cs_64_js = this._get_64_js;
@@ -68,17 +68,19 @@ const XXHash = {
             },
             base58_that: function (array_buffer) {
                 "use strict";
+                let c = 0;
                 let num = BigInt(this.int_that(array_buffer));
-                let encoded = "";
+                let encoded = new Uint8Array(12);
                 let remainder = BigInt(0);
 
                 while (num > 0) {
                     remainder = num % base_58;
                     num = num / base_58;
-                    encoded = encoded + alphabet_58.charAt(parseInt(remainder.toString()));
+                    encoded[c] = alphabet_58[parseInt(remainder.toString())];
+                    c = (c + 1)|0;
                 }
 
-                return encoded;
+                return String.fromCharCode.apply(null, encoded);
             }
         };
     }
