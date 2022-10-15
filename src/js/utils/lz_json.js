@@ -2439,7 +2439,7 @@ window.lzp3_json_process_function = AsyncFunction(`var t=async function(t,e){ret
             reject(null);
         }
 })}*/
-import * as lz4 from "lz4-wasm";
+import * as lz4 from "./lz4/lz4_wasm";
 
 const LZP3 = (uint8a_or_obj, mode = "COMPRESS_OBJECT", pool = null) => {
 
@@ -2449,13 +2449,11 @@ const LZP3 = (uint8a_or_obj, mode = "COMPRESS_OBJECT", pool = null) => {
 
             if (mode === "COMPRESS_OBJECT") {
                 //  JS -> json_str -> ui8a -> compressed ui8a
-                console.log("test")
                 return Promise.resolve(lz4.compress(new TextEncoder().encode(JSON.stringify(uint8a_or_obj, null, 0))));
 
             } else if (mode === "DECOMPRESS_UINT8A") {
                 // ui8a decompressed -> ui8a -> json_str -> JS
                 return Promise.resolve(JSON.parse(new TextDecoder().decode(lz4.decompress(uint8a_or_obj))));
-
             }
         } catch(e){}
     }

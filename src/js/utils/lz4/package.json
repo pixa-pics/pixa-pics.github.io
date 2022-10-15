@@ -1,0 +1,29 @@
+{
+  "name": "lz4-wasm",
+  "collaborators": [
+    "Pascal Seitz <pascal.seitz@gmail.com>"
+  ],
+  "description": "High Performance lz4 wasm implementation",
+  "version": "0.9.2",
+  "license": "MIT",
+  "files": [
+    "lz4_wasm_bg.wasm.d.ts",
+    "lz4_wasm_bg.wasm",
+    "lz4_wasm.js",
+    "lz4_wasm_bg.js",
+    "lz4_wasm.d.ts",
+    "LICENSE_MIT",
+    "LICENSE_APACHE"
+  ],
+  "module": "lz4_wasm.js",
+  "types": "lz4_wasm.d.ts",
+  "sideEffects": false,
+  "keywords": [
+    "compression",
+    "lz4",
+    "compress",
+    "decompression",
+    "decompress",
+    "wasm"
+  ]
+}
