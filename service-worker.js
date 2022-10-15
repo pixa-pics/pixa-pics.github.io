@@ -154,7 +154,6 @@ self.addEventListener("fetch", function(event) {
                         "/client/chunk_29.min.js",
                         "/client/chunk_30.min.js",
                         "/client/chunk_31.min.js",
-                        "/client/chunk_32.min.js",
                     ]);
                 }),
                 static_cache.then(function (cache) {
