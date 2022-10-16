@@ -2,7 +2,7 @@
 const AFunction = Object.getPrototypeOf( function(){}).constructor;
 window.base64_process_function = new AFunction(`
 
-var fun = function (to, data_array) {
+var fun = function (to, data_array_buffer, data_buffer_add_indexes) {
 
     function bytesToBase64(bytes) {
         "use strict";
@@ -92,25 +92,42 @@ var fun = function (to, data_array) {
     
     return new Promise(function(resolve, reject){
 
-        var func = to === "bytes" ? base64ToBytes: bytesToBase64;
+        if(to === "base64") {
         
-        resolve(data_array.map(function (data) { return func(data); }));
+            let data_array_buffers = new Array(data_buffer_add_indexes.length);
+            let current_i = 0;
+            data_buffer_add_indexes.forEach(function(i, y){
+                
+                data_array_buffers[y] = new Uint8Array(data_array_buffer.slice(current_i, current_i+i).buffer);
+                current_i += i;
+            });
+            
+            resolve(data_array_buffers.map(function (data) { return bytesToBase64(data); }))
+        }
     });
 }; return fun;`)();
 
 const worker_base64 = async(to, data_array, pool = null) => {
 
+    let data_buffer_length = 0;
+    let data_buffer_add_index = 0;
+    let data_buffer_add_indexes = [];
+    data_array.forEach(function(d){data_buffer_length += (("buffer" in d) ? d.buffer.byteLength: d.byteLength);});
+    let data_array_buffer = new Uint8Array(data_buffer_length);
+    data_array.forEach(function(d){var b = ("buffer" in d) ? d.buffer: d; data_array_buffer.set(new Uint8Array(b), data_buffer_add_index); data_buffer_add_index += b.byteLength; data_buffer_add_indexes.push(b.byteLength | 0)});
+
+
     if(Boolean(pool)) {
 
         return pool.exec(window.base64_process_function, [
-            to, data_array
+            to, data_array_buffer, data_buffer_add_indexes
         ]).catch((e) => {
 
-            return window.base64_process_function(to, data_array);
+            return window.base64_process_function(to, data_array_buffer, data_buffer_add_indexes);
         }).timeout(40 * 1000);
     }else {
 
-        return window.base64_process_function(to, data_array);
+        return window.base64_process_function(to, data_array_buffer, data_buffer_add_indexes);
     }
 };
 
