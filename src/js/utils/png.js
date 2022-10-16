@@ -1,5 +1,5 @@
 import {png_quant} from "./png_quant";
-import {oxi_png} from "./oxi_png.js";
+import {oxi_png} from "./oxi_png";
 
 
 const png = (dataurl, level, interlace, quality_min, quality_max, speed, pool = null) => {

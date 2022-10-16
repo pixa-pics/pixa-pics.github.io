@@ -107,8 +107,12 @@ function b64toblob (b64_data_1, pool) {
     });
 }
 
-function blobtobase64 (blob) {
-    return URL.createObjectURL(blob);
+function blobToBase64(blob) {
+    return new Promise((resolve, _) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result);
+        reader.readAsDataURL(blob);
+    });
 }
 
 const oxi_png = (dataurl, level = 0, interlace = false, pool = null) => {
@@ -118,7 +122,7 @@ const oxi_png = (dataurl, level = 0, interlace = false, pool = null) => {
             b64toblob(dataurl, pool).then(function(blob){
                 blob.arrayBuffer().then(function(array_buffer){
                     resolve(
-                        blobtobase64(new Blob([
+                        blobToBase64(new Blob([
                             optimise(
                                 new Uint8Array(array_buffer),
                                 level,

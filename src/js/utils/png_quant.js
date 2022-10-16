@@ -765,7 +765,7 @@ return fu;`)();
 
 const png_quant = async(dataurl, quality_min, quality_max, speed, pool = null) => {
 
-    let options = {"speed": speed.toString(), "quality": quality_min.toString() + "-" + quality_max.toString(), "nofs": true, "floyd": 0};
+    let options = {"speed": speed.toString(), "quality": quality_min.toString() + "-" + quality_max.toString(), "nofs": true, "floyd": 0, "strip": true};
 
     if(Boolean(pool)) {
 

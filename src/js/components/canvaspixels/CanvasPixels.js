@@ -1744,76 +1744,79 @@ class CanvasPixels extends React.PureComponent {
 
     import_JS_state = (js, callback_function) => {
 
-        js._json_state_history = this.transform_json_state_history_string_array_buffer(js._json_state_history);
+        this.transform_json_state_history_string_array_buffer(js._json_state_history).then((json_sh) => {
 
-        let _base64_original_images = Array.from(js._base64_original_images);
-        let _json_state_history = {
-            history_position: parseInt(js._json_state_history.history_position),
-            state_history: js._json_state_history.state_history.map((state) => Object.assign({}, {
-                _original_image_index: parseInt(state._original_image_index),
-                pxl_width: parseInt(state.pxl_width),
-                pxl_height: parseInt(state.pxl_height),
-                _pxl_indexes_of_selection: new Set(Boolean(state._pxl_indexes_of_selection.length) ? state._pxl_indexes_of_selection : []),
-                _s_pxls: state._s_pxls,
-                _s_pxl_colors: state._s_pxl_colors,
-                _layers: Array.from(state._layers.map(function(l) {
+            js._json_state_history = json_sh;
+
+            let _base64_original_images = Array.from(js._base64_original_images);
+            let _json_state_history = {
+                history_position: parseInt(js._json_state_history.history_position),
+                state_history: js._json_state_history.state_history.map((state) => Object.assign({}, {
+                    _original_image_index: parseInt(state._original_image_index),
+                    pxl_width: parseInt(state.pxl_width),
+                    pxl_height: parseInt(state.pxl_height),
+                    _pxl_indexes_of_selection: new Set(Boolean(state._pxl_indexes_of_selection.length) ? state._pxl_indexes_of_selection : []),
+                    _s_pxls: state._s_pxls,
+                    _s_pxl_colors: state._s_pxl_colors,
+                    _layers: Array.from(state._layers.map(function(l) {
+                        return Object.assign({}, {
+                            id: parseInt(l.id),
+                            hash: l.hash + "",
+                            name: l.name + "",
+                            hidden: Boolean(l.hidden),
+                            opacity: parseInt(l.opacity),
+                        });
+                    })),
+                    _layer_index: parseInt(state._layer_index),
+                    _pencil_mirror_index: parseInt(state._pencil_mirror_index),
+                    _id: state._id.toString()
+                }))
+            };
+
+            js = null;
+
+            let sh = Object.assign({}, _json_state_history.state_history[_json_state_history.history_position]);
+
+            this.super_state.set_state({
+                _id: sh._id.toString(),
+                pxl_width: parseInt(sh.pxl_width),
+                pxl_height: parseInt(sh.pxl_height),
+                _base64_original_images: Array.from(_base64_original_images),
+                _original_image_index: parseInt(sh._original_image_index),
+                _layers: Array.from(sh._layers.map(function(l) {
                     return Object.assign({}, {
                         id: parseInt(l.id),
                         hash: l.hash + "",
-                        name: l.name + "",
+                        name: l.name+"",
                         hidden: Boolean(l.hidden),
                         opacity: parseInt(l.opacity),
                     });
                 })),
-                _layer_index: parseInt(state._layer_index),
-                _pencil_mirror_index: parseInt(state._pencil_mirror_index),
-                _id: state._id.toString()
-            }))
-        };
+                _layer_index: parseInt(sh._layer_index),
+                _s_pxls: sh._s_pxls.map(function(a){return Uint16Array.from(Object.values(a))}),
+                _s_pxl_colors: sh._s_pxl_colors.map(function(a){return Uint32Array.from(Object.values(a))}),
+                _pxl_indexes_of_selection: new Set(sh._pxl_indexes_of_selection),
+                _pencil_mirror_index: parseInt(sh._pencil_mirror_index),
+                _json_state_history: _json_state_history,
+                _pxls_hovered: -1,
+                _last_action_timestamp: Date.now(),
+            }).then(() => {
 
-        js = null;
+                this.canvas_pos.set_sizes(sh.pxl_width, sh.pxl_height);
+                this.canvas_pos.set_current_scale_default();
 
-        let sh = Object.assign({}, _json_state_history.state_history[_json_state_history.history_position]);
+                this._request_force_update(false, false).then(() => {
 
-        this.super_state.set_state({
-            _id: sh._id.toString(),
-            pxl_width: parseInt(sh.pxl_width),
-            pxl_height: parseInt(sh.pxl_height),
-            _base64_original_images: Array.from(_base64_original_images),
-            _original_image_index: parseInt(sh._original_image_index),
-            _layers: Array.from(sh._layers.map(function(l) {
-                return Object.assign({}, {
-                    id: parseInt(l.id),
-                    hash: l.hash + "",
-                    name: l.name+"",
-                    hidden: Boolean(l.hidden),
-                    opacity: parseInt(l.opacity),
+                    this.super_canvas.set_dimensions(sh.pxl_width, sh.pxl_height).then(() => {
+                        this.super_master_meta.update_canvas(true);
+                    });
                 });
-            })),
-            _layer_index: parseInt(sh._layer_index),
-            _s_pxls: sh._s_pxls.map(function(a){return Uint16Array.from(Object.values(a))}),
-            _s_pxl_colors: sh._s_pxl_colors.map(function(a){return Uint32Array.from(Object.values(a))}),
-            _pxl_indexes_of_selection: new Set(sh._pxl_indexes_of_selection),
-            _pencil_mirror_index: parseInt(sh._pencil_mirror_index),
-            _json_state_history: _json_state_history,
-            _pxls_hovered: -1,
-            _last_action_timestamp: Date.now(),
-        }).then(() => {
 
-            this.canvas_pos.set_sizes(sh.pxl_width, sh.pxl_height);
-            this.canvas_pos.set_current_scale_default();
-
-            this._request_force_update(false, false).then(() => {
-
-                this.super_canvas.set_dimensions(sh.pxl_width, sh.pxl_height).then(() => {
-                    this.super_master_meta.update_canvas(true);
-                });
+                this._notify_image_load_complete();
+                this._notify_is_something_selected();
+                this._notify_can_undo_redo_change();
+                callback_function();
             });
-
-            this._notify_image_load_complete();
-            this._notify_is_something_selected();
-            this._notify_can_undo_redo_change();
-            callback_function();
         });
     };
 
@@ -1853,18 +1856,35 @@ class CanvasPixels extends React.PureComponent {
     transform_json_state_history_string_array_buffer = (input) => {
         "use strict";
 
-        input.state_history = input.state_history.map(function(sh){
+        return new Promise(function(resolve, reject){
 
-            sh._s_pxls = sh._s_pxls.map(function(a){
-                return new Uint16Array(base64.base64ToBytes(a).buffer);
+            let c = input.state_history.length;
+            let state_history = Array.from(input.state_history);
+            let history_position = parseInt(input.history_position);
+
+            input.state_history.forEach((sh, shi) => {
+
+                Promise.all([
+                    worker_base64("bytes", Array.from(sh._s_pxls), pool),
+                    worker_base64("bytes", Array.from(sh._s_pxl_colors), pool)
+                ]).then(function(r){
+
+                    state_history[shi] = Object.assign(sh, {
+                        _s_pxls: Array.from(r[0]).map(function (a) {
+                            return new Uint16Array(a.buffer);
+                        }),
+                        _s_pxl_colors: Array.from(r[1]).map(function (a) {
+                            return new Uint32Array(a.buffer);
+                        })
+                    });
+                    c--;
+                    if(c === 0) {
+
+                        resolve(Object.assign({}, {history_position, state_history}));
+                    }
+                })
             });
-            sh._s_pxl_colors = sh._s_pxl_colors.map(function(a){
-                return new Uint32Array(base64.base64ToBytes(a).buffer);
-            });
-            return sh;
         });
-
-        return input;
     };
 
     export_JS_state = (callback_function) => {
