@@ -858,12 +858,16 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                 label: "matrix",
                 tools: [
                     {
-                        icon: <FileDownloadIcon/>, text: "Render (1x size)", sub: "[CTRL + Q]", on_click: () => {
+                        icon: <FileDownloadIcon/>,
+                        disabled: too_much_colors_no_vector,
+                        text: "Render (1x size)",
+                        sub: "[CTRL + Q]", on_click: () => {
                             this._download_png(1)
                         }
                     },
                     {
                         icon: <FileDownloadIcon/>,
+                        disabled: too_much_colors_no_vector,
                         text: "Render (2x size)",
                         sub: "Upscale 2x",
                         on_click: () => {
@@ -872,6 +876,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                     },
                     {
                         icon: <FileDownloadIcon/>,
+                        disabled: too_much_colors_no_vector,
                         text: "Render (4x size)",
                         sub: "Upscale 4x",
                         on_click: () => {
@@ -880,6 +885,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                     },
                     {
                         icon: <FileDownloadIcon/>,
+                        disabled: too_much_colors_no_vector,
                         text: "Render (6x size)",
                         sub: "Upscale 6x",
                         on_click: () => {
@@ -888,6 +894,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                     },
                     {
                         icon: <FileDownloadIcon/>,
+                        disabled: too_much_colors_no_vector,
                         text: "Render (8x size)",
                         sub: "Upscale 8x",
                         on_click: () => {
@@ -896,6 +903,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                     },
                     {
                         icon: <FileDownloadIcon/>,
+                        disabled: too_much_colors_no_vector,
                         text: "Render (12x size)",
                         sub: "[CTRL + S]", on_click: () => {
                             this._download_png(12)
@@ -903,6 +911,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                     },
                     {
                         icon: <FileDownloadIcon/>,
+                        disabled: too_much_colors_no_vector,
                         text: "Render (16x size)",
                         sub: "Upscale 16x", on_click: () => {
                             this._download_png(16)
@@ -910,6 +919,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                     },
                     {
                         icon: <FileDownloadIcon/>,
+                        disabled: too_much_colors_no_vector,
                         text: "Render (24x size)",
                         sub: "Upscale 24x",
                         on_click: () => {
@@ -1994,7 +2004,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                                                     }
                                                 </ListSubheader>
                                                 {
-                                                    Boolean(Boolean(name === "filters" || action_set.label === "vector") && too_much_colors_no_vector) ?
+                                                    Boolean(Boolean(name === "filters" || action_set.label === "vector" || action_set.label === "matrix") && too_much_colors_no_vector) ?
                                                         <ListItem button={name !== "filters"} onClick={() => {canvas.to_less_color("auto")}}>
                                                             <ListItemIcon><LessColorAutoIcon className={classes.listItemIcon} /></ListItemIcon>
                                                             <ListItemText primary="Auto reduce color palette" secondary={"May you need less color in your palette?"} />
