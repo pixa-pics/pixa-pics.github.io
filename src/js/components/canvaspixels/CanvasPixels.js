@@ -525,8 +525,8 @@ class CanvasPixels extends React.PureComponent {
                 _filter_thumbnails
             } = this.super_state.get_state();
 
-            const p = _s_pxls[_layer_index];
-            const pc = _s_pxl_colors[_layer_index];
+            const p = Uint32Array.from(_s_pxls[_layer_index]);
+            const pc = Uint32Array.from(_s_pxl_colors[_layer_index]);
             const hash = this.xxhash.base58_that(Uint32Array.from(p.map(function(pci){ pci = pci|0; return (pc[pci]|0)&0xFFFFFFFF; })));
             if (_last_filters_hash !== hash || _processing_filters === false) {
 
@@ -1553,8 +1553,8 @@ class CanvasPixels extends React.PureComponent {
 
                         for(let index = 0; index < new_current_state._layers.length; index++){
 
-                            const p =  new_current_state._s_pxls[index];
-                            const pc = new_current_state._s_pxl_colors[index];
+                            const p =  Uint32Array.from(new_current_state._s_pxls[index]);
+                            const pc = Uint32Array.from(new_current_state._s_pxl_colors[index]);
                             const new_hash = xxhash.base58_that(Uint32Array.from(p.map(function(pci){ pci = pci | 0; return (pc[pci]|0)&0xFFFFFFFF; })));
                             const old_layer = Object.assign({}, (old_current_state._layers || new Array())[index]);
                             const old_thumbnail = old_layer.thumbnail || "";
