@@ -586,32 +586,34 @@ class CanvasPixels extends React.PureComponent {
         });
     };
 
-    get_base64_png_data_url = (scale = 1, callback_function = () => {}, with_palette = false, with_compression_speed = 0, with_compression_quality_min = 30, with_compression_quality_max = 35) => {
+    get_base64_png_data_url = (scale = 1, with_palette = false, with_compression_speed = 0, with_compression_quality_min = 30, with_compression_quality_max = 35) => {
 
-        this._get_base64_png_data_url(scale, callback_function, with_palette, with_compression_speed, with_compression_quality_min, with_compression_quality_max);
+        return this._get_base64_png_data_url(scale, with_palette, with_compression_speed, with_compression_quality_min, with_compression_quality_max);
     };
 
-    _get_base64_png_data_url = (scale = 1, callback_function = () => {}, with_palette = false, with_compression_speed = 0, with_compression_quality_min = 30, with_compression_quality_max = 35) => {
+    _get_base64_png_data_url = (scale = 1, with_palette = false, with_compression_speed = 0, with_compression_quality_min = 30, with_compression_quality_max = 35) => {
 
-        const { pxl_width, pxl_height, _s_pxls, _s_pxl_colors, _layers } = this.super_state.get_state();
+        return new Promise( (resolve, reject) => {
+            const { pxl_width, pxl_height, _s_pxls, _s_pxl_colors, _layers } = this.super_state.get_state();
+            const b64pngcanvas = B64PngCanvas.from(pool, pxl_width, pxl_height, _s_pxls, _s_pxl_colors, _layers, scale, with_palette);
+            b64pngcanvas.render().then((result) => {
 
-        const b64pngcanvas = B64PngCanvas.from(pool, pxl_width, pxl_height, _s_pxls, _s_pxl_colors, _layers, scale, with_palette);
-        b64pngcanvas.render((result) => {
+                b64pngcanvas.destroy();
+                if(with_compression_speed !== 0) {
 
-            if(with_compression_speed !== 0) {
+                    JSLoader( () => import("../../utils/png_quant")).then(({png_quant}) => {
 
-                JSLoader( () => import("../../utils/png_quant")).then(({png_quant}) => {
+                        png_quant(result.url.toString(), with_compression_quality_min, with_compression_quality_max, with_compression_speed, pool).then((base_64_out) => {
 
-                    png_quant(Object.values(result)[0], with_compression_quality_min, with_compression_quality_max, with_compression_speed, pool).then((base_64_out) => {
-
-                        callback_function(with_palette ? Array.of(base_64_out, Object.values(result)[1]): Array.of(base_64_out.toString()));
-                        base_64_out = null;
+                            result.url = base_64_out;
+                            resolve(result);
+                        });
                     });
-                });
-            }else {
+                }else {
 
-                callback_function(with_palette ? Array.of(Object.values(result)[0], Object.values(result)[1]): Array.of(Object.values(result)[0]));
-            }
+                    resolve(result);
+                }
+            });
         });
     };
 
@@ -1891,21 +1893,21 @@ class CanvasPixels extends React.PureComponent {
 
         this._maybe_save_state((_json_state_history) => {
 
-            this.get_base64_png_data_url(1, ([base_64]) => {
+            this.get_base64_png_data_url(1, false, 5, 50, 75).then( ({url}) => {
 
                 this.transform_json_state_history_array_buffer_string(_json_state_history).then((result) => {
 
-                    const bytes = 3 * Math.ceil((base_64.length/4));
+                    const bytes = 3 * Math.ceil((url.length/4));
                     callback_function({
                         id: this.super_state.get_state()._id.toString(),
                         kb: bytes / 1024,
-                        preview: base_64,
+                        preview: url,
                         timestamp: Date.now(),
                         _base64_original_images: Array.from(this.super_state.get_state()._base64_original_images),
                         _json_state_history: result
                     });
                 });
-            }, false, 5, 50, 75);
+            });
         });
     };
 

@@ -1112,16 +1112,15 @@ class Pixel extends React.PureComponent {
 
         window.dispatchEvent(new Event(`art-download-raster${size}`));
 
-        get_base64_png_data_url(size, ([base_64]) => {
+        get_base64_png_data_url(size, false, 1, 99, 100).then(({url}) => {
 
-            const hash = xxhashthat(base_64);
+            const hash = xxhashthat(url);
 
             let a = document.createElement("a"); //Create <a>
             a.download = `PIXAPICS-${hash}-PIXELATED-${size}x_RAS.png`; //File name Here
-            a.href = base_64;
+            a.href = url;
             a.click();
             a.remove();
-            base_64 = null;
 
             actions.trigger_sfx("hero_decorative-celebration-02");
             setTimeout(() => {
@@ -1130,7 +1129,7 @@ class Pixel extends React.PureComponent {
                 actions.trigger_sfx("alert_high-intensity");
 
             }, 2000);
-        }, false, 1, 100, 100);
+        });
     };
 
     _download_svg = (using = "xbrz", optimize_render_size = false, download_svg = false) => {
@@ -1145,14 +1144,14 @@ class Pixel extends React.PureComponent {
 
             setTimeout(() => {
 
-                get_base64_png_data_url(1, ([png_base64_in, palette]) => {
+                get_base64_png_data_url(1, true, 1, 99, 100).then(({url, colors}) => {
 
-                    const hash = xxhashthat(png_base64_in);
+                    const hash = xxhashthat(url);
 
                     let { _files_waiting_download } = this.state;
                     _files_waiting_download.push({
                         name: `PIXAPICS-${hash}-PIXELATED-1x_RAS.png`,
-                        url: png_base64_in.toString()
+                        url: url.toString()
                     });
                     this.setState({_files_waiting_download}, () => {
 
@@ -1160,7 +1159,7 @@ class Pixel extends React.PureComponent {
                     });
 
                     actions.trigger_voice("processing");
-                    base64png_to_xbrz_svg(png_base64_in.toString(), (image_base64, size) => {
+                    base64png_to_xbrz_svg(url.toString(), (image_base64, size) => {
 
                         let { _files_waiting_download } = this.state;
                         _files_waiting_download.push({
@@ -1207,11 +1206,8 @@ class Pixel extends React.PureComponent {
 
                         });
 
-                    }, Array.from(palette), using, Boolean(optimize_render_size), Boolean(download_svg));
-                    palette = null;
-                    png_base64_in = null;
-
-                }, true, 1, 100, 100);
+                    }, Array.from(colors), using, Boolean(optimize_render_size), Boolean(download_svg));
+                });
 
             }, 750);
 
