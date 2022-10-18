@@ -163,7 +163,7 @@ const utility = {
     },
 
     typedArrayToBytes(typedArray) {
-        return typedArray.buffer;
+        return new Uint8Array(typedArray.buffer);
     }
 };
 
@@ -214,83 +214,98 @@ function checkByteOffset(buffer) {
 
 function getMaskAtIndexFromBuffer(index, buffer) {
 
-    var maskBuffer = buffer.slice(4+index*20, 24+index*20);
+    var maskBuffer = buffer.slice(4+index*52, 4+52+index*52);
     return {
-        type: utility.bytesToBase64(maskBuffer.slice(0, 8)),
-        name: utility.bytesToBase64(maskBuffer.slice(8, 16)),
-        length: new Uint32Array(maskBuffer.slice(16, 20))[0]
+        type: utility.bytesToBase64(maskBuffer.slice(0, 24)),
+        name: utility.bytesToBase64(maskBuffer.slice(24, 48)),
+        length: new Uint32Array(maskBuffer.slice(48, 52))[0]
     };
 }
 
 function encodeIntoMask(type, name, length) {
 
-    var type8 = new Uint8Array(new ArrayBuffer(8));
+    var type24 = new Uint8Array(new ArrayBuffer(24));
     new Uint8Array(utility.base64ToBytes(type).buffer).forEach(function(b, i, a){
-        type8[8-a.length+i] = b;
+        type24[24-a.length+i] = b;
     });
 
-    var name8 = new Uint8Array(new ArrayBuffer(8));
+    var name24 = new Uint8Array(new ArrayBuffer(24));
     new Uint8Array(utility.base64ToBytes(name).buffer).forEach(function(b, i, a){
-        name8[8-a.length+i] = b;
+        name24[24-a.length+i] = b;
     });
 
     var length4 = new Uint8Array(Uint32Array.of(length));
 
     var mask = new Uint8Array(new ArrayBuffer(20));
-    mask.set(type8, 0);
-    mask.set(name8, 8);
-    mask.set(length4, 16);
+    mask.set(type24, 0);
+    mask.set(name24, 24);
+    mask.set(length4, 48);
 
     return mask;
 }
 
 function joinMasksAndItsNumber(masks) {
 
-    var all = new Uint8Array(new ArrayBuffer(4+20*masks.length));
+    var all = new Uint8Array(new ArrayBuffer(4+52*masks.length));
 
     var n4 = encodeMaskNumber(masks.length);
-    var masks20x = new Uint8Array(new ArrayBuffer(20*masks.length))
+    var masks52x = new Uint8Array(new ArrayBuffer(52*masks.length))
 
     masks.forEach(function(mask, index){
 
-        masks20x.set(encodeIntoMask(mask.type, mask.name, mask.length), index*20);
+        masks52x.set(encodeIntoMask(mask.type, mask.name, mask.length), index*20);
     });
 
     all.set(n4, 0);
-    all.set(masks20x, 4);
+    all.set(masks52x, 4);
 
     return all;
 }
 
-export function joinEverything(masksWithBuffers) {
+function joinEverything(masksWithBuffers) {
 
+    // Parse Object
     masksWithBuffers = Object.entries(masksWithBuffers).map(function([key, value]){
-
         return {
             type: value.type,
             name: key,
-            length: value.length,
             data: value.data,
         };
     });
 
-    var masksBytes = joinMasksAndItsNumber(masksWithBuffers);
-    var buffersByteslength = 0;
-    masksWithBuffers.forEach(function(mask){
-        buffersByteslength += mask.length;
-    });
-
-    var buffersBytes = new Uint8Array(new ArrayBuffer(buffersByteslength));
-    var bufferCurrentOffset = 0;
-    masksWithBuffers.forEach(function(mask){
-
+    // Encode all data
+    var dataArray = new Array(masksWithBuffers.length);
+    masksWithBuffers.forEach(function(mask, mask_i){
+        var data;
         if(mask.type === "HallOfBinary") {
-            buffersBytes.set(joinEverything(mask.data));
+            data = joinEverything(mask.data);
         }else {
-            buffersBytes.set(encode(mask.type, mask.data), bufferCurrentOffset);
+            data = encode(mask.type, mask.data);
         }
-        bufferCurrentOffset += mask.length;
+
+        dataArray[mask_i] = data;
     });
+
+    // Count total buffer length
+    var bufferCurrentOffset = 0;
+    dataArray.forEach(function(data){
+
+        masksWithBuffers.length = data.length;
+        bufferCurrentOffset += data.length;
+    });
+
+    // Set bytes in buffer and mask length
+    var buffersBytes = new Uint8Array(new ArrayBuffer(bufferCurrentOffset));
+    bufferCurrentOffset = 0;
+    dataArray.forEach(function(data, data_i){
+
+        buffersBytes.set(data, bufferCurrentOffset);
+        masksWithBuffers[data_i].length = data.length;
+        bufferCurrentOffset += data.length;
+    });
+
+    var masksBytes = joinMasksAndItsNumber(masksWithBuffers);
+
 
     var all = new Uint8Array(new ArrayBuffer(masksBytes.length+buffersBytes.length));
     all.set(masksBytes, 0);
@@ -299,7 +314,7 @@ export function joinEverything(masksWithBuffers) {
     return all;
 }
 
-export function splitEverything(bytes) {
+function splitEverything(bytes) {
 
     var maskLength = checkMaskNumber(bytes);
     var masks = new Array(maskLength);
@@ -322,7 +337,10 @@ export function splitEverything(bytes) {
     return main;
 }
 
-
+window._HOB = {
+    joinEverything,
+    splitEverything
+}
 
 /*
 Cascade of masks and objects in a kind of virtual machine state

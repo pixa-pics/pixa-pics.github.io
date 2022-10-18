@@ -1,7 +1,8 @@
 "use strict";
 import "regenerator-runtime/runtime";
-import api from "../js/utils/api";
-import {l} from "../js/utils/t";
+import "./utils/hallOfBinary";
+import api from "./utils/api";
+import {l} from "./utils/t";
 
 import React from "react";
 import ReactDOM from "react-dom";

@@ -199,19 +199,24 @@ const SuperState = {
 
                 let new_ui32_colors = sd_colors.subarray_uint32(0, indexes.length);
 
-                pxl_colors = Array.from(pxl_colors);
+                let pxl_colors_set = new Set(pxl_colors);
+                let pxl_colors_new = [];
                 Uint32Array.from(new Set(new_ui32_colors)).forEach(function(c){
 
-                    c = (c | 0) & 0xFFFFFFFF;
-                    if(!pxl_colors.includes(c)){
-                        pxl_colors.push(c);
+                    if(!pxl_colors_set.has(c)){
+                        pxl_colors_new.push(c);
                     }
                 });
 
-                pxl_colors = Uint32Array.from(pxl_colors);
+                if(pxl_colors_new.length > 0) {
+
+                    pxl_colors = Uint32Array.from(Array.from(pxl_colors).concat(pxl_colors_new));
+                }
+
                 for(let i = 0; i < indexes.length; i = (i + 1 | 0)>>>0) {
                     pxls[indexes[i]] = (pxl_colors.indexOf(new_ui32_colors[i]) | 0) >>> 0;
                 }
+
 
                 let st = Object.assign(s, {
                     _s_pxl_colors: state._s_pxl_colors,

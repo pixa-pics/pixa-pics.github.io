@@ -195,6 +195,7 @@ module.exports = {
             'bn.js': path.join(__dirname, 'node_modules/bn.js/lib/bn.js'),
             'process': path.join(__dirname, 'node_modules/process'),
             'readable-stream': path.join(__dirname, 'node_modules/readable-stream/lib/ours/browser.js'),
+            'readable-stream@4.1.0': path.join(__dirname, 'node_modules/readable-stream/lib/ours/browser.js'),
             "buffer": path.join(__dirname, 'node_modules/buffer'),
         }
     },
