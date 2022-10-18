@@ -164,45 +164,6 @@ const utility = {
 
     typedArrayToBytes(typedArray) {
         return typedArray.buffer;
-    },
-
-    bytesToTypedElementOfType(buffer, type) {
-
-        switch (type) {
-            case "Int8Element":
-                return new Int8Array(buffer)[0]
-                break;
-            case "Uint8Element":
-                return new Uint8Array(buffer)[0]
-                break;
-            case "Uint8ClampedElement":
-                return new Uint8ClampedArray(buffer)[0]
-                break;
-            case "Int16Element":
-                return new Int16Array(buffer)[0]
-                break;
-            case "Uint16Element":
-                return new Uint16Array(buffer)[0]
-                break;
-            case "Int32Element":
-                return new Int32Array(buffer)[0]
-                break;
-            case "Uint32Element":
-                return new Uint32Array(buffer)[0]
-                break;
-            case "Float32Element":
-                return new Float32Array(buffer)[0]
-                break;
-            case "Float64Element":
-                return new Float64Array(buffer)[0]
-                break;
-            case "BigInt64Element":
-                return new BigInt64Array(buffer)[0]
-                break;
-            case "BigUint64Element":
-                return new BigUint64Array(buffer)[0]
-                break;
-        }
     }
 };
 
@@ -301,7 +262,7 @@ function joinMasksAndItsNumber(masks) {
     return all;
 }
 
-function joinEverything(masksWithBuffers) {
+export function joinEverything(masksWithBuffers) {
 
     masksWithBuffers = Object.entries(masksWithBuffers).map(function([key, value]){
 
@@ -312,7 +273,7 @@ function joinEverything(masksWithBuffers) {
             data: value.data,
         };
     });
-    
+
     var masksBytes = joinMasksAndItsNumber(masksWithBuffers);
     var buffersByteslength = 0;
     masksWithBuffers.forEach(function(mask){
@@ -338,7 +299,7 @@ function joinEverything(masksWithBuffers) {
     return all;
 }
 
-function splitEverything(bytes) {
+export function splitEverything(bytes) {
 
     var maskLength = checkMaskNumber(bytes);
     var masks = new Array(maskLength);

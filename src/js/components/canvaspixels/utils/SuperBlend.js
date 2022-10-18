@@ -1,26 +1,8 @@
 import {simdops, SIMDopeColor, SIMDopeColors} from "../../../utils/simdope/simdope";
-
 const {
-    plus_int,
     minus_int,
-    plus_uint,
-    minus_uint,
-    multiply_uint,
-    divide_uint,
-    abs_int,
-    clamp_uint8,
-    clamp_uint32,
-    int_equal,
     int_not_equal,
-    int_less,
-    int_less_equal,
-    int_greater_equal,
-    uint_equal,
-    uint_not_equal,
-    uint_less,
-    uint_less_equal,
 } = simdops;
-
 const SuperBlend = {
     _build_state(layer_number, max_length) {
         "use strict";
@@ -133,6 +115,21 @@ const SuperBlend = {
         let shadow_state = shadow_builder(state);
 
         let bytes_index = -1;
+
+        const {
+            plus_int,
+            plus_uint,
+            minus_uint,
+            multiply_uint,
+            divide_uint,
+            clamp_uint8,
+            clamp_uint32,
+            int_equal,
+            int_less,
+            int_greater_equal,
+            uint_not_equal,
+            uint_less_equal,
+        } = simdops;
 
         return {
             for: function(pixel_index) {

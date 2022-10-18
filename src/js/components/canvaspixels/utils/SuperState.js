@@ -183,8 +183,8 @@ const SuperState = {
                 callback_function = callback_function || function(){};
 
                 let state = _state.get();
-                let pxl_colors = new Uint32Array(state._s_pxl_colors[state._layer_index].buffer);
-                let pxls = new Uint16Array(state._s_pxls[state._layer_index].buffer);
+                let pxl_colors = state._s_pxl_colors[state._layer_index];
+                let pxls = state._s_pxls[state._layer_index];
 
                 let indexes = Uint32Array.from(pxl_indexes);
                 let sd_color = SIMDopeColor.new_uint32(color);
@@ -201,6 +201,8 @@ const SuperState = {
 
                 pxl_colors = Array.from(pxl_colors);
                 Uint32Array.from(new Set(new_ui32_colors)).forEach(function(c){
+
+                    c = (c | 0) & 0xFFFFFFFF;
                     if(!pxl_colors.includes(c)){
                         pxl_colors.push(c);
                     }
@@ -208,7 +210,7 @@ const SuperState = {
 
                 pxl_colors = Uint32Array.from(pxl_colors);
                 for(let i = 0; i < indexes.length; i = (i + 1 | 0)>>>0) {
-                    pxls[indexes[i]] = pxl_colors.indexOf(new_ui32_colors[i]);
+                    pxls[indexes[i]] = (pxl_colors.indexOf(new_ui32_colors[i]) | 0) >>> 0;
                 }
 
                 let st = Object.assign(s, {

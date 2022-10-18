@@ -144,7 +144,8 @@ const SuperMasterMeta = {
                         }else {
 
                             // This is a list of color index that we explore
-                            const full_pxls = Uint32Array.from(_s_pxls[_layer_index].map(function(pci){ return simdops.clamp_uint32(_s_pxl_colors[_layer_index][pci]); }));
+                            var {clamp_uint32, plus_uint, int_less, int_equal, int_not_equal, clamp_uint8, multiply_uint } = simdops;
+                            const full_pxls = Uint32Array.from(_s_pxls[_layer_index]).map(function(pci){ return clamp_uint32(_s_pxl_colors[_layer_index][pci]); });
                             let _pxl_indexes_of_current_shape = new Set();
 
                             if (Boolean(tool === "LINE" || tool === "RECTANGLE" || tool === "ELLIPSE" || tool === "TRIANGLE") && _shape_index_a !== -1 && _pxls_hovered !== -1) {
@@ -207,13 +208,13 @@ const SuperMasterMeta = {
 
                             if(!is_there_different_dimension){
 
-                                meta.super_blend.update(simdops.plus_uint(_layers.length, 1), full_pxls_length);
+                                meta.super_blend.update(plus_uint(_layers.length, 1), full_pxls_length);
                                 let super_blend_for = meta.super_blend.for;
                                 let super_blend_stack = meta.super_blend.stack;
 
-                                for (let index = 0; simdops.int_less(index, full_pxls_length); index = simdops.plus_uint(index, 1)) {
+                                for (let index = 0; int_less(index, full_pxls_length); index = plus_uint(index, 1)) {
 
-                                    bool_new_hover = simdops.int_equal(_pxls_hovered, index);
+                                    bool_new_hover = int_equal(_pxls_hovered, index);
                                     bool_old_hover = _old_pxls_hovered.has(index);
                                     bool_new_shape = _pxl_indexes_of_current_shape.has(index);
                                     bool_old_shape = _pxl_indexes_of_old_shape.has(index);
@@ -221,7 +222,7 @@ const SuperMasterMeta = {
                                     bool_old_selection = _pxl_indexes_of_selection_drawn.has(index);
                                     bool_new_import = imported_image_pxls_positioned_keyset.has(index);
                                     bool_old_import = _previous_imported_image_pxls_positioned_keyset.has(index);
-                                    bool_new_pixel = simdops.int_not_equal(full_pxls[index], _old_full_pxls[index]);
+                                    bool_new_pixel = int_not_equal(full_pxls[index], _old_full_pxls[index]);
 
                                     if (
                                         clear_canvas ||
@@ -236,14 +237,14 @@ const SuperMasterMeta = {
 
                                         super_blend_for(index);
 
-                                        for (let i = 0; simdops.int_less(i, layers_length); i = simdops.plus_uint(i,1)) {
+                                        for (let i = 0; int_less(i, layers_length); i = plus_uint(i,1)) {
 
                                             if(_layers[i].hidden || hide_canvas_content) {
 
                                                 super_blend_stack(i, 0, 0, 0);
                                             }else {
 
-                                                super_blend_stack(i, _s_pxl_colors[i][_s_pxls[i][index]], simdops.clamp_uint8(simdops.multiply_uint(_layers[i].opacity, 255)), false);
+                                                super_blend_stack(i, _s_pxl_colors[i][_s_pxls[i][index]], clamp_uint8(multiply_uint(_layers[i].opacity, 255)), false);
                                             }
                                         }
 
