@@ -28,8 +28,6 @@ let encode, decode;
 })()
 
 
-
-
 export function bytesToBase64(bytes) {
     "use strict";
 
