@@ -676,11 +676,12 @@ class CanvasPixels extends React.PureComponent {
 
         }
 
+        const r = this.color_conversion.clean_duplicate_colors(new_pxls, new_pxl_colors);
         return {
             too_much_pixel_cpu_would_go_brrrrr: too_much_pixel_cpu_would_go_brrrrr,
-            ratio_pixel_per_color: new_pxls.length / new_pxl_colors.length,
-            new_pxl_colors: Uint32Array.from(new_pxl_colors),
-            new_pxls: new_pxls,
+            ratio_pixel_per_color: r[0].length / r[1].length,
+            new_pxl_colors: r[1],
+            new_pxls: r[0]
         };
     }
 

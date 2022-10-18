@@ -1268,7 +1268,7 @@ const B64PngCanvas = {
             const p =  Uint32Array.from(_s_pxls[i]);
             const pc = Uint32Array.from(_s_pxl_colors[i]);
 
-            layers_pxls_colors.set(Uint32Array.from(p.map(function(pci){ return pc[pci]; })), layers_pxls_colors_length * i);
+            layers_pxls_colors.set(p.map(function(pci){ return pc[pci]; }), layers_pxls_colors_length * i);
         }
 
         return Object.assign({}, {
@@ -1277,7 +1277,7 @@ const B64PngCanvas = {
             workerp: pool,
             w: pxl_width,
             h: pxl_height,
-            sp: layers_pxls_colors.buffer,
+            sp: layers_pxls_colors,
             spc: layers_pxls_colors_length,
             l: _layers,
             s: scale,
