@@ -5,6 +5,9 @@
 ![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/BADASSPP.gif)
 
 **You can easily convert selfies and other pictures into pixel art going back then to an HD image (but as a painting) very easily!**
+
+![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/777.png)
+
 > Yet many drawing tools and selection mode enables you to be creative (and decentralize everything)!
 
  * **Copyleft** and copyright can get shifted!
