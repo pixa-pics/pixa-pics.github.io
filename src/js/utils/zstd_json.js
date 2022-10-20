@@ -1,6 +1,6 @@
 import {ZstdInit as ZstdInitWasm, ZstdSimple as ZstdSimpleWasm} from "@oneidentity/zstd-js/wasm";
 import {ZstdInit as ZstdInitAsm, ZstdSimple as ZstdSimpleAsm} from "@oneidentity/zstd-js/asm";
-import {worker_cbor} from "./cbor";
+import {cbor} from "./cbor";
 
 const ZSTD = (uint8a_or_obj, mode = "COMPRESS_OBJECT", pool = null) => {
 
@@ -14,14 +14,14 @@ const ZSTD = (uint8a_or_obj, mode = "COMPRESS_OBJECT", pool = null) => {
 
                     if (mode === "COMPRESS_OBJECT") {
                         //  JS -> buffer -> ui8a -> compressed ui8a
-                        worker_cbor(uint8a_or_obj).then(function(buffer){
+                        cbor(uint8a_or_obj).then(function(buffer){
                             resolve(ZstdSimpleWasm.compress(new Uint8Array(buffer)));
                         });
 
 
                     } else if (mode === "DECOMPRESS_UINT8A") {
                         // compressed ui8a -> ui8a decompressed -> buffer -> JS
-                        worker_cbor(ZstdSimpleWasm.decompress(uint8a_or_obj).buffer).then(function(js){
+                        cbor(ZstdSimpleWasm.decompress(uint8a_or_obj).buffer).then(function(js){
                             resolve(js);
                         });
                     }

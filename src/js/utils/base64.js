@@ -19,21 +19,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import * as b64 from 'base64-encoding';
-
-let encode, decode;
-(async() => {
-    encode = await new b64.Base64Encoder().optimize().encode;
-    decode = await new b64.Base64Decoder().optimize().decode;
-})()
-
-
 export function bytesToBase64(bytes) {
     "use strict";
 
-    try {
-        return encode(bytes);
-    } catch(e){}
     const base64abcCC = Uint8Array.of(65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 43, 47);
 
     let i = 2, j = 0;
@@ -66,7 +54,7 @@ export function bytesToBase64(bytes) {
     }
 
     let s = "";
-    for(i = 0; i < result.length; i = (i+512|0)>>>0){
+    for(i = 0; i < result.length; i = (i+2048|0)>>>0){
         s = s.concat(String.fromCharCode.apply(null, result.subarray(i, Math.min(i+512|0, result.length))));
     }
 
@@ -74,10 +62,6 @@ export function bytesToBase64(bytes) {
 }
 
 export function base64ToBytes(str) {
-
-    try {
-        return decode(str);
-    } catch(e){}
 
     const base64error_code = 255;
     const base64codes = Uint8Array.of(255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 62, 255, 255, 255, 63, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 255, 255, 255, 0, 255, 255, 255, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 255, 255, 255, 255, 255, 255, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51);
