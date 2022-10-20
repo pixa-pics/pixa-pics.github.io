@@ -32,10 +32,9 @@
     "react-swipeable-views": "^0.13.9",
     "readable-stream": "~4.1.0",
     "regenerator-runtime": "^0.13.9",
-    "tinycbor": "~0.2.1",
     "svg64": "^1.1.0",
     "svgo": "^2.8.0",
-    "workerpool": "^6.2.1",
+    "workerpool": "~6.2.1",
     "xxhash-wasm": "~1.0.1"
   },
   "devDependencies": {

@@ -883,17 +883,16 @@ class CanvasPixels extends React.PureComponent {
         if(img_d.id) {
 
             const _layer_index = 0;
-            const ns_pxl_colors = Array.of(Uint32Array.from(img_d.pxl_colors));
-            const ns_pxls = Array.of(Uint16Array.from(img_d.pxls));
+            const [pxls_copy, pxl_colors_copy] = this.color_conversion.clean_duplicate_colors(img_d.pxls, Uint32Array.from(img_d.pxl_colors));
 
             this.super_state.set_state({
                 _id: Date.now(),
-                pxl_width: img_d.width,
-                pxl_height: img_d.height,
+                pxl_width: img_d.width | 0,
+                pxl_height: img_d.height | 0,
                 _pxl_indexes_of_selection: new Set(),
                 _base64_original_images: [loading_base64_img],
-                _s_pxl_colors: ns_pxl_colors,
-                _s_pxls: ns_pxls,
+                _s_pxl_colors: [pxl_colors_copy],
+                _s_pxls: [pxls_copy],
                 _layers: [{id: Date.now(), name: "Layer 0", hidden: false, opacity: 1}],
                 _layer_index,
                 _pxls_hovered: -1,
@@ -902,12 +901,12 @@ class CanvasPixels extends React.PureComponent {
                 _json_state_history: {history_position: 0, state_history: []},
             }).then(() => {
 
-                this.canvas_pos.set_sizes(img_d.width, img_d.height);
+                this.canvas_pos.set_sizes(img_d.width | 0, img_d.height | 0);
                 this.canvas_pos.set_current_scale_default();
 
                 this._request_force_update(false, false).then(() => {
 
-                    this.super_canvas.set_dimensions(img_d.width, img_d.height).then(() => {
+                    this.super_canvas.set_dimensions(img_d.width | 0, img_d.height | 0).then(() => {
                         this.super_master_meta.update_canvas(true);
                     });
                 });
@@ -1178,39 +1177,36 @@ class CanvasPixels extends React.PureComponent {
                     new_base64_original_images.push(base64_original_image);
                 }
 
-                let ns_pxl_colors = Array.of(Uint32Array.from(new_pxl_data.new_pxl_colors));
-                let ns_pxls = Array.of(Uint16Array.from(new_pxl_data.new_pxls));
-                new_pxl_data = null;
+                const [pxls_copy, pxl_colors_copy] = this.color_conversion.clean_duplicate_colors(new_pxl_data.new_pxls, Uint32Array.from(new_pxl_data.new_pxl_colors));
 
                 this.super_state.set_state({
                     _id: Date.now(),
-                    pxl_width: width,
-                    pxl_height: height,
+                    pxl_width: width | 0,
+                    pxl_height: height | 0,
                     _pxl_indexes_of_selection: new Set(),
                     _base64_original_images: new_base64_original_images,
                     _layers: [{id: Date.now(), name: "Layer 0", hidden: false, opacity: 1}],
                     _json_state_history: {history_position: 0, state_history: []},
-                    _s_pxl_colors: ns_pxl_colors,
-                    _s_pxls: ns_pxls,
+                    _s_pxl_colors: [pxl_colors_copy],
+                    _s_pxls: [pxls_copy],
                     _layer_index: 0,
                     _pxls_hovered: -1,
                     _original_image_index: new_base64_original_images.indexOf(base64_original_image),
                     _last_action_timestamp: Date.now(),
                 }).then(() => {
 
-                    this.canvas_pos.set_sizes(width, height);
+                    this.canvas_pos.set_sizes(width | 0, height | 0);
                     this.canvas_pos.set_current_scale_default();
 
                     this._request_force_update(false, false).then(() => {
 
-                        this.super_canvas.set_dimensions(width, height).then(() => {
+                        this.super_canvas.set_dimensions(width | 0, height | 0).then(() => {
                             this.super_master_meta.update_canvas(true);
                         });
                     });
 
                     this._notify_image_load_complete();
                     this._notify_export_state();
-                    this.super_master_meta.update_canvas(true);
                 });
 
             }, 50);

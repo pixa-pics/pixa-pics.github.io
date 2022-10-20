@@ -1277,7 +1277,7 @@ const B64PngCanvas = {
             workerp: pool,
             w: pxl_width,
             h: pxl_height,
-            sp: layers_pxls_colors,
+            sp: layers_pxls_colors.buffer,
             spc: layers_pxls_colors_length,
             l: _layers,
             s: scale,
@@ -1307,10 +1307,10 @@ const B64PngCanvas = {
             },
             destroy(callback_function = function(){}) {
                 if(s !== null) {
-                    s.workerp.terminate(function (c){
-                        s = null;
-                        callback_function(c);
-                    });
+
+                     s = null;
+                     callback_function();
+
                 }else {
                     callback_function("ok");
                 }
@@ -1325,7 +1325,7 @@ const B64PngCanvas = {
 
                         return s.asyncf(s.w, s.h, s.sp, s.spc, s.l, s.s, s.wp);
 
-                    }).timeout(10 * 1000);
+                    }).timeout(15 * 1000);
                 }else {
 
                     return Promise.reject();

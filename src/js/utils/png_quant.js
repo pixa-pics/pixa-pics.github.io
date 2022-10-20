@@ -727,22 +727,52 @@ Xu=zu>>>0<10,Gu=0==(0|ju),qu=Gu&Xu,Ju=Wu|qu,Ju&Ku&&(Qu=b>>>0>30,Zu=Iu>>>b,$u=0==
 ;var i=e.length+1,t=[allocate(intArrayFromString(Module.thisProgram),"i8",0)];r();for(var n=0;n<i-1;n+=1)t.push(allocate(intArrayFromString(e[n]),"i8",0)),r();t.push(0),t=allocate(t,"i32",0);try{exit(Module._main(i,t,0),!0)}catch(e){if(e instanceof ExitStatus)return;if("SimulateInfiniteLoop"==e)return void(Module.noExitRuntime=!0);throw e&&"object"==typeof e&&e.stack&&Module.printErr("exception thrown: "+[e,e.stack]),e}finally{calledMain=!0}},Module.run=Module.run=run,Module.exit=Module.exit=exit;var abortDecorators=[];if(Module.abort=Module.abort=abort,Module.preInit)for("function"==typeof Module.preInit&&(Module.preInit=[Module.preInit]);Module.preInit.length>0;)Module.preInit.pop()();var shouldRunNow=!0;Module.noInitialRun&&(shouldRunNow=!1),run();var file=null;try{file=FS.readFile("/input-new.png")}catch(e){return FS.unlink("/input.png"),new Error("No output: ")}return FS.unlink("/input-new.png"),FS.unlink("/input.png"),{data:file}}}pngquant.call(this);
     
     /* Utility to convert data url to blob */
-    function dataURLtoUint8(dataurl) {
-        var arr = dataurl.split(',');
-        var mime = arr[0].match(/:(.*?);/)[1];
-        var bstr = atob(arr[1]);
-        arr = null;
-        var n = bstr.length | 0;
-        var i = 0;
-        var u8arr = new Uint8Array(n);
-        for (i = 0; (i|0) < (n|0); i = (i+1|0)>>>0) {
-            u8arr[i] = bstr.charCodeAt(i);
+    function base64ToBytes(str) {
+    
+        const base64error_code = 255;
+        const base64codes = Uint8Array.of(255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 62, 255, 255, 255, 63, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 255, 255, 255, 0, 255, 255, 255, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 255, 255, 255, 255, 255, 255, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51);
+        const base64codes_length = base64codes.length | 0;
+    
+        function charCodeAt(s) {
+            return s.charCodeAt(0) & 0xFF;
         }
-        bstr = null;
-        return u8arr;
+        function getBase64CodesBufferResults(buffer) {
+            return Uint8Array.of( buffer >> 16, (buffer >> 8) & 0xFF, buffer & 0xFF)
+        }
+        function getBase64Code(char_code) {
+    
+            char_code = (char_code | 0) >>> 0;
+            if (((char_code|0)>>>0) >= ((base64codes_length|0)>>>0)) {throw new Error("Unable to parse base64 string.");}
+            const code = (base64codes[char_code] | 0) >>> 0;
+            if (((code|0)>>>0) == ((base64error_code|0)>>>0)) {throw new Error("Unable to parse base64 string.");}
+            return code;
+        }
+        function getBase64CodesBuffer(str_char_codes) {
+            return (getBase64Code(str_char_codes[0]) << 18 | getBase64Code(str_char_codes[1]) << 12 | getBase64Code(str_char_codes[2]) << 6 | getBase64Code(str_char_codes[3]) | 0) >>> 0;
+        }
+    
+        if ((str.length % 4 | 0) > 0) {
+            throw new Error("Unable to parse base64 string.");
+        }
+        const index = str.indexOf("=") | 0;
+        if ((index|0) > -1 && (index|0) < (str.length - 2 | 0)) {
+            throw new Error("Unable to parse base64 string.");
+        }
+    
+        let str_char_code = Uint8Array.from(str.split("").map(function(s){ return charCodeAt(s)}));
+        let missingOctets = str.endsWith("==") ? 2 : str.endsWith("=") ? 1 : 0,
+            n = str.length | 0,
+            result = new Uint8Array(3 * (n / 4));
+    
+        let i = 0, j = 0;
+        for (;(i|0) < (n|0); i = (i+4|0)>>>0, j = (j+3|0)>>>0) {
+            result.set(getBase64CodesBufferResults(getBase64CodesBuffer(str_char_code.subarray(i, i+4|0))), j);
+        }
+    
+        return result.slice(0, result.length - missingOctets | 0);
     }
     
-    var blob = new Blob(Array.of(pngquant(dataURLtoUint8(dataurl), options, function(){}).data), { type: "image/png" });
+    var blob = new Blob(Array.of(pngquant(base64ToBytes(dataurl.split(",")[1]), options, function(){}).data), { type: "image/png" });
     
     try {
         
@@ -763,7 +793,7 @@ Xu=zu>>>0<10,Gu=0==(0|ju),qu=Gu&Xu,Ju=Wu|qu,Ju&Ku&&(Qu=b>>>0>30,Zu=Iu>>>b,$u=0==
 })};
 return fu;`)();
 
-const png_quant = async(dataurl, quality_min, quality_max, speed, pool = null) => {
+const png_quant = (dataurl, quality_min, quality_max, speed, pool = null) => {
 
     let options = {"speed": speed.toString(), "quality": quality_min.toString() + "-" + quality_max.toString(), "nofs": true, "floyd": 0, "strip": true};
 
