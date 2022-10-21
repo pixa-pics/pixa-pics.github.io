@@ -54,8 +54,8 @@ export function bytesToBase64(bytes) {
     }
 
     let s = "";
-    for(i = 0; i < result.length; i = (i+2048|0)>>>0){
-        s = s.concat(String.fromCharCode.apply(null, result.subarray(i, Math.min(i+512|0, result.length))));
+    for(i = 0; i < result.length; i = (i+1024|0)>>>0){
+        s = s.concat(String.fromCharCode.apply(null, result.subarray(i, Math.min(i+1024|0, result.length))));
     }
 
     return s;
@@ -64,21 +64,21 @@ export function bytesToBase64(bytes) {
 export function base64ToBytes(str) {
 
     const base64error_code = 255;
-    const base64codes = Uint8Array.of(255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 62, 255, 255, 255, 63, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 255, 255, 255, 0, 255, 255, 255, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 255, 255, 255, 255, 255, 255, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51);
+    const base64codes = Uint8ClampedArray.of(255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 62, 255, 255, 255, 63, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 255, 255, 255, 0, 255, 255, 255, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 255, 255, 255, 255, 255, 255, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51);
     const base64codes_length = base64codes.length | 0;
 
     function charCodeAt(s) {
         return s.charCodeAt(0) & 0xFF;
     }
     function getBase64CodesBufferResults(buffer) {
-        return Uint8Array.of( buffer >> 16, (buffer >> 8) & 0xFF, buffer & 0xFF)
+        return Uint8ClampedArray.of( buffer >> 16, (buffer >> 8) & 0xFF, buffer & 0xFF)
     }
     function getBase64CodesBufferResultsBy4(buffer_1, buffer_2, buffer_3, buffer_4 ) {
-        return Uint8Array.of(
+        return Uint8ClampedArray.of(
             buffer_1 >> 16, (buffer_1 >> 8) & 0xFF, buffer_1 & 0xFF,
             buffer_2 >> 16, (buffer_2 >> 8) & 0xFF, buffer_2 & 0xFF,
             buffer_3 >> 16, (buffer_3 >> 8) & 0xFF, buffer_3 & 0xFF,
-            buffer_4 >> 16, (buffer_4 >> 8) & 0xFF, buffer_4 & 0xFF,
+            buffer_4 >> 16, (buffer_4 >> 8) & 0xFF, buffer_4 & 0xFF
         );
     }
     function getBase64Code(char_code) {
@@ -101,14 +101,14 @@ export function base64ToBytes(str) {
         throw new Error("Unable to parse base64 string.");
     }
 
-    let str_char_code = Uint8Array.from(str.split("").map(function(s){ return charCodeAt(s)}));
+    let str_char_code = Uint8ClampedArray.from(str.split("").map(function(s){ return charCodeAt(s)}));
     let missingOctets = str.endsWith("==") ? 2 : str.endsWith("=") ? 1 : 0,
         n = str.length | 0,
-        result = new Uint8Array(3 * (n / 4));
+        result = new Uint8ClampedArray(3 * (n / 4));
 
-    let str_char_code_splitted = new Uint8Array(16);
+    let str_char_code_splitted = new Uint8ClampedArray(16);
     let i = 0, j = 0;
-    for (;(i|0) < (n-12|0); i = (i+16|0)>>>0, j = (j+12|0)>>>0) { // Single Operation Multiple Data (SIMD) up to 3x faster
+    for (;(i+16|0) < (n|0); i = (i+16|0)>>>0, j = (j+12|0)>>>0) { // Single Operation Multiple Data (SIMD) up to 3x faster
 
         str_char_code_splitted.set(str_char_code.subarray(i, i+16|0));
         result.set(getBase64CodesBufferResultsBy4(

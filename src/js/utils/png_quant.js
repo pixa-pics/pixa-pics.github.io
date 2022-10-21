@@ -688,7 +688,7 @@ pngquant.c and rwpng.c/h:
 */
 
 
-const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
+var AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
 window.png_quant_process_function  = new AsyncFunction(`var fu = async function(dataurl, options) {return new Promise(function(resolve, reject){
                 
     "use strict";
@@ -728,22 +728,30 @@ Xu=zu>>>0<10,Gu=0==(0|ju),qu=Gu&Xu,Ju=Wu|qu,Ju&Ku&&(Qu=b>>>0>30,Zu=Iu>>>b,$u=0==
     
     /* Utility to convert data url to blob */
     function base64ToBytes(str) {
-    
-        const base64error_code = 255;
-        const base64codes = Uint8Array.of(255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 62, 255, 255, 255, 63, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 255, 255, 255, 0, 255, 255, 255, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 255, 255, 255, 255, 255, 255, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51);
-        const base64codes_length = base64codes.length | 0;
+
+        var base64error_code = 255;
+        var base64codes = Uint8ClampedArray.of(255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 62, 255, 255, 255, 63, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 255, 255, 255, 0, 255, 255, 255, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 255, 255, 255, 255, 255, 255, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51);
+        var base64codes_length = base64codes.length | 0;
     
         function charCodeAt(s) {
             return s.charCodeAt(0) & 0xFF;
         }
         function getBase64CodesBufferResults(buffer) {
-            return Uint8Array.of( buffer >> 16, (buffer >> 8) & 0xFF, buffer & 0xFF)
+            return Uint8ClampedArray.of( buffer >> 16, (buffer >> 8) & 0xFF, buffer & 0xFF)
+        }
+        function getBase64CodesBufferResultsBy4(buffer_1, buffer_2, buffer_3, buffer_4 ) {
+            return Uint8ClampedArray.of(
+                buffer_1 >> 16, (buffer_1 >> 8) & 0xFF, buffer_1 & 0xFF,
+                buffer_2 >> 16, (buffer_2 >> 8) & 0xFF, buffer_2 & 0xFF,
+                buffer_3 >> 16, (buffer_3 >> 8) & 0xFF, buffer_3 & 0xFF,
+                buffer_4 >> 16, (buffer_4 >> 8) & 0xFF, buffer_4 & 0xFF
+            );
         }
         function getBase64Code(char_code) {
     
             char_code = (char_code | 0) >>> 0;
             if (((char_code|0)>>>0) >= ((base64codes_length|0)>>>0)) {throw new Error("Unable to parse base64 string.");}
-            const code = (base64codes[char_code] | 0) >>> 0;
+            var code = (base64codes[char_code] | 0) >>> 0;
             if (((code|0)>>>0) == ((base64error_code|0)>>>0)) {throw new Error("Unable to parse base64 string.");}
             return code;
         }
@@ -754,18 +762,30 @@ Xu=zu>>>0<10,Gu=0==(0|ju),qu=Gu&Xu,Ju=Wu|qu,Ju&Ku&&(Qu=b>>>0>30,Zu=Iu>>>b,$u=0==
         if ((str.length % 4 | 0) > 0) {
             throw new Error("Unable to parse base64 string.");
         }
-        const index = str.indexOf("=") | 0;
+        var index = str.indexOf("=") | 0;
         if ((index|0) > -1 && (index|0) < (str.length - 2 | 0)) {
             throw new Error("Unable to parse base64 string.");
         }
     
-        let str_char_code = Uint8Array.from(str.split("").map(function(s){ return charCodeAt(s)}));
-        let missingOctets = str.endsWith("==") ? 2 : str.endsWith("=") ? 1 : 0,
+        var str_char_code = Uint8ClampedArray.from(str.split("").map(function(s){ return charCodeAt(s)}));
+        var missingOctets = str.endsWith("==") ? 2 : str.endsWith("=") ? 1 : 0,
             n = str.length | 0,
-            result = new Uint8Array(3 * (n / 4));
+            result = new Uint8ClampedArray(3 * (n / 4));
     
-        let i = 0, j = 0;
-        for (;(i|0) < (n|0); i = (i+4|0)>>>0, j = (j+3|0)>>>0) {
+        var str_char_code_splitted = new Uint8ClampedArray(16);
+        var i = 0, j = 0;
+        for (;(i+16|0) < (n|0); i = (i+16|0)>>>0, j = (j+12|0)>>>0) { // Single Operation Multiple Data (SIMD) up to 3x faster
+    
+            str_char_code_splitted.set(str_char_code.subarray(i, i+16|0));
+            result.set(getBase64CodesBufferResultsBy4(
+                getBase64CodesBuffer(str_char_code_splitted.subarray(0, 4)),
+                getBase64CodesBuffer(str_char_code_splitted.subarray(4, 8)),
+                getBase64CodesBuffer(str_char_code_splitted.subarray(8, 12)),
+                getBase64CodesBuffer(str_char_code_splitted.subarray(12, 16))
+            ), j);
+        }
+    
+        for (;(i|0) < (n|0); i = (i+4|0)>>>0, j = (j+3|0)>>>0) { // Single Operation Single Data (normal)
             result.set(getBase64CodesBufferResults(getBase64CodesBuffer(str_char_code.subarray(i, i+4|0))), j);
         }
     
@@ -795,7 +815,7 @@ return fu;`)();
 
 const png_quant = (dataurl, quality_min, quality_max, speed, pool = null) => {
 
-    let options = {"speed": speed.toString(), "quality": quality_min.toString() + "-" + quality_max.toString(), "nofs": true, "floyd": 0, "strip": true};
+    const options = {"speed": speed.toString(), "quality": quality_min.toString() + "-" + quality_max.toString(), "nofs": true, "floyd": 0, "strip": true};
 
     if(Boolean(pool)) {
 
