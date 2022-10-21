@@ -572,7 +572,7 @@ class Pixel extends React.PureComponent {
         }
 
         this.setState(new_props);
-        
+
     }
 
     _try_load_with_payload = (load_with) => {
@@ -1112,7 +1112,7 @@ class Pixel extends React.PureComponent {
 
         window.dispatchEvent(new Event(`art-download-raster${size}`));
 
-        get_base64_png_data_url(size, false, 1, 99, 100).then(({url}) => {
+        get_base64_png_data_url(size, false, 1, 95, 100).then(({url}) => {
 
             const hash = xxhashthat(url);
 
@@ -1144,7 +1144,7 @@ class Pixel extends React.PureComponent {
 
             setTimeout(() => {
 
-                get_base64_png_data_url(1, true, 1, 99, 100).then(({url, colors}) => {
+                get_base64_png_data_url(1, true, 1, 95, 100).then(({url, colors}) => {
 
                     const hash = xxhashthat(url);
 

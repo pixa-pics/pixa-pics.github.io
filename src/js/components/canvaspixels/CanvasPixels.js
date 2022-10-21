@@ -592,19 +592,18 @@ class CanvasPixels extends React.PureComponent {
 
     _get_base64_png_data_url = (scale = 1, with_palette = false, with_compression_speed = 0, with_compression_quality_min = 30, with_compression_quality_max = 35) => {
 
-        const { _json_state_history } = this.super_state.get_state();
-        const { pxl_width, pxl_height, _s_pxls, _s_pxl_colors, _layers } = _json_state_history.state_history[_json_state_history.history_position];
+        const { _json_state_history, pxl_width, pxl_height } = this.super_state.get_state();
+        const { _s_pxls, _s_pxl_colors, _layers } = _json_state_history.state_history[_json_state_history.history_position];
         const b64pngcanvas = B64PngCanvas.from(pool, pxl_width | 0, pxl_height | 0, _s_pxls, _s_pxl_colors, _layers, scale | 0, with_palette);
 
         return new Promise( (resolve, reject) => {
             b64pngcanvas.render().then((result) => {
 
-                b64pngcanvas.destroy();
                 if(with_compression_speed !== 0) {
 
                     JSLoader( () => import("../../utils/png_quant")).then(({png_quant}) => {
 
-                        png_quant(result.url.toString(), with_compression_quality_min, with_compression_quality_max, with_compression_speed, pool).then((base_64_out) => {
+                        png_quant(result.url, with_compression_quality_min, with_compression_quality_max, with_compression_speed, pool).then((base_64_out) => {
 
                             result.url = base_64_out;
                             resolve(result);
@@ -889,8 +888,8 @@ class CanvasPixels extends React.PureComponent {
 
             this.super_state.set_state({
                 _id: Date.now(),
-                pxl_width: img_d.width | 0,
-                pxl_height: img_d.height | 0,
+                pxl_width: parseInt(img_d.width),
+                pxl_height: parseInt(img_d.height),
                 _pxl_indexes_of_selection: new Set(),
                 _base64_original_images: [loading_base64_img],
                 _s_pxl_colors: [pxl_colors_copy],
@@ -1183,8 +1182,8 @@ class CanvasPixels extends React.PureComponent {
 
                 this.super_state.set_state({
                     _id: Date.now(),
-                    pxl_width: width | 0,
-                    pxl_height: height | 0,
+                    pxl_width: parseInt(width),
+                    pxl_height: parseInt(height),
                     _pxl_indexes_of_selection: new Set(),
                     _base64_original_images: new_base64_original_images,
                     _layers: [{id: Date.now(), name: "Layer 0", hidden: false, opacity: 1}],

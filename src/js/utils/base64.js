@@ -22,7 +22,7 @@ SOFTWARE.
 export function bytesToBase64(bytes) {
     "use strict";
 
-    const base64abcCC = Uint8Array.of(65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 43, 47);
+    const base64abcCC = Uint8ClampedArray.of(65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 43, 47);
 
     let i = 2, j = 0;
     let l = bytes.length | 0;
@@ -30,7 +30,7 @@ export function bytesToBase64(bytes) {
     let k = l % 3;
     let n = Math.floor(l / 3) * 4 + (k && k + 1);
     let N = Math.ceil(l / 3) * 4;
-    let result = new Uint8Array(N);
+    let result = new Uint8ClampedArray(N);
 
     for (i = 2, j = 0; (i|0) < (l|0); i = (i+3|0)>>>0, j = (j+4|0)>>>0) {
         result[j] = base64abcCC[bytes[i - 2 | 0] >> 2] & 0xFF;

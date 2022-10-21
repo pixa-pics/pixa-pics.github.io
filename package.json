@@ -35,6 +35,7 @@
     "svg64": "^1.1.0",
     "svgo": "^2.8.0",
     "workerpool": "~6.2.1",
+    "fast-png": "~6.1.0",
     "xxhash-wasm": "~1.0.1"
   },
   "devDependencies": {
