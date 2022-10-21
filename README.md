@@ -4,7 +4,7 @@
 
 ![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/BADASSPP.gif)
 
-**You can easily convert selfies and other pictures into pixel art going back then to an HD image (but as a painting) very easily!**
+**You can easily convert selfies and other pictures into pixel art going back then to an HD image (but as a painting) very easily!** Watch Youtube HD trailer now! https://youtu.be/lC7OYGI8waE
 
 ![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/777.png)
 
