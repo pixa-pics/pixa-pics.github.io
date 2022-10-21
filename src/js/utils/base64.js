@@ -54,8 +54,8 @@ export function bytesToBase64(bytes) {
     }
 
     let s = "";
-    for(i = 0; i < result.length; i = (i+1024|0)>>>0){
-        s = s.concat(String.fromCharCode.apply(null, result.subarray(i, Math.min(i+1024|0, result.length))));
+    for(i = 0; i < result.length; i = (i+512|0)>>>0){
+        s = s.concat(String.fromCharCode.apply(null, result.subarray(i, Math.min(i+512|0, result.length))));
     }
 
     return s;

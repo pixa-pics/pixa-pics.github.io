@@ -39,10 +39,194 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
- */
+ *//*
+
+            function png_encode_id(image_data) {
+
+                var Base64 = {
+
+                    // private property
+                    _keyStr : "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
+
+                    // public method for encoding
+                    encode : function (input) {
+                        var output = "";
+                        var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
+                        var i = 0;
+
+                        while ((i|0) < (input.length|0)) {
+                            chr1 = input.charCodeAt(i++);
+                            chr2 = input.charCodeAt(i++);
+                            chr3 = input.charCodeAt(i++);
+
+                            enc1 = chr1 >> 2;
+                            enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
+                            enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
+                            enc4 = chr3 & 63;
+
+                            if (isNaN(chr2)) {
+                                enc3 = enc4 = 64;
+                            } else if (isNaN(chr3)) {
+                                enc4 = 64;
+                            }
+
+                            output = output +
+                                this._keyStr.charAt(enc1) + this._keyStr.charAt(enc2) +
+                                this._keyStr.charAt(enc3) + this._keyStr.charAt(enc4);
+                        }
+
+                        return output;
+                    }
+                };
+
+                var DEFLATE_METHOD = String.fromCharCode(0x78, 0x01),
+                    CRC_TABLE = [],
+                    SIGNATURE = String.fromCharCode(137, 80, 78, 71, 13, 10, 26, 10),
+                    NO_FILTER = String.fromCharCode(0),
+
+                    make_crc_table = function () {
+                        var n, c, k;
+
+                        for (n = 0; n < 256; n++) {
+                            c = n;
+                            for (k = 0; k < 8; k++) {
+                                if (c & 1) {
+                                    c = 0xedb88320 ^ (c >>> 1);
+                                } else {
+                                    c = c >>> 1;
+                                }
+                            }
+                            CRC_TABLE[n] = c;
+                        }
+                    },
+
+                    inflateStore = function (data) {
+                        var MAX_STORE_LENGTH = 65535,
+                            storeBuffer = '',
+                            i,
+                            remaining,
+                            blockType;
+
+                        for (i = 0; i < data.length; i += MAX_STORE_LENGTH) {
+                            remaining = data.length - i;
+                            blockType = '';
+
+                            if (remaining <= MAX_STORE_LENGTH) {
+                                blockType = String.fromCharCode(0x01);
+                            } else {
+                                remaining = MAX_STORE_LENGTH;
+                                blockType = String.fromCharCode(0x00);
+                            }
+                            // little-endian
+                            storeBuffer += blockType + String.fromCharCode((remaining & 0xFF), (remaining & 0xFF00) >>> 8);
+                            storeBuffer += String.fromCharCode(((~remaining) & 0xFF), ((~remaining) & 0xFF00) >>> 8);
+
+                            storeBuffer += data.substring(i, i + remaining);
+                        }
+
+                        return storeBuffer;
+                    },
+
+                    adler32 = function (data) {
+                        var MOD_ADLER = 65521,
+                            a = 1,
+                            b = 0,
+                            i;
+
+                        for (i = 0; (i|0) < (data.length|0); i=(i+1|0)>>>0) {
+                            a = (a + data.charCodeAt(i)) % MOD_ADLER;
+                            b = (b + a) % MOD_ADLER;
+                        }
+
+                        return (b << 16) | a;
+                    },
+
+                    update_crc = function (crc, buf) {
+                        var c = crc, n, b;
+
+                        for (n = 0; (n|0) < (buf.length|0); n=(n+1|0)>>>0) {
+                            b = buf.charCodeAt(n);
+                            c = CRC_TABLE[(c ^ b) & 0xff] ^ (c >>> 8);
+                        }
+                        return c;
+                    },
+
+                    crc = function crc(buf) {
+                        return update_crc(0xffffffff, buf) ^ 0xffffffff;
+                    },
+
+                    dwordAsString = function (dword) {
+                        return String.fromCharCode((dword & 0xFF000000) >>> 24, (dword & 0x00FF0000) >>> 16, (dword & 0x0000FF00) >>> 8, (dword & 0x000000FF));
+                    },
+
+                    createChunk = function (length, type, data) {
+                        var CRC = crc(type + data);
+
+                        return dwordAsString(length) +
+                            type +
+                            data +
+                            dwordAsString(CRC);
+                    },
+
+                    IEND,
+
+                    createIHDR = function (width, height) {
+                        var IHDRdata;
+
+                        IHDRdata = dwordAsString(width);
+                        IHDRdata += dwordAsString(height);
+
+                        // bit depth
+                        IHDRdata += String.fromCharCode(8);
+                        // color type: 6=truecolor with alpha
+                        IHDRdata += String.fromCharCode(6);
+                        // compression method: 0=deflate, only allowed value
+                        IHDRdata += String.fromCharCode(0);
+                        // filtering: 0=adaptive, only allowed value
+                        IHDRdata += String.fromCharCode(0);
+                        // interlacing: 0=none
+                        IHDRdata += String.fromCharCode(0);
+
+                        return createChunk(13, 'IHDR', IHDRdata);
+                    },
+
+                    png = function (width, height, rgba) {
+                        var IHDR = createIHDR(width, height),
+                            IDAT,
+                            scanlines = '',
+                            scanline,
+                            y,
+                            x,
+                            compressedScanlines;
+
+                        for (y = 0; (y|0) < (rgba.length|0); y = (y + width * 4|0)>>>0) {
+                            scanline = NO_FILTER;
+                            if (Array.isArray(rgba)) {
+                                for (x = 0; (x|0) < (width * 4 | 0); x=(x+1|0)>>>0) {
+                                    scanline += String.fromCharCode(rgba[y + x] & 0xff);
+                                }
+                            } else {
+                                // rgba=string
+                                scanline += rgba.substr(y, width * 4 | 0);
+                            }
+                            scanlines += scanline;
+                        }
+
+                        compressedScanlines = DEFLATE_METHOD + inflateStore(scanlines) + dwordAsString(adler32(scanlines));
+
+                        IDAT = createChunk(compressedScanlines.length, 'IDAT', compressedScanlines);
+
+                        return SIGNATURE + IHDR + IDAT + IEND;
+                    };
+
+                make_crc_table();
+                IEND = createChunk(0, 'IEND', '');
+
+                return "data:image/png;base64," + Base64.encode(png(image_data.width, image_data.height, image_data.data));
+            }
 
 
-/*
+
 // Order of the color component stored (in order to not meld with endianness when creating a list from a buffer, it is mostly like "reversed")
             var CONFIG_UINT8X4 = "rgba";
 
@@ -957,27 +1141,12 @@ SOFTWARE.
 
                 ctx = null; canvas = null;
 
-                createImageBitmap(image_data).then(function(btmp_i) {
+                if(with_palette) {
 
-                    var canvas2 = new OffscreenCanvas(pxl_width * scale, pxl_height * scale);
-                    var ctx2 = canvas2.getContext("bitmaprenderer");
-                    ctx2.transferFromImageBitmap(btmp_i);
-
-                    canvas2.convertToBlob({type: "image/png"}).then(function(blob) {
-
-                        var data_url = new FileReaderSync().readAsDataURL(blob);
-                        if(with_palette) {
-
-                            resolve(Object.assign({}, {"url": data_url.toString(), "colors": Array.from(all_colors)}));
-                        }else {
-                            resolve(Object.assign({}, {"url": data_url.toString()}));
-                        }
-
-                        data_url = null; all_colors = null; blob = null;   btmp_i.close();
-
-                    });
-                    ctx2 = null; canvas2 = null;
-                });
+                    resolve(Object.assign({}, {"url": png_encode_id(image_data), "colors": Array.from(all_colors)}));
+                }else {
+                    resolve(Object.assign({}, {"url": png_encode_id(image_data)}));
+                }
                 image_data = null;
 
             }catch (e) {
@@ -1050,7 +1219,7 @@ const B64PngCanvas = {
         pxl_height = pxl_height | 0
 
         const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
-        const asyncs = `var t=function(t,e,r,n,i,u,a){return new Promise((function(s){t|=0,e|=0,u|=0;var o={unary_neg:t=>-t,unary_bitwise_not:t=>~t,unary_logical_not:t=>!t,boolean_and:(t,e)=>t&&e,binary_and:(t,e)=>t&e,binary_or:(t,e)=>t|e,binary_xor:(t,e)=>t^e,binary_add:(t,e)=>t+e,binary_sub:(t,e)=>t-e,binary_mul:(t,e)=>t*e,binary_div:(t,e)=>t/e,binary_equal:(t,e)=>t==e,binary_not_equal:(t,e)=>t!=e,binary_less:(t,e)=>t<e,binary_less_equal:(t,e)=>t<=e,binary_greater:(t,e)=>t>e,binary_greater_equal:(t,e)=>t>=e,binary_shift_left:(t,e)=>t<<e,binary_shift_right_arithmetic:(t,e)=>t>>e,binary_shift_right_logical:(t,e)=>t>>>e,min_num:(t,e)=>t!=t?e:e!=e?t:Math.min(t,e),max_num:(t,e)=>t!=t?e:e!=e?t:Math.max(t,e),modulo_int:(t,e)=>t%e|0,modulo_uint:(t,e)=>(t%e|0)>>>0,plus_int:(t,e)=>t+e|0,minus_int:(t,e)=>t-e|0,plus_uint:(t,e)=>(t+e|0)>>>0,minus_uint:(t,e)=>(t-e|0)>>>0,multiply_int:(t,e)=>t*e|0,divide_int:(t,e)=>t/e|0,multiply_uint:(t,e)=>(t*e|0)>>>0,divide_uint:(t,e)=>(t/e|0)>>>0,divide_four_uint:t=>(t>>2|0)>>>0,abs_int:t=>(0|t)<0?(0|-t)>>>0:(0|t)>>>0,max_int:(t,e)=>(t|=0)>(e|=0)?e:t,min_int:(t,e)=>(t|=0)>(e|=0)?t:e,max_uint:(t,e)=>(t=(0|t)>>>0)>(e=(0|e)>>>0)?e:t,min_uint:(t,e)=>(t|=0)>(e|=0)?t:e,clamp_int:(t,e,r)=>t=(t=(t|=0)-(t-(r|=0)&r-t>>31)|0)-(t-(e|=0)&t-e>>31)|0,clamp_uint8:t=>255&(0|t),inverse_255:t=>255&(255-t|0),divide_255:t=>255&(t/255|0),clamp_uint32:t=>4294967295&(0|t),int_equal:(t,e)=>(0|t)==(0|e),int_not_equal:(t,e)=>(0|t)!=(0|e),int_less:(t,e)=>(0|t)<(0|e),int_less_equal:(t,e)=>(0|t)<=(0|e),int_greater:(t,e)=>(0|t)>(0|e),int_greater_equal:(t,e)=>(0|t)>=(0|e),uint_equal:(t,e)=>(0|t)>>>0==(0|e)>>>0,uint_not_equal:(t,e)=>(0|t)>>>0!=(0|e)>>>0,uint_less:(t,e)=>(0|t)>>>0<(0|e)>>>0,uint_less_equal:(t,e)=>(0|t)>>>0<=(0|e)>>>0,uint_greater:(t,e)=>(0|t)>>>0>(0|e)>>>0,uint_greater_equal:(t,e)=>(0|t)>>>0>=(0|e)>>>0,format_int:t=>0|t,format_uint:t=>(0|t)>>>0},{unary_neg:_,unary_bitwise_not:f,unary_logical_not:c,boolean_and:l,binary_and:y,binary_or:p,binary_xor:g,binary_add:b,binary_sub:h,binary_mul:m,binary_div:d,binary_equal:w,binary_not_equal:v,binary_less:U,binary_less_equal:O,binary_greater:q,binary_greater_equal:A,binary_shift_left:j,binary_shift_right_arithmetic:C,binary_shift_right_logical:P,min_num:x,max_num:D,modulo_int:I,modulo_uint:S,plus_int:B,minus_int:R,plus_uint:M,minus_uint:k,multiply_int:L,divide_int:z,multiply_uint:E,divide_uint:F,divide_four_uint:T,abs_int:G,max_int:H,min_int:J,max_uint:K,min_uint:N,clamp:Q,clamp_int:V,clamp_uint8:W,divide_255:X,inverse_255:Y,clamp_uint32:Z,int_equal:$,int_not_equal:tt,int_less:et,int_less_equal:rt,int_greater:nt,int_greater_equal:it,uint_equal:ut,uint_not_equal:at,uint_less:st,uint_less_equal:ot,uint_greater:_t,uint_greater_equal:ft,format_int:ct,format_uint:lt}=o,yt=function(t,e){"use strict";if(e=e||0,!(this instanceof yt))return new yt(t,e);t instanceof Uint8ClampedArray?this.storage_uint8_=t:this.storage_uint8_=new Uint8ClampedArray("buffer"in t?t.buffer:t,E(e,4))};yt.new_zero=function(){"use strict";return yt(new ArrayBuffer(4))},yt.new_splat=function(t){"use strict";var e=new Uint8ClampedArray(4);return e.fill(W(t)),yt(e)},yt.new_of=function(t,e,r,n){"use strict";var i=new Uint8ClampedArray(4);return i[3]=W(t),i[2]=W(e),i[1]=W(r),i[0]=W(n),yt(i)},yt.new_safe_of=function(t,e,r,n){"use strict";var i=new Uint8ClampedArray(4);return i[3]=V(t,0,255),i[2]=V(e,0,255),i[1]=V(r,0,255),i[0]=V(n,0,255),yt(i)},yt.new_from=function(t){"use strict";return yt(t)},yt.new_array=function(t){"use strict";var e=new Uint8ClampedArray(4);return e[3]=W(t[0]),e[2]=W(t[1]),e[1]=W(t[2]),e[0]=W(t[3]),yt(e)},yt.new_array_safe=function(t){"use strict";var e=new Uint8ClampedArray(4);return e[3]=W(V(t[0],0,255)),e[2]=W(V(t[1],0,255)),e[1]=W(V(t[2],0,255)),e[0]=W(V(t[3],0,255)),yt(e)},yt.new_bool=function(t,e,r,n){"use strict";var i=new Uint8ClampedArray(4);return i[3]=(0|t)>0?1:0,i[2]=(0|e)>0?1:0,i[1]=(0|r)>0?1:0,i[0]=(0|n)>0?1:0,yt(i)},yt.new_uint32=function(t){"use strict";var e=new Uint8ClampedArray(4);return e[0]=255&t,e[1]=t>>>8&255,e[2]=t>>>16&255,e[3]=t>>>24&255,yt(e)},yt.new_hsla=function(t,e,r,n){"use strict";t=F(t,360),e=F(e,100),r=F(r,100),n=F(n,100);var i,u,a=0;if(0===e)i=u=a=r;else{function _(t,e,r){return r<0&&(r+=1),r>1&&(r-=1),r<1/6?t+6*(e-t)*r:r<.5?e:r<2/3?t+(e-t)*(2/3-r)*6:t}var s=r<.5?r*(1+e):r+e-r*e,o=2*r-s;i=_(o,s,t+1/3),u=_(o,s,t),a=_(o,s,t-1/3)}return yt.new_of(E(i,255),E(u,255),E(a,255),E(n,255))},Object.defineProperty(yt.prototype,"r",{get:function(){"use strict";return W(this.storage_uint8_[3])}}),Object.defineProperty(yt.prototype,"g",{get:function(){"use strict";return W(this.storage_uint8_[2])}}),Object.defineProperty(yt.prototype,"b",{get:function(){"use strict";return W(this.storage_uint8_[1])}}),Object.defineProperty(yt.prototype,"a",{get:function(){"use strict";return W(this.storage_uint8_[0])}}),Object.defineProperty(yt.prototype,"uint32",{get:function(){"use strict";return(this.storage_uint8_[3]<<24|this.storage_uint8_[2]<<16|this.storage_uint8_[1]<<8|this.storage_uint8_[0]|0)>>>0}}),Object.defineProperty(yt.prototype,"hex",{get:function(){"use strict";return"#".concat("00000000".concat(this.uint32.toString(16)).slice(-8))}}),Object.defineProperty(yt.prototype,"hsl",{get:function(){"use strict";var t=W(this.storage_uint8_[3]),e=W(this.storage_uint8_[2]),r=W(this.storage_uint8_[1]),n=W(this.storage_uint8_[0]);t=+t/255,e=+e/255,r=+r/255,n=+n/255;var i,u,a=Math.max(t,e,r),s=Math.min(t,e,r),o=(a+s)/2;if(a==s)i=u=0;else{var _=a-s;switch(u=o>.5?_/(2-a-s):_/(a+s),a){case t:i=(e-r)/_+(e<r?6:0);break;case e:i=(r-t)/_+2;break;case r:i=(t-e)/_+4}i/=6}return Uint16Array.of(E(i,360),E(u,100),E(o,100),E(n,100))}}),Object.defineProperty(yt.prototype,"offset",{get:function(){"use strict";return T(this.storage_uint8_.byteOffset)}}),Object.defineProperty(yt.prototype,"buffer",{get:function(){"use strict";return this.storage_uint8_.buffer}}),Object.defineProperty(yt.prototype,"set",{get:function(){"use strict";return function(t){t instanceof yt?this.storage_uint8_.set(t.subarray(0,4)):"subarray"in t?this.storage_uint8_.set(t):"buffer"in t?this.storage_uint8_.set(t.buffer):this.storage_uint8_.set(t)}}}),Object.defineProperty(yt.prototype,"subarray",{get:function(){"use strict";return function(t,e){return this.storage_uint8_.subarray(t,e)}}}),Object.defineProperty(yt.prototype,"slice",{get:function(){"use strict";return function(t,e){return this.storage_uint8_.slice(t,e)}}}),yt.prototype.set_scale_of_on_255=function(t,e,r,n){var i=Uint8ClampedArray.of(X(E(this.r,t)),X(E(this.g,e)),X(E(this.b,r)),X(E(this.a,n)));return this.set(i),this},yt.prototype.scale_of_on_255=function(t,e,r,n){var i=Uint8ClampedArray.of(X(E(this.r,t)),X(E(this.g,e)),X(E(this.b,r)),X(E(this.a,n)));return yt(i)},yt.prototype.blend_with=function(t,e,r,n){if(e=W(e),r=r||!1,n=n||!1,t.multiply_a_255(e),r&&t.is_fully_transparent())this.set(new ArrayBuffer(4));else if(this.is_not_fully_transparent()&&t.is_not_fully_opaque()){var i=n?F(M(this.a,e),2):Y(X(E(Y(t.a),Y(this.a))));this.set(yt.merge_scale_of_255(t,F(E(t.a,255),i),this,X(E(this.a,F(E(Y(t.a),255),i)))).set_a(i))}else this.set(t);return this},yt.prototype.get_difference_with=function(t){return yt.new_of(G(this.r,t.r),G(this.g,t.g),G(this.b,t.b),G(this.a,t.a))},yt.prototype.sum_rgba=function(){return M(M(this.r,this.g),M(this.b,this.a))},yt.prototype.sum_rgb=function(){return M(M(this.r,this.g),this.b)},yt.prototype.is_dark=function(){return ot(this.sum_rgb(),384)},yt.prototype.is_fully_transparent=function(){return ut(this.a,0)},yt.prototype.is_fully_opaque=function(){return ut(this.a,255)},yt.prototype.is_not_fully_transparent=function(){return!this.is_fully_transparent()},yt.prototype.is_not_fully_opaque=function(){return!this.is_fully_opaque()},yt.prototype.match_with=function(t,e){"use strict";if(1===(e=void 0===e?-1:W(e)))return!0;if(0===e)return ut(this.get_difference_with(t).sum_rgba(),0);{const r=this.get_difference_with(t);return-1!==e?st(r.r,e)&&st(r.g,e)&&st(r.b,e)&&st(r.a,e)?1:0:r.sum_rgb()/765*Math.abs(1-r.a/255)}},yt.prototype.set_r=function(t){"use strict";return this.subarray()[3]=W(t),this},yt.prototype.set_g=function(t){"use strict";return this.subarray()[2]=W(t),this},yt.prototype.set_b=function(t){"use strict";return this.subarray()[1]=W(t),this},yt.prototype.set_a=function(t){"use strict";return this.subarray()[0]=W(t),this},yt.prototype.multiply_a_255=function(t){"use strict";var e=this.subarray();return e[0]=W(X(E(e[0],t))),this},yt.prototype.copy=function(){"use strict";return yt(this.slice(0,4))},yt.with_r=function(t,e){"use strict";var r=t.slice(0,4);return r[3]=W(e),yt(r)},yt.with_g=function(t,e){"use strict";var r=t.slice(0,4);return r[2]=W(e),yt(r)},yt.with_b=function(t,e){"use strict";var r=t.slice(0,4);return r[1]=W(e),yt(r)},yt.with_a=function(t,e){"use strict";var r=t.slice(0,4);return r[0]=W(e),yt(r)},yt.with_inverse=function(t){"use strict";var e=t.slice(0,4);return e[3]=k(255-e[3]),e[2]=k(255-e[2]),e[1]=k(255-e[1]),e[0]=k(255-e[0]),yt(e)},yt.sumarray=function(t,e,r){"use strict";e=N(e|=0,3),r=N(r=(r|=0)||4,4);for(var n=0,i=e;st(i,r);i=M(i,1))n=M(n,t["rgba".charAt(i)]);return n},yt.row_is_equal=function(t,e){return yt.new_bool(ut(t.r,e.r),ut(t.g,e.g),ut(t.b,e.b),ut(t.a,e.a))},yt.row_is_greater=function(t,e){return yt.new_bool(_t(t.r,e.r),_t(t.g,e.g),_t(t.b,e.b),_t(t.a,e.a))},yt.row_is_less=function(t,e){return yt.new_bool(st(t.r,e.r),st(t.g,e.g),st(t.b,e.b),st(t.a,e.a))},yt.row_is_greater_equal=function(t,e){return yt.new_bool(ft(t.r,e.r),ft(t.g,e.g),ft(t.b,e.b),ft(t.a,e.a))},yt.row_is_less_equal=function(t,e){return yt.new_bool(ot(t.r,e.r),ot(t.g,e.g),ot(t.b,e.b),ot(t.a,e.a))},yt.row_get_difference=function(t,e){return yt.new_of(G(t.r,e.r),G(t.g,e.g),G(t.b,e.b),G(t.a,e.a))},yt.match=function(t,e,r){"use strict";return t.match_with(e,r)},yt.blend=function(t,e,r,n,i){return t.copy().blend_with(e,r,n,i)},yt.plus=function(t,e){var r=new Uint8ClampedArray(4);return r[3]=W(J(255,B(t.r,e.r))),r[2]=W(J(255,B(t.g,e.g))),r[1]=W(J(255,B(t.b,e.b))),r[0]=W(J(255,B(t.a,e.a))),yt(r)},yt.minus=function(t,e){var r=new Uint8ClampedArray(4);return r[3]=W(H(0,R(t.r,e.r))),r[2]=W(H(0,R(t.g,e.g))),r[1]=W(H(0,R(t.b,e.b))),r[0]=W(H(0,R(t.a,e.a))),yt(r)},yt.average=function(t,e){var r=new Uint8ClampedArray(4);return r[3]=W(F(B(t.r,e.r),2)),r[2]=W(F(B(t.g,e.g),2)),r[1]=W(F(B(t.b,e.b),2)),r[0]=W(F(B(t.a,e.a),2)),yt(r)},yt.merge_scale_of_255=function(t,e,r,n){return yt.merge(yt.scale_of_on_255(t,e,e,e,e),yt.scale_of_on_255(r,n,n,n,n))},yt.scale_of_on_255=function(t,e,r,n,i){var u=new Uint8ClampedArray(4);return u[3]=V(X(E(t.r,e)),0,255),u[2]=V(X(E(t.g,r)),0,255),u[1]=V(X(E(t.b,n)),0,255),u[0]=V(X(E(t.a,i)),0,255),yt(u)},yt.merge=function(t,e){var r=new Uint8ClampedArray(4);return r[3]=V(M(t.r,e.r),0,255),r[2]=V(M(t.g,e.g),0,255),r[1]=V(M(t.b,e.b),0,255),r[0]=V(M(t.a,e.a),0,255),yt(r)};var pt=function(t){"use strict";if(!(this instanceof pt))return new pt(t);this.storage_uint8_array_=new Uint8ClampedArray("buffer"in t?t.buffer:t),this.storage_uint32_array_=new Uint32Array("buffer"in t?t.buffer:t)};Object.defineProperty(pt.prototype,"length",{get:function(){"use strict";return T(this.storage_uint8_array_.length)}}),Object.defineProperty(pt.prototype,"buffer",{get:function(){"use strict";return this.storage_uint8_array_.buffer}}),Object.defineProperty(pt.prototype,"buffer_setUint8",{get:function(){"use strict";return function(t,e){return t|=0,e|=0,this.storage_uint8_array_[t]=W(e)}}}),Object.defineProperty(pt.prototype,"buffer_getUint8",{get:function(){"use strict";return function(t){return t|=0,this.storage_uint8_array_[t]}}}),Object.defineProperty(pt.prototype,"buffer_getUint8a",{get:function(){"use strict";return function(t,e){return e=M(t|=0,E(e=(e|=0)||1,4)),this.storage_uint8_array_.subarray(t,e)}}}),Object.defineProperty(pt.prototype,"buffer_setUint32",{get:function(){"use strict";return function(t,e){this.storage_uint32_array_[0|t]=Z(e)}}}),Object.defineProperty(pt.prototype,"buffer_getUint32",{get:function(){"use strict";return function(t){return this.storage_uint32_array_[0|t]}}}),Object.defineProperty(pt.prototype,"subarray_uint32",{get:function(){"use strict";return function(t,e){return t|=0,e=(e|=0)||this.length,this.storage_uint32_array_.subarray(t,e)}}}),Object.defineProperty(pt.prototype,"slice_uint32",{get:function(){"use strict";return function(t,e){return t|=0,e=(e|=0)||this.length,this.storage_uint32_array_.slice(t,e)}}}),Object.defineProperty(pt.prototype,"subarray_uint8",{get:function(){"use strict";return function(t,e){return t|=0,e|=0,this.storage_uint8_array_.subarray(E(t,4),E(e,4))}}}),Object.defineProperty(pt.prototype,"slice_uint8",{get:function(){"use strict";return function(t,e){return t|=0,e|=0,this.storage_uint8_array_.slice(E(t,4),E(e,4))}}}),pt.prototype.get_element=function(t){return t|=0,yt(this.buffer,t)},pt.prototype.subarray=function(t,e){return t|=0,e|=0,this.buffer_getUint8a(t,e)},pt.prototype.set_element=function(t,e){t|=0,this.buffer_setUint32(t,e.uint32)},pt.prototype.set_uint32_element=function(t,e){t|=0,e=Z(e),this.buffer_setUint32(t,e)},pt.prototype.get_uint32_element=function(t){return t|=0,this.buffer_getUint32(t)},pt.prototype.get_sub_uint8a=function(t,e){return t|=0,e|=0,this.buffer_getUint8a(E(t,4),e)},pt.prototype.get_slice_uint8a=function(t,e){return t|=0,e|=0,this.buffer_getUint8a(E(t,4),e).slice(0,E(e||1,4))},pt.prototype.get_buffer=function(t,e){return t|=0,e|=0,this.buffer_getUint8a(E(t,4),e).buffer};var gt=new Set,bt=pt(r),ht=0|i.length,mt=pt(new ArrayBuffer(4*n)),dt=yt.new_zero(),wt=u>1,vt=wt||a;try{if("undefined"==typeof OffscreenCanvas)throw new Error("Impossible to create OffscreenCanvas in this web environment.");var Ut;u>1&&(Pt=(Ct=new OffscreenCanvas(t*u,e*u)).getContext("2d"));for(var Ot=0;(0|Ot)<(0|n);Ot=Ot+1>>>0){dt.set(mt.get_element(Ot));for(var qt=0;(0|qt)<(0|ht);qt=qt+1>>>0)i[qt].hidden||dt.blend_with(bt.get_element(qt*n+Ot|0),W(E(i[qt].opacity,255)),!1,!1);var At=vt?dt.hex:"";if(gt.add(At),mt.set_element(Ot,dt),wt){var jt=(Ot-(xt=Ot%t|0))/t|0;Pt.fillStyle=At,Pt.fillRect(xt*u|0,jt*u|0,1*u|0,1*u|0)}}Ut=wt?Pt.getImageData(0,0,t*u|0,e*u|0):new ImageData(new Uint8ClampedArray(mt.slice_uint32(0,n).reverse().buffer).reverse(),t,e),Pt=null,Ct=null,createImageBitmap(Ut).then((function(r){var n=new OffscreenCanvas(t*u,e*u),i=n.getContext("bitmaprenderer");i.transferFromImageBitmap(r),n.convertToBlob({type:"image/png"}).then((function(t){var e=(new FileReaderSync).readAsDataURL(t);s(a?Object.assign({},{url:e.toString(),colors:Array.from(gt)}):Object.assign({},{url:e.toString()})),e=null,gt=null,t=null,r.close()})),i=null,n=null})),Ut=null}catch(Dt){var Ct;(Ct=document.createElement("canvas")).width=t*u,Ct.height=e*u;var Pt=Ct.getContext("2d");for(Ot=0;(0|Ot)<(0|n);Ot=Ot+1>>>0){dt.set(mt.get_element(Ot));for(qt=0;(0|qt)<(0|ht);qt=qt+1>>>0)i[qt].hidden||dt.blend_with(bt.get_element(qt*n+Ot),W(E(i[qt].opacity,255)),!1,!1);At=vt?dt.hex:"";if(gt.add(At),mt.set_element(Ot,dt),wt){var xt;jt=(Ot-(xt=Ot%t|0))/t|0;Pt.fillStyle=At,Pt.fillRect(xt*u|0,jt*u|0,1*u|0,1*u|0)}}1===u&&Pt.putImageData(new ImageData(new Uint8ClampedArray(mt.slice_uint32(0,n).reverse().buffer).reverse(),t,e),0,0),a?(s(Object.assign({},{url:Ct.toDataURL("image/png"),colors:Array.from(gt)})),Pt=null,Ct=null,gt=null):(s(Object.assign({},{url:Ct.toDataURL("image/png")})),Pt=null,Ct=null)}}))};`
+        const asyncs = `var t=function(t,r,e,n,i,u,a){return new Promise((function(s){function o(t){var r,e={_keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",encode:function(t){for(var r,e,n,i,u,a,s,o="",_=0;(0|_)<(0|t.length);)i=(r=t.charCodeAt(_++))>>2,u=(3&r)<<4|(e=t.charCodeAt(_++))>>4,a=(15&e)<<2|(n=t.charCodeAt(_++))>>6,s=63&n,isNaN(e)?a=s=64:isNaN(n)&&(s=64),o=o+this._keyStr.charAt(i)+this._keyStr.charAt(u)+this._keyStr.charAt(a)+this._keyStr.charAt(s);return o}},n=String.fromCharCode(120,1),i=[],u=String.fromCharCode(137,80,78,71,13,10,26,10),a=String.fromCharCode(0),s=function(t){return 4294967295^function(t,r){var e,n,u=t;for(e=0;(0|e)<(0|r.length);e=(e+1|0)>>>0)n=r.charCodeAt(e),u=i[255&(u^n)]^u>>>8;return u}(4294967295,t)},o=function(t){return String.fromCharCode((4278190080&t)>>>24,(16711680&t)>>>16,(65280&t)>>>8,255&t)},_=function(t,r,e){var n=s(r+e);return o(t)+r+e+o(n)};return function(){var t,r,e;for(t=0;t<256;t++){for(r=t,e=0;e<8;e++)1&r?r=3988292384^r>>>1:r>>>=1;i[t]=r}}(),r=_(0,"IEND",""),"data:image/png;base64,"+e.encode(function(t,e,i){var s,f,c,l,y,g=function(t,r){var e;return e=o(t),e+=o(r),e+=String.fromCharCode(8),e+=String.fromCharCode(6),e+=String.fromCharCode(0),e+=String.fromCharCode(0),e+=String.fromCharCode(0),_(13,"IHDR",e)}(t,e),h="";for(c=0;(0|c)<(0|i.length);c=(c+4*t|0)>>>0){if(f=a,Array.isArray(i))for(l=0;(0|l)<(4*t|0);l=(l+1|0)>>>0)f+=String.fromCharCode(255&i[c+l]);else f+=i.substr(c,4*t|0);h+=f}return y=n+function(t){var r,e,n,i=65535,u="";for(r=0;r<t.length;r+=i)n="",(e=t.length-r)<=i?n=String.fromCharCode(1):(e=i,n=String.fromCharCode(0)),u+=n+String.fromCharCode(255&e,(65280&e)>>>8),u+=String.fromCharCode(255&~e,(65280&~e)>>>8),u+=t.substring(r,r+e);return u}(h)+o(function(t){var r,e=1,n=0;for(r=0;(0|r)<(0|t.length);r=(r+1|0)>>>0)n=(n+(e=(e+t.charCodeAt(r))%65521))%65521;return n<<16|e}(h)),s=_(y.length,"IDAT",y),u+g+s+r}(t.width,t.height,t.data))}t|=0,r|=0,u|=0;var _={unary_neg:t=>-t,unary_bitwise_not:t=>~t,unary_logical_not:t=>!t,boolean_and:(t,r)=>t&&r,binary_and:(t,r)=>t&r,binary_or:(t,r)=>t|r,binary_xor:(t,r)=>t^r,binary_add:(t,r)=>t+r,binary_sub:(t,r)=>t-r,binary_mul:(t,r)=>t*r,binary_div:(t,r)=>t/r,binary_equal:(t,r)=>t==r,binary_not_equal:(t,r)=>t!=r,binary_less:(t,r)=>t<r,binary_less_equal:(t,r)=>t<=r,binary_greater:(t,r)=>t>r,binary_greater_equal:(t,r)=>t>=r,binary_shift_left:(t,r)=>t<<r,binary_shift_right_arithmetic:(t,r)=>t>>r,binary_shift_right_logical:(t,r)=>t>>>r,min_num:(t,r)=>t!=t?r:r!=r?t:Math.min(t,r),max_num:(t,r)=>t!=t?r:r!=r?t:Math.max(t,r),modulo_int:(t,r)=>t%r|0,modulo_uint:(t,r)=>(t%r|0)>>>0,plus_int:(t,r)=>t+r|0,minus_int:(t,r)=>t-r|0,plus_uint:(t,r)=>(t+r|0)>>>0,minus_uint:(t,r)=>(t-r|0)>>>0,multiply_int:(t,r)=>t*r|0,divide_int:(t,r)=>t/r|0,multiply_uint:(t,r)=>(t*r|0)>>>0,divide_uint:(t,r)=>(t/r|0)>>>0,divide_four_uint:t=>(t>>2|0)>>>0,abs_int:t=>(0|t)<0?(0|-t)>>>0:(0|t)>>>0,max_int:(t,r)=>(t|=0)>(r|=0)?r:t,min_int:(t,r)=>(t|=0)>(r|=0)?t:r,max_uint:(t,r)=>(t=(0|t)>>>0)>(r=(0|r)>>>0)?r:t,min_uint:(t,r)=>(t|=0)>(r|=0)?t:r,clamp_int:(t,r,e)=>t=(t=(t|=0)-(t-(e|=0)&e-t>>31)|0)-(t-(r|=0)&t-r>>31)|0,clamp_uint8:t=>255&(0|t),inverse_255:t=>255&(255-t|0),divide_255:t=>255&(t/255|0),clamp_uint32:t=>4294967295&(0|t),int_equal:(t,r)=>(0|t)==(0|r),int_not_equal:(t,r)=>(0|t)!=(0|r),int_less:(t,r)=>(0|t)<(0|r),int_less_equal:(t,r)=>(0|t)<=(0|r),int_greater:(t,r)=>(0|t)>(0|r),int_greater_equal:(t,r)=>(0|t)>=(0|r),uint_equal:(t,r)=>(0|t)>>>0==(0|r)>>>0,uint_not_equal:(t,r)=>(0|t)>>>0!=(0|r)>>>0,uint_less:(t,r)=>(0|t)>>>0<(0|r)>>>0,uint_less_equal:(t,r)=>(0|t)>>>0<=(0|r)>>>0,uint_greater:(t,r)=>(0|t)>>>0>(0|r)>>>0,uint_greater_equal:(t,r)=>(0|t)>>>0>=(0|r)>>>0,format_int:t=>0|t,format_uint:t=>(0|t)>>>0},{unary_neg:f,unary_bitwise_not:c,unary_logical_not:l,boolean_and:y,binary_and:g,binary_or:h,binary_xor:p,binary_add:b,binary_sub:d,binary_mul:m,binary_div:w,binary_equal:v,binary_not_equal:C,binary_less:A,binary_less_equal:U,binary_greater:q,binary_greater_equal:O,binary_shift_left:j,binary_shift_right_arithmetic:P,binary_shift_right_logical:S,min_num:x,max_num:D,modulo_int:k,modulo_uint:I,plus_int:M,minus_int:N,plus_uint:R,minus_uint:B,multiply_int:E,divide_int:z,multiply_uint:L,divide_uint:H,divide_four_uint:T,abs_int:F,max_int:G,min_int:J,max_uint:K,min_uint:Q,clamp:V,clamp_int:W,clamp_uint8:X,divide_255:Y,inverse_255:Z,clamp_uint32:$,int_equal:tt,int_not_equal:rt,int_less:et,int_less_equal:nt,int_greater:it,int_greater_equal:ut,uint_equal:at,uint_not_equal:st,uint_less:ot,uint_less_equal:_t,uint_greater:ft,uint_greater_equal:ct,format_int:lt,format_uint:yt}=_,gt=function(t,r){"use strict";if(r=r||0,!(this instanceof gt))return new gt(t,r);t instanceof Uint8ClampedArray?this.storage_uint8_=t:this.storage_uint8_=new Uint8ClampedArray("buffer"in t?t.buffer:t,L(r,4))};gt.new_zero=function(){"use strict";return gt(new ArrayBuffer(4))},gt.new_splat=function(t){"use strict";var r=new Uint8ClampedArray(4);return r.fill(X(t)),gt(r)},gt.new_of=function(t,r,e,n){"use strict";var i=new Uint8ClampedArray(4);return i[3]=X(t),i[2]=X(r),i[1]=X(e),i[0]=X(n),gt(i)},gt.new_safe_of=function(t,r,e,n){"use strict";var i=new Uint8ClampedArray(4);return i[3]=W(t,0,255),i[2]=W(r,0,255),i[1]=W(e,0,255),i[0]=W(n,0,255),gt(i)},gt.new_from=function(t){"use strict";return gt(t)},gt.new_array=function(t){"use strict";var r=new Uint8ClampedArray(4);return r[3]=X(t[0]),r[2]=X(t[1]),r[1]=X(t[2]),r[0]=X(t[3]),gt(r)},gt.new_array_safe=function(t){"use strict";var r=new Uint8ClampedArray(4);return r[3]=X(W(t[0],0,255)),r[2]=X(W(t[1],0,255)),r[1]=X(W(t[2],0,255)),r[0]=X(W(t[3],0,255)),gt(r)},gt.new_bool=function(t,r,e,n){"use strict";var i=new Uint8ClampedArray(4);return i[3]=(0|t)>0?1:0,i[2]=(0|r)>0?1:0,i[1]=(0|e)>0?1:0,i[0]=(0|n)>0?1:0,gt(i)},gt.new_uint32=function(t){"use strict";var r=new Uint8ClampedArray(4);return r[0]=255&t,r[1]=t>>>8&255,r[2]=t>>>16&255,r[3]=t>>>24&255,gt(r)},gt.new_hsla=function(t,r,e,n){"use strict";t=H(t,360),r=H(r,100),e=H(e,100),n=H(n,100);var i,u,a=0;if(0===r)i=u=a=e;else{function _(t,r,e){return e<0&&(e+=1),e>1&&(e-=1),e<1/6?t+6*(r-t)*e:e<.5?r:e<2/3?t+(r-t)*(2/3-e)*6:t}var s=e<.5?e*(1+r):e+r-e*r,o=2*e-s;i=_(o,s,t+1/3),u=_(o,s,t),a=_(o,s,t-1/3)}return gt.new_of(L(i,255),L(u,255),L(a,255),L(n,255))},Object.defineProperty(gt.prototype,"r",{get:function(){"use strict";return X(this.storage_uint8_[3])}}),Object.defineProperty(gt.prototype,"g",{get:function(){"use strict";return X(this.storage_uint8_[2])}}),Object.defineProperty(gt.prototype,"b",{get:function(){"use strict";return X(this.storage_uint8_[1])}}),Object.defineProperty(gt.prototype,"a",{get:function(){"use strict";return X(this.storage_uint8_[0])}}),Object.defineProperty(gt.prototype,"uint32",{get:function(){"use strict";return(this.storage_uint8_[3]<<24|this.storage_uint8_[2]<<16|this.storage_uint8_[1]<<8|this.storage_uint8_[0]|0)>>>0}}),Object.defineProperty(gt.prototype,"hex",{get:function(){"use strict";return"#".concat("00000000".concat(this.uint32.toString(16)).slice(-8))}}),Object.defineProperty(gt.prototype,"hsl",{get:function(){"use strict";var t=X(this.storage_uint8_[3]),r=X(this.storage_uint8_[2]),e=X(this.storage_uint8_[1]),n=X(this.storage_uint8_[0]);t=+t/255,r=+r/255,e=+e/255,n=+n/255;var i,u,a=Math.max(t,r,e),s=Math.min(t,r,e),o=(a+s)/2;if(a==s)i=u=0;else{var _=a-s;switch(u=o>.5?_/(2-a-s):_/(a+s),a){case t:i=(r-e)/_+(r<e?6:0);break;case r:i=(e-t)/_+2;break;case e:i=(t-r)/_+4}i/=6}return Uint16Array.of(L(i,360),L(u,100),L(o,100),L(n,100))}}),Object.defineProperty(gt.prototype,"offset",{get:function(){"use strict";return T(this.storage_uint8_.byteOffset)}}),Object.defineProperty(gt.prototype,"buffer",{get:function(){"use strict";return this.storage_uint8_.buffer}}),Object.defineProperty(gt.prototype,"set",{get:function(){"use strict";return function(t){t instanceof gt?this.storage_uint8_.set(t.subarray(0,4)):"subarray"in t?this.storage_uint8_.set(t):"buffer"in t?this.storage_uint8_.set(t.buffer):this.storage_uint8_.set(t)}}}),Object.defineProperty(gt.prototype,"subarray",{get:function(){"use strict";return function(t,r){return this.storage_uint8_.subarray(t,r)}}}),Object.defineProperty(gt.prototype,"slice",{get:function(){"use strict";return function(t,r){return this.storage_uint8_.slice(t,r)}}}),gt.prototype.set_scale_of_on_255=function(t,r,e,n){var i=Uint8ClampedArray.of(Y(L(this.r,t)),Y(L(this.g,r)),Y(L(this.b,e)),Y(L(this.a,n)));return this.set(i),this},gt.prototype.scale_of_on_255=function(t,r,e,n){var i=Uint8ClampedArray.of(Y(L(this.r,t)),Y(L(this.g,r)),Y(L(this.b,e)),Y(L(this.a,n)));return gt(i)},gt.prototype.blend_with=function(t,r,e,n){if(r=X(r),e=e||!1,n=n||!1,t.multiply_a_255(r),e&&t.is_fully_transparent())this.set(new ArrayBuffer(4));else if(this.is_not_fully_transparent()&&t.is_not_fully_opaque()){var i=n?H(R(this.a,r),2):Z(Y(L(Z(t.a),Z(this.a))));this.set(gt.merge_scale_of_255(t,H(L(t.a,255),i),this,Y(L(this.a,H(L(Z(t.a),255),i)))).set_a(i))}else this.set(t);return this},gt.prototype.get_difference_with=function(t){return gt.new_of(F(this.r,t.r),F(this.g,t.g),F(this.b,t.b),F(this.a,t.a))},gt.prototype.sum_rgba=function(){return R(R(this.r,this.g),R(this.b,this.a))},gt.prototype.sum_rgb=function(){return R(R(this.r,this.g),this.b)},gt.prototype.is_dark=function(){return _t(this.sum_rgb(),384)},gt.prototype.is_fully_transparent=function(){return at(this.a,0)},gt.prototype.is_fully_opaque=function(){return at(this.a,255)},gt.prototype.is_not_fully_transparent=function(){return!this.is_fully_transparent()},gt.prototype.is_not_fully_opaque=function(){return!this.is_fully_opaque()},gt.prototype.match_with=function(t,r){"use strict";if(1===(r=void 0===r?-1:X(r)))return!0;if(0===r)return at(this.get_difference_with(t).sum_rgba(),0);{const e=this.get_difference_with(t);return-1!==r?ot(e.r,r)&&ot(e.g,r)&&ot(e.b,r)&&ot(e.a,r)?1:0:e.sum_rgb()/765*Math.abs(1-e.a/255)}},gt.prototype.set_r=function(t){"use strict";return this.subarray()[3]=X(t),this},gt.prototype.set_g=function(t){"use strict";return this.subarray()[2]=X(t),this},gt.prototype.set_b=function(t){"use strict";return this.subarray()[1]=X(t),this},gt.prototype.set_a=function(t){"use strict";return this.subarray()[0]=X(t),this},gt.prototype.multiply_a_255=function(t){"use strict";var r=this.subarray();return r[0]=X(Y(L(r[0],t))),this},gt.prototype.copy=function(){"use strict";return gt(this.slice(0,4))},gt.with_r=function(t,r){"use strict";var e=t.slice(0,4);return e[3]=X(r),gt(e)},gt.with_g=function(t,r){"use strict";var e=t.slice(0,4);return e[2]=X(r),gt(e)},gt.with_b=function(t,r){"use strict";var e=t.slice(0,4);return e[1]=X(r),gt(e)},gt.with_a=function(t,r){"use strict";var e=t.slice(0,4);return e[0]=X(r),gt(e)},gt.with_inverse=function(t){"use strict";var r=t.slice(0,4);return r[3]=B(255-r[3]),r[2]=B(255-r[2]),r[1]=B(255-r[1]),r[0]=B(255-r[0]),gt(r)},gt.sumarray=function(t,r,e){"use strict";r=Q(r|=0,3),e=Q(e=(e|=0)||4,4);for(var n=0,i=r;ot(i,e);i=R(i,1))n=R(n,t["rgba".charAt(i)]);return n},gt.row_is_equal=function(t,r){return gt.new_bool(at(t.r,r.r),at(t.g,r.g),at(t.b,r.b),at(t.a,r.a))},gt.row_is_greater=function(t,r){return gt.new_bool(ft(t.r,r.r),ft(t.g,r.g),ft(t.b,r.b),ft(t.a,r.a))},gt.row_is_less=function(t,r){return gt.new_bool(ot(t.r,r.r),ot(t.g,r.g),ot(t.b,r.b),ot(t.a,r.a))},gt.row_is_greater_equal=function(t,r){return gt.new_bool(ct(t.r,r.r),ct(t.g,r.g),ct(t.b,r.b),ct(t.a,r.a))},gt.row_is_less_equal=function(t,r){return gt.new_bool(_t(t.r,r.r),_t(t.g,r.g),_t(t.b,r.b),_t(t.a,r.a))},gt.row_get_difference=function(t,r){return gt.new_of(F(t.r,r.r),F(t.g,r.g),F(t.b,r.b),F(t.a,r.a))},gt.match=function(t,r,e){"use strict";return t.match_with(r,e)},gt.blend=function(t,r,e,n,i){return t.copy().blend_with(r,e,n,i)},gt.plus=function(t,r){var e=new Uint8ClampedArray(4);return e[3]=X(J(255,M(t.r,r.r))),e[2]=X(J(255,M(t.g,r.g))),e[1]=X(J(255,M(t.b,r.b))),e[0]=X(J(255,M(t.a,r.a))),gt(e)},gt.minus=function(t,r){var e=new Uint8ClampedArray(4);return e[3]=X(G(0,N(t.r,r.r))),e[2]=X(G(0,N(t.g,r.g))),e[1]=X(G(0,N(t.b,r.b))),e[0]=X(G(0,N(t.a,r.a))),gt(e)},gt.average=function(t,r){var e=new Uint8ClampedArray(4);return e[3]=X(H(M(t.r,r.r),2)),e[2]=X(H(M(t.g,r.g),2)),e[1]=X(H(M(t.b,r.b),2)),e[0]=X(H(M(t.a,r.a),2)),gt(e)},gt.merge_scale_of_255=function(t,r,e,n){return gt.merge(gt.scale_of_on_255(t,r,r,r,r),gt.scale_of_on_255(e,n,n,n,n))},gt.scale_of_on_255=function(t,r,e,n,i){var u=new Uint8ClampedArray(4);return u[3]=W(Y(L(t.r,r)),0,255),u[2]=W(Y(L(t.g,e)),0,255),u[1]=W(Y(L(t.b,n)),0,255),u[0]=W(Y(L(t.a,i)),0,255),gt(u)},gt.merge=function(t,r){var e=new Uint8ClampedArray(4);return e[3]=W(R(t.r,r.r),0,255),e[2]=W(R(t.g,r.g),0,255),e[1]=W(R(t.b,r.b),0,255),e[0]=W(R(t.a,r.a),0,255),gt(e)};var ht=function(t){"use strict";if(!(this instanceof ht))return new ht(t);this.storage_uint8_array_=new Uint8ClampedArray("buffer"in t?t.buffer:t),this.storage_uint32_array_=new Uint32Array("buffer"in t?t.buffer:t)};Object.defineProperty(ht.prototype,"length",{get:function(){"use strict";return T(this.storage_uint8_array_.length)}}),Object.defineProperty(ht.prototype,"buffer",{get:function(){"use strict";return this.storage_uint8_array_.buffer}}),Object.defineProperty(ht.prototype,"buffer_setUint8",{get:function(){"use strict";return function(t,r){return t|=0,r|=0,this.storage_uint8_array_[t]=X(r)}}}),Object.defineProperty(ht.prototype,"buffer_getUint8",{get:function(){"use strict";return function(t){return t|=0,this.storage_uint8_array_[t]}}}),Object.defineProperty(ht.prototype,"buffer_getUint8a",{get:function(){"use strict";return function(t,r){return r=R(t|=0,L(r=(r|=0)||1,4)),this.storage_uint8_array_.subarray(t,r)}}}),Object.defineProperty(ht.prototype,"buffer_setUint32",{get:function(){"use strict";return function(t,r){this.storage_uint32_array_[0|t]=$(r)}}}),Object.defineProperty(ht.prototype,"buffer_getUint32",{get:function(){"use strict";return function(t){return this.storage_uint32_array_[0|t]}}}),Object.defineProperty(ht.prototype,"subarray_uint32",{get:function(){"use strict";return function(t,r){return t|=0,r=(r|=0)||this.length,this.storage_uint32_array_.subarray(t,r)}}}),Object.defineProperty(ht.prototype,"slice_uint32",{get:function(){"use strict";return function(t,r){return t|=0,r=(r|=0)||this.length,this.storage_uint32_array_.slice(t,r)}}}),Object.defineProperty(ht.prototype,"subarray_uint8",{get:function(){"use strict";return function(t,r){return t|=0,r|=0,this.storage_uint8_array_.subarray(L(t,4),L(r,4))}}}),Object.defineProperty(ht.prototype,"slice_uint8",{get:function(){"use strict";return function(t,r){return t|=0,r|=0,this.storage_uint8_array_.slice(L(t,4),L(r,4))}}}),ht.prototype.get_element=function(t){return t|=0,gt(this.buffer,t)},ht.prototype.subarray=function(t,r){return t|=0,r|=0,this.buffer_getUint8a(t,r)},ht.prototype.set_element=function(t,r){t|=0,this.buffer_setUint32(t,r.uint32)},ht.prototype.set_uint32_element=function(t,r){t|=0,r=$(r),this.buffer_setUint32(t,r)},ht.prototype.get_uint32_element=function(t){return t|=0,this.buffer_getUint32(t)},ht.prototype.get_sub_uint8a=function(t,r){return t|=0,r|=0,this.buffer_getUint8a(L(t,4),r)},ht.prototype.get_slice_uint8a=function(t,r){return t|=0,r|=0,this.buffer_getUint8a(L(t,4),r).slice(0,L(r||1,4))},ht.prototype.get_buffer=function(t,r){return t|=0,r|=0,this.buffer_getUint8a(L(t,4),r).buffer};var pt=new Set,bt=ht(e),dt=0|i.length,mt=ht(new ArrayBuffer(4*n)),wt=gt.new_zero(),vt=u>1,Ct=vt||a;try{if("undefined"==typeof OffscreenCanvas)throw new Error("Impossible to create OffscreenCanvas in this web environment.");var At;u>1&&(St=(Pt=new OffscreenCanvas(t*u,r*u)).getContext("2d"));for(var Ut=0;(0|Ut)<(0|n);Ut=Ut+1>>>0){wt.set(mt.get_element(Ut));for(var qt=0;(0|qt)<(0|dt);qt=qt+1>>>0)i[qt].hidden||wt.blend_with(bt.get_element(qt*n+Ut|0),X(L(i[qt].opacity,255)),!1,!1);var Ot=Ct?wt.hex:"";if(pt.add(Ot),mt.set_element(Ut,wt),vt){var jt=(Ut-(xt=Ut%t|0))/t|0;St.fillStyle=Ot,St.fillRect(xt*u|0,jt*u|0,1*u|0,1*u|0)}}At=vt?St.getImageData(0,0,t*u|0,r*u|0):new ImageData(new Uint8ClampedArray(mt.slice_uint32(0,n).reverse().buffer).reverse(),t,r),St=null,Pt=null,s(a?Object.assign({},{url:o(At),colors:Array.from(pt)}):Object.assign({},{url:o(At)})),At=null}catch(Dt){var Pt;(Pt=document.createElement("canvas")).width=t*u,Pt.height=r*u;var St=Pt.getContext("2d");for(Ut=0;(0|Ut)<(0|n);Ut=Ut+1>>>0){wt.set(mt.get_element(Ut));for(qt=0;(0|qt)<(0|dt);qt=qt+1>>>0)i[qt].hidden||wt.blend_with(bt.get_element(qt*n+Ut),X(L(i[qt].opacity,255)),!1,!1);Ot=Ct?wt.hex:"";if(pt.add(Ot),mt.set_element(Ut,wt),vt){var xt;jt=(Ut-(xt=Ut%t|0))/t|0;St.fillStyle=Ot,St.fillRect(xt*u|0,jt*u|0,1*u|0,1*u|0)}}1===u&&St.putImageData(new ImageData(new Uint8ClampedArray(mt.slice_uint32(0,n).reverse().buffer).reverse(),t,r),0,0),a?(s(Object.assign({},{url:Pt.toDataURL("image/png"),colors:Array.from(pt)})),St=null,Pt=null,pt=null):(s(Object.assign({},{url:Pt.toDataURL("image/png")})),St=null,Pt=null)}}))};`
             + "return t;";
 
 
