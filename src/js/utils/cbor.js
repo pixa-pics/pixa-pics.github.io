@@ -23,27 +23,28 @@
 */
 
 const fun = function (object_or_buffer) {
-    
+
     return new Promise (function (resolve, reject){
 
         "use strict";
-        
+
         var POW_2_24 = 5.960464477539063e-8,
             POW_2_32 = 4294967296,
             POW_2_53 = 9007199254740992;
-        
+
         function encode(value) {
+
           var data = new ArrayBuffer(256);
           var dataView = new DataView(data);
-          var lastLength;
+          var lastLength = 0;
           var offset = 0;
-    
+
           function prepareWrite(length) {
             var newByteLength = data.byteLength | 0;
             var requiredLength = offset + length | 0;
             while ((newByteLength|0) < (requiredLength|0))
               newByteLength <<= 1;
-            if (newByteLength !== data.byteLength) {
+            if ((newByteLength|0) != (data.byteLength|0)) {
               var oldDataView = dataView;
               data = new ArrayBuffer(newByteLength);
               dataView = new DataView(data);
@@ -56,29 +57,32 @@ const fun = function (object_or_buffer) {
             return dataView;
           }
           function commitWrite() {
-            offset += lastLength;
+            offset = (offset+lastLength|0)>>>0;
           }
           function writeFloat64(value) {
             commitWrite(prepareWrite(8).setFloat64(offset, value));
           }
           function writeUint8(value) {
+            value = (value|0) & 0xFF;
             commitWrite(prepareWrite(1).setUint8(offset, value));
           }
           function writeUint8Array(value) {
             var dataView = prepareWrite(value.length);
             for (var i = 0; (i|0) < (value.length|0); i = (i+1|0)>>>0)
-              dataView.setUint8(offset + i, value[i]);
+              dataView.setUint8(offset + i | 0, value[i]);
             commitWrite();
           }
           function writeUint16(value) {
+            value = (value|0) & 0xFFFF;
             commitWrite(prepareWrite(2).setUint16(offset, value));
           }
           function writeUint32(value) {
+            value = (value|0) & 0xFFFFFFFF;
             commitWrite(prepareWrite(4).setUint32(offset, value));
           }
           function writeUint64(value) {
-            var low = value % POW_2_32 | 0;
-            var high = (value - low) / POW_2_32 | 0;
+            var low = (value % POW_2_32 | 0) >>> 0;
+            var high = ((value - low) / POW_2_32 | 0)>>>0;
             var dataView = prepareWrite(8);
             dataView.setUint32(offset, high);
             dataView.setUint32(offset + 4 | 0, low);
@@ -116,10 +120,10 @@ const fun = function (object_or_buffer) {
 
             switch (typeof value) {
               case "number":
-                if (Math.floor(value) === value) {
-                  if (0 <= value && value <= POW_2_53)
+                if ((value|0) === value) {
+                  if (0 <= value && (value|0) <= (POW_2_53|0))
                     return writeTypeAndLength(0, value);
-                  if (-POW_2_53 <= value && value < 0)
+                  if ((-POW_2_53|0) <= (value|0) && value < 0)
                     return writeTypeAndLength(1, -(value + 1));
                 }
                 writeUint8(0xfb);
@@ -184,8 +188,10 @@ const fun = function (object_or_buffer) {
 
           var ret = new ArrayBuffer(offset);
           var retView = new DataView(ret);
-          for (var i = 0; (i|0) < (offset|0); i = (i+1|0)>>>0)
+          var i = 0;
+          for (; (i|0) < (offset|0); i = (i+1|0)>>>0){
             retView.setUint8(i, dataView.getUint8(i));
+          }
           return ret;
         }
 
@@ -199,7 +205,7 @@ const fun = function (object_or_buffer) {
             simpleValue = function() { return undefined; };
 
           function commitRead(length, value) {
-            offset += length;
+            offset = (offset+length|0)>>>0;
             return value;
           }
           function readArrayBuffer(length) {
@@ -251,15 +257,15 @@ const fun = function (object_or_buffer) {
           function readLength(additionalInformation) {
             if (additionalInformation < 24)
               return additionalInformation;
-            if (additionalInformation === 24)
+            if (additionalInformation == 24)
               return readUint8();
-            if (additionalInformation === 25)
+            if (additionalInformation == 25)
               return readUint16();
-            if (additionalInformation === 26)
+            if (additionalInformation == 26)
               return readUint32();
-            if (additionalInformation === 27)
+            if (additionalInformation == 27)
               return readUint64();
-            if (additionalInformation === 31)
+            if (additionalInformation == 31)
               return -1;
             throw "Invalid length encoding";
           }
@@ -280,18 +286,18 @@ const fun = function (object_or_buffer) {
                 if (value < 0xe0) {
                   value = (value & 0x1f) <<  6
                         | (readUint8() & 0x3f);
-                  length -= 1;
+                  length = length-1|0;
                 } else if (value < 0xf0) {
                   value = (value & 0x0f) << 12
                         | (readUint8() & 0x3f) << 6
                         | (readUint8() & 0x3f);
-                  length -= 2;
+                  length = length-2|0;
                 } else {
                   value = (value & 0x0f) << 18
                         | (readUint8() & 0x3f) << 12
                         | (readUint8() & 0x3f) << 6
                         | (readUint8() & 0x3f);
-                  length -= 3;
+                  length = length-3|0;
                 }
               }
 
@@ -342,7 +348,7 @@ const fun = function (object_or_buffer) {
                   }
                   var fullArray = new Uint8Array(fullArrayLength);
                   var fullArrayOffset = 0;
-                  for (i = 0; i < elements.length; ++i) {
+                  for (i = 0; (i|0) < (elements.length|0); i=(i+1|0)>>>0) {
                     fullArray.set(elements[i], fullArrayOffset);
                     fullArrayOffset += elements[i].length;
                   }
@@ -408,7 +414,7 @@ const fun = function (object_or_buffer) {
             throw "Remaining bytes";
           return ret;
         }
-    
+
         if(object_or_buffer instanceof ArrayBuffer) {
 
             resolve(decode(object_or_buffer));
@@ -416,7 +422,7 @@ const fun = function (object_or_buffer) {
 
             resolve(encode(object_or_buffer));
         }
-        
+
     });
 };
 

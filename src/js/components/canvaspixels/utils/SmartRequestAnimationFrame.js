@@ -1,6 +1,6 @@
 const SmartRequestAnimationFrame = {
     _create_state() {
-        
+
         const raf =
             window.requestAnimationFrame       ||
             window.oRequestAnimationFrame      ||
@@ -13,7 +13,7 @@ const SmartRequestAnimationFrame = {
             window.mozCancelAnimationFrame    ||
             window.webkitCancelAnimationFrame ||
             window.msCancelAnimationFrame;
-        
+
         return Object.assign({}, {
             raf,
             caf,
@@ -52,7 +52,7 @@ const SmartRequestAnimationFrame = {
             },
             destroy(callback_function = function(){}) {
                 if(s !== null) {
-                    
+
                     clearInterval(fps_intereval)
                     s = null;
                     callback_function();
@@ -76,7 +76,7 @@ const SmartRequestAnimationFrame = {
                         reject();
                     }else {
 
-                        let skip_frame_rate = s.is_mobile_or_tablet ? 30: 60;
+                        let skip_frame_rate = s.is_mobile_or_tablet ? 15: 30;
 
                         let running_smoothly = true;
 
