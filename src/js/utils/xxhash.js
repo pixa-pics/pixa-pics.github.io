@@ -122,19 +122,18 @@ function XXH () {
  * @param {Number|Object} seed as a number or an unsigned 32 bits integer
  * @return ThisExpression
  */
-function init (seed) {
-	this.seed = seed instanceof UINT32 ? seed.clone() : UINT32(seed)
-	this.v1 = this.seed.clone().add(PRIME32_1).add(PRIME32_2)
-	this.v2 = this.seed.clone().add(PRIME32_2)
-	this.v3 = this.seed.clone()
-	this.v4 = this.seed.clone().subtract(PRIME32_1)
-	this.total_len = 0
-	this.memsize = 0
-	this.memory = null
+XXH.prototype.init = function init (seed) {
+		this.seed = seed instanceof UINT32 ? seed.clone() : UINT32(seed)
+		this.v1 = this.seed.clone().add(PRIME32_1).add(PRIME32_2)
+		this.v2 = this.seed.clone().add(PRIME32_2)
+		this.v3 = this.seed.clone()
+		this.v4 = this.seed.clone().subtract(PRIME32_1)
+		this.total_len = 0
+		this.memsize = 0
+		this.memory = null
 
-	return this
+		return this;
 }
-XXH.prototype.init = init
 
 /**
  * Add data to be computed for the XXH hash
@@ -340,43 +339,6 @@ var PRIME64_4 = UINT64(  '9650029242287828579' )
 var PRIME64_5 = UINT64(  '2870177450012600261' )
 
 /**
- * Convert string to proper UTF-8 array
- * @param str Input string
- * @returns {Uint8Array} UTF8 array is returned as uint8 array
- */
-function toUTF8Array (str) {
-	var utf8 = []
-	for (var i=0, n=str.length; i < n; i++) {
-		var charcode = str.charCodeAt(i)
-		if (charcode < 0x80) utf8.push(charcode)
-		else if (charcode < 0x800) {
-			utf8.push(0xc0 | (charcode >> 6),
-				0x80 | (charcode & 0x3f))
-		}
-		else if (charcode < 0xd800 || charcode >= 0xe000) {
-			utf8.push(0xe0 | (charcode >> 12),
-				0x80 | ((charcode>>6) & 0x3f),
-				0x80 | (charcode & 0x3f))
-		}
-		// surrogate pair
-		else {
-			i++;
-			// UTF-16 encodes 0x10000-0x10FFFF by
-			// subtracting 0x10000 and splitting the
-			// 20 bits of 0x0-0xFFFFF into two halves
-			charcode = 0x10000 + (((charcode & 0x3ff)<<10)
-				| (str.charCodeAt(i) & 0x3ff))
-			utf8.push(0xf0 | (charcode >>18),
-				0x80 | ((charcode>>12) & 0x3f),
-				0x80 | ((charcode>>6) & 0x3f),
-				0x80 | (charcode & 0x3f))
-		}
-	}
-
-	return new Uint8Array(utf8)
-}
-
-/**
  * XXH64 object used as a constructor or a function
  * @constructor
  * or
@@ -402,7 +364,8 @@ function XXH64 () {
  * @param {Number|Object} seed as a number or an unsigned 32 bits integer
  * @return ThisExpression
  */
-function init (seed) {
+
+XXH64.prototype.init = function init (seed) {
 	this.seed = seed instanceof UINT64 ? seed.clone() : UINT64(seed)
 	this.v1 = this.seed.clone().add(PRIME64_1).add(PRIME64_2)
 	this.v2 = this.seed.clone().add(PRIME64_2)
@@ -412,9 +375,8 @@ function init (seed) {
 	this.memsize = 0
 	this.memory = null
 
-	return this
-}
-XXH64.prototype.init = init
+	return this;
+};
 
 /**
  * Add data to be computed for the XXH64 hash
@@ -490,7 +452,7 @@ XXH64.prototype.update = function (input) {
 			,	(this.memory[p64+7] << 8) | this.memory[p64+6]
 		)
 		this.v1.add( other.multiply(PRIME64_2) ).rotl(31).multiply(PRIME64_1);
-		p64 += 8
+		p64 = (p64+8|0)>>>0;
 		other = UINT64(
 			(this.memory[p64+1] << 8) | this.memory[p64]
 			,	(this.memory[p64+3] << 8) | this.memory[p64+2]
@@ -498,7 +460,7 @@ XXH64.prototype.update = function (input) {
 			,	(this.memory[p64+7] << 8) | this.memory[p64+6]
 		)
 		this.v2.add( other.multiply(PRIME64_2) ).rotl(31).multiply(PRIME64_1);
-		p64 += 8
+		p64 = (p64+8|0)>>>0;
 		other = UINT64(
 			(this.memory[p64+1] << 8) | this.memory[p64]
 			,	(this.memory[p64+3] << 8) | this.memory[p64+2]
@@ -506,7 +468,7 @@ XXH64.prototype.update = function (input) {
 			,	(this.memory[p64+7] << 8) | this.memory[p64+6]
 		)
 		this.v3.add( other.multiply(PRIME64_2) ).rotl(31).multiply(PRIME64_1);
-		p64 += 8
+		p64 = (p64+8|0)>>>0;
 		other = UINT64(
 			(this.memory[p64+1] << 8) | this.memory[p64]
 			,	(this.memory[p64+3] << 8) | this.memory[p64+2]
@@ -515,13 +477,13 @@ XXH64.prototype.update = function (input) {
 		)
 		this.v4.add( other.multiply(PRIME64_2) ).rotl(31).multiply(PRIME64_1);
 
-		p += 32 - this.memsize
+		p = p + 32 - this.memsize | 0;
 		this.memsize = 0
 	}
 
-	if (p <= bEnd - 32)
+	if ((p|0) <= (bEnd - 32|0))
 	{
-		var limit = bEnd - 32
+		var limit = bEnd - 32 | 0;
 
 		do
 		{
@@ -533,7 +495,7 @@ XXH64.prototype.update = function (input) {
 				,	(input[p+7] << 8) | input[p+6]
 			)
 			this.v1.add( other.multiply(PRIME64_2) ).rotl(31).multiply(PRIME64_1);
-			p += 8
+			p = (p+8|0)>>>0;
 			other = UINT64(
 				(input[p+1] << 8) | input[p]
 				,	(input[p+3] << 8) | input[p+2]
@@ -541,7 +503,7 @@ XXH64.prototype.update = function (input) {
 				,	(input[p+7] << 8) | input[p+6]
 			)
 			this.v2.add( other.multiply(PRIME64_2) ).rotl(31).multiply(PRIME64_1);
-			p += 8
+			p = (p+8|0)>>>0;
 			other = UINT64(
 				(input[p+1] << 8) | input[p]
 				,	(input[p+3] << 8) | input[p+2]
@@ -549,7 +511,7 @@ XXH64.prototype.update = function (input) {
 				,	(input[p+7] << 8) | input[p+6]
 			)
 			this.v3.add( other.multiply(PRIME64_2) ).rotl(31).multiply(PRIME64_1);
-			p += 8
+			p = (p+8|0)>>>0;
 			other = UINT64(
 				(input[p+1] << 8) | input[p]
 				,	(input[p+3] << 8) | input[p+2]
@@ -557,7 +519,7 @@ XXH64.prototype.update = function (input) {
 				,	(input[p+7] << 8) | input[p+6]
 			)
 			this.v4.add( other.multiply(PRIME64_2) ).rotl(31).multiply(PRIME64_1);
-			p += 8
+			p = (p+8|0)>>>0;
 		} while (p <= limit)
 	}
 
@@ -614,7 +576,7 @@ XXH64.prototype.digest = function () {
 
 	h64.add( u.fromNumber(this.total_len) )
 
-	while (p <= bEnd - 8)
+	while ((p|0) <= (bEnd - 8 | 0))
 	{
 		u.fromBits(
 			(input[p+1] << 8) | input[p]
@@ -628,10 +590,10 @@ XXH64.prototype.digest = function () {
 			.rotl(27)
 			.multiply( PRIME64_1 )
 			.add( PRIME64_4 )
-		p += 8
+		p = (p+8|0)>>>0;
 	}
 
-	if (p + 4 <= bEnd) {
+	if ((p + 4 | 0) <= (bEnd | 0)) {
 		u.fromBits(
 			(input[p+1] << 8) | input[p]
 			,	(input[p+3] << 8) | input[p+2]
@@ -643,10 +605,10 @@ XXH64.prototype.digest = function () {
 			.rotl(23)
 			.multiply( PRIME64_2 )
 			.add( PRIME64_3 )
-		p += 4
+		p = (p+4|0)>>>0;
 	}
 
-	while (p < bEnd)
+	while ((p|0) < (bEnd|0))
 	{
 		u.fromBits( input[p++], 0, 0, 0 )
 		h64

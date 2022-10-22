@@ -1,6 +1,5 @@
 "use strict";
 import "regenerator-runtime/runtime";
-import "./utils/hallOfBinary";
 import api from "./utils/api";
 import {l} from "./utils/t";
 
