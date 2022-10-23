@@ -1818,7 +1818,7 @@ class CanvasPixels extends React.PureComponent {
 
         this._maybe_save_state((_json_state_history) => {
 
-            this.get_base64_png_data_url(1, false, 5, 50, 75).then( ({url}) => {
+            this.get_base64_png_data_url(1, false, 1, 100, 100).then( ({url}) => {
 
                 const bytes = 3 * Math.ceil((url.length/4));
                 callback_function({
