@@ -594,7 +594,7 @@ class CanvasPixels extends React.PureComponent {
 
         const { _json_state_history, pxl_width, pxl_height } = this.super_state.get_state();
         const { _s_pxls, _s_pxl_colors, _layers } = _json_state_history.state_history[_json_state_history.history_position];
-        const b64pngcanvas = B64PngCanvas.from(pool, pxl_width | 0, pxl_height | 0, _s_pxls, _s_pxl_colors, _layers, scale | 0, with_palette);
+        const b64pngcanvas = B64PngCanvas.from(pool, parseInt(pxl_width), parseInt(pxl_height), _s_pxls, _s_pxl_colors, _layers, parseInt(scale), with_palette);
 
         return new Promise( (resolve, reject) => {
             b64pngcanvas.render().then((result) => {
