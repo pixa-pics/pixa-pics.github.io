@@ -1,19 +1,46 @@
 # PIXA.PICS
 
-## A) LET US SAY 
+## A) :upside_down_face: LET US SAY
 
-<img src="https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/BADASSPP.gif" align="left" />
+<img width="350" height="197" src="https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/BADASSPP.gif" align="right" />
 
-**You can easily convert selfies and other pictures into pixel art going back then to an HD image (but as a painting) very easily!** Watch Youtube HD trailer now! https://youtu.be/lC7OYGI8waE
+> You can easily convert selfies and other pictures into pixel art going back then to an HD image (but as a painting) very easily! Watch Youtube HD trailer now! https://youtu.be/lC7OYGI8waE
+
+<p align="center">
+  <a href="#a-upside_down_face-let-us-say">Let us say</a> •
+  <a href="#b-thinking-tomorrow-is-knocking">Tomorrow is knocking</a> •
+  <a href="#c-zap-what-does-it-perform">What does it perform</a> •
+  <a href="#d-medal_military-special-features">Special features</a> •
+  <a href="#e-crowntechnology">Technology</a>
+</p>
+
+<p align="center">
+    <a href="https://github.com/pixa-pics/pixa-pics.github.io/commits/master">
+    <img src="https://img.shields.io/github/last-commit/pixa-pics/pixa-pics.github.io.svg?style=flat-square&logo=github&logoColor=white"
+         alt="GitHub last commit" /></a>
+    <a href="https://github.com/pixa-pics/pixa-pics.github.io/issues">
+    <img src="https://img.shields.io/github/issues-raw/pixa-pics/pixa-pics.github.io.svg?style=flat-square&logo=github&logoColor=white"
+         alt="GitHub issues" /></a>
+    <a href="https://github.com/pixa-pics/pixa-pics.github.io/pulls">
+    <img src="https://img.shields.io/github/issues-pr-raw/pixa-pics/pixa-pics.github.io.svg?style=flat-square&logo=github&logoColor=white"
+         alt="GitHub pull requests" /></a>
+</p>
+
+---
+
+``` 
+```
+
+---
 
 ![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/777.png)
 
 > Yet many drawing tools and selection mode enables you to be creative (and decentralize everything)!
 
- * **Copyleft** and copyright can get shifted!
- * **Anonymize selfies** (keep details masked, reduce entropy of data).
- * **Compress 100x-1000x** a visual scene into less than 12 Kb PNGs that scales in HD.
- * **Do more, without less**... This is pixaaaaa! (pics)
+* **Copyleft** and copyright can get shifted!
+* **Anonymize selfies** (keep details masked, reduce entropy of data).
+* **Compress 100x-1000x** a visual scene into less than 12 Kb PNGs that scales in HD.
+* **Do more, without less**... This is pixaaaaa! (pics)
 
 ![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/AWESOMAPIXAPICS.png)
 
@@ -32,9 +59,9 @@ A person can preserve details of their private life and still publish digital pa
 ### 4) Preserving yourself as your own hero
 It is useful in the field of the protection of the private sphere and the online-self, in the field of drawing and image editing, also in the creation of so-called "intelligent" NFTs as well as in the artistic field quite simply. Meanwhile, also between the search and identification of missing persons and the anonymization and copyleft (un-copyright) of visual subjects... A real tool for the creation of "artistic situations being safer than safe".
 
-## B) Tomorrow is knocking!
+## B) :thinking: Tomorrow is knocking!
 
-Pixa.Pics stands in favor of the freedom of expression, communication, education; **respect for the privacy of citizens and civil rights in general**. We defend the free flow of ideas, knowledge and culture as the software is completely free and open-source. 
+Pixa.Pics stands in favor of the freedom of expression, communication, education; **respect for the privacy of citizens and civil rights in general**. We defend the free flow of ideas, knowledge and culture as the software is completely free and open-source.
 
 ![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/SCREENSHOTS_GRID_pngquant.png)
 
@@ -44,15 +71,15 @@ Pixa.Pics stands in favor of the freedom of expression, communication, education
 
 > And so, when we talk about privacy and anonymity or pecuniary freedom, it wouldn't occur to some that non-fungible tokens are a good reason to think that.
 
-## C) What does it perform?
+## C) :zap: What does it perform?
 
- > This is PIXAAAAA! An awesome pixel art editor made with material design guideline trends and awesome web technologies! 100% visionary in privacy concerns/critics and against detractors with its development that has enabled to show an online-self (image) within a minimalistic version of an high definition image (minima-art), to which, looks like pixel art throughout an automatic resize and color quantization, and then to up-scale it way beyond Full HD through an algorithm that makes it happens to make it looking like a painting, while it will generate an infinite SVG and 6x bigger PNG version of the minima-art.
+> This is PIXAAAAA! An awesome pixel art editor made with material design guideline trends and awesome web technologies! 100% visionary in privacy concerns/critics and against detractors with its development that has enabled to show an online-self (image) within a minimalistic version of an high definition image (minima-art), to which, looks like pixel art throughout an automatic resize and color quantization, and then to up-scale it way beyond Full HD through an algorithm that makes it happens to make it looking like a painting, while it will generate an infinite SVG and 6x bigger PNG version of the minima-art.
 
- * **Protect images.**
- * **Sanitizing private data before processing it remotely.**
- * **Staying on the front line of dropping cost as it is a FOSS.**
- * **Getting to openly fight what misses being just great, while boring good exists.** 
- * **Staying modern without paying anything for useless and toxic ultra-simplification tools.**
+* **Protect images.**
+* **Sanitizing private data before processing it remotely.**
+* **Staying on the front line of dropping cost as it is a FOSS.**
+* **Getting to openly fight what misses being just great, while boring good exists.**
+* **Staying modern without paying anything for useless and toxic ultra-simplification tools.**
 
 **Does https://pixa.pics/pixel get?**
 
@@ -62,15 +89,15 @@ Pixa.Pics stands in favor of the freedom of expression, communication, education
 As a team we have a commitment to work collaboratively, and participate with maximum transparency and thus lastly, we also supports free speech, anti-corruption and net neutrality facing it with **the swords of code we are forging to improve the third web’s major update.**
 
 
-## D) Special features
+## D) :medal_military: Special features
 
 Screenshot of the minima's laboratory of pixa.pics (which is a pixel art editor).
 
- * Create pixel art from your pictures and draw, cut, select, do anything.
- * Have fun with NFTs weighting as low as ~10-100Kb.
- * Restore and colorize B/W while scaling up to 12x images.
+* Create pixel art from your pictures and draw, cut, select, do anything.
+* Have fun with NFTs weighting as low as ~10-100Kb.
+* Restore and colorize B/W while scaling up to 12x images.
 
-## E) Technology
+## E) :crown:	Technology
 
 * Low-Level-JavaScript just like [asm.js](http://asmjs.org/) or SIMD.js for blazing efficient color operation
 * Multi-threading (Web [Worker](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/js/utils/worker-pool.js))
@@ -130,11 +157,11 @@ Please email-us at: [pixa.pics@protonmail.com](mailto:pixa.pics@protonmail.com)
 
 ![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/NOSHOTOFTHESCREEN.jpg)
 
-**About me:** My name is Matias Affolter, and I love to build tools for humanity, my code is my voice, my weapon of choice. I know that uniquely we are free, together and naturally we are just stronger and that's why I need you supporting the project to pay the contributors, a little incentive given with a little bit of love, no one is against it! 
+**About me:** My name is Matias Affolter, and I love to build tools for humanity, my code is my voice, my weapon of choice. I know that uniquely we are free, together and naturally we are just stronger and that's why I need you supporting the project to pay the contributors, a little incentive given with a little bit of love, no one is against it!
 
-Of course the mission I assigned to myself was enabling artworks talking about one's life being customizable and yet anonymous. Because we can store those artworks inside some blockchain technology (entirely, not only a proof) to make it last centuries from now without too many details in it, isn't over, I will need new ideas and contributors, and also more! 
+Of course the mission I assigned to myself was enabling artworks talking about one's life being customizable and yet anonymous. Because we can store those artworks inside some blockchain technology (entirely, not only a proof) to make it last centuries from now without too many details in it, isn't over, I will need new ideas and contributors, and also more!
 
-Your kindness helping the project in anyways is great, don't hesitate to fork, star, and share! 
+Your kindness helping the project in anyways is great, don't hesitate to fork, star, and share!
 
 ---
 
