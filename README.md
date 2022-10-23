@@ -130,7 +130,11 @@ Please email-us at: [pixa.pics@protonmail.com](mailto:pixa.pics@protonmail.com)
 
 ![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/NOSHOTOFTHESCREEN.jpg)
 
-**About me:** My name is Matias Affolter, and I love to build tools for humanity, my code is my voice, my weapon of choice. Uniquely no mercy, we are free, together and naturally we are stronger.
+**About me:** My name is Matias Affolter, and I love to build tools for humanity, my code is my voice, my weapon of choice. I know that uniquely we are free, together and naturally we are just stronger and that's why I need you supporting the project to pay the contributors, a little incentive given with a little bit of love, no one is against it! 
+
+Of course the mission I assigned to myself was enabling artworks talking about one's life being customizable and yet anonymous. Because we can store those artworks inside some blockchain technology (entirely, not only a proof) to make it last centuries from now without too many details in it, isn't over, I will need new ideas and contributors, and also more! 
+
+Your kindness helping the project in anyways is great, don't hesitate to fork, star, and share! 
 
 ---
 
