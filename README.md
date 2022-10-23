@@ -2,7 +2,7 @@
 
 ## A) LET US SAY 
 
-![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/BADASSPP.gif)
+<img src="https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/BADASSPP.gif" align="left" />
 
 **You can easily convert selfies and other pictures into pixel art going back then to an HD image (but as a painting) very easily!** Watch Youtube HD trailer now! https://youtu.be/lC7OYGI8waE
 
