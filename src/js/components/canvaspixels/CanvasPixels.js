@@ -1754,8 +1754,8 @@ class CanvasPixels extends React.PureComponent {
                     pxl_width: parseInt(state.pxl_width),
                     pxl_height: parseInt(state.pxl_height),
                     _pxl_indexes_of_selection: new Set(Boolean(state._pxl_indexes_of_selection.length) ? state._pxl_indexes_of_selection : []),
-                    _s_pxls: state._s_pxls.map(function (a){return new Uint16Array(a.buffer)}),
-                    _s_pxl_colors:  state._s_pxl_colors.map(function (a){return new Uint32Array(a.buffer)}),
+                    _s_pxls: state._s_pxls.map(function (a){return new Uint16Array(Uint8ClampedArray.from(a).buffer)}),
+                    _s_pxl_colors:  state._s_pxl_colors.map(function (a){return new Uint32Array(Uint8ClampedArray.from(a).buffer)}),
                     _layers: Array.from(state._layers.map(function(l) {
                         return Object.assign({}, {
                             id: parseInt(l.id),
@@ -1792,8 +1792,8 @@ class CanvasPixels extends React.PureComponent {
                 });
             })),
             _layer_index: parseInt(sh._layer_index),
-            s_pxls: sh._s_pxls.map(function (a){return new Uint16Array(a.buffer)}),
-            _s_pxl_colors: sh._s_pxl_colors.map(function (a){return new Uint32Array(a.buffer)}),
+            s_pxls: sh._s_pxls.map(function (a){return new Uint16Array(Uint8ClampedArray.from(a).buffer)}),
+            _s_pxl_colors: sh._s_pxl_colors.map(function (a){return new Uint32Array(Uint8ClampedArray.from(a).buffer)}),
             _pxl_indexes_of_selection: new Set(sh._pxl_indexes_of_selection),
             _pencil_mirror_index: parseInt(sh._pencil_mirror_index),
             _json_state_history: _json_state_history,

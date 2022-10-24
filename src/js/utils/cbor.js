@@ -165,9 +165,12 @@ const fun = function (object_or_buffer) {
                   writeTypeAndLength(4, length);
                   for (i = 0; (i|0) < (length|0); i = (i+1|0)>>>0)
                     encodeItem(value[i]);
-                } else if (value instanceof Uint8Array || value instanceof Uint8ClampedArray) {
+                } else if (value instanceof Uint8Array) {
                   writeTypeAndLength(2, value.length);
                   writeUint8Array(value);
+                } else if(value instanceof Uint8ClampedArray){
+                  writeTypeAndLength(2, value.length);
+                  writeUint8Array(Uint8Array.from(value));
                 } else {
                   var keys = Object.keys(value);
                   length = keys.length | 0;
@@ -209,7 +212,7 @@ const fun = function (object_or_buffer) {
             return value;
           }
           function readArrayBuffer(length) {
-            return commitRead(length, new Uint8ClampedArray(data, offset, length));
+            return commitRead(length, new Uint8Array(data, offset, length));
           }
           function readFloat16() {
             var tempArrayBuffer = new ArrayBuffer(4);
@@ -346,7 +349,7 @@ const fun = function (object_or_buffer) {
                     fullArrayLength += length;
                     elements.push(readArrayBuffer(length));
                   }
-                  var fullArray = new Uint8ClampedArray(fullArrayLength);
+                  var fullArray = new Uint8Array(fullArrayLength);
                   var fullArrayOffset = 0;
                   for (i = 0; (i|0) < (elements.length|0); i=(i+1|0)>>>0) {
                     fullArray.set(elements[i], fullArrayOffset);
