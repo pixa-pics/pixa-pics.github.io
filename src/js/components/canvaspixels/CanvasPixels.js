@@ -1754,8 +1754,8 @@ class CanvasPixels extends React.PureComponent {
                     pxl_width: parseInt(state.pxl_width),
                     pxl_height: parseInt(state.pxl_height),
                     _pxl_indexes_of_selection: new Set(Boolean(state._pxl_indexes_of_selection.length) ? state._pxl_indexes_of_selection : []),
-                    _s_pxls: state._s_pxls.map(function (a){return new Uint16Array(Uint8ClampedArray.from(a).buffer)}),
-                    _s_pxl_colors:  state._s_pxl_colors.map(function (a){return new Uint32Array(Uint8ClampedArray.from(a).buffer)}),
+                    _s_pxls: Array.from(state._s_pxls.map(function (a){return Uint16Array.from(Object.values(a))})),
+                    _s_pxl_colors:  Array.from(state._s_pxl_colors.map(function (a){return Uint32Array.from(Object.values(a))})),
                     _layers: Array.from(state._layers.map(function(l) {
                         return Object.assign({}, {
                             id: parseInt(l.id),
@@ -1792,8 +1792,8 @@ class CanvasPixels extends React.PureComponent {
                 });
             })),
             _layer_index: parseInt(sh._layer_index),
-            s_pxls: sh._s_pxls.map(function (a){return new Uint16Array(Uint8ClampedArray.from(a).buffer)}),
-            _s_pxl_colors: sh._s_pxl_colors.map(function (a){return new Uint32Array(Uint8ClampedArray.from(a).buffer)}),
+            s_pxls: Array.from(sh._s_pxls.map(function (a){return Uint16Array.from(Object.values(a))})),
+            _s_pxl_colors: Array.from(sh._s_pxl_colors.map(function (a){return Uint32Array.from(Object.values(a))})),
             _pxl_indexes_of_selection: new Set(sh._pxl_indexes_of_selection),
             _pencil_mirror_index: parseInt(sh._pencil_mirror_index),
             _json_state_history: _json_state_history,
@@ -1825,8 +1825,8 @@ class CanvasPixels extends React.PureComponent {
             let json_state_history = Object.assign(Object.assign({}, _json_state_history), {state_history: Array.from(_json_state_history.state_history.map(function(sh){
 
                 let new_sh = Object.assign({}, sh);
-                new_sh._s_pxls = Array.from(sh._s_pxls.map(function(s_pxls){return new Uint8Array(Uint16Array.from(s_pxls).buffer)}));
-                new_sh._s_pxl_colors = Array.from(sh._s_pxl_colors.map(function(s_pxl_colors){return new Uint8Array(Uint32Array.from(s_pxl_colors).buffer)}));
+                new_sh._s_pxls = Array.from(sh._s_pxls.map(function(s_pxls){return Uint16Array.from(s_pxls)}));
+                new_sh._s_pxl_colors = Array.from(sh._s_pxl_colors.map(function(s_pxl_colors){return Uint32Array.from(s_pxl_colors)}));
 
                 return new_sh;
             }))});
