@@ -3,7 +3,19 @@ import { withStyles } from "@material-ui/core/styles"
 
 import { t } from "../utils/t";
 
-import {Dialog, DialogContent, DialogContentText, DialogTitle, InputLabel, Input, InputAdornment, IconButton, FormControl, Tooltip} from "@material-ui/core";
+import {
+    Dialog,
+    DialogContent,
+    DialogContentText,
+    DialogTitle,
+    InputLabel,
+    Input,
+    InputAdornment,
+    IconButton,
+    FormControl,
+    Tooltip,
+    Button
+} from "@material-ui/core";
 
 import DialogCloseButton from "../components/DialogCloseButton";
 
@@ -97,19 +109,35 @@ const styles = theme => ({
         display: "inline-block",
         padding: theme.spacing(2),
         width: 320,
-        [theme.breakpoints.down("sm")]: {
-            display: "none"
+        backgroundImage: `linear-gradient(45deg, white 33%, #ffffff55), url("/src/images/infographics/ShareWho.svg")`,
+        marginLeft: 48,
+        backgroundSize: "cover",
+        [theme.breakpoints.down("xs")]: {
+            display: "none",
+            width: 0,
+            padding: 0,
+            marginLeft: 0
         }
     },
     dialogContent: {
         display: "inline-block",
         backgroundImage: "radial-gradient(farthest-corner at 0px 0px, #ffffffaa 25%, #43e0 75%), radial-gradient(farthest-corner at 0% 100%, #ffffffaa 25%, #43e0 75%)",
+        marginRight: 48,
+        [theme.breakpoints.down("xs")]: {
+            marginRight: "auto",
+            marginLeft: "auto"
+        }
     },
     dialogInner: {
         display: "inherit",
         backgroundSize: "100%",
         backgroundRepeat: "no-repeat",
         backgroundPosition: "center",
+        "& > div" : {
+            borderRadius: 4,
+            boxShadow: "0px 11px 15px -7px rgb(0 0 0 / 20%), 0px 24px 38px 3px rgb(0 0 0 / 14%), 0px 9px 46px 8px rgb(0 0 0 / 12%)",
+            backgroundColor: "#ffffffff",
+        }
     },
 });
 
@@ -181,8 +209,9 @@ class ShareDialog extends React.Component {
                     disablePortal={true}
                     open={open}
                     onClose={(event) => {this.props.onClose(event)}}
+                    PaperProps={{style: {background: "none", boxShadow: "none"}}}
                 >
-                    <div className={classes.dialogInner} style={{backgroundImage: `url(/src/images/infographics/ShareWho.svg)`}}>
+                    <div className={classes.dialogInner}>
                         <div className={classes.dialogContent}>
                             <DialogTitle>
                                 {t( "components.share_dialog.title")}
@@ -255,9 +284,10 @@ class ShareDialog extends React.Component {
                                 </DialogContentText>
                             </DialogContent>
                         </div>
-                        <div className={classes.dialogImage} style={{background: "#ffffff99"}}>
+                        <div className={classes.dialogImage}>
                             <p>Happy means happy, getting to shares it for fun, brings easier means and support that follow positivity in our objectives from our side.</p>
                             <p>Involvements being of any good intent and will is very appreciated. Wants To Share? Yes Or No...</p>
+                            <Button fullWidth={true} variant={"outlined"} onClick={this.props.onClose}>DISMISS</Button>
                         </div>
                     </div>
                 </Dialog>

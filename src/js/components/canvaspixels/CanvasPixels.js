@@ -2892,7 +2892,6 @@ class CanvasPixels extends React.PureComponent {
 
         let pixels = _s_pxls[_layer_index];
         let colors = Array.from(_s_pxl_colors[_layer_index]);
-        let new_colors =  [];
 
         _pxl_indexes_of_selection.forEach((pixel_index) => {
 

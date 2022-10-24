@@ -46,13 +46,14 @@ const styles = theme => ({
         float: "right",
     },
     uploadButtonDesktopPaperplane: {
-        background: "#adafd9",
+        background: "#5762ffc4",
         "&:hover": {
-            background: "#a5b2d4",
+            background: "#5762ffe4",
         },
         boxShadow: "none",
         color: "#000000",
         fontWeight: "bold",
+        mixBlendMode: "hard-light",
         fontSize: "2.5em",
         "& .MuiSvgIcon-root": {
             marginRight: "1em",
