@@ -302,7 +302,7 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
                 return row.doc;
             }).sort((a, b) =>  new Date(b.timestamp) - new Date(a.timestamp));
             response = null;
-            
+
             let settings_doc = settings_docs.splice(0, 1)[0] || null;
             settings_docs = settings_docs.map((sd, sdi) => {return {_id: sd._id, _rev: sd._rev, _deleted: true, timestamp: 0, data: null, info: null, _attachments: {}}})
 
@@ -327,12 +327,12 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
 
                                 try {
 
-                                    ZSTD(data, "COMPRESS_OBJECT", POOL).then((uint8a) => {
+                                    ZSTD(data, "COMPRESS_OBJECT", POOL).then((with_buffer) => {
 
                                         settings_doc._attachments = settings_doc._attachments || {};
                                         settings_doc._attachments[name_id] = {
                                             content_type: "application/octet-stream",
-                                            data: new Blob([uint8a], {type : "application/octet-stream"})
+                                            data: new Blob([with_buffer], {type : "application/octet-stream"})
                                         };
                                         attachments_to_process--;
                                         if(attachments_to_process === 0) {
@@ -524,11 +524,11 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
 
                     try {
 
-                        ZSTD(data, "COMPRESS_OBJECT", POOL).then((uint8a) => {
+                        ZSTD(data, "COMPRESS_OBJECT", POOL).then((with_buffer) => {
 
                             attachments[name_id] = {
                                 content_type: "application/octet-stream",
-                                data: new Blob([uint8a], {type : "application/octet-stream"})
+                                data: new Blob([with_buffer], {type : "application/octet-stream"})
                             };
                             blobs_to_add--;
 

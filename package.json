@@ -11,7 +11,7 @@
     "@material-ui/lab": "~4.0.0-alpha.57",
     "@material-ui/pickers": "^3.3.10",
     "@oneidentity/zstd-js": "~1.0.2",
-    "base64-encoding": "~0.15.0-alpha.0",
+    "cbor-x": "~1.4.1",
     "buffer": "~6.0.3",
     "clipboard-polyfill": "^3.0.3",
     "cuint": "~0.2.2",
@@ -35,7 +35,6 @@
     "svg64": "^1.1.0",
     "svgo": "^2.8.0",
     "workerpool": "~6.2.1",
-    "fast-png": "~6.1.0",
     "xxhash-wasm": "~1.0.1"
   },
   "devDependencies": {

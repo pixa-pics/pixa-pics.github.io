@@ -14,15 +14,21 @@ const ZSTD = (uint8a_or_obj, mode = "COMPRESS_OBJECT", pool = null) => {
 
                     if (mode === "COMPRESS_OBJECT") {
                         //  JS -> buffer -> ui8a -> compressed ui8a
-                        cbor(uint8a_or_obj).then(function(buffer){
-                            resolve(ZstdSimpleWasm.compress(new Uint8Array(buffer)));
+                        cbor(uint8a_or_obj).then(function(serialized_buffer){
+
+                            var uint8a_serialized = new Uint8ClampedArray(serialized_buffer);
+                            var uint8a_serialized_compressed = ZstdSimpleWasm.compress(uint8a_serialized);
+                            console.log(uint8a_serialized.length, uint8a_serialized_compressed.length)
+                            resolve(uint8a_serialized_compressed)
                         });
 
 
                     } else if (mode === "DECOMPRESS_UINT8A") {
                         // compressed ui8a -> ui8a decompressed -> buffer -> JS
-                        cbor(ZstdSimpleWasm.decompress(uint8a_or_obj).buffer).then(function(js){
-                            resolve(js);
+                        var uint8a_serialized = ZstdSimpleWasm.decompress(uint8a_or_obj);
+                        console.log(uint8a_or_obj.length, uint8a_serialized.length)
+                        cbor(uint8a_serialized).then(function(obj){
+                            resolve(obj);
                         });
                     }
                 })();
