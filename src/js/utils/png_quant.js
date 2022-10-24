@@ -797,12 +797,12 @@ Xu=zu>>>0<10,Gu=0==(0|ju),qu=Gu&Xu,Ju=Wu|qu,Ju&Ku&&(Qu=b>>>0>30,Zu=Iu>>>b,$u=0==
     try {
         
         resolve(FileReaderSync.readAsDataURL(blob));
-        blob = null;
+       
     } catch(e) {
         
         try {
             var reader = new FileReader();
-            reader.onload = function(){ resolve(reader.result); blob = null; };
+            reader.onload = function(){ resolve(reader.result); };
             reader.readAsDataURL(blob);
               
         } catch(e2) {
@@ -824,6 +824,18 @@ const png_quant = (dataurl, quality_min, quality_max, speed, pool = null) => {
         ]).catch((e) => {
 
             return window.png_quant_process_function(dataurl, options);
+        }).then(function(r){
+
+            return new Promise(function(resolve, reject){
+
+                if(r.match("data:image/png;base64,dW5kZWZpbmVk")){
+
+                    resolve(dataurl);
+                }else {
+
+                    resolve(r);
+                }
+            });
         }).timeout(40 * 1000);
     }else {
 

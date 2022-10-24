@@ -1323,8 +1323,8 @@ const B64PngCanvas = {
             destroy(callback_function = function(){}) {
                 if(s !== null) {
 
-                     s = null;
-                     callback_function();
+                    s = null;
+                    callback_function();
 
                 }else {
                     callback_function("ok");
@@ -1334,9 +1334,7 @@ const B64PngCanvas = {
 
                 if(s !== null) {
 
-
                     return s.workerp.exec(
-
                         s.asyncf, [s.w, s.h, s.sp, s.spc, s.l, s.s, s.wp]
                     ).catch(function(e) {
 
