@@ -150,7 +150,7 @@ const styles = theme => ({
     listItemIcon: {
         color: theme.palette.secondary.dark
     },
-    
+
     menu: {
         "& .MuiList-padding": {
             padding: 0,
@@ -1449,6 +1449,38 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                         text: "Get average color",
                         on_click: () => {
                             this._get_average_color_of_selection()
+                        }
+                    },
+                    {
+                        icon: <SelectColorIcon/>,
+                        disabled: !is_something_selected,
+                        text: "Luminance +10",
+                        on_click: () => {
+                            canvas._selection_pxl_adjust_sat_lum(0, 10);
+                        }
+                    },
+                    {
+                        icon: <SelectColorIcon/>,
+                        disabled: !is_something_selected,
+                        text: "Luminance -10",
+                        on_click: () => {
+                            canvas._selection_pxl_adjust_sat_lum(0, -10);
+                        }
+                    },
+                    {
+                        icon: <SelectColorIcon/>,
+                        disabled: !is_something_selected,
+                        text: "Saturation +10",
+                        on_click: () => {
+                            canvas._selection_pxl_adjust_sat_lum(10, 0);
+                        }
+                    },
+                    {
+                        icon: <SelectColorIcon/>,
+                        disabled: !is_something_selected,
+                        text: "Saturation -10",
+                        on_click: () => {
+                            canvas._selection_pxl_adjust_sat_lum(-10, 0);
                         }
                     },
                 ]

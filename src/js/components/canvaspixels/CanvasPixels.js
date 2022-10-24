@@ -1743,7 +1743,7 @@ class CanvasPixels extends React.PureComponent {
     };
 
     import_JS_state = (js, callback_function) => {
-        console.log(js)
+
         let _base64_original_images = Array.from(js._base64_original_images).map(function(img){ return img[0] +","+ bytesToBase64(img[1]); });
         let _json_state_history = {
             history_position: parseInt(js._json_state_history.history_position),
@@ -2884,6 +2884,37 @@ class CanvasPixels extends React.PureComponent {
 
         return Array.of(pxls, pxl_colors);
     };
+
+    _selection_pxl_adjust_sat_lum = (bonus_malus_sat = 0, bonus_malus_lum = 0) => {
+
+        const { _layer_index } = this.super_state.get_state();
+        let { _s_pxls, _s_pxl_colors, _pxl_indexes_of_selection } = this.super_state.get_state();
+
+        let pixels = _s_pxls[_layer_index];
+        let colors = Array.from(_s_pxl_colors[_layer_index]);
+        let new_colors =  [];
+
+        _pxl_indexes_of_selection.forEach((pixel_index) => {
+
+            const uint32 = colors[pixels[pixel_index]];
+            const [h, s, l, o] = this.color_conversion.to_hsla_from_rgba(this.color_conversion.to_rgba_from_uint32(uint32));
+
+            const saturation = Math.min(100, Math.max(0, s + bonus_malus_sat));
+            const luminance = Math.min(100, Math.max(0, l + bonus_malus_lum));
+            const new_color = this.color_conversion.to_uint32_from_rgba(this.color_conversion.to_rgba_from_hsla(Array.of(h, saturation, luminance, o)));
+            if(colors.indexOf(new_color) === -1) {
+
+                colors.push(new_color);
+            }
+            pixels[pixel_index] = colors.indexOf(new_color);
+        });
+
+        colors = Uint32Array.from(colors);
+        _s_pxl_colors[_layer_index] = colors;
+        _s_pxls[_layer_index] = pixels;
+
+        this.super_state.set_state({_s_pxl_colors, _s_pxls});
+    }
 
     _auto_adjust_smoothness = () => {
 
