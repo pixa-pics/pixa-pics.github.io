@@ -667,7 +667,7 @@ class Pixel extends React.PureComponent {
 
             this.setState({_kb: current_state.kb, _saved_at: Date.now()}, () => {
 
-                JSLoader( () => import("../utils/zstd_json")).then(({ZSTD}) => {
+                JSLoader( () => import("../utils/lzp3_cbor")).then(({LZP3}) => {
 
                     api.set_settings({}, (err, res) => {
 
@@ -677,7 +677,7 @@ class Pixel extends React.PureComponent {
                             actions.trigger_snackbar("Looks like I can't save your file as our compression module can't load.", 5700);
                             actions.jamy_update("angry");
                         }
-                    }, attachment_array, ZSTD, pool, (err, res) => {
+                    }, attachment_array, LZP3, pool, (err, res) => {
 
                         actions.trigger_loading_update(100);
                         if(!err) {
@@ -1643,11 +1643,11 @@ class Pixel extends React.PureComponent {
 
     _handle_import_json_state_id = (id) => {
 
-        JSLoader( () => import("../utils/zstd_json")).then(({ZSTD}) => {
+        JSLoader( () => import("../utils/lzp3_cbor")).then(({LZP3}) => {
 
             this._handle_load("image_preload");
             actions.trigger_voice("accessing_memory");
-            api.get_settings(() => {}, ["json_state-ID" + id + ".json.lz"], this._process_settings_attachment_result, ZSTD, pool);
+            api.get_settings(() => {}, ["json_state-ID" + id + ".json.lz"], this._process_settings_attachment_result, LZP3, pool);
         }).catch(() => {
 
             actions.trigger_snackbar("Looks like I can't get your file as our compression module can't load.", 5700);
