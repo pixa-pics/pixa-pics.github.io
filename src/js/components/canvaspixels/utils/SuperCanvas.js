@@ -1,4 +1,4 @@
-import workerpool from "workerpool";
+//import workerpool from "workerpool";
 import SIMDope from "../../../utils/simdope/simdope";
 const {clamp_uint32, modulo_uint, divide_uint, minus_uint, uint_greater, uint_less, plus_uint, max_int, min_int, int_less, multiply_uint} = SIMDope.simdops;
 
@@ -105,7 +105,7 @@ const SuperCanvas = {
                  
             }; return bpro;`)();
 
-        const pool = workerpool.pool({minWorkers: 1, maxWorkers: 1});
+        //const pool = workerpool.pool({minWorkers: 1, maxWorkers: 1});
         const d2d = this.draw_2d;
         const template = function(c, pxl_width, pxl_height){
 
@@ -229,10 +229,7 @@ const SuperCanvas = {
                             let pr_top_left_x = _state.pr.top_left.x | 0;
                             let pr_top_left_y = _state.pr.top_left.y | 0;
 
-                            pool.exec(bpro, [s_width, pr_width, pr_height, pr_top_left_x, pr_top_left_y, _state.fp.buffer]).catch(function () {
-
-                                return b(s_width, pr_width, pr_height, pr_top_left_x, pr_top_left_y, _state.fp.buffer);
-                            }).then(function(bitmap){
+                            bpro(s_width, pr_width, pr_height, pr_top_left_x, pr_top_left_y, _state.fp.buffer).then(function(bitmap){
 
 
                                 if(_state.b.bmp_t < new_bmp_t) {
