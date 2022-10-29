@@ -10,7 +10,7 @@
     "scope": "/"
   },
   "short_name": "PIXA PICS",
-  "description": "Pixel-Art/NFTs LAB. Make potential possible while (un)limited.",
+  "description": "Pixel-Art & NFTs LAB. Make potential possible and (un)limited.",
   "display": "fullscreen",
   "theme_color": "#060f23",
   "background_color": "#ffffff",
@@ -34,10 +34,6 @@
       "icons": [{ "src": "/src/images/logo-transparent.png", "sizes": "1536x1536", "type": "image/png" }]
     }
   ],
-  "related_applications": [{
-    "platform": "play",
-    "url": "https://play.google.com/store/apps/details?id=pics.pixa.twa"
-  }],
   "screenshots" : [
     {
       "src": "/src/images/screenshots/pixa.pics_1.png",

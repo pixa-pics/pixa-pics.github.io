@@ -113,7 +113,7 @@ function XXH () {
 	if (!(this instanceof XXH))
 		return new XXH( arguments[0] )
 
-	init.call(this, arguments[0])
+	this.init.call(this, arguments[0])
 }
 
 /**
@@ -355,7 +355,7 @@ function XXH64 () {
 	if (!(this instanceof XXH64))
 		return new XXH64( arguments[0] )
 
-	init.call(this, arguments[0])
+	this.init.call(this, arguments[0])
 }
 
 /**

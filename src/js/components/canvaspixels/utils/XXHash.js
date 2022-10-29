@@ -6,7 +6,7 @@ const XXHash = {
 
         return {
             // Compute properties
-            xxh_f: {create64(seed){return XXHashJS.h64(seed)}},
+            xxh_f: {create64: function(seed){return XXHashJS.h64(seed); }},
             xxh_v: "64",
             xxh_t: "js",
             xxh_tt: Date.now()
@@ -21,7 +21,7 @@ const XXHash = {
                 XXHashWASM().then(function(hasher){
 
                     resolve({
-                        xxh_f: {create64(seed){return hasher.create64(BigInt(seed))}} ,
+                        xxh_f: {create64: function(seed){return hasher.create64(BigInt(seed))}} ,
                         xxh_v: "64",
                         xxh_t: "wasm",
                         xxh_tt: Date.now()

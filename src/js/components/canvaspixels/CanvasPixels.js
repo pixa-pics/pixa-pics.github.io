@@ -524,9 +524,17 @@ class CanvasPixels extends React.PureComponent {
                 _filter_thumbnails
             } = this.super_state.get_state();
 
-            const p = Uint32Array.from(_s_pxls[_layer_index]);
-            const pc = Uint32Array.from(_s_pxl_colors[_layer_index]);
-            const hash = this.xxhash.base58_that(Uint32Array.from(p.map(function(pci){ pci = pci|0; return (pc[pci]|0)&0xFFFFFFFF; })));
+            const p = _s_pxls[_layer_index];
+            const pc = _s_pxl_colors[_layer_index];
+
+            const p_buffer_length =  p.length * 2 | 0;
+            const pc_buffer_length = pc.length * 4 | 0;
+            let uint8 = new Uint8Array(p_buffer_length + pc_buffer_length);
+            uint8.set(new Uint8Array(p.buffer), 0);
+            uint8.set(new Uint8Array(pc.buffer), p_buffer_length);
+
+            const hash = this.xxhash.base58_that(uint8);
+
             if (_last_filters_hash !== hash || _processing_filters === false) {
 
                 let thumbnails = _filter_thumbnails || new Map()
@@ -1553,9 +1561,15 @@ class CanvasPixels extends React.PureComponent {
 
                         for(let index = 0; index < new_current_state._layers.length; index++){
 
-                            const p =  Uint32Array.from(new_current_state._s_pxls[index]);
-                            const pc = Uint32Array.from(new_current_state._s_pxl_colors[index]);
-                            const new_hash = xxhash.base58_that(Uint32Array.from(p.map(function(pci){ pci = pci | 0; return (pc[pci]|0)&0xFFFFFFFF; })));
+                            const p =  new_current_state._s_pxls[index];
+                            const p_buffer_length =  p.length * 2 | 0;
+                            const pc = new_current_state._s_pxl_colors[index];
+                            const pc_buffer_length = pc.length * 4 | 0;
+                            let uint8 = new Uint8Array(p_buffer_length + pc_buffer_length);
+                            uint8.set(new Uint8Array(p.buffer), 0);
+                            uint8.set(new Uint8Array(pc.buffer), p_buffer_length);
+
+                            const new_hash = xxhash.base58_that(uint8);
                             const old_layer = Object.assign({}, (old_current_state._layers || new Array())[index]);
                             const old_thumbnail = old_layer.thumbnail || "";
                             const old_hash = old_layer.hash || "";

@@ -1,5 +1,6 @@
 import React from "react";
-
+import {cbor} from "../utils/cbor";
+import XXHashJS from "../utils/xxhash";
 import {
     withStyles,
     List,
@@ -359,7 +360,10 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
             _filter_thumbnail_changed: true,
             _compressed: false,
             _vectorized: false,
+            layers_hash: ""
         };
+        this.cbor = cbor;
+        this.xxhash32js = function (buffer_uint8){ return XXHashJS.h32(0xFADE).update(buffer_uint8).digest()};
     };
 
     componentWillReceiveProps(new_props) {
@@ -368,7 +372,6 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
             view_name_index,
             previous_view_name_index,
             view_names,
-            layers,
             layer_index,
             is_image_import_mode,
             hide_canvas_content,
@@ -388,22 +391,22 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
             pencil_mirror_mode,
             is_something_selected,
             import_size,
-            import_colorize
+            import_colorize,
+            layers_hash
         } = this.state;
 
         const _history_changed = Boolean(can_undo !== new_props.can_undo) ||  Boolean(can_redo !== new_props.can_redo);
         const must_compute_filter = Boolean(Boolean(view_name_index !== new_props.view_name_index || _history_changed) && Boolean(new_props.view_name_index === 6));
 
+        let props_override = {};
         let layers_colors_max = 0;
         Array.from(new_props.layers).forEach(function(l){ if(layers_colors_max < parseInt(l.number_of_colors)) { layers_colors_max = parseInt(l.number_of_colors);}});
         const too_much_colors_no_vector = Boolean(layers_colors_max >= 128);
-
         if (Boolean(new_props.should_update) && (
             too_much_colors_no_vector !== this.state.too_much_colors_no_vector,
             view_name_index !== new_props.view_name_index ||
             previous_view_name_index !== new_props.previous_view_name_index ||
             view_names !== new_props.view_names ||
-            JSON.stringify(layers) !== JSON.stringify(new_props.layers) ||
             parseInt(layer_index) !== parseInt(new_props.layer_index) ||
             is_image_import_mode !== new_props.is_image_import_mode ||
             hide_canvas_content !== new_props.hide_canvas_content ||
@@ -424,50 +427,54 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
             import_size !== new_props.import_size ||
             import_colorize !== new_props.import_colorize ||
            filters_preview_progression !== new_props.filters_preview_progression
-        )) {
+        )) {} else {
 
-            let props_override = {last_filters_hash: this.state.last_filters_hash, too_much_colors_no_vector};
+            const new_layers_hash = this.xxhash32js(this.cbor(new_props.layers, true));
+            if(layers_hash === new_layers_hash) {
 
-            if(must_compute_filter) {
-
-                props_override = {last_filters_hash: last_filters_hash, too_much_colors_no_vector}
-                this.compute_filters_preview();
-
+                return false;
             }else {
 
-                if (this.state._filters_changed) {
-
-                    let bmp;
-                    let ar = "";
-                    let processed = false;
-
-                    for (let i = 0; i < new_props.filters.length; i++) {
-
-                        bmp = new_props.filters_thumbnail[new_props.filters[i]] || {};
-
-                        if (Boolean(bmp)) {
-                            ar = `${bmp.width} / ${bmp.height}`;
-                            processed = true;
-                        }
-                    }
-
-                    if (ar !== this.state._filter_aspect_ratio && processed) {
-
-                        props_override._filters_changed = false;
-                        props_override._filter_aspect_ratio = ar;
-                    }
-                }
+                props_override.layers_hash = new_layers_hash;
             }
+        }
 
-            this.setState({...new_props, ...props_override, slider_value: parseFloat(new_props.slider_value)}, () => {
-                this.forceUpdate();
-            });
+        props_override = Object.assign(props_override, {last_filters_hash: this.state.last_filters_hash, too_much_colors_no_vector});
 
+        if(must_compute_filter) {
+
+            props_override =  Object.assign(props_override, {last_filters_hash: last_filters_hash, too_much_colors_no_vector});
+            this.compute_filters_preview();
 
         }else {
 
-            return false;
+            if (this.state._filters_changed) {
+
+                let bmp;
+                let ar = "";
+                let processed = false;
+
+                for (let i = 0; i < new_props.filters.length; i++) {
+
+                    bmp = new_props.filters_thumbnail[new_props.filters[i]] || {};
+
+                    if (Boolean(bmp)) {
+                        ar = `${bmp.width} / ${bmp.height}`;
+                        processed = true;
+                    }
+                }
+
+                if (ar !== this.state._filter_aspect_ratio && processed) {
+
+                    props_override._filters_changed = false;
+                    props_override._filter_aspect_ratio = ar;
+                }
+            }
         }
+
+        this.setState({...new_props, ...props_override, slider_value: parseFloat(new_props.slider_value)}, () => {
+            this.forceUpdate();
+        });
     }
 
     compute_filters_preview = () => {
