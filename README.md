@@ -67,8 +67,6 @@ Pixa.Pics stands in favor of the freedom of expression, communication, education
 
 > IT CLAIMS TO BE THE UNBREAKABLE, UNCHANGABLE, UNSTOPPABLE Ace of Automatic Information; Blockchain is a list of transactions grouped into multiple blocks that constitute a state in a machine that changes according to a cryptography-based agreement AND between its participating terminals through a data network. This technology allows you to save and keep a structured data set for centuries flawlessly.
 
-![](https://player.odycdn.com/speech/attacks-on-descentralized-and-distributed-network:8043d2812cb3cf7d9d4e610f30c81bb84ba96e3c.gif)
-
 **We strongly believe bold the following recklessly for a while. The Internet has become an oligopoly Disneyland with little innovation. The central banks have corrupted money - the operating system of society. We see blockchain as a new computing platform with novel features, that could both, bring a new phase of innovation, and redefine the existing monetary systems. We want to contribute to bringing a better future sooner. Hence, ten months ago, we founded pixa pics.**
 
 ![](https://player.odycdn.com/speech/descentralized-VS-distributed:bfd75860ad506b47a9d9106150856784635a0661.png)
