@@ -11,7 +11,8 @@
   <a href="#b-thinking-tomorrow-is-knocking">Tomorrow is knocking</a> •
   <a href="#c-zap-what-does-it-perform">What does it perform</a> •
   <a href="#d-medal_military-special-features">Special features</a> •
-  <a href="#e-crowntechnology">Technology</a>
+  <a href="#e-crowntechnology">Technology</a> •
+  <a href="#g-sdk-for-up-scaling-images">SDK</a>
 </p>
 
 <p align="center">
