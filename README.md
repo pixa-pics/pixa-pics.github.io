@@ -155,9 +155,25 @@ Please email-us at: [pixa.pics@protonmail.com](mailto:pixa.pics@protonmail.com)
 
 ### Sponsor-kit : [Pixelarts_NFTs_PixaPics.pdf](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/Pixelarts_NFTs_PixaPics.pdf)
 
+## G) SDK for up-scaling images
+
+```js
+import Pixa from "xxx-pixa-pics-upscale"; // Soon ready
+import xbrz from "xxx-pixa-pics-upscale/xbrz"; // Soon online
+
+var pixa = new Pixa();
+pixa.add(xbrz)
+pixa.upscale(base64, "xbrz").then(function(base642nd){
+
+    //img.src = base642nd;
+});
+```
+
+The SDK is being developed from our source code.
+
 ---
 
-![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/NOSHOTOFTHESCREEN.jpg)
+<img width="400" height="400" src="https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/NOSHOTOFTHESCREEN_S.png" align="left" />
 
 **About me:** My name is Matias Affolter, and I love to build tools for humanity, my code is my voice, my weapon of choice. I know that uniquely we are free, together and naturally we are just stronger and that's why I need you supporting the project to pay the contributors, a little incentive given with a little bit of love, no one is against it!
 
