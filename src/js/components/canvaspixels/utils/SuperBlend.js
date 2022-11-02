@@ -187,7 +187,7 @@ const SuperBlend = {
 
                 for(i = 0; uint_less_equal(i, used_colors_length); i = plus_uint(i,1)) {
 
-                    start_layer = start_layer_indexes[i] | 0;
+                    start_layer = start_layer_indexes[i];
 
                     // Get the first base color to sum up with colors atop of it
                     base_uint8x4.set(SIMDope_final_with_colors.get_element(i).buffer);

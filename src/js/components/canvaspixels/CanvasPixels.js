@@ -44,6 +44,8 @@ import CanvasFilters from "../canvaspixels/utils/CanvasFilters"
 import SIMDope from "../../utils/simdope/simdope";
 import {base64ToBytes, bytesToBase64} from "../../utils/base64";
 const simdops = SIMDope.simdops;
+const SIMDopeColors = SIMDope.SIMDopeColors;
+const SIMDopeColor = SIMDope.SIMDopeColor;
 class CanvasPixels extends React.PureComponent {
 
     constructor(props) {
@@ -2883,30 +2885,49 @@ class CanvasPixels extends React.PureComponent {
 
     _pxl_adjust_saturation = (pxls, pxl_colors, intensity) => {
 
-        let min_s = 100;
+        return Array.of(pxls, pxl_colors);
+
+        let min_s = 255;
         let max_s = 0;
 
-        pxl_colors.forEach((uint32) => {
+        intensity = parseFloat(intensity);
+        let saturation = 0;
+        let color;
+        let hsl;
+        let colors = SIMDopeColors(pxl_colors);
+        let {clamp_int} = simdops;
+        let length = colors.length;
 
-            const s = this.color_conversion.to_hsla_from_rgba(this.color_conversion.to_rgba_from_uint32(uint32))[1];
-            if(s > max_s) { max_s = s; }
-            if(s < min_s) { min_s = s; }
-        });
+        for(let i = 0; (i|0) < (length|0); i = (i+1|0)>>>0) {
+
+            color = colors.get_element(i);
+            saturation = color.hsl[1];
+            if((color.a | 0) > 0) {
+                if((saturation|0) > (max_s|0)) {max_s = saturation | 0;}
+                if((saturation|0) < (min_s|0)) {min_s = saturation | 0;}
+            }
+        }
 
         const alpha = 100 / Math.max(1, max_s - min_s);
         const beta = -min_s * alpha;
 
-        pxl_colors = Uint32Array.from(pxl_colors.map((uint32) => {
+        for(let i = 0; (i|0) < (length|0); i = (i+1|0)>>>0) {
 
-            const [h, s, l, o] = this.color_conversion.to_hsla_from_rgba(this.color_conversion.to_rgba_from_uint32(uint32));
+            color = colors.get_element(i);
+            hsl = color.hsl;
+            saturation = clamp_int( hsl[1] * alpha + beta | 0, 0, 100);
+            saturation = intensity * saturation + (1-intensity) * hsl[1] | 0;
 
-            const saturation = Math.min(100, Math.max(0, s * alpha + beta));
-            const new_saturation = intensity * saturation + (1-intensity) * s;
+            colors.set_element(i, SIMDopeColor.new_hsla(
+                hsl[0],
+                saturation,
+                hsl[2],
+                color.a
+            ));
+        }
 
-            return this.color_conversion.to_uint32_from_rgba(this.color_conversion.to_rgba_from_hsla(Array.of(h, new_saturation, l, o)));
-        }));
-
-        return Array.of(pxls, pxl_colors);
+        pxl_colors = colors.subarray_uint32(0, length);
+        return [pxls, pxl_colors, alpha, beta];
     };
 
     _selection_pxl_adjust_sat_lum = (bonus_malus_sat = 0, bonus_malus_lum = 0) => {
@@ -3290,48 +3311,42 @@ class CanvasPixels extends React.PureComponent {
         let min_grey = 255;
         let max_grey = 0;
 
-        pxl_colors.forEach((pxl_color, index) => {
+        intensity = parseFloat(intensity) * 255 | 0;
+        let greyscale = 0;
+        let color;
+        let colors = SIMDopeColors(pxl_colors);
+        let {clamp_int} = simdops;
+        let length = colors.length;
 
-            if(pxls.includes(index)) {
+        for(let i = 0; (i|0) < (length|0); i = (i+1|0)>>>0) {
 
-                const [r, g, b, a] = this.color_conversion.to_rgba_from_uint32(pxl_color);
-                const greyscale = (r + g + b) / 3 * (a / 255);
-
-                if(a > 0) {
-
-                    if(greyscale > max_grey) {
-
-                        max_grey = greyscale;
-                    }
-                    if(greyscale < min_grey) {
-
-                        min_grey = greyscale;
-                    }
-                }
+            color = colors.get_element(i);
+            greyscale = color.sum_rgb() / 3 * color.a / 255 | 0;
+            if((color.a | 0) > 0) {
+                if((greyscale|0) > (max_grey|0)) {max_grey = greyscale | 0;}
+                if((greyscale|0) < (min_grey|0)) {min_grey = greyscale | 0;}
             }
-        });
+        }
 
         const alpha = 255 / Math.max(1, max_grey - min_grey);
-        const beta = -min_grey * alpha;
+        const beta = -min_grey * alpha | 0;
 
-        pxl_colors = pxl_colors.map((pxl_color) => {
+        for(let i = 0; (i|0) < (length|0); i = (i+1|0)>>>0) {
 
-            let [r, g, b, a] = this.color_conversion.to_rgba_from_uint32(pxl_color);
+            color = colors.get_element(i);
 
-            r = r * alpha + beta;
-            g = g * alpha + beta;
-            b = b * alpha + beta;
+            color.blend_with(
+                SIMDopeColor.new_of(
+                    clamp_int(color.r * alpha + beta | 0, 0, 255),
+                    clamp_int(color.g * alpha + beta | 0, 0, 255),
+                    clamp_int(color.b * alpha + beta | 0, 0, 255),
+                    color.a
+                ), intensity, false, false);
+            colors.set_element(i, color);
+        }
 
-            r = parseInt(Math.min(255, Math.max(0, r)));
-            g = parseInt(Math.min(255, Math.max(0, g)));
-            b = parseInt(Math.min(255, Math.max(0, b)));
-
-            return this.color_conversion.blend_colors(pxl_color, this.color_conversion.to_uint32_from_rgba(Uint8ClampedArray.of(r, g, b, a)), intensity, false, false);
-
-        });
-
+        pxl_colors = colors.subarray_uint32(0, length);
         return [pxls, pxl_colors, alpha, beta];
-
     };
 
     _pxl_adjust_smoothness = (pxls, pxl_colors, pxl_width, pxl_height, rounds) => {

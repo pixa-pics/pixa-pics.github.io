@@ -1039,7 +1039,7 @@ var SIMDopeColors = function(with_main_buffer){
 };
 
 Object.defineProperty(SIMDopeColors.prototype, 'length', {
-    get: function() { "use strict"; return divide_four_uint(this.storage_uint8_array_.length); }
+    get: function() { "use strict"; return this.storage_uint32_array_.length; }
 });
 Object.defineProperty(SIMDopeColors.prototype, 'buffer', {
     get: function() { "use strict"; return this.storage_uint8_array_.buffer; }
