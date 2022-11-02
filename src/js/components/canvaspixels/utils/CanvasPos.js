@@ -765,7 +765,7 @@ const CanvasPos = {
                 "use strict";
                 const msan = s.scale.moves_speed_average_now;
                 const shadow_depth = msan < 0 ? Math.round(Math.abs(msan) / 2): msan;
-                return  {box_shadow: sh[shadow_depth]};
+                return  {box_shadow: sh[shadow_depth], will_change: Boolean(msan > -24)};
             },
             get_canvas_pos_from_event: function(pageX, pageY) {
                 "use strict";

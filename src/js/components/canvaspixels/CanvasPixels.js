@@ -603,16 +603,26 @@ class CanvasPixels extends React.PureComponent {
         const { _json_state_history, pxl_width, pxl_height } = this.super_state.get_state();
         const { _s_pxls, _s_pxl_colors, _layers } = _json_state_history.state_history[_json_state_history.history_position];
 
-        const b64pngcanvas = B64PngCanvas.from(pool, parseInt(pxl_width), parseInt(pxl_height), _s_pxls, _s_pxl_colors, _layers, parseInt(scale), with_palette);
+        const b64pngcanvas = B64PngCanvas.from(pool, parseInt(pxl_width), parseInt(pxl_height), _s_pxls, _s_pxl_colors, _layers, parseInt(scale), true);
 
         return new Promise( (resolve, reject) => {
             b64pngcanvas.render().then((result) => {
 
-                if(with_compression_speed !== 0) {
+                if(with_compression_speed !== 0 && result.colors.length <= 256) {
 
                     JSLoader( () => import("../../utils/png_quant")).then(({png_quant}) => {
 
                         png_quant(result.url.toString(), with_compression_quality_min, with_compression_quality_max, with_compression_speed, pool).then((base_64_out) => {
+
+                            result.url = base_64_out;
+                            resolve(result);
+                        });
+                    });
+                }else if(with_compression_speed !== 0 && result.colors.length > 256){
+
+                    JSLoader( () => import("../../utils/oxi_png")).then(({oxi_png}) => {
+
+                        oxi_png(result.url.toString(), Math.floor(with_compression_quality_max/30), false, pool).then((base_64_out) => {
 
                             result.url = base_64_out;
                             resolve(result);
@@ -3456,7 +3466,7 @@ class CanvasPixels extends React.PureComponent {
         const {canvas_wrapper, device_pixel_ratio, scale, canvas_event_target} = this.canvas_pos.get_state();
         const {mouse_down} = this.canvas_pos.get_pointer_state();
         const screen_zoom_ratio = this.canvas_pos.get_screen_zoom_ratio();
-        const {box_shadow} = this.canvas_pos.get_style();
+        const {box_shadow, will_change} = this.canvas_pos.get_style();
         const {background_image, transform_rotate, filter} = perspective ? this.canvas_pos.get_perspective_state(): {};
         const is_mobile_or_tablet = this.sraf.get_state().is_mobile_or_tablet;
         const cursor = this.super_state.get_cursor(_is_on_resize_element, _is_image_import_mode, mouse_down, tool, select_mode, canvas_event_target);
@@ -3508,7 +3518,7 @@ class CanvasPixels extends React.PureComponent {
                              filter: `opacity(${!is_there_new_dimension ? "1": "0"}) ${perspective ? filter: ""}`,
                              webkitFilter: `opacity(${!is_there_new_dimension ? "1": "0"}) ${perspective ? filter: ""}`,
                              transform: `translate(${Math.round(scale.move_x * 100) / 100}px, ${Math.round(scale.move_y * 100) / 100}px) ${perspective ? transform_rotate: ""}`,
-                             willChange: "transform, box-shadow",
+                             willChange: will_change ? "transform, box-shadow": "",
                              transformOrigin: "center middle",
                              mixBlendMode: "screen",
                              boxSizing: "content-box",

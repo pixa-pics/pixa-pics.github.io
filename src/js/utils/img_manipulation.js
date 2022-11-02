@@ -175,7 +175,7 @@ window.imagedata_to_base64_process_function = new AsyncFunction(`var t = async f
                 ctx.transferFromImageBitmap(bmp);
                 bmp = null;
                 
-                return canvas.convertToBlob({type: type}).then(function(blb) {
+                return canvas.convertToBlob({type: type, quality: 0.9}).then(function(blb) {
                     
                     return FileReaderSync.readAsDataURL(blb);
                 });
@@ -194,7 +194,7 @@ window.imagedata_to_base64_process_function = new AsyncFunction(`var t = async f
             ctx.imageSmoothingEnabled = false;
             ctx.putImageData(imagedata, 0, 0);
             
-            var base64 = canvas.toDataURL("image/png");
+            var base64 = canvas.toDataURL(type, 0.9);
             canvas = null;
             resolve(base64);
         });

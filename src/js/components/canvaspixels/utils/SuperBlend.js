@@ -166,7 +166,7 @@ const SuperBlend = {
                 let SIMDope_layers_with_colors = SIMDopeColors(uint32_rgba_colors_data_in_layers.buffer);
                 let SIMDope_final_with_colors = SIMDopeColors(base_rgba_colors_for_blending);
                 let i = 0;
-                
+
                 // Browse the full list of pixel colors encoded within 32 bytes of data
                 for(i = 0; int_less(i, used_colors_length); i = plus_uint(i,1)) {
 
@@ -184,10 +184,10 @@ const SuperBlend = {
                     }
                     start_layer_indexes[i] = plus_int(start_layer, 1);
                 }
-                
+
                 for(i = 0; uint_less_equal(i, used_colors_length); i = plus_uint(i,1)) {
 
-                    start_layer = start_layer_indexes[i];
+                    start_layer = start_layer_indexes[i] | 0;
 
                     // Get the first base color to sum up with colors atop of it
                     base_uint8x4.set(SIMDope_final_with_colors.get_element(i).buffer);
