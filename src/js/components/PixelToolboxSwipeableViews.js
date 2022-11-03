@@ -369,6 +369,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
     componentWillReceiveProps(new_props) {
 
         const {
+            should_update,
             view_name_index,
             previous_view_name_index,
             view_names,
@@ -402,7 +403,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
         let layers_colors_max = 0;
         Array.from(new_props.layers).forEach(function(l){ if(layers_colors_max < parseInt(l.number_of_colors)) { layers_colors_max = parseInt(l.number_of_colors);}});
         const too_much_colors_no_vector = Boolean(layers_colors_max >= 128);
-        if (Boolean(new_props.should_update) && (
+        if (Boolean(new_props.should_update || should_update) && (
             too_much_colors_no_vector !== this.state.too_much_colors_no_vector,
             view_name_index !== new_props.view_name_index ||
             previous_view_name_index !== new_props.previous_view_name_index ||

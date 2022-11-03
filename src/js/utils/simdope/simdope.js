@@ -1090,7 +1090,7 @@ Object.defineProperty(SIMDopeColors.prototype, 'slice_uint8', {
 
 SIMDopeColors.prototype.get_element = function (i) {
     i = i | 0;
-    return SIMDopeColor(this.buffer, i);
+    return SIMDopeColor(this.subarray_uint8(i, i+1));
 }
 SIMDopeColors.prototype.subarray = function (i, n) {
     i = i | 0;
