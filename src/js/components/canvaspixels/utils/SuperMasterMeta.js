@@ -294,17 +294,17 @@ const SuperMasterMeta = {
 
                                             meta.sraf.run_frame( () => {
                                                 meta.super_canvas.render(b2).then(function(){
-                                                    state = Object.assign(state, {
-                                                        _previous_imported_image_pxls_positioned_keyset: imported_image_pxls_positioned_keyset,
-                                                        _old_selection_pair_highlight: _selection_pair_highlight,
-                                                        _old_layers_string_id: old_layers_string_id,
-                                                        _old_full_pxls: full_pxls,
-                                                        _old_pxl_width: pxl_width | 0,
-                                                        _old_pxl_height: pxl_height | 0,
-                                                        _last_paint_timestamp: requested_at,
-                                                        _is_there_new_dimension: is_there_new_dimension,
-                                                        _did_hide_canvas_content: hide_canvas_content
-                                                    });
+
+                                                    state._previous_imported_image_pxls_positioned_keyset = imported_image_pxls_positioned_keyset;
+                                                    state._old_selection_pair_highlight = _selection_pair_highlight;
+                                                    state._old_layers_string_id = old_layers_string_id;
+                                                    state._old_full_pxls = full_pxls;
+                                                    state._old_pxl_width = pxl_width | 0;
+                                                    state._old_pxl_height = pxl_height | 0;
+                                                    state._last_paint_timestamp = requested_at;
+                                                    state._is_there_new_dimension = is_there_new_dimension;
+                                                    state._did_hide_canvas_content = hide_canvas_content;
+
                                                     if(is_there_new_dimension !== _is_there_new_dimension || is_there_different_dimension) {
 
                                                         state._is_there_new_dimension = is_there_different_dimension;

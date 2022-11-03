@@ -155,13 +155,19 @@ const SuperState = {
                     },
                     set(new_props) {
                         return new Promise(function(resolve){
-                            Object.keys(new_props).forEach(function (key) {
 
+                            let keys = Object.keys(new_props);
+                            let keys_length = keys.length | 0;
+                            let key = "";
+
+                            for (let i = 0; (i|0) < (keys_length|0); i = (i+1|0)>>>0) {
+
+                                key = keys[i].toString();
                                 state[key] = new_props[key];
                                 if (key === "pxl_current_color") {
                                     state["pxl_current_color_uint32"] = _format_hex_color_getUin32(new_props[key]);
                                 }
-                            });
+                            }
 
                             resolve();
                         });

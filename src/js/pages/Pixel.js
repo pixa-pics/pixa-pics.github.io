@@ -423,7 +423,7 @@ class Pixel extends React.PureComponent {
 
     constructor(props) {
         super(props);
-        this.state = {
+        this.st4te = {
             classes: props.classes,
             load_with: props.load_with + "",
             _history: HISTORY,
@@ -495,6 +495,24 @@ class Pixel extends React.PureComponent {
         };
     };
 
+    setSt4te(st4te, callback) {
+
+        let keys = Object.keys(st4te);
+        let keys_length = keys.length | 0;
+        let key = "";
+
+        for (let i = 0; (i|0) < (keys_length|0); i = (i+1|0)>>>0) {
+
+            key = keys[i].toString();
+            this.st4te[key] = st4te[key];
+        }
+
+        if(typeof callback === "function") {
+
+            callback();
+        }
+    }
+
     componentWillMount() {
 
         actions.trigger_loading_update(0);
@@ -505,7 +523,7 @@ class Pixel extends React.PureComponent {
         }, 300);
         l(null, () => {
 
-            this.setState({_time_ago_initiated: true}, () => {
+            this.setSt4te({_time_ago_initiated: true}, () => {
 
                 this.forceUpdate();
             });
@@ -518,24 +536,24 @@ class Pixel extends React.PureComponent {
 
         setTimeout(() => {
 
-            if(this.state._is_pixel_dialog_create_open){
+            if(this.st4te._is_pixel_dialog_create_open){
 
                 actions.trigger_snackbar("Right here! Let's upload a picture now to create a new artwork.", 6000);
 
                 setTimeout(() => {
 
-                    if(this.state._is_pixel_dialog_create_open){
+                    if(this.st4te._is_pixel_dialog_create_open){
 
                         actions.trigger_snackbar("By the way, ...", 1000);
 
                         setTimeout(() => {
 
-                            if(this.state._is_pixel_dialog_create_open){
+                            if(this.st4te._is_pixel_dialog_create_open){
 
                                 actions.trigger_snackbar("Huh, let me take my breath! ...", 1500);
                                 setTimeout(() => {
 
-                                    if(this.state._is_pixel_dialog_create_open){
+                                    if(this.st4te._is_pixel_dialog_create_open){
 
                                         actions.trigger_snackbar("You can set the size of your artwork before uploading your picture.", 10000);
                                     }
@@ -553,25 +571,25 @@ class Pixel extends React.PureComponent {
         document.addEventListener("keydown", this._handle_keydown);
         document.addEventListener("keyup", this._handle_keyup);
         dispatcher.register(this._handle_events.bind(this));
-        this._try_load_with_payload(this.state.load_with + "");
-        this.setState({_h_svg: get_svg_in_b64(<HexGrid color={"#e5e5e5"}/>)});
+        this._try_load_with_payload(this.st4te.load_with + "");
+        this.setSt4te({_h_svg: get_svg_in_b64(<HexGrid color={"#e5e5e5"}/>)});
         JSLoader( () => import("../utils/ressource_pixel")).then((RESSOURCE_PIXELS) => {
 
-            this.setState({_library: RESSOURCE_PIXELS});
+            this.setSt4te({_library: RESSOURCE_PIXELS});
         });
     }
 
     componentWillReceiveProps(new_props) {
 
-        if(new_props.load_with !== this.state.load_with) {
+        if(new_props.load_with !== this.st4te.load_with) {
 
-            this.setState({load_with: ""+new_props.load_with, _settings: JSON.parse(new_props.settings)}, ()  => {
+            this.setSt4te({load_with: ""+new_props.load_with, _settings: JSON.parse(new_props.settings)}, ()  => {
 
                 this._try_load_with_payload(""+new_props.load_with);
             });
         }
 
-        this.setState(new_props);
+        this.setSt4te(new_props);
 
     }
 
@@ -579,7 +597,7 @@ class Pixel extends React.PureComponent {
 
         if(load_with.length <= 0){
 
-            this.setState({_is_pixel_dialog_create_open: !Boolean(load_with.length > 0)}, () => {
+            this.setSt4te({_is_pixel_dialog_create_open: !Boolean(load_with.length > 0)}, () => {
 
                 api.get_settings(this._process_settings_info_result);
             });
@@ -593,16 +611,16 @@ class Pixel extends React.PureComponent {
                 img.addEventListener("load", () => {
                     const try_again = () => {
 
-                        if(!Boolean(this.state._canvas)) {
+                        if(!Boolean(this.st4te._canvas)) {
 
                             setTimeout(() => {try_again()}, 100);
                         }else {
 
-                            this.setState({_kb: 0, _saved_at: 1/0}, () => {
+                            this.setSt4te({_kb: 0, _saved_at: 1/0}, () => {
 
                                 this.forceUpdate();
                             });
-                            this.state._canvas.set_canvas_from_image(img, base64.toString(), {}, true);
+                            this.st4te._canvas.set_canvas_from_image(img, base64.toString(), {}, true);
                             this._handle_load_complete("image_preload", {});
                         }
                     };
@@ -665,7 +683,7 @@ class Pixel extends React.PureComponent {
             let attachment_array = {};
             attachment_array["json_state-ID" + current_state.id + ".json.lz"] = current_state;
 
-            this.setState({_kb: current_state.kb, _saved_at: Date.now()}, () => {
+            this.setSt4te({_kb: current_state.kb, _saved_at: Date.now()}, () => {
 
                 JSLoader( () => import("../utils/lzp3_cbor")).then(({LZP3}) => {
 
@@ -719,9 +737,9 @@ class Pixel extends React.PureComponent {
 
                 actions.trigger_snackbar("DELETION, Successful!", 2000);
                 actions.trigger_sfx("alert_high-intensity");
-                let ap = Object.assign({}, this.state._attachment_previews);
+                let ap = Object.assign({}, this.st4te._attachment_previews);
                 delete ap["json_state-ID" + id + ".json.lz"];
-                this.setState({_attachment_previews: ap}, () => {
+                this.setSt4te({_attachment_previews: ap}, () => {
                     this.forceUpdate();
                 });
             }else {
@@ -741,7 +759,7 @@ class Pixel extends React.PureComponent {
             _window_width = w.innerWidth || documentElement.clientWidth || body.clientWidth,
             _window_height = w.innerHeight|| documentElement.clientHeight || body.clientHeight;
 
-        this.setState({_less_than_1280w: _window_width < 1280})
+        this.setSt4te({_less_than_1280w: _window_width < 1280})
     }
 
     componentWillUnmount() {
@@ -754,7 +772,7 @@ class Pixel extends React.PureComponent {
 
     _handle_menu_close = () => {
 
-        this.setState({_menu_mouse_x: null, _menu_mouse_y: null}, () => {
+        this.setSt4te({_menu_mouse_x: null, _menu_mouse_y: null}, () => {
 
             this.forceUpdate();
         });
@@ -762,10 +780,10 @@ class Pixel extends React.PureComponent {
 
     _handle_right_click = (event, data) => {
 
-        const { get_pixel_color_from_pos } = this.state._canvas;
+        const { get_pixel_color_from_pos } = this.st4te._canvas;
         data.pxl_color = get_pixel_color_from_pos(data.pos_x, data.pos_y);
 
-        this.setState({
+        this.setSt4te({
             _menu_mouse_x: event.clientX - 2,
             _menu_mouse_y: event.clientY - 4,
             _menu_data: data,
@@ -778,7 +796,7 @@ class Pixel extends React.PureComponent {
 
     _set_cursor_fuck_you = (is_active) => {
 
-        this.setState({_is_cursor_fuck_you_active: is_active}, () => {
+        this.setSt4te({_is_cursor_fuck_you_active: is_active}, () => {
 
             this.forceUpdate();
         });
@@ -793,7 +811,7 @@ class Pixel extends React.PureComponent {
             // Set new settings from query result
             const _attachment_previews = typeof settings.attachment_previews !== "undefined" ? settings.attachment_previews: {};
 
-            this.setState({_attachment_previews}, () => {
+            this.setSt4te({_attachment_previews}, () => {
 
                 this.forceUpdate();
             });
@@ -802,7 +820,7 @@ class Pixel extends React.PureComponent {
 
     _process_settings_attachment_result = (error, data) => {
 
-        const { import_JS_state } = this.state._canvas;
+        const { import_JS_state } = this.st4te._canvas;
         this._handle_load_complete("image_preload", {});
 
         if(Boolean(error)) {
@@ -813,14 +831,14 @@ class Pixel extends React.PureComponent {
 
         }else {
 
-            this.setState({_kb: data.kb, _saved_at: Date.now()}, () => {
+            this.setSt4te({_kb: data.kb, _saved_at: Date.now()}, () => {
 
                 this.forceUpdate();
             });
 
             import_JS_state(data, () => {
 
-                this.setState({ _is_pixel_dialog_create_open: false, _attachment_previews: {}}, () => {
+                this.setSt4te({ _is_pixel_dialog_create_open: false, _attachment_previews: {}}, () => {
 
                     this.forceUpdate();
                 });
@@ -831,8 +849,8 @@ class Pixel extends React.PureComponent {
 
     _handle_view_name_change = (view_name_index, previous_name_index = null) => {
 
-        const { _view_names, _toolbox_container_ref } = this.state;
-        previous_name_index = previous_name_index === null ? this.state._view_name_index: previous_name_index;
+        const { _view_names, _toolbox_container_ref } = this.st4te;
+        previous_name_index = previous_name_index === null ? this.st4te._view_name_index: previous_name_index;
 
         const _view_name = _view_names[view_name_index] || _view_names[0];
         const _view_name_index = _view_names.indexOf(_view_name) === -1 ? 0: _view_names.indexOf(_view_name);
@@ -847,7 +865,7 @@ class Pixel extends React.PureComponent {
 
         _toolbox_container_ref.scrollTop = 0;
 
-        this.setState({_previous_view_name_index: previous_name_index || this.state._view_name_index, _view_name_index}, () => {
+        this.setSt4te({_previous_view_name_index: previous_name_index || this.st4te._view_name_index, _view_name_index}, () => {
 
             this.forceUpdate();
         });
@@ -857,8 +875,8 @@ class Pixel extends React.PureComponent {
 
         if(event.pointerType === "mouse" && event.button === 0 || event.pointerType !== "mouse") {
 
-            const { _view_names, _toolbox_container_ref } = this.state;
-            previous_name_index = previous_name_index === null ? this.state._view_name_index: previous_name_index;
+            const { _view_names, _toolbox_container_ref } = this.st4te;
+            previous_name_index = previous_name_index === null ? this.st4te._view_name_index: previous_name_index;
 
             const _view_name = _view_names[view_name_index] || _view_names[0];
             const _view_name_index = _view_names.indexOf(_view_name) === -1 ? 0: _view_names.indexOf(_view_name);
@@ -873,7 +891,7 @@ class Pixel extends React.PureComponent {
 
             _toolbox_container_ref.scrollTop = 0;
 
-            this.setState({_previous_view_name_index: previous_name_index || this.state._view_name_index, _view_name_index}, () => {
+            this.setSt4te({_previous_view_name_index: previous_name_index || this.st4te._view_name_index, _view_name_index}, () => {
 
                 this.forceUpdate();
             });
@@ -882,7 +900,7 @@ class Pixel extends React.PureComponent {
 
     _handle_keydown = (event) => {
 
-        const { _tool, _view_name_index, _view_names, _is_pixel_dialog_post_edit_open } = this.state;
+        const { _tool, _view_name_index, _view_names, _is_pixel_dialog_post_edit_open } = this.st4te;
 
         if (event && !_is_pixel_dialog_post_edit_open) {
 
@@ -896,16 +914,16 @@ class Pixel extends React.PureComponent {
                 switch (event.keyCode) {
 
                     case 38:
-                        this.setState({_mine_player_direction: "UP"});
+                        this.setSt4te({_mine_player_direction: "UP"});
                         break;
                     case 40:
-                        this.setState({_mine_player_direction: "DOWN"});
+                        this.setSt4te({_mine_player_direction: "DOWN"});
                         break;
                     case 37:
-                        this.setState({_mine_player_direction: "LEFT"});
+                        this.setSt4te({_mine_player_direction: "LEFT"});
                         break;
                     case 39:
-                        this.setState({_mine_player_direction: "RIGHT"});
+                        this.setSt4te({_mine_player_direction: "RIGHT"});
                         break;
                 }
             }else {
@@ -1029,28 +1047,28 @@ class Pixel extends React.PureComponent {
 
             }else if(event.key === "Enter") {
 
-                const { confirm_import } = this.state._canvas;
+                const { confirm_import } = this.st4te._canvas;
                 confirm_import();
             }else if(event.ctrlKey) {
 
                 if(_tool.includes("SELECT")) {
 
-                    this.setState({_previous_tool_timestamp: Date.now()});
+                    this.setSt4te({_previous_tool_timestamp: Date.now()});
                     this._set_select_mode("REMOVE");
                 }else {
 
-                    this.setState({_previous_tool_timestamp: Date.now()});
+                    this.setSt4te({_previous_tool_timestamp: Date.now()});
                     this._set_tool("PICKER", false);
                 }
             }else if(event.key === "Shift") {
 
                 if(_tool.includes("SELECT")) {
 
-                    this.setState({_previous_tool_timestamp: Date.now()});
+                    this.setSt4te({_previous_tool_timestamp: Date.now()});
                     this._set_select_mode("ADD");
                 }else {
 
-                    this.setState({_previous_tool_timestamp: Date.now()});
+                    this.setSt4te({_previous_tool_timestamp: Date.now()});
                     this._set_tool("MOVE", false);
                 }
             }else {
@@ -1067,7 +1085,7 @@ class Pixel extends React.PureComponent {
             actions.trigger_snackbar("That was a nice undo!")
         }
 
-        this.state._canvas.undo()
+        this.st4te._canvas.undo()
     }
     _redo = () => {
 
@@ -1098,17 +1116,17 @@ class Pixel extends React.PureComponent {
             }, 3000);
         }
 
-        this.state._canvas.redo()
+        this.st4te._canvas.redo()
     }
     _backup_state = () => {
 
-        const { export_state } = this.state._canvas;
+        const { export_state } = this.st4te._canvas;
         export_state();
     };
 
     _download_image = (size) => {
 
-        const { get_base64_png_data_url, xxhashthat } = this.state._canvas;
+        const { get_base64_png_data_url, xxhashthat } = this.st4te._canvas;
 
         window.dispatchEvent(new Event(`art-download-raster${size}`));
 
@@ -1134,13 +1152,13 @@ class Pixel extends React.PureComponent {
 
     _download_svg = (using = "xbrz", optimize_render_size = false, download_svg = false) => {
 
-        const { get_base64_png_data_url, xxhashthat } = this.state._canvas;
+        const { get_base64_png_data_url, xxhashthat } = this.st4te._canvas;
 
         actions.trigger_voice("please_wait");
         actions.trigger_snackbar("Please wait... Files will download in a few seconds.", 5700);
         actions.jamy_update("happy");
 
-        this.setState({_loading: true, _loading_process: "image_render"}, () => {
+        this.setSt4te({_loading: true, _loading_process: "image_render"}, () => {
 
             setTimeout(() => {
 
@@ -1148,12 +1166,12 @@ class Pixel extends React.PureComponent {
 
                     const hash = xxhashthat(url);
 
-                    let { _files_waiting_download } = this.state;
+                    let { _files_waiting_download } = this.st4te;
                     _files_waiting_download.push({
                         name: `PIXAPICS-${hash}-PIXELATED-1x_RAS.png`,
                         url: url.toString()
                     });
-                    this.setState({_files_waiting_download}, () => {
+                    this.setSt4te({_files_waiting_download}, () => {
 
                         this.forceUpdate();
                     });
@@ -1161,13 +1179,13 @@ class Pixel extends React.PureComponent {
                     actions.trigger_voice("processing");
                     base64png_to_xbrz_svg(url.toString(), (image_base64, size) => {
 
-                        let { _files_waiting_download } = this.state;
+                        let { _files_waiting_download } = this.st4te;
                         _files_waiting_download.push({
                             name: `PIXAPICS-${hash}-${using.toUpperCase()}-${size}x_RAS.png`,
                             url: image_base64.toString()
                         });
                         image_base64 = null;
-                        this.setState({_files_waiting_download}, () => {
+                        this.setSt4te({_files_waiting_download}, () => {
 
                             this.forceUpdate();
                         });
@@ -1176,19 +1194,19 @@ class Pixel extends React.PureComponent {
 
                         if(svg_base64.length > 0) {
 
-                            let { _files_waiting_download } = this.state;
+                            let { _files_waiting_download } = this.st4te;
                             _files_waiting_download.push({
                                 name: `PIXAPICS-${hash}-${using.toUpperCase()}-${size}x_VEC.svg`,
                                 url: svg_base64.toString()
                             });
                             svg_base64 = null;
-                            this.setState({_files_waiting_download}, () => {
+                            this.setSt4te({_files_waiting_download}, () => {
 
                                 this.forceUpdate();
                             });
                         }
 
-                        this.setState({_loading: false, _loading_process: ""}, () => {
+                        this.setSt4te({_loading: false, _loading_process: ""}, () => {
 
                             actions.trigger_voice("complete");
                             actions.trigger_sfx("hero_decorative-celebration-02");
@@ -1216,7 +1234,7 @@ class Pixel extends React.PureComponent {
 
     _continue_download = () => {
 
-        let { _files_waiting_download } = this.state;
+        let { _files_waiting_download } = this.st4te;
 
         if(_files_waiting_download.length > 0) {
 
@@ -1231,7 +1249,7 @@ class Pixel extends React.PureComponent {
             file = null;
             a.remove();
 
-            this.setState({_files_waiting_download}, () => {
+            this.setSt4te({_files_waiting_download}, () => {
 
                 this.forceUpdate();
             });
@@ -1240,23 +1258,23 @@ class Pixel extends React.PureComponent {
 
     _handle_keyup = (event) => {
 
-        const { _is_pixel_dialog_post_edit_open } = this.state;
+        const { _is_pixel_dialog_post_edit_open } = this.st4te;
 
         if (event && !_is_pixel_dialog_post_edit_open) {
 
             event.preventDefault();
             event.stopPropagation();
 
-            const { _tool, _memory_tool, _previous_tool_timestamp } = this.state;
+            const { _tool, _memory_tool, _previous_tool_timestamp } = this.st4te;
 
             if(_memory_tool && _memory_tool !== _tool && Date.now() - 10 * 1000 < _previous_tool_timestamp) {
 
-                this.setState({_previous_tool_timestamp: 1/0});
+                this.setSt4te({_previous_tool_timestamp: 1/0});
                 this._set_tool(_memory_tool);
 
             }else if(_previous_tool_timestamp < Date.now() && _tool.includes("SELECT")) {
 
-                this.setState({_previous_tool_timestamp: 1/0});
+                this.setSt4te({_previous_tool_timestamp: 1/0});
                 this._set_select_mode("REPLACE");
             }
         }
@@ -1269,7 +1287,7 @@ class Pixel extends React.PureComponent {
 
     _upload_image_library = () => {
 
-        this.setState({_library_dialog_open: true, _library_type: "open"}, () => {
+        this.setSt4te({_library_dialog_open: true, _library_type: "open"}, () => {
 
             this.forceUpdate();
         });
@@ -1277,7 +1295,7 @@ class Pixel extends React.PureComponent {
 
     _close_library = () => {
 
-        this.setState({_library_dialog_open: false}, () => {
+        this.setSt4te({_library_dialog_open: false}, () => {
 
             this.forceUpdate();
         });
@@ -1285,8 +1303,8 @@ class Pixel extends React.PureComponent {
 
     _from_library = (base64) => {
 
-        const { _library_type } = this.state;
-        const { set_canvas_from_image, import_image_on_canvas } = this.state._canvas;
+        const { _library_type } = this.st4te;
+        const { set_canvas_from_image, import_image_on_canvas } = this.st4te._canvas;
         let img = new Image;
         img.src = base64;
 
@@ -1294,7 +1312,7 @@ class Pixel extends React.PureComponent {
 
             if(_library_type === "open") {
 
-                this.setState({_kb: 0, _saved_at: 1/0}, () => {
+                this.setSt4te({_kb: 0, _saved_at: 1/0}, () => {
 
                     this.forceUpdate();
                 });
@@ -1329,8 +1347,8 @@ class Pixel extends React.PureComponent {
             const is_type_png = Boolean(smart_file.type === "image/png"); //image/png
             const mimetype = is_type_png ? "image/png": "image/jpeg";
 
-            const { _import_colorize, _import_size } = this.state;
-            const { set_canvas_from_image } = this.state._canvas;
+            const { _import_colorize, _import_size } = this.st4te;
+            const { set_canvas_from_image } = this.st4te._canvas;
 
             this._handle_load("image_preload");
             file_to_base64(smart_file, (base64_input) => {
@@ -1399,7 +1417,7 @@ class Pixel extends React.PureComponent {
                                                                         img.addEventListener("load", () => {
 
                                                                             this._handle_load_complete("image_ai", {});
-                                                                            this.setState({_kb: 0, _saved_at: 1/0});
+                                                                            this.setSt4te({_kb: 0, _saved_at: 1/0});
                                                                             set_canvas_from_image(img, base64_resized.toString(), {}, true);
                                                                             base64_resized = null;
                                                                         }, {once: true, capture: true});
@@ -1453,7 +1471,7 @@ class Pixel extends React.PureComponent {
                                                                         img.addEventListener("load", () => {
 
                                                                             this._handle_load_complete("image_ai", {});
-                                                                            this.setState({_kb: 0, _saved_at: 1/0});
+                                                                            this.setSt4te({_kb: 0, _saved_at: 1/0});
                                                                             set_canvas_from_image(img, base64_resized.toString(), {}, true);
                                                                             base64_resized = null;
                                                                         }, {once: true, capture: true});
@@ -1510,7 +1528,7 @@ class Pixel extends React.PureComponent {
                                                                             img.addEventListener("load", () => {
 
                                                                                 this._handle_load_complete("image_ai", {});
-                                                                                this.setState({_kb: 0, _saved_at: 1/0});
+                                                                                this.setSt4te({_kb: 0, _saved_at: 1/0});
                                                                                 set_canvas_from_image(img, base64_resized.toString(), {}, true);
                                                                                 base64_resized = null;
                                                                             }, {once: true, capture: true});
@@ -1605,7 +1623,7 @@ class Pixel extends React.PureComponent {
                                                                         img.addEventListener("load", () => {
 
                                                                             this._handle_load_complete("image_preload", {});
-                                                                            this.setState({_kb: 0, _saved_at: 1/0});
+                                                                            this.setSt4te({_kb: 0, _saved_at: 1/0});
                                                                             set_canvas_from_image(img, base64_resized.toString(), {}, false);
                                                                             base64_resized = null;
                                                                         }, {once: true, capture: true});
@@ -1670,7 +1688,7 @@ class Pixel extends React.PureComponent {
         if(smart_file !== null) {
 
             let img = new Image();
-            const { import_image_on_canvas } = this.state._canvas;
+            const { import_image_on_canvas } = this.st4te._canvas;
 
             file_to_base64(smart_file, (base64) => {
 
@@ -1687,7 +1705,7 @@ class Pixel extends React.PureComponent {
 
     _import_image_library = () => {
 
-        this.setState({_library_dialog_open: true, _library_type: "import"}, () => {
+        this.setSt4te({_library_dialog_open: true, _library_type: "import"}, () => {
 
             this.forceUpdate();
         });
@@ -1696,7 +1714,7 @@ class Pixel extends React.PureComponent {
     _handle_load = (process) => {
 
         actions.trigger_loading_update(0);
-        this.setState({_loading: true, _loading_process: process}, () => {
+        this.setSt4te({_loading: true, _loading_process: process}, () => {
 
             this.forceUpdate();
         });
@@ -1712,7 +1730,7 @@ class Pixel extends React.PureComponent {
     _handle_load_complete = (process, data) => {
 
         actions.trigger_loading_update(100);
-        this.setState({_loading: false, _loading_process: process}, () => {
+        this.setSt4te({_loading: false, _loading_process: process}, () => {
 
             this.forceUpdate();
         });
@@ -1741,7 +1759,7 @@ class Pixel extends React.PureComponent {
 
     _set_ripple_ref = (element) => {
 
-        if(element === null || this.state._ripple !== null) {return}
+        if(element === null || this.st4te._ripple !== null) {return}
 
         let new_element = {};
 
@@ -1753,12 +1771,12 @@ class Pixel extends React.PureComponent {
             }
         });
 
-        this.setState({_ripple: new_element});
+        this.setSt4te({_ripple: new_element});
     };
 
     _set_canvas_ref = (element) => {
 
-        if(element === null || this.state._filters.length > 0) {return}
+        if(element === null || this.st4te._filters.length > 0) {return}
 
         let new_element = {};
 
@@ -1770,14 +1788,14 @@ class Pixel extends React.PureComponent {
             }
         });
 
-        this.setState({_canvas: new_element, _filters: new_element.get_filter_names()});
+        this.setSt4te({_canvas: new_element, _filters: new_element.get_filter_names()});
     };
 
     _handle_position_change = (position, fps) => {
 
-        this.setState({_x: position.x, _y: position.y, _fps: parseInt(fps)}, () => {
+        this.setSt4te({_x: position.x, _y: position.y, _fps: parseInt(fps)}, () => {
 
-            if(!this.state._less_than_1280w){
+            if(!this.st4te._less_than_1280w){
 
                 this.forceUpdate();
             }
@@ -1786,7 +1804,7 @@ class Pixel extends React.PureComponent {
 
     _handle_can_undo_redo_change = (_can_undo, _can_redo) => {
 
-        this.setState({_can_undo, _can_redo}, () => {
+        this.setSt4te({_can_undo, _can_redo}, () => {
 
             this.forceUpdate();
         })
@@ -1794,7 +1812,7 @@ class Pixel extends React.PureComponent {
 
     _handle_size_change = (_width, _height) => {
 
-        this.setState({_width, _height}, () => {
+        this.setSt4te({_width, _height}, () => {
 
             this.forceUpdate();
         });
@@ -1812,12 +1830,12 @@ class Pixel extends React.PureComponent {
 
         const h = color_conversion.to_hsla_from_rgba(color_conversion.to_rgba_from_hex(color))[0];
 
-        this.setState({_current_color: color, _hue: h});
+        this.setSt4te({_current_color: color, _hue: h});
     };
 
     _handle_relevant_action_event = (event, color = "#ffffff", opacity = 0, sound = false) => {
 
-        const { _ripple } = this.state;
+        const { _ripple } = this.st4te;
 
         if(event && _ripple) {
 
@@ -1828,7 +1846,7 @@ class Pixel extends React.PureComponent {
 
             if(opacity !== 0) {
 
-                this.setState({_ripple_color: color, _ripple_opacity: opacity}, () => {
+                this.setSt4te({_ripple_color: color, _ripple_opacity: opacity}, () => {
                     _ripple.start(event);
 
                     setTimeout(() => {
@@ -1842,7 +1860,7 @@ class Pixel extends React.PureComponent {
 
     _handle_something_selected_change = (is_something_selected) => {
 
-        this.setState({_is_something_selected: is_something_selected}, () => {
+        this.setSt4te({_is_something_selected: is_something_selected}, () => {
 
             this.forceUpdate();
         });
@@ -1850,7 +1868,7 @@ class Pixel extends React.PureComponent {
 
     _set_value_from_slider_with_update = (event, value) => {
 
-        this.setState({_slider_value: value}, () => {
+        this.setSt4te({_slider_value: value}, () => {
 
             this.forceUpdate();
         });
@@ -1858,41 +1876,41 @@ class Pixel extends React.PureComponent {
 
     _set_width_from_slider = (event, value) => {
 
-        const { _set_size } = this.state._canvas;
+        const { _set_size } = this.st4te._canvas;
         _set_size(value, null);
     };
 
     _set_height_from_slider = (event, value) => {
 
-        const { _set_size } = this.state._canvas;
+        const { _set_size } = this.st4te._canvas;
         _set_size(null, value);
     };
 
     _set_import_size = (event, value) => {
 
-        this.setState({_import_size: value || event.target.value});
+        this.setSt4te({_import_size: value || event.target.value});
     };
 
     _set_import_colorize = (event, value) => {
 
-        this.setState({_import_colorize: value || event.target.value});
+        this.setSt4te({_import_colorize: value || event.target.value});
     };
 
     _revert_tool = () => {
 
-        this.setState({_tool: this.state._memory_tool.toString()});
+        this.setSt4te({_tool: this.st4te._memory_tool.toString()});
     };
 
     _set_tool = (name, remember = true) => {
 
-        this.setState({_tool: name.toUpperCase()}, () => {
+        this.setSt4te({_tool: name.toUpperCase()}, () => {
 
             this.forceUpdate();
         });
 
         if(remember) {
 
-            this.setState({_memory_tool: name.toUpperCase()}, () => {
+            this.setSt4te({_memory_tool: name.toUpperCase()}, () => {
 
                 this.forceUpdate();
             });
@@ -1901,7 +1919,7 @@ class Pixel extends React.PureComponent {
 
     _set_select_mode = (mode) => {
 
-        this.setState({_select_mode: mode.toUpperCase()}, () => {
+        this.setSt4te({_select_mode: mode.toUpperCase()}, () => {
 
             this.forceUpdate();
         });
@@ -1909,7 +1927,7 @@ class Pixel extends React.PureComponent {
 
     _set_pencil_mirror_mode = (mode) => {
 
-        this.setState({_pencil_mirror_mode: mode.toUpperCase()}, () => {
+        this.setSt4te({_pencil_mirror_mode: mode.toUpperCase()}, () => {
 
             this.forceUpdate();
         });
@@ -1917,8 +1935,8 @@ class Pixel extends React.PureComponent {
 
     _switch_with_second_color = () => {
 
-        const {_current_color, _second_color } = this.state;
-        this.setState({_current_color: _second_color, _second_color: _current_color}, () => {
+        const {_current_color, _second_color } = this.st4te;
+        this.setSt4te({_current_color: _second_color, _second_color: _current_color}, () => {
 
             this.forceUpdate();
         });
@@ -1926,7 +1944,7 @@ class Pixel extends React.PureComponent {
 
     _show_hide_canvas_content = () => {
 
-        this.setState({_hide_canvas_content: !this.state._hide_canvas_content}, () => {
+        this.setSt4te({_hide_canvas_content: !this.st4te._hide_canvas_content}, () => {
 
             this.forceUpdate();
         });
@@ -1934,7 +1952,7 @@ class Pixel extends React.PureComponent {
 
     _show_hide_background_image = () => {
 
-        this.setState({_show_original_image_in_background: !this.state._show_original_image_in_background}, () => {
+        this.setSt4te({_show_original_image_in_background: !this.st4te._show_original_image_in_background}, () => {
 
             this.forceUpdate();
         });
@@ -1942,7 +1960,7 @@ class Pixel extends React.PureComponent {
 
     _show_hide_transparent_image = () => {
 
-        this.setState({_show_transparent_image_in_background: !this.state._show_transparent_image_in_background}, () => {
+        this.setSt4te({_show_transparent_image_in_background: !this.st4te._show_transparent_image_in_background}, () => {
 
             this.forceUpdate();
         });
@@ -1950,7 +1968,7 @@ class Pixel extends React.PureComponent {
 
     _handle_image_import_mode_change = (is_image_import_mode) => {
 
-        this.setState({_is_image_import_mode: is_image_import_mode}, () => {
+        this.setSt4te({_is_image_import_mode: is_image_import_mode}, () => {
 
             this.forceUpdate();
         });
@@ -1958,7 +1976,7 @@ class Pixel extends React.PureComponent {
 
     _handle_layers_change = (_layer_index, _layers) => {
 
-        this.setState({_previous_layer_index: parseInt(this.state._layer_index), _layer_index, _layers}, () => {
+        this.setSt4te({_previous_layer_index: parseInt(this.st4te._layer_index), _layer_index, _layers}, () => {
 
             this.forceUpdate();
         });
@@ -1966,11 +1984,11 @@ class Pixel extends React.PureComponent {
 
     _handle_filters_thumbnail_change = (_filters_thumbnail, _last_filters_hash, _filters_preview_progression) => {
 
-        if(this.state._filters_preview_progression === "0") {
+        if(this.st4te._filters_preview_progression === "0") {
             actions.trigger_voice("filtering");
         }
 
-        this.setState({_filters_thumbnail, _last_filters_hash, _filters_preview_progression: _filters_preview_progression.toString}, () => {
+        this.setSt4te({_filters_thumbnail, _last_filters_hash, _filters_preview_progression: _filters_preview_progression.toString}, () => {
 
             this.forceUpdate();
         });
@@ -1978,11 +1996,11 @@ class Pixel extends React.PureComponent {
 
     _handle_game_end = () => {
 
-        this.setState({_game_ended: true}, () => {
+        this.setSt4te({_game_ended: true}, () => {
 
             setTimeout(() => {
 
-                this.setState({_game_ended: false});
+                this.setSt4te({_game_ended: false});
 
             }, 5000);
         });
@@ -1990,15 +2008,15 @@ class Pixel extends React.PureComponent {
 
     _handle_edit_drawer_open = (event, _view_name_index) => {
 
-        _view_name_index = typeof _view_name_index !== "undefined" ? _view_name_index: this.state._view_name_index;
-        const do_inner_view_next = Boolean(this.state._view_name_index === _view_name_index) && this.state._is_edit_drawer_open;
-        const { _toolbox_container_ref } = this.state;
+        _view_name_index = typeof _view_name_index !== "undefined" ? _view_name_index: this.st4te._view_name_index;
+        const do_inner_view_next = Boolean(this.st4te._view_name_index === _view_name_index) && this.st4te._is_edit_drawer_open;
+        const { _toolbox_container_ref } = this.st4te;
 
         let _is_edit_drawer_open = true;
         let _view_name_sub_index = null;
         if(do_inner_view_next && _toolbox_container_ref !== null) {
 
-            _view_name_sub_index = this.state._view_name_sub_index || 0;
+            _view_name_sub_index = this.st4te._view_name_sub_index || 0;
             _view_name_sub_index++;
 
             const classname_of_panel = `swipetoolbox_i_${_view_name_index}_${_view_name_sub_index}`;
@@ -2020,7 +2038,7 @@ class Pixel extends React.PureComponent {
             _toolbox_container_ref.scrollTop = 0;
         }
 
-        this.setState({_is_edit_drawer_open, _view_name_index, _view_name_sub_index}, () => {
+        this.setSt4te({_is_edit_drawer_open, _view_name_index, _view_name_sub_index}, () => {
 
             this.forceUpdate();
         });
@@ -2028,7 +2046,7 @@ class Pixel extends React.PureComponent {
 
     _handle_edit_drawer_close = () => {
 
-        this.setState({_is_edit_drawer_open: false}, () => {
+        this.setSt4te({_is_edit_drawer_open: false}, () => {
 
             this.forceUpdate();
         });
@@ -2037,7 +2055,7 @@ class Pixel extends React.PureComponent {
     _set_current_color = (_current_color) => {
 
         this._handle_menu_close();
-        this.setState({_current_color}, () => {
+        this.setSt4te({_current_color}, () => {
 
             this.forceUpdate();
         });
@@ -2045,40 +2063,40 @@ class Pixel extends React.PureComponent {
 
     _exchange_pixel_colors = (old_pixel_color, new_pixel_color) => {
 
-        const { exchange_pixel_color } = this.state._canvas;
-        let { _menu_data } = this.state;
+        const { exchange_pixel_color } = this.st4te._canvas;
+        let { _menu_data } = this.st4te;
 
         exchange_pixel_color(old_pixel_color, new_pixel_color);
         _menu_data.pxl_color = new_pixel_color;
 
         this._handle_menu_close();
-        this.setState({_menu_data});
+        this.setSt4te({_menu_data});
     };
 
     _to_auto_medium_more_contrast = () => {
 
-        const { auto_adjust_contrast } = this.state._canvas;
+        const { auto_adjust_contrast } = this.st4te._canvas;
         auto_adjust_contrast(1/3);
         actions.trigger_voice("enhanced");
     };
 
     _to_auto_medium_more_saturation = () => {
 
-        const { auto_adjust_saturation } = this.state._canvas;
+        const { auto_adjust_saturation } = this.st4te._canvas;
         auto_adjust_saturation(1/3);
         actions.trigger_voice("enhanced");
     };
 
     _less_colors_stepped = (increase = 1, callback_function = () => {}) => {
 
-        const { less_colors_stepped } = this.state._canvas;
+        const { less_colors_stepped } = this.st4te._canvas;
         less_colors_stepped(increase, callback_function);
     };
 
     _less_colors_auto = ( ) => {
 
-        const { _layers, _layer_index } = this.state;
-        const { to_less_color } = this.state._canvas;
+        const { _layers, _layer_index } = this.st4te;
+        const { to_less_color } = this.st4te._canvas;
         actions.trigger_voice("please_wait");
 
         if(parseInt((_layers[_layer_index] || {}).number_of_colors || 0) >= 384) {
@@ -2096,7 +2114,7 @@ class Pixel extends React.PureComponent {
 
     _get_average_color_of_selection = () => {
 
-        const { get_average_color_of_selection } = this.state._canvas;
+        const { get_average_color_of_selection } = this.st4te._canvas;
         const color = get_average_color_of_selection();
 
         this._handle_current_color_change(color);
@@ -2104,7 +2122,7 @@ class Pixel extends React.PureComponent {
 
     _handle_pixel_dialog_create_close = () => {
 
-        this.setState({_is_pixel_dialog_create_open: false, _attachment_previews: {}}, () => {
+        this.setSt4te({_is_pixel_dialog_create_open: false, _attachment_previews: {}}, () => {
 
             this.forceUpdate();
         });
@@ -2112,10 +2130,10 @@ class Pixel extends React.PureComponent {
 
     _handle_pixel_dialog_create_open = () => {
 
-        if(this.state._is_pixel_dialog_create_open === false) {
+        if(this.st4te._is_pixel_dialog_create_open === false) {
             actions.trigger_sfx("hero_decorative-celebration-02");
         }
-        this.setState({_is_pixel_dialog_create_open: true}, () => {
+        this.setSt4te({_is_pixel_dialog_create_open: true}, () => {
 
             api.get_settings(this._process_settings_info_result);
         });
@@ -2125,13 +2143,13 @@ class Pixel extends React.PureComponent {
 
         if(element !== null) {
 
-            this.setState({_toolbox_container_ref: element});
+            this.setSt4te({_toolbox_container_ref: element});
         }
     };
 
     _toggle_perspective = () => {
 
-        const new_perspective = Boolean(!this.state._perspective);
+        const new_perspective = Boolean(!this.st4te._perspective);
 
         if(new_perspective) {
 
@@ -2143,14 +2161,14 @@ class Pixel extends React.PureComponent {
             this._revert_tool();
         }
 
-        this.setState({_perspective: new_perspective}, () => {
+        this.setSt4te({_perspective: new_perspective}, () => {
 
             this.forceUpdate();
         });
     };
 
     _smooth_adjust = (run = 1) => {
-        const { smooth_adjust } = this.state._canvas;
+        const { smooth_adjust } = this.st4te._canvas;
         smooth_adjust(run);
     }
 
@@ -2208,7 +2226,7 @@ class Pixel extends React.PureComponent {
             _files_waiting_download,
             _time_ago_initiated,
             _settings
-        } = this.state;
+        } = this.st4te;
 
         let x = _x === -1 ? "out": _x + 1;
         let y = _y === -1 ? "out": _y + 1;

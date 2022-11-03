@@ -315,7 +315,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
     constructor(props) {
         super(props);
-        this.state = {
+        this.st4te = {
             classes: props.classes,
             canvas: props.canvas,
             is_mobile: props.is_mobile || false,
@@ -366,6 +366,24 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
         this.xxhash32js = function (buffer_uint8){ return XXHashJS.h32(0xFADE).update(buffer_uint8).digest()};
     };
 
+    setSt4te(st4te, callback) {
+
+        let keys = Object.keys(st4te);
+        let keys_length = keys.length | 0;
+        let key = "";
+
+        for (let i = 0; (i|0) < (keys_length|0); i = (i+1|0)>>>0) {
+
+            key = keys[i].toString();
+            this.st4te[key] = st4te[key];
+        }
+
+        if(typeof callback === "function") {
+
+            callback();
+        }
+    }
+
     componentWillReceiveProps(new_props) {
 
         const {
@@ -394,7 +412,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
             import_size,
             import_colorize,
             layers_hash
-        } = this.state;
+        } = this.st4te;
 
         const _history_changed = Boolean(can_undo !== new_props.can_undo) ||  Boolean(can_redo !== new_props.can_redo);
         const must_compute_filter = Boolean(Boolean(view_name_index !== new_props.view_name_index || _history_changed) && Boolean(new_props.view_name_index === 6));
@@ -404,7 +422,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
         Array.from(new_props.layers).forEach(function(l){ if(layers_colors_max < parseInt(l.number_of_colors)) { layers_colors_max = parseInt(l.number_of_colors);}});
         const too_much_colors_no_vector = Boolean(layers_colors_max >= 128);
         if (Boolean(new_props.should_update || should_update) && (
-            too_much_colors_no_vector !== this.state.too_much_colors_no_vector,
+            too_much_colors_no_vector !== this.st4te.too_much_colors_no_vector,
             view_name_index !== new_props.view_name_index ||
             previous_view_name_index !== new_props.previous_view_name_index ||
             view_names !== new_props.view_names ||
@@ -440,7 +458,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
             }
         }
 
-        props_override = Object.assign(props_override, {last_filters_hash: this.state.last_filters_hash, too_much_colors_no_vector});
+        props_override = Object.assign(props_override, {last_filters_hash: this.st4te.last_filters_hash, too_much_colors_no_vector});
 
         if(must_compute_filter) {
 
@@ -449,7 +467,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
         }else {
 
-            if (this.state._filters_changed) {
+            if (this.st4te._filters_changed) {
 
                 let bmp;
                 let ar = "";
@@ -465,7 +483,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                     }
                 }
 
-                if (ar !== this.state._filter_aspect_ratio && processed) {
+                if (ar !== this.st4te._filter_aspect_ratio && processed) {
 
                     props_override._filters_changed = false;
                     props_override._filter_aspect_ratio = ar;
@@ -473,7 +491,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
             }
         }
 
-        this.setState({...new_props, ...props_override, slider_value: parseFloat(new_props.slider_value)}, () => {
+        this.setSt4te({...new_props, ...props_override, slider_value: parseFloat(new_props.slider_value)}, () => {
             this.forceUpdate();
         });
     }
@@ -481,16 +499,16 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
     compute_filters_preview = () => {
 
         try {
-            this.setState({_filters_changed: true}, () => {
+            this.setSt4te({_filters_changed: true}, () => {
 
-                this.state.canvas.compute_filters_preview();
+                this.st4te.canvas.compute_filters_preview();
             });
         } catch (e) {}
     };
 
     _to_filter = (name) => {
 
-        this.state.canvas.to_filter(name, this.state.slider_value);
+        this.st4te.canvas.to_filter(name, this.st4te.slider_value);
         if(!this.is_mobile) {
             this.compute_filters_preview();
         }
@@ -521,7 +539,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
             _layer_opened,
             import_size,
             import_colorize
-        } = this.state;
+        } = this.st4te;
 
         let colors = [];
         for (let i = 1; i <= 128; i++) {
@@ -850,7 +868,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
             too_much_colors_no_vector,
             _compressed,
             _vectorized,
-        } = this.state;
+        } = this.st4te;
 
         const _filters_preview_progression_stepped = Math.round(parseFloat(filters_preview_progression / 7) * 7);
 
@@ -1682,7 +1700,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
             classes,
             width,
             height
-        } = this.state;
+        } = this.st4te;
 
         const panel_names = this.get_action_panel_names();
 
@@ -1718,7 +1736,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
     _rgba_from_hex = (hex) => {
 
-        const { get_rgba_from_hex } = this.state.canvas;
+        const { get_rgba_from_hex } = this.st4te.canvas;
 
         if(!Boolean(get_rgba_from_hex)) { return [0, 0, 0, 0] }
 
@@ -1735,7 +1753,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
     _toggle_compressed = () => {
 
-        this.setState({_compressed: !this.state._compressed}, () => {
+        this.setSt4te({_compressed: !this.st4te._compressed}, () => {
 
             this.forceUpdate();
         });
@@ -1743,7 +1761,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
     _toggle_vectorized = () => {
 
-        this.setState({_vectorized: !this.state._vectorized}, () => {
+        this.setSt4te({_vectorized: !this.st4te._vectorized}, () => {
 
             this.forceUpdate();
         });
@@ -1759,14 +1777,14 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
     _less_colors_stepped = (increase = 1) => {
 
-        const { _less_colors_stepped } = this.state.canvas;
+        const { _less_colors_stepped } = this.st4te.canvas;
         _less_colors_stepped(increase)
     };
 
     _colorize = () => {
 
-        const { current_color, slider_value } = this.state;
-        const { to_color } = this.state.canvas;
+        const { current_color, slider_value } = this.st4te;
+        const { to_color } = this.st4te.canvas;
 
         const [h, s, l, o] = color_conversion.to_hsla_from_rgba(color_conversion.to_rgba_from_hex(current_color));
 
@@ -1815,7 +1833,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
     _handle_color_menu_open = (event) => {
 
-        this.setState({_anchor_el: event.currentTarget}, () => {
+        this.setSt4te({_anchor_el: event.currentTarget}, () => {
 
             this.forceUpdate();
         });
@@ -1823,7 +1841,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
     _handle_color_menu_close = () => {
 
-        this.setState({_anchor_el: null}, () => {
+        this.setSt4te({_anchor_el: null}, () => {
 
             this.forceUpdate();
         });
@@ -1831,7 +1849,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
     _set_saturation_from_slider = (event, value) => {
 
-        this.setState({_saturation: value}, () => {
+        this.setSt4te({_saturation: value}, () => {
 
             this.forceUpdate();
         });
@@ -1839,7 +1857,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
     _set_luminosity_from_slider = (event, value) => {
 
-        this.setState({_luminosity: value}, () => {
+        this.setSt4te({_luminosity: value}, () => {
 
             this.forceUpdate();
         });
@@ -1847,7 +1865,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
     _set_opacity_from_slider = (event, value) => {
 
-        this.setState({_opacity: value}, () => {
+        this.setSt4te({_opacity: value}, () => {
 
             this.forceUpdate();
         });
@@ -1943,7 +1961,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
     _get_average_color_of_selection = () => {
 
-        const { get_average_color_of_selection } = this.state.canvas;
+        const { get_average_color_of_selection } = this.st4te.canvas;
         const color = get_average_color_of_selection();
 
         this._handle_current_color_change(color);
@@ -1951,14 +1969,14 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
     _change_active_layer = (index) => {
 
-        const { layer_index, _layer_opened } = this.state;
-        const { change_active_layer } = this.state.canvas;
+        const { layer_index, _layer_opened } = this.st4te;
+        const { change_active_layer } = this.st4te.canvas;
 
         if(layer_index !== index) {
 
             if(_layer_opened) {
 
-                this.setState({_layer_opened: false}, () => {
+                this.setSt4te({_layer_opened: false}, () => {
 
                     this.forceUpdate();
                 });
@@ -1967,7 +1985,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
             change_active_layer(index);
         }else {
 
-            this.setState({_layer_opened: !_layer_opened}, () => {
+            this.setSt4te({_layer_opened: !_layer_opened}, () => {
 
                 this.forceUpdate();
             });
@@ -1990,7 +2008,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
             view_name_index,
             too_much_colors_no_vector,
             filters_preview_progression
-        } = this.state;
+        } = this.st4te;
 
         const _filters_preview_progression_stepped = Math.round(parseFloat(filters_preview_progression / 7) * 7);
 
