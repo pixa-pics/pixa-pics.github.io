@@ -14,7 +14,7 @@ module.exports = {
         minimizer: [
             new TerserPlugin({
                 terserOptions: {
-                    ecma: undefined,
+                    ecma: 2015,
                     parse: {},
                     module: false,
                     format: null,
@@ -25,6 +25,7 @@ module.exports = {
                     keep_fnames: false,
                     safari10: true,
                     extractComments: false,
+                    enclose: true,
                     mangle: {
                         toplevel: true,
                         eval: true,
@@ -97,7 +98,8 @@ module.exports = {
                         drop_debugger: true,
                         evaluate: "eager",
                         hoist_funs: true,
-                        passes: 3,
+                        hoist_vars: true,
+                        passes: 5,
                     },
                     v8: true,
                     ie: true,

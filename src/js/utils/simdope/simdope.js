@@ -308,6 +308,9 @@ var operators = {
     multiply_uint(a, b) {
         return (a * b | 0) >>> 0;
     },
+    multiply_uint_4(a) {
+        return a << 2;
+    },
     divide_uint(a, b) {
         return (a / b | 0) >>> 0;
     },
@@ -433,6 +436,7 @@ var {
     multiply_int,
     divide_int,
     multiply_uint,
+    multiply_uint_4,
     divide_uint,
     divide_four_uint,
     abs_int,
@@ -606,7 +610,7 @@ Object.defineProperty(SIMDopeColor.prototype, 'a', {
 
 Object.defineProperty(SIMDopeColor.prototype, 'uint32', {
     get: function() { "use strict";
-        return ((this.storage_uint8_[3] << 24) | (this.storage_uint8_[2] << 16) | (this.storage_uint8_[1] <<  8) | this.storage_uint8_[0] | 0) >>> 0;
+        return ((this.storage_uint8_[3] << 24) | (this.storage_uint8_[2] << 16) | (this.storage_uint8_[1] <<  8) | this.storage_uint8_[0] | 0) & 0xFFFFFFFF;
     }
 });
 
@@ -1061,7 +1065,7 @@ Object.defineProperty(SIMDopeColors.prototype, 'buffer_getUint8a', {
     get: function() { "use strict"; return function (i, n) {
         i = i|0;
         n = n|0; n = n || 1;
-        n = plus_uint(i, multiply_uint(n, 4));
+        n = plus_uint(i, multiply_uint_4(n));
         return this.storage_uint8_array_.subarray(i, n);
     }}
 });
@@ -1082,10 +1086,10 @@ Object.defineProperty(SIMDopeColors.prototype, 'slice_uint32', {
     get: function() { "use strict"; return function (start, end){ start = start|0; end = end | 0; end = end || this.length; return this.storage_uint32_array_.slice(start, end); }}
 });
 Object.defineProperty(SIMDopeColors.prototype, 'subarray_uint8', {
-    get: function() { "use strict"; return function (start, end){ start = start | 0; end = end | 0; return this.storage_uint8_array_.subarray(multiply_uint(start, 4), multiply_uint(end, 4)); }}
+    get: function() { "use strict"; return function (start, end){ start = start | 0; end = end | 0; return this.storage_uint8_array_.subarray(multiply_uint_4(start), multiply_uint_4(end)); }}
 });
 Object.defineProperty(SIMDopeColors.prototype, 'slice_uint8', {
-    get: function() { "use strict"; return function (start, end){ start = start | 0; end = end | 0; return this.storage_uint8_array_.slice(multiply_uint(start, 4), multiply_uint(end, 4)); }}
+    get: function() { "use strict"; return function (start, end){ start = start | 0; end = end | 0; return this.storage_uint8_array_.slice(multiply_uint_4(start), multiply_uint_4(end)); }}
 });
 
 SIMDopeColors.prototype.get_element = function (i) {
@@ -1114,17 +1118,17 @@ SIMDopeColors.prototype.get_uint32_element = function (i) {
 SIMDopeColors.prototype.get_sub_uint8a = function (i, n) {
     i = i | 0;
     n = n | 0;
-    return this.buffer_getUint8a(multiply_uint(i, 4), n);
+    return this.buffer_getUint8a(multiply_uint_4(i), n);
 }
 SIMDopeColors.prototype.get_slice_uint8a = function (i, n) {
     i = i | 0;
     n = n | 0;
-    return this.buffer_getUint8a(multiply_uint(i, 4), n).slice(0, multiply_uint(n||1, 4));
+    return this.buffer_getUint8a(multiply_uint_4(i), n).slice(0, multiply_uint_4(n||1));
 }
 SIMDopeColors.prototype.get_buffer = function (i, n) {
     i = i | 0;
     n = n | 0;
-    return this.buffer_getUint8a(multiply_uint(i, 4), n).buffer;
+    return this.buffer_getUint8a(multiply_uint_4(i), n).buffer;
 }
 
 

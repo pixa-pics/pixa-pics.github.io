@@ -128,6 +128,10 @@ const SuperMasterMeta = {
                             _selection_pair_highlight
                         } = meta.super_state.get_state();
 
+                        const layers_opacity_255 = _layers.map(function(layer){
+
+                            return clamp_uint8(multiply_uint(layer.opacity, 255));
+                        });
                         const sizes = meta.canvas_pos.get_state().sizes;
                         let is_there_new_dimension = _old_pxl_width !== pxl_width || _old_pxl_height !== pxl_height;
                         let is_there_different_dimension = sizes.width !== pxl_width || sizes.height !== pxl_height;
@@ -246,7 +250,7 @@ const SuperMasterMeta = {
                                                 super_blend_stack(i, 0, 0, 0);
                                             }else {
 
-                                                super_blend_stack(i, _s_pxl_colors[i][_s_pxls[i][index]] & 0xFFFFFFFF, clamp_uint8(multiply_uint(_layers[i].opacity, 255)), false);
+                                                super_blend_stack(i, _s_pxl_colors[i][_s_pxls[i][index]] & 0xFFFFFFFF, layers_opacity_255[i], false);
                                             }
                                         }
 

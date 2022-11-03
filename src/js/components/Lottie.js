@@ -16,6 +16,7 @@ class Lottie extends React.PureComponent {
             classes: props.classes,
             classNames: props.classNames || "",
             style: props.style,
+            onClick: props.onClick || null,
             loop: props.loop || false,
             hover: props.hover || false,
             autoplay: props.autoplay || false,
@@ -42,7 +43,7 @@ class Lottie extends React.PureComponent {
             container: document.getElementById(id),
             loop: loop,
             autoplay: autoplay,
-            quality: "low",
+            quality: "medium",
             path: path,
             name: id,
             hover: hover,
@@ -58,10 +59,11 @@ class Lottie extends React.PureComponent {
 
     render() {
 
-        const { classes, className, style, loop, path, id } = this.state;
+        const { classes, className, style, onClick, id } = this.state;
 
         return (
             <div className={classes.player + " " + (Boolean(className) ? "." + className: "").toString() + " .lottie"}
+                 onClick={onClick}
                  style={style}
                  id={id}></div>
         );
