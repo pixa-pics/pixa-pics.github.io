@@ -84,7 +84,7 @@ const _get_default_settings = () => {
         sfx_enabled: true,
         jamy_enabled: true,
         voice_enabled: true,
-        music_enabled: true,
+        music_enabled: false,
         attachment_previews: {},
     };
 };

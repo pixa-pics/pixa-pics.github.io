@@ -261,7 +261,7 @@ const SuperMasterMeta = {
                                                 super_blend_stack(i|0, 0, 0, 0);
                                             }else {
 
-                                                super_blend_stack(i|0, _s_pxl_colors[i|0][_s_pxls[i|0][index|0]|0] & 0xFFFFFFFF, layers_opacity_255[i|0]&0xFF, false);
+                                                super_blend_stack(i|0, ((_s_pxl_colors[i|0][_s_pxls[i|0][index|0]|0]|0)>>>0) & 0xFFFFFFFF, layers_opacity_255[i|0]&0xFF, false);
                                             }
                                         }
 
@@ -1351,13 +1351,13 @@ const SuperMasterMeta = {
                     return "#00000000";
                 }
 
-                let layer_pixel_colors = [];
+                let layer_pixel_colors = new Uint32Array(_s_pxl_colors.length);
                 let start_i = -1;
                 start_i++;
 
                 for (let i = _s_pxl_colors.length - 1; i >= 0; i--) {
 
-                    layer_pixel_colors[i] = _s_pxl_colors[i][_s_pxls[i][pxl_index]|0] & 0xFFFFFFFF;
+                    layer_pixel_colors[i] = ((_s_pxl_colors[i][_s_pxls[i][pxl_index]|0]|0)>>>0) & 0xFFFFFFFF;
 
                     if(SIMDopeColor.new_uint32(layer_pixel_colors[i]).is_fully_opaque() && !_layers[i].hidden) {
 
@@ -1377,6 +1377,7 @@ const SuperMasterMeta = {
                     }
                 }
 
+                console.log(pixel_color_uint32.uint32, pixel_color_uint32.hex)
                 return pixel_color_uint32.hex;
             },
             _notify_current_color_change (color, event = null) {

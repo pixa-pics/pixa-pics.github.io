@@ -92,7 +92,7 @@ class Index extends React.PureComponent {
 
     constructor(props) {
         super(props);
-        this.state = {
+        this.st4te = {
             _history: props.history,
             _load_with: "",
             _intervals: [],
@@ -129,6 +129,24 @@ class Index extends React.PureComponent {
         this._page_component = null;
     };
 
+    setSt4te(st4te, callback) {
+
+        let keys = Object.keys(st4te);
+        let keys_length = keys.length | 0;
+        let key = "";
+
+        for (let i = 0; (i|0) < (keys_length|0); i = (i+1|0)>>>0) {
+
+            key = keys[i].toString();
+            this.st4te[key] = st4te[key];
+        }
+
+        if(typeof callback === "function") {
+
+            callback();
+        }
+    }
+
     componentWillMount() {
 
         this._update_settings();
@@ -137,12 +155,12 @@ class Index extends React.PureComponent {
 
     componentDidMount() {
 
-        this.setState({_did_mount: true});
-        const _history_unlisten = this.state._history.listen((location, action) => {
+        this.setSt4te({_did_mount: true});
+        const _history_unlisten = this.st4te._history.listen((location, action) => {
             // location is an object like window.location
             this._set_new_pathname_or_redirect(location.location.pathname);
         });
-        this._set_new_pathname_or_redirect(this.state._history.location.pathname);
+        this._set_new_pathname_or_redirect(this.st4te._history.location.pathname);
 
         setTimeout(() => {
 
@@ -150,10 +168,10 @@ class Index extends React.PureComponent {
             const intervals = [
                 setInterval(async() => {
 
-                    const { is_online } = this.state;
+                    const { is_online } = this.st4te;
                     if(navigator.onLine !== is_online){
 
-                        this.setState({is_online: navigator.onLine}, () => {
+                        this.setSt4te({is_online: navigator.onLine}, () => {
 
                             this.forceUpdate();
                         });
@@ -164,17 +182,17 @@ class Index extends React.PureComponent {
 
                     if(!Math.floor(Math.random() * 32)) {
 
-                        const { _jamy_state_of_mind } = this.state;
+                        const { _jamy_state_of_mind } = this.st4te;
 
-                        this.setState({_jamy_state_of_mind: "suspicious"}, () => {
+                        this.setSt4te({_jamy_state_of_mind: "suspicious"}, () => {
 
                             this.forceUpdate(() => {
 
                                 setTimeout(() => {
 
-                                    if(this.state._jamy_state_of_mind === "suspicious") {
+                                    if(this.st4te._jamy_state_of_mind === "suspicious") {
 
-                                        this.setState({_jamy_state_of_mind}, () => {
+                                        this.setSt4te({_jamy_state_of_mind}, () => {
 
                                             this.forceUpdate();
                                         });
@@ -191,7 +209,7 @@ class Index extends React.PureComponent {
                 }, 1000)
             ];
 
-            this.setState({_intervals: intervals});
+            this.setSt4te({_intervals: intervals});
         }, 5000);
 
         setTimeout(() => {
@@ -238,8 +256,8 @@ class Index extends React.PureComponent {
     componentWillUnmount() {
 
         try {
-            this.state._history_unlisten();
-            this.state._intervals.forEach((itrvl) => {
+            this.st4te._history_unlisten();
+            this.st4te._intervals.forEach((itrvl) => {
 
                 clearInterval(itrvl);
             });
@@ -281,7 +299,7 @@ class Index extends React.PureComponent {
 
     _handle_events = (event) => {
 
-        const { _history, _did_mount } = this.state;
+        const { _history, _did_mount } = this.st4te;
         const { _sfx_enabled, _voice_enabled, _music_enabled, _know_the_settings } = this.settings;
 
         // Make different actions send from a dispatcher bounded to this function
@@ -297,7 +315,7 @@ class Index extends React.PureComponent {
 
                 case "LOAD_WITH":
                     _history.push("/pixel");
-                    this.setState({_load_with: event.data.b64}, () => {
+                    this.setSt4te({_load_with: event.data.b64}, () => {
                         this.forceUpdate()
                     });
                     break;
@@ -339,7 +357,7 @@ class Index extends React.PureComponent {
                     break;
 
                 case "LOADING_UPDATE":
-                    this.setState({_loaded_progress_percent: event.data.percent}, () => {
+                    this.setSt4te({_loaded_progress_percent: event.data.percent}, () => {
 
                         this.forceUpdate();
                     });
@@ -347,10 +365,10 @@ class Index extends React.PureComponent {
 
                 case "PAGE_RENDER_COMPLETE":
 
-                    if (this.state._datasyncserviceworkerallfiles === 0) {
+                    if (this.st4te._datasyncserviceworkerallfiles === 0) {
 
                         const time = 7777 * 10;
-                        this.setState({_datasyncserviceworkerallfiles: Date.now() + time});
+                        this.setSt4te({_datasyncserviceworkerallfiles: Date.now() + time});
                         setTimeout(() => {
                             fetch("data:,all").then(function (r) {
                             })
@@ -490,7 +508,7 @@ class Index extends React.PureComponent {
 
     _set_new_pathname_or_redirect = (neo_pathname) => {
 
-        const { _history, _page_routes, _load_with, _did_mount } = this.state;
+        const { _history, _page_routes, _load_with, _did_mount } = this.st4te;
 
         const new_pathname = String(neo_pathname || _history.location.pathname);
         const old_pathname = String(this.pathname);
@@ -562,7 +580,7 @@ class Index extends React.PureComponent {
 
             setTimeout(() => {
 
-                this.setState({_jamy_state_of_mind: js.som}, () => {
+                this.setSt4te({_jamy_state_of_mind: js.som}, () => {
 
                     this.forceUpdate();
                 });
@@ -572,17 +590,17 @@ class Index extends React.PureComponent {
 
     _trigger_snackbar = (_snackbar_message, _snackbar_auto_hide_duration) => {
 
-        const { _snackbar_open } = this.state;
+        const { _snackbar_open } = this.st4te;
 
         if(_snackbar_open) {
 
-            this.setState({_snackbar_open: false}, () => {
+            this.setSt4te({_snackbar_open: false}, () => {
 
                 this.forceUpdate(() => {
 
                     setTimeout(() => {
 
-                        this.setState({_snackbar_message, _snackbar_auto_hide_duration, _snackbar_open: true}, () => {
+                        this.setSt4te({_snackbar_message, _snackbar_auto_hide_duration, _snackbar_open: true}, () => {
 
                             this.forceUpdate();
                         });
@@ -591,7 +609,7 @@ class Index extends React.PureComponent {
             });
         }else {
 
-            this.setState({_snackbar_message, _snackbar_auto_hide_duration, _snackbar_open: true}, () => {
+            this.setSt4te({_snackbar_message, _snackbar_auto_hide_duration, _snackbar_open: true}, () => {
 
                 this.forceUpdate();
             });
@@ -604,7 +622,7 @@ class Index extends React.PureComponent {
             return;
         }
 
-        this.setState({_snackbar_open: false}, () => {
+        this.setSt4te({_snackbar_open: false}, () => {
 
             this.forceUpdate();
         });
@@ -612,7 +630,7 @@ class Index extends React.PureComponent {
 
     _handle_share_dialog_close = () => {
 
-        this.setState({_is_share_dialog_open: false}, () => {
+        this.setSt4te({_is_share_dialog_open: false}, () => {
 
             this.forceUpdate();
         });
@@ -622,7 +640,7 @@ class Index extends React.PureComponent {
 
     _handle_share_dialog_open = () => {
 
-        this.setState({_is_share_dialog_open: true}, () => {
+        this.setSt4te({_is_share_dialog_open: true}, () => {
 
             this.forceUpdate();
         });
@@ -632,10 +650,10 @@ class Index extends React.PureComponent {
 
     render() {
 
-        const { classes } = this.state;
-        const { _snackbar_open, _snackbar_message, _snackbar_auto_hide_duration } = this.state;
-        const {  _is_share_dialog_open } = this.state;
-        const { _know_if_logged, _loaded_progress_percent, _jamy_state_of_mind } = this.state;
+        const { classes } = this.st4te;
+        const { _snackbar_open, _snackbar_message, _snackbar_auto_hide_duration } = this.st4te;
+        const {  _is_share_dialog_open } = this.st4te;
+        const { _know_if_logged, _loaded_progress_percent, _jamy_state_of_mind } = this.st4te;
         const {_ret, _camo, _bdi, _music_enabled, _jamy_enabled, _language, _know_the_settings} = this.settings;
 
         const JAMY = {

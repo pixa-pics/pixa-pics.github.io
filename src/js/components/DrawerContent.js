@@ -98,18 +98,36 @@ class DrawerContent extends React.PureComponent {
 
     constructor(props) {
         super(props);
-        this.state = {
+        this.st4te = {
             classes: props.classes,
             language: props.language,
             _history: HISTORY,
         };
     };
 
+    setSt4te(st4te, callback) {
+
+        let keys = Object.keys(st4te);
+        let keys_length = keys.length | 0;
+        let key = "";
+
+        for (let i = 0; (i|0) < (keys_length|0); i = (i+1|0)>>>0) {
+
+            key = keys[i].toString();
+            this.st4te[key] = st4te[key];
+        }
+
+        if(typeof callback === "function") {
+
+            callback();
+        }
+    }
+
     componentWillReceiveProps(new_props) {
 
-        if(this.state.language !== new_props.language) {
+        if(this.st4te.language !== new_props.language) {
 
-            this.setState({language: new_props.language}, () => {
+            this.setSt4te({language: new_props.language}, () => {
 
                 this.forceUpdate();
             });
@@ -135,7 +153,7 @@ class DrawerContent extends React.PureComponent {
 
     render() {
 
-        const { classes, language } = this.state;
+        const { classes, language } = this.st4te;
 
         return (
             <div>

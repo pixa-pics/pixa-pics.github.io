@@ -346,6 +346,7 @@ const styles = theme => ({
         },
     },
     ripple: {
+        contain: "layout paint size style",
         "& > .MuiTouchRipple-rippleVisible": {
             animation: "MuiTouchRipple-keyframes-enter 200ms cubic-bezier(0.4, 0, 0.2, 1)"
         }
@@ -2709,7 +2710,7 @@ class Pixel extends React.PureComponent {
                     className={classes.ripple}
                     ref={this._set_ripple_ref}
                     center={false}
-                    style={{color: _ripple_color, opacity: _ripple_opacity, position: "fixed", width: "100vw", height: "100vh", zIndex: 2000}}/>
+                    style={{color: _ripple_color, opacity: _ripple_opacity, position: "fixed", width: "100%", height: "100%"}}/>
 
                 <Backdrop className={classes.backdrop} open={_loading || _files_waiting_download.length > 0}>
                     <div className={classes.backdropTextContent} style={{ fontFamily: `"Jura"`, textTransform: "uppercase"}} onClick={this._continue_download}>

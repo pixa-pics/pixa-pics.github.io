@@ -215,7 +215,7 @@ class InnerToolbar extends React.PureComponent {
 
     constructor(props) {
         super(props);
-        this.state = {
+        this.st4te = {
             pathname: props.pathname,
             camo: props.camo,
             ret: props.ret,
@@ -246,6 +246,24 @@ class InnerToolbar extends React.PureComponent {
         };
     };
 
+    setSt4te(st4te, callback) {
+
+        let keys = Object.keys(st4te);
+        let keys_length = keys.length | 0;
+        let key = "";
+
+        for (let i = 0; (i|0) < (keys_length|0); i = (i+1|0)>>>0) {
+
+            key = keys[i].toString();
+            this.st4te[key] = st4te[key];
+        }
+
+        if(typeof callback === "function") {
+
+            callback();
+        }
+    }
+
     componentDidMount() {
 
         this._load_accessories();
@@ -253,12 +271,12 @@ class InnerToolbar extends React.PureComponent {
 
     _load_accessories = () => {
 
-        if(this.state.camo >= 1) {
+        if(this.st4te.camo >= 1) {
 
-            if(this.state._cams.length <= 1) {
+            if(this.st4te._cams.length <= 1) {
                 JSLoader( () => import("../utils/custom_toolbar")).then(({CAMS}) => {
 
-                    this.setState({_cams: Array.from(CAMS)}, ( )=> {
+                    this.setSt4te({_cams: Array.from(CAMS)}, ( )=> {
 
                         this.forceUpdate();
                     });
@@ -271,26 +289,26 @@ class InnerToolbar extends React.PureComponent {
 
         const state = {
             ...new_props,
-            _actions_triggered: this.state._actions_triggered,
-            _is_info_bar_active: new_props.pathname.includes("pixel") ? this.state._is_info_bar_active: false
+            _actions_triggered: this.st4te._actions_triggered,
+            _is_info_bar_active: new_props.pathname.includes("pixel") ? this.st4te._is_info_bar_active: false
         };
 
-        const update_info_bar = this.state._is_info_bar_active !== state._is_info_bar_active || this.state.pathname !== state.pathname;
+        const update_info_bar = this.st4te._is_info_bar_active !== state._is_info_bar_active || this.st4te.pathname !== state.pathname;
         const update = Boolean(
             update_info_bar ||
-            this.state.camo !== state.camo ||
-            this.state.ret !== state.ret ||
-            this.state.logged_account !== state.logged_account ||
-            this.state.know_if_logged !== state.know_if_logged ||
-            this.state.loaded_progress_percent !== state.loaded_progress_percent ||
-            this.state.music_enabled !== state.music_enabled
+            this.st4te.camo !== state.camo ||
+            this.st4te.ret !== state.ret ||
+            this.st4te.logged_account !== state.logged_account ||
+            this.st4te.know_if_logged !== state.know_if_logged ||
+            this.st4te.loaded_progress_percent !== state.loaded_progress_percent ||
+            this.st4te.music_enabled !== state.music_enabled
         );
 
         if(update_info_bar) {
             state._actions_triggered.clear();
         }
 
-        this.setState(state, () => {
+        this.setSt4te(state, () => {
 
             if(update) {
 
@@ -302,12 +320,12 @@ class InnerToolbar extends React.PureComponent {
 
     _toggle_info_bar_activation = () => {
 
-        let { _is_info_bar_active } = this.state;
+        let { _is_info_bar_active } = this.st4te;
         if(!_is_info_bar_active) {
 
             window.dispatchEvent(new Event("art-action-gethelp"));
         }
-        this.setState({_is_info_bar_active: !_is_info_bar_active}, () => {
+        this.setSt4te({_is_info_bar_active: !_is_info_bar_active}, () => {
 
             this.forceUpdate();
         });
@@ -315,10 +333,10 @@ class InnerToolbar extends React.PureComponent {
 
     _trigger_canvas_action = (name) => {
 
-        let _actions_triggered = this.state._actions_triggered;
+        let _actions_triggered = this.st4te._actions_triggered;
             _actions_triggered.add(name);
 
-        this.setState({_actions_triggered}, () => {
+        this.setSt4te({_actions_triggered}, () => {
 
             this.forceUpdate(() => {
 
@@ -329,7 +347,7 @@ class InnerToolbar extends React.PureComponent {
                     setTimeout(() => {
 
                         _actions_triggered.clear();
-                        this.setState({_actions_triggered, _is_info_bar_active: false}, () => {
+                        this.setSt4te({_actions_triggered, _is_info_bar_active: false}, () => {
 
                             setTimeout(() => {
 
@@ -364,7 +382,7 @@ class InnerToolbar extends React.PureComponent {
 
     _go_to = (url) => {
 
-        const { _history } = this.state;
+        const { _history } = this.st4te;
         _history.push(url);
     };
 
@@ -381,7 +399,7 @@ class InnerToolbar extends React.PureComponent {
 
     _handle_music_enabled_switch_change = () => {
 
-        const checked = Boolean(this.state.music_enabled);
+        const checked = Boolean(this.st4te.music_enabled);
 
         if(checked){
 
@@ -393,7 +411,7 @@ class InnerToolbar extends React.PureComponent {
         }
 
         const settings = { music_enabled: !checked };
-        this.setState(settings, () => {
+        this.setSt4te(settings, () => {
 
             api.set_settings(settings,  this._on_settings_changed);
         });
@@ -402,9 +420,9 @@ class InnerToolbar extends React.PureComponent {
 
     render() {
 
-        const { classes, pathname, logged_account, know_if_logged, loaded_progress_percent, _is_info_bar_active, music_enabled, _actions_triggered } = this.state;
+        const { classes, pathname, logged_account, know_if_logged, loaded_progress_percent, _is_info_bar_active, music_enabled, _actions_triggered } = this.st4te;
 
-        let { _cams, camo, _rets, ret } = this.state;
+        let { _cams, camo, _rets, ret } = this.st4te;
         _cams = _cams.length > 0 ? _cams: [""];
         _rets = _rets.length > 0 ? _rets: [""];
         camo = camo || 0;

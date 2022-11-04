@@ -308,7 +308,7 @@ const SuperCanvas = {
                             if(uint_greater(pr_top_left_y, minus_uint(y, 12))) {pr_top_left_y = max_int(0, minus_uint(y, 12));}
                             else if(uint_less(pr_bottom_right_y, plus_uint(y, 12))) {pr_bottom_right_y = min_int(height, plus_uint(y,12)); }
 
-                            _state.fp.setUint32(index << 2,value & 0xFFFFFFFF, false);
+                            _state.fp.setUint32(index << 2,((value|0)>>>0) & 0xFFFFFFFF, false);
                         });
 
                         pr.width = 1 + pr_bottom_right_x - pr_top_left_x | 0;

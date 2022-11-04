@@ -184,7 +184,7 @@ class AppToolbar extends React.PureComponent {
 
     constructor(props) {
         super(props);
-        this.state = {
+        this.st4te = {
             classes: props.classes,
             pathname: props.pathname,
             language: props.language,
@@ -209,9 +209,27 @@ class AppToolbar extends React.PureComponent {
         };
     };
 
+    setSt4te(st4te, callback) {
+
+        let keys = Object.keys(st4te);
+        let keys_length = keys.length | 0;
+        let key = "";
+
+        for (let i = 0; (i|0) < (keys_length|0); i = (i+1|0)>>>0) {
+
+            key = keys[i].toString();
+            this.st4te[key] = st4te[key];
+        }
+
+        if(typeof callback === "function") {
+
+            callback();
+        }
+    }
+
     componentDidMount() {
 
-        this.setState({
+        this.setSt4te({
             _explosion: <Lottie
                 onClick={this._exit_to_app}
                 id={"explosion"}
@@ -225,15 +243,15 @@ class AppToolbar extends React.PureComponent {
     componentWillReceiveProps(new_props) {
 
         const update = Boolean(
-            new_props.pathname !== this.state.pathname ||
-            new_props.language !== this.state.language ||
-            new_props.know_the_settings !== this.state.know_the_settings ||
-            new_props.jamy_state_of_mind !== this.state.jamy_state_of_mind ||
-            new_props.jamy_enabled !== this.state.jamy_enabled ||
-            new_props.music_enabled !== this.state.music_enabled
+            new_props.pathname !== this.st4te.pathname ||
+            new_props.language !== this.st4te.language ||
+            new_props.know_the_settings !== this.st4te.know_the_settings ||
+            new_props.jamy_state_of_mind !== this.st4te.jamy_state_of_mind ||
+            new_props.jamy_enabled !== this.st4te.jamy_enabled ||
+            new_props.music_enabled !== this.st4te.music_enabled
         );
 
-        this.setState(new_props, () => {
+        this.setSt4te(new_props, () => {
 
             if(update) {
 
@@ -244,7 +262,7 @@ class AppToolbar extends React.PureComponent {
 
     _handle_open_swipeable_app_drawer = () => {
 
-        this.setState({_swipeable_app_drawer_open: true}, ( ) => {
+        this.setSt4te({_swipeable_app_drawer_open: true}, ( ) => {
 
             this.forceUpdate();
         });
@@ -253,7 +271,7 @@ class AppToolbar extends React.PureComponent {
 
     _handle_close_swipeable_app_drawer = () => {
 
-        this.setState({_swipeable_app_drawer_open: false}, ( ) => {
+        this.setSt4te({_swipeable_app_drawer_open: false}, ( ) => {
 
             this.forceUpdate();
         });
@@ -262,7 +280,7 @@ class AppToolbar extends React.PureComponent {
 
     _open_account_menu = (event) => {
 
-        this.setState({_account_menu_anchor_element: event.currentTarget}, ( ) => {
+        this.setSt4te({_account_menu_anchor_element: event.currentTarget}, ( ) => {
 
             this.forceUpdate();
         });
@@ -270,7 +288,7 @@ class AppToolbar extends React.PureComponent {
 
     _close_account_menu = () => {
 
-        this.setState({_account_menu_anchor_element: null, _is_pre_reset: false}, ( ) => {
+        this.setSt4te({_account_menu_anchor_element: null, _is_pre_reset: false}, ( ) => {
 
             this.forceUpdate();
         });
@@ -278,14 +296,14 @@ class AppToolbar extends React.PureComponent {
 
     _open_home = () => {
 
-        const { _history } = this.state;
+        const { _history } = this.st4te;
         _history.push("/");
     };
 
     _open_settings = () => {
 
         window.dispatchEvent(new Event("menu-action-settings"));
-        const { _history } = this.state;
+        const { _history } = this.st4te;
         _history.push("/settings");
     };
 
@@ -299,7 +317,7 @@ class AppToolbar extends React.PureComponent {
 
     _handle_jamy_mouse_enter = () => {
 
-        this.setState({_jamy_mouse_hover: true, _jamy_mouse_hover_click: 0, _look_much_jamy: false, _look_very_much_jamy: false, _click_much_jamy: false}, () => {
+        this.setSt4te({_jamy_mouse_hover: true, _jamy_mouse_hover_click: 0, _look_much_jamy: false, _look_very_much_jamy: false, _click_much_jamy: false}, () => {
 
             setTimeout(() => {
 
@@ -311,22 +329,22 @@ class AppToolbar extends React.PureComponent {
 
     _handle_jamy_mouse_leave = () => {
 
-        this.setState({_jamy_mouse_hover: false, _jamy_mouse_hover_click: 0, _look_much_jamy: false, _look_very_much_jamy: false, _click_much_jamy: false });
+        this.setSt4te({_jamy_mouse_hover: false, _jamy_mouse_hover_click: 0, _look_much_jamy: false, _look_very_much_jamy: false, _click_much_jamy: false });
     };
 
     _show_look_much_jamy = () => {
 
-        if(this.state._jamy_mouse_hover) {
+        if(this.st4te._jamy_mouse_hover) {
 
-            this.setState({_look_much_jamy: true}, () => {
+            this.setSt4te({_look_much_jamy: true}, () => {
 
                 actions.jamy_update("suspicious", 7000);
                 actions.trigger_snackbar(t( "sentences.the longer you look the shiner i get"));
                 setTimeout(() => {
 
-                    if(this.state._jamy_mouse_hover) {
+                    if(this.st4te._jamy_mouse_hover) {
 
-                        this.setState({_look_very_much_jamy: true}, () => {
+                        this.setSt4te({_look_very_much_jamy: true}, () => {
 
                             actions.jamy_update("happy", 4000);
                             actions.trigger_snackbar(t( "sentences.take a picture it last longer"));
@@ -339,15 +357,15 @@ class AppToolbar extends React.PureComponent {
 
     _show_click_much_jamy = () => {
 
-        if(this.state._jamy_mouse_hover) {
+        if(this.st4te._jamy_mouse_hover) {
 
-            this.setState({_click_much_jamy: true}, () => {
+            this.setSt4te({_click_much_jamy: true}, () => {
 
                 actions.jamy_update("angry", 6000);
                 actions.trigger_snackbar(t( "sentences.stop bitchslapping me"));
                 setTimeout(() => {
 
-                    this.setState({_click_much_jamy: false});
+                    this.setSt4te({_click_much_jamy: false});
                 }, 6000);
             });
         }
@@ -355,10 +373,10 @@ class AppToolbar extends React.PureComponent {
 
     _handle_jamy_mouse_click = () => {
 
-        const click = this.state._jamy_mouse_hover_click + 1;
-        this.setState({_jamy_mouse_hover_click: click});
+        const click = this.st4te._jamy_mouse_hover_click + 1;
+        this.setSt4te({_jamy_mouse_hover_click: click});
 
-        if(click >= 16 && this.state._jamy_mouse_hover) {
+        if(click >= 16 && this.st4te._jamy_mouse_hover) {
 
             this._show_click_much_jamy();
         }
@@ -366,7 +384,7 @@ class AppToolbar extends React.PureComponent {
 
     _pre_reset_toggle = () => {
 
-        this.setState({_is_pre_reset: !this.state._is_pre_reset}, () => {
+        this.setSt4te({_is_pre_reset: !this.st4te._is_pre_reset}, () => {
 
             this.forceUpdate();
         });
@@ -374,7 +392,7 @@ class AppToolbar extends React.PureComponent {
 
     render() {
 
-        const { classes, ret, camo, _is_pre_reset, pathname, language, loaded_progress_percent, know_the_settings, _swipeable_app_drawer_open, _account_menu_anchor_element, logged_account, jamy_state_of_mind, jamy_enabled, music_enabled, _explosion } = this.state;
+        const { classes, ret, camo, _is_pre_reset, pathname, language, loaded_progress_percent, know_the_settings, _swipeable_app_drawer_open, _account_menu_anchor_element, logged_account, jamy_state_of_mind, jamy_enabled, music_enabled, _explosion } = this.st4te;
 
         const JAMY = {
             angry: <JamyAngry className={classes.jamy} />,

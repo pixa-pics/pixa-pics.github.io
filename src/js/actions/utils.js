@@ -64,7 +64,7 @@ function trigger_voice(name, volume = 1, pack = "cn") {
 
         setTimeout(() => {
 
-            trigger_sfx(name, volume, pack);
+            trigger_voice(name, volume, pack);
         }, 10);
     }
 }

@@ -1436,33 +1436,26 @@ class CanvasPixels extends React.PureComponent {
     _handle_canvas_wrapper_overflow_context_menu = (event) => {
 
         const [pos_x, pos_y] = this.canvas_pos.get_canvas_pos_from_event(event.pageX, event.pageY);
-        const {_s_pxl_colors, _layer_index, _s_pxls, pxl_width} = this.super_state.get_state();
-        const pxl_index = (pos_y * pxl_width) + pos_x;
-        const pxl_color_index = pxl_index >= 0 ? _s_pxls[_layer_index][pxl_index]: null
-        const c_hex = pxl_color_index === null ? "#ffffffff": this.color_conversion.to_hex_from_uint32(_s_pxl_colors[_layer_index][pxl_color_index]);
+        const pxl_color = this.super_master_meta.get_pixel_color_from_pos(pos_x, pos_y);
 
         if(this.props.onRightClick) {
 
             this.props.onRightClick(event, {
-                pos_x: pos_x,
-                pos_y: pos_y,
-                pxl_color: pxl_color_index === null ? null: c_hex,
+                pos_x,
+                pos_y,
+                pxl_color,
             });
         }
 
         if(this.props.onRelevantActionEvent) {
 
-            this.props.onRelevantActionEvent(event, c_hex, pxl_color_index === null ? .25: 0.75, false);
+            this.props.onRelevantActionEvent(event, pxl_color, 1, false);
         }
 
         if(this.props.setCursorFuckYou) {
 
             this.props.setCursorFuckYou(true);
-            setTimeout(() => {
-
-                this.props.setCursorFuckYou(false);
-
-            }, 2500);
+            setTimeout(this.props.setCursorFuckYou, 2500, false);
         }
     };
 
@@ -1801,7 +1794,7 @@ class CanvasPixels extends React.PureComponent {
 
         js = null;
 
-        let sh = Object.assign({}, _json_state_history.state_history[_json_state_history.history_position]);
+        let sh = _json_state_history.state_history[_json_state_history.history_position];
 
         this.super_state.set_state({
             _id: sh._id.toString(),
@@ -1825,7 +1818,7 @@ class CanvasPixels extends React.PureComponent {
             _pencil_mirror_index: parseInt(sh._pencil_mirror_index),
             _json_state_history: _json_state_history,
             _pxls_hovered: -1,
-            _last_action_timestamp: Date.now(),
+            _last_action_timestamp: 1/0,
         }).then(() => {
 
             this.canvas_pos.set_sizes(sh.pxl_width, sh.pxl_height);
@@ -3504,6 +3497,7 @@ class CanvasPixels extends React.PureComponent {
                          height: "100%",
                          width: "100%",
                          contain: "layout style size paint",
+                         overflow: "hidden",
                          position: "absolute",
                          boxSizing: "border-box",
                          touchAction: "manipulation",
@@ -3535,7 +3529,7 @@ class CanvasPixels extends React.PureComponent {
                              transform: `translate(${Math.round(scale.move_x * 100) / 100}px, ${Math.round(scale.move_y * 100) / 100}px) ${perspective ? transform_rotate: ""}`,
                              willChange: will_change ? "transform, box-shadow": "",
                              transformOrigin: "center middle",
-                             mixBlendMode: "screen",
+                             mixBlendMode: perspective ? "screen": "inherit",
                              boxSizing: "content-box",
                              touchAction: "none",
                              pointerEvents: "none",
@@ -3558,7 +3552,6 @@ class CanvasPixels extends React.PureComponent {
                                 minHeight: screen_zoom_ratio * scale.current * pxl_height | 0,
                                 maxHeight: screen_zoom_ratio * scale.current * pxl_height | 0,
                                 transformOrigin: "left top",
-                                transform: "scale(1) translateZ(10px)",
                                 boxSizing: "content-box",
                                 borderWidth: 0,
                                 ...background_image_style_props,
