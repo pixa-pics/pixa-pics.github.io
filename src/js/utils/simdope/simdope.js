@@ -610,12 +610,12 @@ Object.defineProperty(SIMDopeColor.prototype, 'a', {
 
 Object.defineProperty(SIMDopeColor.prototype, 'uint32', {
     get: function() { "use strict";
-        return ((this.storage_uint8_[3] << 24) | (this.storage_uint8_[2] << 16) | (this.storage_uint8_[1] <<  8) | this.storage_uint8_[0] | 0) & 0xFFFFFFFF;
+        return ((this.storage_uint8_[3] << 24) | (this.storage_uint8_[2] << 16) | (this.storage_uint8_[1] <<  8) | this.storage_uint8_[0]) & 0xFFFFFFFF;
     }
 });
 
 Object.defineProperty(SIMDopeColor.prototype, 'hex', {
-    get: function() { "use strict"; return "#".concat("00000000".concat(this.uint32.toString(16)).slice(-8));}
+    get: function() { "use strict"; return "#".concat("00000000".concat((this.uint32 | 0).toString(16)).slice(-8));}
 });
 
 Object.defineProperty(SIMDopeColor.prototype, 'hsl', {

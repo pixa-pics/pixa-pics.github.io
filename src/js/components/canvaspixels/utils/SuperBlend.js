@@ -79,9 +79,6 @@ const SuperBlend = {
         shadow_state.used_colors_length = state.current_index | 0;
         shadow_state.base_rgba_colors_for_blending = new Uint32Array(shadow_state.used_colors_length);
         shadow_state.start_layer_indexes = new Uint8Array(shadow_state.used_colors_length);
-
-        // Slice uint32 colors and give them as uint8
-        shadow_state.uint32_rgba_colors_data_in_layers_buffer = state.colors_data_in_layers_uint32.buffer;
     },
     init(lay_n, pxl_len){
         "use strict";
@@ -134,11 +131,11 @@ const SuperBlend = {
                 alpha_addition = alpha_addition | 0;
 
                 shadow_updater(shadow_state, state);
-                let {hover_data_in_layer, amount_data_in_layers, indexes_data_for_layers} = state;
-                let {base_rgba_colors_for_blending, uint32_rgba_colors_data_in_layers_buffer, start_layer_indexes, all_layers_length, used_colors_length, max_used_colors_length, bv} = shadow_state;
+                let {colors_data_in_layers_uint32, hover_data_in_layer, amount_data_in_layers, indexes_data_for_layers} = state;
+                let {base_rgba_colors_for_blending, start_layer_indexes, all_layers_length, used_colors_length, max_used_colors_length, bv} = shadow_state;
                 let {color_less_uint8x4, color_full_uint8x4, base_uint8x4, start_layer} = bv;
 
-                let SIMDope_layers_with_colors = SIMDopeColors(uint32_rgba_colors_data_in_layers_buffer);
+                let SIMDope_layers_with_colors = SIMDopeColors(colors_data_in_layers_uint32);
                 let SIMDope_final_with_colors = SIMDopeColors(base_rgba_colors_for_blending);
                 let i = 0;
 
@@ -165,7 +162,7 @@ const SuperBlend = {
                     start_layer = start_layer_indexes[i];
 
                     // Get the first base color to sum up with colors atop of it
-                    base_uint8x4.set(SIMDope_final_with_colors.get_element(i).buffer);
+                    base_uint8x4.set(SIMDope_final_with_colors.get_element(i));
 
                     if(uint_not_equal(start_layer, 0)) {
 

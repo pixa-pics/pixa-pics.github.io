@@ -1,4 +1,5 @@
 import SIMDope from "../../../utils/simdope/simdope";
+import paint from "../../../icons/Paint";
 const simdops = SIMDope.simdops;
 const SIMDopeColor = SIMDope.SIMDopeColor;
 
@@ -1356,10 +1357,9 @@ const SuperMasterMeta = {
 
                 for (let i = _s_pxl_colors.length - 1; i >= 0; i--) {
 
-                    const layer_pixel_color = _s_pxl_colors[i][_s_pxls[i][pxl_index]];
-                    layer_pixel_colors[i] = layer_pixel_color;
+                    layer_pixel_colors[i] = _s_pxl_colors[i][_s_pxls[i][pxl_index]|0] & 0xFFFFFFFF;
 
-                    if(SIMDopeColor.new_uint32(layer_pixel_color).is_fully_opaque() && !_layers[i].hidden) {
+                    if(SIMDopeColor.new_uint32(layer_pixel_colors[i]).is_fully_opaque() && !_layers[i].hidden) {
 
                         start_i = i;
                         break;
@@ -1373,7 +1373,7 @@ const SuperMasterMeta = {
 
                     if(!_layers[i].hidden) {
 
-                        pixel_color_uint32.blend_with(SIMDopeColor.new_uint32(layer_pixel_colors[i]), parseFloat(_layers[i].opacity) * 255, false, false);
+                        pixel_color_uint32.blend_with(SIMDopeColor.new_uint32(layer_pixel_colors[i]), parseInt(parseFloat(_layers[i].opacity) * 255), false, false);
                     }
                 }
 
