@@ -297,7 +297,7 @@ const styles = theme => ({
     backdrop: {
         zIndex: 2000,
         color: "#fff",
-        background: "radial-gradient(farthest-corner, #20079d 20%, #0d168788 70%, #5f69ff66)",
+        background: "radial-gradient(farthest-corner, #041952 20%, #131c9588 70%, #b4b9ff66)",
         contain: "layout paint size style",
         userSelect: "none",
     },

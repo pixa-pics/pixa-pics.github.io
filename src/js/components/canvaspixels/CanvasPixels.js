@@ -3558,6 +3558,7 @@ class CanvasPixels extends React.PureComponent {
                                 minHeight: screen_zoom_ratio * scale.current * pxl_height | 0,
                                 maxHeight: screen_zoom_ratio * scale.current * pxl_height | 0,
                                 transformOrigin: "left top",
+                                transform: "scale(1) translateZ(10px)",
                                 boxSizing: "content-box",
                                 borderWidth: 0,
                                 ...background_image_style_props,
