@@ -520,8 +520,17 @@ class Index extends React.PureComponent {
 
         if(pathname.match(/\/(pixel)$/)) {
 
-            actions.trigger_music(`Tesla_Numbers_15m_session`, 1, "tesla");
+            let random = Math.ceil(Math.random()*3.0)
+            if(random === 1) {
 
+                actions.trigger_music(`Tesla_Numbers_15m_session`, 0.75, "tesla");
+            }else if(random === 2) {
+
+                actions.trigger_music("Decagon-Solfeggio_963Hz_15m", 0.75, "solfeggio");
+            }else if(random === 3) {
+
+                actions.trigger_music("Pi_Number_Decagon_in_A_15m", 0.75, "pi");
+            }
         }else if(pathname.match(/(\/)?$/)) {
 
             const { _has_played_index_music_counter } = this.settings;
