@@ -19,18 +19,13 @@ const SuperBlend = {
             amount_data_in_layers: new Uint8Array(max_length*layer_number),
         };
 
-        return Object.assign({}, state);
+        return state;
     },
     _build_shadow_state (state, old_shadow_state) {
         "use strict";
-        if(typeof old_shadow_state !== "undefined") {
-
-            delete old_shadow_state.base_rgba_colors_for_blending;
-            delete old_shadow_state.uint32_rgba_colors_data_in_layers_buffer;
-        }
 
         // Create a shadow state for computation
-        let shadow_state = {
+        old_shadow_state = {
             base_rgba_colors_for_blending: new Uint32Array(0),
             uint32_rgba_colors_data_in_layers_buffer: new ArrayBuffer(state.layer_number * state.max_length * 4),
             start_layer_indexes: new Uint8Array(0),
@@ -39,13 +34,13 @@ const SuperBlend = {
             bv: {}
         };
 
-        shadow_state.bv.color_less_uint8x4 = SIMDopeColor.new_of(255, 255, 255, 255);
-        shadow_state.bv.color_full_uint8x4 = SIMDopeColor.new_of(0, 0, 0, 255);
-        shadow_state.bv.base_uint8x4 = SIMDopeColor.new_zero();
-        shadow_state.bv.temp_uint8x4 = SIMDopeColor.new_zero();
-        shadow_state.bv.start_layer = 0;
+        old_shadow_state.bv.color_less_uint8x4 = SIMDopeColor.new_of(255, 255, 255, 255);
+        old_shadow_state.bv.color_full_uint8x4 = SIMDopeColor.new_of(0, 0, 0, 255);
+        old_shadow_state.bv.base_uint8x4 = SIMDopeColor.new_zero();
+        old_shadow_state.bv.temp_uint8x4 = SIMDopeColor.new_zero();
+        old_shadow_state.bv.start_layer = 0;
 
-        return shadow_state;
+        return old_shadow_state;
     },
     _update_state(state, layer_number, max_length, _build_state) {
         "use strict";
@@ -72,7 +67,7 @@ const SuperBlend = {
                 state.layer_number = layer_number | 0;
                 state.max_length = max_length | 0;
                 state.current_index = 0;
-                return Object.assign({}, state);
+                return state;
             }
         }
     },
@@ -87,8 +82,6 @@ const SuperBlend = {
 
         // Slice uint32 colors and give them as uint8
         shadow_state.uint32_rgba_colors_data_in_layers_buffer = state.colors_data_in_layers_uint32.buffer;
-
-        return shadow_state;
     },
     init(lay_n, pxl_len){
         "use strict";
@@ -140,10 +133,10 @@ const SuperBlend = {
                 should_return_transparent = should_return_transparent | 0;
                 alpha_addition = alpha_addition | 0;
 
-                shadow_state = shadow_updater(shadow_state, state);
+                shadow_updater(shadow_state, state);
                 let {hover_data_in_layer, amount_data_in_layers, indexes_data_for_layers} = state;
                 let {base_rgba_colors_for_blending, uint32_rgba_colors_data_in_layers_buffer, start_layer_indexes, all_layers_length, used_colors_length, max_used_colors_length, bv} = shadow_state;
-                let {color_less_uint8x4, color_full_uint8x4, base_uint8x4, temp_uint8x4, start_layer} = bv;
+                let {color_less_uint8x4, color_full_uint8x4, base_uint8x4, start_layer} = bv;
 
                 let SIMDope_layers_with_colors = SIMDopeColors(uint32_rgba_colors_data_in_layers_buffer);
                 let SIMDope_final_with_colors = SIMDopeColors(base_rgba_colors_for_blending);
@@ -172,7 +165,7 @@ const SuperBlend = {
                     start_layer = start_layer_indexes[i];
 
                     // Get the first base color to sum up with colors atop of it
-                    base_uint8x4.set(SIMDope_final_with_colors.get_element(i));
+                    base_uint8x4.set(SIMDope_final_with_colors.get_element(i).buffer);
 
                     if(uint_not_equal(start_layer, 0)) {
 

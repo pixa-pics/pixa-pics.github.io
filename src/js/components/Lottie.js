@@ -29,7 +29,7 @@ class Lottie extends React.PureComponent {
 
     componentDidMount() {
 
-        JSLoader( () => import("lottie-web/build/player/lottie_svg")).then((lottie) => {
+        JSLoader( () => import("lottie-web/build/player/lottie_light")).then((lottie) => {
             this._lottie = lottie;
             this._play_lottie();
         });

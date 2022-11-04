@@ -54,6 +54,7 @@ const SuperMasterMeta = {
 
         let super_blend_for = meta.super_blend.for;
         let super_blend_stack = meta.super_blend.stack;
+        let _pxl_indexes_of_current_shape = new Set();
 
         return {
             get: function() {
@@ -153,8 +154,17 @@ const SuperMasterMeta = {
 
                             // This is a list of color index that we explore
                             const colors_in_current_layer = _s_pxl_colors[_layer_index];
-                            const full_pxls = Uint32Array.from(_s_pxls[_layer_index]).map(function(pci){ return clamp_uint32(colors_in_current_layer[pci]); });
-                            let _pxl_indexes_of_current_shape = new Set();
+                            const pixels_in_current_layer = _s_pxls[_layer_index];
+                            const pixels_in_current_layer_length = pixels_in_current_layer.length;
+
+                            let full_pxls = new Uint32Array(pixels_in_current_layer_length);
+
+                            for (let i = 0; (i|0) < (pixels_in_current_layer_length|0); i = (i+1|0)>>>0) {
+
+                                full_pxls[i|0] = clamp_uint32(colors_in_current_layer[pixels_in_current_layer[i|0]|0]);
+                            }
+
+                            _pxl_indexes_of_current_shape.clear();
 
                             if (Boolean(tool === "LINE" || tool === "RECTANGLE" || tool === "ELLIPSE" || tool === "TRIANGLE") && _shape_index_a !== -1 && _pxls_hovered !== -1) {
 
@@ -245,44 +255,44 @@ const SuperMasterMeta = {
 
                                         for (let i = 0; int_less(i, layers_length); i = plus_uint(i,1)) {
 
-                                            if(_layers[i].hidden || hide_canvas_content) {
+                                            if(_layers[i|0].hidden || hide_canvas_content) {
 
-                                                super_blend_stack(i, 0, 0, 0);
+                                                super_blend_stack(i|0, 0, 0, 0);
                                             }else {
 
-                                                super_blend_stack(i, _s_pxl_colors[i][_s_pxls[i][index]] & 0xFFFFFFFF, layers_opacity_255[i], false);
+                                                super_blend_stack(i|0, _s_pxl_colors[i|0][_s_pxls[i|0][index|0]|0] & 0xFFFFFFFF, layers_opacity_255[i|0]&0xFF, false);
                                             }
                                         }
 
-                                        if(!bool_new_hover && bool_old_hover){_old_pxls_hovered.delete(index);}
-                                        else if(bool_new_hover) {_old_pxls_hovered.add(index);}
+                                        if(!bool_new_hover && bool_old_hover){_old_pxls_hovered.delete(index|0);}
+                                        else if(bool_new_hover) {_old_pxls_hovered.add(index|0);}
 
-                                        if (!bool_new_shape && bool_old_shape) {_pxl_indexes_of_old_shape.delete(index);}
-                                        else if(bool_new_shape && !bool_old_shape) {_pxl_indexes_of_old_shape.add(index)}
+                                        if (!bool_new_shape && bool_old_shape) {_pxl_indexes_of_old_shape.delete(index|0);}
+                                        else if(bool_new_shape && !bool_old_shape) {_pxl_indexes_of_old_shape.add(index|0)}
 
-                                        if (!bool_new_selection && bool_old_selection) {_pxl_indexes_of_selection_drawn.delete(index);}
-                                        else if(bool_new_selection && !bool_old_selection) {_pxl_indexes_of_selection_drawn.add(index);}
+                                        if (!bool_new_selection && bool_old_selection) {_pxl_indexes_of_selection_drawn.delete(index|0);}
+                                        else if(bool_new_selection && !bool_old_selection) {_pxl_indexes_of_selection_drawn.add(index|0);}
 
 
                                         if (bool_new_import) {
 
-                                            super_blend_stack(layers_length, imported_image_pxl_colors[imported_image_pxls_positioned[index]], 255, false);
+                                            super_blend_stack(layers_length|0, imported_image_pxl_colors[imported_image_pxls_positioned[index|0]|0], 255, false);
                                         } else if (bool_new_hover) {
 
-                                            super_blend_stack(layers_length, 0, 192, true);
+                                            super_blend_stack(layers_length|0, 0, 192, true);
 
                                         } else if(bool_new_shape) {
 
-                                            super_blend_stack(layers_length, 0, 144, true);
+                                            super_blend_stack(layers_length|0, 0, 144, true);
                                         }else if (bool_new_selection) {
 
                                             pos_x = (index % pxl_width) | 0;
                                             pos_y = ((index - pos_x) / pxl_width) | 0;
 
-                                            super_blend_stack(layers_length, 0, 64 + ((((pos_x + pos_y + (_selection_pair_highlight | 0) | 0) & 1) | 0) * 48)|0, true);
+                                            super_blend_stack(layers_length|0, 0, 64 + ((((pos_x + pos_y + (_selection_pair_highlight | 0) | 0) & 1) | 0) * 48)|0, true);
                                         }else {
 
-                                            super_blend_stack(layers_length, 0, 0, false);
+                                            super_blend_stack(layers_length|0, 0, 0, false);
                                         }
                                     }
                                 }
