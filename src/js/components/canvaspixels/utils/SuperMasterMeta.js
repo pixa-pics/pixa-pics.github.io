@@ -165,7 +165,7 @@ const SuperMasterMeta = {
                             const colors_in_current_layer = _s_pxl_colors[_layer_index];
                             const pixels_in_current_layer = _s_pxls[_layer_index];
                             const pixels_in_current_layer_length = pixels_in_current_layer.length;
-
+                            meta.super_blend.update(plus_uint(_layers.length, 1), pixels_in_current_layer_length);
                             let full_pxls = new Uint32Array(pixels_in_current_layer_length);
 
                             for (let i = 0; (i | 0) < (pixels_in_current_layer_length | 0); i = (i + 1 | 0) >>> 0) {
@@ -248,8 +248,6 @@ const SuperMasterMeta = {
                             let full_pxls_length = full_pxls.length | 0;
                             let pos_x = 0;
                             let pos_y = 0;
-
-                            meta.super_blend.update(plus_uint(_layers.length, 1), full_pxls_length);
 
                             for (let index = 0; int_less(index, full_pxls_length); index = plus_uint(index, 1)) {
 

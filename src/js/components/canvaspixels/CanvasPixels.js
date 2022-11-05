@@ -1795,8 +1795,8 @@ class CanvasPixels extends React.PureComponent {
                     pxl_width: parseInt(state.pxl_width),
                     pxl_height: parseInt(state.pxl_height),
                     _pxl_indexes_of_selection: new Set(Boolean(state._pxl_indexes_of_selection.length) ? state._pxl_indexes_of_selection : []),
-                    _s_pxls: Array.from(state._s_pxls),
-                    _s_pxl_colors:  Array.from(state._s_pxl_colors),
+                    _s_pxls: Array.from(state._s_pxls.map(function(a){return Uint16Array.from(a)})),
+                    _s_pxl_colors:  Array.from(state._s_pxl_colors.map(function(a){return Uint32Array.from(a)})),
                     _layers: Array.from(state._layers.map(function(l) {
                         return Object.assign({}, {
                             id: parseInt(l.id),
@@ -1824,17 +1824,17 @@ class CanvasPixels extends React.PureComponent {
             _base64_original_images: Array.from(_base64_original_images),
             _original_image_index: parseInt(sh._original_image_index),
             _layers: Array.from(sh._layers.map(function(l) {
-                return Object.assign({}, {
+                return {
                     id: parseInt(l.id),
                     hash: l.hash + "",
                     name: l.name+"",
                     hidden: Boolean(l.hidden),
                     opacity: parseInt(l.opacity),
-                });
+                };
             })),
             _layer_index: parseInt(sh._layer_index),
-            s_pxls: Array.from(sh._s_pxls),
-            _s_pxl_colors: Array.from(sh._s_pxl_colors),
+            _s_pxls: Array.from(sh._s_pxls.map(function(a){return Uint16Array.from(a)})),
+            _s_pxl_colors:  Array.from(sh._s_pxl_colors.map(function(a){return Uint32Array.from(a)})),
             _pxl_indexes_of_selection: new Set(sh._pxl_indexes_of_selection),
             _pencil_mirror_index: parseInt(sh._pencil_mirror_index),
             _json_state_history: _json_state_history,
@@ -1842,12 +1842,12 @@ class CanvasPixels extends React.PureComponent {
             _last_action_timestamp: 1/0,
         }).then(() => {
 
-            this.canvas_pos.set_sizes(sh.pxl_width, sh.pxl_height);
+            this.canvas_pos.set_sizes(parseInt(sh.pxl_width), parseInt(sh.pxl_height));
             this.canvas_pos.set_current_scale_default();
 
             this._request_force_update(false, false).then(() => {
 
-                this.super_canvas.set_dimensions(sh.pxl_width, sh.pxl_height).then(() => {
+                this.super_canvas.set_dimensions(parseInt(sh.pxl_width), parseInt(sh.pxl_height)).then(() => {
                     this.super_master_meta.update_canvas(true);
                 });
             });
@@ -1905,13 +1905,13 @@ class CanvasPixels extends React.PureComponent {
                     pxl_height: parseInt(sh.pxl_height),
                     _original_image_index: parseInt(sh._original_image_index),
                     _layers: Array.from(sh._layers.map(function(l) {
-                        return Object.assign({}, {
+                        return {
                             id: parseInt(l.id),
                             hash: l.hash + "",
-                            name: l.name+"",
+                            name: l.name + "",
                             hidden: Boolean(l.hidden),
                             opacity: parseInt(l.opacity),
-                        });
+                        };
                     })),
                     _layer_index: parseInt(sh._layer_index),
                     _s_pxls: Array.from(sh._s_pxls.map(function(a){return Uint16Array.from(a);})),
@@ -1967,13 +1967,13 @@ class CanvasPixels extends React.PureComponent {
                     pxl_height: parseInt(sh.pxl_height),
                     _original_image_index: parseInt(sh._original_image_index),
                     _layers: Array.from(sh._layers.map(function(l) {
-                        return Object.assign({}, {
+                        return {
                             id: parseInt(l.id),
                             hash: l.hash + "",
-                            name: l.name+"",
+                            name: l.name + "",
                             hidden: Boolean(l.hidden),
                             opacity: parseInt(l.opacity),
-                        });
+                        };
                     })),
                     _layer_index: parseInt(sh._layer_index),
                     _s_pxls: Array.from(sh._s_pxls.map(function(a){return Uint16Array.from(a);})),
