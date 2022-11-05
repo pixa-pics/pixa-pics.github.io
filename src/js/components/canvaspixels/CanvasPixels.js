@@ -112,6 +112,23 @@ class CanvasPixels extends React.PureComponent {
                 animation-delay: 25ms;
                 animation-timing-function: linear;
             }
+            .Canvas-Wrapper-Overflow .Canvas-Wrapper::after {
+                content: "";
+                position: absolute;
+                width: 100%;
+                background: linear-gradient(to bottom, #ffffff00 0%, #1700ff14 14%, #1700ff57 21%, transparent);
+                height: 50%;
+                left: 0;
+                z-index: 2;
+                top: 100%;
+            }
+            .Canvas-Wrapper-Overflow.Shown .Canvas-Wrapper::after {
+                animation-name: canvanimationscan;
+                animation-fill-mode: both;
+                animation-duration: 350ms;
+                animation-delay: 200ms;
+                animation-timing-function: linear;
+            }
             .Canvas-Wrapper-Overflow.Not-Shown {
                 animation-name: canvanimation;
                 transform-origin: center center !important;
@@ -132,6 +149,10 @@ class CanvasPixels extends React.PureComponent {
                   61.66% { transform: matrix3d(1.002, 0, 0, 0, 0, 1.001, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1); filter: opacity(1); will-change: transform, filter; }
                   83.98% { transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1); filter: opacity(1); will-change: transform, filter; }
                   100% { transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1); filter: opacity(1); will-change: initial; } 
+            }
+            @keyframes canvanimationscan { 
+                  0% { top: -50% }
+                  100% { top: 100% } 
             }` +
             ".Canvas-Pixels-Cover::after {" +
             `top: 0;
@@ -3470,7 +3491,6 @@ class CanvasPixels extends React.PureComponent {
         } = this.super_state.get_state();
 
         const is_there_new_dimension = this.super_master_meta.is_there_new_dimension();
-
         const {canvas_wrapper, device_pixel_ratio, scale, canvas_event_target} = this.canvas_pos.get_state();
         const {mouse_down} = this.canvas_pos.get_pointer_state();
         const screen_zoom_ratio = this.canvas_pos.get_screen_zoom_ratio();
