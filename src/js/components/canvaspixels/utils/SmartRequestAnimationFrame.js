@@ -76,13 +76,13 @@ const SmartRequestAnimationFrame = {
                         reject();
                     }else {
 
-                        let skip_frame_rate = s.is_mobile_or_tablet ? 15: 30;
+                        let skip_frame_rate = s.is_mobile_or_tablet ? 30: 60;
 
                         let running_smoothly = true;
 
                         let deltaT = Date.now() - s.lasts_raf_time;
                         // do not render frame when deltaT is too high
-                        if ( deltaT > 1000 / (skip_frame_rate * 2/3)) {
+                        if ( deltaT > 1000 / skip_frame_rate) {
                             running_smoothly = false;
                         }
 

@@ -1103,8 +1103,11 @@ SIMDopeColors.prototype.subarray = function (i, n) {
 }
 
 SIMDopeColors.prototype.set_element = function (i, el) {
-    i = i | 0;
-    this.buffer_setUint32(i, el.uint32);
+    i = multiply_uint_4(i);
+    this.buffer_setUint8(plus_uint(i, 0), el.a);
+    this.buffer_setUint8(plus_uint(i, 1), el.b);
+    this.buffer_setUint8(plus_uint(i, 2), el.g);
+    this.buffer_setUint8(plus_uint(i, 3), el.r);
 }
 SIMDopeColors.prototype.set_uint32_element = function (i, uint32) {
     i = i | 0;
