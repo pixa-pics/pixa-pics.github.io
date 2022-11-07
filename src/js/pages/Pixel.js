@@ -1746,15 +1746,21 @@ class Pixel extends React.PureComponent {
             }
         }else if(process === "image_load"){
 
-            actions.trigger_snackbar(`DONE! We've imported an image with my now ${data.number_of_colors} colors.`);
-            setTimeout(() => {
+            if(data.only_scan) {
 
-                actions.trigger_voice("complete");
-            }, 1000);
-            actions.jamy_update("happy");
-            this._handle_edit_drawer_close();
-            this._handle_menu_close();
-            this._handle_pixel_dialog_create_close();
+                actions.trigger_sfx("ui_scan");
+            }else {
+                actions.trigger_sfx("ui_scan");
+                actions.trigger_snackbar(`DONE! We've imported an image with my now ${data.number_of_colors} colors.`);
+                setTimeout(() => {
+
+                    actions.trigger_voice("complete");
+                }, 1000);
+                actions.jamy_update("happy");
+                this._handle_edit_drawer_close();
+                this._handle_menu_close();
+                this._handle_pixel_dialog_create_close();
+            }
         }
     };
 

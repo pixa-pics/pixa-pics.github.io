@@ -70,7 +70,7 @@ class CanvasPixels extends React.PureComponent {
 
         window.addEventListener("resize", this._update_canvas_container_size);
         this._update_canvas_container_size();
-
+        this._notify_image_load_complete(true);
         if(Boolean(this.props.on_fps_change)) {
 
             this.sraf.set_notify_fps_callback(this.props.on_fps_change);
@@ -1744,7 +1744,7 @@ class CanvasPixels extends React.PureComponent {
         }
     };
 
-    _notify_image_load_complete = () => {
+    _notify_image_load_complete = (only_scan = false) => {
 
         const { _s_pxl_colors, pxl_width, pxl_height } = this.super_state.get_state();
 
@@ -1752,6 +1752,7 @@ class CanvasPixels extends React.PureComponent {
             width: pxl_width,
             height: pxl_height,
             number_of_colors: _s_pxl_colors[0].length,
+            only_scan
         };
 
         if(this.props.onLoadComplete) { this.props.onLoadComplete("image_load", image_details); }
@@ -1925,6 +1926,7 @@ class CanvasPixels extends React.PureComponent {
                     if(has_new_dimension) {
                         this.canvas_pos.set_sizes(sh.pxl_width, sh.pxl_height);
                         this.canvas_pos.set_current_scale_default();
+                        this._notify_image_load_complete(true);
                     }
 
                     this._request_force_update(false, false).then(() => {
@@ -1987,6 +1989,7 @@ class CanvasPixels extends React.PureComponent {
                     if(has_new_dimension) {
                         this.canvas_pos.set_sizes(sh.pxl_width, sh.pxl_height);
                         this.canvas_pos.set_current_scale_default();
+                        this._notify_image_load_complete(true);
                     }
 
                     this._request_force_update(false, false).then(() => {
@@ -2397,6 +2400,8 @@ class CanvasPixels extends React.PureComponent {
                                 this.super_master_meta.update_canvas(true);
                             });
                         });
+
+                        this._notify_image_load_complete(true);
                     });
                 }
                 image.src = _base64_original_images[_original_image_index];

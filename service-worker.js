@@ -1,7 +1,7 @@
 "use strict";
-var REQUIRED_CACHE = "unless-update-cache-v505-required";
-var USEFUL_CACHE = "unless-update-cache-v505-useful";
-var STATIC_CACHE = "unless-update-cache-v505-static";
+var REQUIRED_CACHE = "unless-update-cache-v506-required";
+var USEFUL_CACHE = "unless-update-cache-v506-useful";
+var STATIC_CACHE = "unless-update-cache-v506-static";
 var MAIN_CHILD_CHUNK_REGEX = /chunk_(main_[a-z0-9]+)\.min\.js$/i;
 var CHILD_CHUNK_REGEX = /chunk_([0-9]+)\.min\.js$/i;
 
@@ -161,6 +161,7 @@ self.addEventListener("fetch", function(event) {
                         "/src/sounds/sfx/md/state-change_confirm-down.mp3",
                         "/src/sounds/sfx/md/ui_lock.mp3",
                         "/src/sounds/sfx/md/ui_unlock.mp3",
+                        "/src/sounds/sfx/md/ui_scan.mp3",
                         "/src/sounds/sfx/md/alert_high-intensity.mp3",
                         "/src/sounds/sfx/md/navigation_transition-right.mp3",
                         "/src/sounds/voice/cn/accessing_memory.mp3",
