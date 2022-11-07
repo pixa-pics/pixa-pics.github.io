@@ -92,13 +92,13 @@ const SuperCanvas = {
         "use strict";
         const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
         const bpro = AsyncFunction(
-            `var bpro = async function(s_width, pr_width, pr_height, pr_top_left_x, pr_top_left_y, fp_buffer){
+            `var bpro = async function(s_width, pr_width, pr_height, pr_top_left_x, pr_top_left_y, fp){
                 "use strict";
                 var fp_square = new Uint8ClampedArray((pr_width * pr_height * 4 | 0)>>>0);
                 var current_offset_start_index = 0;
                 for(var i = 0; (i|0) < (pr_height|0) ; i = (i + 1 | 0)>>>0) {
                     current_offset_start_index = s_width * (i + pr_top_left_y) + pr_top_left_x | 0;
-                    fp_square.set(new Uint8ClampedArray(fp_buffer.slice((current_offset_start_index*4|0)>>>0, ((current_offset_start_index + pr_width)*4|0)>>>0)), (4*i*pr_width|0)>>>0);
+                    fp_square.set(fp.subarray((current_offset_start_index*4|0)>>>0, ((current_offset_start_index + pr_width)*4|0)>>>0), (4*i*pr_width|0)>>>0);
                 }
                 
                 return createImageBitmap(new ImageData(fp_square, pr_width|0, pr_height|0));
@@ -149,7 +149,7 @@ const SuperCanvas = {
             return {
                 s: cs(c, pxl_width, pxl_height),
                 enable_paint_type: "",
-                fp: new DataView(new ArrayBuffer(pxl_height * pxl_width * 4)),
+                fp: new Uint32Array(new ArrayBuffer(pxl_height * pxl_width * 4)),
                 ic: new Map(),
                 b: {
                     bmp_x: 0,
@@ -215,6 +215,7 @@ const SuperCanvas = {
             },
             prender: function(){
                 "use strict";
+
                 return new Promise(function (resolve, reject){
 
                     if (_state.enable_paint_type === "bitmap") {
@@ -229,7 +230,7 @@ const SuperCanvas = {
                             let pr_top_left_x = _state.pr.top_left.x | 0;
                             let pr_top_left_y = _state.pr.top_left.y | 0;
 
-                            bpro(s_width, pr_width, pr_height, pr_top_left_x, pr_top_left_y, _state.fp.buffer).then(function(bitmap){
+                            bpro(s_width, pr_width, pr_height, pr_top_left_x, pr_top_left_y, new Uint8ClampedArray(_state.fp.slice(0, _state.fp.length).reverse().buffer).reverse()).then(function(bitmap){
 
 
                                 if(_state.b.bmp_t < new_bmp_t) {
@@ -275,6 +276,7 @@ const SuperCanvas = {
 
                         resolve();
                     }
+
                 });
             },
             unpile: function(w, h){
@@ -303,12 +305,12 @@ const SuperCanvas = {
                             x = modulo_uint(index, width);
                             y = divide_uint(minus_uint(index, x), width);
 
-                            if(uint_greater(pr_top_left_x, minus_uint(x, 12))) {pr_top_left_x = max_int(0, minus_uint(x, 12));}
-                            else if(uint_less(pr_bottom_right_x, plus_uint(x, 12))) {pr_bottom_right_x = min_int(width,  plus_uint(x, 12)); }
-                            if(uint_greater(pr_top_left_y, minus_uint(y, 12))) {pr_top_left_y = max_int(0, minus_uint(y, 12));}
-                            else if(uint_less(pr_bottom_right_y, plus_uint(y, 12))) {pr_bottom_right_y = min_int(height, plus_uint(y,12)); }
+                            if(uint_greater(pr_top_left_x, minus_uint(x, 4))) {pr_top_left_x = max_int(0, minus_uint(x, 4));}
+                            else if(uint_less(pr_bottom_right_x, plus_uint(x, 4))) {pr_bottom_right_x = min_int(width,  plus_uint(x, 4)); }
+                            if(uint_greater(pr_top_left_y, minus_uint(y, 4))) {pr_top_left_y = max_int(0, minus_uint(y, 4));}
+                            else if(uint_less(pr_bottom_right_y, plus_uint(y, 4))) {pr_bottom_right_y = min_int(height, plus_uint(y,4)); }
 
-                            _state.fp.setUint32(index << 2,((value|0)>>>0) & 0xFFFFFFFF, false);
+                            _state.fp[index|0] = ((value|0)>>>0) & 0xFFFFFFFF;
                         });
 
                         pr.width = 1 + pr_bottom_right_x - pr_top_left_x | 0;
@@ -320,12 +322,8 @@ const SuperCanvas = {
                         pr.bottom_right.y = pr_bottom_right_y | 0;
                         _state.pr = pr;
 
-                        if(_state.ic.size > 16) {
-                            _state.ic.clear();
-                            _state.enable_paint_type = "bitmap";
-                        }else {
-                            _state.enable_paint_type = "bitmap";
-                        }
+                        _state.ic.clear();
+                        _state.enable_paint_type = "bitmap";
 
                         resolve();
 

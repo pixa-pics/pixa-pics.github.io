@@ -1,6 +1,6 @@
 import React from "react";
-import {Button, withStyles} from "@material-ui/core";
-import {Tooltip, Toolbar, Drawer, Box, Fade} from "@material-ui/core";
+import {withStyles} from "@material-ui/core";
+import {Toolbar, Drawer, Box, Fade} from "@material-ui/core";
 import DrawerContent from "../components/DrawerContent";
 
 import actions from "../actions/utils";

@@ -596,9 +596,9 @@ class Pixel extends React.PureComponent {
 
     _try_load_with_payload = (load_with) => {
 
-        if(load_with.length <= 0){
+        if(load_with.length === 0){
 
-            this.setSt4te({_is_pixel_dialog_create_open: !Boolean(load_with.length > 0)}, () => {
+            this.setSt4te({_is_pixel_dialog_create_open: Boolean(load_with.length === 0)}, () => {
 
                 api.get_settings(this._process_settings_info_result);
             });
@@ -606,7 +606,7 @@ class Pixel extends React.PureComponent {
 
             actions.trigger_sfx("alert_high-intensity");
             this._handle_load("image_preload");
-            base64_sanitize(load_with.toString(), (base64) => {
+            base64_sanitize(load_with + "", (base64) => {
 
                 let img = new Image();
                 img.addEventListener("load", () => {

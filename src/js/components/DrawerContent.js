@@ -18,6 +18,9 @@ const styles = theme => ({
         "& > span": {
             fontWeight: "bold",
             fontSize: "1.25em",
+        },
+        "& .MuiTypography-colorTextSecondary": {
+            color: "#ffffffa8",
         }
     },
     listItemGrey: {
@@ -166,7 +169,7 @@ class DrawerContent extends React.PureComponent {
                         backgroundPosition: "center",
                         textShadow: "0px 0px 6px #8888ff"
                     }} button onClick={this._open_pixel_page}>
-                        <ListItemText className={classes.boldListItemText} primary={"PIXEL-ART EDITOR!\n NFTs LABORATORY..."} />
+                        <ListItemText className={classes.boldListItemText} primary={"PIXEL-ART EDITOR!"} secondary={"NFTs LABORATORY..."}/>
                     </ListItem>
                     <ListItem button className={classes.listItemGrey} onClick={(event) => this._open_link(event, "https://github.com/pixa-pics/pixa-pics.github.io/graphs/contributors")}>
                         <ListItemIcon><PersonIcon className={classes.iconColor} /></ListItemIcon>

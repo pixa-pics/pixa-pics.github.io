@@ -2,7 +2,9 @@ import React, { Suspense } from "react";
 import JSLoader from "../utils/JSLoader";
 import { withStyles } from "@material-ui/core";
 
-import {Snackbar, IconButton, Toolbar} from "@material-ui/core";
+import Snackbar from "@material-ui/core/Snackbar";
+import IconButton from "@material-ui/core/IconButton";
+import Toolbar from "@material-ui/core/Toolbar";
 
 import CloseIcon from "@material-ui/icons/Close";
 
@@ -151,10 +153,6 @@ class Index extends React.PureComponent {
 
         this._update_settings();
         dispatcher.register(this._handle_events.bind(this));
-    }
-
-    componentDidMount() {
-
         this.setSt4te({_did_mount: true});
         const _history_unlisten = this.st4te._history.listen((location, action) => {
             // location is an object like window.location

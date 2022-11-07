@@ -29,7 +29,7 @@ class Lottie extends React.PureComponent {
 
     componentDidMount() {
 
-        JSLoader( () => import("lottie-web/build/player/lottie_light")).then((lottie) => {
+        JSLoader( () => import("lottie-web/build/player/lottie_svg")).then((lottie) => {
             this._lottie = lottie;
             this._play_lottie();
         });
@@ -43,7 +43,7 @@ class Lottie extends React.PureComponent {
             container: document.getElementById(id),
             loop: loop,
             autoplay: autoplay,
-            quality: "medium",
+            quality: "high",
             path: path,
             name: id,
             hover: hover,

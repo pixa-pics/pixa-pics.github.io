@@ -51,7 +51,7 @@ const styles = theme => ({
         transform: "translateY(0px) scale(1)  !important",
         fontSize: "1.314rem",
         minWidth: "min(320px, calc(100% - 32px))",
-        borderRadius: "12px",
+        borderRadius: "4px",
         marginTop: "72px",
         marginLeft: "auto",
         marginRight: "auto",
@@ -96,7 +96,7 @@ const styles = theme => ({
         transition: "color, filter, transform cubic-bezier(0.4, 0, 0.2, 1) 125ms !important",
         fontWeight: "bold",
         fontSize: "21px",
-        borderRadius: "12px",
+        borderRadius: "4px",
         lineHeight: "2em",
         position: "fixed",
         maxWidth: 274,
@@ -315,7 +315,7 @@ class Home extends React.PureComponent {
 
                 this.forceUpdate();
             });
-        }, 1500);
+        }, 250);
 
         setTimeout(() => {
             this.setState({
@@ -329,7 +329,7 @@ class Home extends React.PureComponent {
 
                 this.forceUpdate();
             });
-        }, 3000);
+        }, 500);
     }
 
     componentDidMount() {
@@ -483,7 +483,7 @@ class Home extends React.PureComponent {
                                 />
                             </div>
                         </Grow>}
-                        <h2 className={classes.backgroundImageInfo} style={{filter: "drop-shadow(#ffffff44 0px 0px 4px)", color: "#ffffff", backgroundColor: "#1bcb1866", padding: 16, textAlign: "center", borderRadius: "12px"}}>
+                        <h2 className={classes.backgroundImageInfo} style={{filter: "drop-shadow(#ffffff44 0px 0px 4px)", color: "#ffffff", backgroundColor: "#1bcb1866", padding: 16, textAlign: "center", borderRadius: "4px"}}>
                             <span style={{color: "#ffffff", fontSize: "0.75em"}}>REAL INFINITE "SVG" RENDERING...</span>
                             <br/>
                             <span style={{fontSize: "1em", color: "#22ff00", filter: "drop-shadow(0px 0px 4px darkgreen)"}}>TRY IT RIGHT «NOW»!</span>
