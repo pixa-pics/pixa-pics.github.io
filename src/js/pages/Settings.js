@@ -306,7 +306,7 @@ class Settings extends React.Component {
                             </CardContent>
                             <CardContent>
                                 <h2>How it works</h2>
-                                <p>Gold ($ 6K/Month), Silver ($ 4K/Month), and Bronze ($ 2K/Month) supporters enable Pixa.Pics to have a great team while being wider very soon. Benefiting a positive cashflow to pay everything that is related to our activities is vital for production.</p>
+                                <p>Gold ($ 25K/Year), Silver ($ 15K/Year), and Bronze ($ 5K/Year) supporters enable Pixa.Pics to have a great team while being wider very soon. Benefiting a positive cashflow to pay everything that is related to our activities is vital for production.</p>
                             </CardContent>
                             <CardContent>
                                 <div style={{textAlign: "left", display: "flex", alignItems: "center"}}>

@@ -108,8 +108,8 @@ class CanvasPixels extends React.PureComponent {
                 animation-name: canvanimation;
                 transform-origin: center center !important;
                 animation-fill-mode: both;
-                animation-duration: 175ms;
-                animation-delay: 25ms;
+                animation-duration: 350ms;
+                animation-delay: 0ms;
                 animation-timing-function: linear;
             }
             .Canvas-Wrapper-Overflow .Canvas-Wrapper::after {
@@ -126,7 +126,7 @@ class CanvasPixels extends React.PureComponent {
                 animation-name: canvanimationscan;
                 animation-fill-mode: both;
                 animation-duration: 350ms;
-                animation-delay: 200ms;
+                animation-delay: 350ms;
                 animation-timing-function: linear;
             }
             .Canvas-Wrapper-Overflow.Not-Shown {

@@ -2,7 +2,7 @@ const CanvasPos = {
 
     _get_init_state(pxl_width, pxl_height, default_scale, canvas_wrapper_padding, canvas_wrapper_border_width, perspective) {
         "use strict";
-        return Object.assign({}, {
+        return {
             canvas_event_target: "CANVAS_WRAPPER_OVERFLOW",
             canvas_container: {
                 top: 0,
@@ -30,7 +30,7 @@ const CanvasPos = {
             },
             device_pixel_ratio: window.devicePixelRatio,
             perspective: perspective
-        });
+        };
     },
     _get_screen_zoom_ratio(s) {
         "use strict";
@@ -61,7 +61,7 @@ const CanvasPos = {
         const canvas_right = canvas_wrapper_right - canvas_wrapper_border_box_extra_size / 2 | 0;
         const canvas_bottom = canvas_wrapper_bottom - canvas_wrapper_border_box_extra_size / 2 | 0;
 
-        return Object.assign({}, {
+        return {
             canvas: {
                 offset_left: canvas_offset_left | 0,
                 offset_top: canvas_offset_top | 0,
@@ -92,11 +92,11 @@ const CanvasPos = {
                 width: s.canvas_container.width | 0,
                 height: s.canvas_container.height | 0,
             }
-        });
+        };
     },
     _get_init_pointer_state() {
         "use strict";
-        return Object.assign({}, {
+        return {
             event_button: null,
             mouse_down: false,
             pointer_events: new Map(),
@@ -106,18 +106,18 @@ const CanvasPos = {
             latest_pointers_client_x_center: 0,
             latest_pointers_client_y_center: 0,
             previous_double_pointer_move_timestamp: 0
-        });
+        };
     },
     _copy_event(event) {
         "use strict";
-        return Object.assign({}, {
+        return {
             pointerId: event.pointerId | 0,
             clientX: event.clientX | 0,
             clientY: event.clientY | 0,
             pageX: event.pageX | 0,
             pageY: event.pageY | 0,
             button: event.button | 0
-        });
+        };
     },
     _get_shadows(hex){
 
@@ -376,15 +376,14 @@ const CanvasPos = {
                 let moves_speed_average = moves_speeds.slice(-max_move_speed).reduce((p,c,i,a) => p+(c/a.length), 0);
                 moves_speed_average = Math.max(1, Math.round(Math.floor(moves_speed_average * max_move_speed/200 )))
                 const is_new_scale = Boolean(new_scale !== null);
-                s = Object.assign(s, {scale: Object.assign(s.scale, {
-                    default: parseFloat(scale.default),
-                    current: parseFloat(!is_new_scale ? current: new_scale),
-                    move_x: new_scale_move_x | 0,
-                    move_y: new_scale_move_y | 0,
-                    move_speed_timestamp: Date.now(),
-                    moves_speeds: moves_speeds,
-                    moves_speed_average_now: Boolean(new_scale !== null && new_scale > current) ? max_move_speed: Boolean(new_scale !== null && new_scale < current) ? 0: parseInt(moves_speed_average),
-                })});
+                s.scale.default = parseFloat(scale.default);
+                s.scale.current = parseFloat(!is_new_scale ? current: new_scale);
+                s.scale.move_x = new_scale_move_x | 0;
+                s.scale.move_y = new_scale_move_y | 0;
+                s.scale.move_speed_timestamp = Date.now();
+                s.scale.moves_speeds = moves_speeds;
+                s.scale.moves_speed_average_now = Boolean(new_scale !== null && new_scale > current) ? max_move_speed: Boolean(new_scale !== null && new_scale < current) ? 0: parseInt(moves_speed_average);
+
                 szr = gszr(s);
                 p = gp(s, szr);
                 this.notify_moved(callback_function);
@@ -639,7 +638,7 @@ const CanvasPos = {
                     latest_pointers_client_x_center,
                     latest_pointers_client_y_center,
                     previous_double_pointer_move_timestamp,
-                    previous_double_pointer_down_timestamp,
+                    previous_single_pointer_down_timestamp,
                 } = this.get_pointer_state();
 
                 pointer_events.set(event.pointerId, event);
@@ -666,7 +665,7 @@ const CanvasPos = {
                         previous_double_pointer_move_timestamp: Date.now(),
                     };
 
-                    if(previous_double_pointer_down_timestamp + 50 < Date.now()) {
+                    if(previous_single_pointer_down_timestamp + 30 < Date.now()) {
                         this.set_pointer_state(pointer_state_object);
                         this.set_zoom(of, page_x_center, page_y_center, -move_x, -move_y);
                     }else {
@@ -791,9 +790,7 @@ const CanvasPos = {
             },
             set_current_scale_default: function() {
                 "use strict";
-                s = Object.assign(s, {scale: Object.assign(s.scale, {
-                    current: parseFloat(s.scale.default)
-                })});
+                s.scale.current = parseFloat(s.scale.default);
                 szr = gszr(s);
                 p = gp(s, szr);
                 this.set_canvas_moves_middle();
@@ -834,24 +831,20 @@ const CanvasPos = {
 
                     const new_moves_speed_average_now = Math.max(s.scale.moves_speed_average_now - 1, -max_move_speed);
 
-                    s = Object.assign(s, {scale: Object.assign(s.scale, {
-                        moves_speed_average_now: new_moves_speed_average_now,
-                        move_speed_timestamp: now
-                    })});
+                    s.scale.moves_speed_average_now = new_moves_speed_average_now;
+                    s.scale.move_speed_timestamp = now | 0;
 
                     notifiers.update(false, true);
 
                 }else if(now - s.scale.move_speed_timestamp >= 20 && s.scale.moves_speed_average_now < -max_move_speed && max_move_speed < 24) {
 
-                    s = Object.assign(s, {scale: Object.assign(s.scale, {
-                         moves_speed_average_now: Math.max(s.scale.moves_speed_average_now + 1, -max_move_speed) | 0,
-                        move_speed_timestamp: now | 0
-                    })});
+                    s.scale.moves_speed_average_now = Math.max(s.scale.moves_speed_average_now + 1, -max_move_speed) | 0;
+                    s.scale.move_speed_timestamp = now | 0;
 
-                        notifiers.update(false, true);
+                    notifiers.update(false, true);
                 }else if(s.perspective > 0) {
 
-                        notifiers.update(false, true);
+                    notifiers.update(false, true);
                 }
             }
         };

@@ -1038,8 +1038,9 @@ var SIMDopeColors = function(with_main_buffer){
         return new SIMDopeColors(with_main_buffer);
     }
 
-    this.storage_uint8_array_ = new Uint8ClampedArray(("buffer" in with_main_buffer) ? with_main_buffer.buffer: with_main_buffer);
-    this.storage_uint32_array_ = new Uint32Array(("buffer" in with_main_buffer) ? with_main_buffer.buffer: with_main_buffer);
+    this.storage_ = "buffer" in with_main_buffer ? with_main_buffer.buffer: with_main_buffer;
+    this.storage_uint8_array_ = new Uint8Array(this.storage_);
+    this.storage_uint32_array_ = new Uint32Array(this.storage_);
 };
 
 Object.defineProperty(SIMDopeColors.prototype, 'length', {
@@ -1093,8 +1094,7 @@ Object.defineProperty(SIMDopeColors.prototype, 'slice_uint8', {
 });
 
 SIMDopeColors.prototype.get_element = function (i) {
-    i = i | 0;
-    return SIMDopeColor(this.subarray_uint8(i, i+1));
+    return SIMDopeColor(this.slice_uint8(i|0, i+1|0));
 }
 SIMDopeColors.prototype.subarray = function (i, n) {
     i = i | 0;
@@ -1103,16 +1103,10 @@ SIMDopeColors.prototype.subarray = function (i, n) {
 }
 
 SIMDopeColors.prototype.set_element = function (i, el) {
-    i = multiply_uint_4(i);
-    this.buffer_setUint8(plus_uint(i, 0), el.a);
-    this.buffer_setUint8(plus_uint(i, 1), el.b);
-    this.buffer_setUint8(plus_uint(i, 2), el.g);
-    this.buffer_setUint8(plus_uint(i, 3), el.r);
+    this.buffer_setUint32(i|0, clamp_uint32(el.uint32));
 }
 SIMDopeColors.prototype.set_uint32_element = function (i, uint32) {
-    i = i | 0;
-    uint32 = clamp_uint32(uint32);
-    this.buffer_setUint32(i, uint32);
+    this.buffer_setUint32(i|0, clamp_uint32(uint32));
 }
 SIMDopeColors.prototype.get_uint32_element = function (i) {
     i = i | 0;
