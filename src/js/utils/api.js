@@ -1,7 +1,7 @@
 import { CURRENCY_COUNTRIES } from "../utils/constants";
 import get_browser_locales from "../utils/locales";
 import PouchDB from "pouchdb-core";
-import PouchDB_IDB from "pouchdb-adapter-idb";
+import PouchDB_IDB from "pouchdb-adapter-indexeddb";
 import PouchDB_memory from "pouchdb-adapter-memory";
 
 const init = () => {
@@ -10,14 +10,14 @@ const init = () => {
 
         if(!Boolean(window.settings_db)) {
 
-            PouchDB.on("created",  function(){
+            PouchDB.on("created",  async function(){
 
                 if(Boolean(window._pixa_settings)) {
 
                     window._pixa_settings = _merge_object({}, _get_default_settings());
                     resolve(_merge_object({}, window._pixa_settings));
 
-                    setTimeout(async() => {
+                    setTimeout(() => {
 
                         window.settings_db.post({
                             info: JSON.stringify(_merge_object({}, window._pixa_settings)),
@@ -30,9 +30,19 @@ const init = () => {
                 }
             });
 
-            PouchDB.plugin(PouchDB_memory);
-            PouchDB.plugin(PouchDB_IDB);
-            window.settings_db = new PouchDB("settings_db", {adapter: "idb", view_adapter: "memory", deterministic_revs: true, revs_limit: 1});
+            try {
+
+                PouchDB.plugin(PouchDB_memory);
+                PouchDB.plugin(PouchDB_IDB);
+                window.settings_db = new PouchDB("settings_db", {adapter: "indexeddb", view_adapter: "memory", deterministic_revs: true, revs_limit: 1});
+            }catch (e) {
+
+                reset_all_databases(function(){
+
+                    window.location.reload();
+                });
+            }
+
 
         }else if(Boolean(window._pixa_settings)){
 

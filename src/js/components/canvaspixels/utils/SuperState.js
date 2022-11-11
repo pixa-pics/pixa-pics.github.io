@@ -516,6 +516,17 @@ const SuperState = {
 
                 // TO DO --> GET PREVIOUS COMMIT OR FINISH THIS
                 return {
+                    from_text: function (size, text) {
+
+                        let indexes = new Set();
+                        let ctx = new_canvas_context_2d(width, height)
+                        ctx.font = `${size}px "Jura"`;
+                        ctx.fillStyle = "#ffffffff";
+                        ctx.textAlign = "center";
+                        ctx.fillText(text, width/2, height/2);
+                        get_shadow_indexes_from_canvas_context(ctx, indexes);
+                        return indexes;
+                    },
                     from_border: function(selection, inside, bold ) {
                         "use strict";
                         inside = inside || true;

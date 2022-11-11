@@ -117,9 +117,9 @@ module.exports = {
             chunks: 'async',
             minSize: 384 * 1024,
             maxSize: 2048 * 1024,
-            minChunks: 2,
+            minChunks: 4,
             maxAsyncRequests: 12,
-            maxInitialRequests: 4,
+            maxInitialRequests: 6,
             automaticNameDelimiter: '_',
             automaticNameMaxLength: 30,
             name: true,
@@ -129,9 +129,9 @@ module.exports = {
                     priority: -10
                 },
                 default: {
-                    minChunks: 2,
+                    minChunks: 4,
                     maxAsyncRequests: 12,
-                    maxInitialRequests: 4,
+                    maxInitialRequests: 6,
                     priority: -20,
                     reuseExistingChunk: false
                 }

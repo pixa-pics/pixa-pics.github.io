@@ -68,6 +68,7 @@ import { l, t } from "../utils/t";
 import ColorConversion from "../components/canvaspixels/utils/ColorConversion";
 import ZoomIn from "@material-ui/icons/ZoomIn";
 import ZoomOut from "@material-ui/icons/ZoomOut";
+import PixelDialogText from "../components/PixelDialogText";
 const color_conversion = Object.create(ColorConversion).new();
 
 const styles = theme => ({
@@ -2179,6 +2180,29 @@ class Pixel extends React.PureComponent {
         smooth_adjust(run);
     }
 
+    _close_text = () => {
+
+        this.setSt4te({_text_dialog_open: false}, () => {
+
+            this.forceUpdate();
+        });
+    };
+
+    _open_text = () => {
+
+        this.setSt4te({_text_dialog_open: true}, () => {
+
+            this.forceUpdate();
+        });
+    };
+
+    _draw_text = (size, text) => {
+
+        this._close_text();
+        const { write_text } = this.st4te._canvas;
+        write_text(size, text);
+    }
+
     render() {
 
         const {
@@ -2232,7 +2256,8 @@ class Pixel extends React.PureComponent {
             _perspective,
             _files_waiting_download,
             _time_ago_initiated,
-            _settings
+            _settings,
+            _text_dialog_open,
         } = this.st4te;
 
         let x = _x === -1 ? "out": _x + 1;
@@ -2332,6 +2357,7 @@ class Pixel extends React.PureComponent {
                                 on_upload_image_library={this._upload_image_library}
                                 on_import_image={(e) => {window.dispatchEvent(new Event("art-import-drawer")); this._handle_file_import(e);}}
                                 on_import_image_library={this._import_image_library}
+                                on_request_draw_text={this._open_text}
                                 on_download_image={this._download_image}
                                 on_download_svg={this._download_svg}
                             />
@@ -2435,6 +2461,7 @@ class Pixel extends React.PureComponent {
                             on_upload_image_library={this._upload_image_library}
                             on_import_image={this._handle_file_import}
                             on_import_image_library={this._import_image_library}
+                            on_request_draw_text={this._open_text}
                             on_download_image={this._download_image}
                             on_download_svg={this._download_svg}
                         />
@@ -2698,6 +2725,13 @@ class Pixel extends React.PureComponent {
                     object={_library}
                     onClose={this._close_library}
                     onSelectImage={this._from_library}
+                />
+
+                <PixelDialogText
+                    keepMounted={false}
+                    open={_text_dialog_open}
+                    onClose={this._close_text}
+                    onSuccess={this._draw_text}
                 />
 
 

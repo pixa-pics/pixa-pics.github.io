@@ -86,7 +86,7 @@ class ImageFileDialog extends React.Component {
         return (
             <Dialog open={open}
                     fullWidth={true}
-                    disablePortal={true}
+                    disablePortal={false}
                     onClose={this.props.onClose}
                     keepMounted={keepMounted}>
                 <DialogContent>

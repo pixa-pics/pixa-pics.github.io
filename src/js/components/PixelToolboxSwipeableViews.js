@@ -506,6 +506,11 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
         } catch (e) {}
     };
 
+    _text_to_new_layer = () => {
+
+        this.props.on_request_draw_text();
+    };
+
     _to_filter = (name) => {
 
         this.st4te.canvas.to_filter(name, this.st4te.slider_value);
@@ -1073,6 +1078,11 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                 local_i: 3,
                 label: "importing",
                 tools: [
+                    /*{
+                        icon: <FileImportIcon/>, text: "Text to new layer", sub: "", on_click: () => {
+                            this._text_to_new_layer()
+                        }
+                    },*/
                     {
                         icon: <FileImportIcon/>, text: "Library to import", sub: "", on_click: () => {
                             this._import_image_from_libary()

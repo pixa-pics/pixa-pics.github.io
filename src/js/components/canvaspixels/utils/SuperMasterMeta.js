@@ -327,52 +327,51 @@ const SuperMasterMeta = {
                                 }
                             }
 
-                            [index_changes, color_changes] = meta.super_blend.blend(false, false);
+                            meta.super_blend.blend(false, false).then(function([index_changes, color_changes]){
 
+                                if (index_changes.length > 0 || clear_canvas || is_there_new_dimension || force_update) {
 
-                            if (index_changes.length > 0 || clear_canvas || is_there_new_dimension || force_update) {
+                                    meta.super_canvas.pile(index_changes, color_changes).then(function () {
+                                        meta.super_canvas.unpile(pxl_width, pxl_height).then(function () {
+                                            meta.super_canvas.prender().then(function (b2) {
 
-                                meta.super_canvas.pile(index_changes, color_changes).then(function () {
-                                    meta.super_canvas.unpile(pxl_width, pxl_height).then(function () {
-                                        meta.super_canvas.prender().then(function (b2) {
+                                                meta.sraf.run_frame(() => {
+                                                    meta.super_canvas.render(b2).then(function () {
 
-                                            meta.sraf.run_frame(() => {
-                                                meta.super_canvas.render(b2).then(function () {
+                                                        state._previous_imported_image_pxls_positioned_keyset = imported_image_pxls_positioned_keyset;
+                                                        state._old_selection_pair_highlight = _selection_pair_highlight;
+                                                        state._old_layers_string_id = old_layers_string_id;
+                                                        state._old_full_pxls = full_pxls;
+                                                        state._last_paint_timestamp = requested_at;
+                                                        state._did_hide_canvas_content = hide_canvas_content;
+                                                        state._old_pxl_width = parseInt(pxl_width);
+                                                        state._old_pxl_height = parseInt(pxl_height);
+                                                        state._is_there_new_dimension = false;
+                                                        resolve();
+                                                    });
+                                                }, is_there_new_dimension, false);
+                                            }).catch(function () {
 
-                                                    state._previous_imported_image_pxls_positioned_keyset = imported_image_pxls_positioned_keyset;
-                                                    state._old_selection_pair_highlight = _selection_pair_highlight;
-                                                    state._old_layers_string_id = old_layers_string_id;
-                                                    state._old_full_pxls = full_pxls;
-                                                    state._last_paint_timestamp = requested_at;
-                                                    state._did_hide_canvas_content = hide_canvas_content;
-                                                    state._old_pxl_width = parseInt(pxl_width);
-                                                    state._old_pxl_height = parseInt(pxl_height);
-                                                    state._is_there_new_dimension = false;
-                                                    resolve();
-                                                });
-                                            }, is_there_new_dimension, false);
+                                                setTimeout(promise, 10, resolve, reject)
+                                            });
                                         }).catch(function () {
 
-                                            setTimeout(promise, 10, resolve, reject)
+                                            state._is_there_new_dimension = is_there_different_dimension;
+                                            notifiers.update(false, true).then(function () {
+                                                setTimeout(promise, 10, resolve, reject)
+                                            }).catch(function () {
+                                                setTimeout(promise, 10, resolve, reject)
+                                            });
                                         });
                                     }).catch(function () {
 
-                                        state._is_there_new_dimension = is_there_different_dimension;
-                                        notifiers.update(false, true).then(function () {
-                                            setTimeout(promise, 10, resolve, reject)
-                                        }).catch(function () {
-                                            setTimeout(promise, 10, resolve, reject)
-                                        });
+                                        setTimeout(promise, 10, resolve, reject);
                                     });
-                                }).catch(function () {
+                                } else {
 
                                     setTimeout(promise, 10, resolve, reject);
-                                });
-                            } else {
-
-                                setTimeout(promise, 10, resolve, reject);
-                            }
-
+                                }
+                            });
                         }
                     }else {
 

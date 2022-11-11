@@ -499,31 +499,32 @@ class CanvasPixels extends React.PureComponent {
                 super_blend.stack(2, top_layer_pxl_colors[top_layer_pxls[i]]|0, top_layer_opacity, 0);
             }
 
-            const [index_changes, color_changes] = super_blend.blend(false, false);
-            const fp = new DataView(new ArrayBuffer(pxl_height * pxl_width * 4));
+            super_blend.blend(false, false).then(function([index_changes, color_changes]){
 
-            let length = index_changes.length|0;
-            for(let i = 0; simdops.int_less(i, length); i = simdops.plus_uint(i, 1)) {
-                fp.setUint32(simdops.multiply_uint(index_changes[i], 4), color_changes[i]);
-            }
+                const fp = new DataView(new ArrayBuffer(pxl_height * pxl_width * 4));
 
-            const image_data = new ImageData(new Uint8ClampedArray(fp.buffer), pxl_width, pxl_height);
-            const {new_pxl_colors, new_pxls} = this._get_pixels_palette_and_list_from_image_data(image_data, true);
-            super_blend.clear();
+                let length = index_changes.length|0;
+                for(let i = 0; simdops.int_less(i, length); i = simdops.plus_uint(i, 1)) {
+                    fp.setUint32(simdops.multiply_uint(index_changes[i], 4), color_changes[i]);
+                }
 
-            _layers.splice(at_index-1, 2, new_layer);
-            _s_pxls.splice(at_index-1, 2, new_pxls);
-            _s_pxl_colors.splice(at_index-1, 2, new_pxl_colors);
+                const image_data = new ImageData(new Uint8ClampedArray(fp.buffer), pxl_width, pxl_height);
+                const {new_pxl_colors, new_pxls} = this._get_pixels_palette_and_list_from_image_data(image_data, true);
+                super_blend.clear();
 
-            this.super_state.set_state({
-                _layer_index: at_index-1,
-                _layers,
-                _s_pxls,
-                _s_pxl_colors,
-                _old_pxl_colors: new Uint32Array(_s_pxl_colors[0].length),
-                _last_action_timestamp: Date.now(),
-            }).then(() => {this._maybe_save_state(null, true)});
+                _layers.splice(at_index-1, 2, new_layer);
+                _s_pxls.splice(at_index-1, 2, new_pxls);
+                _s_pxl_colors.splice(at_index-1, 2, new_pxl_colors);
 
+                this.super_state.set_state({
+                    _layer_index: at_index-1,
+                    _layers,
+                    _s_pxls,
+                    _s_pxl_colors,
+                    _old_pxl_colors: new Uint32Array(_s_pxl_colors[0].length),
+                    _last_action_timestamp: Date.now(),
+                }).then(() => {this._maybe_save_state(null, true)});
+            });
         }
     };
 
@@ -1347,6 +1348,15 @@ class CanvasPixels extends React.PureComponent {
 
         delete this.hasnt_been_mount;
     }
+
+    write_text = (size, text) => {
+
+        const li = this.super_state.get_state()._layer_index;
+        this.new_layer(li);
+        this.change_active_layer(li+1)
+        const indexes = this.super_state.create_shape().from_text(size, text);
+        this.super_state.paint_shape(indexes, this.super_state.get_state().pxl_current_color_uint32);
+    };
 
     _match_color = (color_a, color_b, threshold) => {
 
