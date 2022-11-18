@@ -1514,14 +1514,14 @@ class CanvasPixels extends React.PureComponent {
 
                     super_state_object._saving_json_state_history_running = true;
 
-                    let new_current_state = Object.assign({}, {
+                    let new_current_state = {
                         _timestamp: parseInt(Date.now()),
                         _id: _id.toString(),
                         pxl_width: parseInt(pxl_width),
                         pxl_height: parseInt(pxl_height),
                         _original_image_index: parseInt(_original_image_index),
                         _layers: Array.from(_layers).map((l, li) => {
-                            return Object.assign({}, {
+                            return {
                                 id: parseInt(l.id),
                                 hash: l.hash + "",
                                 name: l.name + "",
@@ -1530,14 +1530,14 @@ class CanvasPixels extends React.PureComponent {
                                 thumbnail: l.thumbnail + "" ,
                                 colors: Array.from(l.colors || []),
                                 number_of_colors: parseInt(l.number_of_colors || 0),
-                            });
+                            };
                         }),
                         _layer_index: parseInt(_layer_index),
                         _s_pxls: Array.from(_s_pxls.map(function(a){return Uint16Array.from(a);})),
                         _s_pxl_colors: Array.from(_s_pxl_colors.map(function(a){return Uint32Array.from(a);})),
                         _pxl_indexes_of_selection: new Set(_pxl_indexes_of_selection),
                         _pencil_mirror_index: parseInt(_pencil_mirror_index),
-                    });
+                    };
 
                     let super_state = this.super_state;
                     let _notify_can_undo_redo_change = this._notify_can_undo_redo_change;
@@ -1554,7 +1554,7 @@ class CanvasPixels extends React.PureComponent {
                             const leading_change = Boolean(start > super_state.get_state()._layers_defined_at);
                             let current_state = Object.assign({}, new_current_state);
                             current_state._layers = Array.from(new_current_state._layers.map(function(l) {
-                                return Object.assign({},{
+                                return {
                                     id: l.id | 0,
                                     hash: l.hash + "",
                                     name: l.name + "",
@@ -1562,7 +1562,7 @@ class CanvasPixels extends React.PureComponent {
                                     opacity: parseFloat(l.opacity),
                                     colors: Array.from(l.colors),
                                     number_of_colors: l.number_of_colors | 0,
-                                });
+                                };
                             }));
 
                             if(has_changed && leading_change && current_state_not_empty) {
@@ -1715,7 +1715,7 @@ class CanvasPixels extends React.PureComponent {
 
                             _notify_can_undo_redo_change();
                             if(set_anyway_if_changes_callback !== null) {
-                                set_anyway_if_changes_callback(Object.assign({}, super_state_object._json_state_history), Boolean(_saving_json_state_history_ran_timestamp === now));
+                                set_anyway_if_changes_callback(super_state_object._json_state_history, Boolean(_saving_json_state_history_ran_timestamp === now));
                             }
                         });
 
@@ -1724,13 +1724,13 @@ class CanvasPixels extends React.PureComponent {
             }else {
 
                 if(set_anyway_if_changes_callback !== null) {
-                    set_anyway_if_changes_callback(Object.assign({}, super_state_object._json_state_history), false);
+                    set_anyway_if_changes_callback(super_state_object._json_state_history, false);
                 }
             }
         }else {
 
             if(set_anyway_if_changes_callback !== null) {
-                set_anyway_if_changes_callback(Object.assign({}, super_state_object._json_state_history), false);
+                set_anyway_if_changes_callback( super_state_object._json_state_history, false);
             }
         }
     };

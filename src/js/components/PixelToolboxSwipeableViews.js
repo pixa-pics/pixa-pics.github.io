@@ -364,6 +364,19 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
         };
         this.cbor = cbor;
         this.xxhash32js = function (buffer_uint8){ return XXHashJS.h32(0xFADE).update(buffer_uint8).digest()};
+        this._cache = {
+            "palette": null,
+            "image": null,
+            "layers": null,
+            "tools": null,
+            "selection": null,
+            "effects": null,
+            "filters": null
+        };
+        Object.keys(this._cache).map((name) => {
+
+           this.update_cache_view(name);
+        });
     };
 
     setSt4te(st4te, callback) {
@@ -421,32 +434,34 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
         let layers_colors_max = 0;
         Array.from(new_props.layers).forEach(function(l){ if(layers_colors_max < parseInt(l.number_of_colors)) { layers_colors_max = parseInt(l.number_of_colors);}});
         const too_much_colors_no_vector = Boolean(layers_colors_max >= 128);
-        if (Boolean(new_props.should_update || should_update) && (
-            too_much_colors_no_vector !== this.st4te.too_much_colors_no_vector,
-            view_name_index !== new_props.view_name_index ||
-            previous_view_name_index !== new_props.previous_view_name_index ||
-            view_names !== new_props.view_names ||
+
+        const view_name_changed = Boolean(view_name_index !== new_props.view_name_index);
+        const something_changed_in_view = Boolean(Boolean(new_props.should_update || should_update) && Boolean((
+            Boolean(too_much_colors_no_vector) !== Boolean(this.st4te.too_much_colors_no_vector) ||
+            parseInt(previous_view_name_index) !== parseInt(new_props.previous_view_name_index) ||
             parseInt(layer_index) !== parseInt(new_props.layer_index) ||
-            is_image_import_mode !== new_props.is_image_import_mode ||
-            hide_canvas_content !== new_props.hide_canvas_content ||
-            show_original_image_in_background !== new_props.show_original_image_in_background ||
-            show_transparent_image_in_background !== new_props.show_transparent_image_in_background ||
-            can_undo !== new_props.can_undo ||
-            can_redo !== new_props.can_redo ||
-            current_color !== new_props.current_color ||
-            second_color !== new_props.second_color ||
-            slider_value !== new_props.slider_value ||
-            tool !== new_props.tool ||
-            width !== new_props.width ||
-            height !== new_props.height ||
-            last_filters_hash !== new_props.last_filters_hash ||
-            select_mode !== new_props.select_mode ||
-            pencil_mirror_mode !== new_props.pencil_mirror_mode ||
-            is_something_selected !== new_props.is_something_selected ||
-            import_size !== new_props.import_size ||
-            import_colorize !== new_props.import_colorize ||
-           filters_preview_progression !== new_props.filters_preview_progression
-        )) {} else {
+            Boolean(is_image_import_mode) !==  Boolean(new_props.is_image_import_mode) ||
+            Boolean(hide_canvas_content) !==  Boolean(new_props.hide_canvas_content) ||
+            Boolean(show_original_image_in_background) !==  Boolean(new_props.show_original_image_in_background) ||
+            Boolean(show_transparent_image_in_background) !==  Boolean(new_props.show_transparent_image_in_background) ||
+            Boolean(can_undo) !==  Boolean(new_props.can_undo) ||
+            Boolean(can_redo) !==  Boolean(new_props.can_redo) ||
+            current_color.toString() !== new_props.current_color.toString() ||
+            second_color.toString() !== new_props.second_color.toString() ||
+            parseFloat(slider_value) !== parseFloat(new_props.slider_value) ||
+            tool.toString() !== new_props.tool.toString() ||
+            parseInt(width) !== parseInt(new_props.width) ||
+            parseInt(height) !== parseInt(new_props.height) ||
+            last_filters_hash.toString() !== new_props.last_filters_hash.toString() ||
+            select_mode.toString() !== new_props.select_mode.toString() ||
+            Boolean(pencil_mirror_mode) !== Boolean(new_props.pencil_mirror_mode) ||
+            Boolean(is_something_selected) !== Boolean(new_props.is_something_selected) ||
+            parseInt(import_size) !== parseInt(new_props.import_size) ||
+            Boolean(import_colorize) !== Boolean(new_props.import_colorize) ||
+            parseFloat(filters_preview_progression) !== parseFloat(new_props.filters_preview_progression)
+        )));
+
+        if (something_changed_in_view || view_name_changed) {} else {
 
             const new_layers_hash = this.xxhash32js(this.cbor(new_props.layers, true));
             if(layers_hash === new_layers_hash) {
@@ -491,9 +506,13 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
             }
         }
 
-        this.setSt4te({...new_props, ...props_override, slider_value: parseFloat(new_props.slider_value)}, () => {
-            this.forceUpdate();
-        });
+        if(view_name_changed || something_changed_in_view) {
+            this.setSt4te({...new_props, ...props_override, slider_value: parseFloat(new_props.slider_value)}, () => {
+
+                if(something_changed_in_view) {this.update_cache_view();}
+                this.forceUpdate();
+            });
+        }
     }
 
     compute_filters_preview = () => {
@@ -522,6 +541,11 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
     get_action_panel_names = () => {
 
         return ["palette", "image", "layers", "tools", "selection", "effects", "filters"];
+    };
+
+    get_action_panel_cache = (name) => {
+
+        return this._cache[name];
     };
 
     get_before_action_panel = (index) => {
@@ -1765,6 +1789,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
         this.setSt4te({_compressed: !this.st4te._compressed}, () => {
 
+            this.update_cache_view();
             this.forceUpdate();
         });
     }
@@ -1773,6 +1798,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
         this.setSt4te({_vectorized: !this.st4te._vectorized}, () => {
 
+            this.update_cache_view();
             this.forceUpdate();
         });
     }
@@ -1845,6 +1871,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
         this.setSt4te({_anchor_el: event.currentTarget}, () => {
 
+            this.update_cache_view();
             this.forceUpdate();
         });
     };
@@ -1853,6 +1880,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
         this.setSt4te({_anchor_el: null}, () => {
 
+            this.update_cache_view();
             this.forceUpdate();
         });
     };
@@ -1861,6 +1889,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
         this.setSt4te({_saturation: value}, () => {
 
+            this.update_cache_view();
             this.forceUpdate();
         });
     };
@@ -1869,6 +1898,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
         this.setSt4te({_luminosity: value}, () => {
 
+            this.update_cache_view();
             this.forceUpdate();
         });
     };
@@ -1877,6 +1907,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
         this.setSt4te({_opacity: value}, () => {
 
+            this.update_cache_view();
             this.forceUpdate();
         });
     };
@@ -1988,6 +2019,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
                 this.setSt4te({_layer_opened: false}, () => {
 
+                    this.update_cache_view();
                     this.forceUpdate();
                 });
             }
@@ -1997,6 +2029,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
             this.setSt4te({_layer_opened: !_layer_opened}, () => {
 
+                this.update_cache_view();
                 this.forceUpdate();
             });
         }
@@ -2010,7 +2043,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
         }
     };
 
-    render() {
+    update_cache_view = (name) => {
 
         const {
             classes,
@@ -2021,6 +2054,107 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
         } = this.st4te;
 
         const _filters_preview_progression_stepped = Math.round(parseFloat(filters_preview_progression / 7) * 7);
+        const index = view_name_index;
+        name = name || this.get_action_panel_names()[view_name_index];
+
+        this._cache[name] = (
+            <List key={name} style={{willChange: (Boolean(parseInt(_filters_preview_progression_stepped) === 0 || name !== "filters") ? "": "contents").toString(), minHeight: "100%", contain: "style layout paint", overflow: "visible", contentVisibility: "visible", paddingTop: 0}}>
+
+                {this.get_before_action_panel(view_name_index)}
+
+                {
+                    this.get_action_panel(view_name_index).map((action_set) => {
+                        return (
+                            <div key={name + "-" + action_set.label + "-" + action_set.text.toLowerCase() + "-wrapper"} className={`swipetoolbox_i_${index}_${action_set.local_i}`}>
+                                <ListSubheader className={classes.listSubHeader}>
+                                    <span>{action_set.icon}</span>
+                                    <span>{action_set.text}</span>
+                                    {Boolean(action_set.progression) &&
+                                        <LinearProgress
+                                            color="primary"
+                                            variant="determinate"
+                                            role="progressbar" aria-valuenow={action_set.progression} aria-valuemin="0" aria-valuemax="100"
+                                            aria-label={`main-progressbar-${action_set.text}`}
+                                            className={classes.linearProgress}
+                                            value={parseInt(action_set.progression) % 100} />
+                                    }
+                                </ListSubheader>
+                                {
+                                    Boolean(Boolean(name === "filters" || action_set.label === "vector") && too_much_colors_no_vector) ?
+                                        <ListItem button={name !== "filters"} onClick={() => {canvas.to_less_color("auto")}}>
+                                            <ListItemIcon><LessColorAutoIcon className={classes.listItemIcon} /></ListItemIcon>
+                                            <ListItemText primary="Auto reduce color palette" secondary={"May you need less color in your palette?"} />
+                                        </ListItem>: Boolean(name === "filters") ?
+                                            <blockquote>DID YOU KNOW? Just double-tap/right-click around the drawing area to open a context menu with shortcuts including some to adjust saturation and contrast like a professional...</blockquote>: null
+                                }
+                                {
+                                    Boolean(name === "filters" ) &&
+                                    <ListItem button={true} onClick={this.compute_filters_preview}>
+                                        <ListItemIcon><TimeIcon className={classes.listItemIcon} /></ListItemIcon>
+                                        <ListItemText primary="Refresh filter previews" />
+                                    </ListItem>
+                                }
+                                <div className={name + " " + classes.listItems}
+                                     key={name + "-" + action_set.label + "-" + action_set.text.toLowerCase() + "-inner"}
+                                     style={Object.assign({
+                                         flexWrap: "wrap",
+                                         alignContent: "stretch",
+                                         flexDirection: "row",
+                                         justifyContent: "flex-start",
+                                     }, Boolean(action_set.text.toLowerCase().includes("filter")) ? {padding: "0px !important", margin: "8px !important"}: {})}>
+                                    {action_set.tools.map((tool, index) => {
+                                        return tool.for ? (
+                                                <div key={name + "-" + action_set.label + tool.text.toLowerCase().replaceAll(" ", "-")}>
+                                                    <input
+                                                        accept="image/jpg, image/jpeg, image/png, image/svg, image/webp, image/gif"
+                                                        style={{display: "none"}}
+                                                        id={tool.for}
+                                                        type="file"
+                                                        onChange={tool.on_click}
+                                                    />
+                                                    <ListItem component="label" key={index + (tool.disabled ? "-0": "-1").toString()} htmlFor={tool.for} button disabled={tool.disabled}>
+                                                        <ListItemIcon className={classes.listItemIcon} style={tool.style || {}}>
+                                                            {tool.icon}
+                                                        </ListItemIcon>
+                                                        <ListItemText className={classes.ListItemText}
+                                                                      primary={tool.text} secondary={tool.sub}/>
+                                                    </ListItem>
+                                                </div>
+                                            ):
+                                            (
+                                                <ListItem key={name + "-" + action_set.label + (tool.text || "").toLowerCase().replaceAll(" ", "-")} button disabled={tool.disabled || false}
+                                                          onClick={tool.on_click}>
+                                                    <ListItemIcon className={classes.listItemIcon} style={tool.style || {}}>
+                                                        {tool.icon}
+                                                    </ListItemIcon>
+                                                    <ListItemText className={classes.ListItemText} style={tool.text_style ||{}}
+                                                                  primary={tool.text} secondary={tool.sub}/>
+                                                </ListItem>
+                                            );
+                                    })}
+                                </div>
+                            </div>
+                        );
+                    })
+                }
+
+                {this.get_after_action_panel(view_name_index)}
+
+                <div className={classes.thanksSponsorsGhost} >
+                    <h4>INTERESTED INTO SPONSORING? Please email-us at: <a href={"mailto:pixa.pics@protonmail.com"}>pixa.pics@protonmail.com</a>.</h4>
+                    <h3>>>> Thanks for support!</h3>
+                </div>
+                <div className={classes.thanksSponsors}>
+                    <h4>INTERESTED INTO SPONSORING? Please email-us at: <a style={{color: "#3f9bd3"}} href={"mailto:pixa.pics@protonmail.com"}>pixa.pics@protonmail.com</a>.</h4>
+                    <h3>>>> Thanks for support</h3>
+                </div>
+            </List>
+        );
+    }
+
+    render() {
+
+        const {view_name_index} = this.st4te;
 
         return (
             <SwipeableViews
@@ -2039,103 +2173,11 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
                         if(view_name_index !== index) {
                             return (<List key={name} style={{ willChange: "none", minHeight: "100%", contain: "style layout paint", overflow: "auto", contentVisibility: "visible", paddingTop: 0}} />);
+                        }else {
+
+                            return this._cache[name];
                         }
-
-                        return (
-                            <List key={name} style={{willChange: (Boolean(parseInt(_filters_preview_progression_stepped) === 0 || name !== "filters") ? "": "contents").toString(), minHeight: "100%", contain: "style layout paint", overflow: "visible", contentVisibility: "visible", paddingTop: 0}}>
-
-                                {this.get_before_action_panel(index)}
-
-                                {
-                                    this.get_action_panel(index).map((action_set) => {
-                                        return (
-                                            <div key={name + "-" + action_set.label + "-" + action_set.text.toLowerCase() + "-wrapper"} className={`swipetoolbox_i_${index}_${action_set.local_i}`}>
-                                                <ListSubheader className={classes.listSubHeader}>
-                                                    <span>{action_set.icon}</span>
-                                                    <span>{action_set.text}</span>
-                                                    {Boolean(action_set.progression) &&
-                                                    <LinearProgress
-                                                        color="primary"
-                                                        variant="determinate"
-                                                        role="progressbar" aria-valuenow={action_set.progression} aria-valuemin="0" aria-valuemax="100"
-                                                        aria-label={`main-progressbar-${action_set.text}`}
-                                                        className={classes.linearProgress}
-                                                        value={parseInt(action_set.progression) % 100} />
-                                                    }
-                                                </ListSubheader>
-                                                {
-                                                    Boolean(Boolean(name === "filters" || action_set.label === "vector") && too_much_colors_no_vector) ?
-                                                        <ListItem button={name !== "filters"} onClick={() => {canvas.to_less_color("auto")}}>
-                                                            <ListItemIcon><LessColorAutoIcon className={classes.listItemIcon} /></ListItemIcon>
-                                                            <ListItemText primary="Auto reduce color palette" secondary={"May you need less color in your palette?"} />
-                                                        </ListItem>: Boolean(name === "filters") ?
-                                                            <blockquote>DID YOU KNOW? Just double-tap/right-click around the drawing area to open a context menu with shortcuts including some to adjust saturation and contrast like a professional...</blockquote>: null
-                                                }
-                                                {
-                                                    Boolean(name === "filters" ) &&
-                                                    <ListItem button={true} onClick={this.compute_filters_preview}>
-                                                        <ListItemIcon><TimeIcon className={classes.listItemIcon} /></ListItemIcon>
-                                                        <ListItemText primary="Refresh filter previews" />
-                                                    </ListItem>
-                                                }
-                                                <div className={name + " " + classes.listItems}
-                                                     key={name + "-" + action_set.label + "-" + action_set.text.toLowerCase() + "-inner"}
-                                                     style={Object.assign({
-                                                                 flexWrap: "wrap",
-                                                                 alignContent: "stretch",
-                                                                 flexDirection: "row",
-                                                                 justifyContent: "flex-start",
-                                                             }, Boolean(action_set.text.toLowerCase().includes("filter")) ? {padding: "0px !important", margin: "8px !important"}: {})}>
-                                                    {action_set.tools.map((tool, index) => {
-                                                        return tool.for ? (
-                                                            <div key={name + "-" + action_set.label + tool.text.toLowerCase().replaceAll(" ", "-")}>
-                                                                <input
-                                                                    accept="image/jpg, image/jpeg, image/png, image/svg, image/webp, image/gif"
-                                                                    style={{display: "none"}}
-                                                                    id={tool.for}
-                                                                    type="file"
-                                                                    onChange={tool.on_click}
-                                                                />
-                                                                <ListItem component="label" key={index + (tool.disabled ? "-0": "-1").toString()} htmlFor={tool.for} button disabled={tool.disabled}>
-                                                                    <ListItemIcon className={classes.listItemIcon} style={tool.style || {}}>
-                                                                        {tool.icon}
-                                                                    </ListItemIcon>
-                                                                    <ListItemText className={classes.ListItemText}
-                                                                                  primary={tool.text} secondary={tool.sub}/>
-                                                                </ListItem>
-                                                            </div>
-                                                        ):
-                                                        (
-                                                            <ListItem key={name + "-" + action_set.label + (tool.text || "").toLowerCase().replaceAll(" ", "-")} button disabled={tool.disabled || false}
-                                                                      onClick={tool.on_click}>
-                                                                <ListItemIcon className={classes.listItemIcon} style={tool.style || {}}>
-                                                                    {tool.icon}
-                                                                </ListItemIcon>
-                                                                <ListItemText className={classes.ListItemText} style={tool.text_style ||{}}
-                                                                              primary={tool.text} secondary={tool.sub}/>
-                                                            </ListItem>
-                                                        );
-                                                    })}
-                                                </div>
-                                            </div>
-                                        );
-                                    })
-                                }
-
-                                {this.get_after_action_panel(index)}
-
-                                <div className={classes.thanksSponsorsGhost} >
-                                    <h4>INTERESTED INTO SPONSORING? Please email-us at: <a href={"mailto:pixa.pics@protonmail.com"}>pixa.pics@protonmail.com</a>.</h4>
-                                    <h3>>>> Thanks for support!</h3>
-                                </div>
-                                <div className={classes.thanksSponsors}>
-                                    <h4>INTERESTED INTO SPONSORING? Please email-us at: <a style={{color: "#3f9bd3"}} href={"mailto:pixa.pics@protonmail.com"}>pixa.pics@protonmail.com</a>.</h4>
-                                    <h3>>>> Thanks for support</h3>
-                                </div>
-                            </List>
-                        );
-                    })
-                }
+                })}
             </SwipeableViews>
         );
     }

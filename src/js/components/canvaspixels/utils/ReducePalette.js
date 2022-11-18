@@ -89,6 +89,26 @@ var fu = async function(
             "use strict";
             return new Uint32Array(rgba.reverse().buffer)[0];
         },
+        to_hsla_from_rgba: function(rgba) {
+            "use strict";
+            let [r, g, b, a] = rgba;
+            r /= 255, g /= 255, b /= 255, a /= 255;
+            const max = Math.max(r, g, b), min = Math.min(r, g, b);
+            let h, s, l = (max + min) / 2;
+            if(max == min){
+                h = s = 0; // achromatic
+            }else{
+                var d = max - min;
+                s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+                switch(max){
+                    case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+                    case g: h = (b - r) / d + 2; break;
+                    case b: h = (r - g) / d + 4; break;
+                }
+                h /= 6;
+            }
+            return Array.of((h * 360)|0, (s * 100)|0, (l * 100)|0, (a * 100)|0);
+        },
         match_color: function(color_a, color_b, threshold) {
             "use strict";
             color_a = (color_a | 0) & 0xFFFFFFFF;
@@ -161,6 +181,7 @@ var fu = async function(
             is_bucket_threshold_auto_goal_reached = true;
         }
 
+        var max_hue = 360;
         var attempt = 1;
         var new_pxls;
         var new_pxl_colors;
@@ -177,6 +198,8 @@ var fu = async function(
             new_pxls = Uint16Array.from(pxls);
             new_pxl_colors = Uint32Array.from(pxl_colors);
 
+            var max_cluster = Math.ceil(new_pxl_colors.length / 100)+1;
+            var cluster_size = Math.ceil(max_hue / max_cluster);
             var indexes_of_colors_proceed = new Set();
             var pxl_colors_usage = new Map();
 
@@ -191,46 +214,67 @@ var fu = async function(
                     pxl_colors_usage.set(color_index, n+1);
                 });
 
+                var color_clusters = new Array(12);
+                var index_clusters = new Array(12);
 
-                new_pxl_colors.forEach(function(color_a, index_of_color_a) {
+                for(var c = 0; c < max_cluster; c++){
 
-                    index_of_color_a = index_of_color_a | 0;
-                    color_a = (color_a | 0) & 0xFFFFFFFF;
+                    color_clusters[c] = new Array();
+                    index_clusters[c] = new Array();
+                }
 
-                    if(!indexes_of_colors_proceed.has(index_of_color_a)) {
+                new_pxl_colors.forEach(function (color, index){
 
-                        var color_a_usage = pxl_colors_usage.get(index_of_color_a);
-
-                        new_pxl_colors.forEach(function(color_b, index_of_color_b) {
-
-                            index_of_color_b = index_of_color_b | 0;
-                            color_b = (color_b | 0) & 0xFFFFFFFF;
-
-                            if(index_of_color_a !== index_of_color_b && !indexes_of_colors_proceed.has(index_of_color_b)) {
-
-                                var color_b_usage = pxl_colors_usage.get(index_of_color_b);
-                                var color_a_more_used = color_a_usage > color_b_usage;
-
-                                var color_usage_difference = color_a_more_used ? color_a_usage / color_b_usage: color_b_usage / color_a_usage;
-                                var weighted_threshold = (threshold + (threshold * (1 - 1 / color_usage_difference) * weight_applied_to_color_usage_difference)) / (1 + weight_applied_to_color_usage_difference);
-
-                                if(coco.match_color(color_a, color_b, weighted_threshold)) {
-
-                                    var color = color_a_more_used ?
-                                        coco.blend_colors(new_pxl_colors[index_of_color_a], new_pxl_colors[index_of_color_b], 1 / (color_usage_difference), true, false):
-                                        coco.blend_colors(new_pxl_colors[index_of_color_b], new_pxl_colors[index_of_color_a], 1 / (color_usage_difference), true, false);
-
-                                    new_pxl_colors[index_of_color_a] = (color | 0) & 0xFFFFFFFF;
-                                    new_pxl_colors[index_of_color_b] = (color | 0) & 0xFFFFFFFF;
-                                    indexes_of_colors_proceed.add(index_of_color_a);
-                                    indexes_of_colors_proceed.add(index_of_color_b);
-                                }
-                            }
-                        });
-                    }
+                    var hue = coco.to_hsla_from_rgba(coco.to_rgba_from_uint32(color))[0];
+                    color_clusters[Math.floor(hue/cluster_size)].push(color);
+                    index_clusters[Math.floor(hue/cluster_size)].push(index);
                 });
 
-                indexes_of_colors_proceed.clear();
+                for(var c = 0; c < max_cluster; c++){
+
+                    var color_cluster = color_clusters[c];
+                    var index_cluster = index_clusters[c];
+
+                    color_cluster.forEach(function(color_a, index_of_color_a) {
+
+                        index_of_color_a = index_cluster[index_of_color_a];
+                        color_a = (color_a | 0) & 0xFFFFFFFF;
+
+                        if(!indexes_of_colors_proceed.has(index_of_color_a)) {
+
+                            var color_a_usage = pxl_colors_usage.get(index_of_color_a);
+
+                            color_cluster.forEach(function(color_b, index_of_color_b) {
+
+                                index_of_color_b = index_cluster[index_of_color_b];
+                                color_b = (color_b | 0) & 0xFFFFFFFF;
+
+                                if(index_of_color_a !== index_of_color_b && !indexes_of_colors_proceed.has(index_of_color_b)) {
+
+                                    var color_b_usage = pxl_colors_usage.get(index_of_color_b);
+                                    var color_a_more_used = color_a_usage > color_b_usage;
+
+                                    var color_usage_difference = color_a_more_used ? color_a_usage / color_b_usage: color_b_usage / color_a_usage;
+                                    var weighted_threshold = (threshold + (threshold * (1 - 1 / color_usage_difference) * weight_applied_to_color_usage_difference)) / (1 + weight_applied_to_color_usage_difference);
+
+                                    if(coco.match_color(color_a, color_b, weighted_threshold)) {
+
+                                        var color = color_a_more_used ?
+                                            coco.blend_colors(new_pxl_colors[index_of_color_a], new_pxl_colors[index_of_color_b], 1 / (color_usage_difference), true, false):
+                                            coco.blend_colors(new_pxl_colors[index_of_color_b], new_pxl_colors[index_of_color_a], 1 / (color_usage_difference), true, false);
+
+                                        new_pxl_colors[index_of_color_a] = (color | 0) & 0xFFFFFFFF;
+                                        new_pxl_colors[index_of_color_b] = (color | 0) & 0xFFFFFFFF;
+                                        indexes_of_colors_proceed.add(index_of_color_a);
+                                        indexes_of_colors_proceed.add(index_of_color_b);
+                                    }
+                                }
+                            });
+                        }
+                    });
+                    indexes_of_colors_proceed.clear();
+                }
+
                 pxl_colors_usage.clear();
                 var r = coco.clean_duplicate_colors(new_pxls, new_pxl_colors);
                 new_pxls = r[0];
@@ -270,7 +314,7 @@ const ReducePalette = {
     ) {
 
         const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
-        const asyncs = `var t=async function(t,r,e,a,n,i,_){"use strict";var o={color_a_dv:new DataView(new ArrayBuffer(4)),color_b_dv:new DataView(new ArrayBuffer(4)),dv_match_8_bytes_uint8:new DataView(new ArrayBuffer(8)),base:new Uint8ClampedArray(4),added:new Uint8ClampedArray(4),mix:new Uint8ClampedArray(4),blend_colors:function(t,r,e,a,n){if(a=a||!1,n=n||!1,t=4294967295&(0|t),r=4294967295&(0|r),0===(e=e||1)&&a)return 0;var i=this.to_rgba_from_uint32(t),_=this.to_rgba_from_uint32(r);if(255===_[3]&&1===e)return r;var o=i[3]/255,s=_[3]/255*e,u=new Uint8ClampedArray(4),c=0;if(o>0&&s>0){var f=s/(c=n?s+o:1-(1-s)*(1-o)),h=o*(1-s)/c;u.set(Uint8ClampedArray.of(_[0]*f+i[0]*h,_[1]*f+i[1]*h,_[2]*f+i[2]*h))}else s>0?(c=_[3]/255,u.set(_)):(c=i[3]/255,u.set(i));return n&&(c/=2),u.set(Uint8ClampedArray.of(255*c),3),0|this.to_uint32_from_rgba(u)},to_rgba_from_uint32:function(t){return t=4294967295&(0|t),new Uint8ClampedArray(Uint32Array.of(t).buffer).reverse()},to_uint32_from_rgba:function(t){return new Uint32Array(t.reverse().buffer)[0]},match_color:function(t,r,e){return t=4294967295&(0|t),r=4294967295&(0|r),255===(e=255*e|0)||(0===e?Boolean(t===r):(this.dv_match_8_bytes_uint8.setUint32(0,t),this.dv_match_8_bytes_uint8.setUint32(4,r),Boolean(Math.abs(this.dv_match_8_bytes_uint8.getUint8(3)-this.dv_match_8_bytes_uint8.getUint8(7))<e&&Math.abs(this.dv_match_8_bytes_uint8.getUint8(2)-this.dv_match_8_bytes_uint8.getUint8(6))<e&&Math.abs(this.dv_match_8_bytes_uint8.getUint8(1)-this.dv_match_8_bytes_uint8.getUint8(5))<e&&Math.abs(this.dv_match_8_bytes_uint8.getUint8(0)-this.dv_match_8_bytes_uint8.getUint8(4))<e)))},clean_duplicate_colors(t,r){for(var e=new Map,a=0|t.length,n=new Uint16Array(a),i=0,_=0;_<a;_=(_+1|0)>>>0){i=4294967295&(0|r[(0|t[(0|_)>>>0])>>>0]);var o=e.get(i);void 0===o&&(o=(0|e.size)>>>0,e.set(i,o)),n[_]=(0|o)>>>0}var s=new Uint32Array(e.size);for(var u of e)s[u[1]]=4294967295&(0|u[0]);return Array.of(n,s)}};return new Promise((function(s){var u="auto"===e,c=!u,f=15,h=new Set;((i=null!==i?i:Math.max(Math.sqrt(r.length)+n,100))<2||i+12>r.length)&&(c=!0);for(var l,d,v=1;!c||1===v;){v++,e=u?1/(f-2):e||_,a=a||parseInt(255*e),l=Uint16Array.from(t),d=Uint32Array.from(r);for(var m=new Set,y=new Map,b=1;b<=a;b+=1){var g=e*(b/a),U=b/a;l.forEach((function(t){var r=y.get(t)||0;y.set(t,r+1)})),d.forEach((function(t,r){if(r|=0,t=4294967295&(0|t),!m.has(r)){var e=y.get(r);d.forEach((function(a,n){if(a=4294967295&(0|a),r!==(n|=0)&&!m.has(n)){var i=y.get(n),_=e>i,s=_?e/i:i/e,u=(g+g*(1-1/s)*U)/(1+U);if(o.match_color(t,a,u)){var c=_?o.blend_colors(d[r],d[n],1/s,!0,!1):o.blend_colors(d[n],d[r],1/s,!0,!1);d[r]=4294967295&(0|c),d[n]=4294967295&(0|c),m.add(r),m.add(n)}}}))}})),m.clear(),y.clear();var w=o.clean_duplicate_colors(l,d);l=w[0],d=w[1]}d.length+25>i&&d.length-25<i||!u||h.has(f)?c=!0:d.length>i?(h.add(f),f--):(h.add(f),f++)}s(o.clean_duplicate_colors(l,d)),l=null,d=null}))};`
+        const asyncs = `var t=async function(t,r,a,e,n,i,_){"use strict";var o={color_a_dv:new DataView(new ArrayBuffer(4)),color_b_dv:new DataView(new ArrayBuffer(4)),dv_match_8_bytes_uint8:new DataView(new ArrayBuffer(8)),base:new Uint8ClampedArray(4),added:new Uint8ClampedArray(4),mix:new Uint8ClampedArray(4),blend_colors:function(t,r,a,e,n){if(e=e||!1,n=n||!1,t=4294967295&(0|t),r=4294967295&(0|r),0===(a=a||1)&&e)return 0;var i=this.to_rgba_from_uint32(t),_=this.to_rgba_from_uint32(r);if(255===_[3]&&1===a)return r;var o=i[3]/255,s=_[3]/255*a,h=new Uint8ClampedArray(4),f=0;if(o>0&&s>0){var c=s/(f=n?s+o:1-(1-s)*(1-o)),l=o*(1-s)/f;h.set(Uint8ClampedArray.of(_[0]*c+i[0]*l,_[1]*c+i[1]*l,_[2]*c+i[2]*l))}else s>0?(f=_[3]/255,h.set(_)):(f=i[3]/255,h.set(i));return n&&(f/=2),h.set(Uint8ClampedArray.of(255*f),3),0|this.to_uint32_from_rgba(h)},to_rgba_from_uint32:function(t){return t=4294967295&(0|t),new Uint8ClampedArray(Uint32Array.of(t).buffer).reverse()},to_uint32_from_rgba:function(t){return new Uint32Array(t.reverse().buffer)[0]},to_hsla_from_rgba:function(t){let[r,a,e,n]=t;r/=255,a/=255,e/=255,n/=255;const i=Math.max(r,a,e),_=Math.min(r,a,e);let o,s,h=(i+_)/2;if(i==_)o=s=0;else{var f=i-_;switch(s=h>.5?f/(2-i-_):f/(i+_),i){case r:o=(a-e)/f+(a<e?6:0);break;case a:o=(e-r)/f+2;break;case e:o=(r-a)/f+4}o/=6}return Array.of(360*o|0,100*s|0,100*h|0,100*n|0)},match_color:function(t,r,a){return t=4294967295&(0|t),r=4294967295&(0|r),255===(a=255*a|0)||(0===a?Boolean(t===r):(this.dv_match_8_bytes_uint8.setUint32(0,t),this.dv_match_8_bytes_uint8.setUint32(4,r),Boolean(Math.abs(this.dv_match_8_bytes_uint8.getUint8(3)-this.dv_match_8_bytes_uint8.getUint8(7))<a&&Math.abs(this.dv_match_8_bytes_uint8.getUint8(2)-this.dv_match_8_bytes_uint8.getUint8(6))<a&&Math.abs(this.dv_match_8_bytes_uint8.getUint8(1)-this.dv_match_8_bytes_uint8.getUint8(5))<a&&Math.abs(this.dv_match_8_bytes_uint8.getUint8(0)-this.dv_match_8_bytes_uint8.getUint8(4))<a)))},clean_duplicate_colors(t,r){for(var a=new Map,e=0|t.length,n=new Uint16Array(e),i=0,_=0;_<e;_=(_+1|0)>>>0){i=4294967295&(0|r[(0|t[(0|_)>>>0])>>>0]);var o=a.get(i);void 0===o&&(o=(0|a.size)>>>0,a.set(i,o)),n[_]=(0|o)>>>0}var s=new Uint32Array(a.size);for(var h of a)s[h[1]]=4294967295&(0|h[0]);return Array.of(n,s)}};return new Promise((function(s){var h="auto"===a,f=!h,c=15,l=new Set;((i=null!==i?i:Math.max(Math.sqrt(r.length)+n,100))<2||i+12>r.length)&&(f=!0);for(var u,d,v=1;!f||1===v;){v++,a=h?1/(c-2):a||_,e=e||parseInt(255*a),u=Uint16Array.from(t),d=Uint32Array.from(r);for(var m=Math.ceil(d.length/100)+1,y=Math.ceil(360/m),b=new Set,g=new Map,w=1;w<=e;w+=1){var U=a*(w/e),A=w/e;u.forEach((function(t){var r=g.get(t)||0;g.set(t,r+1)}));for(var p=new Array(12),M=new Array(12),C=0;C<m;C++)p[C]=new Array,M[C]=new Array;d.forEach((function(t,r){var a=o.to_hsla_from_rgba(o.to_rgba_from_uint32(t))[0];p[Math.floor(a/y)].push(t),M[Math.floor(a/y)].push(r)}));for(C=0;C<m;C++){var B=p[C],E=M[C];B.forEach((function(t,r){if(r=E[r],t=4294967295&(0|t),!b.has(r)){var a=g.get(r);B.forEach((function(e,n){if(n=E[n],e=4294967295&(0|e),r!==n&&!b.has(n)){var i=g.get(n),_=a>i,s=_?a/i:i/a,h=(U+U*(1-1/s)*A)/(1+A);if(o.match_color(t,e,h)){var f=_?o.blend_colors(d[r],d[n],1/s,!0,!1):o.blend_colors(d[n],d[r],1/s,!0,!1);d[r]=4294967295&(0|f),d[n]=4294967295&(0|f),b.add(r),b.add(n)}}}))}})),b.clear()}g.clear();var x=o.clean_duplicate_colors(u,d);u=x[0],d=x[1]}d.length+25>i&&d.length-25<i||!h||l.has(c)?f=!0:d.length>i?(l.add(c),c--):(l.add(c),c++)}s(o.clean_duplicate_colors(u,d)),u=null,d=null}))};`
             + "return t;";
 
         return Object.assign({}, {
