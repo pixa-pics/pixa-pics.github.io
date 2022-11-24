@@ -278,8 +278,8 @@ const ColorConversion = {
             },
             match_color: function(color_a, color_b, threshold) {
                 "use strict";
-                color_a = (color_a | 0) >>> 0;
-                color_b = (color_b | 0) >>> 0;
+                color_a = (color_a | 0) & 0xFFFFFFFF;
+                color_b = (color_b | 0) & 0xFFFFFFFF;
                 threshold = typeof threshold === "undefined" ? null: threshold;
 
                 if(threshold === 1) {

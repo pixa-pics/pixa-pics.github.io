@@ -179,10 +179,10 @@ const SuperBlend = {
                         start_layerD = start_layer_indexes[i+3|0];
 
                         // Get the first base color to sum up with colors atop of it
-                        base_uint8x4A.set(SIMDope_final_with_colors.get_element(i|0));
-                        base_uint8x4B.set(SIMDope_final_with_colors.get_element(i+1|0));
-                        base_uint8x4C.set(SIMDope_final_with_colors.get_element(i+2|0));
-                        base_uint8x4D.set(SIMDope_final_with_colors.get_element(i+3|0));
+                        base_uint8x4A = SIMDope_final_with_colors.get_element(i|0);
+                        base_uint8x4B = SIMDope_final_with_colors.get_element(i+1|0);
+                        base_uint8x4C = SIMDope_final_with_colors.get_element(i+2|0);
+                        base_uint8x4D = SIMDope_final_with_colors.get_element(i+3|0);
 
                         if(uint_not_equal(start_layerA, 0)) { base_uint8x4A.set(SIMDope_layers_with_colors.get_element(plus_uint(multiply_uint(minus_uint(start_layerA, 1), max_used_colors_length), i)));}
                         if(uint_not_equal(start_layerB, 0)) { base_uint8x4B.set(SIMDope_layers_with_colors.get_element(plus_uint(multiply_uint(minus_uint(start_layerB, 1), max_used_colors_length), i+1|0)));}
@@ -206,11 +206,6 @@ const SuperBlend = {
                                 amount_data_in_layers[plus_uint(multiply_uint(layer_n, max_used_colors_length), i+3|0)]|0,
                                 should_return_transparent, alpha_addition);
                         }
-
-                        SIMDope_final_with_colors.set_element(i|0, base_uint8x4A);
-                        SIMDope_final_with_colors.set_element(i+1|0, base_uint8x4B);
-                        SIMDope_final_with_colors.set_element(i+2|0, base_uint8x4C);
-                        SIMDope_final_with_colors.set_element(i+3|0, base_uint8x4D);
                     }
 
                     for(;uint_less_equal(i, used_colors_length); i = plus_uint(i,1)) {
@@ -218,7 +213,7 @@ const SuperBlend = {
                         start_layer = start_layer_indexes[i];
 
                         // Get the first base color to sum up with colors atop of it
-                        base_uint8x4.set(SIMDope_final_with_colors.get_element(i));
+                        base_uint8x4 = SIMDope_final_with_colors.get_element(i);
 
                         if(uint_not_equal(start_layer, 0)) {
 
@@ -238,8 +233,6 @@ const SuperBlend = {
                                 alpha_addition
                             );
                         }
-
-                        SIMDope_final_with_colors.set_element(i, base_uint8x4);
                     }
 
                     resolve(Array.of(indexes_data_for_layers.subarray(0, SIMDope_final_with_colors.length), SIMDope_final_with_colors.subarray_uint32(0, SIMDope_final_with_colors.length)));
