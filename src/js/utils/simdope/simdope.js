@@ -474,12 +474,12 @@ var SIMDopeColor = function(with_main_buffer, offset_4bytes){
         return new SIMDopeColor(with_main_buffer, offset_4bytes);
     }
 
-    if(with_main_buffer instanceof Uint8ClampedArray) {
+    if(with_main_buffer instanceof Uint8Array) {
 
         this.storage_uint8_ =  with_main_buffer;
     }else {
 
-        this.storage_uint8_ = new Uint8ClampedArray("buffer" in with_main_buffer ? with_main_buffer.buffer: with_main_buffer, multiply_uint(offset_4bytes, 4));
+        this.storage_uint8_ = new Uint8Array("buffer" in with_main_buffer ? with_main_buffer.buffer: with_main_buffer, multiply_uint(offset_4bytes, 4));
     }
 };
 
@@ -490,13 +490,13 @@ SIMDopeColor.new_zero = function() {
 };
 SIMDopeColor.new_splat = function(n) {
     "use strict";
-    var uint8ca = new Uint8ClampedArray(4);
+    var uint8ca = new Uint8Array(4);
     uint8ca.fill(clamp_uint8(n));
     return SIMDopeColor(uint8ca);
 };
 SIMDopeColor.new_of = function(r, g, b, a) {
     "use strict";
-    var uint8ca = new Uint8ClampedArray(4);
+    var uint8ca = new Uint8Array(4);
     uint8ca[3] = clamp_uint8(r);
     uint8ca[2] = clamp_uint8(g);
     uint8ca[1] = clamp_uint8(b);
@@ -505,7 +505,7 @@ SIMDopeColor.new_of = function(r, g, b, a) {
 };
 SIMDopeColor.new_safe_of = function(r, g, b, a) {
     "use strict";
-    var uint8ca = new Uint8ClampedArray(4);
+    var uint8ca = new Uint8Array(4);
     uint8ca[3] = clamp_int(r, 0, 255);
     uint8ca[2] = clamp_int(g, 0, 255);
     uint8ca[1] = clamp_int(b, 0, 255);
@@ -519,7 +519,7 @@ SIMDopeColor.new_from = function(other) {
 
 SIMDopeColor.new_array = function(array) {
     "use strict";
-    var uint8ca = new Uint8ClampedArray(4);
+    var uint8ca = new Uint8Array(4);
     uint8ca[3] = clamp_uint8(array[0]);
     uint8ca[2] = clamp_uint8(array[1]);
     uint8ca[1] = clamp_uint8(array[2]);
@@ -529,7 +529,7 @@ SIMDopeColor.new_array = function(array) {
 
 SIMDopeColor.new_array_safe = function(array) {
     "use strict";
-    var uint8ca = new Uint8ClampedArray(4);
+    var uint8ca = new Uint8Array(4);
     uint8ca[3] = clamp_uint8(clamp_int(array[0], 0, 255));
     uint8ca[2] = clamp_uint8(clamp_int(array[1], 0, 255));
     uint8ca[1] = clamp_uint8(clamp_int(array[2], 0, 255));
@@ -539,7 +539,7 @@ SIMDopeColor.new_array_safe = function(array) {
 
 SIMDopeColor.new_bool = function(r, g, b, a) {
     "use strict";
-    var uint8ca = new Uint8ClampedArray(4);
+    var uint8ca = new Uint8Array(4);
     uint8ca[3] = (r|0) > 0 ? 0x1 : 0x0;
     uint8ca[2] = (g|0) > 0 ? 0x1 : 0x0;
     uint8ca[1] = (b|0) > 0 ? 0x1 : 0x0;
@@ -549,7 +549,7 @@ SIMDopeColor.new_bool = function(r, g, b, a) {
 
 SIMDopeColor.new_uint32 = function(n) {
     "use strict";
-    var uint8ca = new Uint8ClampedArray(4);
+    var uint8ca = new Uint8Array(4);
     uint8ca[0] = n & 0xff;
     uint8ca[1] = (n >>> 8) & 0xff;
     uint8ca[2] = (n >>> 16) & 0xff;
@@ -610,7 +610,7 @@ Object.defineProperty(SIMDopeColor.prototype, 'a', {
 
 Object.defineProperty(SIMDopeColor.prototype, 'uint32', {
     get: function() { "use strict";
-        return ((this.storage_uint8_[3] << 24) | (this.storage_uint8_[2] << 16) | (this.storage_uint8_[1] <<  8) | this.storage_uint8_[0]) >>> 0;
+        return ((this.storage_uint8_[3] << 24) | (this.storage_uint8_[2] << 16) | (this.storage_uint8_[1] <<  8) | (this.storage_uint8_[0] << 0) | 0) & 0xFFFFFFFF;
     }
 });
 
@@ -712,7 +712,7 @@ Object.defineProperty(SIMDopeColor.prototype, 'slice', {
 });
 
 SIMDopeColor.prototype.simplify = function(of) {
-    var temp = Uint8ClampedArray.of(
+    var temp = Uint8Array.of(
         multiply_uint(divide_uint(this.a, of), of),
         multiply_uint(divide_uint(this.b, of), of),
         multiply_uint(divide_uint(this.g, of), of),
@@ -967,53 +967,52 @@ SIMDopeColor.blend_all_four = function(from_a,
     with_c.multiply_a_255(amount_alpha_c);
     with_d.multiply_a_255(amount_alpha_d);
 
-    var alpha_a = 0;
-    var alpha_b = 0;
-    var alpha_c = 0;
-    var alpha_d = 0;
+    var alpha = new Uint8Array(4);
+    var alpha_with = new Uint8Array(4);
+    var alpha_from = new Uint8Array(4);
 
     if((alpha_addition|0) > 0){
-        alpha_a = divide_uint(plus_uint(from_a.a, amount_alpha_a), 2);
-        alpha_b = divide_uint(plus_uint(from_b.a, amount_alpha_b), 2);
-        alpha_c = divide_uint(plus_uint(from_c.a, amount_alpha_c), 2);
-        alpha_d = divide_uint(plus_uint(from_d.a, amount_alpha_d), 2);
+        alpha[0] = clamp_uint8(divide_uint(plus_uint(from_a.a, amount_alpha_a), 2));
+        alpha[1] = clamp_uint8(divide_uint(plus_uint(from_b.a, amount_alpha_b), 2));
+        alpha[2] = clamp_uint8(divide_uint(plus_uint(from_c.a, amount_alpha_c), 2));
+        alpha[3] = clamp_uint8(divide_uint(plus_uint(from_d.a, amount_alpha_d), 2));
     }else {
 
-        alpha_a = inverse_255(divide_255(multiply_uint(inverse_255(with_a.a), inverse_255(from_a.a))));
-        alpha_b = inverse_255(divide_255(multiply_uint(inverse_255(with_b.a), inverse_255(from_b.a))));
-        alpha_c = inverse_255(divide_255(multiply_uint(inverse_255(with_c.a), inverse_255(from_c.a))));
-        alpha_d = inverse_255(divide_255(multiply_uint(inverse_255(with_d.a), inverse_255(from_d.a))));
+        alpha[0] = clamp_uint8(inverse_255(divide_255(multiply_uint(inverse_255(with_a.a), inverse_255(from_a.a)))));
+        alpha[1] = clamp_uint8(inverse_255(divide_255(multiply_uint(inverse_255(with_b.a), inverse_255(from_b.a)))));
+        alpha[2] = clamp_uint8(inverse_255(divide_255(multiply_uint(inverse_255(with_c.a), inverse_255(from_c.a)))));
+        alpha[3] = clamp_uint8(inverse_255(divide_255(multiply_uint(inverse_255(with_d.a), inverse_255(from_d.a)))));
     }
 
-    var alpha_with_a = divide_uint(multiply_uint(with_a.a, 255), alpha_a);
-    var alpha_with_b = divide_uint(multiply_uint(with_b.a, 255), alpha_b);
-    var alpha_with_c = divide_uint(multiply_uint(with_c.a, 255), alpha_c);
-    var alpha_with_d = divide_uint(multiply_uint(with_d.a, 255), alpha_d);
+    alpha_with[0] = clamp_uint8(divide_uint(multiply_uint(with_a.a, 255), alpha[0]));
+    alpha_with[1] = clamp_uint8(divide_uint(multiply_uint(with_b.a, 255), alpha[1]));
+    alpha_with[2] = clamp_uint8(divide_uint(multiply_uint(with_c.a, 255), alpha[2]));
+    alpha_with[3] = clamp_uint8(divide_uint(multiply_uint(with_d.a, 255), alpha[3]));
 
-    var alpha_from_a = divide_255(multiply_uint(from_a.a, divide_uint(multiply_uint(inverse_255(with_a.a), 255), alpha_a)));
-    var alpha_from_b = divide_255(multiply_uint(from_b.a, divide_uint(multiply_uint(inverse_255(with_b.a), 255), alpha_b)));
-    var alpha_from_c = divide_255(multiply_uint(from_c.a, divide_uint(multiply_uint(inverse_255(with_c.a), 255), alpha_c)));
-    var alpha_from_d = divide_255(multiply_uint(from_d.a, divide_uint(multiply_uint(inverse_255(with_d.a), 255), alpha_d)));
+    alpha_from[0] = clamp_uint8(divide_255(multiply_uint(from_a.a, divide_uint(multiply_uint(inverse_255(with_a.a), 255), alpha[0]))));
+    alpha_from[1] = clamp_uint8(divide_255(multiply_uint(from_b.a, divide_uint(multiply_uint(inverse_255(with_b.a), 255), alpha[1]))));
+    alpha_from[2] = clamp_uint8(divide_255(multiply_uint(from_c.a, divide_uint(multiply_uint(inverse_255(with_c.a), 255), alpha[2]))));
+    alpha_from[3] = clamp_uint8(divide_255(multiply_uint(from_d.a, divide_uint(multiply_uint(inverse_255(with_d.a), 255), alpha[3]))));
 
-    with_a.set(Uint8ClampedArray.of(0, divide_255(multiply_uint(with_a.b, alpha_with_a)), divide_255(multiply_uint(with_a.g, alpha_with_a)), divide_255(multiply_uint(with_a.r, alpha_with_a))));
-    with_b.set(Uint8ClampedArray.of(0, divide_255(multiply_uint(with_b.b, alpha_with_b)), divide_255(multiply_uint(with_b.g, alpha_with_b)), divide_255(multiply_uint(with_b.r, alpha_with_b))));
-    with_c.set(Uint8ClampedArray.of(0, divide_255(multiply_uint(with_c.b, alpha_with_c)), divide_255(multiply_uint(with_c.g, alpha_with_c)), divide_255(multiply_uint(with_c.r, alpha_with_c))));
-    with_d.set(Uint8ClampedArray.of(0, divide_255(multiply_uint(with_d.b, alpha_with_d)), divide_255(multiply_uint(with_d.g, alpha_with_d)), divide_255(multiply_uint(with_d.r, alpha_with_d))));
+    with_a.set(Uint8Array.of(0, divide_255(multiply_uint(with_a.b, alpha_with[0])), divide_255(multiply_uint(with_a.g, alpha_with[0])), divide_255(multiply_uint(with_a.r, alpha_with[0]))));
+    with_b.set(Uint8Array.of(0, divide_255(multiply_uint(with_b.b, alpha_with[1])), divide_255(multiply_uint(with_b.g, alpha_with[1])), divide_255(multiply_uint(with_b.r, alpha_with[1]))));
+    with_c.set(Uint8Array.of(0, divide_255(multiply_uint(with_c.b, alpha_with[2])), divide_255(multiply_uint(with_c.g, alpha_with[2])), divide_255(multiply_uint(with_c.r, alpha_with[2]))));
+    with_d.set(Uint8Array.of(0, divide_255(multiply_uint(with_d.b, alpha_with[3])), divide_255(multiply_uint(with_d.g, alpha_with[3])), divide_255(multiply_uint(with_d.r, alpha_with[3]))));
 
-    from_a.set(Uint8ClampedArray.of(0, divide_255(multiply_uint(from_a.b, alpha_from_a)), divide_255(multiply_uint(from_a.g, alpha_from_a)), divide_255(multiply_uint(from_a.r, alpha_from_a))));
-    from_b.set(Uint8ClampedArray.of(0, divide_255(multiply_uint(from_b.b, alpha_from_b)), divide_255(multiply_uint(from_b.g, alpha_from_b)), divide_255(multiply_uint(from_b.r, alpha_from_b))));
-    from_c.set(Uint8ClampedArray.of(0, divide_255(multiply_uint(from_c.b, alpha_from_c)), divide_255(multiply_uint(from_c.g, alpha_from_c)), divide_255(multiply_uint(from_c.r, alpha_from_c))));
-    from_d.set(Uint8ClampedArray.of(0, divide_255(multiply_uint(from_d.b, alpha_from_d)), divide_255(multiply_uint(from_d.g, alpha_from_d)), divide_255(multiply_uint(from_d.r, alpha_from_d))));
+    from_a.set(Uint8Array.of(0, divide_255(multiply_uint(from_a.b, alpha_from[0])), divide_255(multiply_uint(from_a.g, alpha_from[0])), divide_255(multiply_uint(from_a.r, alpha_from[0]))));
+    from_b.set(Uint8Array.of(0, divide_255(multiply_uint(from_b.b, alpha_from[1])), divide_255(multiply_uint(from_b.g, alpha_from[1])), divide_255(multiply_uint(from_b.r, alpha_from[1]))));
+    from_c.set(Uint8Array.of(0, divide_255(multiply_uint(from_c.b, alpha_from[2])), divide_255(multiply_uint(from_c.g, alpha_from[2])), divide_255(multiply_uint(from_c.r, alpha_from[2]))));
+    from_d.set(Uint8Array.of(0, divide_255(multiply_uint(from_d.b, alpha_from[3])), divide_255(multiply_uint(from_d.g, alpha_from[3])), divide_255(multiply_uint(from_d.r, alpha_from[3]))));
 
-    from_a.set(SIMDopeColor.merge_with_a_fixed(from_a, with_a, alpha_a));
-    from_b.set(SIMDopeColor.merge_with_a_fixed(from_b, with_b, alpha_b));
-    from_c.set(SIMDopeColor.merge_with_a_fixed(from_c, with_c, alpha_c));
-    from_d.set(SIMDopeColor.merge_with_a_fixed(from_d, with_d, alpha_d));
+    from_a.set(SIMDopeColor.merge_with_a_fixed(from_a, with_a, alpha[0]));
+    from_b.set(SIMDopeColor.merge_with_a_fixed(from_b, with_b, alpha[1]));
+    from_c.set(SIMDopeColor.merge_with_a_fixed(from_c, with_c, alpha[2]));
+    from_d.set(SIMDopeColor.merge_with_a_fixed(from_d, with_d, alpha[3]));
 };
 
 // From a given operation and number object perform the operation and return a the number object
 SIMDopeColor.plus = function(t, other) {
-    var temp = new Uint8ClampedArray(4);
+    var temp = new Uint8Array(4);
     temp[3] = clamp_uint8(min_int(255, plus_int(t.r, other.r)));
     temp[2] = clamp_uint8(min_int(255, plus_int(t.g, other.g)));
     temp[1] = clamp_uint8(min_int(255, plus_int(t.b, other.b)));
@@ -1021,7 +1020,7 @@ SIMDopeColor.plus = function(t, other) {
     return SIMDopeColor(temp);
 }
 SIMDopeColor.minus = function(t, other) {
-    var temp = new Uint8ClampedArray(4);
+    var temp = new Uint8Array(4);
     temp[3] = clamp_uint8(max_int(0, minus_int(t.r, other.r)));
     temp[2] = clamp_uint8(max_int(0, minus_int(t.g, other.g)));
     temp[1] = clamp_uint8(max_int(0, minus_int(t.b, other.b)));
@@ -1029,7 +1028,7 @@ SIMDopeColor.minus = function(t, other) {
     return SIMDopeColor(temp);
 }
 SIMDopeColor.average = function(t, other) {
-    var temp = new Uint8ClampedArray(4);
+    var temp = new Uint8Array(4);
     temp[3] = clamp_uint8(divide_uint(plus_int(t.r, other.r), 2));
     temp[2] = clamp_uint8(divide_uint(plus_int(t.g, other.g), 2));
     temp[1] = clamp_uint8(divide_uint(plus_int(t.b, other.b), 2));
@@ -1058,7 +1057,7 @@ SIMDopeColor.merge_scale_of_255_a_fixed = function(t1, of1, t2, of2, alpha) {
 
 SIMDopeColor.scale_of_on_255 = function(t, of_r, of_g, of_b, of_a) {
     return SIMDopeColor(
-        Uint8ClampedArray.of(
+        Uint8Array.of(
             divide_255(multiply_uint(t.a, of_a)),
             divide_255(multiply_uint(t.b, of_b)),
             divide_255(multiply_uint(t.g, of_g)),
@@ -1069,7 +1068,7 @@ SIMDopeColor.scale_of_on_255 = function(t, of_r, of_g, of_b, of_a) {
 
 SIMDopeColor.scale_rgb_of_on_255 = function(t, of_r, of_g, of_b) {
     return SIMDopeColor(
-        Uint8ClampedArray.of(
+        Uint8Array.of(
             0,
             divide_255(multiply_uint(t.b, of_b)),
             divide_255(multiply_uint(t.g, of_g)),
@@ -1080,7 +1079,7 @@ SIMDopeColor.scale_rgb_of_on_255 = function(t, of_r, of_g, of_b) {
 
 SIMDopeColor.merge = function(t1, t2) {
     return SIMDopeColor(
-        Uint8ClampedArray.of(
+        Uint8Array.of(
             plus_uint(t1.a, t2.a),
             plus_uint(t1.b, t2.b),
             plus_uint(t1.g, t2.g),
@@ -1090,7 +1089,7 @@ SIMDopeColor.merge = function(t1, t2) {
 }
 SIMDopeColor.merge_with_a_fixed = function(t1, t2, alpha) {
     return SIMDopeColor(
-        Uint8ClampedArray.of(
+        Uint8Array.of(
             clamp_uint8(alpha),
             plus_uint(t1.b, t2.b),
             plus_uint(t1.g, t2.g),

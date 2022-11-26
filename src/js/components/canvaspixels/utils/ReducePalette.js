@@ -34,17 +34,20 @@ var fu = function(
 ) {
     "use strict";
 
-    var PR = .2126,
-        PG = .7152,
-        PB = .0722,
-        PA = 0.333;
+    // Inspired by https://en.wikipedia.org/wiki/Rec._709
+    var PR = .3000,
+        PG = .4750,
+        PB = .2250,
+        PA = .5000;
 
     var RD = 255,
         GD = 255,
         BD = 255,
         AD = 255;
 
-    var EUCLMAX = Math.sqrt(PR*RD*RD + PG*GD*GD + PB*BD*BD + PA*AD*AD);
+    // Euclidean or Manhattan color distance
+    var EUCLMAX = (Math.sqrt(PR*RD*RD + PG*GD*GD + PB*BD*BD + PA*AD*AD | 0) | 0) >>> 0;
+    var MANHMAX = (PR*RD + PG*GD + PB*BD + PA*AD|0) >>> 0;
 
 
     function plus_uint(a, b) {
@@ -76,6 +79,9 @@ var fu = function(
     }
     function uint_equal(a, b) {
         return ((a | 0) >>> 0) == ((b | 0) >>> 0);
+    }
+    function abs_int(n) {
+        return (n | 0) < 0 ? (-n | 0) >>> 0 : (n | 0) >>> 0;
     }
 
 
@@ -252,7 +258,7 @@ var fu = function(
         return this;
     };
 
-    SIMDopeColor.prototype.match_with = function(color, threshold_255) {
+    SIMDopeColor.prototype.euclidean_match_with = function(color, threshold_255) {
         "use strict";
 
         threshold_255 = (threshold_255 | 0) >>> 0;
@@ -271,7 +277,28 @@ var fu = function(
                 PA * Math.pow(this.a - color.a | 0, 2)
             ) / EUCLMAX * 255 | 0) < (threshold_255|0);
         }
-    }
+    };
+
+    SIMDopeColor.prototype.manhattan_match_with = function(color, threshold_255) {
+        "use strict";
+
+        threshold_255 = (threshold_255 | 0) >>> 0;
+        if((threshold_255|0) == 255) {
+
+            return true;
+        }else if((threshold_255|0) == 0){
+
+            return ((this.uint32|0) == (color.uint32|0));
+        }else {
+
+            return ((
+                PR * abs_int(this.r - color.r | 0) +
+                PG * abs_int(this.g - color.g | 0) +
+                PB * abs_int(this.b - color.b | 0) +
+                PA * abs_int(this.a - color.a | 0) | 0
+            ) / MANHMAX * 255 | 0) < (threshold_255|0);
+        }
+    };
 
     SIMDopeColor.prototype.multiply_a_255 = function(n) {
         "use strict";
@@ -355,7 +382,7 @@ var fu = function(
         );
     }
 
-    var SIMDopeColors = function(with_main_buffer){
+    var SIMDopeColors = function(with_main_buffer, bytes_offset, bytes_length){
         "use strict";
 
         if (!(this instanceof SIMDopeColors)) {
@@ -363,8 +390,12 @@ var fu = function(
         }
 
         this.storage_ = "buffer" in with_main_buffer ? with_main_buffer.buffer: with_main_buffer;
-        this.storage_uint8_array_ = new Uint8Array(this.storage_);
-        this.storage_uint32_array_ = new Uint32Array(this.storage_);
+
+        bytes_offset = bytes_offset | 0;
+        bytes_length = (bytes_length | 0) || (this.storage_.byteLength | 0);
+
+        this.storage_uint8_array_ = new Uint8Array(this.storage_, bytes_offset, bytes_length);
+        this.storage_uint32_array_ = new Uint32Array(this.storage_, bytes_offset, divide_four_uint(bytes_length));
     };
 
     Object.defineProperty(SIMDopeColors.prototype, 'length', {
@@ -468,9 +499,12 @@ var fu = function(
         get: function() { "use strict"; return function(pxls, pxl_colors) {
             "use strict";
 
+            this.pxl_colors_usage_.fill(0, 0, pxl_colors.length);
             this.clean_pxl_colors_.fill(0, 0, pxl_colors.length);
             this.clean_pxl_colors_length_ = 0;
             var color = 0;
+            var color_index = 0;
+            var not_found = -1;
 
             // Set the brand-new pixel color indexes and pixel amount (length)
             this.new_pxls_ = pxls;
@@ -480,18 +514,21 @@ var fu = function(
             for(var i = 0; (i|0) < (this.new_pxls_length_|0); i = (i + 1 | 0)>>>0) {
 
                 color = (pxl_colors[(this.new_pxls_[(i|0)>>>0]|0)>>>0]|0) >>> 0;
+                color_index = this.clean_pxl_colors_.indexOf((color|0) >>> 0) | 0;
 
-                if(!this.clean_pxl_colors_.includes((color|0) >>> 0)) {
+                if((color_index|0) == (not_found|0)) {
 
                     this.clean_pxl_colors_[(this.clean_pxl_colors_length_|0)>>>0] = (color|0) >>> 0;
+                    color_index = this.clean_pxl_colors_length_ | 0;
                     this.clean_pxl_colors_length_ = (this.clean_pxl_colors_length_+1|0)>>>0;
                 }
 
-                this.new_pxls_[(i|0)>>>0] = (this.clean_pxl_colors_.indexOf((color|0) >>> 0) | 0) >>> 0;
+                this.pxl_colors_usage_[(color_index|0)>>>0] = (this.pxl_colors_usage_[(color_index|0)>>>0]+1|0)>>>0;
+                this.new_pxls_[(i|0)>>>0] = (color_index | 0) >>> 0;
             }
 
             // Set the brand-new colors and length
-            this.new_pxl_colors_ = SIMDopeColors(new Uint32Array(this.clean_pxl_colors_.buffer.slice(0, multiply_uint_4(this.clean_pxl_colors_length_))));
+            this.new_pxl_colors_ = SIMDopeColors(this.clean_pxl_colors_.buffer.slice(0, multiply_uint_4(this.clean_pxl_colors_length_)));
             this.new_pxl_colors_length_ = this.new_pxl_colors_.length | 0;
         }}
     });
@@ -501,28 +538,18 @@ var fu = function(
             "use strict";
 
             this.max_cluster_ = this.new_pxl_colors_length_ > 2048 ? 4096+1: this.new_pxl_colors_length_ > 1024 ? 256+1: 16+1;
+            this.length_clusters_ = new Array(this.max_cluster_);
+            this.all_index_clusters_.fill(0, 0, this.new_pxl_colors_length_);
 
-            if(this.index_clusters_.length !== this.max_cluster_) {
-
+            if((this.index_clusters_.length|0) != (this.max_cluster_|0)) {
                 this.index_clusters_ = new Array(this.max_cluster_);
                 for(c = 0; (c|0) < (this.max_cluster_|0); c=(c+1|0)>>>0){ this.index_clusters_[c|0] = new Set();}
             }else {
-
                 for(c = 0; (c|0) < (this.max_cluster_|0); c=(c+1|0)>>>0){ this.index_clusters_[c|0].clear();}
             }
-            this.length_clusters_ = new Array(this.max_cluster_);
-            this.pxl_colors_usage_.fill(0, 0, this.new_pxl_colors_length_);
-            this.all_index_clusters_.fill(0, 0, this.new_pxl_colors_length_);
 
             var current_index = 0;
-            var color_index = 0;
             var c = 0, l = 0;
-
-            for(l = 0; (l|0) < (this.new_pxls_length_|0); l = (l+1|0)>>>0) {
-
-                color_index = (this.new_pxls_[l]|0)>>>0;
-                this.pxl_colors_usage_[(color_index|0)>>>0] = (this.pxl_colors_usage_[(color_index|0)>>>0]+1|0)>>>0;
-            }
 
             if(this.new_pxl_colors_length_ > 2048) {
 
@@ -548,7 +575,7 @@ var fu = function(
 
             for(c = 0; (c|0) < (this.max_cluster_|0); c=(c+1|0)>>>0){
                 this.length_clusters_[c|0] = (this.index_clusters_[c|0].size | 0) >>> 0;
-                this.all_index_clusters_.set(Array.from(this.index_clusters_[c|0]).sort(function(a, b){ return (a - b | 0) > 0; }), current_index);
+                this.all_index_clusters_.set(Uint32Array.from(this.index_clusters_[c|0]).sort(function(a, b){return (a-b|0) > 0; }), current_index);
                 current_index = (current_index + this.length_clusters_[c|0] | 0) >>> 0;
             }
         }}
@@ -599,7 +626,7 @@ var fu = function(
                         color_usage_difference = (first_color_more_used ? color_a_usage / color_b_usage: color_b_usage / color_a_usage) * 255 | 0;
                         weighted_threshold = (((threshold + (threshold * (1 - color_usage_difference/255) * weight_applied_to_color_usage_difference)) / (1 + weight_applied_to_color_usage_difference)) * 255 | 0)>>>0;
 
-                        if(color_a.match_with(color_b,  weighted_threshold|0)) {
+                        if(color_a.manhattan_match_with(color_b,  weighted_threshold|0)) {
 
                             has_blended_something = true;
                             if(first_color_more_used){
@@ -766,13 +793,14 @@ const ReducePalette = {
                 "use strict";
                 if(s !== null) {
 
-                    s.workerp.exec(
+                    /*s.workerp.exec(
 
                         f, [s.p, s.pc, s.bt, s.ts, s.cnb, s.bcn, s.stb]
                     ).catch((e) => {
 
                         return f(s.p, s.pc, s.bt, s.ts, s.cnb, s.bcn, s.stb);
-                    }).timeout(120 * 1000).then(callback_function);
+                    }).timeout(120 * 1000).then(callback_function);*/
+                    fu(s.p, s.pc, s.bt, s.ts, s.cnb, s.bcn, s.stb).then(callback_function);
 
                 }else {
 
