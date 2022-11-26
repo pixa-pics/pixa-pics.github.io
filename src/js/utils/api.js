@@ -207,7 +207,7 @@ const get_settings = (callback_function_info = null, attachment_ids = [], callba
 
                                             } catch (e) {
 
-                                                console.log(e); callback_function_attachment("LZP3 not working", null);
+                                                callback_function_attachment("LZP3 not working", null);
                                             }
                                         }).catch((e) => {
 
@@ -353,7 +353,6 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
                                     });
                                 } catch (e) {
 
-                                    console.log(e);
                                     callback_function_info("LZP3 not working", null);
                                     return false;
                                 }
@@ -550,7 +549,6 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
                         });
                     } catch (e) {
 
-                        console.log(e);
                         callback_function_info("LZP3 not working", null);
                         return false;
                     }

@@ -1392,7 +1392,6 @@ const SuperMasterMeta = {
                     }
                 }
 
-                console.log(pixel_color_uint32.uint32, pixel_color_uint32.hex)
                 return pixel_color_uint32.hex;
             },
             _notify_current_color_change (color, event = null) {

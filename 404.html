@@ -154,7 +154,16 @@
                     // Load pre-used (PRE) file or finally used ones (POST)
                     var fire_it = function (what) {
 
-                        var hrefs = [];
+                        var hrefs = new Array();
+                        var ss = "";
+                        var e = null;
+                        var i = 0;
+                        var clean = false;
+
+                        if(_FIRED_IT_STATE === "") {
+                            clean = true;
+                        }
+
                         if (Boolean(what === "FIRST" && Boolean(_FIRED_IT_STATE !== "FIRST" && _FIRED_IT_STATE !== "LAST")) || Boolean(what === "LAST" && Boolean(_FIRED_IT_STATE !== "FIRST" && _FIRED_IT_STATE !== "LAST"))) {
                             hrefs = hrefs.concat(_PRE_FILES); console.log("First files to load have been ignited.")
                             _FIRED_IT_STATE = "FIRST";
@@ -165,22 +174,28 @@
                             _FIRED_IT_STATE = "LAST";
                         }
 
-                        for (var i = 0; i < hrefs.length; i++) {
+                        if(clean){
+                            var all_hrefs = new Array(0).concat(_PRE_FILES, _POST_FILES);
+                            for (i = 0; i < all_hrefs.length; i++) {
+                                ss = all_hrefs[i];
+                                if (ss.endsWith(".js")) {
+                                    document.querySelectorAll('script[src$="' + ss + '"]').forEach(function (node) {node.remove();});
+                                }
+                            }
+                        }
 
-                            var ss = hrefs[i];
-                            var e;
+                        for (i = 0; i < hrefs.length; i++) {
+                            ss = hrefs[i];
                             if (ss.endsWith(".js")) {
-
-                                document.querySelectorAll('script[src$="' + hrefs[i] + '"]').forEach(function (node) {node.remove();});
                                 e = document.createElement("script"); e.setAttribute("src", ss); e.setAttribute("type", "text/javascript"); e.setAttribute(ss.endsWith(_MAIN_JS_FILE_ENDS_WITH) ? "async" : "defer", "true");
                                 document.body.appendChild(e);
-
                             } else if (ss.endsWith(".css")) {
-
                                 e = document.createElement("link"); e.setAttribute("href", ss); e.setAttribute("rel", "stylesheet");
                                 document.body.appendChild(e);
                             }
                         }
+
+                        _FIRED_IT_STATE = "";
                         return true;
                     }
 

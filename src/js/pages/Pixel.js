@@ -692,7 +692,6 @@ class Pixel extends React.PureComponent {
                     api.set_settings({}, (err, res) => {
 
                         if(err) {
-                            console.log(err);
                             actions.trigger_loading_update(100);
                             actions.trigger_snackbar("Looks like I can't save your file as our compression module can't load.", 5700);
                             actions.jamy_update("angry");
@@ -715,7 +714,6 @@ class Pixel extends React.PureComponent {
                     });
                 }).catch((err) => {
 
-                    console.log(err);
                     actions.trigger_snackbar("Looks like I can't save your file as our compression module can't load.", 5700);
                     actions.jamy_update("angry");
                 });
