@@ -419,7 +419,7 @@ class Index extends React.PureComponent {
             if(!was_the_settings_known) {
 
                 this.forceUpdate(function(){document.body.setAttribute("class", "loaded");});
-                this._set_analytics( 500);
+                this._set_analytics( 50);
             }else if(force_update){
                 this.forceUpdate();
             }
@@ -471,7 +471,7 @@ class Index extends React.PureComponent {
         _paq.push(['setTrackerUrl', 'https://app.friendlyanalytics.ch/matomo.php']);
         _paq.push(['setSiteId', '77']);
 
-        setTimeout(async() => {
+        setTimeout(function(){
 
             let element_a = document.getElementById("matomo-container") || null;
             let append_a = false;
