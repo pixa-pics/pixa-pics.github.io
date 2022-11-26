@@ -437,11 +437,16 @@ class Index extends React.PureComponent {
 
         // Just for us to count download by type just sending "+1"
         window.addEventListener('art-download-raster1', () => { _mtm.push({'event': 'art-download-raster1'}); });
-        window.addEventListener('art-download-raster16', () => { _mtm.push({'event': 'art-download-raster16'}); });
-        window.addEventListener('art-download-raster32', () => { _mtm.push({'event': 'art-download-raster32'}); });
-        window.addEventListener('art-download-raster48', () => { _mtm.push({'event': 'art-download-raster48'}); });
+        window.addEventListener('art-download-raster2', () => { _mtm.push({'event': 'art-download-raster2'}); });
+        window.addEventListener('art-download-raster4', () => { _mtm.push({'event': 'art-download-raster4'}); });
+        window.addEventListener('art-download-raster6', () => { _mtm.push({'event': 'art-download-raster6'}); });
+        window.addEventListener('art-download-raster8', () => { _mtm.push({'event': 'art-download-raster8'}); });
+        window.addEventListener('art-download-raster12', () => { _mtm.push({'event': 'art-download-raster12'}); });
+        window.addEventListener('art-download-raster24', () => { _mtm.push({'event': 'art-download-raster24'}); });
         window.addEventListener('art-download-vectoromni', () => { _mtm.push({'event': 'art-download-vectoromni'}); });
         window.addEventListener('art-download-vectorxbrz', () => { _mtm.push({'event': 'art-download-vectorxbrz'}); });
+        window.addEventListener('art-download-vectorhqnx', () => { _mtm.push({'event': 'art-download-vectorhqnx'}); });
+        window.addEventListener('art-download-vectorepx', () => { _mtm.push({'event': 'art-download-vectorepx'}); });
 
         // Error on upload and button type leading upload
         window.addEventListener('art-upload-browsererror', () => { _mtm.push({'event': 'art-upload-browsererror'}); });

@@ -1154,6 +1154,8 @@ class Pixel extends React.PureComponent {
 
         const { get_base64_png_data_url, xxhashthat } = this.st4te._canvas;
 
+        window.dispatchEvent(new Event(`art-download-vector${using.toLowerCase()}`));
+
         actions.trigger_voice("please_wait");
         actions.trigger_snackbar("Please wait... Files will download in a few seconds.", 5700);
         actions.jamy_update("happy");
