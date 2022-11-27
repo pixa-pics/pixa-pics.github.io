@@ -610,7 +610,7 @@ Object.defineProperty(SIMDopeColor.prototype, 'a', {
 
 Object.defineProperty(SIMDopeColor.prototype, 'uint32', {
     get: function() { "use strict";
-        return ((this.storage_uint8_[3] << 24) | (this.storage_uint8_[2] << 16) | (this.storage_uint8_[1] <<  8) | (this.storage_uint8_[0] << 0) | 0) & 0xFFFFFFFF;
+        return ((this.storage_uint8_[3] << 24) | (this.storage_uint8_[2] << 16) | (this.storage_uint8_[1] <<  8) | (this.storage_uint8_[0] << 0) | 0) >>> 0;
     }
 });
 

@@ -404,7 +404,6 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
             should_update,
             view_name_index,
             previous_view_name_index,
-            view_names,
             layer_index,
             is_image_import_mode,
             hide_canvas_content,
@@ -425,6 +424,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
             is_something_selected,
             import_size,
             import_colorize,
+            layers,
             layers_hash,
         } = this.st4te;
 
@@ -441,6 +441,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
         const view_name_changed = Boolean(view_name_index !== new_props.view_name_index);
         const something_changed_in_view = Boolean(Boolean(new_props.should_update || should_update) && Boolean((
             Boolean(too_much_colors_no_vector) !== Boolean(this.st4te.too_much_colors_no_vector) ||
+            layers.map(function(l){return ""+l.hidden +"_"+l.opacity+"_"+l.number_of_colors}).join("-") !== new_props.layers.map(function(l){return ""+l.hidden +"_"+l.opacity+"_"+l.number_of_colors}).join("-") ||
             parseInt(previous_view_name_index) !== parseInt(new_props.previous_view_name_index) ||
             parseInt(layer_index) !== parseInt(new_props.layer_index) ||
             Boolean(is_image_import_mode) !==  Boolean(new_props.is_image_import_mode) ||
@@ -464,7 +465,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
             parseFloat(filters_preview_progression) !== parseFloat(new_props.filters_preview_progression)
         )));
 
-        if (something_changed_in_view || view_name_changed) {} else {
+        if (!(something_changed_in_view || view_name_changed)) {
 
             const new_layers_hash = this.xxhash32js(this.cbor(new_props.layers, true));
             if(layers_hash === new_layers_hash) {

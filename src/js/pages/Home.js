@@ -116,7 +116,7 @@ const styles = theme => ({
         "&:hover": {
             backdropFilter: "blur(8px) saturate(0.9) brightness(1.075)",
         },
-        transition: "backdrop-filter ease-out 800ms",
+        transition: "backdrop-filter ease-out 240ms 240ms",
         width: "100%",
         height: "100%",
         position: "absolute",

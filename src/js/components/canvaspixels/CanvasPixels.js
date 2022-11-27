@@ -499,7 +499,7 @@ class CanvasPixels extends React.PureComponent {
                 super_blend.stack(2, top_layer_pxl_colors[top_layer_pxls[i]]|0, top_layer_opacity, 0);
             }
 
-            super_blend.blend(false, false).then(function([index_changes, color_changes]){
+            super_blend.blend(false, false).then(([index_changes, color_changes]) => {
 
                 const fp = new DataView(new ArrayBuffer(pxl_height * pxl_width * 4));
 
