@@ -43,7 +43,7 @@
 * **Compress 100x-1000x** a visual scene into less than 12 Kb PNGs that scales in HD.
 * **Do more, without less**... This is pixaaaaa! (pics)
 
-![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/EDITOR.png)
+![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/EDITOR_SQUARE.png)
 
 ### 1) What does it cost?
 
