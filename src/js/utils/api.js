@@ -3,7 +3,6 @@ import get_browser_locales from "../utils/locales";
 import PouchDB from "pouchdb-core";
 import PouchDB_IDB from "pouchdb-adapter-indexeddb";
 import PouchDB_memory from "pouchdb-adapter-memory";
-import {cbor} from "./cbor";
 
 const init = () => {
 
@@ -11,7 +10,7 @@ const init = () => {
 
         if(!Boolean(window.settings_db)) {
 
-            PouchDB.on("created", function(){
+            PouchDB.on("created",  async function(){
 
                 if(Boolean(window._pixa_settings)) {
 
@@ -21,10 +20,10 @@ const init = () => {
                     setTimeout(() => {
 
                         window.settings_db.post({
-                            info: cbor(_merge_object({}, window._pixa_settings)),
+                            info: JSON.stringify(_merge_object({}, window._pixa_settings)),
                             timestamp: Date.now(),
                         });
-                    }, 0);
+                    }, 100);
                 }else {
 
                     resolve(_merge_object({}, window._pixa_settings));
@@ -55,17 +54,17 @@ const init = () => {
                 descending: false,
                 attachments: false,
                 binary: false
-            }).then(function (response) {
+            }).then(async function (response) {
 
-                let settings_docs = response.rows.map(function(row) {
+                let settings_docs = response.rows.map((row) => {
                     return row.doc;
-                }).sort(function(a, b) { return new Date(b.timestamp) - new Date(a.timestamp)});
+                }).sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
                 let settings_doc = settings_docs.splice(0, 1)[0] || null;
 
                 // Choose the first
                 if (settings_doc !== null) {
 
-                    window._pixa_settings = _merge_object({}, cbor(settings_doc.info));
+                    window._pixa_settings = _merge_object({}, JSON.parse(settings_doc.info));
                     resolve(_merge_object({}, window._pixa_settings));
                 }
 
@@ -78,18 +77,8 @@ const init = () => {
 };
 
 const _merge_object = (obj1, obj2) => {
-    "use strict";
-    
-    obj1 = obj1 || {};
-    obj2 = obj2 || {};
 
-    Object.keys(obj2).forEach(function(key){
-       
-        obj1[key] = obj2[key];
-        delete obj2[key];
-    });
-    
-    return obj1;
+    return Object.assign({}, {...obj1, ...obj2});
 };
 
 const _get_default_settings = () => {
@@ -165,12 +154,13 @@ const get_settings = (callback_function_info = null, attachment_ids = [], callba
         if(!error) {
 
             // Get settings docs
-            let settings_docs = response.rows.map(function(row){
+            let settings_docs = response.rows.map((row) => {
                 return row.doc;
-            }).sort(function(a, b) { return new Date(b.timestamp) - new Date(a.timestamp); });
+            }).sort((a, b) =>  new Date(b.timestamp) - new Date(a.timestamp));
             response = null;
 
             let settings_doc = settings_docs.splice(0, 1)[0] || null;
+            settings_docs = settings_docs.map((sd, sdi) => {return {_id: sd._id, _rev: sd._rev, _deleted: true, timestamp: 0, data: null, info: null, _attachments: {}}})
 
             // Choose the first
             if(settings_doc !== null) {
@@ -188,7 +178,7 @@ const get_settings = (callback_function_info = null, attachment_ids = [], callba
 
                             if(!error_doc) {
 
-                                window._pixa_settings = _merge_object({}, cbor(doc.info));
+                                window._pixa_settings = _merge_object({}, JSON.parse(doc.info));
                                 if(callback_function_info){ callback_function_info(null, _merge_object({}, window._pixa_settings))}
 
                                 let blobs = {};
@@ -208,10 +198,12 @@ const get_settings = (callback_function_info = null, attachment_ids = [], callba
 
                                             try {
 
-                                                LZP3(new Uint8Array(array_buffer), "DECOMPRESS_UINT8A", POOL).then(function(obj) {
+                                                LZP3(new Uint8Array(array_buffer), "DECOMPRESS_UINT8A", POOL).then((obj) => {
 
-                                                    callback_function_attachment(null, obj);
+                                                    callback_function_attachment(null, Object.assign({}, obj));
+                                                    obj = null;
                                                 });
+                                                array_buffer = null;
 
                                             } catch (e) {
 
@@ -221,6 +213,7 @@ const get_settings = (callback_function_info = null, attachment_ids = [], callba
 
                                             callback_function_attachment("DB not working", null);
                                         });
+                                        blob = null;
                                     });
 
                                     let delete_count = 0;
@@ -241,7 +234,7 @@ const get_settings = (callback_function_info = null, attachment_ids = [], callba
                                         window.settings_db.put({
                                             _id: doc._id,
                                             _rev: doc._rev,
-                                            info: cbor(_merge_object({}, window._pixa_settings)),
+                                            info: JSON.stringify(_merge_object({}, window._pixa_settings)),
                                             timestamp: Date.now(),
                                             _attachments: settings_doc._attachments,
                                         }, {force: true}, (err) => {
@@ -264,7 +257,7 @@ const get_settings = (callback_function_info = null, attachment_ids = [], callba
 
                     }else {
 
-                        window._pixa_settings = _merge_object({}, cbor(settings_doc.info));
+                        window._pixa_settings = _merge_object({}, JSON.parse(settings_doc.info));
                         if(callback_function_info){ callback_function_info(null, _merge_object({}, window._pixa_settings))};
 
                     }
@@ -278,7 +271,7 @@ const get_settings = (callback_function_info = null, attachment_ids = [], callba
                 window._pixa_settings = _merge_object({}, _get_default_settings());
                 if(callback_function_info){ callback_function_info(null, _merge_object({}, window._pixa_settings))};
                 window.settings_db.post({
-                    info: cbor(_merge_object({}, window._pixa_settings)),
+                    info: JSON.stringify(_merge_object({}, window._pixa_settings)),
                     timestamp: Date.now(),
                 }, function (){});
             }
@@ -326,7 +319,7 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
             // Choose the first
             if(settings_doc !== null) {
 
-                let pixa_settings = _merge_object(cbor(settings_doc.info), info);
+                let pixa_settings = _merge_object(JSON.parse(settings_doc.info), info);
                 window._pixa_settings = _merge_object({}, pixa_settings);
 
                 try {
@@ -344,12 +337,12 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
 
                                 try {
 
-                                    LZP3(data, "COMPRESS_OBJECT", POOL).then(function(with_buffer) {
+                                    LZP3(data, "COMPRESS_OBJECT", POOL).then((with_buffer) => {
 
                                         settings_doc._attachments = settings_doc._attachments || {};
                                         settings_doc._attachments[name_id] = {
                                             content_type: "application/octet-stream",
-                                            data: new Blob(Array.of(with_buffer), {type : "application/octet-stream"})
+                                            data: new Blob([with_buffer], {type : "application/octet-stream"})
                                         };
                                         attachments_to_process--;
                                         if(attachments_to_process === 0) {
@@ -379,7 +372,7 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
                                         window.settings_db.put({
                                             _id: settings_doc._id,
                                             _rev: settings_doc._rev,
-                                            info: cbor(_merge_object({}, window._pixa_settings)),
+                                            info: JSON.stringify(_merge_object({}, window._pixa_settings)),
                                             timestamp: Date.now(),
                                             _attachments: settings_doc._attachments
                                         }, {force: true}, (err) => {
@@ -432,7 +425,7 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
                             window.settings_db.put({
                                 _id: settings_doc._id,
                                 _rev: settings_doc._rev,
-                                info: cbor(_merge_object({}, window._pixa_settings)),
+                                info: JSON.stringify(_merge_object({}, window._pixa_settings)),
                                 timestamp: Date.now(),
                                 _attachments: settings_doc._attachments,
                             }, {force: true}, (err) => {
@@ -477,7 +470,7 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
                         window.settings_db.put({
                             _id: settings_doc._id,
                             _rev: settings_doc._rev,
-                            info: cbor(_merge_object({}, window._pixa_settings)),
+                            info: JSON.stringify(_merge_object({}, window._pixa_settings)),
                             timestamp: Date.now(),
                             _attachments: settings_doc._attachments,
                         }, {force: true}, (err) => {
@@ -565,7 +558,7 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
                 const continue_push_in_db = (attachments) => {
 
                     window.settings_db.post({
-                        info: cbor(_merge_object({}, window._pixa_settings)),
+                        info: JSON.stringify(_merge_object({}, window._pixa_settings)),
                         timestamp: Date.now(),
                         _attachments: attachments
                     }, (err) => {
@@ -584,7 +577,7 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
 
 
                 window.settings_db.post({
-                    info: cbor(pixa_settings),
+                    info: JSON.stringify(pixa_settings),
                     timestamp: Date.now(),
                 }, (err) => {
 

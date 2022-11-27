@@ -23,6 +23,9 @@ const cbor = (object_or_uint8a, no_async = false) => {
 
         if(object_or_uint8a instanceof ArrayBuffer){object_or_uint8a = new Uint8Array(object_or_uint8a);}
         resolve(decode(object_or_uint8a));
+      }else if(typeof object_or_uint8a === "string"){
+
+        resolve(JSON.parse(object_or_uint8a));
       }else {
 
         resolve(encode(object_or_uint8a));
