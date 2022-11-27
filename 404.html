@@ -224,22 +224,26 @@
                             var sw = r.installing || r.waiting || r.active || null;
                             if (sw !== null) {
                                 sw.addEventListener('statechange', function(e) {
-                                    if(e.target.state === "activated") { _LET_FIRE_IT(true).then(function(){resolve();}); }
+                                    if(e.target.state === "activated") { _LET_FIRE_IT(true).then(function(){resolve(r);}); }
                                 });
-                                if(sw.state === "activated") { _LET_FIRE_IT(true).then(function(){resolve();}); }
-                            }else { _LET_FIRE_IT(false).then(function(){resolve();}); }
+                                if(sw.state === "activated") { _LET_FIRE_IT(true).then(function(){resolve(r);}); }
+                            }else { _LET_FIRE_IT(false).then(function(){resolve(r);}); }
                         }).catch(function(){
-                            _LET_FIRE_IT(false).then(function(){resolve();});
+                            _LET_FIRE_IT(false).then(function(){resolve(null);});
                         });
-                    }else { _LET_FIRE_IT(false).then(function(){resolve();}); }
+                    }else { _LET_FIRE_IT(false).then(function(){resolve(null);}); }
                 });
             };
 
-            _REGISTER_SERVICE_WORKER().then(function(){
+            var _LISTEN_RELOAD = function(registration) {
+
                 window.addEventListener("DOMContentLoaded", function () {
-                    _REGISTER_SERVICE_WORKER();
+                    _REGISTER_SERVICE_WORKER().then(_LISTEN_RELOAD);
                 });
-            });
+            };
+
+            _REGISTER_SERVICE_WORKER().then(_LISTEN_RELOAD);
+
         </script>
 
         <!-- Open graph metadata -->

@@ -8,6 +8,9 @@ const cbor = (object_or_uint8a, no_async = false) => {
 
       if(object_or_uint8a instanceof ArrayBuffer){object_or_uint8a = new Uint8Array(object_or_uint8a);}
       return decode(object_or_uint8a);
+    }else if(typeof object_or_uint8a === "string"){
+
+      return JSON.parse(object_or_uint8a);
     }else {
 
       return encode(object_or_uint8a);
