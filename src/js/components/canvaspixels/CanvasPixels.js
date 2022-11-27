@@ -59,7 +59,7 @@ class CanvasPixels extends React.PureComponent {
             this.super_canvas = Object.create(SuperCanvas).from(null, 32, 32);
             this.canvas_pos = Object.create(CanvasPos).from(32,  32,  0.9,  32, 0, 0);
             this.sraf = Object.create(SmartRequestAnimationFrame).init();
-            this.canvas_filters = Object.create(CanvasFilters).init(this.color_conversion);
+            this.canvas_filters = Object.create(CanvasFilters).init(SIMDopeColors);
             this.sraf.start_timer();
             this.super_master_meta = Object.create(SuperMasterMeta).init(this.super_state, this.super_canvas, this.super_blend, this.canvas_pos, this.color_conversion, this.sraf);
             this.hasnt_been_mount = true;

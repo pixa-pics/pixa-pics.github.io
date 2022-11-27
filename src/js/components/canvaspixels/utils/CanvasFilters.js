@@ -1,4 +1,5 @@
 "use strict";
+
 const CanvasFilters = {
 
     _get_filter_list: function () {
@@ -169,9 +170,9 @@ const CanvasFilters = {
         };
     },
 
-    init: function(color_conversion){
+    init: function(sdc){
 
-        const cc = color_conversion;
+        const SIMDopeColors = sdc;
         const filters = this._get_filter_list();
 
         return {
@@ -186,7 +187,9 @@ const CanvasFilters = {
             filter: function(name,intensity,pxl_colors) {
                 "use strict";
 
-                intensity = parseFloat(intensity);
+                intensity = parseFloat(intensity) * 255 | 0;
+                pxl_colors = Uint32Array.from(pxl_colors);
+
                 let colors_length = pxl_colors.length | 0;
                 let rgba_colors_length = colors_length * 4 | 0;
                 let old_pxl_colors_rgba = new Uint8Array(Uint32Array.from(pxl_colors).reverse().buffer).reverse();
@@ -236,16 +239,15 @@ const CanvasFilters = {
                     }
                 }
 
-                pxl_colors = new Uint32Array(
-                    cc.blend_rgba_colors(
-                        Array.of(old_pxl_colors_rgba,pxl_colors_rgba),
-                        intensity,
-                        0,
-                        0
-                    ).reverse().buffer
-                ).reverse();
+                var new_colors = SIMDopeColors(new Uint32Array(pxl_colors_rgba.reverse().buffer).reverse());
+                var old_colors = SIMDopeColors(pxl_colors);
 
-                return pxl_colors;
+                for(var i = 0; (i|0) < (colors_length|0); i = (i+1|0)>>>0){
+
+                    old_colors.get_element(i|0).blend_with(new_colors.get_element(i|0), intensity, false, false);
+                }
+
+                return new_colors.slice_uint32(0, new_colors.length);
             }
         };
     }
