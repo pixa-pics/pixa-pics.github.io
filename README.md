@@ -34,9 +34,11 @@
 
 ---
 
-![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/777.png)
+![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/EDITOR.png)
 
 > Yet many drawing tools and selection mode enables you to be creative (and decentralize everything)!
+
+![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/777.png)
 
 * **Copyleft** and copyright can get shifted!
 * **Anonymize selfies** (keep details masked, reduce entropy of data).
