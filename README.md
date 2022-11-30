@@ -28,9 +28,12 @@
 </p>
 
 ---
-**At the crossroads of mathematical worlds (radix) researchers from around the world allow us to code algorithms aimed at reducing images from 2.8 million bytes to only 8.9 thousand bytes (always equal to 8 bits or 1 byte... ).**
 
-**Aiming to keep Ultra HD 4K+ resolution, we enlarge a thumbnail (yes, pixel art) with algorithms that helped "REMASTER" the greatest video game franchises of the 80s-90s for true-to-life quality. beauty of our current computer hardware.**
+![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/EDITOR2.png)
+
+> **At the crossroads of mathematical worlds (radix) researchers from around the world allow us to code algorithms aimed at reducing images from 2.8 million bytes to only 8.9 thousand bytes (always equal to 8 bits or 1 byte... ).**
+
+> **Aiming to keep Ultra HD 4K+ resolution, we enlarge a thumbnail (yes, pixel art) with algorithms that helped "REMASTER" the greatest video game franchises of the 80s-90s for true-to-life quality. beauty of our current computer hardware.**
 
 **This allows a lot of people to do better than a whole lot of stuff for drawing, education, blockchain, NFTs and image processing/storage...**
 
@@ -124,7 +127,9 @@ Screenshot of the minima's laboratory of pixa.pics (which is a pixel art editor)
 * Chunk ("norris") [webpack system](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/webpack.config.js) for dropping script evaluation cost within CPU
 * WASM Hashing function for detecting change in history of editing (XXHash)
 
-Demo Ultra HD rendering : https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/doc/screenshots/yakuza.png
+### Modules we built (Soon available on Github and NPM)
+ * **SIMDope for computing color blending within list** or for shifting between color format (It is greatly inspired by SIMD.JS which take advantage of the CPU architecture having a faster cache than RAM while meaning (Single Instruction Multiple Data), it enables doing some task as much as 4x quicker, although we already written our code in ASM.JS specification to cast intger to 32 bits in most case and again it is very very very fast, probably the faster color processing library in pure javscript.
+ * **QuantiMat for color quantization** it can reduce a low-res image from 40000 colors to 2000 colors in less than 500 ms, but in results, we achieve one of the greatest quality, when you diminish initial colors 20 times, after processing you can't clearly see any differences except it also removes pixel color glitches and so enables a better quality. We achieve this speed thanks to SIMDope, but also thanks to sorting colors in either 4096, 256, or 16 clusters that takes a binary reduction of color component down to numbers from 0 to the number of cluster and this enables to not compare all of them to all of them savings millions of operations,
 
 Look! On the STEEM blockchain you can post base64 text, transactions are rigged to 73Kb at maxima but STEEM is now kinda old for a blockchain.
 
