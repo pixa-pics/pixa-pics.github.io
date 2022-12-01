@@ -33,6 +33,12 @@
 
 <img width="444" height="963" src="https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/EDITOR_ANDROID.jpg" align="right" />
 
+### Lighten it up to 100 - 1000x
+
+**Pixel art can be stored inside blockchain technology at low cost, enabling to be stored for thousands of year without downtime everywhere!**
+
+But hey, here we do it even greater with pixa.pics... We upscale it with smart algortihms!
+
 > **At the crossroads of mathematical worlds (radix) researchers from around the world allow us to code algorithms aimed at reducing images from 2.8 million bytes to only 8.9 thousand bytes (always equal to 8 bits or 1 byte... ).**
 
 > **Aiming to keep Ultra HD 4K+ resolution, we enlarge a thumbnail (yes, pixel art) with algorithms that helped "REMASTER" the greatest video game franchises of the 80s-90s for true-to-life quality. beauty of our current computer hardware.**
