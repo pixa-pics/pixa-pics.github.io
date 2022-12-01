@@ -31,13 +31,16 @@
 
 ![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/EDITOR2.png)
 
-<img width="369" height="800" src="https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/EDITOR_ANDROID.jpg" align="right" />
+<img width="444" height="963" src="https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/EDITOR_ANDROID.jpg" align="right" />
 
 > **At the crossroads of mathematical worlds (radix) researchers from around the world allow us to code algorithms aimed at reducing images from 2.8 million bytes to only 8.9 thousand bytes (always equal to 8 bits or 1 byte... ).**
 
 > **Aiming to keep Ultra HD 4K+ resolution, we enlarge a thumbnail (yes, pixel art) with algorithms that helped "REMASTER" the greatest video game franchises of the 80s-90s for true-to-life quality. beauty of our current computer hardware.**
 
 **This allows a lot of people to do better than a whole lot of stuff for drawing, education, blockchain, NFTs and image processing/storage...**
+
+
+---
 
 <p align="center">
  <a href="https://pixa.pics/">https://pixa.pics/</a><span> — Unleash potential (un)-limited.</span>
