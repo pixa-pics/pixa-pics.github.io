@@ -179,11 +179,11 @@ class DrawerContent extends React.PureComponent {
                         <ListItemIcon><CodeIcon className={classes.iconColor} /></ListItemIcon>
                         <ListItemText primary="Source Code" />
                     </ListItem>
-                    <ListItem button className={classes.listItemGrey} onClick={(event) => this._open_link(event, "https://t.me/pixapics")}>
+                    <ListItem button className={classes.listItemGrey} onClick={(event) => this._open_link(event, "https://www.facebook.com/groups/504155481777261")}>
                         <Badge className={classes.styledBadgeConnected} overlap="circular" badgeContent=" " variant="dot">
                             <ListItemIcon><ForumIcon className={classes.iconColor} /></ListItemIcon>
                         </Badge>
-                        <ListItemText primary="Telegram" />
+                        <ListItemText primary="Facebook" />
                     </ListItem>
                 </List>
             </div>
