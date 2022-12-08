@@ -151,23 +151,6 @@ Look! On the STEEM blockchain you can post base64 text, transactions are rigged 
 
 > **Thanks for support!**
 
-## F') Getting further with sponsorship and development
-
-**Great is this king, the king kills that is good, you can't kill what is good, but you can kill the king!**
-The king is the newest being an amount of funds along with some specifications to create a new feature that kill one.
-
-**SO :**
-
-Always while a new checkpoint is set the king, once it lived only then, it can be redefined, and kills that you want that isn't great once finished yet good as it was; Example 1000$ for performance improvement development next set a new king as a checkpoint to kills the good rendering system not enabling to run it well in Africa and Europe (But that is done, it is running well even on an old smartphone, yeah!).
-
-**NOW:**
-
-> The king is empty and is not set to achieve anything, currently when it catch a new one, let it hit that is good and will be replaced by a motiated idea accepted and pushed with funds important enough for achievement of the task.
-
-**Current ideas seeking funds:**
-
-- Undefined
-
 **Queued ideas seeking funds:**
 
 * Translate the app in : [EN, FR, DE, IT, ID, PT, JA, ZH, RU, KO, HI, ES]
@@ -175,7 +158,7 @@ Always while a new checkpoint is set the king, once it lived only then, it can b
 * Rebuild some functionalities again.
 * Audit what users need and list the ideas found.
 
-## F") Get started and fund a king functionality now
+## F") Get started and fund like the king, a functionality now
 
 **INTERESTED INTO SPONSORING a good cause? **
 
