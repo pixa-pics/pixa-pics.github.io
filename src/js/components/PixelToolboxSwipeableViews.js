@@ -441,7 +441,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
         const view_name_changed = Boolean(view_name_index !== new_props.view_name_index);
         const something_changed_in_view = Boolean(Boolean(new_props.should_update || should_update) && Boolean((
             Boolean(too_much_colors_no_vector) !== Boolean(this.st4te.too_much_colors_no_vector) ||
-            layers.map(function(l){return ""+l.hidden +"_"+l.opacity+"_"+l.number_of_colors}).join("-") !== new_props.layers.map(function(l){return ""+l.hidden +"_"+l.opacity+"_"+l.number_of_colors}).join("-") ||
+            layers.map(function(l, i){return i+"_"+l.hidden +"_"+l.opacity+"_"+l.number_of_colors}).join("-") !== new_props.layers.map(function(l, i){return i+"_"+l.hidden +"_"+l.opacity+"_"+l.number_of_colors}).join("-") ||
             parseInt(previous_view_name_index) !== parseInt(new_props.previous_view_name_index) ||
             parseInt(layer_index) !== parseInt(new_props.layer_index) ||
             Boolean(is_image_import_mode) !==  Boolean(new_props.is_image_import_mode) ||
