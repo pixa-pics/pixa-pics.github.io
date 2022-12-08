@@ -55,7 +55,7 @@ class CanvasPixels extends React.PureComponent {
             this.xxhash = Object.create(XXHash).new();
             this.bmp_layer = Object.create(BMPLayer).from(pool);
             this.color_conversion = Object.create(ColorConversion).new();
-            this.super_blend = Object.create(SuperBlend).init();
+            this.super_blend = SuperBlend.init(1, 1);
             this.super_canvas = Object.create(SuperCanvas).from(null, 32, 32);
             this.canvas_pos = Object.create(CanvasPos).from(32,  32,  0.9,  32, 0, 0);
             this.sraf = Object.create(SmartRequestAnimationFrame).init();
@@ -490,7 +490,7 @@ class CanvasPixels extends React.PureComponent {
                 opacity: parseFloat(1),
             };
 
-            const super_blend = Object.create(SuperBlend).init(3, pxl_length);
+            const super_blend = SuperBlend.init(3, pxl_length);
             for(let i = 0 ; i < pxl_length; i = (i+1|0)>>>0) {
 
                 super_blend.for(i);

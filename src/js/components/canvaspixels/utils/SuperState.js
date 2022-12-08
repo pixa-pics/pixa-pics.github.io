@@ -162,9 +162,9 @@ const SuperState = {
 
                             for (let i = 0; (i|0) < (keys_length|0); i = (i+1|0)>>>0) {
 
-                                key = keys[i].toString();
+                                key = keys[i|0].toString();
                                 state[key] = new_props[key];
-                                if (key === "pxl_current_color") {
+                                if (key == "pxl_current_color") {
                                     state["pxl_current_color_uint32"] = _format_hex_color_getUin32(new_props[key]);
                                 }
                             }
