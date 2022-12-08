@@ -139,6 +139,9 @@ Screenshot of the minima's laboratory of pixa.pics (which is a pixel art editor)
 * WASM Hashing function for detecting change in history of editing (XXHash)
 
 ### Modules we built (Soon available on Github and NPM)
+
+<img width="300" height="300" src="https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/MEME.jpg" align="right" />
+
  * **SIMDope for computing color blending within list** or for shifting between color format (It is greatly inspired by SIMD.JS which take advantage of the CPU architecture having a faster cache than RAM while meaning (Single Instruction Multiple Data), it enables doing some task as much as 4x quicker, although we already written our code in ASM.JS specification to cast intger to 32 bits in most case and again it is very very very fast, probably the faster color processing library in pure javscript.
  * **QuantiMat for color quantization** it can reduce a low-res image from 40000 colors to 2000 colors in less than 500 ms, but in results, we achieve one of the greatest quality, when you diminish initial colors 20 times, after processing you can't clearly see any differences except it also removes pixel color glitches and so enables a better quality. We achieve this speed thanks to SIMDope, but also thanks to sorting colors in either 4096, 256, or 16 clusters that takes a binary reduction of color component down to numbers from 0 to the number of cluster and this enables to not compare all of them to all of them savings millions of operations,
 
