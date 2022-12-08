@@ -1380,7 +1380,7 @@ class Pixel extends React.PureComponent {
                         bitmap_to_imagedata(bitmap_input, resize_original_to, (imagedata) => {
 
                             bitmap_input = null;
-                            JSLoader( () => import("../utils/rgb_quant")).then(({rgb_quant}) => {
+                            JSLoader( () => import("../utils/quanti_mat")).then(({quanti_mat}) => {
 
                                 if(_import_colorize === "1") {
 
@@ -1400,7 +1400,7 @@ class Pixel extends React.PureComponent {
                                                 bitmap_to_imagedata(bitmap_received, resize_to_before, (imagedata_received) => {
 
                                                     bitmap_received = null;
-                                                    rgb_quant(imagedata_received, limit_color_number,(imagedata2) => {
+                                                    quanti_mat(imagedata_received, 1/64,(imagedata2) => {
 
                                                         imagedata_received = null;
                                                         imagedata_to_base64(imagedata2, "image/png", (base64) => {
@@ -1454,7 +1454,7 @@ class Pixel extends React.PureComponent {
                                                 bitmap_to_imagedata(bitmap_received, resize_to_before, (imagedata_received) => {
 
                                                     bitmap_received = null;
-                                                    rgb_quant(imagedata_received, limit_color_number,(imagedata2) => {
+                                                    quanti_mat(imagedata_received, 1/64,(imagedata2) => {
 
                                                         imagedata_received = null;
                                                         imagedata_to_base64(imagedata2, "image/png", (base64) => {
@@ -1511,7 +1511,7 @@ class Pixel extends React.PureComponent {
                                                     bitmap_to_imagedata(bitmap_received, resize_to_before, (imagedata_received) => {
 
                                                         bitmap_received = null;
-                                                        rgb_quant(imagedata_received, limit_color_number,(imagedata2) => {
+                                                        quanti_mat(imagedata_received, 1/64,(imagedata2) => {
 
                                                             imagedata_received = null;
                                                             imagedata_to_base64(imagedata2, "image/png", (base64) => {
@@ -1558,7 +1558,7 @@ class Pixel extends React.PureComponent {
                                             bitmap_to_imagedata(bitmap, resize_to_before, (imagedata_received) => {
 
                                                 bitmap = null;
-                                                rgb_quant(imagedata_received, limit_color_number,(imagedata2) => {
+                                                quanti_mat(imagedata_received, 1/64,(imagedata2) => {
 
                                                     imagedata_received = null;
                                                     if(imagedata2 === null) {
