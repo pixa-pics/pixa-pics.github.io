@@ -171,7 +171,7 @@ class DrawerContent extends React.PureComponent {
                     }} button onClick={this._open_pixel_page}>
                         <ListItemText className={classes.boldListItemText} primary={"PIXEL-ART EDITOR!"} secondary={"NFTs LABORATORY..."}/>
                     </ListItem>
-                    <ListItem button className={classes.listItemGrey} onClick={(event) => this._open_link(event, "https://github.com/pixa-pics/pixa-pics.github.io/graphs/contributors")}>
+                    <ListItem button className={classes.listItemGrey} onClick={(event) => this._open_link(event, "https://opencollective.com/pixapics")}>
                         <ListItemIcon><PersonIcon className={classes.iconColor} /></ListItemIcon>
                         <ListItemText primary="Contributors" />
                     </ListItem>
