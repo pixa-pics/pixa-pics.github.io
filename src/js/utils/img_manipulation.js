@@ -106,8 +106,6 @@ window.base64_to_bitmap_process_function = new AsyncFunction(`var t = async func
 
 const base64_to_bitmap = (base64, callback_function = () => {}, pool = null) => {
 
-
-
         if(pool !== null) {
 
             pool.exec(window.base64_to_bitmap_process_function, [
@@ -129,6 +127,11 @@ const base64_to_bitmap = (base64, callback_function = () => {}, pool = null) => 
         }
 
 };
+
+const file_to_bitmap = (file_or_blob, callback_function) => {
+
+    createImageBitmap(file_or_blob).then(callback_function);
+}
 
 const bitmap_to_imagedata = (bitmap, resize_to =  1920*1080, callback_function = () => {}) => {
 
@@ -226,4 +229,4 @@ const imagedata_to_base64 = (imagedata, type= "image/png", callback_function = (
 
 };
 
-module.exports = { file_to_base64, base64_to_bitmap, bitmap_to_imagedata, imagedata_to_base64, base64_sanitize }
+module.exports = { file_to_base64, base64_to_bitmap, bitmap_to_imagedata, imagedata_to_base64, base64_sanitize, file_to_bitmap }

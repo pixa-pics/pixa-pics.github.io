@@ -818,28 +818,28 @@ var QuantiMatGlobal = function(
         var image_data_uint32 = new Uint32Array(image_data.data.slice(0, image_data.data.length).reverse().buffer).reverse()
         var color_index = 0;
         var _pxl_colors = new Uint32Array(image_data_uint32.length);
-        var _pxls = new Uint32Array(image_data_uint32.length);
+        var pxls = new Uint32Array(image_data_uint32.length);
         var index_of = 0;
 
         for(var i = 0; (i|0) < (image_data_uint32.length|0); i = (i+1|0)>>>0) {
 
-            index_of = _pxl_colors.indexOf(image_data_uint32[i]);
+            index_of = _pxl_colors.indexOf((image_data_uint32[i]|0)>>>0);
             if(index_of === -1) {
-                _pxl_colors[color_index] = image_data_uint32[i] | 0;
-                index_of = color_index | 0;
-                color_index = color_index + 1 | 0;
+                _pxl_colors[color_index|0] = (image_data_uint32[i]|0)>>>0;
+                index_of = (color_index | 0) >>> 0;
+                color_index = (color_index + 1 | 0) >>> 0;
             }
 
-            _pxls[i] = index_of | 0;
+            pxls[i|0] = (index_of | 0) >>> 0;
         }
 
-        _pxl_colors = _pxl_colors.slice(0, color_index);
+        var pxl_colors = _pxl_colors.slice(0, color_index);
         var now = Date.now();
-        //console.log(_pxl_colors.length)
+        console.log(pxl_colors.length)
 
         var result = QuantiMat({
-            pxls: _pxls,
-            pxl_colors: _pxl_colors,
+            pxls: pxls,
+            pxl_colors: pxl_colors,
             bucket_threshold: bucket_threshold,
             threshold_steps: threshold_steps,
             color_number_bonus: color_number_bonus,
@@ -850,16 +850,13 @@ var QuantiMatGlobal = function(
         var res_pxls = result[0];
         var res_pxl_colors = result[1];
 
-        //console.log(res_pxl_colors.length);
-        //console.log("We removed and processed "+(_pxl_colors.length-res_pxl_colors.length)+" colors within " + (now - Date.now()) + " ms");
-        _pxls = new Uint32Array(result[0].length);
-
-        for(var i = 0; (i|0) < (_pxls.length|0); i = (i+1|0)>>>0) {
-
-            _pxls[i] = res_pxl_colors[res_pxls[i]] | 0;
+        console.log(res_pxl_colors.length);
+        console.log("We removed and processed "+(_pxl_colors.length-res_pxl_colors.length)+" colors within " + (Date.now() - now) + " ms");
+        pxls = new Uint32Array(result[0].length);
+        for(var i = 0; (i|0) < (pxls.length|0); i = (i+1|0)>>>0) {
+            pxls[i|0] = (res_pxl_colors[res_pxls[i|0]|0] | 0) >>> 0;
         }
-
-        image_data.data.set(new Uint8ClampedArray(_pxls.reverse().buffer).reverse());
+        image_data.data.set(new Uint8ClampedArray(pxls.reverse().buffer).reverse());
 
         resolve(image_data);
     });
