@@ -18,4 +18,4 @@ var isok = colors.get_element(4).r + colors.get_element(4).g + colors.get_elemen
 console.log(isok)
 ```
 
-... Look at the code it is FASTER THAN YOU MAY THINK
+INSPIRED BY https://tc39.es/ecmascript_simd/

@@ -1380,7 +1380,7 @@ class Pixel extends React.PureComponent {
                         bitmap_to_imagedata(bitmap_input, resize_original_to, (imagedata) => {
 
                             bitmap_input = null;
-                            JSLoader( () => import("../utils/quanti_mat")).then(({quanti_mat}) => {
+                            JSLoader( () => import("../utils/quantimat/quanti_mat")).then(({quanti_mat}) => {
 
                                 if(_import_colorize === "1") {
 
