@@ -1327,7 +1327,6 @@ class Pixel extends React.PureComponent {
             this._close_library();
         };
     };
-
     _handle_file_upload = (event) => {
 
         const files = (event.target || {}).files || (event.srcElement || {}).files || (event.currentTarget || {}).files || ((event.path || [])[0] || {}).files || [];
@@ -1338,7 +1337,7 @@ class Pixel extends React.PureComponent {
             if(f.type.startsWith('image/')) {
                 smart_file = f;
             }
-        };
+        }
 
         if(smart_file === null && dumb_file === null) {
 
@@ -1353,309 +1352,313 @@ class Pixel extends React.PureComponent {
             const { set_canvas_from_image } = this.st4te._canvas;
 
             this._handle_load("image_preload");
-            actions.trigger_voice("data_upload");
+            file_to_base64(smart_file, (base64_input) => {
 
-            const max_original_size = is_mobile_or_tablet ? Math.sqrt(1280 * 720): Math.sqrt(1920 * 1080);
-            const max_size = is_mobile_or_tablet ? Math.sqrt(512 * 512): Math.sqrt(512 * 512);
-            const max_color = is_mobile_or_tablet ? 1024: 2048;
+                base64_sanitize(base64_input, (base64_input) => {
 
-            let ratio_l_l2 = is_mobile_or_tablet ? 2.5: 5;
-            let min_size = is_mobile_or_tablet ? 512: 1024;
-            let min_color = is_mobile_or_tablet ? 768: 1536;
+                    actions.trigger_voice("data_upload");
 
-            const resize_original_to = parseInt(max_original_size * max_original_size);
-            const limit_color_number = Math.min(max_color, Math.max(parseInt(_import_size * ratio_l_l2), min_color));
-            const resize_to_before = Math.min(parseInt(max_size * max_size), Math.max(parseInt(_import_size * _import_size), parseInt(min_size * min_size)));
-            const resize_to_finally = Math.min(parseInt(max_size * max_size), parseInt(_import_size * _import_size));
+                    const max_original_size = is_mobile_or_tablet ? Math.sqrt(1280 * 720): Math.sqrt(1920 * 1080);
+                    const max_size = is_mobile_or_tablet ? Math.sqrt(512 * 512): Math.sqrt(512 * 512);
+                    const max_color = is_mobile_or_tablet ? 1024: 2048;
 
-            file_to_bitmap(smart_file, (bitmap_input) => {
+                    let ratio_l_l2 = is_mobile_or_tablet ? 2.5: 5;
+                    let min_size = is_mobile_or_tablet ? 512: 1024;
+                    let min_color = is_mobile_or_tablet ? 768: 1536;
 
-                bitmap_to_imagedata(bitmap_input, resize_original_to, (imagedata) => {
+                    const resize_original_to = parseInt(max_original_size * max_original_size);
+                    const limit_color_number = Math.min(max_color, Math.max(parseInt(_import_size * ratio_l_l2), min_color));
+                    const resize_to_before = Math.min(parseInt(max_size * max_size), Math.max(parseInt(_import_size * _import_size), parseInt(min_size * min_size)));
+                    const resize_to_finally = Math.min(parseInt(max_size * max_size), parseInt(_import_size * _import_size));
 
-                    JSLoader( () => import("../utils/quantimat/QuantiMat")).then(({QuantiMatGlobal}) => {
+                    base64_to_bitmap(base64_input, ( bitmap_input ) => {
 
-                        if(_import_colorize === "1") {
+                        smart_file = null;
+                        base64_input = null;
 
-                            this._handle_load_complete("image_preload", {});
-                            this._handle_load("image_ai");
-                            actions.trigger_snackbar("Getting associated with DeepAI.org systems", 5700);
-                            actions.jamy_update("angry");
+                        bitmap_to_imagedata(bitmap_input, resize_original_to, (imagedata) => {
 
-                            imagedata_to_base64(imagedata, mimetype,(base64_resized) => {
+                            bitmap_input = null;
+                            JSLoader( () => import("../utils/quantimat/QuantiMat")).then(({QuantiMatGlobal}) => {
 
-                                imagedata = null;
-                                postJSON("https://deepai.pixa-pics.workers.dev/colorizer", base64_resized, (err, res) => {
+                                if(_import_colorize === "1") {
 
-                                    base64_to_bitmap(res, (bitmap_received) => {
+                                    this._handle_load_complete("image_preload", {});
+                                    this._handle_load("image_ai");
+                                    actions.trigger_snackbar("Getting associated with DeepAI.org systems", 5700);
+                                    actions.jamy_update("angry");
 
-                                        res = null;
-                                        bitmap_to_imagedata(bitmap_received, resize_to_before, (imagedata_received) => {
+                                    imagedata_to_base64(imagedata, mimetype,(base64_resized) => {
 
-                                            bitmap_received = null;
-                                            QuantiMatGlobal(imagedata_received, 2/64).then((imagedata2) => {
+                                        imagedata = null;
+                                        postJSON("https://deepai.pixa-pics.workers.dev/colorizer", base64_resized, (err, res) => {
 
-                                                imagedata_received = null;
-                                                imagedata_to_base64(imagedata2, "image/png", (base64) => {
+                                            base64_to_bitmap(res, (bitmap_received) => {
 
-                                                    imagedata2 = null;
-                                                    base64_to_bitmap(base64, (bitmap_received) => {
+                                                res = null;
+                                                bitmap_to_imagedata(bitmap_received, resize_to_before, (imagedata_received) => {
 
-                                                        base64 = null;
-                                                        bitmap_to_imagedata(bitmap_received, resize_to_finally, (imagedata_received_2) => {
+                                                    bitmap_received = null;
+                                                    QuantiMatGlobal(imagedata_received, 1/64).then((imagedata2) => {
 
-                                                            bitmap_received = null;
-                                                            imagedata_to_base64(imagedata_received_2, "image/png", (base64_final) => {
+                                                        imagedata_received = null;
+                                                        imagedata_to_base64(imagedata2, "image/png", (base64) => {
 
-                                                                imagedata_received_2 = null;
-                                                                let img = new Image();
-                                                                img.addEventListener("load", () => {
+                                                            imagedata2 = null;
+                                                            base64_to_bitmap(base64, (bitmap_received) => {
 
-                                                                    this._handle_load_complete("image_ai", {});
-                                                                    this.setSt4te({_kb: 0, _saved_at: 1/0});
-                                                                    set_canvas_from_image(img, base64_resized.toString(), {}, true);
-                                                                    base64_resized = null;
-                                                                }, {once: true, capture: true});
-                                                                img.src = base64_final.toString();
-                                                                base64_final = null;
+                                                                base64 = null;
+                                                                bitmap_to_imagedata(bitmap_received, resize_to_finally, (imagedata_received_2) => {
 
-                                                            });
-                                                        });
-                                                    });
-                                                }, pool);
-                                            }, pool);
-                                        });
-                                    }, pool);
-                                }, "application/text");
-                            }, pool);
+                                                                    bitmap_received = null;
+                                                                    imagedata_to_base64(imagedata_received_2, "image/png", (base64_final) => {
 
-                        }else if(_import_colorize === "2") {
+                                                                        imagedata_received_2 = null;
+                                                                        let img = new Image();
+                                                                        img.addEventListener("load", () => {
 
-                            this._handle_load_complete("image_preload", {});
-                            this._handle_load("image_ai");
-                            actions.trigger_snackbar("Getting associated with DeepAI.org systems", 5700);
-                            actions.jamy_update("angry");
+                                                                            this._handle_load_complete("image_ai", {});
+                                                                            this.setSt4te({_kb: 0, _saved_at: 1/0});
+                                                                            set_canvas_from_image(img, base64_resized.toString(), {}, true);
+                                                                            base64_resized = null;
+                                                                        }, {once: true, capture: true});
+                                                                        img.src = base64_final.toString();
+                                                                        base64_final = null;
 
-                            imagedata_to_base64(imagedata, mimetype,(base64_resized) => {
-
-                                imagedata = null;
-                                postJSON("https://deepai.pixa-pics.workers.dev/waifu2x", base64_resized, (err, res) => {
-
-                                    base64_to_bitmap(res, (bitmap_received) => {
-
-                                        res = null;
-                                        bitmap_to_imagedata(bitmap_received, resize_to_before, (imagedata_received) => {
-
-                                            bitmap_received = null;
-                                            QuantiMatGlobal(imagedata_received, 2/64).then((imagedata2) => {
-
-                                                imagedata_received = null;
-                                                imagedata_to_base64(imagedata2, "image/png", (base64) => {
-
-                                                    imagedata2 = null;
-                                                    base64_to_bitmap(base64, (bitmap_received) => {
-
-                                                        base64 = null;
-                                                        bitmap_to_imagedata(bitmap_received, resize_to_finally, (imagedata_received_2) => {
-
-                                                            bitmap_received = null;
-                                                            imagedata_to_base64(imagedata_received_2, "image/png", (base64_final) => {
-
-                                                                imagedata_received_2 = null;
-                                                                let img = new Image();
-                                                                img.addEventListener("load", () => {
-
-                                                                    this._handle_load_complete("image_ai", {});
-                                                                    this.setSt4te({_kb: 0, _saved_at: 1/0});
-                                                                    set_canvas_from_image(img, base64_resized.toString(), {}, true);
-                                                                    base64_resized = null;
-                                                                }, {once: true, capture: true});
-                                                                img.src = base64_final.toString();
-                                                                base64_final = null;
-
-                                                            });
-                                                        });
-                                                    });
-                                                }, pool);
-                                            }, pool);
-                                        });
-                                    }, pool);
-                                }, "application/text");
-                            }, pool);
-
-                        }else if(_import_colorize === "3") {
-
-                            this._handle_load_complete("image_preload", {});
-                            this._handle_load("image_ai");
-                            actions.trigger_snackbar("Getting associated with DeepAI.org systems", 5700);
-                            actions.jamy_update("angry");
-
-                            imagedata_to_base64(imagedata, mimetype, (base64_resized) => {
-
-                                imagedata = null;
-                                postJSON("https://deepai.pixa-pics.workers.dev/colorizer", base64_resized, (err, res) => {
-
-                                    postJSON("https://deepai.pixa-pics.workers.dev/waifu2x",  res, (err2, res2) => {
-
-                                        res = null;
-                                        base64_to_bitmap(res2, (bitmap_received) => {
-
-                                            res2 = null;
-                                            bitmap_to_imagedata(bitmap_received, resize_to_before, (imagedata_received) => {
-
-                                                bitmap_received = null;
-                                                QuantiMatGlobal(imagedata_received, 2/64).then((imagedata2) => {
-
-                                                    imagedata_received = null;
-                                                    imagedata_to_base64(imagedata2, "image/png", (base64) => {
-
-                                                        imagedata2 = null;
-                                                        base64_to_bitmap(base64, (bitmap_received_2) => {
-
-                                                            base64 = null;
-                                                            bitmap_to_imagedata(bitmap_received_2, resize_to_finally, (imagedata_received_2) => {
-
-                                                                bitmap_received_2 = null;
-                                                                imagedata_to_base64(imagedata_received_2, "image/png", (base64_final) => {
-
-                                                                    imagedata_received_2 = null;
-                                                                    let img = new Image();
-                                                                    img.addEventListener("load", () => {
-
-                                                                        this._handle_load_complete("image_ai", {});
-                                                                        this.setSt4te({_kb: 0, _saved_at: 1/0});
-                                                                        set_canvas_from_image(img, base64_resized.toString(), {}, true);
-                                                                        base64_resized = null;
-                                                                    }, {once: true, capture: true});
-                                                                    img.src = base64_final.toString();
-                                                                    base64_final = null;
-
+                                                                    });
                                                                 });
                                                             });
-                                                        });
+                                                        }, pool);
                                                     }, pool);
+                                                });
+                                            }, pool);
+                                        }, "application/text");
+                                    }, pool);
+
+                                }else if(_import_colorize === "2") {
+
+                                    this._handle_load_complete("image_preload", {});
+                                    this._handle_load("image_ai");
+                                    actions.trigger_snackbar("Getting associated with DeepAI.org systems", 5700);
+                                    actions.jamy_update("angry");
+
+                                    imagedata_to_base64(imagedata, mimetype,(base64_resized) => {
+
+                                        imagedata = null;
+                                        postJSON("https://deepai.pixa-pics.workers.dev/waifu2x", base64_resized, (err, res) => {
+
+                                            base64_to_bitmap(res, (bitmap_received) => {
+
+                                                res = null;
+                                                bitmap_to_imagedata(bitmap_received, resize_to_before, (imagedata_received) => {
+
+                                                    bitmap_received = null;
+
+                                                    QuantiMatGlobal(imagedata_received, 1/64).then((imagedata2) => {
+
+                                                        imagedata_received = null;
+                                                        imagedata_to_base64(imagedata2, "image/png", (base64) => {
+
+                                                            imagedata2 = null;
+                                                            base64_to_bitmap(base64, (bitmap_received) => {
+
+                                                                base64 = null;
+                                                                bitmap_to_imagedata(bitmap_received, resize_to_finally, (imagedata_received_2) => {
+
+                                                                    bitmap_received = null;
+                                                                    imagedata_to_base64(imagedata_received_2, "image/png", (base64_final) => {
+
+                                                                        imagedata_received_2 = null;
+                                                                        let img = new Image();
+                                                                        img.addEventListener("load", () => {
+
+                                                                            this._handle_load_complete("image_ai", {});
+                                                                            this.setSt4te({_kb: 0, _saved_at: 1/0});
+                                                                            set_canvas_from_image(img, base64_resized.toString(), {}, true);
+                                                                            base64_resized = null;
+                                                                        }, {once: true, capture: true});
+                                                                        img.src = base64_final.toString();
+                                                                        base64_final = null;
+
+                                                                    });
+                                                                });
+                                                            });
+                                                        }, pool);
+                                                    }, pool);
+                                                });
+                                            }, pool);
+                                        }, "application/text");
+                                    }, pool);
+
+                                }else if(_import_colorize === "3") {
+
+                                    this._handle_load_complete("image_preload", {});
+                                    this._handle_load("image_ai");
+                                    actions.trigger_snackbar("Getting associated with DeepAI.org systems", 5700);
+                                    actions.jamy_update("angry");
+
+                                    imagedata_to_base64(imagedata, mimetype, (base64_resized) => {
+
+                                        imagedata = null;
+                                        postJSON("https://deepai.pixa-pics.workers.dev/colorizer", base64_resized, (err, res) => {
+
+                                            postJSON("https://deepai.pixa-pics.workers.dev/waifu2x",  res, (err2, res2) => {
+
+                                                res = null;
+                                                base64_to_bitmap(res2, (bitmap_received) => {
+
+                                                    res2 = null;
+                                                    bitmap_to_imagedata(bitmap_received, resize_to_before, (imagedata_received) => {
+
+                                                        bitmap_received = null;
+                                                        QuantiMatGlobal(imagedata_received, 1/64).then((imagedata2) => {
+
+                                                            imagedata_received = null;
+                                                            imagedata_to_base64(imagedata2, "image/png", (base64) => {
+
+                                                                imagedata2 = null;
+                                                                base64_to_bitmap(base64, (bitmap_received_2) => {
+
+                                                                    base64 = null;
+                                                                    bitmap_to_imagedata(bitmap_received_2, resize_to_finally, (imagedata_received_2) => {
+
+                                                                        bitmap_received_2 = null;
+                                                                        imagedata_to_base64(imagedata_received_2, "image/png", (base64_final) => {
+
+                                                                            imagedata_received_2 = null;
+                                                                            let img = new Image();
+                                                                            img.addEventListener("load", () => {
+
+                                                                                this._handle_load_complete("image_ai", {});
+                                                                                this.setSt4te({_kb: 0, _saved_at: 1/0});
+                                                                                set_canvas_from_image(img, base64_resized.toString(), {}, true);
+                                                                                base64_resized = null;
+                                                                            }, {once: true, capture: true});
+                                                                            img.src = base64_final.toString();
+                                                                            base64_final = null;
+
+                                                                        });
+                                                                    });
+                                                                });
+                                                            }, pool);
+                                                        }, pool);
+                                                    });
                                                 }, pool);
-                                            });
-                                        }, pool);
-                                    }, "application/text");
-                                }, "application/text");
-                            }, pool);
+                                            }, "application/text");
+                                        }, "application/text");
+                                    }, pool);
 
-                        }else {
+                                }else {
 
-                            imagedata_to_base64(imagedata, mimetype, (base64_resized) => {
+                                    imagedata_to_base64(imagedata, mimetype, (base64_resized) => {
 
-                                imagedata = null;
-                                base64_to_bitmap(base64_resized, (bitmap) => {
+                                        imagedata = null;
+                                        base64_to_bitmap(base64_resized, (bitmap) => {
 
-                                    bitmap_to_imagedata(bitmap, resize_to_before, (imagedata_received) => {
+                                            bitmap_to_imagedata(bitmap, resize_to_before, (imagedata_received) => {
 
-                                        bitmap = null;
-                                        QuantiMatGlobal(imagedata_received, 2/64).then((imagedata2) => {
+                                                bitmap = null;
+                                                QuantiMatGlobal(imagedata_received, 1/64).then((imagedata2) => {
 
-                                            imagedata_received = null;
-                                            if(imagedata2 === null) {
+                                                    imagedata_received = null;
+                                                    if(imagedata2 === null) {
 
-                                                window.dispatchEvent(new Event("art-upload-browsererror"));
-                                                this._handle_load_complete("image_preload", {});
-                                                this._handle_load("browser");
-                                                actions.trigger_sfx("alert_high-intensity", 0.6);
-                                                actions.jamy_update("flirty");
-                                                actions.trigger_snackbar("That's our end my little diddy! My instinctive dwelling require a browser I am supporting.", 6000);
-
-                                                setTimeout(() => {
-
-                                                    actions.trigger_sfx("alert_high-intensity", 0.7);
-                                                    actions.jamy_update("sad");
-                                                    actions.trigger_snackbar("Abandon, misfortune, sadness... I can't live in this strange place.", 7000);
-
-                                                    setTimeout(() => {
-
-                                                        actions.trigger_sfx("alert_high-intensity", 0.8);
-                                                        actions.jamy_update("suspicious");
-                                                        actions.trigger_snackbar("Ho no! I just can't, but someone needs to give me back my usual laboratory environment!", 7000);
+                                                        window.dispatchEvent(new Event("art-upload-browsererror"));
+                                                        this._handle_load_complete("image_preload", {});
+                                                        this._handle_load("browser");
+                                                        actions.trigger_sfx("alert_high-intensity", 0.6);
+                                                        actions.jamy_update("flirty");
+                                                        actions.trigger_snackbar("That's our end my little diddy! My instinctive dwelling require a browser I am supporting.", 6000);
 
                                                         setTimeout(() => {
 
-                                                            actions.trigger_sfx("alert_high-intensity", 0.9);
-                                                            actions.jamy_update("shocked");
-                                                            actions.trigger_snackbar("Yes my enjoyable smartness, gladly you hear me now! Everything gonna be alright to look at me!", 9000);
+                                                            actions.trigger_sfx("alert_high-intensity", 0.7);
+                                                            actions.jamy_update("sad");
+                                                            actions.trigger_snackbar("Abandon, misfortune, sadness... I can't live in this strange place.", 7000);
 
                                                             setTimeout(() => {
 
-                                                                actions.jamy_update("happy");
-                                                                actions.trigger_sfx("alert_high-intensity", 1);
+                                                                actions.trigger_sfx("alert_high-intensity", 0.8);
+                                                                actions.jamy_update("suspicious");
+                                                                actions.trigger_snackbar("Ho no! I just can't, but someone needs to give me back my usual laboratory environment!", 7000);
 
                                                                 setTimeout(() => {
 
-                                                                    actions.trigger_sfx("alert_high-intensity", 1);
+                                                                    actions.trigger_sfx("alert_high-intensity", 0.9);
+                                                                    actions.jamy_update("shocked");
+                                                                    actions.trigger_snackbar("Yes my enjoyable smartness, gladly you hear me now! Everything gonna be alright to look at me!", 9000);
 
-                                                                }, 750);
+                                                                    setTimeout(() => {
 
-                                                            }, 4000);
+                                                                        actions.jamy_update("happy");
+                                                                        actions.trigger_sfx("alert_high-intensity", 1);
 
-                                                        }, 8000);
+                                                                        setTimeout(() => {
 
-                                                    }, 8000);
+                                                                            actions.trigger_sfx("alert_high-intensity", 1);
 
-                                                }, 7000);
+                                                                        }, 750);
 
-                                            }else {
+                                                                    }, 4000);
 
+                                                                }, 8000);
 
-                                                bitmap_to_imagedata(bitmap_input, resize_to_finally, (imagedata_received_2) => {
+                                                            }, 8000);
 
-                                                    imagedata_to_base64(imagedata_received_2, "image/png", (base64_final) => {
+                                                        }, 7000);
 
-                                                        imagedata_received_2 = null;
-                                                        let img = new Image();
-                                                        img.addEventListener("load", () => {
+                                                    }else {
 
-                                                            this._handle_load_complete("image_preload", {});
-                                                            this.setSt4te({_kb: 0, _saved_at: 1/0});
-                                                            set_canvas_from_image(img, base64_resized.toString(), {}, false);
-                                                            base64_resized = null;
-                                                        }, {once: true, capture: true});
-                                                        img.src = base64_final.toString();
-                                                        base64_final = null;
+                                                        imagedata_to_base64(imagedata2, "image/png", (base64) => {
 
-                                                    });
-                                                });
+                                                            imagedata2 = null;
+                                                            base64_to_bitmap(base64, (bitmap_received) => {
 
+                                                                base64 = null;
+                                                                bitmap_to_imagedata(bitmap_received, resize_to_finally, (imagedata_received_2) => {
 
-                                            }
+                                                                    bitmap_received = null;
+                                                                    imagedata_to_base64(imagedata_received_2, "image/png", (base64_final) => {
+
+                                                                        imagedata_received_2 = null;
+                                                                        let img = new Image();
+                                                                        img.addEventListener("load", () => {
+
+                                                                            this._handle_load_complete("image_preload", {});
+                                                                            this.setSt4te({_kb: 0, _saved_at: 1/0});
+                                                                            set_canvas_from_image(img, base64_resized.toString(), {}, false);
+                                                                            base64_resized = null;
+                                                                        }, {once: true, capture: true});
+                                                                        img.src = base64_final.toString();
+                                                                        base64_final = null;
+
+                                                                    });
+                                                                });
+                                                            });
+                                                        }, pool);
+                                                    }
+                                                }, pool);
+                                            });
                                         }, pool);
-                                    });
-                                }, pool);
-                            }, pool);
-                        }
+                                    }, pool);
+                                }
 
-                    }).catch((e) => {
+                            }).catch((e) => {
 
-                        this._handle_load_complete("image_preload", {});
-                        actions.trigger_snackbar("Be sure to have a recent browser or install Google Chrome for using it.", 5700);
-                        actions.jamy_update("angry");
+                                this._handle_load_complete("image_preload", {});
+                                actions.trigger_snackbar("Be sure to have a recent browser or install Google Chrome for using it.", 5700);
+                                actions.jamy_update("angry");
 
-                    });
+                            });
+
+                        });
+
+                    }, pool);
 
                 });
 
-
             }, pool);
         }
-    };
-
-    _handle_import_json_state_id = (id) => {
-
-        JSLoader( () => import("../utils/lzp3_cbor")).then(({LZP3}) => {
-
-            this._handle_load("image_preload");
-            actions.trigger_voice("accessing_memory");
-            api.get_settings(() => {}, ["json_state-ID" + id + ".json.lz"], this._process_settings_attachment_result, LZP3, pool);
-        }).catch(() => {
-
-            actions.trigger_snackbar("Looks like I can't get your file as our compression module can't load.", 5700);
-            actions.jamy_update("angry");
-        });
     };
 
     _handle_file_import = (event) => {

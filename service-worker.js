@@ -1,7 +1,7 @@
 "use strict";
-var REQUIRED_CACHE = "unless-update-cache-v544-required";
-var USEFUL_CACHE = "unless-update-cache-v544-useful";
-var STATIC_CACHE = "unless-update-cache-v544-static";
+var REQUIRED_CACHE = "unless-update-cache-v545-required";
+var USEFUL_CACHE = "unless-update-cache-v545-useful";
+var STATIC_CACHE = "unless-update-cache-v545-static";
 var MAIN_CHILD_CHUNK_REGEX = /chunk_(main_[a-z0-9]+)\.min\.js$/i;
 var CHILD_CHUNK_REGEX = /chunk_([0-9]+)\.min\.js$/i;
 
@@ -189,11 +189,11 @@ self.addEventListener("fetch", function(event) {
             useful_cache.then(function (cache) {
                 return cache.match(url).then(function (response) {
                     return response.ok ? response: fetch(url).then(function (response) { // Fetch, clone, and serve
-                        if(response.ok) { cache.put(url, response.clone());} return Promise.resolve(response.clone());
+                        if(response.ok) { cache.put(url, response.clone());} return Promise.resolve(response);
                     });
                 }).catch(function(){
                     return fetch(url).then(function (response) { // Fetch, clone, and serve
-                        if(response.ok) { cache.put(url, response.clone());} return Promise.resolve(response.clone());
+                        if(response.ok) { cache.put(url, response.clone());} return Promise.resolve(response);
                     });
                 });
             })
@@ -205,11 +205,11 @@ self.addEventListener("fetch", function(event) {
             static_cache.then(function (cache) {
                 return cache.match(url).then(function (response) {
                     return response.ok ? response: fetch(url).then(function (response) { // Fetch, clone, and serve
-                        if(response.ok) { cache.put(url, response.clone());} return Promise.resolve(response.clone());
+                        if(response.ok) { cache.put(url, response.clone());} return Promise.resolve(response);
                     });
                 }).catch(function(){
                     return fetch(url).then(function (response) { // Fetch, clone, and serve
-                        if(response.ok) { cache.put(url, response.clone());} return Promise.resolve(response.clone());
+                        if(response.ok) { cache.put(url, response.clone());} return Promise.resolve(response);
                     });
                 });
             })
@@ -221,11 +221,11 @@ self.addEventListener("fetch", function(event) {
             useful_cache.then(function (cache) {
                 return cache.match(url).then(function (response) {
                     return response.ok ? response: fetch(url).then(function (response) { // Fetch, clone, and serve
-                        if(response.ok) { cache.put(url, response.clone());} return Promise.resolve(response.clone());
+                        if(response.ok) { cache.put(url, response.clone());} return Promise.resolve(response);
                     });
                 }).catch(function(){
                     return fetch(url).then(function (response) { // Fetch, clone, and serve
-                        if(response.ok) { cache.put(url, response.clone());} return Promise.resolve(response.clone());
+                        if(response.ok) { cache.put(url, response.clone());} return Promise.resolve(response);
                     });
                 });
             })
@@ -237,11 +237,11 @@ self.addEventListener("fetch", function(event) {
             required_cache.then(function (cache) {
                 return cache.match("/client/chunk_norris.min.js").then(function (response) {
                     return response.ok ? response: fetch("/client/chunk_norris.min.js").then(function (response) { // Fetch, clone, and serve
-                        if(response.ok) { cache.put("/client/chunk_norris.min.js", response.clone());} return Promise.resolve(response.clone());
+                        if(response.ok) { cache.put("/client/chunk_norris.min.js", response.clone());} return Promise.resolve(response);
                     });
                 }).catch(function(){
                     return fetch(`/client/chunk_norris.min.js`).then(function (response) { // Fetch, clone, and serve
-                        if(response.ok) { cache.put("/client/chunk_norris.min.js", response.clone());} return Promise.resolve(response.clone());
+                        if(response.ok) { cache.put("/client/chunk_norris.min.js", response.clone());} return Promise.resolve(response);
                     });
                 });
             })
@@ -254,11 +254,11 @@ self.addEventListener("fetch", function(event) {
             required_cache.then(function (cache) {
                 return cache.match(`/client/chunk_${middle_name}.min.js`).then(function (response) {
                     return response.ok ? response: fetch(`/client/chunk_${middle_name}.min.js`).then(function (response) { // Fetch, clone, and serve
-                        if(response.ok) { cache.put(`/client/chunk_${middle_name}.min.js`, response.clone());} return Promise.resolve(response.clone());
+                        if(response.ok) { cache.put(`/client/chunk_${middle_name}.min.js`, response.clone());} return Promise.resolve(response);
                     });
                 }).catch(function(){
                     return fetch(`/client/chunk_${middle_name}.min.js`).then(function (response) { // Fetch, clone, and serve
-                        if(response.ok) { cache.put(`/client/chunk_${middle_name}.min.js`, response.clone());} return Promise.resolve(response.clone());
+                        if(response.ok) { cache.put(`/client/chunk_${middle_name}.min.js`, response.clone());} return Promise.resolve(response);
                     });
                 });
             })
@@ -271,11 +271,11 @@ self.addEventListener("fetch", function(event) {
             required_cache.then(function (cache) {
                 return cache.match(`/client/chunk_${middle_name}.min.js`).then(function (response) {
                     return response.ok ? response: fetch(`/client/chunk_${middle_name}.min.js`).then(function (response) { // Fetch, clone, and serve
-                        if(response.ok) { cache.put(`/client/chunk_${middle_name}.min.js`, response.clone());} return Promise.resolve(response.clone());
+                        if(response.ok) { cache.put(`/client/chunk_${middle_name}.min.js`, response.clone());} return Promise.resolve(response);
                     });
                 }).catch(function(){
                     return fetch(`/client/chunk_${middle_name}.min.js`).then(function (response) { // Fetch, clone, and serve
-                        if(response.ok) { cache.put(`/client/chunk_${middle_name}.min.js`, response.clone());} return Promise.resolve(response.clone());
+                        if(response.ok) { cache.put(`/client/chunk_${middle_name}.min.js`, response.clone());} return Promise.resolve(response);
                     });
                 });
             })
@@ -288,11 +288,11 @@ self.addEventListener("fetch", function(event) {
             required_cache.then(function (cache) {
                 return cache.match(`/`).then(function (response) {
                     return response.ok ? response: fetch(`/`).then(function (response) { // Fetch, clone, and serve
-                        if(response.ok) { cache.put(`/`, response.clone());} return Promise.resolve(response.clone());
+                        if(response.ok) { cache.put(`/`, response.clone());} return Promise.resolve(response);
                     });
                 }).catch(function(){
                     return fetch(`/`).then(function (response) { // Fetch, clone, and serve
-                        if(response.ok) { cache.put(`/`, response.clone());} return Promise.resolve(response.clone());
+                        if(response.ok) { cache.put(`/`, response.clone());} return Promise.resolve(response);
                     });
                 });
             })
@@ -319,7 +319,7 @@ self.addEventListener("fetch", function(event) {
                 }),
                 fetch(url).then(function (response) { // Fetch and serve
                     return useful_cache.then(function (cache) {
-                        if(response.ok) { cache.put(url, response.clone());} return Promise.resolve(response.clone());
+                        if(response.ok) { cache.put(url, response.clone());} return Promise.resolve(response);
                     });
                 })
             ])
