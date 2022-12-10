@@ -726,6 +726,20 @@ class Pixel extends React.PureComponent {
         }
     };
 
+    _handle_import_json_state_id = (id) => {
+
+        JSLoader( () => import("../utils/lzp3_cbor")).then(({LZP3}) => {
+
+            this._handle_load("image_preload");
+            actions.trigger_voice("accessing_memory");
+            api.get_settings(() => {}, ["json_state-ID" + id + ".json.lz"], this._process_settings_attachment_result, LZP3, pool);
+        }).catch(() => {
+
+            actions.trigger_snackbar("Looks like I can't get your file as our compression module can't load.", 5700);
+            actions.jamy_update("angry");
+        });
+    };
+
     _delete_unsaved_pixel_art = (id) => {
 
         const attachments = {};

@@ -162,6 +162,10 @@ Look! On the STEEM blockchain you can post base64 text, transactions are rigged 
 
 **INTERESTED INTO SPONSORING a good cause? **
 
+Get involved with us at https://opencollective.com/pixapics
+
+or
+
 Please email-us at: [pixa.pics@protonmail.com](mailto:pixa.pics@protonmail.com)
 
 ### Sponsor-kit : [Pixelarts_NFTs_PixaPics.pdf](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/Pixelarts_NFTs_PixaPics.pdf)

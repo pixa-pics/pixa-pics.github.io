@@ -173,7 +173,7 @@ class DrawerContent extends React.PureComponent {
                     </ListItem>
                     <ListItem button className={classes.listItemGrey} onClick={(event) => this._open_link(event, "https://opencollective.com/pixapics")}>
                         <ListItemIcon><PersonIcon className={classes.iconColor} /></ListItemIcon>
-                        <ListItemText primary="Contributors" />
+                        <ListItemText primary="Sponsors" />
                     </ListItem>
                     <ListItem button className={classes.listItemGrey} onClick={(event) => this._open_link(event, "https://github.com/pixa-pics/pixa-pics.github.io")}>
                         <ListItemIcon><CodeIcon className={classes.iconColor} /></ListItemIcon>
@@ -183,7 +183,7 @@ class DrawerContent extends React.PureComponent {
                         <Badge className={classes.styledBadgeConnected} overlap="circular" badgeContent=" " variant="dot">
                             <ListItemIcon><ForumIcon className={classes.iconColor} /></ListItemIcon>
                         </Badge>
-                        <ListItemText primary="Facebook" />
+                        <ListItemText primary="Facebook community" />
                     </ListItem>
                 </List>
             </div>

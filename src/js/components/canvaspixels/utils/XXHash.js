@@ -84,8 +84,8 @@ const XXHash = {
                 while (num > 0) {
                     remainder = Number(num % base_58) & 0xFF;
                     num = num / base_58;
-                    encoded[c] = alphabet_58[remainder];
-                    c = (c + 1)|0;
+                    encoded[c|0] = alphabet_58[remainder|0];
+                    c = (c + 1 | 0) >>> 0;
                 }
 
                 return String.fromCharCode.apply(null, encoded);
