@@ -24,9 +24,9 @@ SOFTWARE.
  */
 
 // Inspired by https://en.wikipedia.org/wiki/Rec._709
-var PR = 0.3125, // +0.1
-    PG = 0.5154, // -0.2
-    PB = 0.1721, // +0.1
+var PR = 0.45,
+    PG = 0.30,
+    PB = 0.25,
     PA = 1.0000;
 
 var RD = 255,
