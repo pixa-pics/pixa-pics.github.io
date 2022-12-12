@@ -24,9 +24,9 @@ SOFTWARE.
  */
 
 // Inspired by https://en.wikipedia.org/wiki/Rec._709
-var PR = 0.45,
-    PG = 0.30,
-    PB = 0.25,
+var PR = 0.45, // +0.1
+    PG = 0.30, // -0.2
+    PB = 0.25, // +0.1
     PA = 1.0000;
 
 var RD = 255,
@@ -675,7 +675,6 @@ QuantiMat.prototype.clusterize = function() {
 
     this.set_all_cluster_indexes();
 }
-
 QuantiMat.prototype.process_threshold = function(t) {
     "use strict";
 
@@ -728,12 +727,15 @@ QuantiMat.prototype.process_threshold = function(t) {
                         color_usage_difference = (first_color_more_used ? color_a_usage / color_b_usage: color_b_usage / color_a_usage) * 255 | 0;
                         weighted_threshold = (((threshold_255 / 255 + (threshold_255 / 255 * (1 - color_usage_difference/255) * weight_applied_to_color_usage_difference)) / (1 + weight_applied_to_color_usage_difference)) * 255 | 0)>>>0;
 
-                        if(color_a.euclidean_match_with(color_b,  weighted_threshold|0)) {
+                        if(color_a.manhattan_match_with(color_b,  weighted_threshold|0)) {
 
-                            index_merged.add(index_of_color_a);
                             index_merged.add(index_of_color_b);
                             accumulator_colors.add(color_b)
-                            color_a.blend_with(color_b, first_color_more_used ? color_usage_difference: 255 - (color_usage_difference / 255 | 0), false, false);
+                            if(first_color_more_used) {
+                                color_a.blend_with(color_b, color_usage_difference, false, false);
+                            }else {
+                                color_b.blend_with(color_a, color_usage_difference, false, false);
+                            }
                         }
                     }
                 }
@@ -743,6 +745,8 @@ QuantiMat.prototype.process_threshold = function(t) {
 
                     color_iterator.next().value.set(color_a);
                 }
+
+                index_merged.add(index_of_color_a);
             }
         }
 
