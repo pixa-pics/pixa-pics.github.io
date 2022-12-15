@@ -1,7 +1,7 @@
 import { CURRENCY_COUNTRIES } from "../utils/constants";
 import get_browser_locales from "../utils/locales";
 import PouchDB from "pouchdb-core";
-import PouchDB_IDB from "pouchdb-adapter-indexeddb";
+import PouchDB_IDB from "pouchdb-adapter-idb";
 import PouchDB_memory from "pouchdb-adapter-memory";
 
 const init = () => {
@@ -34,7 +34,7 @@ const init = () => {
 
                 PouchDB.plugin(PouchDB_memory);
                 PouchDB.plugin(PouchDB_IDB);
-                window.settings_db = new PouchDB("settings_db", {adapter: "indexeddb", view_adapter: "memory", deterministic_revs: true, revs_limit: 1});
+                window.settings_db = new PouchDB("settings_db", {adapter: "idb", view_adapter: "memory", deterministic_revs: true, revs_limit: 1});
             }catch (e) {
 
                 reset_all_databases(function(){
