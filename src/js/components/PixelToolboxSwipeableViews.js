@@ -997,6 +997,15 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                     tools: [
                         {
                             icon: <FileDownloadIcon/>,
+                            text: "Depixelize",
+                            sub: "Upscale by 10x using Depixelize",
+                            disabled: too_much_colors_no_vector,
+                            on_click: () => {
+                                this._download_svg("depixelize", _compressed, _vectorized)
+                            }
+                        },
+                        {
+                            icon: <FileDownloadIcon/>,
                             text: "Omni",
                             sub: "Upscale by 8x using Omniscale",
                             disabled: too_much_colors_no_vector,

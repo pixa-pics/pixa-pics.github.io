@@ -1,5 +1,6 @@
 import pool from "../utils/worker-pool";
 import JSLoader from "./JSLoader";
+import depixelize from "../utils/depixelize/index";
 
 const base64png_to_xbrz_svg = (base64png, callback_function_for_image, callback_function_for_svg, pal= [], using = "xbrz", optimize_render_size = false, download_svg = false) => {
 
@@ -97,7 +98,36 @@ const base64png_to_xbrz_svg = (base64png, callback_function_for_image, callback_
             }
         }
 
-        if(using === "omniscale") {
+        if(using === "depixelize") {
+
+            const first_scale_size = 10;
+
+            var second_image_data = depixelize(image_data);
+            let third_canvas = document.createElement("canvas");
+            third_canvas.width = second_image_data.width;
+            third_canvas.height = second_image_data.height;
+            let third_canvas_ctx = third_canvas.getContext("2d");
+            third_canvas_ctx.putImageData(second_image_data, 0, 0);
+            let base64_out = third_canvas_ctx.canvas.toDataURL("image/png");
+
+            process_svg(second_image_data, first_scale_size);
+
+            if(optimize_render_size) {
+
+                JSLoader( () => import("../utils/png_quant")).then(({png_quant}) => {
+
+                    png_quant(base64_out, 70, 80, 5, pool).then((base64_out_second) => {
+
+                        callback_function_for_image(base64_out_second, first_scale_size);
+                        base64_out = null;
+                    });
+                });
+            }else {
+
+                callback_function_for_image(base64_out, first_scale_size);
+            }
+
+        }else if(using === "omniscale") {
 
             JSLoader( () => import("../utils/omniscale")).then(({omniscale}) => {
 
