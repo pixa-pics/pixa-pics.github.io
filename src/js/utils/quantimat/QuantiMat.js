@@ -824,7 +824,7 @@ var QuantiMatGlobal = function(
 
             index_of = _pxl_colors.indexOf((image_data_uint32[i]|0)>>>0);
             if(index_of === -1) {
-                _pxl_colors[color_index|0] = (image_data_uint32[i]|0)>>>0;
+                _pxl_colors[color_index|0] = (image_data_uint32[i]|0) & 0xFFFFFFFF;
                 index_of = (color_index | 0) >>> 0;
                 color_index = (color_index + 1 | 0) >>> 0;
             }
@@ -853,7 +853,7 @@ var QuantiMatGlobal = function(
         console.log("We removed and processed "+(_pxl_colors.length-res_pxl_colors.length)+" colors within " + (Date.now() - now) + " ms");
         pxls = new Uint32Array(result[0].length);
         for(var i = 0; (i|0) < (pxls.length|0); i = (i+1|0)>>>0) {
-            pxls[i|0] = (res_pxl_colors[res_pxls[i|0]|0] | 0) >>> 0;
+            pxls[i|0] = (res_pxl_colors[res_pxls[i|0]|0] | 0) & 0xFFFFFFFF;
         }
         image_data.data.set(new Uint8ClampedArray(pxls.reverse().buffer).reverse());
 

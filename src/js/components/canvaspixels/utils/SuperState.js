@@ -380,7 +380,7 @@ const SuperState = {
                     state._imported_image_height = scaled_height;
 
 
-                    let pxls_positioned = new Object();
+                    let pxls_positioned = {};
                     let image_imported_resizer_index = -1;
                     if (new_pxls.length > 0) {
 

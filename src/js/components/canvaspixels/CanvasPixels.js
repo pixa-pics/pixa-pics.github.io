@@ -3554,7 +3554,7 @@ class CanvasPixels extends React.PureComponent {
                              borderWidth: canvas_wrapper.border_width,
                              borderStyle: "solid",
                              borderColor: "#fff",
-                             backgroundColor: canvas_wrapper_background_color,
+                             background: perspective ? "linear-gradient(-45deg, goldenrod, rgb(124, 75, 0), gold, darkgoldenrod, rgb(139, 101, 11), goldenrod, rgb(84, 51, 0))": canvas_wrapper_background_color,
                              margin: 0,
                              borderRadius: canvas_wrapper_border_radius,
                              padding: padding,

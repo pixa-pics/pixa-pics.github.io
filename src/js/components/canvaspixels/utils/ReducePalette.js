@@ -888,8 +888,8 @@ const ReducePalette = {
         let f = this._create_func();
         let s = cs(
             pool,
-            pxls,
-            pxl_colors,
+            Uint16Array.from(pxls),
+            Uint32Array.from(pxl_colors),
             bucket_threshold,
             threshold_steps,
             color_number_bonus,
