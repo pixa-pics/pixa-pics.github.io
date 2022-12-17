@@ -384,10 +384,10 @@ SOFTWARE.
                     return (a | 0) >= (b | 0);
                 },
                 uint_equal(a, b) {
-                    return ((a | 0) >>> 0) == ((b | 0) >>> 0);
+                    return (a | 0) == (b | 0);
                 },
                 uint_not_equal(a, b) {
-                    return ((a | 0) >>> 0) != ((b | 0) >>> 0);
+                    return (a | 0) != (b | 0);
                 },
                 uint_less(a, b) {
                     return ((a | 0) >>> 0) < ((b | 0) >>> 0);

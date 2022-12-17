@@ -142,39 +142,50 @@ const SuperState = {
         let _format_hex_color_getUin32 = this._format_hex_color_getUin32;
         let _state = this._get_build_state(props);
 
-        return {
-            init() {
-                let state = _state;
-                return {
-                    get() {
-                        return state;
-                    },
-                    set(new_props) {
-                        return new Promise(function(resolve){
-
-                            let keys = Object.keys(new_props);
-                            let keys_length = keys.length | 0;
-                            let key = "";
-
-                            for (let i = 0; (i|0) < (keys_length|0); i = (i+1|0)>>>0) {
-
-                                key = keys[i|0].toString();
-                                state[key] = new_props[key];
-                                if (key == "pxl_current_color") {
-                                    state["pxl_current_color_uint32"] = _format_hex_color_getUin32(new_props[key]);
-                                }
-                            }
-
-                            resolve();
-                        });
-                    }
-                };
+        var State = function(state) {
+            "use strict";
+            state = state || {};
+            if (!(this instanceof State)) {
+                return new State(state);
             }
+
+            this.state_ = state;
         };
+
+        Object.defineProperty(State.prototype, 'get', {
+            get: function() { "use strict"; return function() {
+                "use strict";
+                return this.state_;
+            }}
+        });
+        Object.defineProperty(State.prototype, 'set', {
+            get: function() { "use strict"; return function(new_props) {
+                "use strict";
+                var state = this.state_;
+                return new Promise(function(resolve){
+
+                    let keys = Object.keys(new_props);
+                    let keys_length = keys.length | 0;
+                    let key = "";
+
+                    for (let i = 0; (i|0) < (keys_length|0); i = (i+1|0)>>>0) {
+
+                        key = keys[i|0].toString();
+                        state[key] = new_props[key];
+                        if (key == "pxl_current_color") {
+                            state["pxl_current_color_uint32"] = _format_hex_color_getUin32(new_props[key]);
+                        }
+                    }
+                    resolve();
+                });
+            }}
+        });
+
+        return State(_state);
     },
     from: function(props){
         "use strict";
-        let _state = this._build_state(props).init();
+        let _state = this._build_state(props);
         let _pxl_indexes = new Set();
 
         return {
