@@ -949,6 +949,7 @@ var depixel = function () {
 }();
 
 function drawCanvas(graph, scale, reshaped, similar) {
+
     var width = graph.width;
     var height = graph.height;
     var nodes = graph.nodes;
@@ -994,6 +995,29 @@ function drawCanvas(graph, scale, reshaped, similar) {
 
     return context;
 }
+function drawSVG(graph, scale) {
+
+
+    var width = graph.width;
+    var height = graph.height;
+    var nodes = graph.nodes;
+    var paths = [];
+
+    for (let node of graph.nodes()) {
+
+        var lines = "L";
+        var vertices = node.vertices;
+        var v = vertices[0];
+        for (var i = 1; i < vertices.length; ++i) {
+            v = vertices[i];
+            lines += `${v.x * scale},${v.y * scale} `;
+        }
+
+        paths.push(`<path stroke="${node.color}" stroke-width="3.4" fill="${node.color}" d="M${vertices[0].x * scale},${vertices[0].y * scale} ${lines} Z"/>`)
+    }
+
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width*scale} ${height*scale}">${paths.join("\n\t")}</svg>`;
+}
 
 function createEmptyCanvas(graph, scale) {
     var width = graph.width;
@@ -1025,12 +1049,15 @@ function drawContour(canvas, vertices, color, scale) {
     return canvas;
 }
 
-const fu = function (image_data) {
+const fu = function (image_data, compute_svg_string = false) {
     var scale = 10;
     var graph = depixel(image_data.data, image_data.width, image_data.height);
     graph.createSimilarityGraph();
     graph.createVoronoiDiagram();
-    return drawCanvas(graph, scale, false, false).getImageData(0, 0, image_data.width*scale, image_data.height*scale);
+    var image_data = drawCanvas(graph, scale, false, false).getImageData(0, 0, image_data.width*scale, image_data.height*scale);
+    var svg_string = compute_svg_string ? drawSVG(graph, scale): null;
+
+    return Array.of(image_data, svg_string);
 }
 
 export default fu;

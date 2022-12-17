@@ -923,6 +923,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                 {
                     icon: <DownloadIcon/>,
                     text: "Download pixelated",
+                    description: "Simple way to upscale your source file to be sure to have a file that is interpreted correctly with crisp edges.",
                     local_i: 1,
                     label: "matrix",
                     tools: [
@@ -992,6 +993,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                 {
                     icon: <DownloadIcon/>,
                     text: `Download enhanced${too_much_colors_no_vector ? " (Disabled)": ""}`,
+                    description: "In recent years, many great minds have found ways to up-scale pixel art (from it's golden age, that is to say: late 80's) for modern emulator while being impartial and not modifying the source. It will look like a painting!",
                     local_i: 2,
                     label: "vector",
                     tools: [
@@ -2094,6 +2096,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                                             value={parseInt(action_set.progression) % 100} />
                                     }
                                 </ListSubheader>
+                                {(action_set.description || null) && <p style={{margin: "24px 32px"}}>{action_set.description}</p>}
                                 {
                                     Boolean(Boolean(name === "filters" || action_set.label === "vector") && too_much_colors_no_vector) ?
                                         <ListItem button={name !== "filters"} onClick={() => {canvas.to_less_color("auto")}}>

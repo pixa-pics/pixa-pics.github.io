@@ -78,7 +78,11 @@ const base64png_to_xbrz_svg = (base64png, callback_function_for_image, callback_
                                     path: 'path-to.svg',
                                     // all config fields are also available here
                                     multipass: true,
-                                    plugin: ["mergePaths"],
+                                    mergePaths: true,
+                                    mergeStyles: true,
+                                    collapseGroups: true,
+                                    reusePaths: true,
+                                    plugin: ["multipass", "mergePaths", "collapseGroups", "reusePaths", "mergeStyles"],
                                 }).data;
 
                                 callback_function_for_svg("data:image/svg+xml;base64," + window.btoa(svg_source), scale);
@@ -102,7 +106,9 @@ const base64png_to_xbrz_svg = (base64png, callback_function_for_image, callback_
 
             const first_scale_size = 10;
 
-            var second_image_data = depixelize(image_data);
+            var results = depixelize(image_data, download_svg);
+            var second_image_data = results[0];
+            var svg_string = results[1];
             let third_canvas = document.createElement("canvas");
             third_canvas.width = second_image_data.width;
             third_canvas.height = second_image_data.height;
@@ -110,7 +116,29 @@ const base64png_to_xbrz_svg = (base64png, callback_function_for_image, callback_
             third_canvas_ctx.putImageData(second_image_data, 0, 0);
             let base64_out = third_canvas_ctx.canvas.toDataURL("image/png");
 
-            process_svg(second_image_data, first_scale_size);
+            if(download_svg) {
+
+                if(optimize_render_size) {
+
+                    JSLoader( () => import("svgo/dist/svgo.browser")).then(({optimize}) => {
+
+                        svg_string = optimize(svg_string, {
+                            // optional but recommended field
+                            path: 'path-to.svg',
+                            // all config fields are also available here
+                            multipass: true,
+                            plugin: ["mergePaths"],
+                        }).data;
+
+                        callback_function_for_svg("data:image/svg+xml;base64," + window.btoa(svg_string), first_scale_size);
+
+                    });
+                }else {
+
+                    callback_function_for_svg("data:image/svg+xml;base64," + window.btoa(svg_string), first_scale_size);
+
+                }
+            }
 
             if(optimize_render_size) {
 
