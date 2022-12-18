@@ -482,7 +482,7 @@ class Index extends React.PureComponent {
             }
 
             element_a.setAttribute("id", "matomo-container");
-            element_a.setAttribute("defer", "true");
+            element_a.setAttribute("async", "true");
             element_a.setAttribute("src", "https://app.friendlyanalytics.ch/js/container_jRxgodNd.js");
 
             let element_b = document.getElementById("matomo-analytics") || null;
@@ -494,7 +494,7 @@ class Index extends React.PureComponent {
             }
 
             element_b.setAttribute("id", "matomo-analytics");
-            element_a.setAttribute("defer", "true");
+            element_a.setAttribute("async", "true");
             element_b.setAttribute("src", "https://app.friendlyanalytics.ch/matomo.js");
 
             if(append_a) {document.head.appendChild(element_a);}
