@@ -461,7 +461,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
             Boolean(pencil_mirror_mode) !== Boolean(new_props.pencil_mirror_mode) ||
             Boolean(is_something_selected) !== Boolean(new_props.is_something_selected) ||
             parseInt(import_size) !== parseInt(new_props.import_size) ||
-            Boolean(import_colorize) !== Boolean(new_props.import_colorize) ||
+            Number(import_colorize) !== Number(new_props.import_colorize) ||
             parseFloat(filters_preview_progression) !== parseFloat(new_props.filters_preview_progression)
         )));
 
@@ -597,10 +597,11 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
         const is_second_color_dark = r_2 + g_2 + b_2 < 152 * 3;
 
         const panel_names = this.get_action_panel_names();
+
         switch (panel_names[index]) {
             case "layers":
                 return (
-                    <div key={"layers-layers-main"} className={`swipetoolbox_i_${index}_${0}`}>
+                    <div key={"layers-layers-main-n-"+layers+"-i-"+layer_index} className={`swipetoolbox_i_${index}_${0}`}>
                         <ListSubheader className={classes.listSubHeader}>
                             <span><AllLayersIcon/></span>
                             <span>All layers</span>
@@ -842,6 +843,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                             IMPORT</FormLabel>
                         <div className={"image " + classes.listItems}>
                             <RadioGroup row name="Colorize" onChange={this._set_import_colorize}
+                                        key={"colorize-mode-n-"+import_colorize}
                                         value={import_colorize} style={{padding: "12px 0px", margin: "0px 11px"}}>
                                 <FormControlLabel
                                     value={"0"}

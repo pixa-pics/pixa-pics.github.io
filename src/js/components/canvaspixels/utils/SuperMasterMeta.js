@@ -279,11 +279,12 @@ const SuperMasterMeta = {
 
                                     meta_super_blend.for(index|0);
 
-                                    for (let i = 0; int_less(i, layers_length); i = plus_uint(i, 1)) {
+                                    for (let i = 0; (i|0) < (layers_length|0); i = plus_uint(i, 1)) {
 
-                                        meta_super_blend.stack(i | 0,
+                                        meta_super_blend.stack(
+                                            i | 0,
                                             ((_s_pxl_colors[i | 0][_s_pxls[i | 0][index | 0] | 0] | 0) >>> 0) & 0xFFFFFFFF,
-                                            (_layers_hidden[i | 0] || hide_canvas_content) ? 0x00:  layers_opacity_255[i | 0] & 0xFF,
+                                            ((_layers_hidden[i | 0] || hide_canvas_content) ? 0:  layers_opacity_255[i | 0]) & 0xFF,
                                             false);
                                     }
 

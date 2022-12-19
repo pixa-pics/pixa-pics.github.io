@@ -259,18 +259,21 @@ SuperBlend.prototype.blend = function(should_return_transparent, alpha_addition)
             base_uint8x4C = SIMDope_final_with_colors.get_element(i + 2 | 0);
             base_uint8x4D = SIMDope_final_with_colors.get_element(i + 3 | 0);
 
-            if (uint_not_equal(start_layerA, 0)) {
-                base_uint8x4A.set(SIMDope_layers_with_colors.get_element(plus_uint(multiply_uint(minus_uint(start_layerA, 1), max_used_colors_length), i)));
-            }
-            if (uint_not_equal(start_layerB, 0)) {
-                base_uint8x4B.set(SIMDope_layers_with_colors.get_element(plus_uint(multiply_uint(minus_uint(start_layerB, 1), max_used_colors_length), i + 1 | 0)));
-            }
-            if (uint_not_equal(start_layerC, 0)) {
-                base_uint8x4C.set(SIMDope_layers_with_colors.get_element(plus_uint(multiply_uint(minus_uint(start_layerC, 1), max_used_colors_length), i + 2 | 0)));
-            }
-            if (uint_not_equal(start_layerD, 0)) {
-                base_uint8x4D.set(SIMDope_layers_with_colors.get_element(plus_uint(multiply_uint(minus_uint(start_layerD, 1), max_used_colors_length), i + 3 | 0)));
-            }
+
+            added_uint8x4A.set(SIMDope_layers_with_colors.get_element(plus_uint(multiply_uint(minus_uint(start_layerA, 1), max_used_colors_length), i)));
+            added_uint8x4B.set(SIMDope_layers_with_colors.get_element(plus_uint(multiply_uint(minus_uint(start_layerB, 1), max_used_colors_length), i + 1 | 0)));
+            added_uint8x4C.set(SIMDope_layers_with_colors.get_element(plus_uint(multiply_uint(minus_uint(start_layerC, 1), max_used_colors_length), i + 2 | 0)));
+            added_uint8x4D.set(SIMDope_layers_with_colors.get_element(plus_uint(multiply_uint(minus_uint(start_layerD, 1), max_used_colors_length), i + 3 | 0)));
+
+
+            SIMDopeColor.blend_all_four(
+                base_uint8x4A, base_uint8x4B, base_uint8x4C, base_uint8x4D,
+                added_uint8x4A, added_uint8x4B, added_uint8x4C, added_uint8x4D,
+                amount_data_in_layers[plus_uint(multiply_uint(minus_uint(start_layerA, 1), max_used_colors_length), i | 0)] | 0,
+                amount_data_in_layers[plus_uint(multiply_uint(minus_uint(start_layerB, 1), max_used_colors_length), i + 1 | 0)] | 0,
+                amount_data_in_layers[plus_uint(multiply_uint(minus_uint(start_layerC, 1), max_used_colors_length), i + 2 | 0)] | 0,
+                amount_data_in_layers[plus_uint(multiply_uint(minus_uint(start_layerD, 1), max_used_colors_length), i + 3 | 0)] | 0,
+                should_return_transparent, alpha_addition);
 
             // Sum up all colors above
             for (let layer_n = minus_uint(Math.min(start_layerA, start_layerB, start_layerC, start_layerD), 1); int_less(layer_n, all_layers_length); layer_n = plus_int(layer_n, 1)) {

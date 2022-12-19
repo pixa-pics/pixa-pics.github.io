@@ -2752,8 +2752,8 @@ class Pixel extends React.PureComponent {
                     center={false}
                     style={{color: _ripple_color, opacity: _ripple_opacity, position: "fixed", width: "100%", height: "100%"}}/>
 
-                <Backdrop className={classes.backdrop} open={_loading || _files_waiting_download.length > 0}>
-                    <div className={classes.backdropTextContent} style={{ fontFamily: `"Jura"`, textTransform: "uppercase"}} onClick={this._continue_download}>
+                <Backdrop className={classes.backdrop} open={_loading || _files_waiting_download.length > 0} onClick={this._continue_download}>
+                    <div className={classes.backdropTextContent} style={{ fontFamily: `"Jura"`, textTransform: "uppercase", cursor: "pointer"}}>
                         {Boolean(_loading || _files_waiting_download.length > 0) && <h1><ShufflingSpanText key={_loading_process || _loading.toString()} text={_loading_process === "browser" ? "Laboratory in DANGER!": "LABORATORY PROCESSING"} animation_delay_ms={0} animation_duration_ms={200}/></h1>}
                         {_files_waiting_download.length > 0 && <h3><ShufflingSpanText key={_files_waiting_download[0].name.toString()} text={`ACTION REQUIRED... ${String(_files_waiting_download[0].name)}`} animation_delay_ms={300} animation_duration_ms={500}/></h3>}
                         {_files_waiting_download.length > 0 && <div><img src={"/src/images/labostration/MOLECULE.svg"} style={{width: "min(75vw, 75vh)"}}/></div>}

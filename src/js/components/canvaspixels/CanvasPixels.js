@@ -1688,7 +1688,7 @@ class CanvasPixels extends React.PureComponent {
                                     if(dshi === 0){
                                         _json_state_history.state_history.push(dsh.pop());
                                     }else {
-                                        _json_state_history.state_history.push(dsh.pop());
+                                        _json_state_history.state_history.push(dsh.shift());
                                     }
                                     dshi++;
 
@@ -1861,7 +1861,9 @@ class CanvasPixels extends React.PureComponent {
             this._request_force_update(false, false).then(() => {
 
                 this.super_canvas.set_dimensions(parseInt(sh.pxl_width), parseInt(sh.pxl_height)).then(() => {
-                    this.super_master_meta.update_canvas(true);
+                    this.super_master_meta.update_canvas(true).then(() => {
+                        this._maybe_save_state(null, true);
+                    });
                 });
             });
 
