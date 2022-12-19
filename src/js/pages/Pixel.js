@@ -810,10 +810,10 @@ class Pixel extends React.PureComponent {
 
     _set_cursor_fuck_you = (is_active) => {
 
-        this.setSt4te({_is_cursor_fuck_you_active: is_active}, () => {
+        /*this.setSt4te({_is_cursor_fuck_you_active: is_active}, () => {
 
             this.forceUpdate();
-        });
+        });*/
         actions.jamy_update("happy", 2500);
     }
 
