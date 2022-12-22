@@ -872,14 +872,19 @@ class Pixel extends React.PureComponent {
         if(previous_name_index > _view_name_index) {
 
             actions.trigger_sfx("navigation_transition-left");
-        }else {
+        }else if(previous_name_index < _view_name_index){
 
             actions.trigger_sfx("navigation_transition-right");
         }
 
-        _toolbox_container_ref.scrollTop = 0;
+        let props = {};
+        if(previous_name_index !== _view_name_index) {
 
-        this.setSt4te({_previous_view_name_index: previous_name_index || this.st4te._view_name_index, _view_name_index}, () => {
+            props._view_name_sub_index = 0;
+            _toolbox_container_ref.scrollTop = 0;
+        }
+
+        this.setSt4te({...props, _previous_view_name_index: previous_name_index || this.st4te._view_name_index, _view_name_index}, () => {
 
             this.forceUpdate();
         });
@@ -903,9 +908,14 @@ class Pixel extends React.PureComponent {
                 actions.trigger_sfx("navigation_transition-right");
             }
 
-            _toolbox_container_ref.scrollTop = 0;
+            let props = {};
+            if(previous_name_index !== _view_name_index) {
 
-            this.setSt4te({_previous_view_name_index: previous_name_index || this.st4te._view_name_index, _view_name_index}, () => {
+                props._view_name_sub_index = 0;
+                _toolbox_container_ref.scrollTop = 0;
+            }
+
+            this.setSt4te({...props, _previous_view_name_index: previous_name_index || this.st4te._view_name_index, _view_name_index}, () => {
 
                 this.forceUpdate();
             });
@@ -1984,7 +1994,7 @@ class Pixel extends React.PureComponent {
 
     _handle_layers_change = (_layer_index, _layers) => {
 
-        this.setSt4te({_previous_layer_index: parseInt(this.st4te._layer_index), _layer_index, _layers}, () => {
+        this.setSt4te({_previous_layer_index: parseInt(this.st4te._layer_index), _layer_index: parseInt(_layer_index), _layers: Array.from(_layers)}, () => {
 
             this.forceUpdate();
         });
@@ -2021,14 +2031,14 @@ class Pixel extends React.PureComponent {
         const { _toolbox_container_ref } = this.st4te;
 
         let _is_edit_drawer_open = true;
-        let _view_name_sub_index = null;
+        let _view_name_sub_index;
         if(do_inner_view_next && _toolbox_container_ref !== null) {
 
             _view_name_sub_index = this.st4te._view_name_sub_index || 0;
-            _view_name_sub_index++;
 
             const classname_of_panel = `swipetoolbox_i_${_view_name_index}_${_view_name_sub_index}`;
             const panel_element = (document.getElementsByClassName(classname_of_panel) || [])[0] || null;
+            _view_name_sub_index++;
 
             if(panel_element !== null) {
 
@@ -2038,7 +2048,6 @@ class Pixel extends React.PureComponent {
                 _view_name_sub_index = 0;
                 _toolbox_container_ref.scrollTop = 0;
             }
-
 
         }else {
 
@@ -2756,7 +2765,7 @@ class Pixel extends React.PureComponent {
                     <div className={classes.backdropTextContent} style={{ fontFamily: `"Jura"`, textTransform: "uppercase", cursor: "pointer"}}>
                         {Boolean(_loading || _files_waiting_download.length > 0) && <h1><ShufflingSpanText key={_loading_process || _loading.toString()} text={_loading_process === "browser" ? "Laboratory in DANGER!": "LABORATORY PROCESSING"} animation_delay_ms={0} animation_duration_ms={200}/></h1>}
                         {_files_waiting_download.length > 0 && <h3><ShufflingSpanText key={_files_waiting_download[0].name.toString()} text={`ACTION REQUIRED... ${String(_files_waiting_download[0].name)}`} animation_delay_ms={300} animation_duration_ms={500}/></h3>}
-                        {_files_waiting_download.length > 0 && <div><img src={"/src/images/labostration/MOLECULE.svg"} style={{width: "min(75vw, 75vh)"}}/></div>}
+                        {_files_waiting_download.length > 0 && <div><img src={"/src/images/labostration/DOWNLOAD.svg"} style={{width: "min(75vw, 75vh)"}}/></div>}
                         {_files_waiting_download.length > 0 && <h4><ShufflingSpanText pre="[... " app=" ...]" style={{textShadow: "0px 0px 16px white"}} text={"CLICK ON THE SCREEN TO CONTINUE DOWNLOAD!"} animation_delay_ms={is_mobile_or_tablet ? 5000: 2500} animation_duration_ms={500}/></h4>}
                         {_files_waiting_download.length === 0 && _loading && _loading_process === "browser" && <h3><ShufflingSpanText text={"Doesn't feel like home for our dear code here."} animation_delay_ms={300} animation_duration_ms={500}/></h3>}
                         {_files_waiting_download.length === 0 && _loading  && _loading_process === "browser" && <h4><ShufflingSpanText pre="[... " app=" ...]" text={"It can take a while, please download an advanced browser."} animation_delay_ms={is_mobile_or_tablet ? 5000: 2500} animation_duration_ms={500}/></h4>}

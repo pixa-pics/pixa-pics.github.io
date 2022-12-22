@@ -1,6 +1,4 @@
 import React from "react";
-import {cbor} from "../utils/cbor";
-import XXHashJS from "../utils/xxhash";
 import {
     withStyles,
     List,
@@ -95,6 +93,7 @@ import SwapVerticalIcon from "../icons/SwapVertical";
 
 import ColorConversion from "../components/canvaspixels/utils/ColorConversion";
 const color_conversion = Object.create(ColorConversion).new();
+const PANEL_NAMES = ["palette", "image", "layers", "tools", "selection", "effects", "filters"];
 
 const styles = theme => ({
     listSubHeader: {
@@ -354,17 +353,13 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
             import_size: props.import_size,
             import_colorize: props.import_colorize,
             filters_thumbnail: props.filters_thumbnail,
-            last_filters_hash: props.last_filters_hash,
             filters_preview_progression: props.filters_preview_progression,
             _filter_aspect_ratio: "1 / 1",
             _filter_thumbnail_changed: true,
             _compressed: false,
-            _vectorized: false,
-            layers_hash: "",
-            content_update_only_counter: 0,
+            _vectorized: false
         };
-        this.cbor = cbor;
-        this.xxhash32js = function (buffer_uint8){ return XXHashJS.h32(0xFADE).update(buffer_uint8).digest()};
+
         this._cache = {
             "palette": null,
             "image": null,
@@ -374,6 +369,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
             "effects": null,
             "filters": null
         };
+
         Object.keys(this._cache).map((name) => {
 
             this.update_cache_view(name);
@@ -413,22 +409,17 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
             can_redo,
             current_color,
             second_color,
-            slider_value,
             tool,
             width,
             height,
-            last_filters_hash,
             filters_preview_progression,
             select_mode,
             pencil_mirror_mode,
             is_something_selected,
             import_size,
             import_colorize,
-            layers,
-            layers_hash,
+            layers
         } = this.st4te;
-
-        let content_update_only_counter = this.st4te.content_update_only_counter;
 
         const _history_changed = Boolean(can_undo !== new_props.can_undo) ||  Boolean(can_redo !== new_props.can_redo);
         const must_compute_filter = Boolean(Boolean(view_name_index !== new_props.view_name_index || _history_changed) && Boolean(new_props.view_name_index === 6));
@@ -438,10 +429,11 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
         Array.from(new_props.layers).forEach(function(l){ if(layers_colors_max < parseInt(l.number_of_colors)) { layers_colors_max = parseInt(l.number_of_colors);}});
         const too_much_colors_no_vector = Boolean(layers_colors_max > 256);
 
+        const layers_changed = Boolean(layers.map(function(l, i){return i+"_"+l.hidden +"_"+l.opacity+"_"+l.number_of_colors+"_w"+l.thumbnail.width+"-h"+l.thumbnail.height+"-d"+l.thumbnail.drawn}).join("-") !== new_props.layers.map(function(l, i){return i+"_"+l.hidden +"_"+l.opacity+"_"+l.number_of_colors+"_w"+l.thumbnail.width+"-h"+l.thumbnail.height+"-d"+l.thumbnail.drawn}).join("-"));
         const view_name_changed = Boolean(view_name_index !== new_props.view_name_index);
-        const something_changed_in_view = Boolean(Boolean(new_props.should_update || should_update) && Boolean((
+        const something_changed_in_view = Boolean(Boolean(new_props.should_update || should_update) && Boolean(
+            layers_changed ||
             Boolean(too_much_colors_no_vector) !== Boolean(this.st4te.too_much_colors_no_vector) ||
-            layers.map(function(l, i){return i+"_"+l.hidden +"_"+l.opacity+"_"+l.number_of_colors}).join("-") !== new_props.layers.map(function(l, i){return i+"_"+l.hidden +"_"+l.opacity+"_"+l.number_of_colors}).join("-") ||
             parseInt(previous_view_name_index) !== parseInt(new_props.previous_view_name_index) ||
             parseInt(layer_index) !== parseInt(new_props.layer_index) ||
             Boolean(is_image_import_mode) !==  Boolean(new_props.is_image_import_mode) ||
@@ -452,76 +444,57 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
             Boolean(can_redo) !==  Boolean(new_props.can_redo) ||
             current_color.toString() !== new_props.current_color.toString() ||
             second_color.toString() !== new_props.second_color.toString() ||
-            parseFloat(slider_value) !== parseFloat(new_props.slider_value) ||
             tool.toString() !== new_props.tool.toString() ||
             parseInt(width) !== parseInt(new_props.width) ||
             parseInt(height) !== parseInt(new_props.height) ||
-            last_filters_hash.toString() !== new_props.last_filters_hash.toString() ||
             select_mode.toString() !== new_props.select_mode.toString() ||
             Boolean(pencil_mirror_mode) !== Boolean(new_props.pencil_mirror_mode) ||
             Boolean(is_something_selected) !== Boolean(new_props.is_something_selected) ||
             parseInt(import_size) !== parseInt(new_props.import_size) ||
             Number(import_colorize) !== Number(new_props.import_colorize) ||
             parseFloat(filters_preview_progression) !== parseFloat(new_props.filters_preview_progression)
-        )));
-
-        if (!(something_changed_in_view || view_name_changed)) {
-
-            const new_layers_hash = this.xxhash32js(this.cbor(new_props.layers, true));
-            if(layers_hash === new_layers_hash) {
-
-                return false;
-            }else {
-
-                props_override.layers_hash = new_layers_hash;
-            }
-        }
-
-        props_override = Object.assign(props_override, {last_filters_hash: this.st4te.last_filters_hash, too_much_colors_no_vector});
+        ));
 
         if(must_compute_filter) {
 
-            props_override =  Object.assign(props_override, {last_filters_hash: last_filters_hash, too_much_colors_no_vector});
+            props_override =  Object.assign(props_override, {too_much_colors_no_vector});
             this.compute_filters_preview();
 
-        }else {
+        }else if (this.st4te._filters_changed) {
 
-            if (this.st4te._filters_changed) {
+            let bmp;
+            let ar = "";
+            let processed = false;
 
-                let bmp;
-                let ar = "";
-                let processed = false;
+            for (let i = 0; i < new_props.filters.length; i++) {
 
-                for (let i = 0; i < new_props.filters.length; i++) {
+                bmp = new_props.filters_thumbnail[new_props.filters[i]] || {};
 
-                    bmp = new_props.filters_thumbnail[new_props.filters[i]] || {};
-
-                    if (Boolean(bmp)) {
-                        ar = `${bmp.width} / ${bmp.height}`;
-                        processed = true;
-                    }
+                if (Boolean(bmp)) {
+                    ar = `${bmp.width} / ${bmp.height}`;
+                    processed = true;
                 }
+            }
 
-                if (ar !== this.st4te._filter_aspect_ratio && processed) {
+            if (ar !== this.st4te._filter_aspect_ratio && processed) {
 
-                    props_override._filters_changed = false;
-                    props_override._filter_aspect_ratio = ar;
-                }
+                props_override._filters_changed = false;
+                props_override._filter_aspect_ratio = ar;
             }
         }
 
-        if(something_changed_in_view && view_name_changed) {
-
-            content_update_only_counter = (content_update_only_counter+1|0) % 100;
-        }
-
         if(view_name_changed || something_changed_in_view) {
-            this.setSt4te({...new_props, ...props_override, slider_value: parseFloat(new_props.slider_value), content_update_only_counter: content_update_only_counter}, () => {
+            this.setSt4te({...new_props, ...props_override, slider_value: parseFloat(new_props.slider_value)}, () => {
 
-                if(something_changed_in_view) {
+                if( this.st4te.view_name_index === 2){
 
                     this.update_cache_view(null, true);
-                }else {
+
+                }else if(something_changed_in_view) {
+
+                    this.update_cache_view(null, true);
+
+                }else{
 
                     this.forceUpdate();
                 }
@@ -554,7 +527,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
     get_action_panel_names = () => {
 
-        return ["palette", "image", "layers", "tools", "selection", "effects", "filters"];
+        return PANEL_NAMES;
     };
 
     get_action_panel_cache = (name) => {
@@ -601,12 +574,12 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
         switch (panel_names[index]) {
             case "layers":
                 return (
-                    <div key={"layers-layers-main-n-"+layers+"-i-"+layer_index} className={`swipetoolbox_i_${index}_${0}`}>
+                    <div key={"layers-layers-main"} className={`swipetoolbox_i_${index}_${0}`}>
                         <ListSubheader className={classes.listSubHeader}>
                             <span><AllLayersIcon/></span>
                             <span>All layers</span>
                         </ListSubheader>
-                        <div>
+                        <div key={"layers-wrapper-length-"+layers.length}>
                             {Array.from(layers).reverse().map((layer, index, array) => {
 
                                 const index_reverse_order = (array.length - 1) - index;
@@ -615,7 +588,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                                 }
 
                                 return (
-                                    <div key={index_reverse_order}>
+                                    <div key={"layers-list-item-n-"+index_reverse_order}>
                                         <ListItem
                                             divider
                                             className={layer_index === index_reverse_order ? classes.layerSelected : null}
@@ -624,7 +597,8 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                                             <ListItemAvatar>
                                                 <canvas
                                                     className={"pixelated " + classes.layerThumbnail}
-                                                    ref={(el) => {this._set_canvas_ref(el, layer.thumbnail)}}
+                                                    ref={(el) => {this._set_canvas_ref(el, layer.thumbnail, true)}}
+                                                    key={"layer-n-"+index+"-w-"+layer.thumbnail.width+"-h-"+layer.thumbnail.height}
                                                     width={layer.thumbnail.width || 0}
                                                     height={layer.thumbnail.height || 0}
                                                     style={{background: `repeating-conic-gradient(rgb(248 248 248 / 100%) 0% 25%, rgb(224 224 224 / 100%) 0% 50%) left top 50% / calc(200% / ${width}) calc(200% / ${height})`}}
@@ -876,17 +850,20 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
         }
     };
 
-    _set_canvas_ref = (can, bmp) => {
+    _set_canvas_ref = (can, bmp, force = false) => {
 
         if(typeof bmp === "undefined") {return}
         if(typeof bmp.width === "undefined") {return}
+        if(force !== true && bmp.drawn === true) {return}
         if(typeof can === "undefined") {return}
         if(can === null) {return}
         if(typeof can.width === "undefined") {return}
         if(can.width === null) {return}
-        let ctx = can.getContext("2d", {desynchronized: true});
+
+        let ctx = can.getContext("2d");
         ctx.globalCompositeOperation = "copy"
         ctx.drawImage(bmp, 0, 0);
+        bmp.drawn = true;
     };
 
     get_action_panel = (index) => {
@@ -894,7 +871,6 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
         const {
             canvas,
             filters_thumbnail,
-            last_filters_hash,
             layer_index,
             is_image_import_mode,
             hide_canvas_content,
@@ -1701,7 +1677,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                 }
             ];
             case "filters":
-                const {height, width} = filters_thumbnail.get(filters[0]) || new Object();
+                const {height, width} = filters_thumbnail.get(filters[0]) || {};
                 return [
                     {
                         icon: <ImageFilterMagicIcon/>,
@@ -1714,7 +1690,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                         tools: filters.map((name, name_index) => {
 
 
-                            const bmp = filters_thumbnail.get(name) || new Object();
+                            const bmp = filters_thumbnail.get(name) || {};
                             return {
                                 style: {position: "relative", width: "100%", height: "100%" },
                                 icon: <canvas
@@ -1723,7 +1699,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                                     width={width | 0}
                                     height={height | 0}
                                     style={{ zIndex: "-1", aspectRatio: _filter_aspect_ratio, boxSizing: "border-box", height: "100%", minWidth: "100%", width: 128, boxShadow: "0px 1px 2px #3729c1a8", border: "4px solid #020529", borderRadius: 2, contain: "paint style size"}}
-                                    key={"name-" + name + "-ratio-" + _filter_aspect_ratio + "-over-" + (bmp.width || 0).toString() + "x" + (bmp.height || 0).toString() + "-preview-hash-" + last_filters_hash}
+                                    key={"name-" + name + "-ratio-" + _filter_aspect_ratio + "-over-" + (bmp.width || 0).toString() + "x" + (bmp.height || 0).toString()}
                                 />,
                                 text: name,
                                 text_style: {
@@ -2077,7 +2053,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
         name = names[index];
 
         this._cache[name] = (
-            <List key={name} style={{willChange: (Boolean(parseInt(_filters_preview_progression_stepped) === 0 || name !== "filters") ? "": "contents").toString(), minHeight: "100%", contain: "style layout paint", overflow: "visible", contentVisibility: "visible", paddingTop: 0}}>
+            <List key={name} style={{willChange: (Boolean(parseInt(_filters_preview_progression_stepped) === 0 || name !== "filters") ? "": "contents").toString(), minHeight: "100%", contain: "style layout paint", overflow: "visible", paddingTop: 0}}>
 
                 {this.get_before_action_panel(index)}
 
@@ -2179,24 +2155,24 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
     render() {
 
-        const {view_name_index, content_update_only_counter} = this.st4te;
+        const {view_name_index, previous_view_name_index} = this.st4te;
 
         return (
             <SwipeableViews
-                containerStyle={{overflow: "visible", contain: "style size"}}
+                containerStyle={{overflow: "visible", contain: "style paint size layout"}}
                 animateHeight={true}
                 animateTransitions={true}
                 disableLazyLoading={true}
                 resistance={true}
-                springConfig={{tension: 450, friction: 60, duration: '75ms', easeFunction: 'ease-in', delay: '0ms'}}
+                springConfig={{tension: 450, friction: 60, duration: '175ms', easeFunction: 'cubic-bezier(0.4, 0, 0.2, 1)', delay: '5ms'}}
                 index={view_name_index}
                 onChangeIndex={this._handle_view_name_change}
                 disabled={false}
-                key={"swipeable-view-"+content_update_only_counter}
+                key={"swipe-able-view"}
             >
                 {this.get_action_panel_names().map((name, index) => {
 
-                    if(view_name_index !== index) {
+                    if(view_name_index !== index && previous_view_name_index !== index) {
                         return (<List key={name} style={{ willChange: "none", minHeight: "100%", contain: "style layout paint", overflow: "auto", contentVisibility: "visible", paddingTop: 0}} />);
                     }else {
 

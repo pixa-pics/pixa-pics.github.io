@@ -1,7 +1,7 @@
 "use strict";
-var REQUIRED_CACHE = "unless-update-cache-v559-required";
-var USEFUL_CACHE = "unless-update-cache-v559-useful";
-var STATIC_CACHE = "unless-update-cache-v559-static";
+var REQUIRED_CACHE = "unless-update-cache-v560-required";
+var USEFUL_CACHE = "unless-update-cache-v560-useful";
+var STATIC_CACHE = "unless-update-cache-v560-static";
 var MAIN_CHILD_CHUNK_REGEX = /chunk_(main_[a-z0-9]+)\.min\.js$/i;
 var CHILD_CHUNK_REGEX = /chunk_([0-9]+)\.min\.js$/i;
 
@@ -103,6 +103,7 @@ self.addEventListener("fetch", function(event) {
                         "/src/images/labostration/ABDUCTION.svg",
                         "/src/images/labostration/CHEMISTRY.svg",
                         "/src/images/labostration/COMPUTING.svg",
+                        "/src/images/labostration/DOWNLOAD.svg",
                         "/src/images/labostration/GENOMA.svg",
                         "/src/images/labostration/MOLECULE.svg",
                         "/src/images/labostration/NUCLEAR.svg",

@@ -1495,12 +1495,13 @@ class CanvasPixels extends React.PureComponent {
     _maybe_save_state = (set_anyway_if_changes_callback = null, force = false, requested_at = Date.now()) => {
 
 
+        const {will_change} = this.canvas_pos.get_style();
         let super_state_object = this.super_state.get_state();
         if(requested_at > super_state_object._saving_json_state_history_ran_timestamp) {
 
             if(super_state_object._last_action_timestamp + 1250 <= Date.now() || force || super_state_object._json_state_history.state_history.length === 0){
 
-                if(super_state_object._saving_json_state_history_running) {
+                if(super_state_object._saving_json_state_history_running || will_change) {
 
                     setTimeout(() => {
 
