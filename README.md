@@ -31,7 +31,7 @@
 
 ![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/EDITOR2.png)
 
-<img width="444" height="963" src="https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/EDITOR_ANDROID.jpg" align="right" />
+<img width="222" height="482" src="https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/EDITOR_ANDROID.jpg" align="right" />
 
 ### Lighten it up to 100 - 1000x
 
@@ -188,9 +188,9 @@ The SDK is being developed from our source code.
 
 ---
 
-<img width="400" height="400" src="https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/NOSHOTOFTHESCREEN_S.png" align="left" />
+<img width="400" height="400" src="https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/NOSHOTOFTHESCREEN.jpg" align="left" />
 
-**About me:** My name is Matias Affolter, and I love to build tools for humanity, my code is my voice, my weapon of choice. I know that uniquely we are free, together and naturally we are just stronger and that's why I need you supporting the project to pay the contributors, a little incentive given with a little bit of love, no one is against it!
+**About me:** My name is Matias, and I love to build tools for humanity, my code is my voice, my weapon of choice. I know that uniquely we are free, together and naturally we are just stronger and that's why I need you supporting the project to pay the contributors, a little incentive given with a little bit of love, no one is against it!
 
 Of course the mission I assigned to myself was enabling artworks talking about one's life being customizable and yet anonymous. Because we can store those artworks inside some blockchain technology (entirely, not only a proof) to make it last centuries from now without too many details in it, isn't over, I will need new ideas and contributors, and also more!
 
