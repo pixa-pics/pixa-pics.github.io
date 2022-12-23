@@ -496,14 +496,13 @@ class Home extends React.PureComponent {
                 <div className={classes.headerContainer} style={{textShadow: "0px 0px 9px #57bbff"}}>
                     <Fade in={true} timeout={125}>
                         <h1 className={classes.titleh1}>
-                            <span className={classes.revelantText} style={{color: "#ffffff", backgroundColor: "black"}}>From PICS {_camera} into PIXELARTS {_brainplode} and NFTs {_diamond}.</span>
+                            <span className={classes.revelantText} style={{color: "#ffffff", backgroundColor: "black"}}>From PICS {_camera} to PIXELARTS {_brainplode} and NFTs {_diamond}.</span>
                         </h1>
                     </Fade>
                     <Fade in={true} timeout={250}>
                         <h2 className={classes.titleh2} style={{color: "#000639"}}>
                             <span className={classes.revelantTextDesktop} style={{color: "#fff", backgroundColor: "black"}}>Get the MAXIMA of PRIVACY fashionably for real and for the ONLINE-SELF...</span>
                             <br/>
-                            <span className={classes.revelantTextDesktopBelow}>Use effects immediately in the laboratory? Yes or No?</span>
                         </h2>
                     </Fade>
                     <Fade in={true} timeout={375}>

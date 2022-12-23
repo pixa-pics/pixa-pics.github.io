@@ -17,6 +17,27 @@
                 content-visibility: visible;
                 background-color: #fafafa;
             }
+            body.loaded::after {
+                content: "";
+                position: absolute;
+                width: 100%;
+                z-index: 9999999;
+                top: 0;
+                height: 100%;
+                background: radial-gradient(#1700ff00 40%, #0051FF93 50%, #0000ff00 60%);
+                left: 0;
+                background-size: 300% 400%;
+                animation-iteration-count: 1;
+                animation-delay: 120ms !important;
+                animation-fill-mode: both !important;
+                animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1) !important;
+                animation-name: arrival !important;
+                animation-duration: 360ms !important;
+            }
+            @keyframes arrival {
+                0% {display: block; background-position: 50% -10%; opacity: .5 }
+                100% { display: none; background-position: 50% 40%; opacity: 1 }
+            }
             body.loaded > #app {
                 contain: paint style layout;
                 content-visibility: initial;
@@ -115,11 +136,11 @@
             }
             body[datainitiated=true]::after {
                 animation-iteration-count: 1;
-                animation-delay: 10ms !important;
-                animation-fill-mode: both !important;
-                animation-timing-function: ease-out !important;
-                animation-name: zoom-out !important;
-                animation-duration: 90ms !important;
+                animation-delay: 10ms;
+                animation-fill-mode: both;
+                animation-timing-function: ease-out;
+                animation-name: zoom-out;
+                animation-duration: 90ms;
             }
             @keyframes zoom-out {
                 0% {
