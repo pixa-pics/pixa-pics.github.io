@@ -4,7 +4,7 @@ import JSLoader from "../utils/JSLoader";
 import { t } from "../utils/t";
 import { HISTORY } from "../utils/constants";
 
-import {Button, LinearProgress, IconButton} from "@material-ui/core";
+import {Button, LinearProgress, IconButton, Fade} from "@material-ui/core";
 
 import VolumeOffIcon from "@material-ui/icons/VolumeOff";
 import VolumeUpIcon from "@material-ui/icons/VolumeUp";
@@ -443,7 +443,7 @@ class InnerToolbar extends React.PureComponent {
             }
 
 
-            return element === "" ? null: <a key={index} onClick={() => {this._go_to(link_to)}} className={classes.link} >&nbsp;►&nbsp;{element}</a>;
+            return element === "" ? null: <Fade in={true} timeout={index*125}><a key={index} onClick={() => {this._go_to(link_to)}} className={classes.link} >&nbsp;►&nbsp;{element}</a></Fade>;
         }): null;
 
         const usrnm = (know_if_logged ? logged_account ? logged_account.name: t( "components.inner_toolbar.guest"): "");

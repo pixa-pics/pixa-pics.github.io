@@ -361,7 +361,7 @@ const styles = theme => ({
     ripple: {
         contain: "layout paint size style",
         "& > .MuiTouchRipple-rippleVisible": {
-            animation: "MuiTouchRipple-keyframes-enter 200ms cubic-bezier(0.4, 0, 0.2, 1)"
+            animation: "MuiTouchRipple-keyframes-enter 275ms cubic-bezier(0.4, 0, 0.2, 1)"
         }
     },
     infoIcon: {

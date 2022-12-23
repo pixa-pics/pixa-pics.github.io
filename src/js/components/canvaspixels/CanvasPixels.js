@@ -1328,6 +1328,8 @@ class CanvasPixels extends React.PureComponent {
 
     componentWillUnmount() {
 
+        this.export_state();
+
         try {
             window.removeEventListener("resize", this._update_canvas_container_size);
         }catch (e) {}

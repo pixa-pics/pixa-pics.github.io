@@ -1,5 +1,5 @@
 import React from "react";
-import {withStyles} from "@material-ui/core";
+import {Fade, withStyles} from "@material-ui/core";
 
 import {List, ListItem, ListItemIcon, ListItemText, Badge} from "@material-ui/core";
 
@@ -161,30 +161,38 @@ class DrawerContent extends React.PureComponent {
         return (
             <div>
                 <List style={{paddingTop: 0}} className={classes.labList}>
-                    <ListItem style={{
-                        borderBottom: "2px solid #212558",
-                        backgroundColor: "transparent",
-                        background: `linear-gradient(to left, #01031066, #ffffff00), linear-gradient(to bottom, #5a7fd24a, #080b25aa)`,
-                        backgroundSize: "cover",
-                        backgroundPosition: "center",
-                        textShadow: "0px 0px 6px #8888ff"
-                    }} button onClick={this._open_pixel_page}>
-                        <ListItemText className={classes.boldListItemText} primary={"PIXEL-ART EDITOR!"} secondary={"NFTs LABORATORY..."}/>
-                    </ListItem>
-                    <ListItem button className={classes.listItemGrey} onClick={(event) => this._open_link(event, "https://opencollective.com/pixapics")}>
-                        <ListItemIcon><PersonIcon className={classes.iconColor} /></ListItemIcon>
-                        <ListItemText primary="Sponsors" />
-                    </ListItem>
-                    <ListItem button className={classes.listItemGrey} onClick={(event) => this._open_link(event, "https://github.com/pixa-pics/pixa-pics.github.io")}>
-                        <ListItemIcon><CodeIcon className={classes.iconColor} /></ListItemIcon>
-                        <ListItemText primary="Source Code" />
-                    </ListItem>
-                    <ListItem button className={classes.listItemGrey} onClick={(event) => this._open_link(event, "https://www.facebook.com/groups/504155481777261")}>
-                        <Badge className={classes.styledBadgeConnected} overlap="circular" badgeContent=" " variant="dot">
-                            <ListItemIcon><ForumIcon className={classes.iconColor} /></ListItemIcon>
-                        </Badge>
-                        <ListItemText primary="Facebook community" />
-                    </ListItem>
+                    <Fade in={true} timeout={100}>
+                        <ListItem style={{
+                            borderBottom: "2px solid #212558",
+                            backgroundColor: "transparent",
+                            background: `linear-gradient(to left, #01031066, #ffffff00), linear-gradient(to bottom, #5a7fd24a, #080b25aa)`,
+                            backgroundSize: "cover",
+                            backgroundPosition: "center",
+                            textShadow: "0px 0px 6px #8888ff"
+                        }} button onClick={this._open_pixel_page}>
+                            <ListItemText className={classes.boldListItemText} primary={"PIXEL-ART EDITOR!"} secondary={"NFTs LABORATORY..."}/>
+                        </ListItem>
+                    </Fade>
+                    <Fade in={true} timeout={200}>
+                        <ListItem button className={classes.listItemGrey} onClick={(event) => this._open_link(event, "https://opencollective.com/pixapics")}>
+                            <ListItemIcon><PersonIcon className={classes.iconColor} /></ListItemIcon>
+                            <ListItemText primary="Donate" />
+                        </ListItem>
+                    </Fade>
+                    <Fade in={true} timeout={300}>
+                        <ListItem button className={classes.listItemGrey} onClick={(event) => this._open_link(event, "https://github.com/pixa-pics/pixa-pics.github.io")}>
+                            <ListItemIcon><CodeIcon className={classes.iconColor} /></ListItemIcon>
+                            <ListItemText primary="Source Code" />
+                        </ListItem>
+                    </Fade>
+                    <Fade in={true} timeout={400}>
+                        <ListItem button className={classes.listItemGrey} onClick={(event) => this._open_link(event, "https://www.facebook.com/groups/504155481777261")}>
+                            <Badge className={classes.styledBadgeConnected} overlap="circular" badgeContent=" " variant="dot">
+                                <ListItemIcon><ForumIcon className={classes.iconColor} /></ListItemIcon>
+                            </Badge>
+                            <ListItemText primary="Facebook Groups" />
+                        </ListItem>
+                    </Fade>
                 </List>
             </div>
         );
