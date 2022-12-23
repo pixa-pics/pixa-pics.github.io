@@ -128,6 +128,7 @@ const styles = theme => ({
     },
     effectSlider: {
         color: "#3729c1",
+        padding: "16px 0px",
         "& > .MuiSlider-track": {
             height: 4,
         }
@@ -165,6 +166,17 @@ const styles = theme => ({
         width: 480,
         overscrollBehavior: "none",
         display: "flex",
+        animationFillMode: "both",
+        animationName: "$drawer",
+        animationDuration: "175ms",
+        animationTimingFunction: "cubic-bezier(0.4, 0, 0.2, 1)",
+        animationDirection: "alternate",
+        animationIterationCount: "1",
+        animationDelay: "0ms",
+    },
+    "@keyframes drawer": {
+        "0%": { transform: "translateX(100%)"},
+        "190%": { transform: "translateX(0%)"},
     },
     drawerPaper: {
         width: 480,
@@ -364,6 +376,13 @@ const styles = theme => ({
         position: "absolute",
         left: 16,
         top: 16,
+        animationFillMode: "both",
+        animationName: "$fadein",
+        animationDuration: "225ms",
+        animationTimingFunction: "cubic-bezier(0.4, 0, 0.2, 1)",
+        animationDirection: "alternate",
+        animationIterationCount: "1",
+        animationDelay: "175ms",
     },
     saveButton: {
         backgroundColor: "#0037ff14 !important",
@@ -373,6 +392,13 @@ const styles = theme => ({
         [theme.breakpoints.down("md")]: {
             right: 16,
         },
+        animationFillMode: "both",
+        animationName: "$fadein",
+        animationDuration: "225ms",
+        animationTimingFunction: "cubic-bezier(0.4, 0, 0.2, 1)",
+        animationDirection: "alternate",
+        animationIterationCount: "1",
+        animationDelay: "175ms",
     },
     confirmImportButton: {
         position: "absolute",
@@ -381,6 +407,13 @@ const styles = theme => ({
         [theme.breakpoints.down("md")]: {
             bottom: 88,
         },
+        animationFillMode: "both",
+        animationName: "$fadein",
+        animationDuration: "225ms",
+        animationTimingFunction: "cubic-bezier(0.4, 0, 0.2, 1)",
+        animationDirection: "alternate",
+        animationIterationCount: "1",
+        animationDelay: "175ms",
     },
     zoomInButton: {
         position: "absolute",
@@ -389,6 +422,13 @@ const styles = theme => ({
         [theme.breakpoints.down("md")]: {
             bottom: 176,
         },
+        animationFillMode: "both",
+        animationName: "$fadein",
+        animationDuration: "225ms",
+        animationTimingFunction: "cubic-bezier(0.4, 0, 0.2, 1)",
+        animationDirection: "alternate",
+        animationIterationCount: "1",
+        animationDelay: "175ms",
     },
     zoomOutButton: {
         position: "absolute",
@@ -397,6 +437,13 @@ const styles = theme => ({
         [theme.breakpoints.down("md")]: {
             bottom: 132,
         },
+        animationFillMode: "both",
+        animationName: "$fadein",
+        animationDuration: "225ms",
+        animationTimingFunction: "cubic-bezier(0.4, 0, 0.2, 1)",
+        animationDirection: "alternate",
+        animationIterationCount: "1",
+        animationDelay: "175ms",
     },
     redoButton: {
         backgroundColor: "#0037ff14 !important",
@@ -407,6 +454,13 @@ const styles = theme => ({
             right: 16,
             bottom: 132,
         },
+        animationFillMode: "both",
+        animationName: "$fadein",
+        animationDuration: "225ms",
+        animationTimingFunction: "cubic-bezier(0.4, 0, 0.2, 1)",
+        animationDirection: "alternate",
+        animationIterationCount: "1",
+        animationDelay: "175ms",
     },
     undoButton: {
         backgroundColor: "#0037ff14 !important",
@@ -417,7 +471,18 @@ const styles = theme => ({
             right: 16,
             bottom: 88,
         },
-    }
+        animationFillMode: "both",
+        animationName: "$fadein",
+        animationDuration: "225ms",
+        animationTimingFunction: "cubic-bezier(0.4, 0, 0.2, 1)",
+        animationDirection: "alternate",
+        animationIterationCount: "1",
+        animationDelay: "175ms",
+    },
+    "@keyframes fadein": {
+        "0%": { filter: "opacity(0)"},
+        "190%": { filter: "opacity(1)"},
+    },
 });
 
 

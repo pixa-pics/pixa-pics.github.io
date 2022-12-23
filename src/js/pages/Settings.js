@@ -314,11 +314,6 @@ class Settings extends React.Component {
                                     <p style={{float: "right", padding: 16, margin: 0, width: "50%", height: "100%"}}> Thank you, we do not have allies very often, but when we do, we ally worthy of reasons with greatness instead of good.<br/>— The Pixelables</p>
                                 </div>
                             </CardContent>
-                            <Divider />
-                            <CardContent>
-                                <h2>Donate Bitcoin Anonymously :)</h2>
-                                <p>1JJq8FgmUUZ2kAeM3EEk3mDkRbvTUrc5Ej</p>
-                            </CardContent>
                         </Card>
                     </Fade>
                     <Fade in timeout={225*3}>
