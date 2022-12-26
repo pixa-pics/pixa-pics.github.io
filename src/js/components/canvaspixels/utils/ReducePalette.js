@@ -924,7 +924,12 @@ const ReducePalette = {
                     ).catch((e) => {
 
                         return f(s.p, s.pc, s.bt, s.ts, s.cnb, s.bcn, s.stb);
-                    }).timeout(120 * 1000).then(callback_function);
+                    }).timeout(120 * 1000).then(function(results){
+
+                        results[0] = Uint16Array.from(results[0]);
+                        results[1] = Uint32Array.from(results[1]);
+                        callback_function(results);
+                    });
 
                 }else {
 
