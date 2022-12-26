@@ -24,10 +24,10 @@ SOFTWARE.
  */
 
 // Inspired by https://en.wikipedia.org/wiki/Rec._709
-var PR = 0.45, // +0.1
-    PG = 0.30, // -0.2
-    PB = 0.25, // +0.1
-    PA = 1.0000;
+var PR = 0.20, // +0.1
+    PG = 0.16, // -0.2
+    PB = 0.14, // +0.1
+    PA = 0.500;
 
 var RD = 255,
     GD = 255,
@@ -465,7 +465,7 @@ var QuantiMat = function(opts) {
     this.bucket_threshold_ = (this.is_bucket_threshold_auto_ ? this.bucket_threshold_auto_goal_target_: opts.bucket_threshold)|0;
     this.threshold_steps_ = opts.threshold_steps || 1;
     this.color_number_bonus_ = opts.color_number_bonus | 0;
-    this.best_color_number_ = opts.best_color_number !== null ? opts.best_color_number: Math.max(Math.sqrt(opts.pxl_colors.length) + this.color_number_bonus_, 100);
+    this.best_color_number_ = opts.best_color_number !== null ? opts.best_color_number: opts.pxl_colors.length / 2;
 
     this.new_pxls_ = "buffer" in opts.pxls ? new Uint32Array(opts.pxls.buffer) : Uint32Array.from(opts.pxls);
     this.new_pxl_colors_ = "buffer" in opts.pxl_colors ? SIMDopeColors(opts.pxl_colors.buffer) : SIMDopeColors(Uint32Array.from(opts.pxl_colors));
@@ -533,7 +533,7 @@ Object.defineProperty(QuantiMat.prototype, 'get_a_new_pxl_color_from_pxl_index',
 Object.defineProperty(QuantiMat.prototype, 'reset_cluster', {
     get: function() { "use strict"; return function() {
         "use strict";
-        this.max_cluster_ = this.new_pxl_colors_.length > 4096 ? 4096+1: this.new_pxl_colors_.length > 2048 ? 256+1: this.new_pxl_colors_.length > 1024 ? 16+1: 1;
+        this.max_cluster_ = this.new_pxl_colors_.length > 12288 ? 4096+1: this.new_pxl_colors_.length > 6144 ? 256+1: this.new_pxl_colors_.length > 3072 ? 16+1: 1;
         this.length_clusters_.fill(0, 0, this.max_cluster);
         for(var c = 0; (c|0) < (this.max_cluster|0); c=(c+1|0)>>>0){ this.index_clusters_[c|0] = [];}
     }}
@@ -573,6 +573,9 @@ Object.defineProperty(QuantiMat.prototype, 'get_an_index_in_clusters', {
 });
 Object.defineProperty(QuantiMat.prototype, 'get_a_color_usage', {
     get: function() {return function(index){return this.pxl_colors_usage_[index|0] | 0;}}
+});
+Object.defineProperty(QuantiMat.prototype, 'get_a_color_usage_percent', {
+    get: function() {return function(index){return  this.pxl_colors_usage_[index|0] / this.new_pxls_.length;}}
 });
 Object.defineProperty(QuantiMat.prototype, 'get_a_new_pxl_color', {
     get: function() {return function(index){return this.new_pxl_colors_.get_element(index|0);}}
@@ -690,19 +693,23 @@ QuantiMat.prototype.process_threshold = function(t) {
     var stop = 0;
     var color_a, color_b;
     var color_a_usage = 0;
+    var color_a_usage_percent = 0;
     var color_b_usage = 0;
     var first_color_more_used = false;
     var color_usage_difference = 0.0;
+    var color_usage_difference_magic = 0.0;
     var weighted_threshold = 0.0;
 
     var index_of_color_a = 0;
     var index_of_color_b = 0;
     var x = 0, y = 0;
-    var i, color_iterator;
+    var i = 0, color_iterator = 0;
+    var color_n_in_cluster = 0;
 
     for(var c = 0; (c|0) < (this.max_cluster|0); c=(c+1|0)>>>0){
 
-        stop = (start + this.get_length_in_index_clusters(c|0) | 0) >>> 0;
+        color_n_in_cluster = this.get_length_in_index_clusters(c|0) | 0;
+        stop = (start + color_n_in_cluster | 0) >>> 0;
 
         for(x = start; (x|0) < (stop|0); x = (x+1|0)>>>0) {
 
@@ -713,6 +720,7 @@ QuantiMat.prototype.process_threshold = function(t) {
 
                 color_a = this.get_a_new_pxl_color((index_of_color_a|0)>>>0);
                 color_a_usage = (this.get_a_color_usage((index_of_color_a|0)>>>0) | 0) >>> 0;
+                color_a_usage_percent = (this.get_a_color_usage_percent((index_of_color_a|0)>>>0) | 0) >>> 0;
                 accumulator_usages = 0;
 
                 for(y = (x|0)>>>0; (y|0) < (stop|0); y = (y+1|0)>>>0) {
@@ -726,14 +734,27 @@ QuantiMat.prototype.process_threshold = function(t) {
 
                         first_color_more_used = (color_a_usage|0) > (color_b_usage|0);
                         color_usage_difference = (first_color_more_used ? color_a_usage / color_b_usage: color_b_usage / color_a_usage) * 255 | 0;
-                        weighted_threshold = (((threshold_255 / 255 + (threshold_255 / 255 * (1 - color_usage_difference/255) * weight_applied_to_color_usage_difference)) / (1 + weight_applied_to_color_usage_difference)) * 255 | 0)>>>0;
 
+                        // We have a color usage difference that gets attracted to be near half difference, stronger if more distant from above or below the middle line
+                        color_usage_difference_magic = color_usage_difference + ((color_usage_difference >= 128 ? -color_usage_difference: +color_usage_difference) / (Math.abs(color_usage_difference-128|0)/96)) | 0; //
+                        color_usage_difference_magic = ((color_usage_difference_magic|0) <= 1 ? 1: (color_usage_difference_magic|0) >= 254 ? 254: color_usage_difference_magic) | 0;
+
+                        // 50% threshold + 25% color_usage_difference + 25% color_usage_percentage
+                        weighted_threshold = ((
+                            ((threshold_255 / 255) + (threshold_255 / 255 * (1 - color_usage_difference_magic/255) * weight_applied_to_color_usage_difference)) /
+                            (1 + weight_applied_to_color_usage_difference)
+                        ) * 255 | 0)>>>0;  // THRESHOLD + THRESHOLD * WEIGHT / 1 + WEIGHT
+
+                        // The more a color is used the more its blending threshold will be high (Impeaching blending important color too easily)
                         if(color_a.euclidean_match_with(color_b,  weighted_threshold|0)) {
 
-                            index_merged.add(index_of_color_a);
                             index_merged.add(index_of_color_b);
                             accumulator_colors.add(color_b)
-                            color_a.blend_with(color_b, first_color_more_used ? color_usage_difference: 255 - (color_usage_difference / 255 | 0), false, false);
+                            if(first_color_more_used) {
+                                color_a.blend_with(color_b, color_usage_difference, false, false);
+                            }else {
+                                color_b.blend_with(color_a, color_usage_difference, false, false);
+                            }
                         }
                     }
                 }
@@ -743,6 +764,8 @@ QuantiMat.prototype.process_threshold = function(t) {
 
                     color_iterator.next().value.set(color_a);
                 }
+
+                index_merged.add(index_of_color_a);
             }
         }
 
@@ -756,11 +779,10 @@ QuantiMat.prototype.process_threshold = function(t) {
 QuantiMat.prototype.round = function() {
     "use strict";
 
-    if(this.new_pxl_colors_length > 2048) {
+    if(this.new_pxl_colors_length > 3072) {
 
-        var simplify_of = this.new_pxl_colors_length > 8192 ? 8: this.new_pxl_colors_length > 4096 ? 4: this.new_pxl_colors_length > 2048 ? 2: 1;
+        var simplify_of = this.new_pxl_colors_.length > 12288 ? 4.8: this.new_pxl_colors_.length > 6144 ? 3.2: this.new_pxl_colors_.length > 3072 ? 1.6: 1;
         for(var l = 0; (l|0) < (this.new_pxl_colors_length|0); l = (l+1|0)>>>0) {
-
             this.get_a_new_pxl_color((l|0)>>>0).simplify(simplify_of|0);
         }
     }
