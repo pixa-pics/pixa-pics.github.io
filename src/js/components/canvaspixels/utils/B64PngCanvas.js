@@ -1278,12 +1278,12 @@ const B64PngCanvas = {
 
 
         var layers_pxls_colors_length = pxl_width * pxl_height | 0;
-        var layers_pxls_colors = new Uint32Array(_s_pxls.length * layers_pxls_colors_length);
+        var layers_pxls_colors = new Uint32Array(_s_pxls.length * layers_pxls_colors_length | 0);
 
         for(var i = 0; i < _s_pxls.length; i++) {
 
             const p =  Uint32Array.from(_s_pxls[i]);
-            const pc = new Uint32Array(_s_pxl_colors[i].buffer);
+            const pc = Uint32Array.from(_s_pxl_colors[i]);
 
             layers_pxls_colors.set(p.map(function(pci){ return( (pc[pci|0]|0)>>>0) & 0xFFFFFFFF; }), layers_pxls_colors_length * i);
         }

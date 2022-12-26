@@ -202,23 +202,23 @@ XXH.prototype.update = function (input) {
 
 		var p32 = 0;
 		this.v1.xxh_update(
-			(this.memory[p32+1|0] << 8) | this.memory[p32]
+			(this.memory[p32+1|0] << 8) | this.memory[p32|0]
 			,	(this.memory[p32+3|0] << 8) | this.memory[p32+2|0]
 		);
 		p32 = (p32 + 4 | 0) >>> 0;
 		this.v2.xxh_update(
-			(this.memory[p32+1|0] << 8) | this.memory[p32]
+			(this.memory[p32+1|0] << 8) | this.memory[p32|0]
 			,	(this.memory[p32+3|0] << 8) | this.memory[p32+2|0]
 		);
 		p32 = (p32 + 4 | 0) >>> 0;
 		this.v3.xxh_update(
-			(this.memory[p32+1|0] << 8) | this.memory[p32]
+			(this.memory[p32+1|0] << 8) | this.memory[p32|0]
 			,	(this.memory[p32+3|0] << 8) | this.memory[p32+2|0]
 		);
 		p32 = (p32 + 4 | 0) >>> 0
 		this.v4.xxh_update(
-			(this.memory[p32+1] << 8) | this.memory[p32]
-			,	(this.memory[p32+3] << 8) | this.memory[p32+2]
+			(this.memory[p32+1|0] << 8) | this.memory[p32|0]
+			,	(this.memory[p32+3|0] << 8) | this.memory[p32+2]
 		);
 
 		p = p + 16 - this.memsize | 0;
@@ -232,22 +232,22 @@ XXH.prototype.update = function (input) {
 		do
 		{
 			this.v1.xxh_update(
-				(input[p+1|0] << 8) | input[p]
+				(input[p+1|0] << 8) | input[p|0]
 				,	(input[p+3|0] << 8) | input[p+2|0]
 			)
 			p = (p + 4 | 0) >>> 0
 			this.v2.xxh_update(
-				(input[p+1|0] << 8) | input[p]
+				(input[p+1|0] << 8) | input[p|0]
 				,	(input[p+3|0] << 8) | input[p+2|0]
 			)
 			p = (p + 4 | 0) >>> 0
 			this.v3.xxh_update(
-				(input[p+1|0] << 8) | input[p]
+				(input[p+1|0] << 8) | input[p|0]
 				,	(input[p+3|0] << 8) | input[p+2|0]
 			)
 			p = (p + 4 | 0) >>> 0
 			this.v4.xxh_update(
-				(input[p+1|0] << 8) | input[p]
+				(input[p+1|0] << 8) | input[p|0]
 				,	(input[p+3|0] << 8) | input[p+2|0]
 			)
 			p = (p + 4 | 0) >>> 0
@@ -404,9 +404,9 @@ XXH64.prototype.update = function (input) {
 		input = new Uint8Array(input);
 	}
 
-	var p = 0
-	var len = input.length
-	var bEnd = p + len
+	var p = 0;
+	var len = input.length|0;
+	var bEnd = p + len|0;
 
 	if (len == 0) return this
 
@@ -446,34 +446,34 @@ XXH64.prototype.update = function (input) {
 		var p64 = 0
 		var other
 		other = UINT64(
-			(this.memory[p64+1] << 8) | this.memory[p64]
-			,	(this.memory[p64+3] << 8) | this.memory[p64+2]
-			,	(this.memory[p64+5] << 8) | this.memory[p64+4]
-			,	(this.memory[p64+7] << 8) | this.memory[p64+6]
+			(this.memory[p64+1|0] << 8) | this.memory[p64|0]
+			,	(this.memory[p64+3|0] << 8) | this.memory[p64+2|0]
+			,	(this.memory[p64+5|0] << 8) | this.memory[p64+4|0]
+			,	(this.memory[p64+7|0] << 8) | this.memory[p64+6|0]
 		)
 		this.v1.add( other.multiply(PRIME64_2) ).rotl(31).multiply(PRIME64_1);
 		p64 = (p64+8|0)>>>0;
 		other = UINT64(
-			(this.memory[p64+1] << 8) | this.memory[p64]
-			,	(this.memory[p64+3] << 8) | this.memory[p64+2]
-			,	(this.memory[p64+5] << 8) | this.memory[p64+4]
-			,	(this.memory[p64+7] << 8) | this.memory[p64+6]
+			(this.memory[p64+1|0] << 8) | this.memory[p64|0]
+			,	(this.memory[p64+3|0] << 8) | this.memory[p64+2|0]
+			,	(this.memory[p64+5|0] << 8) | this.memory[p64+4|0]
+			,	(this.memory[p64+7|0] << 8) | this.memory[p64+6|0]
 		)
 		this.v2.add( other.multiply(PRIME64_2) ).rotl(31).multiply(PRIME64_1);
 		p64 = (p64+8|0)>>>0;
 		other = UINT64(
-			(this.memory[p64+1] << 8) | this.memory[p64]
-			,	(this.memory[p64+3] << 8) | this.memory[p64+2]
-			,	(this.memory[p64+5] << 8) | this.memory[p64+4]
-			,	(this.memory[p64+7] << 8) | this.memory[p64+6]
+			(this.memory[p64+1|0] << 8) | this.memory[p64|0]
+			,	(this.memory[p64+3|0] << 8) | this.memory[p64+2|0]
+			,	(this.memory[p64+5|0] << 8) | this.memory[p64+4|0]
+			,	(this.memory[p64+7|0] << 8) | this.memory[p64+6|0]
 		)
 		this.v3.add( other.multiply(PRIME64_2) ).rotl(31).multiply(PRIME64_1);
 		p64 = (p64+8|0)>>>0;
 		other = UINT64(
-			(this.memory[p64+1] << 8) | this.memory[p64]
-			,	(this.memory[p64+3] << 8) | this.memory[p64+2]
-			,	(this.memory[p64+5] << 8) | this.memory[p64+4]
-			,	(this.memory[p64+7] << 8) | this.memory[p64+6]
+			(this.memory[p64+1|0] << 8) | this.memory[p64|0]
+			,	(this.memory[p64+3|0] << 8) | this.memory[p64+2|0]
+			,	(this.memory[p64+5|0] << 8) | this.memory[p64+4|0]
+			,	(this.memory[p64+7|0] << 8) | this.memory[p64+6|0]
 		)
 		this.v4.add( other.multiply(PRIME64_2) ).rotl(31).multiply(PRIME64_1);
 
@@ -489,34 +489,34 @@ XXH64.prototype.update = function (input) {
 		{
 			var other
 			other = UINT64(
-				(input[p+1] << 8) | input[p]
-				,	(input[p+3] << 8) | input[p+2]
-				,	(input[p+5] << 8) | input[p+4]
-				,	(input[p+7] << 8) | input[p+6]
+				(input[p+1|0] << 8) | input[p|0]
+				,	(input[p+3|0] << 8) | input[p+2|0]
+				,	(input[p+5|0] << 8) | input[p+4|0]
+				,	(input[p+7|0] << 8) | input[p+6|0]
 			)
 			this.v1.add( other.multiply(PRIME64_2) ).rotl(31).multiply(PRIME64_1);
 			p = (p+8|0)>>>0;
 			other = UINT64(
-				(input[p+1] << 8) | input[p]
-				,	(input[p+3] << 8) | input[p+2]
-				,	(input[p+5] << 8) | input[p+4]
-				,	(input[p+7] << 8) | input[p+6]
+				(input[p+1|0] << 8) | input[p|0]
+				,	(input[p+3|0] << 8) | input[p+2|0]
+				,	(input[p+5|0] << 8) | input[p+4|0]
+				,	(input[p+7|0] << 8) | input[p+6|0]
 			)
 			this.v2.add( other.multiply(PRIME64_2) ).rotl(31).multiply(PRIME64_1);
 			p = (p+8|0)>>>0;
 			other = UINT64(
-				(input[p+1] << 8) | input[p]
-				,	(input[p+3] << 8) | input[p+2]
-				,	(input[p+5] << 8) | input[p+4]
-				,	(input[p+7] << 8) | input[p+6]
+				(input[p+1|0] << 8) | input[p|0]
+				,	(input[p+3|0] << 8) | input[p+2|0]
+				,	(input[p+5|0] << 8) | input[p+4|0]
+				,	(input[p+7|0] << 8) | input[p+6|0]
 			)
 			this.v3.add( other.multiply(PRIME64_2) ).rotl(31).multiply(PRIME64_1);
 			p = (p+8|0)>>>0;
 			other = UINT64(
-				(input[p+1] << 8) | input[p]
-				,	(input[p+3] << 8) | input[p+2]
-				,	(input[p+5] << 8) | input[p+4]
-				,	(input[p+7] << 8) | input[p+6]
+				(input[p+1|0] << 8) | input[p|0]
+				,	(input[p+3|0] << 8) | input[p+2|0]
+				,	(input[p+5|0] << 8) | input[p+4|0]
+				,	(input[p+7|0] << 8) | input[p+6|0]
 			)
 			this.v4.add( other.multiply(PRIME64_2) ).rotl(31).multiply(PRIME64_1);
 			p = (p+8|0)>>>0;
@@ -579,10 +579,10 @@ XXH64.prototype.digest = function () {
 	while ((p|0) <= (bEnd - 8 | 0))
 	{
 		u.fromBits(
-			(input[p+1] << 8) | input[p]
-			,	(input[p+3] << 8) | input[p+2]
-			,	(input[p+5] << 8) | input[p+4]
-			,	(input[p+7] << 8) | input[p+6]
+			(input[p+1|0] << 8) | input[p|0]
+			,	(input[p+3|0] << 8) | input[p+2|0]
+			,	(input[p+5|0] << 8) | input[p+4|0]
+			,	(input[p+7|0] << 8) | input[p+6|0]
 		)
 		u.multiply(PRIME64_2).rotl(31).multiply(PRIME64_1)
 		h64
@@ -595,8 +595,8 @@ XXH64.prototype.digest = function () {
 
 	if ((p + 4 | 0) <= (bEnd | 0)) {
 		u.fromBits(
-			(input[p+1] << 8) | input[p]
-			,	(input[p+3] << 8) | input[p+2]
+			(input[p+1|0] << 8) | input[p|0]
+			,	(input[p+3|0] << 8) | input[p+2|0]
 			,	0
 			,	0
 		)

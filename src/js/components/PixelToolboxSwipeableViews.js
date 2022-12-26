@@ -92,6 +92,7 @@ import SwapHorizontalIcon from "../icons/SwapHorizontal";
 import SwapVerticalIcon from "../icons/SwapVertical";
 
 import ColorConversion from "../components/canvaspixels/utils/ColorConversion";
+import actions from "../actions/utils";
 const color_conversion = Object.create(ColorConversion).new();
 const PANEL_NAMES = ["palette", "image", "layers", "tools", "selection", "effects", "filters"];
 
@@ -110,6 +111,15 @@ const styles = theme => ({
             marginRight: theme.spacing(1),
             //display: "none",
         }
+    },
+    info: {
+        backgroundColor: "#3729c154",
+        color: "#3729c1ff",
+        padding: "16px",
+        borderRadius: "4px",
+    },
+    relevantTextBlue: {
+        color: "#3729c1ff",
     },
     thanksSponsorsGhost: {
         opacity: 0,
@@ -325,6 +335,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
             slider_value: parseFloat(props.slider_value),
             layers: props.layers,
             layer_index: props.layer_index,
+            filter_layer_index: 0,
             can_undo: props.can_undo,
             can_redo: props.can_redo,
             width: props.width,
@@ -352,8 +363,9 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
             too_much_colors_no_vector: false,
             import_size: props.import_size,
             import_colorize: props.import_colorize,
-            filters_thumbnail: props.filters_thumbnail,
-            filters_preview_progression: props.filters_preview_progression,
+            filters_thumbnail: props.filters_thumbnail || new Map(),
+            filters_preview_progression: props.filters_preview_progression || "0",
+            last_filters_hash: "",
             _filter_aspect_ratio: "1 / 1",
             _filter_thumbnail_changed: true,
             _compressed: false,
@@ -394,6 +406,65 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
         }
     }
 
+    _handle_filters_thumbnail_change = (filters_thumbnail, last_filters_hash, filters_preview_progression) => {
+
+        filters_preview_progression = filters_preview_progression.toString();
+        if(this.st4te.filters_preview_progression === "0") {
+            actions.trigger_voice("filtering");
+        }
+
+        if (this.st4te._filters_changed) {
+
+            let bmp;
+            let ar = "";
+            let processed = false;
+
+            for (let i = 0; i < this.st4te.filters.length; i++) {
+
+                bmp = filters_thumbnail[this.st4te.filters[i]] || {};
+
+                if (Boolean(bmp)) {
+                    ar = `${bmp.width} / ${bmp.height}`;
+                    processed = true;
+                }
+            }
+
+            if (ar !== this.st4te._filter_aspect_ratio && processed) {
+
+                this.setSt4te({_filters_changed: false, _filter_aspect_ratio: ar}, () => {
+
+                    this.update_cache_view(null, true);
+                });
+            }
+        }
+
+        this.setSt4te({filters_thumbnail, last_filters_hash, filters_preview_progression, filter_layer_index: this.st4te.layer_index}, () => {
+
+            if(filters_preview_progression === "100") {
+
+                this.update_cache_view(null, true);
+            }
+        });
+    };
+
+    componentDidMount() {
+
+        if(this.props.set_filters_callback) {
+
+            this.props.set_filters_callback(this._handle_filters_thumbnail_change);
+        }
+
+        if(this.props.set_props_callback) {
+
+            this.props.set_props_callback(this._set_props);
+        }
+    }
+
+    _set_props = (props) => {
+
+        this.componentWillReceiveProps(Object.assign(Object.assign({}, this.props), props));
+    };
+
     componentWillReceiveProps(new_props) {
 
         const {
@@ -401,6 +472,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
             view_name_index,
             previous_view_name_index,
             layer_index,
+            filter_layer_index,
             is_image_import_mode,
             hide_canvas_content,
             show_original_image_in_background,
@@ -421,8 +493,9 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
             layers
         } = this.st4te;
 
+        const layer_index_changed = Boolean(filter_layer_index !== new_props.layer_index);
         const _history_changed = Boolean(can_undo !== new_props.can_undo) ||  Boolean(can_redo !== new_props.can_redo);
-        const must_compute_filter = Boolean(Boolean(view_name_index !== new_props.view_name_index || _history_changed) && Boolean(new_props.view_name_index === 6));
+        const must_compute_filter = Boolean(Boolean(view_name_index !== new_props.view_name_index || _history_changed || layer_index_changed) && Boolean(new_props.view_name_index === 6));
 
         let props_override = {};
         let layers_colors_max = 0;
@@ -457,34 +530,11 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
         if(must_compute_filter) {
 
-            props_override =  Object.assign(props_override, {too_much_colors_no_vector});
             this.compute_filters_preview();
-
-        }else if (this.st4te._filters_changed) {
-
-            let bmp;
-            let ar = "";
-            let processed = false;
-
-            for (let i = 0; i < new_props.filters.length; i++) {
-
-                bmp = new_props.filters_thumbnail[new_props.filters[i]] || {};
-
-                if (Boolean(bmp)) {
-                    ar = `${bmp.width} / ${bmp.height}`;
-                    processed = true;
-                }
-            }
-
-            if (ar !== this.st4te._filter_aspect_ratio && processed) {
-
-                props_override._filters_changed = false;
-                props_override._filter_aspect_ratio = ar;
-            }
         }
 
         if(view_name_changed || something_changed_in_view) {
-            this.setSt4te({...new_props, ...props_override, slider_value: parseFloat(new_props.slider_value)}, () => {
+            this.setSt4te({...new_props, ...props_override, slider_value: parseFloat(new_props.slider_value), too_much_colors_no_vector}, () => {
 
                 if( this.st4te.view_name_index === 2){
 
@@ -971,7 +1021,9 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                 {
                     icon: <DownloadIcon/>,
                     text: `Download enhanced${too_much_colors_no_vector ? " (Disabled)": ""}`,
-                    description: "In recent years, many great minds have found ways to up-scale pixel art (from it's golden age, that is to say: late 80's) for modern emulator while being impartial and not modifying the source. It will look like a painting!",
+                    description: too_much_colors_no_vector ?
+                        "It will look like a painting! Yet, we need to have less than 256 colors for each layers because there should be a few shapes to get a beautiful result.":
+                        "After 2000's, great minds have found ways to up-scale late 80's pixel art within modern emulators while always being cool and absolutely right. Hey! It can look like a nice painting^^",
                     local_i: 2,
                     label: "vector",
                     tools: [
@@ -1024,7 +1076,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                             icon: _compressed ? <CheckedIcon/>: <UncheckedIcon/>,
                             text: "Compressed",
                             sub: "Reduce file weight",
-                            disabled: false,
+                            disabled: too_much_colors_no_vector,
                             on_click: () => {
                                 this._toggle_compressed()
                             }
@@ -1033,7 +1085,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                             icon: _vectorized ? <CheckedIcon/>: <UncheckedIcon/>,
                             text: "Vectorized",
                             sub: "Download an SVG file with it",
-                            disabled: false,
+                            disabled: too_much_colors_no_vector,
                             on_click: () => {
                                 this._toggle_vectorized()
                             }
@@ -1696,8 +1748,8 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                                 icon: <canvas
                                     className={"pixelated"}
                                     ref={(el) => {this._set_canvas_ref(el, bmp)}}
-                                    width={width | 0}
-                                    height={height | 0}
+                                    width={width || 1}
+                                    height={height || 1}
                                     style={{ zIndex: "-1", aspectRatio: _filter_aspect_ratio, boxSizing: "border-box", height: "100%", minWidth: "100%", width: 128, boxShadow: "0px 1px 2px #3729c1a8", border: "4px solid #020529", borderRadius: 2, contain: "paint style size"}}
                                     key={"name-" + name + "-ratio-" + _filter_aspect_ratio + "-over-" + (bmp.width || 0).toString() + "x" + (bmp.height || 0).toString()}
                                 />,
@@ -2074,14 +2126,14 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                                             value={parseInt(action_set.progression) % 100} />
                                     }
                                 </ListSubheader>
-                                {(action_set.description || null) && <p style={{margin: "24px 32px"}}>{action_set.description}</p>}
+                                {(action_set.description || null) && <p className={classes.info} style={{margin: "24px 32px"}}>{action_set.description}</p>}
                                 {
                                     Boolean(Boolean(name === "filters" || action_set.label === "vector") && too_much_colors_no_vector) ?
-                                        <ListItem button={name !== "filters"} onClick={() => {canvas.to_less_color("auto")}}>
+                                        <ListItem classes={{root: classes.relevantTextBlue}} button={name !== "filters"} onClick={() => {canvas.to_less_color("auto")}}>
                                             <ListItemIcon><LessColorAutoIcon className={classes.listItemIcon} /></ListItemIcon>
                                             <ListItemText primary="Auto reduce color palette" secondary={"May you need less color in your palette?"} />
                                         </ListItem>: Boolean(name === "filters") ?
-                                            <blockquote>DID YOU KNOW? Just double-tap/right-click around the drawing area to open a context menu with shortcuts including some to adjust saturation and contrast like a professional...</blockquote>: null
+                                            <blockquote className={classes.info}>DID YOU KNOW? Just double-tap/right-click around the drawing area to open a context menu with shortcuts including some to adjust saturation and contrast like a professional...</blockquote>: null
                                 }
                                 {
                                     Boolean(name === "filters" ) &&

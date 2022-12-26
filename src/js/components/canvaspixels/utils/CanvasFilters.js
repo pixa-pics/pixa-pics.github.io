@@ -187,13 +187,13 @@ const CanvasFilters = {
             filter: function(name,intensity,pxl_colors) {
                 "use strict";
 
+                pxl_colors = Uint32Array.from(pxl_colors);
                 intensity = parseFloat(intensity) * 255 | 0;
                 let colors_length = pxl_colors.length | 0;
                 let rgba_colors_length = colors_length * 4 | 0;
                 let old_pxl_colors = new Uint8Array(pxl_colors.buffer);
                 let pxl_colors_abgr = new Uint8Array(rgba_colors_length);
                 let abgr = new Uint8ClampedArray(4);
-                pxl_colors = Uint32Array.from(pxl_colors);
 
                 function CLAMP_INT( x,min,max ) {
 

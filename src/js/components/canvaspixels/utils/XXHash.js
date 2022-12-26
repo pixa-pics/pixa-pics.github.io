@@ -65,13 +65,15 @@ const XXHash = {
                 "use strict";
 
                 return s.xxh_f.create64(0xFADE).update(
-                    new Uint8Array(
-                        typeof array_buffer === "string" ?
-                            Buffer.from(array_buffer):
-                            "buffer" in array_buffer ?
-                                array_buffer.buffer:
-                                array_buffer
-                    )
+                    array_buffer instanceof Uint8Array ?
+                        array_buffer:
+                        new Uint8Array(
+                            typeof array_buffer === "string" ?
+                                Buffer.from(array_buffer):
+                                "buffer" in array_buffer ?
+                                    array_buffer.buffer:
+                                    array_buffer
+                        )
                 ).digest();
             },
             base58_that: function (array_buffer) {
@@ -84,7 +86,7 @@ const XXHash = {
                 while (num > 0) {
                     remainder = Number(num % base_58) & 0xFF;
                     num = num / base_58;
-                    encoded[c|0] = alphabet_58[remainder|0];
+                    encoded[c|0] = alphabet_58[remainder|0] | 0;
                     c = (c + 1 | 0) >>> 0;
                 }
 

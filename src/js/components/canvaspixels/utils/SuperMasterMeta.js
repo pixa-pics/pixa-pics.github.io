@@ -753,7 +753,7 @@ const SuperMasterMeta = {
                 const _notified_position_at = meta.super_state.get_state()._notified_position_at;
                 const now = Date.now();
 
-                if ((now - _notified_position_at >= 250 && date === null) || date > _notified_position_at && now - date >= 250) {
+                if ((now - _notified_position_at >= 100 && date === null) || date > _notified_position_at && now - date >= 100) {
 
                     position = {
                         x: typeof position.x === "undefined" ? -1 : position.x,
@@ -765,12 +765,12 @@ const SuperMasterMeta = {
 
                         notifiers.position(position, meta.sraf.get_state().previous_cpaf_fps);
                     });
-                } else if (now < date + 250) {
+                } else if (now < date + 100) {
 
                     setTimeout(() => {
 
                         this._notify_position_change({x: position.x, y: position.y}, now);
-                    }, 75);
+                    }, 33);
                 }
             },
             _handle_canvas_mouse_up(event) {

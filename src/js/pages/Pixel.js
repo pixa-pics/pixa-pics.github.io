@@ -275,6 +275,12 @@ const styles = theme => ({
             color: "#050c4c",
             borderRadius: "4px 4px 0px 0px",
         },
+        "&:first-child": {
+            borderRadius: "0px 4px 0px 0px",
+        },
+        "&:last-child": {
+            borderRadius: "4px 0px 0px 0px",
+        },
         "& .MuiTab-wrapper": {
             fontSize: "11px",
         },
@@ -552,9 +558,8 @@ class Pixel extends React.PureComponent {
             _less_than_1280w: false,
             _is_pixel_dialog_create_open: false,
             _attachment_previews: {},
-            _filters_thumbnail: new Map(),
-            _last_filters_hash: "",
-            _filters_preview_progression: "0",
+            _swipeable_drawer_handle_filters_thumbnail_change: function(){},
+            _swipeable_drawer_set_props: function(){},
             _toolbox_container_ref: null,
             _files_waiting_download: [],
             _time_ago_initiated: false,
@@ -644,7 +649,31 @@ class Pixel extends React.PureComponent {
 
             this.setSt4te({_library: RESSOURCE_PIXELS});
         });
+        
+        this._set_fps_and_xy_elements();
+        this._set_saved_at_element();
     }
+
+    _set_fps_and_xy_elements = () => {
+        
+        this.setSt4te({_fps_el: document.getElementById("fps_el"), _xy_el: document.getElementById("xy_el")});
+    };
+
+    _set_saved_at_element = () => {
+
+        if(!Boolean(this.st4te._saved_at_el)) {
+
+            this.setSt4te({_saved_at_el: document.getElementById("saved_at")}, () => {
+
+                let _saved_at_interval = setInterval(() => {
+
+                    this.st4te._saved_at_el.innerText = t(this.st4te._saved_at, {mini: true});
+                });
+
+                this.setSt4te({_saved_at_interval});
+            });
+        }
+    };
 
     componentWillReceiveProps(new_props) {
 
@@ -838,7 +867,18 @@ class Pixel extends React.PureComponent {
             _window_width = w.innerWidth || documentElement.clientWidth || body.clientWidth,
             _window_height = w.innerHeight|| documentElement.clientHeight || body.clientHeight;
 
-        this.setSt4te({_less_than_1280w: _window_width < 1280})
+        const _less_than_1280w = Boolean(_window_width < 1280);
+        const update = this.st4te._less_than_1280w !== _less_than_1280w;
+        this.setSt4te({_less_than_1280w}, () => {
+            
+            if(update){
+                
+                this.forceUpdate(() => {
+                    
+                   this._set_fps_and_xy_elements(); 
+                });
+            }
+        })
     }
 
     componentWillUnmount() {
@@ -847,6 +887,7 @@ class Pixel extends React.PureComponent {
         window.removeEventListener("resize", this._updated_dimensions);
         document.removeEventListener("keydown", this._handle_keydown);
         document.removeEventListener("keyup", this._handle_keyup);
+        clearInterval(this.st4te._saved_at_interval);
     }
 
     _handle_menu_close = () => {
@@ -1874,30 +1915,50 @@ class Pixel extends React.PureComponent {
         this.setSt4te({_canvas: new_element, _filters: new_element.get_filter_names()});
     };
 
-    _handle_position_change = (position, fps) => {
+    _handle_position_change = (position) => {
 
-        this.setSt4te({_x: position.x, _y: position.y, _fps: parseInt(fps)}, () => {
+        this.setSt4te({_x: position.x, _y: position.y}, () => {
 
             if(!this.st4te._less_than_1280w){
 
-                this.forceUpdate();
+                const { _x, _y } = this.st4te;
+                let x = _x === -1 ? "out": _x + 1;
+                let y = _y === -1 ? "out": _y + 1;
+
+                let xy_text = ` | X: ${x}, Y: ${y} `;
+                this.st4te._xy_el.textContent = xy_text;
             }
         });
-    }
+    };
+
+    _handle_fps_change = (fps) => {
+
+        this.setSt4te({_fps: parseInt(fps)}, () => {
+
+            if(!this.st4te._less_than_1280w){
+
+                const { _fps } = this.st4te;
+                let fps_text = `FPS: ${_fps}`;
+                this.st4te._fps_el.textContent = fps_text;
+            }
+        });
+    };
 
     _handle_can_undo_redo_change = (_can_undo, _can_redo) => {
 
+        const update = Boolean(this.st4te._can_undo !== _can_undo || this.st4te._can_redo !== _can_redo);
         this.setSt4te({_can_undo, _can_redo}, () => {
 
-            this.forceUpdate();
+            if(update){this.forceUpdate();}
         })
     }
 
     _handle_size_change = (_width, _height) => {
 
+        const update = Boolean(this.st4te._width !== _width || this.st4te._height !== _height);
         this.setSt4te({_width, _height}, () => {
 
-            this.forceUpdate();
+            if(update){this.forceUpdate();}
         });
     }
 
@@ -1941,20 +2002,18 @@ class Pixel extends React.PureComponent {
         }
     };
 
-    _handle_something_selected_change = (is_something_selected) => {
+    _handle_something_selected_change = (_is_something_selected) => {
 
-        this.setSt4te({_is_something_selected: is_something_selected}, () => {
+        const update = Boolean(this.st4te._is_something_selected !== _is_something_selected);
+        this.setSt4te({_is_something_selected}, () => {
 
-            this.forceUpdate();
+            if(update){this.forceUpdate();}
         });
     };
 
     _set_value_from_slider_with_update = (event, value) => {
 
-        this.setSt4te({_slider_value: value}, () => {
-
-            this.forceUpdate();
-        });
+        this.setSt4te({_slider_value: value});
     };
 
     _set_width_from_slider = (event, value) => {
@@ -1988,15 +2047,12 @@ class Pixel extends React.PureComponent {
 
         this.setSt4te({_tool: name.toUpperCase()}, () => {
 
-            this.forceUpdate();
+            this._set_props_bypass_this();
         });
 
         if(remember) {
 
-            this.setSt4te({_memory_tool: name.toUpperCase()}, () => {
-
-                this.forceUpdate();
-            });
+            this.setSt4te({_memory_tool: name.toUpperCase()});
         }
     }
 
@@ -2004,7 +2060,7 @@ class Pixel extends React.PureComponent {
 
         this.setSt4te({_select_mode: mode.toUpperCase()}, () => {
 
-            this.forceUpdate();
+            this._set_props_bypass_this();
         });
     }
 
@@ -2012,7 +2068,7 @@ class Pixel extends React.PureComponent {
 
         this.setSt4te({_pencil_mirror_mode: mode.toUpperCase()}, () => {
 
-            this.forceUpdate();
+            this._set_props_bypass_this();
         });
     }
 
@@ -2021,7 +2077,7 @@ class Pixel extends React.PureComponent {
         const {_current_color, _second_color } = this.st4te;
         this.setSt4te({_current_color: _second_color, _second_color: _current_color}, () => {
 
-            this.forceUpdate();
+            this._set_props_bypass_this();
         });
     };
 
@@ -2029,7 +2085,7 @@ class Pixel extends React.PureComponent {
 
         this.setSt4te({_hide_canvas_content: !this.st4te._hide_canvas_content}, () => {
 
-            this.forceUpdate();
+            this._set_props_bypass_this();
         });
     }
 
@@ -2037,7 +2093,7 @@ class Pixel extends React.PureComponent {
 
         this.setSt4te({_show_original_image_in_background: !this.st4te._show_original_image_in_background}, () => {
 
-            this.forceUpdate();
+            this._set_props_bypass_this();
         });
     }
 
@@ -2045,7 +2101,7 @@ class Pixel extends React.PureComponent {
 
         this.setSt4te({_show_transparent_image_in_background: !this.st4te._show_transparent_image_in_background}, () => {
 
-            this.forceUpdate();
+            this._set_props_bypass_this();
         });
     }
 
@@ -2059,21 +2115,88 @@ class Pixel extends React.PureComponent {
 
     _handle_layers_change = (_layer_index, _layers) => {
 
-        this.setSt4te({_previous_layer_index: parseInt(this.st4te._layer_index), _layer_index: parseInt(_layer_index), _layers: Array.from(_layers)}, () => {
+        this.setSt4te({_previous_layer_index: parseInt(this.st4te._layer_index), _layer_index: parseInt(_layer_index), _layers: _layers}, () => {
 
-            this.forceUpdate();
+            this._set_props_bypass_this();
         });
     };
 
-    _handle_filters_thumbnail_change = (_filters_thumbnail, _last_filters_hash, _filters_preview_progression) => {
+    _handle_filters_thumbnail_change = (filters_thumbnail, last_filters_hash, filters_preview_progression) => {
 
-        if(this.st4te._filters_preview_progression === "0") {
-            actions.trigger_voice("filtering");
-        }
+        this.st4te._swipeable_drawer_handle_filters_thumbnail_change(filters_thumbnail, last_filters_hash, filters_preview_progression);
+    };
 
-        this.setSt4te({_filters_thumbnail, _last_filters_hash, _filters_preview_progression: _filters_preview_progression.toString}, () => {
+    _set_filters_callback = (callback) => {
 
-            this.forceUpdate();
+        this.setSt4te({_swipeable_drawer_handle_filters_thumbnail_change: callback});
+    };
+
+    _set_props_callback = (callback) => {
+
+        this.setSt4te({_swipeable_drawer_set_props: callback});
+    };
+
+    _set_props_bypass_this = () => {
+
+        const {
+            _view_name_index,
+            _previous_view_name_index,
+            _layers,
+            _layer_index,
+            _hide_canvas_content,
+            _show_original_image_in_background,
+            _show_transparent_image_in_background,
+            _hue,
+            _current_color,
+            _second_color,
+            _slider_value,
+            _tool,
+            _width,
+            _height,
+            _filters,
+            _select_mode,
+            _pencil_mirror_mode,
+            _is_something_selected,
+            _import_size,
+            _import_colorize,
+        } = this.st4te;
+
+        this.st4te._canvas._set_props({
+            tool: _tool,
+            hide_canvas_content: _hide_canvas_content,
+            show_original_image_in_background: _show_original_image_in_background && true,
+            show_transparent_image_in_background: _show_transparent_image_in_background,
+            select_mode: _select_mode,
+            pencil_mirror_mode: _pencil_mirror_mode,
+            hue: _hue,
+            bucket_threshold: _slider_value,
+            color_loss: _slider_value,
+            pxl_current_color: _current_color,
+            default_size: _import_size,
+            ideal_size: _import_size,
+            max_size: _import_size * 1.5,
+        });
+        this.st4te._swipeable_drawer_set_props({
+            view_name_index: _view_name_index,
+            previous_view_name_index: _previous_view_name_index,
+            layers: _layers,
+            layer_index: _layer_index,
+            hide_canvas_content: _hide_canvas_content,
+            show_original_image_in_background: _show_original_image_in_background,
+            show_transparent_image_in_background: _show_transparent_image_in_background,
+            hue: _hue,
+            current_color: _current_color,
+            second_color: _second_color,
+            slider_value: _slider_value,
+            tool: _tool,
+            width: parseInt(_width),
+            height: parseInt(_height),
+            filters: _filters,
+            select_mode: _select_mode,
+            pencil_mirror_mode: _pencil_mirror_mode,
+            is_something_selected: _is_something_selected,
+            import_size: _import_size,
+            import_colorize: _import_colorize
         });
     };
 
@@ -2120,17 +2243,19 @@ class Pixel extends React.PureComponent {
             _toolbox_container_ref.scrollTop = 0;
         }
 
+        const update = Boolean(this.st4te._is_edit_drawer_open !== _is_edit_drawer_open);
         this.setSt4te({_is_edit_drawer_open, _view_name_index, _view_name_sub_index}, () => {
 
-            this.forceUpdate();
+            if(update){this.forceUpdate();}
         });
     };
 
     _handle_edit_drawer_close = () => {
 
+        const update = Boolean(this.st4te._is_edit_drawer_open !== false);
         this.setSt4te({_is_edit_drawer_open: false}, () => {
 
-            this.forceUpdate();
+            if(update){this.forceUpdate();}
         });
     };
 
@@ -2139,7 +2264,7 @@ class Pixel extends React.PureComponent {
         this._handle_menu_close();
         this.setSt4te({_current_color}, () => {
 
-            this.forceUpdate();
+            this._set_props_bypass_this();
         });
     };
 
@@ -2307,7 +2432,7 @@ class Pixel extends React.PureComponent {
             _filters,
             _select_mode,
             _pencil_mirror_mode,
-            _x, _y, _kb, _saved_at, _fps,
+            _kb,
             _is_something_selected,
             _mine_player_direction,
             _is_edit_drawer_open,
@@ -2324,18 +2449,12 @@ class Pixel extends React.PureComponent {
             _h_svg,
             _attachment_previews,
             _is_cursor_fuck_you_active,
-            _filters_thumbnail,
-            _last_filters_hash,
-            _filters_preview_progression,
             _perspective,
             _files_waiting_download,
             _time_ago_initiated,
             _settings,
             _text_dialog_open,
         } = this.st4te;
-
-        let x = _x === -1 ? "out": _x + 1;
-        let y = _y === -1 ? "out": _y + 1;
 
         _menu_data.pos_x = _menu_data.pos_x === -1 ? "out": _menu_data.pos_x;
         _menu_data.pos_y = _menu_data.pos_y === -1 ? "out": _menu_data.pos_y;
@@ -2386,34 +2505,34 @@ class Pixel extends React.PureComponent {
                                 canvas={_canvas}
                                 is_mobile={is_mobile_or_tablet}
                                 view_class={classes.listOfTools}
+                                view_names={_view_names}
+                                is_image_import_mode={_is_image_import_mode}
+                                can_undo={_can_undo}
+                                can_redo={_can_redo}
+
                                 view_name_index={_view_name_index}
                                 previous_view_name_index={_previous_view_name_index}
-                                view_names={_view_names}
                                 layers={_layers}
                                 layer_index={_layer_index}
-                                is_image_import_mode={_is_image_import_mode}
                                 hide_canvas_content={_hide_canvas_content}
                                 show_original_image_in_background={_show_original_image_in_background}
                                 show_transparent_image_in_background={_show_transparent_image_in_background}
-                                can_undo={_can_undo}
-                                can_redo={_can_redo}
                                 hue={_hue}
                                 current_color={_current_color}
                                 second_color={_second_color}
                                 slider_value={_slider_value}
                                 tool={_tool}
-                                width={_width}
-                                height={_height}
+                                width={parseInt(_width)}
+                                height={parseInt(_height)}
                                 filters={_filters}
                                 select_mode={_select_mode}
                                 pencil_mirror_mode={_pencil_mirror_mode}
                                 is_something_selected={_is_something_selected}
                                 import_size={_import_size}
                                 import_colorize={_import_colorize}
-                                filters_thumbnail={_filters_thumbnail}
-                                last_filters_hash={_last_filters_hash}
-                                filters_preview_progression={_filters_preview_progression}
 
+                                set_filters_callback={this._set_filters_callback}
+                                set_props_callback={this._set_props_callback}
                                 set_tool={this._set_tool}
                                 set_select_mode={this._set_select_mode}
                                 set_pencil_mirror_mode={this._set_pencil_mirror_mode}
@@ -2452,8 +2571,8 @@ class Pixel extends React.PureComponent {
                     <div style={{boxShadow: "rgb(0 0 0 / 20%) 0px 2px 4px -1px, rgb(0 0 0 / 14%) 0px 4px 5px 0px, rgb(0 0 0 / 12%) 0px 1px 10px 0px", zIndex: 1}}>
                         <div className={classes.drawerHeader}>
                                             <span className={classes.coordinate}>
-                                                <span>{`FPS: ${_fps}`}</span>
-                                                <span>{` | X: ${x}, Y: ${y} `}</span>
+                                                <span id={"fps_el"}>{`FPS: 0`}</span>
+                                                <span id={"xy_el"}>{` | X: out, Y: out `}</span>
                                             </span>
                             <Typography className={classes.effectSliderText} id="strength-slider" gutterBottom>
                                 Effect strength :
@@ -2490,17 +2609,18 @@ class Pixel extends React.PureComponent {
                             canvas={_canvas}
                             view_class={classes.listOfTools}
                             is_mobile={is_mobile_or_tablet}
+                            view_names={_view_names}
+                            is_image_import_mode={_is_image_import_mode}
+                            can_undo={_can_undo}
+                            can_redo={_can_redo}
+
                             view_name_index={_view_name_index}
                             previous_view_name_index={_previous_view_name_index}
-                            view_names={_view_names}
                             layers={_layers}
                             layer_index={_layer_index}
-                            is_image_import_mode={_is_image_import_mode}
                             hide_canvas_content={_hide_canvas_content}
                             show_original_image_in_background={_show_original_image_in_background}
                             show_transparent_image_in_background={_show_transparent_image_in_background}
-                            can_undo={_can_undo}
-                            can_redo={_can_redo}
                             hue={_hue}
                             current_color={_current_color}
                             second_color={_second_color}
@@ -2514,10 +2634,9 @@ class Pixel extends React.PureComponent {
                             is_something_selected={_is_something_selected}
                             import_size={_import_size}
                             import_colorize={_import_colorize}
-                            filters_thumbnail={_filters_thumbnail}
-                            last_filters_hash={_last_filters_hash}
-                            filters_preview_progression={_filters_preview_progression}
 
+                            set_filters_callback={this._set_filters_callback}
+                            set_props_callback={this._set_props_callback}
                             set_tool={this._set_tool}
                             set_select_mode={this._set_select_mode}
                             set_pencil_mirror_mode={this._set_pencil_mirror_mode}
@@ -2560,6 +2679,7 @@ class Pixel extends React.PureComponent {
                                 perspective={_perspective ? 2: 0}
                                 on_state_export={this._handle_canvas_state_will_export}
                                 on_state_exported={this._handle_canvas_state_exported}
+                                on_fps_change={this._handle_fps_change}
                                 export_state_every_ms={is_mobile_or_tablet ? 5 * 60 * 1000: 3.5 * 60 * 1000}
                                 shadow_size={is_mobile_or_tablet ? 0: 1.5}
                                 key={"canvas"}
@@ -2752,7 +2872,7 @@ class Pixel extends React.PureComponent {
                 </IconButton>
 
                 <Button className={classes.saveButton} variant={"text"} color={"primary"} onClick={this._backup_state}>
-                    {t(_saved_at, {mini: true})} <SaveIcon/> {_kb < 1 ? "?": Math.round(_kb * 10) / 10} kB
+                    <span id={"saved_at"}>?</span> <SaveIcon/> {_kb < 1 ? "?": Math.round(_kb * 10) / 10} kB
                 </Button>
 
                 <IconButton disabled={!_is_image_import_mode} className={classes.confirmImportButton} color={"primary"} size={"small"} onClick={() => {_canvas.confirm_import()}}>

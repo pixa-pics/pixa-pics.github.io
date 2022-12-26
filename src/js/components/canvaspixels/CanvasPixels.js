@@ -63,6 +63,20 @@ class CanvasPixels extends React.PureComponent {
             this.sraf.start_timer();
             this.super_master_meta = Object.create(SuperMasterMeta).init(this.super_state, this.super_canvas, this.super_blend, this.canvas_pos, this.color_conversion, this.sraf);
             this.hasnt_been_mount = true;
+            this.new_current_state = {
+                _timestamp: parseInt(Date.now()),
+                _id: "",
+                pxl_width: parseInt(0),
+                pxl_height: parseInt(0),
+                _original_image_index: parseInt(0),
+                _layers: [],
+                _layer_index: parseInt(0),
+                _s_pxls: [],
+                _s_pxl_colors: [],
+                _pxl_indexes_of_selection: new Set([]),
+                _pencil_mirror_index: parseInt(0),
+            };
+            this.uint8 = new Uint8Array(0);
         }
     };
 
@@ -256,6 +270,11 @@ class CanvasPixels extends React.PureComponent {
 
             this.super_state.set_state({_selection_pair_highlight: !_selection_pair_highlight}).then(this.super_master_meta.update_canvas);
         }
+    };
+
+    _set_props = (props) => {
+
+        this.componentWillReceiveProps(Object.assign(Object.assign({}, this.props), props));
     };
 
     componentWillReceiveProps(new_props) {
@@ -555,11 +574,15 @@ class CanvasPixels extends React.PureComponent {
 
             const p_buffer_length =  p.length * 2 | 0;
             const pc_buffer_length = pc.length * 4 | 0;
-            let uint8 = new Uint8Array(p_buffer_length + pc_buffer_length);
-            uint8.set(new Uint8Array(p.buffer), 0);
-            uint8.set(new Uint8Array(pc.buffer), p_buffer_length);
+            const total_length = p_buffer_length + pc_buffer_length;
 
-            const hash = this.xxhash.base58_that(uint8);
+            if(this.uint8.length !== total_length) {
+                this.uint8 = new Uint8Array(p_buffer_length + pc_buffer_length);
+            }
+
+            this.uint8.set(new Uint8Array(p.buffer), 0);
+            this.uint8.set(new Uint8Array(pc.buffer), p_buffer_length);
+            const hash = this.xxhash.base58_that(this.uint8);
 
             if (_last_filters_hash !== hash || _processing_filters === false) {
 
@@ -1519,31 +1542,30 @@ class CanvasPixels extends React.PureComponent {
 
                     super_state_object._saving_json_state_history_running = true;
 
-                    let new_current_state = {
-                        _timestamp: parseInt(Date.now()),
-                        _id: _id.toString(),
-                        pxl_width: parseInt(pxl_width),
-                        pxl_height: parseInt(pxl_height),
-                        _original_image_index: parseInt(_original_image_index),
-                        _layers: Array.from(_layers).map((l, li) => {
-                            return {
-                                id: parseInt(l.id),
-                                hash: l.hash + "",
-                                name: l.name + "",
-                                hidden: Boolean(l.hidden),
-                                opacity: parseFloat(l.opacity || 1),
-                                thumbnail: l.thumbnail + "" ,
-                                colors: Array.from(l.colors || []),
-                                number_of_colors: parseInt(l.number_of_colors || 0),
-                            };
-                        }),
-                        _layer_index: parseInt(_layer_index),
-                        _s_pxls: Array.from(_s_pxls.map(function(a){return Uint16Array.from(a);})),
-                        _s_pxl_colors: Array.from(_s_pxl_colors.map(function(a){return Uint32Array.from(a);})),
-                        _pxl_indexes_of_selection: new Set(_pxl_indexes_of_selection),
-                        _pencil_mirror_index: parseInt(_pencil_mirror_index),
-                    };
+                    this.new_current_state._timestamp = parseInt(Date.now());
+                    this.new_current_state._id = _id.toString();
+                    this.new_current_state.pxl_width = parseInt(pxl_width);
+                    this.new_current_state.pxl_height = parseInt(pxl_height);
+                    this.new_current_state._original_image_index = parseInt(_original_image_index);
+                    this.new_current_state._layers = Array.from(_layers).map((l, li) => {
+                        return {
+                            id: parseInt(l.id),
+                            hash: l.hash + "",
+                            name: l.name + "",
+                            hidden: Boolean(l.hidden),
+                            opacity: parseFloat(l.opacity || 1),
+                            thumbnail: l.thumbnail + "" ,
+                            colors: Array.from(l.colors || []),
+                            number_of_colors: parseInt(l.number_of_colors || 0),
+                        };
+                    });
+                    this.new_current_state._layer_index = parseInt(_layer_index);
+                    this.new_current_state._s_pxls = Array.from(_s_pxls.map(function(a){return Uint16Array.from(a);}));
+                    this.new_current_state._s_pxl_colors = Array.from(_s_pxl_colors.map(function(a){return Uint32Array.from(a);}));
+                    this.new_current_state._pxl_indexes_of_selection = new Set(_pxl_indexes_of_selection);
+                    this.new_current_state._pencil_mirror_index = parseInt(_pencil_mirror_index);
 
+                    let uint8 = this.uint8;
                     let super_state = this.super_state;
                     let _notify_can_undo_redo_change = this._notify_can_undo_redo_change;
                     let xxhash = this.xxhash;
@@ -1558,17 +1580,17 @@ class CanvasPixels extends React.PureComponent {
                             const current_state_not_empty = Boolean(typeof new_current_state._layers !== "undefined");
                             const leading_change = Boolean(start > super_state.get_state()._layers_defined_at);
                             let current_state = Object.assign({}, new_current_state);
-                            current_state._layers = Array.from(new_current_state._layers.map(function(l) {
-                                return {
-                                    id: l.id | 0,
-                                    hash: l.hash + "",
-                                    name: l.name + "",
-                                    hidden: l.hidden && true,
-                                    opacity: parseFloat(l.opacity),
-                                    colors: Array.from(l.colors),
-                                    number_of_colors: l.number_of_colors | 0,
-                                };
-                            }));
+                                current_state._layers = Array.from(new_current_state._layers.map(function(l) {
+                                    return {
+                                        id: l.id | 0,
+                                        hash: l.hash + "",
+                                        name: l.name + "",
+                                        hidden: l.hidden && true,
+                                        opacity: parseFloat(l.opacity),
+                                        colors: Array.from(l.colors),
+                                        number_of_colors: l.number_of_colors | 0,
+                                    };
+                                }));
 
                             if(has_changed && leading_change && current_state_not_empty) {
 
@@ -1606,12 +1628,15 @@ class CanvasPixels extends React.PureComponent {
                             const p_buffer_length =  p.length * 2 | 0;
                             const pc = new_current_state._s_pxl_colors[index];
                             const pc_buffer_length = pc.length * 4 | 0;
-                            let uint8 = new Uint8Array(p_buffer_length + pc_buffer_length);
+                            const total_length = p_buffer_length + pc_buffer_length;
+                            if(uint8.length !== total_length) {
+                                uint8 = new Uint8Array(p_buffer_length + pc_buffer_length);
+                            }
                             uint8.set(new Uint8Array(p.buffer), 0);
                             uint8.set(new Uint8Array(pc.buffer), p_buffer_length);
 
                             const new_hash = xxhash.base58_that(uint8);
-                            const old_layer = Object.assign({}, (old_current_state._layers || new Array())[index]);
+                            const old_layer = Object.assign({}, (old_current_state._layers || [])[index]);
                             const old_thumbnail = old_layer.thumbnail || "";
                             const old_hash = old_layer.hash || "";
 
@@ -1663,7 +1688,7 @@ class CanvasPixels extends React.PureComponent {
                         }
                     };
 
-                    _notify_layers_and_compute_thumbnails_change(old_current_state, new_current_state, function(layers, layer_index, layers_changed_state, new_current_state) {
+                    _notify_layers_and_compute_thumbnails_change(old_current_state, this.new_current_state, function(layers, layer_index, layers_changed_state, new_current_state) {
 
                         let _json_state_history = super_state_object._json_state_history;
                         let {_state_history_length, _saving_json_state_history_ran_timestamp } = super_state_object;
@@ -1780,11 +1805,7 @@ class CanvasPixels extends React.PureComponent {
 
     _notify_can_undo_redo_change = () => {
 
-        const _json_state_history = this.super_state.get_state()._json_state_history;
-        const can_undo = this._can_undo(_json_state_history);
-        const can_redo = this._can_redo(_json_state_history);
-
-        if(this.props.onCanUndoRedoChange) { this.props.onCanUndoRedoChange(can_undo, can_redo); }
+        if(this.props.onCanUndoRedoChange) { this.props.onCanUndoRedoChange(this._can_undo(), this._can_redo()); }
     };
 
     _notify_size_change = () => {
@@ -1967,7 +1988,7 @@ class CanvasPixels extends React.PureComponent {
             _json_state_history = this.super_state.get_state()._json_state_history;
         }
 
-        return parseInt(_json_state_history.state_history.length - parseInt(_json_state_history.history_position+1));
+        return _json_state_history.state_history.length - parseInt(_json_state_history.history_position) - 1;
     }
 
     redo = () => {
