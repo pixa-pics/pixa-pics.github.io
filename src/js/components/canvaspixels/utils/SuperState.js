@@ -71,6 +71,7 @@ const SuperState = {
             fast_drawing: props.fast_drawing || false,
             canvas_border_radius: props.canvas_border_radius || 0,
             canvas_wrapper_background_color: props.canvas_wrapper_background_color || "#020529",
+            canvas_wrapper_background_color_focused: props.canvas_wrapper_background_color_focused || "#000000",
             canvas_wrapper_border_radius: props.canvas_wrapper_border_radius || 4,
             show_original_image_in_background: props.show_original_image_in_background || false,
             show_transparent_image_in_background: props.show_transparent_image_in_background || false,

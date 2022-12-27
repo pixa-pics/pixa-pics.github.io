@@ -17,7 +17,8 @@ import {
     Divider,
     FormControlLabel,
     Button,
-    Menu
+    Menu,
+    Fade
 } from "@material-ui/core";
 
 import {HISTORY} from "../utils/constants";
@@ -97,10 +98,38 @@ const color_conversion = Object.create(ColorConversion).new();
 const PANEL_NAMES = ["palette", "image", "layers", "tools", "selection", "effects", "filters"];
 
 const styles = theme => ({
+    "@global": {
+        "@keyframes wiggle": {
+            "0%, 7%": {transform: "scale(1.00)"},
+            "15%": {transform: "scale(1.08)"},
+            "20%": {transform: "scale(1.04)"},
+            "25%": {transform: "scale(1.00)"},
+            "30%": {transform: "scale(0.96)"},
+            "40%, 100%": {transform: "scale(1)"}
+        },
+        "@keyframes shift": {
+            "0%, 7%": {transform: "translateX(0%)"},
+            "15%": {transform: "translateX(-25%)"},
+            "20%": {transform: "translateX(-10%)"},
+            "25%": {transform: "translateX(0%)"},
+            "30%": {transform: "translateX(10%)"},
+            "40%, 100%": {transform: "translateX(0%)"}
+        }
+    },
     listSubHeader: {
+        "&:hover": {
+            backgroundColor: "#e5e5fd",
+            boxShadow: "0px 2px 5px #050c4c4d",
+            transition: "all cubic-bezier(0.4, 0, 0.2, 1) 350ms",
+            "& span svg": {
+                animation: "$shift linear 675ms both",
+            }
+        },
+        cursor: "pointer",
+        transition: "all cubic-bezier(0.4, 0, 0.2, 1) 275ms",
+        boxShadow: "0px 3px 6px #050c4c4d",
         width: "100%",
         alignSelf: "flex-start",
-        boxShadow: "0px 3px 6px #050c4c4d",
         color: "#3729c1",
         fontWeight: "bold",
         backgroundColor: "#ededff",
@@ -109,7 +138,6 @@ const styles = theme => ({
             verticalAlign: "middle",
             color: "#050c4c",
             marginRight: theme.spacing(1),
-            //display: "none",
         }
     },
     info: {
@@ -195,16 +223,6 @@ const styles = theme => ({
             color: "rgb(25 25 51 / 54%)"
         }
     },
-    "@global": {
-        "@keyframes wiggle": {
-            "0%, 7%": {transform: "scale(1.00)"},
-            "15%": {transform: "scale(1.10)"},
-            "20%": {transform: "scale(1.05)"},
-            "25%": {transform: "scale(1.00)"},
-            "30%": {transform: "scale(0.95)"},
-            "40%, 100%": {transform: "scale(1)"}
-        }
-    },
     animatedDownload: {
 
     },
@@ -260,8 +278,8 @@ const styles = theme => ({
             boxSizing: "content-box",
             contain: "paint style layout",
             "&:hover": {
-                animation: "$wiggle linear 375ms both",
-                transition: "all cubic-bezier(0.4, 0, 0.2, 1) 375ms",
+                animation: "$wiggle linear 325ms both",
+                transition: "all cubic-bezier(0.4, 0, 0.2, 1) 325ms",
                 color: "#050c4c",
                 background: "#D7D7FD7D",
             },
@@ -424,6 +442,14 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
             callback();
         }
     }
+
+    _scroll_to_id = (classname) => {
+
+        if(typeof this.props.on_scroll_to === "function"){
+
+            this.props.on_scroll_to(classname);
+        }
+    };
 
     _handle_filters_thumbnail_change = (filters_thumbnail, last_filters_hash, filters_preview_progression) => {
 
@@ -644,7 +670,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
             case "layers":
                 return (
                     <div key={"layers-layers-main"} className={`swipetoolbox_i_${index}_${0}`}>
-                        <ListSubheader className={classes.listSubHeader}>
+                        <ListSubheader className={classes.listSubHeader} onClick={() => {this._scroll_to_id(`swipetoolbox_i_${index}_${0}`)}}>
                             <span><AllLayersIcon/></span>
                             <span>All layers</span>
                         </ListSubheader>
@@ -836,7 +862,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
             case "image":
                 return (
                     <div key={"image-image-upload"} className={`swipetoolbox_i_${index}_${0}`}>
-                        <ListSubheader className={classes.listSubHeader}>
+                        <ListSubheader className={classes.listSubHeader} onClick={() => {this._scroll_to_id(`swipetoolbox_i_${index}_${0}`)}}>
                             <span><ImportIcon/></span>
                             <span>Upload</span>
                         </ListSubheader>
@@ -1830,7 +1856,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
         switch (panel_names[index]) {
             case "image": return (
                 <div key={"image-image-create"} className={`swipetoolbox_i_${index}_${3}`}>
-                    <ListSubheader className={classes.listSubHeader}>
+                    <ListSubheader className={classes.listSubHeader} onClick={() => {this._scroll_to_id(`swipetoolbox_i_${index}_${3}`)}}>
                         <span><ImagePlusIcon/></span>
                         <span>Create new</span>
                     </ListSubheader>
@@ -2147,7 +2173,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                     this.get_action_panel(index).map((action_set) => {
                         return (
                             <div key={name + "-" + action_set.label + "-" + action_set.text.toLowerCase() + "-wrapper"} className={`swipetoolbox_i_${index}_${action_set.local_i}`}>
-                                <ListSubheader className={classes.listSubHeader}>
+                                <ListSubheader className={classes.listSubHeader} onClick={() => {this._scroll_to_id(`swipetoolbox_i_${index}_${action_set.local_i}`)}}>
                                     <span>{action_set.icon}</span>
                                     <span>{action_set.text}</span>
                                     {Boolean(action_set.progression) &&
@@ -2261,7 +2287,6 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                     if(view_name_index !== index && previous_view_name_index !== index) {
                         return (<List key={name} style={{ willChange: "none", minHeight: "100%", contain: "style layout paint", overflow: "auto", contentVisibility: "visible", paddingTop: 0}} />);
                     }else {
-
                         return this._cache[name];
                     }
                 })}

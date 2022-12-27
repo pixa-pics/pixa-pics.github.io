@@ -168,15 +168,28 @@ const styles = theme => ({
         display: "flex",
         animationFillMode: "both",
         animationName: "$drawer",
-        animationDuration: "175ms",
+        animationDuration: "250ms",
         animationTimingFunction: "cubic-bezier(0.4, 0, 0.2, 1)",
         animationDirection: "alternate",
         animationIterationCount: "1",
         animationDelay: "0ms",
+        "& > div": {
+            animationFillMode: "both",
+            animationName: "$opacity",
+            animationDuration: "125ms",
+            animationTimingFunction: "cubic-bezier(0.4, 0, 0.2, 1)",
+            animationDirection: "alternate",
+            animationIterationCount: "1",
+            animationDelay: "125ms",
+        }
     },
     "@keyframes drawer": {
         "0%": { transform: "translateX(100%)"},
         "190%": { transform: "translateX(0%)"},
+    },
+    "@keyframes opacity": {
+        "0%": { filter: "opacity(0)"},
+        "190%": { filter: "opacity(1)"},
     },
     "@keyframes menu": {
         "0%": { transform: "translateY(100%)"},
@@ -292,9 +305,8 @@ const styles = theme => ({
             backgroundColor: "#dfddf2",
             color: "#050c4c",
             borderRadius: "4px 4px 0px 0px",
-            "& .MuiSvgIcon-root": {
-                animationDelay: "5ms",
-                animationDuration: "550ms",
+            "& .MuiTab-wrapper": {
+                animationDuration: "375ms",
                 animationTimingFunction: "linear",
                 animationName: "$bounce",
                 transformOrigin: "center bottom"
@@ -718,10 +730,10 @@ class Pixel extends React.PureComponent {
 
         if(load_with.length === 0){
 
-            this.setSt4te({_is_pixel_dialog_create_open: Boolean(load_with.length === 0)}, () => {
-
-                api.get_settings(this._process_settings_info_result);
-            });
+            api.get_settings(this._process_settings_info_result);
+            setTimeout(() => {
+                this.setSt4te({_is_pixel_dialog_create_open: Boolean(load_with.length === 0)}, () => { this.forceUpdate(); });
+            }, 725);
         }else {
 
             actions.trigger_sfx("alert_high-intensity");
@@ -1009,17 +1021,14 @@ class Pixel extends React.PureComponent {
         }
 
         let props = {};
-        if(previous_name_index !== _view_name_index) {
-
-            props._view_name_sub_index = 0;
-            _toolbox_container_ref.scrollTop = 0;
-        }
+        props._view_name_sub_index = 0;
+        _toolbox_container_ref.scrollTop = 0;
 
         this.setSt4te({...props, _previous_view_name_index: previous_name_index || this.st4te._view_name_index, _view_name_index}, () => {
 
             this.forceUpdate();
         });
-    };
+    }
 
     _handle_view_name_switch = (event, view_name_index,  previous_name_index = null) => {
 
@@ -2365,10 +2374,12 @@ class Pixel extends React.PureComponent {
         if(this.st4te._is_pixel_dialog_create_open === false) {
             actions.trigger_sfx("hero_decorative-celebration-02");
         }
-        this.setSt4te({_is_pixel_dialog_create_open: true}, () => {
 
-            api.get_settings(this._process_settings_info_result);
-        });
+        api.get_settings(this._process_settings_info_result);
+        setTimeout(() => {
+            this.setSt4te({_is_pixel_dialog_create_open: true}, () => { this.forceUpdate(); });
+        }, 725);
+
     };
 
     _set_toolbox_container_ref = (element) => {
@@ -2376,6 +2387,18 @@ class Pixel extends React.PureComponent {
         if(element !== null) {
 
             this.setSt4te({_toolbox_container_ref: element});
+        }
+    };
+
+    _scroll_to_drawer = (classname) => {
+
+        const panel_element = (document.getElementsByClassName(classname) || [])[0] || null;
+        if(panel_element !== null) {
+
+            this.st4te._toolbox_container_ref.scrollTop = panel_element.offsetTop;
+        }else {
+
+            this.st4te._toolbox_container_ref.scrollTop = 0;
         }
     };
 
@@ -2578,6 +2601,7 @@ class Pixel extends React.PureComponent {
                                 on_request_draw_text={this._open_text}
                                 on_download_image={this._download_image}
                                 on_download_svg={this._download_svg}
+                                on_scroll_to={this._scroll_to_drawer}
                             />
                         </div>
                     </div>
@@ -2682,6 +2706,7 @@ class Pixel extends React.PureComponent {
                             on_request_draw_text={this._open_text}
                             on_download_image={this._download_image}
                             on_download_svg={this._download_svg}
+                            on_scroll_to={this._scroll_to_drawer}
                         />
                     </div>
                 </div>
@@ -2954,7 +2979,7 @@ class Pixel extends React.PureComponent {
                 />
 
 
-                <PixelDialogCreate keepMounted={true}
+                <PixelDialogCreate keepMounted={false}
                                    theme_day={_settings._theme_day}
                                    open={_is_pixel_dialog_create_open}
                                    pixel_arts={_time_ago_initiated ? _attachment_previews: {}}
