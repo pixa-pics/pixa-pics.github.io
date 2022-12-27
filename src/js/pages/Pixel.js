@@ -265,6 +265,14 @@ const styles = theme => ({
             backgroundColor: "#050c4c",
         }
     },
+    "@keyframes bounce": {
+        "0%": {transform: "translate3d(0, 0px, 0) scaleY(1.00)"},
+        "20%": {transform: "translate3d(0, 1px, 0) scaleY(0.95)"},
+        "40%": {transform: "translate3d(0, 0px, 0) scaleY(1.00)"},
+        "70%": {transform: "translate3d(0, -1px, 0) scaleY(1.05)"},
+        "80%": {transform: "translate3d(0, 1px, 0) scaleY(0.95)"},
+        "90%": {transform: "translate3d(0, 0px, 0) scaleY(1.00)"}
+    },
     tab: {
         backgroundColor: "transparent",
         color: "#050c4c",
@@ -274,6 +282,13 @@ const styles = theme => ({
             backgroundColor: "#dfddf2",
             color: "#050c4c",
             borderRadius: "4px 4px 0px 0px",
+            "& .MuiSvgIcon-root": {
+                animationDelay: "5ms",
+                animationDuration: "320ms",
+                animationTimingFunction: "linear",
+                animationName: "$bounce",
+                transformOrigin: "center bottom"
+            }
         },
         "&:first-child": {
             borderRadius: "0px 4px 0px 0px",
