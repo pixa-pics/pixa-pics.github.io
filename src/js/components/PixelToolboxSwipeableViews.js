@@ -208,7 +208,7 @@ const styles = theme => ({
         },
     },
     bubbleButton: {
-        contain: "size style layout !important",
+        contain: "style layout !important",
         "&::before, &::after": {
             position: "absolute",
             content: "''",
