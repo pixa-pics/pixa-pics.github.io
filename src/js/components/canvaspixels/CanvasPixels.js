@@ -1572,6 +1572,66 @@ class CanvasPixels extends React.PureComponent {
                     let onLayersChange = this.props.onLayersChange;
                     let get_layer_bitmap_image = this.get_layer_bitmap_image;
 
+                    const _get_most_used_color_sorted = function (pxls, pxl_colors, limit = 256) {
+
+                        let pxls_length = pxls.length|0;
+                        let pxl_colors_length = pxl_colors.length|0;
+                        let color_usages = new Uint32Array(pxl_colors_length|0);
+                        let color_index = 0;
+                        let color_indexes = new Uint32Array(limit|0);
+                        let color_indexes_offset = 0;
+
+                        for(let i = 0; (i|0) < (pxls_length|0); i = (i+1|0) >>> 0) {
+
+                            color_index = (pxls[i|0]|0) >>> 0;
+                            color_usages[color_index] = (color_usages[color_index] + 1 | 0) >>> 0;
+                        }
+
+                        let color_usages_sorted = Uint32Array.from(color_usages).sort().reverse();
+                        let found_at_index = -1;
+                        let idx = -1;
+                        let usage_n = 0;
+
+                        for(var i = 0; (i|0) < (pxl_colors_length|0); i = (i+1|0)>>>0) {
+
+                            usage_n = color_usages_sorted[i|0] | 0;
+                            idx = color_usages_sorted.indexOf(usage_n|0)|0;
+                            while ((idx|0) != (found_at_index|0)) {
+                                color_indexes[color_indexes_offset|0] = (idx | 0) >>> 0;
+                                color_indexes_offset = (color_indexes_offset + 1 | 0) >>> 0;
+                                idx = color_usages_sorted.indexOf(usage_n|0, idx+1|0) | 0;
+                                if(color_indexes_offset >= limit) { i = pxl_colors_length|0;}
+                            }
+                        }
+
+                        let final_colors = new Uint32Array(color_indexes_offset);
+                        for(let i = 0; (i|0) < (color_indexes_offset|0); i = (i + 1 | 0) >>> 0) {
+
+                            final_colors[i|0] = (pxl_colors[color_indexes[i|0]|0]|0) & 0xFFFFFFFF;
+                        }
+
+                        let final_colors_hex = new Array(color_indexes_offset|0).fill(null).map(function(){return {pos: 0, hex: ""}});
+                        let final_colors_sd = SIMDopeColors(final_colors.buffer);
+
+                        for(let i = 0; (i|0) < (color_indexes_offset|0); i = (i + 1 | 0) >>> 0) {
+
+                            final_colors_hex[i|0].pos = final_colors_sd.get_element(i|0).pos|0;
+                            final_colors_hex[i|0].hex = ""+final_colors_sd.get_element(i|0).hex;
+                        }
+
+                        var r = [];
+                        final_colors_hex.sort(
+                            function(a, b){ return (a.pos - b.pos | 0) > 0; }
+                        ).forEach(function (o){
+
+                            if(!r.includes(o.hex)) {
+
+                                r.push(o.hex);
+                            }
+                        });
+
+                        return r;
+                    };
 
                     const _notify_layers_and_compute_thumbnails_change = function(old_current_state, new_current_state, callback_function = null, start = Date.now()) {
 
@@ -1652,7 +1712,7 @@ class CanvasPixels extends React.PureComponent {
                                     }
                                     new_current_state._layers[index].hash = new_hash;
                                     new_current_state._layers[index].thumbnail = new_thumbnail;
-                                    new_current_state._layers[index].colors = Array.from(pc.subarray(0, 128)).map(function(c){return "#".concat("00000000".concat(((c|0)>>>0).toString(16)).slice(-8))});
+                                    new_current_state._layers[index].colors = _get_most_used_color_sorted(p, pc, 256);
                                     new_current_state._layers[index].number_of_colors = parseInt(pc.length);
                                     all_layers_length++;
 
@@ -1673,7 +1733,7 @@ class CanvasPixels extends React.PureComponent {
                                     Boolean(new_current_state._layers[index].colors.length !== new_current_state._layers[index].number_of_colors)
                                 ) {
 
-                                    new_current_state._layers[index].colors = Array.from(pc.subarray(0, 128)).map(function(c){return "#".concat("00000000".concat(((c|0)>>>0).toString(16)).slice(-8))});
+                                    new_current_state._layers[index].colors = _get_most_used_color_sorted(p, pc, 256);
                                     new_current_state._layers[index].number_of_colors = parseInt(pc.length);
                                 }
 

@@ -10,7 +10,7 @@ const styles = theme => ({
         padding: 24,
         display: "flex",
         flexDirection: "row",
-        justifyContent: "space-between",
+        justifyContent: "left",
         alignContent: "stretch",
         "& > *:not(:last-child)": {
             marginRight: 8,
@@ -28,10 +28,10 @@ class PixelColorPalette extends React.PureComponent {
 
     constructor(props) {
         super(props);
-        this.state = {
+        this.st4te = {
             classes: props.classes,
             colors: props.colors || [],
-            selected_colors:  props.selected_colors || [],
+            selected_colors:  props.selected_colors || ["#"],
             padding: props.padding || 24,
             gap: props.gap || 0,
             size: props.size || 32,
@@ -40,21 +40,45 @@ class PixelColorPalette extends React.PureComponent {
         };
     };
 
+    setSt4te(st4te, callback) {
+
+        let keys = Object.keys(st4te);
+        let keys_length = keys.length | 0;
+        let key = "";
+
+        for (let i = 0; (i|0) < (keys_length|0); i = (i+1|0)>>>0) {
+
+            key = keys[i].toString();
+            this.st4te[key] = st4te[key];
+        }
+
+        if(typeof callback === "function") {
+
+            callback();
+        }
+    }
+
+    componentDidMount() {
+
+        this.forceUpdate();
+    }
+
+
     componentWillReceiveProps(new_props) {
 
-        const { colors, selected_colors } = this.state;
-        const update = (new_props.colors.length !== colors.length || (new_props.colors.selected_colors||[])[0] !== (selected_colors||[])[0]);
-        this.setState(new_props, () => {
+        const { colors, selected_colors } = this.st4te;
+        const update = Boolean(new_props.colors.length !== colors.length || new_props.selected_colors.length !== selected_colors.length || (new_props.selected_colors || ["#"])[0] !== (selected_colors || ["#"])[0]);
 
-            if(update){
+        if(update){
+            this.setSt4te(new_props, () => {
                 this.forceUpdate();
-            }
-        });
+            });
+        }
     }
 
     _handle_color_item_click = (event, color) => {
 
-        if(this.props.onColorClick) {
+        if(typeof this.props.onColorClick === "function") {
 
             this.props.onColorClick(event, color);
         }
@@ -62,8 +86,7 @@ class PixelColorPalette extends React.PureComponent {
 
     render() {
 
-        let { classes, colors, padding, gap, size, transparent, align, selected_colors } = this.state;
-        const selected_colors_set = new Set(selected_colors);
+        let { classes, colors, padding, gap, size, transparent, align, selected_colors } = this.st4te;
 
         return (
             <div className={classes.colorPalette} style={align === "center" ? {padding, gap}: align === "left" ? {justifyContent: "start", padding, gap}: {justifyContent: "start", padding, gap}}>
@@ -73,15 +96,16 @@ class PixelColorPalette extends React.PureComponent {
                                        icon={<EraserIcon />}
                                        full_width={true}
                                        color={"#00000000"}
-                                       selected={selected_colors_set.has("#00000000") || false}
+                                       selected={Boolean((selected_colors.indexOf("#00000000")|0) >= 0)}
                                        onClick={(event) => {this._handle_color_item_click(event, "#00000000")}}/>
                 {colors.map((color, index) => {
 
-                    return (<PixelColorPaletteItem key={index}
+                    var selected = Boolean((selected_colors.indexOf(color)|0) >= 0);
+                    return (<PixelColorPaletteItem key={"c-"+color+"-i-"+index+"-s-"+(selected ? "1": "0")}
                                                   color={color}
                                                   size={size}
-                                                  selected={selected_colors_set.has(color) || false}
-                                                  onClick={(event) => {this._handle_color_item_click(event, color)}} />);
+                                                  selected={selected}
+                                                  onClick={this._handle_color_item_click} />);
                 })}
             </div>
         );

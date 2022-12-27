@@ -396,7 +396,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
         for (let i = 0; (i|0) < (keys_length|0); i = (i+1|0)>>>0) {
 
-            key = keys[i].toString();
+            key = keys[i]+"";
             this.st4te[key] = st4te[key];
         }
 
@@ -408,7 +408,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
     _handle_filters_thumbnail_change = (filters_thumbnail, last_filters_hash, filters_preview_progression) => {
 
-        filters_preview_progression = filters_preview_progression.toString();
+        filters_preview_progression = filters_preview_progression+"";
         if(this.st4te.filters_preview_progression === "0") {
             actions.trigger_voice("filtering");
         }
@@ -515,12 +515,12 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
             Boolean(show_transparent_image_in_background) !==  Boolean(new_props.show_transparent_image_in_background) ||
             Boolean(can_undo) !==  Boolean(new_props.can_undo) ||
             Boolean(can_redo) !==  Boolean(new_props.can_redo) ||
-            current_color.toString() !== new_props.current_color.toString() ||
-            second_color.toString() !== new_props.second_color.toString() ||
-            tool.toString() !== new_props.tool.toString() ||
+            current_color+"" !== new_props.current_color+"" ||
+            second_color+"" !== new_props.second_color+"" ||
+            tool+"" !== new_props.tool+"" ||
             parseInt(width) !== parseInt(new_props.width) ||
             parseInt(height) !== parseInt(new_props.height) ||
-            select_mode.toString() !== new_props.select_mode.toString() ||
+            select_mode+"" !== new_props.select_mode+"" ||
             Boolean(pencil_mirror_mode) !== Boolean(new_props.pencil_mirror_mode) ||
             Boolean(is_something_selected) !== Boolean(new_props.is_something_selected) ||
             parseInt(import_size) !== parseInt(new_props.import_size) ||
@@ -666,11 +666,12 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                                                 <div style={{padding: "12px 0px 12px 32px"}}>
                                                     <span>Colours: ({layer.colors.length}/{layer.number_of_colors})</span>
                                                     <PixelColorPalette
+                                                        key={"layer-n-"+index+"-color-palette"}
                                                         transparent={true}
                                                         padding="12px 0px"
                                                         size={32}
                                                         gap="8px"
-                                                        colors={Array.from(layer.colors)}
+                                                        colors={layer.colors}
                                                         selected_colors={Array.of(current_color)}
                                                         onColorClick={(event, color) => {
                                                             this._handle_current_color_change(color)
@@ -1751,7 +1752,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                                     width={width || 1}
                                     height={height || 1}
                                     style={{ zIndex: "-1", aspectRatio: _filter_aspect_ratio, boxSizing: "border-box", height: "100%", minWidth: "100%", width: 128, boxShadow: "0px 1px 2px #3729c1a8", border: "4px solid #020529", borderRadius: 2, contain: "paint style size"}}
-                                    key={"name-" + name + "-ratio-" + _filter_aspect_ratio + "-over-" + (bmp.width || 0).toString() + "x" + (bmp.height || 0).toString()}
+                                    key={"name-" + name + "-ratio-" + _filter_aspect_ratio + "-over-" + (bmp.width || 0)+"" + "x" + (bmp.height || 0)+""}
                                 />,
                                 text: name,
                                 text_style: {
@@ -2105,7 +2106,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
         name = names[index];
 
         this._cache[name] = (
-            <List key={name} style={{willChange: (Boolean(parseInt(_filters_preview_progression_stepped) === 0 || name !== "filters") ? "": "contents").toString(), minHeight: "100%", contain: "style layout paint", overflow: "visible", paddingTop: 0}}>
+            <List key={name} style={{willChange: (Boolean(parseInt(_filters_preview_progression_stepped) === 0 || name !== "filters") ? "": "contents")+"", minHeight: "100%", contain: "style layout paint", overflow: "visible", paddingTop: 0}}>
 
                 {this.get_before_action_panel(index)}
 
@@ -2160,7 +2161,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                                                         type="file"
                                                         onChange={tool.on_click}
                                                     />
-                                                    <ListItem component="label" key={index + (tool.disabled ? "-0": "-1").toString()} htmlFor={tool.for} button disabled={tool.disabled}>
+                                                    <ListItem component="label" key={index + (tool.disabled ? "-0": "-1")+""} htmlFor={tool.for} button disabled={tool.disabled}>
                                                         <ListItemIcon className={classes.listItemIcon} style={tool.style || {}}>
                                                             {tool.icon}
                                                         </ListItemIcon>
