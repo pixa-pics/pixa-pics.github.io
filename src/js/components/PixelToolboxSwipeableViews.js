@@ -196,50 +196,17 @@ const styles = theme => ({
         }
     },
     "@global": {
-        "@keyframes topBubbles": {
-            "0%": {backgroundPosition: "5% 90%, 10% 90%, 10% 90%, 15% 90%, 25% 90%, 25% 90%, 40% 90%, 55% 90%, 70% 90%"},
-            "50%": {backgroundPosition: "0 80%, 0 20%, 10% 40%, 20% 0, 30% 30%, 22% 50%, 50% 50%, 65% 20%, 90% 30%"},
-            "100%": {backgroundPosition: "0 70%, 0 10%, 10% 30%, 20% -10%, 30% 20%, 22% 40%, 50% 40%, 65% 10%, 90% 20%",  backgroundSize: "0 0, 0 0, 0 0, 0 0, 0 0, 0 0"}
-        },
-        "@keyframes bottomBubbles": {
-            "0%": {backgroundPosition: "10% -10%, 30% 10%, 55% -10%, 70% -10%, 85% -10%, 70% -10%, 70% 0"},
-            "50%": {backgroundPosition: "0 80%, 20% 80%, 45% 60%, 60% 100%, 75% 70%, 95% 60%, 105% 0"},
-            "100%": {backgroundPosition: "0 90%, 20% 90%, 45% 70%, 60% 110%, 75% 80%, 95% 70%, 110% 10%", backgroundSize: "0 0, 0 0, 0 0, 0 0, 0 0, 0 0"}
-        },
-    },
-    bubbleButton: {
-        contain: "style layout !important",
-        "&::before, &::after": {
-            position: "absolute",
-            content: "''",
-            display: "block",
-            width: "140%",
-            height: "100%",
-            left: "-20%",
-            zIndex: "-1000",
-            transition: "all cubic-bezier(0.4, 0, 0.2, 1) 0.5s",
-            backgroundRepeat: "no-repeat"
-        },
-        "&::before": {
-            display: "none",
-            top: "-75%",
-            backgroundImage: `radial-gradient(circle, #b2b2b2 20%, transparent 20%), radial-gradient(circle, transparent 20%, #b2b2b2 20%, transparent 30%), radial-gradient(circle, #b2b2b2 20%, transparent 20%), radial-gradient(circle, #b2b2b2 20%, transparent 20%), radial-gradient(circle, transparent 10%, #b2b2b2 15%, transparent 20%), radial-gradient(circle, #b2b2b2 20%, transparent 20%), radial-gradient(circle, #b2b2b2 20%, transparent 20%), radial-gradient(circle, #b2b2b2 20%, transparent 20%), radial-gradient(circle, #b2b2b2 20%, transparent 20%)`,
-            backgroundSize: `10% 10%, 20% 20%, 15% 15%, 20% 20%, 18% 18%, 10% 10%, 15% 15%, 10% 10%, 18% 18%`
-        },
-        "&::after": {
-            display: "none",
-            bottom: "-75%",
-            backgroundImage: `radial-gradient(circle, #b2b2b2 20%, transparent 20%), radial-gradient(circle, #b2b2b2 20%, transparent 20%), radial-gradient(circle, transparent 10%, #b2b2b2 15%, transparent 20%),  radial-gradient(circle, #b2b2b2 20%, transparent 20%), radial-gradient(circle, #b2b2b2 20%, transparent 20%), radial-gradient(circle, #b2b2b2 20%, transparent 20%), radial-gradient(circle, #b2b2b2 20%, transparent 20%)`,
-            backgroundSize: "15% 15%, 20% 20%, 18% 18%, 20% 20%, 15% 15%, 10% 10%, 20% 20%"
-        },
-        "&:active::before": {
-            display: "block",
-            animation: "$topBubbles cubic-bezier(0.4, 0, 0.2, 1) 0.75s both"
-        },
-        "&:active::after": {
-            display: "block",
-            animation: "$bottomBubbles cubic-bezier(0.4, 0, 0.2, 1) 0.75s both"
+        "@keyframes wiggle": {
+            "0%, 7%": {transform: "scale(1.00)"},
+            "15%": {transform: "scale(1.10)"},
+            "20%": {transform: "scale(1.05)"},
+            "25%": {transform: "scale(1.00)"},
+            "30%": {transform: "scale(0.95)"},
+            "40%, 100%": {transform: "scale(1)"}
         }
+    },
+    animatedDownload: {
+
     },
     listItems: {
         textAlignLast: "center",
@@ -292,6 +259,12 @@ const styles = theme => ({
             textAlign: "center",
             boxSizing: "content-box",
             contain: "paint style layout",
+            "&:hover": {
+                animation: "$wiggle linear 375ms both",
+                transition: "all cubic-bezier(0.4, 0, 0.2, 1) 375ms",
+                color: "#050c4c",
+                background: "#D7D7FD7D",
+            },
             "& .MuiListItemIcon-root": {
                 minWidth: 0,
                 contain: "paint style layout",
@@ -1005,7 +978,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                     tools: [
                         {
                             icon: <FileDownloadIcon/>,
-                            class: classes.bubbleButton,
+                            class: classes.animatedDownload,
                             text: "Render (1x size)",
                             sub: "[CTRL + Q]", on_click: () => {
                                 this._download_png(1)
@@ -1013,7 +986,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                         },
                         {
                             icon: <FileDownloadIcon/>,
-                            class: classes.bubbleButton,
+                            class: classes.animatedDownload,
                             text: "Render (2x size)",
                             sub: "Upscale 2x",
                             on_click: () => {
@@ -1022,7 +995,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                         },
                         {
                             icon: <FileDownloadIcon/>,
-                            class: classes.bubbleButton,
+                            class: classes.animatedDownload,
                             text: "Render (4x size)",
                             sub: "Upscale 4x",
                             on_click: () => {
@@ -1031,7 +1004,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                         },
                         {
                             icon: <FileDownloadIcon/>,
-                            class: classes.bubbleButton,
+                            class: classes.animatedDownload,
                             text: "Render (6x size)",
                             sub: "Upscale 6x",
                             on_click: () => {
@@ -1040,7 +1013,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                         },
                         {
                             icon: <FileDownloadIcon/>,
-                            class: classes.bubbleButton,
+                            class: classes.animatedDownload,
                             text: "Render (8x size)",
                             sub: "Upscale 8x",
                             on_click: () => {
@@ -1049,7 +1022,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                         },
                         {
                             icon: <FileDownloadIcon/>,
-                            class: classes.bubbleButton,
+                            class: classes.animatedDownload,
                             text: "Render (12x size)",
                             sub: "[CTRL + S]", on_click: () => {
                                 this._download_png(12)
@@ -1057,7 +1030,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                         },
                         {
                             icon: <FileDownloadIcon/>,
-                            class: classes.bubbleButton,
+                            class: classes.animatedDownload,
                             text: "Render (16x size)",
                             sub: "Upscale 16x", on_click: () => {
                                 this._download_png(16)
@@ -1065,7 +1038,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                         },
                         {
                             icon: <FileDownloadIcon/>,
-                            class: classes.bubbleButton,
+                            class: classes.animatedDownload,
                             text: "Render (24x size)",
                             sub: "Upscale 24x",
                             on_click: () => {
@@ -1085,7 +1058,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                     tools: [
                         {
                             icon: <FileDownloadIcon/>,
-                            class: classes.bubbleButton,
+                            class: classes.animatedDownload,
                             text: "Depixelize",
                             sub: "Upscale by 10x using Depixelize",
                             disabled: too_much_colors_no_vector,
@@ -1095,7 +1068,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                         },
                         {
                             icon: <FileDownloadIcon/>,
-                            class: classes.bubbleButton,
+                            class: classes.animatedDownload,
                             text: "Omni",
                             sub: "Upscale by 8x using Omniscale",
                             disabled: too_much_colors_no_vector,
@@ -1105,7 +1078,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                         },
                         {
                             icon: <FileDownloadIcon/>,
-                            class: classes.bubbleButton,
+                            class: classes.animatedDownload,
                             text: "xBRZ",
                             sub: "Upscale by 6x using xBRZ",
                             disabled: too_much_colors_no_vector,
@@ -1115,7 +1088,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                         },
                         {
                             icon: <FileDownloadIcon/>,
-                            class: classes.bubbleButton,
+                            class: classes.animatedDownload,
                             text: "hqNx",
                             sub: "Upscale by 4x using hqNx",
                             disabled: too_much_colors_no_vector,
@@ -1125,7 +1098,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                         },
                         {
                             icon: <FileDownloadIcon/>,
-                            class: classes.bubbleButton,
+                            class: classes.animatedDownload,
                             text: "EPX",
                             sub: "Upscale by 4x using EPX",
                             disabled: too_much_colors_no_vector,

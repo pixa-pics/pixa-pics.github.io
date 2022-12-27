@@ -178,6 +178,10 @@ const styles = theme => ({
         "0%": { transform: "translateX(100%)"},
         "190%": { transform: "translateX(0%)"},
     },
+    "@keyframes menu": {
+        "0%": { transform: "translateY(100%)"},
+        "190%": { transform: "translateY(0%)"},
+    },
     drawerPaper: {
         width: 480,
         overflowX: "overlay",
@@ -251,10 +255,16 @@ const styles = theme => ({
     },
     tabs: {
         contain: "paint size style layout",
+        animationFillMode: "both",
+        animationName: "$menu",
+        animationDuration: "175ms",
+        animationTimingFunction: "cubic-bezier(0.4, 0, 0.2, 1)",
+        animationDirection: "alternate",
+        animationIterationCount: "1",
+        animationDelay: "0ms",
         height: 72,
         display: "grid",
         "& .MuiTabs-scroller": {
-
             overflowY: "hidden",
         },
         "& .MuiTab-root": {
@@ -267,9 +277,9 @@ const styles = theme => ({
     },
     "@keyframes bounce": {
         "0%": {transform: "translate3d(0, 0px, 0) scaleY(1.00)"},
-        "20%": {transform: "translate3d(0, 1px, 0) scaleY(0.95)"},
+        "20%": {transform: "translate3d(0, 2px, 0) scaleY(0.95)"},
         "40%": {transform: "translate3d(0, 0px, 0) scaleY(1.00)"},
-        "70%": {transform: "translate3d(0, -1px, 0) scaleY(1.05)"},
+        "70%": {transform: "translate3d(0, -2px, 0) scaleY(1.10)"},
         "80%": {transform: "translate3d(0, 1px, 0) scaleY(0.95)"},
         "90%": {transform: "translate3d(0, 0px, 0) scaleY(1.00)"}
     },
@@ -284,7 +294,7 @@ const styles = theme => ({
             borderRadius: "4px 4px 0px 0px",
             "& .MuiSvgIcon-root": {
                 animationDelay: "5ms",
-                animationDuration: "320ms",
+                animationDuration: "550ms",
                 animationTimingFunction: "linear",
                 animationName: "$bounce",
                 transformOrigin: "center bottom"
