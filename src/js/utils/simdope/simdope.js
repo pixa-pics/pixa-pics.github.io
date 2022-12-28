@@ -304,31 +304,31 @@ var operators = {
         return a - b | 0;
     },
     plus_uint(a, b) {
-        return (a + b | 0) >>> 0;
+        return (a + b | 0) &0xFFFFFFFF;
     },
     minus_uint(a, b) {
-        return (a - b | 0) >>> 0;
+        return (a - b | 0) &0xFFFFFFFF;
     },
     multiply_int(a, b) {
-        return a * b | 0;
+        return Math.imul(a|0, b|0) | 0;
     },
     divide_int(a, b) {
         return a / b | 0;
     },
     multiply_uint(a, b) {
-        return (a * b | 0) >>> 0;
+        return (Math.imul((a|0)&0xFFFFFFFF, (b|0)&0xFFFFFFFF) | 0)&0xFFFFFFFF;
     },
     multiply_uint_4(a) {
-        return a << 2;
+        return (a << 2) &0xFFFFFFFF;
     },
     divide_uint(a, b) {
-        return (a / b | 0) >>> 0;
+        return (a / b | 0) &0xFFFFFFFF;
     },
     divide_four_uint(n) {
-        return (n >> 2 | 0) >>> 0;
+        return (n >> 2) &0xFFFFFFFF;
     },
     abs_int(n) {
-        return (n | 0) < 0 ? (-n | 0) >>> 0 : (n | 0) >>> 0;
+        return (n | 0) < 0 ? (-n | 0) >>> 0 : (n | 0) &0xFFFFFFFF;
     },
     max_int(a, b) {
         a = a | 0;
@@ -341,8 +341,8 @@ var operators = {
         return a > b ? a : b;
     },
     max_uint(a, b) {
-        a = (a | 0) >>> 0;
-        b = (b | 0) >>> 0;
+        a = (a | 0) &0xFFFFFFFF;
+        b = (b | 0) &0xFFFFFFFF;
         return a > b ? b : a;
     },
     min_uint(a, b) {
@@ -366,7 +366,7 @@ var operators = {
         return (n / 255 | 0) & 0xFF;
     },
     clamp_uint32(n) {
-        return ((n|0)>>>0) & 0xFFFFFFFF;
+        return (n|0) & 0xFFFFFFFF;
     },
     int_equal(a, b) {
         return (a | 0) == (b | 0);
@@ -387,28 +387,28 @@ var operators = {
         return (a | 0) >= (b | 0);
     },
     uint_equal(a, b) {
-        return ((a | 0) >>> 0) == ((b | 0) >>> 0);
+        return ((a | 0) &0xFFFFFFFF) == ((b | 0) &0xFFFFFFFF);
     },
     uint_not_equal(a, b) {
-        return ((a | 0) >>> 0) != ((b | 0) >>> 0);
+        return ((a | 0) &0xFFFFFFFF) != ((b | 0) &0xFFFFFFFF);
     },
     uint_less(a, b) {
-        return ((a | 0) >>> 0) < ((b | 0) >>> 0);
+        return ((a | 0) &0xFFFFFFFF) < ((b | 0) &0xFFFFFFFF);
     },
     uint_less_equal(a, b) {
-        return ((a | 0) >>> 0) <= ((b | 0) >>> 0);
+        return ((a | 0) &0xFFFFFFFF) <= ((b | 0) &0xFFFFFFFF);
     },
     uint_greater(a, b) {
-        return ((a | 0) >>> 0) > ((b | 0) >>> 0);
+        return ((a | 0) &0xFFFFFFFF) > ((b | 0) &0xFFFFFFFF);
     },
     uint_greater_equal(a, b) {
-        return ((a | 0) >>> 0) >= ((b | 0) >>> 0);
+        return ((a | 0) &0xFFFFFFFF) >= ((b | 0) &0xFFFFFFFF);
     },
     format_int(n) {
         return (n | 0);
     },
     format_uint(n) {
-        return (n | 0) >>> 0;
+        return (n | 0) &0xFFFFFFFF;
     }
 };
 
@@ -627,7 +627,7 @@ Object.defineProperty(SIMDopeColor.prototype, 'pos', {
     get: function() { "use strict";
 
         var hsl = this.hsl;
-        return (hsl[0]*32+hsl[2]*16+hsl[1]*8|0) >>> 0
+        return (hsl[0]*32+hsl[2]*16+hsl[1]*8|0) &0xFFFFFFFF
     },
 });
 
@@ -691,7 +691,7 @@ Object.defineProperty(SIMDopeColor.prototype, 'rgbaon4bits', {
         var b = divide_four_uint(divide_four_uint(divide_four_uint(divide_four_uint(this.storage_uint8_[1]))));
         var a = divide_four_uint(divide_four_uint(divide_four_uint(divide_four_uint(this.storage_uint8_[0]))));
 
-        return ((r << 3) | (g << 2) | (b <<  1) | (a << 0) | 0) >>> 0;
+        return ((r << 3) | (g << 2) | (b <<  1) | (a << 0) | 0) &0xFFFFFFFF;
     }
 });
 
@@ -703,7 +703,7 @@ Object.defineProperty(SIMDopeColor.prototype, 'rgbaon8bits', {
         var b = divide_four_uint(divide_four_uint(divide_four_uint(this.storage_uint8_[1])));
         var a = divide_four_uint(divide_four_uint(divide_four_uint(this.storage_uint8_[0])));
 
-        return ((r << 6) | (g << 4) | (b <<  2) | (a << 0) | 0) >>> 0;
+        return ((r << 6) | (g << 4) | (b <<  2) | (a << 0) | 0) &0xFFFFFFFF;
     }
 });
 
@@ -715,7 +715,7 @@ Object.defineProperty(SIMDopeColor.prototype, 'rgbaon12bits', {
         var b = divide_uint(divide_four_uint(divide_four_uint(this.storage_uint8_[1])), 2);
         var a = divide_uint(divide_four_uint(divide_four_uint(this.storage_uint8_[0])), 2);
 
-        return ((r << 9) | (g << 6) | (b <<  3) | (a << 0) | 0) >>> 0;
+        return ((r << 9) | (g << 6) | (b <<  3) | (a << 0) | 0) &0xFFFFFFFF;
     }
 });
 
