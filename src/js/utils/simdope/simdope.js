@@ -354,9 +354,7 @@ var operators = {
         x = x | 0;
         min = min | 0;
         max = max | 0;
-        x = x - ((x - max) & ((max - x) >> 31)) | 0;
-        x = x - ((x - min) & ((x - min) >> 31)) | 0;
-        return x;
+        return (x < min ? min: x > max ? max: x) | 0;
     },
     clamp_uint8(n) {
         return (n | 0) & 0xFF;
