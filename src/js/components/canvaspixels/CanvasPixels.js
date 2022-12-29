@@ -51,6 +51,7 @@ class CanvasPixels extends React.PureComponent {
     constructor(props) {
         super(props);
         if(!this.hasnt_been_mount) {
+            this.reduce_palette = ReducePalette.from(pool);
             this.super_state = Object.create(SuperState).from(props);
             this.xxhash = Object.create(XXHash).new();
             this.bmp_layer = Object.create(BMPLayer).from(pool);
@@ -3537,9 +3538,10 @@ class CanvasPixels extends React.PureComponent {
     _remove_close_pxl_colors = async(pxls = [], pxl_colors  = [], bucket_threshold = null, threshold_steps = null, color_number_bonus = 54, best_color_number = null) => {
 
         const state_bucket_threshold = this.super_state.get_state().bucket_threshold;
+        const rp = this.reduce_palette;
 
         return new Promise(function(resolve){
-            ReducePalette.from(pool, pxls, pxl_colors, bucket_threshold, threshold_steps, color_number_bonus, best_color_number, state_bucket_threshold).compute(resolve);
+            rp.compute(resolve, pxls, pxl_colors, bucket_threshold, threshold_steps, color_number_bonus, best_color_number, state_bucket_threshold);
         });
     };
 
