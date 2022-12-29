@@ -25,15 +25,47 @@ SOFTWARE.
 
 // Order of the color component stored (in order to not meld with endianness when creating a list from a buffer, it is mostly like "reversed")
 var CONFIG_UINT8X4 = "rgba";
-var PR = .2126, // +0.1
-    PG = .7152, // -0.2
-    PB = .0722, // +0.1
-    PA = 1.000;
+
+// Inspired by https://en.wikipedia.org/wiki/Rec._709
+var i = function(a, b){return Math.imul((a|0)&0xFFFFFFFF, (b|0)&0xFFFFFFFF)&0xFFFFFFFF; };
+var fr = Math.fround;
+var r = function(x){ return (0.5+x|0)&0xFFFFFFFF; };
+var p2 = function(x){ x = x|0; return (i(x|0, x|0)|0)&0xFFFFFFFF; };
+var s = function(x){
+
+    // Base cases
+    x = (x | 0)&0xFFFFFFFF;
+    if ((x|0) == 0 || (x|0) == 1){
+
+        return x | 0;
+    }
+
+    // Starting from 1, try all
+    // numbers until i*i is
+    // greater than or equal to x.
+    var i = 1;
+    var result = 1;
+
+    while ((result|0) <= (x|0)) {
+        i = (i+1|0)&0xFFFFFFFF;
+        result = (i * i | 0)&0xFFFFFFFF;
+    }
+
+    return (i - 1 | 0)&0xFFFFFFFF;
+};
+var PR = fr(0.2126*3/4), // +0.1
+    PG = fr(0.7152*3/4), // -0.2
+    PB = fr(0.0722*3/4), // +0.1
+    PA = fr(1.0000/4);
+
 var RD = 255,
     GD = 255,
     BD = 255,
     AD = 255;
-var EUCLMAX = (Math.sqrt(PR*RD*RD + PG*GD*GD + PB*BD*BD + PA*AD*AD | 0) | 0) >>> 0;
+
+// Euclidean or Manhattan color distance
+var EUCLMAX = (s(PR*RD*RD + PG*GD*GD + PB*BD*BD + PA*AD*AD | 0) | 0) >>> 0;
+var MANHMAX = (PR*RD + PG*GD + PB*BD + PA*AD|0) >>> 0;
 
 // X11 color names
 var WX3 = {
@@ -726,13 +758,15 @@ Object.defineProperty(SIMDopeColor.prototype, 'offset', {
 Object.defineProperty(SIMDopeColor.prototype, 'buffer', {
     get: function() { "use strict"; return this.storage_uint8_.buffer.slice(this.storage_uint8_.byteOffset, plus_uint(this.storage_uint8_.byteOffset, 4)); }
 });
-
+Object.defineProperty(SIMDopeColor.prototype, 'subarray', {
+    get: function() { "use strict"; return this.storage_uint8_.subarray(0, 4); }
+});
 Object.defineProperty(SIMDopeColor.prototype, 'set', {
     get: function() { "use strict"; return function(with_buffer) {
 
         if(with_buffer instanceof SIMDopeColor) {
 
-            this.storage_uint8_.set(with_buffer.subarray);
+            this.storage_uint8_.set(new Uint8Array(with_buffer.buffer));
 
         }else if("subarray" in with_buffer) {
 
@@ -752,9 +786,6 @@ Object.defineProperty(SIMDopeColor.prototype, 'set_out_of', {
 
     }}
 });
-Object.defineProperty(SIMDopeColor.prototype, 'subarray', {
-    get: function() { "use strict"; return this.storage_uint8_.subarray(0, 4); }
-});
 Object.defineProperty(SIMDopeColor.prototype, 'slice', {
     get: function() { "use strict"; return this.storage_uint8_.slice(0, 4);}
 });
@@ -772,20 +803,32 @@ SIMDopeColor.prototype.simplify = function(of) {
 
 SIMDopeColor.prototype.blend_with = function(added_uint8x4, amount_alpha, should_return_transparent, alpha_addition) {
 
-    amount_alpha = clamp_uint8(amount_alpha);
     alpha_addition = alpha_addition | 0;
     added_uint8x4.multiply_a_255(amount_alpha);
-    var alpha = (alpha_addition|0) > 0 ?
-        divide_uint(plus_uint(this.a, amount_alpha), 2):
-        inverse_255(divide_255(multiply_uint(inverse_255(added_uint8x4.a), inverse_255(this.a))));
 
-    this.set(SIMDopeColor.merge_scale_of_255_a_fixed(
-        added_uint8x4, divide_uint(multiply_uint(added_uint8x4.a, 255), alpha),
-        this, divide_255(multiply_uint(this.a, divide_uint(multiply_uint(inverse_255(added_uint8x4.a), 255), alpha))),
-        alpha
-    ));
+    if(should_return_transparent) {
 
-    added_uint8x4.set(this);
+        if(this.is_fully_transparent()) {
+
+            added_uint8x4.set(ArrayBuffer(4));
+        }else if(added_uint8x4.is_fully_transparent()) {
+
+            this.set(ArrayBuffer(4));
+        }
+    }else {
+
+        var alpha = (alpha_addition|0) > 0 ?
+            divide_uint(plus_uint(this.a, added_uint8x4.a), 2):
+            inverse_255(divide_255(i(inverse_255(added_uint8x4.a), inverse_255(this.a))));
+
+        this.set(SIMDopeColor.merge_scale_of_255_a_fixed(
+            added_uint8x4, divide_uint(i(added_uint8x4.a, 255), alpha),
+            this, divide_255(i(this.a, divide_uint(i(inverse_255(added_uint8x4.a), 255), alpha))),
+            alpha
+        ));
+
+        added_uint8x4.set(this);
+    }
 
     return this;
 };
@@ -869,9 +912,7 @@ SIMDopeColor.prototype.set_a = function(a) {
 };
 SIMDopeColor.prototype.multiply_a_255 = function(n) {
     "use strict";
-    var uint8a = this.subarray;
-    uint8a[0] = clamp_uint8(divide_255(multiply_uint(uint8a[0], n)));
-    return this;
+    this.subarray[0] = clamp_uint8(divide_255(multiply_uint(this.a|0, n|0)));
 };
 SIMDopeColor.prototype.copy = function(a) {
     "use strict";
@@ -922,9 +963,9 @@ SIMDopeColor.sumarray = function(other, start, end) {
 
     var sum = 0;
     for(var i = start; uint_less(i, end); i = plus_uint(i, 1)) {
-        sum = plus_uint(sum, other[CONFIG_UINT8X4.charAt(i)]);
+        sum = plus_uint(sum, other[CONFIG_UINT8X4.charAt(i|0)]);
     }
-    return sum;
+    return sum|0;
 };
 
 // from a given number object and a second one, test values and return boolean
@@ -1025,6 +1066,26 @@ SIMDopeColor.blend_all_four = function(from_a,
                                        should_return_transparent, alpha_addition) {
 
     alpha_addition = alpha_addition | 0;
+    should_return_transparent = should_return_transparent | 0;
+    var alpha = new Uint8Array(4);
+    var alpha_with = new Uint8Array(4);
+    var alpha_from = new Uint8Array(4);
+    var transparent = new Uint8Array(4);
+
+    if((should_return_transparent) != 0) {
+
+        if(from_a.is_fully_transparent()) {transparent[0] = 1;
+        }else if(with_a.is_fully_transparent()) {transparent[0] = 1;}
+
+        if(from_b.is_fully_transparent()) {transparent[1] = 1;
+        }else if(with_b.is_fully_transparent()) {transparent[1] = 1;}
+
+        if(from_c.is_fully_transparent()) {transparent[2] = 1;
+        }else if(with_c.is_fully_transparent()) {transparent[2] = 1;}
+
+        if(from_d.is_fully_transparent()) {transparent[3] = 1;
+        }else if(with_d.is_fully_transparent()) {transparent[3] = 1;}
+    }
 
     amount_alpha_a = clamp_uint8(amount_alpha_a);
     amount_alpha_b = clamp_uint8(amount_alpha_b);
@@ -1036,11 +1097,7 @@ SIMDopeColor.blend_all_four = function(from_a,
     with_c.multiply_a_255(amount_alpha_c);
     with_d.multiply_a_255(amount_alpha_d);
 
-    var alpha = new Uint8Array(4);
-    var alpha_with = new Uint8Array(4);
-    var alpha_from = new Uint8Array(4);
-
-    if((alpha_addition|0) > 0){
+    if((alpha_addition|0) != 0){
         alpha[0] = alpha_add(from_a.a, amount_alpha_a);
         alpha[1] = alpha_add(from_b.a, amount_alpha_b);
         alpha[2] = alpha_add(from_c.a, amount_alpha_c);
@@ -1077,6 +1134,11 @@ SIMDopeColor.blend_all_four = function(from_a,
     from_b.merge_with_a_fixed(with_b, alpha[1]);
     from_c.merge_with_a_fixed(with_c, alpha[2]);
     from_d.merge_with_a_fixed(with_d, alpha[3]);
+
+    if((transparent[0]|0) != 0){ from_a.set_out_of(0, 0, 0, 0); with_a.set_out_of(0, 0, 0, 0); }
+    if((transparent[1]|0) != 0){ from_b.set_out_of(0, 0, 0, 0); with_b.set_out_of(0, 0, 0, 0); }
+    if((transparent[2]|0) != 0){ from_c.set_out_of(0, 0, 0, 0); with_c.set_out_of(0, 0, 0, 0); }
+    if((transparent[3]|0) != 0){ from_d.set_out_of(0, 0, 0, 0); with_d.set_out_of(0, 0, 0, 0); }
 };
 
 // From a given operation and number object perform the operation and return a the number object

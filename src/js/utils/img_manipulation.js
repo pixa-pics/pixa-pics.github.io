@@ -49,7 +49,7 @@ window.base64_sanitize_process_function = new AsyncFunction(`var t = async funct
     "use strict";
     return new Promise(function(resolve, reject) {
         var img = new Image();
-        var is_png = base64.startsWith("data:image/png;base64,");
+        var is_png = base64.startsWith("data:image/png;");
         img.onload = function() {
     
             var canvas = document.createElement("canvas");
@@ -154,7 +154,7 @@ const bitmap_to_imagedata = (bitmap, resize_to =  1920*1080, callback_function =
 window.imagedata_to_base64_process_function = new AsyncFunction(`var t = async function(imagedata, type) {
 
     "use strict"
-    
+    type = type || "image/png";
     try {
     
         if (typeof OffscreenCanvas === "undefined") {
@@ -178,7 +178,7 @@ window.imagedata_to_base64_process_function = new AsyncFunction(`var t = async f
                 ctx.transferFromImageBitmap(bmp);
                 bmp = null;
                 
-                return canvas.convertToBlob({type: type, quality: 0.9}).then(function(blb) {
+                return canvas.convertToBlob({type: type, quality: 0.75}).then(function(blb) {
                     
                     return FileReaderSync.readAsDataURL(blb);
                 });
@@ -197,7 +197,7 @@ window.imagedata_to_base64_process_function = new AsyncFunction(`var t = async f
             ctx.imageSmoothingEnabled = false;
             ctx.putImageData(imagedata, 0, 0);
             
-            var base64 = canvas.toDataURL(type, 0.9);
+            var base64 = canvas.toDataURL(type, 0.75);
             canvas = null;
             resolve(base64);
         });

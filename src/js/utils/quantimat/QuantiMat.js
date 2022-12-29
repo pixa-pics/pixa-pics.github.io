@@ -130,18 +130,18 @@ var SIMDopeColor = function(with_main_buffer, offset_4bytes){
         return new SIMDopeColor(with_main_buffer, offset_4bytes);
     }
 
-    if(with_main_buffer instanceof Uint8ClampedArray) {
+    if(with_main_buffer instanceof Uint8Array) {
 
         this.storage_uint8_ =  with_main_buffer;
     }else {
 
-        this.storage_uint8_ = new Uint8ClampedArray("buffer" in with_main_buffer ? with_main_buffer.buffer: with_main_buffer, i(offset_4bytes, 4));
+        this.storage_uint8_ = new Uint8Array("buffer" in with_main_buffer ? with_main_buffer.buffer: with_main_buffer, i(offset_4bytes, 4));
     }
 };
 
 SIMDopeColor.new_of = function(r, g, b, a) {
     "use strict";
-    var uint8ca = new Uint8ClampedArray(4);
+    var uint8ca = new Uint8Array(4);
     uint8ca[3] = clamp_uint8(r);
     uint8ca[2] = clamp_uint8(g);
     uint8ca[1] = clamp_uint8(b);
@@ -224,35 +224,24 @@ Object.defineProperty(SIMDopeColor.prototype, 'offset', {
 Object.defineProperty(SIMDopeColor.prototype, 'buffer', {
     get: function() { "use strict"; return this.storage_uint8_.buffer.slice(this.storage_uint8_.byteOffset, plus_uint(this.storage_uint8_.byteOffset, 4)); }
 });
-
+Object.defineProperty(SIMDopeColor.prototype, 'subarray', {
+    get: function() { "use strict"; return this.storage_uint8_.subarray(0, 4); }
+});
 Object.defineProperty(SIMDopeColor.prototype, 'set', {
     get: function() { "use strict"; return function(with_buffer) {
 
         if(with_buffer instanceof SIMDopeColor) {
 
-            this.storage_uint8_[3] = clamp_uint8(with_buffer.r);
-            this.storage_uint8_[2] = clamp_uint8(with_buffer.g);
-            this.storage_uint8_[1] = clamp_uint8(with_buffer.b);
-            this.storage_uint8_[0] = clamp_uint8(with_buffer.a);
+            this.storage_uint8_.set(new Uint8Array(with_buffer.buffer));
 
         }else if("subarray" in with_buffer) {
 
-            this.storage_uint8_[3] = clamp_uint8(with_buffer[3]);
-            this.storage_uint8_[2] = clamp_uint8(with_buffer[2]);
-            this.storage_uint8_[1] = clamp_uint8(with_buffer[1]);
-            this.storage_uint8_[0] = clamp_uint8(with_buffer[0]);
-
-        }else if("slice" in with_buffer) {
-
-            this.storage_uint8_.set(with_buffer.slice(0, 4));
+            this.storage_uint8_.set(with_buffer.subarray(0, 4));
         }else {
 
             this.storage_uint8_.set(with_buffer);
         }
     }}
-});
-Object.defineProperty(SIMDopeColor.prototype, 'subarray', {
-    get: function() { "use strict"; return function(start, end) { return this.storage_uint8_.subarray(start, end); }}
 });
 Object.defineProperty(SIMDopeColor.prototype, 'slice', {
     get: function() { "use strict"; return function(start, end) { return this.storage_uint8_.slice(start, end); }}
@@ -263,7 +252,7 @@ SIMDopeColor.prototype.is_fully_transparent = function() {
 };
 
 SIMDopeColor.prototype.simplify = function(of) {
-    var temp = Uint8ClampedArray.of(
+    var temp = Uint8Array.of(
         multiply_uint(r(this.a / of), of),
         multiply_uint(r(this.b / of), of),
         multiply_uint(r(this.g / of), of),
@@ -275,35 +264,32 @@ SIMDopeColor.prototype.simplify = function(of) {
 
 SIMDopeColor.prototype.blend_with = function(added_uint8x4, amount_alpha, should_return_transparent, alpha_addition) {
 
+    should_return_transparent = should_return_transparent | 0;
     alpha_addition = alpha_addition | 0;
+
     added_uint8x4.multiply_a_1000(amount_alpha|0);
 
-    if(should_return_transparent) {
+    if((should_return_transparent|0)!=0) {
 
         if(this.is_fully_transparent()) {
-
-            added_uint8x4.set(this);
-            return this;
+            added_uint8x4.set(ArrayBuffer(4));
         }else if(added_uint8x4.is_fully_transparent()) {
-
-            this.set(added_uint8x4);
-            return this;
+            this.set(ArrayBuffer(4));
         }
+    }else {
+
+        var alpha = (alpha_addition|0) != 0 ?
+            divide_uint(plus_uint(this.a, added_uint8x4.a), 2):
+            inverse_255(divide_255(i(inverse_255(added_uint8x4.a), inverse_255(this.a))));
+
+        this.set(SIMDopeColor.merge_scale_of_255_a_fixed(
+            added_uint8x4, divide_uint(i(added_uint8x4.a, 255), alpha),
+            this, divide_255(i(this.a, divide_uint(i(inverse_255(added_uint8x4.a), 255), alpha))),
+            alpha
+        ));
+
+        added_uint8x4.set(this);
     }
-
-    var alpha = (alpha_addition|0) > 0 ?
-        divide_uint(plus_uint(this.a, added_uint8x4.a), 2):
-        inverse_255(divide_255(i(inverse_255(added_uint8x4.a), inverse_255(this.a))));
-
-    this.set(SIMDopeColor.merge_scale_of_255_a_fixed(
-        added_uint8x4, divide_uint(i(added_uint8x4.a, 255), alpha),
-        this, divide_255(i(this.a, divide_uint(i(inverse_255(added_uint8x4.a), 255), alpha))),
-        alpha
-    ));
-
-    added_uint8x4.set(this);
-
-    return this;
 };
 
 SIMDopeColor.prototype.euclidean_match_with = function(color, threshold_1000) {
@@ -347,12 +333,9 @@ SIMDopeColor.prototype.manhattan_match_with = function(color, threshold_1000) {
         ) / MANHMAX * 1000 | 0) < (threshold_1000|0);
     }
 };
-
 SIMDopeColor.prototype.multiply_a_1000 = function(n) {
     "use strict";
-    var uint8a = this.subarray();
-    uint8a[0] = clamp_uint8(divide_uint(i(uint8a[0], n), 1000));
-    return this;
+    this.subarray[0] = clamp_uint8(divide_uint(i(this.a, n), 1000));
 };
 SIMDopeColor.prototype.copy = function(a) {
     "use strict";
@@ -381,7 +364,7 @@ SIMDopeColor.merge_scale_of_255_a_fixed = function(t1, of1, t2, of2, alpha) {
 
 SIMDopeColor.scale_rgb_of_on_255 = function(t, of_r, of_g, of_b) {
     return SIMDopeColor(
-        Uint8ClampedArray.of(
+        Uint8Array.of(
             0,
             divide_255(i(t.b, of_b)),
             divide_255(i(t.g, of_g)),
@@ -392,7 +375,7 @@ SIMDopeColor.scale_rgb_of_on_255 = function(t, of_r, of_g, of_b) {
 
 SIMDopeColor.merge_with_a_fixed = function(t1, t2, alpha) {
     return SIMDopeColor(
-        Uint8ClampedArray.of(
+        Uint8Array.of(
             clamp_uint8(alpha),
             plus_uint(t1.b, t2.b),
             plus_uint(t1.g, t2.g),
@@ -655,7 +638,7 @@ Object.defineProperty(QuantiMat.prototype, 'set_bucket_threshold', {
 Object.defineProperty(QuantiMat.prototype, 'get_data', {
     get: function() {return function(){
 
-        return Array.of(this.new_pxls_, this.new_pxl_colors_.slice_uint32(0, this.new_pxl_colors_.length));
+        return Array.of(Uint32Array.from(this.new_pxls_), Uint32Array.from(this.new_pxl_colors_.subarray_uint32(0, this.new_pxl_colors_.length)));
     }}
 });
 
@@ -813,7 +796,7 @@ QuantiMat.prototype.process_threshold = function(t) {
                     weighted_threshold = ((((threshold_1000 / 1000) + (threshold_1000 / 1000 * (1 - color_usage_difference_flattened_much) * weight_applied_to_color_usage_difference)) / (1 + weight_applied_to_color_usage_difference)) * 1000 | 0) >>> 0;  // THRESHOLD + THRESHOLD * WEIGHT / 1 + WEIGHT
 
                     // The less a color is used the less it requires a great distance to be merged (so we don't have many color used only a few time in the whole image, heavily used color gets preserved better than lowly used ones)
-                    if(color_a.euclidean_match_with(color_b,  ((weighted_threshold+weighted_threshold*preserve_frequent_color_weight)/2|0) & 1000)) {
+                    if(color_a.manhattan_match_with(color_b,  ((weighted_threshold+weighted_threshold*preserve_frequent_color_weight)/2|0) & 1000)) {
 
                         // Update color usage and relative variables
                         index_merged = true;
@@ -842,10 +825,10 @@ QuantiMat.prototype.process_threshold = function(t) {
 
             if(index_merged) {
 
-                do {
+                while (current_color !== null) {
                     current_color.value.set(latest_color.value);
                     current_color = current_color.tail || null;
-                } while (current_color !== null);
+                }
             }
         }
 
@@ -922,17 +905,15 @@ var QuantiMatGlobal = function(
     return new Promise(function(resolve){
         "use strict";
 
-        var image_data_uint32 = new Uint32Array(image_data.data.slice(0, image_data.data.length).reverse().buffer).reverse()
-        var color_index = 0;
+        var image_data_uint32 = new Uint32Array(image_data.data.subarray(0, image_data.data.length).reverse().buffer).reverse()
+        var color_index = 1;
         var _pxl_colors = new Uint32Array(image_data_uint32.length);
         var pxls = new Uint32Array(image_data_uint32.length);
-        var index_of = 0;
 
-        for(var i = 0; (i|0) < (image_data_uint32.length|0); i = (i+1|0)>>>0) {
+        for(var i = 0, index_of = -1; (i|0) < (image_data_uint32.length|0); i = (i+1|0)>>>0, index_of = _pxl_colors.indexOf(image_data_uint32[i|0]|0) | 0) {
 
-            index_of = _pxl_colors.indexOf((image_data_uint32[i]|0)>>>0);
-            if(index_of === -1) {
-                _pxl_colors[color_index|0] = (image_data_uint32[i]|0) & 0xFFFFFFFF;
+            if((index_of|0) == -1) {
+                _pxl_colors[color_index|0] = image_data_uint32[i|0]|0;
                 index_of = (color_index | 0) >>> 0;
                 color_index = (color_index + 1 | 0) >>> 0;
             }
@@ -940,13 +921,12 @@ var QuantiMatGlobal = function(
             pxls[i|0] = (index_of | 0) >>> 0;
         }
 
-        var pxl_colors = _pxl_colors.slice(0, color_index);
         var now = Date.now();
-        console.log(pxl_colors.length)
+        console.log(color_index)
 
         var result = QuantiMat({
             pxls: pxls,
-            pxl_colors: pxl_colors,
+            pxl_colors: _pxl_colors.slice(0, color_index),
             bucket_threshold: bucket_threshold,
             threshold_steps: threshold_steps,
             color_number_bonus: color_number_bonus,
@@ -959,11 +939,11 @@ var QuantiMatGlobal = function(
 
         console.log(res_pxl_colors.length);
         console.log("We removed and processed "+(_pxl_colors.length-res_pxl_colors.length)+" colors within " + (Date.now() - now) + " ms");
-        pxls = new Uint32Array(result[0].length);
+        pxls = new Uint32Array(result[0].length).fill(0);
         for(var i = 0; (i|0) < (pxls.length|0); i = (i+1|0)>>>0) {
-            pxls[i|0] = (res_pxl_colors[res_pxls[i|0]|0] | 0) & 0xFFFFFFFF;
+            pxls[i|0] = (res_pxl_colors[res_pxls[i|0]|0] | 0) >>> 0;
         }
-        image_data.data.set(new Uint8ClampedArray(pxls.reverse().buffer).reverse());
+        image_data.data.set(new Uint8Array(pxls.reverse().buffer).reverse());
 
         resolve(image_data);
     });
