@@ -1,15 +1,20 @@
-import {png_quant} from "./png_quant";
-import {oxi_png} from "./oxi_png";
+import JSLoader from "./JSLoader";
 
 
 const png = (dataurl, level, interlace, quality_min, quality_max, speed, pool = null) => {
 
     return new Promise(function(resolve, reject){
 
-        oxi_png(dataurl, level, interlace).catch(function(e){
-            console.log("OXIPNG Failed to proceed... Using PNG-QUANT instead!");
-            return png_quant(dataurl, quality_min, quality_max, speed, pool)
-        }).then(resolve).catch(reject);
+        JSLoader( () => import("../utils/oxi_png")).then(({oxi_png}) => {
+
+            oxi_png(dataurl, level, interlace).catch(function(e){
+                console.log("OXIPNG Failed to proceed... Using PNG-QUANT instead!");
+                JSLoader( () => import("../utils/png_quant")).then(({png_quant}) => {
+
+                    resolve(png_quant(dataurl, quality_min, quality_max, speed, pool));
+                });
+            }).then(resolve).catch(reject);
+        });
     });
 };
 
