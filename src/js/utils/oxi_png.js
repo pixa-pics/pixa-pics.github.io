@@ -115,7 +115,7 @@ function blobToBase64(blob) {
     });
 }
 
-const oxi_png = (dataurl, level = 0, interlace = false, pool = null) => {
+export function oxi_png(dataurl, level = 0, interlace = false, pool = null) {
 
     return new Promise(function(resolve, reject){
         init(BYTES).then(function (){
@@ -134,6 +134,4 @@ const oxi_png = (dataurl, level = 0, interlace = false, pool = null) => {
             }).catch(reject);
         }).catch(reject);
     });
-};
-
-module.exports = {oxi_png};
+}

@@ -45,8 +45,7 @@ export function bytesToBase64(bytes) {
         result[j+3|0] = "=".charCodeAt(0) & 0xFF;
         j = (j+4|0)>>>0;
     }
-    if ((i|0) == (l|0)) { // 2 octets yet to write
-        result[j|0] = base64abcCC[bytes[i - 2 | 0] >> 2] & 0xFF;
+    if ((i|0) == (l|0)) {         result[j|0] = base64abcCC[bytes[i - 2 | 0] >> 2] & 0xFF;
         result[j+1|0] = base64abcCC[((bytes[i - 2 | 0] & 0x03) << 4) | (bytes[i - 1 | 0] >> 4)] & 0xFF;
         result[j+2|0] = base64abcCC[(bytes[i - 1 | 0] & 0x0F) << 2] & 0xFF;
         result[j+3|0] = "=".charCodeAt(0) & 0xFF;

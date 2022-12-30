@@ -1407,8 +1407,8 @@ class Pixel extends React.PureComponent {
             let file = _files_waiting_download.shift();
 
             let a = document.createElement("a"); //Create <a>
-            a.download = file.name.toString(); //File name Here
-            a.href = file.url.toString();
+            a.download = ""+file.name; //File name Here
+            a.href = ""+file.url;
             a.click();
             delete file.url;
             delete file.name;

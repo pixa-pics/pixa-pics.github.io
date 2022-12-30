@@ -662,7 +662,7 @@ class CanvasPixels extends React.PureComponent {
 
                     JSLoader( () => import("../../utils/png_quant")).then(({png_quant}) => {
 
-                        png_quant(result.url.toString(), with_compression_quality_min, with_compression_quality_max, with_compression_speed, pool).then((base_64_out) => {
+                        png_quant(""+result.url, with_compression_quality_min, with_compression_quality_max, with_compression_speed, pool).then((base_64_out) => {
 
                             result.url = base_64_out;
                             resolve(result);
@@ -672,7 +672,7 @@ class CanvasPixels extends React.PureComponent {
 
                     JSLoader( () => import("../../utils/oxi_png")).then(({oxi_png}) => {
 
-                        oxi_png(result.url.toString(), Math.floor(with_compression_quality_max/30), false, pool).then((base_64_out) => {
+                        oxi_png(""+result.url, Math.floor(with_compression_quality_max/30), false, pool).then((base_64_out) => {
 
                             result.url = base_64_out;
                             resolve(result);
