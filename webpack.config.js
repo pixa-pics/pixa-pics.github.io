@@ -14,21 +14,36 @@ module.exports = {
         minimizer: [
             new TerserPlugin({
                 terserOptions: {
-                    ecma: 2015,
+                    parallel: true,
+                    minify: true,
+                    minifyWhitespace: true,
+                    minifyIdentifiers: true,
+                    minifySyntax: true,
+                    ecma: 5,
                     parse: {},
-                    module: false,
-                    format: null,
+                    module: true,
                     toplevel: true,
                     nameCache: null,
                     ie8: true,
                     keep_classnames: false,
                     keep_fnames: false,
                     safari10: true,
-                    extractComments: false,
                     enclose: true,
+                    extractComments: false,
+                    format: {
+                        comments: false,
+                        ecma: 5,
+                        spidermonkey: true,
+                        webkit: true,
+                        wrap_iife: true,
+                        wrap_func_args: true
+                    },
                     mangle: {
                         toplevel: true,
-                        eval: true,
+                        module: true,
+                        eval: true
+                    },
+                    properties: {
                         reserved: [
                             'Object',
                             'canvas',
@@ -163,6 +178,7 @@ module.exports = {
                                     },
                                     forceAllTransforms: true,
                                     shippedProposals: true,
+                                    loose: true,
                                     bugfixes: true,
                                     useBuiltIns: "usage"
                                 }],

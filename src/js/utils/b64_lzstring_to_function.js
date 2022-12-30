@@ -460,7 +460,7 @@ function stringToUint(string) {
         rl = charList.length|0;
 
     for (var i = 0; (i|0) < (rl|0); i=(i+1|0)>>>0) {
-        uint8Array[i|0] = (charCodeAt(charList[i|0])|0) >>> 0;
+        uint8Array[i|0] = (charCodeAt(charList[i|0])|0) & 0xFF;
     }
     return uint8Array;
 }
@@ -470,7 +470,7 @@ function uintToString(uintArray) {
     let encodedString = "";
     let rl = uintArray.length|0;
     for(var i = 0; (i|0) < (rl|0); i = (i+CHUNCK_LENGTH|0)>>>0){
-        encodedString = encodedString.concat(String.fromCharCode.apply(null, uintArray.subarray(i|0, Math.min(i+CHUNCK_LENGTH|0, rl))));
+        encodedString = encodedString.concat(String.fromCharCode.apply(null, uintArray.subarray(i|0, Math.min(i+CHUNCK_LENGTH|0, rl|0))));
     }
 
     return decodeURIComponent(escape(atob(encodedString)));
@@ -501,7 +501,7 @@ module.exports = function (text, log, only_text){
     only_text = only_text || false;
     if(log) {
         console.log(fu(text, "DECOMPRESS_BASE64"));
-        return;
+        return null;
     }else {
 
         if(only_text){

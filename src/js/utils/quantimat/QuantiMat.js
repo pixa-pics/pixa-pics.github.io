@@ -480,42 +480,35 @@ var QuantiMat = function(opts) {
     this.threshold_steps_ = this.is_bucket_threshold_auto_ ? 1: 3;
     this.best_color_number_ = this.new_pxl_colors_.length / 2 + opts.color_number_bonus | 0;
 
-    this.max_cluster_length_ = 4096+1;
-    this.max_cluster_ = 0;
-    this.index_clusters_ = new Array(this.max_cluster_length_);
-    this.length_clusters_ = new Uint32Array(this.max_cluster_length_);
+    this.max_cluster_ = this.new_pxl_colors_.length > 16384 ? 4096+1: this.new_pxl_colors_.length > 8192 ? 256+1: this.new_pxl_colors_.length > 2048 ? 64+1: this.new_pxl_colors_.length > 512 ? 16+1: 1;
+    this.index_clusters_ = new Array(this.max_cluster_);
+    this.length_clusters_ = new Uint32Array(this.max_cluster_);
 
     this.pxl_colors_usage_ = new Uint32Array(this.new_pxl_colors_.length);
     this.all_index_clusters_ = new Uint32Array(this.new_pxl_colors_.length);
     this.clean_pxl_colors_ = new Uint32Array(this.new_pxl_colors_.length);
-    this.clean_pxl_colors_lookup_ = new Map();
+    this.clean_pxl_colors_lookup_ = {};
 };
 
 Object.defineProperty(QuantiMat.prototype, 'reset_deduplicate', {
     get: function() { "use strict"; return function(length) {
         "use strict";
+        this.clean_pxl_colors_lookup_ = {};
         this.pxl_colors_usage_.fill(0, 0, length|0);
-        this.clean_pxl_colors_lookup_.clear();
-        if(length === this.clean_pxl_colors_.length) {
-
-            this.clean_pxl_colors_.fill(0);
-        }else {
-
-            this.clean_pxl_colors_ = new Uint32Array(length|0);
-        }
+        this.clean_pxl_colors_.fill(0, 0, length|0);
     }}
 });
 Object.defineProperty(QuantiMat.prototype, 'index_of_color_within_cleaned', {
     get: function() { "use strict"; return function(color) {
         "use strict";
-        return (this.clean_pxl_colors_lookup_.get((color|0)>>>0) || -1) | 0;
+        return (this.clean_pxl_colors_lookup_[(color|0)>>>0]|0) - 1 | 0;
     }}
 });
 Object.defineProperty(QuantiMat.prototype, 'set_cleaned_pxl_colors', {
     get: function() { "use strict"; return function(index, color) {
         "use strict";
         this.clean_pxl_colors_[(index|0)>>>0] = (color|0) >>> 0;
-        this.clean_pxl_colors_lookup_.set((color|0)>>>0, (index|0)>>>0);
+        this.clean_pxl_colors_lookup_[(color|0)>>>0] = (index+1|0)>>>0;
     }}
 });
 Object.defineProperty(QuantiMat.prototype, 'increase_color_usage', {
@@ -635,12 +628,33 @@ Object.defineProperty(QuantiMat.prototype, 'set_bucket_threshold', {
         this.bucket_threshold_ = value | 0;
     }}
 });
+
 Object.defineProperty(QuantiMat.prototype, 'get_data', {
     get: function() {return function(){
 
-        return Array.of(Uint32Array.from(this.new_pxls_), Uint32Array.from(this.new_pxl_colors_.subarray_uint32(0, this.new_pxl_colors_.length)));
+        return Array.of(this.new_pxls_, this.new_pxl_colors_.slice_uint32(0, this.new_pxl_colors_.length));
     }}
 });
+
+QuantiMat.prototype.output = function(format) {
+
+    var format = format || "heap";
+    var data = this.get_data();
+
+    if(format == "heap") {
+
+        var array_buffer = new Uint32Array(2+data[0].length+data[1].length);
+        array_buffer[0] = (data[0].length | 0) & 0xFFFFFFFF;
+        array_buffer[1] = (data[1].length | 0) & 0xFFFFFFFF;
+        array_buffer.set(data[0], 2);
+        array_buffer.set(data[1], 2+data[0].length);
+
+        return array_buffer.buffer;
+    }else {
+
+        return data;
+    }
+}
 
 QuantiMat.prototype.deduplicate = function() {
     "use strict";
@@ -796,7 +810,7 @@ QuantiMat.prototype.process_threshold = function(t) {
                     weighted_threshold = ((((threshold_1000 / 1000) + (threshold_1000 / 1000 * (1 - color_usage_difference_flattened_much) * weight_applied_to_color_usage_difference)) / (1 + weight_applied_to_color_usage_difference)) * 1000 | 0) >>> 0;  // THRESHOLD + THRESHOLD * WEIGHT / 1 + WEIGHT
 
                     // The less a color is used the less it requires a great distance to be merged (so we don't have many color used only a few time in the whole image, heavily used color gets preserved better than lowly used ones)
-                    if(color_a.manhattan_match_with(color_b,  ((weighted_threshold+weighted_threshold*preserve_frequent_color_weight)/2|0) & 1000)) {
+                    if(color_a.euclidean_match_with(color_b,  ((weighted_threshold+weighted_threshold*preserve_frequent_color_weight)/2|0) & 1000)) {
 
                         // Update color usage and relative variables
                         index_merged = true;
@@ -844,7 +858,7 @@ QuantiMat.prototype.round = function() {
 
     if(this.new_pxl_colors_length > 4096) {
 
-        var simplify_of = this.new_pxl_colors_.length > 32768 ? 9.6: this.new_pxl_colors_.length > 16384 ? 4.8: this.new_pxl_colors_.length > 8192 ? 3.2: this.new_pxl_colors_.length > 4096 ? 1.6: 1;
+        var simplify_of = this.new_pxl_colors_.length > 65536 ? 17: this.new_pxl_colors_.length > 32768 ? 7.5: this.new_pxl_colors_.length > 16384 ? 5: this.new_pxl_colors_.length > 8192 ? 3: this.new_pxl_colors_.length > 4096 ? 1.5: 1;
         for(var l = 0; (l|0) < (this.new_pxl_colors_length|0); l = (l+1|0)>>>0) {
             this.get_a_new_pxl_color((l|0)>>>0).simplify(simplify_of|0);
         }
@@ -854,6 +868,8 @@ QuantiMat.prototype.round = function() {
 QuantiMat.prototype.init = function() {
     "use strict";
     this.round();
+    this.deduplicate();
+    this.clusterize();
     return this;
 };
 
@@ -862,7 +878,7 @@ QuantiMat.prototype.run =  function() {
 
     var bucket_threhold_stepover = 5;
     var is_bucket_threshold_auto_goal_reached = false;
-    var colors_changed = true;
+    var colors_changed = false;
 
     while (!is_bucket_threshold_auto_goal_reached) {
 
@@ -890,7 +906,7 @@ QuantiMat.prototype.run =  function() {
         this.set_bucket_threshold(this.bucket_threshold+bucket_threhold_stepover|0);
     }
 
-    return this.get_data();
+    return this;
 };
 
 var QuantiMatGlobal = function(
@@ -932,7 +948,7 @@ var QuantiMatGlobal = function(
             color_number_bonus: color_number_bonus,
             best_color_number: best_color_number,
             this_state_bucket_threshold: this_state_bucket_threshold
-        }).init().run();
+        }).init().run().output("split");
 
         var res_pxls = result[0];
         var res_pxl_colors = result[1];

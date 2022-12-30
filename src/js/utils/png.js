@@ -9,9 +9,9 @@ const png = (dataurl, level, interlace, quality_min, quality_max, speed, pool = 
 
             oxi_png(dataurl, level, interlace).catch(function(e){
                 console.log("OXIPNG Failed to proceed... Using PNG-QUANT instead!");
-                JSLoader( () => import("../utils/png_quant")).then(({png_quant}) => {
+                JSLoader( () => import("../utils/png_quant")).then((png_quant) => {
 
-                    resolve(png_quant(dataurl, quality_min, quality_max, speed, pool));
+                    resolve(png_quant.default(dataurl, quality_min, quality_max, speed, pool));
                 });
             }).then(resolve).catch(reject);
         });
