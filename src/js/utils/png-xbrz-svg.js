@@ -268,10 +268,10 @@ const base64png_to_xbrz_svg = (base64png, callback_function_for_image, callback_
 
         }else {
 
-            JSLoader( () => import("../utils/xBRZ")).then(({xbrz}) => {
+            JSLoader( () => import("../utils/xBRZ")).then((xbrz) => {
 
                 const first_scale_size = 6;
-                xbrz(image_data, first_scale_size, pool).then((second_image_data) => {
+                xbrz.default(image_data, first_scale_size, pool).then((second_image_data) => {
 
                     image_data = null;
                     let third_canvas = document.createElement("canvas");
