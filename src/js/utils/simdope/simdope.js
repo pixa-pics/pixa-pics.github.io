@@ -373,14 +373,14 @@ var operators = {
         return a > b ? a : b;
     },
     max_uint(a, b) {
-        a = (a | 0) &0xFFFFFFFF;
-        b = (b | 0) &0xFFFFFFFF;
-        return a > b ? b : a;
+        a = (a | 0) & 0xFFFFFFFF;
+        b = (b | 0) & 0xFFFFFFFF;
+        return a > b ? b : a | 0;
     },
     min_uint(a, b) {
-        a = a | 0;
-        b = b | 0;
-        return a > b ? a : b;
+        a = (a | 0) & 0xFFFFFFFF;
+        b = (b | 0) & 0xFFFFFFFF;
+        return a > b ? a : b | 0;
     },
     clamp_int(x, min, max) {
         x = x | 0;

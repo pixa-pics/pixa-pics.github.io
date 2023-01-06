@@ -9,7 +9,7 @@ import JSLoader from "../utils/JSLoader";
 let is_mobile_or_tablet = window.mobileAndTabletCheck();
 import React, { Suspense } from "react";
 import dispatcher from "../dispatcher";
-const CanvasPixels = React.lazy(() => JSLoader( () => import("../components/canvaspixels/CanvasPixels")));
+const CanvasPixels = React.lazy(() =>  import("../components/canvaspixels/CanvasPixels.js"));
 import {Button, IconButton, withStyles} from "@material-ui/core";
 import pool from "../utils/worker-pool";
 import {ListItem, Typography, Backdrop, Slider, SwipeableDrawer, Drawer, Tabs, Tab, Menu, ListSubheader, ListItemText, ListItemIcon} from "@material-ui/core";

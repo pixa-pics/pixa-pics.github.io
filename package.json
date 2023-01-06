@@ -35,7 +35,8 @@
     "svg64": "^1.1.0",
     "svgo": "^2.8.0",
     "workerpool": "~6.2.1",
-    "xxhash-wasm": "~1.0.1"
+    "xxhash-wasm": "~1.0.1",
+    "core-js": "^3.27.1"
   },
   "devDependencies": {
     "@svgr/cli": "~6.4.0",
