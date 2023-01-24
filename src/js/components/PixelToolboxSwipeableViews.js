@@ -406,6 +406,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
             _filter_aspect_ratio: "1 / 1",
             _filter_thumbnail_changed: true,
             _compressed: false,
+            _upscale: false,
             _vectorized: false
         };
 
@@ -985,6 +986,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
             filters_preview_progression,
             too_much_colors_no_vector,
             _compressed,
+            _upscale,
             _vectorized,
         } = this.st4te;
 
@@ -1089,7 +1091,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                             sub: "Upscale by 10x using Depixelize",
                             disabled: too_much_colors_no_vector,
                             on_click: () => {
-                                this._download_svg("depixelize", _compressed, _vectorized)
+                                this._download_svg("depixelize", _compressed, _vectorized, _upscale)
                             }
                         },
                         {
@@ -1099,7 +1101,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                             sub: "Upscale by 8x using Omniscale",
                             disabled: too_much_colors_no_vector,
                             on_click: () => {
-                                this._download_svg("omniscale", _compressed, _vectorized)
+                                this._download_svg("omniscale", _compressed, _vectorized, _upscale)
                             }
                         },
                         {
@@ -1109,7 +1111,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                             sub: "Upscale by 6x using xBRZ",
                             disabled: too_much_colors_no_vector,
                             on_click: () => {
-                                this._download_svg("xbrz", _compressed, _vectorized)
+                                this._download_svg("xbrz", _compressed, _vectorized, _upscale)
                             }
                         },
                         {
@@ -1119,7 +1121,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                             sub: "Upscale by 4x using hqNx",
                             disabled: too_much_colors_no_vector,
                             on_click: () => {
-                                this._download_svg("hqnx", _compressed, _vectorized)
+                                this._download_svg("hqnx", _compressed, _vectorized, _upscale)
                             }
                         },
                         {
@@ -1129,7 +1131,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                             sub: "Upscale by 4x using EPX",
                             disabled: too_much_colors_no_vector,
                             on_click: () => {
-                                this._download_svg("epx", _compressed, _vectorized)
+                                this._download_svg("epx", _compressed, _vectorized, _upscale)
                             }
                         },
                         {
@@ -1150,6 +1152,15 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                                 this._toggle_vectorized()
                             }
                         },
+                        {
+                            icon: _upscale ? <CheckedIcon/>: <UncheckedIcon/>,
+                            text: "AI upscale",
+                            sub: "Increase resolution by 2x2 for output <= HD",
+                            disabled: too_much_colors_no_vector,
+                            on_click: () => {
+                                this._toggle_upscale()
+                            }
+                        }
                     ]
                 }
             ];
@@ -1908,6 +1919,14 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
         });
     }
 
+    _toggle_upscale = () => {
+
+        this.setSt4te({_upscale: !this.st4te._upscale}, () => {
+
+            this.update_cache_view(null, true);
+        });
+    }
+
     _toggle_vectorized = () => {
 
         this.setSt4te({_vectorized: !this.st4te._vectorized}, () => {
@@ -1916,11 +1935,11 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
         });
     }
 
-    _download_svg = (using = "xbrz", optimize_render_size = false, download_svg = false) => {
+    _download_svg = (using = "xbrz", optimize_render_size = false, download_svg = false, maybe_upscale_with_ai = false) => {
 
         if(this.props.on_download_svg) {
 
-            this.props.on_download_svg(using, optimize_render_size, download_svg);
+            this.props.on_download_svg(using, optimize_render_size, download_svg, maybe_upscale_with_ai);
         }
     };
 

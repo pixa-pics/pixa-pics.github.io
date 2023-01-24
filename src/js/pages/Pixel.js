@@ -1314,7 +1314,7 @@ class Pixel extends React.PureComponent {
         });
     };
 
-    _download_svg = (using = "xbrz", optimize_render_size = false, download_svg = false) => {
+    _download_svg = (using = "xbrz", optimize_render_size = false, download_svg = false, maybe_upscale_with_ai = false) => {
 
         const { get_base64_png_data_url, xxhashthat } = this.st4te._canvas;
 
@@ -1343,17 +1343,39 @@ class Pixel extends React.PureComponent {
                     });
 
                     actions.trigger_voice("processing");
-                    base64png_to_xbrz_svg(url.toString(), (image_base64, size) => {
+                    base64png_to_xbrz_svg(url.toString(), (image_base64, size, width, height) => {
 
                         let { _files_waiting_download } = this.st4te;
                         _files_waiting_download.push({
                             name: `PIXAPICS-${hash}-${using.toUpperCase()}-${size}x_RAS.png`,
                             url: image_base64.toString()
                         });
-                        image_base64 = null;
                         this.setSt4te({_files_waiting_download}, () => {
 
                             this.forceUpdate();
+
+                            if(maybe_upscale_with_ai) {
+
+                                if(width * height < 1600 * 1600) {
+
+                                    postJSON("https://deepai.pixa-pics.workers.dev/waifu2x", image_base64.toString(), (err, res) => {
+
+
+                                        let { _files_waiting_download } = this.st4te;
+
+                                        _files_waiting_download.push({
+                                            name: `PIXAPICS-${hash}-${using.toUpperCase()}-${size}xAI2x_RAS.png`,
+                                            url: res.toString()
+                                        });
+
+                                        this.setSt4te({_files_waiting_download}, () => {
+
+                                            this.forceUpdate();
+                                        });
+                                    });
+                                }
+                            }
+
                         });
 
                     }, (svg_base64, size) => {
