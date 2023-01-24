@@ -1407,46 +1407,50 @@ const SuperMasterMeta = {
                     meta.super_state.set_state({pxl_current_color: color});
                 }
             },
-            _notify_relevant_action_event (event, color = "#ffffffff", opacity = 1) {
+            _notify_relevant_action_event (event, color, opacity = 1) {
 
                 if(notifiers.action) {
 
-                    notifiers.action(event, meta.color_conversion.format_hex_color(color), opacity);
+                    if(typeof color == "number") {
+                        color = SIMDopeColor.new_uint32(color).hex;
+                    }
+                    notifiers.action(event, color, opacity);
                 }
             },
             exchange_pixel_color (old_color, new_color) {
 
                 const { _s_pxl_colors, _s_pxls, _layer_index } = meta.super_state.get_state();
 
+                let pxls_copy = new Uint16Array(_s_pxls[_layer_index].buffer);
 
-                let pxl_colors_copy = Array.from(_s_pxl_colors[_layer_index]);
-                let pxls_copy =  new Uint16Array(_s_pxls[_layer_index].buffer);
+                const pxl_color_index = _s_pxl_colors[_layer_index].indexOf(old_color);
 
-                const pxl_color_index = pxl_colors_copy.indexOf(old_color);
-
-                const pxl_color = pxl_colors_copy[pxl_color_index];
-                const pxl_color_new = meta.color_conversion.blend_colors(pxl_color, new_color, 1, true, false);
+                console.log(pxl_color_index, old_color, new_color)
+                const pxl_color = _s_pxl_colors[_layer_index][pxl_color_index];
+                const pxl_color_new = SIMDopeColor.new_uint32(old_color).blend_with(SIMDopeColor.new_uint32(new_color), 255, true, false).uint32;
 
                 // Eventually add current color to color list
-                if(!pxl_colors_copy.includes(pxl_color_new)){
+                if (!_s_pxl_colors[_layer_index].includes(pxl_color_new)) {
 
-                    pxl_colors_copy.push(pxl_color_new);
+                    let pxl_colors = new Uint32Array(_s_pxl_colors[_layer_index].length+1);
+                    pxl_colors.set(_s_pxl_colors[_layer_index], 0);
+                    pxl_colors[pxl_colors.length-1] = (pxl_color_new | 0) >>> 0;
+                    _s_pxl_colors[_layer_index] = pxl_colors;
                 }
 
-                const new_color_index = pxl_colors_copy.indexOf(pxl_color_new);
-
+                const new_color_index = _s_pxl_colors[_layer_index].indexOf(pxl_color_new);
                 pxls_copy = pxls_copy.map((pxl) => {
 
                     return pxl === pxl_color_index ? new_color_index: pxl;
                 });
 
-                [pxls_copy, pxl_colors_copy] = meta.color_conversion.clean_duplicate_colors(pxls_copy, Uint32Array.from(pxl_colors_copy));
+                const [pxls_c, pxl_colors_c] = meta.color_conversion.clean_duplicate_colors(pxls_copy, _s_pxl_colors[_layer_index]);
 
                 let ns_pxl_colors = meta.super_state.get_state()._s_pxl_colors;
-                ns_pxl_colors[_layer_index] = pxl_colors_copy;
+                ns_pxl_colors[_layer_index] = pxl_colors_c;
 
                 let ns_pxls = meta.super_state.get_state()._s_pxls;
-                ns_pxls[_layer_index] = pxls_copy;
+                ns_pxls[_layer_index] = pxls_c;
 
                 meta.super_state.set_state({_s_pxls: ns_pxls, _s_pxl_colors: ns_pxl_colors, _last_action_timestamp: Date.now()}).then(this.update_canvas);
             }

@@ -2302,12 +2302,12 @@ class Pixel extends React.PureComponent {
         });
     };
 
-    _exchange_pixel_colors = (old_pixel_color, new_pixel_color) => {
+    _exchange_pixel_colors = (x, y, new_pixel_color) => {
 
         const { exchange_pixel_color } = this.st4te._canvas;
         let { _menu_data } = this.st4te;
 
-        exchange_pixel_color(old_pixel_color, new_pixel_color);
+        exchange_pixel_color(x, y, new_pixel_color);
         _menu_data.pxl_color = new_pixel_color;
 
         this._handle_menu_close();
@@ -2869,7 +2869,7 @@ class Pixel extends React.PureComponent {
                                 </ListItemIcon>
                                 <ListItemText primary="Pick color" />
                             </ListItem>
-                            <ListItem button divider style={_menu_data.pxl_color === null ? {display: "none"}: {}} disabled={_menu_data.pxl_color === _current_color || _menu_data.pxl_color === null} onClick={(event) => {this._exchange_pixel_colors(_menu_data.pxl_color, _current_color); this._handle_relevant_action_event(_menu_event, _current_color, 1, true);}}>
+                            <ListItem button divider style={_menu_data.pxl_color === null ? {display: "none"}: {}} disabled={_menu_data.pxl_color === _current_color || _menu_data.pxl_color === null} onClick={(event) => {this._exchange_pixel_colors(_menu_data.pos_x, _menu_data.pos_y, _current_color+""); this._handle_relevant_action_event(_menu_event, _current_color, 1, true);}}>
                                 <ListItemIcon>
                                     <SquareIcon style={{ color: _current_color, background: `repeating-conic-gradient(#80808055 0% 25%, #00000000 0% 50%) 50% / calc(200% / ${_width}) calc(200% / ${_height})`}} />
                                 </ListItemIcon>

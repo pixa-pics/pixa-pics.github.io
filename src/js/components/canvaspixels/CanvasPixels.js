@@ -1429,46 +1429,20 @@ class CanvasPixels extends React.PureComponent {
         }
     };
 
-    exchange_pixel_color = (old_color, new_color) => {
+    exchange_pixel_color = (x, y, new_color) => {
 
+        let { pxl_width, _s_pxls, _s_pxl_colors, _layer_index } = this.super_state.get_state();
+
+        const old_color = _s_pxl_colors[_layer_index][_s_pxls[_layer_index][y*pxl_width+x]];
+        if((""+new_color).startsWith("#")) {
+            new_color = new SIMDopeColor.new_hex(new_color).uint32;
+        }
         this._exchange_pixel_color(old_color, new_color);
     };
 
     _exchange_pixel_color = (old_color, new_color) => {
 
-        const { _s_pxl_colors, _s_pxls, _layer_index } = this.super_state.get_state();
-
-
-        let pxl_colors_copy = Array.from(_s_pxl_colors[_layer_index]);
-        let pxls_copy =  new Uint16Array(_s_pxls[_layer_index].buffer);
-
-        const pxl_color_index = pxl_colors_copy.indexOf(this.color_conversion.to_uint32_from_hex(this.color_conversion.format_hex_color(old_color)));
-
-        const pxl_color = pxl_colors_copy[pxl_color_index];
-        const pxl_color_new = this.color_conversion.blend_colors(pxl_color, this.color_conversion.to_uint32_from_hex(new_color), 1, true, false);
-
-        // Eventually add current color to color list
-        if(!pxl_colors_copy.includes(pxl_color_new)){
-
-            pxl_colors_copy.push(pxl_color_new);
-        }
-
-        const new_color_index = pxl_colors_copy.indexOf(pxl_color_new);
-
-        pxls_copy = pxls_copy.map((pxl) => {
-
-            return pxl === pxl_color_index ? new_color_index: pxl;
-        });
-
-        [pxls_copy, pxl_colors_copy] = this.color_conversion.clean_duplicate_colors(pxls_copy, Uint32Array.from(pxl_colors_copy));
-
-        let ns_pxl_colors = this.super_state.get_state()._s_pxl_colors;
-        ns_pxl_colors[_layer_index] = pxl_colors_copy;
-
-        let ns_pxls = this.super_state.get_state()._s_pxls;
-        ns_pxls[_layer_index] = pxls_copy;
-
-        this.super_state.set_state({_s_pxls: ns_pxls, _s_pxl_colors: ns_pxl_colors, _last_action_timestamp: Date.now()}).then(this.super_master_meta.update_canvas);
+        this.super_master_meta.exchange_pixel_color(old_color, new_color);
     };
 
     set_selection_by_colors = (color, threshold) => {
