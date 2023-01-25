@@ -1,5 +1,4 @@
-import SIMDope from "../../../utils/simdope/simdope";
-import opacity from "../../../icons/Opacity";
+import SIMDope from "simdope";
 const simdops = SIMDope.simdops;
 const SIMDopeColor = SIMDope.SIMDopeColor;
 

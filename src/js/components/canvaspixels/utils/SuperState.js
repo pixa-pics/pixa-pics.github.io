@@ -1,5 +1,4 @@
-import SIMDope from "../../../utils/simdope/simdope";
-const simdops = SIMDope.simdops;
+import SIMDope from "simdope";
 const SIMDopeColors = SIMDope.SIMDopeColors;
 const SIMDopeColor = SIMDope.SIMDopeColor;
 
@@ -207,7 +206,7 @@ const SuperState = {
                     sd_colors.set_element(i,
                         SIMDopeColor
                             .new_uint32(pxl_colors[pxls[indexes[i]]])
-                            .blend_with(sd_color, opacity*255, false, false)
+                            .blend_with(sd_color.copy(), opacity*255, false, false)
                         );
                 }
 

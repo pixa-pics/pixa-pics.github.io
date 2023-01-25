@@ -1,4 +1,4 @@
-import {simdops, SIMDopeColor, SIMDopeColors} from "../../../utils/simdope/simdope";
+import {simdops, SIMDopeColor, SIMDopeColors} from "simdope";
 const {
     minus_int,
     int_not_equal,

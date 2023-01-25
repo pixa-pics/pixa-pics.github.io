@@ -41,7 +41,7 @@ import SmartRequestAnimationFrame from "../canvaspixels/utils/SmartRequestAnimat
 import XXHash from "../canvaspixels/utils/XXHash";
 import CanvasPos from "../canvaspixels/utils/CanvasPos"
 import CanvasFilters from "../canvaspixels/utils/CanvasFilters"
-import SIMDope from "../../utils/simdope/simdope";
+import SIMDope from "simdope";
 import {base64ToBytes, bytesToBase64} from "../../utils/base64";
 const simdops = SIMDope.simdops;
 const SIMDopeColors = SIMDope.SIMDopeColors;

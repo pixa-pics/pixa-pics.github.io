@@ -1,4 +1,4 @@
-import SIMDope from "../../../utils/simdope/simdope";
+import SIMDope from "simdope";
 const simdops = SIMDope.simdops;
 
 const ColorConversion = {
