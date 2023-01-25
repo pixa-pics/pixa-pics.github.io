@@ -126,7 +126,7 @@ const reset_all_databases = (callback_function) => {
     });
 }
 
-const get_settings = (callback_function_info = null, attachment_ids = [], callback_function_attachment = null, LZP3 = null, POOL = null ) => {
+const get_settings = (callback_function_info = null, attachment_ids = [], callback_function_attachment = null, UJS = null, POOL = null ) => {
 
     if(typeof window._pixa_settings !== "undefined" && window._pixa_settings !== null) {
 
@@ -198,7 +198,7 @@ const get_settings = (callback_function_info = null, attachment_ids = [], callba
 
                                             try {
 
-                                                LZP3(new Uint8Array(array_buffer), "DECOMPRESS_UINT8A", POOL).then((obj) => {
+                                                UJS(new Uint8Array(array_buffer), "DECOMPRESS_UINT8A", POOL).then((obj) => {
 
                                                     callback_function_attachment(null, Object.assign({}, obj));
                                                     obj = null;
@@ -207,7 +207,7 @@ const get_settings = (callback_function_info = null, attachment_ids = [], callba
 
                                             } catch (e) {
 
-                                                callback_function_attachment("LZP3 not working", null);
+                                                callback_function_attachment("UraniumJS modules not working", null);
                                             }
                                         }).catch((e) => {
 
@@ -294,7 +294,7 @@ const get_settings = (callback_function_info = null, attachment_ids = [], callba
     });
 }
 
-const set_settings = (info = {}, callback_function_info = () => {}, attachment_array = {}, LZP3 = null, POOL = null, callback_function_attachment = null) => {
+const set_settings = (info = {}, callback_function_info = () => {}, attachment_array = {}, UJS = null, POOL = null, callback_function_attachment = null) => {
 
     window.settings_db.allDocs({
         include_docs: true,
@@ -337,7 +337,7 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
 
                                 try {
 
-                                    LZP3(data, "COMPRESS_OBJECT", POOL).then((with_buffer) => {
+                                    UJS(data, "COMPRESS_OBJECT", POOL).then((with_buffer) => {
 
                                         settings_doc._attachments = settings_doc._attachments || {};
                                         settings_doc._attachments[name_id] = {
@@ -353,7 +353,7 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
                                     });
                                 } catch (e) {
 
-                                    callback_function_info("LZP3 not working", null);
+                                    callback_function_info("UraniumJS modules not working", null);
                                     return false;
                                 }
 
@@ -533,7 +533,7 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
 
                     try {
 
-                        LZP3(data, "COMPRESS_OBJECT", POOL).then((with_buffer) => {
+                        UJS(data, "COMPRESS_OBJECT", POOL).then((with_buffer) => {
 
                             attachments[name_id] = {
                                 content_type: "application/octet-stream",
@@ -549,7 +549,7 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
                         });
                     } catch (e) {
 
-                        callback_function_info("LZP3 not working", null);
+                        callback_function_info("UraniumJS modules not working", null);
                         return false;
                     }
 

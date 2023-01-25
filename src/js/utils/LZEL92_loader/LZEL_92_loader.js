@@ -23,7 +23,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import UraniumJS from "../UraniumJS";
+import UraniumJS from "uraniumjs/UraniumJS";
+import UraniumCompressJS from "uraniumjs/UraniumCompressJS";
+UraniumJS.enrichFunctionCalls = UraniumCompressJS.UraniumJSEnrichFunctionCalls;
+UraniumJS.depleteFunctionCalls = UraniumCompressJS.UraniumJSDepleteFunctionCalls;
 
 /*
   BASE 92 --- Encoding

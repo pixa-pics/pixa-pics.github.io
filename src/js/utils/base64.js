@@ -19,7 +19,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import UraniumJS from "./UraniumJS";
+import UraniumJS from "uraniumjs/UraniumJS";
 
 export function bytesToBase64(bytes) {
     return UraniumJS.BASE64.fromUint8Array(bytes);

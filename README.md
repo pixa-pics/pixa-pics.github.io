@@ -138,12 +138,18 @@ Screenshot of the minima's laboratory of pixa.pics (which is a pixel art editor)
 * Chunk ("norris") [webpack system](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/webpack.config.js) for dropping script evaluation cost within CPU
 * WASM Hashing function for detecting change in history of editing (XXHash)
 
-### Modules we built (Soon available on Github and NPM)
+### Modules we built
 
 <img width="300" height="300" src="https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/MEME.jpg" align="right" />
 
- * **[SIMDope](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/js/utils/simdope/simdope.js) (23.8 kB minified 0 dep., only 5 kB with Gzip) for computing color blending within list** or for shifting between color format (It is greatly inspired by SIMD.JS which take advantage of the CPU architecture having a faster cache than RAM while meaning (Single Instruction Multiple Data), it enables doing some task as much as 4x quicker, although we already written our code in ASM.JS specification to cast intger to 32 bits in most case and again it is very very very fast, probably the faster color processing library in pure javscript.
- * **[QuantiMat](https://github.com/pixa-pics/pixa-pics.github.io/tree/main/src/js/utils/quantimat) (15.2kB minified 0 dep, only 3 kB with Gzip) is used for color quantization** it can reduce an image with 50K colors down to 2K colors in 88ms with ease, 500K OPS (1 OP = distance + blending + ordering, ...) / SEC, we achieve one of the greatest quality, when you diminish initial colors 20 times, after processing you can't clearly see any differences except it also removes pixel color glitches and so enables a better quality. We achieve this speed thanks to SIMDope, but also thanks to sorting colors in either 4096, 256, or 16 clusters that takes a binary reduction of color component down to numbers from 0 to the number of cluster and this enables to not compare all of them to all of them savings millions of operations,
+  * **[QuantiMat](https://github.com/pixa-pics/pixa-pics.github.io/tree/main/src/js/utils/quantimat) (15.2kB minified 0 dep, only 3 kB with Gzip) is used for color quantization** it can reduce an image with 50K colors down to 2K colors in 88ms with ease, 500K OPS (1 OP = distance + blending + ordering, ...) / SEC, we achieve one of the greatest quality, when you diminish initial colors 20 times, after processing you can't clearly see any differences except it also removes pixel color glitches and so enables a better quality. We achieve this speed thanks to SIMDope, but also thanks to sorting colors in either 4096, 256, or 16 clusters that takes a binary reduction of color component down to numbers from 0 to the number of cluster and this enables to not compare all of them to all of them savings millions of operations,
+
+---
+
+  * **[UraniumJS](https://www.npmjs.com/package/uraniumjs)** LZP3 & LZJBR + BASE92 are used to ENRICH or DEPLETE elements such as String, Object, and ArrayBuffer up to -2/3 gained over inline content
+  * **[SIMDope](https://www.npmjs.com/package/simdope)** Color trafficking library faster than tools not mentioning it, lighting fast and around 1000 lines of code.
+  * **[SuperJSONatural](https://www.npmjs.com/package/superjsonatural)** JSON yet, lighter & faster with the support of all JS TypedArray!
+  * **[UTFzap](https://www.npmjs.com/package/utf-zap)** Intelligent UTF-16
 
 Look! On the STEEM blockchain you can post base64 text, transactions are rigged to 73Kb at maxima but STEEM is now kinda old for a blockchain.
 
