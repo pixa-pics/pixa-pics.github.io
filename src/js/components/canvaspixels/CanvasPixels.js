@@ -42,7 +42,7 @@ import XXHash from "../canvaspixels/utils/XXHash";
 import CanvasPos from "../canvaspixels/utils/CanvasPos"
 import CanvasFilters from "../canvaspixels/utils/CanvasFilters"
 import SIMDope from "simdope";
-import {base64ToBytes, bytesToBase64} from "../../utils/base64";
+import {toBytes, toBase64} from 'fast-base64';
 const simdops = SIMDope.simdops;
 const SIMDopeColors = SIMDope.SIMDopeColors;
 const SIMDopeColor = SIMDope.SIMDopeColor;
@@ -1866,97 +1866,112 @@ class CanvasPixels extends React.PureComponent {
 
     import_JS_state = (js, callback_function) => {
 
-        let _base64_original_images = Array.from(js._base64_original_images).map(function(img){ return img[0] +","+ bytesToBase64(img[1]); });
-        let _json_state_history = {
-            history_position: parseInt(js._json_state_history.history_position),
-            state_history: js._json_state_history.state_history.map(function(state){
+        var _base64_original_images = Array.from(js._base64_original_images);
+        Promise.all(_base64_original_images.map((entry) => {return Promise.resolve(toBase64(entry[1])); }))
+            .then((response) => {
+                response.forEach((img_1, index) => {
+                    _base64_original_images[index] = _base64_original_images[index][0] + "," + img_1;
+                });
+
+                let _json_state_history = {
+                    history_position: parseInt(js._json_state_history.history_position),
+                    state_history: js._json_state_history.state_history.map(function(state){
 
 
-                return Object.assign({}, {
-                    _original_image_index: parseInt(state._original_image_index),
-                    pxl_width: parseInt(state.pxl_width),
-                    pxl_height: parseInt(state.pxl_height),
-                    _pxl_indexes_of_selection: new Set(Boolean(state._pxl_indexes_of_selection.length) ? state._pxl_indexes_of_selection : []),
-                    _s_pxls: Array.from(state._s_pxls.map(function(a){return Uint16Array.from(a)})),
-                    _s_pxl_colors:  Array.from(state._s_pxl_colors.map(function(a){return Uint32Array.from(a)})),
-                    _layers: Array.from(state._layers.map(function(l) {
                         return Object.assign({}, {
+                            _original_image_index: parseInt(state._original_image_index),
+                            pxl_width: parseInt(state.pxl_width),
+                            pxl_height: parseInt(state.pxl_height),
+                            _pxl_indexes_of_selection: new Set(Boolean(state._pxl_indexes_of_selection.length) ? state._pxl_indexes_of_selection : []),
+                            _s_pxls: Array.from(state._s_pxls.map(function(a){return Uint16Array.from(a)})),
+                            _s_pxl_colors:  Array.from(state._s_pxl_colors.map(function(a){return Uint32Array.from(a)})),
+                            _layers: Array.from(state._layers.map(function(l) {
+                                return Object.assign({}, {
+                                    id: parseInt(l.id),
+                                    hash: l.hash + "",
+                                    name: l.name + "",
+                                    hidden: Boolean(l.hidden),
+                                    opacity: parseInt(l.opacity),
+                                });
+                            })),
+                            _layer_index: parseInt(state._layer_index),
+                            _pencil_mirror_index: parseInt(state._pencil_mirror_index),
+                            _id: state._id.toString()
+                        })
+                    })
+                };
+
+                js = null;
+
+                let sh = _json_state_history.state_history[_json_state_history.history_position];
+
+                this.super_state.set_state({
+                    _id: sh._id.toString(),
+                    pxl_width: parseInt(sh.pxl_width),
+                    pxl_height: parseInt(sh.pxl_height),
+                    _base64_original_images: Array.from(_base64_original_images),
+                    _original_image_index: parseInt(sh._original_image_index),
+                    _layers: Array.from(sh._layers.map(function(l) {
+                        return {
                             id: parseInt(l.id),
                             hash: l.hash + "",
-                            name: l.name + "",
+                            name: l.name+"",
                             hidden: Boolean(l.hidden),
                             opacity: parseInt(l.opacity),
-                        });
+                        };
                     })),
-                    _layer_index: parseInt(state._layer_index),
-                    _pencil_mirror_index: parseInt(state._pencil_mirror_index),
-                    _id: state._id.toString()
-                })
-            })
-        };
+                    _layer_index: parseInt(sh._layer_index),
+                    _s_pxls: Array.from(sh._s_pxls.map(function(a){return Uint16Array.from(a)})),
+                    _s_pxl_colors:  Array.from(sh._s_pxl_colors.map(function(a){return Uint32Array.from(a)})),
+                    _pxl_indexes_of_selection: new Set(sh._pxl_indexes_of_selection),
+                    _pencil_mirror_index: parseInt(sh._pencil_mirror_index),
+                    _json_state_history: _json_state_history,
+                    _pxls_hovered: -1,
+                    _last_action_timestamp: 1/0,
+                }).then(() => {
 
-        js = null;
+                    this.canvas_pos.set_sizes(parseInt(sh.pxl_width), parseInt(sh.pxl_height));
+                    this.canvas_pos.set_current_scale_default();
 
-        let sh = _json_state_history.state_history[_json_state_history.history_position];
+                    this._request_force_update(false, false).then(() => {
 
-        this.super_state.set_state({
-            _id: sh._id.toString(),
-            pxl_width: parseInt(sh.pxl_width),
-            pxl_height: parseInt(sh.pxl_height),
-            _base64_original_images: Array.from(_base64_original_images),
-            _original_image_index: parseInt(sh._original_image_index),
-            _layers: Array.from(sh._layers.map(function(l) {
-                return {
-                    id: parseInt(l.id),
-                    hash: l.hash + "",
-                    name: l.name+"",
-                    hidden: Boolean(l.hidden),
-                    opacity: parseInt(l.opacity),
-                };
-            })),
-            _layer_index: parseInt(sh._layer_index),
-            _s_pxls: Array.from(sh._s_pxls.map(function(a){return Uint16Array.from(a)})),
-            _s_pxl_colors:  Array.from(sh._s_pxl_colors.map(function(a){return Uint32Array.from(a)})),
-            _pxl_indexes_of_selection: new Set(sh._pxl_indexes_of_selection),
-            _pencil_mirror_index: parseInt(sh._pencil_mirror_index),
-            _json_state_history: _json_state_history,
-            _pxls_hovered: -1,
-            _last_action_timestamp: 1/0,
-        }).then(() => {
-
-            this.canvas_pos.set_sizes(parseInt(sh.pxl_width), parseInt(sh.pxl_height));
-            this.canvas_pos.set_current_scale_default();
-
-            this._request_force_update(false, false).then(() => {
-
-                this.super_canvas.set_dimensions(parseInt(sh.pxl_width), parseInt(sh.pxl_height)).then(() => {
-                    this.super_master_meta.update_canvas(true).then(() => {
-                        this._maybe_save_state(null, true);
+                        this.super_canvas.set_dimensions(parseInt(sh.pxl_width), parseInt(sh.pxl_height)).then(() => {
+                            this.super_master_meta.update_canvas(true).then(() => {
+                                this._maybe_save_state(null, true);
+                            });
+                        });
                     });
-                });
-            });
 
-            this._notify_image_load_complete();
-            this._notify_is_something_selected();
-            this._notify_can_undo_redo_change();
-            callback_function();
-        });
+                    this._notify_image_load_complete();
+                    this._notify_is_something_selected();
+                    this._notify_can_undo_redo_change();
+                    callback_function();
+                });
+
+            });
     };
 
     export_JS_state = (callback_function) => {
 
         this._maybe_save_state((_json_state_history) => {
 
-            this.get_base64_png_data_url(1, false, 1, 100, 100).then( ({url}) => {
+            var base64_o_i = this.super_state.get_state()._base64_original_images.map(function(img){ return img.split(","); });
+            Promise.all(base64_o_i.map((entry) => {return Promise.resolve(toBytes(entry[1])); }))
+            .then((response) => {
+                response.forEach((img_1, index) => {
+                    base64_o_i[index][1] = img_1;
+                });
 
-                const bytes = 3 * Math.ceil((url.length/4));
-                callback_function({
-                    id: this.super_state.get_state()._id.toString(),
-                    kb: bytes / 1024,
-                    preview: url,
-                    timestamp: Date.now(),
-                    _base64_original_images: this.super_state.get_state()._base64_original_images.map(function(img){ img = img.split(","); return Array.of(img[0], base64ToBytes(img[1])); }),
-                    _json_state_history
+                this.get_base64_png_data_url(1, false, 1, 100, 100).then( ({url}) => {
+                    const bytes = 3 * Math.ceil((url.length/4));
+                    callback_function({
+                        id: this.super_state.get_state()._id.toString(),
+                        kb: bytes / 1024,
+                        preview: url,
+                        timestamp: Date.now(),
+                        _base64_original_images: base64_o_i,
+                        _json_state_history
+                    });
                 });
             });
         });
