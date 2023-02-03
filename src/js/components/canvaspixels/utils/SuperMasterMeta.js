@@ -44,6 +44,7 @@ const SuperMasterMeta = {
             color_conversion,
             sraf
         };
+
         let notifiers = {
             position(){},
             selection(){},
@@ -52,7 +53,7 @@ const SuperMasterMeta = {
             update(){}
         };
 
-
+        let shape_creator = meta.super_state.create_shape();
         let _pxl_indexes_of_current_shape = new Set();
 
         return {
@@ -143,6 +144,8 @@ const SuperMasterMeta = {
                         // If there is different dimension or if there are new dimension now
                         if(is_there_different_dimension || is_there_new_dimension) {
 
+                            // Update shape creator
+                            shape_creator = meta.super_state.create_shape();
                             // Update dimension
                             meta.super_state.set_state({
                                 pxl_width: parseInt(sizes.width),
@@ -179,29 +182,29 @@ const SuperMasterMeta = {
 
                                 _pxl_indexes_of_current_shape =
                                     tool === "LINE" ?
-                                        meta.super_state.create_shape().from_line(_shape_index_a, _pxls_hovered) :
+                                        shape_creator.from_line(_shape_index_a, _pxls_hovered) :
                                         tool === "RECTANGLE" ?
-                                            meta.super_state.create_shape().from_rectangle(_shape_index_a, _pxls_hovered) :
+                                            shape_creator.from_rectangle(_shape_index_a, _pxls_hovered) :
                                             tool === "ELLIPSE" ?
-                                                meta.super_state.create_shape().from_ellipse(_shape_index_a, _pxls_hovered) :
+                                                shape_creator.from_ellipse(_shape_index_a, _pxls_hovered) :
                                                 _pxl_indexes_of_current_shape;
 
                             } else if (Boolean(tool === "SELECT LINE" || tool === "SELECT RECTANGLE" || tool === "SELECT ELLIPSE") && _select_shape_index_a !== -1 && _pxls_hovered !== -1) {
 
                                 _pxl_indexes_of_current_shape =
                                     tool === "SELECT LINE" ?
-                                        meta.super_state.create_shape().from_line(_select_shape_index_a, _pxls_hovered) :
+                                        shape_creator.from_line(_select_shape_index_a, _pxls_hovered) :
                                         tool === "SELECT RECTANGLE" ?
-                                            meta.super_state.create_shape().from_rectangle(_select_shape_index_a, _pxls_hovered) :
+                                            shape_creator.from_rectangle(_select_shape_index_a, _pxls_hovered) :
                                             tool === "SELECT ELLIPSE" ?
-                                                meta.super_state.create_shape().from_ellipse(_select_shape_index_a, _pxls_hovered) :
+                                                shape_creator.from_ellipse(_select_shape_index_a, _pxls_hovered) :
                                                 _pxl_indexes_of_current_shape;
 
                             } else if (Boolean(tool === "SELECT PATH" || tool === "CONTOUR") && _paint_or_select_hover_pxl_indexes.size > 0) {
 
                                 const first_drawn_pixel = _paint_or_select_hover_pxl_indexes[0];
                                 const last_drawn_pixel = _paint_or_select_hover_pxl_indexes[_paint_or_select_hover_pxl_indexes.size - 1];
-                                const closing_path_line = meta.super_state.create_shape().from_line(first_drawn_pixel, last_drawn_pixel);
+                                const closing_path_line = shape_creator.from_line(first_drawn_pixel, last_drawn_pixel);
 
                                 if (select_mode === "REMOVE" && tool === "SELECT PATH") {
 
@@ -496,7 +499,7 @@ const SuperMasterMeta = {
                             _paint_or_select_hover_actions_latest_index = pxl_index | 0;
                         }
 
-                        let new_drawn_pxl_indexes =  meta.super_state.create_shape().from_line(_paint_or_select_hover_actions_latest_index, pxl_index);
+                        let new_drawn_pxl_indexes =  shape_creator.from_line(_paint_or_select_hover_actions_latest_index, pxl_index);
                         meta.super_state.paint_shape(new_drawn_pxl_indexes, pxl_current_color_uint32, pxl_current_opacity);
 
                         const { pencil_mirror_mode, _pencil_mirror_index } = meta.super_state.get_state();
@@ -646,7 +649,7 @@ const SuperMasterMeta = {
                             _paint_or_select_hover_actions_latest_index = pxl_index;
                         }
 
-                        const new_drawn_pxl_indexes = meta.super_state.create_shape().from_line(_paint_or_select_hover_actions_latest_index, pxl_index);
+                        const new_drawn_pxl_indexes = shape_creator.from_line(_paint_or_select_hover_actions_latest_index, pxl_index);
 
                         if(tool === "SELECT PATH") {
 
@@ -777,9 +780,9 @@ const SuperMasterMeta = {
                     let { pxl_current_opacity, pxl_current_color_uint32 } = meta.super_state.get_state();
                     const first_drawn_pixel = [..._paint_or_select_hover_pxl_indexes][0];
                     const last_drawn_pixel = [..._paint_or_select_hover_pxl_indexes][_paint_or_select_hover_pxl_indexes.size-1];
-                    const closing_path_line =  meta.super_state.create_shape().from_line(first_drawn_pixel, last_drawn_pixel);
+                    const closing_path_line =  shape_creator.from_line(first_drawn_pixel, last_drawn_pixel);
                     _paint_or_select_hover_pxl_indexes = new Set([..._paint_or_select_hover_pxl_indexes, ...closing_path_line]);
-                    const pxl_indexes = meta.super_state.create_shape().from_path(_paint_or_select_hover_pxl_indexes);
+                    const pxl_indexes = shape_creator.from_path(_paint_or_select_hover_pxl_indexes);
 
                     meta.super_state.paint_shape(pxl_indexes, pxl_current_color_uint32, pxl_current_opacity,
                         {
@@ -795,9 +798,9 @@ const SuperMasterMeta = {
 
                     const first_drawn_pixel = _paint_or_select_hover_pxl_indexes[0];
                     const last_drawn_pixel = _paint_or_select_hover_pxl_indexes[_paint_or_select_hover_pxl_indexes.size-1];
-                    const closing_path_line =  meta.super_state.create_shape().from_line(first_drawn_pixel, last_drawn_pixel);
+                    const closing_path_line =  shape_creator.from_line(first_drawn_pixel, last_drawn_pixel);
                     _paint_or_select_hover_pxl_indexes = new Set(Array.from(_paint_or_select_hover_pxl_indexes).concat(Array.from(closing_path_line)));
-                    const pxl_indexes = meta.super_state.create_shape().from_path(_paint_or_select_hover_pxl_indexes);
+                    const pxl_indexes = shape_creator.from_path(_paint_or_select_hover_pxl_indexes);
 
                     if(select_mode === "REPLACE") {
 
@@ -903,13 +906,13 @@ const SuperMasterMeta = {
                             switch (tool) {
 
                                 case "LINE":
-                                    pxl_indexes = meta.super_state.create_shape().from_line(_shape_index_a, pxl_index);
+                                    pxl_indexes = shape_creator.from_line(_shape_index_a, pxl_index);
                                     break;
                                 case "RECTANGLE":
-                                    pxl_indexes = meta.super_state.create_shape().from_rectangle(_shape_index_a, pxl_index);
+                                    pxl_indexes = shape_creator.from_rectangle(_shape_index_a, pxl_index);
                                     break;
                                 case "ELLIPSE":
-                                    pxl_indexes = meta.super_state.create_shape().from_ellipse(_shape_index_a, pxl_index);
+                                    pxl_indexes = shape_creator.from_ellipse(_shape_index_a, pxl_index);
                                     break;
                             }
 
@@ -933,12 +936,12 @@ const SuperMasterMeta = {
 
                             let pixel_indexes =
                                 tool === "SELECT LINE" ?
-                                    meta.super_state.create_shape().from_line(_select_shape_index_a, pxl_index):
+                                    shape_creator.from_line(_select_shape_index_a, pxl_index):
                                     tool === "SELECT RECTANGLE" ?
-                                        meta.super_state.create_shape().from_rectangle(_select_shape_index_a, pxl_index):
+                                        shape_creator.from_rectangle(_select_shape_index_a, pxl_index):
                                         tool === "SELECT ELLIPSE" ?
-                                            meta.super_state.create_shape().from_ellipse(_select_shape_index_a, pxl_index):
-                                            meta.super_state.create_shape().from_ellipse(_select_shape_index_a, pxl_index);
+                                            shape_creator.from_ellipse(_select_shape_index_a, pxl_index):
+                                            shape_creator.from_ellipse(_select_shape_index_a, pxl_index);
 
                             if(select_mode === "REPLACE") {
 
@@ -1250,7 +1253,7 @@ const SuperMasterMeta = {
 
                         if(tool === "BORDER") {
 
-                            meta.super_state.create_shape().from_border(colored_pxl_indexes, true, true).forEach((pxl_index) => {
+                            shape_creator.from_border(colored_pxl_indexes, true, true).forEach((pxl_index) => {
 
                                 color_pixel(pxl_index, true);
                             });

@@ -26,42 +26,40 @@ import UraniumJS from "uraniumjs/UraniumJS";
 import UraniumCompressJS from "uraniumjs/UraniumCompressJS";
 UraniumJS.enrichFunctionCalls = UraniumCompressJS.UraniumJSEnrichFunctionCalls;
 UraniumJS.depleteFunctionCalls = UraniumCompressJS.UraniumJSDepleteFunctionCalls;
-
-/*
-  BASE 92 --- Encoding
-*/
 const AFunction = Object.getPrototypeOf( function(){}).constructor;
-function fu(string, mode) {
-    "use strict";
 
-    if(mode.startsWith("COMPRESS")) {
+export default function (text, log, only_text){
 
-        return UraniumJS.enrichString(string);
-        
-    }else if(mode.startsWith("DECOMPRESS")) {
+    function uraniumize(string, mode) {
+        "use strict";
 
-        return UraniumJS.stringDeplete(string);
+        if(mode.startsWith("COMPRESS")) {
 
-    }else {
+            return UraniumJS.enrichString(string);
 
-        return null;
+        }else if(mode.startsWith("DECOMPRESS")) {
+
+            return UraniumJS.stringDeplete(string);
+
+        }else {
+
+            return null;
+        }
     }
-}
 
-module.exports = function (text, log, only_text){
     "use strict";
     log = log || false;
     only_text = only_text || false;
     if(log) {
-        console.log(fu(text, "DECOMPRESS"));
+        console.log(uraniumize(text, "DECOMPRESS"));
         return null;
     }else {
 
         if(only_text){
-            return fu(text, "DECOMPRESS");
+            return uraniumize(text, "DECOMPRESS");
         }else {
 
-            return new AFunction(fu(text, "DECOMPRESS"))();
+            return new AFunction(uraniumize(text, "DECOMPRESS"))();
         }
     }
 };

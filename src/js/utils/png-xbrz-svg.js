@@ -137,9 +137,9 @@ const base64png_to_xbrz_svg = (base64png, callback_function_for_image, callback_
 
             if(optimize_render_size) {
 
-                JSLoader( () => import("../utils/png_quant")).then((png_quant) => {
+                JSLoader( () => import("./png_quant")).then(({png_quant}) => {
 
-                    png_quant.default(base64_out, 70, 80, 5, pool).then((base64_out_second) => {
+                    png_quant(base64_out, 70, 80, 5, pool).then((base64_out_second) => {
 
                         callback_function_for_image(base64_out_second, first_scale_size, second_image_data.width, second_image_data.height);
                     });
@@ -167,9 +167,9 @@ const base64png_to_xbrz_svg = (base64png, callback_function_for_image, callback_
 
                     if(optimize_render_size) {
 
-                        JSLoader( () => import("../utils/png_quant")).then((png_quant) => {
+                        JSLoader( () => import("./png_quant")).then(({png_quant}) => {
 
-                            png_quant.default(base64_out, 70, 80, 5, pool).then((base64_out_second) => {
+                            png_quant(base64_out, 70, 80, 5, pool).then((base64_out_second) => {
 
                                 callback_function_for_image(base64_out_second, first_scale_size, second_image_data.width, second_image_data.height);
                             });
@@ -200,9 +200,9 @@ const base64png_to_xbrz_svg = (base64png, callback_function_for_image, callback_
 
                     if(optimize_render_size) {
 
-                        JSLoader( () => import("../utils/png_quant")).then((png_quant) => {
+                        JSLoader( () => import("./png_quant")).then(({png_quant}) => {
 
-                            png_quant.default(base64_out, 70, 80, 5, pool).then((base64_out_second) => {
+                            png_quant(base64_out, 70, 80, 5, pool).then((base64_out_second) => {
 
                                 callback_function_for_image(base64_out_second, first_scale_size, second_image_data.width, second_image_data.height);
                             });
@@ -233,9 +233,9 @@ const base64png_to_xbrz_svg = (base64png, callback_function_for_image, callback_
 
                     if(optimize_render_size) {
 
-                        JSLoader( () => import("../utils/png_quant")).then((png_quant) => {
+                        JSLoader( () => import("./png_quant")).then(({png_quant}) => {
 
-                            png_quant.default(base64_out, 70, 80, 5, pool).then((base64_out_second) => {
+                            png_quant(base64_out, 70, 80, 5, pool).then((base64_out_second) => {
 
                                 callback_function_for_image(base64_out_second, first_scale_size, second_image_data.width, second_image_data.height);
                             });
@@ -265,9 +265,9 @@ const base64png_to_xbrz_svg = (base64png, callback_function_for_image, callback_
 
                     if(optimize_render_size) {
 
-                        JSLoader( () => import("../utils/png_quant")).then((png_quant) => {
+                        JSLoader( () => import("./png_quant")).then(({png_quant}) => {
 
-                            png_quant.default(base64_out, 70, 80, 5, pool).then((base64_out_second) => {
+                            png_quant(base64_out, 70, 80, 5, pool).then((base64_out_second) => {
 
                                 callback_function_for_image(base64_out_second, first_scale_size, second_image_data.width, second_image_data.height);
                             });
