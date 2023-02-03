@@ -6,6 +6,7 @@ import {List, ListItem, ListItemIcon, ListItemText, Badge} from "@material-ui/co
 import PersonIcon from "@material-ui/icons/Person";
 import CodeIcon from "@material-ui/icons/Code";
 import ForumIcon from "@material-ui/icons/Forum";
+import PaletteIcon from "@material-ui/icons/Palette";
 
 import { HISTORY } from "../utils/constants";
 import actions from "../actions/utils";
@@ -55,6 +56,7 @@ const styles = theme => ({
     },
     styledBadgeConnected: {
         "& .MuiBadge-badge": {
+            marginRight: -8,
             backgroundColor: "#44b700",
             color: "#44b700",
             boxShadow: `0 0 0 2px ${theme.palette.secondary.dark}`,
@@ -162,15 +164,9 @@ class DrawerContent extends React.PureComponent {
             <div>
                 <List style={{paddingTop: 0}} className={classes.labList}>
                     <Fade in={true} timeout={100}>
-                        <ListItem style={{
-                            borderBottom: "2px solid #212558",
-                            backgroundColor: "transparent",
-                            background: `linear-gradient(to left, #01031066, #ffffff00), linear-gradient(to bottom, #5a7fd24a, #080b25aa)`,
-                            backgroundSize: "cover",
-                            backgroundPosition: "center",
-                            textShadow: "0px 0px 6px #8888ff"
-                        }} button onClick={this._open_pixel_page}>
-                            <ListItemText className={classes.boldListItemText} primary={"PIXEL-ART EDITOR!"} secondary={"NFTs LABORATORY..."}/>
+                        <ListItem button className={classes.listItemGrey} onClick={this._open_pixel_page}>
+                            <ListItemIcon><PaletteIcon className={classes.iconColor} /></ListItemIcon>
+                            <ListItemText primary="Draw" />
                         </ListItem>
                     </Fade>
                     <Fade in={true} timeout={200}>
@@ -182,7 +178,7 @@ class DrawerContent extends React.PureComponent {
                     <Fade in={true} timeout={300}>
                         <ListItem button className={classes.listItemGrey} onClick={(event) => this._open_link(event, "https://github.com/pixa-pics/pixa-pics.github.io")}>
                             <ListItemIcon><CodeIcon className={classes.iconColor} /></ListItemIcon>
-                            <ListItemText primary="Source Code" />
+                            <ListItemText primary="Source code" />
                         </ListItem>
                     </Fade>
                     <Fade in={true} timeout={400}>
@@ -190,7 +186,7 @@ class DrawerContent extends React.PureComponent {
                             <Badge className={classes.styledBadgeConnected} overlap="circular" badgeContent=" " variant="dot">
                                 <ListItemIcon><ForumIcon className={classes.iconColor} /></ListItemIcon>
                             </Badge>
-                            <ListItemText primary="Facebook Groups" />
+                            <ListItemText primary="Facebook's group" />
                         </ListItem>
                     </Fade>
                 </List>

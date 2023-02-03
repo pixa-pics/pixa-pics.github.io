@@ -43,10 +43,10 @@ const styles = theme => ({
         maxWidth: "100%",
     },
     content: {
-        position: "relative",
+        position: "absolute",
         contain: "size paint style layout",
-        width: "calc(100% - 256px)",
-        marginLeft: 256,
+        width: "calc(100% - 64px)",
+        marginLeft: 64,
         height: "calc(100% - 64px)",
         [theme.breakpoints.down("xs")]: {
             height: "calc(100% - 56px)",
@@ -625,10 +625,7 @@ class Index extends React.PureComponent {
             return;
         }
 
-        this.setSt4te({_snackbar_open: false}, () => {
-
-            this.forceUpdate();
-        });
+        this.setSt4te({_snackbar_open: false}, this.forceUpdate);
     };
 
     _handle_share_dialog_close = () => {
@@ -701,7 +698,7 @@ class Index extends React.PureComponent {
                     }}
                     message={<div>
                         {_jamy_enabled ? <span className={classes.jamyContainer}>{JAMY[_jamy_state_of_mind]}</span>: null}
-                        <span>{_snackbar_message.toString()}</span>
+                        <span>{_snackbar_message}</span>
                     </div>}
                     action={
                         <IconButton size="small" aria-label="close" color="inherit" onClick={this._close_snackbar}>

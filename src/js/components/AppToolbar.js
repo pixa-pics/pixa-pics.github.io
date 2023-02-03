@@ -237,6 +237,31 @@ class AppToolbar extends React.PureComponent {
                 autoplay={true}
                 src="/src/js/notoemoji/lottie/1f4a5.json"
                 style={{ height: '150px', width: '150px', cursor: "pointer" }}/>
+        });
+        this._updated_dimensions();
+        window.addEventListener("resize", this._updated_dimensions);
+    }
+
+    componentWillUnmount() {
+
+        window.removeEventListener("resize", this._updated_dimensions);
+    }
+
+    _updated_dimensions = () => {
+
+        let w = window,
+            d = document,
+            documentElement = d.documentElement,
+            body = d.getElementsByTagName('body')[0],
+            _window_width = w.innerWidth || documentElement.clientWidth || body.clientWidth,
+            _window_height = w.innerHeight|| documentElement.clientHeight || body.clientHeight;
+
+        const _less_than_1280w = Boolean(_window_width < 1280);
+        const update = this.st4te._less_than_1280w !== _less_than_1280w;
+        this.setSt4te({_less_than_1280w}, () => {
+            if(update){
+                this.forceUpdate();
+            }
         })
     }
 
@@ -392,7 +417,7 @@ class AppToolbar extends React.PureComponent {
 
     render() {
 
-        const { classes, ret, camo, _is_pre_reset, pathname, language, loaded_progress_percent, know_the_settings, _swipeable_app_drawer_open, _account_menu_anchor_element, logged_account, jamy_state_of_mind, jamy_enabled, music_enabled, _explosion } = this.st4te;
+        const { classes, ret, camo, _is_pre_reset, pathname, language, loaded_progress_percent, know_the_settings, _less_than_1280w, _swipeable_app_drawer_open, _account_menu_anchor_element, logged_account, jamy_state_of_mind, jamy_enabled, music_enabled, _explosion } = this.st4te;
 
         const JAMY = {
             angry: <JamyAngry className={classes.jamy} />,
@@ -406,25 +431,6 @@ class AppToolbar extends React.PureComponent {
 
         return (
             <div>
-                <SwipeableDrawer
-                    keepMounted={true}
-                    transitionDuration={{enter: 125, exit: 75}}
-                    anchor="left"
-                    classes={{root: classes.swipeableDrawer, paper: classes.drawerPaper}}
-                    open={_swipeable_app_drawer_open}
-                    onOpen={this._handle_open_swipeable_app_drawer}
-                    onClose={this._handle_close_swipeable_app_drawer}>
-                        <Toolbar className={classes.appBar}>
-                            <div className={classes.swipeableDrawerToolbar} onClick={this._open_home}>
-                                <span className={classes.swipeableDrawerAppTitle}>HTTPS://PIXA.PICS/</span>
-                            </div>
-                        </Toolbar>
-                        <DrawerContent logged_account={logged_account} language={language} onClose={this._handle_close_swipeable_app_drawer}/>
-                    <div className={_swipeable_app_drawer_open ? classes.drawerPrivacyHint: classes.drawerPrivacyHintHidden}>
-                        <p style={{fontSize: "0.777em"}}>Cutting off annoying details is free while on the journey! Easily becoming a lighter adventure, using a sanitized online-self's image tends to honor one's real beauty stronger.<br/><br/>THIS APP: Is in your hands only, doesn't sniff network requests, and is neutral just like Switzerland.</p>
-                        <h4 style={{color: "#ffffffff", marginBottom: 0}}>Online-self image matters! This isn't madness; This is Pixaaaaa! ... Pics</h4>
-                    </div>
-                </SwipeableDrawer>
                 <AppBar position="fixed" className={classes.appBar}>
                     <Toolbar>
                         <IconButton edge="start" className={classes.drawerButton} color="inherit" aria-label="menu" onClick={this._handle_open_swipeable_app_drawer}>
@@ -484,6 +490,24 @@ class AppToolbar extends React.PureComponent {
                         </Menu>
                     </Toolbar>
                 </AppBar>
+                {_less_than_1280w && <SwipeableDrawer
+                    keepMounted={false}
+                    transitionDuration={{enter: 125, exit: 75}}
+                    anchor="left"
+                    classes={{root: classes.swipeableDrawer, paper: classes.drawerPaper}}
+                    open={_swipeable_app_drawer_open}
+                    onOpen={this._handle_open_swipeable_app_drawer}
+                    onClose={this._handle_close_swipeable_app_drawer}>
+                    <Toolbar className={classes.appBar}>
+                        <div className={classes.swipeableDrawerToolbar} onClick={this._open_home}>
+                            <span className={classes.swipeableDrawerAppTitle}>HTTPS://PIXA.PICS/</span>
+                        </div>
+                    </Toolbar>
+                    <DrawerContent logged_account={logged_account} language={language} onClose={this._handle_close_swipeable_app_drawer}/>
+                    <div className={_swipeable_app_drawer_open ? classes.drawerPrivacyHint: classes.drawerPrivacyHintHidden}>
+                        <h4 style={{color: "#ffffffff", marginBottom: 0}}>Give them a mask and they're being starting to speak the truth...</h4>
+                    </div>
+                </SwipeableDrawer>}
             </div>
         );
     }

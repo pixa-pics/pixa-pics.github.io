@@ -10,13 +10,20 @@ const styles = theme => ({
         display: "none",
     },
     drawer: {
-        width: 256,
         flexShrink: 0,
         position: "fixed",
         zIndex: 111,
         height: "100%",
         contain: "layout paint size style",
         boxShadow: "2px 0px 4px 0px rgb(0 0 0 / 20%), 4px 0px 5px 0px rgb(0 0 0 / 14%), 6px 0px 10px 0px rgb(0 0 0 / 12%)",
+        width: 256,
+        clipPath: "inset(0 192px 0 0)",
+        transition: "clip-path cubic-bezier(0.4, 0, 0.2, 1) 275ms",
+        "&:hover": {
+            width: 256,
+            clipPath: "inset(0 0 0 0)",
+            transition: "clip-path cubic-bezier(0.4, 0, 0.2, 1) 175ms",
+        },
         [theme.breakpoints.down("sm")]: {
             display: "none"
         },
@@ -43,7 +50,6 @@ const styles = theme => ({
             backgroundPosition: "25% 100%",
             backgroundRepeat: "no-repeat",
             backgroundSize: "100%",
-            backgroundImage: `url()`,
             zIndex: -1,
         },
     },
@@ -57,14 +63,13 @@ const styles = theme => ({
         padding: 8,
         color: "#ffffff",
         userSelect: "none",
-        "& > p": {
+        "& > h4": {
             opacity: 0,
             fontWeight: "bold",
-            paddingBottom: 12,
             transition: "opacity cubic-bezier(0.4, 0, 0.2, 1) 350ms",
         },
-        "&:hover > p": {
-            opacity: 0,
+        "&:hover > h4": {
+            opacity: 1,
             transition: "opacity cubic-bezier(0.4, 0, 0.2, 1) 350ms",
         }
     },
@@ -92,6 +97,7 @@ class AppDrawer extends React.PureComponent {
             bdi: props.bdi,
             language: props.language,
             classes: props.classes,
+            _less_than_1280w: false,
             _backgrds: [
                 ``,
                 `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 442 516' width='589.333' height='688' xmlns:v='https://vecta.io/nano'%3E%3Cdefs%3E%3CclipPath id='A'%3E%3Cpath d='M0 0h442v516H0z'/%3E%3C/clipPath%3E%3C/defs%3E%3Cg clip-path='url(%23A)'%3E%3Cpath fill='%23060e23' d='M57 71l17 15 3 6-1-6-1-10 7 7 6 12 3 11 6 3-4-20 13 8 16 17 13 21-12-30-10-12 3-3 13 8-6-16 22-23-8 27v41l4 20 6 12 3-20 12-24-4 16v11l8-18 4-12h9l2 2 4-6 19-3-4 8v6l4-5 10-9h6l20 2-36 19-18 13 22-10 31-8 16 1 3-7-36-22-3-7-1 5-11-6-10-19-1 5 1 6-15-16v4l-15-11 22 1 39 11 21 15 7 17-1-17-19-55-9-16-6-6 12 4 7 6-3-13 8 2 4 8V4l10-3 5 15 1 23 5-25 5 2-2 18 7-12 7 7v4h5l6 5 10 25 17-22 21-19-5 16 1 4 5-9v-3l7-12h14l-20 25-9 18-7 17-17 6-7 7 31-9 30-2 28 6 35 17 7 8h-16l-6-8-11-6 2 12-16-19-2 5 16 19-17 5-10-16-6-3 3 8 4 7-5 7-6-13-8-11-7-7 14 30-14 5-6 6 37 10 17 9 15 15-6 1-7-8-8-4 10 12 12 19 6 18 2 16-22-18v-5h-11l-29-13-3-12-4-5 2 14-17-6h-7l13 17 2 14-11-6 11 16v9l-13-17-6-2 11 16 8 15 2 14-4 16-9-7v-12l-4-6v9l-1 6-3-9-6-3-4-20-5 5 1 7-9-11v-19l8-21-8 4-10 22-10-12 4-12-8 2v7l-6-9-2-13-17 25-25 48 9 15-1 10-6-8-6-2 14 26-21-9-12 32-16 60-10 56 1 33 21 53h-43l1-53-18-69-4-51-1-61 7-50-37 12-22 13-25 27 2-12-20 8-7 12 3-31 13-4-9-4 9-13 15 6 8-2-10-6-9-2 5-5-1-5 13-5 18 10 18 3-16-10h-6l-3-6 9-6-1-4 8-2 11 6 10-6-9-11 12-1-16-8h-8l-7-6v8l-15 2-13-4-6 2 12 6-41 5h0L3 212l17-18 19-6H23l22-21h24l12 5 2 3 2-5-12-9-22-4 12-7 5-9 7 5-4-9 14 4 12-2-20-4-12-9h22l-29-10 6-3-4-4V98l6 2 11-2-18-7-2-20zm226-22l-12 8-8 17 15-15 11-7-6-3h0zm29 80l6-8v-7l5 13h7v-12l-3-9 7 9 3 17h-10l-15-3h0zm-130 31l13-12v8l5-2 15-11 7-1-7 5v5l15-2 10 4h-17l-15 2-13 4h-13 0zm-16-6l-6 11 9-3 5 3 8-11-8-2-8 2h0zm-80-7h7l15 5 17 11 11 12h-9l-9-12-16-9-5 2-11-9h0zm95 45l20-9 2 13 5-11 12-6-7 8-2 5 14-6 11-1 7-11 10-7-5 8 10-3-13 15-5 12-8 13-7 17-14-17-11-9-19-11h0zm-17 32l8 6 5 13 10-10-7 20 6 10 11 7v-11l5-11 1 12-3 16 7-9v-5l3 5-7 13-8 24-9 29-6 22-6 30-4 19-9-50-2-61 2-39 3-30h0z' fill-rule='evenodd'/%3E%3C/g%3E%3C/svg%3E")`,
@@ -117,11 +123,6 @@ class AppDrawer extends React.PureComponent {
 
             callback();
         }
-    }
-
-    componentDidMount() {
-
-        this.forceUpdate();
     }
 
     componentWillReceiveProps(new_props) {
@@ -152,8 +153,7 @@ class AppDrawer extends React.PureComponent {
                         <DrawerContent language={language} onClose={() => {}} />
                         <Fade in={true} timeout={600}>
                             <div className={classes.drawerPrivacyHint}>
-                                <p style={{fontSize: "0.777em"}}>Cutting off annoying details is free while on the journey! Easily becoming a lighter adventure, using a sanitized online-self's image tends to honor one's real beauty stronger.<br/><br/>THIS APP: Is in your hands only, doesn't sniff network requests, and is neutral just like Switzerland.</p>
-                                <h4 style={{color: "#ffffffff", marginBottom: 0}}>Online-self's image doesn't matters? This is madness!</h4>
+                                <h4 style={{color: "#ffffffff", marginBottom: 0}}>Give them a mask and they're being starting to speak the truth...</h4>
                             </div>
                         </Fade>
                     </div>
