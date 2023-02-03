@@ -1,5 +1,5 @@
-import UraniumJS from "uraniumjs/UraniumJS";
-import UraniumCompressJS from "uraniumjs/UraniumCompressJS";
+import UraniumJS from "uraniumjs/UraniumJS.min.js";
+import UraniumCompressJS from "uraniumjs/UraniumCompressJS.min.js";
 import SuperJSONatural from "superjsonatural";
 
 UraniumJS.enrichFunctionCalls = UraniumCompressJS.UraniumJSEnrichFunctionCalls;

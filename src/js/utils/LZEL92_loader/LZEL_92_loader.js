@@ -1,4 +1,3 @@
-"use strict";
 /*!
 MIT License
 
@@ -23,8 +22,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import UraniumJS from "uraniumjs/UraniumJS";
-import UraniumCompressJS from "uraniumjs/UraniumCompressJS";
+import UraniumJS from "uraniumjs/UraniumJS.min.js";
+import UraniumCompressJS from "uraniumjs/UraniumCompressJS.min.js";
 UraniumJS.enrichFunctionCalls = UraniumCompressJS.UraniumJSEnrichFunctionCalls;
 UraniumJS.depleteFunctionCalls = UraniumCompressJS.UraniumJSDepleteFunctionCalls;
 
