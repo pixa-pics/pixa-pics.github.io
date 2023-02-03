@@ -942,7 +942,7 @@ var t = function(buffer) {
 
 // https://www.digitalocean.com/community/tools/minify MINIFY --> var t=function...... AND ADD : return t;
 
-import LZEL_92 from "../../../utils/LZEL_92_loader";
+import {load as LZEL_92} from "../../../utils/LZEL_92_loader";
 
 const ReducePalette = {
 

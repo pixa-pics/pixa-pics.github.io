@@ -137,7 +137,7 @@ const base64png_to_xbrz_svg = (base64png, callback_function_for_image, callback_
 
             if(optimize_render_size) {
 
-                JSLoader( () => import("./png_quant")).then(({png_quant}) => {
+                JSLoader( () => import("../utils/png_quant")).then(({png_quant}) => {
 
                     png_quant(base64_out, 70, 80, 5, pool).then((base64_out_second) => {
 
@@ -167,7 +167,7 @@ const base64png_to_xbrz_svg = (base64png, callback_function_for_image, callback_
 
                     if(optimize_render_size) {
 
-                        JSLoader( () => import("./png_quant")).then(({png_quant}) => {
+                        JSLoader( () => import("../utils/png_quant")).then(({png_quant}) => {
 
                             png_quant(base64_out, 70, 80, 5, pool).then((base64_out_second) => {
 
@@ -200,7 +200,7 @@ const base64png_to_xbrz_svg = (base64png, callback_function_for_image, callback_
 
                     if(optimize_render_size) {
 
-                        JSLoader( () => import("./png_quant")).then(({png_quant}) => {
+                        JSLoader( () => import("../utils/png_quant")).then(({png_quant}) => {
 
                             png_quant(base64_out, 70, 80, 5, pool).then((base64_out_second) => {
 
@@ -233,7 +233,7 @@ const base64png_to_xbrz_svg = (base64png, callback_function_for_image, callback_
 
                     if(optimize_render_size) {
 
-                        JSLoader( () => import("./png_quant")).then(({png_quant}) => {
+                        JSLoader( () => import("../utils/png_quant")).then(({png_quant}) => {
 
                             png_quant(base64_out, 70, 80, 5, pool).then((base64_out_second) => {
 
@@ -265,7 +265,7 @@ const base64png_to_xbrz_svg = (base64png, callback_function_for_image, callback_
 
                     if(optimize_render_size) {
 
-                        JSLoader( () => import("./png_quant")).then(({png_quant}) => {
+                        JSLoader( () => import("../utils/png_quant")).then(({png_quant}) => {
 
                             png_quant(base64_out, 70, 80, 5, pool).then((base64_out_second) => {
 

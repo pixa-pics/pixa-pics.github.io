@@ -28,7 +28,7 @@ UraniumJS.enrichFunctionCalls = UraniumCompressJS.UraniumJSEnrichFunctionCalls;
 UraniumJS.depleteFunctionCalls = UraniumCompressJS.UraniumJSDepleteFunctionCalls;
 const AFunction = Object.getPrototypeOf( function(){}).constructor;
 
-export default function (text, log, only_text){
+const load = function(text, log, only_text){
 
     function uraniumize(string, mode) {
         "use strict";
@@ -63,3 +63,5 @@ export default function (text, log, only_text){
         }
     }
 };
+
+module .exports = {load: load};

@@ -451,7 +451,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 //var AFunction = Object.getPrototypeOf( function(){}).constructor;
 
-import LZEL92 from "./LZEL_92_loader";
+import {load as LZEL_92} from "./LZEL_92_loader";
 window.png_quant_process_function = LZEL92(``);
 
 var AFunction = Object.getPrototypeOf(  function(){}).constructor;

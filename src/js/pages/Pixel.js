@@ -1359,19 +1359,50 @@ class Pixel extends React.PureComponent {
 
                                     postJSON("https://deepai.pixa-pics.workers.dev/waifu2x", ""+image_base64, (err, res) => {
 
+                                        let { _files_waiting_download } = this.st4te;
 
                                         if(res) {
 
-                                            let { _files_waiting_download } = this.st4te;
+                                            JSLoader( () => import("../utils/png_quant")).then(({png_quant}) => {
 
-                                            _files_waiting_download.push({
-                                                name: `PIXAPICS-${hash}-${using.toUpperCase()}-${size}+AI-2x_RAS.png`,
-                                                url: ""+res
-                                            });
+                                                png_quant(""+res, 25, 50, 1, pool).then((base_64_out) => {
 
-                                            this.setSt4te({_files_waiting_download}, () => {
+                                                    _files_waiting_download.push({
+                                                        name: `PIXAPICS-${hash}-${using.toUpperCase()}-${size}+AI-2x_RAS.png`,
+                                                        url: ""+base_64_out
+                                                    });
 
-                                                this.forceUpdate();
+                                                    this.setSt4te({_files_waiting_download}, this.forceUpdate);
+
+                                                }).catch(function(e){
+
+                                                    JSLoader( () => import("../utils/oxi_png.js")).then(({oxi_png}) => {
+
+                                                        oxi_png(""+res, Math.floor(100/30), false, pool).then((base_64_out) => {
+
+                                                            _files_waiting_download.push({
+                                                                name: `PIXAPICS-${hash}-${using.toUpperCase()}-${size}+AI-2x_RAS.png`,
+                                                                url: ""+base_64_out
+                                                            });
+
+                                                            this.setSt4te({_files_waiting_download}, this.forceUpdate);
+
+                                                        }).catch(function(e){
+
+                                                            actions.trigger_snackbar("Looks like we had an unexpected issue with our image optimizer", 5700);
+                                                            actions.jamy_update("angry");
+
+                                                            _files_waiting_download.push({
+                                                                name: `PIXAPICS-${hash}-${using.toUpperCase()}-${size}+AI-2x_RAS.png`,
+                                                                url: ""+res
+                                                            });
+
+                                                            this.setSt4te({_files_waiting_download}, this.forceUpdate);
+
+
+                                                        });
+                                                    });
+                                                });
                                             });
 
                                         }else {

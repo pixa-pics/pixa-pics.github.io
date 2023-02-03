@@ -96,7 +96,6 @@ async function init(bytes) {
 
 function b64toblob (b64_data_1, pool) {
     return new Promise(function(resolve, reject){
-
         base64_sanitize(b64_data_1, function(b64_data_2){
             fetch(b64_data_2).then(function(response){
                 response.blob().then(function(blob){
