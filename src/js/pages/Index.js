@@ -625,7 +625,9 @@ class Index extends React.PureComponent {
             return;
         }
 
-        this.setSt4te({_snackbar_open: false}, this.forceUpdate);
+        this.setSt4te({_snackbar_open: false}, () => {
+            this.forceUpdate();
+        });
     };
 
     _handle_share_dialog_close = () => {

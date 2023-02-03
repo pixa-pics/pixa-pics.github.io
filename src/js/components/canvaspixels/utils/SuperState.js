@@ -186,7 +186,6 @@ const SuperState = {
     from: function(props){
         "use strict";
         let _state = this._build_state(props);
-        let _pxl_indexes = new Set();
 
         return {
             paint_shape(pxl_indexes, color, opacity, s, callback_function) {
@@ -194,19 +193,18 @@ const SuperState = {
 
                 s = s || {};
                 callback_function = callback_function || function(){};
-
+                pxl_indexes = pxl_indexes || new Set();
                 let state = _state.get();
                 let pxl_colors = state._s_pxl_colors[state._layer_index];
                 let pxls = state._s_pxls[state._layer_index];
-
                 let indexes = Uint32Array.from(pxl_indexes);
                 let sd_color = SIMDopeColor.new_uint32(color);
                 let sd_colors = SIMDopeColors(new Uint32Array(indexes.length));
                 for(let i = 0; i < indexes.length; i = (i + 1 | 0)>>>0) {
                     sd_colors.set_element(i,
                         SIMDopeColor
-                            .new_uint32(pxl_colors[pxls[indexes[i]]])
-                            .blend_with(sd_color.copy(), opacity*255, false, false)
+                            .new_uint32(pxl_colors[pxls[indexes[i|0]|0]|0]|0)
+                            .blend_with(sd_color.copy(), opacity*255|0, false, false)
                         );
                 }
 
@@ -227,7 +225,7 @@ const SuperState = {
                 }
 
                 for(let i = 0; i < indexes.length; i = (i + 1 | 0)>>>0) {
-                    pxls[indexes[i]] = (pxl_colors.indexOf(new_ui32_colors[i]) | 0) >>> 0;
+                    pxls[indexes[i|0]|0] = (pxl_colors.indexOf(new_ui32_colors[i|0]|0) | 0) >>> 0;
                 }
 
 
@@ -360,12 +358,6 @@ const SuperState = {
                     return 'url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAAAAq0lEQVRYR+1WQQrAIAxb///oDmUOkc3W2kEG2XHQGpPURg6wTzLwqKr2fUQk3Ddc2AMogBqGgo2ARpkhGaKHZtMIKRmnjJLtrBBIU0O9QzvsjrUpyzUd0BgfvAdYWz3StzLUm7KBuWLEKzZPzHjqO8SWElXuX7UnLCCvTCvTFJYsAuarGswp270tQ77FIOQuY0BjQLOM+zuGVlbK7HIpLzXH3vIXGfIwlGXqE9034xUtxdxDAAAAAElFTkSuQmCC") 18 18, auto';
                 }
             },
-            get_indexes: function(clear_before) {
-                "use strict";
-                clear_before = clear_before || false;
-                if(clear_before){_pxl_indexes.clear();}
-                return _pxl_indexes;
-            },
             get_imported_image_data: function() {
                 "use strict";
                 let state = _state.get();
@@ -486,11 +478,10 @@ const SuperState = {
             },
             create_shape: function() {
                 "use strict";
-                let new_canvas_context_2d = this.new_canvas_context_2d;
                 let state = _state.get();
-                let pxl_indexes = this.get_indexes(true);
                 let width = state.pxl_width | 0;
                 let height = state.pxl_height | 0;
+                let context = this.new_canvas_context_2d(width, height);
 
                 function get_opposite_coordinates(width, from, to) {
                     "use strict";
@@ -511,26 +502,26 @@ const SuperState = {
 
                 function get_shadow_indexes_from_canvas_context(context, shadow_indexes) {
                     "use strict";
-                    const ui32_colors = new Uint32Array(context.getImageData(0, 0, context.canvas.width, context.canvas.height).data.reverse().buffer).reverse();
-                    const ui32_colors_length = ui32_colors.length | 0;
+                    shadow_indexes = shadow_indexes || new Set();
+                    let ui32_colors = new Uint32Array(context.getImageData(0, 0, context.canvas.width, context.canvas.height).data.reverse().buffer).reverse();
+                    let ui32_colors_length = ui32_colors.length | 0;
                     for(let i = 0; (i|0) < (ui32_colors_length|0); i = (i + 1 | 0)>>>0) {
-
-                        if(ui32_colors[i] !== 0) { shadow_indexes.add(i);}
+                        if((ui32_colors[i|0]|0) != 0) { shadow_indexes.add(i|0);}
                     }
+
+                    return shadow_indexes;
                 }
 
                 // TO DO --> GET PREVIOUS COMMIT OR FINISH THIS
                 return {
                     from_text: function (size, text) {
 
-                        let indexes = new Set();
-                        let ctx = new_canvas_context_2d(width, height)
-                        ctx.font = `${size}px "Jura"`;
-                        ctx.fillStyle = "#ffffffff";
-                        ctx.textAlign = "center";
-                        ctx.fillText(text, width/2, height/2);
-                        get_shadow_indexes_from_canvas_context(ctx, indexes);
-                        return indexes;
+                        context.clearRect(0, 0, width, height);
+                        context.font = `${size}px "Jura"`;
+                        context.fillStyle = "#ffffffff";
+                        context.textAlign = "center";
+                        context.fillText(text, width/2, height/2);
+                        return get_shadow_indexes_from_canvas_context(context);
                     },
                     from_border: function(selection, inside, bold ) {
                         "use strict";
@@ -594,7 +585,7 @@ const SuperState = {
                                     !selection.has(left) || -1 === left
                                 ) {
 
-                                    pxls_of_the_border.add(pxl_index);
+                                    pxls_of_the_border.add(pxl_index|0);
                                 }
 
                                 if(bold) {
@@ -606,7 +597,7 @@ const SuperState = {
                                         !selection.has(bottom_right) || -1 === bottom_right
                                     ) {
 
-                                        pxls_of_the_border.add(pxl_index);
+                                        pxls_of_the_border.add(pxl_index|0);
                                     }
 
                                 }
@@ -618,38 +609,37 @@ const SuperState = {
                     },
                     from_path: function(path_indexes){
                         "use strict";
-                        let path_context = new_canvas_context_2d(width, height);
 
-                        path_context.lineWidth = 0;
-                        path_context.beginPath();
-
+                        context.clearRect(0, 0, width, height);
+                        context.lineWidth = 0;
+                        context.beginPath();
                         path_indexes.forEach((pxl_index, index) => {
 
-                            const x = pxl_index % width;
-                            const y = (pxl_index - x) / width
+                            const x = pxl_index % width|0;
+                            const y = (pxl_index - x|0) / width|0;
 
-                            if(index === 0) {
+                            if((index|0) == 0) {
 
-                                path_context.moveTo(x, y);
+                                context.moveTo(x|0, y|0);
                             }else {
 
-                                path_context.lineTo(x, y);
+                                context.lineTo(x|0, y|0);
                             }
 
                         });
 
-                        path_context.strokeStyle = "#ffffffff";
-                        path_context.fillStyle = "#ffffffff";
-                        path_context.stroke();
-                        path_context.fill();
+                        context.strokeStyle = "#ffffffff";
+                        context.fillStyle = "#ffffffff";
+                        context.stroke();
+                        context.fill();
 
-                        get_shadow_indexes_from_canvas_context(path_context, path_indexes);
-                        return path_indexes;
+                        return get_shadow_indexes_from_canvas_context(context, path_indexes);
                     },
                     from_line: function(from, to) {
                         "use strict";
                         from = from | 0;
                         to = to | 0;
+                        let pxl_indexes = new Set();
                         let c = get_opposite_coordinates(width, from, to);
                         let dx = Math.abs(c.secondary.x - c.primary.x) | 0;
                         let dy = Math.abs(c.secondary.y - c.primary.y) | 0;
@@ -684,21 +674,22 @@ const SuperState = {
                         "use strict";
                         from = from | 0;
                         to = to | 0;
+                        let pxl_indexes = new Set();
                         let c = get_opposite_coordinates(width, from, to);
 
-                        const rectangle_width = Math.abs(c.primary.x - c.secondary.x) + 1 | 0;
-                        const rectangle_height = Math.abs(c.primary.y - c.secondary.y) + 1 | 0;
-                        const rectangle_top_left_x = Math.max(c.primary.x, c.secondary.x) - (rectangle_width - 1) | 0;
-                        const rectangle_top_left_y = Math.max(c.primary.y, c.secondary.y) - (rectangle_height - 1) | 0;
+                        const rectangle_width = Math.abs(c.primary.x - c.secondary.x | 0) + 1 | 0;
+                        const rectangle_height = Math.abs(c.primary.y - c.secondary.y | 0) + 1 | 0;
+                        const rectangle_top_left_x = Math.max(c.primary.x, c.secondary.x | 0) - (rectangle_width - 1 | 0) | 0;
+                        const rectangle_top_left_y = Math.max(c.primary.y, c.secondary.y | 0) - (rectangle_height - 1 | 0) | 0;
                         const pixel_number_in_rectangle = rectangle_width * rectangle_height | 0;
 
                         let inside_rectangle_x = 0;
                         let inside_rectangle_y = 0;
-                        for(let i = 0; i < pixel_number_in_rectangle; i = i + 1 | 0) {
+                        for(let i = 0; i < pixel_number_in_rectangle; i = (i + 1 | 0) >>> 0) {
 
                             inside_rectangle_x = i % rectangle_width | 0;
-                            inside_rectangle_y = (i - inside_rectangle_x) / rectangle_width | 0;
-                            pxl_indexes.add((rectangle_top_left_y + inside_rectangle_y) * width + (rectangle_top_left_x + inside_rectangle_x) | 0);
+                            inside_rectangle_y = (i - inside_rectangle_x | 0) / rectangle_width | 0;
+                            pxl_indexes.add((rectangle_top_left_y + inside_rectangle_y | 0) * width + (rectangle_top_left_x + inside_rectangle_x | 0) | 0);
                         }
 
                         return pxl_indexes;
@@ -707,29 +698,25 @@ const SuperState = {
                         "use strict";
                         from = from | 0;
                         to = to | 0;
-                        let c = get_opposite_coordinates(width, from, to);
-                        let ellipse_width = Math.abs(c.primary.x - c.secondary.x) + 1 | 0;
-                        let ellipse_height = Math.abs(c.primary.y - c.secondary.y) + 1 | 0;
-                        const ellipse_top_left_x = Math.max(c.primary.x, c.secondary.x) - (ellipse_width - 1) | 0;
-                        const ellipse_top_left_y = Math.max(c.primary.y, c.secondary.y) - (ellipse_height - 1) | 0;
+                        let c = get_opposite_coordinates(width|0, from|0, to|0);
+                        let ellipse_width = Math.abs(c.primary.x - c.secondary.x|0) + 1 | 0;
+                        let ellipse_height = Math.abs(c.primary.y - c.secondary.y|0) + 1 | 0;
+                        const ellipse_top_left_x = Math.max(c.primary.x, c.secondary.x|0) - (ellipse_width - 1|0) | 0;
+                        const ellipse_top_left_y = Math.max(c.primary.y, c.secondary.y|0) - (ellipse_height - 1|0) | 0;
 
-                        let ellipse_rayon_x = ellipse_width / 2;
-                        let ellipse_rayon_y = ellipse_height / 2;
+                        let ellipse_rayon_x = ellipse_width / 2|0;
+                        let ellipse_rayon_y = ellipse_height / 2|0;
                         const ellipse_middle_x = ellipse_rayon_x + ellipse_top_left_x | 0;
                         const ellipse_middle_y = ellipse_rayon_y + ellipse_top_left_y | 0;
+                        context.clearRect(0, 0, width|0, height|0);
+                        context.translate(ellipse_middle_x, ellipse_middle_y);
+                        context.rotate(0);
+                        context.scale(ellipse_rayon_x, ellipse_rayon_y);
+                        context.arc(0, 0, 1, 0, 2 * Math.PI);
+                        context.fillStyle = "#ffffffff";
+                        context.fill();
 
-                        let ellipse_context = new_canvas_context_2d(width, height);
-                        ellipse_context.save();
-                        ellipse_context.translate(ellipse_middle_x, ellipse_middle_y);
-                        ellipse_context.rotate(0);
-                        ellipse_context.scale(ellipse_rayon_x, ellipse_rayon_y);
-                        ellipse_context.arc(0, 0, 1, 0, 2 * Math.PI);
-                        ellipse_context.restore();
-                        ellipse_context.fillStyle = "#ffffffff";
-                        ellipse_context.fill();
-
-                        get_shadow_indexes_from_canvas_context(ellipse_context, pxl_indexes);
-                        return pxl_indexes;
+                        return get_shadow_indexes_from_canvas_context(context);
                     }
                 };
             }
