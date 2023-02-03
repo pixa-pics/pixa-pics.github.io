@@ -54,8 +54,6 @@ But hey, here we do it even greater with pixa.pics... We upscale it with smart a
 
 ---
 
-![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/EDITOR.png)
-
 > Yet many drawing tools and selection mode enables you to be creative (and decentralize everything)!
 
 ![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/777.png)
@@ -64,8 +62,6 @@ But hey, here we do it even greater with pixa.pics... We upscale it with smart a
 * **Anonymize selfies** (keep details masked, reduce entropy of data).
 * **Compress 100x-1000x** a visual scene into less than 12 Kb PNGs that scales in HD.
 * **Do more, without less**... This is pixaaaaa! (pics)
-
-![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/EDITOR_SQUARE.png)
 
 ### 1) What does it cost?
 
