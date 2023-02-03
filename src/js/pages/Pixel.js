@@ -1347,7 +1347,7 @@ class Pixel extends React.PureComponent {
                         let { _files_waiting_download } = this.st4te;
                         _files_waiting_download.push({
                             name: `PIXAPICS-${hash}-${using.toUpperCase()}-${size}x_RAS.png`,
-                            url: image_base64
+                            url: ""+image_base64
                         });
                         this.setSt4te({_files_waiting_download}, () => {
 
@@ -1357,21 +1357,30 @@ class Pixel extends React.PureComponent {
 
                                 if(width * height < 1600 * 1600) {
 
-                                    postJSON("https://deepai.pixa-pics.workers.dev/waifu2x", image_base64, (err, res) => {
+                                    postJSON("https://deepai.pixa-pics.workers.dev/waifu2x", ""+image_base64, (err, res) => {
 
 
-                                        let { _files_waiting_download } = this.st4te;
+                                        if(res) {
 
-                                        _files_waiting_download.push({
-                                            name: `PIXAPICS-${hash}-${using.toUpperCase()}-${size}xAI2x_RAS.png`,
-                                            url: res
-                                        });
+                                            let { _files_waiting_download } = this.st4te;
 
-                                        this.setSt4te({_files_waiting_download}, () => {
+                                            _files_waiting_download.push({
+                                                name: `PIXAPICS-${hash}-${using.toUpperCase()}-${size}+AI-2x_RAS.png`,
+                                                url: ""+res
+                                            });
 
-                                            this.forceUpdate();
-                                        });
-                                    });
+                                            this.setSt4te({_files_waiting_download}, () => {
+
+                                                this.forceUpdate();
+                                            });
+
+                                        }else {
+
+                                            console.log(err, res)
+                                            actions.trigger_snackbar("Looks like we had an unexpected issue with deepai.org", 5700);
+                                            actions.jamy_update("angry");
+                                        }
+                                    }, "application/text");
                                 }
                             }
 
