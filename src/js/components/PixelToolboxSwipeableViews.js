@@ -141,7 +141,7 @@ const styles = theme => ({
         }
     },
     info: {
-        backgroundColor: "#3729c154",
+        backgroundColor: "#3729c12e",
         color: "#3729c1ff",
         padding: "16px",
         borderRadius: "4px",

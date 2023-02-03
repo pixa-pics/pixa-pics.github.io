@@ -21,9 +21,11 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+*/
 
-*//*
-        var fu = function(
+
+/*
+var fu = function(
             pxl_width,
             pxl_height,
             _color_a,
@@ -218,928 +220,325 @@ SOFTWARE.
                 return "data:image/png;base64," + Base64.encode(png(image_data.width, image_data.height, image_data.data));
             }
 
+            // Inspired by https://en.wikipedia.org/wiki/Rec._709
+            var imul = function(a, b){return Math.imul((a|0)&0xFFFFFFFF, (b|0)&0xFFFFFFFF)&0xFFFFFFFF; };
+            var fr = Math.fround;
+            var r = function(x){ return (0.5+x|0)&0xFFFFFFFF; };
+            var p2 = function(x){ x = x|0; return (imul(x|0, x|0)|0)&0xFFFFFFFF; };
+            var s = function(x){
 
-// Order of the color component stored (in order to not meld with endianness when creating a list from a buffer, it is mostly like "reversed")
-            var CONFIG_UINT8X4 = "rgba";
+                // Base cases
+                x = (x | 0)&0xFFFFFFFF;
+                if ((x|0) == 0 || (x|0) == 1){
 
-            var operators = {
-                unary_neg(a) {
-                    return -a;
-                },
-                unary_bitwise_not(a) {
-                    return ~a;
-                },
-                unary_logical_not(a) {
-                    return !a;
-                },
-                boolean_and(a, b) {
-                    return a && b;
-                },
-                binary_and(a, b) {
-                    return a & b;
-                },
-                binary_or(a, b) {
-                    return a | b;
-                },
-                binary_xor(a, b) {
-                    return a ^ b;
-                },
-                binary_add(a, b) {
-                    return a + b;
-                },
-                binary_sub(a, b) {
-                    return a - b;
-                },
-                binary_mul(a, b) {
-                    return a * b;
-                },
-                binary_div(a, b) {
-                    return a / b;
-                },
-                binary_equal(a, b) {
-                    return a == b;
-                },
-                binary_not_equal(a, b) {
-                    return a != b;
-                },
-                binary_less(a, b) {
-                    return a < b;
-                },
-                binary_less_equal(a, b) {
-                    return a <= b;
-                },
-                binary_greater(a, b) {
-                    return a > b;
-                },
-                binary_greater_equal(a, b) {
-                    return a >= b;
-                },
-                binary_shift_left(a, bits) {
-                    return a << bits;
-                },
-                binary_shift_right_arithmetic(a, bits) {
-                    return a >> bits;
-                },
-                binary_shift_right_logical(a, bits) {
-                    return a >>> bits;
-                },
-                min_num(x, y) {
-                    return x != x ? y : y != y ? x : Math.min(x, y);
-                },
-                max_num(x, y) {
-                    return x != x ? y : y != y ? x : Math.max(x, y);
-                },
-                modulo_int(a, b) {
-                    return a % b | 0;
-                },
-                modulo_uint(a, b) {
-                    return (a % b | 0) >>> 0;
-                },
-                plus_int(a, b) {
-                    return a + b | 0;
-                },
-                minus_int(a, b) {
-                    return a - b | 0;
-                },
-                plus_uint(a, b) {
-                    return (a + b | 0) >>> 0;
-                },
-                minus_uint(a, b) {
-                    return (a - b | 0) >>> 0;
-                },
-                multiply_int(a, b) {
-                    return a * b | 0;
-                },
-                divide_int(a, b) {
-                    return a / b | 0;
-                },
-                multiply_uint(a, b) {
-                    return (a * b | 0) >>> 0;
-                },
-                divide_uint(a, b) {
-                    return (a / b | 0) >>> 0;
-                },
-                divide_four_uint(n) {
-                    return (n >> 2 | 0) >>> 0;
-                },
-                abs_int(n) {
-                    return (n | 0) < 0 ? (-n | 0) >>> 0 : (n | 0) >>> 0;
-                },
-                max_int(a, b) {
-                    a = a | 0;
-                    b = b | 0;
-                    return a > b ? b : a;
-                },
-                min_int(a, b) {
-                    a = a | 0;
-                    b = b | 0;
-                    return a > b ? a : b;
-                },
-                max_uint(a, b) {
-                    a = (a | 0) >>> 0;
-                    b = (b | 0) >>> 0;
-                    return a > b ? b : a;
-                },
-                min_uint(a, b) {
-                    a = a | 0;
-                    b = b | 0;
-                    return a > b ? a : b;
-                },
-                clamp_int(x, min, max) {
-                    x = x | 0;
-                    min = min | 0;
-                    max = max | 0;
-                    x = x - ((x - max) & ((max - x) >> 31)) | 0;
-                    x = x - ((x - min) & ((x - min) >> 31)) | 0;
-                    return x;
-                },
-                clamp_uint8(n) {
-                    return (n | 0) & 0xFF;
-                },
-                inverse_255(n) {
-                    return (255 - n | 0) & 0xFF;
-                },
-                divide_255(n) {
-                    return (n / 255 | 0) & 0xFF;
-                },
-                clamp_uint32(n) {
-                    return (n | 0) & 0xFFFFFFFF;
-                },
-                int_equal(a, b) {
-                    return (a | 0) == (b | 0);
-                },
-                int_not_equal(a, b) {
-                    return (a | 0) != (b | 0);
-                },
-                int_less(a, b) {
-                    return (a | 0) < (b | 0);
-                },
-                int_less_equal(a, b) {
-                    return (a | 0) <= (b | 0);
-                },
-                int_greater(a, b) {
-                    return (a | 0) > (b | 0);
-                },
-                int_greater_equal(a, b) {
-                    return (a | 0) >= (b | 0);
-                },
-                uint_equal(a, b) {
-                    return (a | 0) == (b | 0);
-                },
-                uint_not_equal(a, b) {
-                    return (a | 0) != (b | 0);
-                },
-                uint_less(a, b) {
-                    return ((a | 0) >>> 0) < ((b | 0) >>> 0);
-                },
-                uint_less_equal(a, b) {
-                    return ((a | 0) >>> 0) <= ((b | 0) >>> 0);
-                },
-                uint_greater(a, b) {
-                    return ((a | 0) >>> 0) > ((b | 0) >>> 0);
-                },
-                uint_greater_equal(a, b) {
-                    return ((a | 0) >>> 0) >= ((b | 0) >>> 0);
-                },
-                format_int(n) {
-                    return (n | 0);
-                },
-                format_uint(n) {
-                    return (n | 0) >>> 0;
+                    return x | 0;
                 }
-            };
 
-            var {
-                unary_neg,
-                unary_bitwise_not,
-                unary_logical_not,
-                boolean_and,
-                binary_and,
-                binary_or,
-                binary_xor,
-                binary_add,
-                binary_sub,
-                binary_mul,
-                binary_div,
-                binary_equal,
-                binary_not_equal,
-                binary_less,
-                binary_less_equal,
-                binary_greater,
-                binary_greater_equal,
-                binary_shift_left,
-                binary_shift_right_arithmetic,
-                binary_shift_right_logical,
-                min_num,
-                max_num,
-                modulo_int,
-                modulo_uint,
-                plus_int,
-                minus_int,
-                plus_uint,
-                minus_uint,
-                multiply_int,
-                divide_int,
-                multiply_uint,
-                divide_uint,
-                divide_four_uint,
-                abs_int,
-                max_int,
-                min_int,
-                max_uint,
-                min_uint,
-                clamp,
-                clamp_int,
-                clamp_uint8,
-                divide_255,
-                inverse_255,
-                clamp_uint32,
-                int_equal,
-                int_not_equal,
-                int_less,
-                int_less_equal,
-                int_greater,
-                int_greater_equal,
-                uint_equal,
-                uint_not_equal,
-                uint_less,
-                uint_less_equal,
-                uint_greater,
-                uint_greater_equal,
-                format_int,
-                format_uint,
-            } = operators;
+                // Starting from 1, try all
+                // numbers until i*i is
+                // greater than or equal to x.
+                var i = 1;
+                var result = 1;
+
+                while ((result|0) <= (x|0)) {
+                    i = (i+1|0)&0xFFFFFFFF;
+                    result = (i * i | 0)&0xFFFFFFFF;
+                }
+
+                return (i - 1 | 0)&0xFFFFFFFF;
+            };
+            var PR = fr(0.2126), // +0.1
+                PG = fr(0.7152), // -0.2
+                PB = fr(0.0722), // +0.1
+                PA = fr(1.0000);
+
+            var RD = 255,
+                GD = 255,
+                BD = 255,
+                AD = 255;
+
+            // Euclidean or Manhattan color distance
+            var EUCLMAX = (s(PR*RD*RD + PG*GD*GD + PB*BD*BD + PA*AD*AD | 0) | 0) >>> 0;
+            var MANHMAX = (PR*RD + PG*GD + PB*BD + PA*AD|0) >>> 0;
+
+
+            function plus_uint(a, b) {
+                return (a + b | 0) >>> 0;
+            }
+            function multiply_uint(a, b) {
+                return (Math.imul((a|0)&0xFFFFFFFF, (b|0)&0xFFFFFFFF) | 0)&0xFFFFFFFF;
+            }
+            function multiply_uint_4(a) {
+                return a << 2;
+            }
+            function divide_uint(a, b) {
+                return (a / b | 0) &0xFFFFFFFF;
+            }
+            function divide_4_uint(n) {
+                return (n >> 2 | 0) &0xFFFFFFFF;
+            }
+            function clamp_uint8(n) {
+                return (n | 0) & 0xFF;
+            }
+            function inverse_255(n) {
+                return (255 - n | 0) & 0xFF;
+            }
+            function divide_255(n) {
+                return (n / 255 | 0) & 0xFF;
+            }
+            function clamp_uint32(n) {
+                return ((n|0)>>>0) & 0xFFFFFFFF;
+            }
+            function uint_equal(a, b) {
+                return ((a | 0)&0xFFFFFFFF) == ((b | 0)&0xFFFFFFFF);
+            }
+
 
 // NEW BASIC : Number object with 4 times 0-255
-            var SIMDopeColor = function (with_main_buffer, offset_4bytes) {
+            var SIMDopeColor = function(with_main_buffer, offset_4bytes){
                 "use strict";
                 offset_4bytes = offset_4bytes || 0;
                 if (!(this instanceof SIMDopeColor)) {
                     return new SIMDopeColor(with_main_buffer, offset_4bytes);
                 }
 
-                if (with_main_buffer instanceof Uint8ClampedArray) {
+                if(with_main_buffer instanceof Uint8Array) {
 
-                    this.storage_uint8_ = with_main_buffer;
-                } else {
+                    this.storage_uint8_ =  with_main_buffer;
+                }else {
 
-                    this.storage_uint8_ = new Uint8ClampedArray("buffer" in with_main_buffer ? with_main_buffer.buffer : with_main_buffer, multiply_uint(offset_4bytes, 4));
+                    this.storage_uint8_ = new Uint8Array("buffer" in with_main_buffer ? with_main_buffer.buffer: with_main_buffer, imul(offset_4bytes, 4));
                 }
             };
 
-// NEW PARTICULAR : Number object other means of varruct
-            SIMDopeColor.new_zero = function () {
+            SIMDopeColor.new_of = function(r, g, b, a) {
                 "use strict";
-                return SIMDopeColor(new ArrayBuffer(4));
-            };
-            SIMDopeColor.new_splat = function (n) {
-                "use strict";
-                var uint8ca = new Uint8ClampedArray(4);
-                uint8ca.fill(clamp_uint8(n));
-                return SIMDopeColor(uint8ca);
-            };
-            SIMDopeColor.new_of = function (r, g, b, a) {
-                "use strict";
-                var uint8ca = new Uint8ClampedArray(4);
+                var uint8ca = new Uint8Array(4);
                 uint8ca[3] = clamp_uint8(r);
                 uint8ca[2] = clamp_uint8(g);
                 uint8ca[1] = clamp_uint8(b);
                 uint8ca[0] = clamp_uint8(a);
                 return SIMDopeColor(uint8ca);
-            };
-            SIMDopeColor.new_safe_of = function (r, g, b, a) {
-                "use strict";
-                var uint8ca = new Uint8ClampedArray(4);
-                uint8ca[3] = clamp_int(r, 0, 255);
-                uint8ca[2] = clamp_int(g, 0, 255);
-                uint8ca[1] = clamp_int(b, 0, 255);
-                uint8ca[0] = clamp_int(a, 0, 255);
-                return SIMDopeColor(uint8ca);
-            };
-            SIMDopeColor.new_from = function (other) {
-                "use strict";
-                return SIMDopeColor(other);
-            };
+            }
 
-            SIMDopeColor.new_array = function (array) {
-                "use strict";
-                var uint8ca = new Uint8ClampedArray(4);
-                uint8ca[3] = clamp_uint8(array[0]);
-                uint8ca[2] = clamp_uint8(array[1]);
-                uint8ca[1] = clamp_uint8(array[2]);
-                uint8ca[0] = clamp_uint8(array[3]);
-                return SIMDopeColor(uint8ca);
-            };
-
-            SIMDopeColor.new_array_safe = function (array) {
-                "use strict";
-                var uint8ca = new Uint8ClampedArray(4);
-                uint8ca[3] = clamp_uint8(clamp_int(array[0], 0, 255));
-                uint8ca[2] = clamp_uint8(clamp_int(array[1], 0, 255));
-                uint8ca[1] = clamp_uint8(clamp_int(array[2], 0, 255));
-                uint8ca[0] = clamp_uint8(clamp_int(array[3], 0, 255));
-                return SIMDopeColor(uint8ca);
-            };
-
-            SIMDopeColor.new_bool = function (r, g, b, a) {
-                "use strict";
-                var uint8ca = new Uint8ClampedArray(4);
-                uint8ca[3] = (r | 0) > 0 ? 0x1 : 0x0;
-                uint8ca[2] = (g | 0) > 0 ? 0x1 : 0x0;
-                uint8ca[1] = (b | 0) > 0 ? 0x1 : 0x0;
-                uint8ca[0] = (a | 0) > 0 ? 0x1 : 0x0;
-                return SIMDopeColor(uint8ca);
-            };
-
-            SIMDopeColor.new_uint32 = function (n) {
-                "use strict";
-                var uint8ca = new Uint8ClampedArray(4);
-                uint8ca[0] = n & 0xff;
-                uint8ca[1] = (n >>> 8) & 0xff;
-                uint8ca[2] = (n >>> 16) & 0xff;
-                uint8ca[3] = (n >>> 24) & 0xff;
-                return SIMDopeColor(uint8ca);
-            };
-
-            SIMDopeColor.new_hsla = function (h, s, l, a) {
-                "use strict";
-
-                h = divide_uint(h, 360);
-                s = divide_uint(s, 100);
-                l = divide_uint(l, 100);
-                a = divide_uint(a, 100);
-
-                var r, g, b = 0.0;
-                if (s === 0) {
-                    r = g = b = l;
-                } else {
-
-                    function hue_to_rgb(p, q, t) {
-                        if (t < 0) t += 1;
-                        if (t > 1) t -= 1;
-                        if (t < 1 / 6) return p + (q - p) * 6 * t;
-                        if (t < 1 / 2) return q;
-                        if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
-                        return p;
-                    }
-
-                    var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-                    var p = 2 * l - q;
-                    r = hue_to_rgb(p, q, h + 1 / 3);
-                    g = hue_to_rgb(p, q, h);
-                    b = hue_to_rgb(p, q, h - 1 / 3);
-                }
-
-                return SIMDopeColor.new_of(multiply_uint(r, 255), multiply_uint(g, 255), multiply_uint(b, 255), multiply_uint(a, 255));
-            };
-
-// Properties of number object
+            // Properties of number object
             Object.defineProperty(SIMDopeColor.prototype, 'r', {
-                get: function () {
-                    "use strict";
-                    return clamp_uint8(this.storage_uint8_[3]);
-                },
+                get: function() { "use strict"; return clamp_uint8(this.storage_uint8_[3]); },
             });
             Object.defineProperty(SIMDopeColor.prototype, 'g', {
-                get: function () {
-                    "use strict";
-                    return clamp_uint8(this.storage_uint8_[2]);
-                },
+                get: function() { "use strict"; return clamp_uint8(this.storage_uint8_[2]); },
             });
             Object.defineProperty(SIMDopeColor.prototype, 'b', {
-                get: function () {
-                    "use strict";
-                    return clamp_uint8(this.storage_uint8_[1]);
-                },
+                get: function() { "use strict"; return clamp_uint8(this.storage_uint8_[1]); },
             });
             Object.defineProperty(SIMDopeColor.prototype, 'a', {
-                get: function () {
-                    "use strict";
-                    return clamp_uint8(this.storage_uint8_[0]);
-                },
+                get: function() { "use strict"; return clamp_uint8(this.storage_uint8_[0]); },
             });
 
             Object.defineProperty(SIMDopeColor.prototype, 'uint32', {
-                get: function () {
-                    "use strict";
-                    return ((this.storage_uint8_[3] << 24) | (this.storage_uint8_[2] << 16) | (this.storage_uint8_[1] << 8) | this.storage_uint8_[0] | 0) >>> 0;
+                get: function() { "use strict";
+                    return ((this.storage_uint8_[3] << 24) | (this.storage_uint8_[2] << 16) | (this.storage_uint8_[1] <<  8) | this.storage_uint8_[0]) >>> 0;
                 }
             });
 
             Object.defineProperty(SIMDopeColor.prototype, 'hex', {
-                get: function () {
-                    "use strict";
-                    return "#".concat("00000000".concat(this.uint32.toString(16)).slice(-8));
-                }
-            });
-
-            Object.defineProperty(SIMDopeColor.prototype, 'hsl', {
-                get: function () {
-                    "use strict";
-                    var r = clamp_uint8(this.storage_uint8_[3]);
-                    var g = clamp_uint8(this.storage_uint8_[2]);
-                    var b = clamp_uint8(this.storage_uint8_[1]);
-                    var a = clamp_uint8(this.storage_uint8_[0]);
-
-                    r = +r / 255, g = +g / 255, b = +b / 255, a = +a / 255;
-
-                    var max = Math.max(r, g, b), min = Math.min(r, g, b);
-                    var h, s, l = (max + min) / 2;
-                    if (max == min) {
-                        h = s = 0; // achromatic
-                    } else {
-                        var d = max - min;
-                        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-                        switch (max) {
-                            case r:
-                                h = (g - b) / d + (g < b ? 6 : 0);
-                                break;
-                            case g:
-                                h = (b - r) / d + 2;
-                                break;
-                            case b:
-                                h = (r - g) / d + 4;
-                                break;
-                        }
-                        h /= 6;
-                    }
-                    return Uint16Array.of(multiply_uint(h, 360), multiply_uint(s, 100), multiply_uint(l, 100), multiply_uint(a, 100));
-                }
+                get: function() { "use strict"; return "#".concat("00000000".concat(this.uint32.toString(16)).slice(-8));}
             });
 
             Object.defineProperty(SIMDopeColor.prototype, 'offset', {
-                get: function () {
-                    "use strict";
-                    return divide_four_uint(this.storage_uint8_.byteOffset);
-                }
+                get: function() {"use strict"; return divide_4_uint(this.storage_uint8_.byteOffset);}
             });
 
             Object.defineProperty(SIMDopeColor.prototype, 'buffer', {
-                get: function () {
-                    "use strict";
-                    return this.storage_uint8_.buffer;
-                }
-            });
-
-            Object.defineProperty(SIMDopeColor.prototype, 'set', {
-                get: function () {
-                    "use strict";
-                    return function (with_buffer) {
-
-                        if (with_buffer instanceof SIMDopeColor) {
-
-                            this.storage_uint8_.set(with_buffer.subarray(0, 4));
-                        } else if ("subarray" in with_buffer) {
-
-                            this.storage_uint8_.set(with_buffer);
-                        } else if ("buffer" in with_buffer) {
-
-                            this.storage_uint8_.set(with_buffer.buffer);
-                        } else {
-
-                            this.storage_uint8_.set(with_buffer);
-                        }
-                    }
-                }
+                get: function() { "use strict"; return this.storage_uint8_.buffer.slice(this.storage_uint8_.byteOffset, plus_uint(this.storage_uint8_.byteOffset, 4)); }
             });
             Object.defineProperty(SIMDopeColor.prototype, 'subarray', {
-                get: function () {
-                    "use strict";
-                    return function (start, end) {
-                        return this.storage_uint8_.subarray(start, end);
+                get: function() { "use strict"; return this.storage_uint8_.subarray(0, 4); }
+            });
+            Object.defineProperty(SIMDopeColor.prototype, 'set', {
+                get: function() { "use strict"; return function(with_buffer) {
+
+                    if(with_buffer instanceof SIMDopeColor) {
+
+                        this.storage_uint8_.set(new Uint8Array(with_buffer.buffer));
+
+                    }else if("subarray" in with_buffer) {
+
+                        this.storage_uint8_.set(with_buffer.subarray(0, 4));
+                    }else {
+
+                        this.storage_uint8_.set(with_buffer);
                     }
-                }
+                }}
             });
             Object.defineProperty(SIMDopeColor.prototype, 'slice', {
-                get: function () {
-                    "use strict";
-                    return function (start, end) {
-                        return this.storage_uint8_.slice(start, end);
-                    }
-                }
+                get: function() { "use strict"; return function(start, end) { return this.storage_uint8_.slice(start, end); }}
             });
 
-            SIMDopeColor.prototype.set_scale_of_on_255 = function (of_r, of_g, of_b, of_a) {
-                var temp = Uint8ClampedArray.of(
-                    divide_255(multiply_uint(this.r, of_r)),
-                    divide_255(multiply_uint(this.g, of_g)),
-                    divide_255(multiply_uint(this.b, of_b)),
-                    divide_255(multiply_uint(this.a, of_a))
+            SIMDopeColor.prototype.is_fully_transparent = function() {
+                return uint_equal(this.a, 0);
+            };
+
+            SIMDopeColor.prototype.simplify = function(of) {
+                var temp = Uint8Array.of(
+                    multiply_uint(r(this.a / of), of),
+                    multiply_uint(r(this.b / of), of),
+                    multiply_uint(r(this.g / of), of),
+                    multiply_uint(r(this.r / of), of),
                 );
                 this.set(temp);
                 return this;
             }
 
-            SIMDopeColor.prototype.scale_of_on_255 = function (of_r, of_g, of_b, of_a) {
-                var temp = Uint8ClampedArray.of(
-                    divide_255(multiply_uint(this.r, of_r)),
-                    divide_255(multiply_uint(this.g, of_g)),
-                    divide_255(multiply_uint(this.b, of_b)),
-                    divide_255(multiply_uint(this.a, of_a))
-                );
-                return SIMDopeColor(temp);
-            }
+            SIMDopeColor.prototype.blend_with = function(added_uint8x4, amount_alpha, should_return_transparent, alpha_addition) {
 
-            SIMDopeColor.prototype.blend_with = function (added_uint8x4, amount_alpha, should_return_transparent, alpha_addition) {
+                should_return_transparent = should_return_transparent | 0;
+                alpha_addition = alpha_addition | 0;
 
-                amount_alpha = clamp_uint8(amount_alpha);
-                should_return_transparent = should_return_transparent || false;
-                alpha_addition = alpha_addition || false;
+                added_uint8x4.multiply_a_1000(amount_alpha|0);
 
-                added_uint8x4.multiply_a_255(amount_alpha);
-                if (should_return_transparent && added_uint8x4.is_fully_transparent()) {
+                if((should_return_transparent|0)!=0) {
 
-                    this.set(new ArrayBuffer(4));
-                } else if (this.is_not_fully_transparent() && added_uint8x4.is_not_fully_opaque()) {
-
-                    var alpha = alpha_addition ?
-                        divide_uint(plus_uint(this.a, amount_alpha), 2) :
-                        inverse_255(divide_255(multiply_uint(inverse_255(added_uint8x4.a), inverse_255(this.a))));
-
-                    this.set(SIMDopeColor.merge_scale_of_255(
-                        added_uint8x4, divide_uint(multiply_uint(added_uint8x4.a, 255), alpha),
-                        this, divide_255(multiply_uint(this.a, divide_uint(multiply_uint(inverse_255(added_uint8x4.a), 255), alpha)))
-                        ).set_a(alpha)
-                    );
-                } else {
-
-                    this.set(added_uint8x4);
-                }
-
-                return this;
-            };
-
-            SIMDopeColor.prototype.get_difference_with = function (other) {
-                return SIMDopeColor.new_of(
-                    abs_int(this.r, other.r),
-                    abs_int(this.g, other.g),
-                    abs_int(this.b, other.b),
-                    abs_int(this.a, other.a),
-                );
-            };
-
-            SIMDopeColor.prototype.sum_rgba = function () {
-                return plus_uint(plus_uint(this.r, this.g), plus_uint(this.b, this.a));
-            };
-
-            SIMDopeColor.prototype.sum_rgb = function () {
-                return plus_uint(plus_uint(this.r, this.g), this.b);
-            };
-
-            SIMDopeColor.prototype.is_dark = function () {
-                return uint_less_equal(this.sum_rgb(), 384);
-            };
-            SIMDopeColor.prototype.is_fully_transparent = function () {
-                return uint_equal(this.a, 0);
-            };
-            SIMDopeColor.prototype.is_fully_opaque = function () {
-                return uint_equal(this.a, 255);
-            };
-            SIMDopeColor.prototype.is_not_fully_transparent = function () {
-                return !this.is_fully_transparent();
-            };
-            SIMDopeColor.prototype.is_not_fully_opaque = function () {
-                return !this.is_fully_opaque();
-            };
-
-            SIMDopeColor.prototype.match_with = function (added_uint8x4, threshold_255) {
-                "use strict";
-
-                threshold_255 = typeof threshold_255 === "undefined" ? -1 : clamp_uint8(threshold_255);
-                if (threshold_255 === 1) {
-
-                    return true;
-                } else if (threshold_255 === 0) {
-
-                    return uint_equal(this.get_difference_with(added_uint8x4).sum_rgba(), 0);
-                } else {
-
-                    const diff_uint8x4 = this.get_difference_with(added_uint8x4);
-
-                    if (threshold_255 !== -1) {
-
-                        return (uint_less(diff_uint8x4.r, threshold_255) &&
-                            uint_less(diff_uint8x4.g, threshold_255) &&
-                            uint_less(diff_uint8x4.b, threshold_255) &&
-                            uint_less(diff_uint8x4.a, threshold_255)) ? 1 : 0;
-                    } else {
-
-                        return diff_uint8x4.sum_rgb() / 765 * Math.abs(1 - diff_uint8x4.a / 255);
+                    if(this.is_fully_transparent()) {
+                        added_uint8x4.set(ArrayBuffer(4));
+                    }else if(added_uint8x4.is_fully_transparent()) {
+                        this.set(ArrayBuffer(4));
                     }
-                }
-            }
+                }else {
 
-            SIMDopeColor.prototype.set_r = function (r) {
-                "use strict";
-                var uint8a = this.subarray();
-                uint8a[3] = clamp_uint8(r);
-                return this;
+                    var alpha = (alpha_addition|0) != 0 ?
+                        divide_uint(plus_uint(this.a, added_uint8x4.a), 2):
+                        inverse_255(divide_255(imul(inverse_255(added_uint8x4.a), inverse_255(this.a))));
+
+                    this.set(SIMDopeColor.merge_scale_of_255_a_fixed(
+                        added_uint8x4, divide_uint(imul(added_uint8x4.a, 255), alpha),
+                        this, divide_255(imul(this.a, divide_uint(imul(inverse_255(added_uint8x4.a), 255), alpha))),
+                        alpha
+                    ));
+
+                    added_uint8x4.set(this);
+                }
             };
-            SIMDopeColor.prototype.set_g = function (g) {
+
+            SIMDopeColor.prototype.multiply_a_1000 = function(n) {
                 "use strict";
-                var uint8a = this.subarray();
-                uint8a[2] = clamp_uint8(g);
-                return this;
+                this.subarray[0] = clamp_uint8(divide_uint(imul(this.a, n), 1000));
             };
-            SIMDopeColor.prototype.set_b = function (b) {
-                "use strict";
-                var uint8a = this.subarray();
-                uint8a[1] = clamp_uint8(b);
-                return this;
-            };
-            SIMDopeColor.prototype.set_a = function (a) {
-                "use strict";
-                var uint8a = this.subarray();
-                uint8a[0] = clamp_uint8(a);
-                return this;
-            };
-            SIMDopeColor.prototype.multiply_a_255 = function (n) {
-                "use strict";
-                var uint8a = this.subarray();
-                uint8a[0] = clamp_uint8(divide_255(multiply_uint(uint8a[0], n)));
-                return this;
-            };
-            SIMDopeColor.prototype.copy = function (a) {
+            SIMDopeColor.prototype.copy = function(a) {
                 "use strict";
                 return SIMDopeColor(this.slice(0, 4));
             };
-// get a the number object wile modifying property values
-            SIMDopeColor.with_r = function (t, r) {
-                "use strict";
-                var ta = t.slice(0, 4);
-                ta[3] = clamp_uint8(r);
-                return SIMDopeColor(ta);
-            };
-            SIMDopeColor.with_g = function (t, g) {
-                "use strict";
-                var ta = t.slice(0, 4);
-                ta[2] = clamp_uint8(g);
-                return SIMDopeColor(ta);
-            };
-            SIMDopeColor.with_b = function (t, b) {
-                "use strict";
-                var ta = t.slice(0, 4);
-                ta[1] = clamp_uint8(b);
-                return SIMDopeColor(ta);
-            };
-            SIMDopeColor.with_a = function (t, a) {
+
+            // get a the number object wile modifying property values
+            SIMDopeColor.with_a = function(t, a) {
                 "use strict";
                 var ta = t.slice(0, 4);
                 ta[0] = clamp_uint8(a);
                 return SIMDopeColor(ta);
             };
-            SIMDopeColor.with_inverse = function (t) {
-                "use strict";
-                var ta = t.slice(0, 4);
-                ta[3] = minus_uint(255 - ta[3]);
-                ta[2] = minus_uint(255 - ta[2]);
-                ta[1] = minus_uint(255 - ta[1]);
-                ta[0] = minus_uint(255 - ta[0]);
-                return SIMDopeColor(ta);
-            };
+            SIMDopeColor.merge_scale_of_255_a_fixed = function(t1, of1, t2, of2, alpha) {
 
-// Get various operation on number object
-            SIMDopeColor.sumarray = function (other, start, end) {
-                "use strict";
-                start = start | 0;
-                start = min_uint(start, 3);
-                end = end | 0;
-                end = end || 4;
-                end = min_uint(end, 4);
+                of1 = clamp_uint8(of1);
+                of2 = clamp_uint8(of2);
+                alpha = clamp_uint8(alpha);
 
-                var sum = 0;
-                for (var i = start; uint_less(i, end); i = plus_uint(i, 1)) {
-                    sum = plus_uint(sum, other[CONFIG_UINT8X4.charAt(i)]);
-                }
-                return sum;
-            };
-
-// from a given number object and a second one, test values and return boolean
-            SIMDopeColor.row_is_equal = function (t, other) {
-                return SIMDopeColor.new_bool(
-                    uint_equal(t.r, other.r),
-                    uint_equal(t.g, other.g),
-                    uint_equal(t.b, other.b),
-                    uint_equal(t.a, other.a),
+                return SIMDopeColor.merge_with_a_fixed(
+                    SIMDopeColor.scale_rgb_of_on_255(t1, of1, of1, of1),
+                    SIMDopeColor.scale_rgb_of_on_255(t2, of2, of2, of2),
+                    alpha
                 );
-            };
-            SIMDopeColor.row_is_greater = function (t, other) {
-                return SIMDopeColor.new_bool(
-                    uint_greater(t.r, other.r),
-                    uint_greater(t.g, other.g),
-                    uint_greater(t.b, other.b),
-                    uint_greater(t.a, other.a),
+            }
+
+            SIMDopeColor.scale_rgb_of_on_255 = function(t, of_r, of_g, of_b) {
+                return SIMDopeColor(
+                    Uint8Array.of(
+                        0,
+                        divide_255(imul(t.b, of_b)),
+                        divide_255(imul(t.g, of_g)),
+                        divide_255(imul(t.r, of_r))
+                    )
                 );
-            };
-            SIMDopeColor.row_is_less = function (t, other) {
-                return SIMDopeColor.new_bool(
-                    uint_less(t.r, other.r),
-                    uint_less(t.g, other.g),
-                    uint_less(t.b, other.b),
-                    uint_less(t.a, other.a),
+            }
+
+            SIMDopeColor.merge_with_a_fixed = function(t1, t2, alpha) {
+                return SIMDopeColor(
+                    Uint8Array.of(
+                        clamp_uint8(alpha),
+                        plus_uint(t1.b, t2.b),
+                        plus_uint(t1.g, t2.g),
+                        plus_uint(t1.r, t2.r),
+                    )
                 );
-            };
-            SIMDopeColor.row_is_greater_equal = function (t, other) {
-                return SIMDopeColor.new_bool(
-                    uint_greater_equal(t.r, other.r),
-                    uint_greater_equal(t.g, other.g),
-                    uint_greater_equal(t.b, other.b),
-                    uint_greater_equal(t.a, other.a),
-                );
-            };
-            SIMDopeColor.row_is_less_equal = function (t, other) {
-                return SIMDopeColor.new_bool(
-                    uint_less_equal(t.r, other.r),
-                    uint_less_equal(t.g, other.g),
-                    uint_less_equal(t.b, other.b),
-                    uint_less_equal(t.a, other.a),
-                );
-            };
-
-            SIMDopeColor.row_get_difference = function (t, other) {
-                return SIMDopeColor.new_of(
-                    abs_int(t.r, other.r),
-                    abs_int(t.g, other.g),
-                    abs_int(t.b, other.b),
-                    abs_int(t.a, other.a),
-                );
-            };
-
-            SIMDopeColor.match = function (base_uint8x4, added_uint8x4, threshold_255) {
-                "use strict";
-
-                return base_uint8x4.match_with(added_uint8x4, threshold_255);
             }
 
-            SIMDopeColor.blend = function (base_uint8x4, added_uint8x4, amount_alpha, should_return_transparent, alpha_addition) {
-
-                return base_uint8x4.copy().blend_with(added_uint8x4, amount_alpha, should_return_transparent, alpha_addition);
-            };
-
-// From a given operation and number object perform the operation and return a the number object
-            SIMDopeColor.plus = function (t, other) {
-                var temp = new Uint8ClampedArray(4);
-                temp[3] = clamp_uint8(min_int(255, plus_int(t.r, other.r)));
-                temp[2] = clamp_uint8(min_int(255, plus_int(t.g, other.g)));
-                temp[1] = clamp_uint8(min_int(255, plus_int(t.b, other.b)));
-                temp[0] = clamp_uint8(min_int(255, plus_int(t.a, other.a)));
-                return SIMDopeColor(temp);
-            }
-            SIMDopeColor.minus = function (t, other) {
-                var temp = new Uint8ClampedArray(4);
-                temp[3] = clamp_uint8(max_int(0, minus_int(t.r, other.r)));
-                temp[2] = clamp_uint8(max_int(0, minus_int(t.g, other.g)));
-                temp[1] = clamp_uint8(max_int(0, minus_int(t.b, other.b)));
-                temp[0] = clamp_uint8(max_int(0, minus_int(t.a, other.a)));
-                return SIMDopeColor(temp);
-            }
-            SIMDopeColor.average = function (t, other) {
-                var temp = new Uint8ClampedArray(4);
-                temp[3] = clamp_uint8(divide_uint(plus_int(t.r, other.r), 2));
-                temp[2] = clamp_uint8(divide_uint(plus_int(t.g, other.g), 2));
-                temp[1] = clamp_uint8(divide_uint(plus_int(t.b, other.b), 2));
-                temp[0] = clamp_uint8(divide_uint(plus_int(t.a, other.a), 2));
-                return SIMDopeColor(temp);
-            }
-            SIMDopeColor.merge_scale_of_255 = function (t1, of1, t2, of2) {
-
-                return SIMDopeColor.merge(SIMDopeColor.scale_of_on_255(t1, of1, of1, of1, of1), SIMDopeColor.scale_of_on_255(t2, of2, of2, of2, of2));
-            }
-
-            SIMDopeColor.scale_of_on_255 = function (t, of_r, of_g, of_b, of_a) {
-                var temp = new Uint8ClampedArray(4);
-                temp[3] = clamp_int(divide_255(multiply_uint(t.r, of_r)), 0, 255);
-                temp[2] = clamp_int(divide_255(multiply_uint(t.g, of_g)), 0, 255);
-                temp[1] = clamp_int(divide_255(multiply_uint(t.b, of_b)), 0, 255);
-                temp[0] = clamp_int(divide_255(multiply_uint(t.a, of_a)), 0, 255);
-                return SIMDopeColor(temp);
-            }
-
-            SIMDopeColor.merge = function (t1, t2) {
-                var temp = new Uint8ClampedArray(4);
-                temp[3] = clamp_int(plus_uint(t1.r, t2.r), 0, 255);
-                temp[2] = clamp_int(plus_uint(t1.g, t2.g), 0, 255);
-                temp[1] = clamp_int(plus_uint(t1.b, t2.b), 0, 255);
-                temp[0] = clamp_int(plus_uint(t1.a, t2.a), 0, 255);
-                return SIMDopeColor(temp);
-            }
-
-            var SIMDopeColors = function (with_main_buffer) {
+            var SIMDopeColors = function(with_main_buffer, bytes_offset, bytes_length){
                 "use strict";
 
                 if (!(this instanceof SIMDopeColors)) {
                     return new SIMDopeColors(with_main_buffer);
                 }
 
-                this.storage_uint8_array_ = new Uint8ClampedArray(("buffer" in with_main_buffer) ? with_main_buffer.buffer : with_main_buffer);
-                this.storage_uint32_array_ = new Uint32Array(("buffer" in with_main_buffer) ? with_main_buffer.buffer : with_main_buffer);
+                this.storage_ = "buffer" in with_main_buffer ? with_main_buffer.buffer: with_main_buffer;
+
+                bytes_offset = bytes_offset | 0;
+                bytes_length = (bytes_length | 0) || (this.storage_.byteLength | 0);
+
+                this.storage_uint8_array_ = new Uint8Array(this.storage_, bytes_offset, bytes_length);
+                this.storage_uint32_array_ = new Uint32Array(this.storage_, bytes_offset, divide_4_uint(bytes_length));
             };
 
             Object.defineProperty(SIMDopeColors.prototype, 'length', {
-                get: function () {
-                    "use strict";
-                    return divide_four_uint(this.storage_uint8_array_.length);
-                }
+                get: function() { "use strict"; return this.storage_uint32_array_.length; }
             });
             Object.defineProperty(SIMDopeColors.prototype, 'buffer', {
-                get: function () {
-                    "use strict";
-                    return this.storage_uint8_array_.buffer;
-                }
+                get: function() { "use strict"; return this.storage_uint8_array_.buffer; }
             });
             Object.defineProperty(SIMDopeColors.prototype, 'buffer_setUint8', {
-                get: function () {
-                    "use strict";
-                    return function (i, n) {
-                        i = i | 0;
-                        n = n | 0;
-                        return this.storage_uint8_array_[i] = clamp_uint8(n);
-                    }
-                }
+                get: function() { "use strict"; return function (i, n) {
+                    i = i | 0;
+                    n = n | 0;
+                    return this.storage_uint8_array_[i] = clamp_uint8(n);
+                }}
             });
             Object.defineProperty(SIMDopeColors.prototype, 'buffer_getUint8', {
-                get: function () {
-                    "use strict";
-                    return function (i) {
-                        i = i | 0;
-                        return this.storage_uint8_array_[i];
-                    }
-                }
+                get: function() { "use strict"; return function (i) {
+                    i = i | 0;
+                    return this.storage_uint8_array_[i];
+                }}
             });
             Object.defineProperty(SIMDopeColors.prototype, 'buffer_getUint8a', {
-                get: function () {
-                    "use strict";
-                    return function (i, n) {
-                        i = i | 0;
-                        n = n | 0;
-                        n = n || 1;
-                        n = plus_uint(i, multiply_uint(n, 4));
-                        return this.storage_uint8_array_.subarray(i, n);
-                    }
-                }
+                get: function() { "use strict"; return function (i, n) {
+                    i = i|0;
+                    n = n|0; n = n || 1;
+                    n = plus_uint(i, multiply_uint_4(n));
+                    return this.storage_uint8_array_.subarray(i, n);
+                }}
             });
             Object.defineProperty(SIMDopeColors.prototype, 'buffer_setUint32', {
-                get: function () {
-                    "use strict";
-                    return function (i, n) {
-                        this.storage_uint32_array_[i | 0] = clamp_uint32(n);
-                    }
-                }
+                get: function() { "use strict"; return function (i, n) {
+                    this.storage_uint32_array_[i|0] = clamp_uint32(n);
+                }}
             });
             Object.defineProperty(SIMDopeColors.prototype, 'buffer_getUint32', {
-                get: function () {
-                    "use strict";
-                    return function (i) {
-                        return this.storage_uint32_array_[i | 0];
-                    }
-                }
+                get: function() { "use strict"; return function (i) {
+                    return  this.storage_uint32_array_[i|0];
+                }}
             });
             Object.defineProperty(SIMDopeColors.prototype, 'subarray_uint32', {
-                get: function () {
-                    "use strict";
-                    return function (start, end) {
-                        start = start | 0;
-                        end = end | 0;
-                        end = end || this.length;
-                        return this.storage_uint32_array_.subarray(start, end);
-                    }
-                }
+                get: function() { "use strict"; return function (start, end){ start = start|0; end = end | 0; end = end || this.length; return this.storage_uint32_array_.subarray(start, end); }}
             });
             Object.defineProperty(SIMDopeColors.prototype, 'slice_uint32', {
-                get: function () {
-                    "use strict";
-                    return function (start, end) {
-                        start = start | 0;
-                        end = end | 0;
-                        end = end || this.length;
-                        return this.storage_uint32_array_.slice(start, end);
-                    }
-                }
+                get: function() { "use strict"; return function (start, end){ start = start|0; end = end | 0; end = end || this.length; return this.storage_uint32_array_.slice(start, end); }}
             });
             Object.defineProperty(SIMDopeColors.prototype, 'subarray_uint8', {
-                get: function () {
-                    "use strict";
-                    return function (start, end) {
-                        start = start | 0;
-                        end = end | 0;
-                        return this.storage_uint8_array_.subarray(multiply_uint(start, 4), multiply_uint(end, 4));
-                    }
-                }
+                get: function() { "use strict"; return function (start, end){ start = start | 0; end = end | 0; return this.storage_uint8_array_.subarray(multiply_uint_4(start), multiply_uint_4(end)); }}
             });
             Object.defineProperty(SIMDopeColors.prototype, 'slice_uint8', {
-                get: function () {
-                    "use strict";
-                    return function (start, end) {
-                        start = start | 0;
-                        end = end | 0;
-                        return this.storage_uint8_array_.slice(multiply_uint(start, 4), multiply_uint(end, 4));
-                    }
-                }
+                get: function() { "use strict"; return function (start, end){ start = start | 0; end = end | 0; return this.storage_uint8_array_.slice(multiply_uint_4(start), multiply_uint_4(end)); }}
             });
 
             SIMDopeColors.prototype.get_element = function (i) {
-                i = i | 0;
-                return SIMDopeColor(this.buffer, i);
+                return SIMDopeColor(this.buffer, i|0);
             }
             SIMDopeColors.prototype.subarray = function (i, n) {
                 i = i | 0;
@@ -1147,60 +546,25 @@ SOFTWARE.
                 return this.buffer_getUint8a(i, n);
             }
 
-            SIMDopeColors.prototype.set_element = function (i, el) {
-                i = i | 0;
-                this.buffer_setUint32(i, el.uint32);
-            }
-            SIMDopeColors.prototype.set_uint32_element = function (i, uint32) {
-                i = i | 0;
-                uint32 = clamp_uint32(uint32);
-                this.buffer_setUint32(i, uint32);
-            }
-            SIMDopeColors.prototype.get_uint32_element = function (i) {
-                i = i | 0;
-                return this.buffer_getUint32(i);
-            }
-            SIMDopeColors.prototype.get_sub_uint8a = function (i, n) {
-                i = i | 0;
-                n = n | 0;
-                return this.buffer_getUint8a(multiply_uint(i, 4), n);
-            }
-            SIMDopeColors.prototype.get_slice_uint8a = function (i, n) {
-                i = i | 0;
-                n = n | 0;
-                return this.buffer_getUint8a(multiply_uint(i, 4), n).slice(0, multiply_uint(n || 1, 4));
-            }
-            SIMDopeColors.prototype.get_buffer = function (i, n) {
-                i = i | 0;
-                n = n | 0;
-                return this.buffer_getUint8a(multiply_uint(i, 4), n).buffer;
-            }
-
             var all_colors = new Set();
 
             var layers_pxls_colors = SIMDopeColors(_color_a);
             var pxl_layers_length = _layers.length | 0;
             var pxl_colors = SIMDopeColors(new ArrayBuffer(_color_l * 4));
-            var color = SIMDopeColor.new_zero();
             var big_scale = scale > 1;
             var compute_hex = with_palette;
 
-
             for (var i = 0; (i | 0) < (_color_l | 0); i = (i + 1) >>> 0) {
-
-                color.set(pxl_colors.get_element(i));
 
                 for (var l = 0; (l | 0) < (pxl_layers_length | 0); l = (l + 1) >>> 0) {
 
-                    if (!_layers[l].hidden) {
+                    if (!_layers[l|0].hidden) {
 
-                        color.blend_with(layers_pxls_colors.get_element(l * _color_l + i | 0), clamp_uint8(multiply_uint(_layers[l].opacity, 255)), false, false);
+                        pxl_colors.get_element(i|0).blend_with(layers_pxls_colors.get_element(l * _color_l + i | 0), _layers[l|0].opacity*1000|0, false, false);
                     }
                 }
 
-                var color_hex = compute_hex ? color.hex : "";
-                all_colors.add(color_hex);
-                pxl_colors.set_element(i, color);
+                all_colors.add(compute_hex ? pxl_colors.get_element(i|0).hex : "");
             }
 
             var image_data;
@@ -1249,10 +613,8 @@ SOFTWARE.
                 resolve(Object.assign({}, {"url": png_encode_id(image_data)}));
             }
             image_data = null;
-
-        })};*/
-
-
+        })};
+ */
 
 const B64PngCanvas = {
 
@@ -1273,9 +635,7 @@ const B64PngCanvas = {
         pxl_height = pxl_height | 0
 
         const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
-        const asyncs = `var t=function(t,r,e,n,i,u,a){return new Promise((function(o){function s(t){var r,e={_keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",encode:function(t){for(var r,e,n,i,u,a,o,s="",_=0;(0|_)<(0|t.length);)i=(r=t.charCodeAt(_++))>>2,u=(3&r)<<4|(e=t.charCodeAt(_++))>>4,a=(15&e)<<2|(n=t.charCodeAt(_++))>>6,o=63&n,isNaN(e)?a=o=64:isNaN(n)&&(o=64),s=s+this._keyStr.charAt(i)+this._keyStr.charAt(u)+this._keyStr.charAt(a)+this._keyStr.charAt(o);return s}},n=String.fromCharCode(120,1),i=[],u=String.fromCharCode(137,80,78,71,13,10,26,10),a=String.fromCharCode(0),o=function(t){return 4294967295^function(t,r){var e,n,u=t;for(e=0;(0|e)<(0|r.length);e=(e+1|0)>>>0)n=r.charCodeAt(e),u=i[255&(u^n)]^u>>>8;return u}(4294967295,t)},s=function(t){return String.fromCharCode((4278190080&t)>>>24,(16711680&t)>>>16,(65280&t)>>>8,255&t)},_=function(t,r,e){var n=o(r+e);return s(t)+r+e+s(n)};return function(){var t,r,e;for(t=0;t<256;t++){for(r=t,e=0;e<8;e++)1&r?r=3988292384^r>>>1:r>>>=1;i[t]=r}}(),r=_(0,"IEND",""),"data:image/png;base64,"+e.encode(function(t,e,i){var o,f,c,y,l,g=function(t,r){var e;return e=s(t),e+=s(r),e+=String.fromCharCode(8),e+=String.fromCharCode(6),e+=String.fromCharCode(0),e+=String.fromCharCode(0),e+=String.fromCharCode(0),_(13,"IHDR",e)}(t,e),h="";for(c=0;(0|c)<(0|i.length);c=(c+4*t|0)>>>0){for(f=a,y=0;(0|y)<(4*t|0);y=(y+1|0)>>>0)f+=String.fromCharCode(255&i[c+y]);h+=f}return l=n+function(t){var r,e,n,i=65535,u="";for(r=0;r<t.length;r+=i)n="",(e=t.length-r)<=i?n=String.fromCharCode(1):(e=i,n=String.fromCharCode(0)),u+=n+String.fromCharCode(255&e,(65280&e)>>>8),u+=String.fromCharCode(255&~e,(65280&~e)>>>8),u+=t.substring(r,r+e);return u}(h)+s(function(t){var r,e=1,n=0;for(r=0;(0|r)<(0|t.length);r=(r+1|0)>>>0)n=(n+(e=(e+t.charCodeAt(r))%65521))%65521;return n<<16|e}(h)),o=_(l.length,"IDAT",l),u+g+o+r}(t.width,t.height,t.data))}t|=0,r|=0,u|=0;var _={unary_neg:t=>-t,unary_bitwise_not:t=>~t,unary_logical_not:t=>!t,boolean_and:(t,r)=>t&&r,binary_and:(t,r)=>t&r,binary_or:(t,r)=>t|r,binary_xor:(t,r)=>t^r,binary_add:(t,r)=>t+r,binary_sub:(t,r)=>t-r,binary_mul:(t,r)=>t*r,binary_div:(t,r)=>t/r,binary_equal:(t,r)=>t==r,binary_not_equal:(t,r)=>t!=r,binary_less:(t,r)=>t<r,binary_less_equal:(t,r)=>t<=r,binary_greater:(t,r)=>t>r,binary_greater_equal:(t,r)=>t>=r,binary_shift_left:(t,r)=>t<<r,binary_shift_right_arithmetic:(t,r)=>t>>r,binary_shift_right_logical:(t,r)=>t>>>r,min_num:(t,r)=>t!=t?r:r!=r?t:Math.min(t,r),max_num:(t,r)=>t!=t?r:r!=r?t:Math.max(t,r),modulo_int:(t,r)=>t%r|0,modulo_uint:(t,r)=>(t%r|0)>>>0,plus_int:(t,r)=>t+r|0,minus_int:(t,r)=>t-r|0,plus_uint:(t,r)=>(t+r|0)>>>0,minus_uint:(t,r)=>(t-r|0)>>>0,multiply_int:(t,r)=>t*r|0,divide_int:(t,r)=>t/r|0,multiply_uint:(t,r)=>(t*r|0)>>>0,divide_uint:(t,r)=>(t/r|0)>>>0,divide_four_uint:t=>(t>>2|0)>>>0,abs_int:t=>(0|t)<0?(0|-t)>>>0:(0|t)>>>0,max_int:(t,r)=>(t|=0)>(r|=0)?r:t,min_int:(t,r)=>(t|=0)>(r|=0)?t:r,max_uint:(t,r)=>(t=(0|t)>>>0)>(r=(0|r)>>>0)?r:t,min_uint:(t,r)=>(t|=0)>(r|=0)?t:r,clamp_int:(t,r,e)=>t=(t=(t|=0)-(t-(e|=0)&e-t>>31)|0)-(t-(r|=0)&t-r>>31)|0,clamp_uint8:t=>255&(0|t),inverse_255:t=>255&(255-t|0),divide_255:t=>255&(t/255|0),clamp_uint32:t=>4294967295&(0|t),int_equal:(t,r)=>(0|t)==(0|r),int_not_equal:(t,r)=>(0|t)!=(0|r),int_less:(t,r)=>(0|t)<(0|r),int_less_equal:(t,r)=>(0|t)<=(0|r),int_greater:(t,r)=>(0|t)>(0|r),int_greater_equal:(t,r)=>(0|t)>=(0|r),uint_equal:(t,r)=>(0|t)>>>0==(0|r)>>>0,uint_not_equal:(t,r)=>(0|t)>>>0!=(0|r)>>>0,uint_less:(t,r)=>(0|t)>>>0<(0|r)>>>0,uint_less_equal:(t,r)=>(0|t)>>>0<=(0|r)>>>0,uint_greater:(t,r)=>(0|t)>>>0>(0|r)>>>0,uint_greater_equal:(t,r)=>(0|t)>>>0>=(0|r)>>>0,format_int:t=>0|t,format_uint:t=>(0|t)>>>0},{unary_neg:f,unary_bitwise_not:c,unary_logical_not:y,boolean_and:l,binary_and:g,binary_or:h,binary_xor:p,binary_add:b,binary_sub:d,binary_mul:m,binary_div:w,binary_equal:v,binary_not_equal:C,binary_less:A,binary_less_equal:U,binary_greater:q,binary_greater_equal:O,binary_shift_left:j,binary_shift_right_arithmetic:P,binary_shift_right_logical:S,min_num:x,max_num:k,modulo_int:D,modulo_uint:I,plus_int:M,minus_int:N,plus_uint:B,minus_uint:z,multiply_int:E,divide_int:H,multiply_uint:R,divide_uint:T,divide_four_uint:F,abs_int:G,max_int:J,min_int:K,max_uint:L,min_uint:Q,clamp:V,clamp_int:W,clamp_uint8:X,divide_255:Y,inverse_255:Z,clamp_uint32:$,int_equal:tt,int_not_equal:rt,int_less:et,int_less_equal:nt,int_greater:it,int_greater_equal:ut,uint_equal:at,uint_not_equal:ot,uint_less:st,uint_less_equal:_t,uint_greater:ft,uint_greater_equal:ct,format_int:yt,format_uint:lt}=_,gt=function(t,r){"use strict";if(r=r||0,!(this instanceof gt))return new gt(t,r);t instanceof Uint8ClampedArray?this.storage_uint8_=t:this.storage_uint8_=new Uint8ClampedArray("buffer"in t?t.buffer:t,R(r,4))};gt.new_zero=function(){"use strict";return gt(new ArrayBuffer(4))},gt.new_splat=function(t){"use strict";var r=new Uint8ClampedArray(4);return r.fill(X(t)),gt(r)},gt.new_of=function(t,r,e,n){"use strict";var i=new Uint8ClampedArray(4);return i[3]=X(t),i[2]=X(r),i[1]=X(e),i[0]=X(n),gt(i)},gt.new_safe_of=function(t,r,e,n){"use strict";var i=new Uint8ClampedArray(4);return i[3]=W(t,0,255),i[2]=W(r,0,255),i[1]=W(e,0,255),i[0]=W(n,0,255),gt(i)},gt.new_from=function(t){"use strict";return gt(t)},gt.new_array=function(t){"use strict";var r=new Uint8ClampedArray(4);return r[3]=X(t[0]),r[2]=X(t[1]),r[1]=X(t[2]),r[0]=X(t[3]),gt(r)},gt.new_array_safe=function(t){"use strict";var r=new Uint8ClampedArray(4);return r[3]=X(W(t[0],0,255)),r[2]=X(W(t[1],0,255)),r[1]=X(W(t[2],0,255)),r[0]=X(W(t[3],0,255)),gt(r)},gt.new_bool=function(t,r,e,n){"use strict";var i=new Uint8ClampedArray(4);return i[3]=(0|t)>0?1:0,i[2]=(0|r)>0?1:0,i[1]=(0|e)>0?1:0,i[0]=(0|n)>0?1:0,gt(i)},gt.new_uint32=function(t){"use strict";var r=new Uint8ClampedArray(4);return r[0]=255&t,r[1]=t>>>8&255,r[2]=t>>>16&255,r[3]=t>>>24&255,gt(r)},gt.new_hsla=function(t,r,e,n){"use strict";t=T(t,360),r=T(r,100),e=T(e,100),n=T(n,100);var i,u,a=0;if(0===r)i=u=a=e;else{function _(t,r,e){return e<0&&(e+=1),e>1&&(e-=1),e<1/6?t+6*(r-t)*e:e<.5?r:e<2/3?t+(r-t)*(2/3-e)*6:t}var o=e<.5?e*(1+r):e+r-e*r,s=2*e-o;i=_(s,o,t+1/3),u=_(s,o,t),a=_(s,o,t-1/3)}return gt.new_of(R(i,255),R(u,255),R(a,255),R(n,255))},Object.defineProperty(gt.prototype,"r",{get:function(){"use strict";return X(this.storage_uint8_[3])}}),Object.defineProperty(gt.prototype,"g",{get:function(){"use strict";return X(this.storage_uint8_[2])}}),Object.defineProperty(gt.prototype,"b",{get:function(){"use strict";return X(this.storage_uint8_[1])}}),Object.defineProperty(gt.prototype,"a",{get:function(){"use strict";return X(this.storage_uint8_[0])}}),Object.defineProperty(gt.prototype,"uint32",{get:function(){"use strict";return(this.storage_uint8_[3]<<24|this.storage_uint8_[2]<<16|this.storage_uint8_[1]<<8|this.storage_uint8_[0]|0)>>>0}}),Object.defineProperty(gt.prototype,"hex",{get:function(){"use strict";return"#".concat("00000000".concat(this.uint32.toString(16)).slice(-8))}}),Object.defineProperty(gt.prototype,"hsl",{get:function(){"use strict";var t=X(this.storage_uint8_[3]),r=X(this.storage_uint8_[2]),e=X(this.storage_uint8_[1]),n=X(this.storage_uint8_[0]);t=+t/255,r=+r/255,e=+e/255,n=+n/255;var i,u,a=Math.max(t,r,e),o=Math.min(t,r,e),s=(a+o)/2;if(a==o)i=u=0;else{var _=a-o;switch(u=s>.5?_/(2-a-o):_/(a+o),a){case t:i=(r-e)/_+(r<e?6:0);break;case r:i=(e-t)/_+2;break;case e:i=(t-r)/_+4}i/=6}return Uint16Array.of(R(i,360),R(u,100),R(s,100),R(n,100))}}),Object.defineProperty(gt.prototype,"offset",{get:function(){"use strict";return F(this.storage_uint8_.byteOffset)}}),Object.defineProperty(gt.prototype,"buffer",{get:function(){"use strict";return this.storage_uint8_.buffer}}),Object.defineProperty(gt.prototype,"set",{get:function(){"use strict";return function(t){t instanceof gt?this.storage_uint8_.set(t.subarray(0,4)):"subarray"in t?this.storage_uint8_.set(t):"buffer"in t?this.storage_uint8_.set(t.buffer):this.storage_uint8_.set(t)}}}),Object.defineProperty(gt.prototype,"subarray",{get:function(){"use strict";return function(t,r){return this.storage_uint8_.subarray(t,r)}}}),Object.defineProperty(gt.prototype,"slice",{get:function(){"use strict";return function(t,r){return this.storage_uint8_.slice(t,r)}}}),gt.prototype.set_scale_of_on_255=function(t,r,e,n){var i=Uint8ClampedArray.of(Y(R(this.r,t)),Y(R(this.g,r)),Y(R(this.b,e)),Y(R(this.a,n)));return this.set(i),this},gt.prototype.scale_of_on_255=function(t,r,e,n){var i=Uint8ClampedArray.of(Y(R(this.r,t)),Y(R(this.g,r)),Y(R(this.b,e)),Y(R(this.a,n)));return gt(i)},gt.prototype.blend_with=function(t,r,e,n){if(r=X(r),e=e||!1,n=n||!1,t.multiply_a_255(r),e&&t.is_fully_transparent())this.set(new ArrayBuffer(4));else if(this.is_not_fully_transparent()&&t.is_not_fully_opaque()){var i=n?T(B(this.a,r),2):Z(Y(R(Z(t.a),Z(this.a))));this.set(gt.merge_scale_of_255(t,T(R(t.a,255),i),this,Y(R(this.a,T(R(Z(t.a),255),i)))).set_a(i))}else this.set(t);return this},gt.prototype.get_difference_with=function(t){return gt.new_of(G(this.r,t.r),G(this.g,t.g),G(this.b,t.b),G(this.a,t.a))},gt.prototype.sum_rgba=function(){return B(B(this.r,this.g),B(this.b,this.a))},gt.prototype.sum_rgb=function(){return B(B(this.r,this.g),this.b)},gt.prototype.is_dark=function(){return _t(this.sum_rgb(),384)},gt.prototype.is_fully_transparent=function(){return at(this.a,0)},gt.prototype.is_fully_opaque=function(){return at(this.a,255)},gt.prototype.is_not_fully_transparent=function(){return!this.is_fully_transparent()},gt.prototype.is_not_fully_opaque=function(){return!this.is_fully_opaque()},gt.prototype.match_with=function(t,r){"use strict";if(1===(r=void 0===r?-1:X(r)))return!0;if(0===r)return at(this.get_difference_with(t).sum_rgba(),0);{const e=this.get_difference_with(t);return-1!==r?st(e.r,r)&&st(e.g,r)&&st(e.b,r)&&st(e.a,r)?1:0:e.sum_rgb()/765*Math.abs(1-e.a/255)}},gt.prototype.set_r=function(t){"use strict";return this.subarray()[3]=X(t),this},gt.prototype.set_g=function(t){"use strict";return this.subarray()[2]=X(t),this},gt.prototype.set_b=function(t){"use strict";return this.subarray()[1]=X(t),this},gt.prototype.set_a=function(t){"use strict";return this.subarray()[0]=X(t),this},gt.prototype.multiply_a_255=function(t){"use strict";var r=this.subarray();return r[0]=X(Y(R(r[0],t))),this},gt.prototype.copy=function(){"use strict";return gt(this.slice(0,4))},gt.with_r=function(t,r){"use strict";var e=t.slice(0,4);return e[3]=X(r),gt(e)},gt.with_g=function(t,r){"use strict";var e=t.slice(0,4);return e[2]=X(r),gt(e)},gt.with_b=function(t,r){"use strict";var e=t.slice(0,4);return e[1]=X(r),gt(e)},gt.with_a=function(t,r){"use strict";var e=t.slice(0,4);return e[0]=X(r),gt(e)},gt.with_inverse=function(t){"use strict";var r=t.slice(0,4);return r[3]=z(255-r[3]),r[2]=z(255-r[2]),r[1]=z(255-r[1]),r[0]=z(255-r[0]),gt(r)},gt.sumarray=function(t,r,e){"use strict";r=Q(r|=0,3),e=Q(e=(e|=0)||4,4);for(var n=0,i=r;st(i,e);i=B(i,1))n=B(n,t["rgba".charAt(i)]);return n},gt.row_is_equal=function(t,r){return gt.new_bool(at(t.r,r.r),at(t.g,r.g),at(t.b,r.b),at(t.a,r.a))},gt.row_is_greater=function(t,r){return gt.new_bool(ft(t.r,r.r),ft(t.g,r.g),ft(t.b,r.b),ft(t.a,r.a))},gt.row_is_less=function(t,r){return gt.new_bool(st(t.r,r.r),st(t.g,r.g),st(t.b,r.b),st(t.a,r.a))},gt.row_is_greater_equal=function(t,r){return gt.new_bool(ct(t.r,r.r),ct(t.g,r.g),ct(t.b,r.b),ct(t.a,r.a))},gt.row_is_less_equal=function(t,r){return gt.new_bool(_t(t.r,r.r),_t(t.g,r.g),_t(t.b,r.b),_t(t.a,r.a))},gt.row_get_difference=function(t,r){return gt.new_of(G(t.r,r.r),G(t.g,r.g),G(t.b,r.b),G(t.a,r.a))},gt.match=function(t,r,e){"use strict";return t.match_with(r,e)},gt.blend=function(t,r,e,n,i){return t.copy().blend_with(r,e,n,i)},gt.plus=function(t,r){var e=new Uint8ClampedArray(4);return e[3]=X(K(255,M(t.r,r.r))),e[2]=X(K(255,M(t.g,r.g))),e[1]=X(K(255,M(t.b,r.b))),e[0]=X(K(255,M(t.a,r.a))),gt(e)},gt.minus=function(t,r){var e=new Uint8ClampedArray(4);return e[3]=X(J(0,N(t.r,r.r))),e[2]=X(J(0,N(t.g,r.g))),e[1]=X(J(0,N(t.b,r.b))),e[0]=X(J(0,N(t.a,r.a))),gt(e)},gt.average=function(t,r){var e=new Uint8ClampedArray(4);return e[3]=X(T(M(t.r,r.r),2)),e[2]=X(T(M(t.g,r.g),2)),e[1]=X(T(M(t.b,r.b),2)),e[0]=X(T(M(t.a,r.a),2)),gt(e)},gt.merge_scale_of_255=function(t,r,e,n){return gt.merge(gt.scale_of_on_255(t,r,r,r,r),gt.scale_of_on_255(e,n,n,n,n))},gt.scale_of_on_255=function(t,r,e,n,i){var u=new Uint8ClampedArray(4);return u[3]=W(Y(R(t.r,r)),0,255),u[2]=W(Y(R(t.g,e)),0,255),u[1]=W(Y(R(t.b,n)),0,255),u[0]=W(Y(R(t.a,i)),0,255),gt(u)},gt.merge=function(t,r){var e=new Uint8ClampedArray(4);return e[3]=W(B(t.r,r.r),0,255),e[2]=W(B(t.g,r.g),0,255),e[1]=W(B(t.b,r.b),0,255),e[0]=W(B(t.a,r.a),0,255),gt(e)};var ht=function(t){"use strict";if(!(this instanceof ht))return new ht(t);this.storage_uint8_array_=new Uint8ClampedArray("buffer"in t?t.buffer:t),this.storage_uint32_array_=new Uint32Array("buffer"in t?t.buffer:t)};Object.defineProperty(ht.prototype,"length",{get:function(){"use strict";return F(this.storage_uint8_array_.length)}}),Object.defineProperty(ht.prototype,"buffer",{get:function(){"use strict";return this.storage_uint8_array_.buffer}}),Object.defineProperty(ht.prototype,"buffer_setUint8",{get:function(){"use strict";return function(t,r){return t|=0,r|=0,this.storage_uint8_array_[t]=X(r)}}}),Object.defineProperty(ht.prototype,"buffer_getUint8",{get:function(){"use strict";return function(t){return t|=0,this.storage_uint8_array_[t]}}}),Object.defineProperty(ht.prototype,"buffer_getUint8a",{get:function(){"use strict";return function(t,r){return r=B(t|=0,R(r=(r|=0)||1,4)),this.storage_uint8_array_.subarray(t,r)}}}),Object.defineProperty(ht.prototype,"buffer_setUint32",{get:function(){"use strict";return function(t,r){this.storage_uint32_array_[0|t]=$(r)}}}),Object.defineProperty(ht.prototype,"buffer_getUint32",{get:function(){"use strict";return function(t){return this.storage_uint32_array_[0|t]}}}),Object.defineProperty(ht.prototype,"subarray_uint32",{get:function(){"use strict";return function(t,r){return t|=0,r=(r|=0)||this.length,this.storage_uint32_array_.subarray(t,r)}}}),Object.defineProperty(ht.prototype,"slice_uint32",{get:function(){"use strict";return function(t,r){return t|=0,r=(r|=0)||this.length,this.storage_uint32_array_.slice(t,r)}}}),Object.defineProperty(ht.prototype,"subarray_uint8",{get:function(){"use strict";return function(t,r){return t|=0,r|=0,this.storage_uint8_array_.subarray(R(t,4),R(r,4))}}}),Object.defineProperty(ht.prototype,"slice_uint8",{get:function(){"use strict";return function(t,r){return t|=0,r|=0,this.storage_uint8_array_.slice(R(t,4),R(r,4))}}}),ht.prototype.get_element=function(t){return t|=0,gt(this.buffer,t)},ht.prototype.subarray=function(t,r){return t|=0,r|=0,this.buffer_getUint8a(t,r)},ht.prototype.set_element=function(t,r){t|=0,this.buffer_setUint32(t,r.uint32)},ht.prototype.set_uint32_element=function(t,r){t|=0,r=$(r),this.buffer_setUint32(t,r)},ht.prototype.get_uint32_element=function(t){return t|=0,this.buffer_getUint32(t)},ht.prototype.get_sub_uint8a=function(t,r){return t|=0,r|=0,this.buffer_getUint8a(R(t,4),r)},ht.prototype.get_slice_uint8a=function(t,r){return t|=0,r|=0,this.buffer_getUint8a(R(t,4),r).slice(0,R(r||1,4))},ht.prototype.get_buffer=function(t,r){return t|=0,r|=0,this.buffer_getUint8a(R(t,4),r).buffer};for(var pt,bt=new Set,dt=ht(e),mt=0|i.length,wt=ht(new ArrayBuffer(4*n)),vt=gt.new_zero(),Ct=u>1,At=a,Ut=0;(0|Ut)<(0|n);Ut=Ut+1>>>0){vt.set(wt.get_element(Ut));for(var qt=0;(0|qt)<(0|mt);qt=qt+1>>>0)i[qt].hidden||vt.blend_with(dt.get_element(qt*n+Ut|0),X(R(i[qt].opacity,255)),!1,!1);var Ot=At?vt.hex:"";bt.add(Ot),wt.set_element(Ut,vt)}if(Ct){var jt=wt.subarray_uint32(),Pt=jt.length,St=new Uint32Array(Pt*u*u),xt=0,kt=t*u|0,Dt=0,It=0,Mt=0,Nt=0;for(xt=0;(0|xt)<(0|Pt);xt=(xt+1|0)>>>0)for(Mt=(((xt-(Dt=xt%t|0))/t|0)*u*kt|0)+(Dt*u|0)|0,Nt=0;(0|Nt)<(0|u);Nt=(Nt+1|0)>>>0)It=Mt+kt*Nt|0,St.fill(4294967295&jt[xt],0|It,It+u|0);pt=new ImageData(new Uint8ClampedArray(St.reverse().buffer).reverse(),t*u|0,r*u|0)}else pt=new ImageData(new Uint8ClampedArray(wt.subarray_uint32(0,n).reverse().buffer).reverse(),t,r);o(a?Object.assign({},{url:s(pt),colors:Array.from(bt)}):Object.assign({},{url:s(pt)})),pt=null}))};`
-            + "return t;";
-
+        const asyncs = `return function(t,r,e,n,i,o,u){return new Promise((function(s){function a(t){var r,e={_keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",encode:function(t){for(var r,e,n,i,o,u,s,a="",f=0;(0|f)<(0|t.length);)i=(r=t.charCodeAt(f++))>>2,o=(3&r)<<4|(e=t.charCodeAt(f++))>>4,u=(15&e)<<2|(n=t.charCodeAt(f++))>>6,s=63&n,isNaN(e)?u=s=64:isNaN(n)&&(s=64),a=a+this._keyStr.charAt(i)+this._keyStr.charAt(o)+this._keyStr.charAt(u)+this._keyStr.charAt(s);return a}},n=String.fromCharCode(120,1),i=[],o=String.fromCharCode(137,80,78,71,13,10,26,10),u=String.fromCharCode(0),s=function(t){return 4294967295^function(t,r){var e,n,o=t;for(e=0;(0|e)<(0|r.length);e=(e+1|0)>>>0)n=r.charCodeAt(e),o=i[255&(o^n)]^o>>>8;return o}(4294967295,t)},a=function(t){return String.fromCharCode((4278190080&t)>>>24,(16711680&t)>>>16,(65280&t)>>>8,255&t)},f=function(t,r,e){var n=s(r+e);return a(t)+r+e+a(n)};return function(){var t,r,e;for(t=0;t<256;t++){for(r=t,e=0;e<8;e++)1&r?r=3988292384^r>>>1:r>>>=1;i[t]=r}}(),r=f(0,"IEND",""),"data:image/png;base64,"+e.encode(function(t,e,i){var s,c,_,h,g,y=function(t,r){var e;return e=a(t),e+=a(r),e+=String.fromCharCode(8),e+=String.fromCharCode(6),e+=String.fromCharCode(0),e+=String.fromCharCode(0),e+=String.fromCharCode(0),f(13,"IHDR",e)}(t,e),p="";for(_=0;(0|_)<(0|i.length);_=(_+4*t|0)>>>0){for(c=u,h=0;(0|h)<(4*t|0);h=(h+1|0)>>>0)c+=String.fromCharCode(255&i[_+h]);p+=c}return g=n+function(t){var r,e,n,i=65535,o="";for(r=0;r<t.length;r+=i)n="",(e=t.length-r)<=i?n=String.fromCharCode(1):(e=i,n=String.fromCharCode(0)),o+=n+String.fromCharCode(255&e,(65280&e)>>>8),o+=String.fromCharCode(255&~e,(65280&~e)>>>8),o+=t.substring(r,r+e);return o}(p)+a(function(t){var r,e=1,n=0;for(r=0;(0|r)<(0|t.length);r=(r+1|0)>>>0)n=(n+(e=(e+t.charCodeAt(r))%65521))%65521;return n<<16|e}(p)),s=f(g.length,"IDAT",g),o+y+s+r}(t.width,t.height,t.data))}t|=0,r|=0,o|=0;var f=function(t,r){return 4294967295&Math.imul(4294967295&(0|t),4294967295&(0|r))},c=Math.fround,_=function(t){return 4294967295&(.5+t|0)},h=c(.2126),g=c(.7152),y=c(.0722),p=c(1);!function(t){if(0==(0|(t=4294967295&(0|t)))||1==(0|t))return 0|t;for(var r=1,e=1;(0|e)<=(0|t);)e=4294967295&((r=4294967295&(r+1|0))*r|0)}(255*h*255+255*g*255+255*y*255+255*p*255|0);function b(t,r){return(t+r|0)>>>0}function d(t,r){return 4294967295&(0|Math.imul(4294967295&(0|t),4294967295&(0|r)))}function l(t){return t<<2}function C(t,r){return 4294967295&(t/r|0)}function m(t){return 4294967295&(t>>2|0)}function O(t){return 255&(0|t)}function A(t){return 255&(255-t|0)}function v(t){return 255&(t/255|0)}var j=function(t,r){"use strict";if(r=r||0,!(this instanceof j))return new j(t,r);t instanceof Uint8Array?this.storage_uint8_=t:this.storage_uint8_=new Uint8Array("buffer"in t?t.buffer:t,f(r,4))};j.new_of=function(t,r,e,n){"use strict";var i=new Uint8Array(4);return i[3]=O(t),i[2]=O(r),i[1]=O(e),i[0]=O(n),j(i)},Object.defineProperty(j.prototype,"r",{get:function(){"use strict";return O(this.storage_uint8_[3])}}),Object.defineProperty(j.prototype,"g",{get:function(){"use strict";return O(this.storage_uint8_[2])}}),Object.defineProperty(j.prototype,"b",{get:function(){"use strict";return O(this.storage_uint8_[1])}}),Object.defineProperty(j.prototype,"a",{get:function(){"use strict";return O(this.storage_uint8_[0])}}),Object.defineProperty(j.prototype,"uint32",{get:function(){"use strict";return(this.storage_uint8_[3]<<24|this.storage_uint8_[2]<<16|this.storage_uint8_[1]<<8|this.storage_uint8_[0])>>>0}}),Object.defineProperty(j.prototype,"hex",{get:function(){"use strict";return"#".concat("00000000".concat(this.uint32.toString(16)).slice(-8))}}),Object.defineProperty(j.prototype,"offset",{get:function(){"use strict";return m(this.storage_uint8_.byteOffset)}}),Object.defineProperty(j.prototype,"buffer",{get:function(){"use strict";return this.storage_uint8_.buffer.slice(this.storage_uint8_.byteOffset,b(this.storage_uint8_.byteOffset,4))}}),Object.defineProperty(j.prototype,"subarray",{get:function(){"use strict";return this.storage_uint8_.subarray(0,4)}}),Object.defineProperty(j.prototype,"set",{get:function(){"use strict";return function(t){t instanceof j?this.storage_uint8_.set(new Uint8Array(t.buffer)):"subarray"in t?this.storage_uint8_.set(t.subarray(0,4)):this.storage_uint8_.set(t)}}}),Object.defineProperty(j.prototype,"slice",{get:function(){"use strict";return function(t,r){return this.storage_uint8_.slice(t,r)}}}),j.prototype.is_fully_transparent=function(){return(4294967295&(0|this.a))==(4294967295&(0|0))},j.prototype.simplify=function(t){var r=Uint8Array.of(d(_(this.a/t),t),d(_(this.b/t),t),d(_(this.g/t),t),d(_(this.r/t),t));return this.set(r),this},j.prototype.blend_with=function(t,r,e,n){if(e|=0,n|=0,t.multiply_a_1000(0|r),0!=(0|e))this.is_fully_transparent()?t.set(ArrayBuffer(4)):t.is_fully_transparent()&&this.set(ArrayBuffer(4));else{var i=0!=(0|n)?C(b(this.a,t.a),2):A(v(f(A(t.a),A(this.a))));this.set(j.merge_scale_of_255_a_fixed(t,C(f(t.a,255),i),this,v(f(this.a,C(f(A(t.a),255),i))),i)),t.set(this)}},j.prototype.multiply_a_1000=function(t){"use strict";this.subarray[0]=O(C(f(this.a,t),1e3))},j.prototype.copy=function(){"use strict";return j(this.slice(0,4))},j.with_a=function(t,r){"use strict";var e=t.slice(0,4);return e[0]=O(r),j(e)},j.merge_scale_of_255_a_fixed=function(t,r,e,n,i){return r=O(r),n=O(n),i=O(i),j.merge_with_a_fixed(j.scale_rgb_of_on_255(t,r,r,r),j.scale_rgb_of_on_255(e,n,n,n),i)},j.scale_rgb_of_on_255=function(t,r,e,n){return j(Uint8Array.of(0,v(f(t.b,n)),v(f(t.g,e)),v(f(t.r,r))))},j.merge_with_a_fixed=function(t,r,e){return j(Uint8Array.of(O(e),b(t.b,r.b),b(t.g,r.g),b(t.r,r.r)))};var P=function(t,r,e){"use strict";if(!(this instanceof P))return new P(t);this.storage_="buffer"in t?t.buffer:t,r|=0,e=0|e||0|this.storage_.byteLength,this.storage_uint8_array_=new Uint8Array(this.storage_,r,e),this.storage_uint32_array_=new Uint32Array(this.storage_,r,m(e))};Object.defineProperty(P.prototype,"length",{get:function(){"use strict";return this.storage_uint32_array_.length}}),Object.defineProperty(P.prototype,"buffer",{get:function(){"use strict";return this.storage_uint8_array_.buffer}}),Object.defineProperty(P.prototype,"buffer_setUint8",{get:function(){"use strict";return function(t,r){return t|=0,r|=0,this.storage_uint8_array_[t]=O(r)}}}),Object.defineProperty(P.prototype,"buffer_getUint8",{get:function(){"use strict";return function(t){return t|=0,this.storage_uint8_array_[t]}}}),Object.defineProperty(P.prototype,"buffer_getUint8a",{get:function(){"use strict";return function(t,r){return r=b(t|=0,l(r=(r|=0)||1)),this.storage_uint8_array_.subarray(t,r)}}}),Object.defineProperty(P.prototype,"buffer_setUint32",{get:function(){"use strict";return function(t,r){this.storage_uint32_array_[0|t]=function(t){return(0|t)>>>0&4294967295}(r)}}}),Object.defineProperty(P.prototype,"buffer_getUint32",{get:function(){"use strict";return function(t){return this.storage_uint32_array_[0|t]}}}),Object.defineProperty(P.prototype,"subarray_uint32",{get:function(){"use strict";return function(t,r){return t|=0,r=(r|=0)||this.length,this.storage_uint32_array_.subarray(t,r)}}}),Object.defineProperty(P.prototype,"slice_uint32",{get:function(){"use strict";return function(t,r){return t|=0,r=(r|=0)||this.length,this.storage_uint32_array_.slice(t,r)}}}),Object.defineProperty(P.prototype,"subarray_uint8",{get:function(){"use strict";return function(t,r){return t|=0,r|=0,this.storage_uint8_array_.subarray(l(t),l(r))}}}),Object.defineProperty(P.prototype,"slice_uint8",{get:function(){"use strict";return function(t,r){return t|=0,r|=0,this.storage_uint8_array_.slice(l(t),l(r))}}}),P.prototype.get_element=function(t){return j(this.buffer,0|t)},P.prototype.subarray=function(t,r){return t|=0,r|=0,this.buffer_getUint8a(t,r)};for(var w,S=new Set,U=P(e),x=0|i.length,k=P(new ArrayBuffer(4*n)),D=o>1,I=u,N=0;(0|N)<(0|n);N=N+1>>>0){for(var B=0;(0|B)<(0|x);B=B+1>>>0)i[0|B].hidden||k.get_element(0|N).blend_with(U.get_element(B*n+N|0),1e3*i[0|B].opacity|0,!1,!1);S.add(I?k.get_element(0|N).hex:"")}if(D){var M=k.subarray_uint32(),E=M.length,H=new Uint32Array(E*o*o),L=0,R=t*o|0,T=0,q=0,z=0,F=0;for(L=0;(0|L)<(0|E);L=(L+1|0)>>>0)for(z=(((L-(T=L%t|0))/t|0)*o*R|0)+(T*o|0)|0,F=0;(0|F)<(0|o);F=(F+1|0)>>>0)q=z+R*F|0,H.fill(4294967295&M[L],0|q,q+o|0);w=new ImageData(new Uint8ClampedArray(H.reverse().buffer).reverse(),t*o|0,r*o|0)}else w=new ImageData(new Uint8ClampedArray(k.subarray_uint32(0,n).reverse().buffer).reverse(),t,r);s(u?Object.assign({},{url:a(w),colors:Array.from(S)}):Object.assign({},{url:a(w)})),w=null}))};`;
 
         var layers_pxls_colors_length = pxl_width * pxl_height | 0;
         var layers_pxls_colors = new Uint32Array(_s_pxls.length * layers_pxls_colors_length | 0);
@@ -1290,7 +650,7 @@ const B64PngCanvas = {
 
         return Object.assign({}, {
             // Compute properties
-            asyncf: new AsyncFunction(asyncs)(),
+            asyncf: new AsyncFunction(asyncs+" return fu;")(),
             workerp: pool,
             w: pxl_width,
             h: pxl_height,

@@ -660,7 +660,7 @@ class CanvasPixels extends React.PureComponent {
 
                 if(with_compression_speed !== 0 && result.colors.length <= 256) {
 
-                    JSLoader( () => import("../../utils/png_quant.js")).then((png_quant) => {
+                    JSLoader( () => import("../../utils/png_quant")).then((png_quant) => {
 
                         png_quant.default(""+result.url, with_compression_quality_min, with_compression_quality_max, with_compression_speed, pool).then((base_64_out) => {
 
@@ -1876,8 +1876,6 @@ class CanvasPixels extends React.PureComponent {
                 let _json_state_history = {
                     history_position: parseInt(js._json_state_history.history_position),
                     state_history: js._json_state_history.state_history.map(function(state){
-
-
                         return Object.assign({}, {
                             _original_image_index: parseInt(state._original_image_index),
                             pxl_width: parseInt(state.pxl_width),
@@ -1915,7 +1913,7 @@ class CanvasPixels extends React.PureComponent {
                         return {
                             id: parseInt(l.id),
                             hash: l.hash + "",
-                            name: l.name+"",
+                            name: l.name + "",
                             hidden: Boolean(l.hidden),
                             opacity: parseInt(l.opacity),
                         };

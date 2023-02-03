@@ -39,7 +39,6 @@ export default function png_quant(dataurl, quality_min, quality_max, speed, pool
             }).timeout(60 * 1000);
         } else {
 
-
             window.png_quant_process_function(dataurl, options).then(function (r) {
                 resolve(r)
             }).catch(function (e) {
