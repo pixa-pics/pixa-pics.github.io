@@ -54,9 +54,9 @@ var t = function(buffer) {
 
         return (i - 1 | 0)>>>0;
     };
-    var PR = fr(0.2126*3/4), // +0.1
-        PG = fr(0.7152*3/4), // -0.2
-        PB = fr(0.0722*3/4), // +0.1
+    var PR = fr(0.2926*3/4), // +0.08
+        PG = fr(0.5552*3/4), // -0.16
+        PB = fr(0.1922*3/4), // +0.08
         PA = fr(1.0000/4);
 
     var RD = 255,
@@ -547,7 +547,7 @@ var t = function(buffer) {
     Object.defineProperty(QuantiMat.prototype, 'reset_cluster', {
         get: function() { "use strict"; return function() {
             "use strict";
-            this.max_cluster_ = this.new_pxl_colors_.length > 16384 ? 4096+1: this.new_pxl_colors_.length > 8192 ? 256+1: this.new_pxl_colors_.length > 2048 ? 64+1: this.new_pxl_colors_.length > 512 ? 16+1: 1;
+            this.max_cluster_ = this.new_pxl_colors_.length > 32768 ? 4096+1: this.new_pxl_colors_.length > 16385 ? 256+1: this.new_pxl_colors_.length > 8192 ? 64+1: this.new_pxl_colors_.length > 2048 ? 16+1: 1;
             this.length_clusters_.fill(0, 0, this.max_cluster|0);
             for(var c = 0; (c|0) < (this.max_cluster|0); c=(c+1|0)>>>0){ this.index_clusters_[c|0] = [];}
         }}
@@ -753,6 +753,7 @@ var t = function(buffer) {
         var color_a, color_b;
         var color_a_usage = 0;
         var color_a_usage_percent = 0;
+        var color_b_usage_percent = 0;
         var color_b_usage = 0;
         var first_color_more_used = false;
         var color_usage_difference_positive = 0.0;
@@ -764,6 +765,7 @@ var t = function(buffer) {
         var x = 0, y = 0;
         var color_n_in_cluster = 0;
         var low_if_used_alot = 1.0;
+        var low_if_both_used_alot = 1.0;
         var smart = Boolean(this.max_cluster < 4096+1);
 
         for(var c = 0; (c|0) < (this.max_cluster|0); c=(c+1|0)>>>0){
@@ -783,11 +785,6 @@ var t = function(buffer) {
 
                 if((color_a_usage|0) > 0 && color_a.is_not_fully_transparent()) {
 
-                    if(smart) {
-                        color_a_usage_percent = this.get_a_color_usage_percent(index_of_color_a|0);
-                        low_if_used_alot = color_a_usage_percent < average_cluster_color_usage_percent ? 1: average_cluster_color_usage_percent / color_a_usage_percent;
-                    }
-
                     // Start following color snake
                     latest_color = {value: color_a};
 
@@ -806,9 +803,9 @@ var t = function(buffer) {
                             if(smart) {
 
                                 if((color_usage_difference_positive|0) > 500) {
-                                    color_usage_difference_flattened_much = (color_usage_difference_positive - (color_usage_difference_positive-500) * 0.6 | 0) / 1000;
+                                    color_usage_difference_flattened_much = (color_usage_difference_positive - (color_usage_difference_positive-500) * 0.7 | 0) / 1000;
                                 }else {
-                                    color_usage_difference_flattened_much = (color_usage_difference_positive + (500 - color_usage_difference_positive) * 0.6 | 0) / 1000;
+                                    color_usage_difference_flattened_much = (color_usage_difference_positive + (500 - color_usage_difference_positive) * 0.7 | 0) / 1000;
                                 }
 
                             }else {
@@ -819,23 +816,21 @@ var t = function(buffer) {
                             // 50% threshold + 25% color_usage_difference - 25% color_usage_difference_flattened (Basically smoothen the way it becomed harder for color far from usage to be blended together)
                             weighted_threshold = ((((threshold_1000 / 1000) + (threshold_1000 / 1000 * (1 - color_usage_difference_flattened_much) * weight_applied_to_color_usage_difference)) / (1 + weight_applied_to_color_usage_difference)) * 1000 | 0) >>> 0;  // THRESHOLD + THRESHOLD * WEIGHT / 1 + WEIGHT
 
+                            if(smart) {
+                                color_a_usage_percent = this.get_a_color_usage_percent(index_of_color_a|0);
+                                color_b_usage_percent = this.get_a_color_usage_percent(index_of_color_b|0);
+                                low_if_used_alot = color_a_usage_percent > average_cluster_color_usage_percent ? average_cluster_color_usage_percent / color_a_usage_percent: 1;
+                                low_if_both_used_alot = (color_a_usage_percent + color_b_usage_percent|0) > (average_cluster_color_usage_percent * 2|0) ? (average_cluster_color_usage_percent * 2|0) / (color_a_usage_percent + color_b_usage_percent|0): 1;
+                            }
+
                             // The less a color is used the less it requires a great distance to be merged (so we don't have many color used only a few time in the whole image, heavily used color gets preserved better than lowly used ones)
-                            if(color_a.euclidean_match_with(color_b,  (weighted_threshold+weighted_threshold*low_if_used_alot|0)/2|0)) {
+                            if(color_a.euclidean_match_with(color_b,  (weighted_threshold+weighted_threshold*low_if_both_used_alot+weighted_threshold*low_if_used_alot|0)/3|0)) {
 
                                 // Update color usage and relative variables
                                 index_merged = true;
                                 color_a_usage = (color_a_usage + color_b_usage | 0) >>> 0;
                                 this.set_a_color_usage(index_of_color_a|0, color_a_usage|0);
                                 this.set_a_color_usage(index_of_color_b|0, 0);
-
-                                if(smart) {
-                                    color_a_usage_percent = this.get_a_color_usage_percent(index_of_color_a|0);
-                                    low_if_used_alot = color_a_usage_percent < average_cluster_color_usage_percent ? 1: average_cluster_color_usage_percent / color_a_usage_percent;
-                                }
-
-                                // Adds color to blend to processed colors and stack it to what will be set to be equals with all other color blended
-                                latest_color.tail = {value: this.get_a_new_pxl_color(index_of_color_b|0)};
-                                latest_color = latest_color.tail;
 
                                 // Blend the two colors according to their usage's weight
                                 if(first_color_more_used) {
@@ -844,13 +839,6 @@ var t = function(buffer) {
                                     color_b.blend_with(color_a, color_usage_difference_positive|0, false, false);
                                 }
                             }
-                        }
-                    }
-
-                    if(index_merged) {
-                        while (typeof latest_color != "undefined") {
-                            latest_color.value.set(color_a);
-                            latest_color = latest_color.tail;
                         }
                     }
                 }
@@ -947,7 +935,7 @@ import {load as LZEL_92} from "../../../utils/LZEL_92_loader";
 const ReducePalette = {
 
     _create_func: function (){
-        return LZEL_92('UraniumJS! H~=2;NH&wbkh6l3oXM[S%r3q6Pi##PX.[MIdijF>y_A.*,o]D]GeS_]h.!P§(3¡7S!=kbNhs3QU¡ExFHz=hCC(rt?lam#Jg&9¡L>;Snqqt;VwDpp,F&g5Dq&BRgivC,R34zHM9iGYx2v#-2CU9fLQw-kCJz#f#GNH6r>M}~Eq,s}EqZd*>T9>8j%7¡TuKF7-LFu6§wUNH>-X-#VY(,w#.:])¡38&6V|A@D)&)p6EQk9O)~l3Gu37^x708eCw3jBI fs§<]l>oUNZ~WL%>?2|t#|^qDHVzJ-|(bI{e|zcM7GNH7ZMl:(^mAZstg8g<YwW5z^lAQ(zh:))nekK?oW>X4CaPnR(QHB|+7#*o=#I+T&NiCCo4:o7Bg(CX]bTr?cF=AjKb;N#X2gW58Pg(btfkz¡§UZ_|)dA 0ET<O:AI6wrDHQ9zsCC%§[0u0cm7K&FBxKRG%aZeM&@AeAs&-XyK%;U2&ZH}jU0kp=F)dNFBprfkQ3?95KOo6F&cOz7P8cz}l3DA3_GNlto#8f?@§?*m<c[f[-< :Z(z&08;a{EQf¡|i^*{WeOCF3>qO!@aA;ONonTQI=u1 4OtKvE? _cgq5|2hNlRy6NEKdv Qk[v;{>t,k#@ e%(N?_I@2l+¡~1b1jep*2U46{C[ ,A(-2O(Qx_AG*)c§6zLC#9lW;QRK59)K+§w|o{(U-o_@¡>~}Mx{OOtT_[4jQV(bO?iD{)<drKA[s]L5AXk§qB!CJZ~cUG~h_~TJyC&7qe,c=B§L:)EaJBXI8r 1&*Gdw0§8ciQ0u>&&zv^ !*Kks0VbBb}|1nI98sIfg*8OOm[kHw¡§Zn};x?m*oHdC:p#izK7pBi§y2[^Eh>GeVu9+.4a-q@<%D&*7v_@R0t-l]qr]D§5w{eLp?pq1X|Je>x:t9sMTyU |)w9pp¡s9cg{#9#EEp5r2,pY^iZ_§NA{U|n#Wk,aWni%.Qe04fuT#N>!!{2~s|D§!Tda~4xCFWJSf@§h521¡^i)[<¡6eIs=Go|R2+LMsLeR9:n%HAy8O~Q6¡tFU>5}M*#[zt6=Q24Y9Yz41lye@*+>V@P6G746inT <{GFD1%;#gtNIK%{|Er:Lsqd(U5EHHf_§W_r2XWip{?*%N=[TdLknj[Xl(I,psPTyB_M|3EwHdqi]=r@ixD,s25g|?z5GtP3MEh1#(8eJBrZL5{?@AW§dWB*!t~[fK79gFDnI[~mH:=A0]Evn@f{P&k2a>rq:5W!,5s?UA?¡jVCxK=Lo~Ig0R(m~>&92J4bc]LkajO!):Cx;i ROY*]13bJN~+G4%XK?5~h}ix<f0v(x~EM§VG~xCQ+^Fv|f<gFZk-7C#PPgQIj9D0%aB-<eks?Mo_Qq_kEQbi§^68>f46§&xoGiQG43(sNU14ID|I2:[1%_F{T6%Tl,C|b:h?yvQl,-0H7do{3sW1+G-70pcjZPKc?QCvstN7hP=G! S3sWIcOo-^=UZoTMjq¡vK5-{FMGWI#[=XuB=y2berkDrOTwvqA]7Gf[m%w(>|::6LNb4J(zA(=%7KV#vBp3cEPuWF9?zDr<_6|(][;;Yz.NOo;{V@p#2uCPb._N<QR>7!EU(;kQ~vquK%<Q§fK6Ljr=pCy]IsC.o)up6nG!8(l3-2LfmG>=scT^lK6{r1byiOAY[hAV<AD=8l|sKUvQUPxx Yia[?_qY9,sRKuGI[mlY§K912§g[:Z8r%o>>+geUd9e45^RxI&@{<oK-vJ?rEvDJs+igz§ni~mS%TupXB_QwLF+UjNz&quLlNZ¡i2=1raL8Tln:q[OvR1<~H|5fUt§g>?|MuN+Ul|Orhswq4dMpD*h.uDO+mC|v[Fw?f CK7ROz8§M~sXFO|51MF5PYEX  yRqb&gYi2[]gg|m#GC(Ty0F0cjnr#l7E-XyC6x8u6+8z~(L9lz,dB*5O>vw>Y>]sDl§uvjNJ*S@F6UM-O5[O S(y&YAw&w3.eMv[9nQ]2-Ws45nbA~%D({5Gq%?>IbMIyG,!p~ f)9n4(d¡rV+BvLUy!45~+HQ#QxA@NdnH!y*gVBX6ycLZ[oD*:NQ3g*a;&aq2T8[i)e@0Fo<=E7ku9<3l§A.+Epa:M3#|YMW>C3:C!1JC>eo~@tluTc¡ =b;e[I¡i9Qw&M@ScI7] 5}|ww]^?ney^0I j-!k#_lv§N&i#~B+%JGR}hK*qd,U%-RK=mesM.nj<YFSb6ghCi=Zgw[sB~av)2DD+Z{+qhG+§r A5QA|y¡LDpDUJn¡Ron;OMSeZ#8P:C2F93f q6knXWwoalA 9!fnTBpjbHNexzMkwEe<7V{]wuR_ns]vS)-z]T+#[LEAaLY?VX~S>ex2s]RI-nu;NpR)F%(9WS,<V-UQCpI .y,.Z3g Gq,+=?4X(x¡x32QG!I<G.X+n_.-e8|~Kt4%!Qe]uSSd4Hd<y5hlcIJ*i:(A1z6E2T2Ujl^gjpdS&Roemo&>y^RDo=uCE+HuP¡@aT:,98>;okF4@c.S^p+J8,L¡WvxQ¡lpA=%,5Fnrb ;8HX[LF?%}TD8vr]bAL~qSx.§M+O;hw~;kV1xk6{7M@@T)_K{n(Fp§e|1@r^ #fV-{& 2¡DIn_I_U*[ON gu<y|)U@>p&?j1C;XiW.56Pum(|p^_uA+4N)1hp.UVY<(0Q~B@~3zkjoy¡DP|{BjWFq=-W_9nb8 *HVuo&m(E~-j)Dnxr§*Is8Ac58]m@0%S,KsA:zzvF=iRs}AxRGvq(fR;A0etqP&S(aM*Y^@Cg;¡Y8q&?hX]0[=bN 8WJyCXe%FYv<E-Ir;cG3fjgji:{;sc[M-G#=USn;OJxY}Vnw=;_o(&=v%nr@CV( &|o*eAJ57*7ih=|V&d7rXt jc-4Naep,pXpI0jU*< Xz&U¡sc;§ng,IEbqHU4¡y~%-IA_Om=<pIP6:()IHPLFK+1FKY;.b>Y4c-Abk3*CZE;=#Fya~ _nd##Oe&xdM:7LaUc[#nFfIcb§xD:i|!aIIm8EeaTJF7x[S#V{AWs+3l0tn)4H]r{Y^¡T^enL~F+>:U;AuX2rp#<lmE>eTU49P~>v~Ut{O)FfzST:;]G*<AqIHT!TW{D@t9otBeMR b29Nb|gL4AAHQK¡WEHc_q!0x<[KH!|;8Ypw(ByC;gF3u]U)1MUY #,4v&P:c05QP[.pggHlf0{AEI}Gxbzd7soM5SC¡jtJ )(d_d:HLa4W>Q-?YH&a,u(RBI*x(7Bh0)%¡bqWt{7p(3Lsz)pwz>|mg<?f )MOu=JTp9iv@_*fV_o1A¡2kbF-s3r4ziaRS!x?u<|&]D4wTke#.QPiGl26b^vszF{jY Lb=G;2x!us&D:K;w&nf1<%2]1XzFCZws*t]VPu0&P_t(OgZ=]A¡#:u;y[<NK45^.mgfRx^ZN47f§D9(k|GJA?nvdI|FQ> r¡|wC?¡Md-ycsEF1;Ck)z+L9Gc@~ROcDhdkVPDRy>@rsK9o6kY0??l]Lt~mE9*sy¡B!ZX+~k2{w#X4e¡Y_Y;rr{58{_B*AQ9IEZw2R_K3+MUeJcM-@C]wtu*~*R3kBpHX=%+HK#zB]?^8mz Lu0Y{U.0T{Mmo.oa0!kpi KfIUBN* ]Q7[<>Fl%W&,+lo?AQ0@4a%.chDJ5,+I|n&}C.EX#YWflnea1f~t5~xYcigI?w|U[FO]-9*aViqEw?E7X@QW46Is!;Gy69BfjudE.yTJi@Q]¡,k?bV]u]dpBCRAw6<5c-3*cs8&77;@wj5CBz.V.dLN1D20M8Uo]>rq*)Ss^Edk]X1{E§sLmE0oC;8Mgp&1qpBAZ36ZJq=fckJlo4q=e!v1sa !>+O<.V39%YL~g~1IiGF0t§5§5gS&K4TKd[=@NNBju:mUyzRY2BUP#~A-:UI1Sh]¡(5BfzbTU@RgiT7^W=|&y:MWu{c^1&v|fy9 ~BQnzO1Hif*QgNWm,k{<T^#U.K){H6LX3PwNk+HI8+1ot_ozWiWqbfqDm8Y&XOlS1+n0_csSu9OQQb;bNfIQrzczz1@VGI¡L1cckhu@v*0p^pD %L¡@C!?:Th2~@Sxb+I#,{lM<E.qMH<p([]gB?8^o1ZrxH:5Y=%X(Cp!z=K9v&Z1<XJPCXTdHFu>!S!y=j~?TYWielu<0~%x*AeWf~Uwa6;2%^B(5=h.1SK&LD.FBkwMh|ULh@O3%¡O?2d,2+zd^~dv%C!Orbu.n:#?z>_hTN4]%3TX?KC3zp0S)=I9JQswkW:%Ja+ePl¡Q~)5UYB§vJerpfqG:b%l]8#oQb3H8%{eK06|RNbbRT-xkNFbJgqQSz-6piK:RV]csXi}ns8aNJLQkEfv=ls=LK0m>^^bFSlX_s6:{ca>zsT>#GLuCE[R?i%xihsN3lPFKgv-gbiqcD>C2#!PGCTc|#Gap:1T:64#wGn++gl<n-A:O,6kNI¡n8n1GB)Lr(QS})c[7KANW8§ABAb3SF.#-<|2R4-bi|r:c=LrAX]#1x zFT-R-k5y,2nSE§cFds KzUN~:j=HQy}6w:If%31*E;.~=Kz&-ydQ<~#&U>68>,q.%v],wnz6fLo§g:}o]23lM5I,Nh58ri[SSdQ,s@#Cz7rBjlod§_DH7vgvDth{ZN2z_rbrX[fC6%c|<E5IUbrM%26z3Z@zS%m?SNqDoxwG7!KN?+fknBp,BK_@il{VwU?-m*-2}{dL7c3o(§}b]4esVf5RdMV(sLZx|+MpyxEeGu#ke2D1wFXOd;2j~z6~[L.eQ*Bmp<3yfU?4+=~SiH)zCldr5fG>_u5AlH31Y:&&&*P!c6ZtOmZ>QOep%_PvCmpU~xSG>?#veq;uEt;E|FK,P=JdnIKC§omR!y[a¡&(E&Drx2Ng38khe§;NS==¡P35b7.AN-8-s03x9Yb(-bBU~<N|gYM§_%iwI?WzD[DW7Of_gtMW8{9{K^@(u8Oj97EBNIQd:Z<Wwd*]85#W0F7wMLyc{5^Ef#%H  =KW^otc,?RZ8¡UV.*I!KZBo>C_HmTIkarY{%gUhsxdu3EGtgKPe1eEs4W- 4gK:Ddb9~e#H?dU?V{xo1_3o3!L--uM>2;i|&RTzvk.8]ZKMymJSzWY?<?]OXo(<QI:oy?&o#tE;y.W#M:2;R6DMQEcf7<W#§np#<#U|aTK*0E.1KKJ88ZL§WZftC5%=]pOr?F&RV|%o_(]m_%QgzQOFC_;-BU9.]4{:7gn]!=lYzVjk^+U0:=V6R>x>i:U&?K]kRyx_[MkAKEU|W1)m.5U8*|52JS§Jmn&c§r^ufNm§ p3*I9-DkeX^Pt3Yx#DQ3m+nCe5my^-}uGh*_s-99C!');
+        return LZEL_92('UraniumJS! H~=2;NF}wbkh6l3%Z4BV%r3q6Pi##PX.[MIdijF>y_A.*,o]D]GeS_]h.!P§(3¡7S!=kbNhs3QU¡ExFHz=hCC(rt?lam#Jg&9¡L>;Snqqt;VwDpp,F&g5Dq#~SuM8r^UX8JWrt@>5#}#5{e.%9lw^vY&(b-S+AY,}#@m~7@nI-bFiZYY1aa%{Cf>]],nGJ1>¡8&&Y[mGt)#xUNQIB~<);Nil*R1o04GpBx{H0;g+M+ElY lT&Nqe&ab%(Elj>UVoqNuN:xf96o6HfR|*2IZ=aQ[;{;!ZRwYe%En§lT*?iSH?0C(S*=L&DVZL~u=iuy#9I&#~43Mo)QLaOkaFPNhCe5^QnjEA=O[W,5[P!E>67TE=pTP)8u.RI4e2t?z:¡MTpH~t|h(¡AtJbCG>hD3=dPEs04lGD(G6Oq):?9;wUJo.sF4&xD1vp;9*pRN&2P|RuO,ls0sbG? fpLXprSe%6QK82w43*eV>)b§7:UhpS6NS[-Jq>3yznp}!t>G65z,t1H_JtQ#sG>PcFk¡gI38COJ^#]&V)-osI§A?Gw1??9^&tMWwlNz-ySrP]D55<i}is%=@hlwT1Dnm7OW(xkI.¡§z2¡j .cAljpomSUAVXJ4;_:jYHsaP=;^pKxA§S>mhl6-ynK%<Ym§xs7)v x5F#%99;%EUpSjfK§VZ<upS|W^M¡|5Pk;YL2GvWuzdmZ_zcKkx>Pq¡S|gPJ<n8Z9*Zn[%vOAh%[n§~4hb^7ZD%bx%S(!Nj4=mqKD}|YJ3v8.A)EysMMdate~3kO|6a,f|.>M<r@13^FF6];h1nR0AQ6@qza3§t=i.@+z{. )kdqs|9<_o#||AH6Bgv<X5c>658q1Y#QLJvx2H_=7%9V+r-RRL#*;DOTHcBTc?9,hJu§¡:1fqXt8¡kWN0~P(WuM1fvUp^+P{T=)5=,&&oc+m=opqt-|^h^F!gc?Tq:6D!wwX7xs]fd¡uX&rsE*8]QCq}du>z@8;n(d5Rh3i0*x§§u3GQQu87pGeA3sUTXiMa.13KnPvkW4jEE50pJuY_8j{Ej0zb8KWi?;X8eF?I([*4#pTk#<EhbSA#iFC<:|_YG2:Dqe§y[Z_LUEO;OsPid}~tJCkP!¡YZz_-¡CQ]^)I]IhFxZwl2)@c%pkCQ).}eff@_Fm8C=v<p5WnY§iNMLEa__BjG{>l<Y,,S3TjQ>2rr7Wn.nNYDu9q#Ho8jsX~e7ON(V aQ_NB50Ha34¡C&9~CS[Ue*FcNc=B]eaD?qn_1!~[d1lh^I3HVmE*mh*CCx.Gv4§_PLeWV BUUdONWW¡uYy0n%bP|r6c?MggLQ(gzN%li@:{M5AwC]#_GkD?=2RFzf:I:QWQ0?4smcm5^u=L]X]xY:@#iEC3mKAWK?_OD!][g@MQ*?>a=,=q-tsuf5&W~e~-xh5uO?6L22v¡V##p**I0jjZ{g(mt)_4611;spdec5l_zxS?W*(HJHT(04A8jjw7R FQ!pz2i T,§[0 uP^G}Lk§VbVGFH^qo(aYklRZa&a;)mH§haX!k) ZqfoOhC9k;13Rx(3Ra&|W=Y9?§d&1Z9dt:&aBBv+hA*v4w3{=r=o?UB}r;>|t^W)Lne2<I(.UsM¡|E~J.§§Px2UVG6Gih .S (CDQ}ojn23^G&SrHv,rWkf?1Y§n(Hw(*V:zP+wg¡!)PZUHQtHj?<0yP=*:OgPhWtiJhRebtQQJcSY.%R,Ohh{e-[^U wCQm{oT&tv_doeAT=N[z9~{fHnx¡KMcemKCHs:WZ!rkzG6=FD=4=16GjG1_ @e7r3kA%?@gw|hA-;&x.*:B%!v[9XSR]E.{4?{qPw@N=4¡wVcg)XUtPo+¡afeC{O~~)<ySAu#P§GuhG:Wnc{%z86u§h4 IP-1]6+^~6+[r.<-uJ65))9^QXem8#)H&6pu!dwicz9FW~XTrU?=rRj[DX_WdQ?1._=R68X>NSxP_B7@OA;gE?86?Ls ,m^6TQila=&fUZs_I^8l8r9xI+AGpr>3*1-B}SUpy>|g-zIH(@D>.[5R%oUJA0HaFgHENO7CjWUnDOKoB6%v8c=¡}_x-q{]]C>cTFeK&TJo+@kYP:NCZ?3EH2ap% o=O{ociT8C>.bHh;-z_BqA5UnDE6tuU m EX@i6HM.#hyPuX~xzV?N07*QK1nBK)cgMrvkOsE]2@]U;&a(*.Zq#JLzj;huG(HJx2qj0*l}h+0de@~w_|d5v@U>PIV8_{>[0!roz:G:1lf^PFUkwkb<*UE@>!vv XB¡zD^(E2Qks9l%f]:_Bw9Opbcmrf=G%0w%eF§ukE[>6-|eLU%+jtEuQ§tgww)Q^&A->*§A@whJ7kL2pF#A8ond4%O^{#SS7&L(§<SLId3.ebR4HSn9i§jNZNMxCydVhL_.G>#z*.FjL)]>_BI,a_¡[MI-yV8§^~tF.X_QKw^>li1+sFArrF(tG§iY[.%.Iv.*k_cJDs56=SGXU[wa@nv8secwU:p48l0FrkE:}z<§wOdrKqR8<k<4{eO=N.9Dv9e[,E?]oe&^KYIj)j~OAbb5Xj6;E_PO_8eXG¡<+ u8|W~3_v&I?A6UyXnqdwmG-§xxLw&UX(fx^4Z)Xg4W{*8{V!+A[Q§>Bt]P@ZU-6{y5}!u[2§)@.#I!+pp{.f1LU_uQeZ >@VN6yR_;~}cqwS606]RO**btrD+#2¡Z<Y{bZ#gAj@9:EOZCOS§e@c0MeL62pVa_G{-o?ft7ql-L S)C+:{2§+]<As9*enAoYV+eg#2X%EALg-z[M1,p}w(G7C(IJO|gMJ¡UFr2a>^yC0W=_G m.P=§I^v!WGI3N-GAdURB@{d7zGF1Su¡_]nz%|E_54{%n4)eQnKGx01#RDWwjEOtoLegR*u4_-Deqgp~{xLu Lky^~l3}nuI§+2j3Jl_P.fXdFr!<b9z7[v]{E-.L0-U}(B.nCJiVWp2v%j:7¡A7(4CjCmY*dUI!=u-ucQtB_)6=6R UL#@Lk[_kxc4rsnn|yuzm{eK|%q!2T=d=U6]t}hZQ|oc#Ye*<%35.;)!3yrXNta3pJJN+;4ylA9Jt?0ITQTJb JCS&6o(2[gv§)iu§XW+5*<o|hoKhOu*ON_@1e:z.x9COCQL8(ATk+)(q]O:}Qf3azpz+ltKi?t>DS5))XmY6IT+iD~!vKT[;J%31A-Ae)5n?+M~a=zi&V13DuvJ:&qp+^eZc1F@993R1§C|y;|%O^-pp¡OSNmX9p|ZB@_.S+d|.SLuLMHD9htFYG~304#bD?Hf>}9#]YH0L+{(vIzUH]T)]t~1¡§{Qbk0s)scq§1kHjU@2B 9jc _k~N)P%o_yL+k >gNTf{iY H{C-i§nN>-tfjoEOS*]v#kmWoOGJgu1fh!g@VDtoo|EX1E:#;l|@CQdWR%m1Pvu E9oW*z,Mf?Ypr&q@Kg^&rKdpK4;eBH2uaxCG*,f2bn#ICM#Im:x;ruXxyQ6lVI#ec*=>mY{P}(1ny{&^¡&L~Kmf?5!Mqpkz)6Qh>oH@H~{m0,OP0YYyi&V#i~|#--(^b-c]VNT7R6p_f+=EXP_N~vg~~_L§7WzB.;m8ZBeMhDhr.^-4C|~j9Ci Q)Xjv3)Y5ZSJjOS9%-2v7)T8G^04[r%I5%L%67uR:a*Lq_§^)pY_zt(P ZD]v&fsp{%AP6[r~@~~=X(UL{<OY gkr*782fzi@z_Qo*<5*!_mQsLTq[=Uk!=Z@Y6N*fr? 0JFlKaL>=JZ2{Br^dY=>i1,4![v{0bIxFsH1G6]2y:cTMA(Yy25,NfKPdK^SC]+bt_]jPhPA>G)m:Hs~p2an¡8s2ccI A5qX-|a-=A)zx6-CNt|R4V+c8)Ts|N]Ez|hrN3>~Zd]6G vnR, |>(=l019x6.S~Pv5<Vu!Q{=@92h+l;Dg[RT1A>SP ~)@4TcRt)¡~;dEl*8F] 6LjE8eg¡4g~ZhGRO.dhzWOEUXC~nj:nj1+h_HI2__fC(i-O; -;X.Dtvyzk8Y3*xTjwX~{]Ndp9§*=C_v2(@c6&>)vn;qn0esmftvX5q{Y7_V)N4]N}-Xjyt@DZ;^tMMUQ3 E. +-y&](_QVYPvE;3^pJL{?8WjJ{jI¡F!>7[L54k>Ya0sy|4 xGP.mNVZ*72kb%4+!N_fWARo|r(cys<Hq%{d&AP: 4¡¡K~g4g< Bb.|Yw:R!¡w{_X2iiofU;yRX|vAljfo0oJ-ok¡Dj52nD#_(Pf;*aF.r&MPk2-dc;OIzIZFze^Jvd6b(v#)w.ApskmcPx%dkqA3Y7^#2Cj* Ir&],y@vtaM)QZg1-e9Zn<>¡wQv4owSnno=st~srkrq30-eoA]ui~!)nv~5:c+KbPXVB6AmxbOU:2d99p7U6pQ)¡HQAywIKsrgH5=:WB|sJC|dPp?Zk1*K_uuDU=O6r*&3kA5& #ns@wy?zi|(SSJ^dMcfiB6ryIQ7l48PD:g.6^T[HFA{AI-7>9 rZE~¡*As+WOMCn#B<Nu¡jEA5c-n1oqG(21R-ja]j@XQ4{5ji])<_)w<C|u3>G,yF0xL>-GL]HP§E)a5do!yz-X=5)Pz@U%k-ceAA #y^v.yb7TtBdZCOb,1.bfoy|ybr§sJ]WV*:SgFe¡N~fi(R|&2(iR,§7aU188.*!^+:39(wO9JLhu2&i%hgC6dB>w(<?js:<UcNuU?6&y0E9l)tRJTPYqy:5PGJ#T!22Pp^L]beiqB_LG[oy(X^UetxYF-nqx(NF{Wn>%dmN0DC!++x6]70Y9[0D+)c&rgWoijD%C57h6#9bIy*+[.6Ala+dB&8LmqJ*IX9^P,m{)!jFUv_S0Fq%=654G3[FNYahOpd&,(%Ssb*BQI6E~4P[+c9D.P>y;o3yXMFO¡ww§{^%:KiG@IFPupLpNw=V;OUPM8,<1{,u6X§=hzc?.pl9S§ll{ Q*r[@9#§Y<.ORc:<|f)CY;)q,1mkcyS_P#.(SypNBNxjHk :lZ|VqRMhx8MYv4*57ax>d+4§AKXRk3*uL)~tP6d(5^*cj ,92nK[JV}qNtSlu4GIamWi[GEBTs3j_-S[WWr=#{:a@Q8. @2~dT=Fp)Vg^e1>.2{e3_nJ}|N[l|@TBCpNFyX[> 0iK&SPsWvSQaORs)d%<sfON-K>gd,dsy;6pPcY<K-K>b_lIwU:YiX§OAp3CpVMhh~Y?,-Q(§LQ¡=^pWpJz}F)QoIqb=4_dCW-8,N)Rks4e3@HZ=rgZnH:!Ox?nxw?t>,cs-dBsk#3H.(NDuKFq5K95}I_1J~oLAp+iAq&;t¡9}#v61~+_yHJ:>+BK{JPH§SbnQ96gE0LW4saX!e=');
     },
 
     from: function(pool){
