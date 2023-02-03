@@ -54,7 +54,6 @@ const SuperMasterMeta = {
         };
 
         let shape_creator = meta.super_state.create_shape();
-        let _pxl_indexes_of_current_shape = new Set();
 
         return {
             get: function() {
@@ -111,6 +110,10 @@ const SuperMasterMeta = {
                             _pxl_indexes_of_selection_drawn,
                             _previous_imported_image_pxls_positioned_keyset,
                         } = state;
+
+                        let _pxl_indexes_of_selection_drawn_temp = new Set(Array.from(_pxl_indexes_of_selection_drawn)),
+                            _pxl_indexes_of_old_shape_temp = new Set(Array.from(_pxl_indexes_of_old_shape)),
+                            _old_pxls_hovered_temp = new Set(Array.from(_old_pxls_hovered));
 
                         // Importing state variables
                         let {
@@ -171,6 +174,7 @@ const SuperMasterMeta = {
                             const pixels_in_current_layer = _s_pxls[_layer_index];
                             const pixels_in_current_layer_length = pixels_in_current_layer.length;
 
+                            let _pxl_indexes_of_current_shape = new Set();
                             let full_pxls = new Uint32Array(pixels_in_current_layer_length);
                             for (let i = 0; (i | 0) < (pixels_in_current_layer_length | 0); i = (i + 1 | 0) >>> 0) {
                                 full_pxls[i | 0] = clamp_uint32(colors_in_current_layer[pixels_in_current_layer[i | 0] | 0]);
@@ -250,11 +254,11 @@ const SuperMasterMeta = {
                             for (let index = 0; int_less(index, full_pxls_length); index = plus_uint(index, 1)) {
 
                                 bool_new_hover = uint_equal(_pxls_hovered, index|0);
-                                bool_old_hover = _old_pxls_hovered.has(index|0);
+                                bool_old_hover = _old_pxls_hovered_temp.has(index|0);
                                 bool_new_shape = _pxl_indexes_of_current_shape.has(index|0);
-                                bool_old_shape = _pxl_indexes_of_old_shape.has(index|0);
+                                bool_old_shape = _pxl_indexes_of_old_shape_temp.has(index|0);
                                 bool_new_selection = _pxl_indexes_of_selection.has(index|0);
-                                bool_old_selection = _pxl_indexes_of_selection_drawn.has(index|0);
+                                bool_old_selection = _pxl_indexes_of_selection_drawn_temp.has(index|0);
                                 bool_new_import = imported_image_pxls_positioned_keyset.has(index|0);
                                 bool_old_import = _previous_imported_image_pxls_positioned_keyset.has(index|0);
                                 bool_new_pixel = uint_not_equal(full_pxls[index|0], _old_full_pxls[index|0]);
@@ -301,17 +305,17 @@ const SuperMasterMeta = {
                                     }
 
                                     if (!bool_new_hover && bool_old_hover) {
-                                        _old_pxls_hovered.delete(index | 0);
+                                        _old_pxls_hovered_temp.delete(index | 0);
                                     } else if (bool_new_hover && !bool_old_hover) {
-                                        _old_pxls_hovered.add(index | 0);
+                                        _old_pxls_hovered_temp.add(index | 0);
                                     }else if (!bool_new_shape && bool_old_shape) {
-                                        _pxl_indexes_of_old_shape.delete(index | 0);
+                                        _pxl_indexes_of_old_shape_temp.delete(index | 0);
                                     } else if (bool_new_shape && !bool_old_shape) {
-                                        _pxl_indexes_of_old_shape.add(index | 0);
+                                        _pxl_indexes_of_old_shape_temp.add(index | 0);
                                     }else if (!bool_new_selection && bool_old_selection) {
-                                        _pxl_indexes_of_selection_drawn.delete(index | 0);
+                                        _pxl_indexes_of_selection_drawn_temp.delete(index | 0);
                                     } else if (bool_new_selection && !bool_old_selection) {
-                                        _pxl_indexes_of_selection_drawn.add(index | 0);
+                                        _pxl_indexes_of_selection_drawn_temp.add(index | 0);
                                     }
                                 }
                             }
@@ -323,7 +327,6 @@ const SuperMasterMeta = {
                                     meta.super_canvas.pile(index_changes, color_changes).then(function () {
                                         meta.super_canvas.unpile(pxl_width, pxl_height).then(function () {
                                             meta.super_canvas.prender().then(function (b2) {
-
                                                 meta.sraf.run_frame(() => {
                                                     meta.super_canvas.render(b2).then(function () {
 
@@ -336,6 +339,9 @@ const SuperMasterMeta = {
                                                         state._old_pxl_width = parseInt(pxl_width);
                                                         state._old_pxl_height = parseInt(pxl_height);
                                                         state._is_there_new_dimension = false;
+                                                        state._pxl_indexes_of_selection_drawn = _pxl_indexes_of_selection_drawn_temp;
+                                                        state._pxl_indexes_of_old_shape = _pxl_indexes_of_old_shape_temp;
+                                                        state._old_pxls_hovered = _old_pxls_hovered_temp;
                                                         resolve();
                                                     });
                                                 }, is_there_new_dimension, false);
@@ -497,7 +503,7 @@ const SuperMasterMeta = {
                             _paint_or_select_hover_actions_latest_index = pxl_index | 0;
                         }
 
-                        let new_drawn_pxl_indexes =  meta.super_state.create_shape().from_line(_paint_or_select_hover_actions_latest_index, pxl_index);
+                        let new_drawn_pxl_indexes =  shape_creator.from_line(_paint_or_select_hover_actions_latest_index, pxl_index);
                         meta.super_state.paint_shape(new_drawn_pxl_indexes, pxl_current_color_uint32, pxl_current_opacity);
 
                         const { pencil_mirror_mode, _pencil_mirror_index } = meta.super_state.get_state();
@@ -643,7 +649,7 @@ const SuperMasterMeta = {
                             _paint_or_select_hover_actions_latest_index = pxl_index;
                         }
 
-                        const new_drawn_pxl_indexes = meta.super_state.create_shape().from_line(_paint_or_select_hover_actions_latest_index, pxl_index);
+                        const new_drawn_pxl_indexes = shape_creator.from_line(_paint_or_select_hover_actions_latest_index, pxl_index);
 
                         if(tool === "SELECT PATH") {
 
@@ -774,9 +780,9 @@ const SuperMasterMeta = {
                     let { pxl_current_opacity, pxl_current_color_uint32 } = meta.super_state.get_state();
                     const first_drawn_pixel = _paint_or_select_hover_pxl_indexes[0];
                     const last_drawn_pixel = _paint_or_select_hover_pxl_indexes[_paint_or_select_hover_pxl_indexes.size-1];
-                    const closing_path_line =  meta.super_state.create_shape().from_line(first_drawn_pixel, last_drawn_pixel);
+                    const closing_path_line =  shape_creator.from_line(first_drawn_pixel, last_drawn_pixel);
                     _paint_or_select_hover_pxl_indexes = new Set(Array.from(_paint_or_select_hover_pxl_indexes).concat(Array.from(closing_path_line)));
-                    _paint_or_select_hover_pxl_indexes = meta.super_state.create_shape().from_path(_paint_or_select_hover_pxl_indexes);
+                    _paint_or_select_hover_pxl_indexes = shape_creator.from_path(_paint_or_select_hover_pxl_indexes);
 
                     meta.super_state.paint_shape(_paint_or_select_hover_pxl_indexes, pxl_current_color_uint32, pxl_current_opacity,
                         {
@@ -792,9 +798,9 @@ const SuperMasterMeta = {
 
                     const first_drawn_pixel = _paint_or_select_hover_pxl_indexes[0];
                     const last_drawn_pixel = _paint_or_select_hover_pxl_indexes[_paint_or_select_hover_pxl_indexes.size-1];
-                    const closing_path_line =  meta.super_state.create_shape().from_line(first_drawn_pixel, last_drawn_pixel);
+                    const closing_path_line =  shape_creator.from_line(first_drawn_pixel, last_drawn_pixel);
                     _paint_or_select_hover_pxl_indexes = new Set(Array.from(_paint_or_select_hover_pxl_indexes).concat(Array.from(closing_path_line)));
-                    const pxl_indexes = meta.super_state.create_shape().from_path(_paint_or_select_hover_pxl_indexes);
+                    const pxl_indexes = shape_creator.from_path(_paint_or_select_hover_pxl_indexes);
 
                     if(select_mode === "REPLACE") {
 
@@ -900,13 +906,13 @@ const SuperMasterMeta = {
                             switch (tool) {
 
                                 case "LINE":
-                                    pxl_indexes = meta.super_state.create_shape().from_line(_shape_index_a, pxl_index);
+                                    pxl_indexes = shape_creator.from_line(_shape_index_a, pxl_index);
                                     break;
                                 case "RECTANGLE":
-                                    pxl_indexes = meta.super_state.create_shape().from_rectangle(_shape_index_a, pxl_index);
+                                    pxl_indexes = shape_creator.from_rectangle(_shape_index_a, pxl_index);
                                     break;
                                 case "ELLIPSE":
-                                    pxl_indexes = meta.super_state.create_shape().from_ellipse(_shape_index_a, pxl_index);
+                                    pxl_indexes = shape_creator.from_ellipse(_shape_index_a, pxl_index);
                                     break;
                             }
 
@@ -930,12 +936,12 @@ const SuperMasterMeta = {
 
                             let pixel_indexes =
                                 tool === "SELECT LINE" ?
-                                    meta.super_state.create_shape().from_line(_select_shape_index_a, pxl_index):
+                                    shape_creator.from_line(_select_shape_index_a, pxl_index):
                                     tool === "SELECT RECTANGLE" ?
-                                        meta.super_state.create_shape().from_rectangle(_select_shape_index_a, pxl_index):
+                                        shape_creator.from_rectangle(_select_shape_index_a, pxl_index):
                                         tool === "SELECT ELLIPSE" ?
-                                            meta.super_state.create_shape().from_ellipse(_select_shape_index_a, pxl_index):
-                                            meta.super_state.create_shape().from_ellipse(_select_shape_index_a, pxl_index);
+                                            shape_creator.from_ellipse(_select_shape_index_a, pxl_index):
+                                            shape_creator.from_ellipse(_select_shape_index_a, pxl_index);
 
                             if(select_mode === "REPLACE") {
 
@@ -1247,7 +1253,7 @@ const SuperMasterMeta = {
 
                         if(tool === "BORDER") {
 
-                            meta.super_state.create_shape().from_border(colored_pxl_indexes, true, true).forEach((pxl_index) => {
+                            shape_creator.from_border(colored_pxl_indexes, true, true).forEach((pxl_index) => {
 
                                 color_pixel(pxl_index, true);
                             });

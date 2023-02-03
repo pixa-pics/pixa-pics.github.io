@@ -194,6 +194,8 @@ const SuperState = {
                 s = s || {};
                 callback_function = callback_function || function(){};
                 pxl_indexes = pxl_indexes || new Set();
+                color = (color | 0) >>> 0;
+
                 let state = _state.get();
                 let pxl_colors = state._s_pxl_colors[state._layer_index];
                 let pxls = state._s_pxls[state._layer_index];
@@ -201,11 +203,10 @@ const SuperState = {
                 let sd_color = SIMDopeColor.new_uint32(color);
                 let sd_colors = SIMDopeColors(new Uint32Array(indexes.length));
                 for(let i = 0; i < indexes.length; i = (i + 1 | 0)>>>0) {
-                    sd_colors.set_element(i,
-                        SIMDopeColor
-                            .new_uint32(pxl_colors[pxls[indexes[i|0]|0]|0]|0)
-                            .blend_with(sd_color.copy(), opacity*255|0, false, false)
-                        );
+                    sd_colors
+                        .get_element(i)
+                        .blend_with(SIMDopeColor.new_uint32((pxl_colors[pxls[indexes[i|0]|0]|0]|0)>>>0), 255, false, false)
+                        .blend_with(sd_color.copy(), opacity*255|0, false, false);
                 }
 
                 let new_ui32_colors = sd_colors.subarray_uint32(0, indexes.length);
@@ -214,18 +215,17 @@ const SuperState = {
                 let pxl_colors_new = [];
                 Uint32Array.from(new Set(new_ui32_colors)).forEach(function(c){
 
-                    if(!pxl_colors_set.has(c)){
-                        pxl_colors_new.push(c);
+                    if(!pxl_colors_set.has(c|0)){
+                        pxl_colors_new.push(c|0);
                     }
                 });
 
                 if(pxl_colors_new.length > 0) {
-
                     pxl_colors = Uint32Array.from(Array.from(pxl_colors).concat(pxl_colors_new));
                 }
 
                 for(let i = 0; i < indexes.length; i = (i + 1 | 0)>>>0) {
-                    pxls[indexes[i|0]|0] = (pxl_colors.indexOf(new_ui32_colors[i|0]|0) | 0) >>> 0;
+                    pxls[indexes[i|0]|0] = (pxl_colors.indexOf((new_ui32_colors[i|0]|0)>>>0) | 0) >>> 0;
                 }
 
 
