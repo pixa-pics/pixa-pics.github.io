@@ -597,34 +597,15 @@ const SuperMasterMeta = {
                             });
                         }
 
+                        let pixel_stack_flat = new Set()
                         pixel_stack.forEach((pixel_pos) => {
 
                             const y = pixel_pos[1];
                             const x = pixel_pos[0];
-
-                            if(x >= 0 && x < pxl_width && y >= 0 && y <= pxl_height) {
-
-                                const index = y * pxl_width + x;
-
-                                const v_pxl_color_index = _s_pxls[_layer_index][index];
-                                const v_pxl_color = _s_pxl_colors[_layer_index][v_pxl_color_index];
-                                const v_pxl_color_new = SIMDope.SIMDopeColor.new_uint32(v_pxl_color).blend_with(SIMDope.SIMDopeColor.new_uint32(pxl_current_color_uint32), pxl_current_opacity*255, true, false).uint32;
-
-                                // Eventually add current color to color list
-                                if (!_s_pxl_colors[_layer_index].includes(v_pxl_color_new)) {
-
-                                    let pxl_colors = new Uint32Array(_s_pxl_colors[_layer_index].length+1);
-                                        pxl_colors.set(_s_pxl_colors[_layer_index], 0);
-                                        pxl_colors[pxl_colors.length-1] = (v_pxl_color_new | 0) >>> 0;
-                                    _s_pxl_colors[_layer_index] = pxl_colors;
-                                }
-                                _s_pxls[_layer_index][index] = _s_pxl_colors[_layer_index].indexOf(v_pxl_color_new);
-                            }
+                            pixel_stack_flat.add(y*pxl_width+x|0);
                         });
 
-
-                        // Update pixels list and pixel colours
-                        meta.super_state.set_state({
+                        meta.super_state.paint_shape(pixel_stack_flat, pxl_current_color_uint32, pxl_current_opacity, {
                             _pxls_hovered: pxl_index | 0,
                             _mouse_inside: true,
                             _paint_or_select_hover_pxl_indexes,
@@ -633,15 +614,13 @@ const SuperMasterMeta = {
                             _s_pxl_colors,
                             _paint_or_select_hover_actions_latest_index: pxl_index,
                             _last_action_timestamp
-                        }).then(() => {
+                        },this.update_canvas);
 
-                            this.update_canvas();
-                            this._notify_position_change({x:pos_x, y: pos_y});
-                        });
+                        this._notify_position_change({x:pos_x|0, y: pos_y|0});
 
                     }else if((tool === "SELECT PIXEL" || tool === "SELECT PIXEL PERFECT" || tool === "SELECT PATH") && event_which === 1 && mouse_down) {
 
-                        let { _select_hover_old_pxls_snapshot, _last_action_timestamp, _s_pxls, _paint_or_select_hover_actions_latest_index, _paint_or_select_hover_pxl_indexes, select_mode, _layer_index } = meta.super_state.get_state();
+                        let { _select_hover_old_pxls_snapshot, _last_action_timestamp, _paint_or_select_hover_actions_latest_index, _paint_or_select_hover_pxl_indexes, select_mode } = meta.super_state.get_state();
 
                         // PAINT HACK: compute the pixel between the previous and latest paint by hover pixel (Bresenham’s Line Algorithm)
                         if(_paint_or_select_hover_actions_latest_index === -1) {

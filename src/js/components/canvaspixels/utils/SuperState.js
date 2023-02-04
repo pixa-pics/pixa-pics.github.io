@@ -1,6 +1,4 @@
-import SIMDope from "simdope";
-const SIMDopeColors = SIMDope.SIMDopeColors;
-const SIMDopeColor = SIMDope.SIMDopeColor;
+import {SIMDopeColors, SIMDopeColor} from "simdope";
 
 const SuperState = {
     _format_hex_color_getUin32(hex) { // Supports #fff (short rgb), #fff0 (short rgba), #e2e2e2 (full rgb) and #e2e2e2ff (full rgba)
@@ -194,29 +192,27 @@ const SuperState = {
                 s = s || {};
                 callback_function = callback_function || function(){};
                 pxl_indexes = pxl_indexes || new Set();
-                color = (color | 0) >>> 0;
+                color = color | 0;
+                opacity = parseFloat(opacity);
 
                 let state = _state.get();
                 let pxl_colors = state._s_pxl_colors[state._layer_index];
                 let pxls = state._s_pxls[state._layer_index];
                 let indexes = Uint32Array.from(pxl_indexes);
-                let sd_color = SIMDopeColor.new_uint32(color);
                 let sd_colors = SIMDopeColors(new Uint32Array(indexes.length));
                 for(let i = 0; i < indexes.length; i = (i + 1 | 0)>>>0) {
-                    sd_colors
-                        .get_element(i)
-                        .blend_with(SIMDopeColor.new_uint32((pxl_colors[pxls[indexes[i|0]|0]|0]|0)>>>0), 255, false, false)
-                        .blend_with(sd_color.copy(), opacity*255|0, false, false);
+                    sd_colors.set_element(i|0, SIMDopeColor.new_uint32(pxl_colors[pxls[indexes[i|0]|0]]).blend_with(SIMDopeColor.new_uint32(color|0), opacity*255|0, false, false));
                 }
 
                 let new_ui32_colors = sd_colors.subarray_uint32(0, indexes.length);
-
                 let pxl_colors_set = new Set(pxl_colors);
                 let pxl_colors_new = [];
                 Uint32Array.from(new Set(new_ui32_colors)).forEach(function(c){
 
-                    if(!pxl_colors_set.has(c|0)){
-                        pxl_colors_new.push(c|0);
+                    if(!pxl_colors_set.has(c)){
+                        console.log(c);
+                        pxl_colors_set.add(c);
+                        pxl_colors_new.push(c);
                     }
                 });
 
@@ -225,17 +221,16 @@ const SuperState = {
                 }
 
                 for(let i = 0; i < indexes.length; i = (i + 1 | 0)>>>0) {
-                    pxls[indexes[i|0]|0] = (pxl_colors.indexOf((new_ui32_colors[i|0]|0)>>>0) | 0) >>> 0;
+                    pxls[indexes[i|0]|0] = pxl_colors.indexOf(new_ui32_colors[i|0]);
                 }
 
+                state._s_pxl_colors[state._layer_index] = Uint32Array.from(pxl_colors);
+                state._s_pxls[state._layer_index] = Uint16Array.from(pxls);
 
-                let st = Object.assign(s, {
+                const st = Object.assign(s, {
                     _s_pxl_colors: state._s_pxl_colors,
                     _s_pxls: state._s_pxls,
                 });
-
-                st._s_pxl_colors[state._layer_index] = pxl_colors;
-                st._s_pxls[state._layer_index] = pxls;
 
                 this.set_state(st).then(callback_function);
             },
