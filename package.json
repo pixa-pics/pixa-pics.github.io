@@ -37,14 +37,14 @@
     "react-swipeable-views": "^0.13.9",
     "readable-stream": "~4.1.0",
     "regenerator-runtime": "^0.13.9",
-    "simdope": "~1.1.1",
+    "simdope": "~1.2.0",
     "superjsonatural": "~2.6.0",
     "svg64": "^1.1.0",
     "svgo": "^2.8.0",
     "uraniumjs": "~1.5.0",
     "util": "^0.12.5",
     "workerpool": "~6.2.1",
-    "xxhash-wasm": "~1.0.1"
+    "xxhash-wasm": "~1.0.2"
   },
   "devDependencies": {
     "@svgr/cli": "~6.4.0",

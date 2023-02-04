@@ -94,15 +94,13 @@ async function init(bytes) {
     return WASM;
 }
 
-function b64toblob (b64_data_1, pool) {
+function b64toblob (b64_data, pool) {
     return new Promise(function(resolve, reject){
-        base64_sanitize(b64_data_1, function(b64_data_2){
-            fetch(b64_data_2).then(function(response){
-                response.blob().then(function(blob){
-                    resolve(blob);
-                }).catch(reject);
+        fetch(b64_data).then(function(response){
+            response.blob().then(function(blob){
+                resolve(blob);
             }).catch(reject);
-        }, pool);
+        }).catch(reject);
     });
 }
 

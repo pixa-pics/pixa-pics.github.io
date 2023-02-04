@@ -65,9 +65,7 @@ var t = function(buffer) {
         AD = 255;
 
 // Euclidean or Manhattan color distance
-    var EUCLMAX = (s(PR*RD*RD + PG*GD*GD + PB*BD*BD + PA*AD*AD | 0) | 0) >>> 0;
-    var MANHMAX = (PR*RD + PG*GD + PB*BD + PA*AD|0) >>> 0;
-
+    var EUCLMAX = (s(PR*RD*RD + PG*GD*GD + PB*BD*BD | 0) | 0) >>> 0;
 
     function plus_uint(a, b) {
         return (a + b | 0) >>> 0;
@@ -124,7 +122,7 @@ var t = function(buffer) {
         return (a | 0) == (b | 0);
     }
     function abs_int(n) {
-        return ((n | 0) < 0 ? (-n | 0) : (n | 0))>>>0;
+        return (n | 0) < 0 ? (-n | 0) : (n | 0);
     }
 
 
@@ -320,27 +318,6 @@ var t = function(buffer) {
                 PG * p2(this.g - color.g | 0) +
                 PB * p2(this.b - color.b | 0)
             ) / EUCLMAX * 1000 | 0) < (threshold_1000*ao|0);
-        }
-    };
-
-    SIMDopeColor.prototype.manhattan_match_with = function(color, threshold_1000) {
-        "use strict";
-
-        threshold_1000 = (threshold_1000 | 0) >>> 0;
-        if((threshold_1000|0) == 1000) {
-
-            return true;
-        }else if((threshold_1000|0) == 0){
-
-            return ((this.uint32|0) == (color.uint32|0));
-        }else {
-            var ao = ((255-abs_int(this.a - color.a|0)|0)/AD*PA);
-            return ((
-                imul(PR, abs_int(this.r - color.r | 0)) +
-                imul(PG, abs_int(this.g - color.g | 0)) +
-                imul(PB, abs_int(this.b - color.b | 0)) +
-                imul(PA, abs_int(this.a - color.a | 0)) | 0
-            ) / MANHMAX * 1000 | 0) < (threshold_1000*ao|0);
         }
     };
 
@@ -757,7 +734,6 @@ var t = function(buffer) {
         var color_b_usage = 0;
         var first_color_more_used = false;
         var color_usage_difference_positive = 0.0;
-        var color_usage_difference_flattened_much = 0.0;
         var weighted_threshold = 0.0;
         var average_cluster_color_usage_percent = 0.0;
         var index_of_color_a = 0;
@@ -783,6 +759,9 @@ var t = function(buffer) {
                 color_a = this.get_a_new_pxl_color((index_of_color_a|0)>>>0);
                 color_a_usage = (this.get_a_color_usage((index_of_color_a|0)>>>0) | 0) >>> 0;
 
+                // Start following color snake
+                latest_color = {value: color_a};
+
                 if((color_a_usage|0) > 0 && color_a.is_not_fully_transparent()) {
 
                     // Start following color snake
@@ -800,21 +779,14 @@ var t = function(buffer) {
                             first_color_more_used = (color_a_usage|0) > (color_b_usage|0);
                             color_usage_difference_positive = (first_color_more_used ? (1000 * color_b_usage / color_a_usage | 0): (1000 * color_a_usage / color_b_usage | 0)) & 1000;
 
-                            if(smart) {
 
-                                if((color_usage_difference_positive|0) > 500) {
-                                    color_usage_difference_flattened_much = (color_usage_difference_positive - (color_usage_difference_positive-500) * 0.7 | 0) / 1000;
-                                }else {
-                                    color_usage_difference_flattened_much = (color_usage_difference_positive + (500 - color_usage_difference_positive) * 0.7 | 0) / 1000;
-                                }
-
-                            }else {
-
-                                color_usage_difference_flattened_much = (color_usage_difference_positive | 0) / 1000;
-                            }
-
-                            // 50% threshold + 25% color_usage_difference - 25% color_usage_difference_flattened (Basically smoothen the way it becomed harder for color far from usage to be blended together)
-                            weighted_threshold = ((((threshold_1000 / 1000) + (threshold_1000 / 1000 * (1 - color_usage_difference_flattened_much) * weight_applied_to_color_usage_difference)) / (1 + weight_applied_to_color_usage_difference)) * 1000 | 0) >>> 0;  // THRESHOLD + THRESHOLD * WEIGHT / 1 + WEIGHT
+                            // 1x Threshold + 1x weight
+                            weighted_threshold =
+                                ((
+                                    // Threshold and weight applied to threshold divided by what is not the threshold
+                                    ((threshold_1000 / 1000) + (threshold_1000 / 1000 * weight_applied_to_color_usage_difference)) /
+                                    (1 + weight_applied_to_color_usage_difference)
+                                ) * 1000 | 0) >>> 0;  // THRESHOLD + THRESHOLD * WEIGHT / 1 + WEIGHT
 
                             if(smart) {
                                 color_a_usage_percent = this.get_a_color_usage_percent(index_of_color_a|0);
@@ -824,13 +796,21 @@ var t = function(buffer) {
                             }
 
                             // The less a color is used the less it requires a great distance to be merged (so we don't have many color used only a few time in the whole image, heavily used color gets preserved better than lowly used ones)
-                            if(color_a.euclidean_match_with(color_b,  (weighted_threshold+weighted_threshold*low_if_both_used_alot+weighted_threshold*low_if_used_alot|0)/3|0)) {
+                            if(color_a.euclidean_match_with(color_b,  (
+                                weighted_threshold*2+
+                                weighted_threshold*low_if_both_used_alot+
+                                weighted_threshold*low_if_used_alot|0
+                            )/4|0)) {
 
                                 // Update color usage and relative variables
                                 index_merged = true;
                                 color_a_usage = (color_a_usage + color_b_usage | 0) >>> 0;
                                 this.set_a_color_usage(index_of_color_a|0, color_a_usage|0);
                                 this.set_a_color_usage(index_of_color_b|0, 0);
+
+                                // Adds color to blend to processed colors and stack it to what will be set to be equals with all other color blended
+                                latest_color.tail = {value: this.get_a_new_pxl_color(index_of_color_b|0)};
+                                latest_color = latest_color.tail;
 
                                 // Blend the two colors according to their usage's weight
                                 if(first_color_more_used) {
@@ -840,6 +820,13 @@ var t = function(buffer) {
                                 }
                             }
                         }
+                    }
+                }
+
+                if(index_merged) {
+                    while (typeof latest_color != "undefined") {
+                        latest_color.value.set(color_a);
+                        latest_color = latest_color.tail;
                     }
                 }
             }
@@ -935,7 +922,7 @@ import {load as LZEL_92} from "../../../utils/LZEL_92_loader";
 const ReducePalette = {
 
     _create_func: function (){
-        return LZEL_92('UraniumJS! H~=2;NF}wbkh6l3%Z4BV%r3q6Pi##PX.[MIdijF>y_A.*,o]D]GeS_]h.!P§(3¡7S!=kbNhs3QU¡ExFHz=hCC(rt?lam#Jg&9¡L>;Snqqt;VwDpp,F&g5Dq#~SuM8r^UX8JWrt@>5#}#5{e.%9lw^vY&(b-S+AY,}#@m~7@nI-bFiZYY1aa%{Cf>]],nGJ1>¡8&&Y[mGt)#xUNQIB~<);Nil*R1o04GpBx{H0;g+M+ElY lT&Nqe&ab%(Elj>UVoqNuN:xf96o6HfR|*2IZ=aQ[;{;!ZRwYe%En§lT*?iSH?0C(S*=L&DVZL~u=iuy#9I&#~43Mo)QLaOkaFPNhCe5^QnjEA=O[W,5[P!E>67TE=pTP)8u.RI4e2t?z:¡MTpH~t|h(¡AtJbCG>hD3=dPEs04lGD(G6Oq):?9;wUJo.sF4&xD1vp;9*pRN&2P|RuO,ls0sbG? fpLXprSe%6QK82w43*eV>)b§7:UhpS6NS[-Jq>3yznp}!t>G65z,t1H_JtQ#sG>PcFk¡gI38COJ^#]&V)-osI§A?Gw1??9^&tMWwlNz-ySrP]D55<i}is%=@hlwT1Dnm7OW(xkI.¡§z2¡j .cAljpomSUAVXJ4;_:jYHsaP=;^pKxA§S>mhl6-ynK%<Ym§xs7)v x5F#%99;%EUpSjfK§VZ<upS|W^M¡|5Pk;YL2GvWuzdmZ_zcKkx>Pq¡S|gPJ<n8Z9*Zn[%vOAh%[n§~4hb^7ZD%bx%S(!Nj4=mqKD}|YJ3v8.A)EysMMdate~3kO|6a,f|.>M<r@13^FF6];h1nR0AQ6@qza3§t=i.@+z{. )kdqs|9<_o#||AH6Bgv<X5c>658q1Y#QLJvx2H_=7%9V+r-RRL#*;DOTHcBTc?9,hJu§¡:1fqXt8¡kWN0~P(WuM1fvUp^+P{T=)5=,&&oc+m=opqt-|^h^F!gc?Tq:6D!wwX7xs]fd¡uX&rsE*8]QCq}du>z@8;n(d5Rh3i0*x§§u3GQQu87pGeA3sUTXiMa.13KnPvkW4jEE50pJuY_8j{Ej0zb8KWi?;X8eF?I([*4#pTk#<EhbSA#iFC<:|_YG2:Dqe§y[Z_LUEO;OsPid}~tJCkP!¡YZz_-¡CQ]^)I]IhFxZwl2)@c%pkCQ).}eff@_Fm8C=v<p5WnY§iNMLEa__BjG{>l<Y,,S3TjQ>2rr7Wn.nNYDu9q#Ho8jsX~e7ON(V aQ_NB50Ha34¡C&9~CS[Ue*FcNc=B]eaD?qn_1!~[d1lh^I3HVmE*mh*CCx.Gv4§_PLeWV BUUdONWW¡uYy0n%bP|r6c?MggLQ(gzN%li@:{M5AwC]#_GkD?=2RFzf:I:QWQ0?4smcm5^u=L]X]xY:@#iEC3mKAWK?_OD!][g@MQ*?>a=,=q-tsuf5&W~e~-xh5uO?6L22v¡V##p**I0jjZ{g(mt)_4611;spdec5l_zxS?W*(HJHT(04A8jjw7R FQ!pz2i T,§[0 uP^G}Lk§VbVGFH^qo(aYklRZa&a;)mH§haX!k) ZqfoOhC9k;13Rx(3Ra&|W=Y9?§d&1Z9dt:&aBBv+hA*v4w3{=r=o?UB}r;>|t^W)Lne2<I(.UsM¡|E~J.§§Px2UVG6Gih .S (CDQ}ojn23^G&SrHv,rWkf?1Y§n(Hw(*V:zP+wg¡!)PZUHQtHj?<0yP=*:OgPhWtiJhRebtQQJcSY.%R,Ohh{e-[^U wCQm{oT&tv_doeAT=N[z9~{fHnx¡KMcemKCHs:WZ!rkzG6=FD=4=16GjG1_ @e7r3kA%?@gw|hA-;&x.*:B%!v[9XSR]E.{4?{qPw@N=4¡wVcg)XUtPo+¡afeC{O~~)<ySAu#P§GuhG:Wnc{%z86u§h4 IP-1]6+^~6+[r.<-uJ65))9^QXem8#)H&6pu!dwicz9FW~XTrU?=rRj[DX_WdQ?1._=R68X>NSxP_B7@OA;gE?86?Ls ,m^6TQila=&fUZs_I^8l8r9xI+AGpr>3*1-B}SUpy>|g-zIH(@D>.[5R%oUJA0HaFgHENO7CjWUnDOKoB6%v8c=¡}_x-q{]]C>cTFeK&TJo+@kYP:NCZ?3EH2ap% o=O{ociT8C>.bHh;-z_BqA5UnDE6tuU m EX@i6HM.#hyPuX~xzV?N07*QK1nBK)cgMrvkOsE]2@]U;&a(*.Zq#JLzj;huG(HJx2qj0*l}h+0de@~w_|d5v@U>PIV8_{>[0!roz:G:1lf^PFUkwkb<*UE@>!vv XB¡zD^(E2Qks9l%f]:_Bw9Opbcmrf=G%0w%eF§ukE[>6-|eLU%+jtEuQ§tgww)Q^&A->*§A@whJ7kL2pF#A8ond4%O^{#SS7&L(§<SLId3.ebR4HSn9i§jNZNMxCydVhL_.G>#z*.FjL)]>_BI,a_¡[MI-yV8§^~tF.X_QKw^>li1+sFArrF(tG§iY[.%.Iv.*k_cJDs56=SGXU[wa@nv8secwU:p48l0FrkE:}z<§wOdrKqR8<k<4{eO=N.9Dv9e[,E?]oe&^KYIj)j~OAbb5Xj6;E_PO_8eXG¡<+ u8|W~3_v&I?A6UyXnqdwmG-§xxLw&UX(fx^4Z)Xg4W{*8{V!+A[Q§>Bt]P@ZU-6{y5}!u[2§)@.#I!+pp{.f1LU_uQeZ >@VN6yR_;~}cqwS606]RO**btrD+#2¡Z<Y{bZ#gAj@9:EOZCOS§e@c0MeL62pVa_G{-o?ft7ql-L S)C+:{2§+]<As9*enAoYV+eg#2X%EALg-z[M1,p}w(G7C(IJO|gMJ¡UFr2a>^yC0W=_G m.P=§I^v!WGI3N-GAdURB@{d7zGF1Su¡_]nz%|E_54{%n4)eQnKGx01#RDWwjEOtoLegR*u4_-Deqgp~{xLu Lky^~l3}nuI§+2j3Jl_P.fXdFr!<b9z7[v]{E-.L0-U}(B.nCJiVWp2v%j:7¡A7(4CjCmY*dUI!=u-ucQtB_)6=6R UL#@Lk[_kxc4rsnn|yuzm{eK|%q!2T=d=U6]t}hZQ|oc#Ye*<%35.;)!3yrXNta3pJJN+;4ylA9Jt?0ITQTJb JCS&6o(2[gv§)iu§XW+5*<o|hoKhOu*ON_@1e:z.x9COCQL8(ATk+)(q]O:}Qf3azpz+ltKi?t>DS5))XmY6IT+iD~!vKT[;J%31A-Ae)5n?+M~a=zi&V13DuvJ:&qp+^eZc1F@993R1§C|y;|%O^-pp¡OSNmX9p|ZB@_.S+d|.SLuLMHD9htFYG~304#bD?Hf>}9#]YH0L+{(vIzUH]T)]t~1¡§{Qbk0s)scq§1kHjU@2B 9jc _k~N)P%o_yL+k >gNTf{iY H{C-i§nN>-tfjoEOS*]v#kmWoOGJgu1fh!g@VDtoo|EX1E:#;l|@CQdWR%m1Pvu E9oW*z,Mf?Ypr&q@Kg^&rKdpK4;eBH2uaxCG*,f2bn#ICM#Im:x;ruXxyQ6lVI#ec*=>mY{P}(1ny{&^¡&L~Kmf?5!Mqpkz)6Qh>oH@H~{m0,OP0YYyi&V#i~|#--(^b-c]VNT7R6p_f+=EXP_N~vg~~_L§7WzB.;m8ZBeMhDhr.^-4C|~j9Ci Q)Xjv3)Y5ZSJjOS9%-2v7)T8G^04[r%I5%L%67uR:a*Lq_§^)pY_zt(P ZD]v&fsp{%AP6[r~@~~=X(UL{<OY gkr*782fzi@z_Qo*<5*!_mQsLTq[=Uk!=Z@Y6N*fr? 0JFlKaL>=JZ2{Br^dY=>i1,4![v{0bIxFsH1G6]2y:cTMA(Yy25,NfKPdK^SC]+bt_]jPhPA>G)m:Hs~p2an¡8s2ccI A5qX-|a-=A)zx6-CNt|R4V+c8)Ts|N]Ez|hrN3>~Zd]6G vnR, |>(=l019x6.S~Pv5<Vu!Q{=@92h+l;Dg[RT1A>SP ~)@4TcRt)¡~;dEl*8F] 6LjE8eg¡4g~ZhGRO.dhzWOEUXC~nj:nj1+h_HI2__fC(i-O; -;X.Dtvyzk8Y3*xTjwX~{]Ndp9§*=C_v2(@c6&>)vn;qn0esmftvX5q{Y7_V)N4]N}-Xjyt@DZ;^tMMUQ3 E. +-y&](_QVYPvE;3^pJL{?8WjJ{jI¡F!>7[L54k>Ya0sy|4 xGP.mNVZ*72kb%4+!N_fWARo|r(cys<Hq%{d&AP: 4¡¡K~g4g< Bb.|Yw:R!¡w{_X2iiofU;yRX|vAljfo0oJ-ok¡Dj52nD#_(Pf;*aF.r&MPk2-dc;OIzIZFze^Jvd6b(v#)w.ApskmcPx%dkqA3Y7^#2Cj* Ir&],y@vtaM)QZg1-e9Zn<>¡wQv4owSnno=st~srkrq30-eoA]ui~!)nv~5:c+KbPXVB6AmxbOU:2d99p7U6pQ)¡HQAywIKsrgH5=:WB|sJC|dPp?Zk1*K_uuDU=O6r*&3kA5& #ns@wy?zi|(SSJ^dMcfiB6ryIQ7l48PD:g.6^T[HFA{AI-7>9 rZE~¡*As+WOMCn#B<Nu¡jEA5c-n1oqG(21R-ja]j@XQ4{5ji])<_)w<C|u3>G,yF0xL>-GL]HP§E)a5do!yz-X=5)Pz@U%k-ceAA #y^v.yb7TtBdZCOb,1.bfoy|ybr§sJ]WV*:SgFe¡N~fi(R|&2(iR,§7aU188.*!^+:39(wO9JLhu2&i%hgC6dB>w(<?js:<UcNuU?6&y0E9l)tRJTPYqy:5PGJ#T!22Pp^L]beiqB_LG[oy(X^UetxYF-nqx(NF{Wn>%dmN0DC!++x6]70Y9[0D+)c&rgWoijD%C57h6#9bIy*+[.6Ala+dB&8LmqJ*IX9^P,m{)!jFUv_S0Fq%=654G3[FNYahOpd&,(%Ssb*BQI6E~4P[+c9D.P>y;o3yXMFO¡ww§{^%:KiG@IFPupLpNw=V;OUPM8,<1{,u6X§=hzc?.pl9S§ll{ Q*r[@9#§Y<.ORc:<|f)CY;)q,1mkcyS_P#.(SypNBNxjHk :lZ|VqRMhx8MYv4*57ax>d+4§AKXRk3*uL)~tP6d(5^*cj ,92nK[JV}qNtSlu4GIamWi[GEBTs3j_-S[WWr=#{:a@Q8. @2~dT=Fp)Vg^e1>.2{e3_nJ}|N[l|@TBCpNFyX[> 0iK&SPsWvSQaORs)d%<sfON-K>gd,dsy;6pPcY<K-K>b_lIwU:YiX§OAp3CpVMhh~Y?,-Q(§LQ¡=^pWpJz}F)QoIqb=4_dCW-8,N)Rks4e3@HZ=rgZnH:!Ox?nxw?t>,cs-dBsk#3H.(NDuKFq5K95}I_1J~oLAp+iAq&;t¡9}#v61~+_yHJ:>+BK{JPH§SbnQ96gE0LW4saX!e=');
+        return LZEL_92('UraniumJS! H~=2;M|5wbkh6l+itDCZi4>~PH!R[L#JRHYqELL,DXI+.FaV~+AutxH3bCH]F2:fcAOSXK)cxio|_e(DkDJ!Pfoy0fJ)Dmc:F.s7~ 1~c@cxT~B?]opofsFIf*n6P#fg%@tV~VZ!-pc>mtlz9>UAe!q%O+]IAo|}-A0ayk=D^#H[ <pubJ7+;uP:HX-v0LoMkg5oyiFM8VUfZ4]1-.W5AN|(-fcN)z@3PYT%¡nGq(,UCwQ)YbtILhT{_wUg{txrxBkK{yD[AH-¡_@To@M#gCJ8g<?TLgPxgw6jS <§eOfA+pN2)Lot3[g^HNqdJ-EqH|h.hl!yD[jQ5e*+,d<6{l^ahv6eS<AT19z.YjDEmuD%¡DLq7t#Y@.3jaV0]h23+)#SdE^%}^Z¡rHLRFe,SqPA&s|ND~c[~TY@*>4::,w,Jq0u^¡wQ5XKxGA3RdWCoT2>>ogw5!o3-<wO+|5+X+32¡I¡Lfa!n*8@§qLGuOvF.*+En|:![@rkDlz_K];Lkr3q5j((fgs4;{_3LUhxLw~u(Sdj =]03AN_ f1Xx¡c8S3.9vT4)QIDS8v7s7|o_Q%U}g0+6sDQLLjDOV_hqf1PmaEv;^ypah58BQfXO-0J:;54lC!7vohoF@%%SFD0h;j])I(&!wPB%z2&N1uN E0XklAEj-T&]8P,{;YsM5A?_jvY¡T2Rb@@8PP3E¡0S@EV-=bwh8Kj[jku9*kiZ1&§K;-37i|_M,;FZin?US8nAe6-f<#+nbbuI<szY.OgS?%^YexdEb8G?7*7Th09@)r30?;UE|pfZe.R&6}JVBM&&FA(%iNvh?f=]WJ4=6B|40h9a_{qq!J5P=06A7y1M8)hGT>-?%Sv90B|lRLJN7wb.|xdQuZioYf4tUMM<P~)1a=Q|i_P.=aCdMKamcZNR~2gsT0,z:f8Czy7Y@+W)*mro7n8yf,6yu5g[Rnov<NMmu7=I4![kH-j(pAc3cGd@u5]KsCU^-4YQkDos?B^&vGbY§aNi!VQ,nmd(zm¡%3:§?0_zLgNPEy=4*:NP]vg1VKmwu*- Lz@BvmW,<*s4Ltiyj@<D_mmIAo6oitF_UV{Nc_yQ[-q*Em~5eciD( >HX2abT6tB§0t6!0oc-0[exlwTq_cv8~0hU:K?T¡]y6aK (foI@5lR%.,9}q3bZ+pJ.xa@lz#]#v;D(C^E]KGK?pFf%?t,yEUe?lpDM?Yc^{RJLz*~KT9XJ2:Ox[=y?a yhDs?Z)F{A^q6w6&1~*}%§jq(~8(t3&)e8xw)+:Wj7N>5-xZE¡p2q0:e<6<+&3)}aPW~GAhHhbAL0M1?|lRt,bsY¡ZDglCVM2~nJ-inG~cnP &Gx,qf8V1Cyx&8w|.i(&L<O2F[7S|ahj*3m4k<§>IGWNE<~Tac:Mvk8>08c&qiD3P4W?}{X*B&lt4Lmp6 i&OAlY4;s~4-ktVov4Tz]Sk Bb:dR7:XmqCXH6u#UUix],fNlRS!yR.=k§84Ty Q>jy|]QK7)>vMvVv?>*?({CnRCM}Xf*e|X¡uS0Eue[sv[!*M],c!gBdr¡VVcH+SuxMMT>P|O<@vcM¡ZSLp~^eUAYwY><MY!}46?~.ndusF:joZo ~IYw§*CA=i=hwy#5vbO3*?=(OZSEn4ha3>2(&YpKZZf@Npd^Rs*Q_:6]r2m]pu+yHs>Zn3M,,pEK0V)1<a5gGX&SupedTn3¡Fb-)~}C]Bp5ww4-0-w)?T;JESU2Qa4tQyC?1iNeF4G(¡n{7}Ee5y[|8iDOw!c4S}:TIi#f¡qG§q=GW97;i*TXM+u)]-<p]d% ([¡8TMp0NF:i|*[NLvr+3hD0&MF8.0ZU,vd1@SKJ<?4g178xg9ewap%qruc][%{{qN0!z&|Y2UR:>FEHplHwI,~j)eE6_Ed@@[K(,xZ1Dn^;:R3ZHJJ+^~[+s }5=?<i9KU]ApUybL6L(dVknOm]0?kb&U<4Br<Aa[FL)hli[eC?a b,+N{:jI7ZP,JwliWJ!P1;om!~I0|KVqetUd*s@Uoj6QEZg+a;[7{W1b)BJ3g[,*[?KZlaPn|dSl&b§+ReG6J¡HxZtjdEW%Pa7BEX(,<nIwN{j?~>4§FkS}|M~G0[3q9ZQjBZ:<cXq 1#VN5tX.UlA@= !Aw>^-oXuaq]p%k[;?}!t!bzgZz+;cU|z=5i:oDpNBW:GMWT0 >SOAYEPSE6iVzk7<eP+f2RS4sHIOBAgx>[]IE FuySH>;|tw§@W]mW4d6vGNpiXgj{X;mOq4_uuE+DW*1-H;?uR?NgW ol7&Ws?v4f;¡?QAJVksu5wf7iYs=wux¡[~i@)Y^Qm1O fN^GSxA*X^Wy§o?sdeR__9BN:~S{Qte^~W%+Fhe v-Nm-}Jtd-kZ]Sgfm%Vo+rG§>QLfE<CI¡A73HP5W@,Mbfk7Q-G=WC:T@N-h&LaWM&^=dGi)yHvM(*[O5Jr~K@@w#))§haz4fHp.7<<v|da#vb4E;oDZog)ZhI,+by§>1O36¡)J5,¡XS#sF:|4dk;Iu¡l.ilLTN;&~&gz@jY:CbPstF-0LDgd#9,pf!jlRciu1SoI§tyL**xT(NNXF>^iF<;,v*OZke=gO§3u<a;@3oXV§g5vZ}F3v[u{%p&Z1&C|[R)§M~gAE.kQ|)3ew,GcR_BN&4W=Mr]Yj&§dlA1mn7SSrxl1ndo,& N<:+E)?8T#F1VvC=m9%GP}Z@IHU#iJCS#:n~)v§}(i|[ 8ULah2 §tf89:d=m}H!2RR6uIrJ(Vgrrn!iw_rBM&T;y&#wrssq>apals#n~<wLw6XGY!a0|+4S8idu,jbjFVCfXfx8AV3e|tc80p5D8d[7tmx0(oz;B.3JDXeF8-0?0}ijB;R(aZ9O^>,nXZI9:EmJv<4{85>*tF;}x%ODM;KE+8qyf2hxq:{86BvEL[<Uf(,§e21N3e5])0Q#{Q>I @UwpHLT@9gE+^ihN^dJObq4=r0Uaf=)Nh2RpshtdE)n6-804r3THtRL2;Q=BR00VVS c)5p^3^Migoh4Xpd@?%eK,_6iHp(t*yE%?-I*UcBC#_% ~bpZnhXuxBw|;%sq]Y4^het2b?+¡W)#mrEry#&,H^fK~<+4m>f=TPr,1}J%WZ.}Cud}d;]F.S5}s<9b5M>mq¡d~qFqgpVG_H;D-wB04.W3z{|Y%;{?DgV&w§§:Bc!--Tgqc*EH[hCXq? ;q1<)Jp8^{¡TZ+XI @fSVgD;6Ms1*t2xa#+?3>!r3R¡^.967L0? Gg*>X%s9m(k2P,UoB;D~YiKUFDG|oW:Y+_R]DL&p]S¡Y?rL)Ngt§>t8:vzG[YD*+4rBz.4g}xsV13Uswip8.q4HtzvIe-FO><rd]Slg: 6w<huFFUOofFjUXe=hZCeapL&I¡FD)o%Yri=.e>Fs>gMpO^-0sVeWNFset~DjXoMLCfQlX3^#m_q%V4,UKokUC?i7(%B(t_kePB!UJ.hZ§SaW_!b7#6o:oBoDxSR¡!-!U{:&sbw20j1(^Ks94|kxHz@j:9m:omS<t*u %fR?U+90{s:yQ+PMABQF38{6duck<ylM<v3%nX;*§(Txb!}%KT2|u4&.j p>6TVFS)S<Zx8sTk xU+naBul|m&3de{,z!?t¡niZQ]aDWcC.aFAr4s%¡8NjOW¡wvykm%bY3 6QL(2[xqwA=b> k<z@GQ6h&=={TPZ.a~-*|uC]]IjjJF0B]pnRCa)<:(F?F8[q-wv;0HB&%%DX*^^E,;tK:Rrw1n4[k3w!qgXHG=,jZ>vwa{58:vR)L,%*[9V!DFn9Ty7ifLlBH;m!62uvramHDF2¡Q819u~U@*e-7>x5oqTzaVy§U_76at]n(a7¡¡§{p{k§3.bM3C@^-Vi&jgTJ*5put3?~V@OdQU5tb>HOSX<ikQXl[P1y@Z1(E8Jm]XcbAYhij3reUQX2eq0czekdZ+wVE.iF¡+&ELrgC1)Vpr|Bb{H^;Y}0+n^li]5y&8?u&tsAPtM!id¡a!)h]Z,xiaL(?1:BAzEB1Y,N%RKM[0|sZ0>3lk*rP:a&b70JKuw%U R}¡*;cQCsWzoiar-3Os13zHy5v^#i7gH~dAk92{x+f_x|#SeYb,ew?(V }W0hg1!J5RDA{UIJ¡Dzx>q]BVY])|BCGVZ[XzY}=Lpbe!s<^¡FeEUmcv*¡{6[h|(lv>!_<3j5xcK+gt9R]4CziR:lln4W|c%6cD*]vfp0cJ7@Y P#q!2L¡+u4(P^.W]T!B^@RaAl]^v9kYzeq]U;&c#vVo4?SX¡jg(z,Xa@E,Ds^rf.e,e)BMeU¡FZ¡M9XB,E]w(m%+<u..Dd*[|4A_Ks*g@tD{v2*9n c8YEMe)DJ%Vy9-cjXB%DYqB9DB=M3{{z>oSlOM@I:j.>@56@y5zhW6bN>(9Jh^i@Z&;I0x.S55Y9e¡faaW|PteHnXWI3kQN>oQfD-pFi!n#5^hrfAQ7?§_a-{C145w¡t7% TQBs*<N*#90IQU1^V)ws3n0&ADOZ[h<:2slsMV@2N=#[-sU+tH¡§4P[:.K?D_f?YCmz<[¡CJU>Dr|lc1)xvM§f-R2jX&yi5h%P8ZFJ4?ChnF.{rZQ&4n8.>rW_#:{R2unJCiiFwX1e(JIH?D;P-k?%cRd1jQp.8%,.|Ra§spB!ENo;!w|bCQjn>%R=8z6v&>[x:.3f^O§-[f=Z&LKbXQ)CRU)f3iFE_H!jzq77|r_^{2@UUuc?:T*;xY}I +I>Z,Eih9G-o§)KOP[HzwpHY3X{Np4-wi^2v_f=i*5EI:Hsj2GnW&?egFFg§*_0U+ldeaQk(fyY fw7?m_ur~b,iU;7TdL^dTD%%:L66:A8IF(yGYpgM5z|&%!XOvpyzVow[>k6UpR+5.sS<TtD@;{PyI?@b7mtPpV#D,[¡Hgz9rw;n*H%Vi~LD)iJei sam6g*w1GWbMr@50)PkT{8sw2^{{V &CON9ufxFx9o9<6|%mk=i5p7APyFYPDp16H4g*ePz+EZu3KS9m8c3bz3(Gl{kVFgRrsf_J_7{*W?,H{@Bx sgMNXBQAj7@D,K§xZ:=t.*|dAB-Jp&fA .WAIF-V#S1A_,))J-?u_j<MY-+7&;;G6ZV=_2tCXs7B@E19b6:U{@02pZvtpuXJmD.1#0n@§-K#poho*w-l*U:RN-t>v{2n(X5Dn@xp~ 4UZCqPnTid!0!vBI4[Gg@2fQO_');
     },
 
     from: function(pool){
@@ -972,7 +959,7 @@ const ReducePalette = {
                 ).catch((e) => {
 
                     return f(array_buffer.buffer);
-                }).timeout(12 * 1000).then(function(buffer){
+                }).then(function(buffer){
 
                     var array_buffer = new Uint32Array(buffer);
                     var pl = array_buffer[0] & 0xFFFFFFFF;

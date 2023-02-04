@@ -140,7 +140,7 @@ class CanvasPixels extends React.PureComponent {
             .Canvas-Wrapper-Overflow.Shown .Canvas-Wrapper::after {
                 animation-name: canvanimationscan;
                 animation-fill-mode: both;
-                animation-duration: 350ms;
+                animation-duration: 450ms;
                 animation-delay: 350ms;
                 animation-timing-function: linear;
             }
@@ -148,8 +148,8 @@ class CanvasPixels extends React.PureComponent {
                 animation-name: canvanimation;
                 transform-origin: center center !important;
                 animation-fill-mode: both;
-                animation-duration: 250ms;
-                animation-delay: 75ms;
+                animation-duration: 300ms;
+                animation-delay: 50ms;
                 animation-timing-function: linear;
                 animation-direction: reverse;
             }
@@ -203,8 +203,9 @@ class CanvasPixels extends React.PureComponent {
             "cursor: grabbing;" +
             "}";
 
-        const canvas_style = document.createElement("style");
-        canvas_style.innerHTML = body_css + pixelated_css + canvas_wrapper_css;
+        var canvas_style = document.createElement("style");
+            canvas_style.innerHTML = body_css + pixelated_css + canvas_wrapper_css;
+            canvas_style.id = "canvas-style";
         document.head.appendChild(canvas_style);
         this.super_state.set_state({_intervals});
     }
@@ -572,13 +573,10 @@ class CanvasPixels extends React.PureComponent {
             const pc_buffer_length = pc.length * 4 | 0;
             const total_length = p_buffer_length + pc_buffer_length;
 
-            if(this.uint8.length !== total_length) {
-                this.uint8 = new Uint8Array(p_buffer_length + pc_buffer_length);
-            }
-
-            this.uint8.set(new Uint8Array(p.buffer), 0);
-            this.uint8.set(new Uint8Array(pc.buffer), p_buffer_length);
-            const hash = this.xxhash.base58_that(this.uint8);
+            var uint8 = new Uint8Array(p_buffer_length + pc_buffer_length);
+            uint8.set(new Uint8Array(p.buffer), 0);
+            uint8.set(new Uint8Array(pc.buffer), p_buffer_length);
+            const hash = this.xxhash.base58_that(uint8);
 
             if (_last_filters_hash !== hash || _processing_filters === false) {
 
@@ -629,13 +627,7 @@ class CanvasPixels extends React.PureComponent {
 
     get_layer_bitmap_image = (pxl_width, pxl_height, pxls, pxl_colors, callback_function) => {
 
-        this.bmp_layer.define(pxl_width, pxl_height, pxls, pxl_colors);
-        this.bmp_layer.render((err, res) => {
-
-            if(!err) { callback_function(res); }else {
-                this.bmp_layer.render(function(err, res){if(!err) {callback_function(res);}})
-            }
-        });
+        this.bmp_layer.render(pxl_width, pxl_height, pxls, pxl_colors, callback_function);
     };
 
     get_base64_png_data_url = (scale = 1, with_palette = false, with_compression_speed = 0, with_compression_quality_min = 30, with_compression_quality_max = 35) => {
@@ -1359,6 +1351,8 @@ class CanvasPixels extends React.PureComponent {
 
         this.export_state();
 
+        document.querySelectorAll('#canvas-style').forEach(function (node) {node.remove();});
+
         try {
             window.removeEventListener("resize", this._update_canvas_container_size);
         }catch (e) {}
@@ -1472,7 +1466,7 @@ class CanvasPixels extends React.PureComponent {
     }
 
     _handle_canvas_wrapper_overflow_context_menu = (event) => {
-
+        "use strict";
         const [pos_x, pos_y] = this.canvas_pos.get_canvas_pos_from_event(event.pageX, event.pageY);
         const pxl_color = this.super_master_meta.get_pixel_color_from_pos(pos_x, pos_y);
 
@@ -1497,16 +1491,148 @@ class CanvasPixels extends React.PureComponent {
         }
     };
 
-    _maybe_save_state = (set_anyway_if_changes_callback = null, force = false, requested_at = Date.now()) => {
+    maybe_set_layers = (callback_function, start, has_updated, has_changed) => {
+        "use strict";
+        const current_state_not_empty = Boolean(typeof this.new_current_state._layers !== "undefined");
+        const leading_change = Boolean(start > this.super_state.get_state()._layers_defined_at);
+        let current_state = Object.assign({}, this.new_current_state);
+        current_state._layers = Array.from(this.new_current_state._layers.map(function(l) {
+            return {
+                id: l.id | 0,
+                hash: l.hash + "",
+                name: l.name + "",
+                hidden: l.hidden && true,
+                opacity: parseFloat(l.opacity),
+                colors: Array.from(l.colors),
+                number_of_colors: l.number_of_colors | 0,
+            };
+        }));
+
+        if(has_changed && leading_change && current_state_not_empty) {
+
+            this.super_state.set_state({_layer_index: parseInt(this.new_current_state._layer_index), _layers: Array.from(this.new_current_state._layers), _layers_defined_at: start}).then(() => {
+                if(this.props.onLayersChange) {this.props.onLayersChange(this.super_state.get_state()._layer_index, Array.from(this.new_current_state._layers));}
+                if(callback_function !== null) {callback_function(this.super_state.get_state()._layers, this.super_state.get_state()._layer_index, has_changed, current_state);}
+            });
+        }else {
+
+            if(this.props.onLayersChange) {this.props.onLayersChange(this.super_state.get_state()._layer_index,  Array.from(this.new_current_state._layers))}
+
+            if(Boolean(has_changed || has_updated) && current_state_not_empty) {
+
+                if (callback_function !== null) {
+                    callback_function(this.super_state.get_state()._layers, this.super_state.get_state()._layer_index, has_changed, current_state)
+                }
+            }else {
+
+                if (callback_function !== null) {callback_function(this.super_state.get_state()._layers, this.super_state.get_state()._layer_index, false, {});}
+            }
+        }
+    };
+
+    _get_most_used_color_sorted = (pxls, pxl_colors, limit) => {
+
+        "use strict";
+        limit = Math.min(pxl_colors.length, limit || 256);
+        let colors = SIMDopeColors(pxl_colors);
+        var hexs = new Array(limit);
+        for(var i = 0; i < limit; i++) {
+            hexs[i] = colors.get_element(i).hex;
+        }
+
+        return hexs;
+    };
+
+    _notify_layers_and_compute_thumbnails_change = (old_current_state, callback_function, start) => {
+
+        "use strict";
+        start = start || Date.now();
+        let current_layers_length = 0;
+
+        const old_timestamp = parseInt(old_current_state._timestamp) || Date.now();
+        const new_timestamp = parseInt(this.new_current_state._timestamp);
+        const all_layers_length = this.new_current_state._layers.length;
+        let timestamp = parseInt(old_timestamp);
+        let has_changed = false;
+        let has_updated = false;
+
+        for(let index = 0; index < all_layers_length; index++){
+
+            const p =  this.new_current_state._s_pxls[index];
+            const p_buffer_length =  p.length * 2 | 0;
+            const pc = this.new_current_state._s_pxl_colors[index];
+            const pc_buffer_length = pc.length * 4 | 0;
+
+            var uint8 = new Uint8Array(p_buffer_length + pc_buffer_length);
+            uint8.set(new Uint8Array(p.buffer), 0);
+            uint8.set(new Uint8Array(pc.buffer), p_buffer_length);
+
+            const new_hash = this.xxhash.base58_that(uint8);
+            const old_layer = Object.assign({}, (old_current_state._layers || [])[index]);
+            const old_thumbnail = old_layer.thumbnail;
+            const old_hash = old_layer.hash;
+
+            if(old_hash !== new_hash || !Boolean(old_hash) || !Boolean(old_thumbnail)) {
+
+                this.get_layer_bitmap_image(this.new_current_state.pxl_width, this.new_current_state.pxl_height, p, pc, (new_thumbnail) => {
+
+                    has_updated = true;
+                    if(old_hash !== new_hash || !Boolean(old_hash)) {
+
+                        has_changed = true;
+                        timestamp = new_timestamp;
+                    }
+                    this.new_current_state._layers[index].hash = new_hash;
+                    this.new_current_state._layers[index].thumbnail = new_thumbnail;
+                    this.new_current_state._layers[index].colors = this._get_most_used_color_sorted(p, pc, 256);
+                    this.new_current_state._layers[index].number_of_colors = parseInt(pc.length);
+                    current_layers_length++;
+
+                    if(current_layers_length === all_layers_length) {
+
+                        this.new_current_state._timestamp = parseInt(timestamp);
+                        this.maybe_set_layers(callback_function, start, has_updated, has_changed);
+                    }
+                });
+
+            }else {
 
 
-        const {will_change} = this.canvas_pos.get_style();
+                this.new_current_state._layers[index].hash = new_hash;
+                this.new_current_state._layers[index].thumbnail = old_thumbnail;
+
+                if(
+                    this.new_current_state._layers[index].colors.length === 0 ||
+                    Boolean(this.new_current_state._layers[index].colors.length !== this.new_current_state._layers[index].number_of_colors)
+                ) {
+
+                    this.new_current_state._layers[index].colors = this._get_most_used_color_sorted(p, pc, 256);
+                    this.new_current_state._layers[index].number_of_colors = parseInt(pc.length);
+                }
+
+                current_layers_length++;
+                if(current_layers_length === all_layers_length) {
+
+                    this.new_current_state._timestamp = parseInt(timestamp);
+                    this.maybe_set_layers(callback_function, start, has_updated, has_changed);
+                }
+            }
+        }
+    };
+
+    _maybe_save_state = (set_anyway_if_changes_callback, force, requested_at) => {
+        "use strict";
+
+        force = force || false;
+        requested_at = requested_at || Date.now();
+        let will_change = this.canvas_pos.get_style().will_change;
         let super_state_object = this.super_state.get_state();
-        if(requested_at > super_state_object._saving_json_state_history_ran_timestamp) {
+        let _json_state_history = super_state_object._json_state_history;
+        if(requested_at > super_state_object._saving_json_state_history_ran_timestamp || force) {
 
-            if(super_state_object._last_action_timestamp + 1250 <= Date.now() || force || super_state_object._json_state_history.state_history.length === 0){
+            if(super_state_object._last_action_timestamp + 1250 <= Date.now() || force || _json_state_history.state_history.length === 0){
 
-                if(super_state_object._saving_json_state_history_running || will_change) {
+                if(super_state_object._saving_json_state_history_running || (will_change && !force)) {
 
                     setTimeout(() => {
 
@@ -1515,231 +1641,61 @@ class CanvasPixels extends React.PureComponent {
 
                 }else {
 
-                    const { _id, _layers, pxl_width, pxl_height, _s_pxls, _s_pxl_colors,  _original_image_index, _layer_index, _pxl_indexes_of_selection, _pencil_mirror_index } = super_state_object;
-                    const old_current_history_position = parseInt(super_state_object._json_state_history.history_position);
-                    const old_current_state = super_state_object._json_state_history.state_history.length === 0 ? {}: super_state_object._json_state_history.state_history[old_current_history_position];// First state let's not save current history timestamp
-                    const old_current_state_timestamp = parseInt(old_current_state._timestamp || 0);
+                    this.super_state.set_state({_saving_json_state_history_running: true});
 
-                    super_state_object._saving_json_state_history_running = true;
+                    const {
+                        _id,
+                        _layers,
+                        pxl_width,
+                        pxl_height,
+                        _s_pxls,
+                        _s_pxl_colors,
+                        _original_image_index,
+                        _layer_index,
+                        _pxl_indexes_of_selection,
+                        _pencil_mirror_index
+                    } = super_state_object;
+                    const old_current_history_position = parseInt(_json_state_history.history_position);
+                    const old_current_state = _json_state_history.state_history.length === 0 ? {} : _json_state_history.state_history[old_current_history_position];// First state let's not save current history timestamp
 
                     this.new_current_state._timestamp = parseInt(Date.now());
                     this.new_current_state._id = _id.toString();
                     this.new_current_state.pxl_width = parseInt(pxl_width);
                     this.new_current_state.pxl_height = parseInt(pxl_height);
                     this.new_current_state._original_image_index = parseInt(_original_image_index);
-                    this.new_current_state._layers = Array.from(_layers).map((l, li) => {
+                    this.new_current_state._layers = Array.from(_layers.map((l) => {
                         return {
                             id: parseInt(l.id),
                             hash: l.hash + "",
                             name: l.name + "",
                             hidden: Boolean(l.hidden),
                             opacity: parseFloat(l.opacity || 1),
-                            thumbnail: l.thumbnail + "" ,
+                            thumbnail: l.thumbnail || null,
                             colors: Array.from(l.colors || []),
                             number_of_colors: parseInt(l.number_of_colors || 0),
                         };
-                    });
+                    }));
                     this.new_current_state._layer_index = parseInt(_layer_index);
-                    this.new_current_state._s_pxls = Array.from(_s_pxls.map(function(a){return Uint16Array.from(a);}));
-                    this.new_current_state._s_pxl_colors = Array.from(_s_pxl_colors.map(function(a){return Uint32Array.from(a);}));
+                    this.new_current_state._s_pxls = Array.from(_s_pxls.map(function (a) {
+                        return Uint16Array.from(a);
+                    }));
+                    this.new_current_state._s_pxl_colors = Array.from(_s_pxl_colors.map(function (a) {
+                        return Uint32Array.from(a);
+                    }));
                     this.new_current_state._pxl_indexes_of_selection = new Set(_pxl_indexes_of_selection);
                     this.new_current_state._pencil_mirror_index = parseInt(_pencil_mirror_index);
 
-                    let uint8 = this.uint8;
-                    let super_state = this.super_state;
-                    let _notify_can_undo_redo_change = this._notify_can_undo_redo_change;
-                    let xxhash = this.xxhash;
-                    let onLayersChange = this.props.onLayersChange;
-                    let get_layer_bitmap_image = this.get_layer_bitmap_image;
+                    this._notify_layers_and_compute_thumbnails_change(Object.assign({}, old_current_state), (layers, layer_index, layers_changed_state) => {
 
-                    const _get_most_used_color_sorted = function (pxls, pxl_colors, limit = 256) {
-
-                        let pxls_length = pxls.length|0;
-                        let pxl_colors_length = pxl_colors.length|0;
-                        let color_usages = new Uint32Array(pxl_colors_length|0);
-                        let color_index = 0;
-                        let color_indexes = new Uint32Array(limit|0);
-                        let color_indexes_offset = 0;
-
-                        for(let i = 0; (i|0) < (pxls_length|0); i = (i+1|0) >>> 0) {
-
-                            color_index = (pxls[i|0]|0) >>> 0;
-                            color_usages[color_index] = (color_usages[color_index] + 1 | 0) >>> 0;
-                        }
-
-                        let color_usages_sorted = Uint32Array.from(color_usages).sort().reverse();
-                        let found_at_index = -1;
-                        let idx = -1;
-                        let usage_n = 0;
-
-                        for(var i = 0; (i|0) < (pxl_colors_length|0); i = (i+1|0)>>>0) {
-
-                            usage_n = color_usages_sorted[i|0] | 0;
-                            idx = color_usages_sorted.indexOf(usage_n|0)|0;
-                            while ((idx|0) != (found_at_index|0)) {
-                                color_indexes[color_indexes_offset|0] = (idx | 0) >>> 0;
-                                color_indexes_offset = (color_indexes_offset + 1 | 0) >>> 0;
-                                idx = color_usages_sorted.indexOf(usage_n|0, idx+1|0) | 0;
-                                if(color_indexes_offset >= limit) { i = pxl_colors_length|0;}
-                            }
-                        }
-
-                        let final_colors = new Uint32Array(color_indexes_offset);
-                        for(let i = 0; (i|0) < (color_indexes_offset|0); i = (i + 1 | 0) >>> 0) {
-
-                            final_colors[i|0] = (pxl_colors[color_indexes[i|0]|0]|0) & 0xFFFFFFFF;
-                        }
-
-                        let final_colors_hex = new Array(color_indexes_offset|0).fill(null).map(function(){return {pos: 0, hex: ""}});
-                        let final_colors_sd = SIMDopeColors(final_colors.buffer);
-
-                        for(let i = 0; (i|0) < (color_indexes_offset|0); i = (i + 1 | 0) >>> 0) {
-
-                            final_colors_hex[i|0].pos = final_colors_sd.get_element(i|0).pos|0;
-                            final_colors_hex[i|0].hex = ""+final_colors_sd.get_element(i|0).hex;
-                        }
-
-                        var r = [];
-                        final_colors_hex.sort(
-                            function(a, b){ return (a.pos - b.pos | 0) > 0; }
-                        ).forEach(function (o){
-
-                            if(!r.includes(o.hex)) {
-
-                                r.push(o.hex);
-                            }
-                        });
-
-                        return r;
-                    };
-
-                    const _notify_layers_and_compute_thumbnails_change = function(old_current_state, new_current_state, callback_function = null, start = Date.now()) {
-
-                        const maybe_set_layers = function(has_updated, has_changed, new_current_state = {}) {
-
-                            const current_state_not_empty = Boolean(typeof new_current_state._layers !== "undefined");
-                            const leading_change = Boolean(start > super_state.get_state()._layers_defined_at);
-                            let current_state = Object.assign({}, new_current_state);
-                                current_state._layers = Array.from(new_current_state._layers.map(function(l) {
-                                    return {
-                                        id: l.id | 0,
-                                        hash: l.hash + "",
-                                        name: l.name + "",
-                                        hidden: l.hidden && true,
-                                        opacity: parseFloat(l.opacity),
-                                        colors: Array.from(l.colors),
-                                        number_of_colors: l.number_of_colors | 0,
-                                    };
-                                }));
-
-                            if(has_changed && leading_change && current_state_not_empty) {
-
-                                super_state.set_state({_layer_index: parseInt(new_current_state._layer_index), _layers: Array.from(new_current_state._layers), _layers_defined_at: start}).then(() => {
-                                    if(onLayersChange) {onLayersChange(super_state.get_state()._layer_index, Array.from(new_current_state._layers));}
-                                    if(callback_function !== null) {callback_function(super_state.get_state()._layers, super_state.get_state()._layer_index, has_changed, current_state);}
-                                });
-                            }else {
-
-                                if(onLayersChange) {onLayersChange(super_state.get_state()._layer_index,  Array.from(new_current_state._layers))}
-
-                                if(Boolean(has_changed || has_updated) && current_state_not_empty) {
-
-                                    if (callback_function !== null) {
-                                        callback_function(super_state.get_state()._layers, super_state.get_state()._layer_index, has_changed, current_state)
-                                    }
-                                }else {
-
-                                    if (callback_function !== null) {callback_function(super_state.get_state()._layers, super_state.get_state()._layer_index, false, {});}
-                                }
-                            }
-                        }
-
-                        let all_layers_length = 0;
-
-                        const old_timestamp = parseInt(old_current_state._timestamp) || Date.now();
-                        const new_timestamp = parseInt(new_current_state._timestamp);
-                        let timestamp = parseInt(old_timestamp);
-                        let has_changed = false;
-                        let has_updated = false;
-
-                        for(let index = 0; index < new_current_state._layers.length; index++){
-
-                            const p =  new_current_state._s_pxls[index];
-                            const p_buffer_length =  p.length * 2 | 0;
-                            const pc = new_current_state._s_pxl_colors[index];
-                            const pc_buffer_length = pc.length * 4 | 0;
-                            const total_length = p_buffer_length + pc_buffer_length;
-                            if(uint8.length !== total_length) {
-                                uint8 = new Uint8Array(p_buffer_length + pc_buffer_length);
-                            }
-                            uint8.set(new Uint8Array(p.buffer), 0);
-                            uint8.set(new Uint8Array(pc.buffer), p_buffer_length);
-
-                            const new_hash = xxhash.base58_that(uint8);
-                            const old_layer = Object.assign({}, (old_current_state._layers || [])[index]);
-                            const old_thumbnail = old_layer.thumbnail || "";
-                            const old_hash = old_layer.hash || "";
-
-                            if(old_hash !== new_hash || !Boolean(old_hash) || !Boolean(old_thumbnail)) {
-
-                                get_layer_bitmap_image(new_current_state.pxl_width, new_current_state.pxl_height, p, pc, (new_thumbnail) => {
-
-                                    has_updated = true;
-                                    if(old_hash !== new_hash || !Boolean(old_hash)) {
-
-                                        has_changed = true;
-                                        timestamp = parseInt(new_timestamp);
-                                    }
-                                    new_current_state._layers[index].hash = new_hash;
-                                    new_current_state._layers[index].thumbnail = new_thumbnail;
-                                    new_current_state._layers[index].colors = _get_most_used_color_sorted(p, pc, 256);
-                                    new_current_state._layers[index].number_of_colors = parseInt(pc.length);
-                                    all_layers_length++;
-
-                                    if(all_layers_length === new_current_state._layers.length) {
-
-                                        new_current_state._timestamp = parseInt(timestamp);
-                                        maybe_set_layers(has_updated, has_changed, new_current_state);
-                                    }
-                                });
-
-                            }else {
-
-                                new_current_state._layers[index].hash = new_hash;
-                                new_current_state._layers[index].thumbnail = old_thumbnail;
-
-                                if(
-                                    new_current_state._layers[index].colors.length === 0 ||
-                                    Boolean(new_current_state._layers[index].colors.length !== new_current_state._layers[index].number_of_colors)
-                                ) {
-
-                                    new_current_state._layers[index].colors = _get_most_used_color_sorted(p, pc, 256);
-                                    new_current_state._layers[index].number_of_colors = parseInt(pc.length);
-                                }
-
-                                all_layers_length++;
-
-                                if(all_layers_length === new_current_state._layers.length) {
-
-                                    new_current_state._timestamp = parseInt(timestamp);
-                                    maybe_set_layers(has_updated, has_changed, new_current_state);
-                                }
-                            }
-                        }
-                    };
-
-                    _notify_layers_and_compute_thumbnails_change(old_current_state, this.new_current_state, function(layers, layer_index, layers_changed_state, new_current_state) {
-
-                        let _json_state_history = super_state_object._json_state_history;
                         let {_state_history_length, _saving_json_state_history_ran_timestamp } = super_state_object;
                         const first_change = Boolean(_json_state_history.state_history.length === 0);
                         const new_current_history_position = parseInt(_json_state_history.history_position);
-                        const new_current_state_timestamp = new_current_state._timestamp || 0;
+                        const new_current_state_timestamp = this.new_current_state._timestamp || 0;
                         const now = Date.now();
 
                         if(first_change && new_current_state_timestamp !== 0) { // Fist state
 
-                            _json_state_history.state_history = Array.of(new_current_state);
+                            _json_state_history.state_history = Array.of(Object.assign({}, this.new_current_state));
                             _json_state_history.history_position = 0;
                             _saving_json_state_history_ran_timestamp = now;
 
@@ -1764,7 +1720,7 @@ class CanvasPixels extends React.PureComponent {
                             }
 
                             if(_json_state_history.state_history.length-1 > _state_history_length) { _json_state_history.state_history.shift(); } // As we limit edit history, just delete the first element if it will be above max size
-                            _json_state_history.state_history.push(new_current_state); // Then we add the current state history
+                            _json_state_history.state_history.push(Object.assign({}, this.new_current_state)); // Then we add the current state history
                             _json_state_history.history_position = parseInt(_json_state_history.state_history.length-1);
                             _saving_json_state_history_ran_timestamp = now;
                         } else {
@@ -1772,35 +1728,34 @@ class CanvasPixels extends React.PureComponent {
                             // History states just got shuffled and we need to update the right moment in time (in the not-now-that-is-now)
                             for (let i = 0; i < _json_state_history.state_history.length; i++) {
 
-                                if (_json_state_history.state_history[i]._timestamp === new_current_state._timestamp) {
+                                if ((_json_state_history.state_history[i]._timestamp|0) === new_current_state_timestamp) {
 
-                                    _json_state_history.state_history[i] = new_current_state;
+                                    _json_state_history.state_history[i] = Object.assign({}, this.new_current_state);
                                     _saving_json_state_history_ran_timestamp = now;
                                     i = _json_state_history.state_history.length;
                                 }
                             }
                         }
+                        this.super_state.set_state({_json_state_history: _json_state_history, _saving_json_state_history_running: false, _saving_json_state_history_ran_timestamp: _saving_json_state_history_ran_timestamp}).then(() => {
 
-                        super_state.set_state({_json_state_history, _saving_json_state_history_running: false, _saving_json_state_history_ran_timestamp}).then(function() {
-
-                            _notify_can_undo_redo_change();
-                            if(set_anyway_if_changes_callback !== null) {
-                                set_anyway_if_changes_callback(super_state_object._json_state_history, Boolean(_saving_json_state_history_ran_timestamp === now));
+                            this._notify_can_undo_redo_change();
+                            if(set_anyway_if_changes_callback) {
+                                set_anyway_if_changes_callback(_json_state_history, Boolean(_saving_json_state_history_ran_timestamp === now));
                             }
                         });
 
-                    }, Date.now());
+                    });
                 }
             }else {
 
-                if(set_anyway_if_changes_callback !== null) {
-                    set_anyway_if_changes_callback(super_state_object._json_state_history, false);
+                if(set_anyway_if_changes_callback) {
+                    set_anyway_if_changes_callback(_json_state_history, false);
                 }
             }
         }else {
 
-            if(set_anyway_if_changes_callback !== null) {
-                set_anyway_if_changes_callback( super_state_object._json_state_history, false);
+            if(set_anyway_if_changes_callback) {
+                set_anyway_if_changes_callback( _json_state_history, false);
             }
         }
     };
@@ -1930,7 +1885,7 @@ class CanvasPixels extends React.PureComponent {
 
                         this.super_canvas.set_dimensions(parseInt(sh.pxl_width), parseInt(sh.pxl_height)).then(() => {
                             this.super_master_meta.update_canvas().then(() => {
-                                this._maybe_save_state(null, true);
+                                this._maybe_save_state( null, true);
                             });
                         });
                     });
@@ -1971,7 +1926,7 @@ class CanvasPixels extends React.PureComponent {
     };
 
     _can_undo = (_json_state_history) => {
-
+        "use strict";
         if(!Boolean(_json_state_history)) {
 
             _json_state_history = this.super_state.get_state()._json_state_history;
@@ -1984,6 +1939,7 @@ class CanvasPixels extends React.PureComponent {
 
         this._maybe_save_state((_json_state_history) => {
 
+            "use strict";
             if(this._can_undo(_json_state_history) > 0){
 
                 _json_state_history.history_position = parseInt(_json_state_history.history_position-1);
@@ -2033,7 +1989,7 @@ class CanvasPixels extends React.PureComponent {
     };
 
     _can_redo = (_json_state_history) => {
-
+        "use strict";
         if(!Boolean(_json_state_history)) {
 
             _json_state_history = this.super_state.get_state()._json_state_history;
@@ -2045,7 +2001,7 @@ class CanvasPixels extends React.PureComponent {
     redo = () => {
 
         this._maybe_save_state((_json_state_history) => {
-
+            "use strict";
             if (this._can_redo(_json_state_history) > 0) {
 
                 _json_state_history.history_position =  parseInt(_json_state_history.history_position+1);
@@ -2987,48 +2943,43 @@ class CanvasPixels extends React.PureComponent {
 
     _pxl_adjust_saturation = (pxls, pxl_colors, intensity) => {
 
-        return Array.of(pxls, pxl_colors);
+        let min_sat = 100;
+        let max_sat = 0;
 
-        let min_s = 255;
-        let max_s = 0;
-
-        intensity = parseFloat(intensity);
+        intensity = parseFloat(intensity) * 255 | 0;
         let saturation = 0;
         let color;
-        let hsl;
         let colors = SIMDopeColors(pxl_colors);
-        let {clamp_int} = simdops;
         let length = colors.length;
+        let hsla;
 
         for(let i = 0; (i|0) < (length|0); i = (i+1|0)>>>0) {
 
             color = colors.get_element(i);
-            saturation = color.hsl[1];
+            saturation = color.hsla[1];
             if((color.a | 0) > 0) {
-                if((saturation|0) > (max_s|0)) {max_s = saturation | 0;}
-                if((saturation|0) < (min_s|0)) {min_s = saturation | 0;}
+                if((saturation|0) > (max_sat|0)) {max_sat = saturation | 0;}
+                if((saturation|0) < (min_sat|0)) {min_sat = saturation | 0;}
             }
         }
 
-        const alpha = 100 / Math.max(1, max_s - min_s);
-        const beta = -min_s * alpha;
+        const alpha = 100 / Math.max(1, max_sat - min_sat);
+        const beta = -min_sat * alpha | 0;
 
         for(let i = 0; (i|0) < (length|0); i = (i+1|0)>>>0) {
 
             color = colors.get_element(i);
-            hsl = color.hsl;
-            saturation = clamp_int( hsl[1] * alpha + beta | 0, 0, 100);
-            saturation = intensity * saturation + (1-intensity) * hsl[1] | 0;
-
-            colors.set_element(i, SIMDopeColor.new_hsla(
-                hsl[0],
-                saturation,
-                hsl[2],
-                color.a
-            ));
+            hsla = color.hsla;
+            color.blend_with(
+                SIMDopeColor.new_hsla(
+                    hsla[0],
+                    hsla[1] * alpha + beta | 0,
+                    hsla[2],
+                    hsla[3]
+                ), intensity, false, false);
         }
 
-        pxl_colors = colors.subarray_uint32(0, length);
+        pxl_colors = colors.slice_uint32(0, length);
         return [pxls, pxl_colors, alpha, beta];
     };
 

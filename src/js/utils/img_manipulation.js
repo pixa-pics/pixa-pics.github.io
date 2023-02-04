@@ -112,14 +112,16 @@ window.base64_sanitize_process_function = new AsyncFunction(`var t = async funct
            var canvas;
            try {
                 canvas = new OffscreenCanvas(img.naturalWidth || img.width, img.naturalHeight || img.height);
+                var ctx = canvas.getContext("2d");
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
             } catch(e){
                 canvas = document.createElement("canvas");
                 canvas.width = img.naturalWidth || img.width;
                 canvas.height = img.naturalHeight || img.height;
+                var ctx = canvas.getContext("2d");
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
             }
             
-            var ctx = canvas.getContext("2d");
-            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
             resolve(canvas.toDataURL(is_png ? "image/png": "image/jpeg")); 
         };
         img.onerror = function() { reject(); };

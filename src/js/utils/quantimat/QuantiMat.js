@@ -749,10 +749,10 @@ QuantiMat.prototype.process_threshold = function(t) {
     var color_a, color_b;
     var color_a_usage = 0;
     var color_a_usage_percent = 0;
+    var color_b_usage_percent = 0;
     var color_b_usage = 0;
     var first_color_more_used = false;
     var color_usage_difference_positive = 0.0;
-    var color_usage_difference_flattened_much = 0.0;
     var weighted_threshold = 0.0;
     var average_cluster_color_usage_percent = 0.0;
     var index_of_color_a = 0;
@@ -760,6 +760,7 @@ QuantiMat.prototype.process_threshold = function(t) {
     var x = 0, y = 0;
     var color_n_in_cluster = 0;
     var low_if_used_alot = 1.0;
+    var low_if_both_used_alot = 1.0;
     var smart = Boolean(this.max_cluster < 4096+1);
 
     for(var c = 0; (c|0) < (this.max_cluster|0); c=(c+1|0)>>>0){
@@ -777,12 +778,10 @@ QuantiMat.prototype.process_threshold = function(t) {
             color_a = this.get_a_new_pxl_color((index_of_color_a|0)>>>0);
             color_a_usage = (this.get_a_color_usage((index_of_color_a|0)>>>0) | 0) >>> 0;
 
-            if((color_a_usage|0) > 0 && color_a.is_not_fully_transparent()) {
+            // Start following color snake
+            latest_color = {value: color_a};
 
-                if(smart) {
-                    color_a_usage_percent = this.get_a_color_usage_percent(index_of_color_a|0);
-                    low_if_used_alot = color_a_usage_percent < average_cluster_color_usage_percent ? 1: average_cluster_color_usage_percent / color_a_usage_percent;
-                }
+            if((color_a_usage|0) > 0 && color_a.is_not_fully_transparent()) {
 
                 // Start following color snake
                 latest_color = {value: color_a};
@@ -799,35 +798,34 @@ QuantiMat.prototype.process_threshold = function(t) {
                         first_color_more_used = (color_a_usage|0) > (color_b_usage|0);
                         color_usage_difference_positive = (first_color_more_used ? (1000 * color_b_usage / color_a_usage | 0): (1000 * color_a_usage / color_b_usage | 0)) & 1000;
 
+
+                        // 1x Threshold + 1x weight
+                        weighted_threshold =
+                            ((
+                                // Threshold and weight applied to threshold divided by what is not the threshold
+                                ((threshold_1000 / 1000) + (threshold_1000 / 1000 * weight_applied_to_color_usage_difference)) /
+                                (1 + weight_applied_to_color_usage_difference)
+                            ) * 1000 | 0) >>> 0;  // THRESHOLD + THRESHOLD * WEIGHT / 1 + WEIGHT
+
                         if(smart) {
-
-                            if((color_usage_difference_positive|0) > 500) {
-                                color_usage_difference_flattened_much = (color_usage_difference_positive - (color_usage_difference_positive-500) * 0.6 | 0) / 1000;
-                            }else {
-                                color_usage_difference_flattened_much = (color_usage_difference_positive + (500 - color_usage_difference_positive) * 0.6 | 0) / 1000;
-                            }
-
-                        }else {
-
-                            color_usage_difference_flattened_much = (color_usage_difference_positive | 0) / 1000;
+                            color_a_usage_percent = this.get_a_color_usage_percent(index_of_color_a|0);
+                            color_b_usage_percent = this.get_a_color_usage_percent(index_of_color_b|0);
+                            low_if_used_alot = color_a_usage_percent > average_cluster_color_usage_percent ? average_cluster_color_usage_percent / color_a_usage_percent: 1;
+                            low_if_both_used_alot = (color_a_usage_percent + color_b_usage_percent|0) > (average_cluster_color_usage_percent * 2|0) ? (average_cluster_color_usage_percent * 2|0) / (color_a_usage_percent + color_b_usage_percent|0): 1;
                         }
 
-                        // 50% threshold + 25% color_usage_difference - 25% color_usage_difference_flattened (Basically smoothen the way it becomed harder for color far from usage to be blended together)
-                        weighted_threshold = ((((threshold_1000 / 1000) + (threshold_1000 / 1000 * (1 - color_usage_difference_flattened_much) * weight_applied_to_color_usage_difference)) / (1 + weight_applied_to_color_usage_difference)) * 1000 | 0) >>> 0;  // THRESHOLD + THRESHOLD * WEIGHT / 1 + WEIGHT
-
                         // The less a color is used the less it requires a great distance to be merged (so we don't have many color used only a few time in the whole image, heavily used color gets preserved better than lowly used ones)
-                        if(color_a.euclidean_match_with(color_b,  (weighted_threshold+weighted_threshold*low_if_used_alot|0)/2|0)) {
+                        if(color_a.euclidean_match_with(color_b,  (
+                            weighted_threshold*2+
+                            weighted_threshold*low_if_both_used_alot+
+                            weighted_threshold*low_if_used_alot|0
+                        )/4|0)) {
 
                             // Update color usage and relative variables
                             index_merged = true;
                             color_a_usage = (color_a_usage + color_b_usage | 0) >>> 0;
                             this.set_a_color_usage(index_of_color_a|0, color_a_usage|0);
                             this.set_a_color_usage(index_of_color_b|0, 0);
-
-                            if(smart) {
-                                color_a_usage_percent = this.get_a_color_usage_percent(index_of_color_a|0);
-                                low_if_used_alot = color_a_usage_percent < average_cluster_color_usage_percent ? 1: average_cluster_color_usage_percent / color_a_usage_percent;
-                            }
 
                             // Adds color to blend to processed colors and stack it to what will be set to be equals with all other color blended
                             latest_color.tail = {value: this.get_a_new_pxl_color(index_of_color_b|0)};
@@ -842,12 +840,12 @@ QuantiMat.prototype.process_threshold = function(t) {
                         }
                     }
                 }
+            }
 
-                if(index_merged) {
-                    while (typeof latest_color != "undefined") {
-                        latest_color.value.set(color_a);
-                        latest_color = latest_color.tail;
-                    }
+            if(index_merged) {
+                while (typeof latest_color != "undefined") {
+                    latest_color.value.set(color_a);
+                    latest_color = latest_color.tail;
                 }
             }
         }

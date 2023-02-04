@@ -146,6 +146,7 @@ XXH.prototype.update = function (input) {
 
 	if ("buffer" in input) {
 		input = input.buffer;
+		input = new Uint8Array(input);
 		isArrayBuffer = true;
 	}
 

@@ -5,6 +5,7 @@ window.mobileAndTabletCheck = function() {
     return check;
 };
 
+import {UJS} from "../utils/ujs";
 import JSLoader from "../utils/JSLoader";
 let is_mobile_or_tablet = window.mobileAndTabletCheck();
 import React, { Suspense } from "react";
@@ -804,6 +805,10 @@ class Pixel extends React.PureComponent {
         actions.trigger_loading_update(0);
         actions.jamy_update("suspicious");
         actions.trigger_snackbar("Ok diddy! Saving yours.", 1500);
+
+        window.onbeforeunload = function(e) {
+            return 'Your content that was being saved will be lost.';
+        };
     };
 
     _handle_canvas_state_exported = (current_state) => {
@@ -818,39 +823,35 @@ class Pixel extends React.PureComponent {
 
             this.setSt4te({_kb: current_state.kb, _saved_at: Date.now()}, () => {
 
-                JSLoader( () => import("../utils/ujs")).then(({UJS}) => {
+                api.set_settings({}, (err, res) => {
 
-                    api.set_settings({}, (err, res) => {
-
-                        if(err) {
-                            actions.trigger_loading_update(100);
-                            actions.trigger_snackbar("Looks like I can't save your file as our compression module can't load.", 5700);
-                            actions.jamy_update("angry");
-                        }
-                    }, attachment_array, UJS, pool, (err, res) => {
-
+                    if(err) {
                         actions.trigger_loading_update(100);
-                        if(!err) {
+                        actions.trigger_snackbar("Looks like I can't save your file as our compression module can't load.", 5700);
+                        actions.jamy_update("angry");
+                    }
+                }, attachment_array, UJS, pool, (err, res) => {
 
-                            setTimeout(() => {
-                                actions.jamy_update("happy");
-                            }, 250);
-                            actions.trigger_snackbar("Success! Laboratory's artwork saved!", 2000);
+                    actions.trigger_loading_update(100);
+                    if(!err) {
 
-                        }else {
+                        window.onbeforeunload = function(e) {};
+                        setTimeout(() => {
+                            actions.jamy_update("happy");
+                        }, 250);
+                        actions.trigger_snackbar("Success! Laboratory's artwork saved!", 2000);
 
-                            actions.trigger_snackbar("Laboratory artwork failed to save.", 2000);
-                            actions.jamy_update("sad");
-                        }
-                    });
-                }).catch((err) => {
+                    }else {
 
-                    actions.trigger_snackbar("Looks like I can't save your file as our compression module can't load.", 5700);
-                    actions.jamy_update("angry");
+                        window.onbeforeunload = function(e) {};
+                        actions.trigger_snackbar("Laboratory artwork failed to save.", 2000);
+                        actions.jamy_update("sad");
+                    }
                 });
             });
         }else {
 
+            window.onbeforeunload = function(e) {};
             setTimeout(() => {
                 actions.trigger_snackbar("Huh, we don't store nearly empty file up here, diddy.", 2000);
             }, 2000);

@@ -24,18 +24,18 @@
                 z-index: 9999999;
                 top: 0;
                 height: 100%;
-                background: radial-gradient(#1700ff00 40%, #0051FF93 50%, #0000ff00 60%);
+                background: radial-gradient(#1700ff11 40%, #0051FF93 50%, #0000ff22 60%);
                 left: 0;
                 background-size: 300% 400%;
                 animation-iteration-count: 1;
-                animation-delay: 150ms !important;
+                animation-delay: 325ms !important;
                 animation-fill-mode: both !important;
                 animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1) !important;
                 animation-name: arrival !important;
-                animation-duration: 275ms !important;
+                animation-duration: 325ms !important;
             }
             @keyframes arrival {
-                0% {display: block; background-position: 50% -10%; opacity: .5 }
+                0% {display: block; background-position: 50% -10%; opacity: .66 }
                 100% { display: none; background-position: 50% 40%; opacity: 1 }
             }
             body.loaded > #app {
@@ -63,11 +63,11 @@
                 overflow: hidden;
             }
             @keyframes bounce {
-                0% {filter: brightness(1) contrast(1);transform: scale(1);}
-                25% {filter: brightness(1.3) contrast(0.85);transform: scale(1.05);}
-                50% {filter: brightness(1) contrast(1);transform: scale(0.9);}
-                75% { filter: brightness(1.1) contrast(0.95); transform: scale(1.05); }
-                100% { filter: brightness(1) contrast(1); transform: scale(1); }
+                0% {filter: brightness(1) contrast(1);transform: scale(1.1);}
+                25% {filter: brightness(1.3) contrast(0.85);transform: scale(1.15);}
+                50% {filter: brightness(1) contrast(1);transform: scale(1);}
+                75% { filter: brightness(1.1) contrast(0.95); transform: scale(1.15); }
+                100% { filter: brightness(1) contrast(1); transform: scale(1.1); }
             }
             body::after {
                 content-visibility: auto;
@@ -140,16 +140,18 @@
                 animation-fill-mode: both;
                 animation-timing-function: ease-out;
                 animation-name: zoom-out;
-                animation-duration: 90ms;
+                animation-duration: 125ms;
             }
             @keyframes zoom-out {
                 0% {
                     transform: translateZ(10px) scale(1);
+                    background-blend-mode: darken;
                     filter: opacity(1);
                     content-visibility: auto !important;
                 }
                 100% {
                     transform: translateZ(10px) scale(6);
+                    background-blend-mode: darken;
                     filter: opacity(0);
                     content-visibility: hidden !important;
                 }
@@ -161,11 +163,11 @@
 
             "use strict";
             /* LOAD JS FILE (in two "moves") */
+            var _FIRED_IT_STATE = "";
             var _LET_FIRE_IT = function(is_service_worker_activation_successful) {
 
                 return new Promise(function(resolve, reject){
 
-                    var _FIRED_IT_STATE = "";
                     var _MAIN_JS_FILE_ENDS_WITH = "norris.min.js";
                     var _PRE_FILES = Array.of("/client/chunk_main_690b702c.min.js", "/client/chunk_main_748942c6.min.js",);
                     var _POST_FILES = Array.of( "/src/fonts/jura/index.css", "/client/chunk_norris.min.js", "/src/fonts/baksheesh/index.css");
@@ -208,7 +210,7 @@
                         for (i = 0; i < hrefs.length; i++) {
                             ss = hrefs[i];
                             if (ss.endsWith(".js")) {
-                                e = document.createElement("script"); e.setAttribute("src", ss); e.setAttribute("type", "text/javascript"); e.setAttribute(ss.endsWith(_MAIN_JS_FILE_ENDS_WITH) ? "async" : "defer", "true");
+                                e = document.createElement("script"); e.setAttribute("src", ss); e.setAttribute("type", "text/javascript"); e.setAttribute(ss.endsWith(_MAIN_JS_FILE_ENDS_WITH) ? "defer" : "defer", "true");
                                 document.body.appendChild(e);
                             } else if (ss.endsWith(".css")) {
                                 e = document.createElement("link"); e.setAttribute("href", ss); e.setAttribute("rel", "stylesheet");
@@ -216,7 +218,6 @@
                             }
                         }
 
-                        _FIRED_IT_STATE = "";
                         return true;
                     }
 
@@ -237,6 +238,7 @@
 
             /* TRY INSTALL SERVICE WORKER, FINALLY LOAD JS FILE */
             var _REGISTER_SERVICE_WORKER = function() {
+                _FIRED_IT_STATE = "";
                 return new Promise(function(resolve, reject){
                     if ("serviceWorker" in navigator) {
                         navigator.serviceWorker.register("/service-worker.js", {

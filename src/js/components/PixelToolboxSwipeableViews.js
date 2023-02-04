@@ -693,8 +693,8 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                                             <ListItemAvatar>
                                                 <canvas
                                                     className={"pixelated " + classes.layerThumbnail}
-                                                    ref={(el) => {this._set_canvas_ref(el, layer.thumbnail, true)}}
-                                                    key={"layer-n-"+index+"-w-"+layer.thumbnail.width+"-h-"+layer.thumbnail.height}
+                                                    ref={(el) => {this._set_canvas_ref(el, layer.thumbnail)}}
+                                                    key={"layer-n-"+index_reverse_order+"-w-"+layer.thumbnail.width+"-h-"+layer.thumbnail.height}
                                                     width={layer.thumbnail.width || 0}
                                                     height={layer.thumbnail.height || 0}
                                                     style={{background: `repeating-conic-gradient(rgb(248 248 248 / 100%) 0% 25%, rgb(224 224 224 / 100%) 0% 50%) left top 50% / calc(200% / ${width}) calc(200% / ${height})`}}
@@ -949,13 +949,13 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
     _set_canvas_ref = (can, bmp, force = false) => {
 
-        if(typeof bmp === "undefined") {return}
-        if(typeof bmp.width === "undefined") {return}
-        if(force !== true && bmp.drawn === true) {return}
-        if(typeof can === "undefined") {return}
-        if(can === null) {return}
-        if(typeof can.width === "undefined") {return}
-        if(can.width === null) {return}
+        if(typeof bmp == "undefined") {return}
+        if(typeof bmp.width == "undefined") {return}
+        if(force != true && bmp.drawn == true) {return}
+        if(typeof can == "undefined") {return}
+        if(can == null) {return}
+        if(typeof can.width == "undefined") {return}
+        if(!can.width) {return}
 
         let ctx = can.getContext("2d");
         ctx.globalCompositeOperation = "copy"
