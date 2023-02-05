@@ -142,7 +142,7 @@ const ColorConversion = {
                 let mix_view = new DataView(mix_buffer);
                 let mix = new Uint8ClampedArray(mix_buffer);
                 let float_variables =  new DataView(new ArrayBuffer(24)); // ba3, ad3, mi3, ao, bo;
-                    float_variables.setFloat32(20, (amount * 65535 | 0) / 65535);
+                float_variables.setFloat32(20, (amount * 65535 | 0) / 65535);
                 let start_layer = 0;
 
                 for(let i1 = 0, i4 = 0; (i1|0) < (used_colors_length|0); i1 = ((i1+1)|0)>>>0, i4 = ((i4+4)|0)>>>0) {
@@ -312,35 +312,34 @@ const ColorConversion = {
             clean_duplicate_colors(_pxls, _pxl_colors) {
                 "use strict";
                 // Work with Hashtables and Typed Array so it is fast
-                var new_pxl_colors_map = {};
-                var new_pxl_colors_map_length = 0;
+                var new_pxl_colors_map = new Map();
                 var _pxls_length = _pxls.length | 0;
                 var new_pxls = new Uint16Array(_pxls_length);
-                var new_pxl_color_index = 0;
+
                 var pxl_color_index = 0;
                 var color = 0;
 
-                for(var i = 0; (i|0) < (_pxls_length|0); i = (i + 1 | 0)>>>0) {
+                for(var i = 0; i < _pxls_length; i = (i + 1 | 0)>>>0) {
 
                     pxl_color_index = (_pxls[(i|0)>>>0]|0)>>>0;
                     color = (_pxl_colors[pxl_color_index]|0) & 0xFFFFFFFF;
-                    new_pxl_color_index = new_pxl_colors_map[color|0];
+                    var new_pxl_color_index = new_pxl_colors_map.get(color)
 
                     if(typeof new_pxl_color_index === "undefined") {
 
-                        new_pxl_color_index = (new_pxl_colors_map_length|0) >>> 0;
-                        new_pxl_colors_map[color|0] = new_pxl_color_index|0;
-                        new_pxl_colors_map_length = (new_pxl_colors_map_length+1|0)>>>0;
+                        new_pxl_color_index = (new_pxl_colors_map.size|0) >>> 0;
+                        new_pxl_colors_map.set(color, new_pxl_color_index);
                     }
 
                     new_pxls[i] = (new_pxl_color_index | 0) >>> 0;
                 }
 
-                var new_pxl_colors = Uint32Array.from(new_pxl_colors_map_length);
+                var new_pxl_colors = new Uint32Array(new_pxl_colors_map.size);
                 for (var e of new_pxl_colors_map) {
 
                     new_pxl_colors[e[1]] = (e[0]|0) & 0xFFFFFFFF;
                 }
+
                 return Array.of(new_pxls, new_pxl_colors);
             }
         };
