@@ -1,6 +1,12 @@
 # PIXA.PICS
 
-:warning: - [A few words on pixel art and NFTs.pdf](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/A%20few%20words%20on%20pixel%20art%20and%20NFTs.pdf) (3 pages long, it explain why they should be ditched)
+---
+
+<h3 align="center">
+ <span>:warning: </span><a href="https://github.com/pixa-pics/pixa-pics.github.io/blob/main/A%20few%20words%20on%20pixel%20art%20and%20NFTs.pdf">A few words on pixel art and NFTs.pdf</a><span> — 5 pages long, it explains why they should be ditched properly :warning:</span>
+</h3>
+
+---
 
 ## A) :upside_down_face: LET US SAY
 
