@@ -191,7 +191,7 @@ The SDK is being developed from our source code.
 
 ---
 
-<img width="400" height="400" src="https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/NOSHOTOFTHESCREEN.jpg" align="left" />
+https://www.instagram.com/asaitama_1.618/
 
 **About me:** My name is Matias, and I love to build tools for humanity, my code is my voice, my weapon of choice. I know that uniquely we are free, together and naturally we are just stronger and that's why I need you supporting the project to pay the contributors, a little incentive given with a little bit of love, no one is against it!
 
