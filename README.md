@@ -3,8 +3,10 @@
 ---
 
 <h3 align="center">
- <span>:warning: </span><a href="https://github.com/pixa-pics/pixa-pics.github.io/blob/main/A%20few%20words%20on%20pixel%20art%20and%20NFTs.pdf">A few words on pixel art and NFTs.pdf</a><span> — 5 pages long, it explains why they should be ditched properly :warning:</span>
+ <span> :warning: </span><a href="https://github.com/pixa-pics/pixa-pics.github.io/blob/main/A%20few%20words%20on%20pixel%20art%20and%20NFTs.pdf">A few words on pixel art and NFTs.pdf</a> :warning: <span> <br/> 5 pages long, it explains why they should be ditched properly.</span>
 </h3>
+
+![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/EDITOR.png)
 
 ---
 
@@ -37,7 +39,6 @@
 
 ---
 
-![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/EDITOR.png)
 ![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/EDITOR2.png)
 
 <img width="222" height="482" src="https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/EDITOR_ANDROID.jpg" align="right" />
