@@ -43,7 +43,7 @@ const styles = theme => ({
         maxWidth: "100%",
     },
     content: {
-        position: "absolute",
+        position: "fixed",
         contain: "size paint style layout",
         width: "calc(100% - 64px)",
         marginLeft: 64,

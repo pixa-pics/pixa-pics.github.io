@@ -486,37 +486,37 @@ class Home extends React.PureComponent {
                         </div>
                     </Grow>}
                     <Fade in={true} timeout={750}>
-                        <h2 className={classes.backgroundImageInfo} style={{filter: "drop-shadow(#ffffff44 0px 0px 4px)", color: "#ffffff", backgroundColor: "#1bcb1866", padding: 16, textAlign: "center", borderRadius: "4px"}}>
+                        <h2 className={classes.backgroundImageInfo} style={{filter: "drop-shadow(#ffffff44 0px 0px 4px)", color: "#ffffff", backgroundColor: "rgba(0,103,255,0.4)", padding: 16, textAlign: "center", borderRadius: "4px"}}>
                             <span style={{color: "#ffffff", fontSize: "0.75em"}}>REAL INFINITE "SVG" RENDERING...</span>
                             <br/>
-                            <span style={{fontSize: "1em", color: "#22ff00", filter: "drop-shadow(0px 0px 4px darkgreen)"}}>TRY IT RIGHT «NOW»!</span>
+                            <span style={{fontSize: "1em", color: "#72a4ff", filter: "drop-shadow(0px 0px 4px darkgreen)"}}>TRY IT RIGHT «NOW»!</span>
                         </h2>
                     </Fade>
                 </div>
                 <div className={classes.headerContainer} style={{textShadow: "0px 0px 9px #57bbff"}}>
                     <Fade in={true} timeout={125}>
                         <h1 className={classes.titleh1}>
-                            <span className={classes.revelantText} style={{color: "#ffffff", backgroundColor: "black"}}>From PICS {_camera} to PIXELARTS {_brainplode} and NFTs {_diamond}.</span>
+                            <span className={classes.revelantText} style={{color: "#ffffff"}}>From PICS {_camera} to PIXELARTS {_brainplode} and NFTs {_diamond}.</span>
                         </h1>
                     </Fade>
                     <Fade in={true} timeout={250}>
                         <h2 className={classes.titleh2} style={{color: "#000639"}}>
-                            <span className={classes.revelantTextDesktop} style={{color: "#fff", backgroundColor: "black"}}>Get the MAXIMA of PRIVACY fashionably for real and for the ONLINE-SELF...</span>
+                            <span className={classes.revelantTextDesktop} style={{color: "#fff"}}>Get the MAXIMA of PRIVACY fashionably for real and for the ONLINE-SELF...</span>
                             <br/>
                         </h2>
                     </Fade>
                     <Fade in={true} timeout={375}>
                         <h2 className={classes.titleh2} style={{color: "#000639"}}>
                             <JacketEmojiSvg alt="scientist-jacket-tweemoji" className="emoji-150"/>
-                            <span className={classes.revelantText} style={{color: "#fff", backgroundColor: "black"}}> WHILE DRAWING/EDITING</span>
-                            <span className={classes.revelantText} style={{color: "#fff", backgroundColor: "black"}}> you can use 55+ tools for pixel art within 7 panels</span>
+                            <span className={classes.revelantText} style={{color: "#fff"}}> WHILE DRAWING/EDITING</span>
+                            <span className={classes.revelantText} style={{color: "#fff"}}> you can use 55+ tools for pixel art within 7 panels</span>
                         </h2>
                     </Fade>
                     <Fade in={true} timeout={500}>
                         <h2 className={classes.titleh2} style={{color: "#000639"}}>
                             <GlassesEmojiSvg alt="scientist-jacket-tweemoji" style={{verticalAlign: "middle"}} className="emoji-150"/>
-                            <span className={classes.revelantText} style={{color: "#fff", backgroundColor: "black"}}> RENDER UNLIMITED PIXEL ART </span>
-                            <span className={classes.revelantText} style={{color: "#fff", backgroundColor: "black"}}>in 4K Ultra HD images</span>
+                            <span className={classes.revelantText} style={{color: "#fff"}}> RENDER UNLIMITED PIXEL ART </span>
+                            <span className={classes.revelantText} style={{color: "#fff"}}>in 4K Ultra HD images</span>
                         </h2>
                     </Fade>
                     <Fade in={true} timeout={625}>

@@ -1,29 +1,27 @@
 const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
+const AFunction = Object.getPrototypeOf( function(){}).constructor;
 
-window.file_to_bmp_sanitized_process_function = new AsyncFunction(`var t = async function(file) {
+window.file_to_bmp_sanitized_process_function = new AFunction(`var t = function(file) {
     "use strict";
     
     return new Promise(function(resolve, reject) {
         var img = new Image();
         img.onload = function() {
     
+            var is_png = file.type == "image/png";
             var canvas;
-            
             try {
-                canvas = new OffscreenCanvas(img.naturalWidth || img.width, img.naturalHeight || img.height);
+                createImageBitmap(img, {
+                    resizeQuality: 'pixelated'
+                }).then(function(bmp){
+                
+                    resolve(bmp);
+                });
+                
             } catch(e){
-                canvas = document.createElement("canvas");
-                canvas.width = img.naturalWidth || img.width;
-                canvas.height = img.naturalHeight || img.height;
+                reject();
             }
             
-            var ctx = canvas.getContext("2d");
-            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-            
-            createImageBitmap(ctx.canvas, {
-                premultiplyAlpha: 'premultiply',
-                resizeQuality: 'pixelated'
-            }).then(function(r){resolve(r);});
         };
         img.onerror = function() { reject(); };
         img.src = URL.createObjectURL(file);
@@ -55,17 +53,13 @@ const file_to_bmp_sanitized = (file, callback_function = () => {}, pool = null) 
     }
 };
 
-window.file_to_base64_process_function = new AsyncFunction(`var t = async function(file) {
+window.file_to_base64_process_function = new AFunction(`var t = function(file) {
     "use strict";
     
     try {
-    
-        if (typeof FileReaderSync === "undefined") {
-            throw new Error("Impossible to create FileReaderSync in this web environment.");
-        }
         
         return new Promise(function(resolve, _) {
-            resolve(FileReaderSync.readAsDataURL(file));
+            resolve(new FileReaderSync().readAsDataURL(file));
         });
         
     } catch(error) {
@@ -102,7 +96,7 @@ const file_to_base64 = (file, callback_function = () => {}, pool = null) => {
     }
 };
 
-window.base64_sanitize_process_function = new AsyncFunction(`var t = async function(base64) {
+window.base64_sanitize_process_function = new AFunction(`var t = function(base64) {
     "use strict";
     return new Promise(function(resolve, reject) {
         var img = new Image();
@@ -111,18 +105,37 @@ window.base64_sanitize_process_function = new AsyncFunction(`var t = async funct
     
            var canvas;
            try {
-                canvas = new OffscreenCanvas(img.naturalWidth || img.width, img.naturalHeight || img.height);
-                var ctx = canvas.getContext("2d");
-                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+           
+                createImageBitmap(img, {
+                    resizeQuality: 'pixelated'
+                }).then(function(bmp){
+                
+                    var canvas;
+                        canvas = new OffscreenCanvas(img.naturalWidth || img.width, img.naturalHeight || img.height);
+                    var ctx = canvas.getContext("bitmaprenderer");
+                        ctx.imageSmoothingEnabled = false;
+                        ctx.transferFromImageBitmap(bmp);
+                    
+                    canvas.convertToBlob({type: is_png ? "image/png": "image/jpeg"}).then(function(blb) {
+                        
+                        try {
+                            resolve(new FileReaderSync().readAsDataURL(blb));
+                        } catch(e2) {
+                            var reader = new FileReader();
+                            reader.onload = function(){ resolve(reader.result)};
+                            reader.readAsDataURL(blb);
+                        }
+                    });
+                });
+                
             } catch(e){
                 canvas = document.createElement("canvas");
                 canvas.width = img.naturalWidth || img.width;
                 canvas.height = img.naturalHeight || img.height;
                 var ctx = canvas.getContext("2d");
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                resolve(canvas.toDataURL(is_png ? "image/png": "image/jpeg")); 
             }
-            
-            resolve(canvas.toDataURL(is_png ? "image/png": "image/jpeg")); 
         };
         img.onerror = function() { reject(); };
         img.src = base64;
@@ -161,7 +174,6 @@ window.base64_to_bitmap_process_function = new AsyncFunction(`var t = async func
         return res.blob().then(function(blb){
 
             return createImageBitmap(blb, {
-                premultiplyAlpha: 'premultiply',
                 resizeQuality: 'pixelated'
             });
         });
@@ -216,40 +228,35 @@ const bitmap_to_imagedata = (bitmap, resize_to =  1920*1080, callback_function =
         ctx = null;
 };
 
-window.imagedata_to_base64_process_function = new AsyncFunction(`var t = async function(imagedata, type) {
+window.imagedata_to_base64_process_function = new AFunction(`var t = function(imagedata, type) {
 
     "use strict"
     type = type || "image/png";
     try {
     
-        if (typeof OffscreenCanvas === "undefined") {
-            throw new Error("Impossible to create OffscreenCanvas in this web environment.");
-        }
-        
-        if (typeof FileReaderSync === "undefined") {
-            throw new Error("Impossible to create FileReaderSync in this web environment.");
-        }
-        
         return new Promise(function(resolve, _) {
 
-            var base64 = createImageBitmap(imagedata, {
+            createImageBitmap(imagedata, {
                 premultiplyAlpha: 'premultiply',
                 resizeQuality: 'pixelated'
-            }).then(function(bmp){
+            }).then((bmp) => {
             
-                var canvas = new OffscreenCanvas(imagedata.width, imagedata.height);
+                var canvas;
+                    canvas = new OffscreenCanvas(imagedata.width, imagedata.height);
                 var ctx = canvas.getContext("bitmaprenderer");
-                ctx.imageSmoothingEnabled = false;
-                ctx.transferFromImageBitmap(bmp);
-                bmp = null;
+                    ctx.imageSmoothingEnabled = false;
+                    ctx.transferFromImageBitmap(bmp);
                 
-                return canvas.convertToBlob({type: type, quality: 0.75}).then(function(blb) {
-                    
-                    return FileReaderSync.readAsDataURL(blb);
+                canvas.convertToBlob({type: type, quality: 0.75}).then((blb) => {
+                    try {
+                        resolve(new FileReaderSync().readAsDataURL(blb));
+                    } catch(e2) {
+                        var reader = new FileReader();
+                        reader.onload = function(){ resolve(reader.result)};
+                        reader.readAsDataURL(blb);
+                    }
                 });
             });
-        
-            resolve(base64);
         });
        
     }catch (e) {
