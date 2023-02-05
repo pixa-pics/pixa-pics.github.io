@@ -1395,23 +1395,18 @@ const SuperMasterMeta = {
                 const { _s_pxl_colors, _s_pxls, _layer_index } = meta.super_state.get_state();
 
                 let pxls_copy = new Uint16Array(_s_pxls[_layer_index].buffer);
-
                 const pxl_color_index = _s_pxl_colors[_layer_index].indexOf(old_color);
 
-                console.log(pxl_color_index, old_color, new_color)
-                const pxl_color = _s_pxl_colors[_layer_index][pxl_color_index];
-                const pxl_color_new = SIMDopeColor.new_uint32(old_color).blend_with(SIMDopeColor.new_uint32(new_color), 255, true, false).uint32;
-
                 // Eventually add current color to color list
-                if (!_s_pxl_colors[_layer_index].includes(pxl_color_new)) {
+                if (!_s_pxl_colors[_layer_index].includes(new_color)) {
 
                     let pxl_colors = new Uint32Array(_s_pxl_colors[_layer_index].length+1);
                     pxl_colors.set(_s_pxl_colors[_layer_index], 0);
-                    pxl_colors[pxl_colors.length-1] = (pxl_color_new | 0) >>> 0;
+                    pxl_colors[pxl_colors.length-1] = (new_color | 0) >>> 0;
                     _s_pxl_colors[_layer_index] = pxl_colors;
                 }
 
-                const new_color_index = _s_pxl_colors[_layer_index].indexOf(pxl_color_new);
+                const new_color_index = _s_pxl_colors[_layer_index].indexOf(new_color);
                 pxls_copy = pxls_copy.map((pxl) => {
 
                     return pxl === pxl_color_index ? new_color_index: pxl;

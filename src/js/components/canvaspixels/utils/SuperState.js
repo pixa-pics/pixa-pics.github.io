@@ -210,7 +210,6 @@ const SuperState = {
                 Uint32Array.from(new Set(new_ui32_colors)).forEach(function(c){
 
                     if(!pxl_colors_set.has(c)){
-                        console.log(c);
                         pxl_colors_set.add(c);
                         pxl_colors_new.push(c);
                     }

@@ -104,12 +104,14 @@ class CanvasPixels extends React.PureComponent {
 
         const pixelated_css =
             ".Canvas-Pixels, .Canvas-Wrapper-Overflow, .Canvas-Wrapper, .Canvas-Pixels-Cover {" +
-            "-ms-interpolation-mode: nearest-neighbor;" +
-            "image-rendering: -moz-crisp-edges;" +
-            "image-rendering: -webkit-crisp-edges;" +
-            "image-rendering: -o-pixelated;" +
-            "image-rendering: crisp-edges;" +
-            "image-rendering: pixelated;" +
+            `-ms-interpolation-mode: nearest-neighbor;
+            image-rendering: optimizeSpeed;
+            image-rendering: -o-pixelated;
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: -webkit-crisp-edges;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+            image-rendering: pixelated;`+
             "touch-action: none;" +
             "pointer-events: none;" +
             "backface-visibility: hidden;" +
@@ -129,7 +131,7 @@ class CanvasPixels extends React.PureComponent {
             }
             .Canvas-Wrapper-Overflow .Canvas-Wrapper::after {
                 content: "";
-                position: absolute;
+                position: fixed;
                 width: 100%;
                 background: linear-gradient(to bottom, #ffffff00 0%, #1700ff14 14%, #1700ff57 21%, transparent);
                 height: 50%;
@@ -3555,7 +3557,7 @@ class CanvasPixels extends React.PureComponent {
                          width: "100%",
                          contain: "layout style size paint",
                          overflow: "hidden",
-                         position: "absolute",
+                         position: "fixed",
                          boxSizing: "border-box",
                          touchAction: "manipulation",
                          pointerEvents: "auto",
@@ -3569,6 +3571,7 @@ class CanvasPixels extends React.PureComponent {
                          draggable={"false"}
                          style={{
                              contain: "layout style size paint",
+                             overflow: "hidden",
                              left: 0,
                              top: 0,
                              borderWidth: canvas_wrapper.border_width,
@@ -3598,7 +3601,8 @@ class CanvasPixels extends React.PureComponent {
                             draggable={"false"}
                             style={{
                                 zIndex: 2,
-                                position: "absolute",
+                                position: "fixed",
+                                overflow: "hidden",
                                 contain: "layout style size paint",
                                 touchAction: "none",
                                 pointerEvents: "none",
@@ -3630,7 +3634,7 @@ class CanvasPixels extends React.PureComponent {
                                      left: 0,
                                      top: 0,
                                      borderWidth: 0,
-                                     position: "absolute",
+                                     position: "fixed",
                                      width: Math.ceil(Math.floor(pxl_width) * (screen_zoom_ratio * scale.current).toFixed(3) + 2 * padding),
                                      height: Math.ceil(Math.floor(pxl_height) * (screen_zoom_ratio * scale.current).toFixed(3) + 2 * padding),
                                      boxSizing: "content-box",
@@ -3644,7 +3648,7 @@ class CanvasPixels extends React.PureComponent {
                     <div style={{
                         left: 0,
                         top: 0,
-                        position: "absolute",
+                        position: "fixed",
                         cursor: cursor,
                         height: "100%",
                         width: "100%",
@@ -3659,7 +3663,7 @@ class CanvasPixels extends React.PureComponent {
                         zIndex: 1,
                         color: canvas_wrapper_background_color,
                         textAlign: "center",
-                        position: "absolute",
+                        position: "fixed",
                         bottom: 0,
                         left: 0,
                         width: "100%",

@@ -141,16 +141,18 @@ const styles = theme => ({
         }
     },
     info: {
-        backgroundColor: "#3729c12e",
-        color: "#3729c1ff",
+        backgroundColor: "#f2f2ff",
+        color: "#5c5fd1",
         padding: "16px",
-        borderRadius: "4px",
+        margin: 0,
+        borderRadius: "0px",
     },
     relevantTextBlue: {
         color: "#3729c1ff",
     },
     thanksSponsorsGhost: {
         opacity: 0,
+        left: 0,
         userSelect: "none",
         pointerEvents: "none",
         padding: "16px 24px 8px 24px",
@@ -169,13 +171,13 @@ const styles = theme => ({
     thanksSponsors: {
         position: "fixed",
         bottom: 0,
+        left: 0,
         padding: "16px 24px 8px 24px",
         fontFamily: "'Jura'",
         textTransform: "uppercase",
-        boxShadow: "0px -2px 4px #011965",
         marginBottom: "-8px",
         marginTop: "16px",
-        background: "radial-gradient(farthest-corner, #050126 40%, #001f74)",
+        background: "radial-gradient(farthest-corner, #050126 40%, #000000)",
         color: "#ddd",
         overflow: "hidden",
         boxSizing: "border-box",

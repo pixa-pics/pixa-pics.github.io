@@ -20,12 +20,13 @@
             }
             body.loaded::after {
                 content: "";
+                contain: paint style size layout;
                 position: absolute;
                 width: 100%;
                 z-index: 9999999;
                 top: 0;
                 height: 100%;
-                background: radial-gradient(#1700ff11 40%, #0051FF93 50%, #0000ff22 60%);
+                background: radial-gradient(#00000000 40%, #0051FFAE 50%, #00000000 60%);
                 left: 0;
                 background-size: 300% 400%;
                 animation-iteration-count: 1;
@@ -36,8 +37,8 @@
                 animation-duration: 325ms !important;
             }
             @keyframes arrival {
-                0% {display: block; background-position: 50% -10%; opacity: .66 }
-                100% { display: none; background-position: 50% 40%; opacity: 1 }
+                0% {display: block !important; background-position: 50% -10%; opacity: .5 }
+                100% { display: none !important; background-position: 50% 40%; opacity: 1 }
             }
             body.loaded > #app {
                 contain: paint style layout;
@@ -136,12 +137,13 @@
                 min-width: 100vw;
             }
             body[datainitiated=true]::after {
+                contain: size paint style layout;
                 animation-iteration-count: 1;
-                animation-delay: 10ms;
+                animation-delay: 5ms;
                 animation-fill-mode: both;
                 animation-timing-function: ease-out;
                 animation-name: zoom-out;
-                animation-duration: 125ms;
+                animation-duration: 75ms;
             }
             @keyframes zoom-out {
                 0% {

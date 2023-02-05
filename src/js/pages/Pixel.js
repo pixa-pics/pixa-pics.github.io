@@ -298,7 +298,7 @@ const styles = theme => ({
         "90%": {transform: "translate3d(0, 0px, 0) scaleY(1.00)"}
     },
     tab: {
-        backgroundColor: "transparent",
+        backgroundColor: "#fff",
         color: "#050c4c",
         transition: "color, background-color ease-in .175s",
         "&.Mui-selected": {
