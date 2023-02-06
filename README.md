@@ -10,6 +10,10 @@
 
 [![AI Generated promotional video of pixe.pics](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/VIDEO.png)](https://www.youtube.com/watch?v=GZ95Sk8QIR4)
 
+**Comments on the role of NFTs for the domain of pixel art**
+
+![Real user dialog on NFTs and pixel art compatibility](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/DIALOG.png)
+
 ---
 
 ## A) :upside_down_face: LET US SAY
