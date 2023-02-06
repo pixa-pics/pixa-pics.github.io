@@ -8,7 +8,7 @@
 
 ## PIXA.PICS | AI Generated promotional video
 
-[![AI Generated promotional video of pixe.pics](https://i.ibb.co/Q81yKGT/Screenshot-from-2023-02-06-15-57-30.png)](https://www.youtube.com/watch?v=GZ95Sk8QIR4)
+[![AI Generated promotional video of pixe.pics](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/VIDEO.png)](https://www.youtube.com/watch?v=GZ95Sk8QIR4)
 
 ---
 
