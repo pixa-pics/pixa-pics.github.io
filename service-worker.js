@@ -218,16 +218,17 @@ self.addEventListener("fetch", function(event) {
                         if(response.status === 200) { cache.put(url, response.clone());} return Promise.resolve(response.clone());
                     });
                 }).then(function(response) {
-                    var ab = response.arrayBuffer();
-                    return new Response(
-                        ab.slice(pos),
-                        {
-                            status: 206,
-                            statusText: 'Partial Content',
-                            headers: [
-                                ['Content-Type', 'video/mp4'],
-                                ['Content-Range', 'bytes ' + pos + '-' + (ab.byteLength - 1) + '/' + ab.byteLength]]
-                        });
+                    return response.arrayBuffer().then(function (ab){
+                        return new Response(
+                            ab.slice(pos),
+                            {
+                                status: 206,
+                                statusText: 'Partial Content',
+                                headers: [
+                                    ['Content-Type', 'video/mp4'],
+                                    ['Content-Range', 'bytes ' + pos + '-' + (ab.byteLength - 1) + '/' + ab.byteLength]]
+                            });
+                    });
                 }));
         }else {
 
