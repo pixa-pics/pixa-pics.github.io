@@ -313,7 +313,7 @@ class Home extends React.PureComponent {
                 loop={true}
                 autoplay={true}
                 src="/src/js/lottie/camera.json"
-                style={{ height: '1.5em', width: '1.5em' }}/>
+                style={{ transform: "translateZ(10px)", height: '1.5em', width: '1.5em' }}/>
                 }, () => {
             this.forceUpdate();
         });
@@ -326,7 +326,7 @@ class Home extends React.PureComponent {
                     autoplay={true}
                     initialSegment={[27, 174]}
                     src="/src/js/notoemoji/lottie/1f92f.json"
-                    style={{ height: '1.5em', width: '1.5em' }}/>
+                    style={{ transform: "translateZ(10px)", height: '1.5em', width: '1.5em' }}/>
             }, () => {
 
                 this.forceUpdate();
@@ -340,7 +340,7 @@ class Home extends React.PureComponent {
                     loop={true}
                     autoplay={true}
                     src="/src/js/notoemoji/lottie/1f48e.json"
-                    style={{ height: '1.5em', width: '1.5em' }}/>
+                    style={{ transform: "translateZ(10px)", height: '1.5em', width: '1.5em' }}/>
             }, () => {
 
                 this.forceUpdate();

@@ -256,7 +256,7 @@ class AppToolbar extends React.PureComponent {
                 loop={true}
                 autoplay={true}
                 src="/src/js/notoemoji/lottie/1f4a5.json"
-                style={{ height: '150px', width: '150px', cursor: "pointer" }}/>
+                style={{ transform: "translateZ(10px)", height: '150px', width: '150px', cursor: "pointer" }}/>
         });
         this._updated_dimensions();
         window.addEventListener("resize", this._updated_dimensions);

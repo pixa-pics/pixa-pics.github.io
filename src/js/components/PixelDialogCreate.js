@@ -77,6 +77,16 @@ const styles = theme => ({
         [theme.breakpoints.up("lg")]: {
             display: "none",
         }
+    },
+    tutorial: {
+        contain: "layout paint size style",
+        position: "absolute",
+        bottom: 0,
+        left: 0,
+        padding: 0,
+        margin: 0,
+        width: 512,
+        height: 288
     }
 });
 
@@ -92,8 +102,7 @@ class PixelDialogCreate extends React.PureComponent {
             size: props.size,
             pixel_arts: props.pixel_arts,
             theme_day: props.theme_day,
-            _paperplane: null,
-            _painting: null,
+            _paperplane: null
         };
     };
 
@@ -107,19 +116,13 @@ class PixelDialogCreate extends React.PureComponent {
                 loop={true}
                 autoplay={true}
                 src="/src/js/lottie/paperplane.json"
-                style={{ height: '100%', width: '100%', position: "absolute", top: 0, left: 0, zIndex: 0}}/>,
+                style={{ transform: "translateZ(10px)", height: '100%', width: '100%', position: "absolute", top: 0, left: 0, zIndex: 0}}/>,
             _ufo: <Lottie
                 id={"ufo"}
                 loop={true}
                 autoplay={true}
                 src="/src/js/lottie/ufo.json"
-                style={{ height: '100%', width: '100%', position: "absolute", top: 0, left: 0, zIndex: 0}}/>,
-            _painting: <Lottie
-                id={"painting"}
-                loop={true}
-                autoplay={true}
-                src="/src/js/lottie/painting.json"
-                style={{width: "100%", height: "140%", cursor: "pointer"}}/>
+                style={{ transform: "translateZ(10px)", height: '100%', width: '100%', position: "absolute", top: 0, left: 0, zIndex: 0}}/>
         }, () => {
 
             this.forceUpdate();
@@ -167,8 +170,7 @@ class PixelDialogCreate extends React.PureComponent {
             pixel_arts,
             theme_day,
             _paperplane,
-            _ufo,
-            _painting,
+            _ufo
         } = this.state;
 
         const _is_ufo = !theme_day;
@@ -228,36 +230,74 @@ class PixelDialogCreate extends React.PureComponent {
                                 autoFocus>
                                 UPLOAD
                             </Button>
-                            <Typography component={"h2"} variant={"h6"} style={{marginTop: 16, marginLeft: 24}}>Unsaved minima</Typography>
-                            <div style={{padding: "8px 24px", position: "relative", display: "flex", flexWrap: "wrap", justifyContent: "space-around", overflow: "hidden", boxSizing: "border-box", width: "100%"}}>
-                                <ImageList rowHeight={288} cols={2.0} style={{flexWrap: "nowrap", contain: "paint style layout", contains: "strict", maxWidth: "min(576px, (100vw - 96px))"}}>
-                                    {Boolean(Object.keys(pixel_arts).length === 0) && <ImageListItem onClick={this.props.onClose} style={{maxWidth: "100%", display: "inline-block", width: "auto", userSelect: "none"}} className={"pixelated"} key={"new"}>
-                                        {_painting}
-                                        <ImageListItemBar
-                                            title={"Create new painting"}
-                                        />
-                                    </ImageListItem>}
-                                    {
-                                        Object.values(pixel_arts).sort((a, b) => b.timestamp - a.timestamp).map((v, i) => {
+                            <Typography component={"h2"} variant={"h6"} style={{marginTop: 16, marginLeft: 24}}>{Boolean(Object.keys(pixel_arts).length === 0) ? <span>How to use it?</span>: <span>Unsaved minima</span>}</Typography>
+                            {Boolean(Object.keys(pixel_arts).length === 0) ?
+                                <div className={classes.tutorial} style={{
+                                    padding: "8px 24px",
+                                    position: "relative",
+                                    display: "flex",
+                                    flexWrap: "wrap",
+                                    justifyContent: "space-around",
+                                    overflow: "hidden",
+                                    boxSizing: "content-box",
+                                    maxWidth: "calc(100vw - 96px)",
+                                }}>
+                                    <video width="512" height="288" style={{transform: "translateZ(10px)", maxWidth: "calc(100vw - 48px)"}} autoPlay>
+                                        <source src="/src/videos/tutorial.mp4" type="video/mp4"/>
+                                    </video>
+                                </div> :
+                                <div style={{
+                                    padding: "8px 24px",
+                                    position: "relative",
+                                    display: "flex",
+                                    flexWrap: "wrap",
+                                    justifyContent: "space-around",
+                                    overflow: "hidden",
+                                    boxSizing: "border-box",
+                                    width: "100%"
+                                }}>
+                                    <ImageList rowHeight={288} cols={2.0} style={{
+                                        flexWrap: "nowrap",
+                                        contain: "paint style layout",
+                                        contains: "strict",
+                                        maxWidth: "min(576px, (100vw - 96px))"
+                                    }}>
+                                        {
+                                            Object.values(pixel_arts).sort((a, b) => b.timestamp - a.timestamp).map((v, i) => {
 
-                                            const {id, kb, preview, timestamp} = v;
-                                            return (
-                                                <ImageListItem style={{display: "inline-block", width: "auto", userSelect: "none"}} className={"pixelated"} key={id}>
-                                                    <img onClick={() => {this.props.import_JSON_state(id)}} src={v.preview} alt={`preview ${i}`} style={{zIndex: 0, width: "auto", height: "100%", cursor: "pointer"}}/>
-                                                    <ImageListItemBar
-                                                        title={t(timestamp)}
-                                                        subtitle={<span>{kb.toFixed(2)} Kb</span>}
-                                                        actionIcon={
-                                                            <IconButton style={{color: "#fff"}} onClick={(event) => {this._handle_pixel_art_delete(id)}} aria-label={`Delete`}>
-                                                                <DeleteIcon />
-                                                            </IconButton>
-                                                        }
-                                                    />
-                                                </ImageListItem>);
-                                        })
-                                    }
-                                </ImageList>
-                            </div>
+                                                const {id, kb, preview, timestamp} = v;
+                                                return (
+                                                    <ImageListItem style={{
+                                                        display: "inline-block",
+                                                        width: "auto",
+                                                        userSelect: "none"
+                                                    }} className={"pixelated"} key={id}>
+                                                        <img onClick={() => {
+                                                            this.props.import_JSON_state(id)
+                                                        }} src={v.preview} alt={`preview ${i}`} style={{
+                                                            zIndex: 0,
+                                                            width: "auto",
+                                                            height: "100%",
+                                                            cursor: "pointer"
+                                                        }}/>
+                                                        <ImageListItemBar
+                                                            title={t(timestamp)}
+                                                            subtitle={<span>{kb.toFixed(2)} Kb</span>}
+                                                            actionIcon={
+                                                                <IconButton style={{color: "#fff"}}
+                                                                            onClick={(event) => {
+                                                                                this._handle_pixel_art_delete(id)
+                                                                            }} aria-label={`Delete`}>
+                                                                    <DeleteIcon/>
+                                                                </IconButton>
+                                                            }
+                                                        />
+                                                    </ImageListItem>);
+                                            })
+                                        }
+                                    </ImageList>
+                                </div>
+                            }
                         </div>
                     </div>
                  </DialogContent>
