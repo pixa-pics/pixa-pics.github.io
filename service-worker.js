@@ -1,7 +1,7 @@
 "use strict";
-var REQUIRED_CACHE = "unless-update-cache-v611-required";
-var USEFUL_CACHE = "unless-update-cache-v611-useful";
-var STATIC_CACHE = "unless-update-cache-v611-static";
+var REQUIRED_CACHE = "unless-update-cache-v612-required";
+var USEFUL_CACHE = "unless-update-cache-v612-useful";
+var STATIC_CACHE = "unless-update-cache-v612-static";
 var MAIN_CHILD_CHUNK_REGEX = /chunk_(main_[a-z0-9]+)\.min\.js$/i;
 var CHILD_CHUNK_REGEX = /chunk_([0-9]+)\.min\.js$/i;
 
@@ -208,7 +208,7 @@ self.addEventListener("fetch", function(event) {
 
     }else if(Boolean(url.endsWith(".wav") || url.endsWith(".mp3") || url.endsWith(".mp4")) && same_site) {
 
-        if (event.request.headers.get('range')) {
+        if (event.request.headers.get('range') && url.endsWith(".mp4")) {
             var pos = Number(/^bytes\=(\d+)\-$/g.exec(event.request.headers.get('range'))[1]);
             event.respondWith(
                 static_cache.then(function(cache) {
@@ -217,24 +217,16 @@ self.addEventListener("fetch", function(event) {
                     return fetch(url).then(function (response) { // Fetch, clone, and serve
                         if(response.status === 200) { cache.put(url, response.clone());} return Promise.resolve(response.clone());
                     });
-                }).then(function(res) {
-                    if (!res) {
-                        return fetch(event.request)
-                            .then(res => {
-                                return res.arrayBuffer();
-                            });
-                    }
-                    return res.arrayBuffer();
-                }).then(function(ab) {
+                }).then(function(response) {
+                    var ab = response.arrayBuffer();
                     return new Response(
                         ab.slice(pos),
                         {
                             status: 206,
                             statusText: 'Partial Content',
                             headers: [
-                                // ['Content-Type', 'video/webm'],
-                                ['Content-Range', 'bytes ' + pos + '-' +
-                                (ab.byteLength - 1) + '/' + ab.byteLength]]
+                                ['Content-Type', 'video/mp4'],
+                                ['Content-Range', 'bytes ' + pos + '-' + (ab.byteLength - 1) + '/' + ab.byteLength]]
                         });
                 }));
         }else {
