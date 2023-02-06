@@ -98,12 +98,23 @@ const styles = theme => ({
         }
     },
     presentation: {
+        contain: "layout paint size style",
         position: "absolute",
         bottom: 0,
         left: 0,
         padding: 0,
         margin: 0,
-        clipPath: "polygon(0% 15%, 0 0, 15% 0%, 75% 0, 75% 14%, 100% 15%, 100% 85%, 100% 100%, 85% 100%, 15% 100%, 0 100%, 0% 85%)"
+        width: 256,
+        height: 256,
+        "&::after": {
+            content: "''",
+            background: `${theme.palette.secondary.dark} !important`,
+            position: "absolute",
+            right: 0,
+            top: 0,
+            width: "25%",
+            height: "15%"
+        },
     },
     closePresentation: {
         position: "absolute",
@@ -145,7 +156,7 @@ class AppDrawer extends React.PureComponent {
             language: props.language,
             count_presentation_open: props.count_presentation_open,
             classes: props.classes,
-            _less_than_1280w: false,
+            _less_than_960w: false,
             _presentation_open: props.count_presentation_open > 0,
             _backgrds: [
                 ``,
@@ -176,11 +187,11 @@ class AppDrawer extends React.PureComponent {
             _window_width = w.innerWidth || documentElement.clientWidth || body.clientWidth,
             _window_height = w.innerHeight|| documentElement.clientHeight || body.clientHeight;
 
-        const _less_than_1280w = Boolean(_window_width < 1280);
-        const update = this.st4te._less_than_1280w !== _less_than_1280w;
+        const _less_than_960w = Boolean(_window_width < 960);
+        const update = this.st4te._less_than_960w !== _less_than_960w;
 
         if(update){
-            this.setSt4te({_less_than_1280w}, () => {
+            this.setSt4te({_less_than_960w}, () => {
                 this.forceUpdate();
             })
         }
@@ -231,18 +242,20 @@ class AppDrawer extends React.PureComponent {
 
     render() {
 
-        const { classes, language, bdi, _backgrds, _presentation_open, _less_than_1280w } = this.st4te;
+        const { classes, language, bdi, _backgrds, _presentation_open, _less_than_960w } = this.st4te;
         
         return (
-            (!_less_than_1280w) && <Box elevation={4}>
+            (!_less_than_960w) && <Box elevation={4}>
                 <Drawer ModalProps={{disablePortal: true, keepMounted: true}} className={_presentation_open ? classes.drawerOpen: classes.drawer} PaperProps={{style: {backgroundImage: _presentation_open ? "none": _backgrds[bdi], backgroundSize: "contain", backgroundPosition: "bottom", backgroundRepeat: "no-repeat"}}} variant="permanent" classes={{paper: classes.drawerPaper}}>
                     <Toolbar />
                     <div className={classes.drawerContainer}>
                         <DrawerContent language={language} onClose={() => {}} />
                         { _presentation_open ?
-                            <video width="256" height="256" className={classes.presentation} autoPlay>
-                                <source src="/src/videos/presentation.mp4" type="video/mp4"/>
-                            </video>:
+                            <div className={classes.presentation}>
+                                <video width="256" height="256" style={{aspectRatio: "1", transform: "translateZ(10px)"}} autoPlay>
+                                    <source src="/src/videos/presentation.mp4" type="video/mp4"/>
+                                </video>
+                            </div>:
                             <Fade in={true} timeout={600}>
                                 <div className={classes.drawerPrivacyHint}>
                                     <h4 style={{color: "#ffffffff", marginBottom: 0}}>Give them a mask and they're being starting to speak the truth...</h4>

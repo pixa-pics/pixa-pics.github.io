@@ -1,7 +1,7 @@
 "use strict";
-var REQUIRED_CACHE = "unless-update-cache-v608-required";
-var USEFUL_CACHE = "unless-update-cache-v608-useful";
-var STATIC_CACHE = "unless-update-cache-v608-static";
+var REQUIRED_CACHE = "unless-update-cache-v609-required";
+var USEFUL_CACHE = "unless-update-cache-v609-useful";
+var STATIC_CACHE = "unless-update-cache-v609-static";
 var MAIN_CHILD_CHUNK_REGEX = /chunk_(main_[a-z0-9]+)\.min\.js$/i;
 var CHILD_CHUNK_REGEX = /chunk_([0-9]+)\.min\.js$/i;
 
@@ -202,19 +202,47 @@ self.addEventListener("fetch", function(event) {
 
     }else if(Boolean(url.endsWith(".wav") || url.endsWith(".mp3") || url.endsWith(".mp4")) && same_site) {
 
-        event.respondWith(
-            static_cache.then(function (cache) {
-                return cache.match(url).then(function (response) {
-                    return response.status === 200 ? response.clone(): fetch(url).then(function (response) { // Fetch, clone, and serve
-                        if(response.status === 200) { cache.put(url, response.clone());} return Promise.resolve(response.clone());
+        if (event.request.headers.get('range')) {
+            var pos = Number(/^bytes\=(\d+)\-$/g.exec(event.request.headers.get('range'))[1]);
+            event.respondWith(
+                static_cache.then(function(cache) {
+                        return cache.match(event.request.url);
+                    }).then(function(res) {
+                    if (!res) {
+                        return fetch(event.request)
+                            .then(res => {
+                                return res.arrayBuffer();
+                            });
+                    }
+                    return res.arrayBuffer();
+                }).then(function(ab) {
+                    return new Response(
+                        ab.slice(pos),
+                        {
+                            status: 206,
+                            statusText: 'Partial Content',
+                            headers: [
+                                // ['Content-Type', 'video/webm'],
+                                ['Content-Range', 'bytes ' + pos + '-' +
+                                (ab.byteLength - 1) + '/' + ab.byteLength]]
+                        });
+                }));
+        }else {
+
+            event.respondWith(
+                static_cache.then(function (cache) {
+                    return cache.match(url).then(function (response) {
+                        return response.status === 200 ? response.clone(): fetch(url).then(function (response) { // Fetch, clone, and serve
+                            if(response.status === 200) { cache.put(url, response.clone());} return Promise.resolve(response.clone());
+                        });
+                    }).catch(function(){
+                        return fetch(url).then(function (response) { // Fetch, clone, and serve
+                            if(response.status === 200) { cache.put(url, response.clone());} return Promise.resolve(response.clone());
+                        });
                     });
-                }).catch(function(){
-                    return fetch(url).then(function (response) { // Fetch, clone, and serve
-                        if(response.status === 200) { cache.put(url, response.clone());} return Promise.resolve(response.clone());
-                    });
-                });
-            })
-        );
+                })
+            );
+        }
 
     }else if(Boolean(url.endsWith(".woff2") || url.endsWith(".ttf") || url.endsWith(".css") || url.endsWith(".json")) && same_site ) {
 

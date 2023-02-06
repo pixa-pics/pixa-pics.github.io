@@ -24,7 +24,6 @@ import JamyHappy from "../icons/JamyHappy";
 import JamySad from "../icons/JamySad";
 import JamyShocked from "../icons/JamyShocked";
 import JamySuspicious from "../icons/JamySuspicious";
-import CloseIcon from "@material-ui/icons/Close";
 
 const styles = theme => ({
     appBar: {
@@ -167,14 +166,24 @@ const styles = theme => ({
             transition: "opacity cubic-bezier(0.4, 0, 0.2, 1) 1750ms",
         }
     },
-
     presentation: {
+        contain: "layout paint size style",
         position: "fixed",
         bottom: 0,
         left: 0,
         padding: 0,
         margin: 0,
-        clipPath: "polygon(0% 15%, 0 0, 15% 0%, 75% 0, 75% 14%, 100% 15%, 100% 85%, 100% 100%, 85% 100%, 15% 100%, 0 100%, 0% 85%)"
+        width: 256,
+        height: 256,
+        "&::after": {
+            content: "''",
+            background: `${theme.palette.secondary.dark} !important`,
+            position: "absolute",
+            right: 0,
+            top: 0,
+            width: "25%",
+            height: "15%"
+        },
     },
     donateButton: {
         position: "absolute",
@@ -267,10 +276,10 @@ class AppToolbar extends React.PureComponent {
             _window_width = w.innerWidth || documentElement.clientWidth || body.clientWidth,
             _window_height = w.innerHeight|| documentElement.clientHeight || body.clientHeight;
 
-        const _less_than_1280w = Boolean(_window_width < 1280);
-        const update = this.st4te._less_than_1280w !== _less_than_1280w;
+        const _less_than_960w = Boolean(_window_width < 960);
+        const update = this.st4te._less_than_960w !== _less_than_960w;
         if(update){
-            this.setSt4te({_less_than_1280w}, () => {
+            this.setSt4te({_less_than_960w}, () => {
                 this.forceUpdate();
             })
         }
@@ -430,7 +439,7 @@ class AppToolbar extends React.PureComponent {
 
     render() {
 
-        const { classes, ret, camo, _is_pre_reset, _presentation_open, pathname, language, loaded_progress_percent, know_the_settings, _less_than_1280w, _swipeable_app_drawer_open, _account_menu_anchor_element, logged_account, jamy_state_of_mind, jamy_enabled, music_enabled, _explosion } = this.st4te;
+        const { classes, ret, camo, _is_pre_reset, _presentation_open, pathname, language, loaded_progress_percent, know_the_settings, _less_than_960w, _swipeable_app_drawer_open, _account_menu_anchor_element, logged_account, jamy_state_of_mind, jamy_enabled, music_enabled, _explosion } = this.st4te;
 
         const JAMY = {
             angry: <JamyAngry className={classes.jamy} />,
@@ -503,7 +512,7 @@ class AppToolbar extends React.PureComponent {
                         </Menu>
                     </Toolbar>
                 </AppBar>
-                {_less_than_1280w && <SwipeableDrawer
+                {_less_than_960w && <SwipeableDrawer
                     keepMounted={true}
                     transitionDuration={{enter: 125, exit: 75}}
                     anchor="left"
@@ -518,9 +527,11 @@ class AppToolbar extends React.PureComponent {
                     </Toolbar>
                     <DrawerContent logged_account={logged_account} language={language} onClose={this._handle_close_swipeable_app_drawer}/>
                     { (_presentation_open) ?
-                        <video width="256" height="256" className={classes.presentation} autoPlay>
-                            <source src="/src/videos/presentation.mp4" type="video/mp4"/>
-                        </video>:
+                        <div className={classes.presentation}>
+                            <video width="256" height="256" autoPlay style={{aspectRatio: "1", transform: "translateZ(10px)"}}>
+                                <source src="/src/videos/presentation.mp4" type="video/mp4"/>
+                            </video>
+                        </div>:
                         <div className={_swipeable_app_drawer_open ? classes.drawerPrivacyHint: classes.drawerPrivacyHintHidden}>
                             <h4 style={{color: "#ffffffff", marginBottom: 0}}>Give them a mask and they're being starting to speak the truth...</h4>
                         </div>
