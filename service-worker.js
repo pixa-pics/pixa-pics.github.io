@@ -1,7 +1,7 @@
 "use strict";
-var REQUIRED_CACHE = "unless-update-cache-v609-required";
-var USEFUL_CACHE = "unless-update-cache-v609-useful";
-var STATIC_CACHE = "unless-update-cache-v609-static";
+var REQUIRED_CACHE = "unless-update-cache-v610-required";
+var USEFUL_CACHE = "unless-update-cache-v610-useful";
+var STATIC_CACHE = "unless-update-cache-v610-static";
 var MAIN_CHILD_CHUNK_REGEX = /chunk_(main_[a-z0-9]+)\.min\.js$/i;
 var CHILD_CHUNK_REGEX = /chunk_([0-9]+)\.min\.js$/i;
 
@@ -55,6 +55,11 @@ self.addEventListener("install", function(event) {
             "/client/chunk_main_748942c6.min.js",
             "/client/chunk_norris.min.js",
             "/",
+        ])
+    });
+    static_cache.then(function (cache) {
+        cache.addAll([
+            "/src/videos/presentation.mp4"
         ])
     });
     event.waitUntil(useful_cache.then(function (cache) {
@@ -207,7 +212,11 @@ self.addEventListener("fetch", function(event) {
             event.respondWith(
                 static_cache.then(function(cache) {
                         return cache.match(event.request.url);
-                    }).then(function(res) {
+                }).catch(function(){
+                    return fetch(url).then(function (response) { // Fetch, clone, and serve
+                        if(response.status === 200) { cache.put(url, response.clone());} return Promise.resolve(response.clone());
+                    });
+                }).then(function(res) {
                     if (!res) {
                         return fetch(event.request)
                             .then(res => {
