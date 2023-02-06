@@ -6,9 +6,9 @@
  <span> :warning: </span><a href="https://github.com/pixa-pics/pixa-pics.github.io/blob/main/A%20few%20words%20on%20pixel%20art%20and%20NFTs.pdf">A few words on pixel art and NFTs.pdf</a> :warning: <span> <br/> 5 pages long, it explains why they should be ditched properly.</span>
 </h3>
 
-## PIXA.PICS | AI Generated promotion video
+## PIXA.PICS | AI Generated promotional video
 
-[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/uHQj1kCCQQ8/0.jpg)](https://www.youtube.com/watch?v=uHQj1kCCQQ8)
+[![AI Generated promotional video of pixe.pics](https://i.ibb.co/Q81yKGT/Screenshot-from-2023-02-06-15-57-30.png)](https://www.youtube.com/watch?v=GZ95Sk8QIR4)
 
 ---
 
