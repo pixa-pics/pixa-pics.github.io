@@ -1,7 +1,7 @@
 "use strict";
-var REQUIRED_CACHE = "unless-update-cache-v607-required";
-var USEFUL_CACHE = "unless-update-cache-v607-useful";
-var STATIC_CACHE = "unless-update-cache-v607-static";
+var REQUIRED_CACHE = "unless-update-cache-v608-required";
+var USEFUL_CACHE = "unless-update-cache-v608-useful";
+var STATIC_CACHE = "unless-update-cache-v608-static";
 var MAIN_CHILD_CHUNK_REGEX = /chunk_(main_[a-z0-9]+)\.min\.js$/i;
 var CHILD_CHUNK_REGEX = /chunk_([0-9]+)\.min\.js$/i;
 
@@ -200,7 +200,7 @@ self.addEventListener("fetch", function(event) {
             })
         );
 
-    }else if(Boolean(url.endsWith(".wav") || url.endsWith(".mp3")) && same_site) {
+    }else if(Boolean(url.endsWith(".wav") || url.endsWith(".mp3") || url.endsWith(".mp4")) && same_site) {
 
         event.respondWith(
             static_cache.then(function (cache) {

@@ -1,11 +1,8 @@
 import React from "react";
-import { withStyles } from "@material-ui/core";
-
 import { HISTORY } from "../utils/constants";
-
 import Lottie from "../components/Lottie";
-
-import {Button, Grow, Fade} from "@material-ui/core";
+import {withStyles, Button, Grow, Fade} from "@material-ui/core";
+import IconPlay from "@material-ui/icons/PlayArrow";
 import actions from "../actions/utils";
 
 import CrownEmojiSvg from "../notoemoji/react/EmojiU1F451";
@@ -240,6 +237,17 @@ const styles = theme => ({
             },
         },
     },
+    playVideoButton: {
+        color: "#f2f2ff",
+        textShadow: "0px 0px 0px #fff",
+        transition: "all cubic-bezier(0.4, 0, 0.2, 1) 225ms !important",
+        pointerEvents: "initial",
+        "&:hover": {
+            color: "#fff",
+            textShadow: "0px 0px 6px #fff",
+            transition: "all cubic-bezier(0.4, 0, 0.2, 1) 350ms !important",
+        }
+    },
     titleh2: {
         whiteSpace: "break-spaces",
         fontWeight: "normal",
@@ -437,6 +445,9 @@ class Home extends React.PureComponent {
 
             window.dispatchEvent(new Event("home-action-tryshare"));
             actions.trigger_share();
+        }else if (action === "presentation") {
+            window.dispatchEvent(new Event("home-action-trypresentation"));
+            actions.trigger_presentation();
         }
     };
 
@@ -498,6 +509,9 @@ class Home extends React.PureComponent {
                         <h1 className={classes.titleh1}>
                             <span className={classes.revelantText} style={{color: "#ffffff"}}>From PICS {_camera} to PIXELARTS {_brainplode} and NFTs {_diamond}.</span>
                         </h1>
+                    </Fade>
+                    <Fade in={true} timeout={800}>
+                        <Button className={classes.playVideoButton} type="text" startIcon={<IconPlay/>} onClick={(event) => {this._handle_speed_dial_action(event, "presentation")}}>Play video</Button>
                     </Fade>
                     <Fade in={true} timeout={250}>
                         <h2 className={classes.titleh2} style={{color: "#000639"}}>

@@ -106,6 +106,7 @@ class Index extends React.PureComponent {
             classes: props.classes,
             _database_attempt: 0,
             _is_share_dialog_open: false,
+            _count_presentation_open: 0,
             _datasyncserviceworkerallfiles: 0,
             _history_unlisten: function(){},
             _did_mount: false,
@@ -336,6 +337,10 @@ class Index extends React.PureComponent {
 
                 case "TRIGGER_SHARE":
                     this._handle_share_dialog_open();
+                    break;
+
+                case "TRIGGER_PRESENTATION":
+                    this._handle_presentation_open();
                     break;
 
                 case "SNACKBAR":
@@ -650,11 +655,19 @@ class Index extends React.PureComponent {
         actions.jamy_update("happy");
     };
 
+    _handle_presentation_open = () => {
+
+        this.setSt4te({_count_presentation_open: this.st4te._count_presentation_open+1}, () => {
+            this.forceUpdate();
+        });
+        actions.jamy_update("happy");
+    };
+
     render() {
 
         const { classes } = this.st4te;
         const { _snackbar_open, _snackbar_message, _snackbar_auto_hide_duration } = this.st4te;
-        const {  _is_share_dialog_open } = this.st4te;
+        const {  _is_share_dialog_open, _count_presentation_open } = this.st4te;
         const { _know_if_logged, _loaded_progress_percent, _jamy_state_of_mind } = this.st4te;
         const {_ret, _camo, _bdi, _music_enabled, _jamy_enabled, _language, _know_the_settings} = this.settings;
 
@@ -675,6 +688,7 @@ class Index extends React.PureComponent {
                         ret={_ret}
                         camo={_camo}
                         language={_language}
+                        count_presentation_open={_count_presentation_open}
                         loaded_progress_percent={_loaded_progress_percent}
                         know_if_logged={_know_if_logged}
                         know_the_settings={_know_the_settings}
@@ -684,6 +698,7 @@ class Index extends React.PureComponent {
                         jamy_state_of_mind={_jamy_state_of_mind}/>
                     <AppDrawer
                         bdi={_bdi}
+                        count_presentation_open={_count_presentation_open}
                         know_the_settings={_know_the_settings}
                         language={_language}/>
                     <Toolbar />

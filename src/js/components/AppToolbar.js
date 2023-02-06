@@ -1,5 +1,5 @@
 import React from "react";
-import {withStyles} from "@material-ui/core";
+import {Fade, withStyles} from "@material-ui/core";
 
 import Lottie from "../components/Lottie";
 import { t } from "../utils/t";
@@ -24,6 +24,7 @@ import JamyHappy from "../icons/JamyHappy";
 import JamySad from "../icons/JamySad";
 import JamyShocked from "../icons/JamyShocked";
 import JamySuspicious from "../icons/JamySuspicious";
+import CloseIcon from "@material-ui/icons/Close";
 
 const styles = theme => ({
     appBar: {
@@ -166,6 +167,15 @@ const styles = theme => ({
             transition: "opacity cubic-bezier(0.4, 0, 0.2, 1) 1750ms",
         }
     },
+
+    presentation: {
+        position: "fixed",
+        bottom: 0,
+        left: 0,
+        padding: 0,
+        margin: 0,
+        clipPath: "polygon(0% 15%, 0 0, 15% 0%, 75% 0, 75% 14%, 100% 15%, 100% 85%, 100% 100%, 85% 100%, 15% 100%, 0 100%, 0% 85%)"
+    },
     donateButton: {
         position: "absolute",
         bottom: 0,
@@ -197,6 +207,7 @@ class AppToolbar extends React.PureComponent {
             jamy_enabled: props.jamy_enabled,
             music_enabled: props.music_enabled,
             _history: HISTORY,
+            _presentation_open: false,
             _swipeable_app_drawer_open: false,
             _account_menu_anchor_element: null,
             _look_much_jamy: false,
@@ -258,25 +269,27 @@ class AppToolbar extends React.PureComponent {
 
         const _less_than_1280w = Boolean(_window_width < 1280);
         const update = this.st4te._less_than_1280w !== _less_than_1280w;
-        this.setSt4te({_less_than_1280w}, () => {
-            if(update){
+        if(update){
+            this.setSt4te({_less_than_1280w}, () => {
                 this.forceUpdate();
-            }
-        })
+            })
+        }
     }
 
     componentWillReceiveProps(new_props) {
 
+        const reopen_presentation = this.st4te.count_presentation_open !== new_props.count_presentation_open && new_props.count_presentation_open > 0;
         const update = Boolean(
             new_props.pathname !== this.st4te.pathname ||
             new_props.language !== this.st4te.language ||
             new_props.know_the_settings !== this.st4te.know_the_settings ||
             new_props.jamy_state_of_mind !== this.st4te.jamy_state_of_mind ||
             new_props.jamy_enabled !== this.st4te.jamy_enabled ||
-            new_props.music_enabled !== this.st4te.music_enabled
+            new_props.music_enabled !== this.st4te.music_enabled ||
+            reopen_presentation
         );
 
-        this.setSt4te(new_props, () => {
+        this.setSt4te({...new_props, _presentation_open: (this.st4te._presentation_open || reopen_presentation), _swipeable_app_drawer_open: (this.st4te._swipeable_app_drawer_open || reopen_presentation)}, () => {
 
             if(update) {
 
@@ -296,7 +309,7 @@ class AppToolbar extends React.PureComponent {
 
     _handle_close_swipeable_app_drawer = () => {
 
-        this.setSt4te({_swipeable_app_drawer_open: false}, ( ) => {
+        this.setSt4te({_swipeable_app_drawer_open: false, _presentation_open: false}, ( ) => {
 
             this.forceUpdate();
         });
@@ -417,7 +430,7 @@ class AppToolbar extends React.PureComponent {
 
     render() {
 
-        const { classes, ret, camo, _is_pre_reset, pathname, language, loaded_progress_percent, know_the_settings, _less_than_1280w, _swipeable_app_drawer_open, _account_menu_anchor_element, logged_account, jamy_state_of_mind, jamy_enabled, music_enabled, _explosion } = this.st4te;
+        const { classes, ret, camo, _is_pre_reset, _presentation_open, pathname, language, loaded_progress_percent, know_the_settings, _less_than_1280w, _swipeable_app_drawer_open, _account_menu_anchor_element, logged_account, jamy_state_of_mind, jamy_enabled, music_enabled, _explosion } = this.st4te;
 
         const JAMY = {
             angry: <JamyAngry className={classes.jamy} />,
@@ -491,11 +504,11 @@ class AppToolbar extends React.PureComponent {
                     </Toolbar>
                 </AppBar>
                 {_less_than_1280w && <SwipeableDrawer
-                    keepMounted={false}
+                    keepMounted={true}
                     transitionDuration={{enter: 125, exit: 75}}
                     anchor="left"
                     classes={{root: classes.swipeableDrawer, paper: classes.drawerPaper}}
-                    open={_swipeable_app_drawer_open}
+                    open={_swipeable_app_drawer_open || _presentation_open}
                     onOpen={this._handle_open_swipeable_app_drawer}
                     onClose={this._handle_close_swipeable_app_drawer}>
                     <Toolbar className={classes.appBar}>
@@ -504,9 +517,14 @@ class AppToolbar extends React.PureComponent {
                         </div>
                     </Toolbar>
                     <DrawerContent logged_account={logged_account} language={language} onClose={this._handle_close_swipeable_app_drawer}/>
-                    <div className={_swipeable_app_drawer_open ? classes.drawerPrivacyHint: classes.drawerPrivacyHintHidden}>
-                        <h4 style={{color: "#ffffffff", marginBottom: 0}}>Give them a mask and they're being starting to speak the truth...</h4>
-                    </div>
+                    { (_presentation_open) ?
+                        <video width="256" height="256" className={classes.presentation} autoPlay>
+                            <source src="/src/videos/presentation.mp4" type="video/mp4"/>
+                        </video>:
+                        <div className={_swipeable_app_drawer_open ? classes.drawerPrivacyHint: classes.drawerPrivacyHintHidden}>
+                            <h4 style={{color: "#ffffffff", marginBottom: 0}}>Give them a mask and they're being starting to speak the truth...</h4>
+                        </div>
+                    }
                 </SwipeableDrawer>}
             </div>
         );

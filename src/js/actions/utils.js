@@ -119,6 +119,22 @@ function trigger_share() {
         }, 10);
     }
 }
+function trigger_presentation() {
+
+    if(!dispatcher.isDispatching()) {
+
+        dispatcher.dispatch({
+            type: "TRIGGER_PRESENTATION",
+            data: {}
+        });
+    }else {
+
+        setTimeout(() => {
+
+            trigger_presentation();
+        }, 10);
+    }
+}
 
 function trigger_snackbar(message = "", auto_hide_duration = 3500) {
 
@@ -231,6 +247,7 @@ module.exports = {
     trigger_voice: trigger_voice,
     trigger_music: trigger_music,
     trigger_share: trigger_share,
+    trigger_presentation: trigger_presentation,
     trigger_snackbar: trigger_snackbar,
     trigger_login_update: trigger_login_update,
     trigger_settings_update: trigger_settings_update,
