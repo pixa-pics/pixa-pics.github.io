@@ -514,6 +514,7 @@ class AppToolbar extends React.PureComponent {
                 </AppBar>
                 {_less_than_960w && <SwipeableDrawer
                     keepMounted={false}
+                    disablePortal={true}
                     transitionDuration={{enter: 125, exit: 75}}
                     anchor="left"
                     classes={{root: classes.swipeableDrawer, paper: classes.drawerPaper}}

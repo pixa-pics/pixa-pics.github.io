@@ -217,38 +217,6 @@ class Index extends React.PureComponent {
                 actions.trigger_snackbar("Hey there, I am Jamy!", 2000)
             }
 
-            setTimeout(() => {
-
-                if(this.pathname === "/" || this.pathname === "") {
-                    actions.trigger_snackbar("Let's take a look to our laboratory processing very sharp, crisp-edges images, do you want it?", 5500)
-                }
-
-                setTimeout(() => {
-
-                    if(this.pathname === "/" || this.pathname === "") {
-                        actions.trigger_snackbar("I mean, don't you want to give a try? My dear, welcome!", 3500)
-                    }
-
-                    setTimeout(() => {
-
-                        if(this.pathname === "/" || this.pathname === "") {
-                            actions.jamy_update("annoyed")
-                            actions.trigger_snackbar("Just a hint for you my newbie, what the blue button does is magic.", 7500)
-
-                            setTimeout(() => {
-
-                                if(this.pathname === "/" || this.pathname === "") {
-                                    actions.jamy_update("annoyed")
-                                    actions.trigger_snackbar("That makes you wanna hurt me, am I wrong my lit' diddy?", 6000)
-                                }
-                            }, 8000);
-                        }
-                    }, 10000);
-
-                }, 6000);
-
-            }, 2500);
-
         }, 9000);
     }
 
