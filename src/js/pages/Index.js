@@ -47,12 +47,12 @@ const styles = theme => ({
         contain: "size paint style layout",
         width: "calc(100vw - 64px)",
         marginLeft: 64,
-        height: "calc(100vh - 64px)",
+        height: "calc(100% - 64px)",
         [theme.breakpoints.down("xs")]: {
-            height: "calc(100vh - 56px)",
+            height: "calc(100% - 56px)",
         },
         [theme.breakpoints.down("sm")]: {
-            width: "100vw",
+            width: "100%",
             marginLeft: 0,
         }
     },
