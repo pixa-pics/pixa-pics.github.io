@@ -1,7 +1,7 @@
 "use strict";
-var REQUIRED_CACHE = "unless-update-cache-v618-required";
-var USEFUL_CACHE = "unless-update-cache-v618-useful";
-var STATIC_CACHE = "unless-update-cache-v618-static";
+var REQUIRED_CACHE = "unless-update-cache-v619-required";
+var USEFUL_CACHE = "unless-update-cache-v619-useful";
+var STATIC_CACHE = "unless-update-cache-v619-static";
 var MAIN_CHILD_CHUNK_REGEX = /chunk_(main_[a-z0-9]+)\.min\.js$/i;
 var CHILD_CHUNK_REGEX = /chunk_([0-9]+)\.min\.js$/i;
 
@@ -60,7 +60,11 @@ self.addEventListener("install", function(event) {
     static_cache.then(function (cache) {
         cache.addAll([
             "/src/videos/presentation.mp4",
-            "/src/videos/tutorial.mp4"
+            "/src/videos/tutorial.mp4",
+            "/src/videos/create.mp4",
+            "/src/videos/enhanced.mp4",
+            "/src/videos/pixelated.mp4",
+            "/src/videos/upload.mp4"
         ])
     });
     event.waitUntil(useful_cache.then(function (cache) {
@@ -186,10 +190,6 @@ self.addEventListener("fetch", function(event) {
                         "/src/sounds/voice/cn/vision_activated.mp3",
                         "/src/sounds/voice/cn/vision_deactivated.mp3",
                         "/src/sounds/voice/cn/filtering.mp3",
-                        "/src/videos/create.mp4",
-                        "/src/videos/enhanced.mp4",
-                        "/src/videos/pixelated.mp4",
-                        "/src/videos/upload.mp4",
                         "/src/sounds/music/redeclipse/track_09.mp3",
                     ]);
                 })
@@ -221,24 +221,28 @@ self.addEventListener("fetch", function(event) {
             var pos = Number(/^bytes\=(\d+)\-$/g.exec(event.request.headers.get('range'))[1]);
             event.respondWith(
                 static_cache.then(function(cache) {
-                        return cache.match(event.request.url);
-                }).catch(function(){
-                    return fetch(url).then(function (response) { // Fetch, clone, and serve
-                        if(response.status === 200) { cache.put(url, response.clone());} return Promise.resolve(response.clone());
-                    });
-                }).then(function(response) {
-                    return response.arrayBuffer().then(function (ab){
-                        return new Response(
-                            ab.slice(pos),
-                            {
-                                status: 206,
-                                statusText: 'Partial Content',
-                                headers: [
-                                    ['Content-Type', 'video/mp4'],
-                                    ['Content-Range', 'bytes ' + pos + '-' + (ab.byteLength - 1) + '/' + ab.byteLength]]
+                        return cache.match(event.request.url).then(function (response) {
+                            return response.status === 200 ? response.clone(): fetch(url).then(function (response) { // Fetch, clone, and serve
+                                if(response.status === 200) { cache.put(url, response.clone());} return Promise.resolve(response.clone());
                             });
-                    });
-                }));
+                        }).catch(function(){
+                            return fetch(url).then(function (response) { // Fetch, clone, and serve
+                                if(response.status === 200) { cache.put(url, response.clone());} return Promise.resolve(response.clone());
+                            });
+                        }).then(function(response) {
+                            return response.arrayBuffer().then(function (ab){
+                                return new Response(
+                                    ab.slice(pos),
+                                    {
+                                        status: 206,
+                                        statusText: 'Partial Content',
+                                        headers: [
+                                            ['Content-Type', 'video/mp4'],
+                                            ['Content-Range', 'bytes ' + pos + '-' + (ab.byteLength - 1) + '/' + ab.byteLength]]
+                                    });
+                            });
+                        });
+                }))
         }else {
 
             event.respondWith(
