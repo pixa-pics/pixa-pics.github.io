@@ -260,11 +260,14 @@ const styles = theme => ({
             webkitFilter: "opacity(1) !important",
             willChange: "none !important",
             contain: "size style !important",
-            width: 480,
             height: "100% !important",
-            [theme.breakpoints.down("md")]: {
+            [theme.breakpoints.up("lg")]: {
+                width: 480,
+            },
+            width: "calc(100vw - 64px)",
+            [theme.breakpoints.down("sm")]: {
                 width: "100vw",
-            }
+            },
         },
     },
     tabs: {
@@ -370,7 +373,7 @@ const styles = theme => ({
             display: "none",
         },
         [theme.breakpoints.up("md")]: {
-            width: "calc(100vw - 256px)",
+            width: "calc(100vw - 64px)",
         },
         zIndex: 1300,
         position: "fixed",
@@ -2281,7 +2284,7 @@ class Pixel extends React.PureComponent {
             _toolbox_container_ref.scrollTop = 0;
         }
 
-        const update = Boolean(this.st4te._is_edit_drawer_open !== _is_edit_drawer_open);
+        const update = Boolean(this.st4te._is_edit_drawer_open !== _is_edit_drawer_open || this.st4te._view_name_index !== _view_name_index);
         this.setSt4te({_is_edit_drawer_open, _view_name_index, _view_name_sub_index}, () => {
 
             if(update){this.forceUpdate();}

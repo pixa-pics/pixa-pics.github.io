@@ -126,6 +126,11 @@ class PixelDialogCreate extends React.PureComponent {
         }, () => {
 
             this.forceUpdate();
+
+            try {
+                var video = document.getElementById("presentation-video");
+                video.pause();
+            } catch(e){}
         })
     }
 

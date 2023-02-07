@@ -1,7 +1,7 @@
 "use strict";
-var REQUIRED_CACHE = "unless-update-cache-v617-required";
-var USEFUL_CACHE = "unless-update-cache-v617-useful";
-var STATIC_CACHE = "unless-update-cache-v617-static";
+var REQUIRED_CACHE = "unless-update-cache-v618-required";
+var USEFUL_CACHE = "unless-update-cache-v618-useful";
+var STATIC_CACHE = "unless-update-cache-v618-static";
 var MAIN_CHILD_CHUNK_REGEX = /chunk_(main_[a-z0-9]+)\.min\.js$/i;
 var CHILD_CHUNK_REGEX = /chunk_([0-9]+)\.min\.js$/i;
 
@@ -158,6 +158,11 @@ self.addEventListener("fetch", function(event) {
                         "/client/chunk_28.min.js",
                         "/client/chunk_29.min.js",
                         "/client/chunk_30.min.js",
+                        "/client/chunk_31.min.js",
+                        "/client/chunk_32.min.js",
+                        "/client/chunk_33.min.js",
+                        "/client/chunk_34.min.js",
+                        "/client/chunk_35.min.js",
                     ]);
                 }),
                 static_cache.then(function (cache) {
@@ -181,6 +186,10 @@ self.addEventListener("fetch", function(event) {
                         "/src/sounds/voice/cn/vision_activated.mp3",
                         "/src/sounds/voice/cn/vision_deactivated.mp3",
                         "/src/sounds/voice/cn/filtering.mp3",
+                        "/src/videos/create.mp4",
+                        "/src/videos/enhanced.mp4",
+                        "/src/videos/pixelated.mp4",
+                        "/src/videos/upload.mp4",
                         "/src/sounds/music/redeclipse/track_09.mp3",
                     ]);
                 })

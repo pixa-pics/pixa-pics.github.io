@@ -18,7 +18,8 @@ import {
     FormControlLabel,
     Button,
     Menu,
-    Fade
+    Fade,
+    IconButton
 } from "@material-ui/core";
 
 import {HISTORY} from "../utils/constants";
@@ -94,6 +95,8 @@ import SwapVerticalIcon from "../icons/SwapVertical";
 
 import ColorConversion from "../components/canvaspixels/utils/ColorConversion";
 import actions from "../actions/utils";
+import InfoOutlined from "@material-ui/icons/InfoOutlined";
+import CloseIcon from "@material-ui/icons/Close";
 const color_conversion = Object.create(ColorConversion).new();
 const PANEL_NAMES = ["palette", "image", "layers", "tools", "selection", "effects", "filters"];
 
@@ -116,15 +119,66 @@ const styles = theme => ({
             "40%, 100%": {transform: "translateX(0%)"}
         }
     },
+    listSubHeaderDescription: {
+        lineHeight: "1em",
+        textTransform: "initial",
+        fontWeight: "initial",
+        color: "#170f70",
+        marginTop: 0,
+        textAlign: "justify",
+        marginRight: 120,
+        minHeight: 64,
+        marginLeft: 48
+    },
+    listSubHeaderToggle: {
+        position: "absolute",
+        right: 0,
+        top: 0,
+        margin: 0,
+        "& .MuiSvgIcon-root": {
+            color: "#b3aee8"
+        }
+    },
+    listSubHeaderCollapse: {
+        marginTop: "0px"
+    },
+    listSubHeaderVideo: {
+        contain: "layout paint size style",
+        contentVisibility: "auto",
+        position: "absolute",
+        right: 0,
+        bottom: 0,
+        margin: 0,
+        padding: 0,
+        height: 120,
+        width: 120,
+    },
+    listSubHeaderVideoOverlay: {
+        position: "absolute",
+        top: 0,
+        right: 0,
+        height: 15,
+        width: 30,
+        backgroundColor: "#ededff"
+    },
+    listSubHeaderVideoFade: {
+        position: "absolute",
+        top: 0,
+        right: 0,
+        height: 120,
+        width: 120,
+        background: "linear-gradient(to top, #ededfff1 2.5%,  #ededffbf 5%, #ededff78 15%, transparent 30%)"
+    },
+
     listSubHeader: {
         "&:hover": {
-            backgroundColor: "#e5e5fd",
             boxShadow: "0px 2px 5px #050c4c4d",
-            transition: "all cubic-bezier(0.4, 0, 0.2, 1) 350ms",
-            "& span svg": {
+            transition: "box-shadow cubic-bezier(0.4, 0, 0.2, 1) 350ms",
+            "& .list-sub-header-main-text svg": {
                 animation: "$shift linear 675ms both",
             }
         },
+        display: "inline-table",
         cursor: "pointer",
         transition: "all cubic-bezier(0.4, 0, 0.2, 1) 275ms",
         boxShadow: "0px 3px 6px #050c4c4d",
@@ -409,7 +463,8 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
             _filter_thumbnail_changed: true,
             _compressed: false,
             _upscale: false,
-            _vectorized: false
+            _vectorized: false,
+            _list_sub_header_opened: ""
         };
 
         this._cache = {
@@ -633,6 +688,36 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
         return this._cache[name];
     };
 
+    _set_list_subheader_collapse = (name) => {
+
+        this.setSt4te({_list_sub_header_opened: (this.st4te._list_sub_header_opened && this.st4te._list_sub_header_opened === name) ? "": name}, () => {
+
+            this.forceUpdate();
+        });
+    };
+
+    _get_list_sub_header_content_scarlett = (name, tutorial) => {
+
+        const _list_sub_header_opened = this.st4te._list_sub_header_opened;
+        const classes = this.st4te.classes;
+       return <React.Fragment>
+                <Collapse className={classes.listSubHeaderCollapse} in={_list_sub_header_opened === name}>
+                    <p className={classes.listSubHeaderDescription}>{tutorial}</p>
+                </Collapse>
+                {_list_sub_header_opened === name &&
+                    <div className={classes.listSubHeaderVideo}>
+                        <video id="upload-video" width="120" height="120" style={{aspectRatio: "1", transform: "translateZ(10px)"}} autoPlay>
+                            <source src={"/src/videos/"+name+".mp4"} type="video/mp4"/>
+                        </video>
+                        <div className={classes.listSubHeaderVideoOverlay}></div>
+                        <div className={classes.listSubHeaderVideoFade}></div>
+                    </div>}
+               <IconButton className={classes.listSubHeaderToggle} onClick={() => {this._set_list_subheader_collapse(name)}}>
+                   {_list_sub_header_opened === name ? <CloseIcon/>: <InfoOutlined/>}
+               </IconButton>
+            </React.Fragment>;
+    };
+
     get_before_action_panel = (index) => {
 
         const {
@@ -652,7 +737,8 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
             _opacity,
             _layer_opened,
             import_size,
-            import_colorize
+            import_colorize,
+            _list_sub_header_opened
         } = this.st4te;
 
         let colors = [];
@@ -865,9 +951,12 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
             case "image":
                 return (
                     <div key={"image-image-upload"} className={`swipetoolbox_i_${index}_${0}`}>
-                        <ListSubheader className={classes.listSubHeader} onClick={() => {this._scroll_to_id(`swipetoolbox_i_${index}_${0}`)}}>
-                            <span><ImportIcon/></span>
-                            <span>Upload</span>
+                        <ListSubheader className={classes.listSubHeader} onClick={() => {this._scroll_to_id(`swipetoolbox_i_${index}_${0}`)}} active={_list_sub_header_opened === "upload"}>
+                            <span className={"list-sub-header-main-text"}>
+                                <span><ImportIcon/></span>
+                                <span>Upload</span>
+                            </span>
+                            {this._get_list_sub_header_content_scarlett("upload", "Define a size before uploading an image from the library or your device, this size will be the one used in the laboratory, but before! You can optionally define a retouching setting by artificial intelligence of your starting image, you can enlarge, colorize or even do both at the same time! That's how it's done to open an image in the lab, have fun.")}
                         </ListSubheader>
                         <div className={"image " + classes.listItems}>
                             <input
@@ -1000,6 +1089,8 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
             case "palette": return [];
             case "image": return [
                 {
+                    name: "pixelated",
+                    tutorial: "Here are the buttons to download your image in simple size or enlarged so as to have enlarged but still very clear edges!",
                     icon: <DownloadIcon/>,
                     text: "Download pixelated",
                     description: "Simple way to upscale your source file to be sure to have a file that is interpreted correctly with crisp edges.",
@@ -1078,6 +1169,8 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                     ]
                 },
                 {
+                    name: "enhanced",
+                    tutorial: "Here are the buttons to download your image enlarged, yet having sleek, clean and humanized or rounded edges! It is possible to request a non-raster version of your image, it can be enlarged at will without loss of quality. The other options are provided for the purpose of reducing the size of your incoming file or even enlarging the result by two at most.",
                     icon: <DownloadIcon/>,
                     text: `Download enhanced${too_much_colors_no_vector ? " (Disabled)": ""}`,
                     description: too_much_colors_no_vector ?
@@ -1870,8 +1963,11 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
             case "image": return (
                 <div key={"image-image-create"} className={`swipetoolbox_i_${index}_${3}`}>
                     <ListSubheader className={classes.listSubHeader} onClick={() => {this._scroll_to_id(`swipetoolbox_i_${index}_${3}`)}}>
-                        <span><ImagePlusIcon/></span>
-                        <span>Create new</span>
+                        <span className={"list-sub-header-main-text"}>
+                            <span><ImagePlusIcon/></span>
+                            <span>Create new</span>
+                        </span>
+                        {this._get_list_sub_header_content_scarlett("create", "This is where you can create a new transparent canvas of any size you want. This is how it's done, have fun!")}
                     </ListSubheader>
                     <div style={{
                         padding: "8px 24px",
@@ -2195,8 +2291,11 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                         return (
                             <div key={name + "-" + action_set.label + "-" + action_set.text.toLowerCase() + "-wrapper"} className={`swipetoolbox_i_${index}_${action_set.local_i}`}>
                                 <ListSubheader className={classes.listSubHeader} onClick={() => {this._scroll_to_id(`swipetoolbox_i_${index}_${action_set.local_i}`)}}>
-                                    <span>{action_set.icon}</span>
-                                    <span>{action_set.text}</span>
+                                    <span className={"list-sub-header-main-text"}>
+                                        <span>{action_set.icon}</span>
+                                        <span>{action_set.text}</span>
+                                    </span>
+                                    {action_set.tutorial && this._get_list_sub_header_content_scarlett(action_set.name, action_set.tutorial)}
                                     {Boolean(action_set.progression) &&
                                         <LinearProgress
                                             color="primary"

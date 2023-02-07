@@ -168,6 +168,7 @@ const styles = theme => ({
     },
     presentation: {
         contain: "layout paint size style",
+        contentVisibility: "auto",
         position: "fixed",
         bottom: 0,
         left: 0,

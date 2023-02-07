@@ -99,6 +99,7 @@ const styles = theme => ({
     },
     presentation: {
         contain: "layout paint size style",
+        contentVisibility: "auto",
         position: "absolute",
         bottom: 0,
         left: 0,
