@@ -49,7 +49,7 @@
 
 ---
 
-![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/EDITOR2.png)
+![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/EDITOR1.png)
 
 <img width="222" height="482" src="https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/EDITOR_ANDROID.jpg" align="right" />
 
@@ -76,7 +76,8 @@ But hey, here we do it even greater with pixa.pics... We upscale it with smart a
 
 > Yet many drawing tools and selection mode enables you to be creative (and decentralize everything)!
 
-![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/777.png)
+![Crisp-edge rendering vs xBrz rendering](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/PIXAPICSRENDER.png)
+> Crisp-edge rendering vs xBrz rendering
 
 * **Copyleft** and copyright can get shifted!
 * **Anonymize selfies** (keep details masked, reduce entropy of data).
