@@ -72,6 +72,7 @@ const styles = theme => ({
             position: "fixed",
             fontSize: "1rem",
             bottom: 72,
+            right: 24,
         },
     },
     homeCTAsendit: {

@@ -513,11 +513,11 @@ class AppToolbar extends React.PureComponent {
                     </Toolbar>
                 </AppBar>
                 {_less_than_960w && <SwipeableDrawer
-                    keepMounted={true}
+                    keepMounted={false}
                     transitionDuration={{enter: 125, exit: 75}}
                     anchor="left"
                     classes={{root: classes.swipeableDrawer, paper: classes.drawerPaper}}
-                    open={_swipeable_app_drawer_open || _presentation_open}
+                    open={_swipeable_app_drawer_open}
                     onOpen={this._handle_open_swipeable_app_drawer}
                     onClose={this._handle_close_swipeable_app_drawer}>
                     <Toolbar className={classes.appBar}>
@@ -526,7 +526,7 @@ class AppToolbar extends React.PureComponent {
                         </div>
                     </Toolbar>
                     <DrawerContent logged_account={logged_account} language={language} onClose={this._handle_close_swipeable_app_drawer}/>
-                    { (_presentation_open) ?
+                    { _presentation_open ?
                         <div className={classes.presentation}>
                             <video width="256" height="256" autoPlay style={{aspectRatio: "1", transform: "translateZ(10px)"}}>
                                 <source src="/src/videos/presentation.mp4" type="video/mp4"/>
