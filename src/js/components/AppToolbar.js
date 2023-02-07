@@ -549,7 +549,7 @@ class AppToolbar extends React.PureComponent {
                             <span className={classes.swipeableDrawerAppTitle}>HTTPS://PIXA.PICS/</span>
                         </div>
                     </Toolbar>
-                    <DrawerContent logged_account={logged_account} language={language} onClose={this._handle_close_swipeable_app_drawer}/>
+                    <DrawerContent logged_account={logged_account} language={language}/>
                     { _presentation_open ?
                         <div className={classes.presentation} onClick={this._resume_video}>
                             <video id="presentation-video" width="256" height="256" autoPlay style={{aspectRatio: "1", transform: "translateZ(10px)"}}>
