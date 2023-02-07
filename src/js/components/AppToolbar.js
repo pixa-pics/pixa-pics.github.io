@@ -185,6 +185,17 @@ const styles = theme => ({
             height: "15%"
         },
     },
+    presentationInnerOverlay: {
+        position: "absolute",
+        bottom: 0,
+        left: 0,
+        padding: 0,
+        margin: 0,
+        width: 256,
+        height: 256,
+        background: "linear-gradient(to top, #010310 5%, #01073057 15%, #0022ff14 25%, transparent)",
+        mixBlendMode: "multiply",
+    },
     donateButton: {
         position: "absolute",
         bottom: 0,
@@ -437,6 +448,18 @@ class AppToolbar extends React.PureComponent {
         });
     };
 
+    _resume_video = () => {
+
+        this.setSt4te({_presentation_open: true}, () => {
+
+            this.forceUpdate(() => {
+
+                var video = document.getElementById("presentation-video");
+                video.play();
+            });
+        });
+    };
+
     render() {
 
         const { classes, ret, camo, _is_pre_reset, _presentation_open, pathname, language, loaded_progress_percent, know_the_settings, _less_than_960w, _swipeable_app_drawer_open, _account_menu_anchor_element, logged_account, jamy_state_of_mind, jamy_enabled, music_enabled, _explosion } = this.st4te;
@@ -513,7 +536,7 @@ class AppToolbar extends React.PureComponent {
                     </Toolbar>
                 </AppBar>
                 {_less_than_960w && <SwipeableDrawer
-                    keepMounted={false}
+                    keepMounted={true}
                     disablePortal={true}
                     transitionDuration={{enter: 125, exit: 75}}
                     anchor="left"
@@ -528,10 +551,11 @@ class AppToolbar extends React.PureComponent {
                     </Toolbar>
                     <DrawerContent logged_account={logged_account} language={language} onClose={this._handle_close_swipeable_app_drawer}/>
                     { _presentation_open ?
-                        <div className={classes.presentation}>
-                            <video width="256" height="256" autoPlay style={{aspectRatio: "1", transform: "translateZ(10px)"}}>
+                        <div className={classes.presentation} onClick={this._resume_video}>
+                            <video id="presentation-video" width="256" height="256" autoPlay style={{aspectRatio: "1", transform: "translateZ(10px)"}}>
                                 <source src="/src/videos/presentation.mp4" type="video/mp4"/>
                             </video>
+                            <div className={classes.presentationInnerOverlay}></div>
                         </div>:
                         <div className={_swipeable_app_drawer_open ? classes.drawerPrivacyHint: classes.drawerPrivacyHintHidden}>
                             <h4 style={{color: "#ffffffff", marginBottom: 0}}>Give them a mask and they're being starting to speak the truth...</h4>

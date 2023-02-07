@@ -116,6 +116,17 @@ const styles = theme => ({
             height: "15%"
         },
     },
+    presentationInnerOverlay: {
+        position: "absolute",
+        bottom: 0,
+        left: 0,
+        padding: 0,
+        margin: 0,
+        width: 256,
+        height: 256,
+        background: "linear-gradient(to top, #010310 5%, #01073057 15%, #0022ff14 25%, transparent)",
+        mixBlendMode: "multiply",
+    },
     closePresentation: {
         position: "absolute",
         bottom: 0,
@@ -240,6 +251,18 @@ class AppDrawer extends React.PureComponent {
         });
     };
 
+    _resume_video = () => {
+
+        this.setSt4te({_presentation_open: true}, () => {
+
+            this.forceUpdate(() => {
+
+                var video = document.getElementById("presentation-video");
+                    video.play();
+            });
+        });
+    };
+
     render() {
 
         const { classes, language, bdi, _backgrds, _presentation_open, _less_than_960w } = this.st4te;
@@ -251,10 +274,11 @@ class AppDrawer extends React.PureComponent {
                     <div className={classes.drawerContainer}>
                         <DrawerContent language={language} onClose={() => {}} />
                         { _presentation_open ?
-                            <div className={classes.presentation}>
-                                <video width="256" height="256" style={{aspectRatio: "1", transform: "translateZ(10px)"}} autoPlay>
+                            <div className={classes.presentation} onClick={this._resume_video}>
+                                <video id="presentation-video" width="256" height="256" style={{aspectRatio: "1", transform: "translateZ(10px)"}} autoPlay>
                                     <source src="/src/videos/presentation.mp4" type="video/mp4"/>
                                 </video>
+                                <div className={classes.presentationInnerOverlay}></div>
                             </div>:
                             <Fade in={true} timeout={600}>
                                 <div className={classes.drawerPrivacyHint}>
