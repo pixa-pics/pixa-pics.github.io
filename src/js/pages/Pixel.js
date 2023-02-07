@@ -102,7 +102,7 @@ const styles = theme => ({
         width: "100%",
         height: "100%",
         maxHeight: "100%",
-        display: "flex",
+        display: "inline-block",
         contain: "paint style size layout !important",
     },
     contentDrawer: {
@@ -166,7 +166,7 @@ const styles = theme => ({
         },
         width: 480,
         overscrollBehavior: "none",
-        display: "flex",
+        display: "inline-block",
         animationFillMode: "both",
         animationName: "$drawer",
         animationDuration: "250ms",

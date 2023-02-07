@@ -73,15 +73,60 @@ const overrides = {
             ".pixelated, .pixelated *, .pixelated:not(g), .pixelated:not(g) *": {
                 imageRendering: "pixelated",
             },
+            "video": {
+                animationName: "$fadin",
+                animationDuration: "550ms",
+                animationFillMode: "both",
+                animationDelay: "50ms",
+                "@global": {
+                    "@keyframes fadin": {
+                        "0%": {filter: "opacity(0)", animationTimingFunction: "linear"},
+                        "20%": {filter: "opacity(0)", animationTimingFunction: "cubic-bezier(0.280, 0.840, 0.420, 1)"},
+                        "100%": {filter: "opacity(1)", animationTimingFunction: "cubic-bezier(0.280, 0.840, 0.420, 1)"},
+                    }
+                },
+            },
+            "div.arrival":{
+                background: "linear-gradient(180deg, #00000078 -25%, #00000061 0%, #00000045 35%, #0000001a 90%, transparent)",
+            },
+            "div.arrival::after":{
+                content: "''",
+                contain: "paint style size layout",
+                position: "fixed",
+                width: "100%",
+                zIndex: 9999999,
+                top: 5,
+                height: "95%",
+                background: "radial-gradient(#00000000 27%, #002bffb5 35%, #00000000 40%, #1000ffab 42.5%, #00000000 45%)",
+                left: 0,
+                backgroundSize: "600% 400%",
+                animationIterationCount: "infinite",
+                animationDelay: "250ms !important",
+                animationFillMode: "both !important",
+                animationTimingFunction: "cubic-bezier(0.4, 0, 0.2, 1) !important",
+                animationName: "$arrival !important",
+                animationDuration: "1500ms !important",
+                backgroundPosition: "50% 50%",
+                mixBlendMode: "color",
+                "@global": {
+                    "@keyframes arrival": {
+                        "0%": {display: "block !important", transform: "translateY(150%)", opacity: .7},
+                        "25%": {display: "block !important", transform: "translateY(50%)", opacity: 0.9},
+                        "50%": {display: "block !important", transform: "translateY(0%)", opacity: 0},
+                        "75%": {display: "block !important", transform: "translateY(-50%)", opacity: 0},
+                        "100%": {display: "block !important", transform: "translateY(-100%)", opacity: 0},
+                    }
+                }
+            },
             ".fade-in-500-500": {
                 verticalAlign: "inherit",
-                animationName: "$bounce",
+                animationName: "$fadin500500",
                 animationDuration: "500ms",
                 animationTimingFunction: "cubic-bezier(0.280, 0.840, 0.420, 1)",
                 animationFillMode: "both",
                 animationDelay: "500ms",
                 "@global": {
-                    "@keyframes bounce": {
+                    "@keyframes fadin500500": {
                         "0%": {filter: "opacity(0)"},
                         "100%": {filter: "opacity(1)"},
                     }

@@ -3548,16 +3548,20 @@ class CanvasPixels extends React.PureComponent {
                 {background: `repeating-conic-gradient(rgb(248 248 248 / 100%) 0% 25%, rgb(235 235 235 / 100%) 0% 50%) left top 50% / calc(200% / ${pxl_width}) calc(200% / ${pxl_height})`}: {};
 
         return (
-            <div onContextMenu={(e) => {e.preventDefault()}} ref={this._set_canvas_container_ref} draggable={"false"} style={{zIndex: 11, boxSizing: "border-box", position: "relative", overflow: "visible", touchAction: "none", userSelect: "none", contain: "paint"}} className={className}>
+            <div onContextMenu={(e) => {e.preventDefault()}}
+                 ref={this._set_canvas_container_ref} draggable={"false"}
+                 style={{zIndex: 11, boxSizing: "border-box", position: "relative", overflow: "visible", touchAction: "none", userSelect: "none", display: "block"}}
+                 className={className}>
                 <div ref={this._set_canvas_wrapper_overflow_ref}
                      className={"Canvas-Wrapper-Overflow" + ( !is_there_new_dimension ? " Shown ": " Not-Shown ")}
                      draggable={"false"}
                      style={{
+                         display: "block",
                          height: "100%",
                          width: "100%",
                          contain: "layout style size paint",
                          overflow: "hidden",
-                         position: "fixed",
+                         position: "absolute",
                          boxSizing: "border-box",
                          touchAction: "manipulation",
                          pointerEvents: "auto",
@@ -3570,6 +3574,7 @@ class CanvasPixels extends React.PureComponent {
                          className={"Canvas-Wrapper " + (_mouse_inside ? " Canvas-Focused ": " " + (tool))}
                          draggable={"false"}
                          style={{
+                             display: "block",
                              contain: "layout style size paint",
                              overflow: "hidden",
                              left: 0,
@@ -3600,8 +3605,9 @@ class CanvasPixels extends React.PureComponent {
                         <canvas
                             draggable={"false"}
                             style={{
+                                display: "block",
                                 zIndex: 2,
-                                position: "fixed",
+                                position: "absolute",
                                 overflow: "hidden",
                                 contain: "layout style size paint",
                                 touchAction: "none",
@@ -3627,6 +3633,7 @@ class CanvasPixels extends React.PureComponent {
                             <div className={"Canvas-Pixels-Cover"}
                                  draggable={"false"}
                                  style={{
+                                     display: "block",
                                      backgroundImage: background_image,
                                      zIndex: 3,
                                      borderRadius: canvas_wrapper_border_radius,
@@ -3634,7 +3641,7 @@ class CanvasPixels extends React.PureComponent {
                                      left: 0,
                                      top: 0,
                                      borderWidth: 0,
-                                     position: "fixed",
+                                     position: "absolute",
                                      width: Math.ceil(Math.floor(pxl_width) * (screen_zoom_ratio * scale.current).toFixed(3) + 2 * padding),
                                      height: Math.ceil(Math.floor(pxl_height) * (screen_zoom_ratio * scale.current).toFixed(3) + 2 * padding),
                                      boxSizing: "content-box",
@@ -3646,9 +3653,10 @@ class CanvasPixels extends React.PureComponent {
                         }
                     </div>
                     <div style={{
+                        display: "block",
                         left: 0,
                         top: 0,
-                        position: "fixed",
+                        position: "absolute",
                         cursor: cursor,
                         height: "100%",
                         width: "100%",
@@ -3660,6 +3668,7 @@ class CanvasPixels extends React.PureComponent {
                         zIndex: 10,
                     }} onContextMenu={(e) => {e.preventDefault()}} />
                     {!is_mobile_or_tablet && <div style={{
+                        display: "block",
                         zIndex: 1,
                         color: canvas_wrapper_background_color,
                         textAlign: "center",

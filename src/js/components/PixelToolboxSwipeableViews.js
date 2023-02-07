@@ -204,43 +204,6 @@ const styles = theme => ({
     relevantTextBlue: {
         color: "#3729c1ff",
     },
-    thanksSponsorsGhost: {
-        opacity: 0,
-        left: 0,
-        userSelect: "none",
-        pointerEvents: "none",
-        padding: "16px 24px 8px 24px",
-        fontFamily: "'Jura'",
-        textTransform: "uppercase",
-        marginBottom: "-8px",
-        marginTop: "16px",
-        overflow: "hidden",
-        boxSizing: "border-box",
-        width: "100%",
-        [theme.breakpoints.down("md")]: {
-            marginBottom: "48px",
-            marginTop: "36px",
-        }
-    },
-    thanksSponsors: {
-        position: "fixed",
-        bottom: 0,
-        left: 0,
-        padding: "16px 24px 8px 24px",
-        fontFamily: "'Jura'",
-        textTransform: "uppercase",
-        marginBottom: "-8px",
-        marginTop: "16px",
-        background: "radial-gradient(farthest-corner, #050126 40%, #000000)",
-        color: "#ddd",
-        overflow: "hidden",
-        boxSizing: "border-box",
-        width: "100%",
-        [theme.breakpoints.down("md")]: {
-            marginBottom: "48px",
-            marginTop: "36px",
-        }
-    },
     listItemIcon: {
         color: theme.palette.secondary.dark
     },
@@ -609,6 +572,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
         const view_name_changed = Boolean(view_name_index !== new_props.view_name_index);
         const something_changed_in_view = Boolean(Boolean(new_props.should_update || should_update) && Boolean(
             layers_changed ||
+            select_mode+"" !== new_props.select_mode+"" ||
             Boolean(too_much_colors_no_vector) !== Boolean(this.st4te.too_much_colors_no_vector) ||
             parseInt(previous_view_name_index) !== parseInt(new_props.previous_view_name_index) ||
             parseInt(layer_index) !== parseInt(new_props.layer_index) ||
@@ -623,12 +587,11 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
             tool+"" !== new_props.tool+"" ||
             parseInt(width) !== parseInt(new_props.width) ||
             parseInt(height) !== parseInt(new_props.height) ||
-            select_mode+"" !== new_props.select_mode+"" ||
             Boolean(pencil_mirror_mode) !== Boolean(new_props.pencil_mirror_mode) ||
             Boolean(is_something_selected) !== Boolean(new_props.is_something_selected) ||
             parseInt(import_size) !== parseInt(new_props.import_size) ||
-            Number(import_colorize) !== Number(new_props.import_colorize) ||
-            parseFloat(filters_preview_progression) !== parseFloat(new_props.filters_preview_progression)
+            (import_colorize | 0) !== (new_props.import_colorize | 0) ||
+            Math.round(filters_preview_progression * 10) !== Math.round(new_props.filters_preview_progression * 10)
         ));
 
         if(must_compute_filter) {
@@ -636,23 +599,16 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
             this.compute_filters_preview();
         }
 
-        if(view_name_changed || something_changed_in_view) {
-            this.setSt4te({...new_props, ...props_override, slider_value: parseFloat(new_props.slider_value), too_much_colors_no_vector}, () => {
+        this.setSt4te({...new_props, ...props_override, slider_value: parseFloat(new_props.slider_value), too_much_colors_no_vector}, () => {
 
-                if( this.st4te.view_name_index === 2){
+            if(something_changed_in_view) {
 
-                    this.update_cache_view(null, true);
+                this.update_cache_view(null, true);
+            }else if(view_name_changed) {
 
-                }else if(something_changed_in_view) {
-
-                    this.update_cache_view(null, true);
-
-                }else{
-
-                    this.forceUpdate();
-                }
-            });
-        }
+                this.forceUpdate();
+            }
+        });
     }
 
     compute_filters_preview = () => {
@@ -692,7 +648,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
         this.setSt4te({_list_sub_header_opened: (this.st4te._list_sub_header_opened && this.st4te._list_sub_header_opened === name) ? "": name}, () => {
 
-            this.forceUpdate();
+            this.update_cache_view(null, true);
         });
     };
 
@@ -2368,14 +2324,6 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
                 {this.get_after_action_panel(index)}
 
-                <div className={classes.thanksSponsorsGhost} >
-                    <h4>INTERESTED INTO SPONSORING? Please email-us at: <a href={"mailto:pixa.pics@protonmail.com"}>pixa.pics@protonmail.com</a>.</h4>
-                    <h3>>>> Thanks for support!</h3>
-                </div>
-                <div className={classes.thanksSponsors}>
-                    <h4>INTERESTED INTO SPONSORING? Please email-us at: <a style={{color: "#3f9bd3"}} href={"mailto:pixa.pics@protonmail.com"}>pixa.pics@protonmail.com</a>.</h4>
-                    <h3>>>> Thanks for support</h3>
-                </div>
             </List>
         );
 

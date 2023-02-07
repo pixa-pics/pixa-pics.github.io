@@ -194,8 +194,17 @@ const styles = theme => ({
         margin: 0,
         width: 256,
         height: 256,
-        background: "linear-gradient(to top, #010310 5%, #01073057 15%, #0022ff14 25%, transparent)",
-        mixBlendMode: "multiply",
+        "&::before": {
+            content: "''",
+            position: "absolute",
+            bottom: 0,
+            left: 0,
+            padding: 0,
+            margin: 0,
+            width: 256,
+            height: 256,
+            background: "linear-gradient(to top, #010310 5%, #01073057 15%, #0022ff14 25%, transparent)"
+        }
     },
     donateButton: {
         position: "absolute",
@@ -556,7 +565,7 @@ class AppToolbar extends React.PureComponent {
                             <video id="presentation-video" width="256" height="256" autoPlay style={{aspectRatio: "1", transform: "translateZ(10px)"}}>
                                 <source src="/src/videos/presentation.mp4" type="video/mp4"/>
                             </video>
-                            <div className={classes.presentationInnerOverlay}></div>
+                            <div className={classes.presentationInnerOverlay + " arrival "}></div>
                         </div>:
                         <div className={_swipeable_app_drawer_open ? classes.drawerPrivacyHint: classes.drawerPrivacyHintHidden}>
                             <h4 style={{color: "#ffffffff", marginBottom: 0}}>Give them a mask and they're being starting to speak the truth...</h4>

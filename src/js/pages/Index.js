@@ -43,16 +43,16 @@ const styles = theme => ({
         maxWidth: "100%",
     },
     content: {
-        position: "fixed",
+        position: "absolute",
         contain: "size paint style layout",
-        width: "calc(100% - 64px)",
+        width: "calc(100vw - 64px)",
         marginLeft: 64,
-        height: "calc(100% - 64px)",
+        height: "calc(100vh - 64px)",
         [theme.breakpoints.down("xs")]: {
-            height: "calc(100% - 56px)",
+            height: "calc(100vh - 56px)",
         },
         [theme.breakpoints.down("sm")]: {
-            width: "100%",
+            width: "100vw",
             marginLeft: 0,
         }
     },

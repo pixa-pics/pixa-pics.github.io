@@ -12,6 +12,8 @@ const styles = theme => ({
     dialogMobileFullscreen: {
         "& .MuiPaper-root": {
             maxHeight: "calc(100% - -24px)",
+            contentVisibility: "auto",
+            contain: "paint style layout",
         }
     },
     dialogContentContainer: {
@@ -95,7 +97,7 @@ class PixelDialogCreate extends React.PureComponent {
 
     constructor(props) {
         super(props);
-        this.state = {
+        this.st4te = {
             classes: props.classes,
             keepMounted: props.keepMounted || false,
             open: props.open,
@@ -106,11 +108,29 @@ class PixelDialogCreate extends React.PureComponent {
         };
     };
 
+    setSt4te(st4te, callback) {
+
+        let keys = Object.keys(st4te);
+        let keys_length = keys.length | 0;
+        let key = "";
+
+        for (let i = 0; (i|0) < (keys_length|0); i = (i+1|0)>>>0) {
+
+            key = keys[i]+"";
+            this.st4te[key] = st4te[key];
+        }
+
+        if(typeof callback === "function") {
+
+            callback();
+        }
+    }
+
     componentDidMount() {
 
         actions.trigger_loading_update(100);
 
-        this.setState({
+        this.setSt4te({
             _paperplane: <Lottie
                 id={"paperplane"}
                 loop={true}
@@ -126,25 +146,38 @@ class PixelDialogCreate extends React.PureComponent {
         }, () => {
 
             this.forceUpdate();
-
-            try {
-                var video = document.getElementById("presentation-video");
-                video.pause();
-            } catch(e){}
         })
     }
 
     componentWillReceiveProps(new_props) {
 
+        const open_changed = this.st4te.open !== new_props.open;
         if(
-            this.state.open !== new_props.open ||
-            this.state.size !== new_props.size ||
-            Object.keys(this.state.pixel_arts).join("-") !== Object.keys(new_props.pixel_arts).join("-")
+            open_changed ||
+            this.st4te.size !== new_props.size ||
+            Object.keys(this.st4te.pixel_arts).join("-") !== Object.keys(new_props.pixel_arts).join("-")
         ) {
 
-            this.setState(new_props, () => {
+            this.setSt4te(new_props, () => {
 
                 this.forceUpdate();
+                
+                if(open_changed) {
+                    if(this.st4te.open) {
+
+                        try {
+                            var video = document.getElementById("presentation-video");
+                            video.pause();
+                        } catch(e){}
+
+                    }else {
+
+                        try {
+                            var video = document.getElementById("presentation-video");
+                            video.play();
+                        }catch(e){}
+                    }
+                }
             });
         }
     }
@@ -165,6 +198,14 @@ class PixelDialogCreate extends React.PureComponent {
         }
     };
 
+    _resume_video = () => {
+
+        try {
+            var video = document.getElementById("tutorial-video");
+            video.play();
+        }catch(e){}
+    };
+
     render() {
 
         const {
@@ -176,7 +217,7 @@ class PixelDialogCreate extends React.PureComponent {
             theme_day,
             _paperplane,
             _ufo
-        } = this.state;
+        } = this.st4te;
 
         const _is_ufo = !theme_day;
 
@@ -247,7 +288,7 @@ class PixelDialogCreate extends React.PureComponent {
                                     boxSizing: "content-box",
                                     maxWidth: "calc(100vw - 96px)",
                                 }}>
-                                    <video width="512" height="288" style={{transform: "translateZ(10px)", maxWidth: "calc(100vw - 48px)"}} autoPlay>
+                                    <video width="512" height="288" style={{transform: "translateZ(10px)", maxWidth: "calc(100vw - 48px)"}} id="tutorial-video" onClick={this._resume_video}>
                                         <source src="/src/videos/tutorial.mp4" type="video/mp4"/>
                                     </video>
                                 </div> :
