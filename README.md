@@ -43,12 +43,14 @@
 
 ![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/LAB.png)
 
+![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/EDITOR6.png)
+> FILE SIZE: 1.5 kB Only! [See result in x24 PNG!](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/pixelart.png)
+
 ![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/EDITOR5.png)
 > FILE SIZE: 3.4 kB Only! [See result in Infinite SVG!](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/businesswoman.svg)
 
 ![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/EDITOR4.png)
 > FILE SIZE: 4.2 kB Only! [See result in x24 PNG!](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/sportgalaxy.png)
-
 
 ![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/PHONE.png)
 
