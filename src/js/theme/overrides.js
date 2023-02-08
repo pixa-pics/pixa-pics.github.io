@@ -247,20 +247,14 @@ const overrides = {
             },
             ".MuiBackdrop-root": {
                 backgroundColor: "rgba(6, 14, 35, .5)",
-                backdropFilter: "blur(9px)",
-                webkitBackdropFilter: "blur(9px)",
                 transform: "opacity(1)",
-                animation: "$fadeBlur 400ms cubic-bezier(0.4, 0, 0.2, 1)",
+                animation: "$fadeBlur 225ms cubic-bezier(0.4, 0, 0.2, 1)",
                 "@global": {
                     "@keyframes fadeBlur": {
                         "0%": {
-                            backdropFilter: "blur(9px)",
-                            webkitBackdropFilter: "blur(9px)",
                             transform: "opacity(0)",
                         },
                         "100%": {
-                            backdropFilter: "blur(9px)",
-                            webkitBackdropFilter: "blur(9px)",
                             transform: "opacity(1)",
                         },
                     }
