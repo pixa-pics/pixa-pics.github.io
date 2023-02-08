@@ -6,15 +6,7 @@
 
 ## PIXA.PICS | AI Generated promotional video
 
-[![AI Generated promotional video of pixe.pics](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/VIDEO.png)](https://www.youtube.com/watch?v=GZ95Sk8QIR4)
-
-<details>
-  <summary>Comments on the role of NFTs for the domain of pixel art</summary>
-
-  ![Real user dialog on NFTs and pixel art compatibility](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/DIALOG_ALPHA.png)
-
-</details>
-
+[![AI Generated promotional video of pixe.pics](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/VIDEO2.png)](https://www.youtube.com/watch?v=V-6-m4bHeJU)
 
 ****
 
