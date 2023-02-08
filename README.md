@@ -44,8 +44,10 @@
 ![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/LAB.png)
 
 ![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/EDITOR3.png)
+> FILE SIZE: 9.2 kB Only!
 
-![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/EDITOR4.png)
+![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/EDITOR4.png)
+> FILE SIZE: 4.2 kB Only!
 
 ![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/PHONE.png)
 
