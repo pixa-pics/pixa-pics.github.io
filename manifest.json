@@ -1,8 +1,8 @@
 {
   "manifest_version": 2,
-  "version": "1.0.3.0",
+  "version": "1.1.0.0",
   "author": "Affolter Matias",
-  "name": "PIXA PICS",
+  "name": "PIXA.PICS",
   "start_url": "/",
   "scope": "/",
   "serviceworker": {
@@ -36,56 +36,56 @@
   ],
   "screenshots" : [
     {
-      "src": "/src/images/screenshots/pixa.pics_1.png",
+      "src": "/src/images/screenshots/pixa.pics_1.jpg",
       "sizes": "1080x1920",
       "type": "image/png",
       "platform": "narrow",
       "label": "View 1 - editor"
     },
     {
-      "src": "/src/images/screenshots/pixa.pics_2.png",
+      "src": "/src/images/screenshots/pixa.pics_2.jpg",
       "sizes": "1080x1920",
       "type": "image/png",
       "platform": "narrow",
       "label": "View 2 - editor"
     },
     {
-      "src": "/src/images/screenshots/pixa.pics_3.png",
+      "src": "/src/images/screenshots/pixa.pics_3.jpg",
       "sizes": "1080x1920",
       "type": "image/png",
       "platform": "narrow",
       "label": "View 3 - editor"
     },
     {
-      "src": "/src/images/screenshots/pixa.pics_4.png",
+      "src": "/src/images/screenshots/pixa.pics_4.jpg",
       "sizes": "1080x1920",
       "type": "image/png",
       "platform": "narrow",
       "label": "View 4 - editor"
     },
     {
-      "src": "/src/images/screenshots/pixa.pics_5.png",
+      "src": "/src/images/screenshots/pixa.pics_5.jpg",
       "sizes": "1080x1920",
       "type": "image/png",
       "platform": "narrow",
       "label": "View 5 - editor"
     },
     {
-      "src": "/src/images/screenshots/pixa.pics_6.png",
+      "src": "/src/images/screenshots/pixa.pics_6.jpg",
       "sizes": "1080x1920",
       "type": "image/png",
       "platform": "narrow",
       "label": "View 6 - editor"
     },
     {
-      "src": "/src/images/screenshots/pixa.pics_7.png",
+      "src": "/src/images/screenshots/pixa.pics_7.jpg",
       "sizes": "1080x1920",
       "type": "image/png",
       "platform": "narrow",
       "label": "View 7 - editor"
     },
     {
-      "src": "/src/images/screenshots/pixa.pics_8.png",
+      "src": "/src/images/screenshots/pixa.pics_8.jpg",
       "sizes": "1080x1920",
       "type": "image/png",
       "platform": "narrow",
