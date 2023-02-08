@@ -1,7 +1,7 @@
 "use strict";
-var REQUIRED_CACHE = "unless-update-cache-v621-required";
-var USEFUL_CACHE = "unless-update-cache-v621-useful";
-var STATIC_CACHE = "unless-update-cache-v621-static";
+var REQUIRED_CACHE = "unless-update-cache-v622-required";
+var USEFUL_CACHE = "unless-update-cache-v622-useful";
+var STATIC_CACHE = "unless-update-cache-v622-static";
 var MAIN_CHILD_CHUNK_REGEX = /chunk_(main_[a-z0-9]+)\.min\.js$/i;
 var CHILD_CHUNK_REGEX = /chunk_([0-9]+)\.min\.js$/i;
 
@@ -81,7 +81,40 @@ self.addEventListener("fetch", function(event) {
     const url = event.request.url;
     const same_site = true //event.request.referrer.startsWith(U.hostname);
 
-    if(url.startsWith("data:image") || url.startsWith("blob:http") || url.startsWith("data:application")) {
+    if (event.request.headers.get('range')) {
+        var pos = Number(/^bytes\=(\d+)\-$/g.exec(event.request.headers.get('range'))[1]);
+
+        try {
+            event.respondWith(
+                static_cache.then(function(cache) {
+                    return cache.match(event.request.url).then(function (response) {
+                        return response.status === 200 ? response.clone(): fetch(url).then(function (response) { // Fetch, clone, and serve
+                            if(response.status === 200) { cache.put(url, response.clone());} return Promise.resolve(response.clone());
+                        });
+                    }).catch(function(){
+                        return fetch(url).then(function (response) { // Fetch, clone, and serve
+                            if(response.status === 200) { cache.put(url, response.clone());} return Promise.resolve(response.clone());
+                        });
+                    }).then(function(response) {
+                        return response.arrayBuffer().then(function (ab){
+                            return new Response(
+                                ab.slice(pos),
+                                {
+                                    status: 206,
+                                    statusText: 'Partial Content',
+                                    headers: [
+                                        ['Content-Type', 'video/mp4'],
+                                        ['Content-Range', 'bytes ' + pos + '-' + (ab.byteLength - 1) + '/' + ab.byteLength]]
+                                });
+                        });
+                    });
+                }))
+        }catch(e){
+
+            event.respondWith(fetch(event.request));
+        }
+
+    }else if(url.startsWith("data:image") || url.startsWith("blob:http") || url.startsWith("data:application")) {
 
         event.respondWith(Promise.resolve(fetch(url)));
 
@@ -212,48 +245,19 @@ self.addEventListener("fetch", function(event) {
 
     }else if(Boolean(url.endsWith(".wav") || url.endsWith(".mp3") || url.endsWith(".mp4")) && same_site) {
 
-        if (event.request.headers.get('range') && url.endsWith(".mp4")) {
-            var pos = Number(/^bytes\=(\d+)\-$/g.exec(event.request.headers.get('range'))[1]);
-            event.respondWith(
-                static_cache.then(function(cache) {
-                        return cache.match(event.request.url).then(function (response) {
-                            return response.status === 200 ? response.clone(): fetch(url).then(function (response) { // Fetch, clone, and serve
-                                if(response.status === 200) { cache.put(url, response.clone());} return Promise.resolve(response.clone());
-                            });
-                        }).catch(function(){
-                            return fetch(url).then(function (response) { // Fetch, clone, and serve
-                                if(response.status === 200) { cache.put(url, response.clone());} return Promise.resolve(response.clone());
-                            });
-                        }).then(function(response) {
-                            return response.arrayBuffer().then(function (ab){
-                                return new Response(
-                                    ab.slice(pos),
-                                    {
-                                        status: 206,
-                                        statusText: 'Partial Content',
-                                        headers: [
-                                            ['Content-Type', 'video/mp4'],
-                                            ['Content-Range', 'bytes ' + pos + '-' + (ab.byteLength - 1) + '/' + ab.byteLength]]
-                                    });
-                            });
-                        });
-                }))
-        }else {
-
-            event.respondWith(
-                static_cache.then(function (cache) {
-                    return cache.match(url).then(function (response) {
-                        return response.status === 200 ? response.clone(): fetch(url).then(function (response) { // Fetch, clone, and serve
-                            if(response.status === 200) { cache.put(url, response.clone());} return Promise.resolve(response.clone());
-                        });
-                    }).catch(function(){
-                        return fetch(url).then(function (response) { // Fetch, clone, and serve
-                            if(response.status === 200) { cache.put(url, response.clone());} return Promise.resolve(response.clone());
-                        });
+        event.respondWith(
+            static_cache.then(function (cache) {
+                return cache.match(url).then(function (response) {
+                    return response.status === 200 ? response.clone(): fetch(url).then(function (response) { // Fetch, clone, and serve
+                        if(response.status === 200) { cache.put(url, response.clone());} return Promise.resolve(response.clone());
                     });
-                })
-            );
-        }
+                }).catch(function(){
+                    return fetch(url).then(function (response) { // Fetch, clone, and serve
+                        if(response.status === 200) { cache.put(url, response.clone());} return Promise.resolve(response.clone());
+                    });
+                });
+            })
+        );
 
     }else if(Boolean(url.endsWith(".woff2") || url.endsWith(".ttf") || url.endsWith(".css") || url.endsWith(".json")) && same_site ) {
 
