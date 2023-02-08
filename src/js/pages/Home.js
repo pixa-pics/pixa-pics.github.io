@@ -351,9 +351,9 @@ class Home extends React.PureComponent {
 
     componentDidMount() {
 
-        const all_image_name_infographics = ["Luck.png", "Luck.svg", "Businesswoman.png", "Businesswoman.svg", "Lips.png", "Lips.svg", "Universewoman.png", "Universewoman.svg", "Nuclear.png", "Nuclear.svg"];
+        const all_image_name_infographics = ["Luck.png", "Luck.svg", "Businesswoman2.png", "Businesswoman2.svg", "Lips.png", "Lips.svg", "Universewoman.png", "Universewoman.svg", "Nuclear.png", "Nuclear.svg", "Businesswoman.png", "Businesswoman.svg"];
 
-        let _image_index = -1;
+        let _image_index = 0;
         let _image_name_infographics = all_image_name_infographics[_image_index];
 
         let _image_auto_interval = setInterval( () => {
