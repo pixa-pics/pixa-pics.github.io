@@ -39,9 +39,13 @@
          alt="GitHub pull requests" /></a>
 </p>
 
+---
+
 ![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/LAB.png)
 
 ![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/EDITOR3.png)
+
+![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/EDITOR4.png)
 
 ![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/PHONE.png)
 
