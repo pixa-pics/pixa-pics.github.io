@@ -219,6 +219,7 @@ const styles = theme => ({
         maxWidth: "1200px",
         fontWeight: "bold",
         fontSize: "64px",
+        verticalAlign: "text-bottom",
         "& sup": {
             fontSize: "0.3em",
             opacity: "0.6",
@@ -350,7 +351,7 @@ class Home extends React.PureComponent {
 
     componentDidMount() {
 
-        const all_image_name_infographics = ["Robot.png", "Robot.svg", "Labowoman.png", "Labowoman.svg", "Goldwoman.png", "Goldwoman.svg", "Businesswoman.png", "Businesswoman.svg", "Businesswoman2.png", "Businesswoman2.svg"];
+        const all_image_name_infographics = ["Robot.png", "Robot.svg", "Astro.png", "Astro.svg", "Labowoman.png", "Labowoman.svg", "Goldwoman.png", "Goldwoman.svg", "Businesswoman.png", "Businesswoman.svg", "Businesswoman2.png", "Businesswoman2.svg"];
 
         let _image_index = -1;
         let _image_name_infographics;
@@ -508,48 +509,46 @@ class Home extends React.PureComponent {
                     </Fade>
                 </div>
                 <div className={classes.headerContainer} style={{textShadow: "0px 0px 9px #57bbff"}}>
-                    <Fade in={true} timeout={125}>
+                    <Fade in={true} timeout={250}>
                         <h1 className={classes.titleh1}>
-                            <span className={classes.revelantText} style={{color: "#ffffff"}}>From PICS {_camera} to PIXELARTS {_hundred} and NFTs {_money}</span>
+                            <span className={classes.revelantText} style={{color: "#ffffff"}}>From PICS {_camera} to PIXELARTS {_hundred}<br/>and NFTs {_money}</span>
                         </h1>
                     </Fade>
-                    <Fade in={true} timeout={800}>
+                    <Fade in={true} timeout={250}>
                         <Button className={classes.playVideoButton} type="text" startIcon={<IconPlay/>} onClick={(event) => {this._handle_speed_dial_action(event, "presentation", 1)}}>Intro</Button>
                     </Fade>
-                    <Fade in={true} timeout={1000}>
-                        <Button className={classes.playVideoButton} type="text" onClick={(event) => {this._handle_speed_dial_action(event, "presentation", 2)}}>About</Button>
-                    </Fade>
-                    <Fade in={true} timeout={250}>
-                        <h2 className={classes.titleh2} style={{color: "#000639"}}>
-                            <span className={classes.revelantTextDesktop} style={{color: "#fff"}}>Get the MAXIMA of PRIVACY fashionably for real and for the ONLINE-SELF...</span>
-                            <br/>
-                        </h2>
-                    </Fade>
-                    <Fade in={true} timeout={375}>
-                        <h2 className={classes.titleh2} style={{color: "#000639"}}>
-                            <JacketEmojiSvg alt="scientist-jacket-tweemoji" className="emoji-150"/>
-                            <span className={classes.revelantText} style={{color: "#fff"}}> WHILE DRAWING/EDITING</span>
-                            <span className={classes.revelantText} style={{color: "#fff"}}> you can use 55+ tools for pixel art within 7 panels</span>
-                        </h2>
+                    <Fade in={true} timeout={500}>
+                        <Button className={classes.playVideoButton} type="text" startIcon={<IconPlay/>} onClick={(event) => {this._handle_speed_dial_action(event, "presentation", 2)}}>About</Button>
                     </Fade>
                     <Fade in={true} timeout={500}>
-                        <h2 className={classes.titleh2} style={{color: "#000639"}}>
-                            <GlassesEmojiSvg alt="scientist-jacket-tweemoji" style={{verticalAlign: "middle"}} className="emoji-150"/>
-                            <span className={classes.revelantText} style={{color: "#fff"}}> RENDER UNLIMITED PIXEL ART </span>
-                            <span className={classes.revelantText} style={{color: "#fff"}}>in 4K Ultra HD images</span>
+                        <p style={{maxWidth: "50%"}}>
+                            <span className={classes.revelantText} style={{color: "#ffffff"}}>
+                                NFTs and pixel art are revolutionizing the way we think about digital ownership and creativity.
+                                <br/>
+                                By combining the uniqueness and scarcity of traditional collectibles with the limitless potential of digital media, NFTs are opening up new avenues for artists and creators to express themselves and connect with audiences around the world. And pixel art, with its bold lines, bright colors, and playful forms, is the perfect medium to showcase the beauty and versatility of NFTs.
+                            </span>
+                        </p>
+                    </Fade>
+                    <Fade in={true} timeout={750}>
+                        <h2 className={classes.titleh2} style={{color: "#000639", lineHeight: "2.5em"}}>
+                            <span className={classes.revelantTextDesktop} style={{color: "#fff"}}>Enter our lab now! <GlassesEmojiSvg alt="scientist-jacket-tweemoji" style={{verticalAlign: "middle"}} className="emoji-150"/></span>
+                            <br/>
+                            <span className={classes.revelantTextDesktop} style={{color: "#fff"}}>Be a part of the future... <JacketEmojiSvg alt="scientist-jacket-tweemoji" className="emoji-150"/></span>
+                            <br/>
+                            <span className={classes.revelantTextDesktop} style={{color: "#fff"}}>Create your NFT collection today!</span>
                         </h2>
                     </Fade>
-                    <Fade in={true} timeout={625}>
+                    <Fade in={true} timeout={750}>
                         <Button key={_join_now_button_update} className={classes.homeCTAuseit} variant={"contained"} size={"large"} color="primary" onClick={this._go_to_editor}>
                             <ShufflingSpanText placeholder={_join_now_button_update % 5 ? "START " : "JOIN LAB "} text={_join_now_button_update % 5 ? "START " : "JOIN LAB "} animation_delay_ms={_join_now_button_update === 0 ? 3000: 0} animation_duration_ms={1000} />
                             <ScientistEmojiSvg alt="Laboratory decoration" width={24} height={24} style={{transform: "scale(3.5)", width: 24, height: 24, marginRight: "2em", marginLeft: "2em", filter: "drop-shadow(white 0px 0px 6px)", webkitFilter: "drop-shadow(white 0px 0px 6px)"}} className="emoji-150" />
                             <ShufflingSpanText placeholder={_join_now_button_update % 5 ? " SOON" : " NOW"} text={_join_now_button_update % 5 ? " NOW" : " SOON"} app="..." animation_delay_ms={_join_now_button_update === 0 ? 3000: 500} animation_duration_ms={1000} />
                         </Button>
                     </Fade>
-                    <Fade in={true} timeout={700}>
+                    <Fade in={true} timeout={1000}>
                         <p className={classes.subtitleButton}><span><CrownEmojiSvg alt="king-crown-tweemoji" className="emoji"/> Free For Everyone <LightingEmojiSvg alt="sky-lightning-tweemoji" className="emoji"/> Forever Open-Source</span></p>
                     </Fade>
-                    <Fade in={true} timeout={750}>
+                    <Fade in={true} timeout={1000}>
                         <Button className={classes.homeCTAsendit} variant={"contained"} size={"large"} color="primary" onClick={(event) => {this._handle_speed_dial_action(event, "share")}}>
                             <ShufflingSpanText placeholder={_join_now_button_update % 3 ? "SEND IT" : "SHARE NOW"} text={_join_now_button_update % 3 ? "SEND IT" : "SHARE NOW"} animation_delay_ms={_join_now_button_update === 0 ? 3000: 750} animation_duration_ms={750} />
                         </Button>
