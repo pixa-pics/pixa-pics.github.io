@@ -9,8 +9,8 @@ import CrownEmojiSvg from "../notoemoji/react/EmojiU1F451";
 import LightingEmojiSvg from "../notoemoji/react/EmojiU26A1";
 import GlassesEmojiSvg from "../notoemoji/react/EmojiU1F97D";
 import JacketEmojiSvg from "../notoemoji/react/EmojiU1F97C";
-import BrainplodeEmojiSvg from "../notoemoji/react/EmojiU1F92F";
-import DiamondEmojiSvg from "../notoemoji/react/EmojiU1F48E";
+import hundredEmojiSvg from "../notoemoji/react/EmojiU1F4Af";
+import moneyEmojiSvg from "../notoemoji/react/EmojiU1F4B8";
 import ScientistEmojiSvg from "../notoemoji/react/EmojiU1F4681F3Fd200D1F52C";
 import ShufflingSpanText from "../components/ShufflingSpanText";
 
@@ -292,8 +292,8 @@ class Home extends React.PureComponent {
             _infographics_in: true,
             _bii3_opacity: 1,
             _join_now_button_update: 0,
-            _brainplode: <BrainplodeEmojiSvg style={{ height: '1.5em', width: '1.5em' }}/>,
-            _diamond: <DiamondEmojiSvg style={{ height: '1.5em', width: '1.5em' }}/>,
+            _hundred: <hundredEmojiSvg style={{ transform: "translateZ(10px)", height: '1.5em', width: '1.5em' }}/>,
+            _money: <moneyEmojiSvg style={{ transform: "translateZ(10px)", height: '1.5em', width: '1.5em' }}/>,
             _camera: null
         };
     };
@@ -321,12 +321,11 @@ class Home extends React.PureComponent {
 
         setTimeout(() => {
             this.setState({
-                _brainplode: <Lottie
-                    id={"brainplode"}
+                _hundred: <Lottie
+                    id={"hundred"}
                     loop={true}
                     autoplay={true}
-                    initialSegment={[27, 174]}
-                    src="/src/js/notoemoji/lottie/1f92f.json"
+                    src="/src/js/notoemoji/lottie/1f4af.json"
                     style={{ transform: "translateZ(10px)", height: '1.5em', width: '1.5em' }}/>
             }, () => {
 
@@ -336,11 +335,11 @@ class Home extends React.PureComponent {
 
         setTimeout(() => {
             this.setState({
-                _diamond: <Lottie
-                    id={"diamond"}
+                _money: <Lottie
+                    id={"money"}
                     loop={true}
                     autoplay={true}
-                    src="/src/js/notoemoji/lottie/1f48e.json"
+                    src="/src/js/notoemoji/lottie/1f4b8.json"
                     style={{ transform: "translateZ(10px)", height: '1.5em', width: '1.5em' }}/>
             }, () => {
 
@@ -457,7 +456,7 @@ class Home extends React.PureComponent {
 
     render() {
 
-        const { classes, _brainplode, _diamond, _camera, _infographics_fadein_time, _infographics_in, _selected_locales_code } = this.state;
+        const { classes, _hundred, _money, _camera, _infographics_fadein_time, _infographics_in, _selected_locales_code } = this.state;
         let { _image_name_infographics, _join_now_button_update, _settings } = this.state;
        
         let first_image = false;
@@ -511,7 +510,7 @@ class Home extends React.PureComponent {
                 <div className={classes.headerContainer} style={{textShadow: "0px 0px 9px #57bbff"}}>
                     <Fade in={true} timeout={125}>
                         <h1 className={classes.titleh1}>
-                            <span className={classes.revelantText} style={{color: "#ffffff"}}>From PICS {_camera} to PIXELARTS {_brainplode} and NFTs {_diamond}.</span>
+                            <span className={classes.revelantText} style={{color: "#ffffff"}}>From PICS {_camera} to PIXELARTS {_hundred} and NFTs {_money}.</span>
                         </h1>
                     </Fade>
                     <Fade in={true} timeout={800}>
