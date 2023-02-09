@@ -1,3 +1,4 @@
+"use strict";
 import React, { Suspense } from "react";
 import JSLoader from "../utils/JSLoader";
 import { withStyles } from "@material-ui/core";
@@ -151,16 +152,19 @@ class Index extends React.PureComponent {
     }
 
     componentWillMount() {
-
+        "use strict";
         this._update_settings();
         dispatcher.register(this._handle_events.bind(this));
-        this.setSt4te({_did_mount: true});
         const _history_unlisten = this.st4te._history.listen((location, action) => {
             // location is an object like window.location
             this._set_new_pathname_or_redirect(location.location.pathname);
         });
         this._set_new_pathname_or_redirect(this.st4te._history.location.pathname);
+        this.setSt4te({_did_mount: true, _history_unlisten});
+    }
 
+    componentDidMount() {
+        "use strict";
         setTimeout(() => {
 
             // Make Jamy blink every 32 sec in average.
@@ -355,6 +359,8 @@ class Index extends React.PureComponent {
 
     _process_settings_query_result = (error, settings) => {
 
+        "use strict";
+
         function get_now_hours24_with_locale(lc) {
 
             const offset = UTC_OFFSET_PER_COUNTRIES[lc];
@@ -402,7 +408,7 @@ class Index extends React.PureComponent {
         }
     };
 
-    _set_analytics(wait = 0) {
+    _set_analytics = (wait = 0) => {
 
         /* MATOMO TAG MANAGER (ADDON) */
         var _mtm = window._mtm = window._mtm || [];
@@ -476,7 +482,7 @@ class Index extends React.PureComponent {
         }, wait);
     }
 
-    _update_settings() {
+    _update_settings = async () => {
 
         // Call the api to get results of current settings and send it to a callback function
         api.get_settings(this._process_settings_query_result);

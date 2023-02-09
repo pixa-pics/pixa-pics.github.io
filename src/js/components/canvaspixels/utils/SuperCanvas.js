@@ -280,10 +280,10 @@ const SuperCanvas = {
                             x = modulo_uint(index, width);
                             y = divide_uint(minus_uint(index, x), width);
 
-                            if(uint_greater(pr_top_left_x, minus_uint(x, 4))) {pr_top_left_x = max_int(0, minus_uint(x, 4));}
-                            else if(uint_less(pr_bottom_right_x, plus_uint(x, 4))) {pr_bottom_right_x = min_int(width,  plus_uint(x, 4)); }
-                            if(uint_greater(pr_top_left_y, minus_uint(y, 4))) {pr_top_left_y = max_int(0, minus_uint(y, 4));}
-                            else if(uint_less(pr_bottom_right_y, plus_uint(y, 4))) {pr_bottom_right_y = min_int(height, plus_uint(y,4)); }
+                            if(uint_greater(pr_top_left_x, minus_uint(x, 16))) {pr_top_left_x = max_int(0, minus_uint(x, 16));}
+                            else if(uint_less(pr_bottom_right_x, plus_uint(x, 16))) {pr_bottom_right_x = min_int(width,  plus_uint(x, 16)); }
+                            if(uint_greater(pr_top_left_y, minus_uint(y, 16))) {pr_top_left_y = max_int(0, minus_uint(y, 16));}
+                            else if(uint_less(pr_bottom_right_y, plus_uint(y, 16))) {pr_bottom_right_y = min_int(height, plus_uint(y,16)); }
 
                             _state.fp[index|0] = ((value|0)>>>0) & 0xFFFFFFFF;
                         });

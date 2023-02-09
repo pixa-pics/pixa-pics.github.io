@@ -54,6 +54,10 @@
 
 ![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/PHONE.png)
 
+---
+
+> **BONUS:** [Secret large and infinite render (SVG of 896.9 kB)](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/SECRETRENDER.svg)
+
 <img width="222" height="482" src="https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/EDITOR_ANDROID.jpg" align="right" />
 
 ### Lighten it up to 100 - 1000x
