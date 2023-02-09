@@ -288,7 +288,7 @@ class Home extends React.PureComponent {
             _settings: JSON.parse(props.settings),
             _history: HISTORY,
             _image_name_infographics: "data:image/png;base64,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",
-            _infographics_fadein_time: 0,
+            _infographics_fadein_time: 300,
             _infographics_in: true,
             _bii3_opacity: 1,
             _join_now_button_update: 0,
@@ -351,12 +351,12 @@ class Home extends React.PureComponent {
 
     componentDidMount() {
 
-        const all_image_name_infographics = ["Robot.png", "Robot.svg", "Businesswoman.png", "Businesswoman.svg", "Lips.png", "Lips.svg", "Universewoman.png", "Universewoman.svg", "Businesswoman2.png", "Businesswoman2.svg"];
+        const all_image_name_infographics = ["Robot.png", "Robot.svg", "Businesswoman2.png", "Businesswoman2.svg", "Goldwoman.png", "Goldwoman.svg", "Businesswoman.png", "Businesswoman.svg"];
 
-        let _image_index = 0;
-        let _image_name_infographics = all_image_name_infographics[_image_index];
+        let _image_index = -1;
+        let _image_name_infographics;
 
-        let _image_auto_interval = setInterval( () => {
+        const set_new_image_carousel = () => {
 
             _image_index++;
             _image_index = _image_index % all_image_name_infographics.length;
@@ -376,8 +376,11 @@ class Home extends React.PureComponent {
                     }, 4000);
                 });
             });
+        };
 
-        }, 4500);
+        set_new_image_carousel();
+
+        let _image_auto_interval = setInterval( set_new_image_carousel, 4500);
 
         const _button_interval = setInterval(() => {
 
@@ -385,7 +388,7 @@ class Home extends React.PureComponent {
 
                 this.forceUpdate();
             });
-        }, 24 * 1000);
+        }, 50 * 1000);
 
         this.setState({_image_auto_interval, _button_interval});
     }
@@ -499,9 +502,9 @@ class Home extends React.PureComponent {
                     </Grow>}
                     <Fade in={true} timeout={750}>
                         <h2 className={classes.backgroundImageInfo} style={{filter: "drop-shadow(#ffffff44 0px 0px 4px)", color: "#ffffff", backgroundColor: "rgba(0,103,255,0.4)", padding: 16, textAlign: "center", borderRadius: "4px"}}>
-                            <span style={{color: "#ffffff", fontSize: "0.75em"}}>REAL INFINITE "SVG" RENDERING...</span>
+                            <span style={{color: "#ffffff", fontSize: "0.75em"}}>RENDER ANYTHING IN "SVG"...</span>
                             <br/>
-                            <span style={{fontSize: "1em", color: "#72a4ff", filter: "drop-shadow(0px 0px 4px darkgreen)"}}>TRY IT RIGHT «NOW»!</span>
+                            <span style={{fontSize: "1em", color: "#a0c1ff", filter: "drop-shadow(0px 0px 4px darkgreen)"}}>TRY IT RIGHT «NOW»!</span>
                         </h2>
                     </Fade>
                 </div>

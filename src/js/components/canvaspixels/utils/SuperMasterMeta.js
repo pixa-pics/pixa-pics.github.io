@@ -92,6 +92,7 @@ const SuperMasterMeta = {
                 return new Promise(function (resolve, reject) {
 
                     let promise = this;
+                    let _state = state;
                     // Only operate on canvas context if existing
                     if (meta.super_canvas.ok()) {
 
@@ -109,11 +110,7 @@ const SuperMasterMeta = {
                             _pxl_indexes_of_old_shape,
                             _pxl_indexes_of_selection_drawn,
                             _previous_imported_image_pxls_positioned_keyset,
-                        } = state;
-
-                        let _pxl_indexes_of_selection_drawn_temp = new Set(Array.from(_pxl_indexes_of_selection_drawn)),
-                            _pxl_indexes_of_old_shape_temp = new Set(Array.from(_pxl_indexes_of_old_shape)),
-                            _old_pxls_hovered_temp = new Set(Array.from(_old_pxls_hovered));
+                        } = _state;
 
                         // Importing state variables
                         let {
@@ -155,7 +152,7 @@ const SuperMasterMeta = {
                                 pxl_height: parseInt(sizes.height)
                             });
                             // Tell there were new dimension
-                            state._is_there_new_dimension = true;
+                            _state._is_there_new_dimension = true;
                             // Update html for css animation
                             notifiers.update(false, false).then(function () {
                                 render()
@@ -169,6 +166,7 @@ const SuperMasterMeta = {
 
                         function render() {
 
+                            _old_pxls_hovered.add(_pxls_hovered | 0);
                             // This is a list of color index that we explore
                             const colors_in_current_layer = _s_pxl_colors[_layer_index];
                             const pixels_in_current_layer = _s_pxls[_layer_index];
@@ -254,11 +252,11 @@ const SuperMasterMeta = {
                             for (let index = 0; int_less(index, full_pxls_length); index = plus_uint(index, 1)) {
 
                                 bool_new_hover = uint_equal(_pxls_hovered, index|0);
-                                bool_old_hover = _old_pxls_hovered_temp.has(index|0);
+                                bool_old_hover = _old_pxls_hovered.has(index|0);
                                 bool_new_shape = _pxl_indexes_of_current_shape.has(index|0);
-                                bool_old_shape = _pxl_indexes_of_old_shape_temp.has(index|0);
+                                bool_old_shape = _pxl_indexes_of_old_shape.has(index|0);
                                 bool_new_selection = _pxl_indexes_of_selection.has(index|0);
-                                bool_old_selection = _pxl_indexes_of_selection_drawn_temp.has(index|0);
+                                bool_old_selection = _pxl_indexes_of_selection_drawn.has(index|0);
                                 bool_new_import = imported_image_pxls_positioned_keyset.has(index|0);
                                 bool_old_import = _previous_imported_image_pxls_positioned_keyset.has(index|0);
                                 bool_new_pixel = uint_not_equal(full_pxls[index|0], _old_full_pxls[index|0]);
@@ -267,6 +265,7 @@ const SuperMasterMeta = {
                                     clear_canvas ||
                                     bool_new_import ||
                                     bool_new_pixel ||
+                                    bool_old_hover ||
                                     bool_new_hover != bool_old_hover ||
                                     bool_new_shape != bool_old_shape ||
                                     bool_new_selection != bool_old_selection ||
@@ -305,17 +304,17 @@ const SuperMasterMeta = {
                                     }
 
                                     if (!bool_new_hover && bool_old_hover) {
-                                        _old_pxls_hovered_temp.delete(index | 0);
+                                        _old_pxls_hovered.delete(index | 0);
                                     } else if (bool_new_hover && !bool_old_hover) {
-                                        _old_pxls_hovered_temp.add(index | 0);
+                                        _old_pxls_hovered.add(index | 0);
                                     }else if (!bool_new_shape && bool_old_shape) {
-                                        _pxl_indexes_of_old_shape_temp.delete(index | 0);
+                                        _pxl_indexes_of_old_shape.delete(index | 0);
                                     } else if (bool_new_shape && !bool_old_shape) {
-                                        _pxl_indexes_of_old_shape_temp.add(index | 0);
+                                        _pxl_indexes_of_old_shape.add(index | 0);
                                     }else if (!bool_new_selection && bool_old_selection) {
-                                        _pxl_indexes_of_selection_drawn_temp.delete(index | 0);
+                                        _pxl_indexes_of_selection_drawn.delete(index | 0);
                                     } else if (bool_new_selection && !bool_old_selection) {
-                                        _pxl_indexes_of_selection_drawn_temp.add(index | 0);
+                                        _pxl_indexes_of_selection_drawn.add(index | 0);
                                     }
                                 }
                             }
@@ -330,18 +329,15 @@ const SuperMasterMeta = {
                                                 meta.sraf.run_frame(() => {
                                                     meta.super_canvas.render(b2).then(function () {
 
-                                                        state._previous_imported_image_pxls_positioned_keyset = imported_image_pxls_positioned_keyset;
-                                                        state._old_selection_pair_highlight = _selection_pair_highlight;
-                                                        state._old_layers_string_id = old_layers_string_id;
-                                                        state._old_full_pxls = full_pxls;
-                                                        state._last_paint_timestamp = requested_at;
-                                                        state._did_hide_canvas_content = hide_canvas_content;
-                                                        state._old_pxl_width = parseInt(pxl_width);
-                                                        state._old_pxl_height = parseInt(pxl_height);
-                                                        state._is_there_new_dimension = false;
-                                                        state._pxl_indexes_of_selection_drawn = _pxl_indexes_of_selection_drawn_temp;
-                                                        state._pxl_indexes_of_old_shape = _pxl_indexes_of_old_shape_temp;
-                                                        state._old_pxls_hovered = _old_pxls_hovered_temp;
+                                                        _state._previous_imported_image_pxls_positioned_keyset = imported_image_pxls_positioned_keyset;
+                                                        _state._old_selection_pair_highlight = _selection_pair_highlight;
+                                                        _state._old_layers_string_id = old_layers_string_id;
+                                                        _state._old_full_pxls = full_pxls;
+                                                        _state._last_paint_timestamp = requested_at;
+                                                        _state._did_hide_canvas_content = hide_canvas_content;
+                                                        _state._old_pxl_width = parseInt(pxl_width);
+                                                        _state._old_pxl_height = parseInt(pxl_height);
+                                                        _state._is_there_new_dimension = false;
                                                         resolve();
                                                     });
                                                 }, is_there_new_dimension, false);
@@ -351,7 +347,7 @@ const SuperMasterMeta = {
                                             });
                                         }).catch(function () {
 
-                                            state._is_there_new_dimension = is_there_different_dimension;
+                                            _state._is_there_new_dimension = is_there_different_dimension;
                                             notifiers.update(false, true).then(function () {
                                                 setTimeout(promise, 10, resolve, reject)
                                             }).catch(function () {

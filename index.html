@@ -45,6 +45,7 @@
                 content-visibility: initial;
                 position: fixed;
                 will-change: auto;
+                overflow: hidden;
             }
             body.loading[datainitiated=true] > #app {
                 contain: paint style layout;
@@ -202,13 +203,14 @@
                         }
 
                         if(clean){
-                            var all_hrefs = new Array(0).concat(_PRE_FILES, _POST_FILES);
+                            /*var all_hrefs = new Array(0).concat(_PRE_FILES, _POST_FILES);
                             for (i = 0; i < all_hrefs.length; i++) {
-                                ss = all_hrefs[i];
-                                if (ss.endsWith(".js")) {
-                                    document.querySelectorAll('script[src$="' + ss + '"]').forEach(function (node) {node.remove();});
-                                }
-                            }
+                               ss = all_hrefs[i];
+                               if (ss.endsWith(".js")) {
+                                   document.querySelectorAll('script[src$="' + ss + '"]').forEach(function (node) {node.remove();});
+                               }
+                           }*/
+                            document.body.innerText = "";
                         }
 
                         for (i = 0; i < hrefs.length; i++) {

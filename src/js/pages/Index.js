@@ -285,9 +285,10 @@ class Index extends React.PureComponent {
                     break;
 
                 case "LOAD_WITH":
-                    _history.push("/pixel");
                     this.setSt4te({_load_with: event.data.b64}, () => {
-                        this.forceUpdate()
+                        this.forceUpdate(() => {
+                            _history.push("/pixel");
+                        })
                     });
                     break;
 
