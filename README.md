@@ -56,7 +56,7 @@
 
 ---
 
-> **BONUS:** [Secret large and infinite render (SVG of 896.9 kB)](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/SECRETRENDER.svg)
+> **BONUS:** [Large and infinite size rendering (SVG of ~ 1 mB)](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/SECRETRENDER2.svg)
 
 <img width="222" height="482" src="https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/EDITOR_ANDROID.jpg" align="right" />
 
