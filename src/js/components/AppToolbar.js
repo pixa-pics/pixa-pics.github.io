@@ -237,8 +237,9 @@ class AppToolbar extends React.PureComponent {
             jamy_enabled: props.jamy_enabled,
             music_enabled: props.music_enabled,
             count_presentation_open: props.count_presentation_open,
+            presentation_n: props.presentation_n,
             _history: HISTORY,
-            _presentation_open: false,
+            _presentation_open: props.count_presentation_open > 0,
             _swipeable_app_drawer_open: false,
             _account_menu_anchor_element: null,
             _look_much_jamy: false,
@@ -315,6 +316,7 @@ class AppToolbar extends React.PureComponent {
             new_props.jamy_state_of_mind !== this.st4te.jamy_state_of_mind ||
             new_props.jamy_enabled !== this.st4te.jamy_enabled ||
             new_props.music_enabled !== this.st4te.music_enabled ||
+            new_props.presentation_n !== this.st4te.presentation_n ||
             reopen_presentation
         );
 
@@ -469,9 +471,21 @@ class AppToolbar extends React.PureComponent {
         });
     };
 
+    _resume_video2 = () => {
+
+        this.setSt4te({_presentation_open: true}, () => {
+
+            this.forceUpdate(() => {
+
+                var video = document.getElementById("presentation-video-2");
+                video.play();
+            });
+        });
+    };
+
     render() {
 
-        const { classes, ret, camo, _is_pre_reset, _presentation_open, pathname, language, loaded_progress_percent, know_the_settings, _less_than_960w, _swipeable_app_drawer_open, _account_menu_anchor_element, logged_account, jamy_state_of_mind, jamy_enabled, music_enabled, _explosion } = this.st4te;
+        const { classes, ret, camo, _is_pre_reset, presentation_n, _presentation_open, pathname, language, loaded_progress_percent, know_the_settings, _less_than_960w, _swipeable_app_drawer_open, _account_menu_anchor_element, logged_account, jamy_state_of_mind, jamy_enabled, music_enabled, _explosion } = this.st4te;
 
         const JAMY = {
             angry: <JamyAngry className={classes.jamy} />,
@@ -560,12 +574,19 @@ class AppToolbar extends React.PureComponent {
                     </Toolbar>
                     <DrawerContent logged_account={logged_account} language={language}/>
                     { _presentation_open ?
-                        <div className={classes.presentation} onClick={this._resume_video}>
-                            <video id="presentation-video" width="256" height="256" autoPlay style={{aspectRatio: "1", transform: "translateZ(10px)"}}>
-                                <source src="/src/videos/presentation.mp4" type="video/mp4"/>
-                            </video>
-                            <div className={classes.presentationInnerOverlay + " arrival "}></div>
-                        </div>:
+                        presentation_n === 1 ?
+                            <div className={classes.presentation} onClick={this._resume_video}>
+                                <video id="presentation-video" width="256" height="256" autoPlay style={{aspectRatio: "1", transform: "translateZ(10px)"}}>
+                                    <source src="/src/videos/presentation.mp4" type="video/mp4"/>
+                                </video>
+                                <div className={classes.presentationInnerOverlay + " arrival "}></div>
+                            </div>:
+                            <div className={classes.presentation} onClick={this._resume_video2}>
+                                <video id="presentation-video-2" width="256" height="256" autoPlay style={{aspectRatio: "1", transform: "translateZ(10px)"}}>
+                                    <source src="/src/videos/presentation2.mp4" type="video/mp4"/>
+                                </video>
+                                <div className={classes.presentationInnerOverlay + " arrival "}></div>
+                            </div>:
                         <div className={_swipeable_app_drawer_open ? classes.drawerPrivacyHint: classes.drawerPrivacyHintHidden}>
                             <h4 style={{color: "#ffffffff", marginBottom: 0}}>Give them a mask and they're being starting to speak the truth...</h4>
                         </div>

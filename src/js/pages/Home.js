@@ -350,7 +350,7 @@ class Home extends React.PureComponent {
 
     componentDidMount() {
 
-        const all_image_name_infographics = ["Robot.png", "Robot.svg", "Businesswoman2.png", "Businesswoman2.svg", "Goldwoman.png", "Goldwoman.svg", "Businesswoman.png", "Businesswoman.svg"];
+        const all_image_name_infographics = ["Robot.png", "Robot.svg", "Labowoman.png", "Labowoman.svg", "Goldwoman.png", "Goldwoman.svg", "Businesswoman.png", "Businesswoman.svg", "Businesswoman2.png", "Businesswoman2.svg"];
 
         let _image_index = -1;
         let _image_name_infographics;
@@ -442,7 +442,7 @@ class Home extends React.PureComponent {
         }
     };
 
-    _handle_speed_dial_action = (event, action) => {
+    _handle_speed_dial_action = (event, action, number) => {
 
         if(action === "share") {
 
@@ -450,7 +450,7 @@ class Home extends React.PureComponent {
             actions.trigger_share();
         }else if (action === "presentation") {
             window.dispatchEvent(new Event("home-action-trypresentation"));
-            actions.trigger_presentation();
+            actions.trigger_presentation(number);
         }
     };
 
@@ -510,11 +510,14 @@ class Home extends React.PureComponent {
                 <div className={classes.headerContainer} style={{textShadow: "0px 0px 9px #57bbff"}}>
                     <Fade in={true} timeout={125}>
                         <h1 className={classes.titleh1}>
-                            <span className={classes.revelantText} style={{color: "#ffffff"}}>From PICS {_camera} to PIXELARTS {_hundred} and NFTs {_money}.</span>
+                            <span className={classes.revelantText} style={{color: "#ffffff"}}>From PICS {_camera} to PIXELARTS {_hundred} and NFTs {_money}</span>
                         </h1>
                     </Fade>
                     <Fade in={true} timeout={800}>
-                        <Button className={classes.playVideoButton} type="text" startIcon={<IconPlay/>} onClick={(event) => {this._handle_speed_dial_action(event, "presentation")}}>Play video</Button>
+                        <Button className={classes.playVideoButton} type="text" startIcon={<IconPlay/>} onClick={(event) => {this._handle_speed_dial_action(event, "presentation", 1)}}>Intro</Button>
+                    </Fade>
+                    <Fade in={true} timeout={1000}>
+                        <Button className={classes.playVideoButton} type="text" onClick={(event) => {this._handle_speed_dial_action(event, "presentation", 2)}}>About</Button>
                     </Fade>
                     <Fade in={true} timeout={250}>
                         <h2 className={classes.titleh2} style={{color: "#000639"}}>

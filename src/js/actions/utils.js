@@ -119,19 +119,19 @@ function trigger_share() {
         }, 10);
     }
 }
-function trigger_presentation() {
+function trigger_presentation(number) {
 
     if(!dispatcher.isDispatching()) {
 
         dispatcher.dispatch({
             type: "TRIGGER_PRESENTATION",
-            data: {}
+            data: {number}
         });
     }else {
 
         setTimeout(() => {
 
-            trigger_presentation();
+            trigger_presentation(number);
         }, 10);
     }
 }

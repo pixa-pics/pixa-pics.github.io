@@ -128,6 +128,7 @@ class Index extends React.PureComponent {
             _know_if_logged: false,
             _know_the_settings: false,
             _has_played_index_music_counter: 0,
+            _presentation_n: 0,
         };
         this.pathname = "";
         this._page_component = null;
@@ -313,6 +314,7 @@ class Index extends React.PureComponent {
                     break;
 
                 case "TRIGGER_PRESENTATION":
+                    this.setSt4te({_presentation_n: event.data.number})
                     this._handle_presentation_open();
                     break;
 
@@ -642,7 +644,7 @@ class Index extends React.PureComponent {
 
         const { classes } = this.st4te;
         const { _snackbar_open, _snackbar_message, _snackbar_auto_hide_duration } = this.st4te;
-        const {  _is_share_dialog_open, _count_presentation_open } = this.st4te;
+        const {  _is_share_dialog_open, _count_presentation_open, _presentation_n } = this.st4te;
         const { _know_if_logged, _loaded_progress_percent, _jamy_state_of_mind } = this.st4te;
         const {_ret, _camo, _bdi, _music_enabled, _jamy_enabled, _language, _know_the_settings} = this.settings;
 
@@ -664,6 +666,7 @@ class Index extends React.PureComponent {
                         camo={_camo}
                         language={_language}
                         count_presentation_open={_count_presentation_open}
+                        presentation_n={_presentation_n}
                         loaded_progress_percent={_loaded_progress_percent}
                         know_if_logged={_know_if_logged}
                         know_the_settings={_know_the_settings}
@@ -674,6 +677,7 @@ class Index extends React.PureComponent {
                     <AppDrawer
                         bdi={_bdi}
                         count_presentation_open={_count_presentation_open}
+                        presentation_n={_presentation_n}
                         know_the_settings={_know_the_settings}
                         language={_language}/>
                     <Toolbar />

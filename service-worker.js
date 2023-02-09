@@ -1,7 +1,7 @@
 "use strict";
-var REQUIRED_CACHE = "unless-update-cache-v626-required";
-var USEFUL_CACHE = "unless-update-cache-v626-useful";
-var STATIC_CACHE = "unless-update-cache-v626-static";
+var REQUIRED_CACHE = "unless-update-cache-v627-required";
+var USEFUL_CACHE = "unless-update-cache-v627-useful";
+var STATIC_CACHE = "unless-update-cache-v627-static";
 var MAIN_CHILD_CHUNK_REGEX = /chunk_(main_[a-z0-9]+)\.min\.js$/i;
 var CHILD_CHUNK_REGEX = /chunk_([0-9]+)\.min\.js$/i;
 
@@ -82,37 +82,8 @@ self.addEventListener("fetch", function(event) {
     const same_site = true //event.request.referrer.startsWith(U.hostname);
 
     if (event.request.headers.get('range')) {
-        var pos = Number(/^bytes\=(\d+)\-$/g.exec(event.request.headers.get('range'))[1]);
 
-        try {
-            event.respondWith(
-                static_cache.then(function(cache) {
-                    return cache.match(event.request.url).then(function (response) {
-                        return response.status === 200 ? response.clone(): fetch(url).then(function (response) { // Fetch, clone, and serve
-                            if(response.status === 200) { cache.put(url, response.clone());} return Promise.resolve(response.clone());
-                        });
-                    }).catch(function(){
-                        return fetch(url).then(function (response) { // Fetch, clone, and serve
-                            if(response.status === 200) { cache.put(url, response.clone());} return Promise.resolve(response.clone());
-                        });
-                    }).then(function(response) {
-                        return response.arrayBuffer().then(function (ab){
-                            return new Response(
-                                ab.slice(pos),
-                                {
-                                    status: 206,
-                                    statusText: 'Partial Content',
-                                    headers: [
-                                        ['Content-Type', 'video/mp4'],
-                                        ['Content-Range', 'bytes ' + pos + '-' + (ab.byteLength - 1) + '/' + ab.byteLength]]
-                                });
-                        });
-                    });
-                }))
-        }catch(e){
-
-            event.respondWith(fetch(event.request));
-        }
+        event.respondWith(fetch(event.request));
 
     }else if(url.startsWith("data:image") || url.startsWith("blob:http") || url.startsWith("data:application")) {
 
@@ -132,10 +103,10 @@ self.addEventListener("fetch", function(event) {
                         "/src/images/Gallery/Goldwoman.svg",
                         "/src/images/Gallery/Businesswoman2.png",
                         "/src/images/Gallery/Businesswoman2.svg",
-                        "/src/images/Gallery/Universewoman.png",
-                        "/src/images/Gallery/Universewoman.svg",
                         "/src/images/Gallery/Businesswoman.png",
                         "/src/images/Gallery/Businesswoman.svg",
+                        "/src/images/Gallery/Labowoman.png",
+                        "/src/images/Gallery/Labowoman.svg",
                         "/src/images/infographics/Rambo.svg",
                         "/src/images/infographics/TestBag.svg",
                         "/src/images/infographics/Explosion.svg",

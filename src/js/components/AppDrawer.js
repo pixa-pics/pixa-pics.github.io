@@ -177,6 +177,7 @@ class AppDrawer extends React.PureComponent {
             bdi: props.bdi,
             language: props.language,
             count_presentation_open: props.count_presentation_open,
+            presentation_n: props.presentation_n,
             classes: props.classes,
             _less_than_960w: false,
             _presentation_open: props.count_presentation_open > 0,
@@ -238,9 +239,9 @@ class AppDrawer extends React.PureComponent {
     componentWillReceiveProps(new_props) {
 
         const reopen_presentation = this.st4te.count_presentation_open !== new_props.count_presentation_open && new_props.count_presentation_open > 0;
-        if(this.st4te.language !== new_props.language || this.st4te.bdi !== new_props.bdi || this.st4te.know_the_settings !== new_props.know_the_settings || reopen_presentation) {
+        if(this.st4te.language !== new_props.language || this.st4te.bdi !== new_props.bdi || this.st4te.know_the_settings !== new_props.know_the_settings || this.st4te.presentation_n !== new_props.presentation_n || reopen_presentation) {
 
-            this.setSt4te({know_the_settings: new_props.know_the_settings, bdi: new_props.bdi, language: new_props.language, count_presentation_open: new_props.count_presentation_open, _presentation_open: reopen_presentation}, () => {
+            this.setSt4te({know_the_settings: new_props.know_the_settings, presentation_n: new_props.presentation_n, bdi: new_props.bdi, language: new_props.language, count_presentation_open: new_props.count_presentation_open, _presentation_open: reopen_presentation}, () => {
 
                 this.forceUpdate();
             });
@@ -272,9 +273,22 @@ class AppDrawer extends React.PureComponent {
         });
     };
 
+
+    _resume_video2 = () => {
+
+        this.setSt4te({_presentation_open: true}, () => {
+
+            this.forceUpdate(() => {
+
+                var video = document.getElementById("presentation-video-2");
+                video.play();
+            });
+        });
+    };
+
     render() {
 
-        const { classes, language, bdi, _backgrds, _presentation_open, _less_than_960w } = this.st4te;
+        const { classes, language, bdi, _backgrds, _presentation_open, _less_than_960w, presentation_n } = this.st4te;
         
         return (
             (!_less_than_960w) && <Box elevation={4}>
@@ -283,12 +297,19 @@ class AppDrawer extends React.PureComponent {
                     <div className={classes.drawerContainer}>
                         <DrawerContent language={language} onClose={() => {}} />
                         { _presentation_open ?
-                            <div className={classes.presentation} onClick={this._resume_video}>
-                                <video id="presentation-video" width="256" height="256" style={{aspectRatio: "1", transform: "translateZ(10px)"}} autoPlay>
-                                    <source src="/src/videos/presentation.mp4" type="video/mp4"/>
-                                </video>
-                                <div className={classes.presentationInnerOverlay + " arrival "}></div>
-                            </div>:
+                            presentation_n === 1 ?
+                                <div className={classes.presentation} onClick={this._resume_video}>
+                                    <video id="presentation-video" width="256" height="256" style={{aspectRatio: "1", transform: "translateZ(10px)"}} autoPlay>
+                                        <source src="/src/videos/presentation.mp4" type="video/mp4"/>
+                                    </video>
+                                    <div className={classes.presentationInnerOverlay + " arrival "}></div>
+                                </div>:
+                                <div className={classes.presentation} onClick={this._resume_video2}>
+                                    <video id="presentation-video-2" width="256" height="256" autoPlay style={{aspectRatio: "1", transform: "translateZ(10px)"}}>
+                                        <source src="/src/videos/presentation2.mp4" type="video/mp4"/>
+                                    </video>
+                                    <div className={classes.presentationInnerOverlay + " arrival "}></div>
+                                </div>:
                             <Fade in={true} timeout={600}>
                                 <div className={classes.drawerPrivacyHint}>
                                     <h4 style={{color: "#ffffffff", marginBottom: 0}}>Give them a mask and they're being starting to speak the truth...</h4>
