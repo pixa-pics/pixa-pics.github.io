@@ -901,12 +901,10 @@ class Pixel extends React.PureComponent {
 
     _updated_dimensions = () => {
 
-        let w = window,
-            d = document,
-            documentElement = d.documentElement,
-            body = d.getElementsByTagName('body')[0],
-            _window_width = w.innerWidth || documentElement.clientWidth || body.clientWidth,
-            _window_height = w.innerHeight|| documentElement.clientHeight || body.clientHeight;
+        let documentElement = document.documentElement,
+            body = document.body || document.getElementsByTagName('body')[0],
+            _window_width = window.innerWidth || documentElement.clientWidth || body.clientWidth,
+            _window_height = window.innerHeight|| documentElement.clientHeight || body.clientHeight;
 
         const _less_than_1280w = Boolean(_window_width < 1280);
         const update = this.st4te._less_than_1280w !== _less_than_1280w;

@@ -126,8 +126,8 @@ const styles = theme => ({
         color: "#170f70",
         marginTop: 0,
         textAlign: "justify",
-        marginRight: 120,
-        minHeight: 64,
+        marginRight: 150,
+        minHeight: 126,
         marginLeft: 48
     },
     listSubHeaderToggle: {
@@ -150,23 +150,23 @@ const styles = theme => ({
         bottom: 0,
         margin: 0,
         padding: 0,
-        height: 120,
-        width: 120,
+        height: 164,
+        width: 150,
     },
     listSubHeaderVideoOverlay: {
         position: "absolute",
         top: 0,
         right: 0,
-        height: 15,
-        width: 30,
+        height: 20,
+        width: 40,
         backgroundColor: "#ededff"
     },
     listSubHeaderVideoFade: {
         position: "absolute",
         top: 0,
         right: 0,
-        height: 120,
-        width: 120,
+        height: 150,
+        width: 150,
         background: "linear-gradient(to top, #ededfff1 2.5%,  #ededffbf 5%, #ededff78 15%, transparent 30%)"
     },
 
@@ -187,7 +187,7 @@ const styles = theme => ({
         color: "#3729c1",
         fontWeight: "bold",
         backgroundColor: "#ededff",
-        textTransform: "uppercase",
+        textTransform: "capitalize",
         "& span svg": {
             verticalAlign: "middle",
             color: "#050c4c",
@@ -199,7 +199,7 @@ const styles = theme => ({
         color: "#5c5fd1",
         padding: "16px",
         margin: 0,
-        borderRadius: "0px",
+        borderRadius: "4px",
     },
     relevantTextBlue: {
         color: "#3729c1ff",
@@ -662,7 +662,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                 </Collapse>
                 {_list_sub_header_opened === name &&
                     <div className={classes.listSubHeaderVideo}>
-                        <video id="upload-video" width="120" height="120" style={{aspectRatio: "1", transform: "translateZ(10px)"}} autoPlay>
+                        <video id="upload-video" width="150" height="150" style={{aspectRatio: "1", transform: "translateZ(10px)"}} autoPlay>
                             <source src={"/src/videos/"+name+".mp4"} type="video/mp4"/>
                         </video>
                         <div className={classes.listSubHeaderVideoOverlay}></div>
@@ -2232,6 +2232,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
             filters_preview_progression
         } = this.st4te;
 
+        const _list_sub_header_opened = this.st4te._list_sub_header_opened;
         const names = this.get_action_panel_names();
         const _filters_preview_progression_stepped = Math.round(parseFloat(filters_preview_progression / 7) * 7);
         const index = name ? names.indexOf(name): view_name_index;
@@ -2324,6 +2325,49 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
                 {this.get_after_action_panel(index)}
 
+                <ListSubheader className={classes.listSubHeader} onClick={() => {this._set_list_subheader_collapse("sponsors")}}>
+                        <span className={"list-sub-header-main-text"}>
+                            <span><ImagePlusIcon/></span>
+                            <span style={{textTransform: "uppercase"}}>Advantages of a partnership?</span>
+                        </span>
+
+                    <Collapse className={classes.listSubHeaderCollapse} in={_list_sub_header_opened === "sponsors"}>
+                        <b style={{color: "#060e23", textTransform: "initial"}}>They are the following:</b><br/>
+                        <ol className={classes.listSubHeaderDescription} style={{marginLeft: 12, marginRight: 180, minHeight: 75}}>
+                            <li>Increased brand recognition.</li>
+                            <li>New revenue streams.</li>
+                            <li>Opportunities for user acquisition.</li>
+                            <li>And of course, a lot of original contents...</li>
+                        </ol>
+                        <a style={{fontWeight: "initial", color: "#060e23", textTransform: "initial"}} href={"mailto:pixa.pics@protonmail.com"}>pixa.pics@protonmail.com</a>
+                    </Collapse>
+                    {_list_sub_header_opened === "sponsors" &&
+                        <div className={classes.listSubHeaderVideo} style={{width: 180, height: 180}}>
+                            <video id="upload-video" width="180" height="180" style={{aspectRatio: "1", transform: "translateZ(10px)"}} autoPlay>
+                                <source src={"/src/videos/sponsors.mp4"} type="video/mp4"/>
+                            </video>
+                            <div className={classes.listSubHeaderVideoOverlay} style={{width: 45, height: 30}}></div>
+                            <div className={classes.listSubHeaderVideoFade}  style={{width: 180, height: 180}}></div>
+                        </div>}
+                    <IconButton className={classes.listSubHeaderToggle}>
+                        {_list_sub_header_opened === "sponsors" ? <CloseIcon/>: <InfoOutlined/>}
+                    </IconButton>
+                   </ListSubheader>
+                    <h2 style={{marginLeft: 24, marginTop: 32, textTransform: "initial"}}>Keep on being creative!</h2>
+                    <p style={{margin: "24px 32px"}} className={classes.info}>
+                        <b>NFTs and pixel art are revolutionizing the way we think about digital ownership and creativity.</b> <br/><br/>
+                        By combining the uniqueness and scarcity of traditional collectibles with the limitless potential of digital media, NFTs are opening up new avenues for artists and creators to express themselves and connect with audiences around the world.
+                        And pixel art, with its bold lines, bright colors, and playful forms, is the perfect medium to showcase the beauty and versatility of NFTs.
+                        <br/>
+                        <br/>
+                        So if you're an artist, collector, or just someone who loves to play and create, now is the time to dive into the world of NFTs and pixel art! With so many new opportunities for discovery and expression, you never know what amazing creations you might unleash.
+                        <br/>
+                        <br/>
+                        So grab your tools, get inspired, and let's start exploring this exciting new frontier together!
+                        <br/>
+                        <br/>
+                        <span>— Matias A.</span>
+                    </p>
             </List>
         );
 

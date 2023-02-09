@@ -236,6 +236,7 @@ class AppToolbar extends React.PureComponent {
             jamy_state_of_mind: props.jamy_state_of_mind,
             jamy_enabled: props.jamy_enabled,
             music_enabled: props.music_enabled,
+            count_presentation_open: props.count_presentation_open,
             _history: HISTORY,
             _presentation_open: false,
             _swipeable_app_drawer_open: false,
@@ -290,12 +291,10 @@ class AppToolbar extends React.PureComponent {
 
     _updated_dimensions = () => {
 
-        let w = window,
-            d = document,
-            documentElement = d.documentElement,
-            body = d.getElementsByTagName('body')[0],
-            _window_width = w.innerWidth || documentElement.clientWidth || body.clientWidth,
-            _window_height = w.innerHeight|| documentElement.clientHeight || body.clientHeight;
+        let documentElement = document.documentElement,
+            body = document.body || document.getElementsByTagName('body')[0],
+            _window_width = window.innerWidth || documentElement.clientWidth || body.clientWidth,
+            _window_height = window.innerHeight|| documentElement.clientHeight || body.clientHeight;
 
         const _less_than_960w = Boolean(_window_width < 960);
         const update = this.st4te._less_than_960w !== _less_than_960w;
