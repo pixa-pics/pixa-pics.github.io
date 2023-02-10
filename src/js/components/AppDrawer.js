@@ -289,6 +289,38 @@ class AppDrawer extends React.PureComponent {
     render() {
 
         const { classes, language, bdi, _backgrds, _presentation_open, _less_than_960w, presentation_n } = this.st4te;
+
+        var bottom_el = null;
+        switch(presentation_n) {
+
+            case 1:
+                bottom_el = _presentation_open && <div className={classes.presentation} onClick={this._resume_video}>
+                    <video id="presentation-video" width="256" height="256" style={{aspectRatio: "1", transform: "translateZ(10px)"}} autoPlay>
+                        <source src="/src/videos/presentation.mp4" type="video/mp4"/>
+                    </video>
+                    <div className={classes.presentationInnerOverlay + " arrival "}></div>
+                </div>; break;
+            case 2:
+                bottom_el =  _presentation_open && <div className={classes.presentation} onClick={this._resume_video2}>
+                    <video id="presentation-video" width="256" height="256" autoPlay style={{aspectRatio: "1", transform: "translateZ(10px)"}}>
+                        <source src="/src/videos/presentation2.mp4" type="video/mp4"/>
+                    </video>
+                    <div className={classes.presentationInnerOverlay + " arrival "}></div>
+                </div>; break;
+            default:
+                bottom_el = presentation_n >= 3 && presentation_n <= 7 ?
+                    _presentation_open && <div className={classes.presentation} onClick={this._resume_video2}>
+                        <video id="presentation-video" width="256" height="256" autoPlay style={{aspectRatio: "1", transform: "translateZ(10px)"}}>
+                            <source src={"/src/videos/joke"+(presentation_n-2)+".mp4"} type="video/mp4"/>
+                        </video>
+                        <div className={classes.presentationInnerOverlay + " arrival "}></div>
+                        _presentation_open && </div>:
+                    <Fade in={true} timeout={600}>
+                        <div className={classes.drawerPrivacyHint}>
+                            <h4 style={{color: "#ffffffff", marginBottom: 0}}>Give them a mask and they're being starting to speak the truth...</h4>
+                        </div>
+                    </Fade>
+        }
         
         return (
             (!_less_than_960w) && <Box elevation={4}>
@@ -297,19 +329,7 @@ class AppDrawer extends React.PureComponent {
                     <div className={classes.drawerContainer}>
                         <DrawerContent language={language} onClose={() => {}} />
                         { _presentation_open ?
-                            presentation_n === 1 ?
-                                <div className={classes.presentation} onClick={this._resume_video}>
-                                    <video id="presentation-video" width="256" height="256" style={{aspectRatio: "1", transform: "translateZ(10px)"}} autoPlay>
-                                        <source src="/src/videos/presentation.mp4" type="video/mp4"/>
-                                    </video>
-                                    <div className={classes.presentationInnerOverlay + " arrival "}></div>
-                                </div>:
-                                <div className={classes.presentation} onClick={this._resume_video2}>
-                                    <video id="presentation-video-2" width="256" height="256" autoPlay style={{aspectRatio: "1", transform: "translateZ(10px)"}}>
-                                        <source src="/src/videos/presentation2.mp4" type="video/mp4"/>
-                                    </video>
-                                    <div className={classes.presentationInnerOverlay + " arrival "}></div>
-                                </div>:
+                            bottom_el:
                             <Fade in={true} timeout={600}>
                                 <div className={classes.drawerPrivacyHint}>
                                     <h4 style={{color: "#ffffffff", marginBottom: 0}}>Give them a mask and they're being starting to speak the truth...</h4>

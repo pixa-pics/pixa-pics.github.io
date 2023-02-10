@@ -284,7 +284,7 @@ class Home extends React.PureComponent {
 
     constructor(props) {
         super(props);
-        this.state = {
+        this.st4te = {
             classes: props.classes,
             _settings: JSON.parse(props.settings),
             _history: HISTORY,
@@ -293,6 +293,8 @@ class Home extends React.PureComponent {
             _infographics_in: true,
             _bii3_opacity: 1,
             _join_now_button_update: 0,
+            _less_than_960w: true,
+            _less_than_690h: true,
             _hundred: <hundredEmojiSvg style={{ transform: "translateZ(10px)", height: '1.5em', width: '1.5em' }}/>,
             _money: <moneyEmojiSvg style={{ transform: "translateZ(10px)", height: '1.5em', width: '1.5em' }}/>,
             _camera: null
@@ -301,6 +303,8 @@ class Home extends React.PureComponent {
 
     componentWillMount() {
 
+        this._updated_dimensions();
+        window.addEventListener("resize", this._updated_dimensions);
         actions.trigger_page_render_complete();
         actions.trigger_loading_update(0);
         setTimeout(() => {
@@ -308,7 +312,7 @@ class Home extends React.PureComponent {
             actions.trigger_loading_update(100);
         }, 300);
 
-        this.setState({
+        this.setSt4te({
             _camera: <Lottie
                 id={"camera"}
                 className={"fade-in-500-500"}
@@ -321,7 +325,7 @@ class Home extends React.PureComponent {
         });
 
         setTimeout(() => {
-            this.setState({
+            this.setSt4te({
                 _hundred: <Lottie
                     id={"hundred"}
                     loop={true}
@@ -335,7 +339,7 @@ class Home extends React.PureComponent {
         }, 120);
 
         setTimeout(() => {
-            this.setState({
+            this.setSt4te({
                 _money: <Lottie
                     id={"money"}
                     loop={true}
@@ -348,6 +352,25 @@ class Home extends React.PureComponent {
             });
         }, 240);
     }
+
+    setSt4te(st4te, callback) {
+
+        let keys = Object.keys(st4te);
+        let keys_length = keys.length | 0;
+        let key = "";
+
+        for (let i = 0; (i|0) < (keys_length|0); i = (i+1|0)>>>0) {
+
+            key = keys[i].toString();
+            this.st4te[key] = st4te[key];
+        }
+
+        if(typeof callback === "function") {
+
+            callback();
+        }
+    }
+
 
     componentDidMount() {
 
@@ -363,13 +386,13 @@ class Home extends React.PureComponent {
             _image_name_infographics = _image_index > 0 ? all_image_name_infographics[_image_index]: all_image_name_infographics[0];
 
             // image  has been loaded
-            this.setState({_infographics_in: true, _image_name_infographics, _infographics_fadein_time: 300}, () => {
+            this.setSt4te({_infographics_in: true, _image_name_infographics, _infographics_fadein_time: 300}, () => {
 
                 this.forceUpdate(() => {
 
                     setTimeout(() => {
 
-                        this.setState({_infographics_in: false}, () => {
+                        this.setSt4te({_infographics_in: false}, () => {
 
                             this.forceUpdate();
                         });
@@ -384,26 +407,46 @@ class Home extends React.PureComponent {
 
         const _button_interval = setInterval(() => {
 
-            this.setState({_join_now_button_update: this.state._join_now_button_update+1}, () => {
+            this.setSt4te({_join_now_button_update: this.st4te._join_now_button_update+1}, () => {
 
                 this.forceUpdate();
             });
         }, 50 * 1000);
 
-        this.setState({_image_auto_interval, _button_interval});
+        this.setSt4te({_image_auto_interval, _button_interval});
+    }
+
+    _updated_dimensions = () => {
+
+        let documentElement = document.documentElement,
+            body = document.body || document.getElementsByTagName('body')[0],
+            _window_width = window.innerWidth || documentElement.clientWidth || body.clientWidth,
+            _window_height = window.innerHeight|| documentElement.clientHeight || body.clientHeight;
+
+        const _less_than_960w = Boolean(_window_width < 960);
+        const _less_than_690h = Boolean(_window_height < 690);
+        const update = this.st4te._less_than_960w !== _less_than_960w || this.st4te._less_than_690h !== _less_than_690h;
+
+        if(update){
+            this.setSt4te({_less_than_960w, _less_than_690h}, () => {
+                this.forceUpdate();
+            })
+        }
     }
 
     componentWillReceiveProps(new_props){
 
-        this.setState({_settings: JSON.parse(new_props.settings)}, this.forceUpdate);
+        this.setSt4te({_settings: JSON.parse(new_props.settings)}, this.forceUpdate);
     }
 
     componentWillUnmount() {
 
+        window.removeEventListener("resize", this._updated_dimensions);
+
         try {
             actions.stop_sound();
-            clearInterval(this.state._image_auto_interval);
-            clearInterval(this.state._button_interval);
+            clearInterval(this.st4te._image_auto_interval);
+            clearInterval(this.st4te._button_interval);
         } catch(e) {
 
         }
@@ -457,8 +500,8 @@ class Home extends React.PureComponent {
 
     render() {
 
-        const { classes, _hundred, _money, _camera, _infographics_fadein_time, _infographics_in, _selected_locales_code } = this.state;
-        let { _image_name_infographics, _join_now_button_update, _settings } = this.state;
+        const { classes, _hundred, _money, _camera, _infographics_fadein_time, _infographics_in } = this.st4te;
+        let { _image_name_infographics, _join_now_button_update, _less_than_960w, _less_than_690h } = this.st4te;
        
         let first_image = false;
 
@@ -520,22 +563,30 @@ class Home extends React.PureComponent {
                     <Fade in={true} timeout={500}>
                         <Button className={classes.playVideoButton} type="text" startIcon={<IconPlay/>} onClick={(event) => {this._handle_speed_dial_action(event, "presentation", 2)}}>About</Button>
                     </Fade>
-                    <Fade in={true} timeout={500}>
+                    {_less_than_960w && <Fade in={true} timeout={500}>
                         <p style={{maxWidth: "50%"}}>
                             <span className={classes.revelantText} style={{color: "#ffffff"}}>
-                                NFTs and pixel art are revolutionizing the way we think about digital ownership and creativity.
-                                <br/>
-                                By combining the uniqueness and scarcity of traditional collectibles with the limitless potential of digital media, NFTs are opening up new avenues for artists and creators to express themselves and connect with audiences around the world. And pixel art, with its bold lines, bright colors, and playful forms, is the perfect medium to showcase the beauty and versatility of NFTs.
+                                <span>Unlock your full creative potential and turn your pixel art into valuable collectibles with the world's best NFTs and pixel art web editor. </span>
+                                {!_less_than_690h && <span>NFTs and pixel art are revolutionizing the way we think about digital ownership and creativity.</span>}
                             </span>
                         </p>
-                    </Fade>
+                    </Fade>}
+                    {!_less_than_960w && <Fade in={true} timeout={500}>
+                        <p style={{maxWidth: "50%"}}>
+                            <span className={classes.revelantText} style={{color: "#ffffff"}}>
+                                <span>NFTs and pixel art are revolutionizing the way we think about digital ownership and creativity.</span>
+                                <br/><br/>
+                                <span>By combining the uniqueness and scarcity of traditional collectibles with the limitless potential of digital media, NFTs are opening up new avenues for artists and creators to express themselves and connect with audiences around the world. And pixel art, with its bold lines, bright colors, and playful forms, is the perfect medium to showcase the beauty and versatility of NFTs.</span>
+                                <br/><br/>
+                                <span>Create your NFT collection today!</span>
+                            </span>
+                        </p>
+                    </Fade>}
                     <Fade in={true} timeout={750}>
                         <h2 className={classes.titleh2} style={{color: "#000639", lineHeight: "2.5em"}}>
                             <span className={classes.revelantTextDesktop} style={{color: "#fff"}}>Enter our lab now! <GlassesEmojiSvg alt="scientist-jacket-tweemoji" style={{verticalAlign: "middle"}} className="emoji-150"/></span>
                             <br/>
                             <span className={classes.revelantTextDesktop} style={{color: "#fff"}}>Be a part of the future... <JacketEmojiSvg alt="scientist-jacket-tweemoji" className="emoji-150"/></span>
-                            <br/>
-                            <span className={classes.revelantTextDesktop} style={{color: "#fff"}}>Create your NFT collection today!</span>
                         </h2>
                     </Fade>
                     <Fade in={true} timeout={750}>

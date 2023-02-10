@@ -248,7 +248,8 @@ class AppToolbar extends React.PureComponent {
             _jamy_mouse_hover_click: 0,
             _click_much_jamy: false,
             _is_pre_reset: false,
-            _explosion: null
+            _explosion: null,
+            _logo: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAXCAMAAABUMB2pAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAABRUExURUdwTM8gNGYm6NaEj+///IEMPZe2wwAAALELMsnk6OuhpA/ghUoGKbLt7/dRTgRMpCoBgwahkvPDxN3193CGk/rX1RYCK6HP3AjQ4rz/yZCgsNNpsAgAAAABdFJOUwBA5thmAAABFElEQVQoz4WTi26DMAxF40DsOGl4tmu7///Q2XltqoBdQZDg6PraMsZ0kcpcSb6D6oIjwn3jiRXzJxjh+BizBu/BAx0zosem5waKHVC0j7+Sku6Aohi5IdPILPX8ZzBa3u+5QZtAkktVsNot2TWu3YpFPnt5rUneO30sbG2cOwMs7wGql0JC0WK+1jhr9p0DZycxci5jSt4KJE5cFQJoJpcvudXGNCfuFE+ayDn10lKlOWNihQIHAEY1aKqTIGvtit2JcVBEWpfzdmvQYlfboTBNQ2nbkCB9pPR6IRYqfCP6yugg/4zcWsSCoTLQoI9tSiljmEudLBTd0xNxEKqEPtvMe0pDeuam6WrHteX/fgVz/rP8ADUeDr4tHJI9AAAAAElFTkSuQmCC"
         };
     };
 
@@ -365,8 +366,15 @@ class AppToolbar extends React.PureComponent {
 
     _open_home = () => {
 
-        const { _history } = this.st4te;
-        _history.push("/");
+        const { _history, jamy_enabled, pathname } = this.st4te;
+
+        if(jamy_enabled && (pathname === "" || pathname === "/")){
+
+            actions.trigger_presentation(Math.round(Math.random()*5+3)); // 2, 3, 4, 5 or 6
+        }else {
+
+            _history.push("/");
+        }
     };
 
     _open_settings = () => {
@@ -485,7 +493,7 @@ class AppToolbar extends React.PureComponent {
 
     render() {
 
-        const { classes, ret, camo, _is_pre_reset, presentation_n, _presentation_open, pathname, language, loaded_progress_percent, know_the_settings, _less_than_960w, _swipeable_app_drawer_open, _account_menu_anchor_element, logged_account, jamy_state_of_mind, jamy_enabled, music_enabled, _explosion } = this.st4te;
+        const { classes, ret, camo, _logo, _is_pre_reset, presentation_n, _presentation_open, pathname, language, loaded_progress_percent, know_the_settings, _less_than_960w, _swipeable_app_drawer_open, _account_menu_anchor_element, logged_account, jamy_state_of_mind, jamy_enabled, music_enabled, _explosion } = this.st4te;
 
         const JAMY = {
             angry: <JamyAngry className={classes.jamy} />,
@@ -495,6 +503,38 @@ class AppToolbar extends React.PureComponent {
             sad: <JamySad className={classes.jamy} />,
             shocked: <JamyShocked className={classes.jamy} />,
             suspicious: <JamySuspicious className={classes.jamy} />,
+        }
+
+        var bottom_el = null;
+        switch(presentation_n) {
+
+            case 1:
+                bottom_el = _presentation_open && <div className={classes.presentation} onClick={this._resume_video}>
+                    <video id="presentation-video" width="256" height="256" style={{aspectRatio: "1", transform: "translateZ(10px)"}} autoPlay>
+                        <source src="/src/videos/presentation.mp4" type="video/mp4"/>
+                    </video>
+                    <div className={classes.presentationInnerOverlay + " arrival "}></div>
+                </div>; break;
+            case 2:
+                bottom_el =  _presentation_open && <div className={classes.presentation} onClick={this._resume_video2}>
+                    <video id="presentation-video" width="256" height="256" autoPlay style={{aspectRatio: "1", transform: "translateZ(10px)"}}>
+                        <source src="/src/videos/presentation2.mp4" type="video/mp4"/>
+                    </video>
+                    <div className={classes.presentationInnerOverlay + " arrival "}></div>
+                </div>; break;
+            default:
+                bottom_el = presentation_n >= 3 && presentation_n <= 7 ?
+                    _presentation_open && <div className={classes.presentation} onClick={this._resume_video2}>
+                        <video id="presentation-video" width="256" height="256" autoPlay style={{aspectRatio: "1", transform: "translateZ(10px)"}}>
+                            <source src={"/src/videos/joke"+(presentation_n-2)+".mp4"} type="video/mp4"/>
+                        </video>
+                        <div className={classes.presentationInnerOverlay + " arrival "}></div>
+                        _presentation_open && </div>:
+                    <Fade in={true} timeout={600}>
+                        <div className={classes.drawerPrivacyHint}>
+                            <h4 style={{color: "#ffffffff", marginBottom: 0}}>Give them a mask and they're being starting to speak the truth...</h4>
+                        </div>
+                    </Fade>
         }
 
         return (
@@ -519,7 +559,7 @@ class AppToolbar extends React.PureComponent {
                                                 </div>
                                             </Tooltip>
                                         </div>:
-                                        <img src={"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAXCAMAAABUMB2pAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAABRUExURUdwTM8gNGYm6NaEj+///IEMPZe2wwAAALELMsnk6OuhpA/ghUoGKbLt7/dRTgRMpCoBgwahkvPDxN3193CGk/rX1RYCK6HP3AjQ4rz/yZCgsNNpsAgAAAABdFJOUwBA5thmAAABFElEQVQoz4WTi26DMAxF40DsOGl4tmu7///Q2XltqoBdQZDg6PraMsZ0kcpcSb6D6oIjwn3jiRXzJxjh+BizBu/BAx0zosem5waKHVC0j7+Sku6Aohi5IdPILPX8ZzBa3u+5QZtAkktVsNot2TWu3YpFPnt5rUneO30sbG2cOwMs7wGql0JC0WK+1jhr9p0DZycxci5jSt4KJE5cFQJoJpcvudXGNCfuFE+ayDn10lKlOWNihQIHAEY1aKqTIGvtit2JcVBEWpfzdmvQYlfboTBNQ2nbkCB9pPR6IRYqfCP6yugg/4zcWsSCoTLQoI9tSiljmEudLBTd0xNxEKqEPtvMe0pDeuam6WrHteX/fgVz/rP8ADUeDr4tHJI9AAAAAElFTkSuQmCC"} className={"pixelated " + classes.logo} />
+                                        <img src={_logo} className={"pixelated " + classes.logo} />
                                     : null
                             }
                             <span className={classes.appTitle}>PIXA.PICS</span>
@@ -569,24 +609,33 @@ class AppToolbar extends React.PureComponent {
                     onClose={this._handle_close_swipeable_app_drawer}>
                     <Toolbar className={classes.appBar}>
                         <div className={classes.swipeableDrawerToolbar} onClick={this._open_home}>
+                            <div className={classes.drawerToolbarSpacer} onClick={this._open_home}>
+                                <span className={classes.appTitle}>PIXA.PICS</span>
+                            </div>
+                            {
+                                know_the_settings ?
+                                    jamy_enabled ?
+                                        <div className={classes.jamyContainer}
+                                             onMouseEnter={this._handle_jamy_mouse_enter}
+                                             onMouseLeave={this._handle_jamy_mouse_leave}
+                                             onClick={this._handle_jamy_mouse_click}>
+                                            <Tooltip
+
+                                                title={t( "sentences.hey i am jamy")}>
+                                                <div className={classes.jamyContainer}>
+                                                    {JAMY[jamy_state_of_mind]}
+                                                </div>
+                                            </Tooltip>
+                                        </div>:
+                                        <img src={_logo} className={"pixelated " + classes.logo} />
+                                    : null
+                            }
                             <span className={classes.swipeableDrawerAppTitle}>HTTPS://PIXA.PICS/</span>
                         </div>
                     </Toolbar>
                     <DrawerContent logged_account={logged_account} language={language}/>
                     { _presentation_open ?
-                        presentation_n === 1 ?
-                            <div className={classes.presentation} onClick={this._resume_video}>
-                                <video id="presentation-video" width="256" height="256" autoPlay style={{aspectRatio: "1", transform: "translateZ(10px)"}}>
-                                    <source src="/src/videos/presentation.mp4" type="video/mp4"/>
-                                </video>
-                                <div className={classes.presentationInnerOverlay + " arrival "}></div>
-                            </div>:
-                            <div className={classes.presentation} onClick={this._resume_video2}>
-                                <video id="presentation-video-2" width="256" height="256" autoPlay style={{aspectRatio: "1", transform: "translateZ(10px)"}}>
-                                    <source src="/src/videos/presentation2.mp4" type="video/mp4"/>
-                                </video>
-                                <div className={classes.presentationInnerOverlay + " arrival "}></div>
-                            </div>:
+                        bottom_el:
                         <div className={_swipeable_app_drawer_open ? classes.drawerPrivacyHint: classes.drawerPrivacyHintHidden}>
                             <h4 style={{color: "#ffffffff", marginBottom: 0}}>Give them a mask and they're being starting to speak the truth...</h4>
                         </div>
