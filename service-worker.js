@@ -1,7 +1,7 @@
 "use strict";
-var REQUIRED_CACHE = "unless-update-cache-v628-required";
-var USEFUL_CACHE = "unless-update-cache-v628-useful";
-var STATIC_CACHE = "unless-update-cache-v628-static";
+var REQUIRED_CACHE = "unless-update-cache-v629-required";
+var USEFUL_CACHE = "unless-update-cache-v629-useful";
+var STATIC_CACHE = "unless-update-cache-v629-static";
 var MAIN_CHILD_CHUNK_REGEX = /chunk_(main_[a-z0-9]+)\.min\.js$/i;
 var CHILD_CHUNK_REGEX = /chunk_([0-9]+)\.min\.js$/i;
 
@@ -99,12 +99,14 @@ self.addEventListener("fetch", function(event) {
                         "/src/images/infographics/ShareWho.svg",
                         "/src/images/gallery/Robot.png",
                         "/src/images/gallery/Robot.svg",
+                        "/src/images/gallery/Statue.png",
+                        "/src/images/gallery/Statue.svg",
                         "/src/images/Gallery/Astro.png",
                         "/src/images/Gallery/Astro.svg",
-                        "/src/images/Gallery/Goldwoman.png",
-                        "/src/images/Gallery/Goldwoman.svg",
                         "/src/images/Gallery/Businesswoman2.png",
                         "/src/images/Gallery/Businesswoman2.svg",
+                        "/src/images/Gallery/Statue2.png",
+                        "/src/images/Gallery/Statue2.svg",
                         "/src/images/Gallery/Businesswoman.png",
                         "/src/images/Gallery/Businesswoman.svg",
                         "/src/images/Gallery/Labowoman.png",
