@@ -99,6 +99,8 @@ self.addEventListener("fetch", function(event) {
                         "/src/images/infographics/ShareWho.svg",
                         "/src/images/gallery/Robot.png",
                         "/src/images/gallery/Robot.svg",
+                        "/src/images/gallery/Sharktopus.png",
+                        "/src/images/gallery/Sharktopus.svg",
                         "/src/images/gallery/Statue.png",
                         "/src/images/gallery/Statue.svg",
                         "/src/images/Gallery/Astro.png",
