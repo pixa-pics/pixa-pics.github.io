@@ -95,6 +95,7 @@ const _get_default_settings = () => {
         jamy_enabled: true,
         voice_enabled: true,
         music_enabled: false,
+        activation_enabled: true,
         attachment_previews: {},
     };
 };

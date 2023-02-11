@@ -128,6 +128,12 @@ const styles = theme => ({
         position: "absolute",
         right: 0,
         top: 0,
+        "&:active, &:hover, &:active > video, &:hover > video": {
+            height: 96,
+            width: 96,
+            transform: "scale(2)",
+            zIndex: 1,
+        },
         height: 56,
         width: 56,
         "&::after": {
@@ -2434,7 +2440,7 @@ class Pixel extends React.PureComponent {
         api.get_settings(this._process_settings_info_result);
         setTimeout(() => {
             this.setSt4te({_is_pixel_dialog_create_open: true}, () => { this.forceUpdate(); });
-        }, 725);
+        }, 1450);
 
     };
 

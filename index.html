@@ -20,25 +20,31 @@
             }
             body.loaded::after {
                 content: "";
-                contain: paint style size layout;
-                position: absolute;
-                width: 100%;
+                content-visibility: auto;
+                contain: paint style size layout !important;
+                position: fixed;
+                width: 100vw;
                 z-index: 9999999;
                 top: 0;
-                height: 100%;
-                background: radial-gradient(#00000000 40%, #0051FFAE 50%, #00000000 60%);
                 left: 0;
-                background-size: 300% 400%;
-                animation-iteration-count: 1;
-                animation-delay: 325ms !important;
+                height: 100vh;
+                background-image: radial-gradient(#0d00cd22 30%, #0d00cdbf 40%, #5e4eff00 45%, #0d00cdbf 60%, #00000000 65%) !important;
+                background-color: transparent !important;
+                background-size: 400% 150% !important;
+                background-position: 50% 50% !important;
+                animation-iteration-count: 1 !important;
+                animation-delay: 250ms !important;
                 animation-fill-mode: both !important;
                 animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1) !important;
-                animation-name: arrival !important;
-                animation-duration: 325ms !important;
+                animation-name: ripup !important;
+                animation-duration: 1250ms !important;
             }
-            @keyframes arrival {
-                0% {display: block !important; background-position: 50% -10%; opacity: .5 }
-                100% { display: none !important; background-position: 50% 40%; opacity: 1 }
+            @keyframes ripup {
+                0% {display: block !important; transform: translateY(175%); opacity: .6 }
+                15% { display: block !important; transform: translateY(75%); opacity: 1  }
+                30% { display: block !important; transform: translateY(25%); opacity: 0  }
+                60% { display: block !important; transform: translateY(-75%); opacity: 0  }
+                100% { display: block !important; transform: translateY(-100%); opacity: 0  }
             }
             body.loaded > #app {
                 contain: paint style layout;

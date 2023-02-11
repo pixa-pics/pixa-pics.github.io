@@ -452,37 +452,42 @@ class Home extends React.PureComponent {
         }
     }
 
-    _go_to_editor = (load_with = "") => {
+    _go_to_editor = (load_with = "", trigger_activation = false) => {
 
         window.dispatchEvent(new Event("home-action-tryeditor"));
 
-        if(load_with.length > 0) {
+        if (load_with.startsWith("data:image/png;base64,")) {
 
-            if(load_with.startsWith("data:image/png;base64,")){
+            actions.load_with(load_with, trigger_activation);
+        } else {
 
-                actions.load_with(load_with);
-            }else {
+            if (load_with.length > 0) {
 
                 fetch(load_with).then((resp) => {
 
                     resp.blob().then((blob) => {
 
-                        new Promise(function(resolve, _) {
+                        new Promise(function (resolve, _) {
                             var reader = new FileReader();
-                            reader.onload = function(){ resolve(reader.result)};
-                            reader.onerror = function(){ var u = URL.createObjectURL(blob); resolve(u);};
+                            reader.onload = function () {
+                                resolve(reader.result)
+                            };
+                            reader.onerror = function () {
+                                var u = URL.createObjectURL(blob);
+                                resolve(u);
+                            };
                             reader.readAsDataURL(blob);
                         }).then((base64) => {
 
-                            actions.load_with(base64);
+                            actions.load_with(base64, trigger_activation);
                         });
                     });
                 });
+
+            } else {
+
+                actions.load_with(load_with, trigger_activation)
             }
-
-        }else {
-
-            actions.load_with();
         }
     };
 
@@ -535,7 +540,7 @@ class Home extends React.PureComponent {
                         in={_infographics_in}
                         exit={!_infographics_in}
                         timeout={{ enter: _infographics_fadein_time, exit: _infographics_fadein_time }}>
-                        <div className={classes.backgroundImageWrapper} onClick={() => {this._go_to_editor(_image_name_infographics.replace(".svg", ".png"))}}>
+                        <div className={classes.backgroundImageWrapper} onClick={() => {this._go_to_editor(_image_name_infographics.replace(".svg", ".png"), true)}}>
                             <img src={_image_name_infographics}
                                  alt="Image demo."
                                  style={first_image ? {aspectRatio: "1/1"}: {}}
@@ -590,7 +595,7 @@ class Home extends React.PureComponent {
                         </h2>
                     </Fade>
                     <Fade in={true} timeout={750}>
-                        <Button key={_join_now_button_update} className={classes.homeCTAuseit} variant={"contained"} size={"large"} color="primary" onClick={this._go_to_editor}>
+                        <Button key={_join_now_button_update} className={classes.homeCTAuseit} variant={"contained"} size={"large"} color="primary" onClick={() => {this._go_to_editor("", true)}}>
                             <ShufflingSpanText placeholder={_join_now_button_update % 5 ? "START " : "JOIN LAB "} text={_join_now_button_update % 5 ? "START " : "JOIN LAB "} animation_delay_ms={_join_now_button_update === 0 ? 3000: 0} animation_duration_ms={1000} />
                             <ScientistEmojiSvg alt="Laboratory decoration" width={24} height={24} style={{transform: "scale(3.5)", width: 24, height: 24, marginRight: "2em", marginLeft: "2em", filter: "drop-shadow(white 0px 0px 6px)", webkitFilter: "drop-shadow(white 0px 0px 6px)"}} className="emoji-150" />
                             <ShufflingSpanText placeholder={_join_now_button_update % 5 ? " SOON" : " NOW"} text={_join_now_button_update % 5 ? " NOW" : " SOON"} app="..." animation_delay_ms={_join_now_button_update === 0 ? 3000: 500} animation_duration_ms={1000} />

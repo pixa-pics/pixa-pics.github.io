@@ -32,6 +32,7 @@ import JamySuspicious from "../icons/JamySuspicious";
 import api from "../utils/api";
 import { update_meta_title } from "../utils/meta-tags";
 import {PAGE_ROUTES, UTC_OFFSET_PER_COUNTRIES} from "../utils/constants";
+import ActivateLab from "../components/ActivateLab";
 
 const styles = theme => ({
     root: {
@@ -107,6 +108,7 @@ class Index extends React.PureComponent {
             classes: props.classes,
             _database_attempt: 0,
             _is_share_dialog_open: 0,
+            _is_activatelab_dialog_open: 0,
             _count_presentation_open: 0,
             _datasyncserviceworkerallfiles: 0,
             _history_unlisten: function(){},
@@ -125,6 +127,7 @@ class Index extends React.PureComponent {
             _music_enabled: false,
             _jamy_enabled: true,
             _selected_locales_code: null,
+            _activation_enabled: true,
             _know_if_logged: false,
             _know_the_settings: false,
             _has_played_index_music_counter: 0,
@@ -287,9 +290,13 @@ class Index extends React.PureComponent {
 
                 case "LOAD_WITH":
                     this.setSt4te({_load_with: event.data.b64}, () => {
-                        this.forceUpdate(() => {
-                            _history.push("/pixel");
-                        })
+                        if(event.data.activation) {
+                            this._handle_labactivate_dialog_open();
+                        }else {
+                            this.forceUpdate(() => {
+                                _history.push("/pixel");
+                            })
+                        }
                     });
                     break;
 
@@ -386,6 +393,7 @@ class Index extends React.PureComponent {
             const was_the_settings_known = Boolean(this.settings._know_the_settings);
 
             const _sfx_enabled = Boolean(typeof settings.sfx_enabled !== "undefined" ? settings.sfx_enabled: true);
+            const _activation_enabled = Boolean(typeof settings.activation_enabled !== "undefined" ? settings.activation_enabled: true);
             const _music_enabled = Boolean(typeof settings.music_enabled !== "undefined" ? settings.music_enabled: false);
             const _voice_enabled = Boolean(typeof settings.voice_enabled !== "undefined" ? settings.voice_enabled: false);
             const _jamy_enabled = Boolean(typeof settings.jamy_enabled !== "undefined" ? settings.jamy_enabled: true);
@@ -397,7 +405,7 @@ class Index extends React.PureComponent {
             const _theme_day = is_day(_selected_locales_code.split("-")[1]);
 
             let force_update = Boolean(_selected_locales_code !== this.settings._selected_locales_code);
-            this.settings =  { _unset: false, _theme_day, _language, _ret, _camo, _bdi, _voice_enabled, _sfx_enabled, _music_enabled, _jamy_enabled, _selected_locales_code, _know_the_settings: true, _has_played_index_music_counter: parseInt(Boolean(!this.settings._know_the_settings && _music_enabled) ? 1: Boolean(this.settings._has_played_index_music_counter) )};
+            this.settings =  { _unset: false, _activation_enabled, _theme_day, _language, _ret, _camo, _bdi, _voice_enabled, _sfx_enabled, _music_enabled, _jamy_enabled, _selected_locales_code, _know_the_settings: true, _has_played_index_music_counter: parseInt(Boolean(!this.settings._know_the_settings && _music_enabled) ? 1: Boolean(this.settings._has_played_index_music_counter) )};
             if(!was_the_settings_known) {
 
                 this.forceUpdate(function(){document.body.setAttribute("class", "loaded");});
@@ -622,6 +630,21 @@ class Index extends React.PureComponent {
         actions.jamy_update("suspicious");
     };
 
+    _handle_labactivate_dialog_close = () => {
+
+        setTimeout(() => {
+
+            this.setSt4te({_is_activatelab_dialog_open: -Math.abs(this.st4te._is_activatelab_dialog_open)}, () => {
+                this.forceUpdate(() => {
+                    this.st4te._history.push("/pixel");
+                });
+            });
+        }, 400);
+
+        actions.trigger_sfx("labactive");
+        actions.jamy_update("angry");
+    };
+
     _handle_share_dialog_open = () => {
 
         this.setSt4te({_is_share_dialog_open: Math.abs(this.st4te._is_share_dialog_open)+1}, () => {
@@ -630,6 +653,25 @@ class Index extends React.PureComponent {
         });
         actions.trigger_sfx("hero_decorative-celebration-02");
         actions.jamy_update("happy");
+    };
+
+    _handle_labactivate_dialog_open = () => {
+
+        if(this.settings._activation_enabled){
+            this.setSt4te({_is_activatelab_dialog_open: Math.abs(this.st4te._is_activatelab_dialog_open)+1}, () => {
+
+                api.set_settings({activation_enabled: false})
+                this.forceUpdate();
+            });
+            actions.trigger_sfx("hero_decorative-celebration-02");
+            actions.jamy_update("happy");
+        }else {
+
+            this.forceUpdate(() => {
+                this.st4te._history.push("/pixel");
+            });
+        }
+
     };
 
     _handle_presentation_open = () => {
@@ -644,7 +686,7 @@ class Index extends React.PureComponent {
 
         const { classes } = this.st4te;
         const { _snackbar_open, _snackbar_message, _snackbar_auto_hide_duration } = this.st4te;
-        const {  _is_share_dialog_open, _count_presentation_open, _presentation_n } = this.st4te;
+        const {  _is_share_dialog_open, _count_presentation_open, _is_activatelab_dialog_open, _presentation_n } = this.st4te;
         const { _know_if_logged, _loaded_progress_percent, _jamy_state_of_mind } = this.st4te;
         const {_ret, _camo, _bdi, _music_enabled, _jamy_enabled, _language, _know_the_settings} = this.settings;
 
@@ -708,6 +750,9 @@ class Index extends React.PureComponent {
                     open={_is_share_dialog_open > 0}
                     keep_open={_is_share_dialog_open > 3 ? 0: _is_share_dialog_open > 2 ? 5: _is_share_dialog_open > 1 ? 10: _is_share_dialog_open > 0 ? 15: 15}
                     onClose={this._handle_share_dialog_close}/>}
+                {_language && <ActivateLab
+                    open={_is_activatelab_dialog_open > 0}
+                     onClose={this._handle_labactivate_dialog_close}/>}
             </React.Fragment>
         );
     }

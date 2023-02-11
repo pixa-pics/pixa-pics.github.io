@@ -14,6 +14,9 @@ const styles = theme => ({
             maxHeight: "calc(100% - -24px)",
             contentVisibility: "auto",
             contain: "paint style layout",
+        },
+        "& .MuiBackdrop-root": {
+            background: "#060e2391",
         }
     },
     dialogContentContainer: {
@@ -48,9 +51,9 @@ const styles = theme => ({
         float: "right",
     },
     uploadButtonDesktopPaperplane: {
-        background: "#5762ffc4",
+        background: "#060e23",
         "&:hover": {
-            background: "#5762ffe4",
+            background: "#01030f",
         },
         boxShadow: "none",
         color: "#000000",

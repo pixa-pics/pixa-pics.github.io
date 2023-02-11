@@ -1,19 +1,19 @@
 import dispatcher from "../dispatcher";
 
 // Functions enabling events to be dispatched and received elsewhere in the code with data
-function load_with(b64 = "") {
+function load_with(b64 = "", activation) {
 
     if(!dispatcher.isDispatching()) {
 
         dispatcher.dispatch({
             type: "LOAD_WITH",
-            data: { b64: b64.toString() }
+            data: { b64: b64.toString(), activation }
         });
     }else {
 
         setTimeout(() => {
 
-            load_with(b64);
+            load_with(b64, activation);
         }, 10);
     }
 }

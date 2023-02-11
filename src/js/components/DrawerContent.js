@@ -142,7 +142,7 @@ class DrawerContent extends React.PureComponent {
     _open_pixel_page = () => {
 
         window.dispatchEvent(new Event("menu-action-tryeditor"));
-        actions.load_with();
+        actions.load_with("", true);
         this.props.onClose();
     };
 
