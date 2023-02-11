@@ -816,10 +816,10 @@ QuantiMat.prototype.process_threshold = function(t) {
 
                         // The less a color is used the less it requires a great distance to be merged (so we don't have many color used only a few time in the whole image, heavily used color gets preserved better than lowly used ones)
                         if(color_a.euclidean_match_with(color_b,  (
-                            weighted_threshold*2+
+                            weighted_threshold*6+
                             weighted_threshold*low_if_both_used_alot+
                             weighted_threshold*low_if_used_alot|0
-                        )/4|0)) {
+                        )/8|0)) {
 
                             // Update color usage and relative variables
                             index_merged = true;

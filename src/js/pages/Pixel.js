@@ -122,6 +122,57 @@ const styles = theme => ({
         zIndex: -1,
         background: "#fff",
     },
+    desktopintrovideowrapper: {
+        cursor: "pointer",
+        margin: "12px 24px",
+        position: "absolute",
+        right: 0,
+        top: 0,
+        height: 56,
+        width: 56,
+        "&::after": {
+            content: "''",
+            background: `#fff !important`,
+            position: "absolute",
+            right: 0,
+            top: 0,
+            width: "10%",
+            height: "15%"
+        }
+    },
+    desktopintrovideo: {
+        position: "absolute",
+        right: 0,
+        top: 0,
+        height: 56,
+        width: 56
+    },
+    mobileintrovideowrapper: {
+        zIndex: 1,
+        cursor: "pointer",
+        margin: "16px 56px",
+        position: "absolute",
+        right: 0,
+        top: 0,
+        height: 32,
+        width: 32,
+        "&::after": {
+            content: "''",
+            background: `#fff !important`,
+            position: "absolute",
+            right: 0,
+            top: 0,
+            width: "10%",
+            height: "15%"
+        }
+    },
+    mobileintrovideo: {
+        position: "absolute",
+        right: 0,
+        top: 0,
+        height: 32,
+        width: 32
+    },
     effectSliderText:{
         color: "#050c4c",
         fontWeight: "bold",
@@ -2455,6 +2506,14 @@ class Pixel extends React.PureComponent {
         write_text(size, text);
     }
 
+    _resume_video = () => {
+
+        try {
+            var video = document.getElementById("labintro-video");
+            video.play();
+        }catch(e){}
+    };
+
     render() {
 
         const {
@@ -2533,6 +2592,11 @@ class Pixel extends React.PureComponent {
                     variant="temporary"
                     anchor="bottom"
                 >
+                    <div className={classes.mobileintrovideowrapper}>
+                        <video className={classes.mobileintrovideo} id="labintro-video" width="56" height="56" onClick={this._resume_video} style={{aspectRatio: "1", transform: "translateZ(10px)"}}>
+                            <source src={"/src/videos/labintro.mp4"} type="video/mp4"/>
+                        </video>
+                    </div>
                     <DialogCloseButton onClick={this._handle_edit_drawer_close} />
                     <div style={{display: "grid", contain: "layout paint style"}}>
                         <div style={{boxShadow: "rgb(0 0 0 / 20%) 0px 2px 4px -1px, rgb(0 0 0 / 14%) 0px 4px 5px 0px, rgb(0 0 0 / 12%) 0px 1px 10px 0px", zIndex: 1}}>
@@ -2624,10 +2688,15 @@ class Pixel extends React.PureComponent {
                 <div style={{display: "contents"}}>
                     <div style={{boxShadow: "rgb(0 0 0 / 20%) 0px 2px 4px -1px, rgb(0 0 0 / 14%) 0px 4px 5px 0px, rgb(0 0 0 / 12%) 0px 1px 10px 0px", zIndex: 1}}>
                         <div className={classes.drawerHeader}>
-                                            <span className={classes.coordinate}>
-                                                <span id={"fps_el"}>{`FPS: 0`}</span>
-                                                <span id={"xy_el"}>{` | X: out, Y: out `}</span>
-                                            </span>
+                            <div className={classes.desktopintrovideowrapper}>
+                                <video className={classes.desktopintrovideo} id="labintro-video" width="56" height="56" onClick={this._resume_video} style={{aspectRatio: "1", transform: "translateZ(10px)"}}>
+                                    <source src={"/src/videos/labintro.mp4"} type="video/mp4"/>
+                                </video>
+                            </div>
+                            <span className={classes.coordinate}>
+                                <span id={"fps_el"}>{`FPS: 0`}</span>
+                                <span id={"xy_el"}>{` | X: out, Y: out `}</span>
+                            </span>
                             <Typography className={classes.effectSliderText} id="strength-slider" gutterBottom>
                                 Effect strength :
                             </Typography>

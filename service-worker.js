@@ -1,7 +1,7 @@
 "use strict";
-var REQUIRED_CACHE = "unless-update-cache-v629-required";
-var USEFUL_CACHE = "unless-update-cache-v629-useful";
-var STATIC_CACHE = "unless-update-cache-v629-static";
+var REQUIRED_CACHE = "unless-update-cache-v631-required";
+var USEFUL_CACHE = "unless-update-cache-v631-useful";
+var STATIC_CACHE = "unless-update-cache-v631-static";
 var MAIN_CHILD_CHUNK_REGEX = /chunk_(main_[a-z0-9]+)\.min\.js$/i;
 var CHILD_CHUNK_REGEX = /chunk_([0-9]+)\.min\.js$/i;
 
@@ -192,6 +192,26 @@ self.addEventListener("fetch", function(event) {
                         "/src/sounds/voice/cn/vision_deactivated.mp3",
                         "/src/sounds/voice/cn/filtering.mp3",
                         "/src/sounds/music/redeclipse/track_09.mp3",
+                        "/src/videos/create.mp4",
+                        "/src/videos/enhanced.mp4",
+                        "/src/videos/pixelated.mp4",
+                        "/src/videos/presentation.mp4",
+                        "/src/videos/presentation2.mp4",
+                        "/src/videos/sponsors.mp4",
+                        "/src/videos/tutorial.mp4",
+                        "/src/videos/upload.mp4",
+                        "/src/videos/labintro.mp4",
+                        "/src/videos/joke1.mp4",
+                        "/src/videos/joke2.mp4",
+                        "/src/videos/joke3.mp4",
+                        "/src/videos/joke4.mp4",
+                        "/src/videos/joke5.mp4",
+                        "/src/videos/joke6.mp4",
+                        "/src/videos/joke7.mp4",
+                        "/src/videos/joke8.mp4",
+                        "/src/videos/joke9.mp4",
+                        "/src/videos/joke10.mp4",
+                        "/src/videos/joke11.mp4",
                     ]);
                 })
             ])

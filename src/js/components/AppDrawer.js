@@ -308,7 +308,7 @@ class AppDrawer extends React.PureComponent {
                     <div className={classes.presentationInnerOverlay + " arrival "}></div>
                 </div>; break;
             default:
-                bottom_el = presentation_n >= 3 && presentation_n <= 7 ?
+                bottom_el = presentation_n >= 3 && presentation_n <= 13 ?
                     _presentation_open && <div className={classes.presentation} onClick={this._resume_video2}>
                         <video id="presentation-video" width="256" height="256" autoPlay style={{aspectRatio: "1", transform: "translateZ(10px)"}}>
                             <source src={"/src/videos/joke"+(presentation_n-2)+".mp4"} type="video/mp4"/>

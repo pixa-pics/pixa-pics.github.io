@@ -370,7 +370,7 @@ class AppToolbar extends React.PureComponent {
 
         if(jamy_enabled && (pathname === "" || pathname === "/")){
 
-            actions.trigger_presentation(Math.round(Math.random()*5+3)); // 2, 3, 4, 5 or 6
+            actions.trigger_presentation(Math.round(Math.random()*11+3));
         }else {
 
             _history.push("/");
@@ -401,6 +401,12 @@ class AppToolbar extends React.PureComponent {
                 this._show_look_much_jamy();
 
             }, 8000);
+
+            setTimeout(() => {
+
+                this.setSt4te({_jamy_mouse_hover: false});
+
+            }, 4000);
         });
     };
 
@@ -427,7 +433,14 @@ class AppToolbar extends React.PureComponent {
                             actions.trigger_snackbar(t( "sentences.take a picture it last longer"));
                         });
                     }
-                }, 7100)
+                }, 7100);
+
+                setTimeout(() => {
+
+                    this.setSt4te({_jamy_mouse_hover: false});
+
+                }, 4000);
+
             });
         }
     };
@@ -493,7 +506,7 @@ class AppToolbar extends React.PureComponent {
 
     render() {
 
-        const { classes, ret, camo, _logo, _is_pre_reset, presentation_n, _presentation_open, pathname, language, loaded_progress_percent, know_the_settings, _less_than_960w, _swipeable_app_drawer_open, _account_menu_anchor_element, logged_account, jamy_state_of_mind, jamy_enabled, music_enabled, _explosion } = this.st4te;
+        const { classes, ret, camo, _logo, _is_pre_reset, presentation_n, _presentation_open, pathname, language, loaded_progress_percent, know_the_settings, _less_than_960w, _swipeable_app_drawer_open, _account_menu_anchor_element, logged_account, jamy_state_of_mind, jamy_enabled, music_enabled, _explosion , _jamy_mouse_hover} = this.st4te;
 
         const JAMY = {
             angry: <JamyAngry className={classes.jamy} />,
@@ -523,7 +536,7 @@ class AppToolbar extends React.PureComponent {
                     <div className={classes.presentationInnerOverlay + " arrival "}></div>
                 </div>; break;
             default:
-                bottom_el = presentation_n >= 3 && presentation_n <= 7 ?
+                bottom_el = presentation_n >= 3 && presentation_n <= 13 ?
                     _presentation_open && <div className={classes.presentation} onClick={this._resume_video2}>
                         <video id="presentation-video" width="256" height="256" autoPlay style={{aspectRatio: "1", transform: "translateZ(10px)"}}>
                             <source src={"/src/videos/joke"+(presentation_n-2)+".mp4"} type="video/mp4"/>
@@ -553,7 +566,12 @@ class AppToolbar extends React.PureComponent {
                                             onMouseLeave={this._handle_jamy_mouse_leave}
                                             onClick={this._handle_jamy_mouse_click}>
                                             <Tooltip
-                                                title={t( "sentences.hey i am jamy")}>
+                                                title={t( "sentences.hey i am jamy")}
+                                                PopperProps={{
+                                                    disablePortal: true,
+                                                }}
+                                                placement="right"
+                                                open={_jamy_mouse_hover}>
                                                 <div className={classes.jamyContainer}>
                                                     {JAMY[jamy_state_of_mind]}
                                                 </div>
@@ -604,7 +622,7 @@ class AppToolbar extends React.PureComponent {
                     transitionDuration={{enter: 125, exit: 75}}
                     anchor="left"
                     classes={{root: classes.swipeableDrawer, paper: classes.drawerPaper}}
-                    open={_swipeable_app_drawer_open}
+                    open={_swipeable_app_drawer_open || _presentation_open}
                     onOpen={this._handle_open_swipeable_app_drawer}
                     onClose={this._handle_close_swipeable_app_drawer}>
                     <Toolbar className={classes.appBar}>
@@ -613,22 +631,24 @@ class AppToolbar extends React.PureComponent {
                                 <span className={classes.appTitle}>PIXA.PICS</span>
                             </div>
                             {
-                                know_the_settings ?
-                                    jamy_enabled ?
-                                        <div className={classes.jamyContainer}
-                                             onMouseEnter={this._handle_jamy_mouse_enter}
-                                             onMouseLeave={this._handle_jamy_mouse_leave}
-                                             onClick={this._handle_jamy_mouse_click}>
-                                            <Tooltip
-
-                                                title={t( "sentences.hey i am jamy")}>
-                                                <div className={classes.jamyContainer}>
-                                                    {JAMY[jamy_state_of_mind]}
-                                                </div>
-                                            </Tooltip>
-                                        </div>:
-                                        <img src={_logo} className={"pixelated " + classes.logo} />
-                                    : null
+                                jamy_enabled ?
+                                    <div className={classes.jamyContainer}
+                                         onMouseEnter={this._handle_jamy_mouse_enter}
+                                         onMouseLeave={this._handle_jamy_mouse_leave}
+                                         onClick={this._handle_jamy_mouse_click}>
+                                        <Tooltip
+                                            PopperProps={{
+                                                disablePortal: true,
+                                            }}
+                                            placement="right"
+                                            open={_jamy_mouse_hover}
+                                            title={t( "sentences.hey i am jamy")}>
+                                            <div className={classes.jamyContainer}>
+                                                {JAMY[jamy_state_of_mind]}
+                                            </div>
+                                        </Tooltip>
+                                    </div>:
+                                    <img src={_logo} className={"pixelated " + classes.logo} />
                             }
                             <span className={classes.swipeableDrawerAppTitle}>HTTPS://PIXA.PICS/</span>
                         </div>

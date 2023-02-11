@@ -159,7 +159,7 @@ class CanvasPixels extends React.PureComponent {
                   100% { top: 100% } 
             }` +
             ".Canvas-Pixels-Cover::after {" +
-            `top: 0;
+                `top: 0;
                 left: 0;
                 width: calc(60% - 12px);
                 content: ""attr(datatexttop)"";
@@ -1726,11 +1726,16 @@ class CanvasPixels extends React.PureComponent {
                                 }
                             }
                         }
-                        this.super_state.set_state({_json_state_history: _json_state_history, _saving_json_state_history_running: false, _saving_json_state_history_ran_timestamp: _saving_json_state_history_ran_timestamp}).then(() => {
+                        this.super_state.set_state({_json_state_history: Object.assign({}, _json_state_history), _saving_json_state_history_running: false, _saving_json_state_history_ran_timestamp: _saving_json_state_history_ran_timestamp}).then(() => {
 
                             this._notify_can_undo_redo_change();
+
+                            _json_state_history = Object.assign({}, _json_state_history);
+                            new_current_state._s_pxls = Array.from(new_current_state._s_pxls.map(function (a) {return Uint16Array.from(a);}));
+                            new_current_state._s_pxl_colors = Array.from(new_current_state._s_pxl_colors.map(function (a) {return Uint32Array.from(a);}));
+
                             if(set_anyway_if_changes_callback) {
-                                set_anyway_if_changes_callback(Object.assign({}, _json_state_history), Boolean(_saving_json_state_history_ran_timestamp === now));
+                                set_anyway_if_changes_callback(_json_state_history, Boolean(_saving_json_state_history_ran_timestamp === now));
                             }
                         });
 
