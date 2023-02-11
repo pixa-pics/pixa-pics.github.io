@@ -106,7 +106,7 @@ class Index extends React.PureComponent {
             _snackbar_auto_hide_duration: 1975,
             classes: props.classes,
             _database_attempt: 0,
-            _is_share_dialog_open: false,
+            _is_share_dialog_open: 0,
             _count_presentation_open: 0,
             _datasyncserviceworkerallfiles: 0,
             _history_unlisten: function(){},
@@ -614,7 +614,7 @@ class Index extends React.PureComponent {
 
     _handle_share_dialog_close = () => {
 
-        this.setSt4te({_is_share_dialog_open: false}, () => {
+        this.setSt4te({_is_share_dialog_open: -Math.abs(this.st4te._is_share_dialog_open)}, () => {
 
             this.forceUpdate();
         });
@@ -624,7 +624,7 @@ class Index extends React.PureComponent {
 
     _handle_share_dialog_open = () => {
 
-        this.setSt4te({_is_share_dialog_open: true}, () => {
+        this.setSt4te({_is_share_dialog_open: Math.abs(this.st4te._is_share_dialog_open)+1}, () => {
 
             this.forceUpdate();
         });
@@ -705,7 +705,8 @@ class Index extends React.PureComponent {
                     onClose={this._close_snackbar}
                 />
                 {_language && <ShareDialog
-                    open={_is_share_dialog_open}
+                    open={_is_share_dialog_open > 0}
+                    keep_open={_is_share_dialog_open > 3 ? 0: _is_share_dialog_open > 2 ? 5: _is_share_dialog_open > 1 ? 10: _is_share_dialog_open > 0 ? 15: 15}
                     onClose={this._handle_share_dialog_close}/>}
             </React.Fragment>
         );

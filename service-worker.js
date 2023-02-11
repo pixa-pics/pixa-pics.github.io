@@ -64,7 +64,9 @@ self.addEventListener("install", function(event) {
             "/src/videos/create.mp4",
             "/src/videos/enhanced.mp4",
             "/src/videos/pixelated.mp4",
-            "/src/videos/upload.mp4"
+            "/src/videos/upload.mp4",
+            "/src/videos/share1.mp4",
+            "/src/videos/joke1.mp4"
         ])
     });
     event.waitUntil(useful_cache.then(function (cache) {
@@ -201,7 +203,12 @@ self.addEventListener("fetch", function(event) {
                         "/src/videos/tutorial.mp4",
                         "/src/videos/upload.mp4",
                         "/src/videos/labintro.mp4",
-                        "/src/videos/joke1.mp4",
+                        "/src/videos/share2.mp4",
+                        "/src/videos/share3.mp4",
+                        "/src/videos/share4.mp4",
+                        "/src/videos/share5.mp4",
+                        "/src/videos/share6.mp4",
+                        "/src/videos/share7.mp4",
                         "/src/videos/joke2.mp4",
                         "/src/videos/joke3.mp4",
                         "/src/videos/joke4.mp4",

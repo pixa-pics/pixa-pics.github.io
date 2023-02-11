@@ -109,9 +109,9 @@ const styles = theme => ({
         display: "inline-block",
         padding: theme.spacing(2),
         width: 320,
-        backgroundImage: `linear-gradient(45deg, white 33%, #ffffff55), url("/src/images/infographics/ShareWho.svg")`,
         marginLeft: 48,
         backgroundSize: "cover",
+        textAlign: "center",
         [theme.breakpoints.down("xs")]: {
             display: "none",
             width: 0,
@@ -128,6 +128,25 @@ const styles = theme => ({
             marginLeft: "auto"
         }
     },
+    dialogImageWebShare: {
+        display: "inline-block",
+        padding: theme.spacing(2),
+        width: 320,
+        marginLeft: 48,
+        backgroundSize: "cover",
+        textAlign: "center"
+    },
+    dialogContentWebShare: {
+        display: "inline-block",
+        backgroundImage: "radial-gradient(farthest-corner at 0px 0px, #ffffffaa 25%, #43e0 75%), radial-gradient(farthest-corner at 0% 100%, #ffffffaa 25%, #43e0 75%)",
+        marginRight: 48,
+        [theme.breakpoints.down("xs")]: {
+            display: "none",
+            width: 0,
+            padding: 0,
+            marginLeft: 0
+        }
+    },
     dialogInner: {
         display: "inherit",
         backgroundSize: "100%",
@@ -139,6 +158,54 @@ const styles = theme => ({
             backgroundColor: "#ffffffff",
         }
     },
+    buttonClose:{
+        textTransform: "initial",
+        margin: "12px 24px",
+        position: "absolute",
+        right: 0,
+        width: 259,
+        bottom: 0,
+        zIndex: 1,
+        "@media only screen and (max-width: 600px)": {
+            width: 196,
+        },
+        "@media only screen and (max-width: 760px)": {
+            width: 196,
+        }
+    },
+    desktopintrovideowrapper: {
+        cursor: "pointer",
+        margin: "12px 24px",
+        position: "absolute",
+        right: 0,
+        bottom: -14,
+        height: 259,
+        width: 259,
+        "&::after": {
+            content: "''",
+            background: `#fff !important`,
+            position: "absolute",
+            right: 0,
+            top: 0,
+            width: "10%",
+            height: "15%"
+        },
+        "@media only screen and (max-width: 600px)": {
+            height: 196,
+            width: 196,
+        },
+        "@media only screen and (max-width: 760px)": {
+            height: 196,
+            width: 196,
+        }
+    },
+    desktopintrovideo: {
+        position: "absolute",
+        right: 0,
+        bottom: 0,
+        height: "100%",
+        width: "100%"
+    },
 });
 
 
@@ -149,6 +216,11 @@ class ShareDialog extends React.Component {
         this.state = {
             classes: props.classes,
             open: props.open,
+            keep_open: props.keep_open,
+            _countdown: 0,
+            _keep_open: 0,
+            _web_share: false,
+            _video_n: 1,
         };
     };
 
@@ -156,20 +228,39 @@ class ShareDialog extends React.Component {
 
         const just_being_open = new_props.open && !this.state.open;
 
-        this.setState(new_props, () => {
+        if(just_being_open) {
+            if (navigator.share) {
+                this.setState({_web_share: true});
+                navigator.share({
+                    url: window.location.href,
+                }).then(() => {this.props.onClose(null)}).catch((e) => {});
+            }
+        }
+
+        this.setState({...new_props, _keep_open: just_being_open ? (new_props.keep_open || 0): this.state._keep_open, _video_n: navigator.onLine ? Math.round(1+Math.random()*6): 1}, () => {
 
             if(just_being_open) {
 
-                if (navigator.share) {
-                    navigator.share({
-                        url: window.location.href,
-                    })
-                        .then(() => {this.props.onClose(null)})
-                        .catch((e) => {});
-                }
+                const _countdown = setInterval(() => {
+                    let _keep_open = this.state._keep_open;
+                    if(_keep_open > 0){
+                        _keep_open--;
+                        this.setState({_keep_open}, () => {
+                            this.forceUpdate();
+                        })
+                    }else{
+                        clearInterval(_countdown);
+                    }
+                }, 1000);
 
+                this.setState({_countdown});
             }
         });
+    }
+
+    componentWillUnmount() {
+
+        clearInterval(this.state._countdown)
     }
 
     _copy_url = (event, url) => {
@@ -197,9 +288,17 @@ class ShareDialog extends React.Component {
         window.open(url);
     }
 
+    _resume_video = () => {
+
+        try {
+            var video = document.getElementById("share-video");
+            video.play();
+        }catch(e){}
+    };
+
     render() {
 
-        const { classes, open } = this.state;
+        const { classes, open, _keep_open, _web_share, _video_n } = this.state;
 
         const url = window.location.href;
 
@@ -207,12 +306,13 @@ class ShareDialog extends React.Component {
             <div>
                 <Dialog
                     disablePortal={true}
-                    open={open}
+                    keepMounted={false}
+                    open={open || _keep_open > 0}
                     onClose={(event) => {this.props.onClose(event)}}
                     PaperProps={{style: {background: "none", boxShadow: "none"}}}
                 >
                     <div className={classes.dialogInner}>
-                        <div className={classes.dialogContent}>
+                        <div className={_web_share ? classes.dialogContentWebShare: classes.dialogContent}>
                             <DialogTitle>
                                 {t( "components.share_dialog.title")}
                                 <DialogCloseButton onClick={(event) => {this.props.onClose(event)}} />
@@ -284,10 +384,15 @@ class ShareDialog extends React.Component {
                                 </DialogContentText>
                             </DialogContent>
                         </div>
-                        <div className={classes.dialogImage}>
-                            <p>Happy means happy, getting to shares it for fun, brings easier means and support that follow positivity in our objectives from our side.</p>
-                            <p>Involvements being of any good intent and will is very appreciated. Wants To Share? Yes Or No...</p>
-                            <Button fullWidth={true} variant={"outlined"} onClick={this.props.onClose}>DISMISS</Button>
+                        <div className={_web_share ? classes.dialogImageWebShare: classes.dialogImage}>
+                            <p>Why did the pixel art go viral? Because it was too good to keep to yourself!</p>
+                            <p>Yes Or No... Share our editor with your friends and make your mark in the NFT world.</p>
+                            <Button variant={"contained"} color={"secondary"} fullWidth={true} className={classes.buttonClose} disabled={_keep_open > 0} onClick={this.props.onClose}>DISMISS ({_keep_open > 0 ? `${_keep_open} sec.}`: `ok`})</Button>
+                            <div className={classes.desktopintrovideowrapper}>
+                                <video className={classes.desktopintrovideo} id="share-video" width="259" height="259" autoPlay={_keep_open > 0} onClick={this._resume_video} style={{aspectRatio: "1", transform: "translateZ(10px)"}}>
+                                    <source src={"/src/videos/share"+_video_n+".mp4"} type="video/mp4"/>
+                                </video>
+                            </div>
                         </div>
                     </div>
                 </Dialog>

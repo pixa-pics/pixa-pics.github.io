@@ -370,7 +370,7 @@ class AppToolbar extends React.PureComponent {
 
         if(jamy_enabled && (pathname === "" || pathname === "/")){
 
-            actions.trigger_presentation(Math.round(Math.random()*11+3));
+            actions.trigger_presentation(navigator.onLine ? Math.round(Math.random()*11+3): 3);
         }else {
 
             _history.push("/");
