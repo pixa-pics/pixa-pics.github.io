@@ -660,7 +660,7 @@ class Index extends React.PureComponent {
         if(this.settings._activation_enabled){
             this.setSt4te({_is_activatelab_dialog_open: Math.abs(this.st4te._is_activatelab_dialog_open)+1}, () => {
 
-                api.set_settings({activation_enabled: false})
+                api.set_settings({activation_enabled: false}, this._update_settings)
                 this.forceUpdate();
             });
             actions.trigger_sfx("hero_decorative-celebration-02");

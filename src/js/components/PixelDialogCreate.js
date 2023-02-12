@@ -56,7 +56,7 @@ const styles = theme => ({
             background: "#01030f",
         },
         boxShadow: "none",
-        color: "#000000",
+        color: "#fff",
         fontWeight: "bold",
         mixBlendMode: "hard-light",
         fontSize: "2.5em",

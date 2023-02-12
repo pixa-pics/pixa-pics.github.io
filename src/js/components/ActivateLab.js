@@ -4,6 +4,7 @@ import { withStyles } from "@material-ui/core/styles"
 import {Dialog, Button, DialogContent, Typography, DialogActions} from "@material-ui/core";
 import LabActivate from "../icons/LabActivate";
 import actions from "../actions/utils";
+import RestrictedArea from "../icons/RestrictedArea";
 
 const styles = theme => ({
     dialogMobileFullscreen: {
@@ -12,10 +13,41 @@ const styles = theme => ({
             backgroundSize: "contain",
             contentVisibility: "auto",
             contain: "paint style layout",
+            boxShadow: "none",
+            overflow: "hidden"
         },
         "& .MuiBackdrop-root": {
-            background: "#01030fbf",
+            background: "rgba(1,3,15,0.9)",
+        },
+        "& svg:first-child": {
+            filter: "drop-shadow(0px 0px 24px #0c00ffaa) drop-shadow(0px 0px 12px #0a00db55) drop-shadow(0px 0px 6px #0900bb66) drop-shadow(0px 0px 3px #07008f77)"
         }
+    },
+    "@keyframes glitch": {
+        "0%": { opacity: ".10"},
+        "25%": { opacity: "0"},
+        "50%": { opacity: ".80"},
+        "75%": { opacity: "0"},
+        "100%": { opacity: ".90"},
+    },
+    activateSVG: {
+        cursor: "pointer",
+        animationFillMode: "both",
+        animationName: "$glitch",
+        animationDuration: "250ms",
+        animationTimingFunction: "cubic-bezier(0.4, 0, 0.2, 1)",
+        animationDirection: "alternate",
+        animationIterationCount: "1",
+        animationDelay: "150ms",
+    },
+    restrictedSVG: {
+        animationFillMode: "both",
+        animationName: "$glitch",
+        animationDuration: "250ms",
+        animationTimingFunction: "cubic-bezier(0.4, 0, 0.2, 1)",
+        animationDirection: "alternate",
+        animationIterationCount: "1",
+        animationDelay: "50ms",
     },
     dialogContentContainer: {
         marginTop: 16,
@@ -97,7 +129,7 @@ class ActivateLab extends React.PureComponent {
     _resume_video = () => {
 
         try {
-            var video = document.getElementById("tutorial-video");
+            var video = document.getElementById("activation-video");
             video.play();
         }catch(e){}
     };
@@ -111,15 +143,20 @@ class ActivateLab extends React.PureComponent {
         } = this.st4te;
 
         return (
-            <Dialog open={open}
-                    className={classes.dialogMobileFullscreen}
-                    maxWidth={"xl"}
-                    onClose={this.props.onClose}
-                    onClick={this.props.onClose}
-                    disablePortal={false}
-                    keepMounted={keepMounted}>
-                    <LabActivate style={{height: "min(75vh, 75vw)", width: "min(75vh, 75vw)", margin: "auto"}}/>
-            </Dialog>
+            <React.Fragment>
+                <Dialog open={open}
+                        className={classes.dialogMobileFullscreen}
+                        maxWidth={"xl"}
+                        onClose={this.props.onClose}
+                        disablePortal={false}
+                        keepMounted={keepMounted}>
+                    <LabActivate className={classes.activateSVG} style={{height: "min(75vh, 75vw)", width: "min(75vh, 75vw)", margin: "auto"}} onClick={this.props.onClose}/>
+                    <video width="480" height="480" style={{cursor: "pointer", transform: "translateZ(10px)", maxWidth: "20%", maxHeight: "20%", position: "fixed", left: "5%", top: "0%", mixBlendMode: "multiply", clipPath: "circle(50% at 50% 50%)"}} autoPlay={open} id="activation-video" onClick={this._resume_video}>
+                        <source src="/src/videos/activation.mp4" type="video/mp4"/>
+                    </video>
+                    <RestrictedArea className={classes.restrictedSVG} style={{height: "auto", width: "min(100vh, 100vw)", position: "fixed", bottom: "0%"}}/>
+                </Dialog>
+            </React.Fragment>
         );
     }
 }
