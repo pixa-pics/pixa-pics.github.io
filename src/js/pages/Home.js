@@ -590,10 +590,10 @@ class Home extends React.PureComponent {
                             <Button className={classes.playVideoButton} type="text" startIcon={<IconPlay/>} onClick={(event) => {this._handle_speed_dial_action(event, "presentation", 2)}}>About</Button>
                         </Fade>
                         <Fade in={true} timeout={250}>
-                            <Button className={classes.playVideoButton} type="text" startIcon={<IconPlay/>} onClick={() => {this._handle_video_open(1)}}>NFTs</Button>
+                            <Button className={classes.playVideoButton} type="text" startIcon={<IconPlay/>} onClick={() => {this._handle_video_open(1)}}>Pixel Art?</Button>
                         </Fade>
                         <Fade in={true} timeout={500}>
-                            <Button className={classes.playVideoButton} type="text" startIcon={<IconPlay/>}  onClick={() => {this._handle_video_open(2)}}>Pixel Art</Button>
+                            <Button className={classes.playVideoButton} type="text" startIcon={<IconPlay/>}  onClick={() => {this._handle_video_open(2)}}>NFTs?</Button>
                         </Fade>
                         {_less_than_960w && <Fade in={true} timeout={500}>
                             <p style={{maxWidth: "50%"}}>
@@ -641,14 +641,14 @@ class Home extends React.PureComponent {
                 <Backdrop className={classes.backdrop} open={_is_video_open > 0} onClick={this._handle_video_close}>
                     {_is_video_open === 1 && (
                         <iframe style={{width: "min(1280px, calc(100% - 96px))", height: "auto", aspectRatio: "16/9"}}
-                                width="1280" height="720" src="https://www.youtube-nocookie.com/embed/pbNcwHsgDh8"
+                                width="1280" height="720" src="https://www.youtube-nocookie.com/embed/U77EWqamAgE"
                                 title="YouTube video player" frameBorder="0"
                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                                 allowFullScreen></iframe>
                     )}
                     {_is_video_open === 2 && (
                         <iframe style={{width: "min(1280px, calc(100% - 96px))", height: "auto", aspectRatio: "16/9"}}
-                                width="1280" height="720" src="https://www.youtube-nocookie.com/embed/gwzgroUe9_k"
+                                width="1280" height="720" src="https://www.youtube-nocookie.com/embed/5FkqNhdoRPE"
                                 title="YouTube video player" frameBorder="0"
                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                                 allowFullScreen></iframe>
