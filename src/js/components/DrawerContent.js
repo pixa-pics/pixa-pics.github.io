@@ -5,7 +5,7 @@ import {List, ListItem, ListItemIcon, ListItemText, Badge} from "@material-ui/co
 
 import PersonIcon from "@material-ui/icons/Person";
 import CodeIcon from "@material-ui/icons/Code";
-import ForumIcon from "@material-ui/icons/Forum";
+import PaymentIcon from "@material-ui/icons/Payment";
 import PaletteIcon from "@material-ui/icons/Palette";
 import InfoIcon from "@material-ui/icons/Info";
 
@@ -28,6 +28,9 @@ const styles = theme => ({
     listItemGrey: {
         "& > div > span": {
             opacity: .75,
+        },
+        "& .MuiListItemText-secondary": {
+            color: "#8e93b7 !important"
         }
     },
     iconColor: {
@@ -186,6 +189,12 @@ class DrawerContent extends React.PureComponent {
                         <ListItem button className={classes.listItemGrey} onClick={(event) => this._open_link(event, "https://www.ebook-nft-pixel.art/")}>
                             <ListItemIcon><InfoIcon className={classes.iconColor} /></ListItemIcon>
                             <ListItemText primary="Free Guide (PDF)" />
+                        </ListItem>
+                    </Fade>
+                    <Fade in={true} timeout={500}>
+                        <ListItem button className={classes.listItemGrey} onClick={(event) => this._open_link(event, "https://crypto.com/nft/r/wpfp8qu62z")}>
+                            <ListItemIcon><PaymentIcon className={classes.iconColor} /></ListItemIcon>
+                            <ListItemText primary="Crypto.com (NFTs)" secondary={"Create a legal account now and earn $25 for yourself, while also helping us earn $25."}/>
                         </ListItem>
                     </Fade>
                 </List>
