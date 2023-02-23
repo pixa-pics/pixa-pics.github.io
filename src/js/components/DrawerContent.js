@@ -7,6 +7,7 @@ import PersonIcon from "@material-ui/icons/Person";
 import CodeIcon from "@material-ui/icons/Code";
 import ForumIcon from "@material-ui/icons/Forum";
 import PaletteIcon from "@material-ui/icons/Palette";
+import InfoIcon from "@material-ui/icons/Info";
 
 import { HISTORY } from "../utils/constants";
 import actions from "../actions/utils";
@@ -177,16 +178,14 @@ class DrawerContent extends React.PureComponent {
                     </Fade>
                     <Fade in={true} timeout={300}>
                         <ListItem button className={classes.listItemGrey} onClick={(event) => this._open_link(event, "https://github.com/pixa-pics/pixa-pics.github.io")}>
-                            <ListItemIcon><CodeIcon className={classes.iconColor} /></ListItemIcon>
+                            <Badge className={classes.styledBadgeConnected} overlap="circular" badgeContent=" " variant="dot"><ListItemIcon><CodeIcon className={classes.iconColor} /></ListItemIcon></Badge>
                             <ListItemText primary="Source code" />
                         </ListItem>
                     </Fade>
                     <Fade in={true} timeout={400}>
-                        <ListItem button className={classes.listItemGrey} onClick={(event) => this._open_link(event, "https://www.facebook.com/groups/504155481777261")}>
-                            <Badge className={classes.styledBadgeConnected} overlap="circular" badgeContent=" " variant="dot">
-                                <ListItemIcon><ForumIcon className={classes.iconColor} /></ListItemIcon>
-                            </Badge>
-                            <ListItemText primary="Facebook's group" />
+                        <ListItem button className={classes.listItemGrey} onClick={(event) => this._open_link(event, "https://www.ebook-nft-pixel.art/")}>
+                            <ListItemIcon><InfoIcon className={classes.iconColor} /></ListItemIcon>
+                            <ListItemText primary="Free Guide (PDF)" />
                         </ListItem>
                     </Fade>
                 </List>
