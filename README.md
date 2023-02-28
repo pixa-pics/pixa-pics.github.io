@@ -1,11 +1,5 @@
 # PIXA.PICS
 
-<h3 align="center">
- <span> :warning: </span><a href="https://github.com/pixa-pics/pixa-pics.github.io/blob/main/A%20few%20words%20on%20pixel%20art%20and%20NFTs.pdf">A few words on pixel art and NFTs.pdf</a> :warning: <span> <br/> 5 pages long, it explains why they should be ditched properly.</span>
-</h3>
-
-## PIXA.PICS | AI Generated promotional video
-
 [![AI Generated promotional video of pixe.pics](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/VIDEO2.png)](https://www.youtube.com/watch?v=V-6-m4bHeJU)
 
 ****
@@ -42,6 +36,15 @@
 ---
 
 ![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/LAB.png)
+
+> Within our NFT Laboratory at Pixa.Pics, we're on a mission to democratize digital art and empower creators around the world. Our core values are rooted in creativity, inclusivity, and sustainability, and we believe that technology can be a force for good in the world.
+
+We're inspired by the history of pixel art, which emerged in the early days of digital graphics as a way to create art with limited resources. Today, we're taking that legacy to the next level by leveraging blockchain technology to create new opportunities for artists to showcase and monetize their work.
+
+Our strategic objectives are focused on building a platform that enables creators to unleash their full potential. We're constantly innovating and iterating to make Pixa.Pics the most user-friendly and versatile pixel art editor on the market, while also integrating cutting-edge NFT technology to enable seamless buying, selling, and collecting of digital art.
+
+We believe that by creating a platform that puts artists first, we're contributing to a brighter future for the creative industry and for society as a whole. We're excited to be part of a movement that is redefining what it means to be an artist in the digital age, and we can't wait to see what the future holds.
+
 
 ![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/EDITOR6.png)
 > FILE SIZE: 1.5 kB Only! [See result in x24 PNG!](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/pixelart.png)

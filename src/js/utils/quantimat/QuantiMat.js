@@ -26,17 +26,18 @@ SOFTWARE.
 
 // Inspired by https://en.wikipedia.org/wiki/Rec._709
 var imul = function(a, b){
+    "use strict";
     var ah = (a >>> 16) & 0xffff,
         al = a & 0xffff,
         bh = (b >>> 16) & 0xffff,
         bl = b & 0xffff;
     return ((al * bl) + (((ah * bl + al * bh) << 16) >>> 0) | 0);
 };
-var round = function (n) { return Math.round(n)|0; }
+var round = Math.round;
 var fr = Math.fround;
-var p2 = function(x){ x = x|0; return imul(x|0, x|0)|0; };
+var p2 = function(x){"use strict"; x = x|0; return imul(x|0, x|0)|0; };
 var s = function(x){
-
+    "use strict";
     // Base cases
     x = (x | 0)>>>0;
     if ((x|0) == 0 || (x|0) == 1){
@@ -72,60 +73,93 @@ var EUCLMAX = (s(PR*RD*RD + PG*GD*GD + PB*BD*BD | 0) | 0) >>> 0;
 var MANHMAX = (PR*RD + PG*GD + PB*BD|0) >>> 0;
 
 function plus_uint(a, b) {
+    "use strict";
+    a = a | 0;
+    b = b | 0;
     return (a + b | 0) >>> 0;
 }
 function multiply_uint(a, b) {
-    return Math.imul(a|0, b|0)|0;
+    "use strict";
+    a = a | 0;
+    b = b | 0;
+    return Math.imul(a, b)|0;
 }
 function multiply_uint_4(a) {
+    "use strict";
     return a << 2;
 }
 function divide_uint(a, b) {
+    "use strict";
+    a = a | 0;
+    b = b | 0;
     return (a / b | 0) >>> 0;
 }
 function divide_4_uint(n) {
+    "use strict";
     return (n >> 2 | 0) >>>0;
 }
 function divide_16_uint(n) {
+    "use strict";
     return (n >> 4 | 0) >>> 0;
 }
 function divide_32_uint(n) {
+    "use strict";
     return (n >> 5 | 0) >>>0;
 }
 function divide_64_uint(n) {
+    "use strict";
     return (n >> 6 | 0) >>>0;
 }
 function divide_85_uint(n) {
+    "use strict";
     return (n / 85 - 0.012 | 0) >>>0;
 }
 function divide_128_uint(n) {
+    "use strict";
     return (n >> 7 | 0) >>> 0;
 }
 function clamp_int(x, min, max) {
+    "use strict";
     x = x | 0;
     min = min | 0;
     max = max | 0;
     return (x < min ? min: x > max ? max: x) | 0;
 }
 function clamp_uint8(n) {
+    "use strict";
+    n = n | 0;
     return (n | 0) & 0xFF;
 }
 function inverse_255(n) {
+    "use strict";
+    n = n | 0;
     return (255 - n | 0) & 0xFF;
 }
 function divide_255(n) {
+    "use strict";
+    n = n | 0;
     return (n / 255 | 0) & 0xFF;
 }
 function clamp_uint32(n) {
+    "use strict";
+    n = n | 0;
     return ((n|0)>>>0) >>> 0;
 }
 function uint_not_equal(a, b) {
+    "use strict";
+    a = a | 0;
+    b = b | 0;
     return (a | 0) != (b | 0);
 }
 function uint_equal(a, b) {
+    "use strict";
+    a = a | 0;
+    b = b | 0;
     return (a | 0) == (b | 0);
 }
 function abs_int(n) {
+    "use strict";
+    n = n | 0;
     return (n | 0) < 0 ? (-n | 0) : (n | 0);
 }
 
@@ -274,12 +308,41 @@ SIMDopeColor.prototype.simplify = function(of) {
     return this;
 }
 
+SIMDopeColor.blend_all = function (base, colors, amounts) {
+
+    var sum_r = base.r, sum_g = base.g, sum_b = base.b, sum_a = base.a, sum_amount = 1;
+    var color, amount, length = colors.length|0, i;
+
+    for(i = 0; i < length; i++){
+        color = colors[i];
+        amount = fr(amounts[i]);
+        sum_amount += amount;
+        sum_r += color.r * amount | 0;
+        sum_g += color.g * amount | 0;
+        sum_b += color.b * amount | 0;
+        sum_a += color.a * amount | 0;
+    }
+
+    var uint8 = Uint8Array.of(
+        sum_a / sum_amount | 0,
+        sum_b / sum_amount | 0,
+        sum_g / sum_amount | 0,
+        sum_r / sum_amount | 0
+    );
+
+    base.set(uint8);
+    for(i = 0; i < length; i++) {
+        colors[i].set(uint8);
+    }
+}
+
 SIMDopeColor.prototype.blend_with = function(added_uint8x4, amount_alpha, should_return_transparent, alpha_addition) {
 
+    "use strict";
     should_return_transparent = should_return_transparent | 0;
     alpha_addition = alpha_addition | 0;
-
-    added_uint8x4.multiply_a_1000(amount_alpha|0);
+    amount_alpha = amount_alpha | 0;
+    added_uint8x4.multiply_a_4096(amount_alpha|0);
 
     if((should_return_transparent|0)!=0) {
 
@@ -304,14 +367,14 @@ SIMDopeColor.prototype.blend_with = function(added_uint8x4, amount_alpha, should
     }
 };
 
-SIMDopeColor.prototype.euclidean_match_with = function(color, threshold_1000) {
+SIMDopeColor.prototype.euclidean_match_with = function(color, threshold_4096) {
     "use strict";
 
-    threshold_1000 = (threshold_1000 | 0) >>> 0;
-    if((threshold_1000|0) == 1000) {
+    threshold_4096 = (threshold_4096 | 0) >>> 0;
+    if((threshold_4096|0) == 4096) {
 
         return true;
-    }else if((threshold_1000|0) == 0){
+    }else if((threshold_4096|0) == 0){
 
         return ((this.uint32|0) == (color.uint32|0));
     }else {
@@ -321,18 +384,18 @@ SIMDopeColor.prototype.euclidean_match_with = function(color, threshold_1000) {
             PR * p2(this.r - color.r | 0) +
             PG * p2(this.g - color.g | 0) +
             PB * p2(this.b - color.b | 0)
-        ) / EUCLMAX * 1000 | 0) < (threshold_1000*ao|0);
+        ) / EUCLMAX * 4096 | 0) < (threshold_4096*ao|0);
     }
 };
 
-SIMDopeColor.prototype.manhattan_match_with = function(color, threshold_1000) {
+SIMDopeColor.prototype.manhattan_match_with = function(color, threshold_4096) {
     "use strict";
 
-    threshold_1000 = (threshold_1000 | 0) >>> 0;
-    if((threshold_1000|0) == 1000) {
+    threshold_4096 = (threshold_4096 | 0) >>> 0;
+    if((threshold_4096|0) == 4096) {
 
         return true;
-    }else if((threshold_1000|0) == 0){
+    }else if((threshold_4096|0) == 0){
 
         return ((this.uint32|0) == (color.uint32|0));
     }else {
@@ -342,13 +405,13 @@ SIMDopeColor.prototype.manhattan_match_with = function(color, threshold_1000) {
             PR * abs_int(this.r - color.r | 0) +
             PG * abs_int(this.g - color.g | 0) +
             PB * abs_int(this.b - color.b | 0) | 0
-        ) * 1000 / MANHMAX | 0) < (threshold_1000*ao|0);
+        ) * 4096 / MANHMAX | 0) < (threshold_4096*ao|0);
     }
 };
 
-SIMDopeColor.prototype.multiply_a_1000 = function(n) {
+SIMDopeColor.prototype.multiply_a_4096 = function(n) {
     "use strict";
-    this.subarray[0] = clamp_uint8(divide_uint(imul(this.a, n), 1000));
+    this.subarray[0] = clamp_uint8(divide_uint(imul(this.a, n), 4096));
 };
 SIMDopeColor.prototype.copy = function(a) {
     "use strict";
@@ -485,7 +548,7 @@ var QuantiMat = function(opts) {
     this.new_pxls_ = "buffer" in opts.pxls ? new Uint32Array(opts.pxls.buffer) : Uint32Array.from(opts.pxls);
     this.new_pxl_colors_ = "buffer" in opts.pxl_colors ? SIMDopeColors(opts.pxl_colors.buffer) : SIMDopeColors(Uint32Array.from(opts.pxl_colors));
 
-    this.is_bucket_threshold_auto_ = Boolean(opts.bucket_threshold > 1000);
+    this.is_bucket_threshold_auto_ = Boolean(opts.bucket_threshold > 4096);
     opts.bucket_threshold = opts.bucket_threshold || 0;
     opts.bucket_threshold = (opts.bucket_threshold|0) >= 1 ? (opts.bucket_threshold | 0):  opts.this_state_bucket_threshold || 0;
 
@@ -559,7 +622,7 @@ Object.defineProperty(QuantiMat.prototype, 'get_a_new_pxl_color_from_pxl_index',
 Object.defineProperty(QuantiMat.prototype, 'reset_cluster', {
     get: function() { "use strict"; return function() {
         "use strict";
-        this.max_cluster_ = this.new_pxl_colors_.length > 32768 ? 4096+1: this.new_pxl_colors_.length > 16385 ? 256+1: this.new_pxl_colors_.length > 8192 ? 64+1: this.new_pxl_colors_.length > 2048 ? 16+1: 1;
+        this.max_cluster_ = this.new_pxl_colors_.length > 16384 ? 4096+1: this.new_pxl_colors_.length > 8192 ? 256+1: this.new_pxl_colors_.length > 2048 ? 64+1: this.new_pxl_colors_.length > 512 ? 16+1: 1;
         this.length_clusters_.fill(0, 0, this.max_cluster|0);
         for(var c = 0; (c|0) < (this.max_cluster|0); c=(c+1|0)>>>0){ this.index_clusters_[c|0] = [];}
     }}
@@ -760,23 +823,31 @@ QuantiMat.prototype.process_threshold = function(t) {
     "use strict";
 
     t = (t | 0) >>> 0;
-    var threshold_1000 = this.bucket_threshold * (t / this.threshold_steps) | 0;
+    var threshold_4096 = this.bucket_threshold * (t / this.threshold_steps) | 0;
     var weight_applied_to_color_usage_difference = t / this.threshold_steps;
 
     var index_merged = false;
-    var latest_color = {};
+    var latest_colors = [];
+    var latest_amounts = [];
     var start = 0;
     var stop = 0;
     var color_a, color_b;
     var color_a_usage = 0;
     var color_b_usage = 0;
-    var first_color_more_used = false;
     var color_usage_difference_positive = 0.0;
     var weighted_threshold = 0.0;
     var index_of_color_a = 0;
     var index_of_color_b = 0;
     var x = 0, y = 0;
     var color_n_in_cluster = 0;
+
+    // 1x Threshold + 1x weight
+    weighted_threshold =
+        ((
+            // Threshold and weight applied to threshold divided by what is not the threshold
+            ((threshold_4096 / 4096) + (threshold_4096 / 4096 * weight_applied_to_color_usage_difference)) /
+            (1 + weight_applied_to_color_usage_difference)
+        ) * 4096 | 0) >>> 0;  // THRESHOLD + THRESHOLD * WEIGHT / 1 + WEIGHT
 
     for(var c = 0; (c|0) < (this.max_cluster|0); c=(c+1|0)>>>0){
 
@@ -791,63 +862,41 @@ QuantiMat.prototype.process_threshold = function(t) {
             color_a = this.get_a_new_pxl_color((index_of_color_a|0)>>>0);
             color_a_usage = (this.get_a_color_usage((index_of_color_a|0)>>>0) | 0) >>> 0;
 
-            // Start following color snake
-            latest_color = {value: color_a};
-
             if((color_a_usage|0) > 0 && color_a.is_not_fully_transparent()) {
 
                 // Start following color snake
-                latest_color = {value: color_a};
+                latest_colors = [];
 
                 for(y = start|0; (y|0) < (stop|0); y = (y+1|0)>>>0) {
 
-                    index_of_color_b = (this.get_an_index_in_clusters((y|0)>>>0)|0)>>>0;
+                    index_of_color_b = this.get_an_index_in_clusters(y)|0;
                     // Update color usage and relative variables
-                    color_b = this.get_a_new_pxl_color(index_of_color_b|0);
-                    color_b_usage = (this.get_a_color_usage(index_of_color_b|0) | 0) >>> 0;
+                    color_b = this.get_a_new_pxl_color(index_of_color_b);
+                    color_b_usage = this.get_a_color_usage(index_of_color_b)|0;
 
                     if((color_b_usage|0) > 0 && color_b.is_not_fully_transparent()) {
-
-                        first_color_more_used = (color_a_usage|0) > (color_b_usage|0);
-                        color_usage_difference_positive = (first_color_more_used ? (1000 * color_b_usage / color_a_usage | 0): (1000 * color_a_usage / color_b_usage | 0)) & 1000;
-
-                        // 1x Threshold + 1x weight
-                        weighted_threshold =
-                            ((
-                                // Threshold and weight applied to threshold divided by what is not the threshold
-                                ((threshold_1000 / 1000) + (threshold_1000 / 1000 * weight_applied_to_color_usage_difference)) /
-                                (1 + weight_applied_to_color_usage_difference)
-                            ) * 1000 | 0) >>> 0;  // THRESHOLD + THRESHOLD * WEIGHT / 1 + WEIGHT
 
                         // The less a color is used the less it requires a great distance to be merged (so we don't have many color used only a few time in the whole image, heavily used color gets preserved better than lowly used ones)
                         if(color_a.manhattan_match_with(color_b,  weighted_threshold|0)) {
 
+                            color_usage_difference_positive = ((color_a_usage|0) > (color_b_usage|0) ? (4096 * (1 / color_a_usage / color_b_usage) | 0): (4096 * color_a_usage / color_b_usage | 0)) & 4096;
+
                             // Update color usage and relative variables
                             index_merged = true;
-                            color_a_usage = (color_a_usage + color_b_usage | 0) >>> 0;
-                            this.set_a_color_usage(index_of_color_a|0, color_a_usage|0);
+                            this.set_a_color_usage(index_of_color_a|0, color_a_usage+color_b_usage|0);
                             this.set_a_color_usage(index_of_color_b|0, 0);
 
                             // Adds color to blend to processed colors and stack it to what will be set to be equals with all other color blended
-                            latest_color.tail = {value: this.get_a_new_pxl_color(index_of_color_b|0)};
-                            latest_color = latest_color.tail;
-
-                            // Blend the two colors according to their usage's weight
-                            if(first_color_more_used) {
-                                color_a.blend_with(color_b, color_usage_difference_positive|0, false, false);
-                            }else {
-                                color_b.blend_with(color_a, color_usage_difference_positive|0, false, false);
-                            }
+                            latest_colors.push(this.get_a_new_pxl_color(index_of_color_b|0));
+                            latest_amounts.push((4096-color_usage_difference_positive|0)/4096);
                         }
                     }
                 }
             }
 
             if(index_merged) {
-                while (typeof latest_color != "undefined") {
-                    latest_color.value.set(color_a);
-                    latest_color = latest_color.tail;
-                }
+                SIMDopeColor.blend_all(color_a, latest_colors, latest_amounts);
+                latest_colors = []; latest_amounts = [];
             }
         }
 
@@ -861,9 +910,9 @@ QuantiMat.prototype.process_threshold = function(t) {
 QuantiMat.prototype.round = function() {
     "use strict";
 
-    if(this.new_pxl_colors_length > 4096) {
+    if(this.new_pxl_colors_length > 512) {
 
-        var simplify_of = this.new_pxl_colors_.length > 65536 ? 8.0: this.new_pxl_colors_.length > 32768 ? 6.4: this.new_pxl_colors_.length > 16384 ? 4.8: this.new_pxl_colors_.length > 8192 ? 3.2: this.new_pxl_colors_.length > 4096 ? 1.6: 1;
+        var simplify_of = this.new_pxl_colors_.length > 16384 ? 16: this.new_pxl_colors_.length > 8192 ? 8: this.new_pxl_colors_.length > 2048 ? 4: this.new_pxl_colors_.length > 512 ? 2: 1;
         for(var l = 0; (l|0) < (this.new_pxl_colors_length|0); l = (l+1|0)>>>0) {
             this.get_a_new_pxl_color((l|0)>>>0).simplify(simplify_of);
         }

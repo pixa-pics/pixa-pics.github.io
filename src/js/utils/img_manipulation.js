@@ -4,30 +4,7 @@ const AFunction = Object.getPrototypeOf( function(){}).constructor;
 window.file_to_bmp_sanitized_process_function = new AFunction(`var t = function(file) {
     "use strict";
     
-    return new Promise(function(resolve, reject) {
-        var img = new Image();
-        img.onload = function() {
-    
-            var is_png = file.type == "image/png";
-            var canvas;
-            try {
-                createImageBitmap(img, {
-                    resizeQuality: 'pixelated'
-                }).then(function(bmp){
-                
-                    resolve(bmp);
-                });
-                
-            } catch(e){
-                reject();
-            }
-            
-        };
-        img.onerror = function() { reject(); };
-        img.src = URL.createObjectURL(file);
-    });
-
-    
+    return createImageBitmap(file);
 }; return t;`)();
 
 const file_to_bmp_sanitized = (file, callback_function = () => {}, pool = null) => {
