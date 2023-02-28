@@ -1362,13 +1362,7 @@ class Pixel extends React.PureComponent {
             a.click();
             a.remove();
 
-            actions.trigger_sfx("hero_decorative-celebration-02");
-            setTimeout(() => {
-
-                actions.trigger_snackbar("SHARING greatly helps PIXA.PICS! Happy means happy.", 7000);
-                actions.trigger_sfx("alert_high-intensity");
-
-            }, 2000);
+            this._propose_selling_nft();
         });
     };
 
@@ -1493,19 +1487,7 @@ class Pixel extends React.PureComponent {
 
                         this.setSt4te({_loading: false, _loading_process: ""}, () => {
 
-                            actions.trigger_voice("complete");
-                            actions.trigger_sfx("hero_decorative-celebration-02");
-                            setTimeout(() => {
-
-                                actions.trigger_share();
-                                window.dispatchEvent(new Event("home-action-tryshare"));
-
-                                setTimeout(() => {
-
-                                    actions.trigger_snackbar("SHARING IT greatly helps PIXA.PICS! Happy means happy.", 7000);
-                                }, 2000);
-
-                            }, 2000);
+                            this._propose_selling_nft();
 
                         });
 
@@ -1515,6 +1497,32 @@ class Pixel extends React.PureComponent {
             }, 750);
 
         });
+    };
+
+    _propose_selling_nft = () => {
+
+        actions.trigger_voice("complete");
+        actions.trigger_sfx("hero_decorative-celebration-02");
+        actions.trigger_snackbar("Fantastic!", 1500);
+
+        setTimeout(() => {
+
+            actions.trigger_share();
+            window.dispatchEvent(new Event("home-action-tryshare"));
+
+            setTimeout(() => {
+
+                actions.trigger_sfx("alert_high-intensity");
+                actions.trigger_snackbar("Your unique and stunning pixel art can now be turned into a valuable digital asset through the power of blockchain technology.", 7000);
+                setTimeout(() => {
+
+                    actions.trigger_sfx("hero_decorative-celebration-02");
+                    actions.trigger_snackbar("Sell your pixel art as an NFT on your favourite platform and become a part of the growing NFT community.", 9000);
+                }, 8000);
+
+            }, 2000);
+
+        }, 2000);
     };
 
     _continue_download = () => {
@@ -2042,6 +2050,8 @@ class Pixel extends React.PureComponent {
 
     _handle_can_undo_redo_change = (_can_undo, _can_redo) => {
 
+        _can_undo = parseInt(_can_undo);
+        _can_redo = parseInt(_can_redo);
         const update = Boolean(this.st4te._can_undo !== _can_undo || this.st4te._can_redo !== _can_redo);
         this.setSt4te({_can_undo, _can_redo}, () => {
 
@@ -3016,7 +3026,7 @@ class Pixel extends React.PureComponent {
                     <ZoomIn/>
                 </IconButton>
 
-                <Button disabled={!_can_redo} variant={"text"} color={"primary"} size={"small"}className={classes.redoButton} onClick={(event) => {this._redo()}}>
+                <Button disabled={!_can_redo} variant={"text"} color={"primary"} size={"small"} className={classes.redoButton} onClick={(event) => {this._redo()}}>
                     {`${-_can_redo || ""} Redo`} <ChangeHistoryOutlined style={{transition: "ease-out 225ms transform 25m", transform: `rotate(+${_can_redo*360+90}deg)`}}/>
                 </Button>
                 <Button disabled={!_can_undo} variant={"text"} color={"primary"} size={"small"} className={classes.undoButton} onClick={(event) => {this._undo()}}>

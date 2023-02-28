@@ -173,28 +173,28 @@ class DrawerContent extends React.PureComponent {
                             <ListItemText primary="Draw" />
                         </ListItem>
                     </Fade>
-                    <Fade in={true} timeout={200}>
+                    <Fade in={true} timeout={300}>
                         <ListItem button className={classes.listItemGrey} onClick={(event) => this._open_link(event, "https://opencollective.com/pixapics")}>
                             <ListItemIcon><PersonIcon className={classes.iconColor} /></ListItemIcon>
                             <ListItemText primary="Donate" />
                         </ListItem>
                     </Fade>
-                    <Fade in={true} timeout={300}>
+                    <Fade in={true} timeout={500}>
+                        <ListItem button className={classes.listItemGrey} onClick={(event) => this._open_link(event, "https://www.ebook-nft-pixel.art/")}>
+                            <ListItemIcon><InfoIcon className={classes.iconColor} /></ListItemIcon>
+                            <ListItemText primary="Free Guide" />
+                        </ListItem>
+                    </Fade>
+                    <Fade in={true} timeout={700}>
                         <ListItem button className={classes.listItemGrey} onClick={(event) => this._open_link(event, "https://github.com/pixa-pics/pixa-pics.github.io")}>
                             <Badge className={classes.styledBadgeConnected} overlap="circular" badgeContent=" " variant="dot"><ListItemIcon><CodeIcon className={classes.iconColor} /></ListItemIcon></Badge>
                             <ListItemText primary="Source code" />
                         </ListItem>
                     </Fade>
-                    <Fade in={true} timeout={400}>
-                        <ListItem button className={classes.listItemGrey} onClick={(event) => this._open_link(event, "https://www.ebook-nft-pixel.art/")}>
-                            <ListItemIcon><InfoIcon className={classes.iconColor} /></ListItemIcon>
-                            <ListItemText primary="Free Guide (PDF)" />
-                        </ListItem>
-                    </Fade>
-                    <Fade in={true} timeout={500}>
+                    <Fade in={true} timeout={900}>
                         <ListItem button className={classes.listItemGrey} onClick={(event) => this._open_link(event, "https://crypto.com/nft/r/wpfp8qu62z")}>
                             <ListItemIcon><PaymentIcon className={classes.iconColor} /></ListItemIcon>
-                            <ListItemText primary="Crypto.com (NFTs)" secondary={"Create a legal account now and earn $25 for yourself, while also helping us earn $25."}/>
+                            <ListItemText primary="Showcase NFTs" secondary={"Create an account on crypto.com now, and you will receive up to $25 in CRO today due to our awesome partnership!"}/>
                         </ListItem>
                     </Fade>
                 </List>

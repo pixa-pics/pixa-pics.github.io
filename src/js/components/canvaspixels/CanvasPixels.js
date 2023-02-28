@@ -1514,7 +1514,7 @@ class CanvasPixels extends React.PureComponent {
                 }
             }else {
 
-                if (callback_function !== null) {callback_function(this.super_state.get_state()._layers, this.super_state.get_state()._layer_index, false, {});}
+                if (callback_function !== null) {callback_function(this.super_state.get_state()._layers, this.super_state.get_state()._layer_index, has_changed, {});}
             }
         }
     };
@@ -1611,10 +1611,8 @@ class CanvasPixels extends React.PureComponent {
 
     _maybe_save_state = (set_anyway_if_changes_callback, force, requested_at) => {
         "use strict";
-
         force = force || false;
         requested_at = requested_at || Date.now();
-        let new_current_state = {};
         let will_change = this.canvas_pos.get_style().will_change;
         let super_state_object = this.super_state.get_state();
         let _json_state_history = super_state_object._json_state_history;
@@ -1648,6 +1646,7 @@ class CanvasPixels extends React.PureComponent {
                     const old_current_history_position = parseInt(_json_state_history.history_position);
                     const old_current_state = _json_state_history.state_history.length === 0 ? {} : _json_state_history.state_history[old_current_history_position];// First state let's not save current history timestamp
 
+                    let new_current_state = {};
                     new_current_state._timestamp = parseInt(Date.now());
                     new_current_state._id = _id.toString();
                     new_current_state.pxl_width = parseInt(pxl_width);
@@ -1666,16 +1665,12 @@ class CanvasPixels extends React.PureComponent {
                         };
                     }));
                     new_current_state._layer_index = parseInt(_layer_index);
-                    new_current_state._s_pxls = Array.from(_s_pxls.map(function (a) {
-                        return Uint16Array.from(a);
-                    }));
-                    new_current_state._s_pxl_colors = Array.from(_s_pxl_colors.map(function (a) {
-                        return Uint32Array.from(a);
-                    }));
+                    new_current_state._s_pxls = _s_pxls.map(function (a) {return Uint16Array.from(a);});
+                    new_current_state._s_pxl_colors = _s_pxl_colors.map(function (a) {return Uint32Array.from(a);});
                     new_current_state._pxl_indexes_of_selection = new Set(_pxl_indexes_of_selection);
                     new_current_state._pencil_mirror_index = parseInt(_pencil_mirror_index);
 
-                    this._notify_layers_and_compute_thumbnails_change(Object.assign({}, old_current_state), new_current_state, (layers, layer_index, layers_changed_state) => {
+                    this._notify_layers_and_compute_thumbnails_change(Object.assign({}, old_current_state), Object.assign({}, new_current_state), (layers, layer_index, layers_changed_state) => {
 
                         let {_state_history_length, _saving_json_state_history_ran_timestamp } = super_state_object;
                         const first_change = Boolean(_json_state_history.state_history.length === 0);
@@ -1692,6 +1687,7 @@ class CanvasPixels extends React.PureComponent {
                         }else if(layers_changed_state) {
 
                             const backward_of = parseInt(_json_state_history.state_history.length - 1) - new_current_history_position;
+
                             // An action have been performed while being in the past
                             if(backward_of > 0) {
 
@@ -1700,9 +1696,9 @@ class CanvasPixels extends React.PureComponent {
                                 while(dsh.length) { // Yet inbetween state history get added the reverse order to not break timeline of changes
 
                                     if(dshi === 0){
-                                        _json_state_history.state_history.push(dsh.pop());
+                                        _json_state_history.state_history.push(Object.assign({},dsh.pop()));
                                     }else {
-                                        _json_state_history.state_history.push(dsh.shift());
+                                        _json_state_history.state_history.push(Object.assign({},dsh.shift()));
                                     }
                                     dshi++;
 
@@ -1726,16 +1722,13 @@ class CanvasPixels extends React.PureComponent {
                                 }
                             }
                         }
+
                         this.super_state.set_state({_json_state_history: Object.assign({}, _json_state_history), _saving_json_state_history_running: false, _saving_json_state_history_ran_timestamp: _saving_json_state_history_ran_timestamp}).then(() => {
 
                             this._notify_can_undo_redo_change();
 
-                            _json_state_history = Object.assign({}, _json_state_history);
-                            new_current_state._s_pxls = Array.from(new_current_state._s_pxls.map(function (a) {return Uint16Array.from(a);}));
-                            new_current_state._s_pxl_colors = Array.from(new_current_state._s_pxl_colors.map(function (a) {return Uint32Array.from(a);}));
-
                             if(set_anyway_if_changes_callback) {
-                                set_anyway_if_changes_callback(_json_state_history, Boolean(_saving_json_state_history_ran_timestamp === now));
+                                set_anyway_if_changes_callback(Object.assign({}, _json_state_history), Boolean(_saving_json_state_history_ran_timestamp === now));
                             }
                         });
 
@@ -1899,23 +1892,51 @@ class CanvasPixels extends React.PureComponent {
         this._maybe_save_state((_json_state_history) => {
 
             var base64_o_i = this.super_state.get_state()._base64_original_images.map(function(img){ return img.split(","); });
-            Promise.all(base64_o_i.map((entry) => {return Promise.resolve(toBytes(entry[1])); }))
-            .then((response) => {
-                response.forEach((img_1, index) => {
+            Promise.all([
+                Promise.all(base64_o_i.map((entry) => {return Promise.resolve(toBytes(entry[1])); })),
+                this.get_base64_png_data_url(1, false, 7, 35, 70)
+            ]).then((responses) => {
+
+                Array.from(responses[0]).forEach((img_1, index) => {
                     base64_o_i[index][1] = img_1;
                 });
 
-                this.get_base64_png_data_url(1, false, 1, 100, 100).then( ({url}) => {
-                    const bytes = 3 * Math.ceil((url.length/4));
-                    callback_function({
-                        id: this.super_state.get_state()._id.toString(),
-                        kb: bytes / 1024,
-                        preview: url,
-                        timestamp: Date.now(),
-                        _base64_original_images: base64_o_i,
-                        _json_state_history
-                    });
+                _json_state_history = {
+                    history_position: parseInt(_json_state_history.history_position),
+                    state_history: _json_state_history.state_history.map(function(state){
+                        return Object.assign({}, {
+                            _original_image_index: parseInt(state._original_image_index),
+                            pxl_width: parseInt(state.pxl_width),
+                            pxl_height: parseInt(state.pxl_height),
+                            _pxl_indexes_of_selection: new Set(Boolean(state._pxl_indexes_of_selection.length) ? state._pxl_indexes_of_selection : []),
+                            _s_pxls: Array.from(state._s_pxls.map(function(a){return Uint16Array.from(a)})),
+                            _s_pxl_colors:  Array.from(state._s_pxl_colors.map(function(a){return Uint32Array.from(a)})),
+                            _layers: Array.from(state._layers.map(function(l) {
+                                return Object.assign({}, {
+                                    id: parseInt(l.id),
+                                    hash: l.hash + "",
+                                    name: l.name + "",
+                                    hidden: Boolean(l.hidden),
+                                    opacity: parseInt(l.opacity),
+                                });
+                            })),
+                            _layer_index: parseInt(state._layer_index),
+                            _pencil_mirror_index: parseInt(state._pencil_mirror_index),
+                            _id: state._id.toString()
+                        })
+                    })
+                };
+
+                const bytes = 3 * Math.ceil((responses[1].url.length/4));
+                callback_function({
+                    id: this.super_state.get_state()._id.toString(),
+                    kb: bytes / 1024,
+                    preview: responses[1].url,
+                    timestamp: Date.now(),
+                    _base64_original_images: base64_o_i,
+                    _json_state_history
                 });
+
             });
         });
     };
@@ -1927,7 +1948,7 @@ class CanvasPixels extends React.PureComponent {
             _json_state_history = this.super_state.get_state()._json_state_history;
         }
 
-        return parseInt(_json_state_history.history_position) > 0;
+        return parseInt(_json_state_history.history_position);
     };
 
     undo = () => {
@@ -1990,7 +2011,7 @@ class CanvasPixels extends React.PureComponent {
             _json_state_history = this.super_state.get_state()._json_state_history;
         }
 
-        return _json_state_history.state_history.length - parseInt(_json_state_history.history_position) - 1;
+        return _json_state_history.state_history.length - parseInt(_json_state_history.history_position) - 1 | 0;
     }
 
     redo = () => {
@@ -3400,7 +3421,7 @@ class CanvasPixels extends React.PureComponent {
         rounds = rounds || 1;
         for(let round = 0; round < rounds; round++) {
 
-            Array.from(pxls).forEach((pxl, i) => {
+            pxls.forEach((pxl, i, pxls) => {
 
                 let up, right, bottom, left;
 
@@ -3437,20 +3458,37 @@ class CanvasPixels extends React.PureComponent {
                 let bigger_pxl_around_occurrence_occurrence = -1;
 
                 Object.entries(pxl_around_occurrences).forEach((pxl_around_occurrence) => {
-
                     const [key, value] = pxl_around_occurrence;
-
                     if(bigger_pxl_around_occurrence_occurrence < value) {
-
                         bigger_pxl_around_occurrence_occurrence = value;
                         bigger_pxl_around_occurrence_color_index = key;
                     }
+                });
 
+                let second_bigger_pxl_around_occurrence_color_index = -1;
+                let second_bigger_pxl_around_occurrence_occurrence = -1;
+
+                Object.entries(pxl_around_occurrences).forEach((pxl_around_occurrence) => {
+                    const [key, value] = pxl_around_occurrence;
+                    if(second_bigger_pxl_around_occurrence_occurrence < value && key !== bigger_pxl_around_occurrence_color_index) {
+                        second_bigger_pxl_around_occurrence_occurrence = value;
+                        second_bigger_pxl_around_occurrence_color_index = key;
+                    }
                 });
 
                 if(bigger_pxl_around_occurrence_occurrence >= 6 && bigger_pxl_around_occurrence_color_index !== -1) {
 
                     pxls[i] = bigger_pxl_around_occurrence_color_index;
+                }else if(
+                    bigger_pxl_around_occurrence_occurrence + second_bigger_pxl_around_occurrence_occurrence >= 8
+                    && bigger_pxl_around_occurrence_occurrence >= 5 ){
+
+                    if(SIMDopeColor.new_uint32(pxl_colors[pxls[i]]).match_with(
+                        SIMDopeColor.new_uint32(pxl_colors[bigger_pxl_around_occurrence_color_index]).blend_with(SIMDopeColor.new_uint32(pxl_colors[second_bigger_pxl_around_occurrence_color_index]), 128, false, false)
+                        , 24
+                    )){
+                        pxls[i] = bigger_pxl_around_occurrence_color_index;
+                    }
                 }
 
             });
@@ -3465,9 +3503,10 @@ class CanvasPixels extends React.PureComponent {
 
         const state_bucket_threshold = this.super_state.get_state().bucket_threshold;
         const rp = this.reduce_palette;
+        const width = this.super_state.get_state().pxl_width;
 
         return new Promise(function(resolve){
-            rp.compute(resolve, pxls, pxl_colors, bucket_threshold, threshold_steps, color_number_bonus, best_color_number, state_bucket_threshold);
+            rp.compute(resolve, pxls, pxl_colors, width, bucket_threshold, threshold_steps, color_number_bonus, best_color_number, state_bucket_threshold);
         });
     };
 
