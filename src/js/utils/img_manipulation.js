@@ -192,17 +192,51 @@ const bitmap_to_imagedata = (bitmap, resize_to =  1920*1080, callback_function =
         let scale = 1;
         while (Math.round(bitmap.width * scale) * Math.round(bitmap.height * scale) > resize_to) { scale -= 0.01; }
 
-        let canvas = document.createElement("canvas");
-        canvas.width = Math.round(bitmap.width * scale);
-        canvas.height = Math.round(bitmap.height * scale);
+        try {
 
-        let ctx = canvas.getContext("2d");
-        ctx.imageSmoothingEnabled = false;
-        ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+            createImageBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, {
+                resizeWidth: Math.round(bitmap.width * scale),
+                resizeHeight: Math.round(bitmap.height * scale),
+                resizeQuality: "pixelated"
+            }).then(function (bitmap_resized){
 
-        callback_function(ctx.getImageData(0, 0, canvas.width, canvas.height));  // "getImageData" isn't available in web worker
-        canvas = null;
-        ctx = null;
+                let canvas;
+                try {
+
+                    canvas = new OffscreenCanvas(bitmap_resized.width, bitmap_resized.height);
+                } catch (e) {
+
+                    canvas = document.createElement("canvas");
+                    canvas.width = bitmap_resized.width;
+                    canvas.height = bitmap_resized.height;
+                }
+
+                let ctx = canvas.getContext("2d");
+                ctx.imageSmoothingEnabled = false;
+                ctx.drawImage(bitmap_resized, 0, 0, bitmap_resized.width, bitmap_resized.height);
+                callback_function(ctx.getImageData(0, 0, bitmap_resized.width, bitmap_resized.height));  // "getImageData" isn't available in web worker
+
+            });
+
+        } catch(err) {
+
+            let canvas;
+            try {
+
+                canvas = new OffscreenCanvas(Math.round(bitmap.width * scale), Math.round(bitmap.height * scale));
+            } catch (e) {
+
+                canvas = document.createElement("canvas");
+                canvas.width = Math.round(bitmap.width * scale);
+                canvas.height = Math.round(bitmap.height * scale);
+            }
+
+            let ctx = canvas.getContext("2d");
+            ctx.imageSmoothingEnabled = false;
+            ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+
+            callback_function(ctx.getImageData(0, 0, canvas.width, canvas.height));  // "getImageData" isn't available in web worker
+        }
 };
 
 window.imagedata_to_base64_process_function = new AFunction(`var t = function(imagedata, type) {

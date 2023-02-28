@@ -315,9 +315,9 @@ var t = function(buffer) {
         var sum_r = base.r, sum_g = base.g, sum_b = base.b, sum_a = base.a, sum_amount = 1;
         var color, amount, length = colors.length|0, i;
 
-        for(i = 0; i < length; i++){
-            color = colors[i];
-            amount = fr(amounts[i]);
+        for(i = 0; (i|0) < (length|0); i=i+1|0){
+            color = colors[i|0];
+            amount = fr(amounts[i|0]);
             sum_amount += amount;
             sum_r += color.r * amount | 0;
             sum_g += color.g * amount | 0;
@@ -333,8 +333,8 @@ var t = function(buffer) {
         );
 
         base.set(uint8);
-        for(i = 0; i < length; i++) {
-            colors[i].set(uint8);
+        for(i = 0; (i|0) < (length|0); i=i+1|0) {
+            colors[i|0].set(uint8);
         }
     }
 
@@ -879,7 +879,7 @@ var t = function(buffer) {
                         if((color_b_usage|0) > 0 && color_b.is_not_fully_transparent()) {
 
                             // The less a color is used the less it requires a great distance to be merged (so we don't have many color used only a few time in the whole image, heavily used color gets preserved better than lowly used ones)
-                            if(color_a.manhattan_match_with(color_b,  weighted_threshold|0)) {
+                            if(color_a.euclidean_match_with(color_b,  weighted_threshold|0)) {
 
                                 color_usage_difference_positive = ((color_a_usage|0) > (color_b_usage|0) ? (4096 * (1 / color_a_usage / color_b_usage) | 0): (4096 * color_a_usage / color_b_usage | 0)) & 4096;
 
@@ -896,7 +896,7 @@ var t = function(buffer) {
                     }
                 }
 
-                if(index_merged) {
+                if(latest_colors.length > 0) {
                     SIMDopeColor.blend_all(color_a, latest_colors, latest_amounts);
                     latest_colors = []; latest_amounts = [];
                 }

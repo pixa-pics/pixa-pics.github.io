@@ -965,7 +965,7 @@ var QuantiMatGlobal = function(
     best_color_number,
     this_state_bucket_threshold
 ) {
-    "use strict";
+
     return new Promise(function(resolve){
         "use strict";
 
@@ -985,9 +985,6 @@ var QuantiMatGlobal = function(
             pxls[i|0] = (index_of | 0) >>> 0;
         }
 
-        var now = Date.now();
-        console.log(color_index)
-
         var result = QuantiMat({
             pxls: pxls,
             pxl_colors: _pxl_colors.slice(0, color_index),
@@ -1001,17 +998,16 @@ var QuantiMatGlobal = function(
         }).init().run().output("split");
 
         var res_pxls = result[0];
+        var res_pxl_length = res_pxls.length|0;
+        var res_pxl_size = res_pxls.length-1|0;
         var res_pxl_colors = result[1];
 
-        console.log("We removed and processed "+(_pxl_colors.length-res_pxl_colors.length)+" colors within " + (Date.now() - now) + " ms");
-
-        pxls = new Uint32Array(result[0].length).fill(0);
-        for(var i = 0; (i|0) < (pxls.length|0); i = (i+1|0)>>>0) {
-            pxls[i|0] = (res_pxl_colors[res_pxls[i|0]|0] | 0) >>> 0;
+        pxls = new Uint32Array(res_pxl_length);
+        for(var i = 0; (i|0) < (res_pxl_length|0); i = (i+1|0)>>>0) {
+            pxls[res_pxl_size-i|0] = (res_pxl_colors[res_pxls[i|0]|0] | 0) >>> 0;
         }
 
-        image_data.data.set(new Uint8Array(pxls.reverse().buffer).reverse());
-        console.log(image_data)
+        image_data.data.set(new Uint8Array(pxls.buffer).reverse());
         resolve(image_data);
     });
 };

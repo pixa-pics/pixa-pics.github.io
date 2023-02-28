@@ -1648,14 +1648,8 @@ class Pixel extends React.PureComponent {
 
                 const max_original_size = is_mobile_or_tablet ? Math.sqrt(1280 * 720): Math.sqrt(1920 * 1080);
                 const max_size = is_mobile_or_tablet ? Math.sqrt(512 * 512): Math.sqrt(512 * 512);
-                const max_color = is_mobile_or_tablet ? 1024: 2048;
-
-                let ratio_l_l2 = is_mobile_or_tablet ? 2.5: 5;
                 let min_size = is_mobile_or_tablet ? 512: 1024;
-                let min_color = is_mobile_or_tablet ? 768: 1536;
-
                 const resize_original_to = parseInt(max_original_size * max_original_size);
-                const limit_color_number = Math.min(max_color, Math.max(parseInt(_import_size * ratio_l_l2), min_color));
                 const resize_to_before = Math.min(parseInt(max_size * max_size), Math.max(parseInt(_import_size * _import_size), parseInt(min_size * min_size)));
                 const resize_to_finally = Math.min(parseInt(max_size * max_size), parseInt(_import_size * _import_size));
 
@@ -1798,83 +1792,87 @@ class Pixel extends React.PureComponent {
 
                         }else {
 
-
                             imagedata_to_base64(imagedata, mimetype, (base64_resized) => {
 
-                                QuantiMatGlobal(imagedata, 1/64).then((imagedata2) => {
+                                base64_to_bitmap(base64_resized, (bitmap) => {
 
-                                    if(imagedata2 === null) {
+                                    bitmap_to_imagedata(bitmap, resize_to_before, (imagedata_received) => {
 
-                                        window.dispatchEvent(new Event("art-upload-browsererror"));
-                                        this._handle_load_complete("image_preload", {});
-                                        this._handle_load("browser");
-                                        actions.trigger_sfx("alert_high-intensity", 0.6);
-                                        actions.jamy_update("flirty");
-                                        actions.trigger_snackbar("That's our end my little diddy! My instinctive dwelling require a browser I am supporting.", 6000);
+                                        QuantiMatGlobal(imagedata_received, 1/64).then((imagedata2) => {
 
-                                        setTimeout(() => {
+                                            if(imagedata2 === null) {
 
-                                            actions.trigger_sfx("alert_high-intensity", 0.7);
-                                            actions.jamy_update("sad");
-                                            actions.trigger_snackbar("Abandon, misfortune, sadness... I can't live in this strange place.", 7000);
-
-                                            setTimeout(() => {
-
-                                                actions.trigger_sfx("alert_high-intensity", 0.8);
-                                                actions.jamy_update("suspicious");
-                                                actions.trigger_snackbar("Ho no! I just can't, but someone needs to give me back my usual laboratory environment!", 7000);
+                                                window.dispatchEvent(new Event("art-upload-browsererror"));
+                                                this._handle_load_complete("image_preload", {});
+                                                this._handle_load("browser");
+                                                actions.trigger_sfx("alert_high-intensity", 0.6);
+                                                actions.jamy_update("flirty");
+                                                actions.trigger_snackbar("That's our end my little diddy! My instinctive dwelling require a browser I am supporting.", 6000);
 
                                                 setTimeout(() => {
 
-                                                    actions.trigger_sfx("alert_high-intensity", 0.9);
-                                                    actions.jamy_update("shocked");
-                                                    actions.trigger_snackbar("Yes my enjoyable smartness, gladly you hear me now! Everything gonna be alright to look at me!", 9000);
+                                                    actions.trigger_sfx("alert_high-intensity", 0.7);
+                                                    actions.jamy_update("sad");
+                                                    actions.trigger_snackbar("Abandon, misfortune, sadness... I can't live in this strange place.", 7000);
 
                                                     setTimeout(() => {
 
-                                                        actions.jamy_update("happy");
-                                                        actions.trigger_sfx("alert_high-intensity", 1);
+                                                        actions.trigger_sfx("alert_high-intensity", 0.8);
+                                                        actions.jamy_update("suspicious");
+                                                        actions.trigger_snackbar("Ho no! I just can't, but someone needs to give me back my usual laboratory environment!", 7000);
 
                                                         setTimeout(() => {
 
-                                                            actions.trigger_sfx("alert_high-intensity", 1);
+                                                            actions.trigger_sfx("alert_high-intensity", 0.9);
+                                                            actions.jamy_update("shocked");
+                                                            actions.trigger_snackbar("Yes my enjoyable smartness, gladly you hear me now! Everything gonna be alright to look at me!", 9000);
 
-                                                        }, 750);
+                                                            setTimeout(() => {
 
-                                                    }, 4000);
+                                                                actions.jamy_update("happy");
+                                                                actions.trigger_sfx("alert_high-intensity", 1);
 
-                                                }, 8000);
+                                                                setTimeout(() => {
 
-                                            }, 8000);
+                                                                    actions.trigger_sfx("alert_high-intensity", 1);
 
-                                        }, 7000);
+                                                                }, 750);
 
-                                    }else {
+                                                            }, 4000);
 
-                                        imagedata_to_base64(imagedata2, "image/png", (base64) => {
+                                                        }, 8000);
 
-                                            base64_to_bitmap(base64, (bitmap_received) => {
+                                                    }, 8000);
 
-                                                bitmap_to_imagedata(bitmap_received, resize_to_finally, (imagedata_received_2) => {
+                                                }, 7000);
 
-                                                    imagedata_to_base64(imagedata_received_2, "image/png", (base64_final) => {
+                                            }else {
 
-                                                        let img = new Image();
-                                                        img.addEventListener("load", () => {
+                                                imagedata_to_base64(imagedata2, "image/png", (base64) => {
 
-                                                            this._handle_load_complete("image_preload", {});
-                                                            this.setSt4te({_kb: 0, _saved_at: 1/0});
-                                                            set_canvas_from_image(img, base64_resized, {}, false);
-                                                        }, {once: true, capture: true});
-                                                        img.src = base64_final;
+                                                    base64_to_bitmap(base64, (bitmap_received) => {
+
+                                                        bitmap_to_imagedata(bitmap_received, resize_to_finally, (imagedata_received_2) => {
+
+                                                            imagedata_to_base64(imagedata_received_2, "image/png", (base64_final) => {
+
+                                                                let img = new Image();
+                                                                img.addEventListener("load", () => {
+
+                                                                    this._handle_load_complete("image_preload", {});
+                                                                    this.setSt4te({_kb: 0, _saved_at: 1/0});
+                                                                    set_canvas_from_image(img, base64_resized, {}, false);
+                                                                }, {once: true, capture: true});
+                                                                img.src = base64_final;
+                                                            });
+                                                        });
                                                     });
-                                                });
-                                            });
+                                                }, pool);
+                                            }
                                         }, pool);
-                                    }
+                                    });
                                 }, pool);
-
-                            }, pool)
+                            }, pool);
                         }
 
                     }).catch((e) => {
