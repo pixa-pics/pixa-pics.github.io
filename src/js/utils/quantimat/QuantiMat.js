@@ -862,7 +862,7 @@ QuantiMat.prototype.process_threshold = function(t) {
             color_a = this.get_a_new_pxl_color((index_of_color_a|0)>>>0);
             color_a_usage = (this.get_a_color_usage((index_of_color_a|0)>>>0) | 0) >>> 0;
 
-            if((color_a_usage|0) > 0 && color_a.is_not_fully_transparent()) {
+            if((color_a_usage|0) > 0) {
 
                 // Start following color snake
                 latest_colors = [];
@@ -874,29 +874,31 @@ QuantiMat.prototype.process_threshold = function(t) {
                     color_b = this.get_a_new_pxl_color(index_of_color_b);
                     color_b_usage = this.get_a_color_usage(index_of_color_b)|0;
 
-                    if((color_b_usage|0) > 0 && color_b.is_not_fully_transparent()) {
+                    if((color_b_usage|0) > 0) {
 
                         // The less a color is used the less it requires a great distance to be merged (so we don't have many color used only a few time in the whole image, heavily used color gets preserved better than lowly used ones)
                         if(color_a.manhattan_match_with(color_b,  weighted_threshold|0)) {
 
-                            color_usage_difference_positive = ((color_a_usage|0) > (color_b_usage|0) ? (4096 * (1 / color_a_usage / color_b_usage) | 0): (4096 * color_a_usage / color_b_usage | 0)) & 4096;
+                            color_usage_difference_positive = (color_a_usage|0) > (color_b_usage|0) ? color_a_usage / color_b_usage: 1 / color_a_usage / color_b_usage;
 
                             // Update color usage and relative variables
                             index_merged = true;
-                            this.set_a_color_usage(index_of_color_a|0, color_a_usage+color_b_usage|0);
+                            color_a_usage = color_a_usage+color_b_usage|0;
                             this.set_a_color_usage(index_of_color_b|0, 0);
 
                             // Adds color to blend to processed colors and stack it to what will be set to be equals with all other color blended
                             latest_colors.push(this.get_a_new_pxl_color(index_of_color_b|0));
-                            latest_amounts.push((4096-color_usage_difference_positive|0)/4096);
+                            latest_amounts.push(color_usage_difference_positive);
                         }
                     }
                 }
             }
 
             if(index_merged) {
+                this.set_a_color_usage(index_of_color_a|0, color_a_usage|0);
                 SIMDopeColor.blend_all(color_a, latest_colors, latest_amounts);
                 latest_colors = []; latest_amounts = [];
+                index_merged = false;
             }
         }
 

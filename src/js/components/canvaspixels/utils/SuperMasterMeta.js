@@ -414,15 +414,12 @@ const SuperMasterMeta = {
                 const event_which = event_button+1;
 
                 const [ pos_x, pos_y ] = meta.canvas_pos.get_canvas_pos_from_event(event.pageX, event.pageY);
+                const pxl_index = (pos_y * pxl_width) + pos_x | 0;
 
                 if(pos_x === -1 || pos_y === -1) {
                     this._notify_position_change({x: pos_x, y: pos_y});
-                    return;
-                }
 
-                const pxl_index = (pos_y * pxl_width) + pos_x | 0;
-
-                if(pxl_index !== _pxls_hovered && !hide_canvas_content) {
+                }else if(pxl_index !== _pxls_hovered && !hide_canvas_content) {
 
                     if(_imported_image_pxls.length > 0){
 
@@ -493,14 +490,14 @@ const SuperMasterMeta = {
 
                         let { _paint_hover_old_pxls_snapshot, _last_action_timestamp, _paint_or_select_hover_pxl_indexes, _paint_or_select_hover_pxl_indexes_exception, _paint_or_select_hover_actions_latest_index, _s_pxls, _s_pxl_colors, _layer_index, pxl_current_opacity } = meta.super_state.get_state();
                         const _paint_or_select_hover_pxl_indexes_copy = new Set(Array.from(_paint_or_select_hover_pxl_indexes));
+                        let new_drawn_pxl_indexes = new Set();
                         // PAINT HACK: compute the pixel between the previous and latest paint by hover pixel (Bresenham’s Line Algorithm)
                         if(_paint_or_select_hover_actions_latest_index === -1) {
 
                             _paint_or_select_hover_actions_latest_index = pxl_index | 0;
+                        }else {
+                            new_drawn_pxl_indexes =  shape_creator.from_line(_paint_or_select_hover_actions_latest_index, pxl_index);
                         }
-
-                        let new_drawn_pxl_indexes =  shape_creator.from_line(_paint_or_select_hover_actions_latest_index, pxl_index);
-                        meta.super_state.paint_shape(new_drawn_pxl_indexes, pxl_current_color_uint32, pxl_current_opacity);
 
                         const { pencil_mirror_mode, _pencil_mirror_index } = meta.super_state.get_state();
 
@@ -555,62 +552,73 @@ const SuperMasterMeta = {
                             }
                         }
 
-                        let pixel_stack = new Set(Array.of(_paint_or_select_hover_pxl_indexes)
-                            .filter(function (index){return !_paint_or_select_hover_pxl_indexes_copy.has(index|0) && !_paint_or_select_hover_pxl_indexes_exception.has(index|0);})
-                            .map((index) => {
-                                const x = index % pxl_width|0;
-                                const y = (index - x) / pxl_width|0;
-                                return [x|0, y|0];
-                            }));
+                        if(pencil_mirror_mode !== "NONE") {
 
-                        if(pencil_mirror_mode === "VERTICAL" || pencil_mirror_mode === "BOTH") {
+                            let pixel_stack = new Set(Array.of(_paint_or_select_hover_pxl_indexes)
+                                .filter(function (index){return !_paint_or_select_hover_pxl_indexes_copy.has(index|0) && !_paint_or_select_hover_pxl_indexes_exception.has(index|0);})
+                                .map((index) => {
+                                    const x = index % pxl_width|0;
+                                    const y = (index - x) / pxl_width|0;
+                                    return [x|0, y|0];
+                                }));
 
-                            pixel_stack.forEach((pixel_stacked) => {
+                            if(pencil_mirror_mode === "VERTICAL" || pencil_mirror_mode === "BOTH") {
 
-                                const [s_pos_x, s_pos_y] = pixel_stacked;
+                                pixel_stack.forEach((pixel_stacked) => {
 
-                                const y = s_pos_y - (s_pos_y - pencil_mirror_y) * 2;
-                                const x = s_pos_x;
+                                    const [s_pos_x, s_pos_y] = pixel_stacked;
 
-                                if(x >= 0 && x < pxl_width && y >= 0 && y <= pxl_height) {
+                                    const y = s_pos_y - (s_pos_y - pencil_mirror_y) * 2;
+                                    const x = s_pos_x;
 
-                                    pixel_stack.add([x, y]);
-                                }
-                            });
-                        }
+                                    if(x >= 0 && x < pxl_width && y >= 0 && y <= pxl_height) {
 
-                        if(pencil_mirror_mode === "HORIZONTAL" || pencil_mirror_mode === "BOTH") {
+                                        pixel_stack.add([x, y]);
+                                    }
+                                });
+                            }
 
+                            if(pencil_mirror_mode === "HORIZONTAL" || pencil_mirror_mode === "BOTH") {
+
+                                pixel_stack.forEach((pixel_pos) => {
+
+                                    const y = pixel_pos[1];
+                                    const x = pixel_pos[0] - (pixel_pos[0] - pencil_mirror_x) * 2;
+
+                                    if(x >= 0 && x < pxl_width && y >= 0 && y <= pxl_height) {
+
+                                        pixel_stack.add([x, y]);
+                                    }
+                                });
+                            }
+
+                            let pixel_stack_flat = new Set()
                             pixel_stack.forEach((pixel_pos) => {
 
                                 const y = pixel_pos[1];
-                                const x = pixel_pos[0] - (pixel_pos[0] - pencil_mirror_x) * 2;
-
-                                if(x >= 0 && x < pxl_width && y >= 0 && y <= pxl_height) {
-
-                                    pixel_stack.add([x, y]);
-                                }
+                                const x = pixel_pos[0];
+                                pixel_stack_flat.add(y*pxl_width+x|0);
                             });
+
+                            meta.super_state.paint_shape(pixel_stack_flat, pxl_current_color_uint32, pxl_current_opacity, {
+                                _pxls_hovered: pxl_index | 0,
+                                _mouse_inside: true,
+                                _paint_or_select_hover_pxl_indexes,
+                                _paint_or_select_hover_pxl_indexes_exception,
+                                _paint_or_select_hover_actions_latest_index: pxl_index | 0,
+                                _last_action_timestamp
+                            },this.update_canvas);
+                        }else {
+
+                            meta.super_state.paint_shape(new_drawn_pxl_indexes, pxl_current_color_uint32, pxl_current_opacity, {
+                                _pxls_hovered: pxl_index | 0,
+                                _mouse_inside: true,
+                                _paint_or_select_hover_pxl_indexes,
+                                _paint_or_select_hover_pxl_indexes_exception,
+                                _paint_or_select_hover_actions_latest_index: pxl_index | 0,
+                                _last_action_timestamp
+                            }, this.update_canvas);
                         }
-
-                        let pixel_stack_flat = new Set()
-                        pixel_stack.forEach((pixel_pos) => {
-
-                            const y = pixel_pos[1];
-                            const x = pixel_pos[0];
-                            pixel_stack_flat.add(y*pxl_width+x|0);
-                        });
-
-                        meta.super_state.paint_shape(pixel_stack_flat, pxl_current_color_uint32, pxl_current_opacity, {
-                            _pxls_hovered: pxl_index | 0,
-                            _mouse_inside: true,
-                            _paint_or_select_hover_pxl_indexes,
-                            _paint_or_select_hover_pxl_indexes_exception,
-                            _s_pxls,
-                            _s_pxl_colors,
-                            _paint_or_select_hover_actions_latest_index: pxl_index,
-                            _last_action_timestamp
-                        },this.update_canvas);
 
                         this._notify_position_change({x:pos_x|0, y: pos_y|0});
 

@@ -616,7 +616,7 @@ class Pixel extends React.PureComponent {
             _pxl_current_opacity: 1,
             _width: 32,
             _height: 32,
-            _import_size: "160",
+            _import_size: "192",
             _import_colorize: "0",
             _hue: 360,
             _slider_value: 8/32,

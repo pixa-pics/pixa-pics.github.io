@@ -1,7 +1,7 @@
 "use strict";
-var REQUIRED_CACHE = "unless-update-cache-v641-required";
-var USEFUL_CACHE = "unless-update-cache-v641-useful";
-var STATIC_CACHE = "unless-update-cache-v641-static";
+var REQUIRED_CACHE = "unless-update-cache-v642-required";
+var USEFUL_CACHE = "unless-update-cache-v642-useful";
+var STATIC_CACHE = "unless-update-cache-v642-static";
 var MAIN_CHILD_CHUNK_REGEX = /chunk_(main_[a-z0-9]+)\.min\.js$/i;
 var CHILD_CHUNK_REGEX = /chunk_([0-9]+)\.min\.js$/i;
 
@@ -49,6 +49,15 @@ self.addEventListener("install", function(event) {
 
         return true;
     }
+
+    event.waitUntil(useful_cache.then(function (cache) {
+        return cache.addAll([
+            "/src/images/favicon.ico",
+            "/src/images/manifest/logo-white.png",
+            "/src/fonts/jura/index.css",
+        ]);
+    }));
+
     required_cache.then(function (cache) {
         cache.addAll([
             "/client/chunk_main_690b702c.min.js",
@@ -69,13 +78,6 @@ self.addEventListener("install", function(event) {
             "/src/videos/joke1.mp4"
         ])
     });
-    event.waitUntil(useful_cache.then(function (cache) {
-        return cache.addAll([
-            "/src/images/favicon.ico",
-            "/src/images/manifest/logo-white.png",
-            "/src/fonts/jura/index.css",
-        ]);
-    }));
 });
 
 self.addEventListener("fetch", function(event) {
@@ -99,22 +101,18 @@ self.addEventListener("fetch", function(event) {
                     return cache.addAll([
                         "/src/fonts/baksheesh/index.css",
                         "/src/images/infographics/ShareWho.svg",
-                        "/src/images/gallery/Robot.png",
-                        "/src/images/gallery/Robot.svg",
-                        "/src/images/gallery/Sharktopus.png",
-                        "/src/images/gallery/Sharktopus.svg",
-                        "/src/images/gallery/Statue.png",
+                        "/src/images/gallery/Whohigh.png",
+                        "/src/images/gallery/Whohigh.svg",
+                        "/src/images/Gallery/Axip.png",
+                        "/src/images/Gallery/Axip.svg",
+                       "/src/images/gallery/Statue.png",
                         "/src/images/gallery/Statue.svg",
                         "/src/images/Gallery/Astro.png",
                         "/src/images/Gallery/Astro.svg",
                         "/src/images/Gallery/Businesswoman2.png",
                         "/src/images/Gallery/Businesswoman2.svg",
-                        "/src/images/Gallery/Statue2.png",
-                        "/src/images/Gallery/Statue2.svg",
                         "/src/images/Gallery/Businesswoman.png",
                         "/src/images/Gallery/Businesswoman.svg",
-                        "/src/images/Gallery/Labowoman.png",
-                        "/src/images/Gallery/Labowoman.svg",
                         "/src/images/infographics/Rambo.svg",
                         "/src/images/infographics/TestBag.svg",
                         "/src/images/infographics/Explosion.svg",

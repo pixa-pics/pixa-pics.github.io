@@ -1,6 +1,6 @@
 //import workerpool from "workerpool";
 import SIMDope from "simdope";
-const {clamp_uint32, modulo_uint, divide_uint, minus_uint, uint_greater, uint_less, plus_uint, max_int, min_int, int_less, multiply_uint} = SIMDope.simdops;
+const {clamp_uint32, modulo_uint, divide_int, minus_int, int_greater, int_less, int_greater_equal, int_less_equal, plus_uint, plus_int, max_int, min_int} = SIMDope.simdops;
 
 let requestIdleCallback, cancelIdleCallback;
 if ('requestIdleCallback' in window) {
@@ -35,7 +35,7 @@ const SuperCanvas = {
             let pr_height = _state.pr.height | 0;
             let pr_top_left_x = _state.pr.top_left.x | 0;
             let pr_top_left_y = _state.pr.top_left.y | 0;
-            let pr_uint8a = new Uint8ClampedArray(_state.fp.slice(0, _state.fp.length).reverse().buffer).reverse();
+            let pr_uint8a = new Uint8Array(_state.fp.buffer);
 
             let fp_square = new Uint8ClampedArray((pr_width * pr_height * 4 | 0)>>>0);
             let current_offset_start_index = 0;
@@ -113,10 +113,10 @@ const SuperCanvas = {
                 };
             }
 
-            return {
+            let state = {
                 s: cs(c, pxl_width, pxl_height),
                 enable_paint_type: "",
-                fp: new Uint32Array(new ArrayBuffer(pxl_height * pxl_width * 4)),
+                fp_buffer: new ArrayBuffer(pxl_height * pxl_width * 4),
                 ic: new Map(),
                 b: {
                     bmp_x: 0,
@@ -132,6 +132,11 @@ const SuperCanvas = {
                     height: 0
                 }
             };
+
+            state.fp = new Uint32Array(state.fp_buffer)
+            state.fp_dataview = new DataView(state.fp_buffer);
+
+            return state;
         };
 
         let _state = template(c, pxl_width, pxl_height);
@@ -155,19 +160,25 @@ const SuperCanvas = {
 
                 return new Promise(function (resolve, reject) {
 
+                    _state.pr.top_left.x = _state.s.width | 0;
+                    _state.pr.top_left.y = _state.s.height | 0;
+                    _state.pr.bottom_right.x = 0;
+                    _state.pr.bottom_right.y = 0;
+
                     if (typeof b2 !== "undefined" && _state.enable_paint_type === "bitmap") {
 
                         if(b2.clear_behind) {_state.s.canvas_context.clearRect(b2.bmp_x, b2.bmp_y, b2.bmp.width, b2.bmp.height);}
                         _state.s.canvas_context.globalCompositeOperation = "source-over";
                         _state.s.canvas_context.drawImage(b2.bmp, b2.bmp_x, b2.bmp_y, b2.bmp.width, b2.bmp.height);
-
                         b2.old_bmp.close();
                         _state.b = b2;
+
                         resolve();
                     } else if (_state.enable_paint_type === "offscreen") {
 
                         _state.s.canvas_context.globalCompositeOperation = "copy";
                         _state.s.canvas_context.drawImage(_state.s.offscreen_canvas_context.canvas, 0, 0, _state.s.width, _state.s.height);
+
                         resolve();
                     }else {
 
@@ -195,7 +206,7 @@ const SuperCanvas = {
                             let pr_height = _state.pr.height | 0;
                             let pr_top_left_x = _state.pr.top_left.x | 0;
                             let pr_top_left_y = _state.pr.top_left.y | 0;
-                            let pr_uint8a = new Uint8ClampedArray(_state.fp.slice(0, _state.fp.length).reverse().buffer).reverse();
+                            let pr_uint8a = new Uint8Array(_state.fp.buffer);
                             let pr_uint8a_length = pr_uint8a.length | 0;
                             let not_fully_opaque = false;
                             for(let i = 3; (i|0)<(pr_uint8a_length|0); i = (i+4|0)>>>0) {
@@ -207,7 +218,6 @@ const SuperCanvas = {
 
                             bpro(s_width, pr_width, pr_height, pr_top_left_x, pr_top_left_y, pr_uint8a).then(function(bitmap){
 
-
                                 if(_state.b.bmp_t < new_bmp_t) {
 
                                     let b2 = {};
@@ -217,11 +227,6 @@ const SuperCanvas = {
                                     b2.bmp_x = new_bmp_x | 0;
                                     b2.bmp_y = new_bmp_y | 0;
                                     b2.clear_behind = not_fully_opaque;
-
-                                    _state.pr.top_left.x = _state.s.width | 0;
-                                    _state.pr.top_left.y = _state.s.height | 0;
-                                    _state.pr.bottom_right.x = 0;
-                                    _state.pr.bottom_right.y = 0;
 
                                     resolve(b2);
                                 }else {
@@ -272,20 +277,21 @@ const SuperCanvas = {
                         let pr_top_left_y = pr.top_left.y | 0;
                         let pr_bottom_right_x = pr.bottom_right.x | 0;
                         let pr_bottom_right_y = pr.bottom_right.y | 0;
+                        const fp_last_index = _state.fp.length-1|0;
 
                         _state.ic.forEach(function (value, index) {
 
                             index = (index|0) >>> 0;
 
                             x = modulo_uint(index, width);
-                            y = divide_uint(minus_uint(index, x), width);
+                            y = divide_int(minus_int(index, x), width);
 
-                            if(uint_greater(pr_top_left_x, minus_uint(x, 16))) {pr_top_left_x = max_int(0, minus_uint(x, 16));}
-                            else if(uint_less(pr_bottom_right_x, plus_uint(x, 16))) {pr_bottom_right_x = min_int(width,  plus_uint(x, 16)); }
-                            if(uint_greater(pr_top_left_y, minus_uint(y, 16))) {pr_top_left_y = max_int(0, minus_uint(y, 16));}
-                            else if(uint_less(pr_bottom_right_y, plus_uint(y, 16))) {pr_bottom_right_y = min_int(height, plus_uint(y,16)); }
+                            if(int_greater_equal(pr_top_left_x, minus_int(x, 0))) {pr_top_left_x = max_int(0, minus_int(x, 32));}
+                            else if(int_less_equal(pr_bottom_right_x, plus_int(x, 0))) {pr_bottom_right_x = min_int(width,  plus_int(x, 32)); }
+                            if(int_greater_equal(pr_top_left_y, minus_int(y, 0))) {pr_top_left_y = max_int(0, minus_int(y, 32));}
+                            else if(int_less_equal(pr_bottom_right_y, plus_int(y, 0))) {pr_bottom_right_y = min_int(height, plus_int(y,32)); }
 
-                            _state.fp[index|0] = ((value|0)>>>0) & 0xFFFFFFFF;
+                            _state.fp_dataview.setUint32((index|0) << 2, (value|0)>>>0, false);
                         });
 
                         pr.width = 1 + pr_bottom_right_x - pr_top_left_x | 0;

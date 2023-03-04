@@ -191,47 +191,54 @@ const SuperState = {
 
                 s = s || {};
                 callback_function = callback_function || function(){};
-                pxl_indexes = pxl_indexes || new Set();
+                pxl_indexes = new Set(pxl_indexes || []);
                 color = color | 0;
                 opacity = parseFloat(opacity);
 
-                let state = _state.get();
-                let pxl_colors = state._s_pxl_colors[state._layer_index];
-                let pxls = state._s_pxls[state._layer_index];
-                let indexes = Uint32Array.from(pxl_indexes);
-                let sd_colors = SIMDopeColors(new Uint32Array(indexes.length));
-                for(let i = 0; i < indexes.length; i = (i + 1 | 0)>>>0) {
-                    sd_colors.set_element(i|0, SIMDopeColor.new_uint32(pxl_colors[pxls[indexes[i|0]|0]]).blend_with(SIMDopeColor.new_uint32(color|0), opacity*255|0, false, false));
-                }
+                if(pxl_indexes.size > 0) {
 
-                let new_ui32_colors = sd_colors.subarray_uint32(0, indexes.length);
-                let pxl_colors_set = new Set(pxl_colors);
-                let pxl_colors_new = [];
-                Uint32Array.from(new Set(new_ui32_colors)).forEach(function(c){
-
-                    if(!pxl_colors_set.has(c)){
-                        pxl_colors_set.add(c);
-                        pxl_colors_new.push(c);
+                    let state = _state.get();
+                    let pxl_colors = state._s_pxl_colors[state._layer_index];
+                    let pxls = state._s_pxls[state._layer_index];
+                    let indexes = Uint32Array.from(pxl_indexes);
+                    let indexes_length = indexes.length|0;
+                    let sd_colors = SIMDopeColors(new Uint32Array(indexes_length));
+                    for(let i = 0; (i|0) < (indexes_length|0); i = (i + 1 | 0)>>>0) {
+                        sd_colors.set_element(i|0, SIMDopeColor.new_uint32(pxl_colors[pxls[indexes[i|0]|0]]).blend_with(SIMDopeColor.new_uint32(color|0), opacity*255|0, false, false));
                     }
-                });
 
-                if(pxl_colors_new.length > 0) {
-                    pxl_colors = Uint32Array.from(Array.from(pxl_colors).concat(pxl_colors_new));
+                    let new_ui32_colors = sd_colors.subarray_uint32(0, indexes_length);
+                    let pxl_colors_set = new Set(pxl_colors);
+                    let pxl_colors_new = [];
+                    Uint32Array.from(new Set(new_ui32_colors)).forEach(function(c){
+
+                        if(!pxl_colors_set.has(c)){
+                            pxl_colors_set.add(c);
+                            pxl_colors_new.push(c);
+                        }
+                    });
+
+                    if(pxl_colors_new.length > 0) {
+                        pxl_colors = Uint32Array.from(Array.from(pxl_colors).concat(pxl_colors_new));
+                    }
+
+                    for(let i = 0; (i|0) < (indexes_length|0); i = (i + 1 | 0)>>>0) {
+                        pxls[indexes[i|0]|0] = pxl_colors.indexOf(new_ui32_colors[i|0]);
+                    }
+
+                    state._s_pxl_colors[state._layer_index|0] = pxl_colors instanceof Uint32Array ? pxl_colors: Uint32Array.from(pxl_colors);
+                    state._s_pxls[state._layer_index|0] = pxls instanceof Uint16Array ? pxls: Uint16Array.from(pxls);
+
+                    const st = Object.assign(s, {
+                        _s_pxl_colors: state._s_pxl_colors,
+                        _s_pxls: state._s_pxls,
+                    });
+
+                    this.set_state(st).then(callback_function);
+                }else {
+
+                    callback_function();
                 }
-
-                for(let i = 0; i < indexes.length; i = (i + 1 | 0)>>>0) {
-                    pxls[indexes[i|0]|0] = pxl_colors.indexOf(new_ui32_colors[i|0]);
-                }
-
-                state._s_pxl_colors[state._layer_index] = Uint32Array.from(pxl_colors);
-                state._s_pxls[state._layer_index] = Uint16Array.from(pxls);
-
-                const st = Object.assign(s, {
-                    _s_pxl_colors: state._s_pxl_colors,
-                    _s_pxls: state._s_pxls,
-                });
-
-                this.set_state(st).then(callback_function);
             },
             set_state: function(new_props) {
                 "use strict";
