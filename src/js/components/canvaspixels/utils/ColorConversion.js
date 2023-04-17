@@ -1,4 +1,4 @@
-import SIMDope from "simdope";
+import SIMDope from "simdope/index";
 const simdops = SIMDope.simdops;
 
 const ColorConversion = {

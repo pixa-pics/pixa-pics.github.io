@@ -1,7 +1,7 @@
 import React from "react";
 import { withStyles } from "@material-ui/core";
 import {ButtonBase, Tooltip, Fade} from "@material-ui/core";
-import {SIMDopeColor} from "simdope";
+import {SIMDopeColor} from "simdope/index";
 
 import CheckBoldIcon from "../icons/CheckBold";
 

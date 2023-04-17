@@ -1,6 +1,13 @@
-# PIXA.PICS
+# PIXA.PICS | STORING PIXEL ART NFT ONE THOUSAND YEARS!
 
-[![AI Generated promotional video of pixe.pics](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/VIDEO2.png)](https://www.youtube.com/watch?v=V-6-m4bHeJU)
+
+[![Storing pixel art video thumnbail](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/images/screenshots/STORAGE.jpeg?raw=true)](https://www.youtube.com/watch?v=cctknQhVX1w)
+> Click the image to watch the video on Youtube
+
+## **OR WATCH A DEMO (2 MINUTES)**:
+<//////> https://youtu.be/WlgGdmXmVDo <\\\\\\\\>
+
+[1000 YEARS READY NFTS - HANDBOOK.PDF](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/1000%20Years%20ready%20NFTs%20-%20Handbook.pdf)
 
 ****
 
@@ -35,15 +42,54 @@
 
 ---
 
-![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/LAB.png)
+# Pixa.Pics - Pixel Art Editor and NFT Laboratory
+Pixa.Pics is an all-in-one pixel art editor and NFT laboratory designed for users of all ages and skill levels. The application provides an accessible and secure way for individuals to create, store, and share pixel art while preserving their anonymity and utilizing cutting-edge blockchain technology.
 
-> Within our NFT Laboratory at Pixa.Pics, we're on a mission to democratize digital art and empower creators around the world. Our core values are rooted in creativity, inclusivity, and sustainability, and we believe that technology can be a force for good in the world.
+# Table of Contents
+* Introduction
+* Features
+* File Formats and Compression
+* Blockchain and NFTs
+* Privacy and Anonymity
+* Scaling and Vector Graphics
+* Getting Started
+* Contribute
+* License
 
-We're inspired by the history of pixel art, which emerged in the early days of digital graphics as a way to create art with limited resources. Today, we're taking that legacy to the next level by leveraging blockchain technology to create new opportunities for artists to showcase and monetize their work.
+# Introduction
+Pixel art is a popular digital art form that utilizes a limited palette of colors and distinct pixel shapes to create intricate images. Pixa.Pics is a web application that allows users to easily create and share pixel art while also taking advantage of the growing NFT market. With its simple user interface, anyone from students learning image manipulation to experienced artists can create pixel art effortlessly.
 
-Our strategic objectives are focused on building a platform that enables creators to unleash their full potential. We're constantly innovating and iterating to make Pixa.Pics the most user-friendly and versatile pixel art editor on the market, while also integrating cutting-edge NFT technology to enable seamless buying, selling, and collecting of digital art.
+# Features
+* Intuitive pixel art editor
+* Indexed palette with up to 256 colors
+* PNG file format support for lightweight images
+* NFT creation and management
+* Blockchain integration for secure storage and verification
+* Privacy-focused design
+* Emulator and vector graphics support for scaling and creative displays
 
-We believe that by creating a platform that puts artists first, we're contributing to a brighter future for the creative industry and for society as a whole. We're excited to be part of a movement that is redefining what it means to be an artist in the digital age, and we can't wait to see what the future holds.
+# File Formats and Compression
+Pixa.Pics utilizes a specific type of PNG file format that works with an indexed palette of up to 256 colors. This method results in images that are roughly 75% lighter than traditional PNGs, making them ideal for use in smart contracts and blockchain storage.
+
+# Blockchain and NFTs
+The application supports integration with various blockchains, allowing users to create NFTs of their pixel art. By using base64 encoding and hashing algorithms, Pixa.Pics ensures that the NFTs are secure, verifiable, and tamper-proof. The decentralized nature of blockchains also provides a reliable and long-lasting storage solution for the artwork.
+
+As the cost of storing and processing data on blockchains decreases over time, users can expect more affordable options for creating and managing their NFTs.
+
+# Privacy and Anonymity
+One of the key advantages of pixel art is its ability to protect users' anonymity. Unlike traditional photographs, pixel art does not provide AI technologies with sufficient information to build detailed profiles or create deepfakes. Users can create and share their artwork without worrying about their personal information being used for marketing or other invasive purposes.
+
+# Scaling and Vector Graphics
+Pixa.Pics supports scaling up pixel art using emulators and vector graphics, allowing for impressive and creative displays of the artwork in various sizes. Users can generate SVG files from their pixel art, which can be infinitely scaled without loss of quality. This feature enables the creation of large-scale art installations, such as building-sized displays or high-resolution prints.
+
+# Getting Started
+To start using Pixa.Pics, simply visit the web application at https://www.pixa.pics. From there, you can create a new pixel art project or open an existing one. You can also explore the platform's NFT laboratory and learn more about creating and managing your own NFTs.
+
+# Contribute
+Contributions to Pixa.Pics are welcome! To get involved, visit the GitHub repository and follow the guidelines for submitting issues or pull requests.
+
+# License
+Pixa.Pics is licensed under the MIT License. This allows for free use, modification, and distribution of the software
 
 
 ![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/EDITOR6.png)
@@ -61,25 +107,6 @@ We believe that by creating a platform that puts artists first, we're contributi
 
 <img width="222" height="482" src="https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/EDITOR_ANDROID.jpg" align="right" />
 
-### Lighten it up to 100 - 1000x
-
-**Pixel art can be stored inside blockchain technology at low cost, enabling to be stored for thousands of year without downtime everywhere!**
-
-But hey, here we do it even greater with pixa.pics... We upscale it with smart algortihms!
-
-> **At the crossroads of mathematical worlds (radix) researchers from around the world allow us to code algorithms aimed at reducing images from 2.8 million bytes to only 8.9 thousand bytes (always equal to 8 bits or 1 byte... ).**
-
-> **Aiming to keep Ultra HD 4K+ resolution, we enlarge a thumbnail (yes, pixel art) with algorithms that helped "REMASTER" the greatest video game franchises of the 80s-90s for true-to-life quality. beauty of our current computer hardware.**
-
-**This allows a lot of people to do better than a whole lot of stuff for drawing, education, blockchain, NFTs and image processing/storage...**
-
-
----
-
-<p align="center">
- <a href="https://pixa.pics/">https://pixa.pics/</a><span> — Unleash potential (un)-limited.</span>
-</p>
-
 ---
 
 > Yet many drawing tools and selection mode enables you to be creative (and decentralize everything)!
@@ -92,60 +119,16 @@ But hey, here we do it even greater with pixa.pics... We upscale it with smart a
 * **Compress 100x-1000x** a visual scene into less than 12 Kb PNGs that scales in HD.
 * **Do more, without less**... This is pixaaaaa! (pics)
 
-### 1) What does it cost?
-
-**Permission is hereby granted, free of charge, to any person to use this software.**
-
-Nevertheless, the aforementioned project (i.e. https://pixa.pics/) whose source code is said to be "open" (visible on: https://github.com/pixa-pics/pixa-pics .github.io) needs for the coming year an amount of 75000 US dollar to operate as drawing software in the field of pixelart and digital-painting (art) among others NFTs ( so-called digital cryptographic tokens) being free and open-source.
-
-### 2) Anonymization of visual subjects
-This project allows anonymization of the target visual subject directly on import by reducing the number of colors and the number of pixels present in the raster image (which is just a pixel grid with a few bonus colors) and allowing retouching of it in an interface made in Switzerland, which offers tools for drawing and retouching tints and colors as well as shapes via functions and algorithms on clicking certain buttons inside this software, available under simply "MIT" license via the WEB...
-
-### 3) Lighten the online-self up
-A person can preserve details of their private life and still publish digital paintings of their portrait without risking leaving pejorative details, or deliberately harming the online-self of the person, since the output files only contain 1:100 to 1:1000 of the weight of the source data for an HD image also which more-is will be a form of artwork disregarded from the eventual copyright that protected the base image.
-
-### 4) Preserving yourself as your own hero
-It is useful in the field of the protection of the private sphere and the online-self, in the field of drawing and image editing, also in the creation of so-called "intelligent" NFTs as well as in the artistic field quite simply. Meanwhile, also between the search and identification of missing persons and the anonymization and copyleft (un-copyright) of visual subjects... A real tool for the creation of "artistic situations being safer than safe".
-
-## B) :thinking: Tomorrow is knocking!
-
-Pixa.Pics stands in favor of the freedom of expression, communication, education; **respect for the privacy of citizens and civil rights in general**. We defend the free flow of ideas, knowledge and culture as the software is completely free and open-source.
-
-> IT CLAIMS TO BE THE UNBREAKABLE, UNCHANGABLE, UNSTOPPABLE Ace of Automatic Information; Blockchain is a list of transactions grouped into multiple blocks that constitute a state in a machine that changes according to a cryptography-based agreement AND between its participating terminals through a data network. This technology allows you to save and keep a structured data set for centuries flawlessly.
-
-**We strongly believe bold the following recklessly for a while. The Internet has become an oligopoly Disneyland with little innovation. The central banks have corrupted money - the operating system of society. We see blockchain as a new computing platform with novel features, that could both, bring a new phase of innovation, and redefine the existing monetary systems. We want to contribute to bringing a better future sooner. Hence, ten months ago, we founded pixa pics.**
-
 ![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/power-system.png)
 
-> And so, when we talk about privacy and anonymity or pecuniary freedom, it wouldn't occur to some that non-fungible tokens are a good reason to think that.
-
-## C) :zap: What does it perform?
-
-> This is PIXAAAAA! An awesome pixel art editor made with material design guideline trends and awesome web technologies! 100% visionary in privacy concerns/critics and against detractors with its development that has enabled to show an online-self (image) within a minimalistic version of an high definition image (minima-art), to which, looks like pixel art throughout an automatic resize and color quantization, and then to up-scale it way beyond Full HD through an algorithm that makes it happens to make it looking like a painting, while it will generate an infinite SVG and 6x bigger PNG version of the minima-art.
-
-* **Protect images.**
-* **Sanitizing private data before processing it remotely.**
-* **Staying on the front line of dropping cost as it is a FOSS.**
-* **Getting to openly fight what misses being just great, while boring good exists.**
-* **Staying modern without paying anything for useless and toxic ultra-simplification tools.**
 
 **Does https://pixa.pics/pixel get?**
 
 ![](https://img.shields.io/badge/Maintained%3F-yes-green.svg)
 ![](https://img.shields.io/website-up-down-green-red/http/pixa.pics)
 
-As a team we have a commitment to work collaboratively, and participate with maximum transparency and thus lastly, we also supports free speech, anti-corruption and net neutrality facing it with **the swords of code we are forging to improve the third web’s major update.**
 
-
-## D) :medal_military: Special features
-
-Screenshot of the minima's laboratory of pixa.pics (which is a pixel art editor).
-
-* Create pixel art from your pictures and draw, cut, select, do anything.
-* Have fun with NFTs weighting as low as ~10-100Kb.
-* Restore and colorize B/W while scaling up to 12x images.
-
-## E) :crown:	Technology
+## E) Technology
 
 * Low-Level-JavaScript just like [asm.js](http://asmjs.org/) or SIMD.js for blazing efficient color operation
 * Multi-threading (Web [Worker](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/js/utils/worker-pool.js))
@@ -165,37 +148,17 @@ Screenshot of the minima's laboratory of pixa.pics (which is a pixel art editor)
 
 <img width="300" height="300" src="https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/MEME.jpg" align="right" />
 
-  * **[QuantiMat](https://github.com/pixa-pics/pixa-pics.github.io/tree/main/src/js/utils/quantimat) (15.2kB minified 0 dep, only 3 kB with Gzip) is used for color quantization** it can reduce an image with 50K colors down to 2K colors in 88ms with ease, 500K OPS (1 OP = distance + blending + ordering, ...) / SEC, we achieve one of the greatest quality, when you diminish initial colors 20 times, after processing you can't clearly see any differences except it also removes pixel color glitches and so enables a better quality. We achieve this speed thanks to SIMDope, but also thanks to sorting colors in either 4096, 256, or 16 clusters that takes a binary reduction of color component down to numbers from 0 to the number of cluster and this enables to not compare all of them to all of them savings millions of operations,
+* **[QuantiMat](https://github.com/pixa-pics/pixa-pics.github.io/tree/main/src/js/utils/quantimat) (15.2kB minified 0 dep, only 3 kB with Gzip) is used for color quantization** it can reduce an image with 50K colors down to 2K colors in 88ms with ease, 500K OPS (1 OP = distance + blending + ordering, ...) / SEC, we achieve one of the greatest quality, when you diminish initial colors 20 times, after processing you can't clearly see any differences except it also removes pixel color glitches and so enables a better quality. We achieve this speed thanks to SIMDope, but also thanks to sorting colors in either 4096, 256, or 16 clusters that takes a binary reduction of color component down to numbers from 0 to the number of cluster and this enables to not compare all of them to all of them savings millions of operations,
 
 ---
 
-  * **[UraniumJS](https://www.npmjs.com/package/uraniumjs)** LZP3 & LZJBR + BASE92 are used to ENRICH or DEPLETE elements such as String, Object, and ArrayBuffer up to -2/3 gained over inline content
-  * **[SIMDope](https://www.npmjs.com/package/simdope)** Color trafficking library faster than tools not mentioning it, lighting fast and around 1000 lines of code.
-  * **[SuperJSONatural](https://www.npmjs.com/package/superjsonatural)** JSON yet, lighter & faster with the support of all JS TypedArray!
-  * **[UTFzap](https://www.npmjs.com/package/utf-zap)** Intelligent UTF-16
+* **[UraniumJS](https://www.npmjs.com/package/uraniumjs)** LZP3 & LZJBR + BASE92 are used to ENRICH or DEPLETE elements such as String, Object, and ArrayBuffer up to -2/3 gained over inline content
+* **[SIMDope](https://www.npmjs.com/package/simdope)** Color trafficking library faster than tools not mentioning it, lighting fast and around 1000 lines of code.
+* **[SuperJSONatural](https://www.npmjs.com/package/superjsonatural)** JSON yet, lighter & faster with the support of all JS TypedArray!
+* **[UTFzap](https://www.npmjs.com/package/utf-zap)** Intelligent UTF-16
 
 Look! On the STEEM blockchain you can post base64 text, transactions are rigged to 73Kb at maxima but STEEM is now kinda old for a blockchain.
 
-# F) How can it work thanks to sponsorship?
-
-> **Thanks for support!**
-
-**Queued ideas seeking funds:**
-
-* Translate the app in : [EN, FR, DE, IT, ID, PT, JA, ZH, RU, KO, HI, ES]
-* Make code clear and well documented.
-* Rebuild some functionalities again.
-* Audit what users need and list the ideas found.
-
-## F") Get started and fund like the king, a functionality now
-
-**INTERESTED INTO SPONSORING a good cause?**
-
-Get involved with us at https://opencollective.com/pixapics
-
-or
-
-Please email-us at: [pixa.pics@protonmail.com](mailto:pixa.pics@protonmail.com)
 
 ## G) SDK for up-scaling images
 
@@ -212,16 +175,6 @@ pixa.upscale(base64, "xbrz").then(function(base642nd){
 ```
 
 The SDK is being developed from our source code.
-
----
-
-https://www.instagram.com/asaitama_1.618/
-
-**About me:** My name is Matias, and I love to build tools for humanity, my code is my voice, my weapon of choice. I know that uniquely we are free, together and naturally we are just stronger and that's why I need you supporting the project to pay the contributors, a little incentive given with a little bit of love, no one is against it!
-
-Of course the mission I assigned to myself was enabling artworks talking about one's life being customizable and yet anonymous. Because we can store those artworks inside some blockchain technology (entirely, not only a proof) to make it last centuries from now without too many details in it, isn't over, I will need new ideas and contributors, and also more!
-
-Your kindness helping the project in anyways is great, don't hesitate to fork, star, and share!
 
 ---
 
