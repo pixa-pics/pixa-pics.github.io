@@ -1,4 +1,4 @@
-import {SIMDopeColors, SIMDopeColor} from "simdope/index";
+import {SIMDopeColors, SIMDopeColor} from "simdope";
 
 const SuperState = {
     _format_hex_color_getUin32(hex) { // Supports #fff (short rgb), #fff0 (short rgba), #e2e2e2 (full rgb) and #e2e2e2ff (full rgba)

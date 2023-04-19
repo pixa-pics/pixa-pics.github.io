@@ -1,4 +1,4 @@
-import {simdops, SIMDopeColor, SIMDopeColors} from "simdope/index";
+import {simdops, SIMDopeColor, SIMDopeColors} from "simdope";
 const {
     minus_int,
     int_not_equal,
@@ -97,6 +97,7 @@ const {
     int_greater_equal,
     uint_not_equal,
     uint_less_equal,
+    min_uint,
 } = simdops;
 
 var SuperBlend = function(opts) {
@@ -260,12 +261,12 @@ SuperBlend.prototype.blend = function(should_return_transparent, alpha_addition)
             base_uint8x4D = SIMDope_final_with_colors.get_element(i + 3 | 0);
 
             // Sum up all colors above
-            for (let layer_n = minus_uint(Math.min(start_layerA, start_layerB, start_layerC, start_layerD), 1); int_less(layer_n, all_layers_length); layer_n = plus_int(layer_n, 1)) {
+            for (let layer_n = minus_uint(min_uint(min_uint(start_layerA, start_layerB), min_uint(start_layerC, start_layerD)), 1); int_less(layer_n, all_layers_length); layer_n = plus_int(layer_n, 1)) {
 
-                added_uint8x4A.set(uint_not_equal(hover_data_in_layer[i | 0], layer_n + 1 | 0) ? SIMDope_layers_with_colors.get_element(plus_uint(multiply_uint(layer_n, max_used_colors_length), i | 0)) : SIMDopeColor.average(base_uint8x4A, (base_uint8x4A.is_dark() ? color_less_uint8x4 : color_full_uint8x4)).set_a(plus_uint(192, divide_uint(amount_data_in_layers[plus_uint(multiply_uint(layer_n, max_used_colors_length), i | 0)], 4))));
-                added_uint8x4B.set(uint_not_equal(hover_data_in_layer[i + 1 | 0], layer_n + 1 | 0) ? SIMDope_layers_with_colors.get_element(plus_uint(multiply_uint(layer_n, max_used_colors_length), i + 1 | 0)) : SIMDopeColor.average(base_uint8x4B, (base_uint8x4B.is_dark() ? color_less_uint8x4 : color_full_uint8x4)).set_a(plus_uint(192, divide_uint(amount_data_in_layers[plus_uint(multiply_uint(layer_n, max_used_colors_length), i + 1 | 0)], 4))));
-                added_uint8x4C.set(uint_not_equal(hover_data_in_layer[i + 2 | 0], layer_n + 1 | 0) ? SIMDope_layers_with_colors.get_element(plus_uint(multiply_uint(layer_n, max_used_colors_length), i + 2 | 0)) : SIMDopeColor.average(base_uint8x4C, (base_uint8x4C.is_dark() ? color_less_uint8x4 : color_full_uint8x4)).set_a(plus_uint(192, divide_uint(amount_data_in_layers[plus_uint(multiply_uint(layer_n, max_used_colors_length), i + 2 | 0)], 4))));
-                added_uint8x4D.set(uint_not_equal(hover_data_in_layer[i + 3 | 0], layer_n + 1 | 0) ? SIMDope_layers_with_colors.get_element(plus_uint(multiply_uint(layer_n, max_used_colors_length), i + 3 | 0)) : SIMDopeColor.average(base_uint8x4D, (base_uint8x4D.is_dark() ? color_less_uint8x4 : color_full_uint8x4)).set_a(plus_uint(192, divide_uint(amount_data_in_layers[plus_uint(multiply_uint(layer_n, max_used_colors_length), i + 3 | 0)], 4))));
+                added_uint8x4A = uint_not_equal(hover_data_in_layer[i | 0], layer_n + 1 | 0) ? SIMDope_layers_with_colors.get_element(plus_uint(multiply_uint(layer_n, max_used_colors_length), i | 0)) : SIMDopeColor.average(base_uint8x4A, (base_uint8x4A.is_dark() ? color_less_uint8x4 : color_full_uint8x4)).set_a(plus_uint(192, divide_uint(amount_data_in_layers[plus_uint(multiply_uint(layer_n, max_used_colors_length), i | 0)], 4)));
+                added_uint8x4B = uint_not_equal(hover_data_in_layer[i + 1 | 0], layer_n + 1 | 0) ? SIMDope_layers_with_colors.get_element(plus_uint(multiply_uint(layer_n, max_used_colors_length), i + 1 | 0)) : SIMDopeColor.average(base_uint8x4B, (base_uint8x4B.is_dark() ? color_less_uint8x4 : color_full_uint8x4)).set_a(plus_uint(192, divide_uint(amount_data_in_layers[plus_uint(multiply_uint(layer_n, max_used_colors_length), i + 1 | 0)], 4)));
+                added_uint8x4C = uint_not_equal(hover_data_in_layer[i + 2 | 0], layer_n + 1 | 0) ? SIMDope_layers_with_colors.get_element(plus_uint(multiply_uint(layer_n, max_used_colors_length), i + 2 | 0)) : SIMDopeColor.average(base_uint8x4C, (base_uint8x4C.is_dark() ? color_less_uint8x4 : color_full_uint8x4)).set_a(plus_uint(192, divide_uint(amount_data_in_layers[plus_uint(multiply_uint(layer_n, max_used_colors_length), i + 2 | 0)], 4)));
+                added_uint8x4D = uint_not_equal(hover_data_in_layer[i + 3 | 0], layer_n + 1 | 0) ? SIMDope_layers_with_colors.get_element(plus_uint(multiply_uint(layer_n, max_used_colors_length), i + 3 | 0)) : SIMDopeColor.average(base_uint8x4D, (base_uint8x4D.is_dark() ? color_less_uint8x4 : color_full_uint8x4)).set_a(plus_uint(192, divide_uint(amount_data_in_layers[plus_uint(multiply_uint(layer_n, max_used_colors_length), i + 3 | 0)], 4)));
 
                 SIMDopeColor.blend_all_four(
                     base_uint8x4A, base_uint8x4B, base_uint8x4C, base_uint8x4D,
@@ -305,7 +306,7 @@ SuperBlend.prototype.blend = function(should_return_transparent, alpha_addition)
             }
         }
 
-        resolve(Array.of(indexes_data_for_layers.slice(0, SIMDope_final_with_colors.length), SIMDope_final_with_colors.slice_uint32(0, SIMDope_final_with_colors.length)));
+        resolve(Array.of(indexes_data_for_layers.subarray(0, SIMDope_final_with_colors.length), SIMDope_final_with_colors.subarray_uint32(0, SIMDope_final_with_colors.length)));
     });
 };
 
