@@ -326,21 +326,20 @@ const SuperMasterMeta = {
                                     meta.super_canvas.pile(index_changes, color_changes).then(function () {
                                         meta.super_canvas.unpile(pxl_width, pxl_height).then(function () {
                                             meta.super_canvas.prender().then(function (b2) {
-                                                meta.sraf.run_frame(() => {
-                                                    meta.super_canvas.render(b2).then(function () {
-
-                                                        _state._previous_imported_image_pxls_positioned_keyset = imported_image_pxls_positioned_keyset;
-                                                        _state._old_selection_pair_highlight = _selection_pair_highlight;
-                                                        _state._old_layers_string_id = old_layers_string_id;
-                                                        _state._old_full_pxls = full_pxls;
-                                                        _state._last_paint_timestamp = requested_at;
-                                                        _state._did_hide_canvas_content = hide_canvas_content;
-                                                        _state._old_pxl_width = parseInt(pxl_width);
-                                                        _state._old_pxl_height = parseInt(pxl_height);
-                                                        _state._is_there_new_dimension = false;
-                                                        resolve();
-                                                    });
-                                                }, is_there_new_dimension, false);
+                                                meta.sraf.run_frame(function() {
+                                                    meta.super_canvas.render(b2);
+                                                }, is_there_new_dimension, false).then(function (){
+                                                    _state._previous_imported_image_pxls_positioned_keyset = imported_image_pxls_positioned_keyset;
+                                                    _state._old_selection_pair_highlight = _selection_pair_highlight;
+                                                    _state._old_layers_string_id = old_layers_string_id;
+                                                    _state._old_full_pxls = full_pxls;
+                                                    _state._last_paint_timestamp = requested_at;
+                                                    _state._did_hide_canvas_content = hide_canvas_content;
+                                                    _state._old_pxl_width = parseInt(pxl_width);
+                                                    _state._old_pxl_height = parseInt(pxl_height);
+                                                    _state._is_there_new_dimension = false;
+                                                    resolve();
+                                                });
                                             }).catch(function () {
 
                                                 setTimeout(promise, 10, resolve, reject)

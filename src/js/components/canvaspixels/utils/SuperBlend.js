@@ -36,7 +36,6 @@ function _build_shadow_state (state, old_shadow_state) {
 
     old_shadow_state.bv.color_less_uint8x4 = SIMDopeColor.new_of(255, 255, 255, 255);
     old_shadow_state.bv.color_full_uint8x4 = SIMDopeColor.new_of(0, 0, 0, 255);
-    old_shadow_state.bv.base_uint8x4 = SIMDopeColor.new_zero();
     old_shadow_state.bv.base_uint8x4A = SIMDopeColor.new_zero();
     old_shadow_state.bv.base_uint8x4B = SIMDopeColor.new_zero();
     old_shadow_state.bv.base_uint8x4C = SIMDopeColor.new_zero();
@@ -45,8 +44,6 @@ function _build_shadow_state (state, old_shadow_state) {
     old_shadow_state.bv.added_uint8x4B = SIMDopeColor.new_zero();
     old_shadow_state.bv.added_uint8x4C = SIMDopeColor.new_zero();
     old_shadow_state.bv.added_uint8x4D = SIMDopeColor.new_zero();
-    old_shadow_state.bv.temp_uint8x4 = SIMDopeColor.new_zero();
-    old_shadow_state.bv.start_layer = 0;
     old_shadow_state.bv.start_layerA = 0;
     old_shadow_state.bv.start_layerB = 0;
     old_shadow_state.bv.start_layerC = 0;
@@ -68,7 +65,6 @@ function _update_state(state, layer_number, max_length) {
     } else {
 
         let layer_number_difference = minus_int(layer_number, state.layer_number);
-        let redefine_it_up_to_layer_n = state.layer_number | 0;
 
         // Flooding or recreate existing layers
         if (int_not_equal(layer_number_difference, 0) || int_not_equal(state.max_length, max_length)) {
@@ -93,6 +89,7 @@ const {
     clamp_uint8,
     clamp_uint32,
     int_equal,
+    uint_less,
     int_less,
     int_greater_equal,
     uint_not_equal,
@@ -205,7 +202,7 @@ SuperBlend.prototype.blend = function(should_return_transparent, alpha_addition)
         max_used_colors_length,
         bv
     } = this.shadow_state;
-    let {color_less_uint8x4, color_full_uint8x4, base_uint8x4, start_layer} = bv;
+    let {color_less_uint8x4, color_full_uint8x4, start_layer} = bv;
     let {
         base_uint8x4A,
         added_uint8x4A,
@@ -279,30 +276,18 @@ SuperBlend.prototype.blend = function(should_return_transparent, alpha_addition)
             }
         }
 
-        for (; uint_less_equal(i, used_colors_length); i = plus_uint(i, 1)) {
+        for (; uint_less(i | 0, used_colors_length); i = plus_uint(i, 1)) {
 
-            start_layer = start_layer_indexes[i];
+            start_layerA = start_layer_indexes[i | 0];
+            base_uint8x4A = SIMDope_final_with_colors.get_element(i | 0);
 
-            // Get the first base color to sum up with colors atop of it
-            base_uint8x4 = SIMDope_final_with_colors.get_element(i);
-
-            if (uint_not_equal(start_layer, 0)) {
-
-                base_uint8x4.set(SIMDope_layers_with_colors.get_element(plus_uint(multiply_uint(minus_uint(start_layer, 1), max_used_colors_length), i)));
-            }
             // Sum up all colors above
-            for (let layer_n = minus_uint(start_layer, 1); int_less(layer_n, all_layers_length); layer_n = plus_int(layer_n, 1)) {
+            for (let layer_n = minus_uint(start_layerA, 1); int_less(layer_n, all_layers_length); layer_n = plus_int(layer_n, 1)) {
 
-                // Compute hover if hover color
-                // Get the color below current layer and compute hover color
-                base_uint8x4.blend_with(
-                    uint_not_equal(hover_data_in_layer[i], layer_n + 1 | 0) ?
-                        SIMDope_layers_with_colors.get_element(plus_uint(multiply_uint(layer_n, max_used_colors_length), i))
-                        : SIMDopeColor.average(base_uint8x4, (base_uint8x4.is_dark() ? color_less_uint8x4 : color_full_uint8x4)).set_a(plus_uint(192, divide_uint(amount_data_in_layers[layer_n][i], 4)))
-                    , amount_data_in_layers[plus_uint(multiply_uint(layer_n, max_used_colors_length), i)],
-                    should_return_transparent,
-                    alpha_addition
-                );
+                added_uint8x4A = uint_not_equal(hover_data_in_layer[i | 0], layer_n + 1 | 0) ? SIMDope_layers_with_colors.get_element(plus_uint(multiply_uint(layer_n, max_used_colors_length), i | 0)) : SIMDopeColor.average(base_uint8x4A, (base_uint8x4A.is_dark() ? color_less_uint8x4 : color_full_uint8x4)).set_a(plus_uint(192, divide_uint(amount_data_in_layers[plus_uint(multiply_uint(layer_n, max_used_colors_length), i | 0)], 4)));
+                base_uint8x4A.blend_with(added_uint8x4A,
+                    amount_data_in_layers[plus_uint(multiply_uint(layer_n, max_used_colors_length), i | 0)] | 0,
+                    should_return_transparent, alpha_addition);
             }
         }
 

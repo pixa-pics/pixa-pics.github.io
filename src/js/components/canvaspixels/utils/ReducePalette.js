@@ -22,12 +22,12 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
-/*
+
 var t = function(buffer) {
     "use strict";
 
     // Inspired by https://en.wikipedia.org/wiki/Rec._709
-    var imul = function(a, b){
+    var imul = Math.imul || function(a, b){
         "use strict";
         var ah = (a >>> 16) & 0xffff,
             al = a & 0xffff,
@@ -88,6 +88,7 @@ var t = function(buffer) {
     }
     function multiply_uint_4(a) {
         "use strict";
+        a = a | 0;
         return a << 2;
     }
     function divide_uint(a, b) {
@@ -98,34 +99,33 @@ var t = function(buffer) {
     }
     function divide_4_uint(n) {
         "use strict";
+        n = n | 0;
         return (n >> 2 | 0) >>>0;
     }
     function divide_16_uint(n) {
         "use strict";
+        n = n | 0;
         return (n >> 4 | 0) >>> 0;
     }
     function divide_32_uint(n) {
         "use strict";
+        n = n | 0;
         return (n >> 5 | 0) >>>0;
     }
     function divide_64_uint(n) {
         "use strict";
+        n = n | 0;
         return (n >> 6 | 0) >>>0;
     }
     function divide_85_uint(n) {
         "use strict";
+        n = n | 0;
         return (n / 85 - 0.012 | 0) >>>0;
     }
     function divide_128_uint(n) {
         "use strict";
+        n = n | 0;
         return (n >> 7 | 0) >>> 0;
-    }
-    function clamp_int(x, min, max) {
-        "use strict";
-        x = x | 0;
-        min = min | 0;
-        max = max | 0;
-        return (x < min ? min: x > max ? max: x) | 0;
     }
     function clamp_uint8(n) {
         "use strict";
@@ -978,7 +978,7 @@ var t = function(buffer) {
         }).init().run().output("heap"));
     });
 };
-*/
+
 // https://www.digitalocean.com/community/tools/minify MINIFY --> var t=function...... AND ADD : return t;
 
 import {load as LZEL_92} from "../../../utils/LZEL_92_loader";
