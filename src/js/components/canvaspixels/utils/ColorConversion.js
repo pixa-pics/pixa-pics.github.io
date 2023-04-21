@@ -23,7 +23,7 @@ const ColorConversion = {
 
                 for(let i4 = 0; simdops.uint_less(i4, uint8array_rgba.length); i4 = simdops.plus_uint(i4,4)) {
 
-                    uint8array_subcolor[simdops.divide_four_uint(i4)] = uint8array_rgba[simdops.plus_uint(i4,ci)];
+                    uint8array_subcolor[simdops.divide_4_uint(i4)] = uint8array_rgba[simdops.plus_uint(i4,ci)];
                 }
 
                 return uint8array_subcolor;
