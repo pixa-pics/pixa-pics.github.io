@@ -1672,7 +1672,7 @@ class Pixel extends React.PureComponent {
 
                                         bitmap_to_imagedata(bitmap_received, resize_to_before, (imagedata_received) => {
 
-                                            QuantiMatGlobal(imagedata_received, 1/64).then((imagedata2) => {
+                                            QuantiMatGlobal(imagedata_received, 96).then((imagedata2) => {
 
                                                 imagedata_to_base64(imagedata2, "image/png", (base64) => {
 
@@ -1715,7 +1715,7 @@ class Pixel extends React.PureComponent {
 
                                         bitmap_to_imagedata(bitmap_received, resize_to_before, (imagedata_received) => {
 
-                                            QuantiMatGlobal(imagedata_received, 1/64).then((imagedata2) => {
+                                            QuantiMatGlobal(imagedata_received, 96).then((imagedata2) => {
 
                                                 imagedata_to_base64(imagedata2, "image/png", (base64) => {
 
@@ -1760,7 +1760,7 @@ class Pixel extends React.PureComponent {
 
                                             bitmap_to_imagedata(bitmap_received, resize_to_before, (imagedata_received) => {
 
-                                                QuantiMatGlobal(imagedata_received, 1/64).then((imagedata2) => {
+                                                QuantiMatGlobal(imagedata_received, 96).then((imagedata2) => {
 
                                                     imagedata_to_base64(imagedata2, "image/png", (base64) => {
 
@@ -1798,7 +1798,7 @@ class Pixel extends React.PureComponent {
 
                                     bitmap_to_imagedata(bitmap, resize_to_before, (imagedata_received) => {
 
-                                        QuantiMatGlobal(imagedata_received, 1/64).then((imagedata2) => {
+                                        QuantiMatGlobal(imagedata_received, 96).then((imagedata2) => {
 
                                             if(imagedata2 === null) {
 

@@ -28,7 +28,7 @@ var t = function(buffer) {
 
     var rgba_bytes = 4;
 
-    // Inspired by https://en.wikipedia.org/wiki/Rec._709
+// Inspired by https://en.wikipedia.org/wiki/Rec._709
     var imul = Math.imul || function(a, b){
         "use strict";
         var ah = (a >>> 16) & 0xffff,
@@ -62,10 +62,13 @@ var t = function(buffer) {
 
         return (i - 1 | 0)>>>0;
     };
-    var PR = fr(0.369*3), // +0.08
-        PG = fr(0.447*3), // -0.16
-        PB = fr( 0.194*3), // +0.08
-        PA = fr(1.0000);
+    var PR = fr(0.36*3),
+        PG = fr(0.44*3),
+        PB = fr( 0.20*3);
+
+    var SV1 = fr(1.185),
+        SV2 = fr(0.107),
+        SV3 = fr(0.112);
 
     var RD = 255,
         GD = 255,
@@ -76,8 +79,8 @@ var t = function(buffer) {
     var EUCLMAX = (s(PR*RD*RD + PG*GD*GD + PB*BD*BD | 0) | 0) >>> 0;
     var MANHMAX = (PR*RD + PG*GD + PB*BD|0) >>> 0;
 
-    var tempb = new Uint8Array(rgba_bytes);
-    var tempfloat32a = new Float32Array(new ArrayBuffer(rgba_bytes*2));
+    var TEMPUINT8AX4 = new Uint8Array(4);
+    var TEMPFLOAT32X1 = new Float32Array(2);
 
     function plus_uint(a, b) {
         "use strict";
@@ -96,21 +99,10 @@ var t = function(buffer) {
         a = a | 0;
         return a << 2;
     }
-    function divide_uint(a, b) {
-        "use strict";
-        a = a | 0;
-        b = b | 0;
-        return (a / b | 0) >>> 0;
-    }
     function divide_4_uint(n) {
         "use strict";
         n = n | 0;
         return (n >> 2 | 0) >>>0;
-    }
-    function divide_16_uint(n) {
-        "use strict";
-        n = n | 0;
-        return (n >> 4 | 0) >>> 0;
     }
     function divide_32_uint(n) {
         "use strict";
@@ -131,6 +123,13 @@ var t = function(buffer) {
         "use strict";
         n = n | 0;
         return (n >> 7 | 0) >>> 0;
+    }
+    function clamp_int(x, min, max) {
+        "use strict";
+        x = x | 0;
+        min = min | 0;
+        max = max | 0;
+        return (x < min ? min : x > max ? max : x) | 0;
     }
     function clamp_uint8(n) {
         "use strict";
@@ -155,28 +154,6 @@ var t = function(buffer) {
         b = b | 0;
         return a - b | 0;
     }
-    function divide_255(n) {
-        "use strict";
-        n = n | 0;
-        return (n / 255 | 0) & 0xFF;
-    }
-    function clamp_uint32(n) {
-        "use strict";
-        n = n | 0;
-        return ((n|0)>>>0) >>> 0;
-    }
-    function uint_not_equal(a, b) {
-        "use strict";
-        a = a | 0;
-        b = b | 0;
-        return (a | 0) != (b | 0);
-    }
-    function uint_equal(a, b) {
-        "use strict";
-        a = a | 0;
-        b = b | 0;
-        return (a | 0) == (b | 0);
-    }
     function abs_int(n) {
         "use strict";
         n = n | 0;
@@ -195,7 +172,7 @@ var t = function(buffer) {
     };
 
 
-    // Properties of number object
+// Properties of number object
     Object.defineProperty(SIMDopeColor.prototype, 'r', {
         get: function() { "use strict"; return clamp_uint8(this.storage_uint8_[3]); },
     });
@@ -276,178 +253,101 @@ var t = function(buffer) {
     Object.defineProperty(SIMDopeColor.prototype, 'skin', {
         get: function() {
             "use strict";
-            return (
-                ((this.r/this.g) > 1.185) &&
-                ((this.r*this.b|0) / p2(this.r + this.g + this.b|0) > 0.107) &&
-                ((this.r*this.g|0) / p2(this.r + this.g + this.b|0)) > 0.112
-            );
-        }
-    });
-    Object.defineProperty(SIMDopeColor.prototype, 'set', {
-        get: function() {  "use strict"; return function(with_buffer) {
-            "use strict";
-            if(with_buffer instanceof SIMDopeColor) {
-
-                this.storage_uint8_[0] = clamp_uint8(with_buffer.a);
-                this.storage_uint8_[1] = clamp_uint8(with_buffer.b);
-                this.storage_uint8_[2] = clamp_uint8(with_buffer.g);
-                this.storage_uint8_[3] = clamp_uint8(with_buffer.r);
-
+            var rgb_sum = (this.b + this.g + this.r | 0) >>> 0;
+            if((rgb_sum|0)>0) {
+                TEMPUINT8AX4[0] = clamp_int((3 * this.r | 0) / rgb_sum | 0, 0, 255);
+                TEMPUINT8AX4[1] = clamp_int((3 * this.g | 0) / rgb_sum | 0, 0, 255);
+                TEMPUINT8AX4[2] = clamp_int((3 * this.b | 0) / rgb_sum | 0, 0, 255);
+                var rgb_sum_p2 = p2(((TEMPUINT8AX4[0] + TEMPUINT8AX4[1] + TEMPUINT8AX4[2] | 0) >>> 0) | 0) >>> 0;
+                return (
+                    (fr(TEMPUINT8AX4[0] / TEMPUINT8AX4[1]) > SV1) &&
+                    (fr(((TEMPUINT8AX4[0] * TEMPUINT8AX4[2] | 0) >>> 0) / rgb_sum_p2) > SV2) &&
+                    (fr(((TEMPUINT8AX4[0] * TEMPUINT8AX4[1] | 0) >>> 0) / rgb_sum_p2) > SV3)
+                );
             }else {
 
-                this.storage_uint8_.set(with_buffer, 0);
+                return false;
             }
+        }
+    });
+    Object.defineProperty(SIMDopeColor.prototype, 'set_from_array', {
+        get: function() {  "use strict"; return function(with_buffer) {
+            "use strict";
+            this.storage_uint8_[0] = clamp_uint8(with_buffer[0]);
+            this.storage_uint8_[1] = clamp_uint8(with_buffer[1]);
+            this.storage_uint8_[2] = clamp_uint8(with_buffer[2]);
+            this.storage_uint8_[3] = clamp_uint8(with_buffer[3]);
         }}
     });
     Object.defineProperty(SIMDopeColor.prototype, 'slice', {
         get: function() { "use strict"; return function(start, end) { return this.storage_uint8_.slice(start, end); }}
     });
 
-    SIMDopeColor.prototype.is_fully_transparent = function() {
-        return uint_equal(this.a, 0);
-    };
-
-    SIMDopeColor.prototype.is_not_fully_transparent = function() {
-        return uint_not_equal(this.a, 0);
-    };
-
     Object.defineProperty(SIMDopeColor.prototype, 'simplify', {
         get: function() {  "use strict"; return function(of) {
             "use strict";
             of = fr(of);
-            this.storage_uint8_[0] = multiply_uint(round(this.a / of), of);
-            this.storage_uint8_[1] = multiply_uint(round(this.b / of), of);
-            this.storage_uint8_[2] = multiply_uint(round(this.g / of), of);
-            this.storage_uint8_[3] = multiply_uint(round(this.r / of), of);
-        }}
-    });
-    Object.defineProperty(SIMDopeColor.prototype, 'normalize', {
-        get: function() {  "use strict"; return function() {
-            "use strict";
-            var rgb_sum = this.r + this.g + this.b | 0;
-            this.storage_uint8_[1] = clamp_int(this.b / rgb_sum * 3 | 0, 0, 255);
-            this.storage_uint8_[2] = clamp_int(this.g / rgb_sum * 3 | 0, 0, 255);
-            this.storage_uint8_[3] = clamp_int(this.r / rgb_sum * 3 | 0, 0, 255);
+            this.storage_uint8_[0] = clamp_int(multiply_uint(round(this.a / of), of), 0, 255);
+            this.storage_uint8_[1] = clamp_int(multiply_uint(round(this.b / of), of), 0, 255);
+            this.storage_uint8_[2] = clamp_int(multiply_uint(round(this.g / of), of), 0, 255);
+            this.storage_uint8_[3] = clamp_int(multiply_uint(round(this.r / of), of), 0, 255);
         }}
     });
 
     SIMDopeColor.blend_all = function (base, colors, amounts) {
         "use strict";
-        var sum_r = base.r, sum_g = base.g, sum_b = base.b, sum_a = base.a, sum_amount = 1;
-        var color, amount, length = colors.length|0, i;
+        var sum_r = base.r | 0, sum_g = base.g | 0, sum_b = base.b | 0, sum_a = base.a | 0, sum_amount = fr(1);
+        var color, amount = fr(0), length = colors.length|0, i = 0;
 
-        for(i = 0; i < length; i++){
-            color = colors[i];
-            amount = fr(amounts[i]);
-            sum_amount += amount;
-            sum_r += color.r * amount | 0;
-            sum_g += color.g * amount | 0;
-            sum_b += color.b * amount | 0;
-            sum_a += color.a * amount | 0;
+        for(; (i|0) < (length|0); i = i + 1 | 0){
+            color = colors[i|0];
+            amount = fr(amounts[i|0]);
+            sum_amount = fr(sum_amount + amount);
+            sum_a = (sum_a + color.a * amount | 0) >>> 0;
+            sum_b = (sum_b + color.b * amount | 0) >>> 0;
+            sum_g = (sum_g + color.g * amount | 0) >>> 0;
+            sum_r = (sum_r + color.r * amount | 0) >>> 0;
         }
 
-        tempb[0] = clamp_uint8(sum_a / sum_amount | 0);
-        tempb[1] = clamp_uint8(sum_b / sum_amount | 0);
-        tempb[2] = clamp_uint8(sum_g / sum_amount | 0);
-        tempb[3] = clamp_uint8(sum_r / sum_amount | 0);
+        TEMPUINT8AX4[0] = clamp_int(round(sum_a / sum_amount), 0, 255);
+        TEMPUINT8AX4[1] = clamp_int(round(sum_b / sum_amount), 0, 255);
+        TEMPUINT8AX4[2] = clamp_int(round(sum_g / sum_amount), 0, 255);
+        TEMPUINT8AX4[3] = clamp_int(round(sum_r / sum_amount), 0, 255);
 
-        base.set(tempb);
-        for(i = 0; i < length; i++) {
-            colors[i].set(tempb);
+        base.set_from_array(TEMPUINT8AX4);
+        for(i = 0; (i|0) < (length|0); i = i + 1 | 0) {
+            colors[i|0].set_from_array(TEMPUINT8AX4);
         }
     }
 
-    SIMDopeColor.prototype.euclidean_match_with = function(color, threshold_4096) {
+    SIMDopeColor.prototype.euclidean_match_with = function(color, threshold_float) {
         "use strict";
-
-        threshold_4096 = (threshold_4096 | 0) >>> 0;
-        if((threshold_4096|0) == 4096) {
-
-            return true;
-        }else if((threshold_4096|0) == 0){
-
-            return ((this.uint32|0) == (color.uint32|0));
-        }else {
-
-            tempfloat32a[0] = fr(((AD-abs_int(this.a - color.a|0)|0))/AD);
-            tempfloat32a[1] = fr(tempfloat32a[0] *  tempfloat32a[0]);
-            return (s(
-                PR * p2(this.r - color.r | 0) +
-                PG * p2(this.g - color.g | 0) +
-                PB * p2(this.b - color.b | 0) | 0
-            ) / EUCLMAX * 4096 | 0) < (threshold_4096*tempfloat32a[1]|0);
-        }
+        threshold_float = fr(threshold_float);
+        TEMPFLOAT32X1[0] = fr(1 - abs_int(this.a - color.a|0)/AD);
+        TEMPFLOAT32X1[1] = fr(TEMPFLOAT32X1[0] *  TEMPFLOAT32X1[0]);
+        return (fr(s(
+            PR * p2(this.r - color.r | 0) +
+            PG * p2(this.g - color.g | 0) +
+            PB * p2(this.b - color.b | 0) | 0
+        ) / EUCLMAX) < fr(threshold_float*TEMPFLOAT32X1[1]));
     };
 
-    SIMDopeColor.prototype.manhattan_match_with = function(color, threshold_4096) {
+    SIMDopeColor.prototype.manhattan_match_with = function(color, threshold_float) {
         "use strict";
-
-        threshold_4096 = (threshold_4096 | 0) >>> 0;
-        if((threshold_4096|0) == 4096) {
-
-            return true;
-        }else if((threshold_4096|0) == 0){
-
-            return ((this.uint32|0) == (color.uint32|0));
-        }else {
-
-            tempfloat32a[0] = fr(((AD-abs_int(this.a - color.a|0)|0))/AD);
-            tempfloat32a[1] = fr(tempfloat32a[0] *  tempfloat32a[0]);
-            return ((
-                PR * abs_int(this.r - color.r | 0) +
-                PG * abs_int(this.g - color.g | 0) +
-                PB * abs_int(this.b - color.b | 0) | 0
-            ) / MANHMAX * 4096 | 0) < (threshold_4096*tempfloat32a[1]|0);
-        }
+        threshold_float = fr(threshold_float);
+        TEMPFLOAT32X1[0] = fr(1 - abs_int(this.a - color.a|0)/AD);
+        TEMPFLOAT32X1[1] = fr(TEMPFLOAT32X1[0] *  TEMPFLOAT32X1[0]);
+        return (fr((
+            PR * abs_int(this.r - color.r | 0) +
+            PG * abs_int(this.g - color.g | 0) +
+            PB * abs_int(this.b - color.b | 0) | 0
+        ) / MANHMAX) < fr(threshold_float*TEMPFLOAT32X1[1]));
     };
 
-    SIMDopeColor.prototype.multiply_a_4096 = function(n) {
-        "use strict";
-        this.subarray[0] = clamp_uint8(divide_uint(imul(this.a, n), 4096));
-    };
     SIMDopeColor.prototype.copy = function(a) {
         "use strict";
-        return SIMDopeColor(this.slice(0, 4));
+        return SIMDopeColor(this.slice(0, rgba_bytes));
     };
-
-// get a the number object wile modifying property values
-    SIMDopeColor.with_a = function(t, a) {
-        "use strict";
-        var ta = t.slice(0, 4);
-        ta[0] = clamp_uint8(a);
-        return SIMDopeColor(ta);
-    };
-
-    SIMDopeColor.merge_scale_of_255_a_fixed = function(t1, of1, t2, of2, alpha) {
-        "use strict";
-        of1 = clamp_uint8(of1);
-        of2 = clamp_uint8(of2);
-        alpha = clamp_uint8(alpha);
-
-        SIMDopeColor.scale_rgb_of_on_255(t1, of1, of1, of1);
-        SIMDopeColor.scale_rgb_of_on_255(t2, of2, of2, of2);
-        SIMDopeColor.merge_with_a_fixed(t1, t2, alpha);
-        return t1;
-    }
-
-    SIMDopeColor.scale_rgb_of_on_255 = function(t, of_r, of_g, of_b) {
-        "use strict";
-        var subarray = t.subarray;
-        subarray[0] = 0;
-        subarray[1] = divide_255(multiply_uint(t.b, of_b));
-        subarray[2] = divide_255(multiply_uint(t.g, of_g));
-        subarray[3] = divide_255(multiply_uint(t.r, of_r));
-    }
-
-    SIMDopeColor.merge_with_a_fixed = function(t1, t2, alpha) {
-        "use strict";
-        var subarray = t1.subarray;
-        subarray[0] = clamp_uint8(alpha);
-        subarray[1] = plus_uint(t1.b, t2.b);
-        subarray[2] = plus_uint(t1.g, t2.g);
-        subarray[3] = plus_uint(t1.r, t2.r);
-        t2.set(t1);
-    }
 
     var SIMDopeColors = function(with_main_buffer, bytes_offset, bytes_length){
         "use strict";
@@ -460,8 +360,6 @@ var t = function(buffer) {
 
         bytes_offset = bytes_offset | 0;
         bytes_length = (bytes_length | 0) || (this.storage_.byteLength | 0);
-
-        this.storage_uint8_array_ = new Uint8Array(this.storage_, bytes_offset, bytes_length);
         this.storage_uint32_array_ = new Uint32Array(this.storage_, bytes_offset, divide_4_uint(bytes_length));
     };
 
@@ -469,61 +367,23 @@ var t = function(buffer) {
         get: function() { "use strict"; return this.storage_uint32_array_.length; }
     });
     Object.defineProperty(SIMDopeColors.prototype, 'buffer', {
-        get: function() { "use strict"; return this.storage_uint8_array_.buffer; }
-    });
-    Object.defineProperty(SIMDopeColors.prototype, 'buffer_setUint8', {
-        get: function() { "use strict"; return function (i, n) {
-            i = i | 0;
-            n = n | 0;
-            return this.storage_uint8_array_[i] = clamp_uint8(n);
-        }}
-    });
-    Object.defineProperty(SIMDopeColors.prototype, 'buffer_getUint8', {
-        get: function() { "use strict"; return function (i) {
-            i = i | 0;
-            return this.storage_uint8_array_[i];
-        }}
-    });
-    Object.defineProperty(SIMDopeColors.prototype, 'buffer_getUint8a', {
-        get: function() { "use strict"; return function (i, n) {
-            i = i|0;
-            n = n|0; n = n || 1;
-            n = plus_uint(i, multiply_uint_4(n));
-            return this.storage_uint8_array_.subarray(i, n);
-        }}
-    });
-    Object.defineProperty(SIMDopeColors.prototype, 'buffer_setUint32', {
-        get: function() { "use strict"; return function (i, n) {
-            this.storage_uint32_array_[i|0] = clamp_uint32(n);
-        }}
+        get: function() { "use strict"; return this.storage_uint32_array_.buffer; }
     });
     Object.defineProperty(SIMDopeColors.prototype, 'buffer_getUint32', {
         get: function() { "use strict"; return function (i) {
             return  this.storage_uint32_array_[i|0];
         }}
     });
-    Object.defineProperty(SIMDopeColors.prototype, 'subarray_uint32', {
-        get: function() { "use strict"; return function (start, end){ start = start|0; end = end | 0; end = end || this.length; return this.storage_uint32_array_.subarray(start, end); }}
-    });
     Object.defineProperty(SIMDopeColors.prototype, 'slice_uint32', {
         get: function() { "use strict"; return function (start, end){ start = start|0; end = end | 0; end = end || this.length; return this.storage_uint32_array_.slice(start, end); }}
-    });
-    Object.defineProperty(SIMDopeColors.prototype, 'subarray_uint8', {
-        get: function() { "use strict"; return function (start, end){ start = start | 0; end = end | 0; return this.storage_uint8_array_.subarray(multiply_uint_4(start), multiply_uint_4(end)); }}
-    });
-    Object.defineProperty(SIMDopeColors.prototype, 'slice_uint8', {
-        get: function() { "use strict"; return function (start, end){ start = start | 0; end = end | 0; return this.storage_uint8_array_.slice(multiply_uint_4(start), multiply_uint_4(end)); }}
     });
 
     SIMDopeColors.prototype.get_element = function (i) {
         return SIMDopeColor(this.buffer, i|0);
     }
-    SIMDopeColors.prototype.subarray = function (i, n) {
-        i = i | 0;
-        n = n | 0;
-        return this.buffer_getUint8a(i, n);
-    }
 
+    var DISTINCT_SKIN_COLOR_MATCH_MULTIPLY = fr(0.333);
+    var SAME_SKIN_COLOR_MATCH_MULTIPLY = fr(0.666);
     var QuantiMat = function(opts) {
         "use strict";
         opts = opts || {};
@@ -538,14 +398,11 @@ var t = function(buffer) {
         this.new_pxl_colors_ = "buffer" in opts.pxl_colors ? SIMDopeColors(opts.pxl_colors.buffer) : SIMDopeColors(Uint32Array.from(opts.pxl_colors));
         var l = this.new_pxl_colors_.length|0;
         this.new_pxl_colors_is_skin_mask_ = new Uint8Array(l|0);
-        for(var i = 0; (i|0) < (l|0); i = i + 1 | 0) {
-            this.new_pxl_colors_is_skin_mask_[i|0] = this.new_pxl_colors_.get_element(i|0).skin ? 1: 0;
-        }
-
         this.is_bucket_threshold_auto_ = Boolean(opts.bucket_threshold > 4096);
         opts.bucket_threshold = opts.bucket_threshold || 0;
-        opts.bucket_threshold = (opts.bucket_threshold|0) >= 1 ? (opts.bucket_threshold | 0):  opts.this_state_bucket_threshold || 0;
+        opts.bucket_threshold = (opts.bucket_threshold|0) >= 1 ? (opts.bucket_threshold | 0):  (opts.bucket_threshold * 4096|0) >= 1 ? (opts.bucket_threshold * 4096|0): opts.this_state_bucket_threshold || 96;
 
+        this.set_new_pxl_skin_mask();
         this.bucket_threshold_ = this.is_bucket_threshold_auto_ ? 1: opts.bucket_threshold;
         this.threshold_steps_ = this.is_bucket_threshold_auto_ ? 1: l > 16384 ? 1: l > 8192 ? 2: l > 2048 ? 3: l > 512 ? 4: 5;
         this.best_color_number_ = l / 2 + opts.color_number_bonus | 0;
@@ -597,10 +454,19 @@ var t = function(buffer) {
         get: function() { "use strict"; return function(pxl_colors_length) {
             "use strict";
             this.new_pxl_colors_ = SIMDopeColors(this.clean_pxl_colors_.buffer.slice(0, multiply_uint_4(pxl_colors_length|0)));
-            var l = this.new_pxl_colors_.length|0;
+            this.set_new_pxl_skin_mask();
+        }}
+    });
+    Object.defineProperty(QuantiMat.prototype, 'set_new_pxl_skin_mask', {
+        get: function() { "use strict"; return function() {
+            "use strict";
+            var l = this.new_pxl_colors_.length|0, c;
             this.new_pxl_colors_is_skin_mask_ = new Uint8Array(l|0);
             for(var i = 0; (i|0) < (l|0); i = i + 1 | 0) {
-                this.new_pxl_colors_is_skin_mask_[i|0] = this.new_pxl_colors_.get_element(i|0).skin ? 1: 0;
+                c = this.new_pxl_colors_.get_element(i|0);
+                if(c.skin){
+                    this.new_pxl_colors_is_skin_mask_[i|0] = 0;
+                }
             }
         }}
     });
@@ -816,7 +682,7 @@ var t = function(buffer) {
 
         t = (t | 0) >>> 0;
         var threshold_4096 = this.bucket_threshold * (t / this.threshold_steps) | 0;
-        var weight_applied_to_color_usage_difference = t / this.threshold_steps;
+        var weight_applied_to_color_usage_difference = fr(t / this.threshold_steps);
 
         var index_merged = false;
         var latest_colors = [];
@@ -831,21 +697,23 @@ var t = function(buffer) {
         var color_usage_difference_positive = 0.0;
         var weighted_threshold = 0.0;
         var weighted_threshold_skin = 0.0;
+        var weighted_threshold_skin_skin = 0.0;
         var index_of_color_a = 0;
         var index_of_color_b = 0;
-        var x = 0, y = 0;
+        var x = 0, y = 0, c = 0;
         var color_n_in_cluster = 0;
 
         // 1x Threshold + 1x weight
         weighted_threshold =
-            ((
+            fr(
                 // Threshold and weight applied to threshold divided by what is not the threshold
-                ((threshold_4096 / 4096) + (threshold_4096 / 4096 * weight_applied_to_color_usage_difference)) /
-                (1 + weight_applied_to_color_usage_difference)
-            ) * 4096 | 0) >>> 0;  // THRESHOLD + THRESHOLD * WEIGHT / 1 + WEIGHT
-        weighted_threshold_skin = (weighted_threshold * 0.777 | 0) >>> 0;
+                fr((threshold_4096 / 4096) + (threshold_4096 / 4096 * weight_applied_to_color_usage_difference)) /
+                fr(1 + weight_applied_to_color_usage_difference)
+            );  // THRESHOLD + THRESHOLD * WEIGHT / 1 + WEIGHT
+        weighted_threshold_skin_skin = fr(weighted_threshold * SAME_SKIN_COLOR_MATCH_MULTIPLY);
+        weighted_threshold_skin = fr(weighted_threshold * DISTINCT_SKIN_COLOR_MATCH_MULTIPLY);
 
-        for(var c = 0; (c|0) < (this.max_cluster|0); c=(c+1|0)>>>0){
+        for(; (c|0) < (this.max_cluster|0); c=(c+1|0)>>>0){
 
             color_n_in_cluster = (this.get_length_in_index_clusters(c|0) | 0) >>> 0;
             stop = (start + color_n_in_cluster | 0) >>> 0;
@@ -856,7 +724,7 @@ var t = function(buffer) {
 
                 // Update color usage and relative variables
                 color_a = this.get_a_new_pxl_color((index_of_color_a|0)>>>0);
-                color_a_skin = this.is_pxl_color_skin(index_of_color_a);
+                color_a_skin = this.is_pxl_color_skin((index_of_color_a|0)>>>0);
                 color_a_usage = (this.get_a_color_usage((index_of_color_a|0)>>>0) | 0) >>> 0;
 
                 if((color_a_usage|0) > 0) {
@@ -866,33 +734,32 @@ var t = function(buffer) {
 
                     for(y = start|0; (y|0) < (stop|0); y = (y+1|0)>>>0) {
 
-                        index_of_color_b = this.get_an_index_in_clusters(y)|0;
+                        index_of_color_b = (this.get_an_index_in_clusters((y|0)>>>0)|0)>>>0;
                         // Update color usage and relative variables
-                        color_b = this.get_a_new_pxl_color(index_of_color_b);
-                        color_b_skin = this.is_pxl_color_skin(index_of_color_b);
-                        color_b_usage = this.get_a_color_usage(index_of_color_b)|0;
+                        color_b = this.get_a_new_pxl_color((index_of_color_b|0)>>>0);
+                        color_b_skin = this.is_pxl_color_skin((index_of_color_b|0)>>>0);
+                        color_b_usage = (this.get_a_color_usage((index_of_color_b|0)>>>0)|0)>>>0;
 
-                        if((color_b_usage|0) > 0 && color_a_skin === color_b_skin) {
+                        if((color_b_usage|0) > 0 && (index_of_color_a|0) != (index_of_color_b|0)) {
 
                             // The less a color is used the less it requires a great distance to be merged (so we don't have many color used only a few time in the whole image, heavily used color gets preserved better than lowly used ones)
-                            if(color_a.euclidean_match_with(color_b,  color_a_skin ? weighted_threshold_skin: weighted_threshold)) {
+                            if(color_a.euclidean_match_with(color_b,  (color_a_skin && color_b_skin) ? weighted_threshold_skin_skin: (color_a_skin || color_b_skin) ? weighted_threshold_skin: weighted_threshold)) {
 
                                 color_usage_difference_positive = fr(color_b_usage / color_a_usage);
 
                                 // Update color usage and relative variables
                                 index_merged = true;
-                                this.set_a_color_usage(index_of_color_a|0, color_a_usage+color_b_usage|0);
-                                this.set_a_color_usage(index_of_color_b|0, 0);
 
                                 // Adds color to blend to processed colors and stack it to what will be set to be equals with all other color blended
-                                latest_colors.push(this.get_a_new_pxl_color(index_of_color_b|0));
+                                this.set_a_color_usage(index_of_color_b|0, 0);
+                                latest_colors.push(color_b);
                                 latest_amounts.push(color_usage_difference_positive);
                             }
                         }
                     }
                 }
 
-                if(latest_colors.length > 0) {
+                if((latest_colors.length|0) > 0) {
                     SIMDopeColor.blend_all(color_a, latest_colors, latest_amounts);
                     latest_colors = []; latest_amounts = [];
                 }
@@ -911,6 +778,7 @@ var t = function(buffer) {
         if(this.new_pxl_colors_length > 512) {
 
             var simplify_of = this.new_pxl_colors_.length > 16384 ? 16: this.new_pxl_colors_.length > 8192 ? 8: this.new_pxl_colors_.length > 2048 ? 4: this.new_pxl_colors_.length > 512 ? 2: 1;
+
             for(var l = 0; (l|0) < (this.new_pxl_colors_length|0); l = (l+1|0)>>>0) {
                 this.get_a_new_pxl_color((l|0)>>>0).simplify(simplify_of);
             }
@@ -983,8 +851,8 @@ var t = function(buffer) {
             height
         }).init().run().output("heap"));
     });
-};
-*/
+};*/
+
 // https://www.digitalocean.com/community/tools/minify MINIFY --> var t=function...... AND ADD : return t;
 
 import {load as LZEL_92} from "../../../utils/LZEL_92_loader";
@@ -992,7 +860,7 @@ import {load as LZEL_92} from "../../../utils/LZEL_92_loader";
 const ReducePalette = {
 
     _create_func: function (){
-        return LZEL_92("UraniumJS! H~=2;Nv§wbkh6lA@ZcZN%r3q6Pi##PX.[MIdijF>y_A.*,o]D]GeS_ZpRGsY v=fs-pCWBA}Td8-9!WMRo {=¡<)Yv[§ V m@Yn7EN5|eg8MAvU|mXa)sOWFwsMZ2tYOq3§d?t{CoY%1GTSo><s92SG7YZL OY|WDxM|Xu%x6E2n§mz?8%k&y<mXvX%:#TquyLO§[&K;Wp_&|5eiUhH¡GU8UGR;Z^=t<EEobgSzR1wVN+P4T!-?vtyJ0aD^E.f7Y]AGTYVQDgQ.sj3LLZ~MU#MwhpuiPm@A=xvw} ¡~b]TArCoT03c¡>iCoR7XPw*2ZM@!5&*>YD08u<aYswclj-]4aj(fCXIaU1d~g10&7N6~P(H_Uw:RKyYM1:AdyU|*{C~w,{0Kh!f @xY%f52PJ¡^{Y;jN|DuF7)=y(2~5?G§iH!w+s{@):?n%ZXo 7HH.N|r(#%(!o:ev!:2!§=+X§1 M<~Gj~85E-J¡d?1E-mV[ANkkMa!]7y.rXG?p{?Rt;XmGI!;)y31Ew0]ASBj9B*R6!XF68]¡BR+u_DpD7QpL*?mFR7F~,5s7>ix9=6 I¡¡I)=_y§g6^Ww(10FapL%Q0~tbM#d.mZH<Euaw!JVy7<^-d_=KL8>=V8YHu@5cY]Q¡u2 wcjj}*Bt+XPDBWoE-6Y¡eZ>KPB6Gzobmiowt#d|:0~K{w:D;VZ^@KuY!b1l|a!J@i.~qt,Xg_WxJs!.4l0dzX(2*kv,VF;iH2n=Am?K9)D&g:Ed61#.kVWUeCAi*NOy;02~NiVO?J{}aCOKy^(^%C#@1&MOHe8fZ~s6:jpR+pvvw0NF8.G.LSQGUZy(#gek28auTm921B(A0VCT{#XJhEr§bjZw[Q¡v,yg8jT(*bLX%An3K]GOwC%&8FGpRI#Ou@0G%Y#@HEa%5.{qE:nITwD3@os,wO=phv:(.+JRgIDCy4Kb!JQcdFX_56Gkx49]8 P(dSb§eYAb^Q4!cHuY[p{{OG2s{|!q]8§Q5v|3,#8_wR,k5.zOT]:M!v=1:n{w9qyK%NT hDzZd;{P^5P-I?s56tj5[VvZxYFpEJC9kokE:XErz%j#0>§TPVY)m?Jgn ,-Ubyj<t^q[kR(|?>P1>=MXzA=#pk12G-X0*7§RVv|bc*:=qtH-E?1|5qt[Z!*EKf29o5]R@ X§§Wdu)1jo!@>xNAI§&l :4Jm+^8§ rku27¡z§encKP-+LlzBoSmvL#FaZuX¡:oUy+luP-xz91,XdPYH 5YcTZgk.:O+Yi=mRMvj].5^_b=2I^-}-%tE,1O=cu=icUl^9r9=dSvMJC[G:V|=al1wsp4vf4Q;1,-cM,xYiu§~nSPs*Gb5YE#9AQD4XM<!u.A>5R#52H<I?K~tnS>b]=Ye=@.ak@6uAb|QB3{(H&LyzLe*R2yG(S)Nk]iD,XmX-8gfzjf0xptY[&Xnf:,NRd2%~sN0^¡Ph* X,v3*a[-)}D5Kj#Pqn+8&aHM0.¡1cUS+aH~C§f;r§!U(jKNHBL.A>XH858t¡W^!k()%-:!(i)<kk>1p<NknAjH+?U,NPaT_9ZGt]:_D]Ca=_~G§:FkEH|]) p+nCV]C*J:N3A,8Oc<bEyso&¡=lMMz^7(obvaP:*UpQC4zVc;~US5vkFuLO--~(* ,M4r,gm0#T8tzHz4Lt2p{{s.xOq§XY9cypuU0T?DYa]aCjRES!qsvW1fekzv§VSSR~c(ddPsIwee0¡[p}-:Nvgl=^G:oO0§hO.Co1~h&K<a-]Usc}auhD9Q3-@f aN2K&!@HBZWKH#o+GYIJ!k&yWf@n_c.0WJ)6(Ss),<FmfCM5Ka<;(&}5V1MvtwJ9 qH]}DgsyD-wUQp8LIMoo a5|¡~DpD!Gi|IiU_?,4~5alV@Qb=#LE@V@FQk@i-l0Az0j[Ga8|E6_9*=~%oUxe¡Qir%6&>SF=y|!<^[wjMU5§=v~%qi)57:Slq=SMHA}Olg{:!KsdU!}ME]|vy1I2waJ¡uGi4f,.ePR!BFm~fLMWNY.xh!hN~¡|~AGTeeovUHg!{HG 9x 0}>Wp9MX|V)r8|+^gw-ZS<1^|Q+§KvC!qh-fS+=@t5a~TP4!k3EQ[CqfoHZL xSgm(JjM)m89ZyO4Kz7VI!N6Kg50Joy-%0CgyE>T6Jj^]F+%eB?zmV+gxH@q%XBJfE-;RkFcR{AbE2oIN%3r-djPlAp4?I6Wa~G^~oDC3e¡¡ob~§MH_&tho74[YaAZ-9SAMA[X).Mt)+qh6eIf6w;¡t^tbp+?kBr#1:uQDDIx]b64m@!3p}|c&>J>kNl9[M&B2s)K*9{+-hR^Nx,[O(c@Q;Ut9T5@l+f{e^IAO_NM^8)s3[g{,V,Y?yiJg¡=L*-3g,Aj3M=G,#h^~@Hk<-nz.Iv<wBP~~Iy-D xV#7=SUC8MrBx6)t.b2XI0*20ugz9Z~ZD>D%78§C4iIGVdP,_m3§mm>O8!W(fAhx&gD6Qc6?s:<Y;)xw8R)F ^Pu=l7>}xwX+lg&r#CjCz%x(N--G> {8§Pmvfh%F*p.h4<EcaF1uVO¡<{P= N7_C~;3~JS-bU&w,B8*HXyUnoE1hMp:u9X%tN¡j3)@ww%;-§S¡3kROHa2#3¡,hY]Ac3r@On-L0.;qrPsxqg0*v&9O8%}]t&SS?j!mk=jcd8%Q8qO TEgGnn*=61ksa<Y nm({vn58,xy.[VE8Ps^S:LQ|_5Dxl_]o,n&NC:m463&or,xL,q@(CB+Pvh*&[WQA|ibw .I|l: pxJ;¡?Un1C:R!p)Ad&gjS5z9t*cTi,gP+va§?Q&U!NbSg@0f4;¡§;QoIp@.%59]a]rjLm{XV4{c5oti0§eyf2c<N(7Rg@.HitG :OPn?.L{GY6C5t4YVE§I4B@kFmJy;d6%6t[fvy5#N|4§B=|&1{;K@JxVtXV3M-sS!]T&c;!+(K@4amtf(4Nyx%hRmqTf7_EZkuWeMz!De6Of;U(G8g5jkw}ub=bO-Z:>6]W^-ph @362r4)(T*+7~B;i1sN{Xwq|dn3~@7{5oJR{2 XQbm^@B.dIhM6EyjH1¡-tq.?.9,(aJZ%COQ.Ox@N9()N(K;jr8P6)VZ!w05|~5fAU.Hj9+d: +I[r8Hs8l:V~(M6cCsw3+%#;W§K3PU1Ch=QtwOGRw4jRJhVl§#^3c§lx(b)XnK4hJdMrg9XP4)f;v=V8n{LI|wL%j)yCYNO+NNPDgci=,.Z|px3:9K[A,}Tw|+{pU9p}2r{G.*;xD.&Km}x2RcN=6+D [i7] fh.Mmf3;V¡>¡_Jv?B[A#js_UB{{6bX]y5&ua_24;!Kvvi0H|x>9yEwFMZs§@6§m6)bW)p6t%&X4sBF*DBuEKOus1R?-&v4RQo>0o¡w{os v4],@&>5CST ?&¡&3E}Cemk85RIMcdO<H2h(KntY*y<ZQ-N1§fDPIU?CkAepea]G9r6jv1osN>kQv6F_5h(7zm>z8J96V-S?jdeaAr+,w^44mc1]X(h(Yd&Xm)W|4ns.¡=qw31Y&^-~@p_mo&[-)f^;SyGA;lm|Z¡XFJ}J.3C~PDuoAYAE@.LV¡6]~&¡AO5uW?6DAB|D?ds%WV!^Zzq&¡eWs@^HW99HYIyLA.TznSI:hh):664+e(zsuRD 4_MAGC~ew§flb?2z**rL^M,|RG57.!{(L;ychk7X(§IwR{!V{E7NB%JvtHRx1B<Ip&BFU!YoV(s:% {f*hw3LLm?)Phf)q¡24.<cKOj>QX7§l5Np]br4FD5 Ku#W>[%{T2Ty§4tSF)&Jqo4ZZ5sXCnJS>J(ZQrU-JsZQBzyeICd2;§~azL21g_wv4}ZIC123z8ddp}sZz qS&73BJ4?iD*SJ5I]X-(.H29RQKs%.,K7yt>IuU|)kZQmk~O1P{[:(?u,CT4q;,!x04H!i52[k+K+aMz|>xB:yEg^§4uCO^~Tw_.(S -~-X6A,rn&0^rLv-k§r+2Lr-{IOAv*s-k0cwd=B{xnxNo&UlX]6;LdG?I&Q^ZI|; @[?ka<:C@1{CVQu,V_w=s3Kgn=^O¡C]R8u#}T{NFw5* x,~&t}TJv>]p5.Q?u2l=gM;TX8g§g;Pj*YdKfYM#SAsR>f5-w~,>*u~Cd}[:YEkG§Iw2n.;8N-3C~3OTkH97@X!zmf+3XnpoRySrYRrk<J¡@^8QOng;)B|1D*tr7<qARP58@4{6vHSvo~J#Ni{)PmeO1,FE%j;4b{^w|f:%(7X0+! {9Hih§u}#GR(6YYT1CNetm^7 N>vUI&0_[iDk §>zxn@xwK&,Yus:K|A^EFb~2#4eo3m+8@|L 89W)+|Y>WF1}IXL uNpUPh8.^;>Bp2vMn9 yn<2FK.;-l>g15kT5].9AqIn,o445s_7}!xB*zzzvjav;eU7HnJO(*s§P§Hv%!=Fm8U6h,mvAQFczQ86Nu=ev%7vn{V4018AnN@;n@is#<Os69]S1qX(PF~&D.xg~ O:+FR^uc8V#wqAeAp_YOtQ1{}y:dpptrmlc&@2Z{y-y16R8o!<{aJm!§[§zz~!y69!o55K3k%^fAF&!9,zs?K60C!:¡txWI+zlo%@)dO6mieVS*CbH:P_g7gVA pvolYS=A1gOssT~[m¡]§uI-r;6{,].Mq,Xw-EmQAm}<C<?Uv6]qFz1VdM?ZZr9V)7@+{(aj-R3cbek=Y|>^Q5^M[(B 5KSG63i!GSR{1ADLUt>XOJ§H6e;6>c?YvcL11WyP#LROpFK3.K6oV) b!^}u]7:1;6rJsgcf§ook6<-3;CfzWtW><gOrtxx%%vBU|8,Q+sDFbt¡-.<VC%N¡BS;9zYl=KIQQTXH8DXUV d^Hq+=|§Wb%^~L&[Dc3^r¡]6JLrS@0muV^PAz@Io.wW_e0SALwBHmAQ4BzRTo{GT<)~83OoXRE(T0!G8)HvrZ:gvy2i-wOK2l)t8GSsw=K4uV[c7(k1=8{§GS@%>Gs+&9]g+JDks#tEJu~y%Zg{-^g]ZA§31+AX4nj97v!Q,¡<YYw+AD*)g_;k8^§Khb*jal rOUUf^xn@={bsc7-d^1{DRv]8;ESCR- QAwXhO+<3guH*cdGVlPdeP-Zx>hW1S> §Bv84x<K 1inexw>tD.=t(c1CAWPJs<%F^]|G 6tjI:&Wzx0S,7Jpmk2,lKU&C)&e~*gqz!Vj¡4JTBr51gcObE&k!xOLj6Dp0H@ky:wNYhZ[hAQ#WrHXSQYX~I]§9^:tYJ§+!y>eHjHdv1CNf-2:zX5Fl!D:i&CHvgS>#§xa|mR)]j&U?djR3O3sdM(DMZ|hs8Oet20a)XW #WDe=c~j[S>1lN({,VUG~}YH:;iNW&X<;<VjgZA7P178W>oyjfJ}5o@K=*)[jAhAy:gXv3xW%MW2k@zjc(3YpM:b+B2I{S§G#u?k0@h0V[ON:w#[-u¡s<>_EM7U}3{b|jW¡5tGCCSa<§j3_au^n!;o%8@qQ;DdrzU8)A@§mYd<3¡5,jOy1G(HgNf^,A0Cl]1!*Vg");
+        return LZEL_92("UraniumJS! H~=2;MhbwbkhA~?|? lupd=d_&mcSM9lU6C¡WbsR!X6¡RV#7~8IZ;R(6mM2<VI{T%#tvAH#UWktjkTq4Y%=:ic;Zw}ZYy.n~dZe-¡xAA5rDy0Y&?bpHs^3U0LN§- 7jpgPDRUl{9y3z(c~+LQoe6qSS|4{HH 1U!jZGe50¡,B^*3XZ{f(3!g=}wL)F4I{<<2>Z|hW6>|!0~JJUFog2 NwrV>]]1rME#1ck7wpkgW@MMj].r¡&6z3-cn4rMF1+>~m6t[ZnrFGw Pyq|V;c^No¡RFF:[qP|c8cw}o8-=PDkr7Z]~sC8Txn6llzV&=UC*[V~ok@rO*b¡N7GE<c0S=;eM4|1gla¡s=fE0XwC¡xIdkj.pQOkIb5txSeYI9utWDdYYBBMH-pAz>yk1=mX3-kwGKW43y3|CwZx|(Lk&x§1x2-fWKvm0R;05d,gGCc;.+h,J|XW1AL]Jn*uz~2#cgyrHthh7M0ciaL7Oxyr]PQBe.o0kVH^,^*UkhD<36@~eY**xv,*.C[:eN[o|3§^-i#l§sH(]1mu0+3Z]AK.q(j_N(89X%Nd{M#¡%,)U1ETqll(p§F?>xy|N  v97Nb;@d-Y;{O]h4eV?hGGO|9? 9_d*]T@V_,4Of,(LL:VXT?0T{+P94Q[c,rG*jZs<¡#NPO+=g4p¡lT3as;Nj%)Phm8RhI[ovf_boCgG:&[BleNVu})UL§!W#xUQO0{67+b,mYB!E[i|huyO]zb+TO&FqFD4a%szzxBz1Qby.3{I)§uzH_vsXK%n7vUVew@Ldc<lc&qXH K4.y~~Ks.w(gF*^uc}<9D> f5x=S)dmCo~6mW9p]R?PC?p6h3_->VGUmR^k¡h%*H~>?P<DhYf#^f|5D](d7#¡}L:.w7#8e§GcSntGESZO}3NM#At¡!]O,Zv}G7F=PdurRvo_E9J8@_p§6)bUYsEu{pv:uS5k&?¡!p2]K^vM0(6#rD?5fB{oz9%iz.jB{~XZ4_3Hkn5¡_vZ,5hq:CJU me(pQmbb_^As=F_)M0IgOM,*si.T|Zc§HXvh|*HwhW831=E@~tAl47KF3UfE§;§!1~Q(BnauG{P)U<y9*vxML-7YmUrFOzdn:[W,CW&3mVur?§;kqP(XZoFG#{1WOS~k*6=AjF2hO5dO%ah§rk<NHRFKZsm:jh^&^K2@rSoTqbzP>1hpw5h7[rfAdY73}wV,S!r@sb[v{p:0V>iZB~^l91r8m~t?!#77C*fJOZals0Zy?bm5ANY4b]81T>41,S!pj§m&§1M jZc5^{aky*gp~JAuE5)S{x)b~sviBc,aH-p0Y59jT8JJdrIK!htY?vlPJf-e~S&%%v^)Pi9zWW_lDB_]NNj_Xa-tWnB#K-Q#BSOZl7mU*[f=+~-Phr{F1y*VWPf<AHjv-w,3C.Y:D>Lngbg:=>}Ied1<_![Ir?sK¡S<yZyMdqScf!i}X4CeQg<~^syBdFGz(0uLyJNuLaL]S?=+K?&);mV9y<vEXmF^c<lC{*T e7HmIxluf[]1(RwV{w_IutrE]MXckyy¡d#T¡u>%!R,3^FLQ#2%DwV!brV=QHZ#??lqmd6:3FCbTHCxUI mb:nH*zm.{%S,)||;NA+e%GJzk4XKm9t#;KpTb;k2Ei;*kh)q(h6P7[+Fh562n=Y:gB:}DkMM).)u^#PK§HqTeRNHHz0]9=<}@HUpIqd^1v9@TnO7r.?8QxyIHAl]fqpw5e?¡aB=z#f!> 2jk=_htvA.RneYe;C#Et2 N&8Vy=?§S*T ICXw1[!§GVfBQ_9NBaSo7[@x&<7A=?s+#_55,§J3M{FD3yWs=VU!aLes[6p6|N]m%gqE{H]BQ@,=:Ex5|Li5Ya)xcns%17>S§§x0cPlns81.>V>Ijd*3G-0j!YTwEh58(LuF][)=2T|oDVBhsGy.3SvJklJ@H3byXP>*-y,vyx§x=.*#Xh?jF)SCrYFhgwRy+C![9_,=[X+=>g*)8=Qa@mPo!#!vrSYs§%{3g-OdMn,AAk]vDcs<O;=5-(~n;kQOmU<xXx7m=hOjM:DTy[_wwyx*(V}F{?*4A^nSEN}b+xU(R4bF^Ti6%q?!9ge~tAS>bR>k5w+¡#7BdG1IO*yL+Opxyq9m{TGgn0KqlvuTFd9@%§k+<#A5%Px6qs4W-+{WF-BdQbh>aqA8vKtX087C9?Ef!12O7L:upIy]bPpi^xS<IQ6gPRaF:O5s!+utr;Gtgz)[!3cSn@3&-nQG[)oHXI3erG8FGJKO0?RWf: BkN42Y|I;Zuzp1)k?^Hj*:%AO<kh5cBg*AxQ4*AyHfPRS-1w[=YhI8TIyuR(#fRUQ,;Y+kVuuYV2Ea§PTHcoQi<8?8)gwW0y<,oE0unuf9w5R{IhZ+BI_)pgEh~.Auc7(§f%6lV,7Ly:oTCOQuc=!A15h@ZgpD}@3rEKW~sV{zt-=cSSmZb§PvK§Vs)@W%bdo,4mam}Y&MsgdBk_<.*b1!I.Y.A6{E23.BybIZ#ua!8F&7f81,m4kHwvsUNvpmMT|7*=QAEQYzeHz§vjJW bc>ZEf6Cm4^%hm&*iXho!*.hxfG.)I1?U+Zx]W~ko3[D<¡1yj,z<s1:fw9 ,)(LFjlwk7S-F8F@aArIIA.;YI>yZl}vR!ejXnlhV(t^mA<T[snf9E[pZ[j4.mb)cZzxtw}Y>~p],+vBvYd~BBq]%:7_0TX0*R~Ty;[N¡3Y)S@61?E¡Zh0J_x5;%SLq{21#Y~SIV}1QoExtrRJ p%u%PPbt:=Vo B1op(&jfr4N;#=T|sN!NeHQgU?7 (|N#l#5-(?2h58[_P.o2!¡K8FbGQOd¡q83*hWAuX_#&^go&pT9c&S¡Zs§+7+_zp^KyS14)6vKa&wqCvNbMm;#bp!&bZgfG-tg?_9^S^WA]-{uK4D3B6yG(FQZWby#fAW3UNl}?gL4yOR(C^:FGv)¡zG¡X]~GUKN-z:?q>Iv#%n%l7wMw{4P_zS^G§ UO)aby3?fj)[(bA34R<JdWrz v.-BpH§ :RSB5V[S{VRq))g-REd&fb+aLAq<kwuq87!re-kPu-lZg8M0i)FXnd¡ %0q=;¡?2_phn%bz)HySoC[&zlFHlc8<mM=wBf}c wPZsuYx,D#AkUu!+Z+biBZ?3?cg =#=(-mXTk:8s§.ov*yQfq[lX§2&~9.¡H3TzEFAY%{;I4*AL6BKH}jJmN-pT=WgC#ppF&4msRtU9Dg&)VP;ywZpbEKc_%*t dAB[G^T;FHTs8YZ2=%6pmmR?3Xn-W4?hx~,=]+-UmDBx;5|[A^h%w*97LGX<5<]Q[v[,c[C12J hDpW)o[Tl2yWl:G{Av<+51u) rrclyP>Kt38JP6}*S4)jCVW8}§8:bW-FiMO+;cwm&A=p4#pM9^i1m_§jdT[%22jP{B-5Z2y(QD(dz5.B<f-Y¡WO0{|<TZvN*q8>Fl<}{la9]Zc~mZAJ*~YD>4mrT§QU#t§PYGr*[o+jd(y!fAMakZ%5s*tzU5W4GBq~1b,os|G7)I^do¡4w{_HYI.,~YC46-6M6Rs*SyU4t=ofzz,§<qD|*d_ADJ%)^e¡RN^dxf§zkpaR |NwP9q9i33aM?(HGP§<HLni]AN69Hrr~_6§Piz7&Xs(z(#EJum(§PCe*41(sInQ^ir)B[|l<L;b^#S*zE4JIbi,c@zMvN2MOy_4_7P02v1g2bwNV7_v.j)>utFMSU5]C-5y6%Z%if¡}MBf3f-)IqXSLgv@3§IS9C>?V3oirqnSJ#BOV.DSuu+hG-zI.54srLjZb@Gx1O1[zRc0R??V¡stFPEwh(G4fM0&u^p?JBV)+BvLiyAX*¡Nq)_MC<-K^B7GY9{uQ+y~4+e)ZSE!5yAhu?&~[w_:XOq)PK_7WTtLu4+Qu2;GF¡*9.bbnX]B=R6_nln3S(;4rEQuPAQ3M0ube0-n¡TG=jpU7uY§MI§o&_~u9Fa>NykF67Gu@Op!kQ_oy[(l->&Rc9o#^unX6:)UXVmSapQ=WjcATN[b[j[xoo9fmfg|j@¡NA)R{Jq0nm=N??x|*O<%ya4^A1!oylZw?PY5t?:0qF#P@A@ENw3SyujZ9[+6q;¡8m§TNj6kdso~¡RWk_{yOF<r@l1{7y#§jA.¡Gp_}+uFHpvB=>§yuWhP]mD3>rJ)<<;gglB]B6BFQ@)HtW[<H](4+*§US%t@}5e-lXHH9f=a2giW{vO0Pp^§VJV+fpQS§oD-+tedKLRQz1]1!n;twZnsNMGGh,!@?433H[.kaxm n2SGJAVC+K7ce~){fG[0].B¡CkCuvX58~0baro4(3Cj%;Mic9]gnAniVRS[]D?8,0{Uu0hDke§. P9(yyiIJKFDg+r_ns6&cWjPYrsA_cpnNW>§@!SCa(<cmoT[XYWUPO+Fxn=1z7n| 9;UrI:uhv J l>J3&A*!Hpy3x3wjqGzxQ&-kvCALhz#kL¡§_=cJj;e?§n~{!DSR&JP7]~e3UW§]EZQ{Y&)RaU)j6aV}xZ4{MvG~.!jl~)&7l!^n y%KA}%0dF^Rn9J_*YlL0XIxS,)T-X~cTw{i¡DI+2;9&EcKYG0k@3?oY.[L!C+lAodmtjS2CtJ)77;J5r1X2w%HVtuWo+4 MLyHI4MHCFul-H21JG5 RN,G@?B=8EME%J4fX)Mk?@Z(r2<B}_J!nwu65#1>B ^z8QpP8zB!kpLt{B;k*BC{i9)ONoN~>4W>zF:?EbIx[i9c:Jo{yc=lSnmoaRh+i;kT4p(&m[JfQL.m)b*NclTiPP|tu¡>4V2|D,ah*xyT-=¡,{%0¡WWM§BsFmnr<Ud S~[{M~0Q5icV4u¡AwrSO< [fx~+awxBL*3xEbL{>f5¡UXAk,Xo.K)!s?rrOh=H¡U%lNGY:M]V^|<CWM@oP_EF*9>Qt<|Yc;m6Otm iMb7=Tor6?fUKi}§Z-YD;x(h*;Nom8Z~A-I3QdZY{t];e*36>R9i9mq=x.C,1| #WA_RF1XAG.&@<94-x!4%ZjoU]§&(0fF6+)LXpTq~9 tzKSJA[WT[<R0ibNXsH8u1WMkPWjr97U7§uU54<¡iZ");
     },
 
     from: function(pool){

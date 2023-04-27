@@ -24,8 +24,10 @@ SOFTWARE.
 
 "use strict";
 
+var rgba_bytes = 4;
+
 // Inspired by https://en.wikipedia.org/wiki/Rec._709
-var imul = function(a, b){
+var imul = Math.imul || function(a, b){
     "use strict";
     var ah = (a >>> 16) & 0xffff,
         al = a & 0xffff,
@@ -58,10 +60,13 @@ var s = function(x){
 
     return (i - 1 | 0)>>>0;
 };
-var PR = fr(0.299), // +0.08
-    PG = fr(0.587), // -0.16
-    PB = fr( 0.114), // +0.08
-    PA = fr(1.0000);
+var PR = fr(0.36*3),
+    PG = fr(0.44*3),
+    PB = fr( 0.20*3);
+
+var SV1 = fr(1.185),
+    SV2 = fr(0.107),
+    SV3 = fr(0.112);
 
 var RD = 255,
     GD = 255,
@@ -71,6 +76,9 @@ var RD = 255,
 // Euclidean or Manhattan color distance
 var EUCLMAX = (s(PR*RD*RD + PG*GD*GD + PB*BD*BD | 0) | 0) >>> 0;
 var MANHMAX = (PR*RD + PG*GD + PB*BD|0) >>> 0;
+
+var TEMPUINT8AX4 = new Uint8Array(4);
+var TEMPFLOAT32X1 = new Float32Array(2);
 
 function plus_uint(a, b) {
     "use strict";
@@ -86,36 +94,32 @@ function multiply_uint(a, b) {
 }
 function multiply_uint_4(a) {
     "use strict";
-    return a << 2;
-}
-function divide_uint(a, b) {
-    "use strict";
     a = a | 0;
-    b = b | 0;
-    return (a / b | 0) >>> 0;
+    return a << 2;
 }
 function divide_4_uint(n) {
     "use strict";
+    n = n | 0;
     return (n >> 2 | 0) >>>0;
-}
-function divide_16_uint(n) {
-    "use strict";
-    return (n >> 4 | 0) >>> 0;
 }
 function divide_32_uint(n) {
     "use strict";
+    n = n | 0;
     return (n >> 5 | 0) >>>0;
 }
 function divide_64_uint(n) {
     "use strict";
+    n = n | 0;
     return (n >> 6 | 0) >>>0;
 }
 function divide_85_uint(n) {
     "use strict";
+    n = n | 0;
     return (n / 85 - 0.012 | 0) >>>0;
 }
 function divide_128_uint(n) {
     "use strict";
+    n = n | 0;
     return (n >> 7 | 0) >>> 0;
 }
 function clamp_int(x, min, max) {
@@ -123,39 +127,30 @@ function clamp_int(x, min, max) {
     x = x | 0;
     min = min | 0;
     max = max | 0;
-    return (x < min ? min: x > max ? max: x) | 0;
+    return (x < min ? min : x > max ? max : x) | 0;
 }
 function clamp_uint8(n) {
     "use strict";
     n = n | 0;
     return (n | 0) & 0xFF;
 }
-function inverse_255(n) {
-    "use strict";
-    n = n | 0;
-    return (255 - n | 0) & 0xFF;
-}
-function divide_255(n) {
-    "use strict";
-    n = n | 0;
-    return (n / 255 | 0) & 0xFF;
-}
-function clamp_uint32(n) {
-    "use strict";
-    n = n | 0;
-    return ((n|0)>>>0) >>> 0;
-}
-function uint_not_equal(a, b) {
+function max_int(a, b) {
     "use strict";
     a = a | 0;
     b = b | 0;
-    return (a | 0) != (b | 0);
+    return ((a|0) > (b|0) ? a : b) | 0;
 }
-function uint_equal(a, b) {
+function min_int(a, b) {
     "use strict";
     a = a | 0;
     b = b | 0;
-    return (a | 0) == (b | 0);
+    return ((a|0) > (b|0) ? b : a) | 0;
+}
+function minus_int(a, b) {
+    "use strict";
+    a = a | 0;
+    b = b | 0;
+    return a - b | 0;
 }
 function abs_int(n) {
     "use strict";
@@ -167,29 +162,13 @@ function abs_int(n) {
 // NEW BASIC : Number object with 4 times 0-255
 var SIMDopeColor = function(with_main_buffer, offset_4bytes){
     "use strict";
-    offset_4bytes = offset_4bytes || 0;
     if (!(this instanceof SIMDopeColor)) {
         return new SIMDopeColor(with_main_buffer, offset_4bytes);
     }
-
-    if(with_main_buffer instanceof Uint8Array) {
-
-        this.storage_uint8_ =  with_main_buffer;
-    }else {
-
-        this.storage_uint8_ = new Uint8Array("buffer" in with_main_buffer ? with_main_buffer.buffer: with_main_buffer, imul(offset_4bytes, 4));
-    }
+    offset_4bytes = offset_4bytes | 0;
+    this.storage_uint8_ = new Uint8Array( with_main_buffer, multiply_uint_4(offset_4bytes), max_int(min_int(rgba_bytes, minus_int(with_main_buffer.byteLength, multiply_uint_4(offset_4bytes))), 0));
 };
 
-SIMDopeColor.new_of = function(r, g, b, a) {
-    "use strict";
-    var uint8ca = new Uint8ClampedArray(4);
-    uint8ca[3] = clamp_uint8(r);
-    uint8ca[2] = clamp_uint8(g);
-    uint8ca[1] = clamp_uint8(b);
-    uint8ca[0] = clamp_uint8(a);
-    return SIMDopeColor(uint8ca);
-}
 
 // Properties of number object
 Object.defineProperty(SIMDopeColor.prototype, 'r', {
@@ -260,205 +239,113 @@ Object.defineProperty(SIMDopeColor.prototype, 'rgbaon12bits', {
 });
 
 Object.defineProperty(SIMDopeColor.prototype, 'offset', {
-    get: function() {"use strict"; return divide_4_uint(this.storage_uint8_.byteOffset);}
+    get: function() { "use strict"; return divide_4_uint(this.storage_uint8_.byteOffset);}
 });
 
 Object.defineProperty(SIMDopeColor.prototype, 'buffer', {
-    get: function() { "use strict"; return this.storage_uint8_.buffer.slice(this.storage_uint8_.byteOffset, plus_uint(this.storage_uint8_.byteOffset, 4)); }
+    get: function() {  "use strict"; return this.storage_uint8_.buffer.slice(this.storage_uint8_.byteOffset, plus_uint(this.storage_uint8_.byteOffset, rgba_bytes)); }
 });
 Object.defineProperty(SIMDopeColor.prototype, 'subarray', {
-    get: function() { "use strict"; return this.storage_uint8_.subarray(0, 4); }
+    get: function() {  "use strict"; return this.storage_uint8_.subarray(0, rgba_bytes); }
 });
-Object.defineProperty(SIMDopeColor.prototype, 'set', {
-    get: function() { "use strict"; return function(with_buffer) {
-
-        if(with_buffer instanceof SIMDopeColor) {
-
-            this.storage_uint8_.set(new Uint8Array(with_buffer.buffer));
-
-        }else if("subarray" in with_buffer) {
-
-            this.storage_uint8_.set(with_buffer.subarray(0, 4));
+Object.defineProperty(SIMDopeColor.prototype, 'skin', {
+    get: function() {
+        "use strict";
+        var rgb_sum = (this.b + this.g + this.r | 0) >>> 0;
+        if((rgb_sum|0)>0) {
+            TEMPUINT8AX4[0] = clamp_int((3 * this.r | 0) / rgb_sum | 0, 0, 255);
+            TEMPUINT8AX4[1] = clamp_int((3 * this.g | 0) / rgb_sum | 0, 0, 255);
+            TEMPUINT8AX4[2] = clamp_int((3 * this.b | 0) / rgb_sum | 0, 0, 255);
+            var rgb_sum_p2 = p2(((TEMPUINT8AX4[0] + TEMPUINT8AX4[1] + TEMPUINT8AX4[2] | 0) >>> 0) | 0) >>> 0;
+            return (
+                (fr(TEMPUINT8AX4[0] / TEMPUINT8AX4[1]) > SV1) &&
+                (fr(((TEMPUINT8AX4[0] * TEMPUINT8AX4[2] | 0) >>> 0) / rgb_sum_p2) > SV2) &&
+                (fr(((TEMPUINT8AX4[0] * TEMPUINT8AX4[1] | 0) >>> 0) / rgb_sum_p2) > SV3)
+            );
         }else {
 
-            this.storage_uint8_.set(with_buffer);
+            return false;
         }
+    }
+});
+Object.defineProperty(SIMDopeColor.prototype, 'set_from_array', {
+    get: function() {  "use strict"; return function(with_buffer) {
+        "use strict";
+        this.storage_uint8_[0] = clamp_uint8(with_buffer[0]);
+        this.storage_uint8_[1] = clamp_uint8(with_buffer[1]);
+        this.storage_uint8_[2] = clamp_uint8(with_buffer[2]);
+        this.storage_uint8_[3] = clamp_uint8(with_buffer[3]);
     }}
 });
 Object.defineProperty(SIMDopeColor.prototype, 'slice', {
     get: function() { "use strict"; return function(start, end) { return this.storage_uint8_.slice(start, end); }}
 });
 
-SIMDopeColor.prototype.is_fully_transparent = function() {
-    return uint_equal(this.a, 0);
-};
-
-SIMDopeColor.prototype.is_not_fully_transparent = function() {
-    return uint_not_equal(this.a, 0);
-};
-
-SIMDopeColor.prototype.simplify = function(of) {
-    var temp = Uint8ClampedArray.of(
-        multiply_uint(round(this.a / of), of),
-        multiply_uint(round(this.b / of), of),
-        multiply_uint(round(this.g / of), of),
-        multiply_uint(round(this.r / of), of),
-    );
-    this.set(temp);
-    return this;
-}
+Object.defineProperty(SIMDopeColor.prototype, 'simplify', {
+    get: function() {  "use strict"; return function(of) {
+        "use strict";
+        of = fr(of);
+        this.storage_uint8_[0] = clamp_int(multiply_uint(round(this.a / of), of), 0, 255);
+        this.storage_uint8_[1] = clamp_int(multiply_uint(round(this.b / of), of), 0, 255);
+        this.storage_uint8_[2] = clamp_int(multiply_uint(round(this.g / of), of), 0, 255);
+        this.storage_uint8_[3] = clamp_int(multiply_uint(round(this.r / of), of), 0, 255);
+    }}
+});
 
 SIMDopeColor.blend_all = function (base, colors, amounts) {
+    "use strict";
+    var sum_r = base.r | 0, sum_g = base.g | 0, sum_b = base.b | 0, sum_a = base.a | 0, sum_amount = fr(1);
+    var color, amount = fr(0), length = colors.length|0, i = 0;
 
-    var sum_r = base.r, sum_g = base.g, sum_b = base.b, sum_a = base.a, sum_amount = 1;
-    var color, amount, length = colors.length|0, i;
-
-    for(i = 0; i < length; i++){
-        color = colors[i];
-        amount = fr(amounts[i]);
-        sum_amount += amount;
-        sum_r += color.r * amount | 0;
-        sum_g += color.g * amount | 0;
-        sum_b += color.b * amount | 0;
-        sum_a += color.a * amount | 0;
+    for(; (i|0) < (length|0); i = i + 1 | 0){
+        color = colors[i|0];
+        amount = fr(amounts[i|0]);
+        sum_amount = fr(sum_amount + amount);
+        sum_a = (sum_a + color.a * amount | 0) >>> 0;
+        sum_b = (sum_b + color.b * amount | 0) >>> 0;
+        sum_g = (sum_g + color.g * amount | 0) >>> 0;
+        sum_r = (sum_r + color.r * amount | 0) >>> 0;
     }
 
-    var uint8 = Uint8Array.of(
-        sum_a / sum_amount | 0,
-        sum_b / sum_amount | 0,
-        sum_g / sum_amount | 0,
-        sum_r / sum_amount | 0
-    );
+    TEMPUINT8AX4[0] = clamp_int(round(sum_a / sum_amount), 0, 255);
+    TEMPUINT8AX4[1] = clamp_int(round(sum_b / sum_amount), 0, 255);
+    TEMPUINT8AX4[2] = clamp_int(round(sum_g / sum_amount), 0, 255);
+    TEMPUINT8AX4[3] = clamp_int(round(sum_r / sum_amount), 0, 255);
 
-    base.set(uint8);
-    for(i = 0; i < length; i++) {
-        colors[i].set(uint8);
+    base.set_from_array(TEMPUINT8AX4);
+    for(i = 0; (i|0) < (length|0); i = i + 1 | 0) {
+        colors[i|0].set_from_array(TEMPUINT8AX4);
     }
 }
 
-SIMDopeColor.prototype.blend_with = function(added_uint8x4, amount_alpha, should_return_transparent, alpha_addition) {
-
+SIMDopeColor.prototype.euclidean_match_with = function(color, threshold_float) {
     "use strict";
-    should_return_transparent = should_return_transparent | 0;
-    alpha_addition = alpha_addition | 0;
-    amount_alpha = amount_alpha | 0;
-    added_uint8x4.multiply_a_4096(amount_alpha|0);
-
-    if((should_return_transparent|0)!=0) {
-
-        if(this.is_fully_transparent()) {
-            added_uint8x4.set(new ArrayBuffer(4));
-        }else if(added_uint8x4.is_fully_transparent()) {
-            this.set(new ArrayBuffer(4));
-        }
-    }else {
-
-        var alpha = (alpha_addition|0) != 0 ?
-            divide_uint(plus_uint(this.a, added_uint8x4.a), 2):
-            inverse_255(divide_255(imul(inverse_255(added_uint8x4.a), inverse_255(this.a))));
-
-        this.set(SIMDopeColor.merge_scale_of_255_a_fixed(
-            added_uint8x4, divide_uint(imul(added_uint8x4.a, 255), alpha),
-            this, divide_255(imul(this.a, divide_uint(imul(inverse_255(added_uint8x4.a), 255), alpha))),
-            alpha
-        ));
-
-        added_uint8x4.set(this);
-    }
+    threshold_float = fr(threshold_float);
+    TEMPFLOAT32X1[0] = fr(1 - abs_int(this.a - color.a|0)/AD);
+    TEMPFLOAT32X1[1] = fr(TEMPFLOAT32X1[0] *  TEMPFLOAT32X1[0]);
+    return (fr(s(
+        PR * p2(this.r - color.r | 0) +
+        PG * p2(this.g - color.g | 0) +
+        PB * p2(this.b - color.b | 0) | 0
+    ) / EUCLMAX) < fr(threshold_float*TEMPFLOAT32X1[1]));
 };
 
-SIMDopeColor.prototype.euclidean_match_with = function(color, threshold_4096) {
+SIMDopeColor.prototype.manhattan_match_with = function(color, threshold_float) {
     "use strict";
-
-    threshold_4096 = (threshold_4096 | 0) >>> 0;
-    if((threshold_4096|0) == 4096) {
-
-        return true;
-    }else if((threshold_4096|0) == 0){
-
-        return ((this.uint32|0) == (color.uint32|0));
-    }else {
-
-        var ao = ((AD-abs_int(this.a - color.a|0)|0)/AD*PA);
-        return (s(
-            PR * p2(this.r - color.r | 0) +
-            PG * p2(this.g - color.g | 0) +
-            PB * p2(this.b - color.b | 0)
-        ) / EUCLMAX * 4096 | 0) < (threshold_4096*ao|0);
-    }
-};
-
-SIMDopeColor.prototype.manhattan_match_with = function(color, threshold_4096) {
-    "use strict";
-
-    threshold_4096 = (threshold_4096 | 0) >>> 0;
-    if((threshold_4096|0) == 4096) {
-
-        return true;
-    }else if((threshold_4096|0) == 0){
-
-        return ((this.uint32|0) == (color.uint32|0));
-    }else {
-
-        var ao = ((AD-abs_int(this.a - color.a|0)|0)/AD*PA);
-        return ((
+    threshold_float = fr(threshold_float);
+    TEMPFLOAT32X1[0] = fr(1 - abs_int(this.a - color.a|0)/AD);
+    TEMPFLOAT32X1[1] = fr(TEMPFLOAT32X1[0] *  TEMPFLOAT32X1[0]);
+    return (fr((
             PR * abs_int(this.r - color.r | 0) +
             PG * abs_int(this.g - color.g | 0) +
             PB * abs_int(this.b - color.b | 0) | 0
-        ) * 4096 / MANHMAX | 0) < (threshold_4096*ao|0);
-    }
+    ) / MANHMAX) < fr(threshold_float*TEMPFLOAT32X1[1]));
 };
 
-SIMDopeColor.prototype.multiply_a_4096 = function(n) {
-    "use strict";
-    this.subarray[0] = clamp_uint8(divide_uint(imul(this.a, n), 4096));
-};
 SIMDopeColor.prototype.copy = function(a) {
     "use strict";
-    return SIMDopeColor(this.slice(0, 4));
+    return SIMDopeColor(this.slice(0, rgba_bytes));
 };
-
-// get a the number object wile modifying property values
-SIMDopeColor.with_a = function(t, a) {
-    "use strict";
-    var ta = t.slice(0, 4);
-    ta[0] = clamp_uint8(a);
-    return SIMDopeColor(ta);
-};
-SIMDopeColor.merge_scale_of_255_a_fixed = function(t1, of1, t2, of2, alpha) {
-
-    of1 = clamp_uint8(of1);
-    of2 = clamp_uint8(of2);
-    alpha = clamp_uint8(alpha);
-
-    return SIMDopeColor.merge_with_a_fixed(
-        SIMDopeColor.scale_rgb_of_on_255(t1, of1, of1, of1),
-        SIMDopeColor.scale_rgb_of_on_255(t2, of2, of2, of2),
-        alpha
-    );
-}
-
-SIMDopeColor.scale_rgb_of_on_255 = function(t, of_r, of_g, of_b) {
-    return SIMDopeColor(
-        Uint8ClampedArray.of(
-            0,
-            divide_255(imul(t.b, of_b)),
-            divide_255(imul(t.g, of_g)),
-            divide_255(imul(t.r, of_r))
-        )
-    );
-}
-
-SIMDopeColor.merge_with_a_fixed = function(t1, t2, alpha) {
-    return SIMDopeColor(
-        Uint8ClampedArray.of(
-            clamp_uint8(alpha),
-            plus_uint(t1.b, t2.b),
-            plus_uint(t1.g, t2.g),
-            plus_uint(t1.r, t2.r),
-        )
-    );
-}
 
 var SIMDopeColors = function(with_main_buffer, bytes_offset, bytes_length){
     "use strict";
@@ -471,8 +358,6 @@ var SIMDopeColors = function(with_main_buffer, bytes_offset, bytes_length){
 
     bytes_offset = bytes_offset | 0;
     bytes_length = (bytes_length | 0) || (this.storage_.byteLength | 0);
-
-    this.storage_uint8_array_ = new Uint8Array(this.storage_, bytes_offset, bytes_length);
     this.storage_uint32_array_ = new Uint32Array(this.storage_, bytes_offset, divide_4_uint(bytes_length));
 };
 
@@ -480,61 +365,23 @@ Object.defineProperty(SIMDopeColors.prototype, 'length', {
     get: function() { "use strict"; return this.storage_uint32_array_.length; }
 });
 Object.defineProperty(SIMDopeColors.prototype, 'buffer', {
-    get: function() { "use strict"; return this.storage_uint8_array_.buffer; }
-});
-Object.defineProperty(SIMDopeColors.prototype, 'buffer_setUint8', {
-    get: function() { "use strict"; return function (i, n) {
-        i = i | 0;
-        n = n | 0;
-        return this.storage_uint8_array_[i] = clamp_uint8(n);
-    }}
-});
-Object.defineProperty(SIMDopeColors.prototype, 'buffer_getUint8', {
-    get: function() { "use strict"; return function (i) {
-        i = i | 0;
-        return this.storage_uint8_array_[i];
-    }}
-});
-Object.defineProperty(SIMDopeColors.prototype, 'buffer_getUint8a', {
-    get: function() { "use strict"; return function (i, n) {
-        i = i|0;
-        n = n|0; n = n || 1;
-        n = plus_uint(i, multiply_uint_4(n));
-        return this.storage_uint8_array_.subarray(i, n);
-    }}
-});
-Object.defineProperty(SIMDopeColors.prototype, 'buffer_setUint32', {
-    get: function() { "use strict"; return function (i, n) {
-        this.storage_uint32_array_[i|0] = clamp_uint32(n);
-    }}
+    get: function() { "use strict"; return this.storage_uint32_array_.buffer; }
 });
 Object.defineProperty(SIMDopeColors.prototype, 'buffer_getUint32', {
     get: function() { "use strict"; return function (i) {
         return  this.storage_uint32_array_[i|0];
     }}
 });
-Object.defineProperty(SIMDopeColors.prototype, 'subarray_uint32', {
-    get: function() { "use strict"; return function (start, end){ start = start|0; end = end | 0; end = end || this.length; return this.storage_uint32_array_.subarray(start, end); }}
-});
 Object.defineProperty(SIMDopeColors.prototype, 'slice_uint32', {
     get: function() { "use strict"; return function (start, end){ start = start|0; end = end | 0; end = end || this.length; return this.storage_uint32_array_.slice(start, end); }}
-});
-Object.defineProperty(SIMDopeColors.prototype, 'subarray_uint8', {
-    get: function() { "use strict"; return function (start, end){ start = start | 0; end = end | 0; return this.storage_uint8_array_.subarray(multiply_uint_4(start), multiply_uint_4(end)); }}
-});
-Object.defineProperty(SIMDopeColors.prototype, 'slice_uint8', {
-    get: function() { "use strict"; return function (start, end){ start = start | 0; end = end | 0; return this.storage_uint8_array_.slice(multiply_uint_4(start), multiply_uint_4(end)); }}
 });
 
 SIMDopeColors.prototype.get_element = function (i) {
     return SIMDopeColor(this.buffer, i|0);
 }
-SIMDopeColors.prototype.subarray = function (i, n) {
-    i = i | 0;
-    n = n | 0;
-    return this.buffer_getUint8a(i, n);
-}
 
+var DISTINCT_SKIN_COLOR_MATCH_MULTIPLY = fr(0.333);
+var SAME_SKIN_COLOR_MATCH_MULTIPLY = fr(0.666);
 var QuantiMat = function(opts) {
     "use strict";
     opts = opts || {};
@@ -547,33 +394,25 @@ var QuantiMat = function(opts) {
     opts.pxls = opts.pxls || new Uint32Array(0);
     this.new_pxls_ = "buffer" in opts.pxls ? new Uint32Array(opts.pxls.buffer) : Uint32Array.from(opts.pxls);
     this.new_pxl_colors_ = "buffer" in opts.pxl_colors ? SIMDopeColors(opts.pxl_colors.buffer) : SIMDopeColors(Uint32Array.from(opts.pxl_colors));
-
+    var l = this.new_pxl_colors_.length|0;
+    this.new_pxl_colors_is_skin_mask_ = new Uint8Array(l|0);
     this.is_bucket_threshold_auto_ = Boolean(opts.bucket_threshold > 4096);
     opts.bucket_threshold = opts.bucket_threshold || 0;
-    opts.bucket_threshold = (opts.bucket_threshold|0) >= 1 ? (opts.bucket_threshold | 0):  opts.this_state_bucket_threshold || 0;
+    opts.bucket_threshold = (opts.bucket_threshold|0) >= 1 ? (opts.bucket_threshold | 0):  (opts.bucket_threshold * 4096|0) >= 1 ? (opts.bucket_threshold * 4096|0): opts.this_state_bucket_threshold || 96;
 
+    this.set_new_pxl_skin_mask();
     this.bucket_threshold_ = this.is_bucket_threshold_auto_ ? 1: opts.bucket_threshold;
-    this.threshold_steps_ = this.is_bucket_threshold_auto_ ? 1: this.new_pxl_colors_.length > 16384 ? 1: this.new_pxl_colors_.length > 8192 ? 2: this.new_pxl_colors_.length > 2048 ? 3: this.new_pxl_colors_.length > 512 ? 4: 5;
-    this.best_color_number_ = this.new_pxl_colors_.length / 2 + opts.color_number_bonus | 0;
+    this.threshold_steps_ = this.is_bucket_threshold_auto_ ? 1: l > 16384 ? 1: l > 8192 ? 2: l > 2048 ? 3: l > 512 ? 4: 5;
+    this.best_color_number_ = l / 2 + opts.color_number_bonus | 0;
 
-    this.max_cluster_ = this.new_pxl_colors_.length > 16384 ? 4096+1: this.new_pxl_colors_.length > 8192 ? 256+1: this.new_pxl_colors_.length > 2048 ? 64+1: this.new_pxl_colors_.length > 512 ? 16+1: 1;
+    this.max_cluster_ = l > 16384 ? 4096+1: l > 8192 ? 256+1: l > 2048 ? 64+1: l > 512 ? 16+1: 1;
     this.index_clusters_ = new Array(this.max_cluster_);
     this.length_clusters_ = new Uint32Array(this.max_cluster_);
 
-    this.pxl_colors_usage_ = new Uint32Array(this.new_pxl_colors_.length);
-    this.all_index_clusters_ = new Uint32Array(this.new_pxl_colors_.length);
-    this.clean_pxl_colors_ = new Uint32Array(this.new_pxl_colors_.length);
+    this.pxl_colors_usage_ = new Uint32Array(l);
+    this.all_index_clusters_ = new Uint32Array(l);
+    this.clean_pxl_colors_ = new Uint32Array(l);
     this.clean_pxl_colors_lookup_ = {};
-
-    /*
-    // We will compute how "frequent" the color-set of each cluster is within area of 16x16
-    this.area_size = 16;
-    this.height = opts.height;
-    this.width = opts.width;
-    this.area_x_length = 1+this.width/this.area_size|0;
-    this.area_y_length = 1+this.height/this.area_size|0;
-    this.area_boxes = new Array(this.area_x_length * this.area_y_length).fill(new Uint8Array(this.max_cluster_))
-     */
 };
 
 Object.defineProperty(QuantiMat.prototype, 'reset_deduplicate', {
@@ -613,6 +452,20 @@ Object.defineProperty(QuantiMat.prototype, 'set_new_pxl_colors', {
     get: function() { "use strict"; return function(pxl_colors_length) {
         "use strict";
         this.new_pxl_colors_ = SIMDopeColors(this.clean_pxl_colors_.buffer.slice(0, multiply_uint_4(pxl_colors_length|0)));
+        this.set_new_pxl_skin_mask();
+    }}
+});
+Object.defineProperty(QuantiMat.prototype, 'set_new_pxl_skin_mask', {
+    get: function() { "use strict"; return function() {
+        "use strict";
+        var l = this.new_pxl_colors_.length|0, c;
+        this.new_pxl_colors_is_skin_mask_ = new Uint8Array(l|0);
+        for(var i = 0; (i|0) < (l|0); i = i + 1 | 0) {
+            c = this.new_pxl_colors_.get_element(i|0);
+            if(c.skin){
+                this.new_pxl_colors_is_skin_mask_[i|0] = 0;
+            }
+        }
     }}
 });
 Object.defineProperty(QuantiMat.prototype, 'get_a_new_pxl_color_from_pxl_index', {
@@ -658,20 +511,20 @@ Object.defineProperty(QuantiMat.prototype, 'get_in_cluster_lengths', {
     }}
 });
 Object.defineProperty(QuantiMat.prototype, 'get_an_index_in_clusters', {
-    get: function() {return function(index){return (this.all_index_clusters_[index|0] | 0)>>>0;}}
+    get: function() {"use strict"; return function(index){"use strict";return (this.all_index_clusters_[index|0] | 0)>>>0;}}
 });
 Object.defineProperty(QuantiMat.prototype, 'get_a_color_usage', {
-    get: function() {return function(index){return (this.pxl_colors_usage_[index|0] | 0) >>> 0;}}
+    get: function() {"use strict"; return function(index){"use strict";return (this.pxl_colors_usage_[index|0] | 0) >>> 0;}}
 });
 Object.defineProperty(QuantiMat.prototype, 'set_a_color_usage', {
-    get: function() {return function(index, usage){return this.pxl_colors_usage_[index|0] = (usage|0)>>>0;}}
+    get: function() {"use strict"; return function(index, usage){"use strict";return this.pxl_colors_usage_[index|0] = (usage|0)>>>0;}}
 });
 Object.defineProperty(QuantiMat.prototype, 'get_a_color_usage_percent', {
-    get: function() {return function(index){return this.pxl_colors_usage_[index|0] / this.new_pxls_.length;}}
+    get: function() {"use strict"; return function(index){"use strict";return this.pxl_colors_usage_[index|0] / this.new_pxls_.length;}}
 });
 Object.defineProperty(QuantiMat.prototype, 'get_average_color_usage_percent', {
-    get: function() {return function(start, stop){
-
+    get: function() {"use strict"; return function(start, stop){
+        "use strict";
         start = start | 0;
         stop = stop | 0;
         stop = (stop < start ? this.pxl_colors_usage_.length: stop) | 0;
@@ -690,7 +543,10 @@ Object.defineProperty(QuantiMat.prototype, 'get_average_color_usage_percent', {
     }}
 });
 Object.defineProperty(QuantiMat.prototype, 'get_a_new_pxl_color', {
-    get: function() {return function(index){return this.new_pxl_colors_.get_element(index|0);}}
+    get: function() {"use strict";return function(index){"use strict";return this.new_pxl_colors_.get_element(index|0);}}
+});
+Object.defineProperty(QuantiMat.prototype, 'is_pxl_color_skin', {
+    get: function() {"use strict";return function(index){"use strict";return (this.new_pxl_colors_is_skin_mask_[index|0]|0) > 0;}}
 });
 Object.defineProperty(QuantiMat.prototype, 'max_cluster', {
     get: function() {return this.max_cluster_ | 0;}
@@ -824,7 +680,7 @@ QuantiMat.prototype.process_threshold = function(t) {
 
     t = (t | 0) >>> 0;
     var threshold_4096 = this.bucket_threshold * (t / this.threshold_steps) | 0;
-    var weight_applied_to_color_usage_difference = t / this.threshold_steps;
+    var weight_applied_to_color_usage_difference = fr(t / this.threshold_steps);
 
     var index_merged = false;
     var latest_colors = [];
@@ -832,24 +688,30 @@ QuantiMat.prototype.process_threshold = function(t) {
     var start = 0;
     var stop = 0;
     var color_a, color_b;
+    var color_a_skin = false;
+    var color_b_skin = false;
     var color_a_usage = 0;
     var color_b_usage = 0;
     var color_usage_difference_positive = 0.0;
     var weighted_threshold = 0.0;
+    var weighted_threshold_skin = 0.0;
+    var weighted_threshold_skin_skin = 0.0;
     var index_of_color_a = 0;
     var index_of_color_b = 0;
-    var x = 0, y = 0;
+    var x = 0, y = 0, c = 0;
     var color_n_in_cluster = 0;
 
     // 1x Threshold + 1x weight
     weighted_threshold =
-        ((
+        fr(
             // Threshold and weight applied to threshold divided by what is not the threshold
-            ((threshold_4096 / 4096) + (threshold_4096 / 4096 * weight_applied_to_color_usage_difference)) /
-            (1 + weight_applied_to_color_usage_difference)
-        ) * 4096 | 0) >>> 0;  // THRESHOLD + THRESHOLD * WEIGHT / 1 + WEIGHT
+            fr((threshold_4096 / 4096) + (threshold_4096 / 4096 * weight_applied_to_color_usage_difference)) /
+            fr(1 + weight_applied_to_color_usage_difference)
+        );  // THRESHOLD + THRESHOLD * WEIGHT / 1 + WEIGHT
+    weighted_threshold_skin_skin = fr(weighted_threshold * SAME_SKIN_COLOR_MATCH_MULTIPLY);
+    weighted_threshold_skin = fr(weighted_threshold * DISTINCT_SKIN_COLOR_MATCH_MULTIPLY);
 
-    for(var c = 0; (c|0) < (this.max_cluster|0); c=(c+1|0)>>>0){
+    for(; (c|0) < (this.max_cluster|0); c=(c+1|0)>>>0){
 
         color_n_in_cluster = (this.get_length_in_index_clusters(c|0) | 0) >>> 0;
         stop = (start + color_n_in_cluster | 0) >>> 0;
@@ -860,6 +722,7 @@ QuantiMat.prototype.process_threshold = function(t) {
 
             // Update color usage and relative variables
             color_a = this.get_a_new_pxl_color((index_of_color_a|0)>>>0);
+            color_a_skin = this.is_pxl_color_skin((index_of_color_a|0)>>>0);
             color_a_usage = (this.get_a_color_usage((index_of_color_a|0)>>>0) | 0) >>> 0;
 
             if((color_a_usage|0) > 0) {
@@ -869,36 +732,34 @@ QuantiMat.prototype.process_threshold = function(t) {
 
                 for(y = start|0; (y|0) < (stop|0); y = (y+1|0)>>>0) {
 
-                    index_of_color_b = this.get_an_index_in_clusters(y)|0;
+                    index_of_color_b = (this.get_an_index_in_clusters((y|0)>>>0)|0)>>>0;
                     // Update color usage and relative variables
-                    color_b = this.get_a_new_pxl_color(index_of_color_b);
-                    color_b_usage = this.get_a_color_usage(index_of_color_b)|0;
+                    color_b = this.get_a_new_pxl_color((index_of_color_b|0)>>>0);
+                    color_b_skin = this.is_pxl_color_skin((index_of_color_b|0)>>>0);
+                    color_b_usage = (this.get_a_color_usage((index_of_color_b|0)>>>0)|0)>>>0;
 
-                    if((color_b_usage|0) > 0) {
+                    if((color_b_usage|0) > 0 && (index_of_color_a|0) != (index_of_color_b|0)) {
 
                         // The less a color is used the less it requires a great distance to be merged (so we don't have many color used only a few time in the whole image, heavily used color gets preserved better than lowly used ones)
-                        if(color_a.manhattan_match_with(color_b,  weighted_threshold|0)) {
+                        if(color_a.euclidean_match_with(color_b,  (color_a_skin && color_b_skin) ? weighted_threshold_skin_skin: (color_a_skin || color_b_skin) ? weighted_threshold_skin: weighted_threshold)) {
 
-                            color_usage_difference_positive = (color_a_usage|0) > (color_b_usage|0) ? color_a_usage / color_b_usage: 1 / color_a_usage / color_b_usage;
+                            color_usage_difference_positive = fr(color_b_usage / color_a_usage);
 
                             // Update color usage and relative variables
                             index_merged = true;
-                            color_a_usage = color_a_usage+color_b_usage|0;
-                            this.set_a_color_usage(index_of_color_b|0, 0);
 
                             // Adds color to blend to processed colors and stack it to what will be set to be equals with all other color blended
-                            latest_colors.push(this.get_a_new_pxl_color(index_of_color_b|0));
+                            this.set_a_color_usage(index_of_color_b|0, 0);
+                            latest_colors.push(color_b);
                             latest_amounts.push(color_usage_difference_positive);
                         }
                     }
                 }
             }
 
-            if(index_merged) {
-                this.set_a_color_usage(index_of_color_a|0, color_a_usage|0);
+            if((latest_colors.length|0) > 0) {
                 SIMDopeColor.blend_all(color_a, latest_colors, latest_amounts);
                 latest_colors = []; latest_amounts = [];
-                index_merged = false;
             }
         }
 
@@ -915,6 +776,7 @@ QuantiMat.prototype.round = function() {
     if(this.new_pxl_colors_length > 512) {
 
         var simplify_of = this.new_pxl_colors_.length > 16384 ? 16: this.new_pxl_colors_.length > 8192 ? 8: this.new_pxl_colors_.length > 2048 ? 4: this.new_pxl_colors_.length > 512 ? 2: 1;
+
         for(var l = 0; (l|0) < (this.new_pxl_colors_length|0); l = (l+1|0)>>>0) {
             this.get_a_new_pxl_color((l|0)>>>0).simplify(simplify_of);
         }
@@ -932,7 +794,7 @@ QuantiMat.prototype.init = function() {
 QuantiMat.prototype.run =  function() {
     "use strict";
 
-    var bucket_threhold_stepover = 5;
+    var bucket_threhold_stepover = 12;
     var is_bucket_threshold_auto_goal_reached = false;
 
     while (!is_bucket_threshold_auto_goal_reached) {
