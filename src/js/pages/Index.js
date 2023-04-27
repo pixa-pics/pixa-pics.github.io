@@ -17,9 +17,9 @@ import dispatcher from "../dispatcher";
 import actions from "../actions/utils";
 
 import Home from "./Home";
-const Pixel = React.lazy(() => JSLoader( () => import("../pages/Pixel")));
-const Unknown = React.lazy(() => JSLoader( () => import("../pages/Unknown")));
-const Settings = React.lazy(() => JSLoader( () => import("../pages/Settings")));
+const Pixel = React.lazy(() => import("../pages/Pixel"));
+const Unknown = React.lazy(() => import("../pages/Unknown"));
+const Settings = React.lazy(() =>  import("../pages/Settings"));
 
 import JamyAngry from "../icons/JamyAngry";
 import JamyAnnoyed from "../icons/JamyAnnoyed";
@@ -421,7 +421,7 @@ class Index extends React.PureComponent {
 
     _set_analytics = (wait = 0) => {
 
-        /* MATOMO TAG MANAGER (ADDON) */
+        // MATOMO TAG MANAGER (ADDON)
         var _mtm = window._mtm = window._mtm || [];
         _mtm.push({'mtm.startTime': (new Date().getTime()), 'event': 'mtm.Start'});
 
@@ -463,7 +463,7 @@ class Index extends React.PureComponent {
 
         setTimeout(function(){
 
-            let element_a = document.getElementById("matomo-container") || null;
+            /*let element_a = document.getElementById("matomo-container") || null;
             let append_a = false;
 
             if(element_a === null) {
@@ -488,7 +488,7 @@ class Index extends React.PureComponent {
             element_b.setAttribute("src", "https://app.friendlyanalytics.ch/matomo.js");
 
             if(append_a) {document.head.appendChild(element_a);}
-            if(append_b) {document.head.appendChild(element_b);}
+            if(append_b) {document.head.appendChild(element_b);}*/
 
         }, wait);
     }

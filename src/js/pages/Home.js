@@ -7,10 +7,8 @@ import actions from "../actions/utils";
 
 import CrownEmojiSvg from "../notoemoji/react/EmojiU1F451";
 import LightingEmojiSvg from "../notoemoji/react/EmojiU26A1";
-import GlassesEmojiSvg from "../notoemoji/react/EmojiU1F97D";
-import JacketEmojiSvg from "../notoemoji/react/EmojiU1F97C";
-import hundredEmojiSvg from "../notoemoji/react/EmojiU1F4Af";
-import moneyEmojiSvg from "../notoemoji/react/EmojiU1F4B8";
+import HundredEmojiSvg from "../notoemoji/react/EmojiU1F4Af";
+import MoneyEmojiSvg from "../notoemoji/react/EmojiU1F4B8";
 import ScientistEmojiSvg from "../notoemoji/react/EmojiU1F4681F3Fd200D1F52C";
 import ShufflingSpanText from "../components/ShufflingSpanText";
 
@@ -299,8 +297,8 @@ class Home extends React.PureComponent {
             _join_now_button_update: 0,
             _less_than_960w: true,
             _less_than_690h: true,
-            _hundred: <hundredEmojiSvg style={{ transform: "translateZ(10px)", height: '1.5em', width: '1.5em' }}/>,
-            _money: <moneyEmojiSvg style={{ transform: "translateZ(10px)", height: '1.5em', width: '1.5em' }}/>,
+            _hundred: <HundredEmojiSvg style={{ transform: "translateZ(10px)", height: '1.5em', width: '1.5em' }}/>,
+            _money: <MoneyEmojiSvg style={{ transform: "translateZ(10px)", height: '1.5em', width: '1.5em' }}/>,
             _camera: null,
             _is_video_open: 0
         };

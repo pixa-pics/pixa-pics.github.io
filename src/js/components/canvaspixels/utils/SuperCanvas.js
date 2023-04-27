@@ -1,5 +1,5 @@
 //import workerpool from "workerpool";
-import SIMDope from "simdope";
+import SIMDope from "simdope/index";
 const {clamp_uint32, modulo_uint, divide_int, minus_int, int_greater, int_less, int_greater_equal, int_less_equal, plus_uint, plus_int, max_int, min_int} = SIMDope.simdops;
 
 let requestIdleCallback, cancelIdleCallback;

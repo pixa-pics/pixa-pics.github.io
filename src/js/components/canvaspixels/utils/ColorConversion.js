@@ -1,4 +1,4 @@
-import SIMDope from "simdope";
+import SIMDope from "simdope/index";
 const simdops = SIMDope.simdops;
 
 const ColorConversion = {
@@ -268,7 +268,7 @@ const ColorConversion = {
                     g = hue_to_rgb(p, q, h);
                     b = hue_to_rgb(p, q, h - 1 / 3);
                 }
-                return Uint8ClampedArray.of(simdops.format_uint(r * 255), simdops.format_uint(g * 255), simdops.format_uint(b * 255), simdops.format_uint(a * 255));
+                return Uint8ClampedArray.of((r * 255|0), (g * 255|0), (b * 255 | 0), (a * 255 | 0));
             },
             invert_uint32: function(uint32) {
                 "use strict";

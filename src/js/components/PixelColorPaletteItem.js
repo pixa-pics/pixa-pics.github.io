@@ -1,7 +1,7 @@
 import React from "react";
 import { withStyles } from "@material-ui/core";
 import {ButtonBase, Tooltip, Fade} from "@material-ui/core";
-import {SIMDopeColor} from "simdope";
+import {SIMDopeColor} from "simdope/index";
 
 import CheckBoldIcon from "../icons/CheckBold";
 
@@ -27,7 +27,7 @@ class PixelColorPaletteItem extends React.PureComponent {
             full_width: props.full_width || false,
             icon: props.icon || null,
             style: props.style || {},
-            _is_dark: SIMDopeColor.new_hex(props.color).is_dark(),
+            _is_dark: false //SIMDopeColor.new_hex(props.color||"#00000000").is_dark(),
         };
     };
 
