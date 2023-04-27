@@ -1,11 +1,11 @@
-# PIXA.PICS | STORING PIXEL ART NFT ONE THOUSAND YEARS!
+# PIXA.PICS | STORING PIXEL ART NFT ONE/TWO THOUSAND YEARS!
 
 
-[![Storing pixel art video thumnbail](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/src/images/screenshots/STORAGE.jpeg?raw=true)](https://www.youtube.com/watch?v=cctknQhVX1w)
-> Click the image to watch the video on Youtube
+Storing pixel art 1000 years: https://www.youtube.com/watch?v=cctknQhVX1w
+> Click the link to watch the video on Youtube
 
 ## **OR WATCH A DEMO (2 MINUTES)**:
-<//////> https://youtu.be/WlgGdmXmVDo <\\\\\\\\>
+`<////////>` https://youtu.be/WlgGdmXmVDo `<\\\\\\\\>`
 
 [1000 YEARS READY NFTS - HANDBOOK.PDF](https://github.com/pixa-pics/pixa-pics.github.io/blob/main/1000%20Years%20ready%20NFTs%20-%20Handbook.pdf)
 
@@ -44,6 +44,12 @@
 
 # Pixa.Pics - Pixel Art Editor and NFT Laboratory
 Pixa.Pics is an all-in-one pixel art editor and NFT laboratory designed for users of all ages and skill levels. The application provides an accessible and secure way for individuals to create, store, and share pixel art while preserving their anonymity and utilizing cutting-edge blockchain technology.
+
+# :moneybag: :moneybag: >>>>> We're looking for someone who can pay us six base ten digits US$ to acquire it and lead it further, meanwhile we're working on it.
+
+> We're looking for a unique buyer to take Pixa to the next level. And we're willing to offer a reward of $2000-4000 to anyone who can make the match between Pixa and a successful buyer.
+
+pixa.pics@protonmail.com
 
 # Table of Contents
 * Introduction
