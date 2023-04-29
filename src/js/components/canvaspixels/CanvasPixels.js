@@ -225,7 +225,7 @@ class CanvasPixels extends React.PureComponent {
 
             this._request_force_update(false, false).then(() => {
 
-                this.super_canvas.set_dimensions(width, height).then(this.super_master_meta.update_canvas);
+                this.super_canvas.set_dimensions(width, height).then(() => {this.super_master_meta.update_canvas();});
             });
         });
     }
@@ -257,7 +257,9 @@ class CanvasPixels extends React.PureComponent {
 
         if(tool.toUpperCase().includes("SELECT") && parseInt(_select_shape_index_a) < 0) {
 
-            this.super_state.set_state({_selection_pair_highlight: !_selection_pair_highlight}).then(this.super_master_meta.update_canvas);
+            this.super_state.set_state({_selection_pair_highlight: !_selection_pair_highlight}).then(() => {
+                this.super_master_meta.update_canvas();
+            });
         }
     };
 
@@ -308,7 +310,7 @@ class CanvasPixels extends React.PureComponent {
 
             this.super_state.set_state(new_props).then(() => {
 
-                this._request_force_update(false, false).then(this.super_master_meta.update_canvas);
+                this._request_force_update(false, false).then(() => {this.super_master_meta.update_canvas();});
             });
 
         }else {
@@ -1994,7 +1996,7 @@ class CanvasPixels extends React.PureComponent {
 
                     this._request_force_update(false, false).then(() => {
 
-                        this.super_canvas.set_dimensions(sh.pxl_width, sh.pxl_height).then(this.super_master_meta.update_canvas);
+                        this.super_canvas.set_dimensions(sh.pxl_width, sh.pxl_height).then(() => {this.super_master_meta.update_canvas();});
                     });
 
                     this._notify_is_something_selected();
@@ -2055,7 +2057,7 @@ class CanvasPixels extends React.PureComponent {
 
                     this._request_force_update(false, false).then(() => {
 
-                        this.super_canvas.set_dimensions(sh.pxl_width, sh.pxl_height).then(this.super_master_meta.update_canvas);
+                        this.super_canvas.set_dimensions(sh.pxl_width, sh.pxl_height).then(() => {this.super_master_meta.update_canvas();});
                     });
 
                     this._notify_is_something_selected();
@@ -2095,7 +2097,7 @@ class CanvasPixels extends React.PureComponent {
         let ns_pxls = this.super_state.get_state()._s_pxls;
         ns_pxls[_layer_index] =  new Uint16Array(pxls.buffer);
 
-        this.super_state.set_state({_s_pxl_colors: ns_pxl_colors, _s_pxls: ns_pxls, _last_action_timestamp: Date.now()}).then(this.super_master_meta.update_canvas);
+        this.super_state.set_state({_s_pxl_colors: ns_pxl_colors, _s_pxls: ns_pxls, _last_action_timestamp: Date.now()}).then(() => {this.super_master_meta.update_canvas();});
     }
 
     to_selection_bucket = () => {
@@ -2126,7 +2128,7 @@ class CanvasPixels extends React.PureComponent {
         let ns_pxls = this.super_state.get_state()._s_pxls;
         ns_pxls[_layer_index] =  new Uint16Array(pxls.buffer);
 
-        this.super_state.set_state({_s_pxl_colors: ns_pxl_colors, _s_pxls: ns_pxls, _last_action_timestamp: Date.now()}).then(this.super_master_meta.update_canvas);
+        this.super_state.set_state({_s_pxl_colors: ns_pxl_colors, _s_pxls: ns_pxls, _last_action_timestamp: Date.now()}).then(() => {this.super_master_meta.update_canvas();});
     }
 
     to_selection_invert = () => {
@@ -2143,7 +2145,7 @@ class CanvasPixels extends React.PureComponent {
             }
         }
 
-        this.super_state.set_state({_pxl_indexes_of_selection: pxl_indexes_of_selection, _last_action_timestamp: Date.now()}).then(this.super_master_meta.update_canvas);
+        this.super_state.set_state({_pxl_indexes_of_selection: pxl_indexes_of_selection, _last_action_timestamp: Date.now()}).then(() => {this.super_master_meta.update_canvas();});
     }
 
     get_average_color_of_selection = () => {
@@ -2255,7 +2257,7 @@ class CanvasPixels extends React.PureComponent {
             _s_pxl_colors: ns_pxl_colors,
             _s_pxls: ns_pxls,
             _last_action_timestamp: Date.now()
-        }).then(this.super_master_meta.update_canvas);
+        }).then(() => {this.super_master_meta.update_canvas();});
     };
 
     _get_border_from_selection = (selection, inside = true, bold = false) => {
@@ -2455,7 +2457,7 @@ class CanvasPixels extends React.PureComponent {
 
                         this._request_force_update(false, false).then(() => {
 
-                            this.super_canvas.set_dimensions(new_width, new_height).then(this.super_master_meta.update_canvas);
+                            this.super_canvas.set_dimensions(new_width, new_height).then(() => {this.super_master_meta.update_canvas();});
                         });
 
                         this._notify_image_load_complete(true);
@@ -2479,7 +2481,7 @@ class CanvasPixels extends React.PureComponent {
 
                     this._request_force_update(false, false).then(() => {
 
-                        this.super_canvas.set_dimensions(new_width, new_height).then(this.super_master_meta.update_canvas);
+                        this.super_canvas.set_dimensions(new_width, new_height).then(() => {this.super_master_meta.update_canvas();});
                     });
                 });
             }
@@ -2492,7 +2494,7 @@ class CanvasPixels extends React.PureComponent {
 
         _pxl_indexes_of_selection = this._to_selection_size(grow, _pxl_indexes_of_selection);
 
-        this.super_state.set_state({_pxl_indexes_of_selection}).then(this.super_master_meta.update_canvas);
+        this.super_state.set_state({_pxl_indexes_of_selection}).then(() => {this.super_master_meta.update_canvas();});
     };
 
     _to_selection_size = (grow, _pxl_indexes_of_selection) => {
@@ -2859,7 +2861,7 @@ class CanvasPixels extends React.PureComponent {
                     _original_image_index: new_base64_original_images.indexOf(base64_original_image),
                     _imported_image_pxls,
                     _last_action_timestamp: Date.now()
-                }).then(this.super_master_meta.update_canvas)
+                }).then(() => {this.super_master_meta.update_canvas();})
 
             };
             image.src = _base64_original_images[_original_image_index];
@@ -2874,7 +2876,7 @@ class CanvasPixels extends React.PureComponent {
                 _s_pxls: ns_pxls,
                 _last_action_timestamp: Date.now(),
                 _imported_image_pxls
-            }).then(this.super_master_meta.update_canvas);
+            }).then(() => {this.super_master_meta.update_canvas();});
         }
     };
 
@@ -2908,7 +2910,7 @@ class CanvasPixels extends React.PureComponent {
         let ns_pxls = this.super_state.get_state()._s_pxls;
         ns_pxls[_layer_index] = new_pxls;
 
-        this.super_state.set_state({_s_pxls: ns_pxls, _s_pxl_colors: ns_pxl_colors, _last_action_timestamp: Date.now()}).then(this.super_master_meta.update_canvas);
+        this.super_state.set_state({_s_pxls: ns_pxls, _s_pxl_colors: ns_pxl_colors, _last_action_timestamp: Date.now()}).then(() => {this.super_master_meta.update_canvas();});
     }
 
     _to_less_color = (threshold, callback_function = () => {}) => {
@@ -2944,7 +2946,7 @@ class CanvasPixels extends React.PureComponent {
         [ _s_pxls[_layer_index], _s_pxl_colors[_layer_index] ] = this._pxl_adjust_contrast(_s_pxls[_layer_index], _s_pxl_colors[_layer_index], intensity);
 
 
-        this.super_state.set_state({_s_pxls, _s_pxl_colors, _last_action_timestamp: Date.now()}).then(this.super_master_meta.update_canvas);
+        this.super_state.set_state({_s_pxls, _s_pxl_colors, _last_action_timestamp: Date.now()}).then(() => {this.super_master_meta.update_canvas();});
     };
 
     _auto_adjust_saturation = (intensity = 1) => {
@@ -2954,7 +2956,7 @@ class CanvasPixels extends React.PureComponent {
 
         [ _s_pxls[_layer_index], _s_pxl_colors[_layer_index] ] = this._pxl_adjust_saturation(_s_pxls[_layer_index], _s_pxl_colors[_layer_index], intensity);
 
-        this.super_state.set_state({_s_pxls, _s_pxl_colors, _last_action_timestamp: Date.now()}).then(this.super_master_meta.update_canvas);
+        this.super_state.set_state({_s_pxls, _s_pxl_colors, _last_action_timestamp: Date.now()}).then(() => {this.super_master_meta.update_canvas();});
     }
 
     _pxl_adjust_saturation = (pxls, pxl_colors, intensity) => {
@@ -3036,7 +3038,7 @@ class CanvasPixels extends React.PureComponent {
         [ _s_pxls[_layer_index], _s_pxl_colors[_layer_index] ] = this._pxl_adjust_smoothness(_s_pxls[_layer_index], _s_pxl_colors[_layer_index], pxl_width, pxl_height);
 
 
-        this.super_state.set_state({_s_pxls, _s_pxl_colors, _last_action_timestamp: Date.now()}).then(this.super_master_meta.update_canvas);
+        this.super_state.set_state({_s_pxls, _s_pxl_colors, _last_action_timestamp: Date.now()}).then(() => {this.super_master_meta.update_canvas();});
     };
 
     _pxl_to_vignette = (pxls, pxl_colors, color, intensity, callback_function) => {
@@ -3112,7 +3114,7 @@ class CanvasPixels extends React.PureComponent {
 
                 [_s_pxls[_layer_index], _s_pxl_colors[_layer_index]] = result;
 
-                this.super_state.set_state({_s_pxls, _s_pxl_colors, _last_action_timestamp: Date.now()}).then(this.super_master_meta.update_canvas);
+                this.super_state.set_state({_s_pxls, _s_pxl_colors, _last_action_timestamp: Date.now()}).then(() => {this.super_master_meta.update_canvas();});
             });
         }
     };
@@ -3158,7 +3160,7 @@ class CanvasPixels extends React.PureComponent {
         let ns_pxl_colors = this.super_state.get_state()._s_pxl_colors;
         ns_pxl_colors[_layer_index] = _new_pxl_colors;
 
-        this.super_state.set_state({_s_pxl_colors: ns_pxl_colors, _last_action_timestamp: Date.now()}).then(this.super_master_meta.update_canvas);
+        this.super_state.set_state({_s_pxl_colors: ns_pxl_colors, _last_action_timestamp: Date.now()}).then(() => {this.super_master_meta.update_canvas();});
     };
 
     get_filter_names = () => {
@@ -3187,7 +3189,7 @@ class CanvasPixels extends React.PureComponent {
 
         [_s_pxls[_layer_index], _s_pxl_colors[_layer_index]] = this._dutone_pixels(contrast, color_a, color_b, _s_pxls[_layer_index], _s_pxl_colors[_layer_index]);
 
-        this.super_state.set_state({_s_pxls, _s_pxl_colors, _pxls_hovered: -1, _last_action_timestamp: Date.now()}).then(this.super_master_meta.update_canvas);
+        this.super_state.set_state({_s_pxls, _s_pxl_colors, _pxls_hovered: -1, _last_action_timestamp: Date.now()}).then(() => {this.super_master_meta.update_canvas();});
 
     };
 
@@ -3197,7 +3199,7 @@ class CanvasPixels extends React.PureComponent {
 
         _s_pxl_colors[_layer_index] = this.canvas_filters.filter(name, intensity, _s_pxl_colors[_layer_index]);
 
-        this.super_state.set_state({_s_pxl_colors, _pxls_hovered: -1, _last_action_timestamp: Date.now() }).then(this.super_master_meta.update_canvas);
+        this.super_state.set_state({_s_pxl_colors, _pxls_hovered: -1, _last_action_timestamp: Date.now() }).then(() => {this.super_master_meta.update_canvas();});
 
     }
 
@@ -3321,7 +3323,7 @@ class CanvasPixels extends React.PureComponent {
 
                     this._request_force_update(false, false).then(() => {
 
-                        this.super_canvas.set_dimensions(new_pxl_width, new_pxl_height).then(this.super_master_meta.update_canvas);
+                        this.super_canvas.set_dimensions(new_pxl_width, new_pxl_height).then(() => {this.super_master_meta.update_canvas();});
                     });
                 });
             };
@@ -3348,7 +3350,7 @@ class CanvasPixels extends React.PureComponent {
 
                 this._request_force_update(false, false).then(() => {
 
-                    this.super_canvas.set_dimensions(new_pxl_width, new_pxl_height).then(this.super_master_meta.update_canvas);
+                    this.super_canvas.set_dimensions(new_pxl_width, new_pxl_height).then(() => {this.super_master_meta.update_canvas();});
                 });
             });
         }
@@ -3514,8 +3516,8 @@ class CanvasPixels extends React.PureComponent {
 
         return new Promise((resolve, reject) => {
             this.sraf.run_frame( () => {
-                this.forceUpdate(resolve)
-            }, Boolean(!can_be_cancelable), Boolean(!especially_dont_force)).catch(reject);
+                this.forceUpdate()
+            }, !can_be_cancelable, !especially_dont_force).then(resolve).catch(reject);
         });
     };
 

@@ -451,24 +451,30 @@ const SuperState = {
                     new_pxls: Array.from(new_pxls),
                 };
             },
-            new_canvas_context_2d: function(width, height) {
+            new_canvas_context_2d: function(width, height, old_canvas) {
                 "use strict";
-                let canvas;
-                try {
+                let canvas = typeof old_canvas !== "undefined" ? old_canvas: undefined;
 
-                    if (typeof OffscreenCanvas === "undefined") {
-                        throw new Error("Impossible to create OffscreenCanvas in this web environment.");
+                if(typeof canvas === "undefined"){
+
+                    let is_offscreen = Boolean('OffscreenCanvas' in window);
+
+                    if(is_offscreen) {
+
+                        canvas = new OffscreenCanvas(width, height);
+
+                    }else {
+
+                        canvas = document.createElement("canvas");
+                        canvas.width = width;
+                        canvas.height = height;
                     }
-
-                    canvas = new OffscreenCanvas(width, height);
-                }catch(e) {
-
-                    canvas = document.createElement("canvas");
+                }else {
                     canvas.width = width;
                     canvas.height = height;
                 }
 
-                let context = canvas.getContext('2d');
+                let context = canvas.getContext('2d', {desynchronized: true, willReadFrequently: true});
                 context.mozImageSmoothingEnabled = false;
                 context.webkitImageSmoothingEnabled = false;
                 context.msImageSmoothingEnabled = false;
@@ -479,10 +485,13 @@ const SuperState = {
             },
             create_shape: function() {
                 "use strict";
+                let new_canvas_context_2d = this.new_canvas_context_2d.bind(this);
+
                 let state = _state.get();
                 let width = state.pxl_width | 0;
                 let height = state.pxl_height | 0;
-                let context = this.new_canvas_context_2d(width, height);
+                let context = new_canvas_context_2d(width, height);
+                context.save();
 
                 function get_opposite_coordinates(width, from, to) {
                     "use strict";
@@ -503,11 +512,11 @@ const SuperState = {
 
                 function get_shadow_indexes_from_canvas_context(context, shadow_indexes) {
                     "use strict";
-                    shadow_indexes = shadow_indexes || new Set();
-                    let ui32_colors = new Uint32Array(context.getImageData(0, 0, context.canvas.width, context.canvas.height).data.reverse().buffer).reverse();
-                    let ui32_colors_length = ui32_colors.length | 0;
-                    for(let i = 0; (i|0) < (ui32_colors_length|0); i = (i + 1 | 0)>>>0) {
-                        if((ui32_colors[i|0]|0) != 0) { shadow_indexes.add(i|0);}
+                    shadow_indexes = typeof shadow_indexes == "undefined" ? new Set(): shadow_indexes;
+                    let ui8_colors = context.getImageData(0, 0, context.canvas.width, context.canvas.height).data;
+                    let ui8_colors_length = ui8_colors.length >> 2;
+                    for(let i = 0; (i|0) < (ui8_colors_length|0); i = (i + 1 | 0)>>>0) {
+                        if((ui8_colors[i<<2]|0) != 0) { shadow_indexes.add(i|0);}
                     }
 
                     return shadow_indexes;
@@ -515,6 +524,12 @@ const SuperState = {
 
                 // TO DO --> GET PREVIOUS COMMIT OR FINISH THIS
                 return {
+                    update_state: function (){
+                        state = _state.get();
+                        width = state.pxl_width | 0;
+                        height = state.pxl_height | 0;
+                        context = new_canvas_context_2d(width, height, context.canvas);
+                    },
                     from_text: function (size, text) {
 
                         context.clearRect(0, 0, width, height);
@@ -677,7 +692,6 @@ const SuperState = {
                         to = to | 0;
                         let pxl_indexes = new Set();
                         let c = get_opposite_coordinates(width, from, to);
-
                         const rectangle_width = Math.abs(c.primary.x - c.secondary.x | 0) + 1 | 0;
                         const rectangle_height = Math.abs(c.primary.y - c.secondary.y | 0) + 1 | 0;
                         const rectangle_top_left_x = Math.max(c.primary.x, c.secondary.x | 0) - (rectangle_width - 1 | 0) | 0;
@@ -699,25 +713,28 @@ const SuperState = {
                         "use strict";
                         from = from | 0;
                         to = to | 0;
+                        let pxl_indexes = new Set();
                         let c = get_opposite_coordinates(width|0, from|0, to|0);
                         let ellipse_width = Math.abs(c.primary.x - c.secondary.x|0) + 1 | 0;
                         let ellipse_height = Math.abs(c.primary.y - c.secondary.y|0) + 1 | 0;
                         const ellipse_top_left_x = Math.max(c.primary.x, c.secondary.x|0) - (ellipse_width - 1|0) | 0;
                         const ellipse_top_left_y = Math.max(c.primary.y, c.secondary.y|0) - (ellipse_height - 1|0) | 0;
 
-                        let ellipse_rayon_x = ellipse_width / 2|0;
-                        let ellipse_rayon_y = ellipse_height / 2|0;
-                        const ellipse_middle_x = ellipse_rayon_x + ellipse_top_left_x | 0;
-                        const ellipse_middle_y = ellipse_rayon_y + ellipse_top_left_y | 0;
+                        let ellipse_rayon_x = ellipse_width / 2;
+                        let ellipse_rayon_y = ellipse_height / 2;
+                        const ellipse_middle_x = ellipse_rayon_x + ellipse_top_left_x;
+                        const ellipse_middle_y = ellipse_rayon_y + ellipse_top_left_y;
+
                         context.clearRect(0, 0, width|0, height|0);
                         context.translate(ellipse_middle_x, ellipse_middle_y);
                         context.rotate(0);
                         context.scale(ellipse_rayon_x, ellipse_rayon_y);
                         context.arc(0, 0, 1, 0, 2 * Math.PI);
+
                         context.fillStyle = "#ffffffff";
                         context.fill();
 
-                        return get_shadow_indexes_from_canvas_context(context);
+                        return get_shadow_indexes_from_canvas_context(context, pxl_indexes);
                     }
                 };
             }

@@ -1,4 +1,4 @@
-//import workerpool from "workerpool";
+import pool from "../../../utils/worker-pool";
 import SIMDope from "simdope/index";
 const {clamp_uint32, modulo_uint, divide_int, minus_int, int_greater, int_less, int_greater_equal, int_less_equal, plus_uint, plus_int, max_int, min_int} = SIMDope.simdops;
 
@@ -93,14 +93,20 @@ const SuperCanvas = {
                 let occ2d;
                 if (is_offscreen) {
 
-                    occ2d = new OffscreenCanvas(pxl_width, pxl_height).getContext("2d", {willReadFrequently: false});
+                    occ2d = new OffscreenCanvas(pxl_width, pxl_height).getContext("2d", {willReadFrequently: true});
                     occ2d.imageSmoothingEnabled = false;
                     occ2d.webkitImageSmoothingEnabled = false;
+                    occ2d.mozImageSmoothingEnabled = false;
+                    occ2d.msImageSmoothingEnabled = false;
+
                 }
 
-                cc2d = c.getContext('2d', {desynchronized: false, willReadFrequently: false} );
-                cc2d.imageSmoothingEnabled = false;
+                cc2d = c.getContext('2d', {desynchronized: true, willReadFrequently: true} );
+
+                cc2d.mozImageSmoothingEnabled = false;
                 cc2d.webkitImageSmoothingEnabled = false;
+                cc2d.msImageSmoothingEnabled = false;
+                cc2d.imageSmoothingEnabled = false;
                 cc2d.globalCompositeOperation = "copy";
 
                 return {
@@ -216,7 +222,7 @@ const SuperCanvas = {
                                 }
                             }
 
-                            bpro(s_width, pr_width, pr_height, pr_top_left_x, pr_top_left_y, pr_uint8a).then(function(bitmap){
+                            pool.exec(bpro, [s_width, pr_width, pr_height, pr_top_left_x, pr_top_left_y, pr_uint8a]).then(function(bitmap){
 
                                 if(_state.b.bmp_t < new_bmp_t) {
 
@@ -240,7 +246,7 @@ const SuperCanvas = {
                             resolve(_state.b);
                         }else {
 
-                            _state.old_bmp.close();
+                            _state.b.old_bmp.close();
                             reject();
                         }
 
@@ -281,6 +287,7 @@ const SuperCanvas = {
 
                         _state.ic.forEach(function (value, index) {
 
+                            value = (value|0) >>> 0;
                             index = (index|0) >>> 0;
 
                             x = modulo_uint(index, width);
