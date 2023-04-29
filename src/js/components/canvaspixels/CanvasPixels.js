@@ -3517,7 +3517,7 @@ class CanvasPixels extends React.PureComponent {
         return new Promise((resolve, reject) => {
             this.sraf.run_frame( () => {
                 this.forceUpdate()
-            }, !can_be_cancelable, !especially_dont_force).then(resolve).catch(reject);
+            }, !can_be_cancelable, !especially_dont_force).catch(reject).then(resolve);
         });
     };
 

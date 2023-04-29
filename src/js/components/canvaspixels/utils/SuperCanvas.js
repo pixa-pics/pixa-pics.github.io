@@ -30,6 +30,8 @@ const SuperCanvas = {
         "use strict";
         return new Promise(function (resolve){
 
+            "use strict";
+
             let s_width = _state.s.width | 0;
             let pr_width = _state.pr.width | 0;
             let pr_height = _state.pr.height | 0;
@@ -157,6 +159,8 @@ const SuperCanvas = {
                 "use strict";
                 return new Promise(function (resolve){
 
+                    "use strict";
+
                     _state.s.canvas_context.clearRect(0, 0, _state.s.width, _state.s.height);
                     resolve();
                 });
@@ -165,6 +169,8 @@ const SuperCanvas = {
                 "use strict";
 
                 return new Promise(function (resolve, reject) {
+
+                    "use strict";
 
                     _state.pr.top_left.x = _state.s.width | 0;
                     _state.pr.top_left.y = _state.s.height | 0;
@@ -199,6 +205,8 @@ const SuperCanvas = {
                 "use strict";
 
                 return new Promise(function (resolve, reject){
+
+                    "use strict";
 
                     if (_state.enable_paint_type === "bitmap") {
 
@@ -269,6 +277,8 @@ const SuperCanvas = {
                 "use strict";
                 return new Promise(function (resolve, reject){
 
+                    "use strict";
+
                     let width = _state.s.width | 0;
                     let height = _state.s.height | 0;
 
@@ -286,6 +296,8 @@ const SuperCanvas = {
                         const fp_last_index = _state.fp.length-1|0;
 
                         _state.ic.forEach(function (value, index) {
+
+                            "use strict";
 
                             value = (value|0) >>> 0;
                             index = (index|0) >>> 0;
@@ -320,6 +332,8 @@ const SuperCanvas = {
             pile: function(index_changes, color_changes) {
                 "use strict";
                 return new Promise(function(resolve){
+
+                    "use strict";
 
                     let length = index_changes.length|0;
                     for(let i = 0; int_less(i, length); i = plus_uint(i, 1)) {
