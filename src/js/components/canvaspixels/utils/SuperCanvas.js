@@ -103,7 +103,7 @@ const SuperCanvas = {
 
                 }
 
-                cc2d = c.getContext('2d', {desynchronized: true, willReadFrequently: true} );
+                cc2d = c.getContext('2d', {desynchronized: false, willReadFrequently: true} );
 
                 cc2d.mozImageSmoothingEnabled = false;
                 cc2d.webkitImageSmoothingEnabled = false;

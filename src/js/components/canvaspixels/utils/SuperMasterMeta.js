@@ -92,56 +92,62 @@ const SuperMasterMeta = {
 
                 return new Promise(function (resolve0, reject0) {
                     "use strict";
-                    let render_canvas_func = render_canvas.bind(this);
-                    let promise = this;
 
-                    let {
-                        _old_pxl_width,
-                        _old_pxl_height,
-                    } = state;
+                    if(state._last_paint_timestamp >= requested_at){
+                        resolve0();
+                    }else {
 
-                    // Importing state variables
-                    let {
-                        pxl_width,
-                        pxl_height,
-                    } = meta.super_state.get_state();
+                        let render_canvas_func = render_canvas.bind(this);
+                        let promise = this;
 
-                    // Only operate on canvas context if existing
-                    if (meta.super_canvas.ok()) {
+                        let {
+                            _old_pxl_width,
+                            _old_pxl_height,
+                        } = state;
 
-                        let sizes = meta.canvas_pos.get_state().sizes;
-                        let is_there_new_dimension = Boolean(Boolean(parseInt(_old_pxl_width) !== parseInt(pxl_width)) || Boolean(parseInt(_old_pxl_height) !== parseInt(pxl_height)));
-                        let is_there_different_dimension = parseInt(sizes.width) !== parseInt(pxl_width) || parseInt(sizes.height) !== parseInt(pxl_height);
+                        // Importing state variables
+                        let {
+                            pxl_width,
+                            pxl_height,
+                        } = meta.super_state.get_state();
 
-                        // If there is different dimension or if there are new dimension now
-                        if(is_there_different_dimension || is_there_new_dimension) {
+                        // Only operate on canvas context if existing
+                        if (meta.super_canvas.ok()) {
 
-                            // Update dimension
-                            meta.super_state.set_state({
-                                pxl_width: parseInt(sizes.width),
-                                pxl_height: parseInt(sizes.height)
-                            });
-                            // Tell there were new dimension
-                            state._is_there_new_dimension = true;
-                            // Update html for css animation
-                            notifiers.update(true, false).then(function () {
+                            let sizes = meta.canvas_pos.get_state().sizes;
+                            let is_there_new_dimension = Boolean(Boolean(parseInt(_old_pxl_width) !== parseInt(pxl_width)) || Boolean(parseInt(_old_pxl_height) !== parseInt(pxl_height)));
+                            let is_there_different_dimension = parseInt(sizes.width) !== parseInt(pxl_width) || parseInt(sizes.height) !== parseInt(pxl_height);
+
+                            // If there is different dimension or if there are new dimension now
+                            if(is_there_different_dimension || is_there_new_dimension) {
+
+                                // Update dimension
+                                meta.super_state.set_state({
+                                    pxl_width: parseInt(sizes.width),
+                                    pxl_height: parseInt(sizes.height)
+                                });
+                                // Tell there were new dimension
+                                state._is_there_new_dimension = true;
+                                // Update html for css animation
+                                notifiers.update(false, false).then(function () {
+                                    render_canvas_func(is_there_new_dimension, is_there_different_dimension, force_update, requested_at).then(resolve0).catch(function (error){
+                                        setTimeout(promise, 15, resolve0, reject0);
+                                    });
+                                }).catch(function () {
+                                    setTimeout(promise, 15, resolve0, reject0);
+                                });
+                            }else {
+
                                 render_canvas_func(is_there_new_dimension, is_there_different_dimension, force_update, requested_at).then(resolve0).catch(function (error){
                                     setTimeout(promise, 15, resolve0, reject0);
                                 });
-                            }).catch(function () {
-                                setTimeout(promise, 15, resolve0, reject0);
-                            });
+                            }
+
+
                         }else {
 
-                            render_canvas_func(is_there_new_dimension, is_there_different_dimension, force_update, requested_at).then(resolve0).catch(function (error){
-                                setTimeout(promise, 5, resolve0, reject0);
-                            });
+                            setTimeout(promise, 15, resolve0, reject0);
                         }
-
-
-                    }else {
-
-                        setTimeout(promise, 10, resolve0, reject0);
                     }
                 });
             },
@@ -362,9 +368,7 @@ const SuperMasterMeta = {
                                             meta.sraf.run_frame(function () {
                                                 meta.super_canvas.render(b2);
                                             }, is_there_new_dimension, false)
-                                                .catch(function (){
-                                                    promise(resolve0, reject0);
-                                                }).then(function () {
+                                                .catch(reject0).then(function () {
 
                                                     old_full_pxls = (old_full_pxls.length < full_pxls_length) ? new Uint32Array(full_pxls_length) : old_full_pxls;
                                                     old_full_pxls.set(full_pxls.subarray(0, full_pxls_length));
@@ -392,7 +396,7 @@ const SuperMasterMeta = {
                                 });
                             } else {
 
-                                resolve0();
+                                reject0();
                             }
                         });
                     }
