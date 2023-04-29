@@ -15,7 +15,6 @@ const SuperMasterMeta = {
             _old_pxls_hovered: new Set(),
             _old_selection_pair_highlight: true,
             _old_layers_string_id: "",
-            _old_full_pxls: new Uint32Array(0),
             _old_pxl_width: 0,
             _old_pxl_height: 0,
             _last_paint_timestamp: 0,
@@ -55,6 +54,7 @@ const SuperMasterMeta = {
 
         let shape_creator = meta.super_state.create_shape();
         let full_pxls = new Uint32Array(0);
+        let old_full_pxls = new Uint32Array(0);
 
         return {
             get: function() {
@@ -151,10 +151,10 @@ const SuperMasterMeta = {
 
                 return new Promise(function (resolve0, reject0) {
 
+                    let promise = this;
                     let {
                         _is_there_new_dimension,
                         _did_hide_canvas_content,
-                        _old_full_pxls,
                         _old_pxls_hovered,
                         _old_layers_string_id,
                         _pxl_indexes_of_old_shape,
@@ -288,7 +288,7 @@ const SuperMasterMeta = {
                         bool_old_selection = _pxl_indexes_of_selection_drawn.has(index | 0);
                         bool_new_import = imported_image_pxls_positioned_keyset.has(index | 0);
                         bool_old_import = _previous_imported_image_pxls_positioned_keyset.has(index | 0);
-                        bool_new_pixel = uint_not_equal(full_pxls[index | 0], _old_full_pxls[index | 0]);
+                        bool_new_pixel = uint_not_equal(full_pxls[index | 0], old_full_pxls[index | 0]);
 
                         if (
                             clear_canvas ||
@@ -354,27 +354,35 @@ const SuperMasterMeta = {
 
                             meta.super_canvas.pile(index_changes, color_changes).then(function () {
                                 meta.super_canvas.unpile(pxl_width, pxl_height).then(function () {
+
                                     meta.super_canvas.prender().then(function (b2) {
                                         meta.sraf.run_frame(function () {
                                             meta.super_canvas.render(b2);
-                                        }, is_there_new_dimension, force_update).then(function () {
+                                        }, is_there_new_dimension, is_there_new_dimension)
+                                            .catch(reject0)
+                                            .then(function () {
+
+                                            old_full_pxls = (old_full_pxls.length < full_pxls_length) ? new Uint32Array(full_pxls_length): old_full_pxls;
+                                            old_full_pxls.set(full_pxls.subarray(0, full_pxls_length));
+
                                             state._previous_imported_image_pxls_positioned_keyset = imported_image_pxls_positioned_keyset;
                                             state._old_selection_pair_highlight = _selection_pair_highlight;
                                             state._old_layers_string_id = old_layers_string_id;
-                                            state._old_full_pxls = full_pxls;
                                             state._last_paint_timestamp = requested_at;
                                             state._did_hide_canvas_content = hide_canvas_content;
                                             state._old_pxl_width = parseInt(pxl_width);
                                             state._old_pxl_height = parseInt(pxl_height);
                                             state._is_there_new_dimension = false;
-                                            resolve0();
-                                        }).catch(reject0);
+
+                                            return Promise.resolve();
+
+                                        }).then(resolve0);
                                     }).catch(reject0);
                                 }).catch(reject0);
                             }).catch(reject0);
                         } else {
 
-                            reject0();
+                            resolve0();
                         }
                     });
                 });
@@ -616,7 +624,7 @@ const SuperMasterMeta = {
                                 _paint_or_select_hover_pxl_indexes_exception,
                                 _paint_or_select_hover_actions_latest_index: pxl_index | 0,
                                 _last_action_timestamp
-                            },this.update_canvas);
+                            },() => {this.update_canvas();});
                         }else {
 
                             meta.super_state.paint_shape(new_drawn_pxl_indexes, pxl_current_color_uint32, pxl_current_opacity, {
@@ -626,7 +634,7 @@ const SuperMasterMeta = {
                                 _paint_or_select_hover_pxl_indexes_exception,
                                 _paint_or_select_hover_actions_latest_index: pxl_index | 0,
                                 _last_action_timestamp
-                            }, this.update_canvas);
+                            }, () => {this.update_canvas();});
                         }
 
                         this._notify_position_change({x:pos_x|0, y: pos_y|0});
@@ -908,7 +916,7 @@ const SuperMasterMeta = {
                                     break;
                             }
 
-                            meta.super_state.paint_shape(pxl_indexes, pxl_current_color_uint32, pxl_current_opacity, {_shape_index_a: -1, _last_action_timestamp: Date.now()}, this.update_canvas);
+                            meta.super_state.paint_shape(pxl_indexes, pxl_current_color_uint32, pxl_current_opacity, {_shape_index_a: -1, _last_action_timestamp: Date.now()}, () => {this.update_canvas();});
                             this._notify_relevant_action_event(event, "#ffffffff", .6);
                         }
 
@@ -1063,7 +1071,7 @@ const SuperMasterMeta = {
                                 _paint_or_select_hover_actions_latest_index: pxl_index,
                                 _paint_hover_old_pxls_snapshot: new Uint16Array(meta.super_state.get_state()._s_pxls[_layer_index].buffer),
                                 _last_action_timestamp: Date.now()
-                            }, this.update_canvas);
+                            }, () => {this.update_canvas();});
 
                     }else if ((tool === "BUCKET" || tool === "HUE BUCKET" || tool === "SELECT COLOR THRESHOLD" || tool === "BORDER") && event_which === 1) {
 

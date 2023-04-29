@@ -222,7 +222,7 @@ const SuperCanvas = {
                                 }
                             }
 
-                            pool.exec(bpro, [s_width, pr_width, pr_height, pr_top_left_x, pr_top_left_y, pr_uint8a]).then(function(bitmap){
+                            bpro(s_width, pr_width, pr_height, pr_top_left_x, pr_top_left_y, pr_uint8a).then(function(bitmap){
 
                                 if(_state.b.bmp_t < new_bmp_t) {
 

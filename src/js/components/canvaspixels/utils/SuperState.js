@@ -159,23 +159,17 @@ const SuperState = {
         Object.defineProperty(State.prototype, 'set', {
             get: function() { "use strict"; return function(new_props) {
                 "use strict";
-                var state = this.state_;
-                return new Promise(function(resolve){
 
-                    let keys = Object.keys(new_props);
-                    let keys_length = keys.length | 0;
-                    let key = "";
+                for (var key in new_props) {
 
-                    for (let i = 0; (i|0) < (keys_length|0); i = (i+1|0)>>>0) {
+                    this.state_[key] = new_props[key];
+                }
 
-                        key = keys[i|0].toString();
-                        state[key] = new_props[key];
-                        if (key == "pxl_current_color") {
-                            state["pxl_current_color_uint32"] = _format_hex_color_getUin32(new_props[key]);
-                        }
-                    }
-                    resolve();
-                });
+                if("pxl_current_color" in new_props){
+                    this.state_["pxl_current_color_uint32"] = _format_hex_color_getUin32(new_props["pxl_current_color"]);
+                }
+
+                return Promise.resolve();
             }}
         });
 
