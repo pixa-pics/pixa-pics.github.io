@@ -1,40 +1,7 @@
 import {SIMDopeColors, SIMDopeColor} from "simdope/index";
 
 const SuperState = {
-    _format_hex_color_getUin32(hex) { // Supports #fff (short rgb), #fff0 (short rgba), #e2e2e2 (full rgb) and #e2e2e2ff (full rgba)
-
-        if(typeof hex === "undefined"){
-
-            return 0;
-        } else {
-
-            let a, b, c, d = "";
-            let formatted = "#00000000";
-
-            switch(hex.length) {
-
-                case 9:
-                    formatted = hex;
-                    break;
-                case 7:
-                    formatted = hex.concat("ff");
-                    break;
-                case 5:
-                    a = hex.charAt(1), b = hex.charAt(2), c = hex.charAt(3), d = hex.charAt(4);
-                    formatted =  "#".concat(a, a, b, b, c, c, d, d);
-                    break;
-                case 4:
-                    a = hex.charAt(1), b = hex.charAt(2), c = hex.charAt(3);
-                    formatted = "#".concat(a, a, b, b, c, c, "ff");
-                    break;
-            }
-
-            return parseInt(formatted.slice(1), 16);
-        }
-    },
     _get_build_state(props) {
-
-        let pxl_current_color_uint32 = this._format_hex_color_getUin32(props.pxl_current_color || "#00000000");
 
         return {
             _id: String(parseInt(1000 * Math.random() * 1000).toString(16)),
@@ -57,7 +24,7 @@ const SuperState = {
             pxl_width: 32,
             pxl_height: 32,
             pxl_current_color: props.pxl_current_color || "#00000000",
-            pxl_current_color_uint32: pxl_current_color_uint32,
+            pxl_current_color_uint32: SIMDopeColor.new_hex(props.pxl_current_color || "#00000000").uint32,
             pxl_current_opacity: props.pxl_current_opacity || 1,
             bucket_threshold: props.bucket_threshold || 0,
             color_loss: props.color_loss || 0.25,
@@ -135,49 +102,17 @@ const SuperState = {
             _processing_filters: false,
         };
     },
-    _build_state(props) {
-        "use strict";
-        let _format_hex_color_getUin32 = this._format_hex_color_getUin32;
-        let _state = this._get_build_state(props);
-
-        var State = function(state) {
-            "use strict";
-            state = state || {};
-            if (!(this instanceof State)) {
-                return new State(state);
-            }
-
-            this.state_ = state;
-        };
-
-        Object.defineProperty(State.prototype, 'get', {
-            get: function() { "use strict"; return function() {
-                "use strict";
-                return this.state_;
-            }}
-        });
-        Object.defineProperty(State.prototype, 'set', {
-            get: function() { "use strict"; return function(new_props) {
-                "use strict";
-
-                for (var key in new_props) {
-
-                    this.state_[key] = new_props[key];
-                }
-
-                if("pxl_current_color" in new_props){
-                    this.state_["pxl_current_color_uint32"] = _format_hex_color_getUin32(new_props["pxl_current_color"]);
-                }
-
-                return Promise.resolve();
-            }}
-        });
-
-        return State(_state);
-    },
     from: function(props){
         "use strict";
-        let _state = this._build_state(props);
+        let imported_img_data = {
+            imported_image_pxls_positioned: new Array(0),
+            imported_image_pxl_colors: new Uint32Array(0),
+            image_imported_resizer_index: -1,
+            imported_image_pxls_positioned_keyset: new Set()
+        };
+
+        let state_ = this._get_build_state(props);
+        let key = "";
 
         return {
             paint_shape(pxl_indexes, color, opacity, s, callback_function) {
@@ -185,50 +120,49 @@ const SuperState = {
 
                 s = s || {};
                 callback_function = callback_function || function(){};
-                pxl_indexes = new Set(pxl_indexes || []);
+                pxl_indexes = Uint32Array.from(pxl_indexes);
                 color = color | 0;
-                opacity = parseFloat(opacity);
+                opacity = Math.fround(opacity) * 255 | 0;
+                let indexes_length = pxl_indexes.length|0;
 
-                if(pxl_indexes.size > 0) {
+                if(indexes_length > 0) {
 
-                    let state = _state.get();
-                    let pxl_colors = state._s_pxl_colors[state._layer_index];
-                    let pxls = state._s_pxls[state._layer_index];
-                    let indexes = Uint32Array.from(pxl_indexes);
-                    let indexes_length = indexes.length|0;
-                    let sd_colors = SIMDopeColors(new Uint32Array(indexes_length));
+                    let pxl_colors = state_._s_pxl_colors[state_._layer_index];
+                    let pxls = state_._s_pxls[state_._layer_index];
+                    let sd_color_a = new Uint32Array(indexes_length);
+                    let sd_color_a2 = new Uint32Array(indexes_length);
+                        sd_color_a2.fill(color|0);
+                    let sd_colors = new SIMDopeColors(sd_color_a);
+                    let sd_colors2 = new SIMDopeColors(sd_color_a2);
+
                     for(let i = 0; (i|0) < (indexes_length|0); i = (i + 1 | 0)>>>0) {
-                        sd_colors.set_element(i|0, SIMDopeColor.new_uint32(pxl_colors[pxls[indexes[i|0]|0]]).blend_with(SIMDopeColor.new_uint32(color|0), opacity*255|0, false, false));
+                        sd_color_a[i|0] = pxl_colors[pxls[pxl_indexes[i|0]|0]] & 0xFFFFFFFF;
+                    }
+
+                    for(let i = 0; (i|0) < (indexes_length|0); i = (i + 1 | 0)>>>0) {
+                        sd_colors.get_element(i|0).blend_with(sd_colors2.get_element(i|0), opacity, false, false);
                     }
 
                     let new_ui32_colors = sd_colors.subarray_uint32(0, indexes_length);
-                    let pxl_colors_set = new Set(pxl_colors);
-                    let pxl_colors_new = [];
-                    Uint32Array.from(new Set(new_ui32_colors)).forEach(function(c){
+                    let colors = new Set(pxl_colors);
 
-                        if(!pxl_colors_set.has(c)){
-                            pxl_colors_set.add(c);
-                            pxl_colors_new.push(c);
-                        }
+                    new_ui32_colors.forEach(function (ui32){
+
+                        colors.add(ui32);
                     });
 
-                    if(pxl_colors_new.length > 0) {
-                        pxl_colors = Uint32Array.from(Array.from(pxl_colors).concat(pxl_colors_new));
+                    if(colors.size !== pxl_colors.length){
+
+                        pxl_colors = Uint32Array.from(colors);
                     }
 
                     for(let i = 0; (i|0) < (indexes_length|0); i = (i + 1 | 0)>>>0) {
-                        pxls[indexes[i|0]|0] = pxl_colors.indexOf(new_ui32_colors[i|0]);
+                        pxls[pxl_indexes[i|0]|0] = pxl_colors.lastIndexOf(new_ui32_colors[i|0]) & 0xFFFF;
                     }
 
-                    state._s_pxl_colors[state._layer_index|0] = pxl_colors instanceof Uint32Array ? pxl_colors: Uint32Array.from(pxl_colors);
-                    state._s_pxls[state._layer_index|0] = pxls instanceof Uint16Array ? pxls: Uint16Array.from(pxls);
+                    state_._s_pxl_colors[state_._layer_index] = pxl_colors;
 
-                    const st = Object.assign(s, {
-                        _s_pxl_colors: state._s_pxl_colors,
-                        _s_pxls: state._s_pxls,
-                    });
-
-                    this.set_state(st).then(callback_function);
+                    this.set_state(s).then(callback_function);
                 }else {
 
                     callback_function();
@@ -236,20 +170,30 @@ const SuperState = {
             },
             set_state: function(new_props) {
                 "use strict";
-                return _state.set(new_props);
+
+                for (key in new_props) {
+
+                    state_[key] = new_props[key];
+                }
+
+                if("pxl_current_color" in new_props){
+                    state_["pxl_current_color_uint32"] = SIMDopeColor.new_hex(new_props["pxl_current_color"]).uint32;
+                }
+
+                return Promise.resolve();
             },
             get_state: function() {
                 "use strict";
-                return _state.get();
+                return state_;
             },
             get_cursor: function(_is_on_resize_element, _is_image_import_mode, mouse_down, tool, select_mode, canvas_event_target) {
                 "use strict";
                 _is_on_resize_element = Boolean(_is_on_resize_element);
                 _is_image_import_mode = Boolean(_is_image_import_mode);
                 mouse_down = Boolean(mouse_down);
-                tool = String(tool);
-                select_mode = String(select_mode);
-                canvas_event_target = String(canvas_event_target);
+                tool = "" + tool;
+                select_mode = "" + select_mode;
+                canvas_event_target = "" + canvas_event_target;
 
                 if(_is_image_import_mode) {
 
@@ -355,43 +299,42 @@ const SuperState = {
             },
             get_imported_image_data: function() {
                 "use strict";
-                let state = _state.get();
-                if(state._imported_image_pxls.length) {
+                if(state_._imported_image_pxls.length > 0) {
 
-                    let canvas_ctx = this.new_canvas_context_2d(state._imported_image_width, state._imported_image_height);
-                    state._imported_image_pxls.forEach((pxl, index) => {
+                    let canvas_ctx = this.new_canvas_context_2d(state_._imported_image_width, state_._imported_image_height);
+                    state_._imported_image_pxls.forEach((pxl, index) => {
 
-                        const pos_x = index % state._imported_image_width;
-                        const pos_y = (index - pos_x) / state._imported_image_width;
-                        canvas_ctx.fillStyle = "#".concat("00000000".concat(state._imported_image_pxl_colors[pxl].toString(16)).slice(-8));
+                        const pos_x = index % state_._imported_image_width;
+                        const pos_y = (index - pos_x) / state_._imported_image_width;
+                        canvas_ctx.fillStyle = "#".concat("00000000".concat(state_._imported_image_pxl_colors[pxl].toString(16)).slice(-8));
                         canvas_ctx.fillRect(pos_x, pos_y, 1, 1);
                     });
 
-                    const scaled_width = state._imported_image_width + state._imported_image_scale_delta_x;
-                    const scaled_height = state._imported_image_height + state._imported_image_scale_delta_y;
+                    const scaled_width = state_._imported_image_width + state_._imported_image_scale_delta_x;
+                    const scaled_height = state_._imported_image_height + state_._imported_image_scale_delta_y;
 
                     let canvas_resized_ctx = this.new_canvas_context_2d(scaled_width, scaled_height);
-                    canvas_resized_ctx.drawImage(canvas_ctx.canvas, 0, 0, state._imported_image_width, state._imported_image_height, 0, 0, scaled_width, scaled_height);
+                    canvas_resized_ctx.drawImage(canvas_ctx.canvas, 0, 0, state_._imported_image_width, state_._imported_image_height, 0, 0, scaled_width, scaled_height);
                     let resized_image_data = canvas_resized_ctx.getImageData(0, 0, scaled_width, scaled_height);
                     const {new_pxls, new_pxl_colors} = this.get_pixels_palette_and_list_from_image_data(resized_image_data);
-                    state._imported_image_width = scaled_width;
-                    state._imported_image_height = scaled_height;
+                    state_._imported_image_width = scaled_width;
+                    state_._imported_image_height = scaled_height;
 
 
                     let pxls_positioned = {};
                     let image_imported_resizer_index = -1;
                     if (new_pxls.length > 0) {
 
-                        image_imported_resizer_index = state._imported_image_start_x + scaled_width + (state._imported_image_start_y + scaled_height) * state.pxl_width | 0;
+                        image_imported_resizer_index = state_._imported_image_start_x + scaled_width + (state_._imported_image_start_y + scaled_height) * state_.pxl_width | 0;
                         new_pxls.forEach(function(pxl, index) {
 
                             const pos_x = index % scaled_width;
                             const pos_y = (index - pos_x) / scaled_width;
-                            const current_pos_x_positioned = pos_x + state._imported_image_start_x;
-                            const current_pos_y_positioned = pos_y + state._imported_image_start_y;
-                            const imported_image_pxl_positioned_index = current_pos_y_positioned * state.pxl_width + current_pos_x_positioned;
+                            const current_pos_x_positioned = pos_x + state_._imported_image_start_x;
+                            const current_pos_y_positioned = pos_y + state_._imported_image_start_y;
+                            const imported_image_pxl_positioned_index = current_pos_y_positioned * state_.pxl_width + current_pos_x_positioned;
 
-                            if (current_pos_x_positioned >= 0 && current_pos_x_positioned < state.pxl_width && current_pos_y_positioned >= 0 && current_pos_y_positioned < state.pxl_height) {
+                            if (current_pos_x_positioned >= 0 && current_pos_x_positioned < state_.pxl_width && current_pos_y_positioned >= 0 && current_pos_y_positioned < state_.pxl_height) {
 
                                 pxls_positioned[imported_image_pxl_positioned_index] = pxl | 0;
                             }
@@ -407,12 +350,7 @@ const SuperState = {
                     };
                 }else {
 
-                    return {
-                        imported_image_pxls_positioned: new Array(0),
-                        imported_image_pxl_colors: new Uint32Array(0),
-                        image_imported_resizer_index: -1,
-                        imported_image_pxls_positioned_keyset: new Set()
-                    };
+                    return imported_img_data;
                 }
             },
             get_pixels_palette_and_list_from_image_data: function(image_data) {
@@ -445,9 +383,9 @@ const SuperState = {
                     new_pxls: Array.from(new_pxls),
                 };
             },
-            new_canvas_context_2d: function(width, height, old_canvas) {
+            new_canvas_context_2d: function(width, height, old_context) {
                 "use strict";
-                let canvas = typeof old_canvas !== "undefined" ? old_canvas: undefined;
+                let canvas = typeof old_context !== "undefined" ? old_context.canvas: undefined;
 
                 if(typeof canvas === "undefined"){
 
@@ -463,66 +401,70 @@ const SuperState = {
                         canvas.width = width;
                         canvas.height = height;
                     }
+
+                    let context = canvas.getContext('2d', {willReadFrequently: true});
+                    context.mozImageSmoothingEnabled = false;
+                    context.webkitImageSmoothingEnabled = false;
+                    context.msImageSmoothingEnabled = false;
+                    context.imageSmoothingEnabled = false;
+
+                    return context;
+
                 }else {
+
                     canvas.width = width;
                     canvas.height = height;
+                    return old_context;
+                }
+            },
+            get_opposite_coordinates: function(width, from, to) {
+                "use strict";
+                width = width | 0;
+                from = from | 0;
+                to = to | 0;
+
+                let primary = {x:0, y:0};
+                let secondary = {x:0, y:0};
+
+                secondary.x = (to % width) | 0;
+                primary.x = (from % width) | 0;
+                primary.y = ((from -  primary.x) / width) | 0;
+                secondary.y = ((to - secondary.y)) / width | 0;
+
+                return {primary, secondary};
+            },
+
+            get_shadow_indexes_from_canvas_context: function(context, shadow_indexes) {
+                "use strict";
+                shadow_indexes = typeof shadow_indexes == "undefined" ? new Set(): shadow_indexes;
+                let ui8_colors = context.getImageData(0, 0, context.canvas.width, context.canvas.height).data;
+                let ui8_colors_length = ui8_colors.length >> 2;
+                for(let i = 0; (i|0) < (ui8_colors_length|0); i = (i + 1 | 0)>>>0) {
+                    if((ui8_colors[i<<2]|0) != 0) { shadow_indexes.add(i|0);}
                 }
 
-                let context = canvas.getContext('2d', {desynchronized: true, willReadFrequently: true});
-                context.mozImageSmoothingEnabled = false;
-                context.webkitImageSmoothingEnabled = false;
-                context.msImageSmoothingEnabled = false;
-                context.imageSmoothingEnabled = false;
-
-
-                return context;
+                return shadow_indexes;
             },
             create_shape: function() {
                 "use strict";
                 let new_canvas_context_2d = this.new_canvas_context_2d.bind(this);
+                let get_opposite_coordinates = this.get_opposite_coordinates.bind(this);
+                let get_shadow_indexes_from_canvas_context = this.get_shadow_indexes_from_canvas_context.bind(this);
 
-                let state = _state.get();
-                let width = state.pxl_width | 0;
-                let height = state.pxl_height | 0;
+                let width = state_.pxl_width | 0;
+                let height = state_.pxl_height | 0;
                 let context = new_canvas_context_2d(width, height);
+
                 context.save();
 
-                function get_opposite_coordinates(width, from, to) {
-                    "use strict";
-                    width = width | 0;
-                    from = from | 0;
-                    to = to | 0;
 
-                    let primary = {x:0, y:0};
-                    let secondary = {x:0, y:0};
-
-                    secondary.x = (to % width) | 0;
-                    primary.x = (from % width) | 0;
-                    primary.y = ((from -  primary.x) / width) | 0;
-                    secondary.y = ((to - secondary.y)) / width | 0;
-
-                    return {primary, secondary};
-                }
-
-                function get_shadow_indexes_from_canvas_context(context, shadow_indexes) {
-                    "use strict";
-                    shadow_indexes = typeof shadow_indexes == "undefined" ? new Set(): shadow_indexes;
-                    let ui8_colors = context.getImageData(0, 0, context.canvas.width, context.canvas.height).data;
-                    let ui8_colors_length = ui8_colors.length >> 2;
-                    for(let i = 0; (i|0) < (ui8_colors_length|0); i = (i + 1 | 0)>>>0) {
-                        if((ui8_colors[i<<2]|0) != 0) { shadow_indexes.add(i|0);}
-                    }
-
-                    return shadow_indexes;
-                }
 
                 // TO DO --> GET PREVIOUS COMMIT OR FINISH THIS
                 return {
                     update_state: function (){
-                        state = _state.get();
-                        width = state.pxl_width | 0;
-                        height = state.pxl_height | 0;
-                        context = new_canvas_context_2d(width, height, context.canvas);
+                        width = state_.pxl_width | 0;
+                        height = state_.pxl_height | 0;
+                        context = new_canvas_context_2d(width, height, context);
                     },
                     from_text: function (size, text) {
 

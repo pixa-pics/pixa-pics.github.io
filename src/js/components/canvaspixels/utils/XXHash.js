@@ -52,11 +52,11 @@ const XXHash = {
         return {
             // Methods
             get_info: function() {
-                return Object.assign({}, {
+                return {
                     version: s.xxh_v,
                     type: s.xxh_t,
                     timestamp: s.xxh_tt
-                });
+                };
             },
             base58_that: function (array_buffer) {
                 "use strict";
@@ -81,7 +81,7 @@ const XXHash = {
                     c = (c + 1 | 0) & 0xF;
                 }
 
-                return ""+String.fromCharCode.apply(null, encoded.slice(0, c|0));
+                return "" + String.fromCharCode.apply(null, encoded.slice(0, c|0));
             }
         };
     }

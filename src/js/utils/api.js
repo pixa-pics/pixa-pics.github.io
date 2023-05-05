@@ -78,7 +78,7 @@ const init = () => {
 
 const _merge_object = (obj1, obj2) => {
 
-    return Object.assign({}, {...obj1, ...obj2});
+    return Object.assign(obj1, obj2);
 };
 
 const _get_default_settings = () => {
