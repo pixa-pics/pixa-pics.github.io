@@ -54,9 +54,7 @@ const SuperMasterMeta = {
 
         let shape_creator = meta.super_state.create_shape();
         let full_pxls = new Uint32Array(0);
-        let half_pxls = new Uint16Array(0);
         let old_full_pxls = new Uint32Array(0);
-        let old_half_pxls = new Uint16Array(0);
 
         let key = "";
         let requested_at = 0;
@@ -197,6 +195,9 @@ const SuperMasterMeta = {
                 shape_creator.update_state();
                 _pxl_indexes_of_current_shape.clear();
                 full_pxls = (full_pxls.length < pixels_in_current_layer_length) ? new Uint32Array(pixels_in_current_layer_length) : full_pxls;
+                for (let i = 0; (i | 0) < (pixels_in_current_layer_length | 0); i = (i + 1 | 0) >>> 0) {
+                    full_pxls[i | 0] = (colors_in_current_layer[pixels_in_current_layer[i | 0] | 0] | 0)>>>0;
+                }
 
                 if (Boolean(tool === "LINE" || tool === "RECTANGLE" || tool === "ELLIPSE" || tool === "TRIANGLE") && _shape_index_a !== - 1 && _pxls_hovered !== - 1) {
 
@@ -259,7 +260,6 @@ const SuperMasterMeta = {
                 let pos_y = 0;
 
                 old_full_pxls = (old_full_pxls.length < full_pxls_length) ? new Uint32Array(full_pxls_length) : old_full_pxls;
-                old_half_pxls = (old_half_pxls.length < full_pxls_length) ? new Uint16Array(full_pxls_length) : old_half_pxls;
 
                 meta_super_blend.update(plus_uint(_layers.length, 1), full_pxls_length | 0);
                 for (let index = 0; int_less(index, full_pxls_length); index = plus_uint(index, 1)) {
@@ -272,7 +272,7 @@ const SuperMasterMeta = {
                     bool_old_selection = _pxl_indexes_of_selection_drawn.has(index | 0);
                     bool_new_import = imported_image_pxls_positioned_keyset.has(index | 0);
                     bool_old_import = _previous_imported_image_pxls_positioned_keyset.has(index | 0);
-                    bool_new_pixel = uint_not_equal(pixels_in_current_layer[index | 0], old_half_pxls[index|0]);
+                    bool_new_pixel = uint_not_equal(full_pxls[index | 0], old_full_pxls[index | 0]);
 
                     if (
                         clear_canvas ||
@@ -285,7 +285,7 @@ const SuperMasterMeta = {
                         bool_old_import != bool_new_import
                     ) {
 
-                        old_half_pxls[index|0] = (pixels_in_current_layer[index|0] | 0) >>> 0;
+                        old_full_pxls[index|0] = (full_pxls[index|0] | 0) >>> 0;
                         meta_super_blend.for(index | 0);
 
                         for (let i = 0; (i | 0) < (layers_length | 0); i = plus_uint(i, 1)) {
