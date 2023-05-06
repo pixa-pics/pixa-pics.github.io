@@ -766,7 +766,7 @@ class Pixel extends React.PureComponent {
                 let _saved_at_interval = setInterval(() => {
 
                     this.st4te._saved_at_el.innerText = t(this.st4te._saved_at, {mini: true});
-                });
+                }, 1000);
 
                 this.setSt4te({_saved_at_interval});
             });
@@ -876,13 +876,14 @@ class Pixel extends React.PureComponent {
         actions.trigger_loading_update(75);
         actions.jamy_update("flirty");
         actions.trigger_snackbar("Hold on! Compressing...", 1750);
-        if(current_state.kb > 1) {
+        if(current_state.kb > 0.5) {
 
             let attachment_array = {};
             attachment_array["json_state-ID" + current_state.id + ".json.lz"] = current_state;
 
             this.setSt4te({_kb: current_state.kb, _saved_at: Date.now()}, () => {
 
+                this.forceUpdate();
                 api.set_settings({}, (err, res) => {
 
                     if(err) {
@@ -1899,7 +1900,7 @@ class Pixel extends React.PureComponent {
             if(f.type.startsWith('image/')) {
                 smart_file = f;
             }
-        };
+        }
 
         if(smart_file !== null) {
 
@@ -3006,7 +3007,7 @@ class Pixel extends React.PureComponent {
                 </IconButton>
 
                 <Button className={classes.saveButton} variant={"text"} color={"primary"} onClick={this._backup_state}>
-                    <span id={"saved_at"}>?</span> <SaveIcon/> {_kb < 1 ? "?": Math.round(_kb * 10) / 10} kB
+                    <span id={"saved_at"}>?</span> <SaveIcon/> {_kb < 0.5 ? "?": Math.round(_kb * 10) / 10} kB
                 </Button>
 
                 <IconButton disabled={!_is_image_import_mode} className={classes.confirmImportButton} color={"primary"} size={"small"} onClick={() => {_canvas.confirm_import()}}>

@@ -750,9 +750,8 @@ const SuperMasterMeta = {
                     meta.super_state.set_state({
                         _pxls_hovered: pxl_index | 0,
                         _mouse_inside: true
-                    }).then(() => {
+                    }).then(this.update_canvas).then(( ) => {
 
-                        this.update_canvas();
                         this._notify_position_change({x:pos_x, y: pos_y});
                     });
 
@@ -781,7 +780,7 @@ const SuperMasterMeta = {
                     setTimeout(() => {
 
                         this._notify_position_change({x: position.x, y: position.y}, now);
-                    }, 33);
+                    }, 100-(date-now|0));
                 }
             },
             _handle_canvas_mouse_up(event) {

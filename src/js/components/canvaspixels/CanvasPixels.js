@@ -308,14 +308,14 @@ class CanvasPixels extends React.PureComponent {
             select_mode !== new_props.select_mode
         ) {
 
-            this.super_state.set_state(new_props).then(() => {
+            this.super_state.set_state(new_props, true).then(() => {
 
                 this._request_force_update(false, false).then(() => {this.super_master_meta.update_canvas();});
             });
 
         }else {
 
-            this.super_state.set_state(new_props);
+            this.super_state.set_state(new_props, true);
         }
     }
 
@@ -1327,13 +1327,13 @@ class CanvasPixels extends React.PureComponent {
             function(event){super_master_meta._handle_canvas_mouse_down(event)}
         );
         this.canvas_pos.init_speed_interval();
-        element.addEventListener("wheel", function(event){canvas_pos.handle_wheel(event)}, {capture: true});
-        element.addEventListener("pointerdown", function(event){canvas_pos.handle_pointer_down(event)}, {capture: true});
-        element.addEventListener("pointermove", function(event){canvas_pos.handle_pointer_move(event)}, {capture: true});
-        element.addEventListener("pointerup", function(event){canvas_pos.handle_pointer_up(event)}, {capture: true});
-        //element.addEventListener("pointercancel", function(event){canvas_pos.handle_pointer_up(event)}, {capture: true});
-        element.addEventListener("pointerout", function(event){canvas_pos.handle_pointer_up(event)}, {capture: true});
-        element.addEventListener("pointerleave", function(event){canvas_pos.handle_pointer_up(event)}, {capture: true});
+        element.addEventListener("wheel", function(event){canvas_pos.handle_wheel(event)}, {passive: false});
+        element.addEventListener("pointerdown", function(event){canvas_pos.handle_pointer_down(event)}, {passive: false});
+        element.addEventListener("pointermove", function(event){canvas_pos.handle_pointer_move(event)}, {passive: false});
+        element.addEventListener("pointerup", function(event){canvas_pos.handle_pointer_up(event)}, {passive: false});
+        //element.addEventListener("pointercancel", function(event){canvas_pos.handle_pointer_up(event)}, {capture: false});
+        element.addEventListener("pointerout", function(event){canvas_pos.handle_pointer_up(event)}, {passive: false});
+        element.addEventListener("pointerleave", function(event){canvas_pos.handle_pointer_up(event)}, {passive: false});
 
         this.super_state.set_state({_canvas_wrapper_overflow: element});
     };
@@ -3616,8 +3616,8 @@ class CanvasPixels extends React.PureComponent {
                              borderWidth: canvas_wrapper.border_width,
                              borderStyle: "solid",
                              borderColor: "#fff",
-                             background: perspective ? "linear-gradient(-45deg, goldenrod, rgb(124, 75, 0), gold, darkgoldenrod, rgb(139, 101, 11), goldenrod, rgb(84, 51, 0))": (canvas_event_target === "CANVAS") ? canvas_wrapper_background_color_focused: canvas_wrapper_background_color,
-                             transition: "background, filter cubic-bezier(0.4, 0, 0.2, 1) 225ms",
+                             background: perspective ? "linear-gradient(32deg, #6100fd, #5dbff3, #7be2f1, #98ecff, #32c4ff, #6d5bff, #020562)": (canvas_event_target === "CANVAS") ? canvas_wrapper_background_color_focused: canvas_wrapper_background_color,
+                             transition: "background, fi>lter cubic-bezier(0.4, 0, 0.2, 1) 225ms",
                              margin: 0,
                              borderRadius: canvas_wrapper_border_radius,
                              padding: padding,

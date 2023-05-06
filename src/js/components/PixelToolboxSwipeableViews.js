@@ -719,10 +719,10 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                             <span><AllLayersIcon/></span>
                             <span>All layers</span>
                         </ListSubheader>
-                        <div key={"layers-wrapper-length-"+layers.length}>
-                            {Array.from(layers).reverse().map((layer, index, array) => {
+                        <div key={"layers-wrapper-index-"+index}>
+                            {Array.from(layers).reverse().map((layer, index2, array) => {
 
-                                const index_reverse_order = (array.length - 1) - index;
+                                const index_reverse_order = (array.length - 1) - index2;
                                 if (typeof layer.colors === "undefined") {
                                     return null;
                                 }
@@ -736,8 +736,8 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                                             onClick={() => this._change_active_layer(index_reverse_order)}>
                                             <ListItemAvatar>
                                                 <canvas
-                                                    className={"pixelated " + classes.layerThumbnail}
-                                                    ref={(el) => {this._set_canvas_ref(el, layer.thumbnail)}}
+                                                    className={"pixelated " + classes.layerThumbnail + " " + index}
+                                                    ref={(el) => {this._set_canvas_ref(el, layer.thumbnail, true)}}
                                                     key={"layer-n-"+index_reverse_order+"-w-"+layer.thumbnail.width+"-h-"+layer.thumbnail.height}
                                                     width={layer.thumbnail.width || 0}
                                                     height={layer.thumbnail.height || 0}
@@ -1869,7 +1869,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                                 style: {position: "relative", width: "100%", height: "100%" },
                                 icon: <canvas
                                     className={"pixelated"}
-                                    ref={(el) => {this._set_canvas_ref(el, bmp)}}
+                                    ref={(el) => {this._set_canvas_ref(el, bmp, true)}}
                                     width={width || 1}
                                     height={height || 1}
                                     style={{ zIndex: "-1", aspectRatio: _filter_aspect_ratio, boxSizing: "border-box", height: "100%", minWidth: "100%", width: 128, boxShadow: "0px 1px 2px #3729c1a8", border: "4px solid #020529", borderRadius: 2, contain: "paint style size"}}
@@ -2380,6 +2380,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
     render() {
 
         const {view_name_index, previous_view_name_index} = this.st4te;
+        const cache = this._cache;
 
         return (
             <SwipeableViews
@@ -2394,12 +2395,12 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                 disabled={false}
                 key={"swipe-able-view"}
             >
-                {this.get_action_panel_names().map((name, index) => {
+                {this.get_action_panel_names().map(function (name, index){
 
                     if(view_name_index !== index && previous_view_name_index !== index) {
                         return (<List key={name} style={{ willChange: "none", minHeight: "100%", contain: "style layout paint", overflow: "auto", contentVisibility: "visible", paddingTop: 0}} />);
                     }else {
-                        return this._cache[name];
+                        return cache[name];
                     }
                 })}
             </SwipeableViews>
