@@ -444,11 +444,20 @@ const SuperState = {
 
             get_shadow_indexes_from_canvas_context: function(context, shadow_indexes) {
                 "use strict";
-                shadow_indexes = typeof shadow_indexes == "undefined" ? new Set(): shadow_indexes;
+                shadow_indexes = shadow_indexes instanceof Set ? shadow_indexes: typeof shadow_indexes != "undefined" ? shadow_indexes: new Set();
                 let ui8_colors = context.getImageData(0, 0, context.canvas.width, context.canvas.height).data;
                 let ui8_colors_length = ui8_colors.length >> 2;
-                for(let i = 0; (i|0) < (ui8_colors_length|0); i = (i + 1 | 0)>>>0) {
-                    if((ui8_colors[i<<2]|0) != 0) { shadow_indexes.add(i|0);}
+
+                if(shadow_indexes instanceof  Set) {
+
+                    for(let i = 0; (i|0) < (ui8_colors_length|0); i = (i + 1 | 0)>>>0) {
+                        if((ui8_colors[i<<2]|0) != 0) { shadow_indexes.add(i|0);}
+                    }
+                }else {
+
+                    for(let i = 0; (i|0) < (ui8_colors_length|0); i = (i + 1 | 0)>>>0) {
+                        if((ui8_colors[i<<2]|0) != 0) { shadow_indexes[i|0] = 1;}
+                    }
                 }
 
                 return shadow_indexes;
@@ -474,7 +483,7 @@ const SuperState = {
                         height = state_.pxl_height | 0;
                         context = new_canvas_context_2d(width, height, context);
                     },
-                    from_text: function (size, text) {
+                    from_text: function (size, text, onto) {
 
                         context.clearRect(0, 0, width, height);
                         context.font = `${size}px "Jura"`;
@@ -483,7 +492,7 @@ const SuperState = {
                         context.fillText(text, width/2, height/2);
                         return get_shadow_indexes_from_canvas_context(context);
                     },
-                    from_border: function(selection, inside, bold ) {
+                    from_border: function(selection, inside, bold, onto ) {
                         "use strict";
                         inside = inside || true;
                         bold = bold || false;
@@ -567,7 +576,7 @@ const SuperState = {
 
                         return pxls_of_the_border;
                     },
-                    from_path: function(path_indexes){
+                    from_path: function(path_indexes, onto){
                         "use strict";
 
                         context.clearRect(0, 0, width, height);
@@ -593,13 +602,13 @@ const SuperState = {
                         context.stroke();
                         context.fill();
 
-                        return get_shadow_indexes_from_canvas_context(context, path_indexes);
+                        return get_shadow_indexes_from_canvas_context(context, path_indexes, onto);
                     },
-                    from_line: function(from, to) {
+                    from_line: function(from, to, onto) {
                         "use strict";
                         from = from | 0;
                         to = to | 0;
-                        let pxl_indexes = new Set();
+                        let pxl_indexes = typeof onto == "undefined" ? new Set(): onto;
                         let c = get_opposite_coordinates(width, from, to);
                         let dx = Math.abs(c.secondary.x - c.primary.x) | 0;
                         let dy = Math.abs(c.secondary.y - c.primary.y) | 0;
@@ -608,33 +617,55 @@ const SuperState = {
                         let err = (dx - dy) | 0;
                         let e2 = 0;
 
-                        while(true){
+                        if(pxl_indexes instanceof Set) {
+                            while(true){
 
-                            pxl_indexes.add((c.primary.y * width + c.primary.x)|0);
+                                pxl_indexes.add((c.primary.y * width + c.primary.x)|0);
 
-                            if((c.primary.x|0) == (c.secondary.x|0) && (c.primary.y|0) == (c.secondary.y|0)) { break; }
+                                if((c.primary.x|0) == (c.secondary.x|0) && (c.primary.y|0) == (c.secondary.y|0)) { break; }
 
-                            e2 = (2 * err) | 0;
+                                e2 = (2 * err) | 0;
 
-                            if ((e2|0) > (-dy|0)) {
+                                if ((e2|0) > (-dy|0)) {
 
-                                err = (err-dy)|0;
-                                c.primary.x  = (c.primary.x+sx)|0;
+                                    err = (err-dy)|0;
+                                    c.primary.x  = (c.primary.x+sx)|0;
+                                }
+                                if ((e2|0) < (dx|0)) {
+
+                                    err = (err+dx)|0;
+                                    c.primary.y  = (c.primary.y+sy)|0;
+                                }
                             }
-                            if ((e2|0) < (dx|0)) {
+                        }else {
+                            while(true){
 
-                                err = (err+dx)|0;
-                                c.primary.y  = (c.primary.y+sy)|0;
+                                pxl_indexes[c.primary.y * width + c.primary.x|0] = 1;
+
+                                if((c.primary.x|0) == (c.secondary.x|0) && (c.primary.y|0) == (c.secondary.y|0)) { break; }
+
+                                e2 = (2 * err) | 0;
+
+                                if ((e2|0) > (-dy|0)) {
+
+                                    err = (err-dy)|0;
+                                    c.primary.x  = (c.primary.x+sx)|0;
+                                }
+                                if ((e2|0) < (dx|0)) {
+
+                                    err = (err+dx)|0;
+                                    c.primary.y  = (c.primary.y+sy)|0;
+                                }
                             }
                         }
 
                         return pxl_indexes;
                     },
-                    from_rectangle: function(from, to) {
+                    from_rectangle: function(from, to, onto) {
                         "use strict";
                         from = from | 0;
                         to = to | 0;
-                        let pxl_indexes = new Set();
+                        let pxl_indexes = typeof onto == "undefined" ? new Set(): onto;
                         let c = get_opposite_coordinates(width, from, to);
                         const rectangle_width = Math.abs(c.primary.x - c.secondary.x | 0) + 1 | 0;
                         const rectangle_height = Math.abs(c.primary.y - c.secondary.y | 0) + 1 | 0;
@@ -644,20 +675,31 @@ const SuperState = {
 
                         let inside_rectangle_x = 0;
                         let inside_rectangle_y = 0;
-                        for(let i = 0; i < pixel_number_in_rectangle; i = (i + 1 | 0) >>> 0) {
 
-                            inside_rectangle_x = i % rectangle_width | 0;
-                            inside_rectangle_y = (i - inside_rectangle_x | 0) / rectangle_width | 0;
-                            pxl_indexes.add((rectangle_top_left_y + inside_rectangle_y | 0) * width + (rectangle_top_left_x + inside_rectangle_x | 0) | 0);
+
+                        if(pxl_indexes instanceof Set) {
+
+                            for(let i = 0; i < pixel_number_in_rectangle; i = (i + 1 | 0) >>> 0) {
+                                inside_rectangle_x = i % rectangle_width | 0;
+                                inside_rectangle_y = (i - inside_rectangle_x | 0) / rectangle_width | 0;
+                                pxl_indexes.add((rectangle_top_left_y + inside_rectangle_y | 0) * width + (rectangle_top_left_x + inside_rectangle_x | 0) | 0);
+                            }
+                        }else {
+
+                            for(let i = 0; i < pixel_number_in_rectangle; i = (i + 1 | 0) >>> 0) {
+                                inside_rectangle_x = i % rectangle_width | 0;
+                                inside_rectangle_y = (i - inside_rectangle_x | 0) / rectangle_width | 0;
+                                pxl_indexes[(rectangle_top_left_y + inside_rectangle_y | 0) * width + (rectangle_top_left_x + inside_rectangle_x) | 0] = 1;
+                            }
                         }
 
                         return pxl_indexes;
                     },
-                    from_ellipse: function(from, to) {
+                    from_ellipse: function(from, to, onto) {
                         "use strict";
                         from = from | 0;
                         to = to | 0;
-                        let pxl_indexes = new Set();
+                        let pxl_indexes = typeof onto == "undefined" ? new Set(): onto;
                         let c = get_opposite_coordinates(width|0, from|0, to|0);
                         let ellipse_width = Math.abs(c.primary.x - c.secondary.x|0) + 1 | 0;
                         let ellipse_height = Math.abs(c.primary.y - c.secondary.y|0) + 1 | 0;
