@@ -427,7 +427,9 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
             _compressed: false,
             _upscale: false,
             _vectorized: false,
-            _list_sub_header_opened: ""
+            _list_sub_header_opened: "",
+            _slider_value_width: props.slider_value_width,
+            _slider_value_height: props.slider_value_height,
         };
 
         this._cache = {
@@ -1905,12 +1907,17 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
         }
     };
 
+    canvas_set_size = () => {
+
+        this.st4te.canvas._set_size(this.st4te._slider_value_width, this.st4te._slider_value_height);
+    };
+
     get_after_action_panel = (index) => {
 
         const {
             classes,
-            width,
-            height
+            _slider_value_width,
+            _slider_value_height
         } = this.st4te;
 
         const panel_names = this.get_action_panel_names();
@@ -1933,15 +1940,17 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                         width: "100%"
                     }}>
                         <Typography id="width-slider" gutterBottom>Width</Typography>
-                        <Slider value={width} step={8} valueLabelDisplay="auto" min={0}
-                                max={width > 512 ? width : 512}
+                        <Slider defaultValue={_slider_value_width} step={1} valueLabelDisplay="auto" min={0}
+                                max={512} key={"slider-width-"+_slider_value_width}
                                 onChangeCommitted={this._set_width_from_slider}
                                 aria-labelledby="width-slider"/>
                         <Typography id="height-slider" gutterBottom>Height</Typography>
-                        <Slider value={height} step={8} valueLabelDisplay="auto" min={0}
-                                max={height > 512 ? height : 512}
+                        <Slider defaultValue={_slider_value_height} step={1} valueLabelDisplay="auto" min={0}
+                                max={512} key={"slider-height-"+_slider_value_height}
                                 onChangeCommitted={this._set_height_from_slider}
                                 aria-labelledby="height-slider"/>
+                        <Typography id="confirm-slider" gutterBottom>Confirm</Typography>
+                        <Button fullWidth textPrimary onClick={() => {this.canvas_set_size()}} >Create my new canvas</Button>
                     </div>
                 </div>
             );

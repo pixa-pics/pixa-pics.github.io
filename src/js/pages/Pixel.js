@@ -620,6 +620,8 @@ class Pixel extends React.PureComponent {
             _import_colorize: "0",
             _hue: 360,
             _slider_value: 8/32,
+            _slider_value_width: 192,
+            _slider_value_height: 96,
             _game_ended: false,
             _tool: is_mobile_or_tablet ? "MOVE": "PENCIL",
             _memory_tool: is_mobile_or_tablet ? "MOVE": "PENCIL",
@@ -2114,19 +2116,17 @@ class Pixel extends React.PureComponent {
 
     _set_value_from_slider_with_update = (event, value) => {
 
-        this.setSt4te({_slider_value: value});
+        this.setSt4te({_slider_value: value || event.target.value});
     };
 
     _set_width_from_slider = (event, value) => {
 
-        const { _set_size } = this.st4te._canvas;
-        _set_size(value, null);
+        this.setSt4te({_slider_value_width: value || event.target.value});
     };
 
     _set_height_from_slider = (event, value) => {
 
-        const { _set_size } = this.st4te._canvas;
-        _set_size(null, value);
+        this.setSt4te({_slider_value_height: value || event.target.value});
     };
 
     _set_import_size = (event, value) => {
@@ -2577,6 +2577,8 @@ class Pixel extends React.PureComponent {
             _time_ago_initiated,
             _settings,
             _text_dialog_open,
+            _slider_value_width,
+            _slider_value_height
         } = this.st4te;
 
         _menu_data.pos_x = _menu_data.pos_x === -1 ? "out": _menu_data.pos_x;
@@ -2629,6 +2631,8 @@ class Pixel extends React.PureComponent {
                         <div className={classes.drawerContainer} ref={this._set_toolbox_container_ref}>
                             <PixelToolboxSwipeableViews
                                 should_update={_is_edit_drawer_open}
+                                slider_value_width={_slider_value_width}
+                                slider_value_height={_slider_value_height}
                                 onActionClose={this._handle_edit_drawer_close}
                                 canvas={_canvas}
                                 is_mobile={is_mobile_or_tablet}
@@ -2712,9 +2716,10 @@ class Pixel extends React.PureComponent {
                                 Effect strength :
                             </Typography>
                             <Slider
+                                key={"slider-"+(_slider_value*64 | 0)}
                                 defaultValue={_slider_value}
                                 className={classes.effectSlider}
-                                step={1/32}
+                                step={1/64}
                                 min={0}
                                 max={1}
                                 onChangeCommitted={this._set_value_from_slider_with_update}
@@ -2739,7 +2744,9 @@ class Pixel extends React.PureComponent {
                     </div>
                     <div className={classes.drawerContainer} ref={this._set_toolbox_container_ref}>
                         <PixelToolboxSwipeableViews
-                            should_update={true}
+                            should_update={!_is_edit_drawer_open}
+                            slider_value_width={_slider_value_width}
+                            slider_value_height={_slider_value_height}
                             canvas={_canvas}
                             view_class={classes.listOfTools}
                             is_mobile={is_mobile_or_tablet}

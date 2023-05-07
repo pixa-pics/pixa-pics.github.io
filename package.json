@@ -38,7 +38,7 @@
     "react-swipeable-views": "~0.13.9",
     "readable-stream": "~4.1.0",
     "regenerator-runtime": "~0.13.9",
-    "simdope": "~2.2.1",
+    "simdope": "~3.0.0",
     "superjsonatural": "~3.1.0",
     "svg64": "~1.1.0",
     "svgo": "~2.8.0",
@@ -68,66 +68,6 @@
     "webpack-cli": "~4.10.0",
     "webpack-dev-server": "~4.11.1"
   },
-  "build": {
-    "appId": "pixapics",
-    "nwVersion": "0.54.1",
-    "targets": [
-      "zip"
-    ],
-    "files": [
-      "/index.html",
-      "/404.html",
-      "/src/fonts/Jura-Medium.woff2",
-      "/manifest.json",
-      "/father-chunk.norris.min.js",
-      "/child-chunk.0.min.js",
-      "/child-chunk.1.min.js",
-      "/child-chunk.2.min.js",
-      "/child-chunk.3.min.js",
-      "/child-chunk.4.min.js",
-      "/child-chunk.5.min.js",
-      "/child-chunk.6.min.js",
-      "/child-chunk.7.min.js",
-      "/child-chunk.8.min.js",
-      "/child-chunk.main~1f20a385.min.js",
-      "/child-chunk.main~5a2dc592.min.js",
-      "/child-chunk.main~9acc357d.min.js",
-      "/child-chunk.main~253ae210.min.js",
-      "/child-chunk.main~748942c6.min.js",
-      "/child-chunk.main~af9f4ef7.min.js",
-      "/child-chunk.main~c1dd23ef.min.js",
-      "/child-chunk.main~c3be6df1.min.js",
-      "/child-chunk.main~f9ca8911.min.js",
-      "/src/images/manifest/logo-white.png",
-      "/src/images/favicon.ico",
-      "/src/images/fun.svg",
-      "/src/images/rocket_boy.svg",
-      "/src/images/background.svg",
-      "/src/images/logo-transparent.png",
-      "/src/images/heroes.svg",
-      "/src/images/404.svg",
-      "/src/images/office.svg",
-      "/src/images/travelers.svg",
-      "/src/images/painting.svg",
-      "/src/images/sane-healthy-memories.svg",
-      "/src/images/abduction.svg",
-      "/src/images/AI.svg",
-      "/src/images/DNA.svg",
-      "/src/images/CPU.svg",
-      "/src/images/laboratory.svg",
-      "/src/sounds/sfx/md/FullHorizonThrow.mp3",
-      "/src/sounds/sfx/md/hero_decorative-celebration-02.mp3",
-      "/src/sounds/sfx/md/navigation_selection-complete-celebration.mp3",
-      "/src/sounds/sfx/md/navigation_transition-left.mp3",
-      "/src/sounds/sfx/md/navigation_transition-right.mp3",
-      "/src/sounds/sfx/md/state-change_confirm-down.mp3",
-      "/src/sounds/sfx/md/ui_lock.mp3",
-      "/src/sounds/sfx/md/ui_unlock.mp3"
-    ],
-    "excludes": [
-      "/node-modules/**"
-    ]
-  },
   "scripts": {
     "dev": "NODE_ENV=development webpack-dev-server && ECHO 'You need to delete /client folder'",
     "build": "NODE_ENV=production webpack --node-env \"production\"",
@@ -137,6 +77,6 @@
     "build-notoemoji": "svgr ./src/js/notoemoji/original -d ./src/js/notoemoji/react",
     "optimize-notoemoji": "svgo  -f ./src/js/notoemoji/original"
   },
-  "author": "VIPERTECH",
+  "author": "VIPERTECH (Matias Affolter)",
   "license": "MIT"
 }
