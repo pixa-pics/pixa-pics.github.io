@@ -3572,9 +3572,9 @@ class CanvasPixels extends React.PureComponent {
         const is_mobile_or_tablet = this.sraf.get_state().is_mobile_or_tablet;
         const cursor = this.super_state.get_cursor(_is_on_resize_element, _is_image_import_mode, mouse_down, tool, select_mode, canvas_event_target);
 
-        const canvas_wrapper_width = Math.round(pxl_width * screen_zoom_ratio * scale.current);
-        const canvas_wrapper_height = Math.round(pxl_height * screen_zoom_ratio * scale.current);
-        const padding = Math.floor(canvas_wrapper.padding / device_pixel_ratio * scale.current);
+        const canvas_wrapper_width = pxl_width * screen_zoom_ratio * scale.current + 0.5 | 0;
+        const canvas_wrapper_height = pxl_height * screen_zoom_ratio * scale.current + 0.5 | 0;
+        const padding = canvas_wrapper.padding / device_pixel_ratio * scale.current | 0;
 
         const background_image_style_props = Boolean(show_original_image_in_background && typeof _base64_original_images[_original_image_index] !== "undefined") ?
             {background: `center / cover no-repeat url("${_base64_original_images[_original_image_index]}")`}:
@@ -3582,7 +3582,7 @@ class CanvasPixels extends React.PureComponent {
                 {background: `repeating-conic-gradient(rgb(248 248 248 / 100%) 0% 25%, rgb(235 235 235 / 100%) 0% 50%) left top 50% / calc(200% / ${pxl_width}) calc(200% / ${pxl_height})`}: {};
 
         return (
-            <div onContextMenu={(e) => {e.preventDefault()}}
+            <div onContextMenu={function (e){e.preventDefault()}}
                  ref={this._set_canvas_container_ref} draggable={"false"}
                  style={{zIndex: 11, boxSizing: "border-box", position: "relative", overflow: "visible", touchAction: "none", userSelect: "none", display: "block"}}
                  className={className}>
@@ -3608,7 +3608,8 @@ class CanvasPixels extends React.PureComponent {
                          className={"Canvas-Wrapper " + (_mouse_inside ? " Canvas-Focused ": " " + (tool))}
                          draggable={"false"}
                          style={{
-                             display: "block",
+                             display: "inline-block",
+                             position: "fixed",
                              contain: "layout style size paint",
                              overflow: "hidden",
                              left: 0,
@@ -3621,12 +3622,12 @@ class CanvasPixels extends React.PureComponent {
                              margin: 0,
                              borderRadius: canvas_wrapper_border_radius,
                              padding: padding,
-                             width: Math.floor(canvas_wrapper_width),
-                             height: Math.floor(canvas_wrapper_height),
+                             width: canvas_wrapper_width | 0,
+                             height: canvas_wrapper_height | 0,
                              boxShadow: box_shadow,
                              filter: `opacity(${!is_there_new_dimension ? "1": "0"}) ${perspective ? filter: ""}`,
                              webkitFilter: `opacity(${!is_there_new_dimension ? "1": "0"}) ${perspective ? filter: ""}`,
-                             transform: `translate(${Math.round(scale.move_x * 100) / 100}px, ${Math.round(scale.move_y * 100) / 100}px) ${perspective ? transform_rotate: ""}`,
+                             transform: `translate(${((scale.move_x * 100 | 0) / 100).toFixed(2)}px, ${((scale.move_y * 100 | 0) / 100).toFixed(2)}px) ${perspective ? transform_rotate: ""}`,
                              willChange: will_change ? "transform, box-shadow": "",
                              transformOrigin: "center middle",
                              mixBlendMode: perspective ? "screen": "inherit",
@@ -3660,8 +3661,8 @@ class CanvasPixels extends React.PureComponent {
                             }}
                             className={"Canvas-Pixels"}
                             ref={this._set_canvas_ref}
-                            width={Math.floor(pxl_width)}
-                            height={Math.floor(pxl_height)}/>
+                            width={pxl_width | 0}
+                            height={pxl_height | 0}/>
                         {
                             Boolean(perspective) &&
                             <div className={"Canvas-Pixels-Cover"}
@@ -3676,8 +3677,8 @@ class CanvasPixels extends React.PureComponent {
                                      top: 0,
                                      borderWidth: 0,
                                      position: "absolute",
-                                     width: Math.ceil(Math.floor(pxl_width) * (screen_zoom_ratio * scale.current).toFixed(3) + 2 * padding),
-                                     height: Math.ceil(Math.floor(pxl_height) * (screen_zoom_ratio * scale.current).toFixed(3) + 2 * padding),
+                                     width: ((pxl_width|0) * (screen_zoom_ratio * scale.current) + 2 * padding + 0.5 | 0),
+                                     height: ((pxl_height|0) * (screen_zoom_ratio * scale.current) + 2 * padding + 0.5 | 0),
                                      boxSizing: "content-box",
                                      touchAction: "none",
                                      pointerEvents: "none",
@@ -3714,10 +3715,10 @@ class CanvasPixels extends React.PureComponent {
                         backgroundImage: `url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1NzU4LjY2NyAyNDAiIHdpZHRoPSI3Njc4LjIyMyIgaGVpZ2h0PSIzMjAiPjxkZWZzPjxjbGlwUGF0aCBpZD0iQSI+PHBhdGggZD0iTTAgMGg1NzU4LjY2N3YyNDBIMHoiLz48L2NsaXBQYXRoPjwvZGVmcz48ZyBjbGlwLXBhdGg9InVybCgjQSkiIGZpbGw9IiM3NzciPjxwYXRoIGQ9Ik05MjEgMTgwaDMwdjYwaC0zMHptLTIzMiAwaDMwdjYwaC0zMHptLTIyOSAwaDMwdjYwaC0zMHptLTIyOSAwaDMwdjYwaC0zMHpNMCAwaDMwdjI0MEgwem0yMDczIDE4MGgzMHY2MGgtMzB6bS0yMzIgMGgzMHY2MGgtMzB6bS0yMjkgMGgzMHY2MGgtMzB6bS0yMjkgMGgzMHY2MGgtMzB6TTExNTIgMGgzMHYyNDBoLTMwem0yMDczIDE4MGgzMHY2MGgtMzB6bS0yMzIgMGgzMHY2MGgtMzB6bS0yMjkgMGgzMHY2MGgtMzB6bS0yMjkgMGgzMHY2MGgtMzB6TTIzMDQgMGgzMHYyNDBoLTMwem0yMDczIDE4MGgzMHY2MGgtMzB6bS0yMzIgMGgzMHY2MGgtMzB6bS0yMjkgMGgzMHY2MGgtMzB6bS0yMjkgMGgzMHY2MGgtMzB6TTM0NTYgMGgzMHYyNDBoLTMwem0yMDczIDE4MGgzMHY2MGgtMzB6bS0yMzIgMGgzMHY2MGgtMzB6bS0yMjkgMGgzMHY2MGgtMzB6bS0yMjkgMGgzMHY2MGgtMzB6TTQ2MDggMGgzMHYyNDBoLTMweiIvPjwvZz48L3N2Zz4K")`,
                         backgroundPosition: "bottom",
                         backgroundRepeat: "repeat-x",
-                        backgroundSize: `${Math.round(scale.current * screen_zoom_ratio * 5 * 5)}px`,
+                        backgroundSize: `${scale.current * screen_zoom_ratio * 5 * 5 | 0}px`,
                         pointerEvents: "none",
                         touchAction: "none",
-                    }}><span>[{Math.round(scale.current * screen_zoom_ratio * 100) / 100}x]</span></div>}
+                    }}><span>[{(scale.current * screen_zoom_ratio * 100 | 0) / 100}x]</span></div>}
                 </div>
             </div>
         );
