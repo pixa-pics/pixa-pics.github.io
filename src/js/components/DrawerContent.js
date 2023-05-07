@@ -5,7 +5,6 @@ import {List, ListItem, ListItemIcon, ListItemText, Badge} from "@material-ui/co
 
 import PersonIcon from "@material-ui/icons/Person";
 import CodeIcon from "@material-ui/icons/Code";
-import PaymentIcon from "@material-ui/icons/Payment";
 import PaletteIcon from "@material-ui/icons/Palette";
 import InfoIcon from "@material-ui/icons/Info";
 
@@ -35,6 +34,31 @@ const styles = theme => ({
     },
     iconColor: {
         color: theme.palette.secondary.contrastText
+    },
+    "@global": {
+        "@keyframes glow": {
+            "0%": {
+                color: "#ffffff",
+                filter: "drop-shadow(1px 2px 3px white)"
+            },
+            "20%": {
+                color: "#ffd776",
+                filter: "drop-shadow(2px 4px 6px gold)"
+            },
+            "40%": {
+                color: "#ffffff",
+                filter: "drop-shadow(2px 4px 6px white)"
+            },
+            "100%": {
+                color: "#ffffff",
+                filter: "drop-shadow(1px 2px 3px white)"
+            },
+        }
+    },
+    iconColorGold: {
+        color: "#ffffff",
+        filter: "drop-shadow(2px 4px 6px gold)",
+        animation: "$glow 14s infinite ease-in-out",
     },
     iconLeft: {
         filter: "drop-shadow(0px 0px 15px #011562)",
@@ -175,7 +199,7 @@ class DrawerContent extends React.PureComponent {
                     </Fade>
                     <Fade in={true} timeout={300}>
                         <ListItem button className={classes.listItemGrey} onClick={(event) => this._open_link(event, "https://opencollective.com/pixapics")}>
-                            <ListItemIcon><PersonIcon className={classes.iconColor} /></ListItemIcon>
+                            <ListItemIcon><PersonIcon className={classes.iconColorGold} /></ListItemIcon>
                             <ListItemText primary="Donate" />
                         </ListItem>
                     </Fade>
@@ -189,12 +213,6 @@ class DrawerContent extends React.PureComponent {
                         <ListItem button className={classes.listItemGrey} onClick={(event) => this._open_link(event, "https://github.com/pixa-pics/pixa-pics.github.io")}>
                             <Badge className={classes.styledBadgeConnected} overlap="circular" badgeContent=" " variant="dot"><ListItemIcon><CodeIcon className={classes.iconColor} /></ListItemIcon></Badge>
                             <ListItemText primary="Source code" />
-                        </ListItem>
-                    </Fade>
-                    <Fade in={true} timeout={900}>
-                        <ListItem button className={classes.listItemGrey} onClick={(event) => this._open_link(event, "https://crypto.com/nft/r/wpfp8qu62z")}>
-                            <ListItemIcon><PaymentIcon className={classes.iconColor} /></ListItemIcon>
-                            <ListItemText primary="Showcase NFTs" secondary={"Create an account on crypto.com now, and you will receive up to $25 in CRO today due to our awesome partnership!"}/>
                         </ListItem>
                     </Fade>
                 </List>
