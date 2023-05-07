@@ -1,0 +1,27 @@
+name: NodeJS with Webpack
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [12.22.9]
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Use Node.js 12.22.9
+        uses: actions/setup-node@v2
+        with:
+          node-version: 12.22.9
+
+      - name: Build
+        run: |
+          npm run build

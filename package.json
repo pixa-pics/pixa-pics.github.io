@@ -1,6 +1,6 @@
 {
   "name": "pixa.pics",
-  "version": "1.0.1.0",
+  "version": "2.0.0",
   "description": "Pixel art editor. Make potential (un)limited.",
   "main": "/index.html",
   "dependencies": {
