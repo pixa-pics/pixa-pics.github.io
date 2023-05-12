@@ -1,3 +1,4 @@
+import SetFixed from "../../../utils/SetFixed";
 import {SIMDopeColors, SIMDopeColor} from "simdope/index";
 
 const SuperState = {
@@ -41,8 +42,8 @@ const SuperState = {
             show_transparent_image_in_background: props.show_transparent_image_in_background || false,
             hide_canvas_content: props.hide_canvas_content || false,
             _pencil_mirror_index: -1,
-            _previous_pencil_mirror_axes_indexes: new Set(),
-            _previous_pencil_mirror_axes_hover_indexes: new Set(),
+            _previous_pencil_mirror_axes_indexes: new SetFixed((props.pxl_width || 32) * (props.pxl_height || 32)),
+            _previous_pencil_mirror_axes_hover_indexes: new SetFixed((props.pxl_width || 32) * (props.pxl_height || 32)),
             _base64_original_images: [],
             _original_image_index: -1,
             _layers: [{id: Date.now(), name: "Layer 0", hidden: false, opacity: 1}],
@@ -64,14 +65,14 @@ const SuperState = {
             _paint_hover_old_pxls_snapshot: new Uint16Array((props.pxl_width || 32) * (props.pxl_height || 32)).fill(0),
             _select_hover_old_pxls_snapshot: new Uint16Array(),
             _paint_or_select_hover_actions_latest_index: -1,
-            _paint_or_select_hover_pxl_indexes: new Set(),
-            _paint_or_select_hover_pxl_indexes_exception: new Set(),
+            _paint_or_select_hover_pxl_indexes: new SetFixed((props.pxl_width || 32) * (props.pxl_height || 32)),
+            _paint_or_select_hover_pxl_indexes_exception: new SetFixed((props.pxl_width || 32) * (props.pxl_height || 32)),
             _shape_index_a: -1,
             _select_shape_index_a: -1,
             _shape_index_b: -1,
             _select_shape_index_b: -1,
-            _pxl_indexes_of_selection: new Set(),
-            _previous_pxl_indexes_of_selection: new Set(),
+            _pxl_indexes_of_selection: new SetFixed((props.pxl_width || 32) * (props.pxl_height || 32)),
+            _previous_pxl_indexes_of_selection: new SetFixed((props.pxl_width || 32) * (props.pxl_height || 32)),
             _imported_image_previous_start_x: 0,
             _imported_image_previous_start_y: 0,
             _imported_image_start_x: 0,
@@ -108,7 +109,7 @@ const SuperState = {
             imported_image_pxls_positioned: new Array(0),
             imported_image_pxl_colors: new Uint32Array(0),
             image_imported_resizer_index: -1,
-            imported_image_pxls_positioned_keyset: new Set()
+            imported_image_pxls_positioned_keyset: new SetFixed((props.pxl_width || 32) * (props.pxl_height || 32))
         };
 
         let state_ = this._get_build_state(props);
@@ -120,9 +121,9 @@ const SuperState = {
 
                 s = s || {};
                 callback_function = callback_function || function(){};
-                pxl_indexes = Uint32Array.from(pxl_indexes);
+                pxl_indexes = pxl_indexes.map(function (i){return i|0;});
                 color = color | 0;
-                opacity = Math.fround(opacity) * 255 | 0;
+                opacity = opacity * 255 | 0;
                 let indexes_length = pxl_indexes.length|0;
 
                 if(indexes_length > 0) {
@@ -354,7 +355,7 @@ const SuperState = {
                         imported_image_pxls_positioned: pxls_positioned,
                         imported_image_pxl_colors: new_pxl_colors,
                         image_imported_resizer_index: image_imported_resizer_index,
-                        imported_image_pxls_positioned_keyset: new Set(Object.entries(pxls_positioned).map(function(e){return e[0] | 0;})),
+                        imported_image_pxls_positioned_keyset: new SetFixed(Object.entries(pxls_positioned).map(function(e){return e[0] | 0;})),
                     };
                 }else {
 
@@ -444,11 +445,11 @@ const SuperState = {
 
             get_shadow_indexes_from_canvas_context: function(context, shadow_indexes) {
                 "use strict";
-                shadow_indexes = shadow_indexes instanceof Set ? shadow_indexes: typeof shadow_indexes != "undefined" ? shadow_indexes: new Set();
+                shadow_indexes = shadow_indexes instanceof SetFixed ? shadow_indexes: typeof shadow_indexes != "undefined" ? shadow_indexes: new SetFixed(width*height);
                 let ui8_colors = context.getImageData(0, 0, context.canvas.width, context.canvas.height).data;
                 let ui8_colors_length = ui8_colors.length >> 2;
 
-                if(shadow_indexes instanceof  Set) {
+                if(shadow_indexes instanceof  SetFixed) {
 
                     for(let i = 0; (i|0) < (ui8_colors_length|0); i = (i + 1 | 0)>>>0) {
                         if((ui8_colors[i<<2]|0) != 0) { shadow_indexes.add(i|0);}
@@ -497,7 +498,7 @@ const SuperState = {
                         inside = inside || true;
                         bold = bold || false;
 
-                        let pxls_of_the_border = new Set();
+                        let pxls_of_the_border = new SetFixed(width*height);
 
                         selection.forEach((pxl_index, iteration) => {
 
@@ -608,7 +609,7 @@ const SuperState = {
                         "use strict";
                         from = from | 0;
                         to = to | 0;
-                        let pxl_indexes = typeof onto == "undefined" ? new Set(): onto;
+                        let pxl_indexes = typeof onto == "undefined" ? new SetFixed(width*height): onto;
                         let c = get_opposite_coordinates(width, from, to);
                         let dx = Math.abs(c.secondary.x - c.primary.x) | 0;
                         let dy = Math.abs(c.secondary.y - c.primary.y) | 0;
@@ -617,7 +618,7 @@ const SuperState = {
                         let err = (dx - dy) | 0;
                         let e2 = 0;
 
-                        if(pxl_indexes instanceof Set) {
+                        if(pxl_indexes instanceof SetFixed) {
                             while(true){
 
                                 pxl_indexes.add((c.primary.y * width + c.primary.x)|0);
@@ -665,7 +666,7 @@ const SuperState = {
                         "use strict";
                         from = from | 0;
                         to = to | 0;
-                        let pxl_indexes = typeof onto == "undefined" ? new Set(): onto;
+                        let pxl_indexes = typeof onto == "undefined" ? new SetFixed(width*height): onto;
                         let c = get_opposite_coordinates(width, from, to);
                         const rectangle_width = Math.abs(c.primary.x - c.secondary.x | 0) + 1 | 0;
                         const rectangle_height = Math.abs(c.primary.y - c.secondary.y | 0) + 1 | 0;
@@ -677,7 +678,7 @@ const SuperState = {
                         let inside_rectangle_y = 0;
 
 
-                        if(pxl_indexes instanceof Set) {
+                        if(pxl_indexes instanceof SetFixed) {
 
                             for(let i = 0; i < pixel_number_in_rectangle; i = (i + 1 | 0) >>> 0) {
                                 inside_rectangle_x = i % rectangle_width | 0;
@@ -699,7 +700,7 @@ const SuperState = {
                         "use strict";
                         from = from | 0;
                         to = to | 0;
-                        let pxl_indexes = typeof onto == "undefined" ? new Set(): onto;
+                        let pxl_indexes = typeof onto == "undefined" ? new SetFixed(width*height): onto;
                         let c = get_opposite_coordinates(width|0, from|0, to|0);
                         let ellipse_width = Math.abs(c.primary.x - c.secondary.x|0) + 1 | 0;
                         let ellipse_height = Math.abs(c.primary.y - c.secondary.y|0) + 1 | 0;

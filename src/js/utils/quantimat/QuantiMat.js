@@ -61,9 +61,9 @@ var QuantiMat = (function (){
 
         return (i - 1 | 0)>>>0;
     };
-    var PR = fr(0.36*3),
+    var PR = fr(0.34*3),
         PG = fr(0.44*3),
-        PB = fr( 0.20*3);
+        PB = fr( 0.22*3);
 
     var SV1 = fr(1.185),
         SV2 = fr(0.107),
@@ -77,6 +77,9 @@ var QuantiMat = (function (){
 // Euclidean or Manhattan color distance
     var EUCLMAX = (s(PR*RD*RD + PG*GD*GD + PB*BD*BD | 0) | 0) >>> 0;
     var MANHMAX = (PR*RD + PG*GD + PB*BD|0) >>> 0;
+
+    var DISTINCT_SKIN_COLOR_MATCH_MULTIPLY = fr(0.333);
+    var SAME_SKIN_COLOR_MATCH_MULTIPLY = fr(0.555);
 
     var TEMPUINT8AX4 = new Uint8Array(4);
     var TEMPFLOAT32X1 = new Float32Array(2);
@@ -381,8 +384,6 @@ var QuantiMat = (function (){
         return SIMDopeColor(this.buffer, i|0);
     }
 
-    var DISTINCT_SKIN_COLOR_MATCH_MULTIPLY = fr(0.333);
-    var SAME_SKIN_COLOR_MATCH_MULTIPLY = fr(0.666);
     var QuantiMat = function(opts) {
         "use strict";
         opts = opts || {};
