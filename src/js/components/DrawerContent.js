@@ -3,7 +3,7 @@ import {Fade, withStyles} from "@material-ui/core";
 
 import {List, ListItem, ListItemIcon, ListItemText, Badge} from "@material-ui/core";
 
-import PersonIcon from "@material-ui/icons/Person";
+import DonateIcon from "../icons/Donate";
 import CodeIcon from "@material-ui/icons/Code";
 import PaletteIcon from "@material-ui/icons/Palette";
 import InfoIcon from "@material-ui/icons/Info";
@@ -42,12 +42,12 @@ const styles = theme => ({
                 filter: "drop-shadow(1px 2px 3px white)"
             },
             "20%": {
-                color: "#ffd776",
-                filter: "drop-shadow(2px 4px 6px gold)"
+                color: "#b7d1ff",
+                filter: "drop-shadow(2px 4px 6px #b7d1ff)"
             },
             "40%": {
-                color: "#ffffff",
-                filter: "drop-shadow(2px 4px 6px white)"
+                color: "#80a8ff",
+                filter: "drop-shadow(2px 4px 6px #80a8ff)"
             },
             "100%": {
                 color: "#ffffff",
@@ -57,7 +57,7 @@ const styles = theme => ({
     },
     iconColorGold: {
         color: "#ffffff",
-        filter: "drop-shadow(2px 4px 6px gold)",
+        filter: "drop-shadow(1px 2px 3px white)",
         animation: "$glow 14s infinite ease-in-out",
     },
     iconLeft: {
@@ -199,7 +199,7 @@ class DrawerContent extends React.PureComponent {
                     </Fade>
                     <Fade in={true} timeout={300}>
                         <ListItem button className={classes.listItemGrey} onClick={(event) => this._open_link(event, "https://opencollective.com/pixapics")}>
-                            <ListItemIcon><PersonIcon className={classes.iconColorGold} /></ListItemIcon>
+                            <ListItemIcon><DonateIcon className={classes.iconColorGold} /></ListItemIcon>
                             <ListItemText primary="Donate" />
                         </ListItem>
                     </Fade>

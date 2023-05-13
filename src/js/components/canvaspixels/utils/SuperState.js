@@ -445,19 +445,19 @@ const SuperState = {
 
             get_shadow_indexes_from_canvas_context: function(context, shadow_indexes) {
                 "use strict";
-                shadow_indexes = shadow_indexes instanceof SetFixed ? shadow_indexes: typeof shadow_indexes != "undefined" ? shadow_indexes: new SetFixed(width*height);
+                shadow_indexes = shadow_indexes instanceof SetFixed ? shadow_indexes: typeof shadow_indexes != "undefined" ? shadow_indexes: new SetFixed(context.canvas.width * context.canvas.height);
                 let ui8_colors = context.getImageData(0, 0, context.canvas.width, context.canvas.height).data;
                 let ui8_colors_length = ui8_colors.length >> 2;
 
-                if(shadow_indexes instanceof  SetFixed) {
+                if(shadow_indexes instanceof SetFixed || shadow_indexes instanceof Set) {
 
                     for(let i = 0; (i|0) < (ui8_colors_length|0); i = (i + 1 | 0)>>>0) {
-                        if((ui8_colors[i<<2]|0) != 0) { shadow_indexes.add(i|0);}
+                        if((ui8_colors[i<<2 | 0]|0) != 0) { shadow_indexes.add(i|0);}
                     }
                 }else {
 
                     for(let i = 0; (i|0) < (ui8_colors_length|0); i = (i + 1 | 0)>>>0) {
-                        if((ui8_colors[i<<2]|0) != 0) { shadow_indexes[i|0] = 1;}
+                        if((ui8_colors[i<<2 | 0]|0) != 0) { shadow_indexes[i|0] = 1;}
                     }
                 }
 
@@ -475,8 +475,6 @@ const SuperState = {
 
                 context.save();
 
-
-
                 // TO DO --> GET PREVIOUS COMMIT OR FINISH THIS
                 return {
                     update_state: function (){
@@ -486,12 +484,13 @@ const SuperState = {
                     },
                     from_text: function (size, text, onto) {
 
+                        
                         context.clearRect(0, 0, width, height);
                         context.font = `${size}px "Jura"`;
                         context.fillStyle = "#ffffffff";
                         context.textAlign = "center";
                         context.fillText(text, width/2, height/2);
-                        return get_shadow_indexes_from_canvas_context(context);
+                        return get_shadow_indexes_from_canvas_context(context, onto);
                     },
                     from_border: function(selection, inside, bold, onto ) {
                         "use strict";
@@ -579,11 +578,13 @@ const SuperState = {
                     },
                     from_path: function(path_indexes, onto){
                         "use strict";
-
+                        onto = typeof onto == "undefined" ? new SetFixed(width*height): onto;
+                        
                         context.clearRect(0, 0, width, height);
                         context.lineWidth = 0;
-                        context.beginPath();
-                        path_indexes.forEach((pxl_index, index) => {
+
+                        let start_x = 0, start_y = 0;
+                        path_indexes.forEach(function (pxl_index, index) {
 
                             const x = pxl_index % width|0;
                             const y = (pxl_index - x|0) / width|0;
@@ -591,6 +592,9 @@ const SuperState = {
                             if((index|0) == 0) {
 
                                 context.moveTo(x|0, y|0);
+                                context.beginPath();
+                                start_x = x | 0;
+                                start_y = y | 0;
                             }else {
 
                                 context.lineTo(x|0, y|0);
@@ -603,13 +607,13 @@ const SuperState = {
                         context.stroke();
                         context.fill();
 
-                        return get_shadow_indexes_from_canvas_context(context, path_indexes, onto);
+                        return get_shadow_indexes_from_canvas_context(context, onto);
                     },
                     from_line: function(from, to, onto) {
                         "use strict";
                         from = from | 0;
                         to = to | 0;
-                        let pxl_indexes = typeof onto == "undefined" ? new SetFixed(width*height): onto;
+                        onto = typeof onto == "undefined" ? new SetFixed(width*height): onto;
                         let c = get_opposite_coordinates(width, from, to);
                         let dx = Math.abs(c.secondary.x - c.primary.x) | 0;
                         let dy = Math.abs(c.secondary.y - c.primary.y) | 0;
@@ -618,10 +622,10 @@ const SuperState = {
                         let err = (dx - dy) | 0;
                         let e2 = 0;
 
-                        if(pxl_indexes instanceof SetFixed) {
+                        if(onto instanceof SetFixed) {
                             while(true){
 
-                                pxl_indexes.add((c.primary.y * width + c.primary.x)|0);
+                                onto.add((c.primary.y * width + c.primary.x)|0);
 
                                 if((c.primary.x|0) == (c.secondary.x|0) && (c.primary.y|0) == (c.secondary.y|0)) { break; }
 
@@ -660,7 +664,7 @@ const SuperState = {
                             }
                         }
 
-                        return pxl_indexes;
+                        return onto;
                     },
                     from_rectangle: function(from, to, onto) {
                         "use strict";
@@ -700,7 +704,7 @@ const SuperState = {
                         "use strict";
                         from = from | 0;
                         to = to | 0;
-                        let pxl_indexes = typeof onto == "undefined" ? new SetFixed(width*height): onto;
+                        onto = typeof onto == "undefined" ? new SetFixed(width*height): onto;
                         let c = get_opposite_coordinates(width|0, from|0, to|0);
                         let ellipse_width = Math.abs(c.primary.x - c.secondary.x|0) + 1 | 0;
                         let ellipse_height = Math.abs(c.primary.y - c.secondary.y|0) + 1 | 0;
@@ -721,7 +725,7 @@ const SuperState = {
                         context.fillStyle = "#ffffffff";
                         context.fill();
 
-                        return get_shadow_indexes_from_canvas_context(context, pxl_indexes);
+                        return get_shadow_indexes_from_canvas_context(context, onto);
                     }
                 };
             }
