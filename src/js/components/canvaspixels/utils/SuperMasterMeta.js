@@ -640,7 +640,7 @@ const SuperMasterMeta = {
                                 _paint_or_select_hover_pxl_indexes_exception,
                                 _paint_or_select_hover_actions_latest_index: pxl_index | 0,
                                 _last_action_timestamp
-                            },this.update_canvas);
+                            },() => {this.update_canvas();});
                         }else {
 
                             meta.super_state.paint_shape(_paint_or_select_hover_pxl_indexes, pxl_current_color_uint32, pxl_current_opacity, {
@@ -650,7 +650,7 @@ const SuperMasterMeta = {
                                 _paint_or_select_hover_pxl_indexes_exception,
                                 _paint_or_select_hover_actions_latest_index: pxl_index | 0,
                                 _last_action_timestamp
-                            }, this.update_canvas);
+                            }, () => {this.update_canvas();});
                         }
 
                         this._notify_position_change({x:pos_x|0, y: pos_y|0});
@@ -756,8 +756,9 @@ const SuperMasterMeta = {
                     meta.super_state.set_state({
                         _pxls_hovered: pxl_index | 0,
                         _mouse_inside: true
-                    }).then(this.update_canvas).then(( ) => {
+                    }).then(( ) => {
 
+                        this.update_canvas();
                         this._notify_position_change({x:pos_x, y: pos_y});
                     });
 
@@ -814,7 +815,7 @@ const SuperMasterMeta = {
                             _paint_hover_old_pxls_snapshot: [],
                             _last_action_timestamp: Date.now()
                         },
-                        this.update_canvas
+                        () => {this.update_canvas();}
                     );
 
                 }else if(_paint_or_select_hover_pxl_indexes.size > 0 && tool === "SELECT PATH") {
@@ -873,7 +874,7 @@ const SuperMasterMeta = {
 
                 if (event_which === -1) {
 
-                    meta.super_state.set_state({_pxls_hovered: pxl_index}).then(this.update_canvas);
+                    meta.super_state.set_state({_pxls_hovered: pxl_index}).then(() => {this.update_canvas();});
                     return;
                 }
 
@@ -919,10 +920,10 @@ const SuperMasterMeta = {
 
                             if(event_which === 1) {
 
-                                meta.super_state.set_state({_shape_index_a: pxl_index}).then(this.update_canvas);
+                                meta.super_state.set_state({_shape_index_a: pxl_index}).then(() => {this.update_canvas();});
                             }else {
 
-                                meta.super_state.set_state({_shape_index_a}).then(this.update_canvas);
+                                meta.super_state.set_state({_shape_index_a}).then(() => {this.update_canvas();});
                             }
                         }else {
 
@@ -940,7 +941,7 @@ const SuperMasterMeta = {
                                     break;
                             }
 
-                            meta.super_state.paint_shape(pxl_indexes, pxl_current_color_uint32, pxl_current_opacity, {_shape_index_a: -1, _last_action_timestamp: Date.now()}, this.update_canvas);
+                            meta.super_state.paint_shape(pxl_indexes, pxl_current_color_uint32, pxl_current_opacity, {_shape_index_a: -1, _last_action_timestamp: Date.now()}, () => {this.update_canvas();});
                             this._notify_relevant_action_event(event, "#ffffffff", .6);
                         }
 
@@ -951,10 +952,10 @@ const SuperMasterMeta = {
 
                             if(event_which === 1) {
 
-                                meta.super_state.set_state({_select_shape_index_a: pxl_index}).then(this.update_canvas);
+                                meta.super_state.set_state({_select_shape_index_a: pxl_index}).then(() => {this.update_canvas();});
                             }else {
 
-                                meta.super_state.set_state({_select_shape_index_a}).then(this.update_canvas);
+                                meta.super_state.set_state({_select_shape_index_a}).then(() => {this.update_canvas();});
                             }
                         }else {
 
@@ -1025,7 +1026,7 @@ const SuperMasterMeta = {
 
                     }else if((tool === "SET PENCIL MIRROR") && event_which === 1) {
 
-                        meta.super_state.set_state({ _pencil_mirror_index: pxl_index, _last_action_timestamp: Date.now()}).then(this.update_canvas);
+                        meta.super_state.set_state({ _pencil_mirror_index: pxl_index, _last_action_timestamp: Date.now()}).then(() => {this.update_canvas();});
 
                     }else if((tool === "PENCIL" || tool === "PENCIL PERFECT" || tool === "CONTOUR") && event_which === 1) {
 
@@ -1092,7 +1093,7 @@ const SuperMasterMeta = {
                                 _paint_or_select_hover_actions_latest_index: pxl_index,
                                 _paint_hover_old_pxls_snapshot: new Uint16Array(meta.super_state.get_state()._s_pxls[_layer_index].buffer),
                                 _last_action_timestamp: Date.now()
-                            }, this.update_canvas);
+                            }, () => {this.update_canvas();});
 
                     }else if ((tool === "BUCKET" || tool === "HUE BUCKET" || tool === "SELECT COLOR THRESHOLD" || tool === "BORDER") && event_which === 1) {
 
@@ -1284,7 +1285,7 @@ const SuperMasterMeta = {
 
 
                             // Update pixels list and pixel colours
-                            meta.super_state.set_state({_s_pxls, _s_pxl_colors, _last_action_timestamp: Date.now()}).then(this.update_canvas);
+                            meta.super_state.set_state({_s_pxls, _s_pxl_colors, _last_action_timestamp: Date.now()}).then(() => {this.update_canvas();});
 
                         }else if(tool === "SELECT COLOR THRESHOLD") {
 
