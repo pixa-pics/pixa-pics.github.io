@@ -63,7 +63,7 @@ const SuperMasterMeta = {
         let force_update = true;
         let is_there_new_dimension = false;
         let is_there_different_dimension = false;
-        let render_canvas = null;
+        let render_canvas = this.render_canvas;
         let sizes = meta.canvas_pos.get_state().sizes;
 
         function update_canvas_promise (resolve0, reject0, force_update, requested_at) {
