@@ -105,15 +105,15 @@ const SuperMasterMeta = {
                         // Update html for css animation
                         notifiers.update(false, false).then(function () {
                             render_canvas(is_there_new_dimension, is_there_different_dimension, force_update, requested_at).then(resolve0).catch(function (error){
-                                setTimeout(update_canvas_promise, 5, resolve0, reject0, force_update, requested_at);
+                                setTimeout(this, 5, resolve0, reject0, force_update, requested_at);
                             });
                         }).catch(function () {
-                            setTimeout(update_canvas_promise, 5, resolve0, reject0, force_update, requested_at);
+                            setTimeout(this, 5, resolve0, reject0, force_update, requested_at);
                         });
                     }else {
 
                         render_canvas(is_there_new_dimension, is_there_different_dimension, force_update, requested_at).then(resolve0).catch(function (error){
-                            setTimeout(update_canvas_promise, 5, resolve0, reject0, force_update, requested_at);
+                            setTimeout(this, 5, resolve0, reject0, force_update, requested_at);
                         });
                     }
 
