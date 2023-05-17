@@ -3585,7 +3585,7 @@ class CanvasPixels extends React.PureComponent {
         return (
             <div onContextMenu={function (e){e.preventDefault()}}
                  ref={this._set_canvas_container_ref} draggable={"false"}
-                 style={{zIndex: 11, boxSizing: "border-box", position: "relative", overflow: "visible", touchAction: "none", userSelect: "none", display: "block"}}
+                 style={{zIndex: 11, boxSizing: "border-box", position: "relative", overflow: "hidden", touchAction: "none", userSelect: "none", display: "block"}}
                  className={className}>
                 <div ref={this._set_canvas_wrapper_overflow_ref}
                      className={"Canvas-Wrapper-Overflow" + ( !is_there_new_dimension ? " Shown ": " Not-Shown ")}

@@ -121,7 +121,6 @@ const SuperState = {
 
                 s = s || {};
                 callback_function = callback_function || function(){};
-                pxl_indexes = pxl_indexes.map(function (i){return i|0;});
                 color = color | 0;
                 opacity = opacity * 255 | 0;
                 let indexes_length = pxl_indexes.length|0;
@@ -194,6 +193,10 @@ const SuperState = {
             get_state: function() {
                 "use strict";
                 return state_;
+            },
+            get_notified_pos_at: function() {
+                "use strict";
+                return state_._notified_position_at|0;
             },
             get_cursor: function(_is_on_resize_element, _is_image_import_mode, mouse_down, tool, select_mode, canvas_event_target) {
                 "use strict";
@@ -645,7 +648,7 @@ const SuperState = {
                         }else {
                             while(true){
 
-                                pxl_indexes[c.primary.y * width + c.primary.x|0] = 1;
+                                onto[c.primary.y * width + c.primary.x|0] = 1;
 
                                 if((c.primary.x|0) == (c.secondary.x|0) && (c.primary.y|0) == (c.secondary.y|0)) { break; }
 

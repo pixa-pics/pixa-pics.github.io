@@ -104,17 +104,17 @@ const SuperMasterMeta = {
 
                         // Update html for css animation
                         notifiers.update(false, false).then(function () {
-                            render_canvas(is_there_new_dimension, is_there_different_dimension, force_update, requested_at).then(resolve0).catch(function (error){
+                            render_canvas(is_there_new_dimension, is_there_different_dimension, force_update, requested_at).catch(function (){
                                 setTimeout(update_canvas_promise, 5, resolve0, reject0, force_update, requested_at);
-                            });
+                            }).then(resolve0);
                         }).catch(function () {
                             setTimeout(update_canvas_promise, 5, resolve0, reject0, force_update, requested_at);
                         });
                     }else {
 
-                        render_canvas(is_there_new_dimension, is_there_different_dimension, force_update, requested_at).then(resolve0).catch(function (error){
+                        render_canvas(is_there_new_dimension, is_there_different_dimension, force_update, requested_at).catch(function (){
                             setTimeout(update_canvas_promise, 5, resolve0, reject0, force_update, requested_at);
-                        });
+                        }).then(resolve0);
                     }
 
 
@@ -178,6 +178,7 @@ const SuperMasterMeta = {
                 const old_layers_string_id = _layers.map(function (l) {
                     return "".concat(l.id).concat(l.hidden ? "h" : "v").concat(l.opacity);
                 }).join("");
+
                 const has_layers_visibility_or_opacity_changed = _old_layers_string_id !== old_layers_string_id;
 
                 const layers_opacity_255 = Uint8Array.from(_layers.map(function (layer) {
@@ -264,6 +265,7 @@ const SuperMasterMeta = {
                 old_full_pxls = (old_full_pxls.length < full_pxls_length) ? new Uint32Array(full_pxls_length) : old_full_pxls;
 
                 meta_super_blend.update(plus_uint(_layers.length, 1), full_pxls_length | 0);
+
                 for (let index = 0; int_less(index, full_pxls_length); index = plus_uint(index, 1)) {
 
                     bool_new_hover = uint_equal(_pxls_hovered, index | 0);
@@ -397,7 +399,6 @@ const SuperMasterMeta = {
                 if(Boolean(this)){
                     render_canvas = this.render_canvas;
                 }
-
                 return new Promise(update_canvas_promise);
             },
             render_canvas: function (is_there_new_dimension, is_there_different_dimension, force_update, requested_at) {
@@ -449,15 +450,15 @@ const SuperMasterMeta = {
                 "use strict";
                 let { _pxl_indexes_of_selection, _imported_image_pxls, pxl_current_color_uint32, tool, pxl_width, pxl_height, _pxls_hovered, hide_canvas_content  } = meta.super_state.get_state();
                 const { event_button, mouse_down } = meta.canvas_pos.get_pointer_state();
-                const event_which = event_button+1;
+                const event_which = event_button+1|0;
 
                 const [ pos_x, pos_y ] = meta.canvas_pos.get_canvas_pos_from_event(event.pageX, event.pageY);
                 const pxl_index = (pos_y * pxl_width) + pos_x | 0;
 
-                if(pos_x === -1 || pos_y === -1) {
+                if((pos_x|0) == -1 || (pos_y|0) == -1) {
                     this._notify_position_change({x: pos_x, y: pos_y});
 
-                }else if(pxl_index !== _pxls_hovered && !hide_canvas_content) {
+                }else if((pxl_index|0) != (_pxls_hovered|0) && !hide_canvas_content) {
 
                     if(_imported_image_pxls.length > 0){
 
@@ -556,13 +557,13 @@ const SuperMasterMeta = {
                                 _paint_or_select_hover_pxl_indexes.delete(ie);
                             });
 
-                            if(this._should_remove_not_perfect_second_latest_pixel_from_array(_paint_or_select_hover_pxl_indexes.map(function (i){return i|0;}))) {
+                            if(this._should_remove_not_perfect_second_latest_pixel_from_array(_paint_or_select_hover_pxl_indexes.indexes)) {
 
                                 const second_latest_pixel_drawn = _paint_or_select_hover_pxl_indexes[_paint_or_select_hover_pxl_indexes.size - 2];
                                 _paint_or_select_hover_pxl_indexes.delete(second_latest_pixel_drawn);
                                 _paint_or_select_hover_pxl_indexes_exception.add(second_latest_pixel_drawn);
 
-                                let pixel_index_stack = new SetFixed(Array.of(second_latest_pixel_drawn));
+                                let pixel_index_stack = new Set(Array.of(second_latest_pixel_drawn));
 
                                 pixel_index_stack.forEach((pixel_stacked) => {
 
@@ -586,12 +587,12 @@ const SuperMasterMeta = {
 
                         if(pencil_mirror_mode !== "NONE") {
 
-                            const _paint_or_select_hover_pxl_indexes_copy = new SetFixed(_paint_or_select_hover_pxl_indexes.map(function (i){return i|0;}));
-                            let pixel_stack = new SetFixed(_paint_or_select_hover_pxl_indexes.map(function (i){return i|0;})
+                            const _paint_or_select_hover_pxl_indexes_copy = new SetFixed(_paint_or_select_hover_pxl_indexes.indexes);
+                            let pixel_stack = new Set(
+                                _paint_or_select_hover_pxl_indexes
                                 .filter(function (index){return !_paint_or_select_hover_pxl_indexes_copy.has(index|0) && !_paint_or_select_hover_pxl_indexes_exception.has(index|0);})
-                                .map((index) => {
-                                    const x = index % pxl_width|0;
-                                    const y = (index - x) / pxl_width|0;
+                                .map(function (index){
+                                    var x = index % pxl_width|0, y = (index - x) / pxl_width|0;
                                     return [x|0, y|0];
                                 }));
 
@@ -628,8 +629,7 @@ const SuperMasterMeta = {
                             let pixel_stack_flat = new SetFixed(pxl_width*pxl_height)
                             pixel_stack.forEach((pixel_pos) => {
 
-                                const y = pixel_pos[1];
-                                const x = pixel_pos[0];
+                                var y = pixel_pos[1], x = pixel_pos[0];
                                 pixel_stack_flat.add(y*pxl_width+x|0);
                             });
 
@@ -643,7 +643,7 @@ const SuperMasterMeta = {
                             },() => {this.update_canvas();});
                         }else {
 
-                            meta.super_state.paint_shape(_paint_or_select_hover_pxl_indexes, pxl_current_color_uint32, pxl_current_opacity, {
+                            meta.super_state.paint_shape(_paint_or_select_hover_pxl_indexes.indexes, pxl_current_color_uint32, pxl_current_opacity, {
                                 _pxls_hovered: pxl_index | 0,
                                 _mouse_inside: true,
                                 _paint_or_select_hover_pxl_indexes,
@@ -767,10 +767,10 @@ const SuperMasterMeta = {
             _notify_position_change (position, date) {
                 "use strict";
                 date = date || null;
-                const _notified_position_at = meta.super_state.get_state()._notified_position_at;
-                const now = Date.now();
+                const _notified_position_at = meta.super_state.get_notified_pos_at() | 0;
+                const now = Date.now() | 0;
 
-                if ((now - _notified_position_at >= 100 && date === null) || date > _notified_position_at && now - date >= 100) {
+                if (((now - _notified_position_at|0) >= 100 && date == null) || (date|0) > (_notified_position_at|0) && (now - date|0) >= 100) {
 
                     position = {
                         x: typeof position.x === "undefined" ? -1 : position.x,
@@ -778,19 +778,15 @@ const SuperMasterMeta = {
                     };
 
 
-                    meta.super_state.set_state({_notified_position_at: now}).then(() => {
-
+                    meta.super_state.set_state({_notified_position_at: now}).then(function () {
                         notifiers.position(position, meta.sraf.get_state().previous_cpaf_fps);
                     });
-                } else if (now < date + 100) {
+                } else if ((now|0) < (date + 100|0)) {
 
-                    setTimeout(() => {
-
-                        this._notify_position_change({x: position.x, y: position.y}, now);
-                    }, 100-(date-now|0));
+                    setTimeout(this._notify_position_change, 100-(date-now|0)|0, {x: position.x, y: position.y}, now|0);
                 }
             },
-            _handle_canvas_mouse_up(event) {
+            _handle_canvas_mouse_up() {
                 "use strict";
                 let { _paint_or_select_hover_pxl_indexes, tool, _imported_image_pxls, _pxl_indexes_of_selection, select_mode } = meta.super_state.get_state();
 
@@ -808,7 +804,7 @@ const SuperMasterMeta = {
                     _paint_or_select_hover_pxl_indexes = new SetFixed(_paint_or_select_hover_pxl_indexes.map(function (i){return i|0}).concat(closing_path_line.map(function (i){return i|0})));
                     _paint_or_select_hover_pxl_indexes = shape_creator.from_path(_paint_or_select_hover_pxl_indexes, _paint_or_select_hover_pxl_indexes);
 
-                    meta.super_state.paint_shape(_paint_or_select_hover_pxl_indexes, pxl_current_color_uint32, pxl_current_opacity,
+                    meta.super_state.paint_shape(_paint_or_select_hover_pxl_indexes.indexes, pxl_current_color_uint32, pxl_current_opacity,
                         {
                             _paint_or_select_hover_pxl_indexes: new SetFixed(0),
                             _paint_or_select_hover_pxl_indexes_exception: new SetFixed(0),
@@ -941,7 +937,7 @@ const SuperMasterMeta = {
                                     break;
                             }
 
-                            meta.super_state.paint_shape(pxl_indexes, pxl_current_color_uint32, pxl_current_opacity, {_shape_index_a: -1, _last_action_timestamp: Date.now()}, () => {this.update_canvas();});
+                            meta.super_state.paint_shape(pxl_indexes.indexes, pxl_current_color_uint32, pxl_current_opacity, {_shape_index_a: -1, _last_action_timestamp: Date.now()}, () => {this.update_canvas();});
                             this._notify_relevant_action_event(event, "#ffffffff", .6);
                         }
 
