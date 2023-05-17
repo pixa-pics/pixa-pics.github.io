@@ -1,28 +1,27 @@
-var MASKS_OR_ = Uint8Array.of(
-    0b00000001,
-    0b00000010,
-    0b00000100,
-    0b00001000,
-    0b00010000,
-    0b00100000,
-    0b01000000,
-    0b10000000,
-);
-var MASKS_AND_ = Uint8Array.of(
-    0b11111110,
-    0b11111101,
-    0b11111011,
-    0b11110111,
-    0b11101111,
-    0b11011111,
-    0b10111111,
-    0b01111111,
-);
-
 function BitArray(s) {
     s = (s | 0) >>> 0;
     this.l_ = (s|0) >>> 0;
     this.a_ = new Uint8Array((s + 7 | 0) >>> 3);
+    this.M_OR_ = Uint8Array.of(
+        0b00000001,
+        0b00000010,
+        0b00000100,
+        0b00001000,
+        0b00010000,
+        0b00100000,
+        0b01000000,
+        0b10000000,
+    );
+    this.M_AND_ = Uint8Array.of(
+        0b11111110,
+        0b11111101,
+        0b11111011,
+        0b11110111,
+        0b11101111,
+        0b11011111,
+        0b10111111,
+        0b01111111,
+    );
 }
 
 Object.defineProperty(BitArray.prototype, 'readBit', {
@@ -31,8 +30,12 @@ Object.defineProperty(BitArray.prototype, 'readBit', {
         return function(i) {
             "use strict";
             i = (i | 0) >>> 0;
-            return (this.a_[i >>> 3] & MASKS_OR_[i & 7]) == MASKS_OR_[i & 7];
-    }}
+            var m_or = this.M_OR_[i & 7];
+            i = (i | 0) >>> 3;
+            return (this.a_[i|0] & m_or | 0) == (m_or|0);
+    }},
+    enumerable: false,
+    configurable: false
 });
 
 Object.defineProperty(BitArray.prototype, 'writeBit1', {
@@ -40,9 +43,13 @@ Object.defineProperty(BitArray.prototype, 'writeBit1', {
         "use strict";
         return function(i) {
             "use strict";
-            i = (i|0) >>> 0;
-            this.a_[i >>> 3] = this.a_[i >>> 3] | MASKS_OR_[i & 7];
-    }}
+            i = (i | 0) >>> 0;
+            var m_or = this.M_OR_[i & 7];
+            i = (i | 0) >>> 3;
+            this.a_[i|0] = this.a_[i|0] | m_or;
+    }},
+    enumerable: false,
+    configurable: false
 });
 
 Object.defineProperty(BitArray.prototype, 'writeBit0', {
@@ -50,9 +57,13 @@ Object.defineProperty(BitArray.prototype, 'writeBit0', {
         "use strict";
         return function(i) {
             "use strict";
-            i = (i|0) >>> 0;
-            this.a_[i >>> 3] = this.a_[i >>> 3] & MASKS_AND_[i & 7];
-    }}
+            i = (i | 0) >>> 0;
+            var m_and = this.M_AND_[i & 7];
+            i = (i | 0) >>> 3;
+            this.a_[i|0] = this.a_[i|0] & m_and;
+    }},
+    enumerable: false,
+    configurable: false
 });
 
 
@@ -62,14 +73,18 @@ Object.defineProperty(BitArray.prototype, 'clear', {
         return function() {
             "use strict";
             this.a_.fill(0, 0, this.a_.length);
-    }}
+    }},
+    enumerable: false,
+    configurable: false
 });
 
 Object.defineProperty(BitArray.prototype, 'length', {
     get: function() {
         "use strict";
         return (this.l_ | 0) >>> 0;
-    }
+    },
+    enumerable: false,
+    configurable: false
 });
 
 var SetFixed = function(size){
@@ -100,13 +115,17 @@ Object.defineProperty(SetFixed.prototype, 'size', {
     get: function() {
         "use strict";
         return (this.s_ | 0) >>> 0;
-    }
+    },
+    enumerable: false,
+    configurable: false
 });
 Object.defineProperty(SetFixed.prototype, 'length', {
     get: function() {
         "use strict";
         return (this.a_.length | 0) >>> 0;
-    }
+    },
+    enumerable: false,
+    configurable: false
 });
 Object.defineProperty(SetFixed.prototype, 'indexes', {
     get: function() {
@@ -125,14 +144,18 @@ Object.defineProperty(SetFixed.prototype, 'indexes', {
         }else {
             return BigUint64Array.from(a);
         }
-    }
+    },
+    enumerable: false,
+    configurable: false
 });
 Object.defineProperty(SetFixed.prototype, 'has', {
     get: function() {  "use strict"; return function(i) {
         "use strict";
         i = (i|0) >>> 0;
         return this.a_.readBit(i|0);
-    }}
+    }},
+    enumerable: false,
+    configurable: false
 });
 
 Object.defineProperty(SetFixed.prototype, 'add', {
@@ -154,7 +177,9 @@ Object.defineProperty(SetFixed.prototype, 'add', {
         }
 
         this.a_.writeBit1(i | 0);
-    }}
+    }},
+    enumerable: false,
+    configurable: false
 });
 
 Object.defineProperty(SetFixed.prototype, 'delete', {
@@ -166,7 +191,9 @@ Object.defineProperty(SetFixed.prototype, 'delete', {
             this.s_ = (this.s_ - 1 | 0) >>> 0;
         }
 
-    }}
+    }},
+    enumerable: false,
+    configurable: false
 });
 
 Object.defineProperty(SetFixed.prototype, 'clear', {
@@ -174,7 +201,9 @@ Object.defineProperty(SetFixed.prototype, 'clear', {
         "use strict";
         this.a_.clear();
         this.s_ = 0;
-    }}
+    }},
+    enumerable: false,
+    configurable: false
 });
 
 Object.defineProperty(SetFixed.prototype, 'forEach', {
@@ -183,7 +212,9 @@ Object.defineProperty(SetFixed.prototype, 'forEach', {
             "use strict";
             this.indexes.forEach(func);
         }
-    }
+    },
+    enumerable: false,
+    configurable: false
 });
 
 Object.defineProperty(SetFixed.prototype, 'map', {
@@ -192,7 +223,9 @@ Object.defineProperty(SetFixed.prototype, 'map', {
         return function(func) {
             "use strict";
             return this.indexes.map(func);
-    }}
+    }},
+    enumerable: false,
+    configurable: false
 });
 
 Object.defineProperty(SetFixed.prototype, 'filter', {
@@ -201,7 +234,9 @@ Object.defineProperty(SetFixed.prototype, 'filter', {
         return function(func) {
             "use strict";
             return this.indexes.filter(func);
-    }}
+    }},
+    enumerable: false,
+    configurable: false
 });
 
 module.exports = SetFixed;
