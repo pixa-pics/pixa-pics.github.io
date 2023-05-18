@@ -1753,13 +1753,13 @@ class CanvasPixels extends React.PureComponent {
 
     _notify_is_something_selected = () => {
 
-        const { _pxl_indexes_of_selection } = this.super_state.get_state();
+        const { _pxl_indexes_of_selection, _previous_pxl_indexes_of_selection } = this.super_state.get_state();
 
-        if(Boolean(this.super_state.get_state()._previous_pxl_indexes_of_selection.size) !== Boolean(_pxl_indexes_of_selection.size)) {
+        if(Boolean(_previous_pxl_indexes_of_selection.size) !== Boolean(_pxl_indexes_of_selection.size)) {
 
             this.super_state.set_state({
                 _is_something_selected: Boolean(_pxl_indexes_of_selection.size),
-                _previous_pxl_indexes_of_selection: _pxl_indexes_of_selection
+                _previous_pxl_indexes_of_selection: new SetFixed(_pxl_indexes_of_selection.indexes)
             }).then(() => {
 
                 if(this.props.onSomethingSelectedChange) {
@@ -2522,9 +2522,10 @@ class CanvasPixels extends React.PureComponent {
 
     to_selection_none = () => {
 
-        const { pxl_width, pxl_height } = this.super_state.get_state();
+        let _pxl_indexes_of_selection = this.super_state.get_state()._pxl_indexes_of_selection;
+        _pxl_indexes_of_selection.clear();
 
-        this.super_state.set_state({_pxl_indexes_of_selection: new SetFixed(pxl_width * pxl_height)}).then(() => {
+        this.super_state.set_state({_pxl_indexes_of_selection}).then(() => {
 
             this._notify_is_something_selected();
             this.super_master_meta.update_canvas();
