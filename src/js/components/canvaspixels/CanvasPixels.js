@@ -2416,7 +2416,6 @@ class CanvasPixels extends React.PureComponent {
 
                     let [ctx, canvas] = this._get_new_ctx_from_canvas(s_width, s_height);
 
-                    ctx.save();
                     ctx.drawImage(
                         image,
                         image.width * (top_left[0] / pxl_width),
@@ -2428,7 +2427,6 @@ class CanvasPixels extends React.PureComponent {
                         s_width,
                         s_height
                     );
-                    ctx.restore();
 
                     let base64_original_image = image.src.includes("image/png") ?
                         canvas.toDataURL("image/png") :

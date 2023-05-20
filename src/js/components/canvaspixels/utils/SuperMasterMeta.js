@@ -103,6 +103,10 @@ const SuperMasterMeta = {
                         // Tell there were new dimension
                         state._is_there_new_dimension = true;
 
+                        setTimeout(() => {
+                            state._is_there_new_dimension = false;
+                        }, 500);
+
                         // Update html for css animation
                         notifiers.update(false, false).then(function () {
                             render_canvas(is_there_new_dimension, is_there_different_dimension, force_update, requested_at).catch(function (){
@@ -359,7 +363,6 @@ const SuperMasterMeta = {
                                         state._did_hide_canvas_content = hide_canvas_content;
                                         state._old_pxl_width = parseInt(pxl_width);
                                         state._old_pxl_height = parseInt(pxl_height);
-                                        state._is_there_new_dimension = false;
                                         state._last_paint_timestamp = requested_at;
                                     }, is_there_new_dimension, force_update, Date.now()).then(resolve0).catch(reject0);
                                 });
