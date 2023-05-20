@@ -33,7 +33,8 @@ const SuperMasterMeta = {
             bool_old_selection: false,
             bool_new_import: false,
             bool_old_import: false,
-            bool_new_pixel: false
+            bool_new_pixel: false,
+            bool_new_highlight: false,
         };
 
         let meta = {
@@ -66,7 +67,7 @@ const SuperMasterMeta = {
         let render_canvas = this.render_canvas;
         let sizes = meta.canvas_pos.get_state().sizes;
 
-        function update_canvas_promise (resolve0, reject0, force_update, requested_at) {
+        let update_canvas_promise = function(resolve0, reject0, force_update, requested_at) {
             "use strict";
 
             if(state._last_paint_timestamp >= requested_at){
@@ -137,10 +138,11 @@ const SuperMasterMeta = {
             bool_old_selection,
             bool_new_import,
             bool_old_import,
-            bool_new_pixel
+            bool_new_pixel,
+            bool_new_highlight
         } = boolean_work_variables;
 
-        function render_canvas_promise (resolve0, reject0, is_there_new_dimension, is_there_different_dimension, force_update, requested_at) {
+        let render_canvas_promise = function(resolve0, reject0, is_there_new_dimension, is_there_different_dimension, force_update, requested_at) {
             "use strict";
             if(state._last_paint_timestamp >= requested_at){
                 resolve0();
@@ -154,6 +156,7 @@ const SuperMasterMeta = {
                     _pxl_indexes_of_old_shape,
                     _pxl_indexes_of_selection_drawn,
                     _previous_imported_image_pxls_positioned_keyset,
+                    _old_selection_pair_highlight
                 } = state;
 
                 // Importing state variables
@@ -266,6 +269,8 @@ const SuperMasterMeta = {
 
                 meta_super_blend.update(plus_uint(_layers.length, 1), full_pxls_length | 0);
 
+                bool_new_highlight = _selection_pair_highlight != _old_selection_pair_highlight;
+
                 for (let index = 0; int_less(index, full_pxls_length); index = plus_uint(index, 1)) {
 
                     bool_new_hover = uint_equal(_pxls_hovered, index | 0);
@@ -283,6 +288,8 @@ const SuperMasterMeta = {
                         bool_new_import ||
                         bool_new_pixel ||
                         bool_old_hover ||
+                        bool_new_selection && bool_new_highlight ||
+                        bool_old_selection && bool_new_highlight ||
                         bool_new_hover != bool_old_hover ||
                         bool_new_shape != bool_old_shape ||
                         bool_new_selection != bool_old_selection ||
@@ -310,12 +317,12 @@ const SuperMasterMeta = {
 
                         } else if (bool_new_shape) {
 
-                            meta_super_blend.stack(layers_length | 0, 0, 144, true);
+                            meta_super_blend.stack(layers_length | 0, 0, 160, true);
                         } else if (bool_new_selection) {
 
                             pos_x = (index % pxl_width) | 0;
                             pos_y = ((index - pos_x) / pxl_width) | 0;
-                            meta_super_blend.stack(layers_length | 0, 0, 64 + ((((pos_x + pos_y + (_selection_pair_highlight | 0) | 0) & 1) | 0) * 48) | 0, true);
+                            meta_super_blend.stack(layers_length | 0, 0, 128 + ((((pos_x + pos_y + (_selection_pair_highlight ? 1 : 0) | 0) & 1) | 0) * 64) | 0, true);
                         } else {
 
                             meta_super_blend.stack(layers_length | 0, 0, 0, false);
@@ -1459,7 +1466,7 @@ const SuperMasterMeta = {
                 let ns_pxls = meta.super_state.get_state()._s_pxls;
                 ns_pxls[_layer_index] = pxls_c;
 
-                meta.super_state.set_state({_s_pxls: ns_pxls, _s_pxl_colors: ns_pxl_colors, _last_action_timestamp: Date.now()}).then(this.update_canvas);
+                meta.super_state.set_state({_s_pxls: ns_pxls, _s_pxl_colors: ns_pxl_colors, _last_action_timestamp: Date.now()}).then(() => {this.update_canvas()});
             }
         }
     }
