@@ -27,7 +27,7 @@ var QuantiMat = (function (){
 
     var rgba_bytes = 4;
 
-// Inspired by https://en.wikipedia.org/wiki/Rec._709
+    // Inspired by https://en.wikipedia.org/wiki/Rec._709
     var imul = Math.imul || function(a, b){
         "use strict";
         var ah = (a >>> 16) & 0xffff,
@@ -61,22 +61,28 @@ var QuantiMat = (function (){
 
         return (i - 1 | 0)>>>0;
     };
-    var PR = fr(0.34*3),
-        PG = fr(0.44*3),
-        PB = fr( 0.22*3);
+    // Luma values
+    var PR = fr(0.2989*3),
+        PG = fr(0.587*3),
+        PB = fr( 0.114*3);
+    var PX = Float32Array.of(PR, PG, PB);
 
     var SV1 = fr(1.185),
         SV2 = fr(0.107),
         SV3 = fr(0.112);
+    var SVX = Float32Array.of(SV1, SV2, SV3);
 
     var RD = 255,
         GD = 255,
         BD = 255,
         AD = 255;
+    var XD = Uint8Array.of(RD, GD, BD, AD);
 
 // Euclidean or Manhattan color distance
     var EUCLMAX = (s(PR*RD*RD + PG*GD*GD + PB*BD*BD | 0) | 0) >>> 0;
     var MANHMAX = (PR*RD + PG*GD + PB*BD|0) >>> 0;
+    var FLOAT3P = fr(3/100);
+    var FLOATONE = fr(1);
 
     var DISTINCT_SKIN_COLOR_MATCH_MULTIPLY = fr(0.333);
     var SAME_SKIN_COLOR_MATCH_MULTIPLY = fr(0.555);
@@ -260,12 +266,10 @@ var QuantiMat = (function (){
                 TEMPUINT8AX4[0] = clamp_int((3 * this.r | 0) / rgb_sum | 0, 0, 255);
                 TEMPUINT8AX4[1] = clamp_int((3 * this.g | 0) / rgb_sum | 0, 0, 255);
                 TEMPUINT8AX4[2] = clamp_int((3 * this.b | 0) / rgb_sum | 0, 0, 255);
-                var rgb_sum_p2 = p2(((TEMPUINT8AX4[0] + TEMPUINT8AX4[1] + TEMPUINT8AX4[2] | 0) >>> 0) | 0) >>> 0;
-                return (
-                    (fr(TEMPUINT8AX4[0] / TEMPUINT8AX4[1]) > SV1) &&
-                    (fr(((TEMPUINT8AX4[0] * TEMPUINT8AX4[2] | 0) >>> 0) / rgb_sum_p2) > SV2) &&
-                    (fr(((TEMPUINT8AX4[0] * TEMPUINT8AX4[1] | 0) >>> 0) / rgb_sum_p2) > SV3)
-                );
+                var rgb_sum_p2 = (p2((TEMPUINT8AX4[0] + TEMPUINT8AX4[1] + TEMPUINT8AX4[2] | 0) >>> 0) | 0) >>> 0;
+                return  (fr(TEMPUINT8AX4[0] / TEMPUINT8AX4[1]) > SVX[0]) &&
+                    (fr(((TEMPUINT8AX4[0] * TEMPUINT8AX4[2] | 0) >>> 0) / rgb_sum_p2) > SVX[1]) &&
+                    (fr(((TEMPUINT8AX4[0] * TEMPUINT8AX4[1] | 0) >>> 0) / rgb_sum_p2) > SVX[2]);
             }else {
 
                 return false;
@@ -325,25 +329,25 @@ var QuantiMat = (function (){
     SIMDopeColor.prototype.euclidean_match_with = function(color, threshold_float) {
         "use strict";
         threshold_float = fr(threshold_float);
-        TEMPFLOAT32X1[0] = fr(1 - abs_int(this.a - color.a|0)/AD);
-        TEMPFLOAT32X1[1] = fr(TEMPFLOAT32X1[0] *  TEMPFLOAT32X1[0]);
+        TEMPFLOAT32X1[0] = fr(FLOATONE - fr(abs_int(this.a - color.a|0)/XD[3]));
+        TEMPFLOAT32X1[1] = fr(TEMPFLOAT32X1[0] * TEMPFLOAT32X1[0] - FLOAT3P);
         return (fr(s(
-            PR * p2(this.r - color.r | 0) +
-            PG * p2(this.g - color.g | 0) +
-            PB * p2(this.b - color.b | 0) | 0
+            PX[0] * p2(this.r - color.r | 0) +
+            PX[1] * p2(this.g - color.g | 0) +
+            PX[2] * p2(this.b - color.b | 0) | 0
         ) / EUCLMAX) < fr(threshold_float*TEMPFLOAT32X1[1]));
     };
 
     SIMDopeColor.prototype.manhattan_match_with = function(color, threshold_float) {
         "use strict";
         threshold_float = fr(threshold_float);
-        TEMPFLOAT32X1[0] = fr(1 - abs_int(this.a - color.a|0)/AD);
-        TEMPFLOAT32X1[1] = fr(TEMPFLOAT32X1[0] *  TEMPFLOAT32X1[0]);
-        return (fr((
-            PR * abs_int(this.r - color.r | 0) +
-            PG * abs_int(this.g - color.g | 0) +
-            PB * abs_int(this.b - color.b | 0) | 0
-        ) / MANHMAX) < fr(threshold_float*TEMPFLOAT32X1[1]));
+        TEMPFLOAT32X1[0] = fr(FLOATONE - fr(abs_int(this.a - color.a|0)/XD[3]));
+        TEMPFLOAT32X1[1] = fr(TEMPFLOAT32X1[0] * TEMPFLOAT32X1[0] - FLOAT3P);
+        return fr(fr(
+            PX[0] * abs_int(this.r - color.r | 0) +
+            PX[1] * abs_int(this.g - color.g | 0) +
+            PX[2] * abs_int(this.b - color.b | 0) | 0
+        ) / MANHMAX) < fr(threshold_float*TEMPFLOAT32X1[1]);
     };
 
     SIMDopeColor.prototype.copy = function(a) {
@@ -822,6 +826,7 @@ var QuantiMat = (function (){
 
         return this;
     };
+
     return QuantiMat;
 })()
 

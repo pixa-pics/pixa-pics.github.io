@@ -19,7 +19,7 @@ const SuperMasterMeta = {
             _old_pxl_width: 0,
             _old_pxl_height: 0,
             _last_paint_timestamp: 0,
-            _is_there_new_dimension: false,
+            _is_there_new_dimension: true,
             _did_hide_canvas_content: false,
             _previous_imported_image_pxls_positioned_keyset: new SetFixed(0)
         };
