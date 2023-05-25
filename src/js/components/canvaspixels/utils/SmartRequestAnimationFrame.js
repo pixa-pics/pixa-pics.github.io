@@ -60,20 +60,24 @@ const SmartRequestAnimationFrame = {
                     callback_function("ok");
                 }
             },
-            run_frame(render, do_not_cancel_animation = false, force_update = false, requested_at_t = Date.now()) {
+            run_frame(render, do_not_cancel_animation , force_update, requested_at_t) {
+                "use strict";
+                do_not_cancel_animation = do_not_cancel_animation || false;
+                force_update = force_update || false;
+                requested_at_t = requested_at_t || Date.now();
+
+                function render_it() {
+
+                    "use strict";
+                    var id = s.caf_id | 0;
+                    render();
+                    s.lasts_raf_time = requested_at_t | 0;
+                    if(id === s.caf_id) { s.caf_id = null;}
+                }
 
                 return new Promise(function(resolve, reject){
 
                     "use strict";
-                    function render_it() {
-
-                        "use strict";
-                        const id = s.caf_id | 0;
-                        render();
-                        s.lasts_raf_time = requested_at_t | 0;
-                        if(id === s.caf_id) { s.caf_id = null;}
-                    }
-
                     if(requested_at_t <= s.lasts_raf_time) {
 
                         reject();
