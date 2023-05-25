@@ -1,6 +1,6 @@
 import pool from "../../../utils/worker-pool";
 import SIMDope from "simdope/index";
-const {clamp_uint32, modulo_uint, divide_int, minus_int, int_greater, int_less, int_greater_equal, int_less_equal, plus_uint, plus_int, max_int, min_int} = SIMDope.simdops;
+const {clamp_uint32, modulo_uint, divide_int, minus_int, int_greater, uint_less, int_greater_equal, int_less_equal, plus_uint, plus_int, max_int, min_int} = SIMDope.simdops;
 
 let requestIdleCallback, cancelIdleCallback;
 if ('requestIdleCallback' in window) {
@@ -125,8 +125,18 @@ const SuperCanvas = {
                 s: cs(c, pxl_width, pxl_height),
                 enable_paint_type: "",
                 fp_buffer: new ArrayBuffer(pxl_height * pxl_width * 4),
-                ic: new Map(),
+                ic: {
+                    indexes: new Uint16Array(0),
+                    colors: new Uint32Array(0)
+                },
                 b: {
+                    bmp_x: 0,
+                    bmp_y: 0,
+                    bmp_t: 0,
+                    bmp: {close(){}, width: 0, height: 0},
+                    old_bmp: {close(){}, width: 0, height: 0},
+                },
+                b2: {
                     bmp_x: 0,
                     bmp_y: 0,
                     bmp_t: 0,
@@ -166,8 +176,9 @@ const SuperCanvas = {
                     resolve();
                 });
             },
-            render: function(b2) {
+            render: function() {
                 "use strict";
+                var b2 = _state.b2;
                 _state.pr.top_left.x = _state.s.width | 0;
                 _state.pr.top_left.y = _state.s.height | 0;
                 _state.pr.bottom_right.x = 0;
@@ -177,7 +188,7 @@ const SuperCanvas = {
 
 
                     _state.b.old_bmp.close();
-                    if(b2.clear_behind) {_state.s.canvas_context.clearRect(b2.bmp_x, b2.bmp_y, b2.bmp.width, b2.bmp.height);}
+                    _state.s.canvas_context.clearRect(b2.bmp_x, b2.bmp_y, b2.bmp.width, b2.bmp.height);
                     _state.s.canvas_context.globalCompositeOperation = "source-over";
                     _state.s.canvas_context.drawImage(b2.bmp, b2.bmp_x, b2.bmp_y, b2.bmp.width, b2.bmp.height);
                     _state.b = b2;
@@ -208,31 +219,22 @@ const SuperCanvas = {
                         let pr_top_left_x = _state.pr.top_left.x | 0;
                         let pr_top_left_y = _state.pr.top_left.y | 0;
                         let pr_uint8a = _state.pr_uint8a;
-                        let pr_uint8a_length = pr_uint8a.length | 0;
-                        let not_fully_opaque = false;
-                        for(let i = 3; (i|0)<(pr_uint8a_length|0); i = (i+4|0)>>>0) {
-                            if((pr_uint8a[i]|0) != 0xFF) {
-                                not_fully_opaque = true;
-                                i = pr_uint8a_length | 0;
-                            }
-                        }
 
                         return bpro(s_width, pr_width, pr_height, pr_top_left_x, pr_top_left_y, pr_uint8a).then(function(bitmap){
 
                             if(_state.b.bmp_t < new_bmp_t) {
 
-                                let b2 = {};
-                                b2.old_bmp = _state.b.bmp;
-                                b2.bmp = bitmap;
-                                b2.bmp_t = new_bmp_t | 0;
-                                b2.bmp_x = new_bmp_x | 0;
-                                b2.bmp_y = new_bmp_y | 0;
-                                b2.clear_behind = not_fully_opaque;
+                                _state.b2.old_bmp = _state.b.bmp;
+                                _state.b2.bmp = bitmap;
+                                _state.b2.bmp_t = new_bmp_t | 0;
+                                _state.b2.bmp_x = new_bmp_x | 0;
+                                _state.b2.bmp_y = new_bmp_y | 0;
 
-                                return Promise.resolve(b2);
+                                return Promise.resolve();
                             }else {
 
-                                return Promise.resolve(_state.b);
+                                _state.b2 = _state.b;
+                                return Promise.resolve();
                             }
 
                         });
@@ -243,7 +245,8 @@ const SuperCanvas = {
 
                         if(_state.bmp.width !== 0){
 
-                            return Promise.resolve(_state.b);
+                            _state.b2 = _state.b;
+                            return Promise.resolve();
                         }else {
 
                             return Promise.reject();
@@ -275,33 +278,35 @@ const SuperCanvas = {
                     }else {
 
                         let x, y;
+                        let index_changes = _state.ic.indexes;
+                        let color_changes = _state.ic.colors;
+                        let dataview = _state.fp_dataview;
                         let pr = _state.pr;
                         let pr_top_left_x = pr.top_left.x | 0;
                         let pr_top_left_y = pr.top_left.y | 0;
                         let pr_bottom_right_x = pr.bottom_right.x | 0;
                         let pr_bottom_right_y = pr.bottom_right.y | 0;
-                        const fp_last_index = _state.fp.length-1|0;
+                        let value = 0, index = 0;
 
-                        _state.ic.forEach(function (value, index) {
-
+                        for(let i = 0, l = index_changes.length|0; uint_less(i, l); i = plus_uint(i, 1)) {
                             "use strict";
 
-                            value = (value|0) >>> 0;
-                            index = (index|0) >>> 0;
+                            value = (color_changes[i|0]|0) >>> 0;
+                            index = (index_changes[i|0]|0) >>> 0;
 
                             x = modulo_uint(index, width);
                             y = divide_int(minus_int(index, x), width);
 
-                            if(int_greater_equal(pr_top_left_x, minus_int(x, 0))) {pr_top_left_x = max_int(0, minus_int(x, 32));}
-                            else if(int_less_equal(pr_bottom_right_x, plus_int(x, 0))) {pr_bottom_right_x = min_int(width,  plus_int(x, 32)); }
-                            if(int_greater_equal(pr_top_left_y, minus_int(y, 0))) {pr_top_left_y = max_int(0, minus_int(y, 32));}
-                            else if(int_less_equal(pr_bottom_right_y, plus_int(y, 0))) {pr_bottom_right_y = min_int(height, plus_int(y,32)); }
+                            if(int_greater_equal(pr_top_left_x, x)) {pr_top_left_x = max_int(0, minus_int(x, 32));}
+                            else if(int_less_equal(pr_bottom_right_x, x)) {pr_bottom_right_x = min_int(width,  plus_int(x, 32)); }
+                            if(int_greater_equal(pr_top_left_y, y)) {pr_top_left_y = max_int(0, minus_int(y, 32));}
+                            else if(int_less_equal(pr_bottom_right_y, y)) {pr_bottom_right_y = min_int(height, plus_int(y,32)); }
 
-                            _state.fp_dataview.setUint32((index|0) << 2, (value|0)>>>0, false);
-                        });
+                            dataview.setUint32((index|0) << 2, (value|0)>>>0, false);
+                        }
 
-                        pr.width = 1 + pr_bottom_right_x - pr_top_left_x | 0;
-                        pr.height = 1 + pr_bottom_right_y - pr_top_left_y | 0;
+                        pr.width = pr_bottom_right_x - pr_top_left_x | 0;
+                        pr.height = pr_bottom_right_y - pr_top_left_y | 0;
 
                         pr.top_left.x = pr_top_left_x | 0;
                         pr.top_left.y = pr_top_left_y | 0;
@@ -309,7 +314,6 @@ const SuperCanvas = {
                         pr.bottom_right.y = pr_bottom_right_y | 0;
                         _state.pr = pr;
 
-                        _state.ic.clear();
                         _state.enable_paint_type = _state.s.is_bitmap ? "bitmap": _state.s.is_offscreen ? "offscreen": "";
 
                         resolve();
@@ -321,11 +325,8 @@ const SuperCanvas = {
                 return new Promise(function(resolve){
 
                     "use strict";
-
-                    let length = index_changes.length|0;
-                    for(let i = 0; int_less(i, length); i = plus_uint(i, 1)) {
-                        _state.ic.set(clamp_uint32(index_changes[i]), clamp_uint32(color_changes[i]));
-                    }
+                    _state.ic.indexes = index_changes;
+                    _state.ic.colors = color_changes;
 
                     resolve();
                 });

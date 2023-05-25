@@ -177,43 +177,51 @@ class Base64 {
 
     setBase64CodesBufferResults(buffer, start, buffer_1) {
         start = (start | 0) >>> 0;
-        buffer[(start|0) >>> 0] = (buffer_1 >> 16) & 0xFF;
-        buffer[(start+1|0) >>> 0] = (buffer_1 >> 8) & 0xFF;
-        buffer[(start+2|0) >>> 0] = buffer_1 & 0xFF;
+        buffer[(start | 0) >>> 0] = (buffer_1 >> 16) & 0xFF;
+        buffer[(start + 1 | 0) >>> 0] = (buffer_1 >> 8) & 0xFF;
+        buffer[(start + 2 | 0) >>> 0] = buffer_1 & 0xFF;
     }
+
     setBase64CodesBufferResultsMO2(buffer, start, buffer_1) {
         start = (start | 0) >>> 0;
-        buffer[(start|0) >>> 0] = (buffer_1 >> 16) & 0xFF;
+        buffer[(start | 0) >>> 0] = (buffer_1 >> 16) & 0xFF;
     }
+
     setBase64CodesBufferResultsMO1(buffer, start, buffer_1) {
         start = (start | 0) >>> 0;
-        buffer[(start|0) >>> 0] = (buffer_1 >> 16) & 0xFF;
-        buffer[(start+1|0) >>> 0] = (buffer_1 >> 8) & 0xFF;
+        buffer[(start | 0) >>> 0] = (buffer_1 >> 16) & 0xFF;
+        buffer[(start + 1 | 0) >>> 0] = (buffer_1 >> 8) & 0xFF;
     }
+
     setBase64CodesBufferResultsMO0(buffer, start, buffer_1) {
         start = (start | 0) >>> 0;
-        buffer[(start|0) >>> 0] = (buffer_1 >> 16) & 0xFF;
-        buffer[(start+1|0) >>> 0] = (buffer_1 >> 8) & 0xFF;
-        buffer[(start+2|0) >>> 0] = buffer_1 & 0xFF;
+        buffer[(start | 0) >>> 0] = (buffer_1 >> 16) & 0xFF;
+        buffer[(start + 1 | 0) >>> 0] = (buffer_1 >> 8) & 0xFF;
+        buffer[(start + 2 | 0) >>> 0] = buffer_1 & 0xFF;
     }
-    setBase64CodesBufferResultsBy4(buffer, start, buffer_1, buffer_2, buffer_3, buffer_4 ) {
+
+    setBase64CodesBufferResultsBy4(buffer, start, buffer_1, buffer_2, buffer_3, buffer_4) {
         start = (start | 0) >>> 0;
-        this.setBase64CodesBufferResults(buffer, (start|0) >>> 0, (buffer_1 | 0) >>> 0);
-        this.setBase64CodesBufferResults(buffer, (start+3|0) >>> 0, (buffer_2 | 0) >>> 0);
-        this.setBase64CodesBufferResults(buffer, (start+6|0) >>> 0, (buffer_3 | 0) >>> 0);
-        this.setBase64CodesBufferResults(buffer, (start+9|0) >>> 0, (buffer_4 | 0) >>> 0);
+        this.setBase64CodesBufferResults(buffer, (start | 0) >>> 0, (buffer_1 | 0) >>> 0);
+        this.setBase64CodesBufferResults(buffer, (start + 3 | 0) >>> 0, (buffer_2 | 0) >>> 0);
+        this.setBase64CodesBufferResults(buffer, (start + 6 | 0) >>> 0, (buffer_3 | 0) >>> 0);
+        this.setBase64CodesBufferResults(buffer, (start + 9 | 0) >>> 0, (buffer_4 | 0) >>> 0);
     }
+
     getBase64Code(char_code) {
 
         char_code = (char_code | 0) & 0xFF;
         return (this.base64codes[char_code] | 0) >>> 0;
     }
+
     getBase64CodesBuffer(str_char_codes, start) {
-        return (this.getBase64Code(str_char_codes[start+0|0]) << 18 | this.getBase64Code(str_char_codes[start+1|0]) << 12 | this.getBase64Code(str_char_codes[start+2|0]) << 6 | this.getBase64Code(str_char_codes[start+3|0]) | 0) >>> 0;
+        return (this.getBase64Code(str_char_codes[start + 0 | 0]) << 18 | this.getBase64Code(str_char_codes[start + 1 | 0]) << 12 | this.getBase64Code(str_char_codes[start + 2 | 0]) << 6 | this.getBase64Code(str_char_codes[start + 3 | 0]) | 0) >>> 0;
     }
+
     resetMemory() {
         this.memory = new Uint8Array(4096);
     }
+
     bytesToBase64(bytes) {
         "use strict";
         let i = 2, J = 0, j = J >> 2;
@@ -222,35 +230,35 @@ class Base64 {
         let k = l % 3 | 0;
         let n = Math.floor(l / 3) * 4 + (k && k + 1) | 0;
         let N = Math.ceil(l / 3) * 4 | 0;
-        this.memory = (this.memory.length|0) >= (N|0) ? this.memory: new Uint8Array(N|0);
-        let result = this.memory.subarray(0, N|0);
+        this.memory = (this.memory.length | 0) >= (N | 0) ? this.memory : new Uint8Array(N | 0);
+        let result = this.memory.subarray(0, N | 0);
 
-        for (; (i|0) < (l|0); i = (i+3|0)>>>0, J = (J+1|0)>>>0, j = J >> 2) {
-            result[(j|0)>>>0] = this.base64abcCC[bytes[(i - 2 | 0)>>>0] >> 2] & 0xFF;
-            result[(j+1|0)>>>0] = this.base64abcCC[((bytes[(i - 2 | 0)>>>0] & 0x03) << 4) | (bytes[(i - 1 | 0)>>>0] >> 4)] & 0xFF;
-            result[(j+2|0)>>>0] = this.base64abcCC[((bytes[(i - 1 | 0)>>>0] & 0x0F) << 2) | (bytes[(i|0)>>>0] >> 6)] & 0xFF;
-            result[(j+3|0)>>>0] = this.base64abcCC[bytes[(i|0)>>>0] & 0x3F] & 0xFF;
+        for (; (i | 0) < (l | 0); i = (i + 3 | 0) >>> 0, J = (J + 1 | 0) >>> 0, j = J >> 2) {
+            result[(j | 0) >>> 0] = this.base64abcCC[bytes[(i - 2 | 0) >>> 0] >> 2] & 0xFF;
+            result[(j + 1 | 0) >>> 0] = this.base64abcCC[((bytes[(i - 2 | 0) >>> 0] & 0x03) << 4) | (bytes[(i - 1 | 0) >>> 0] >> 4)] & 0xFF;
+            result[(j + 2 | 0) >>> 0] = this.base64abcCC[((bytes[(i - 1 | 0) >>> 0] & 0x0F) << 2) | (bytes[(i | 0) >>> 0] >> 6)] & 0xFF;
+            result[(j + 3 | 0) >>> 0] = this.base64abcCC[bytes[(i | 0) >>> 0] & 0x3F] & 0xFF;
         }
 
-        if ((i|0) == (l + 1 | 0)) { // 1 octet yet to write
-            result[(j|0)>>>0] = this.base64abcCC[bytes[(i - 2 | 0)>>>0] >> 2] & 0xFF;
-            result[(j+1|0)>>>0] = this.base64abcCC[(bytes[(i - 2 | 0)>>>0] & 0x03) << 4] & 0xFF;
-            result[(j+2|0)>>>0] = "=".charCodeAt(0) & 0xFF;
-            result[(j+3|0)>>>0] = "=".charCodeAt(0) & 0xFF;
-            j = (j+4|0)>>>0;
+        if ((i | 0) == (l + 1 | 0)) { // 1 octet yet to write
+            result[(j | 0) >>> 0] = this.base64abcCC[bytes[(i - 2 | 0) >>> 0] >> 2] & 0xFF;
+            result[(j + 1 | 0) >>> 0] = this.base64abcCC[(bytes[(i - 2 | 0) >>> 0] & 0x03) << 4] & 0xFF;
+            result[(j + 2 | 0) >>> 0] = "=".charCodeAt(0) & 0xFF;
+            result[(j + 3 | 0) >>> 0] = "=".charCodeAt(0) & 0xFF;
+            j = (j + 4 | 0) >>> 0;
         }
 
-        if ((i|0) == (l|0)) {
-            result[(j|0)>>>0] = this.base64abcCC[bytes[(i - 2 | 0)>>>0] >> 2] & 0xFF;
-            result[(j+1|0)>>>0] = this.base64abcCC[((bytes[(i - 2 | 0)>>>0] & 0x03) << 4) | (bytes[(i - 1 | 0)>>>0] >> 4)] & 0xFF;
-            result[(j+2|0)>>>0] = this.base64abcCC[(bytes[(i - 1 | 0)>>>0] & 0x0F) << 2] & 0xFF;
-            result[(j+3|0)>>>0] = "=".charCodeAt(0) & 0xFF;
+        if ((i | 0) == (l | 0)) {
+            result[(j | 0) >>> 0] = this.base64abcCC[bytes[(i - 2 | 0) >>> 0] >> 2] & 0xFF;
+            result[(j + 1 | 0) >>> 0] = this.base64abcCC[((bytes[(i - 2 | 0) >>> 0] & 0x03) << 4) | (bytes[(i - 1 | 0) >>> 0] >> 4)] & 0xFF;
+            result[(j + 2 | 0) >>> 0] = this.base64abcCC[(bytes[(i - 1 | 0) >>> 0] & 0x0F) << 2] & 0xFF;
+            result[(j + 3 | 0) >>> 0] = "=".charCodeAt(0) & 0xFF;
         }
 
         let s = "";
-        let rl = N|0;
-        for(i = 0; (i|0) < (rl|0); i = (i+this.CHUNCK_LENGTH|0)>>>0){
-            s = s.concat(String.fromCharCode.apply(null, result.subarray(i|0, Math.min(i+this.CHUNCK_LENGTH|0, rl|0))));
+        let rl = N | 0;
+        for (i = 0; (i | 0) < (rl | 0); i = (i + this.CHUNCK_LENGTH | 0) >>> 0) {
+            s = s.concat(String.fromCharCode.apply(null, result.subarray(i | 0, Math.min(i + this.CHUNCK_LENGTH | 0, rl | 0))));
         }
 
         return s;
@@ -261,36 +269,41 @@ class Base64 {
             throw new Error("Unable to parse base64 string.");
         }
         const index = str.indexOf("=") | 0;
-        if ((index|0) > -1 && (index|0) < (str.length - 2 | 0)) {
+        if ((index | 0) > - 1 && (index | 0) < (str.length - 2 | 0)) {
             throw new Error("Unable to parse base64 string.");
         }
 
-        let str_char_code = Uint8Array.from(str.split("").map(function(s){ return charCodeAt(s)}));
+        let str_char_code = Uint8Array.from(str.split("").map(function (s) {
+            return charCodeAt(s)
+        }));
         let missingOctets = str.endsWith("==") ? 2 : str.endsWith("=") ? 1 : 0,
             n = str.length | 0,
             result = new Uint8Array(3 * (n / 4) - missingOctets | 0);
 
         let i = 0, j = 0;
-        for (;(i+16|0) < (n|0); i = (i+16|0)>>>0, j = (j+12|0)>>>0) { // Single Operation Multiple Data (SIMD) up to 3x faster
+        for (; (i + 16 | 0) < (n | 0); i = (i + 16 | 0) >>> 0, j = (j + 12 | 0) >>> 0) { // Single Operation Multiple Data (SIMD) up to 3x faster
 
-            this.setBase64CodesBufferResultsBy4(result, j|0,
-                this.getBase64CodesBuffer(str_char_code, i|0),
-                this.getBase64CodesBuffer(str_char_code, i+4|0),
-                this.getBase64CodesBuffer(str_char_code, i+8|0),
-                this.getBase64CodesBuffer(str_char_code, i+12|0)
+            this.setBase64CodesBufferResultsBy4(result, j | 0,
+                this.getBase64CodesBuffer(str_char_code, i | 0),
+                this.getBase64CodesBuffer(str_char_code, i + 4 | 0),
+                this.getBase64CodesBuffer(str_char_code, i + 8 | 0),
+                this.getBase64CodesBuffer(str_char_code, i + 12 | 0)
             );
         }
 
-        for (;(i|0) < (n-1|0); i = (i+4|0)>>>0, j = (j+3|0)>>>0) { // Single Operation Single Data (normal)
-            this.setBase64CodesBufferResults(result, j|0, this.getBase64CodesBuffer(str_char_code, i|0));
+        for (; (i | 0) < (n - 1 | 0); i = (i + 4 | 0) >>> 0, j = (j + 3 | 0) >>> 0) { // Single Operation Single Data (normal)
+            this.setBase64CodesBufferResults(result, j | 0, this.getBase64CodesBuffer(str_char_code, i | 0));
         }
         switch (missingOctets) {
             case 2:
-                this.setBase64CodesBufferResultsMO2(result, j|0, this.getBase64CodesBuffer(str_char_code, i|0)); break;
+                this.setBase64CodesBufferResultsMO2(result, j | 0, this.getBase64CodesBuffer(str_char_code, i | 0));
+                break;
             case 1:
-                this.setBase64CodesBufferResultsMO1(result, j|0, this.getBase64CodesBuffer(str_char_code, i|0)); break;
+                this.setBase64CodesBufferResultsMO1(result, j | 0, this.getBase64CodesBuffer(str_char_code, i | 0));
+                break;
             case 0:
-                this.setBase64CodesBufferResultsMO0(result, j|0, this.getBase64CodesBuffer(str_char_code, i|0)); break;
+                this.setBase64CodesBufferResultsMO0(result, j | 0, this.getBase64CodesBuffer(str_char_code, i | 0));
+                break;
         }
 
         return result;

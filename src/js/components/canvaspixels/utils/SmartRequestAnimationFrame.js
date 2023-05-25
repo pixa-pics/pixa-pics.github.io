@@ -62,21 +62,24 @@ const SmartRequestAnimationFrame = {
             },
             run_frame(render, do_not_cancel_animation = false, force_update = false, requested_at_t = Date.now()) {
 
-                const render_it = async function() {
-
-                    const id = s.caf_id | 0;
-                    render();
-                    if(id === s.caf_id) { s.caf_id = null;}
-                };
-
                 return new Promise(function(resolve, reject){
+
                     "use strict";
+                    function render_it() {
+
+                        "use strict";
+                        const id = s.caf_id | 0;
+                        render();
+                        s.lasts_raf_time = requested_at_t | 0;
+                        if(id === s.caf_id) { s.caf_id = null;}
+                    }
+
                     if(requested_at_t <= s.lasts_raf_time) {
 
                         reject();
                     }else {
 
-                        let skip_frame_rate = s.is_mobile_or_tablet ? 30: 60;
+                        let skip_frame_rate = s.is_mobile_or_tablet ? 20: 40;
 
                         let running_smoothly = true;
 
@@ -96,7 +99,6 @@ const SmartRequestAnimationFrame = {
                             }
 
                             s.cpaf_frames++;
-                            s.lasts_raf_time = requested_at_t | 0;
 
                             if(!do_not_cancel_animation) {
 
@@ -107,7 +109,7 @@ const SmartRequestAnimationFrame = {
                             }
 
                             resolve();
-                        }else if(!running_smoothly || s.caf_id !== null && deltaT > 1000 / (skip_frame_rate * 2)){ // Low
+                        }else if(!running_smoothly || s.caf_id !== null && deltaT > 1000 / (skip_frame_rate * 1.5)){ // Low
 
                             if(s.caf_id !== null) {
 
@@ -117,7 +119,6 @@ const SmartRequestAnimationFrame = {
                             }
 
                             s.cpaf_frames++;
-                            s.lasts_raf_time = requested_at_t | 0;
 
                             if(!do_not_cancel_animation) {
 
@@ -130,13 +131,13 @@ const SmartRequestAnimationFrame = {
                             resolve();
                         }else if(deltaT < 1000 / (skip_frame_rate * 2)){
 
-                            setTimeout(this, 1000 / (skip_frame_rate * 8), resolve, reject);
+                            setTimeout(this, 1000 / (skip_frame_rate * 2), resolve, reject);
                         }else if(force_update || do_not_cancel_animation) {
 
-                            setTimeout(this, 1000 / (skip_frame_rate * 16), resolve, reject);
+                            setTimeout(this, 1000 / (skip_frame_rate * 4), resolve, reject);
                         }else {
 
-                            setTimeout(this, 1000 / (skip_frame_rate * 4), resolve, reject);
+                            setTimeout(this, 1000 / skip_frame_rate, resolve, reject);
                         }
                     }
                 });
