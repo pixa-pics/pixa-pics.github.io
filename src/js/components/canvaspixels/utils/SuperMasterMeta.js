@@ -353,16 +353,18 @@ const SuperMasterMeta = {
                     if (index_changes.length > 0 || clear_canvas || is_there_new_dimension || force_update) {
 
                         meta.super_canvas.pile(index_changes, color_changes).then(function () {
-                            state._previous_imported_image_pxls_positioned_keyset = imported_image_pxls_positioned_keyset;
-                            state._old_selection_pair_highlight = _selection_pair_highlight;
-                            state._old_layers_string_id = old_layers_string_id;
-                            state._did_hide_canvas_content = hide_canvas_content;
-                            state._old_pxl_width = parseInt(pxl_width);
-                            state._old_pxl_height = parseInt(pxl_height);
-                            state._last_paint_timestamp = requested_at;
                             meta.super_canvas.unpile(pxl_width, pxl_height).then(function () {
                                 meta.super_canvas.prender().then(function () {
-                                    meta.sraf.run_frame(meta.super_canvas.render, clear_canvas || is_there_new_dimension || force_update, false, Date.now()).then(resolve0).catch(reject0);
+                                    meta.sraf.run_frame(meta.super_canvas.render, true, false, Date.now()).then(function (){
+                                        state._previous_imported_image_pxls_positioned_keyset = imported_image_pxls_positioned_keyset;
+                                        state._old_selection_pair_highlight = _selection_pair_highlight;
+                                        state._old_layers_string_id = old_layers_string_id;
+                                        state._did_hide_canvas_content = hide_canvas_content;
+                                        state._old_pxl_width = parseInt(pxl_width);
+                                        state._old_pxl_height = parseInt(pxl_height);
+                                        state._last_paint_timestamp = requested_at;
+                                        resolve0();
+                                    }).catch(reject0);
                                 }).catch(reject0);
                             }).catch(reject0);
                         }).catch(reject0);
