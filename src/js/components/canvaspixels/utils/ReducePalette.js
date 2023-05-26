@@ -374,7 +374,7 @@ var t = function(buffer) {
         get: function() { "use strict"; return this.storage_uint32_array_.length; }
     });
     Object.defineProperty(SIMDopeColors.prototype, 'buffer', {
-        get: function() { "use strict"; return this.storage_uint32_array_.buffer; }
+        get: function() { "use strict"; return this.storage_; }
     });
     Object.defineProperty(SIMDopeColors.prototype, 'buffer_getUint32', {
         get: function() { "use strict"; return function (i) {
@@ -389,6 +389,204 @@ var t = function(buffer) {
         return SIMDopeColor(this.buffer, i|0);
     }
 
+    function BitArray(s) {
+        s = (s | 0) >>> 0;
+        this.l_ = s|0;
+        this.a_ = new Uint32Array((this.l_ + 31 | 0) >>> 5);
+        this.M_OR_ = Uint32Array.of(
+            0b00000000000000000000000000000001,
+            0b00000000000000000000000000000010,
+            0b00000000000000000000000000000100,
+            0b00000000000000000000000000001000,
+            0b00000000000000000000000000010000,
+            0b00000000000000000000000000100000,
+            0b00000000000000000000000001000000,
+            0b00000000000000000000000010000000,
+            0b00000000000000000000000100000000,
+            0b00000000000000000000001000000000,
+            0b00000000000000000000010000000000,
+            0b00000000000000000000100000000000,
+            0b00000000000000000001000000000000,
+            0b00000000000000000010000000000000,
+            0b00000000000000000100000000000000,
+            0b00000000000000001000000000000000,
+            0b00000000000000010000000000000000,
+            0b00000000000000100000000000000000,
+            0b00000000000001000000000000000000,
+            0b00000000000010000000000000000000,
+            0b00000000000100000000000000000000,
+            0b00000000001000000000000000000000,
+            0b00000000010000000000000000000000,
+            0b00000000100000000000000000000000,
+            0b00000001000000000000000000000000,
+            0b00000010000000000000000000000000,
+            0b00000100000000000000000000000000,
+            0b00001000000000000000000000000000,
+            0b00010000000000000000000000000000,
+            0b00100000000000000000000000000000,
+            0b01000000000000000000000000000000,
+            0b10000000000000000000000000000000
+        );
+
+        this.M_AND_ = Uint32Array.of(
+            0b11111111111111111111111111111110,
+            0b11111111111111111111111111111101,
+            0b11111111111111111111111111111011,
+            0b11111111111111111111111111110111,
+            0b11111111111111111111111111101111,
+            0b11111111111111111111111111011111,
+            0b11111111111111111111111110111111,
+            0b11111111111111111111111101111111,
+            0b11111111111111111111111011111111,
+            0b11111111111111111111110111111111,
+            0b11111111111111111111101111111111,
+            0b11111111111111111111011111111111,
+            0b11111111111111111110111111111111,
+            0b11111111111111111101111111111111,
+            0b11111111111111111011111111111111,
+            0b11111111111111110111111111111111,
+            0b11111111111111101111111111111111,
+            0b11111111111111011111111111111111,
+            0b11111111111110111111111111111111,
+            0b11111111111101111111111111111111,
+            0b11111111111011111111111111111111,
+            0b11111111110111111111111111111111,
+            0b11111111101111111111111111111111,
+            0b11111111011111111111111111111111,
+            0b11111110111111111111111111111111,
+            0b11111101111111111111111111111111,
+            0b11111011111111111111111111111111,
+            0b11110111111111111111111111111111,
+            0b11101111111111111111111111111111,
+            0b11011111111111111111111111111111,
+            0b10111111111111111111111111111111,
+            0b01111111111111111111111111111111
+        );
+    }
+
+    Object.defineProperty(BitArray.prototype, 'readBit', {
+        get: function() {
+            "use strict";
+            return function(i) {
+                "use strict";
+                i = (i | 0) >>> 0;
+                var m_or = this.M_OR_[i & 31];
+                i = (i | 0) >>> 5;
+                return (this.a_[i|0] & m_or | 0) == (m_or|0);
+            }},
+        enumerable: false,
+        configurable: false
+    });
+
+    Object.defineProperty(BitArray.prototype, 'writeBit1', {
+        get: function() {
+            "use strict";
+            return function(i) {
+                "use strict";
+                i = (i | 0) >>> 0;
+                var m_or = this.M_OR_[i & 31];
+                i = (i | 0) >>> 5;
+                this.a_[i|0] = this.a_[i|0] | m_or;
+            }},
+        enumerable: false,
+        configurable: false
+    });
+
+    Object.defineProperty(BitArray.prototype, 'length', {
+        get: function() {
+            "use strict";
+            return (this.l_ | 0) >>> 0;
+        },
+        enumerable: false,
+        configurable: false
+    });
+
+    var SetFixed = function(size){
+        "use strict";
+        if (!(this instanceof SetFixed)) {
+            return new SetFixed(size);
+        }
+        if(typeof size == "object") {
+            this.set_ = new Set(Array.from(size));
+            this.s_ = this.set_.size;
+            this.indexes_ = Array.from(this.set_);
+            this.max_ = 0;
+            for(var i = 0, l = this.indexes_.length|0; (i|0) < (l|0); i = i + 1 | 0){if((this.max_|0) < (this.indexes_[i|0]|0)){ this.max_ = this.indexes_[i|0]|0; }}
+            this.a_ = new BitArray(this.max_);
+            for(var i = 0, l = this.indexes_.length|0; (i|0) < (l|0); i = i + 1 | 0){this.a_.writeBit1(this.indexes_[i|0]|0); }
+
+            delete this.set_;
+            delete this.indexes_;
+            delete this.max_;
+        }else {
+
+            this.a_ = new BitArray(size);
+            this.s_ = 0;
+        }
+    };
+
+    Object.defineProperty(SetFixed.prototype, 'size', {
+        get: function() {
+            "use strict";
+            return (this.s_ | 0) >>> 0;
+        },
+        enumerable: false,
+        configurable: false
+    });
+    Object.defineProperty(SetFixed.prototype, 'length', {
+        get: function() {
+            "use strict";
+            return (this.a_.length | 0) >>> 0;
+        },
+        enumerable: false,
+        configurable: false
+    });
+    Object.defineProperty(SetFixed.prototype, 'indexes', {
+        get: function() {
+            "use strict";
+            var a = [], l = this.length|0, i = 0;
+            for (; (i|0) < (l|0); i = (i + 32 | 0)>>>0) {
+                a.push.apply(a, this.a_.readFourBytes(i|0));
+            }
+            return a;
+        },
+        enumerable: false,
+        configurable: false
+    });
+    Object.defineProperty(SetFixed.prototype, 'has', {
+        get: function() {  "use strict"; return function(i) {
+            "use strict";
+            i = (i|0) >>> 0;
+            return this.a_.readBit(i|0);
+        }},
+        enumerable: false,
+        configurable: false
+    });
+
+    Object.defineProperty(SetFixed.prototype, 'add', {
+        get: function() {  "use strict"; return function(i) {
+            "use strict";
+
+            i = (i|0) >>> 0;
+            if((this.length|0) < (i|0)){
+                var a = this.indexes, l = a.length|0, x = 0;
+                this.a_ = new BitArray(i+i|0);
+                for(;(x|0)<(l|0); x = x + 1 | 0) {
+                    this.a_.writeBit1(a[x|0]|0);
+                }
+                this.s_ = (a.length|0)>>>0;
+            }
+
+            if(!this.a_.readBit(i | 0)){
+                this.s_ = (this.s_ + 1 | 0) >>> 0;
+            }
+
+            this.a_.writeBit1(i | 0);
+        }},
+        enumerable: false,
+        configurable: false
+    });
+
     var QuantiMat = function(opts) {
         "use strict";
         opts = opts || {};
@@ -402,7 +600,7 @@ var t = function(buffer) {
         this.new_pxls_ = "buffer" in opts.pxls ? new Uint32Array(opts.pxls.buffer) : Uint32Array.from(opts.pxls);
         this.new_pxl_colors_ = "buffer" in opts.pxl_colors ? SIMDopeColors(opts.pxl_colors.buffer) : SIMDopeColors(Uint32Array.from(opts.pxl_colors));
         var l = this.new_pxl_colors_.length|0;
-        this.new_pxl_colors_is_skin_mask_ = new Uint8Array(l|0);
+        this.new_pxl_colors_is_skin_mask_ = new SetFixed(l|0);
         this.is_bucket_threshold_auto_ = Boolean(opts.bucket_threshold > 4096);
         opts.bucket_threshold = opts.bucket_threshold || 0;
         opts.bucket_threshold = (opts.bucket_threshold|0) >= 1 ? (opts.bucket_threshold | 0):  (opts.bucket_threshold * 4096|0) >= 1 ? (opts.bucket_threshold * 4096|0): opts.this_state_bucket_threshold || 96;
@@ -465,12 +663,11 @@ var t = function(buffer) {
     Object.defineProperty(QuantiMat.prototype, 'set_new_pxl_skin_mask', {
         get: function() { "use strict"; return function() {
             "use strict";
-            var l = this.new_pxl_colors_.length|0, c;
-            this.new_pxl_colors_is_skin_mask_ = new Uint8Array(l|0);
+            var l = this.new_pxl_colors_.length|0;
+            this.new_pxl_colors_is_skin_mask_ = new SetFixed(l|0);
             for(var i = 0; (i|0) < (l|0); i = i + 1 | 0) {
-                c = this.new_pxl_colors_.get_element(i|0);
-                if(c.skin){
-                    this.new_pxl_colors_is_skin_mask_[i|0] = 0;
+                if(this.new_pxl_colors_.get_element(i|0).skin){
+                    this.new_pxl_colors_is_skin_mask_.add(i|0);
                 }
             }
         }}
@@ -553,7 +750,7 @@ var t = function(buffer) {
         get: function() {"use strict";return function(index){"use strict";return this.new_pxl_colors_.get_element(index|0);}}
     });
     Object.defineProperty(QuantiMat.prototype, 'is_pxl_color_skin', {
-        get: function() {"use strict";return function(index){"use strict";return (this.new_pxl_colors_is_skin_mask_[index|0]|0) > 0;}}
+        get: function() {"use strict";return function(index){"use strict";return this.new_pxl_colors_is_skin_mask_.has(index|0);}}
     });
     Object.defineProperty(QuantiMat.prototype, 'max_cluster', {
         get: function() {return this.max_cluster_ | 0;}
@@ -865,7 +1062,7 @@ import {load as LZEL_92} from "../../../utils/LZEL_92_loader";
 const ReducePalette = {
 
     _create_func: function (){
-        return LZEL_92("UraniumJS! H~=2;Mt=wbkhA:%KA-Wen§>5Bp]&3+^prjIe:{Xho2OHYMSIBQd^)#9wxe[).(aGkHH9>A=K-nPjYZbe)&~0%UL§9?XugVMf:v%&l{-1e)u%bz5qT6YdB@Ob qyK4nu3FCYp6 R e:kO2W|;=~&¡Z}mYnPs2C@mAT1§5pf5|c4&us(WO^yfY]d<anOYf4aekctXTE:LjJz§ZUnFs}! jjSY-@O&NA:aM,s6:HyqvdG[jPdI;g6zEmR{WhKKP9A~AvB^^EL&7Q~!eq.qP;psy~{*.Yjn1|ul&]0M<3)py%wm8f9^)oZh¡e!Pk Ku3!dbOa<ti@qk=eeFCdbLU¡v>*=KRxG^MvSaWk)9vA|v?a-o~2?nuG!*tA1]UUD0^ o2H¡pA§@LnX{C4H64§ik2gH^rq:NI{ypPWZ¡WdFxkNBNuS5F?0@SjE_&L(Z=Y]EAcJ8m)O#5mN8r0WBiHZf^7]v2O>hf>NCSShjj:khk3hQB39zol.1zex{:~~CGdEQAwraag2!+X(fXluZXC,W){<¡+d&{y(U5(C@-V2k6(u0![BN!alUO+§Z9xDq<F¡e,§?Z;1{.KuHk3N_23,eSjTX<AuA6)Fq.#mSe*GivZQ:s?^zc7X¡)P1I+I!Zg_r g4{;QW=VRNl!#6ZqGHV:e?<Ox:=cVSbxR=Bm}p_F+a+)4z5FA5t [jE§¡{O>E§yC_s&WbrH1VVbsvC:yI0|< J)eu0]61#+br@]5^|lZ55LzY<H!CyW,lU 3VT0dR=uFzk§BWwC51Mz]S%D#;tvT_4 =H<80|qgZ>|#6-HiRGN:A*HPNx(68#{P#4Ji,sYG>-d3 *Xp|6s;f=TFsRv)63^>tqluwL,6p§,X=~5fap+M5z[I<d&(Zx0NBP=8&JOnPfdQBS#-g%v+4q>]g8@R¡p_oJdbOq %Vo =s3p8=w{ Ly,rH^^ucSE.TyqDBhS B1x¡xdrKFmR1{;a!!w#p_B>:LByP7fEZ~0@VE2pY+x=IX%GlB*@[DY>%zO>URq&ze*neS HaFodqCG5Z_+E NiITt?;R37i§1n9TdSFB@Lw{B¡3I~*ud*^a*§!AlCxekWTkN~[]_?40T(tB)eC25J:KIz~u5 d4_co2UBN)&k=4I0G0bH3(sStZdin[5zm<bH#3Mn4S§IJCIGb0T^oWe%Yt9}%^_XtVdUB{f+83L cs%FIdHSc7vq|M7ac+@=FWH*%&XZH-IB7d=gyGk~JXPTwQzng-n§Q_VzI=R§?.y5!65STh<kDho#uhM-X{K= N |OAPhjIRqlUib#83vysLc>aMDsh*I<,)9#oZ##=Rk?Ba!2ue%*aXRLJuF<Dn*mC bn*6uwa_Qf*r%?^M|]*,U.DWfJfMP§INie!XYDDI#BJpGS+Gd[Ug{7SJsq1!96(1)@|4=??< SzDJYeg>,j<§U2(;¡z§Fxx&^LM3~FyAIGu)Z7*s§]:&7yQHWD>+Z]#GA)?zB)f@S]6uM-?=EBAk^MNHHKW1ZALf¡x)(u!&2):}sE(vSE?vF?e28nLdgQg}O,i,>A]vrlh-p1xs!Uh;&kXD(n~BO+[erwTpoqH?WKm0n~>T!)W(3Ifdbt!|_lQl@<xE87S9da5ZxNB}¡%EEj|&k0K.gs7]*0yfq>|ypSYAlVI=eTLQ*6eaRo:~_V,Tozi8y0&,RAh7W4Vnp(9 _K=KA1aVwe+[jnau#S:nTfb&^akho>4f{kc§hD,iG>HDBh}fbw1S^ObRQ>*VmVniquz9;>#c^qQj¡0P:,;qBO{B[ELtR(z9WfCcsTX+q>YB@FfN@!Uk16|#Zlhjr@q5O§Q-{6KtIMWWX9^OuHmQee +K M6&H[Isr m3J!k:>0^|u*[_i4wzJWq{5A§:3,|S!,HGicyr+iOnF8?;b5K_3Y@zcl~|Z(*fm#CKreZd+<oudxFF*@5Bn0;8nG>B1Y0CP<2AnX<LPKhsT&cAp[XQrByMy^._sgPP?8k@+JU¡(*jXD58t564!u¡fSMWD!3@Qp>!fDwQc<:Jp8=#p~¡uRL!:5bfm]wbEvvVjth_^sG!c;js]4r¡j2!%=r!¡Oj ]{oC*bliAO~FG]iZ,;VNImgxm7&#G(^§|!be~]c]{1lh*#iXO8C+*tGcpT5;§n7gP.F%~%r3z>9)K§tIu-3¡teuC6oXhe10x-O5g4ja!*753l9ebi%B6M:@&ROC1v(wI=(,A¡Y({GK-jyVEWJW+x99{-tE!27Dtvucl]&>2V1kDsln%DWh8JSdGhUnesQE{xRl+eQ<_0*x{vap4§r8PBi?_iDk[rG?7;uR:k.pv<m!H4VR7rt¡XCe*Zs §)<}5li^99.>RF((9~%?!cZ3k4MPOpR ~lV<z<P>-N,?;{fAjq)HSx¡oKmrXw 2Y !;!iR]=Th@(tnQ0;{_,7.,:z6Z;}#HIXE&?-P6>fCMrS!Ia%olb58gjDw<¡smoJ4gLP+#lN2q74Q§NNbn@UErs^qGq=gko>Q%qwTmZXV#Me!X^|+MaO-WGD<Y#?^Pv8R:F^Y6T¡8j~-q<|s&)§Bl+BKfC(GR~&iEKZ{?[RBk%_5Z3Nu12,IXjM[E§hd!jpWJwMB9&65xR~Bc5Sd#-nXWNAt5G95aUD7WHY#@W|yl;GjT@eg=xmYOzEE.XYdgBk §3%Fv*qImyxgu3gx4+*9I;+t&=nUdXKp<k:I~Ro~mF~]@NmbgJ!@4<TuW!a<,v>§:6M16SI,U[C#^yjTl¡_!,9%lx2c^^TjBgwF.SJq@!q{!BI-(o-0!Z&.{(e.Y03i!<eUwo8N:Ht<!gyu)@D@fooohH]v}qU&p G5T5ExqH9,O8 NY.(HpO(M*Fv_EfdwmPL[l@|W[,y99PH&|6Wqxnd¡{;§6¡:oW^0=xPm?*6CsSJ@-wB:Y{vr#CD*(D_1~<oS~d;b~pTz^1§4KQ,K)-[|dxP1u1tnd |u~§F5iqe{Eu&pN=yq{&jYPKidkLaz2RPnn.)id RwzDi9|chdE{{6cJz.3R?3hV Zs+H-xY,k3h2EjWkCd%G_2ue.[J:c85§KX~u31.ffenCJ*IoqD_%J7Y{1My4qVmY<e(x?aXMx{={h}<SPhRdd-o§{v;+44]pB9C1?I(?GuST9@§2B*y6,0(aO .Z[YBG-x[Ep4walw|(cv,)HkdAw9lUM3<o#SB8qa7+EBfyF?{f8GsQeXjNNCHKLOBdOZY!_];5wJFPI%rq3(EX+wmAmVFE¡,@sx~SZfK73¡E;fF_Uz>W6H!yE{zpxZcNPlaPtm:8§tIb@>(<~z#Wj x.Q}I~PjpqPnw1mg{TTA_[H;BHp)Q)BBc>?m_>s^x%N3H556Dz3YZa@hJ4INq6!G4-qAMkaD#0pXH¡^.@>Jf++i6xe[OacybxA5!o7,:e§oR0jNTg_LkoWAEQQDbV<gxbBa2iePP6!.u^~L,a&z¡epSa9v(n<¡5S?D7>r1aj0YR(6O6]Nx[§qeUcrC:¡)RQ<{0wNWsgCYuMHCE%y29:!|hRWLB^<J,<tC:W0qG+wL~gQoJzi§¡4mbCfQyFmXqcerjms]0gKc?3Chqopw9kHv@Zfc:RjAnJpMm7S#;LeNPr<DtTL6T}Jj.68Zobr,fm¡Hf<[%<e84X!Ck§_EWV]LBh<7@:gJFbD4%GzU0SFONRW9P>7^O7(m>=QXJ8ooi*M%J7wP¡BiENILVm 2Ztbd¡fF>:^I,]#N^XI|ho1Ec23+g1b§UD1TvQXMMiKaEMRBWzlY|bxG;YH#Gj}evRZ52C2e{m<^}-OP§ lsyd_Rd!Dq0t*HB?*?RP#Khk¡V.2Mj?Ob§>§|STDpAg6Y9I[NOBO2Jmt^![WqMP=PxA&Vovor^EZTZNU>Lzo_BP>s~Y+|@Y§vAFDc{Y-BvgqpJ^p9ZMyvLq,vU,oWFiC)~I3@~o](=lmeY Hk7_J}*j(<UHS)-wPC8[lT16D@aUf^i*Nv#)<OjNJl;rMZg|c4¡&CNl-VcnMRYT&CsitOtOUjd{k?RTNG#{2P7IMlNsGf]3pkS*MYHpi@wH#&=vtBOqeyz_sf>Lm+9|<-4I6GBD?(>§@ P_@@>c2wt&0l9N4d3&fVI)qV,9.-Lmk]( M?dt:_¡*2#M,DtJQcC-8q<c-zI?HGxJa<GUQ6b%Qafd3B,Y24%aKXY.[H5AB_Mo>7Ju-eIIk+<L|>([pCk7?hs>0k|)D!aF4g%xccSfQV@FJKApKbqQ7!v@0p0.kTHjbkOF<vwsZIq#=sIkY@DR§>H-5pF_wqY¡>lnU;Y!?DT{|LRoMhb6q.(&LQA&¡]Yvq,;)L?2<z3R^%@ZR&Gl4?);uIlz!i4Bgt1Y¡n%Tfe6}:Mt(V[SHhqVkz6%x,)9E7-e @EXH2TX75q<6~¡^D9Dn0 :MG(,5OFm_mWz67XECEw8Z^0FbE:mXGB,*cd#b[tp¡NZ_{sKW=hgdm<t2)=Rk]+U}G.Gsk<RF@QP1%4@|&Yv,%I(lT8MB >e=ePB#j7Qd,2*cJl(k~!B?C)I,q 9)wxmZev5[3[~dl¡.%IMp9Oh{P1FkO1tkl;V58^YHq72§fvMaew6qblWZ:C9¡p5D+Hy-|]:ZLwKET*U*C{XZSi-oVLSk~q9]IGv]]?d&1?_^Z_rVzA psn.hd=PY<¡kT+B.2*:GK?k*~~o,<#Oebx,+k9axK]n§lt¡pFHK~uB1M7ls#xRM(mlc§R~dimdo9P miMVtE-S1za)j,0?9= {]+Tbc{mLI&z98u[7bMrc§4EP=2sfXX8ji6@Y[pJ*2JqDmK@0hJi>Nqd(v§vcRuolGj5md;[c,10kZ¡K?,EVN+)j9oX|aBza¡ip?Ps=ijJ5!AdQL8{jR:+7o0:7KzIEsllacohqJ&{Fw@wfEt^l-|z|{-D7*x4*ev-@MzlYC3<p!YP§+Pj^¡T<{VunjtWPE077e-*o+#mw@@FbSLJt[<<g:b~P^sbE;3ar47|Y-0Et0usvfCqx)v%@YK#xdxOVRbz)T#iu]¡^mqC^x):a1BOde?<¡MUK+V+rXHOV|JB?Lf(?-V8&-WtYrMN<¡]mIWqDa_}K~9^ZI¡7mfXY<Yi@Y)+jRuY<z17b1H%Y(ZH])]7<]@74o +)7:sDFF&W1vdeEYDamAUxEciP!&!R");
+        return LZEL_92("UraniumJS! H~=2;Pr#wbkh6lQZZSw{%r3q6Pi##PX.[MIdijF>y_A.*,o]D]GeS_]h.!P§(3¡7S!=k_.XFU]jVMI<E2e1AHMo7aUn<WGUJeN9d§GpCV5;NmSWrWI_1)BN=)Udg*;S7gJ3¡>_%§§AWJ]@4. +JM!z>Tf§qMCi:Xn2c.!b<?Lw3ccWR§bC<jHX{g!SogSU|RT7k¡![(rG2pG2[[lmzrbBK-lWL@R~Q|U>Yh8 ti>Ai|!lgz#YOOIgN+,bfi¡BtZ]ErK(O>nDQ -Q.mlIegG0c!6RX§!F]n8BzHH-cyEE[Mx8D§d5Vd!5=*%?Vr(I{29f  -0Tz}!dl?qa_s@nf§h-6zd_ipz;_Jjt?jkhLeJFIWU*UX8nmtAD1P^<IH=f>=V+{m*FNWi8v^blR^VSg1_NC5[A!D=14xTV.IBaSr6,#&F,|#-1jdS2{uU+v9¡OEQK0Rcv.tu=#E0T|nOgsV6OX<Zc^cx8%R6e2%>ewe4N@_ZqxiNzX2[}zeWwZI DtEgOntz,DGPoY)lN7=xt_Ni<^EPIv Y8TeEOF@S]8Xa _e%Pny1z1|5wZ]AIE%,gL7==LLXtMyitqy Q~iwc.]LJ!V+_w.O-Y?tl.Fw!j=X;¡;[Y0lc#Um!U }O>s}|}Y2+Xr4§K<@p&|&)dWB~[*K)vxc>=Y%Sts5Es]!+LF.=(v~nCx@FKD5Sc2fc!¡5¡[¡sX_^_§&.lIT)q _dg&|u=In1~-m--bmhu)jPiM|g5528T8i0j k&@]QNtZ%T}%V[LYFZ&jPRvU8B1]J0Js]yfV~ ymWrn1q)27JR[Web_[<gC2VdBCXTDw=j5(HL&>e=n:b<_Wy2t8,@ceFp-ftH% Wk^JJb:cxw0{zH§{z%v^CpVcBThOr#iI+,w{@nR[UpgMEB8mbGHx?j=EA|JO{D{p{n¡Mz6Xr5g2m{cDc,u!m87a44(1~I&ULL>g56-mG<M+< ;f3[-^5J<J%G:.!{L=7,FMs*-T?,w2TQNB+H9I2M4wc%[Oc|5O~_:H%XbU9{.W[=J4QDS;05W-=c3fg):j~2§?@cp%F¡!WXMLH0zj5C _ (§uya<K8duJpIYr>g§p?em3360f{fqH)26e!B> !i=[e¡9^Vbw+:XT§s|<2z:BN,:cb1fc2dh~;2)A,F^N+N% qniWr~H9G,Cm|[=RNpP_=*XNW! I<!9Z*~,Cs+^_4y0vXQvI>|#Q~z]YK,@7+UPej;kDB10zY§~=Mg.#y-tEO4i!¡jnzC%1b+*+dm<?w:!*:SvK<?QogfNc^?MS<D[l1p3Jz I(VS8_,5h_krAXi13ing(-OEj3,?f>tzTX7_68U62c}kZ,URDk^->Yp!.+yLI8*(|t%,rw:{acU+4tM[dMLc2J}xycyOt-J=In;{p|cec6+mVTe,wVe]cYhH8?b[p^3aRt([,cyHlO-C-B8:|N)z.*BFPR¡~L;(C%z@4_#^^1<>;562yqTn(wgmkR11#v2^H~qp6mQ(=l§7A%Uc%BtYj&zFOkp9[ZVT7q]¡b+T;kc:+pg8Q;cfT8k)5sTrkx(p|VX=F;0_7=N>_TuIF3%o|SHUhyl*!GkBpyDB}Tf#d{Gm?-.F§Z&UITSr5&|!TO¡PS|O^P|!@R[[P*{*SC@eI;P2qvl|WF1FZ~@gfSV(#yClDI6QD7wlUN=,eNJ_Z{y)CffNY{l@^VRc(B0yz7JrBTh~DL*{k.p CvH^g}n=xPAv(W^5L0-F{(DX{crFObt¡Ft(Nvw@|u@r¡:POPjGU+%UBLpFs,r_FLX(.G0!a§oKgUljP§&J9528&j]1]5¡1_q&iEUh7O#]T|?T>y:h(FRe,G}[:S9AcD?^AcTb,=ggm0qzM@n:q.B%pW.jRz&Umqd|f;tE#d<lj4J8auH_?jWhsoV24Kr=cEi;JLlPgm3ZVBV;29rd(;A<§Bpn§w:FfYJRs&lw.),)myfHau?KTCZ#51n!A%}¡sV{2Bb,ui%vO* 8%2Sg?§uPpd{k#@hN3YIBnEa;tNu#Kg0lgf;q@=qw^b<aqFRR0ei=9§)S 5Hyv[cIWm8G-¡8N;re,ka(Ho¡EgWaeEk>;{j>Ij>9)8¡<[JFn9Ximv%&8H§hu)ztTOip1x*GW9lLW-VrhfEpApv]8tB@Z6OZ0ya§tQ¡!(Sf.M*¡*oJ+exGB1.+wQIo2(?s{2=DNJOqKUSLA^L{3A0d0@zDZpL3sNL?u2MKedxToPz-}tHoGPtx)~aGV§f{FL:b8bKk=r!KY)f#m0q>5*Hot(,cMo¡d_]6#gLUpk=L^Sw|AVse_ZrZ3~!vOQnap)z3cd%5ut@[M*w9gZ KwI]9-@nMv!PE&.!P5RHW%pG,++Qv~H3:p¡F*P¡M) ,TV.E^ybL5oOVz|N0C§;{[.y}b=l!DtI_5YnQKGn*OI |uJ)<,(4:5h%#Vqm(0o)_ R8d:hZTx3*rd:(¡9d=4u.X-<=6qA@BGt}:yq;g=(|Lj!e11GN:W3XG Fo3&d30.A^8HL6@u.02+l[.?%Umf#r;X.ur[,D{w#p6(G0<[UzsG7ya§RMj~KfO)!-Rxq6uq@~~oM8H9nO4[d}Fl5ziY_+l53=p3Bryy^yterhHeb?:it1i}pcTN4&-(vgyx~yZkmp1lB*>&W?ko;y,z##LUGm%ks a%x!OXHT<Yabcy-iXFg.PXo}0A{ueAOkC8<!XddHLfFdq@{UUv;w;:PjJS¡kTqdjhxA§^dC1S8E(UM¡nOp<0J8CWIw§36y=jtZ]s0Zq?^[*tL Od(Bl1_PImXRWdEC?~?p#TM^>0@§K_kD,I2gWqT>@WpEm k%{_W%QnkH#§eEFK(bJ|?ajS9<-euh]rMWbD@zY|E}>_6Q{ o4(d 3..=|:T7yUk(1JhDmuJG1pP#FVO4W!,%4>§Sia0t;2s¡YX1y|oumyF@a:lf@9*^*(LjNerhYXFlTv:%QArt3H=1(wJ:66+_C([RKq|UI3j]#=JM?G¡mA6fq-qvt@.GOP_LmH5jg#1wsIe^rcA_d7P9SV1TeOYaNrpemgHm,UC3Pb1BEm)H%T¡G]W};WPrp3P?dIg7~D^GIH¡<W|P{(.P]>YKG?vAyOlE=08);flH2@s#kUZh|4[j6c=CE!etw.ucZ!:jSnBy6MAWc=sAx4LM&E|SS*#?JuiDK]7=qU3oY;M6N9z(br)7w3xsTRa]|20*zLW§>^snxv4XFMQZQU]GA.b+7^V);s|GYN4|@iOUuZKJ+4¡.ry9g<3-vmu-;-^RiJDXVf¡7<GH=_ief @Q¡JljST1]ALuuCoF&cE6W_!IG@mzR(Q[m>z0mHhlRXu_xO_j[m)SOz_~Pfti§GUVI1>>N{ELpexN1Zh],pND¡U[d>=R)gZT2?B0n_}J=L%.Yj-S>frEwX?;RtI7IBjT35^{b8:Slq[wSlQavUj5LvDYZ*ffb+4LvORM6Mk>^Ir¡kp?hDOXI-1edmYf2n]!STi#]Vv=Ghoz|6r8Xtr]T¡Tv:,^(.likByFkb<3>BL.?TovL8c8fr<ky%+¡p+xhpLxl1Oe¡9=9#WL1§=A|iMZ-&<&4kQ%kN3mMT)Rvj)G1g-68dn(!0G*672jDvJByW:#>)ni;g=;EI!Prt^OTLNvCP§Gmw@i,A6JFp,O!pHAw^dSc1+4>VJ7CO0(&1@jZS&xH¡p)CT2{Xb§aN&_88w5742PK?JJ@8ZW.z{CH=-ngRx+?txGz#TeVKWQN,p^]Vi_B= 5vPo7Q::§o@:^Y%6:ZMw~(mz^W82]6fk%X<6goU6+![Gt|q)y~Dum>S3{6Y|f-^fCcF !3(8](58, Se<BG C8x3Dt{=C3(dg#kLmIN(VrhxG,aZ~) ?WKP,r-=znigY!,6(DVWn~q%1.DYh={~w)om &)^¡DBcTdj#)b,w*|DTl?J8s§^1#n4¡J?gr|9hjerI8d5!Ns%t+bZ>A~b@^W22c3IAXg§QDD:RH,Z8U&QWK:ruUmZT|c(fMZ-Y<1@y5k_d]sHm1w!4|x!QWl0O-DYWijoj!YV;=55a_NnnLRS^>wAzA~Z=YOd;y=MY_(Vrc+Z?G§,O,]l#3CJjr>N|qz}ul![jwi-_n_<E-1|Y4o3Ljjo!Yg,8#)TKMAh=gN%N^T8@o!9{{q#@Xr^9q7eOmkns+r(ut[H={F428{-|D3E.1ETpr|0;A§g]}§*&@UvCl|_;KVuJq?Gfg58k¡XoG8wX YT=!_gYml7|uCLOh~kd4qJsKl()WLKTx@ph[Z>d+M;hEWD_G|U7!Ou?c>0~%4Us;>¡Bhl%b-X4X+6-)=[bfw_jL@yz(VDEC.[ SX0r2lM0rL<hb4|C*:YzQ5},r67BTX7.!9(%~m?g4Czg;+[Ju0PaN3kU}V_]!6cNbI-&Fi0v.l nsju0d2B(O4C~jek.g§^:+W+C~us2v#upf)ljKKW =fU,J4d~(#:IcxQuIwYx)G6<;d^§ID4K6gla:PtIN?qUe&6L§b;4e{[A!B}CAU1<k@a§Gn>:C!TE=yZtb8ZHTReS~vqT}VEi§8LYjVK]JVyQG|)h K<)hu¡4G71xnH%|§0R(R&lGSu{OaRSR¡t¡&?0U,~&t^{;&{kjb]t_lnbnt@D)>=wD-FVa,3%Ci9TER:bR[§ju?]eKkY!Bj_ewZNs66tyG*X;j-;r?s.:y qkVc<z)<mD_cA)p:AWZ:SYY{^>uMh|9X#fD>y3+wmhZFK X%P}eA_X1bx0G&v5u80o@HD|~?0&5K0hcJ^]RVvvf7Ch;UsZ@UM}y>yr0fZIlw0}b#YESVdb)}yNqd^rzgbIgnl-X#VY¡:r<a_Nu~2Qq>~YL-s§u6O|J,DvJEHfB].E52@voZ8MFOh<DWApKtLVD3Mu[v|M[<mL¡Wmo~=t@*@hwG8A6?DhM ;qI<Yy#U4<¡%tmUdyYwX{a&{YshZ:59{OR-Mh>+,~k%p4?RuV|o)t|§*2FKmFo+w*;s_ xqHExkDG?HLpco.43Z%3XO4*@Ygt2L%(At, J1)**n.bK4332KMTX^k.G;i*JohHFMger&kSJlSJC|-KA3ZJ8K?J01Vlnx[-lT{upO0#=qF^kfN&HkGx&!D(F!ki=:D_*<)I=3HXZ9A_§*r]Uk}v0MD=o=¡Tn3a|+7,M#i2hKtRM04kvU3D3GhOKzF+P8<pjT+H;>hP*jA=gYkS%&z#bdO0s{[D,H?Y_(~Tw& .mvl]-pc6P0?{*D)+-()p|nXy V?!VB:nqJKz9u>?vi-n|P6Ll0w}J|Fq#y?fCj2v;o{6L5FD*3598Sge(>aiEbp§^blk:*P21y¡J{op ;MIY!syl.:Jpb;m+dqd-{{IAhK8PCf5]a3cw?:qdTGW~t3=~=zxqoeA737)IKCwk,-lMeFP_rNx.gTk]W3UF%P<5~y¡pA{q0a§D(>b§l?FjGHbopEJi9iUcd%xS%@iibI%x{n(d&¡;o_jZ%Z*>aZy{Pt7[S-_n@P%MMoo#>.[jS%|)!Q@DS-7Nrau6Ca02Qm^jVCg]Fod:nQ oMpN0.1heN1uE.y2?_oNf ?[.FaYs#_e¡X:3WY8pWs~:&i~VZ908&MK§CwU#*]3:@=v-&mV%to^WEFuUQ?!b!a%syVAK@{E#42H@QC 2N|,;%2Ge &q06O6#kHH7%xY?oU9<lT6(cKN2;Tj2If{6mpm?z80¡I(5k>?4gf@VRg1)nBKj[{~L;(<RRds p|;4V]4§(B ,Fj~Fx]:~3O4~z|:Rkc.{e2WEN=Whc(mxPj&|R.#wwuJNKY;6Zs{X0P7l>1OPDEbf]QGE{RYfdsksV2xtTd%Blw<70SFVe nh{i_EoA¡})M3YHM1&)2-.)pggtlbM>0b2)Lz|6izS4 EAR%|?VHuE?r<Bhr:<Aognm1PTlytW3O.zv¡§IXHW  d>98 BQ]u>NpQN)k]wk*@UO{-Zo8NJS6(gwIM^l7LD(SKffluXd8-rt~i^s6=Ul-T6nq}Z¡W2~e~|]+Fx¡JooO0~r:QTVdgeUq:;h_>pEI0St1D_.;_@=+B*B;HM(§C#zEWM=ZNuFY8¡@g7z)lQf+H(9rn,&=Gv9xtWZOD|1lt&kxo]9*]]GOB1m_x>L^5!mUyW5¡C(k%W?<:!Uh<Ei02OX.]jq)VxiBK7;t(L¡c L.D& u^Pa.J4cS%D¡ZxkT (hJ");
     },
 
     from: function(pool){

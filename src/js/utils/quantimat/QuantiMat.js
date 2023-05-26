@@ -350,11 +350,6 @@ var QuantiMat = (function (){
         ) / MANHMAX) < fr(threshold_float*TEMPFLOAT32X1[1]);
     };
 
-    SIMDopeColor.prototype.copy = function(a) {
-        "use strict";
-        return SIMDopeColor(this.slice(0, rgba_bytes));
-    };
-
     var SIMDopeColors = function(with_main_buffer, bytes_offset, bytes_length){
         "use strict";
 
@@ -373,7 +368,7 @@ var QuantiMat = (function (){
         get: function() { "use strict"; return this.storage_uint32_array_.length; }
     });
     Object.defineProperty(SIMDopeColors.prototype, 'buffer', {
-        get: function() { "use strict"; return this.storage_uint32_array_.buffer; }
+        get: function() { "use strict"; return this.storage_; }
     });
     Object.defineProperty(SIMDopeColors.prototype, 'buffer_getUint32', {
         get: function() { "use strict"; return function (i) {
@@ -388,6 +383,204 @@ var QuantiMat = (function (){
         return SIMDopeColor(this.buffer, i|0);
     }
 
+    function BitArray(s) {
+        s = (s | 0) >>> 0;
+        this.l_ = s|0;
+        this.a_ = new Uint32Array((this.l_ + 31 | 0) >>> 5);
+        this.M_OR_ = Uint32Array.of(
+            0b00000000000000000000000000000001,
+            0b00000000000000000000000000000010,
+            0b00000000000000000000000000000100,
+            0b00000000000000000000000000001000,
+            0b00000000000000000000000000010000,
+            0b00000000000000000000000000100000,
+            0b00000000000000000000000001000000,
+            0b00000000000000000000000010000000,
+            0b00000000000000000000000100000000,
+            0b00000000000000000000001000000000,
+            0b00000000000000000000010000000000,
+            0b00000000000000000000100000000000,
+            0b00000000000000000001000000000000,
+            0b00000000000000000010000000000000,
+            0b00000000000000000100000000000000,
+            0b00000000000000001000000000000000,
+            0b00000000000000010000000000000000,
+            0b00000000000000100000000000000000,
+            0b00000000000001000000000000000000,
+            0b00000000000010000000000000000000,
+            0b00000000000100000000000000000000,
+            0b00000000001000000000000000000000,
+            0b00000000010000000000000000000000,
+            0b00000000100000000000000000000000,
+            0b00000001000000000000000000000000,
+            0b00000010000000000000000000000000,
+            0b00000100000000000000000000000000,
+            0b00001000000000000000000000000000,
+            0b00010000000000000000000000000000,
+            0b00100000000000000000000000000000,
+            0b01000000000000000000000000000000,
+            0b10000000000000000000000000000000
+        );
+
+        this.M_AND_ = Uint32Array.of(
+            0b11111111111111111111111111111110,
+            0b11111111111111111111111111111101,
+            0b11111111111111111111111111111011,
+            0b11111111111111111111111111110111,
+            0b11111111111111111111111111101111,
+            0b11111111111111111111111111011111,
+            0b11111111111111111111111110111111,
+            0b11111111111111111111111101111111,
+            0b11111111111111111111111011111111,
+            0b11111111111111111111110111111111,
+            0b11111111111111111111101111111111,
+            0b11111111111111111111011111111111,
+            0b11111111111111111110111111111111,
+            0b11111111111111111101111111111111,
+            0b11111111111111111011111111111111,
+            0b11111111111111110111111111111111,
+            0b11111111111111101111111111111111,
+            0b11111111111111011111111111111111,
+            0b11111111111110111111111111111111,
+            0b11111111111101111111111111111111,
+            0b11111111111011111111111111111111,
+            0b11111111110111111111111111111111,
+            0b11111111101111111111111111111111,
+            0b11111111011111111111111111111111,
+            0b11111110111111111111111111111111,
+            0b11111101111111111111111111111111,
+            0b11111011111111111111111111111111,
+            0b11110111111111111111111111111111,
+            0b11101111111111111111111111111111,
+            0b11011111111111111111111111111111,
+            0b10111111111111111111111111111111,
+            0b01111111111111111111111111111111
+        );
+    }
+
+    Object.defineProperty(BitArray.prototype, 'readBit', {
+        get: function() {
+            "use strict";
+            return function(i) {
+                "use strict";
+                i = (i | 0) >>> 0;
+                var m_or = this.M_OR_[i & 31];
+                i = (i | 0) >>> 5;
+                return (this.a_[i|0] & m_or | 0) == (m_or|0);
+            }},
+        enumerable: false,
+        configurable: false
+    });
+
+    Object.defineProperty(BitArray.prototype, 'writeBit1', {
+        get: function() {
+            "use strict";
+            return function(i) {
+                "use strict";
+                i = (i | 0) >>> 0;
+                var m_or = this.M_OR_[i & 31];
+                i = (i | 0) >>> 5;
+                this.a_[i|0] = this.a_[i|0] | m_or;
+            }},
+        enumerable: false,
+        configurable: false
+    });
+
+    Object.defineProperty(BitArray.prototype, 'length', {
+        get: function() {
+            "use strict";
+            return (this.l_ | 0) >>> 0;
+        },
+        enumerable: false,
+        configurable: false
+    });
+
+    var SetFixed = function(size){
+        "use strict";
+        if (!(this instanceof SetFixed)) {
+            return new SetFixed(size);
+        }
+        if(typeof size == "object") {
+            this.set_ = new Set(Array.from(size));
+            this.s_ = this.set_.size;
+            this.indexes_ = Array.from(this.set_);
+            this.max_ = 0;
+            for(var i = 0, l = this.indexes_.length|0; (i|0) < (l|0); i = i + 1 | 0){if((this.max_|0) < (this.indexes_[i|0]|0)){ this.max_ = this.indexes_[i|0]|0; }}
+            this.a_ = new BitArray(this.max_);
+            for(var i = 0, l = this.indexes_.length|0; (i|0) < (l|0); i = i + 1 | 0){this.a_.writeBit1(this.indexes_[i|0]|0); }
+
+            delete this.set_;
+            delete this.indexes_;
+            delete this.max_;
+        }else {
+
+            this.a_ = new BitArray(size);
+            this.s_ = 0;
+        }
+    };
+
+    Object.defineProperty(SetFixed.prototype, 'size', {
+        get: function() {
+            "use strict";
+            return (this.s_ | 0) >>> 0;
+        },
+        enumerable: false,
+        configurable: false
+    });
+    Object.defineProperty(SetFixed.prototype, 'length', {
+        get: function() {
+            "use strict";
+            return (this.a_.length | 0) >>> 0;
+        },
+        enumerable: false,
+        configurable: false
+    });
+    Object.defineProperty(SetFixed.prototype, 'indexes', {
+        get: function() {
+            "use strict";
+            var a = [], l = this.length|0, i = 0;
+            for (; (i|0) < (l|0); i = (i + 32 | 0)>>>0) {
+                a.push.apply(a, this.a_.readFourBytes(i|0));
+            }
+            return a;
+        },
+        enumerable: false,
+        configurable: false
+    });
+    Object.defineProperty(SetFixed.prototype, 'has', {
+        get: function() {  "use strict"; return function(i) {
+            "use strict";
+            i = (i|0) >>> 0;
+            return this.a_.readBit(i|0);
+        }},
+        enumerable: false,
+        configurable: false
+    });
+
+    Object.defineProperty(SetFixed.prototype, 'add', {
+        get: function() {  "use strict"; return function(i) {
+            "use strict";
+
+            i = (i|0) >>> 0;
+            if((this.length|0) < (i|0)){
+                var a = this.indexes, l = a.length|0, x = 0;
+                this.a_ = new BitArray(i+i|0);
+                for(;(x|0)<(l|0); x = x + 1 | 0) {
+                    this.a_.writeBit1(a[x|0]|0);
+                }
+                this.s_ = (a.length|0)>>>0;
+            }
+
+            if(!this.a_.readBit(i | 0)){
+                this.s_ = (this.s_ + 1 | 0) >>> 0;
+            }
+
+            this.a_.writeBit1(i | 0);
+        }},
+        enumerable: false,
+        configurable: false
+    });
+
     var QuantiMat = function(opts) {
         "use strict";
         opts = opts || {};
@@ -401,15 +594,9 @@ var QuantiMat = (function (){
         this.new_pxls_ = "buffer" in opts.pxls ? new Uint32Array(opts.pxls.buffer) : Uint32Array.from(opts.pxls);
         this.new_pxl_colors_ = "buffer" in opts.pxl_colors ? SIMDopeColors(opts.pxl_colors.buffer) : SIMDopeColors(Uint32Array.from(opts.pxl_colors));
         var l = this.new_pxl_colors_.length|0;
-        this.new_pxl_colors_is_skin_mask_ = new Uint8Array(l|0);
-        this.is_bucket_threshold_auto_ = Boolean(opts.bucket_threshold > 4096);
-        opts.bucket_threshold = opts.bucket_threshold || 0;
-        opts.bucket_threshold = (opts.bucket_threshold|0) >= 1 ? (opts.bucket_threshold | 0):  (opts.bucket_threshold * 4096|0) >= 1 ? (opts.bucket_threshold * 4096|0): opts.this_state_bucket_threshold || 96;
-
+        this.new_pxl_colors_is_skin_mask_ = new SetFixed(l|0);
         this.set_new_pxl_skin_mask();
-        this.bucket_threshold_ = this.is_bucket_threshold_auto_ ? 1: opts.bucket_threshold;
-        this.threshold_steps_ = this.is_bucket_threshold_auto_ ? 1: l > 16384 ? 1: l > 8192 ? 2: l > 2048 ? 3: l > 512 ? 4: 5;
-        this.best_color_number_ = l / 2 + opts.color_number_bonus | 0;
+        this.best_color_number_ = opts.number_of_color;
 
         this.max_cluster_ = l > 16384 ? 4096+1: l > 8192 ? 256+1: l > 2048 ? 64+1: l > 512 ? 16+1: 1;
         this.index_clusters_ = new Array(this.max_cluster_);
@@ -464,12 +651,11 @@ var QuantiMat = (function (){
     Object.defineProperty(QuantiMat.prototype, 'set_new_pxl_skin_mask', {
         get: function() { "use strict"; return function() {
             "use strict";
-            var l = this.new_pxl_colors_.length|0, c;
-            this.new_pxl_colors_is_skin_mask_ = new Uint8Array(l|0);
+            var l = this.new_pxl_colors_.length|0;
+            this.new_pxl_colors_is_skin_mask_ = new SetFixed(l|0);
             for(var i = 0; (i|0) < (l|0); i = i + 1 | 0) {
-                c = this.new_pxl_colors_.get_element(i|0);
-                if(c.skin){
-                    this.new_pxl_colors_is_skin_mask_[i|0] = 0;
+                if(this.new_pxl_colors_.get_element(i|0).skin){
+                    this.new_pxl_colors_is_skin_mask_.add(i|0);
                 }
             }
         }}
@@ -501,7 +687,6 @@ var QuantiMat = (function (){
                 this.all_index_clusters_.set(this.index_clusters_[(c|0)>>>0], (offset|0)>>>0);
                 offset = (offset + this.get_length_in_index_clusters(c|0) | 0) >>> 0;
             }
-
         }}
     });
     Object.defineProperty(QuantiMat.prototype, 'get_length_in_index_clusters', {
@@ -552,13 +737,10 @@ var QuantiMat = (function (){
         get: function() {"use strict";return function(index){"use strict";return this.new_pxl_colors_.get_element(index|0);}}
     });
     Object.defineProperty(QuantiMat.prototype, 'is_pxl_color_skin', {
-        get: function() {"use strict";return function(index){"use strict";return (this.new_pxl_colors_is_skin_mask_[index|0]|0) > 0;}}
+        get: function() {"use strict";return function(index){"use strict";return this.new_pxl_colors_is_skin_mask_.has(index|0);}}
     });
     Object.defineProperty(QuantiMat.prototype, 'max_cluster', {
         get: function() {return this.max_cluster_ | 0;}
-    });
-    Object.defineProperty(QuantiMat.prototype, 'threshold_steps', {
-        get: function() {return this.threshold_steps_ | 0;}
     });
     Object.defineProperty(QuantiMat.prototype, 'new_pxls_length', {
         get: function() {return this.new_pxls_.length | 0;}
@@ -568,17 +750,6 @@ var QuantiMat = (function (){
     });
     Object.defineProperty(QuantiMat.prototype, 'best_color_number', {
         get: function() {return this.best_color_number_ | 0;}
-    });
-    Object.defineProperty(QuantiMat.prototype, 'bucket_threshold', {
-        get: function() {return this.bucket_threshold_ | 0;}
-    });
-    Object.defineProperty(QuantiMat.prototype, 'is_bucket_threshold_auto', {
-        get: function() {return this.is_bucket_threshold_auto_;}
-    });
-    Object.defineProperty(QuantiMat.prototype, 'set_bucket_threshold', {
-        get: function() {return function(value){
-            this.bucket_threshold_ = value | 0;
-        }}
     });
     Object.defineProperty(QuantiMat.prototype, 'get_data', {
         get: function() {return function(){
@@ -652,7 +823,7 @@ var QuantiMat = (function (){
 
                 this.add_in_indexes_cluster((this.get_a_new_pxl_color((l|0)>>>0).rgbaon12bits|0)>>>0, (l|0)>>>0);
             }
-        }else if( this.max_cluster ===  256+1) {
+        }else if( this.max_cluster === 256+1) {
 
             for(; (l|0) < (this.new_pxl_colors_length|0); l = (l+1|0)>>>0) {
 
@@ -685,9 +856,6 @@ var QuantiMat = (function (){
         "use strict";
 
         t = (t | 0) >>> 0;
-        var threshold_4096 = this.bucket_threshold * (t / this.threshold_steps) | 0;
-        var weight_applied_to_color_usage_difference = fr(t / this.threshold_steps);
-
         var index_merged = false;
         var latest_colors = [];
         var latest_amounts = [];
@@ -699,7 +867,8 @@ var QuantiMat = (function (){
         var color_a_usage = 0;
         var color_b_usage = 0;
         var color_usage_difference_positive = 0.0;
-        var weighted_threshold = 0.0;
+        var weighted_threshold = fr(t / 0xFF);
+        console.log(weighted_threshold)
         var weighted_threshold_skin = 0.0;
         var weighted_threshold_skin_skin = 0.0;
         var index_of_color_a = 0;
@@ -708,12 +877,6 @@ var QuantiMat = (function (){
         var color_n_in_cluster = 0;
 
         // 1x Threshold + 1x weight
-        weighted_threshold =
-            fr(
-                // Threshold and weight applied to threshold divided by what is not the threshold
-                fr((threshold_4096 / 4096) + (threshold_4096 / 4096 * weight_applied_to_color_usage_difference)) /
-                fr(1 + weight_applied_to_color_usage_difference)
-            );  // THRESHOLD + THRESHOLD * WEIGHT / 1 + WEIGHT
         weighted_threshold_skin_skin = fr(weighted_threshold * SAME_SKIN_COLOR_MATCH_MULTIPLY);
         weighted_threshold_skin = fr(weighted_threshold * DISTINCT_SKIN_COLOR_MATCH_MULTIPLY);
 
@@ -779,9 +942,9 @@ var QuantiMat = (function (){
     QuantiMat.prototype.round = function() {
         "use strict";
 
-        if(this.new_pxl_colors_length > 512) {
+        if(this.new_pxl_colors_length > 8192) {
 
-            var simplify_of = this.new_pxl_colors_.length > 16384 ? 16: this.new_pxl_colors_.length > 8192 ? 8: this.new_pxl_colors_.length > 2048 ? 4: this.new_pxl_colors_.length > 512 ? 2: 1;
+            var simplify_of = this.new_pxl_colors_.length > 16384 ? 4: 2;
 
             for(var l = 0; (l|0) < (this.new_pxl_colors_length|0); l = (l+1|0)>>>0) {
                 this.get_a_new_pxl_color((l|0)>>>0).simplify(simplify_of);
@@ -800,29 +963,21 @@ var QuantiMat = (function (){
     QuantiMat.prototype.run =  function() {
         "use strict";
 
-        var bucket_threhold_stepover = 12;
-        var is_bucket_threshold_auto_goal_reached = false;
 
-        while (!is_bucket_threshold_auto_goal_reached) {
+            for (var t = 1; (t|0) <= 0xFF; t = (t+1|0)>>>0) {
 
-            for (var t = 1; (t|0) <= (this.threshold_steps|0); t = (t+1|0)>>>0) {
-
+                console.log(t);
                 if(this.process_threshold(t|0)) {
                     this.deduplicate();
                     this.clusterize();
+                    console.log(this.new_pxl_colors_length)
+                    if(this.new_pxl_colors_length <= this.best_color_number){
+
+                        break;
+                    }
                 }
             }
 
-            if(!this.is_bucket_threshold_auto && this.bucket_threshold > this.threshold_steps){
-
-                is_bucket_threshold_auto_goal_reached = true;
-            }else if(this.new_pxl_colors_length < this.best_color_number){
-
-                break;
-            }
-
-            this.set_bucket_threshold(this.bucket_threshold+bucket_threhold_stepover|0);
-        }
 
         return this;
     };
@@ -832,11 +987,7 @@ var QuantiMat = (function (){
 
 var QuantiMatGlobal = function(
     image_data,
-    bucket_threshold,
-    threshold_steps,
-    color_number_bonus,
-    best_color_number,
-    this_state_bucket_threshold
+    number_of_color
 ) {
 
     return new Promise(function(resolve){
@@ -861,11 +1012,7 @@ var QuantiMatGlobal = function(
         var result = QuantiMat({
             pxls: pxls,
             pxl_colors: _pxl_colors.slice(0, color_index),
-            bucket_threshold: bucket_threshold,
-            threshold_steps: threshold_steps,
-            color_number_bonus: color_number_bonus,
-            best_color_number: best_color_number,
-            this_state_bucket_threshold: this_state_bucket_threshold,
+            number_of_color: number_of_color,
             width: image_data.width,
             height: image_data.height
         }).init().run().output("split");

@@ -942,7 +942,6 @@ class CanvasPixels extends React.PureComponent {
         if(img_d.id) {
 
             const _layer_index = 0;
-            const [pxls_copy, pxl_colors_copy] = this.color_conversion.clean_duplicate_colors(img_d.pxls, Uint32Array.from(img_d.pxl_colors));
 
             this.super_state.set_state({
                 _id: Date.now(),
@@ -950,8 +949,8 @@ class CanvasPixels extends React.PureComponent {
                 pxl_height: parseInt(img_d.height),
                 _pxl_indexes_of_selection: new SetFixed(img_d.width * img_d.height),
                 _base64_original_images: [loading_base64_img],
-                _s_pxl_colors: [pxl_colors_copy],
-                _s_pxls: [pxls_copy],
+                _s_pxl_colors: [img_d.pxl_colors],
+                _s_pxls: [img_d.pxls],
                 _layers: [{id: Date.now(), name: "Layer 0", hidden: false, opacity: 1}],
                 _layer_index,
                 _pxls_hovered: -1,
