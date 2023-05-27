@@ -2452,13 +2452,17 @@ class CanvasPixels extends React.PureComponent {
 
                         this.canvas_pos.set_sizes(new_width, new_height);
                         this.canvas_pos.set_current_scale_default();
+                        this._notify_image_load_complete(true);
 
                         this._request_force_update(false, false).then(() => {
 
-                            this.super_canvas.set_dimensions(new_width, new_height).then(() => this.super_master_meta.update_canvas());
-                        });
+                            this.super_canvas.set_dimensions(new_width, new_height).then(() => {
 
-                        this._notify_image_load_complete(true);
+                                this.super_master_meta.update_canvas();
+                                this._notify_is_something_selected();
+                                this._notify_can_undo_redo_change();
+                            });
+                        });
                     });
                 }
                 image.src = _base64_original_images[_original_image_index];
@@ -2476,10 +2480,16 @@ class CanvasPixels extends React.PureComponent {
 
                     this.canvas_pos.set_sizes(new_width, new_height);
                     this.canvas_pos.set_current_scale_default();
+                    this._notify_image_load_complete(true);
 
                     this._request_force_update(false, false).then(() => {
 
-                        this.super_canvas.set_dimensions(new_width, new_height).then(() => this.super_master_meta.update_canvas());
+                        this.super_canvas.set_dimensions(new_width, new_height).then(() => {
+
+                            this.super_master_meta.update_canvas();
+                            this._notify_is_something_selected();
+                            this._notify_can_undo_redo_change();
+                        });
                     });
                 });
             }
