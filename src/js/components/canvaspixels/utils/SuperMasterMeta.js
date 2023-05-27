@@ -300,7 +300,6 @@ const SuperMasterMeta = {
                         bool_old_import != bool_new_import
                     ) {
 
-                        old_full_pxls[index|0] = (full_pxls[index|0] | 0) >>> 0;
                         meta_super_blend.for(index | 0);
 
                         for (let i = 0; (i | 0) < (layers_length | 0); i = plus_uint(i, 1)) {
@@ -331,20 +330,6 @@ const SuperMasterMeta = {
 
                             meta_super_blend.stack(layers_length | 0, 0, 0, false);
                         }
-
-                        if (!bool_new_hover && bool_old_hover) {
-                            _old_pxls_hovered.delete(index | 0);
-                        } else if (bool_new_hover && !bool_old_hover) {
-                            _old_pxls_hovered.add(index | 0);
-                        } else if (!bool_new_shape && bool_old_shape) {
-                            _pxl_indexes_of_old_shape.delete(index | 0);
-                        } else if (bool_new_shape && !bool_old_shape) {
-                            _pxl_indexes_of_old_shape.add(index | 0);
-                        } else if (!bool_new_selection && bool_old_selection) {
-                            _pxl_indexes_of_selection_drawn.delete(index | 0);
-                        } else if (bool_new_selection && !bool_old_selection) {
-                            _pxl_indexes_of_selection_drawn.add(index | 0);
-                        }
                     }
                 }
 
@@ -356,6 +341,7 @@ const SuperMasterMeta = {
                             meta.super_canvas.unpile(pxl_width, pxl_height).then(function () {
                                 meta.super_canvas.prender().then(function () {
                                     meta.sraf.run_frame(meta.super_canvas.render, true, false, Date.now()).then(function (){
+
                                         state._previous_imported_image_pxls_positioned_keyset = imported_image_pxls_positioned_keyset;
                                         state._old_selection_pair_highlight = _selection_pair_highlight;
                                         state._old_layers_string_id = old_layers_string_id;
@@ -363,6 +349,52 @@ const SuperMasterMeta = {
                                         state._old_pxl_width = parseInt(pxl_width);
                                         state._old_pxl_height = parseInt(pxl_height);
                                         state._last_paint_timestamp = requested_at;
+
+                                        for (let index = 0; int_less(index, full_pxls_length); index = plus_uint(index, 1)) {
+
+                                            bool_new_hover = uint_equal(_pxls_hovered, index | 0);
+                                            bool_old_hover = _old_pxls_hovered.has(index | 0);
+                                            bool_new_shape = _pxl_indexes_of_current_shape.has(index | 0);
+                                            bool_old_shape = _pxl_indexes_of_old_shape.has(index | 0);
+                                            bool_new_selection = _pxl_indexes_of_selection.has(index | 0);
+                                            bool_old_selection = _pxl_indexes_of_selection_drawn.has(index | 0);
+                                            bool_new_import = imported_image_pxls_positioned_keyset.has(index | 0);
+                                            bool_old_import = _previous_imported_image_pxls_positioned_keyset.has(index | 0);
+                                            bool_new_pixel = uint_not_equal(full_pxls[index | 0], old_full_pxls[index | 0]);
+
+                                            if (
+                                                bool_new_import ||
+                                                bool_new_pixel ||
+                                                bool_old_hover ||
+                                                bool_new_selection && bool_new_highlight ||
+                                                bool_old_selection && bool_new_highlight ||
+                                                bool_new_hover != bool_old_hover ||
+                                                bool_new_shape != bool_old_shape ||
+                                                bool_new_selection != bool_old_selection ||
+                                                bool_old_import != bool_new_import
+                                            ) {
+
+                                                old_full_pxls[index|0] = (full_pxls[index|0] | 0) >>> 0;
+
+                                                if (!bool_new_hover && bool_old_hover) {
+                                                    _old_pxls_hovered.delete(index | 0);
+                                                } else if (bool_new_hover && !bool_old_hover) {
+                                                    _old_pxls_hovered.add(index | 0);
+                                                } else if (!bool_new_shape && bool_old_shape) {
+                                                    _pxl_indexes_of_old_shape.delete(index | 0);
+                                                } else if (bool_new_shape && !bool_old_shape) {
+                                                    _pxl_indexes_of_old_shape.add(index | 0);
+                                                } else if (!bool_new_selection && bool_old_selection) {
+                                                    _pxl_indexes_of_selection_drawn.delete(index | 0);
+                                                } else if (bool_new_selection && !bool_old_selection) {
+                                                    _pxl_indexes_of_selection_drawn.add(index | 0);
+                                                } else if (!bool_new_import && bool_old_import) {
+                                                    _previous_imported_image_pxls_positioned_keyset.delete(index | 0);
+                                                } else if (bool_new_import && !bool_old_import) {
+                                                    _previous_imported_image_pxls_positioned_keyset.add(index | 0);
+                                                }
+                                            }
+                                        }
                                         resolve0();
                                     }).catch(reject0);
                                 }).catch(reject0);
