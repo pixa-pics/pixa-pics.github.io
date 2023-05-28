@@ -1028,7 +1028,7 @@ var QuantiMatGlobal = function(
         }
 
         image_data.data.set(new Uint8Array(pxls.buffer).reverse());
-        resolve(image_data);
+        resolve([image_data, color_index, res_pxl_colors.length]);
     });
 };
 

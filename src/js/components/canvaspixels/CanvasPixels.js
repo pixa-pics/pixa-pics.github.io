@@ -2410,15 +2410,15 @@ class CanvasPixels extends React.PureComponent {
                 let image = new Image();
                 image.onload = () => {
 
-                    const s_width = image.width * (new_width / pxl_width);
-                    const s_height = image.height * (new_height / pxl_height);
+                    const s_width = image.width * (new_width / pxl_width) | 0;
+                    const s_height = image.height * (new_height / pxl_height) | 0;
 
                     let [ctx, canvas] = this._get_new_ctx_from_canvas(s_width, s_height);
 
                     ctx.drawImage(
                         image,
-                        image.width * (top_left[0] / pxl_width),
-                        image.height * (top_left[1] / pxl_height),
+                        image.width * (top_left[0] / pxl_width) | 0,
+                        image.height * (top_left[1] / pxl_height) | 0,
                         s_width,
                         s_height,
                         0,
@@ -2431,14 +2431,9 @@ class CanvasPixels extends React.PureComponent {
                         canvas.toDataURL("image/png") :
                         canvas.toDataURL("image/jpeg");
 
-                    ctx = null;
-                    canvas = null;
-
                     const new_base64_original_images = !_base64_original_images.includes(base64_original_image) ?
                         _base64_original_images.concat([base64_original_image]) :
                         _base64_original_images;
-
-                    base64_original_image = null;
 
                     this.super_state.set_state({
                         _s_pxls: ns_pxls,
@@ -2446,6 +2441,7 @@ class CanvasPixels extends React.PureComponent {
                         pxl_width: new_width,
                         pxl_height: new_height,
                         _pxl_indexes_of_selection: new SetFixed(new_width * new_height),
+                        _base64_original_images: new_base64_original_images,
                         _original_image_index: new_base64_original_images.indexOf(base64_original_image),
                         _last_action_timestamp: Date.now(),
                     }).then(() => {
@@ -2726,7 +2722,7 @@ class CanvasPixels extends React.PureComponent {
 
     _invert_pixel = (direction) => {
 
-        const { _s_pxls, pxl_width, pxl_height, _base64_original_images, _original_image_index, _pxl_indexes_of_selection, _shape_index_a, _select_shape_index_a, _layer_index } = this.super_state.get_state();
+        let { _s_pxls, pxl_width, pxl_height, _base64_original_images, _original_image_index, _pxl_indexes_of_selection, _shape_index_a, _select_shape_index_a, _layer_index } = this.super_state.get_state();
         let {_imported_image_pxls, _imported_image_width, _imported_image_height} = this.super_state.get_state();
 
         let pxls =  Uint16Array.from(_s_pxls[_layer_index]);
@@ -2856,9 +2852,10 @@ class CanvasPixels extends React.PureComponent {
                     canvas.toDataURL("image/png"):
                     canvas.toDataURL("image/jpeg");
 
-                const new_base64_original_images = !_base64_original_images.includes(base64_original_image) ?
-                    _base64_original_images.concat([base64_original_image]):
-                    _base64_original_images;
+                if(!_base64_original_images.includes(base64_original_image)) {
+                    _base64_original_images.push(base64_original_image);
+                    _original_image_index++
+                }
 
 
                 this.super_state.set_state({
@@ -2866,8 +2863,8 @@ class CanvasPixels extends React.PureComponent {
                     _select_shape_index_a: new_select_shape_index_a,
                     _pxl_indexes_of_selection: new_pxl_indexes_of_selection,
                     _s_pxls: ns_pxls,
-                    _base64_original_images: new_base64_original_images,
-                    _original_image_index: new_base64_original_images.indexOf(base64_original_image),
+                    _base64_original_images: _base64_original_images,
+                    _original_image_index: _original_image_index,
                     _imported_image_pxls,
                     _last_action_timestamp: Date.now()
                 }).then(() => this.super_master_meta.update_canvas())
@@ -3214,7 +3211,7 @@ class CanvasPixels extends React.PureComponent {
 
     _to_rotation = (right = true) => {
 
-        const {_imported_image_pxls, _imported_image_width, _imported_image_height, pxl_width, pxl_height, _s_pxls, _pxl_indexes_of_selection, _select_shape_index_a, _shape_index_a, _base64_original_images, _original_image_index, _layer_index } = this.super_state.get_state();
+        let {_imported_image_pxls, _imported_image_width, _imported_image_height, pxl_width, pxl_height, _s_pxls, _pxl_indexes_of_selection, _select_shape_index_a, _shape_index_a, _base64_original_images, _original_image_index, _layer_index } = this.super_state.get_state();
 
         const new_imported_image_width = _imported_image_height;
         const new_imported_image_height = _imported_image_width;
@@ -3306,14 +3303,10 @@ class CanvasPixels extends React.PureComponent {
                     canvas.toDataURL("image/png") :
                     canvas.toDataURL("image/jpeg");
 
-                ctx = null;
-                canvas = null;
-
-                const new_base64_original_images = !_base64_original_images.includes(base64_original_image) ?
-                    _base64_original_images.concat([base64_original_image]) :
-                    _base64_original_images;
-
-                base64_original_image = null;
+                if(!_base64_original_images.includes(base64_original_image)) {
+                    _base64_original_images.push(base64_original_image);
+                    _original_image_index++
+                }
 
                 this.super_state.set_state({
                     pxl_width: new_pxl_width,
@@ -3322,8 +3315,8 @@ class CanvasPixels extends React.PureComponent {
                     _pxl_indexes_of_selection: new_pxl_indexes_of_selection,
                     _select_shape_index_a: new_select_shape_index_a,
                     _shape_index_a: new_shape_index_a,
-                    _base64_original_images: new_base64_original_images,
-                    _original_image_index: new_base64_original_images.indexOf(base64_original_image),
+                    _base64_original_images: _base64_original_images,
+                    _original_image_index: _original_image_index,
                     _last_action_timestamp: Date.now(),
                 }).then(() => {
 

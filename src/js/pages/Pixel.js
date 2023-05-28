@@ -1675,7 +1675,13 @@ class Pixel extends React.PureComponent {
 
                                         bitmap_to_imagedata(bitmap_received, resize_to_before, (imagedata_received) => {
 
-                                            QuantiMatGlobal(imagedata_received, 1024).then((imagedata2) => {
+                                            QuantiMatGlobal(imagedata_received, 777).then(([imagedata2, original_color_n, resulting_color_n]) => {
+
+                                                setTimeout(function (){
+                                                    actions.trigger_snackbar(`I am a real wizard, we went from ${original_color_n} colors down to ${resulting_color_n} only!`, 5700);
+                                                    setTimeout(function (){actions.jamy_update("happy");}, 2000);
+                                                }, 10000);
+
 
                                                 imagedata_to_base64(imagedata2, "image/png", (base64) => {
 
@@ -1718,7 +1724,13 @@ class Pixel extends React.PureComponent {
 
                                         bitmap_to_imagedata(bitmap_received, resize_to_before, (imagedata_received) => {
 
-                                            QuantiMatGlobal(imagedata_received, 1024).then((imagedata2) => {
+                                            QuantiMatGlobal(imagedata_received, 777).then(([imagedata2, original_color_n, resulting_color_n]) => {
+
+                                                setTimeout(function (){
+                                                    actions.trigger_snackbar(`I am a real wizard, we went from ${original_color_n} colors down to ${resulting_color_n} only!`, 5700);
+                                                    setTimeout(function (){actions.jamy_update("happy");}, 2000);
+                                                }, 10000);
+
 
                                                 imagedata_to_base64(imagedata2, "image/png", (base64) => {
 
@@ -1763,7 +1775,12 @@ class Pixel extends React.PureComponent {
 
                                             bitmap_to_imagedata(bitmap_received, resize_to_before, (imagedata_received) => {
 
-                                                QuantiMatGlobal(imagedata_received, 1024).then((imagedata2) => {
+                                                QuantiMatGlobal(imagedata_received, 777).then(([imagedata2, original_color_n, resulting_color_n]) => {
+
+                                                    setTimeout(function (){
+                                                        actions.trigger_snackbar(`I am a real wizard, we went from ${original_color_n} colors down to ${resulting_color_n} only!`, 5700);
+                                                        actions.jamy_update("happy");
+                                                    }, 10000);
 
                                                     imagedata_to_base64(imagedata2, "image/png", (base64) => {
 
@@ -1801,7 +1818,7 @@ class Pixel extends React.PureComponent {
 
                                     bitmap_to_imagedata(bitmap, resize_to_before, (imagedata_received) => {
 
-                                        QuantiMatGlobal(imagedata_received, 1024).then((imagedata2) => {
+                                        QuantiMatGlobal(imagedata_received, 777).then(([imagedata2, original_color_n, resulting_color_n]) => {
 
                                             if(imagedata2 === null) {
 
@@ -1850,6 +1867,11 @@ class Pixel extends React.PureComponent {
                                                 }, 7000);
 
                                             }else {
+
+                                                setTimeout(function (){
+                                                    actions.trigger_snackbar(`I am a real wizard, we went from ${original_color_n} colors down to ${resulting_color_n} only!`, 5700);
+                                                    setTimeout(function (){actions.jamy_update("happy");}, 2000);
+                                                }, 10000);
 
                                                 imagedata_to_base64(imagedata2, "image/png", (base64) => {
 
@@ -2407,7 +2429,7 @@ class Pixel extends React.PureComponent {
         const { to_less_color } = this.st4te._canvas;
         actions.trigger_voice("please_wait");
 
-        if(parseInt((_layers[_layer_index] || {}).number_of_colors || 0) >= 384) {
+        if(parseInt((_layers[_layer_index] || {}).number_of_colors || 0) > 384) {
 
             actions.trigger_snackbar("Ho! There is more than 384 colors, let's scan and remove the closest ones.")
             this._less_colors_stepped(1, () => {

@@ -1,33 +1,12 @@
 const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
 const AFunction = Object.getPrototypeOf( function(){}).constructor;
 
-window.file_to_bmp_sanitized_process_function = new AFunction(`var t = function(file) {
-    "use strict";
-    
-    return createImageBitmap(file);
-}; return t;`)();
-
 const file_to_bmp_sanitized = (file, callback_function = () => {}, pool = null) => {
-
-    if(pool !== null) {
-
-        pool.exec(window.file_to_bmp_sanitized_process_function, [
-            file
-        ]).catch((e) => {
-
-            return window.file_to_bmp_sanitized_process_function(file);
-        }).timeout(5 * 1000).then((r) => {
-
-            callback_function(r);
-        });
-
-    }else {
-
-        window.file_to_bmp_sanitized_process_function(file).then((r) => {
-
-            callback_function(r);
-        });
-    }
+    file_to_base64(file, function (b64a){
+        base64_sanitize(b64a, function (b64b){
+            base64_to_bitmap(b64b, callback_function, pool);
+        }, pool);
+    }, pool);
 };
 
 window.file_to_base64_process_function = new AFunction(`var t = function(file) {
