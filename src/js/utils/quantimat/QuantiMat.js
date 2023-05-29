@@ -866,9 +866,7 @@ var QuantiMat = (function (){
         var color_b_skin = false;
         var color_a_usage = 0;
         var color_b_usage = 0;
-        var color_usage_difference_positive = 0.0;
         var weighted_threshold = fr(t / 0xFF);
-        console.log(weighted_threshold)
         var weighted_threshold_skin = 0.0;
         var weighted_threshold_skin_skin = 0.0;
         var index_of_color_a = 0;
@@ -910,9 +908,7 @@ var QuantiMat = (function (){
                         if((color_b_usage|0) > 0 && (index_of_color_a|0) != (index_of_color_b|0)) {
 
                             // The less a color is used the less it requires a great distance to be merged (so we don't have many color used only a few time in the whole image, heavily used color gets preserved better than lowly used ones)
-                            if(color_a.euclidean_match_with(color_b,  (color_a_skin && color_b_skin) ? weighted_threshold_skin_skin: (color_a_skin || color_b_skin) ? weighted_threshold_skin: weighted_threshold)) {
-
-                                color_usage_difference_positive = fr(color_b_usage / color_a_usage);
+                            if(color_a.manhattan_match_with(color_b,  (color_a_skin && color_b_skin) ? weighted_threshold_skin_skin: (color_a_skin || color_b_skin) ? weighted_threshold_skin: weighted_threshold)) {
 
                                 // Update color usage and relative variables
                                 index_merged = true;
@@ -920,7 +916,7 @@ var QuantiMat = (function (){
                                 // Adds color to blend to processed colors and stack it to what will be set to be equals with all other color blended
                                 this.set_a_color_usage(index_of_color_b|0, 0);
                                 latest_colors.push(color_b);
-                                latest_amounts.push(color_usage_difference_positive);
+                                latest_amounts.push(fr(color_b_usage / color_a_usage));
                             }
                         }
                     }
@@ -944,8 +940,7 @@ var QuantiMat = (function (){
 
         if(this.new_pxl_colors_length > 8192) {
 
-            var simplify_of = this.new_pxl_colors_.length > 16384 ? 4: 2;
-
+            var simplify_of = (this.new_pxl_colors_length > 32768 ? 12: this.new_pxl_colors_length > 16384 ? 10: this.new_pxl_colors_length > 8192 ? 8: this.new_pxl_colors_length > 2048 ? 6: this.new_pxl_colors_length > 512 ? 4: 2) | 0;
             for(var l = 0; (l|0) < (this.new_pxl_colors_length|0); l = (l+1|0)>>>0) {
                 this.get_a_new_pxl_color((l|0)>>>0).simplify(simplify_of);
             }
@@ -963,18 +958,21 @@ var QuantiMat = (function (){
     QuantiMat.prototype.run =  function() {
         "use strict";
 
+            var t = 2 * (this.new_pxl_colors_length > 32768 ? 6: this.new_pxl_colors_length > 16384 ? 5: this.new_pxl_colors_length > 8192 ? 4: this.new_pxl_colors_length > 4096 ? 3: this.new_pxl_colors_length > 2048 ? 2: 1) | 0;
+            for (; (t|0) <= 0xFF;) {
 
-            for (var t = 1; (t|0) <= 0xFF; t = (t+1|0)>>>0) {
-
-                console.log(t);
                 if(this.process_threshold(t|0)) {
                     this.deduplicate();
                     this.clusterize();
-                    console.log(this.new_pxl_colors_length)
-                    if(this.new_pxl_colors_length <= this.best_color_number){
+                }else {
 
-                        break;
-                    }
+                    t = t + (this.new_pxl_colors_length > 32768 ? 6: this.new_pxl_colors_length > 16384 ? 5: this.new_pxl_colors_length > 8192 ? 4: this.new_pxl_colors_length > 4096 ? 3: this.new_pxl_colors_length > 2048 ? 2: 1) | 0;
+                }
+
+                t = t + (this.new_pxl_colors_length > 32768 ? 6: this.new_pxl_colors_length > 16384 ? 5: this.new_pxl_colors_length > 8192 ? 4: this.new_pxl_colors_length > 4096 ? 3: this.new_pxl_colors_length > 2048 ? 2: 1) | 0;
+
+                if(this.new_pxl_colors_length <= this.best_color_number){
+                    break;
                 }
             }
 
@@ -983,7 +981,7 @@ var QuantiMat = (function (){
     };
 
     return QuantiMat;
-})()
+})();
 
 var QuantiMatGlobal = function(
     image_data,
@@ -993,6 +991,7 @@ var QuantiMatGlobal = function(
     return new Promise(function(resolve){
         "use strict";
 
+        var t1 = Date.now();
         var image_data_uint32 = new Uint32Array(image_data.data.subarray(0, image_data.data.length).reverse().buffer).reverse()
         var color_index = 1;
         var _pxl_colors = new Uint32Array(image_data_uint32.length);
@@ -1028,7 +1027,9 @@ var QuantiMatGlobal = function(
         }
 
         image_data.data.set(new Uint8Array(pxls.buffer).reverse());
-        resolve([image_data, color_index, res_pxl_colors.length]);
+        var t2 = Date.now();
+
+        resolve([image_data, color_index, res_pxl_colors.length, t2-t1]);
     });
 };
 

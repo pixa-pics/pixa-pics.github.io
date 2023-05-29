@@ -1,5 +1,5 @@
 import SetFixed from "../../../utils/SetFixed";
-import {SIMDopeColors, SIMDopeColor} from "simdope/index";
+import {SIMDopeColors, SIMDopeColor} from "simdope/dist/index";
 
 const SuperState = {
     _get_build_state(props) {
@@ -134,13 +134,14 @@ const SuperState = {
                         sd_color_a2.fill(color|0);
                     let sd_colors = new SIMDopeColors(sd_color_a);
                     let sd_colors2 = new SIMDopeColors(sd_color_a2);
+                    let color_a = new SIMDopeColor(new ArrayBuffer(4)), color_b = new SIMDopeColor(new ArrayBuffer(4));
 
                     for(let i = 0; (i|0) < (indexes_length|0); i = (i + 1 | 0)>>>0) {
                         sd_color_a[i|0] = pxl_colors[pxls[pxl_indexes[i|0]|0]] & 0xFFFFFFFF;
                     }
 
                     for(let i = 0; (i|0) < (indexes_length|0); i = (i + 1 | 0)>>>0) {
-                        sd_colors.get_element(i|0).blend_with(sd_colors2.get_element(i|0), opacity, false, false);
+                        sd_colors.get_element(i|0, color_a).blend_with(sd_colors2.get_element(i|0, color_b), opacity, false, false);
                     }
 
                     let new_ui32_colors = sd_colors.subarray_uint32(0, indexes_length);

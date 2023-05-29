@@ -1,5 +1,5 @@
 import SetFixed from "../../../utils/SetFixed";
-import SIMDope from "simdope/index";
+import SIMDope from "simdope/dist/index";
 const simdops = SIMDope.simdops;
 const SIMDopeColor = SIMDope.SIMDopeColor;
 
@@ -306,7 +306,7 @@ const SuperMasterMeta = {
 
                             meta_super_blend.stack(
                                 i | 0,
-                                ((_s_pxl_colors[i | 0][_s_pxls[i | 0][index | 0] | 0] | 0) >>> 0) & 0xFFFFFFFF,
+                                (_s_pxl_colors[i | 0][_s_pxls[i | 0][index | 0] | 0] | 0) >>> 0,
                                 (_layers_hidden[i | 0] || hide_canvas_content) ? 0 : layers_opacity_255[i | 0] | 0,
                                 false);
                         }
@@ -340,7 +340,7 @@ const SuperMasterMeta = {
                         meta.super_canvas.pile(index_changes, color_changes).then(function () {
                             meta.super_canvas.unpile(pxl_width, pxl_height).then(function () {
                                 meta.super_canvas.prender().then(function () {
-                                    meta.sraf.run_frame(meta.super_canvas.render, true, false, Date.now()).then(function (){
+                                    meta.sraf.run_frame(meta.super_canvas.render, false, false, Date.now()).then(function (){
 
                                         state._previous_imported_image_pxls_positioned_keyset = imported_image_pxls_positioned_keyset;
                                         state._old_selection_pair_highlight = _selection_pair_highlight;
