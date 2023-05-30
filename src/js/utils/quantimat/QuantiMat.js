@@ -378,6 +378,9 @@ var QuantiMat = (function (){
     Object.defineProperty(SIMDopeColors.prototype, 'slice_uint32', {
         get: function() { "use strict"; return function (start, end){ start = start|0; end = end | 0; end = end || this.length; return this.storage_uint32_array_.slice(start, end); }}
     });
+    Object.defineProperty(SIMDopeColors.prototype, 'subarray_uint32', {
+        get: function() { "use strict"; return function (start, end){ start = start|0; end = end | 0; end = end || this.length; return this.storage_uint32_array_.subarray(start, end); }}
+    });
 
     SIMDopeColors.prototype.get_element = function (i) {
         return SIMDopeColor(this.buffer, i|0);
@@ -606,8 +609,87 @@ var QuantiMat = (function (){
         this.all_index_clusters_ = new Uint32Array(l);
         this.clean_pxl_colors_ = new Uint32Array(l);
         this.clean_pxl_colors_lookup_ = {};
+
+        this.is_skin_ops_ = 0;
+        this.match_ops_ = 0;
+        this.blend_ops_ = 0;
+        this.remove_duplicate_ops_ = 0;
+        this.simplify_ops_ = 0;
+        this.classify_on_x_bits_ops_ = 0;
     };
 
+    Object.defineProperty(QuantiMat.prototype, 'set_is_skin_ops', {
+        get: function() { "use strict"; return function(n) {
+            "use strict";
+            this.is_skin_ops_ = (n|0) >>> 0;
+        }}
+    });
+    Object.defineProperty(QuantiMat.prototype, 'set_match_ops', {
+        get: function() { "use strict"; return function(n) {
+            "use strict";
+            this.match_ops_ = (n|0) >>> 0;
+        }}
+    });
+    Object.defineProperty(QuantiMat.prototype, 'set_blend_ops', {
+        get: function() { "use strict"; return function(n) {
+            "use strict";
+            this.blend_ops_ = (n|0) >>> 0;
+        }}
+    });
+    Object.defineProperty(QuantiMat.prototype, 'set_remove_duplicate_ops', {
+        get: function() { "use strict"; return function(n) {
+            "use strict";
+            this.remove_duplicate_ops_ = (n|0) >>> 0;
+        }}
+    });
+    Object.defineProperty(QuantiMat.prototype, 'set_simplify_ops', {
+        get: function() { "use strict"; return function(n) {
+            "use strict";
+            this.simplify_ops_ = n;
+        }}
+    });
+    Object.defineProperty(QuantiMat.prototype, 'set_classify_on_x_bits_ops', {
+        get: function() { "use strict"; return function(n) {
+            "use strict";
+            this.classify_on_x_bits_ops_ = n;
+        }}
+    });
+    Object.defineProperty(QuantiMat.prototype, 'get_is_skin_ops', {
+        get: function() { "use strict"; return function() {
+            "use strict";
+            return this.is_skin_ops_ | 0;
+        }}
+    });
+    Object.defineProperty(QuantiMat.prototype, 'get_match_ops', {
+        get: function() { "use strict"; return function() {
+            "use strict";
+            return this.match_ops_ | 0;
+        }}
+    });
+    Object.defineProperty(QuantiMat.prototype, 'get_blend_ops', {
+        get: function() { "use strict"; return function() {
+            "use strict";
+            return this.blend_ops_ | 0;
+        }}
+    });
+    Object.defineProperty(QuantiMat.prototype, 'get_remove_duplicate_ops', {
+        get: function() { "use strict"; return function() {
+            "use strict";
+            return this.remove_duplicate_ops_ | 0;
+        }}
+    });
+    Object.defineProperty(QuantiMat.prototype, 'get_simplify_ops', {
+        get: function() { "use strict"; return function() {
+            "use strict";
+            return this.simplify_ops_;
+        }}
+    });
+    Object.defineProperty(QuantiMat.prototype, 'get_classify_on_x_bits_ops', {
+        get: function() { "use strict"; return function() {
+            "use strict";
+            return this.classify_on_x_bits_ops_;
+        }}
+    });
     Object.defineProperty(QuantiMat.prototype, 'reset_deduplicate', {
         get: function() { "use strict"; return function(length) {
             "use strict";
@@ -651,13 +733,14 @@ var QuantiMat = (function (){
     Object.defineProperty(QuantiMat.prototype, 'set_new_pxl_skin_mask', {
         get: function() { "use strict"; return function() {
             "use strict";
-            var l = this.new_pxl_colors_.length|0;
+            var c = new SIMDopeColor(new ArrayBuffer(4)), l = this.new_pxl_colors_.length|0, i = 0;
             this.new_pxl_colors_is_skin_mask_ = new SetFixed(l|0);
-            for(var i = 0; (i|0) < (l|0); i = i + 1 | 0) {
-                if(this.new_pxl_colors_.get_element(i|0).skin){
+            for(; (i|0) < (l|0); i = i + 1 | 0) {
+                if(this.new_pxl_colors_.get_element(i|0, c).skin){
                     this.new_pxl_colors_is_skin_mask_.add(i|0);
                 }
             }
+            this.set_is_skin_ops(this.get_is_skin_ops() + i|0);
         }}
     });
     Object.defineProperty(QuantiMat.prototype, 'get_a_new_pxl_color_from_pxl_index', {
@@ -683,7 +766,7 @@ var QuantiMat = (function (){
             "use strict";
             var c = 0;
             var offset = 0;
-            for(c = 0; (c|0) < (this.max_cluster|0); c=(c+1|0)>>>0){
+            for(; (c|0) < (this.max_cluster|0); c=(c+1|0)>>>0){
                 this.all_index_clusters_.set(this.index_clusters_[(c|0)>>>0], (offset|0)>>>0);
                 offset = (offset + this.get_length_in_index_clusters(c|0) | 0) >>> 0;
             }
@@ -753,8 +836,14 @@ var QuantiMat = (function (){
     });
     Object.defineProperty(QuantiMat.prototype, 'get_data', {
         get: function() {return function(){
-
-            return Array.of(this.new_pxls_, this.new_pxl_colors_.slice_uint32(0, this.new_pxl_colors_.length));
+            return Array.of(this.new_pxls_, this.new_pxl_colors_.subarray_uint32(0, this.new_pxl_colors_.length), {
+                deduplicate: this.get_remove_duplicate_ops(),
+                simplify: this.get_simplify_ops(),
+                classify: this.get_classify_on_x_bits_ops(),
+                skin: this.get_is_skin_ops(),
+                blend: this.get_blend_ops(),
+                match: this.get_match_ops()
+            });
         }}
     });
 
@@ -781,6 +870,7 @@ var QuantiMat = (function (){
     QuantiMat.prototype.deduplicate = function() {
         "use strict";
 
+        this.set_remove_duplicate_ops(this.get_remove_duplicate_ops() + 1|0);
         this.reset_deduplicate(this.new_pxl_colors_length|0);
 
         var clean_pxl_colors_length = 0;
@@ -849,6 +939,10 @@ var QuantiMat = (function (){
             }
         }
 
+        if(this.max_cluster > 1) {
+
+            this.set_classify_on_x_bits_ops(this.get_classify_on_x_bits_ops() + this.new_pxl_colors_length);
+        }
         this.set_all_cluster_indexes();
     }
 
@@ -871,7 +965,7 @@ var QuantiMat = (function (){
         var weighted_threshold_skin_skin = 0.0;
         var index_of_color_a = 0;
         var index_of_color_b = 0;
-        var x = 0, y = 0, c = 0;
+        var x = 0, y = 0, c = 0, p = 0, m = 0;
         var color_n_in_cluster = 0;
 
         // 1x Threshold + 1x weight
@@ -907,6 +1001,7 @@ var QuantiMat = (function (){
 
                         if((color_b_usage|0) > 0 && (index_of_color_a|0) != (index_of_color_b|0)) {
 
+                            m = (m+1|0) >>> 0;
                             // The less a color is used the less it requires a great distance to be merged (so we don't have many color used only a few time in the whole image, heavily used color gets preserved better than lowly used ones)
                             if(color_a.manhattan_match_with(color_b,  (color_a_skin && color_b_skin) ? weighted_threshold_skin_skin: (color_a_skin || color_b_skin) ? weighted_threshold_skin: weighted_threshold)) {
 
@@ -924,6 +1019,7 @@ var QuantiMat = (function (){
 
                 if((latest_colors.length|0) > 0) {
                     SIMDopeColor.blend_all(color_a, latest_colors, latest_amounts);
+                    p = (p+latest_colors.length+1|0) >>> 0;
                     latest_colors = []; latest_amounts = [];
                 }
             }
@@ -931,6 +1027,8 @@ var QuantiMat = (function (){
             start = stop | 0;
         }
 
+        this.set_match_ops(this.get_match_ops()+ m);
+        this.set_blend_ops(this.get_blend_ops()+ p);
         return index_merged;
     }
 
@@ -944,6 +1042,7 @@ var QuantiMat = (function (){
             for(var l = 0; (l|0) < (this.new_pxl_colors_length|0); l = (l+1|0)>>>0) {
                 this.get_a_new_pxl_color((l|0)>>>0).simplify(simplify_of);
             }
+            this.set_simplify_ops(this.get_simplify_ops()+this.new_pxl_colors_length);
         }
     };
 
@@ -991,45 +1090,39 @@ var QuantiMatGlobal = function(
     return new Promise(function(resolve){
         "use strict";
 
-        var t1 = Date.now();
         var image_data_uint32 = new Uint32Array(image_data.data.subarray(0, image_data.data.length).reverse().buffer).reverse()
         var color_index = 1;
-        var _pxl_colors = new Uint32Array(image_data_uint32.length);
+        var pxl_colors = Uint32Array.from(new Set(image_data_uint32));
+        var original_color_n = pxl_colors.length;
         var pxls = new Uint32Array(image_data_uint32.length);
 
-        for(var i = 0, index_of = -1; (i|0) < (image_data_uint32.length|0); i = (i+1|0)>>>0, index_of = _pxl_colors.indexOf(image_data_uint32[i|0]|0) | 0) {
-
-            if((index_of|0) == -1) {
-                _pxl_colors[color_index|0] = image_data_uint32[i|0]|0;
-                index_of = (color_index | 0) >>> 0;
-                color_index = (color_index + 1 | 0) >>> 0;
-            }
-
-            pxls[i|0] = (index_of | 0) >>> 0;
+        for(var i = 0, l = image_data_uint32.length|0; (i|0) < (l|0); i = (i+1|0)>>>0) {
+            pxls[i|0] = (pxl_colors.indexOf((image_data_uint32[i|0] | 0) >>> 0) | 0) >>> 0;
         }
 
+        var t1 = Date.now();
         var result = QuantiMat({
             pxls: pxls,
-            pxl_colors: _pxl_colors.slice(0, color_index),
-            number_of_color: number_of_color,
+            pxl_colors,
+            number_of_color,
             width: image_data.width,
             height: image_data.height
         }).init().run().output("split");
+        var t2 = Date.now();
 
+        console.log(result[2]);
         var res_pxls = result[0];
         var res_pxl_length = res_pxls.length|0;
         var res_pxl_size = res_pxls.length-1|0;
         var res_pxl_colors = result[1];
 
-        pxls = new Uint32Array(res_pxl_length);
         for(var i = 0; (i|0) < (res_pxl_length|0); i = (i+1|0)>>>0) {
-            pxls[res_pxl_size-i|0] = (res_pxl_colors[res_pxls[i|0]|0] | 0) >>> 0;
+            image_data_uint32[res_pxl_size-i|0] = (res_pxl_colors[(res_pxls[i|0]|0) >>> 0] | 0) >>> 0;
         }
 
-        image_data.data.set(new Uint8Array(pxls.buffer).reverse());
-        var t2 = Date.now();
+        image_data = new ImageData(new Uint8ClampedArray(image_data_uint32.buffer).reverse(), image_data.width, image_data.height);
 
-        resolve([image_data, color_index, res_pxl_colors.length, t2-t1]);
+        resolve([image_data, original_color_n - res_pxl_colors.length, res_pxl_colors.length, t2-t1|0]);
     });
 };
 
