@@ -112,6 +112,16 @@ var QuantiMat = (function (){
         n = n | 0;
         return (n >> 2 | 0) >>>0;
     }
+    function divide_8_uint(n) {
+        "use strict";
+        n = n | 0;
+        return (n >> 3 | 0) >>>0;
+    }
+    function divide_16_uint(n) {
+        "use strict";
+        n = n | 0;
+        return (n >> 4 | 0) >>>0;
+    }
     function divide_32_uint(n) {
         "use strict";
         n = n | 0;
@@ -203,49 +213,31 @@ var QuantiMat = (function (){
     Object.defineProperty(SIMDopeColor.prototype, 'rgbaon4bits', {
         get: function() {
             "use strict";
-            var r = divide_128_uint(this.storage_uint8_[3]);
-            var g = divide_128_uint(this.storage_uint8_[2]);
-            var b = divide_128_uint(this.storage_uint8_[1]);
-            var a = divide_128_uint(this.storage_uint8_[0]);
-
-            return ((r << 3) | (g << 2) | (b <<  1) | (a << 0) | 0) >>> 0;
-        }
-    });
-
-    Object.defineProperty(SIMDopeColor.prototype, 'rgbaon6bits', {
-        get: function() {
-            "use strict";
-            var r = divide_85_uint(this.storage_uint8_[3]);
-            var g = divide_85_uint(this.storage_uint8_[2]);
-            var b = divide_85_uint(this.storage_uint8_[1]);
-            var a = divide_85_uint(this.storage_uint8_[0]);
-
-            return ((r ^ 0b010000) + (g ^ 0b001000) + (b ^ 0b000100) + (a ^ 0b000000) | 0) >>> 0;
+            return ((divide_128_uint(this.storage_uint8_[3]) << 3) | (divide_128_uint(this.storage_uint8_[2]) << 2) | (divide_128_uint(this.storage_uint8_[1]) <<  1) | (divide_128_uint(this.storage_uint8_[0]) << 0) | 0) >>> 0;
         }
     });
 
     Object.defineProperty(SIMDopeColor.prototype, 'rgbaon8bits', {
         get: function() {
             "use strict";
-            var r = divide_64_uint(this.storage_uint8_[3]);
-            var g = divide_64_uint(this.storage_uint8_[2]);
-            var b = divide_64_uint(this.storage_uint8_[1]);
-            var a = divide_64_uint(this.storage_uint8_[0]);
-
-            return ((r << 6) | (g << 4) | (b <<  2) | (a << 0) | 0) >>> 0;
+            return ((divide_64_uint(this.storage_uint8_[3]) << 6) | (divide_64_uint(this.storage_uint8_[2]) << 4) | (divide_64_uint(this.storage_uint8_[1]) <<  2) | (divide_64_uint(this.storage_uint8_[0]) << 0) | 0) >>> 0;
         }
     });
 
-    Object.defineProperty(SIMDopeColor.prototype, 'rgbaon12bits', {
+    Object.defineProperty(SIMDopeColor, 'rgbaon12bits', {
         get: function() {
             "use strict";
-            var r = divide_32_uint(this.storage_uint8_[3]);
-            var g = divide_32_uint(this.storage_uint8_[2]);
-            var b = divide_32_uint(this.storage_uint8_[1]);
-            var a = divide_32_uint(this.storage_uint8_[0]);
-
-            return ((r << 9) | (g << 6) | (b <<  3) | (a << 0) | 0) >>> 0;
+            return ((divide_32_uint(this.storage_uint8_[3]) << 9) | (divide_32_uint(this.storage_uint8_[2]) << 6) | (divide_32_uint(this.storage_uint8_[1]) <<  3) | (divide_32_uint(this.storage_uint8_[0]) << 0) | 0) >>> 0;
         }
+    });
+
+    Object.defineProperty(SIMDopeColor.prototype, 'rgbaon16bits', {
+        get: function() {
+            "use strict";
+            return ((divide_16_uint(this.storage_uint8_[3]) << 12) | (divide_16_uint(this.storage_uint8_[2]) << 8) | (divide_16_uint(this.storage_uint8_[1]) <<  4) | (divide_16_uint(this.storage_uint8_[0]) << 0) | 0) >>> 0;
+        },
+        enumerable: false,
+        configurable: false
     });
 
     Object.defineProperty(SIMDopeColor.prototype, 'offset', {
@@ -601,7 +593,7 @@ var QuantiMat = (function (){
         this.set_new_pxl_skin_mask();
         this.best_color_number_ = opts.number_of_color;
 
-        this.max_cluster_ = l > 16384 ? 4096+1: l > 8192 ? 256+1: l > 2048 ? 64+1: l > 512 ? 16+1: 1;
+        this.max_cluster_ = l > 65536 ? 65536+1: l > 16384 ? 4096+1: l > 8192 ? 256+1: l > 512 ? 16+1: 1;
         this.index_clusters_ = new Array(this.max_cluster_);
         this.length_clusters_ = new Uint32Array(this.max_cluster_);
 
@@ -750,7 +742,7 @@ var QuantiMat = (function (){
     Object.defineProperty(QuantiMat.prototype, 'reset_cluster', {
         get: function() { "use strict"; return function() {
             "use strict";
-            this.max_cluster_ = this.new_pxl_colors_.length > 16384 ? 4096+1: this.new_pxl_colors_.length > 8192 ? 256+1: this.new_pxl_colors_.length > 2048 ? 64+1: this.new_pxl_colors_.length > 512 ? 16+1: 1;
+            this.max_cluster_ = this.new_pxl_colors_.length > 65536 ? 65536+1: this.new_pxl_colors_.length > 16384 ? 4096+1: this.new_pxl_colors_.length > 8192 ? 256+1: this.new_pxl_colors_.length > 512 ? 16+1: 1;
             this.length_clusters_.fill(0, 0, this.max_cluster|0);
             for(var c = 0; (c|0) < (this.max_cluster|0); c=(c+1|0)>>>0){ this.index_clusters_[c|0] = [];}
         }}
@@ -907,7 +899,13 @@ var QuantiMat = (function (){
 
         var l = 0;
 
-        if(this.max_cluster === 4096+1) {
+        if(this.max_cluster === 65536+1){
+
+            for(; (l|0) < (this.new_pxl_colors_length|0); l = (l+1|0)>>>0) {
+
+                this.add_in_indexes_cluster((this.get_a_new_pxl_color((l|0)>>>0).rgbaon16bits|0)>>>0, (l|0)>>>0);
+            }
+        }else if(this.max_cluster === 4096+1) {
 
             for(; (l|0) < (this.new_pxl_colors_length|0); l = (l+1|0)>>>0) {
 
@@ -918,12 +916,6 @@ var QuantiMat = (function (){
             for(; (l|0) < (this.new_pxl_colors_length|0); l = (l+1|0)>>>0) {
 
                 this.add_in_indexes_cluster((this.get_a_new_pxl_color((l|0)>>>0).rgbaon8bits|0)>>>0, (l|0)>>>0);
-            }
-        }else if(this.max_cluster === 64+1){
-
-            for(; (l|0) < (this.new_pxl_colors_length|0); l = (l+1|0)>>>0) {
-
-                this.add_in_indexes_cluster((this.get_a_new_pxl_color((l|0)>>>0).rgbaon6bits|0)>>>0, (l|0)>>>0);
             }
         }else if(this.max_cluster === 16+1){
 

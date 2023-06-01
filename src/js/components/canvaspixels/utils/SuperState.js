@@ -1,5 +1,5 @@
-import SetFixed from "../../../utils/SetFixed";
-import {SIMDopeColors, SIMDopeColor} from "simdope/dist/index";
+import {SetFixed} from "@asaitama/boolean-array";
+import {SIMDopeColors, SIMDopeColor} from "simdope";
 
 const SuperState = {
     _get_build_state(props) {
@@ -66,6 +66,7 @@ const SuperState = {
             _select_hover_old_pxls_snapshot: new Uint16Array(),
             _paint_or_select_hover_actions_latest_index: -1,
             _paint_or_select_hover_pxl_indexes: new SetFixed((props.pxl_width || 32) * (props.pxl_height || 32)),
+            _pxl_indexes_newly_painted: new SetFixed((props.pxl_width || 32) * (props.pxl_height || 32)),
             _paint_or_select_hover_pxl_indexes_exception: new SetFixed((props.pxl_width || 32) * (props.pxl_height || 32)),
             _shape_index_a: -1,
             _select_shape_index_a: -1,
@@ -127,6 +128,7 @@ const SuperState = {
 
                 if(indexes_length > 0) {
 
+                    let pxl_indexes_newly_painted = state_._pxl_indexes_newly_painted;
                     let pxl_colors = state_._s_pxl_colors[state_._layer_index];
                     let pxls = state_._s_pxls[state_._layer_index];
                     let sd_color_a = new Uint32Array(indexes_length);
@@ -159,6 +161,7 @@ const SuperState = {
 
                     for(let i = 0; (i|0) < (indexes_length|0); i = (i + 1 | 0)>>>0) {
                         pxls[pxl_indexes[i|0]|0] = pxl_colors.lastIndexOf(new_ui32_colors[i|0]) & 0xFFFF;
+                        pxl_indexes_newly_painted.add(pxl_indexes[i|0]|0);
                     }
 
                     state_._s_pxl_colors[state_._layer_index] = pxl_colors;

@@ -1,5 +1,5 @@
 import pool from "../../../utils/worker-pool";
-import SIMDope from "simdope/dist/index";
+import SIMDope from "simdope";
 const {clamp_uint32, modulo_uint, divide_int, minus_int, int_greater, uint_less, int_greater_equal, int_less_equal, plus_uint, plus_int, max_int, min_int} = SIMDope.simdops;
 
 let requestIdleCallback, cancelIdleCallback;
@@ -178,30 +178,35 @@ const SuperCanvas = {
             },
             render: function() {
                 "use strict";
-                var b2 = _state.b2;
-                _state.pr.top_left.x = _state.s.width | 0;
-                _state.pr.top_left.y = _state.s.height | 0;
-                _state.pr.bottom_right.x = 0;
-                _state.pr.bottom_right.y = 0;
+                return new Promise(function (resolve){
+                    "use strict";
+                    var b2 = _state.b2;
+                    _state.pr.top_left.x = _state.s.width | 0;
+                    _state.pr.top_left.y = _state.s.height | 0;
+                    _state.pr.bottom_right.x = 0;
+                    _state.pr.bottom_right.y = 0;
 
-                if (typeof b2 !== "undefined" && _state.enable_paint_type === "bitmap") {
+                    if (typeof b2 !== "undefined" && _state.enable_paint_type === "bitmap") {
 
 
-                    _state.b.old_bmp.close();
-                    _state.s.canvas_context.clearRect(b2.bmp_x, b2.bmp_y, b2.bmp.width, b2.bmp.height);
-                    _state.s.canvas_context.globalCompositeOperation = "source-over";
-                    _state.s.canvas_context.drawImage(b2.bmp, b2.bmp_x, b2.bmp_y, b2.bmp.width, b2.bmp.height);
-                    _state.b = b2;
+                        _state.b.old_bmp.close();
+                        _state.s.canvas_context.clearRect(b2.bmp_x, b2.bmp_y, b2.bmp.width, b2.bmp.height);
+                        _state.s.canvas_context.globalCompositeOperation = "source-over";
+                        _state.s.canvas_context.drawImage(b2.bmp, b2.bmp_x, b2.bmp_y, b2.bmp.width, b2.bmp.height);
+                        _state.b = b2;
 
-                } else if (_state.enable_paint_type === "offscreen") {
+                    } else if (_state.enable_paint_type === "offscreen") {
 
-                    _state.s.canvas_context.globalCompositeOperation = "copy";
-                    _state.s.canvas_context.drawImage(_state.s.offscreen_canvas_context.canvas, 0, 0, _state.s.width, _state.s.height);
+                        _state.s.canvas_context.globalCompositeOperation = "copy";
+                        _state.s.canvas_context.drawImage(_state.s.offscreen_canvas_context.canvas, 0, 0, _state.s.width, _state.s.height);
 
-                }else {
+                    }else {
 
-                    d2d(_state.s.canvas_context, _state);
-                }
+                        d2d(_state.s.canvas_context, _state);
+                    }
+                    resolve();
+                });
+
             },
             prender: function(){
                 "use strict";

@@ -1,5 +1,5 @@
-import SetFixed from "../../../utils/SetFixed";
-import SIMDope from "simdope/dist/index";
+import {SetFixed} from "@asaitama/boolean-array";
+import SIMDope from "simdope";
 const simdops = SIMDope.simdops;
 const SIMDopeColor = SIMDope.SIMDopeColor;
 
@@ -11,6 +11,7 @@ const SuperMasterMeta = {
         let state = {
             index_changes: new Uint32Array(0),
             color_changes: new Uint32Array(0),
+            _pxl_indexes_updated: new SetFixed(0),
             _pxl_indexes_of_selection_drawn: new SetFixed(0),
             _pxl_indexes_of_old_shape: new SetFixed(0),
             _old_pxls_hovered: new SetFixed(0),
@@ -157,6 +158,7 @@ const SuperMasterMeta = {
                     _did_hide_canvas_content,
                     _old_pxls_hovered,
                     _old_layers_string_id,
+                    _pxl_indexes_updated,
                     _pxl_indexes_of_old_shape,
                     _pxl_indexes_of_selection_drawn,
                     _previous_imported_image_pxls_positioned_keyset,
@@ -213,22 +215,22 @@ const SuperMasterMeta = {
 
                     _pxl_indexes_of_current_shape =
                         tool === "LINE" ?
-                            shape_creator.from_line(_shape_index_a, _pxls_hovered) :
+                            shape_creator.from_line(_shape_index_a, _pxls_hovered, _pxl_indexes_of_current_shape) :
                             tool === "RECTANGLE" ?
-                                shape_creator.from_rectangle(_shape_index_a, _pxls_hovered) :
+                                shape_creator.from_rectangle(_shape_index_a, _pxls_hovered, _pxl_indexes_of_current_shape) :
                                 tool === "ELLIPSE" ?
-                                    shape_creator.from_ellipse(_shape_index_a, _pxls_hovered) :
+                                    shape_creator.from_ellipse(_shape_index_a, _pxls_hovered, _pxl_indexes_of_current_shape) :
                                     _pxl_indexes_of_current_shape;
 
                 } else if (Boolean(tool === "SELECT LINE" || tool === "SELECT RECTANGLE" || tool === "SELECT ELLIPSE") && _select_shape_index_a !== - 1 && _pxls_hovered !== - 1) {
 
                     _pxl_indexes_of_current_shape =
                         tool === "SELECT LINE" ?
-                            shape_creator.from_line(_select_shape_index_a, _pxls_hovered) :
+                            shape_creator.from_line(_select_shape_index_a, _pxls_hovered, _pxl_indexes_of_current_shape) :
                             tool === "SELECT RECTANGLE" ?
-                                shape_creator.from_rectangle(_select_shape_index_a, _pxls_hovered) :
+                                shape_creator.from_rectangle(_select_shape_index_a, _pxls_hovered, _pxl_indexes_of_current_shape) :
                                 tool === "SELECT ELLIPSE" ?
-                                    shape_creator.from_ellipse(_select_shape_index_a, _pxls_hovered) :
+                                    shape_creator.from_ellipse(_select_shape_index_a, _pxls_hovered, _pxl_indexes_of_current_shape) :
                                     _pxl_indexes_of_current_shape;
 
                 } else if (Boolean(tool === "SELECT PATH" || tool === "CONTOUR") && _paint_or_select_hover_pxl_indexes.size > 0) {
@@ -270,9 +272,7 @@ const SuperMasterMeta = {
                 let pos_y = 0;
 
                 old_full_pxls = (old_full_pxls.length < full_pxls_length) ? new Uint32Array(full_pxls_length) : old_full_pxls;
-
                 meta_super_blend.update(plus_uint(_layers.length, 1), full_pxls_length | 0);
-
                 bool_new_highlight = _selection_pair_highlight != _old_selection_pair_highlight;
 
                 for (let index = 0; int_less(index, full_pxls_length); index = plus_uint(index, 1)) {
@@ -293,7 +293,6 @@ const SuperMasterMeta = {
                         bool_new_pixel ||
                         bool_old_hover ||
                         bool_new_selection && bool_new_highlight ||
-                        bool_old_selection && bool_new_highlight ||
                         bool_new_hover != bool_old_hover ||
                         bool_new_shape != bool_old_shape ||
                         bool_new_selection != bool_old_selection ||
@@ -301,9 +300,7 @@ const SuperMasterMeta = {
                     ) {
 
                         meta_super_blend.for(index | 0);
-
                         for (let i = 0; (i | 0) < (layers_length | 0); i = plus_uint(i, 1)) {
-
                             meta_super_blend.stack(
                                 i | 0,
                                 (_s_pxl_colors[i | 0][_s_pxls[i | 0][index | 0] | 0] | 0) >>> 0,
@@ -342,6 +339,17 @@ const SuperMasterMeta = {
                                 meta.super_canvas.prender().then(function () {
                                     meta.sraf.run_frame(meta.super_canvas.render, false, false, Date.now()).then(function (){
 
+                                        _pxl_indexes_of_selection_drawn.clear();
+                                        _old_pxls_hovered.clear();
+                                        _pxl_indexes_of_old_shape.clear();
+                                        _previous_imported_image_pxls_positioned_keyset.clear();
+
+                                        _pxl_indexes_of_selection_drawn.bulkAdd(_pxl_indexes_of_selection.indexes);
+                                        _old_pxls_hovered.add(_pxls_hovered);
+                                        _pxl_indexes_of_old_shape.bulkAdd(_pxl_indexes_of_current_shape.indexes);
+                                        _previous_imported_image_pxls_positioned_keyset.bulkAdd(imported_image_pxls_positioned_keyset.indexes);
+                                        old_full_pxls.set(full_pxls);
+
                                         state._previous_imported_image_pxls_positioned_keyset = imported_image_pxls_positioned_keyset;
                                         state._old_selection_pair_highlight = _selection_pair_highlight;
                                         state._old_layers_string_id = old_layers_string_id;
@@ -350,51 +358,6 @@ const SuperMasterMeta = {
                                         state._old_pxl_height = parseInt(pxl_height);
                                         state._last_paint_timestamp = requested_at;
 
-                                        for (let index = 0; int_less(index, full_pxls_length); index = plus_uint(index, 1)) {
-
-                                            bool_new_hover = uint_equal(_pxls_hovered, index | 0);
-                                            bool_old_hover = _old_pxls_hovered.has(index | 0);
-                                            bool_new_shape = _pxl_indexes_of_current_shape.has(index | 0);
-                                            bool_old_shape = _pxl_indexes_of_old_shape.has(index | 0);
-                                            bool_new_selection = _pxl_indexes_of_selection.has(index | 0);
-                                            bool_old_selection = _pxl_indexes_of_selection_drawn.has(index | 0);
-                                            bool_new_import = imported_image_pxls_positioned_keyset.has(index | 0);
-                                            bool_old_import = _previous_imported_image_pxls_positioned_keyset.has(index | 0);
-                                            bool_new_pixel = uint_not_equal(full_pxls[index | 0], old_full_pxls[index | 0]);
-
-                                            if (
-                                                bool_new_import ||
-                                                bool_new_pixel ||
-                                                bool_old_hover ||
-                                                bool_new_selection && bool_new_highlight ||
-                                                bool_old_selection && bool_new_highlight ||
-                                                bool_new_hover != bool_old_hover ||
-                                                bool_new_shape != bool_old_shape ||
-                                                bool_new_selection != bool_old_selection ||
-                                                bool_old_import != bool_new_import
-                                            ) {
-
-                                                old_full_pxls[index|0] = (full_pxls[index|0] | 0) >>> 0;
-
-                                                if (!bool_new_hover && bool_old_hover) {
-                                                    _old_pxls_hovered.delete(index | 0);
-                                                } else if (bool_new_hover && !bool_old_hover) {
-                                                    _old_pxls_hovered.add(index | 0);
-                                                } else if (!bool_new_shape && bool_old_shape) {
-                                                    _pxl_indexes_of_old_shape.delete(index | 0);
-                                                } else if (bool_new_shape && !bool_old_shape) {
-                                                    _pxl_indexes_of_old_shape.add(index | 0);
-                                                } else if (!bool_new_selection && bool_old_selection) {
-                                                    _pxl_indexes_of_selection_drawn.delete(index | 0);
-                                                } else if (bool_new_selection && !bool_old_selection) {
-                                                    _pxl_indexes_of_selection_drawn.add(index | 0);
-                                                } else if (!bool_new_import && bool_old_import) {
-                                                    _previous_imported_image_pxls_positioned_keyset.delete(index | 0);
-                                                } else if (bool_new_import && !bool_old_import) {
-                                                    _previous_imported_image_pxls_positioned_keyset.add(index | 0);
-                                                }
-                                            }
-                                        }
                                         resolve0();
                                     }).catch(reject0);
                                 }).catch(reject0);
