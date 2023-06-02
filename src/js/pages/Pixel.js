@@ -603,6 +603,7 @@ class Pixel extends React.PureComponent {
             _library: {},
             _library_type: "open",
             _view_name_index: 1,
+            _handle_wheel_timestamp: Date.now(),
             _view_name_sub_index: 0,
             _previous_view_name_index: 1,
             _view_names: ["palette", "image", "layers", "tools", "selection", "effects", "filters"],
@@ -737,11 +738,13 @@ class Pixel extends React.PureComponent {
             }
         }, 9000);
         actions.jamy_update("happy");
-
         window.addEventListener("resize", this._updated_dimensions);
+        window.addEventListener('wheel', this._prevent_ctrl_zoom, { passive: false });
+
         this._updated_dimensions();
         document.addEventListener("keydown", this._handle_keydown);
         document.addEventListener("keyup", this._handle_keyup);
+        document.getElementById("tabs-desktop").addEventListener("wheel", (event) => {this._handle_wheel(event)}, {passive: false});
         dispatcher.register(this._handle_events.bind(this));
         this._try_load_with_payload(this.st4te.load_with + "");
         this.setSt4te({_h_svg: get_svg_in_b64(<HexGrid color={"#e5e5e5"}/>)});
@@ -758,6 +761,12 @@ class Pixel extends React.PureComponent {
         
         this.setSt4te({_fps_el: document.getElementById("fps_el"), _xy_el: document.getElementById("xy_el")});
     };
+
+    _prevent_ctrl_zoom = (e) => {
+        if (e.ctrlKey) {
+            e.preventDefault();
+        }
+    }
 
     _set_saved_at_element = () => {
 
@@ -984,10 +993,32 @@ class Pixel extends React.PureComponent {
 
         actions.stop_sound();
         window.removeEventListener("resize", this._updated_dimensions);
+        window.removeEventListener('wheel', this._prevent_ctrl_zoom);
+        document.getElementById("tabs-desktop").removeEventListener("wheel", (event) => {this._handle_wheel(event)}, {passive: false});
         document.removeEventListener("keydown", this._handle_keydown);
         document.removeEventListener("keyup", this._handle_keyup);
         clearInterval(this.st4te._saved_at_interval);
     }
+
+    _handle_wheel = ({deltaY}) => {
+
+        if((this.st4te._handle_wheel_timestamp + 250) < Date.now()) {
+            let switch_of = deltaY === 0 ? 0: deltaY > 0 ? -1: 1;
+            let vni = this.st4te._view_name_index+switch_of;
+
+            if(vni < 0){
+                vni = this.st4te._view_name_index = this.st4te._view_names.length-1;
+            }else {
+                vni = vni % this.st4te._view_names.length;
+            }
+
+            this.setSt4te({
+                _handle_wheel_timestamp: Date.now()
+            }, () => {
+                this._handle_view_name_change(vni, this.st4te._view_name_index);
+            })
+        }
+    };
 
     _handle_menu_close = () => {
 
@@ -1156,12 +1187,16 @@ class Pixel extends React.PureComponent {
                 switch (event.keyCode) {
 
                     case 37:
-
                         this._handle_view_name_change(_view_name_index-1 < 0 ? _view_names.length-1: _view_name_index-1);
                         break;
                     case 39:
-
                         this._handle_view_name_change( _view_name_index+1 > _view_names.length-1 ? 0: _view_name_index+1);
+                        break;
+                    case 38:
+                        this._scroll_to_drawer(-1);
+                        break;
+                    case 40:
+                        this._scroll_to_drawer(1);
                         break;
                 }
             }
@@ -2481,13 +2516,31 @@ class Pixel extends React.PureComponent {
 
     _scroll_to_drawer = (classname) => {
 
-        const panel_element = (document.getElementsByClassName(classname) || [])[0] || null;
-        if(panel_element !== null) {
+        if((""+classname).startsWith(`swipetoolbox_i_`)) {
 
-            this.st4te._toolbox_container_ref.scrollTop = panel_element.offsetTop;
+            const panel_element = (document.getElementsByClassName(classname) || [])[0] || null;
+            if (panel_element !== null) {
+
+                this.st4te._toolbox_container_ref.scrollTop = panel_element.offsetTop;
+            } else {
+
+                this.st4te._toolbox_container_ref.scrollTop = 0;
+            }
         }else {
 
-            this.st4te._toolbox_container_ref.scrollTop = 0;
+            const offset = this.st4te._toolbox_container_ref.scrollTop;
+            let panel = (document.getElementsByClassName(`swipetoolbox_i_${this.st4te._view_name_index}_${0}`) || [])[0] || {}, i = 1;
+            while(Boolean(panel)) {
+                if(offset > panel.offsetTop){
+                    panel = (document.getElementsByClassName(`swipetoolbox_i_${this.st4te._view_name_index}_${i++}`) || [])[0] || {};
+                }else {
+                    panel = (document.getElementsByClassName(`swipetoolbox_i_${this.st4te._view_name_index}_${i-1+classname}`) || [])[0] || {};
+                    break;
+                }
+            }
+
+            this.st4te._toolbox_container_ref.scrollTop = panel.offsetTop || 0;
+
         }
     };
 
@@ -2748,7 +2801,8 @@ class Pixel extends React.PureComponent {
                                 aria-labelledby="strength-slider"
                             />
                         </div>
-                        <Tabs className={classes.tabs}
+                        <Tabs id="tabs-desktop"
+                              className={classes.tabs}
                               variant="fullWidth"
                               indicatorColor="primary"
                               textColor="primary"

@@ -22,6 +22,7 @@ import {
     IconButton
 } from "@material-ui/core";
 
+import {SIMDopeColor} from "simdope";
 import {HISTORY} from "../utils/constants";
 
 import AllLayersIcon from "../icons/AllLayers";
@@ -31,7 +32,7 @@ import ImageFilterMagicIcon from "../icons/ImageFilterMagic";
 import SwipeableViews from "react-swipeable-views";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import PixelColorPalette from "./PixelColorPalette";
-import {ChromePicker} from "react-color";
+import { RgbaColorPicker } from "react-colorful";
 import ImagePlusIcon from "../icons/ImagePlus";
 import ImportIcon from "../icons/Import";
 import DownloadIcon from "../icons/Download";
@@ -209,6 +210,10 @@ const styles = theme => ({
     },
 
     menu: {
+        "& .MuiPaper-root":{
+            overflow: "inherit",
+            contain: "layout size style"
+        },
         "& .MuiList-padding": {
             padding: 0,
         },
@@ -226,7 +231,7 @@ const styles = theme => ({
     listOfTools: {
         paddingTop: 0
     },
-    chromePicker: {
+    materialPicker: {
         fontFamily: "Open Sans !important",
     },
     flipExpandMoreIcon: {
@@ -699,6 +704,9 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
             _list_sub_header_opened
         } = this.st4te;
 
+        const ccsd = SIMDopeColor.new_hex(current_color);
+        const current_color_rgba = {r: ccsd.r, g: ccsd.g, b: ccsd.b, a: ccsd.a/255};
+
         let colors = [];
         for (let i = 1; i <= 128; i++) {
 
@@ -811,15 +819,15 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                         <Menu
                             className={classes.menu}
                             anchorEl={_anchor_el}
+                            anchorPosition={{vertical: "top", horizontal: "center"}}
                             keepMounted
                             open={Boolean(_anchor_el)}
                             onClose={this._handle_color_menu_close}
                             style={{padding: 0}}
                         >
-                            <ChromePicker className={classes.chromePicker}
-                                          color={current_color}
-                                          onChange={this._handle_current_color_change}
-                                          disableAlpha={false}/>
+                            <RgbaColorPicker className={classes.materialPicker}
+                                          color={current_color_rgba}
+                                          onChange={(c) => {this._handle_current_color_change(SIMDopeColor.new_of(c.r, c.g, c.b, c.a*255|0).hex)}}/>
                         </Menu>
 
                         <div style={{textAlign: "center"}}>
@@ -833,7 +841,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                                         background: current_color,
                                         borderRadius: 4,
                                         height: 48,
-                                        width: 96
+                                        width: 152
                                     }}
                                     onClick={(event) => {
                                         this._handle_color_menu_open(event, current_color)
@@ -855,7 +863,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                                     onClick={(event) => {
                                         this._switch_with_second_color()
                                     }}>
-                                Secondary
+                                Switch
                             </Button>
                         </div>
 
@@ -2052,6 +2060,10 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
             this.props.on_current_color_change(color);
         }
+
+        this.setSt4te({current_color: color}, () => {
+            this.update_cache_view(null, true);
+        });
     };
 
     _handle_view_name_change = (view_name_index, previous_name_index = null) => {

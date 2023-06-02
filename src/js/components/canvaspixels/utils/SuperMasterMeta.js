@@ -692,9 +692,10 @@ const SuperMasterMeta = {
                                 _paint_or_select_hover_pxl_indexes.add(i|0);
                             });
 
-                            if(this._should_remove_not_perfect_second_latest_pixel_from_array(_paint_or_select_hover_pxl_indexes)) {
+                            const _paint_or_select_hover_pxl_indexes_indexes = _paint_or_select_hover_pxl_indexes.indexes;
+                            if(this._should_remove_not_perfect_second_latest_pixel_from_array(_paint_or_select_hover_pxl_indexes_indexes)) {
 
-                                const pixel_index_to_remove = _paint_or_select_hover_pxl_indexes[_paint_or_select_hover_pxl_indexes.size - 2];
+                                const pixel_index_to_remove = _paint_or_select_hover_pxl_indexes_indexes[_paint_or_select_hover_pxl_indexes_indexes.length - 2];
 
                                 if(!_select_hover_old_pxls_snapshot.includes(pixel_index_to_remove) && (select_mode === "ADD" || select_mode === "REPLACE")) {
 
@@ -804,7 +805,7 @@ const SuperMasterMeta = {
                     const first_drawn_pixel = _paint_or_select_hover_pxl_indexes[0];
                     const last_drawn_pixel = _paint_or_select_hover_pxl_indexes[_paint_or_select_hover_pxl_indexes.size-1];
                     const closing_path_line =  shape_creator.from_line(first_drawn_pixel, last_drawn_pixel);
-                    _paint_or_select_hover_pxl_indexes = new SetFixed(_paint_or_select_hover_pxl_indexes.map(function (i){return i|0}).concat(closing_path_line.map(function (i){return i|0})));
+                    _paint_or_select_hover_pxl_indexes = new SetFixed(Array.from(_paint_or_select_hover_pxl_indexes.indexes).concat(closing_path_line));
                     _paint_or_select_hover_pxl_indexes = shape_creator.from_path(_paint_or_select_hover_pxl_indexes, _paint_or_select_hover_pxl_indexes);
 
                     meta.super_state.paint_shape(_paint_or_select_hover_pxl_indexes.indexes, pxl_current_color_uint32, pxl_current_opacity,
@@ -823,8 +824,8 @@ const SuperMasterMeta = {
                     const first_drawn_pixel = _paint_or_select_hover_pxl_indexes[0];
                     const last_drawn_pixel = _paint_or_select_hover_pxl_indexes[_paint_or_select_hover_pxl_indexes.size-1];
                     const closing_path_line =  shape_creator.from_line(first_drawn_pixel, last_drawn_pixel);
-                    _paint_or_select_hover_pxl_indexes = new SetFixed(Array.from(_paint_or_select_hover_pxl_indexes).concat(Array.from(closing_path_line)));
-                    const pxl_indexes = shape_creator.from_path(_paint_or_select_hover_pxl_indexes.map(function (i){return i|0}));
+                    _paint_or_select_hover_pxl_indexes = new SetFixed(Array.from(_paint_or_select_hover_pxl_indexes.indexes).concat(closing_path_line));
+                    _paint_or_select_hover_pxl_indexes = shape_creator.from_path(_paint_or_select_hover_pxl_indexes, _paint_or_select_hover_pxl_indexes);
 
                     if(select_mode === "REPLACE") {
 
@@ -833,14 +834,14 @@ const SuperMasterMeta = {
 
                     if(select_mode === "ADD" || select_mode === "REPLACE") {
 
-                        pxl_indexes.forEach(function(pxl) {
+                        _paint_or_select_hover_pxl_indexes.forEach(function(pxl) {
 
                             _pxl_indexes_of_selection.add(pxl);
                         });
 
                     }else {
 
-                        pxl_indexes.forEach(function(pxl) {
+                        _paint_or_select_hover_pxl_indexes.forEach(function(pxl) {
 
                             _pxl_indexes_of_selection.delete(pxl);
                         });
