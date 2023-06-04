@@ -486,8 +486,8 @@ class CanvasPixels extends React.PureComponent {
             const bottom_layer_pxls =  new Uint16Array(_s_pxls[at_index - 1].buffer);
             const top_layer_pxl_colors = new Uint32Array(_s_pxl_colors[at_index].buffer);
             const bottom_layer_pxl_colors = new Uint32Array(_s_pxl_colors[at_index - 1].buffer);
-            const top_layer_opacity = (parseFloat(_layers[at_index].opacity) * 255 | 0) & 0xFF ;
-            const bottom_layer_opacity = (parseFloat(_layers[at_index-1].opacity) * 255 | 0) & 0xFF;
+            const top_layer_opacity = Math.round(parseFloat(_layers[at_index].opacity) * 255) & 0xFF ;
+            const bottom_layer_opacity = Math.round(parseFloat(_layers[at_index-1].opacity) * 255) & 0xFF;
 
             const pxl_length = top_layer_pxls.length | 0;
 
@@ -498,15 +498,14 @@ class CanvasPixels extends React.PureComponent {
                 opacity: parseFloat(1),
             };
 
-            const super_blend = SuperBlend.init(3, pxl_length);
-            for(let i = 0 ; i < pxl_length; i = (i+1|0)>>>0) {
+            const super_blend = SuperBlend.init(2, pxl_length);
+            super_blend.update(2, pxl_length, Uint8Array.of(bottom_layer_opacity, top_layer_opacity))
+            for(let i = 0 ; (i|0) < (pxl_length|0); i = (i+1|0)>>>0) {
 
-                super_blend.for(i);
-                super_blend.stack(0, 0, 1, 0);
-                super_blend.stack(1, bottom_layer_pxl_colors[bottom_layer_pxls[i]]|0, bottom_layer_opacity, 0);
-                super_blend.stack(0, 0, 1, 0);
-                super_blend.stack(2, top_layer_pxl_colors[top_layer_pxls[i]]|0, top_layer_opacity, 0);
-                super_blend.stack(0, 0, 1, 0);
+                super_blend.for(i, 0);
+                super_blend.stack(0, bottom_layer_pxl_colors[bottom_layer_pxls[i|0]]);
+                super_blend.stack(1, top_layer_pxl_colors[top_layer_pxls[i|0]]);
+                super_blend.next();
             }
 
             super_blend.blend(false, false).then(([index_changes, color_changes]) => {

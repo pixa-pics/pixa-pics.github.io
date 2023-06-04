@@ -190,12 +190,9 @@ const SuperMasterMeta = {
 
                 const has_layers_visibility_or_opacity_changed = _old_layers_string_id !== old_layers_string_id;
 
-                const layers_opacity_255 = Uint8Array.from(_layers.map(function (layer) {
-                    return parseFloat(layer.opacity) * 255 | 0;
+                const layers_opacity_255 = Uint8ClampedArray.from(_layers.map(function (l) {
+                    return (l.hidden || hide_canvas_content) ? 0 :  Math.round(parseFloat(l.opacity) * 255);
                 }));
-                const _layers_hidden = _layers.map(function (layer) {
-                    return Boolean(layer.hidden)
-                });
 
                 _old_pxls_hovered.add(_pxls_hovered | 0);
                 // This is a list of color index that we explore
@@ -270,12 +267,15 @@ const SuperMasterMeta = {
                 let full_pxls_length = pixels_in_current_layer_length | 0;
                 let pos_x = 0;
                 let pos_y = 0;
+                let i = 0;
+                let index = 0;
 
                 old_full_pxls = (old_full_pxls.length < full_pxls_length) ? new Uint32Array(full_pxls_length) : old_full_pxls;
-                meta_super_blend.update(plus_uint(_layers.length, 1), full_pxls_length | 0);
+                console.log(layers_opacity_255)
+                meta_super_blend.update(plus_uint(_layers.length, 1), full_pxls_length | 0, layers_opacity_255);
                 bool_new_highlight = _selection_pair_highlight != _old_selection_pair_highlight;
 
-                for (let index = 0; int_less(index, full_pxls_length); index = plus_uint(index, 1)) {
+                for (; int_less(index, full_pxls_length); index = plus_uint(index, 1)) {
 
                     bool_new_hover = uint_equal(_pxls_hovered, index | 0);
                     bool_old_hover = _old_pxls_hovered.has(index | 0);
@@ -299,34 +299,36 @@ const SuperMasterMeta = {
                         bool_old_import != bool_new_import
                     ) {
 
-                        meta_super_blend.for(index | 0);
-                        for (let i = 0; (i | 0) < (layers_length | 0); i = plus_uint(i, 1)) {
-                            meta_super_blend.stack(
-                                i | 0,
-                                (_s_pxl_colors[i | 0][_s_pxls[i | 0][index | 0] | 0] | 0) >>> 0,
-                                (_layers_hidden[i | 0] || hide_canvas_content) ? 0 : layers_opacity_255[i | 0] | 0,
-                                false);
-                        }
+                        if (bool_new_hover) {
 
-                        if (bool_new_import) {
-
-                            meta_super_blend.stack(layers_length | 0, imported_image_pxl_colors[imported_image_pxls_positioned[index | 0] | 0] | 0, 255, false);
-                        } else if (bool_new_hover) {
-
-                            meta_super_blend.stack(layers_length | 0, 0, 192, true);
+                            meta_super_blend.for(index | 0, 96);
 
                         } else if (bool_new_shape) {
 
-                            meta_super_blend.stack(layers_length | 0, 0, 160, true);
+                            meta_super_blend.for(index | 0, 128);
                         } else if (bool_new_selection) {
 
                             pos_x = (index % pxl_width) | 0;
                             pos_y = ((index - pos_x) / pxl_width) | 0;
-                            meta_super_blend.stack(layers_length | 0, 0, 128 + ((((pos_x + pos_y + (_selection_pair_highlight ? 1 : 0) | 0) & 1) | 0) * 64) | 0, true);
+                            meta_super_blend.for(index | 0, 72 + ((((pos_x + pos_y + (_selection_pair_highlight ? 1 : 0) | 0) & 1) | 0) * 48) | 0);
                         } else {
 
-                            meta_super_blend.stack(layers_length | 0, 0, 0, false);
+                            meta_super_blend.for(index | 0, 0)
                         }
+
+                        for (i = 0; (i | 0) < (layers_length | 0); i = plus_uint(i, 1)) {
+                            meta_super_blend.stack(i | 0, (_s_pxl_colors[i | 0][_s_pxls[i | 0][index | 0] | 0] | 0) >>> 0);
+                        }
+
+                        if (bool_new_import) {
+
+                            meta_super_blend.stack(layers_length | 0, (imported_image_pxl_colors[imported_image_pxls_positioned[index | 0] | 0] | 0) >>> 0);
+                        }else {
+
+                            meta_super_blend.stack(layers_length | 0, 0);
+                        }
+
+                        meta_super_blend.next();
                     }
                 }
 
@@ -593,11 +595,11 @@ const SuperMasterMeta = {
                             const _paint_or_select_hover_pxl_indexes_copy = new SetFixed(_paint_or_select_hover_pxl_indexes.indexes);
                             let pixel_stack = new Set(
                                 _paint_or_select_hover_pxl_indexes
-                                .filter(function (index){return !_paint_or_select_hover_pxl_indexes_copy.has(index|0) && !_paint_or_select_hover_pxl_indexes_exception.has(index|0);})
-                                .map(function (index){
-                                    var x = index % pxl_width|0, y = (index - x) / pxl_width|0;
-                                    return [x|0, y|0];
-                                }));
+                                    .filter(function (index){return !_paint_or_select_hover_pxl_indexes_copy.has(index|0) && !_paint_or_select_hover_pxl_indexes_exception.has(index|0);})
+                                    .map(function (index){
+                                        var x = index % pxl_width|0, y = (index - x) / pxl_width|0;
+                                        return [x|0, y|0];
+                                    }));
 
                             if(pencil_mirror_mode === "VERTICAL" || pencil_mirror_mode === "BOTH") {
 
