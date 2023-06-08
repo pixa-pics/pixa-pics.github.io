@@ -39,11 +39,11 @@ const SuperCanvas = {
             let pr_top_left_y = _state.pr.top_left.y | 0;
             let pr_uint8a = new Uint8Array(_state.fp.buffer);
 
-            let fp_square = new Uint8ClampedArray((pr_width * pr_height * 4 | 0)>>>0);
+            let fp_square = ctx2d.getImageData(pr_top_left_x, pr_top_left_y, pr_width, pr_height);
             let current_offset_start_index = 0;
             for(let i = 0; (i|0) < (pr_height|0) ; i = (i + 1 | 0)>>>0) {
                 current_offset_start_index = s_width * (i + pr_top_left_y) + pr_top_left_x | 0;
-                fp_square.set(pr_uint8a.subarray((current_offset_start_index*4|0)>>>0, ((current_offset_start_index + pr_width)*4|0)>>>0), (4*i*pr_width|0)>>>0);
+                fp_square.data.set(pr_uint8a.subarray((current_offset_start_index*4|0)>>>0, ((current_offset_start_index + pr_width)*4|0)>>>0), (4*i*pr_width|0)>>>0);
             }
 
             _state.pr.top_left.x = _state.s.width | 0;
@@ -51,8 +51,7 @@ const SuperCanvas = {
             _state.pr.bottom_right.x = 0;
             _state.pr.bottom_right.y = 0;
 
-            let image_data = new ImageData(fp_square, pr_width|0, pr_height|0)
-            ctx2d.putImageData(image_data, pr_top_left_x, pr_top_left_y, 0, 0, pr_width, pr_height);
+            ctx2d.putImageData(fp_square, pr_top_left_x, pr_top_left_y, 0, 0, pr_width, pr_height);
             resolve();
         });
     },
@@ -319,7 +318,7 @@ const SuperCanvas = {
                         pr.bottom_right.y = pr_bottom_right_y | 0;
                         _state.pr = pr;
 
-                        _state.enable_paint_type = _state.s.is_bitmap ? "bitmap": _state.s.is_offscreen ? "offscreen": "";
+                        _state.enable_paint_type = _state.s.is_offscreen ? "offscreen":  _state.s.is_bitmap ? "bitmap": "";
 
                         resolve();
                     }

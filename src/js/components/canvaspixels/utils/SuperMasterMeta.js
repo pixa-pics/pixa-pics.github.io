@@ -192,7 +192,7 @@ const SuperMasterMeta = {
 
                 const layers_opacity_255 = Uint8ClampedArray.from(_layers.map(function (l) {
                     return (l.hidden || hide_canvas_content) ? 0 :  Math.round(parseFloat(l.opacity) * 255);
-                }));
+                }).concat([255]));
 
                 _old_pxls_hovered.add(_pxls_hovered | 0);
                 // This is a list of color index that we explore
@@ -271,7 +271,6 @@ const SuperMasterMeta = {
                 let index = 0;
 
                 old_full_pxls = (old_full_pxls.length < full_pxls_length) ? new Uint32Array(full_pxls_length) : old_full_pxls;
-                console.log(layers_opacity_255)
                 meta_super_blend.update(plus_uint(_layers.length, 1), full_pxls_length | 0, layers_opacity_255);
                 bool_new_highlight = _selection_pair_highlight != _old_selection_pair_highlight;
 

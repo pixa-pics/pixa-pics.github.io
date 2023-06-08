@@ -1667,7 +1667,7 @@ class CanvasPixels extends React.PureComponent {
                     new_current_state._layer_index = parseInt(_layer_index);
                     new_current_state._s_pxls = _s_pxls.map(function (a) {return Uint16Array.from(a);});
                     new_current_state._s_pxl_colors = _s_pxl_colors.map(function (a) {return Uint32Array.from(a);});
-                    new_current_state._pxl_indexes_of_selection = _pxl_indexes_of_selection;
+                    new_current_state._pxl_indexes_of_selection = _pxl_indexes_of_selection.indexes;
                     new_current_state._pencil_mirror_index = parseInt(_pencil_mirror_index);
 
                     this._notify_layers_and_compute_thumbnails_change(Object.assign({}, old_current_state), Object.assign({}, new_current_state), (layers, layer_index, layers_changed_state) => {
@@ -1818,7 +1818,7 @@ class CanvasPixels extends React.PureComponent {
                             _original_image_index: parseInt(state._original_image_index),
                             pxl_width: parseInt(state.pxl_width),
                             pxl_height: parseInt(state.pxl_height),
-                            _pxl_indexes_of_selection: Boolean(state._pxl_indexes_of_selection.length) ? state._pxl_indexes_of_selection : new SetFixed(state.pxl_width * state.pxl_height),
+                            _pxl_indexes_of_selection: Boolean(state._pxl_indexes_of_selection.length) ? new SetFixed(state._pxl_indexes_of_selection) : new SetFixed(state.pxl_width * state.pxl_height),
                             _s_pxls: Array.from(state._s_pxls.map(function(a){return Uint16Array.from(a)})),
                             _s_pxl_colors:  Array.from(state._s_pxl_colors.map(function(a){return Uint32Array.from(a)})),
                             _layers: Array.from(state._layers.map(function(l) {
@@ -1859,7 +1859,7 @@ class CanvasPixels extends React.PureComponent {
                     _layer_index: parseInt(sh._layer_index),
                     _s_pxls: Array.from(sh._s_pxls.map(function(a){return Uint16Array.from(a)})),
                     _s_pxl_colors:  Array.from(sh._s_pxl_colors.map(function(a){return Uint32Array.from(a)})),
-                    _pxl_indexes_of_selection: sh._pxl_indexes_of_selection,
+                    _pxl_indexes_of_selection: new SetFixed(sh._pxl_indexes_of_selection),
                     _pencil_mirror_index: parseInt(sh._pencil_mirror_index),
                     _json_state_history: _json_state_history,
                     _pxls_hovered: -1,
@@ -1908,7 +1908,7 @@ class CanvasPixels extends React.PureComponent {
                             _original_image_index: parseInt(state._original_image_index),
                             pxl_width: parseInt(state.pxl_width),
                             pxl_height: parseInt(state.pxl_height),
-                            _pxl_indexes_of_selection: Boolean(state._pxl_indexes_of_selection.length) ? state._pxl_indexes_of_selection : new SetFixed(state.pxl_width * state.pxl_height),
+                            _pxl_indexes_of_selection: Boolean(state._pxl_indexes_of_selection.length) ? new SetFixed(state._pxl_indexes_of_selection) : new SetFixed(state.pxl_width * state.pxl_height),
                             _s_pxls: Array.from(state._s_pxls.map(function(a){return Uint16Array.from(a)})),
                             _s_pxl_colors:  Array.from(state._s_pxl_colors.map(function(a){return Uint32Array.from(a)})),
                             _layers: Array.from(state._layers.map(function(l) {
@@ -1980,7 +1980,7 @@ class CanvasPixels extends React.PureComponent {
                     _layer_index: parseInt(sh._layer_index),
                     _s_pxls: Array.from(sh._s_pxls.map(function(a){return Uint16Array.from(a);})),
                     _s_pxl_colors: Array.from(sh._s_pxl_colors.map(function(a){return Uint32Array.from(a);})),
-                    _pxl_indexes_of_selection: sh._pxl_indexes_of_selection,
+                    _pxl_indexes_of_selection: new SetFixed(sh._pxl_indexes_of_selection),
                     _pencil_mirror_index: parseInt(sh._pencil_mirror_index),
                     _json_state_history: _json_state_history,
                     _last_action_timestamp: Date.now(),
@@ -2041,7 +2041,7 @@ class CanvasPixels extends React.PureComponent {
                     _layer_index: parseInt(sh._layer_index),
                     _s_pxls: Array.from(sh._s_pxls.map(function(a){return Uint16Array.from(a);})),
                     _s_pxl_colors: Array.from(sh._s_pxl_colors.map(function(a){return Uint32Array.from(a);})),
-                    _pxl_indexes_of_selection: sh._pxl_indexes_of_selection,
+                    _pxl_indexes_of_selection: new SetFixed(sh._pxl_indexes_of_selection),
                     _pencil_mirror_index: parseInt(sh._pencil_mirror_index),
                     _json_state_history: _json_state_history,
                     _last_action_timestamp: Date.now(),
