@@ -1,13 +1,9 @@
-# PIXA.PICS | STORING PIXEL ART NFT ONE/TWO THOUSAND YEARS!
+# PIXA.PICS | STORING PIXEL-ART NFT ONE THOUSAND YEARS!
 
 
 Storing pixel art 1000 years: https://www.youtube.com/watch?v=cctknQhVX1w
 > Click the link to watch the video on Youtube
 
-## **OR WATCH A DEMO (2 MINUTES)**:
-`<////////>` https://youtu.be/WlgGdmXmVDo `<\\\\\\\\>`
-
-****
 
 ---
 
@@ -43,11 +39,7 @@ Storing pixel art 1000 years: https://www.youtube.com/watch?v=cctknQhVX1w
 # Pixa.Pics - Pixel Art Editor and NFT Laboratory
 Pixa.Pics is an all-in-one pixel art editor and NFT laboratory designed for users of all ages and skill levels. The application provides an accessible and secure way for individuals to create, store, and share pixel art while preserving their anonymity and utilizing cutting-edge blockchain technology.
 
-### :moneybag: :moneybag: >>>>> We're looking for someone who can pay us six base ten digits US$ to acquire it and lead it further, meanwhile we're working on it.
-
-> We're looking for a unique buyer to take Pixa to the next level. And we're willing to offer a reward of $2000-4000 to anyone who can make the match between Pixa and a successful buyer.
-
-pixa.pics@protonmail.com
+![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/EDITOR-HALO.png)
 
 # Table of Contents
 * Introduction
@@ -95,7 +87,6 @@ Contributions to Pixa.Pics are welcome! To get involved, visit the GitHub reposi
 # License
 Pixa.Pics is licensed under the MIT License. This allows for free use, modification, and distribution of the software
 
-
 ![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/EDITOR6.png)
 > FILE SIZE: 1.5 kB Only! [See result in x24 PNG!](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/pixelart.png)
 
@@ -104,16 +95,6 @@ Pixa.Pics is licensed under the MIT License. This allows for free use, modificat
 
 ![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/EDITOR4.png)
 > FILE SIZE: 4.2 kB Only! [See result in x24 PNG!](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/sportgalaxy.png)
-
-![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/PHONE.png)
-
----
-
-<img width="222" height="482" src="https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/EDITOR_ANDROID.jpg" align="right" />
-
----
-
-> Yet many drawing tools and selection mode enables you to be creative (and decentralize everything)!
 
 ![Crisp-edge rendering vs xBrz rendering](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/PIXAPICSRENDER.png)
 > Crisp-edge rendering vs xBrz rendering
