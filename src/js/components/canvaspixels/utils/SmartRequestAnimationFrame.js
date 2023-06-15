@@ -66,15 +66,6 @@ const SmartRequestAnimationFrame = {
                 force_update = force_update || false;
                 requested_at_t = requested_at_t || Date.now();
 
-                function render_it() {
-
-                    "use strict";
-                    var id = s.caf_id | 0;
-                    render();
-                    s.lasts_raf_time = requested_at_t | 0;
-                    if(id === s.caf_id) { s.caf_id = null;}
-                }
-
                 return new Promise(function(resolve, reject){
 
                     "use strict";
@@ -104,15 +95,19 @@ const SmartRequestAnimationFrame = {
 
                             s.cpaf_frames++;
 
+                            var id = s.caf_id | 0;
                             if(!do_not_cancel_animation) {
 
-                                s.caf_id = s.raf.call(window, render_it);
+                                s.caf_id = s.raf.call(window, render);
                             }else {
 
-                                s.raf.call(window, render_it);
+                                s.raf.call(window, render);
                             }
-
+                            s.lasts_raf_time = requested_at_t | 0;
+                            if(id === s.caf_id) { s.caf_id = null;}
                             resolve();
+
+
                         }else if(!running_smoothly || s.caf_id !== null && deltaT > 1000 / (skip_frame_rate * 1.5)){ // Low
 
                             if(s.caf_id !== null) {
@@ -124,15 +119,18 @@ const SmartRequestAnimationFrame = {
 
                             s.cpaf_frames++;
 
+                            var id = s.caf_id | 0;
                             if(!do_not_cancel_animation) {
 
-                                s.caf_id = s.raf.call(window, render_it);
+                                s.caf_id = s.raf.call(window, render);
                             }else {
 
-                                s.raf.call(window, render_it);
+                                s.raf.call(window, render);
                             }
-
+                            s.lasts_raf_time = requested_at_t | 0;
+                            if(id === s.caf_id) { s.caf_id = null;}
                             resolve();
+
                         }else if(deltaT < 1000 / (skip_frame_rate * 2)){
 
                             setTimeout(this, 1000 / (skip_frame_rate * 2), resolve, reject);

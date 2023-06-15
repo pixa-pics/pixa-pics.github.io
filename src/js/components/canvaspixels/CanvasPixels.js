@@ -57,7 +57,7 @@ class CanvasPixels extends React.PureComponent {
             this.bmp_layer = Object.create(BMPLayer).from(pool);
             this.color_conversion = Object.create(ColorConversion).new();
             this.super_blend = SuperBlend.init(1, 1);
-            this.super_canvas = Object.create(SuperCanvas).from(null, 32, 32);
+            this.super_canvas = new SuperCanvas(null, 32, 32);
             this.canvas_pos = Object.create(CanvasPos).from(32,  32,  0.9,  32, 0, 0);
             this.sraf = Object.create(SmartRequestAnimationFrame).init();
             this.canvas_filters = Object.create(CanvasFilters).init(SIMDopeColors);
