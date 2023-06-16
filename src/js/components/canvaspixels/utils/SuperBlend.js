@@ -137,13 +137,15 @@ Object.defineProperty(SuperBlend.prototype, 'get_updated_shadow_state', {
     get: function() { "use strict"; return function() {
         "use strict";
         // Create a shadow state for computation
+        if(this.shadow_state_.all_layers_length < this.number_length_index_[0]) {
+            this.shadow_state_.layers_colors = new Array(this.number_length_index_[0] + 1 | 0).fill(null).map(function (){return new SIMDopeColor(new ArrayBuffer(4))});
+        }
+
         this.shadow_state_.all_layers_length = this.number_length_index_[0] | 0;
-        this.shadow_state_.layers_colors = new Array(this.number_length_index_[0] + 1 | 0).fill(null).map(function (){return new SIMDopeColor(new ArrayBuffer(4))});
         this.shadow_state_.max_used_colors_length = this.number_length_index_[1] | 0;
         this.shadow_state_.used_colors_length = this.number_length_index_[2] | 0;
 
         if(this.shadow_state_.base_rgba_colors_for_blending.length >= this.shadow_state_.used_colors_length) {
-
             this.shadow_state_.base_rgba_colors_for_blending.fill(0, 0, this.shadow_state_.used_colors_length);
         }else {
             this.shadow_state_.base_rgba_colors_for_blending = new Uint32Array(this.shadow_state_.used_colors_length);
@@ -222,19 +224,19 @@ SuperBlend.prototype.blend = function(should_return_transparent, alpha_addition)
         indexes_data_for_layers
     } = this.state;
 
-    let i = 0, offs = 0, roffs = 0, layer_n = 0;
-
     return new Promise(function (resolve) {
+
+        let i = 0, off = new Uint32Array(2), layer_n = 0;
 
         for (i  = 0; uint_less(i | 0, used_colors_length); i = plus_uint(i, 1)) {
 
-            layers_colors[0] = base_rgba_colors_for_blending_SIMDope.get_element(i | 0, layers_colors[0]);
-            roffs = multiply_uint(i, all_layers_length);
+            base_rgba_colors_for_blending_SIMDope.get_use_element(i | 0, layers_colors[0]);
+            off[0] = multiply_uint(i, all_layers_length);
             // Sum up all colors above
-            for (layer_n = 0; uint_less(layer_n, all_layers_length); layer_n = plus_int(layer_n, 1)) {
+            for (layer_n = 0; uint_less(layer_n, all_layers_length); layer_n = plus_uint(layer_n, 1)) {
 
-                offs = plus_uint(roffs, layer_n);
-                layers_colors[layer_n+1|0] = colors_data_in_layers_uint32_SIMDope.get_element(offs | 0, layers_colors[layer_n+1|0]);
+                off[1] = plus_uint(off[0], layer_n);
+                colors_data_in_layers_uint32_SIMDope.get_use_element(off[1], layers_colors[layer_n+1|0]);
                 layers_colors[layer_n|0].set_tail(layers_colors[layer_n+1|0], layers_opacity_255[layer_n|0]);
             }
 

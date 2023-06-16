@@ -748,7 +748,7 @@ class Index extends React.PureComponent {
                 />
                 {_language && <ShareDialog
                     open={_is_share_dialog_open > 0}
-                    keep_open={_is_share_dialog_open > 3 ? 0: _is_share_dialog_open > 2 ? 5: _is_share_dialog_open > 1 ? 10: _is_share_dialog_open > 0 ? 15: 15}
+                    keep_open={_is_share_dialog_open > 3 ? 0: _is_share_dialog_open > 2 ? 2: _is_share_dialog_open > 1 ? 5: _is_share_dialog_open > 0 ? 7: 9}
                     onClose={this._handle_share_dialog_close}/>}
                 {_language && <ActivateLab
                     open={_is_activatelab_dialog_open > 0}

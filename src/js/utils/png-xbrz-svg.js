@@ -2,7 +2,7 @@ import pool from "../utils/worker-pool";
 import JSLoader from "./JSLoader";
 import depixelize from "../utils/depixelize/index";
 
-const base64png_to_xbrz_svg = (base64png, callback_function_for_image, callback_function_for_svg, pal= [], using = "xbrz", optimize_render_size = false, download_svg = false) => {
+const base64png_to_xbrz_svg = (base64png, callback_function_for_image, callback_function_for_svg, callback_function_for_crt, pal= [], using = "xbrz", optimize_render_size = false, download_svg = false, also_crt= false) => {
 
     let image = new Image();
     image.onload = () => {
@@ -14,6 +14,33 @@ const base64png_to_xbrz_svg = (base64png, callback_function_for_image, callback_
         canvas.height = height;
         ctx.drawImage(image, 0, 0, width, height);
         let image_data = ctx.getImageData(0, 0, width, height);
+
+        const process_crt = (image_data, scale) => {
+
+            return new Promise(function (resolve, reject){
+
+                JSLoader(() => import("../utils/crt")).then(({crt}) => {
+
+                    crt(image_data, 1).then(resolve).catch(reject);
+                });
+            });
+        };
+
+        const process_optimize_render_size = (base64_out, first_scale_size, second_image_data_width, second_image_data_height, callb) => {
+            if(optimize_render_size) {
+
+                JSLoader( () => import("../utils/png_quant")).then(({png_quant}) => {
+
+                    png_quant(base64_out, 70, 80, 5, pool).then((base64_out_second) => {
+
+                        callb(base64_out_second, first_scale_size, second_image_data_width, second_image_data_height);
+                    });
+                });
+            }else {
+
+                callb(base64_out, first_scale_size, second_image_data_width, second_image_data_height);
+            }
+        };
 
         const process_svg = (image_data, scale) => {
 
@@ -111,11 +138,24 @@ const base64png_to_xbrz_svg = (base64png, callback_function_for_image, callback_
             third_canvas_ctx.putImageData(second_image_data, 0, 0);
             let base64_out = third_canvas_ctx.canvas.toDataURL("image/png");
 
+            if(also_crt) {
+
+                process_crt(second_image_data, 1).then(function (imgd){
+                    let fourth_canvas = document.createElement("canvas");
+                    fourth_canvas.width = imgd.width;
+                    fourth_canvas.height = imgd.height;
+                    let fourth_canvas_ctx = fourth_canvas.getContext("2d");
+                    fourth_canvas_ctx.putImageData(imgd, 0, 0);
+                    let base64_crt_out = fourth_canvas.toDataURL("image/png");
+                    process_optimize_render_size(base64_crt_out, first_scale_size, imgd.width, imgd.height, callback_function_for_crt);
+                });
+            }
+
             if(download_svg) {
 
-                if(optimize_render_size) {
+                if (optimize_render_size) {
 
-                    JSLoader( () => import("svgo/dist/svgo.browser")).then(({optimize}) => {
+                    JSLoader(() => import("svgo/dist/svgo.browser")).then(({optimize}) => {
 
                         svg_string = optimize(svg_string, {
                             // optional but recommended field
@@ -126,28 +166,15 @@ const base64png_to_xbrz_svg = (base64png, callback_function_for_image, callback_
                         }).data;
 
                         callback_function_for_svg("data:image/svg+xml;base64," + window.btoa(svg_string), first_scale_size);
-
                     });
-                }else {
+                } else {
 
                     callback_function_for_svg("data:image/svg+xml;base64," + window.btoa(svg_string), first_scale_size);
 
                 }
             }
 
-            if(optimize_render_size) {
-
-                JSLoader( () => import("../utils/png_quant")).then(({png_quant}) => {
-
-                    png_quant(base64_out, 70, 80, 5, pool).then((base64_out_second) => {
-
-                        callback_function_for_image(base64_out_second, first_scale_size, second_image_data.width, second_image_data.height);
-                    });
-                });
-            }else {
-
-                callback_function_for_image(base64_out, first_scale_size, second_image_data.width, second_image_data.height);
-            }
+            process_optimize_render_size(base64_out, first_scale_size, second_image_data.width, second_image_data.height, callback_function_for_image);
 
         }else if(using === "omniscale") {
 
@@ -163,21 +190,22 @@ const base64png_to_xbrz_svg = (base64png, callback_function_for_image, callback_
                     let third_canvas_ctx = third_canvas.getContext("2d");
                     third_canvas_ctx.putImageData(second_image_data, 0, 0);
                     let base64_out = third_canvas_ctx.canvas.toDataURL("image/png");
-                    process_svg(second_image_data, first_scale_size);
 
-                    if(optimize_render_size) {
+                    if(also_crt) {
 
-                        JSLoader( () => import("../utils/png_quant")).then(({png_quant}) => {
-
-                            png_quant(base64_out, 70, 80, 5, pool).then((base64_out_second) => {
-
-                                callback_function_for_image(base64_out_second, first_scale_size, second_image_data.width, second_image_data.height);
-                            });
+                        process_crt(second_image_data, 1).then(function (imgd){
+                            let fourth_canvas = document.createElement("canvas");
+                            fourth_canvas.width = imgd.width;
+                            fourth_canvas.height = imgd.height;
+                            let fourth_canvas_ctx = fourth_canvas.getContext("2d");
+                            fourth_canvas_ctx.putImageData(imgd, 0, 0);
+                            let base64_crt_out = fourth_canvas.toDataURL("image/png");
+                            process_optimize_render_size(base64_crt_out, first_scale_size, imgd.width, imgd.height, callback_function_for_crt);
                         });
-                    }else {
-
-                        callback_function_for_image(base64_out, first_scale_size, second_image_data.width, second_image_data.height);
                     }
+
+                    process_svg(second_image_data, first_scale_size);
+                    process_optimize_render_size(base64_out, first_scale_size, second_image_data.width, second_image_data.height, callback_function_for_image);
 
                 });
             });
@@ -196,21 +224,22 @@ const base64png_to_xbrz_svg = (base64png, callback_function_for_image, callback_
                     let third_canvas_ctx = third_canvas.getContext("2d");
                     third_canvas_ctx.putImageData(second_image_data, 0, 0);
                     let base64_out = third_canvas_ctx.canvas.toDataURL("image/png");
-                    process_svg(second_image_data, first_scale_size);
 
-                    if(optimize_render_size) {
+                    if(also_crt) {
 
-                        JSLoader( () => import("../utils/png_quant")).then(({png_quant}) => {
-
-                            png_quant(base64_out, 70, 80, 5, pool).then((base64_out_second) => {
-
-                                callback_function_for_image(base64_out_second, first_scale_size, second_image_data.width, second_image_data.height);
-                            });
+                        process_crt(second_image_data, 1).then(function (imgd){
+                            let fourth_canvas = document.createElement("canvas");
+                            fourth_canvas.width = imgd.width;
+                            fourth_canvas.height = imgd.height;
+                            let fourth_canvas_ctx = fourth_canvas.getContext("2d");
+                            fourth_canvas_ctx.putImageData(imgd, 0, 0);
+                            let base64_crt_out = fourth_canvas.toDataURL("image/png");
+                            process_optimize_render_size(base64_crt_out, first_scale_size, imgd.width, imgd.height, callback_function_for_crt);
                         });
-                    }else {
-
-                        callback_function_for_image(base64_out, first_scale_size, second_image_data.width, second_image_data.height);
                     }
+
+                    process_svg(second_image_data, first_scale_size);
+                    process_optimize_render_size(base64_out, first_scale_size, second_image_data.width, second_image_data.height, callback_function_for_image);
 
                 });
             });
@@ -229,21 +258,22 @@ const base64png_to_xbrz_svg = (base64png, callback_function_for_image, callback_
                     let third_canvas_ctx = third_canvas.getContext("2d");
                     third_canvas_ctx.putImageData(second_image_data, 0, 0);
                     let base64_out = third_canvas_ctx.canvas.toDataURL("image/png");
-                    process_svg(second_image_data, first_scale_size);
 
-                    if(optimize_render_size) {
+                    if(also_crt) {
 
-                        JSLoader( () => import("../utils/png_quant")).then(({png_quant}) => {
-
-                            png_quant(base64_out, 70, 80, 5, pool).then((base64_out_second) => {
-
-                                callback_function_for_image(base64_out_second, first_scale_size, second_image_data.width, second_image_data.height);
-                            });
+                        process_crt(second_image_data, 1).then(function (imgd){
+                            let fourth_canvas = document.createElement("canvas");
+                            fourth_canvas.width = imgd.width;
+                            fourth_canvas.height = imgd.height;
+                            let fourth_canvas_ctx = fourth_canvas.getContext("2d");
+                            fourth_canvas_ctx.putImageData(imgd, 0, 0);
+                            let base64_crt_out = fourth_canvas.toDataURL("image/png");
+                            process_optimize_render_size(base64_crt_out, first_scale_size, imgd.width, imgd.height, callback_function_for_crt);
                         });
-                    }else {
-
-                        callback_function_for_image(base64_out, first_scale_size, second_image_data.width, second_image_data.height);
                     }
+
+                    process_svg(second_image_data, first_scale_size);
+                    process_optimize_render_size(base64_out, first_scale_size, second_image_data.width, second_image_data.height, callback_function_for_image);
 
                 });
             });
@@ -261,21 +291,22 @@ const base64png_to_xbrz_svg = (base64png, callback_function_for_image, callback_
                     let third_canvas_ctx = third_canvas.getContext("2d");
                     third_canvas_ctx.putImageData(second_image_data, 0, 0);
                     let base64_out = third_canvas_ctx.canvas.toDataURL("image/png");
-                    process_svg(second_image_data, first_scale_size);
 
-                    if(optimize_render_size) {
+                    if(also_crt) {
 
-                        JSLoader( () => import("../utils/png_quant")).then(({png_quant}) => {
-
-                            png_quant(base64_out, 70, 80, 5, pool).then((base64_out_second) => {
-
-                                callback_function_for_image(base64_out_second, first_scale_size, second_image_data.width, second_image_data.height);
-                            });
+                        process_crt(second_image_data, 1).then(function (imgd){
+                            let fourth_canvas = document.createElement("canvas");
+                            fourth_canvas.width = imgd.width;
+                            fourth_canvas.height = imgd.height;
+                            let fourth_canvas_ctx = fourth_canvas.getContext("2d");
+                            fourth_canvas_ctx.putImageData(imgd, 0, 0);
+                            let base64_crt_out = fourth_canvas.toDataURL("image/png");
+                            process_optimize_render_size(base64_crt_out, first_scale_size, imgd.width, imgd.height, callback_function_for_crt);
                         });
-                    }else {
-
-                        callback_function_for_image(base64_out, first_scale_size, second_image_data.width, second_image_data.height);
                     }
+
+                    process_svg(second_image_data, first_scale_size);
+                    process_optimize_render_size(base64_out, first_scale_size, second_image_data.width, second_image_data.height, callback_function_for_image);
                 });
             });
         }

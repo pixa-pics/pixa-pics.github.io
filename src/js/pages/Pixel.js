@@ -1404,7 +1404,7 @@ class Pixel extends React.PureComponent {
         });
     };
 
-    _download_svg = (using = "xbrz", optimize_render_size = false, download_svg = false, maybe_upscale_with_ai = false) => {
+    _download_svg = (using = "xbrz", optimize_render_size = false, download_svg = false, download_crt = false, maybe_upscale_with_ai = false) => {
 
         const { get_base64_png_data_url, xxhashthat } = this.st4te._canvas;
 
@@ -1529,7 +1529,22 @@ class Pixel extends React.PureComponent {
 
                         });
 
-                    }, Array.from(colors), using, Boolean(optimize_render_size), Boolean(download_svg));
+                    }, (crt_base64, size) => {
+
+                        if(crt_base64.length > 0) {
+
+                            let { _files_waiting_download } = this.st4te;
+                            _files_waiting_download.push({
+                                name: `PIXAPICS-${hash}-${using.toUpperCase()}-${size}+CRT.png`,
+                                url: crt_base64
+                            });
+                            this.setSt4te({_files_waiting_download}, () => {
+
+                                this.forceUpdate();
+                            });
+                        }
+
+                    }, Array.from(colors), using, Boolean(optimize_render_size), Boolean(download_svg), Boolean(download_crt));
                 });
 
             }, 750);
