@@ -333,8 +333,8 @@ const SuperState = {
                     canvas_resized_ctx.drawImage(canvas_ctx.canvas, 0, 0, state_._imported_image_width, state_._imported_image_height, 0, 0, scaled_width, scaled_height);
                     let resized_image_data = canvas_resized_ctx.getImageData(0, 0, scaled_width, scaled_height);
                     const {new_pxls, new_pxl_colors} = this.get_pixels_palette_and_list_from_image_data(resized_image_data);
-                    state_._imported_image_width = scaled_width;
-                    state_._imported_image_height = scaled_height;
+                    //state_._imported_image_width = scaled_width;
+                    //state_._imported_image_height = scaled_height;
 
 
                     let pxls_positioned = {};

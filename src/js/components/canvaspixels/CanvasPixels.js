@@ -396,8 +396,8 @@ class CanvasPixels extends React.PureComponent {
         let { _layers, _s_pxl_colors, _s_pxls } = this.super_state.get_state();
         at_index = typeof at_index === "undefined" ? _s_pxl_colors.length: at_index;
 
-        _s_pxl_colors.splice(at_index + 1, 0, new Uint32Array(_s_pxl_colors[at_index].buffer));
-        _s_pxls.splice(at_index + 1, 0, [..._s_pxls[at_index]]);
+        _s_pxl_colors.splice(at_index + 1, 0, Uint32Array.from(_s_pxl_colors[at_index]));
+        _s_pxls.splice(at_index + 1, 0, Uint16Array.from(_s_pxls[at_index]));
         _layers.splice(at_index + 1, 0, {
             id: Date.now(),
             hash: _layers[at_index].hash,
@@ -1329,7 +1329,7 @@ class CanvasPixels extends React.PureComponent {
         element.addEventListener("pointerdown", function(event){canvas_pos.handle_pointer_down(event)}, {passive: false});
         element.addEventListener("pointermove", function(event){canvas_pos.handle_pointer_move(event)}, {passive: false});
         element.addEventListener("pointerup", function(event){canvas_pos.handle_pointer_up(event)}, {passive: false});
-        //element.addEventListener("pointercancel", function(event){canvas_pos.handle_pointer_up(event)}, {capture: false});
+        element.addEventListener("pointercancel", function(event){canvas_pos.handle_pointer_up(event)}, {passive: false});
         element.addEventListener("pointerout", function(event){canvas_pos.handle_pointer_up(event)}, {passive: false});
         element.addEventListener("pointerleave", function(event){canvas_pos.handle_pointer_up(event)}, {passive: false});
 

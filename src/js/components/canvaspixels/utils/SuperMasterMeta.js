@@ -26,6 +26,7 @@ const SuperMasterMeta = {
         };
 
         let boolean_work_variables = {
+            bool_is_resize: false,
             bool_new_hover: false,
             bool_old_hover: false,
             bool_new_shape: false,
@@ -135,6 +136,7 @@ const SuperMasterMeta = {
         let _pxl_indexes_of_current_shape = new SetFixed(sizes.width*sizes.height);
         let meta_super_blend = meta.super_blend;
         let {
+            bool_is_resize,
             bool_new_hover,
             bool_old_hover,
             bool_new_shape,
@@ -261,7 +263,8 @@ const SuperMasterMeta = {
                 const {
                     imported_image_pxls_positioned,
                     imported_image_pxl_colors,
-                    imported_image_pxls_positioned_keyset
+                    imported_image_pxls_positioned_keyset,
+                    image_imported_resizer_index
                 } = meta.super_state.get_imported_image_data();
 
                 let full_pxls_length = pixels_in_current_layer_length | 0;
@@ -276,6 +279,7 @@ const SuperMasterMeta = {
 
                 for (; int_less(index, full_pxls_length); index = plus_uint(index, 1)) {
 
+                    bool_is_resize = uint_equal(image_imported_resizer_index, index | 0);
                     bool_new_hover = uint_equal(_pxls_hovered, index | 0);
                     bool_old_hover = _old_pxls_hovered.has(index | 0);
                     bool_new_shape = _pxl_indexes_of_current_shape.has(index | 0);
@@ -295,10 +299,14 @@ const SuperMasterMeta = {
                         bool_new_hover != bool_old_hover ||
                         bool_new_shape != bool_old_shape ||
                         bool_new_selection != bool_old_selection ||
-                        bool_old_import != bool_new_import
+                        bool_old_import != bool_new_import ||
+                        bool_is_resize
                     ) {
 
-                        if (bool_new_hover) {
+                        if(bool_is_resize) {
+
+                            meta_super_blend.for(index | 0, 192);
+                        }else if (bool_new_hover) {
 
                             meta_super_blend.for(index | 0, 96);
 
@@ -347,6 +355,7 @@ const SuperMasterMeta = {
 
                                             _pxl_indexes_of_selection_drawn.bulkAdd(_pxl_indexes_of_selection.indexes);
                                             _old_pxls_hovered.add(_pxls_hovered);
+                                            _old_pxls_hovered.add(image_imported_resizer_index);
                                             _pxl_indexes_of_old_shape.bulkAdd(_pxl_indexes_of_current_shape.indexes);
                                             _previous_imported_image_pxls_positioned_keyset.bulkAdd(imported_image_pxls_positioned_keyset.indexes);
                                             old_full_pxls.set(full_pxls);
@@ -451,7 +460,7 @@ const SuperMasterMeta = {
             },
             _handle_canvas_mouse_move(event) {
                 "use strict";
-                let { _pxl_indexes_of_selection, _imported_image_pxls, pxl_current_color_uint32, tool, pxl_width, pxl_height, _pxls_hovered, hide_canvas_content  } = meta.super_state.get_state();
+                let { _pxl_indexes_of_selection, _imported_image_pxls, pxl_current_color_uint32, tool, pxl_width, pxl_height, _pxls_hovered, hide_canvas_content, _is_on_resize_element } = meta.super_state.get_state();
                 const { event_button, mouse_down } = meta.canvas_pos.get_pointer_state();
                 const event_which = event_button+1|0;
 
@@ -468,19 +477,18 @@ const SuperMasterMeta = {
                         let { _imported_image_move_from, _imported_image_scale_delta_x, _imported_image_scale_delta_y, _imported_image_start_x, _imported_image_start_y, _imported_image_width, _imported_image_height } = meta.super_state.get_state();
                         const _imported_image_final_width = _imported_image_width + _imported_image_scale_delta_x;
                         const _imported_image_final_height = _imported_image_height + _imported_image_scale_delta_y;
-                        const old_pxl_index = (_imported_image_move_from[1] * pxl_width) + _imported_image_move_from[0];
                         const image_imported_resizer_index = (_imported_image_start_x + _imported_image_final_width) + (_imported_image_start_y + _imported_image_final_height) * pxl_width;
-                        const _is_on_resize_element = pxl_index === image_imported_resizer_index || old_pxl_index === image_imported_resizer_index;
+                        const is_on_resize_element = (pxl_index|0) == (image_imported_resizer_index|0) || (_pxls_hovered|0) == (image_imported_resizer_index|0);
                         let _new_imported_image_scale_delta_x = 0;
                         let _new_imported_image_scale_delta_y = 0;
 
+                        const x_difference = pos_x - _imported_image_move_from[0];
+                        const y_difference = pos_y - _imported_image_move_from[1];
+                        _imported_image_move_from = Array.of(pos_x, pos_y);
+
                         if(event_which === 1 && mouse_down) {
 
-                            const x_difference = pos_x - _imported_image_move_from[0];
-                            const y_difference = pos_y - _imported_image_move_from[1];
-                            _imported_image_move_from = Array.of(pos_x, pos_y);
-
-                            if(!_is_on_resize_element) {
+                            if(!is_on_resize_element) {
 
                                 _imported_image_start_x = _imported_image_start_x + x_difference | 0;
                                 _imported_image_start_x = (_imported_image_start_x < -_imported_image_final_width) ? -_imported_image_final_width: _imported_image_start_x | 0;
@@ -488,39 +496,54 @@ const SuperMasterMeta = {
                                 _imported_image_start_y = _imported_image_start_y + y_difference | 0;
                                 _imported_image_start_y = (_imported_image_start_y < -_imported_image_final_height) ? -_imported_image_final_height: _imported_image_start_y  | 0;
                                 _imported_image_start_y = (_imported_image_start_y >= pxl_height) ? pxl_height: _imported_image_start_y | 0;
-                            }else {
+
+                                meta.super_state.set_state({
+                                    _pxls_hovered: pxl_index | 0,
+                                    _is_on_resize_element: is_on_resize_element,
+                                    _mouse_inside: true,
+                                    _imported_image_start_x,
+                                    _imported_image_start_y,
+                                    _imported_image_move_from: Array.of(
+                                    _imported_image_move_from[0],
+                                        _imported_image_move_from[1]
+                                    )
+                                }).then(() => {
+
+                                    this.update_canvas();
+                                    this._notify_position_change( {x:pos_x, y: pos_y});
+                                });
+                            }else{
 
                                 _new_imported_image_scale_delta_x = _imported_image_scale_delta_x + x_difference | 0;
                                 _new_imported_image_scale_delta_y = _imported_image_scale_delta_y + y_difference | 0;
-
                                 _new_imported_image_scale_delta_x = Math.max(_new_imported_image_scale_delta_x, -(_imported_image_width - 1)) | 0;
                                 _new_imported_image_scale_delta_y = Math.max(_new_imported_image_scale_delta_y, -(_imported_image_height - 1)) | 0;
                                 _imported_image_scale_delta_x = _new_imported_image_scale_delta_x | 0;
                                 _imported_image_scale_delta_y = _new_imported_image_scale_delta_y | 0;
+
+                                meta.super_state.set_state({
+                                    _pxls_hovered: pxl_index | 0,
+                                    _is_on_resize_element: is_on_resize_element,
+                                    _mouse_inside: true,
+                                    _imported_image_scale_delta_x,
+                                    _imported_image_scale_delta_y,
+                                    _imported_image_move_from: Array.of(
+                                        _imported_image_move_from[0],
+                                        _imported_image_move_from[1]
+                                    )
+                                }).then(() => {
+
+                                    this.update_canvas();
+                                    this._notify_position_change( {x:pos_x, y: pos_y});
+                                });
                             }
 
-                            meta.super_state.set_state({
-                                _pxls_hovered: pxl_index | 0,
-                                _is_on_resize_element,
-                                _mouse_inside: true,
-                                _imported_image_start_x,
-                                _imported_image_start_y,
-                                _imported_image_scale_delta_x,
-                                _imported_image_scale_delta_y,
-                                _imported_image_move_from: Array.of(
-                                    _imported_image_move_from[0] + _new_imported_image_scale_delta_x - _imported_image_scale_delta_x | 0,
-                                    _imported_image_move_from[1] + _new_imported_image_scale_delta_y - _imported_image_scale_delta_y | 0
-                                ),
-                            }).then(() => {
 
-                                this.update_canvas();
-                                this._notify_position_change( {x:pos_x, y: pos_y});
-                            });
                         }else {
 
                             meta.super_state.set_state({
                                 _pxls_hovered: pxl_index | 0,
-                                _is_on_resize_element,
+                                _is_on_resize_element: is_on_resize_element,
                                 _mouse_inside: true
                             }).then(() => {
 
@@ -1385,28 +1408,17 @@ const SuperMasterMeta = {
                 }
 
                 let layer_pixel_colors = new Uint32Array(_s_pxl_colors.length);
-                let start_i = -1;
-                start_i++;
-
-                for (let i = _s_pxl_colors.length - 1; i >= 0; i--) {
-
-                    layer_pixel_colors[i] = ((_s_pxl_colors[i][_s_pxls[i][pxl_index]|0]|0)>>>0) & 0xFFFFFFFF;
-
-                    if(SIMDopeColor.new_uint32(layer_pixel_colors[i]).is_fully_opaque() && !_layers[i].hidden) {
-
-                        start_i = i;
-                        break;
-                    }
-
-                }
+                let start_i = 0;
 
                 let pixel_color_uint32 = SIMDopeColor.new_zero();
 
                 for (let i = start_i; i < _s_pxl_colors.length ; i++) {
 
-                    if(!_layers[i].hidden) {
+                    if(typeof _layers[i] != "undefined") {
+                        if(!_layers[i].hidden) {
 
-                        pixel_color_uint32.blend_with(SIMDopeColor.new_uint32(layer_pixel_colors[i]), parseInt(parseFloat(_layers[i].opacity) * 255), false, false);
+                            pixel_color_uint32.blend_with(SIMDopeColor.new_uint32(layer_pixel_colors[i]), parseInt(parseFloat(_layers[i].opacity) * 255), false, false);
+                        }
                     }
                 }
 
