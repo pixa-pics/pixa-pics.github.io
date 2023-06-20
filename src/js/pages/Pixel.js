@@ -3108,9 +3108,9 @@ class Pixel extends React.PureComponent {
                     <span id={"saved_at"}>?</span> <SaveIcon/> {_kb < 0.5 ? "?": Math.round(_kb * 10) / 10} kB
                 </Button>
 
-                <IconButton disabled={!_is_image_import_mode} className={classes.confirmImportButton} color={"primary"} size={"small"} onClick={() => {_canvas.confirm_import()}}>
-                    <FileImportIcon/>
-                </IconButton>
+                <Button disabled={!_is_image_import_mode} className={classes.confirmImportButton} color={"primary"} size={"small"} onClick={() => {_is_image_import_mode ? _canvas.confirm_import(): this._import_image_library()}}>
+                    <FileImportIcon/> {_is_image_import_mode ? "OK": "IMport"}
+                </Button>
 
                 <IconButton className={classes.zoomOutButton} color={"primary"} size={"small"} onClick={() => {_canvas.zoom_out()}}>
                     <ZoomOut/>

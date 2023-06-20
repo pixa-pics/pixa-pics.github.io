@@ -38,6 +38,8 @@ var Layer = function(image_data, width, height){
     for(var i = 0, l = this.color_indexes_length_ | 0; (i|0) < (l|0); i = (i + 1 | 0) >>> 0) {
         this.color_indexes_[i|0] = (this.uint32_colors_.indexOf(this.uint32_pixel_color_[i|0]) | 0) >>> 0;
     }
+
+    this.bitmap_ = {height: this.height_, width: this.height_, destroy: function (){}};
 };
 
 Layer.new_from_colors_and_indexes = function (colors, indexes, width, height) {
@@ -71,10 +73,44 @@ Object.defineProperty(Layer.prototype, 'image_data', {
     configurable: false
 });
 
+Object.defineProperty(Layer.prototype, 'set_bitmap', {
+    get: function() {
+        "use strict";
+        return function (bmp){
+            "use strict";
+            this.bitmap_ = bmp;
+        }
+    },
+    enumerable: false,
+    configurable: false
+});
+
 Object.defineProperty(Layer.prototype, 'bitmap_async', {
     get: function() {
         "use strict";
-        return createImageBitmap(this.image_data);
+        this.bitmap_.destroy();
+        var set_bitmap = this.set_bitmap;
+        var image_data = this.image_data;
+        return new Promise(function (resolve, reject){
+            createImageBitmap(image_data).then(function (bmp){
+                set_bitmap(bmp);
+                resolve(bmp);
+            }).catch(reject);
+        });
+    },
+    enumerable: false,
+    configurable: false
+});
+
+Object.defineProperty(Layer.prototype, 'hash_hex_async', {
+    get: function() {
+        "use strict";
+        var data = this.uint32_pixel_color_;
+        return new Promise(function (resolve, reject){
+            crypto.subtle.digest("SHA-1", data).then(function (buffer){
+                resolve(new Uint8Array(buffer).map(function (byte_value){ return byte_value.toString(16).padStart(2, "0"); }).join(""));
+            }).catch(reject);
+        });
     },
     enumerable: false,
     configurable: false
@@ -265,3 +301,24 @@ Layer.prototype.auto_adjust_contrast = function (intensity) {
 
     this.force_update_data();
 }
+
+
+var Layers = function(image_data_array, meta_data_array, width, height){
+    "use strict";
+
+    if (!(this instanceof Layers)) {
+        return new Layers(image_data_array, meta_data_array, width, height);
+    }
+
+    width = (width | 0) >>> 0;
+    height = (height | 0) >>> 0;
+
+    this.layers_ = new Array(image_data_array.length);
+    this.metadata_ = new Array(meta_data_array.length);
+    for(var i = 0; i < image_data_array.length; i++) {
+        this.layers_[i] = new Layer(image_data_array[i], width, height);
+    }
+    for(var i = 0; i < meta_data_array.length; i++) {
+        this.metadata_[i] = meta_data_array[i];
+    }
+};
