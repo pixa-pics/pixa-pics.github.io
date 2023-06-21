@@ -175,12 +175,14 @@ Object.defineProperty(SuperBlend.prototype, 'bytes_index', {
 
 SuperBlend.init = function (lay_n, pxl_len, layers_opacity_255) {
     "use strict";
-    return SuperBlend({layer_number: lay_n, max_length: pxl_len, layers_opacity_255: layers_opacity_255});
+    return new SuperBlend({layer_number: lay_n, max_length: pxl_len, layers_opacity_255: layers_opacity_255});
 }
 
 Object.defineProperty(SuperBlend.prototype, 'for', {
     get: function() { "use strict"; return function (pixel_index, amount_hover) {
         "use strict";
+        pixel_index = (pixel_index | 0) >>> 0;
+        amount_hover = (amount_hover | 0) >>> 0;
         this.indexes_data_for_layers_[this.number_length_index_[2]] = clamp_uint32(pixel_index);
         this.hover_data_in_layer_[this.number_length_index_[2]] = clamp_uint8(amount_hover);
         this.number_length_index_[2] = plus_uint(this.number_length_index_[2], 1);
@@ -197,6 +199,8 @@ Object.defineProperty(SuperBlend.prototype, 'next', {
 Object.defineProperty(SuperBlend.prototype, 'stack', {
     get: function() { "use strict"; return function (for_layer_index, ui32color) {
         "use strict";
+        for_layer_index = (for_layer_index | 0) >>> 0;
+        ui32color = (ui32color | 0) >>> 0;
         this.colors_data_in_layers_uint32_[plus_uint(multiply_uint(this.bytes_index_, this.number_length_index_[0]), clamp_uint8(for_layer_index))] = clamp_uint32(ui32color);
     }}
 });

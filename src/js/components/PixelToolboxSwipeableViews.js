@@ -94,11 +94,9 @@ import RotateRightIcon from "../icons/RotateRight";
 import SwapHorizontalIcon from "../icons/SwapHorizontal";
 import SwapVerticalIcon from "../icons/SwapVertical";
 
-import ColorConversion from "../components/canvaspixels/utils/ColorConversion";
 import actions from "../actions/utils";
 import InfoOutlined from "@material-ui/icons/InfoOutlined";
 import CloseIcon from "@material-ui/icons/Close";
-const color_conversion = Object.create(ColorConversion).new();
 const PANEL_NAMES = ["palette", "image", "layers", "tools", "selection", "effects", "filters"];
 
 const styles = theme => ({
@@ -711,13 +709,13 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
         let colors = [];
         for (let i = 1; i <= 128; i++) {
 
-            colors.push(color_conversion.to_hex_from_rgba(color_conversion.to_rgba_from_hsla(Array.of((i / 128) * 360, _saturation, _luminosity, _opacity))));
+            colors.push(SIMDopeColor.new_hsla((i / 128) * 360 | 0, _saturation, _luminosity, _opacity).hex);
         }
 
-        const [r_1, g_1, b_1] = current_color === "#ffffff" ? [196, 196, 196] : color_conversion.to_rgba_from_hex(current_color);
+        const [r_1, g_1, b_1] = current_color === "#ffffff" ? [196, 196, 196] : SIMDopeColor.new_hex(current_color).get_slice();
         const is_current_color_dark = r_1 + g_1 + b_1 < 152 * 3;
 
-        const [r_2, g_2, b_2] = second_color === "#ffffff" ? [196, 196, 196] : color_conversion.to_rgba_from_hex(second_color);
+        const [r_2, g_2, b_2] = second_color === "#ffffff" ? [196, 196, 196] : SIMDopeColor.new_hex(second_color).get_slice();
         const is_second_color_dark = r_2 + g_2 + b_2 < 152 * 3;
 
         const panel_names = this.get_action_panel_names();
@@ -2044,7 +2042,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
         const { current_color, slider_value } = this.st4te;
         const { to_color } = this.st4te.canvas;
 
-        const [h, s, l, o] = color_conversion.to_hsla_from_rgba(color_conversion.to_rgba_from_hex(current_color));
+        const [h, s, l, a] = SIMDopeColor.new_hex(current_color).hsla;
 
         to_color(h, slider_value, s === 0 ? null: s, l === 0 ? null: l);
     }

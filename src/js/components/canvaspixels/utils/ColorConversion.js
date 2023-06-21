@@ -198,28 +198,28 @@ const ColorConversion = {
             to_hex_from_uint32: function(uint32){
                 "use strict";
                 uint32 = (uint32 | 0) >>> 0;
-                return "#".concat("00000000".concat(uint32.toString(16)).slice(-8));
+                return "#".concat("00000000".concat(new Uint32Array(new Uint8Array(Uint32Array.of(uint32).buffer).reverse().buffer).toString(16)).slice(-8));
             },
             to_hex_from_rgba: function(rgba) {
                 "use strict";
-                return "#".concat("00000000".concat(new Uint32Array(rgba.reverse().buffer)[0].toString(16)).slice(-8));
+                return "#".concat("00000000".concat(new Uint32Array(rgba.buffer)[0].toString(16)).slice(-8));
             },
             to_rgba_from_hex: function(hex) {
                 "use strict";
-                return new Uint8ClampedArray(Uint32Array.of(parseInt(hex.slice(1), 16)).buffer).reverse();
+                return new Uint8ClampedArray(Uint32Array.of(parseInt(hex.slice(1), 16)).buffer);
             },
             to_rgba_from_uint32: function(uint32) {
                 "use strict";
                 uint32 = (uint32 | 0) >>> 0;
-                return new Uint8ClampedArray(Uint32Array.of(uint32).buffer).reverse();
+                return new Uint8ClampedArray(Uint32Array.of(uint32).buffer);
             },
             to_uint32_from_rgba: function(rgba) {
                 "use strict";
-                return (new Uint32Array(rgba.reverse().buffer)[0] | 0) >>> 0;
+                return (new Uint32Array(rgba.buffer)[0] | 0) >>> 0;
             },
             to_uint32_from_hex: function(hex) {
                 "use strict";
-                return (parseInt(hex.slice(1), 16) | 0) >>> 0;
+                return new Uint32Array(new Uint8Array(Uint32Array.of((parseInt(hex.slice(1), 16) | 0) >>> 0).buffer).reverse().buffer);
             },
             to_hsla_from_rgba: function(rgba) {
                 "use strict";

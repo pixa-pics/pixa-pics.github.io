@@ -513,7 +513,7 @@ const B64PngCanvas = {
         for(var i = 0; i < _s_pxls.length; i++) {
 
             const p =  Uint32Array.from(_s_pxls[i]);
-            const pc = Uint32Array.from(_s_pxl_colors[i]);
+            const pc = new Uint32Array(new Uint8Array(Uint32Array.from(_s_pxl_colors[i]).reverse().buffer).reverse().buffer);
 
             layers_pxls_colors.set(p.map(function(pci){ return( (pc[pci|0]|0)>>>0) & 0xFFFFFFFF; }), layers_pxls_colors_length * i);
         }

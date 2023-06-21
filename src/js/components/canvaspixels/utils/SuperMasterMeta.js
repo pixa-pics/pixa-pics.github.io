@@ -324,6 +324,7 @@ const SuperMasterMeta = {
                         }
 
                         for (i = 0; (i | 0) < (layers_length | 0); i = plus_uint(i, 1)) {
+
                             meta_super_blend.stack(i | 0, (_s_pxl_colors[i | 0][_s_pxls[i | 0][index | 0] | 0] | 0) >>> 0);
                         }
 
@@ -346,29 +347,28 @@ const SuperMasterMeta = {
                         meta.super_canvas.pile(index_changes, color_changes).then(function () {
                             meta.super_canvas.unpile(pxl_width, pxl_height).then(function () {
                                 meta.super_canvas.prender().then(function () {
-                                    meta.sraf.run_frame(function(){
-                                        meta.super_canvas.render().then(function (){
-                                            _pxl_indexes_of_selection_drawn.clear();
-                                            _old_pxls_hovered.clear();
-                                            _pxl_indexes_of_old_shape.clear();
-                                            _previous_imported_image_pxls_positioned_keyset.clear();
+                                    meta.sraf.run_frame(function(){meta.super_canvas.render()}, false, false, Date.now()).then(function (){
+                                        _pxl_indexes_of_selection_drawn.clear();
+                                        _old_pxls_hovered.clear();
+                                        _pxl_indexes_of_old_shape.clear();
+                                        _previous_imported_image_pxls_positioned_keyset.clear();
 
-                                            _pxl_indexes_of_selection_drawn.bulkAdd(_pxl_indexes_of_selection.indexes);
-                                            _old_pxls_hovered.add(_pxls_hovered);
-                                            _old_pxls_hovered.add(image_imported_resizer_index);
-                                            _pxl_indexes_of_old_shape.bulkAdd(_pxl_indexes_of_current_shape.indexes);
-                                            _previous_imported_image_pxls_positioned_keyset.bulkAdd(imported_image_pxls_positioned_keyset.indexes);
-                                            old_full_pxls.set(full_pxls);
+                                        _pxl_indexes_of_selection_drawn.bulkAdd(_pxl_indexes_of_selection.indexes);
+                                        _old_pxls_hovered.add(_pxls_hovered);
+                                        _old_pxls_hovered.add(image_imported_resizer_index);
+                                        _pxl_indexes_of_old_shape.bulkAdd(_pxl_indexes_of_current_shape.indexes);
+                                        _previous_imported_image_pxls_positioned_keyset.bulkAdd(imported_image_pxls_positioned_keyset.indexes);
+                                        old_full_pxls.set(full_pxls);
 
-                                            state._previous_imported_image_pxls_positioned_keyset = imported_image_pxls_positioned_keyset;
-                                            state._old_selection_pair_highlight = _selection_pair_highlight;
-                                            state._old_layers_string_id = old_layers_string_id;
-                                            state._did_hide_canvas_content = hide_canvas_content;
-                                            state._old_pxl_width = parseInt(pxl_width);
-                                            state._old_pxl_height = parseInt(pxl_height);
-                                            state._last_paint_timestamp = requested_at;
-                                        });
-                                    }, false, false, Date.now()).then(resolve0).catch(reject0);
+                                        state._previous_imported_image_pxls_positioned_keyset = imported_image_pxls_positioned_keyset;
+                                        state._old_selection_pair_highlight = _selection_pair_highlight;
+                                        state._old_layers_string_id = old_layers_string_id;
+                                        state._did_hide_canvas_content = hide_canvas_content;
+                                        state._old_pxl_width = parseInt(pxl_width);
+                                        state._old_pxl_height = parseInt(pxl_height);
+                                        state._last_paint_timestamp = requested_at;
+                                        resolve0();
+                                    }).catch(reject0);
                                 }).catch(reject0);
                             }).catch(reject0);
                         }).catch(reject0);

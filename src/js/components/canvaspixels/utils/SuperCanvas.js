@@ -1,5 +1,5 @@
 import SIMDope from "simdope";
-const {clamp_uint32, modulo_uint, divide_int, minus_int, int_greater, uint_less, int_greater_equal, int_less_equal, plus_uint, plus_int, max_int, min_int} = SIMDope.simdops;
+const {clamp_uint32, modulo_uint, divide_uint, minus_uint, uint_greater, uint_less, uint_greater_equal, uint_less_equal, plus_uint, minus_int, int_greater, int_less, int_greater_equal, int_less_equal, plus_int, max_int, min_int} = SIMDope.simdops;
 
 function draw_2d(ctx2d, _state) {
     "use strict";
@@ -14,12 +14,13 @@ function draw_2d(ctx2d, _state) {
         let pr_top_left_y = _state.pr.top_left.y | 0;
         let pr_uint8a = _state.pr_uint8a;
 
+        var imul = Math.imul;
         let fp_square = ctx2d.getImageData(pr_top_left_x, pr_top_left_y, pr_width, pr_height);
         let fp_square_data = fp_square.data;
         let current_offset_start_index = 0;
-        for(let i = 0; (i|0) < (pr_height|0) ; i = (i + 1 | 0)>>>0) {
-            current_offset_start_index = (s_width * (i + pr_top_left_y) + pr_top_left_x | 0) >>> 0;
-            fp_square_data.set(pr_uint8a.subarray((current_offset_start_index*4|0)>>>0, ((current_offset_start_index + pr_width)<<2|0)>>>0), (i*pr_width<<2|0)>>>0);
+        for(var i = 0; (i|0) < (pr_height|0) ; i = (i + 1 | 0)>>>0) {
+            current_offset_start_index = (imul(s_width, (i + pr_top_left_y | 0)) + pr_top_left_x | 0) >>> 0;
+            fp_square_data.set(pr_uint8a.subarray((current_offset_start_index << 2|0)>>>0, ((current_offset_start_index + pr_width | 0)<<2|0)>>>0), (imul(i,pr_width)<<2|0)>>>0);
         }
 
         _state.pr.top_left.x = _state.s.width | 0;
@@ -37,14 +38,15 @@ const bpro = AFunction(
     `var bpro = function(s_width, pr_width, pr_height, pr_top_left_x, pr_top_left_y, fp){
             
                 "use strict";
-                var fp_square = new Uint8ClampedArray((pr_width * pr_height * 4 | 0)>>>0);
+                var imul = Math.imul;
+                var fp_square = new Uint8Array(imul(pr_width, pr_height) << 4);
                 var current_offset_start_index = 0;
                 for(var i = 0; (i|0) < (pr_height|0) ; i = (i + 1 | 0)>>>0) {
-                    current_offset_start_index = s_width * (i + pr_top_left_y) + pr_top_left_x | 0;
-                    fp_square.set(fp.subarray((current_offset_start_index*4|0)>>>0, ((current_offset_start_index + pr_width)<<2|0)>>>0), (i*pr_width<<2|0)>>>0);
+                    current_offset_start_index = (imul(s_width, (i + pr_top_left_y | 0)) + pr_top_left_x | 0) >>> 0;
+                    fp_square.set(fp.subarray((current_offset_start_index << 2|0)>>>0, ((current_offset_start_index + pr_width | 0)<<2|0)>>>0), (imul(i,pr_width)<<2|0)>>>0);
                 }
                 
-                return createImageBitmap(new ImageData(fp_square, pr_width|0, pr_height|0));                
+                return createImageBitmap(new ImageData(new Uint8ClampedArray(fp_square.buffer), pr_width|0, pr_height|0));                
               
             }; return bpro;`)();
 
@@ -125,7 +127,6 @@ function template(c, pxl_width, pxl_height){
     };
 
     state.fp = new Uint32Array(state.fp_buffer)
-    state.fp_dataview = new DataView(state.fp_buffer);
     state.pr_uint8a = new Uint8Array(state.fp.buffer);
 
     return state;
@@ -275,35 +276,35 @@ Object.defineProperty(SuperCanvas.prototype, 'unpile', {
             let x, y;
             let index_changes = this.state_.ic.indexes;
             let color_changes = this.state_.ic.colors;
-            let dataview = this.state_.fp_dataview;
+            let uint32a = this.state_.fp;
             let pr = this.state_.pr;
             let pr_top_left_x = pr.top_left.x | 0;
             let pr_top_left_y = pr.top_left.y | 0;
             let pr_bottom_right_x = pr.bottom_right.x | 0;
             let pr_bottom_right_y = pr.bottom_right.y | 0;
-            let value = 0, index = 0;
+            let index = 0;
 
             for (let i = 0, l = index_changes.length | 0; uint_less(i, l); i = plus_uint(i, 1)) {
                 "use strict";
 
-                value = (color_changes[i | 0] | 0) >>> 0;
                 index = (index_changes[i | 0] | 0) >>> 0;
 
                 x = modulo_uint(index, width);
-                y = divide_int(minus_int(index, x), width);
+                y = divide_uint(minus_uint(index, x), width);
 
-                if (int_greater_equal(pr_top_left_x, x)) {
+                if (uint_greater_equal(pr_top_left_x, x)) {
                     pr_top_left_x = max_int(0, minus_int(x, 16));
-                } else if (int_less_equal(pr_bottom_right_x, x)) {
+                } else if (uint_less_equal(pr_bottom_right_x, x)) {
                     pr_bottom_right_x = min_int(width, plus_int(x, 16));
                 }
-                if (int_greater_equal(pr_top_left_y, y)) {
+
+                if (uint_greater_equal(pr_top_left_y, y)) {
                     pr_top_left_y = max_int(0, minus_int(y, 16));
-                } else if (int_less_equal(pr_bottom_right_y, y)) {
+                } else if (uint_less_equal(pr_bottom_right_y, y)) {
                     pr_bottom_right_y = min_int(height, plus_int(y, 16));
                 }
 
-                dataview.setUint32((index | 0) << 2, (value | 0) >>> 0, false);
+                uint32a[(index | 0) >>> 0] = (color_changes[i | 0] | 0) >>> 0;
             }
 
             pr.width = pr_bottom_right_x - pr_top_left_x | 0;

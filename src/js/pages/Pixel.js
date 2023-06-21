@@ -66,11 +66,10 @@ import HexGrid from "../icons/HexGrid";
 import get_svg_in_b64 from "../utils/svgToBase64";
 import { l, t } from "../utils/t";
 
-import ColorConversion from "../components/canvaspixels/utils/ColorConversion";
 import ZoomIn from "@material-ui/icons/ZoomIn";
 import ZoomOut from "@material-ui/icons/ZoomOut";
 import PixelDialogText from "../components/PixelDialogText";
-const color_conversion = Object.create(ColorConversion).new();
+import {SIMDopeColor} from "simdope";
 
 const styles = theme => ({
     green: {
@@ -2141,13 +2140,13 @@ class Pixel extends React.PureComponent {
 
         if(typeof color.rgb !== "undefined") {
 
-            color = color_conversion.to_hex_from_rgba(Uint8ClampedArray.of(color.rgb.r, color.rgb.g, color.rgb.b, parseInt(color.rgb.a * 255)));
+            color = SIMDopeColor.new_of(color.rgb.r, color.rgb.g, color.rgb.b, parseInt(color.rgb.a * 255)).hex;
         }else {
 
-            color = color_conversion.format_hex_color(color);
+            color = SIMDopeColor.new_hex(color).hex;
         }
 
-        const h = color_conversion.to_hsla_from_rgba(color_conversion.to_rgba_from_hex(color))[0];
+        const h = SIMDopeColor.new_hex(color).hsla[0];
 
         this.setSt4te({_current_color: color, _hue: h});
     };

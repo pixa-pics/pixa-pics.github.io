@@ -1156,7 +1156,7 @@ const ReducePalette = {
                 array_buffer[6] = (state_bucket_threshold | 0) & 0xFFFFFFFF;
                 array_buffer[7] = (width | 0) & 0xFFFFFFFF;
                 array_buffer.set(Uint32Array.from(pxls), 7);
-                array_buffer.set(Uint32Array.from(pxl_colors), 7+pxls.length|0);
+                array_buffer.set(new Uint32Array(new Uint8Array(Uint32Array.from(pxl_colors).reverse().buffer).reverse().buffer), 7+pxls.length|0);
 
                 pool.exec(
 
@@ -1171,7 +1171,7 @@ const ReducePalette = {
                     var pcl = array_buffer[1] & 0xFFFFFFFF;
                     var results = new Array(2);
                     results[0] = Uint16Array.from(array_buffer.subarray(2, pl+2|0));
-                    results[1] = Uint32Array.from(array_buffer.subarray(2+pl|0, 2+pl+pcl|0));
+                    results[1] = new Uint32Array(new Uint8Array(Uint32Array.from(array_buffer.subarray(2+pl|0, 2+pl+pcl|0)).reverse().buffer).reverse().buffer);
 
                     callback_function(results);
                 });

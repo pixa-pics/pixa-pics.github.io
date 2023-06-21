@@ -64,7 +64,6 @@ class CanvasPixels extends React.PureComponent {
             this.sraf.start_timer();
             this.super_master_meta = Object.create(SuperMasterMeta).init(this.super_state, this.super_canvas, this.super_blend, this.canvas_pos, this.color_conversion, this.sraf);
             this.hasnt_been_mount = true;
-            this.uint8 = new Uint8Array(0);
         }
     };
 
@@ -482,10 +481,10 @@ class CanvasPixels extends React.PureComponent {
 
         if(typeof _layers[at_index] !== "undefined" && typeof _layers[at_index - 1] !== "undefined") {
 
-            const top_layer_pxls =  new Uint16Array(_s_pxls[at_index].buffer);
-            const bottom_layer_pxls =  new Uint16Array(_s_pxls[at_index - 1].buffer);
-            const top_layer_pxl_colors = new Uint32Array(_s_pxl_colors[at_index].buffer);
-            const bottom_layer_pxl_colors = new Uint32Array(_s_pxl_colors[at_index - 1].buffer);
+            const top_layer_pxls =  _s_pxls[at_index];
+            const bottom_layer_pxls =  _s_pxls[at_index - 1];
+            const top_layer_pxl_colors = _s_pxl_colors[at_index];
+            const bottom_layer_pxl_colors = _s_pxl_colors[at_index - 1];
             const top_layer_opacity = Math.round(parseFloat(_layers[at_index].opacity) * 255) & 0xFF ;
             const bottom_layer_opacity = Math.round(parseFloat(_layers[at_index-1].opacity) * 255) & 0xFF;
 
@@ -498,8 +497,7 @@ class CanvasPixels extends React.PureComponent {
                 opacity: parseFloat(1),
             };
 
-            const super_blend = SuperBlend.init(2, pxl_length);
-            super_blend.update(2, pxl_length, Uint8Array.of(bottom_layer_opacity, top_layer_opacity))
+            const super_blend = SuperBlend.init(2, pxl_length, Uint8Array.of(bottom_layer_opacity, top_layer_opacity));
             for(let i = 0 ; (i|0) < (pxl_length|0); i = (i+1|0)>>>0) {
 
                 super_blend.for(i, 0);
@@ -510,11 +508,11 @@ class CanvasPixels extends React.PureComponent {
 
             super_blend.blend(false, false).then(([index_changes, color_changes]) => {
 
-                const fp = new DataView(new ArrayBuffer(pxl_height * pxl_width * 4));
+                const fp = new Uint32Array(new ArrayBuffer(pxl_height * pxl_width * 4));
 
                 let length = index_changes.length|0;
                 for(let i = 0; simdops.int_less(i, length); i = simdops.plus_uint(i, 1)) {
-                    fp.setUint32(simdops.multiply_uint(index_changes[i], 4), color_changes[i]);
+                    fp[index_changes[i]] = color_changes[i|0];
                 }
 
                 const image_data = new ImageData(new Uint8ClampedArray(fp.buffer), pxl_width, pxl_height);

@@ -1,3 +1,4 @@
+import {SIMDopeColors, SIMDopeColor} from "simdope";
 "use strict";
 
 const CanvasFilters = {
@@ -170,9 +171,8 @@ const CanvasFilters = {
         };
     },
 
-    init: function(sdc){
+    init: function(){
 
-        const SIMDopeColors = sdc;
         const filters = this._get_filter_list();
 
         return {
@@ -192,8 +192,8 @@ const CanvasFilters = {
                 let colors_length = pxl_colors.length | 0;
                 let rgba_colors_length = colors_length * 4 | 0;
                 let old_pxl_colors = new Uint8Array(pxl_colors.buffer);
-                let pxl_colors_abgr = new Uint8Array(rgba_colors_length);
-                let abgr = new Uint8ClampedArray(4);
+                let pxl_colors_rgba = new Uint8Array(rgba_colors_length);
+                let rgba = new Uint8ClampedArray(4);
 
                 function CLAMP_INT( x,min,max ) {
 
@@ -207,44 +207,44 @@ const CanvasFilters = {
                     let average = 0;
                     for(let i4 = 0; (i4|0) < (rgba_colors_length|0); i4 = (i4 + 4 | 0) >>> 0) {
 
-                        abgr.set(old_pxl_colors.subarray(i4|0, i4+4|0));
-                        average = (abgr.subarray(1,4).reduce(function(base,n){n = n|0; return (base + n) | 0},0) / 3) | 0;
-                        pxl_colors_abgr[i4|0] = abgr[0];
-                        pxl_colors_abgr.fill(average|0, i4+1|0, i4+4|0)
+                        rgba.set(old_pxl_colors.subarray(i4|0, i4+4|0));
+                        average = (rgba.subarray(0,3).reduce(function(base,n){n = n|0; return (base + n) | 0},0) / 3) | 0;
+                        pxl_colors_rgba.fill(average|0, i4|0, i4+3|0)
+                        pxl_colors_rgba[i4+3|0] = rgba[3];
                     }
 
                 }else if(name.toLowerCase() === "sepia"){
                     
                     for(let i4 = 0; (i4|0) < (rgba_colors_length|0); i4 = (i4 + 4 | 0) >>> 0) {
 
-                        abgr.set(old_pxl_colors.subarray(i4|0, i4+4|0));
-                        pxl_colors_abgr[i4|0] = abgr[0] & 0xFF;
-                        pxl_colors_abgr[i4+1|0] = CLAMP_INT(((abgr[3] * .272) + (abgr[2] *.534) + (abgr[1] * .131))|0,0,255) & 0xFF;
-                        pxl_colors_abgr[i4+2|0] = CLAMP_INT(((abgr[3] * .349) + (abgr[2] *.686) + (abgr[1] * .168))|0,0,255) & 0xFF;
-                        pxl_colors_abgr[i4+3|0] = CLAMP_INT(((abgr[3] * .393) + (abgr[2]  *.769) + (abgr[1] * .189))|0,0,255) & 0xFF;
+                        rgba.set(old_pxl_colors.subarray(i4|0, i4+4|0));
+                        pxl_colors_rgba[i4|0] = CLAMP_INT(((rgba[0] * .272) + (rgba[1] *.534) + (rgba[2] * .131))|0,0,255) & 0xFF;
+                        pxl_colors_rgba[i4+1|0] = CLAMP_INT(((rgba[0] * .349) + (rgba[1] *.686) + (rgba[2] * .168))|0,0,255) & 0xFF;
+                        pxl_colors_rgba[i4+2|0] = CLAMP_INT(((rgba[0] * .393) + (rgba[1]  *.769) + (rgba[2] * .189))|0,0,255) & 0xFF;
+                        pxl_colors_rgba[i4+3|0] = rgba[3] & 0xFF;
                     }
                 }else {
 
                     const filter = filters[name];
                     for(let i4 = 0; (i4|0) < (rgba_colors_length|0); i4 = (i4 + 4 | 0) >>> 0) {
 
-                        abgr.set(old_pxl_colors.subarray(i4|0, i4+4|0));
-                        pxl_colors_abgr[i4|0] = abgr[0] & 0xFF;
-                        pxl_colors_abgr[i4+1|0] = filter["a"][filter["b"][abgr[1]&0xFF]&0xFF] & 0xFF;
-                        pxl_colors_abgr[i4+2|0] = filter["a"][filter["g"][abgr[2]&0xFF]&0xFF] & 0xFF;
-                        pxl_colors_abgr[i4+3|0] = filter["a"][filter["r"][abgr[3]&0xFF]&0xFF] & 0xFF;
+                        rgba.set(old_pxl_colors.subarray(i4|0, i4+4|0));
+                        pxl_colors_rgba[i4|0] = filter["a"][filter["r"][rgba[0]&0xFF]&0xFF] & 0xFF;
+                        pxl_colors_rgba[i4+1|0] = filter["a"][filter["g"][rgba[1]&0xFF]&0xFF] & 0xFF;
+                        pxl_colors_rgba[i4+2|0] = filter["a"][filter["b"][rgba[2]&0xFF]&0xFF] & 0xFF;
+                        pxl_colors_rgba[i4+3|0] = rgba[3] & 0xFF;
                     }
                 }
 
-                var new_colors = SIMDopeColors(pxl_colors_abgr.buffer);
-                var old_colors = SIMDopeColors(pxl_colors.buffer);
+                var new_colors = new SIMDopeColors(pxl_colors_rgba.buffer);
+                var old_colors = new SIMDopeColors(pxl_colors.buffer);
 
                 for(var i = 0; (i|0) < (colors_length|0); i = (i+1|0)>>>0){
 
                     old_colors.get_element(i|0).blend_with(new_colors.get_element(i|0), intensity, false, false);
                 }
 
-                return new_colors.slice_uint32(0, new_colors.length);
+                return new_colors.slice_uint32(0, old_colors.length);
             }
         };
     }
