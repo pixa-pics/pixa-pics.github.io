@@ -1,7 +1,7 @@
 "use strict";
-var REQUIRED_CACHE = "unless-update-cache-v718-required";
-var USEFUL_CACHE = "unless-update-cache-v718-useful";
-var STATIC_CACHE = "unless-update-cache-v718-static";
+var REQUIRED_CACHE = "unless-update-cache-v719-required";
+var USEFUL_CACHE = "unless-update-cache-v719-useful";
+var STATIC_CACHE = "unless-update-cache-v719-static";
 var MAIN_CHILD_CHUNK_REGEX = /chunk_(main_[a-z0-9]+)\.min\.js$/i;
 var CHILD_CHUNK_REGEX = /chunk_([0-9]+)\.min\.js$/i;
 
@@ -101,18 +101,16 @@ self.addEventListener("fetch", function(event) {
                     return cache.addAll([
                         "/src/fonts/baksheesh/index.css",
                         "/src/images/infographics/ShareWho.svg",
-                        "/src/images/gallery/Whohigh.png",
-                        "/src/images/gallery/Whohigh.svg",
-                        "/src/images/Gallery/Axip.png",
-                        "/src/images/Gallery/Axip.svg",
-                       "/src/images/gallery/Statue.png",
-                        "/src/images/gallery/Statue.svg",
-                        "/src/images/Gallery/Astro.png",
-                        "/src/images/Gallery/Astro.svg",
-                        "/src/images/Gallery/Businesswoman2.png",
-                        "/src/images/Gallery/Businesswoman2.svg",
+                        "/src/images/Gallery/Woodo.png",
+                        "/src/images/Gallery/Woodo.svg",
+                        "/src/images/Gallery/Banshee.png",
+                        "/src/images/Gallery/Banshee.svg",
                         "/src/images/Gallery/Businesswoman.png",
                         "/src/images/Gallery/Businesswoman.svg",
+                        "/src/images/Gallery/Robot.png",
+                        "/src/images/Gallery/Robot.svg",
+                        "/src/images/gallery/Statue.png",
+                        "/src/images/gallery/Statue.svg",
                         "/src/images/infographics/Rambo.svg",
                         "/src/images/infographics/TestBag.svg",
                         "/src/images/infographics/Explosion.svg",

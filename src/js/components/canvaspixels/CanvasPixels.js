@@ -1523,7 +1523,7 @@ class CanvasPixels extends React.PureComponent {
 
         "use strict";
         limit = Math.min(pxl_colors.length, limit || 256);
-        let colors = new SIMDopeColors(new SIMDopeColors(pxl_colors).get_deduplicated_sorted_uint32a().buffer);
+        let colors = new SIMDopeColors(new SIMDopeColors(pxl_colors).get_deduplicated_sorted_uint32a(limit).buffer);
         var hexs = new Array(limit);
         for(var i = 0; i < limit; i++) {
             hexs[i] = colors.get_element(i).hex;
