@@ -377,7 +377,7 @@ class Home extends React.PureComponent {
 
     componentDidMount() {
 
-        const all_image_name_infographics = ["Woodo.png", "Woodo.svg", "Banshee.png", "Banshee.svg",  "Businesswoman.png", "Businesswoman.svg", "Robot.png", "Robot.svg", "Statue.png", "Statue.svg"];
+        const all_image_name_infographics = ["Woodo.png", "Woodo.svg", "Cortanaude.png", "Cortanaude.svg", "Banshee.png", "Banshee.svg",  "Businesswoman.png", "Businesswoman.svg", "Robot.png", "Robot.svg", "Statue.png", "Statue.svg"];
 
         let _image_index = -1;
         let _image_name_infographics;
