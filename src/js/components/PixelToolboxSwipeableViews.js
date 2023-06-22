@@ -2363,7 +2363,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
                 {this.get_after_action_panel(index)}
 
-                <ListSubheader className={classes.listSubHeader} onClick={() => {this._set_list_subheader_collapse("sponsors")}}>
+                {/*<ListSubheader className={classes.listSubHeader} onClick={() => {this._set_list_subheader_collapse("sponsors")}}>
                         <span className={"list-sub-header-main-text"}>
                             <span><ImagePlusIcon/></span>
                             <span style={{textTransform: "uppercase"}}>Advantages of a partnership?</span>
@@ -2390,9 +2390,9 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                     <IconButton className={classes.listSubHeaderToggle}>
                         {_list_sub_header_opened === "sponsors" ? <CloseIcon/>: <InfoOutlined/>}
                     </IconButton>
-                   </ListSubheader>
-                    <h2 style={{marginLeft: 24, marginTop: 32, textTransform: "initial"}}>Keep on being creative!</h2>
-                    <p style={{margin: "24px 32px"}} className={classes.info}>
+                   </ListSubheader>*/}
+                {/*<h2 style={{marginLeft: 24, marginTop: 32, textTransform: "initial"}}>Keep on being creative!</h2>*/}
+                {/*<p style={{margin: "24px 32px"}} className={classes.info}>
                         <b>NFTs and pixel art are revolutionizing the way we think about digital ownership and creativity.</b> <br/><br/>
                         By combining the uniqueness and scarcity of traditional collectibles with the limitless potential of digital media, NFTs are opening up new avenues for artists and creators to express themselves and connect with audiences around the world.
                         And pixel art, with its bold lines, bright colors, and playful forms, is the perfect medium to showcase the beauty and versatility of NFTs.
@@ -2405,7 +2405,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                         <br/>
                         <br/>
                         <span>— Matias A.</span>
-                    </p>
+                    </p>*/}
             </List>
         );
 

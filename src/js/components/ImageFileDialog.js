@@ -9,7 +9,7 @@ const styles = theme => ({
 });
 
 
-class ImageFileDialog extends React.Component {
+class ImageFileDialog extends React.PureComponent {
 
     constructor(props) {
         super(props);

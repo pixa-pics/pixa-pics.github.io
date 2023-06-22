@@ -9,7 +9,7 @@ const styles = theme => ({
 });
 
 
-class PixelDialogText extends React.Component {
+class PixelDialogText extends React.PureComponent {
 
     constructor(props) {
         super(props);

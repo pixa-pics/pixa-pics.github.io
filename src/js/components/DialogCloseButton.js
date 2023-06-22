@@ -15,7 +15,7 @@ const styles = theme => ({
 });
 
 
-class DialogCloseButton extends React.Component {
+class DialogCloseButton extends React.PureComponent {
 
     constructor(props) {
         super(props);

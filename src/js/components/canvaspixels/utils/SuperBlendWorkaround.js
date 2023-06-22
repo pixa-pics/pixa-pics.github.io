@@ -1,4 +1,4 @@
-import {simdops, SIMDopeColor, SIMDopeColors} from "simdope";
+import {simdops, SIMDopeColor, SIMDopeColors, SIMDopeBlend} from "simdope";
 const {
     minus_int,
     int_not_equal,
@@ -39,7 +39,6 @@ function _build_state(layer_number, max_length, layers_opacity_255) {
         layers_opacity_255: layer_o,
     };
 
-    state.colors_data_in_layers_uint32_SIMDope = new SIMDopeColors(state.colors_data_in_layers_uint32.buffer);
     return state;
 }
 function _build_shadow_state (old_shadow_state) {
@@ -146,7 +145,7 @@ Object.defineProperty(SuperBlend.prototype, 'get_updated_shadow_state', {
         this.shadow_state_.used_colors_length = this.number_length_index_[2] | 0;
 
         if(this.shadow_state_.base_rgba_colors_for_blending.length >= this.shadow_state_.used_colors_length) {
-            this.shadow_state_.base_rgba_colors_for_blending.fill(0, 0, this.shadow_state_.used_colors_length);
+            //this.shadow_state_.base_rgba_colors_for_blending.fill(0, 0, this.shadow_state_.used_colors_length);
         }else {
             this.shadow_state_.base_rgba_colors_for_blending = new Uint32Array(this.shadow_state_.used_colors_length);
             this.shadow_state_.base_rgba_colors_for_blending_SIMDope = new SIMDopeColors(this.shadow_state_.base_rgba_colors_for_blending.buffer);
@@ -201,7 +200,7 @@ Object.defineProperty(SuperBlend.prototype, 'stack', {
         "use strict";
         for_layer_index = (for_layer_index | 0) >>> 0;
         ui32color = (ui32color | 0) >>> 0;
-        this.colors_data_in_layers_uint32_[plus_uint(multiply_uint(this.bytes_index_, this.number_length_index_[0]), clamp_uint8(for_layer_index))] = clamp_uint32(ui32color);
+        this.colors_data_in_layers_uint32_[plus_uint(multiply_uint(this.number_length_index_[1], clamp_uint8(for_layer_index)), this.bytes_index_)] = clamp_uint32(ui32color);
     }}
 });
 
@@ -211,49 +210,30 @@ SuperBlend.prototype.blend = function(should_return_transparent, alpha_addition)
     should_return_transparent = should_return_transparent | 0;
     alpha_addition = alpha_addition | 0;
 
-    var {
+    let {
         base_rgba_colors_for_blending,
         base_rgba_colors_for_blending_SIMDope,
         all_layers_length,
         used_colors_length,
+        max_used_colors_length,
         layers_colors,
         color_less_uint8x4,
         color_full_uint8x4
     } = this.get_updated_shadow_state();
 
-    var {
-        colors_data_in_layers_uint32_SIMDope,
+    let {
         hover_data_in_layer,
+        colors_data_in_layers_uint32,
         layers_opacity_255,
         indexes_data_for_layers
     } = this.state;
 
+    var uint32a = new Array(all_layers_length).fill(null).map(function (el, i){return colors_data_in_layers_uint32.slice(i*max_used_colors_length, i*max_used_colors_length+used_colors_length).buffer});
+    var blender = new SIMDopeBlend(uint32a, layers_opacity_255);
+
     return new Promise(function (resolve) {
-        "use strict";
 
-        var i = 0, off = new Uint32Array(2), layer_n = 0;
-
-        for (i  = 0; uint_less(i | 0, used_colors_length); i = plus_uint(i, 1)) {
-
-            base_rgba_colors_for_blending_SIMDope.get_use_element(i | 0, layers_colors[0]);
-            off[0] = multiply_uint(i, all_layers_length);
-            // Sum up all colors above
-            for (layer_n = 0; uint_less(layer_n, all_layers_length); layer_n = plus_uint(layer_n, 1)) {
-
-                off[1] = plus_uint(off[0], layer_n);
-                colors_data_in_layers_uint32_SIMDope.get_use_element(off[1], layers_colors[layer_n+1|0]);
-                layers_colors[layer_n|0].set_tail(layers_colors[layer_n+1|0], layers_opacity_255[layer_n|0]);
-            }
-
-            if((hover_data_in_layer[i | 0]|0) > 0) {
-                layers_colors[0].blend_first_with_tails(alpha_addition)
-                layers_colors[0].blend_first_with(layers_colors[0].is_dark() ? color_less_uint8x4 : color_full_uint8x4, hover_data_in_layer[i | 0], false, alpha_addition);
-            }else {
-                layers_colors[0].blend_first_with_tails(alpha_addition);
-            }
-        }
-
-        resolve(Array.of(indexes_data_for_layers.subarray(0, used_colors_length), base_rgba_colors_for_blending.subarray(0, used_colors_length)));
+        resolve(Array.of(indexes_data_for_layers.subarray(0, used_colors_length), blender.blend()));
     });
 };
 

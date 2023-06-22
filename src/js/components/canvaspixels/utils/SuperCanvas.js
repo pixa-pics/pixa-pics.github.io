@@ -293,15 +293,15 @@ Object.defineProperty(SuperCanvas.prototype, 'unpile', {
                 y = divide_uint(minus_uint(index, x), width);
 
                 if (uint_greater_equal(pr_top_left_x, x)) {
-                    pr_top_left_x = max_int(0, minus_int(x, 16));
+                    pr_top_left_x = max_int(0, minus_int(x, 4));
                 } else if (uint_less_equal(pr_bottom_right_x, x)) {
-                    pr_bottom_right_x = min_int(width, plus_int(x, 16));
+                    pr_bottom_right_x = min_int(width, plus_int(x, 4));
                 }
 
                 if (uint_greater_equal(pr_top_left_y, y)) {
-                    pr_top_left_y = max_int(0, minus_int(y, 16));
+                    pr_top_left_y = max_int(0, minus_int(y, 4));
                 } else if (uint_less_equal(pr_bottom_right_y, y)) {
-                    pr_bottom_right_y = min_int(height, plus_int(y, 16));
+                    pr_bottom_right_y = min_int(height, plus_int(y, 4));
                 }
 
                 uint32a[(index | 0) >>> 0] = (color_changes[i | 0] | 0) >>> 0;
@@ -338,8 +338,12 @@ Object.defineProperty(SuperCanvas.prototype, 'set_dimensions', {
         if(this.state_.s.width !== w || this.state_.s.height !== h) {
 
             this.state_ = template(this.state_.s.canvas_context.canvas, w, h);
+            return Promise.resolve();
+        }else {
+
+            return Promise.reject();
         }
-        return Promise.resolve();
+
     }}
 });
 Object.defineProperty(SuperCanvas.prototype, 'secure_context', {

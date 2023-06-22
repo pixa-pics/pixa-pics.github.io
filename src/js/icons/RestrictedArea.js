@@ -7,8 +7,8 @@ const RestrictedArea = (props) => (
             isolation: "isolate",
         }}
         viewBox="0 0 4096 489"
-        width="4096pt"
-        height={652}
+        width="4096px"
+        height="652px"
         {...props}
     >
         <defs>

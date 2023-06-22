@@ -33,13 +33,13 @@ const SmartRequestAnimationFrame = {
 
         return {
             // Methods
-            start_timer() {
+            start_timer: function (){
 
                 clearInterval(fps_intereval);
                 if(fps_intereval) { clearInterval(fps_intereval) }
                 s = cs();
                 fps_intereval = setInterval(function() {
-
+                    "use strict";
                     s.second_previous_cpaf_fps = parseInt(s.previous_cpaf_fps);
                     s.previous_cpaf_fps = s.cpaf_frames * 1.5 | 0;
                     s.cpaf_frames = 0;

@@ -74,7 +74,7 @@ class CanvasPixels extends React.PureComponent {
         this._notify_image_load_complete(true);
         if(Boolean(this.props.on_fps_change)) {
 
-            this.sraf.set_notify_fps_callback(this.props.on_fps_change);
+            this.sraf.set_notify_fps_callback((props) => {this.props.on_fps_change(props)});
         }
 
         let _intervals = [];
@@ -196,6 +196,23 @@ class CanvasPixels extends React.PureComponent {
             canvas_style.id = "canvas-style";
         document.head.appendChild(canvas_style);
         this.super_state.set_state({_intervals});
+
+        this.super_master_meta.set_notifiers(
+            this.props.onPositionChange,
+            this.props.onSomethingSelectedChange,
+            this.props.onCurrentColorChange,
+            this.props.onRelevantActionEvent,
+            this._request_force_update
+        );
+
+        this.canvas_pos.set_notifiers(
+            this._request_force_update,
+            this._handle_canvas_wrapper_overflow_context_menu,
+            this._super_master_meta_handle_canvas_mouse_move,
+            this._super_master_meta_handle_canvas_mouse_up,
+            this._super_master_meta_handle_canvas_mouse_down
+        );
+        this.canvas_pos.init_speed_interval();
     }
 
     xxhashthat = (array) => {
@@ -224,7 +241,7 @@ class CanvasPixels extends React.PureComponent {
 
             this._request_force_update(false, false).then(() => {
 
-                this.super_canvas.set_dimensions(width, height).then(() => this.super_master_meta.update_canvas(true));
+                this.super_canvas.set_dimensions(width, height).then(() => this.super_master_meta.update_canvas(true).catch(( ) => {this._set_size(width, height)}));
             });
         });
     }
@@ -1280,7 +1297,7 @@ class CanvasPixels extends React.PureComponent {
         this.canvas_pos.set_current_scale_default();
 
         this.super_canvas.set_dimensions(pxl_width, pxl_height).then(() => {
-            this.super_master_meta.update_canvas(true);
+            this.super_master_meta.update_canvas().catch(() => {this._set_canvas_ref(can)});
         });
     };
 
@@ -1304,34 +1321,38 @@ class CanvasPixels extends React.PureComponent {
     _set_canvas_wrapper_overflow_ref = (element) => {
 
         if(element === null) {return}
-
-        let super_master_meta = this.super_master_meta;
-        super_master_meta.set_notifiers(
-            this.props.onPositionChange,
-            this.props.onSomethingSelectedChange,
-            this.props.onCurrentColorChange,
-            this.props.onRelevantActionEvent,
-            this._request_force_update
-        );
-
-        let canvas_pos = this.canvas_pos;
-        canvas_pos.set_notifiers(
-            this._request_force_update,
-            this._handle_canvas_wrapper_overflow_context_menu,
-            function(event){super_master_meta._handle_canvas_mouse_move(event)},
-            function(event){super_master_meta._handle_canvas_mouse_up(event)},
-            function(event){super_master_meta._handle_canvas_mouse_down(event)}
-        );
-        this.canvas_pos.init_speed_interval();
-        element.addEventListener("wheel", function(event){canvas_pos.handle_wheel(event)}, {passive: false});
-        element.addEventListener("pointerdown", function(event){canvas_pos.handle_pointer_down(event)}, {passive: false});
-        element.addEventListener("pointermove", function(event){canvas_pos.handle_pointer_move(event)}, {passive: false});
-        element.addEventListener("pointerup", function(event){canvas_pos.handle_pointer_up(event)}, {passive: false});
-        element.addEventListener("pointercancel", function(event){canvas_pos.handle_pointer_up(event)}, {passive: false});
-        element.addEventListener("pointerout", function(event){canvas_pos.handle_pointer_up(event)}, {passive: false});
-        element.addEventListener("pointerleave", function(event){canvas_pos.handle_pointer_up(event)}, {passive: false});
+        element.addEventListener("wheel", this._canvas_pos_handle_wheel, {passive: false});
+        element.addEventListener("pointerdown", this._canvas_pos_handle_pointer_down, {passive: false});
+        element.addEventListener("pointermove", this._canvas_pos_handle_pointer_move, {passive: false});
+        element.addEventListener("pointerup", this._canvas_pos_handle_pointer_up, {passive: false});
+        element.addEventListener("pointercancel", this._canvas_pos_handle_pointer_up, {passive: false});
+        element.addEventListener("pointerout", this._canvas_pos_handle_pointer_up, {passive: false});
+        element.addEventListener("pointerleave", this._canvas_pos_handle_pointer_up, {passive: false});
 
         this.super_state.set_state({_canvas_wrapper_overflow: element});
+    };
+
+    _super_master_meta_handle_canvas_mouse_move = (event) => {
+        "use strict"; this.super_master_meta._handle_canvas_mouse_move(event);
+    };
+    _super_master_meta_handle_canvas_mouse_up = (event) => {
+        "use strict"; this.super_master_meta._handle_canvas_mouse_up(event);
+    };
+    _super_master_meta_handle_canvas_mouse_down = (event) => {
+        "use strict"; this.super_master_meta._handle_canvas_mouse_down(event);
+    };
+
+    _canvas_pos_handle_wheel = (event) => {
+        "use strict"; this.canvas_pos.handle_wheel(event);
+    };
+    _canvas_pos_handle_pointer_down = (event) => {
+        "use strict"; this.canvas_pos.handle_pointer_down(event);
+    };
+    _canvas_pos_handle_pointer_move = (event) => {
+        "use strict"; this.canvas_pos.handle_pointer_move(event);
+    };
+    _canvas_pos_handle_pointer_up = (event) => {
+        "use strict"; this.canvas_pos.handle_pointer_up(event);
     };
 
     componentWillUnmount() {
@@ -1346,13 +1367,13 @@ class CanvasPixels extends React.PureComponent {
 
         try {
             const { _canvas_wrapper_overflow } = this.super_state.get_state();
-            _canvas_wrapper_overflow.removeEventListener("wheel", this._handle_wheel);
-            _canvas_wrapper_overflow.removeEventListener("pointerdown", this._handle_pointer_down);
-            _canvas_wrapper_overflow.removeEventListener("pointermove", this._handle_pointer_move);
-            _canvas_wrapper_overflow.removeEventListener("pointerup", this._handle_pointer_up);
-            _canvas_wrapper_overflow.removeEventListener("pointercancel", this._handle_pointer_up);
-            _canvas_wrapper_overflow.removeEventListener("pointerout", this._handle_pointer_up);
-            _canvas_wrapper_overflow.removeEventListener("pointerleave", this._handle_pointer_up);
+            _canvas_wrapper_overflow.removeEventListener("wheel", this._canvas_pos_handle_wheel);
+            _canvas_wrapper_overflow.removeEventListener("pointerdown", this._canvas_pos_handle_pointer_down);
+            _canvas_wrapper_overflow.removeEventListener("pointermove", this._canvas_pos_handle_pointer_move);
+            _canvas_wrapper_overflow.removeEventListener("pointerup", this._canvas_pos_handle_pointer_up);
+            _canvas_wrapper_overflow.removeEventListener("pointercancel", this._canvas_pos_handle_pointer_up);
+            _canvas_wrapper_overflow.removeEventListener("pointerout", this._canvas_pos_handle_pointer_up);
+            _canvas_wrapper_overflow.removeEventListener("pointerleave", this._canvas_pos_handle_pointer_up);
         } catch(e) {}
 
         this.super_state.get_state()._intervals.forEach((i) => {
@@ -3498,7 +3519,7 @@ class CanvasPixels extends React.PureComponent {
 
     };
 
-    _remove_close_pxl_colors = async(pxls = [], pxl_colors  = [], bucket_threshold = null, threshold_steps = null, color_number_bonus = 54, best_color_number = null) => {
+    _remove_close_pxl_colors = (pxls = [], pxl_colors  = [], bucket_threshold = null, threshold_steps = null, color_number_bonus = 54, best_color_number = null) => {
 
         const state_bucket_threshold = this.super_state.get_state().bucket_threshold;
         const rp = this.reduce_palette;
@@ -3509,11 +3530,17 @@ class CanvasPixels extends React.PureComponent {
         });
     };
 
-    _request_force_update = (can_be_cancelable = false, especially_dont_force = false) => {
+    _request_force_update = (can_be_cancelable, especially_dont_force) => {
 
-        return this.sraf.run_frame( () => {
-                this.forceUpdate()
-            }, !can_be_cancelable, !especially_dont_force)
+        "use strict";
+
+        can_be_cancelable = typeof can_be_cancelable == "undefined" ? true: can_be_cancelable;
+        especially_dont_force = typeof especially_dont_force == "undefined" ? true: especially_dont_force;
+
+        return this.sraf.run_frame(  () => {
+                "use strict";
+                this.forceUpdate();
+            }, !Boolean(can_be_cancelable), !Boolean(especially_dont_force))
     }
 
     _update_canvas_container_size = () => {

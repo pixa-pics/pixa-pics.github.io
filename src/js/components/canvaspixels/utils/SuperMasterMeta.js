@@ -340,26 +340,35 @@ const SuperMasterMeta = {
                     }
                 }
 
-                meta_super_blend.blend(false, false).then(function ([index_changes, color_changes]) {
+                meta_super_blend.blend(false, false).then(function (params) {
+                    "use strict";
+                    var index_changes = params[0], color_changes = params[1];
 
                     if (index_changes.length > 0 || clear_canvas || is_there_new_dimension || force_update) {
 
                         meta.super_canvas.pile(index_changes, color_changes).then(function () {
+                            "use strict";
                             meta.super_canvas.unpile(pxl_width, pxl_height).then(function () {
+                                "use strict";
                                 meta.super_canvas.prender().then(function () {
-                                    meta.sraf.run_frame(function(){meta.super_canvas.render()}, false, false, Date.now()).then(function (){
-                                        _pxl_indexes_of_selection_drawn.clear();
-                                        _old_pxls_hovered.clear();
-                                        _pxl_indexes_of_old_shape.clear();
-                                        _previous_imported_image_pxls_positioned_keyset.clear();
-
-                                        _pxl_indexes_of_selection_drawn.bulkAdd(_pxl_indexes_of_selection.indexes);
-                                        _old_pxls_hovered.add(_pxls_hovered);
-                                        _old_pxls_hovered.add(image_imported_resizer_index);
-                                        _pxl_indexes_of_old_shape.bulkAdd(_pxl_indexes_of_current_shape.indexes);
-                                        _previous_imported_image_pxls_positioned_keyset.bulkAdd(imported_image_pxls_positioned_keyset.indexes);
-                                        old_full_pxls.set(full_pxls);
-
+                                    "use strict";
+                                    meta.sraf.run_frame(function(){
+                                        "use strict";
+                                        meta.super_canvas.render().then(function (){
+                                            "use strict";
+                                            _pxl_indexes_of_selection_drawn.clear();
+                                            _old_pxls_hovered.clear();
+                                            _pxl_indexes_of_old_shape.clear();
+                                            _previous_imported_image_pxls_positioned_keyset.clear();
+                                            _pxl_indexes_of_selection_drawn.bulkAdd(_pxl_indexes_of_selection.indexes);
+                                            _old_pxls_hovered.add(_pxls_hovered);
+                                            _old_pxls_hovered.add(image_imported_resizer_index);
+                                            _pxl_indexes_of_old_shape.bulkAdd(_pxl_indexes_of_current_shape.indexes);
+                                            _previous_imported_image_pxls_positioned_keyset.bulkAdd(imported_image_pxls_positioned_keyset.indexes);
+                                            old_full_pxls.set(full_pxls);
+                                        });
+                                    }, is_there_new_dimension || is_there_different_dimension, is_there_new_dimension || is_there_different_dimension || force_update, Date.now()).then(function (){
+                                        "use strict";
                                         state._previous_imported_image_pxls_positioned_keyset = imported_image_pxls_positioned_keyset;
                                         state._old_selection_pair_highlight = _selection_pair_highlight;
                                         state._old_layers_string_id = old_layers_string_id;
@@ -374,7 +383,7 @@ const SuperMasterMeta = {
                         }).catch(reject0);
                     } else {
 
-                        resolve0();
+                        reject0();
                     }
                 });
             }
@@ -793,15 +802,15 @@ const SuperMasterMeta = {
             },
             _notify_position_change (position, date) {
                 "use strict";
-                date = date || null;
+                date = date || Date.now();
                 const _notified_position_at = meta.super_state.get_notified_pos_at() | 0;
                 const now = Date.now() | 0;
 
                 if (((now - _notified_position_at|0) >= 100 && date == null) || (date|0) > (_notified_position_at|0) && (now - date|0) >= 100) {
 
                     position = {
-                        x: typeof position.x === "undefined" ? -1 : position.x,
-                        y: typeof position.y === "undefined" ? -1 : position.y,
+                        x: typeof position.x == "undefined" ? -1 : position.x,
+                        y: typeof position.y == "undefined" ? -1 : position.y,
                     };
 
 

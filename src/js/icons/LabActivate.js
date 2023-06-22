@@ -7,8 +7,8 @@ const LabActivate = (props) => (
             isolation: "isolate",
         }}
         viewBox="0 0 4096 4096"
-        width="4096pt"
-        height="4096pt"
+        width="4096px"
+        height="4096px"
         {...props}
     >
         <defs>

@@ -218,9 +218,9 @@ const CanvasFilters = {
                     for(let i4 = 0; (i4|0) < (rgba_colors_length|0); i4 = (i4 + 4 | 0) >>> 0) {
 
                         rgba.set(old_pxl_colors.subarray(i4|0, i4+4|0));
-                        pxl_colors_rgba[i4|0] = CLAMP_INT(((rgba[0] * .272) + (rgba[1] *.534) + (rgba[2] * .131))|0,0,255) & 0xFF;
+                        pxl_colors_rgba[i4|0] = CLAMP_INT(((rgba[0] * .393) + (rgba[1]  *.769) + (rgba[2] * .189))|0,0,255) & 0xFF;
                         pxl_colors_rgba[i4+1|0] = CLAMP_INT(((rgba[0] * .349) + (rgba[1] *.686) + (rgba[2] * .168))|0,0,255) & 0xFF;
-                        pxl_colors_rgba[i4+2|0] = CLAMP_INT(((rgba[0] * .393) + (rgba[1]  *.769) + (rgba[2] * .189))|0,0,255) & 0xFF;
+                        pxl_colors_rgba[i4+2|0] = CLAMP_INT(((rgba[0] * .272) + (rgba[1] *.534) + (rgba[2] * .131))|0,0,255) & 0xFF;
                         pxl_colors_rgba[i4+3|0] = rgba[3] & 0xFF;
                     }
                 }else {

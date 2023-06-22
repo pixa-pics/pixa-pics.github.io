@@ -209,7 +209,7 @@ const styles = theme => ({
 });
 
 
-class ShareDialog extends React.Component {
+class ShareDialog extends React.PureComponent {
 
     constructor(props) {
         super(props);
