@@ -70,8 +70,6 @@ class CanvasPixels extends React.PureComponent {
     componentDidMount() {
 
         window.addEventListener("resize", this._update_canvas_container_size);
-        this._update_canvas_container_size();
-        this._notify_image_load_complete(true);
         if(Boolean(this.props.on_fps_change)) {
 
             this.sraf.set_notify_fps_callback((props) => {this.props.on_fps_change(props)});
@@ -210,9 +208,13 @@ class CanvasPixels extends React.PureComponent {
             this._handle_canvas_wrapper_overflow_context_menu,
             this._super_master_meta_handle_canvas_mouse_move,
             this._super_master_meta_handle_canvas_mouse_up,
-            this._super_master_meta_handle_canvas_mouse_down
+            this._super_master_meta_handle_canvas_mouse_down,
+            this._request_force_update
         );
         this.canvas_pos.init_speed_interval();
+
+        this._update_canvas_container_size();
+        this._notify_image_load_complete(true);
     }
 
     xxhashthat = (array) => {
@@ -220,20 +222,14 @@ class CanvasPixels extends React.PureComponent {
         return this.xxhash.base58_that(array);
     };
 
-    _set_size = (width = null, height = null) => {
+    _set_size = (width = 0, height = 0) => {
 
         width = width || this.super_state.get_state().pxl_width;
         height = height || this.super_state.get_state().pxl_height;
 
         this.super_state.set_state({
-            id: Date.now(),
             pxl_width: width,
-            pxl_height: height,
-            _pxl_indexes_of_selection: new SetFixed(width*height),
-            _layers: [{id: Date.now(), name: "Layer 0", hidden: false, opacity: 1}],
-            _layer_index: 0,
-            _s_pxls: Array.of(new Uint16Array((width || 32) * (height || 32))),
-            _s_pxl_colors: Array.of(Uint32Array.of(0))
+            pxl_height: height
         }).then(() => {
 
             this.canvas_pos.set_sizes(width, height);
@@ -973,16 +969,7 @@ class CanvasPixels extends React.PureComponent {
                 _json_state_history: {history_position: 0, state_history: []},
             }).then(() => {
 
-                this.canvas_pos.set_sizes(img_d.width | 0, img_d.height | 0);
-                this.canvas_pos.set_current_scale_default();
-
-                this._request_force_update(false, false).then(() => {
-
-                    this.super_canvas.set_dimensions(img_d.width | 0, img_d.height | 0).then(() => {
-                        this.super_master_meta.update_canvas();
-                    });
-                });
-
+                this._set_size();
                 this._notify_image_load_complete();
                 this._notify_export_state();
             });
@@ -1266,16 +1253,7 @@ class CanvasPixels extends React.PureComponent {
                     _last_action_timestamp: Date.now(),
                 }).then(() => {
 
-                    this.canvas_pos.set_sizes(width | 0, height | 0);
-                    this.canvas_pos.set_current_scale_default();
-
-                    this._request_force_update(false, false).then(() => {
-
-                        this.super_canvas.set_dimensions(width | 0, height | 0).then(() => {
-                            this.super_master_meta.update_canvas(true);
-                        });
-                    });
-
+                    this._set_size();
                     this._notify_image_load_complete();
                     this._notify_export_state();
                 });
@@ -1293,12 +1271,7 @@ class CanvasPixels extends React.PureComponent {
 
         let { pxl_width, pxl_height } = this.super_state.get_state();
         this.super_canvas.new(can, pxl_width, pxl_height);
-        this.canvas_pos.set_sizes(pxl_width, pxl_height);
-        this.canvas_pos.set_current_scale_default();
-
-        this.super_canvas.set_dimensions(pxl_width, pxl_height).then(() => {
-            this.super_master_meta.update_canvas().catch(() => {this._set_canvas_ref(can)});
-        });
+        this._set_size();
     };
 
     _set_canvas_container_ref = (element) => {
@@ -1885,18 +1858,7 @@ class CanvasPixels extends React.PureComponent {
                     _last_action_timestamp: 1/0,
                 }).then(() => {
 
-                    this.canvas_pos.set_sizes(parseInt(sh.pxl_width), parseInt(sh.pxl_height));
-                    this.canvas_pos.set_current_scale_default();
-
-                    this._request_force_update(false, false).then(() => {
-
-                        this.super_canvas.set_dimensions(parseInt(sh.pxl_width), parseInt(sh.pxl_height)).then(() => {
-                            this.super_master_meta.update_canvas(true).then(() => {
-                                this._maybe_save_state( null, true);
-                            });
-                        });
-                    });
-
+                    this._set_size();
                     this._notify_image_load_complete();
                     this._notify_is_something_selected();
                     this._notify_can_undo_redo_change();
@@ -2006,16 +1968,8 @@ class CanvasPixels extends React.PureComponent {
                 }).then(() => {
 
                     if(has_new_dimension) {
-                        this.canvas_pos.set_sizes(sh.pxl_width, sh.pxl_height);
-                        this.canvas_pos.set_current_scale_default();
-                        this._notify_image_load_complete(true);
+                        this._set_size();
                     }
-
-                    this._request_force_update(false, false).then(() => {
-
-                        this.super_canvas.set_dimensions(sh.pxl_width, sh.pxl_height).then(() => this.super_master_meta.update_canvas(true));
-                    });
-
                     this._notify_is_something_selected();
                     this._notify_can_undo_redo_change();
                 });
@@ -2067,15 +2021,8 @@ class CanvasPixels extends React.PureComponent {
                 }).then(() => {
 
                     if(has_new_dimension) {
-                        this.canvas_pos.set_sizes(sh.pxl_width, sh.pxl_height);
-                        this.canvas_pos.set_current_scale_default();
-                        this._notify_image_load_complete(true);
+                        this._set_size();
                     }
-
-                    this._request_force_update(false, false).then(() => {
-
-                        this.super_canvas.set_dimensions(sh.pxl_width, sh.pxl_height).then(() => this.super_master_meta.update_canvas(true));
-                    });
 
                     this._notify_is_something_selected();
                     this._notify_can_undo_redo_change();
@@ -2463,19 +2410,8 @@ class CanvasPixels extends React.PureComponent {
                         _last_action_timestamp: Date.now(),
                     }).then(() => {
 
-                        this.canvas_pos.set_sizes(new_width, new_height);
-                        this.canvas_pos.set_current_scale_default();
                         this._notify_image_load_complete(true);
-
-                        this._request_force_update(false, false).then(() => {
-
-                            this.super_canvas.set_dimensions(new_width, new_height).then(() => {
-
-                                this.super_master_meta.update_canvas();
-                                this._notify_is_something_selected();
-                                this._notify_can_undo_redo_change();
-                            });
-                        });
+                        this._set_size();
                     });
                 }
                 image.src = _base64_original_images[_original_image_index];
@@ -2491,19 +2427,8 @@ class CanvasPixels extends React.PureComponent {
                     _last_action_timestamp: Date.now(),
                 }).then(() => {
 
-                    this.canvas_pos.set_sizes(new_width, new_height);
-                    this.canvas_pos.set_current_scale_default();
                     this._notify_image_load_complete(true);
-
-                    this._request_force_update(false, false).then(() => {
-
-                        this.super_canvas.set_dimensions(new_width, new_height).then(() => {
-
-                            this.super_master_meta.update_canvas();
-                            this._notify_is_something_selected();
-                            this._notify_can_undo_redo_change();
-                        });
-                    });
+                    this._set_size();
                 });
             }
         }
@@ -3337,13 +3262,7 @@ class CanvasPixels extends React.PureComponent {
                     _last_action_timestamp: Date.now(),
                 }).then(() => {
 
-                    this.canvas_pos.set_sizes(pxl_width, pxl_height);
-                    this.canvas_pos.set_current_scale_default();
-
-                    this._request_force_update(false, false).then(() => {
-
-                        this.super_canvas.set_dimensions(new_pxl_width, new_pxl_height).then(() => this.super_master_meta.update_canvas(true));
-                    });
+                    this._set_size();
                 });
             };
 
@@ -3364,13 +3283,7 @@ class CanvasPixels extends React.PureComponent {
                 _last_action_timestamp: Date.now(),
             }).then(() => {
 
-                this.canvas_pos.set_sizes(pxl_width, pxl_height);
-                this.canvas_pos.set_current_scale_default();
-
-                this._request_force_update(false, false).then(() => {
-
-                    this.super_canvas.set_dimensions(new_pxl_width, new_pxl_height).then(() => this.super_master_meta.update_canvas(true));
-                });
+                this._set_size();
             });
         }
     };
@@ -3540,7 +3453,7 @@ class CanvasPixels extends React.PureComponent {
         return this.sraf.run_frame(  () => {
                 "use strict";
                 this.forceUpdate();
-            }, !Boolean(can_be_cancelable), !Boolean(especially_dont_force))
+            }, !Boolean(can_be_cancelable), !Boolean(especially_dont_force)).catch(this._request_force_update)
     }
 
     _update_canvas_container_size = () => {

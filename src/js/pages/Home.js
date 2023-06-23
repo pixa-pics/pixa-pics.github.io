@@ -7,8 +7,6 @@ import actions from "../actions/utils";
 
 import CrownEmojiSvg from "../notoemoji/react/EmojiU1F451";
 import LightingEmojiSvg from "../notoemoji/react/EmojiU26A1";
-import HundredEmojiSvg from "../notoemoji/react/EmojiU1F4Af";
-import MoneyEmojiSvg from "../notoemoji/react/EmojiU1F4B8";
 import ScientistEmojiSvg from "../notoemoji/react/EmojiU1F4681F3Fd200D1F52C";
 import ShufflingSpanText from "../components/ShufflingSpanText";
 
@@ -297,8 +295,8 @@ class Home extends React.PureComponent {
             _join_now_button_update: 0,
             _less_than_960w: true,
             _less_than_690h: true,
-            _hundred: <HundredEmojiSvg style={{ transform: "translateZ(10px)", height: '1.5em', width: '1.5em' }}/>,
-            _money: <MoneyEmojiSvg style={{ transform: "translateZ(10px)", height: '1.5em', width: '1.5em' }}/>,
+            _hundred: null,
+            _money: null,
             _camera: null,
             _is_video_open: 0
         };
@@ -333,7 +331,7 @@ class Home extends React.PureComponent {
                     id={"hundred"}
                     loop={true}
                     autoplay={true}
-                    src="/src/js/notoemoji/lottie/1f4af.json"
+                    src="/src/js/lottie/halo.json"
                     style={{ transform: "translateZ(10px)", height: '1.5em', width: '1.5em' }}/>
             }, () => {
 
@@ -347,7 +345,7 @@ class Home extends React.PureComponent {
                     id={"money"}
                     loop={true}
                     autoplay={true}
-                    src="/src/js/notoemoji/lottie/1f4b8.json"
+                    src="/src/js/lottie/zap.json"
                     style={{ transform: "translateZ(10px)", height: '1.5em', width: '1.5em' }}/>
             }, () => {
 
@@ -377,7 +375,7 @@ class Home extends React.PureComponent {
 
     componentDidMount() {
 
-        const all_image_name_infographics = ["Woodo.png", "Woodo.svg", "Cortanaude.png", "Cortanaude.svg", "Banshee.png", "Banshee.svg",  "Businesswoman.png", "Businesswoman.svg", "Robot.png", "Robot.svg", "Statue.png", "Statue.svg"];
+        const all_image_name_infographics = ["Falcon.png", "Falcon.svg", "Liathan.png", "Liathan.svg", "Woodo.png", "Woodo.svg", "Banshee.png", "Banshee.svg", "Cortanade.png", "Cortanade.svg"];
 
         let _image_index = -1;
         let _image_name_infographics;
@@ -389,7 +387,7 @@ class Home extends React.PureComponent {
             _image_name_infographics = _image_index > 0 ? all_image_name_infographics[_image_index]: all_image_name_infographics[0];
 
             // image  has been loaded
-            this.setSt4te({_infographics_in: true, _image_name_infographics, _infographics_fadein_time: 300}, () => {
+            this.setSt4te({_infographics_in: true, _image_name_infographics, _infographics_fadein_time: 555}, () => {
 
                 this.forceUpdate(() => {
 
@@ -399,14 +397,14 @@ class Home extends React.PureComponent {
 
                             this.forceUpdate();
                         });
-                    }, 4000);
+                    }, 2222);
                 });
             });
         };
 
         set_new_image_carousel();
 
-        let _image_auto_interval = setInterval( set_new_image_carousel, 4500);
+        let _image_auto_interval = setInterval( set_new_image_carousel, 3333);
 
         const _button_interval = setInterval(() => {
 
@@ -587,22 +585,14 @@ class Home extends React.PureComponent {
                         <Fade in={true} timeout={500}>
                             <Button className={classes.playVideoButton} type="text" startIcon={<IconPlay/>} onClick={(event) => {this._handle_speed_dial_action(event, "presentation", 2)}}>About</Button>
                         </Fade>
-                        {_less_than_960w && <Fade in={true} timeout={500}>
-                            <p style={{maxWidth: "50%"}}>
-                            <span className={classes.revelantText} style={{color: "#ffffff"}}>
-                                <span>Unlock your full creative potential and turn your pixel art into valuable collectibles with the world's best NFTs and pixel art web editor. </span>
-                                {!_less_than_690h && <span>NFTs and pixel art are revolutionizing the way we think about digital ownership and creativity.</span>}
-                            </span>
-                            </p>
-                        </Fade>}
                         {!_less_than_960w && <Fade in={true} timeout={500}>
                             <p style={{maxWidth: "50%"}}>
                             <span className={classes.revelantText} style={{color: "#ffffff"}}>
-                                <span>NFTs and pixel art are revolutionizing the way we think about digital ownership and creativity.</span>
+                                {!_less_than_690h && <span>NFTs and pixel art are revolutionizing the way we think about digital ownership and creativity.</span>}
                                 <br/><br/>
-                                <span>By combining the uniqueness and scarcity of traditional collectibles with the limitless potential of digital media, NFTs are opening up new avenues for artists and creators to express themselves and connect with audiences around the world. And pixel art, with its bold lines, bright colors, and playful forms, is the perfect medium to showcase the beauty and versatility of NFTs.</span>
+                                <span>Welcome to our revolutionary Pixel Art Editor and NFT Laboratory, where artistic innovation meets the power of blockchain. Prepare to embark on a mesmerizing journey through the cosmos of creativity, where the stars themselves bow to the brilliance of your imagination.</span>
                                 <br/><br/>
-                                <span>Create your NFT collection today!</span>
+                                {!_less_than_690h && <span>Create your NFTs collection that can LAST FOR MILLENNIA(S)!</span>}
                             </span>
                             </p>
                         </Fade>}

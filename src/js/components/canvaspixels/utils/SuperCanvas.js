@@ -288,23 +288,22 @@ Object.defineProperty(SuperCanvas.prototype, 'unpile', {
                 "use strict";
 
                 index = (index_changes[i | 0] | 0) >>> 0;
+                uint32a[(index | 0) >>> 0] = (color_changes[i | 0] | 0) >>> 0;
 
                 x = modulo_uint(index, width);
                 y = divide_uint(minus_uint(index, x), width);
 
                 if (uint_greater_equal(pr_top_left_x, x)) {
-                    pr_top_left_x = max_int(0, minus_int(x, 4));
+                    pr_top_left_x = max_int(0, minus_int(x, 7));
                 } else if (uint_less_equal(pr_bottom_right_x, x)) {
-                    pr_bottom_right_x = min_int(width, plus_int(x, 4));
+                    pr_bottom_right_x = min_int(width, plus_int(x, 7));
                 }
 
                 if (uint_greater_equal(pr_top_left_y, y)) {
-                    pr_top_left_y = max_int(0, minus_int(y, 4));
+                    pr_top_left_y = max_int(0, minus_int(y, 7));
                 } else if (uint_less_equal(pr_bottom_right_y, y)) {
-                    pr_bottom_right_y = min_int(height, plus_int(y, 4));
+                    pr_bottom_right_y = min_int(height, plus_int(y, 7));
                 }
-
-                uint32a[(index | 0) >>> 0] = (color_changes[i | 0] | 0) >>> 0;
             }
 
             pr.width = pr_bottom_right_x - pr_top_left_x | 0;

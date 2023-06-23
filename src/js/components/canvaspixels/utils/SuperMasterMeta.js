@@ -66,7 +66,7 @@ const SuperMasterMeta = {
         let force_update = true;
         let is_there_new_dimension = false;
         let is_there_different_dimension = false;
-        let render_canvas = this.render_canvas;
+        let render_canvas = undefined;
         let sizes = meta.canvas_pos.get_state().sizes;
 
         let update_canvas_promise = function(resolve0, reject0, force_update, requested_at) {
@@ -113,21 +113,21 @@ const SuperMasterMeta = {
                         notifiers.update(false, false).then(function () {
                             render_canvas(is_there_new_dimension, is_there_different_dimension, force_update, requested_at).catch(function (){
                                 setTimeout(update_canvas_promise, 5, resolve0, reject0, force_update, requested_at);
-                            }).then(resolve0);
+                            });
                         }).catch(function () {
-                            setTimeout(update_canvas_promise, 5, resolve0, reject0, force_update, requested_at);
+                            setTimeout(update_canvas_promise, 10, resolve0, reject0, force_update, requested_at);
                         });
                     }else {
 
                         render_canvas(is_there_new_dimension, is_there_different_dimension, force_update, requested_at).catch(function (){
                             setTimeout(update_canvas_promise, 5, resolve0, reject0, force_update, requested_at);
-                        }).then(resolve0);
+                        });
                     }
 
 
                 }else {
 
-                    setTimeout(update_canvas_promise, 5, resolve0, reject0, force_update, requested_at);
+                    setTimeout(update_canvas_promise, 15, resolve0, reject0, force_update, requested_at);
                 }
             }
         }
@@ -340,6 +340,14 @@ const SuperMasterMeta = {
                     }
                 }
 
+                function handle_reject0(){
+                    if(force_update){
+                        setTimeout(update_canvas_promise, 5, resolve0, reject0, force_update, requested_at);
+                    }else{
+                        reject0();
+                    }
+                }
+
                 meta_super_blend.blend(false, false).then(function (params) {
                     "use strict";
                     var index_changes = params[0], color_changes = params[1];
@@ -366,24 +374,25 @@ const SuperMasterMeta = {
                                             _pxl_indexes_of_old_shape.bulkAdd(_pxl_indexes_of_current_shape.indexes);
                                             _previous_imported_image_pxls_positioned_keyset.bulkAdd(imported_image_pxls_positioned_keyset.indexes);
                                             old_full_pxls.set(full_pxls);
-                                        });
+
+                                            state._previous_imported_image_pxls_positioned_keyset = imported_image_pxls_positioned_keyset;
+                                            state._old_selection_pair_highlight = _selection_pair_highlight;
+                                            state._old_layers_string_id = old_layers_string_id;
+                                        }).catch(handle_reject0);
                                     }, is_there_new_dimension || is_there_different_dimension, is_there_new_dimension || is_there_different_dimension || force_update, Date.now()).then(function (){
                                         "use strict";
-                                        state._previous_imported_image_pxls_positioned_keyset = imported_image_pxls_positioned_keyset;
-                                        state._old_selection_pair_highlight = _selection_pair_highlight;
-                                        state._old_layers_string_id = old_layers_string_id;
                                         state._did_hide_canvas_content = hide_canvas_content;
                                         state._old_pxl_width = parseInt(pxl_width);
                                         state._old_pxl_height = parseInt(pxl_height);
                                         state._last_paint_timestamp = requested_at;
                                         resolve0();
-                                    }).catch(reject0);
-                                }).catch(reject0);
-                            }).catch(reject0);
-                        }).catch(reject0);
+                                    }).catch(handle_reject0);
+                                }).catch(handle_reject0);
+                            }).catch(handle_reject0);
+                        }).catch(handle_reject0);
                     } else {
 
-                        reject0();
+                        resolve0();
                     }
                 });
             }
@@ -417,7 +426,7 @@ const SuperMasterMeta = {
                 "use strict";
                 force_update = force_update || false;
                 requested_at = requested_at || Date.now();
-                if(Boolean(this)){
+                if(typeof render_canvas == "undefined" && Boolean(this)){
                     render_canvas = this.render_canvas;
                 }
                 return new Promise(update_canvas_promise);

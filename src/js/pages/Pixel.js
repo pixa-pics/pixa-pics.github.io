@@ -2957,12 +2957,13 @@ class Pixel extends React.PureComponent {
                                 style: {
                                     maxHeight: 350,
                                     width: 250,
-                                    overflowY: "overlay"
+                                    overflowY: "overlay",
+                                    contain: "paint style layout"
                                 },
                             }}
                             onContextMenu={(e) => {e.preventDefault()}}
                             MenuListProps={{dense: true}}
-                            transitionDuration={{enter: 50, exit: 75}}
+                            transitionDuration={{enter: 25, exit: 50}}
                             open={_menu_mouse_y !== null}
                             onClose={this._handle_menu_close}
                             anchorReference="anchorPosition"

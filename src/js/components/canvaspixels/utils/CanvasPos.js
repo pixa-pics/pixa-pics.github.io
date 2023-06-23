@@ -421,7 +421,7 @@ const CanvasPos = {
                 notifiers.down(event);
             },
             notify_middle: function() {
-                notifiers.middle();
+                notifiers.middle(false, false);
             },
             set_shadow_color: function(hex) {
 
