@@ -1,7 +1,6 @@
-"use strict";
-var REQUIRED_CACHE = "unless-update-cache-v723-required";
-var USEFUL_CACHE = "unless-update-cache-v723-useful";
-var STATIC_CACHE = "unless-update-cache-v723-static";
+var REQUIRED_CACHE = "unless-update-cache-v724-required";
+var USEFUL_CACHE = "unless-update-cache-v724-useful";
+var STATIC_CACHE = "unless-update-cache-v724-static";
 var MAIN_CHILD_CHUNK_REGEX = /chunk_(main_[a-z0-9]+)\.min\.js$/i;
 var CHILD_CHUNK_REGEX = /chunk_([0-9]+)\.min\.js$/i;
 

@@ -237,7 +237,7 @@ class PixelDialogCreate extends React.PureComponent {
                         <div className={classes.leftImage}>
                             <input
                                 onChange={this.props.on_upload}
-                                accept="image/jpg, image/svg, image/jpeg, image/png, image/svg, image/webp, image/gif"
+                                accept="image/jpg, image/svg, image/jpeg, image/png, image/webp, image/gif"
                                 style={{display: "none"}}
                                 id="button-file-dialog-primary"
                                 type="file"
@@ -264,7 +264,7 @@ class PixelDialogCreate extends React.PureComponent {
                             </div>
                             <input
                                 onChange={this.props.on_upload}
-                                accept="image/jpg, image/svg, image/jpeg, image/png, image/svg, image/webp, image/gif"
+                                accept="image/jpg, image/svg, image/jpeg, image/png, image/webp, image/gif"
                                 style={{display: "none"}}
                                 id="button-file-dialog-secondary"
                                 type="file"

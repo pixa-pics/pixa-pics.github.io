@@ -235,10 +235,12 @@ class CanvasPixels extends React.PureComponent {
             this.canvas_pos.set_sizes(width, height);
             this.canvas_pos.set_current_scale_default();
 
-            this._request_force_update(false, false).then(() => {
+            this._request_force_update(true, true).then(() => {
 
-                this.super_canvas.set_dimensions(width, height).then(() => this.super_master_meta.update_canvas(true).catch(( ) => {this._set_size(width, height)}));
-            });
+                this.super_canvas.set_dimensions(width, height).finally(
+                    () => { this.super_master_meta.update_canvas().catch(() => {this._set_size()})}
+                );
+            }).catch(() => {this._set_size()});
         });
     }
 
@@ -3161,130 +3163,154 @@ class CanvasPixels extends React.PureComponent {
 
         const new_pxl_width = pxl_height;
         const new_pxl_height = pxl_width;
-        let ns_pxls = Array.from(_s_pxls);
 
         let new_pxl_indexes_of_selection = new SetFixed(new_pxl_width * new_pxl_height);
         let new_select_shape_index_a = _select_shape_index_a;
         let new_shape_index_a = _shape_index_a;
 
+        let x = 0, y = 0, new_x = 0, new_y = 0, new_index = 0;
+
         if(_imported_image_pxls.length) {
 
             _imported_image_pxls.forEach(function(pxl, index) {
 
-                const x = index % _imported_image_width;
-                const y = (index - x) / _imported_image_width;
+                x = index % _imported_image_width;
+                y = (index - x) / _imported_image_width;
 
-                const new_y = right ? x: (new_imported_image_height - 1) - x;
-                const new_x = right ? (new_imported_image_width - 1) - y: y;
-                const new_index = new_x + new_y * new_imported_image_width;
+                new_y = right ? x: (new_imported_image_height - 1) - x;
+                new_x = right ? (new_imported_image_width - 1) - y: y;
+                new_index = new_x + new_y * new_imported_image_width;
 
                 n_imported_image_pxls[new_index] = pxl;
+
+                if(_pxl_indexes_of_selection.has(index)) {
+
+                    new_pxl_indexes_of_selection.add(new_index);
+                }
 
             });
 
         }else {
+
+            for (let index = 0, l = _s_pxls[0].length; index < l; index++) {
+
+                x = index % pxl_width;
+                y = (index - x) / pxl_width;
+
+                new_y = right ? x: (new_pxl_height - 1) - x;
+                new_x = right ? (new_pxl_width - 1) - y: y;
+                new_index = new_x + new_y * new_pxl_width;
+
+                if(_pxl_indexes_of_selection.has(index)) {
+
+                    new_pxl_indexes_of_selection.add(new_index);
+                }
+
+                if(_select_shape_index_a === index){
+
+                    new_select_shape_index_a = new_index;
+                }
+
+                if(_shape_index_a === index) {
+
+                    new_shape_index_a = new_index;
+                }
+            }
 
             for (let i = 0; i < _s_pxls.length; i++) {
 
                 let new_pxls = new Uint16Array(new_pxl_width * new_pxl_height);
 
-                ns_pxls[i].forEach(function(pxl, index) {
+                _s_pxls[i].forEach(function(pxl, index) {
 
-                    const x = index % pxl_width;
-                    const y = (index - x) / pxl_width;
+                    x = index % pxl_width;
+                    y = (index - x) / pxl_width;
 
-                    const new_y = right ? x: (new_pxl_height - 1) - x;
-                    const new_x = right ? (new_pxl_width - 1) - y: y;
-                    const new_index = new_x + new_y * new_pxl_width;
+                    new_y = right ? x: (new_pxl_height - 1) - x;
+                    new_x = right ? (new_pxl_width - 1) - y: y;
+                    new_index = new_x + new_y * new_pxl_width;
 
 
                     new_pxls[new_index] = pxl;
-
-                    if(i === _layer_index) {
-
-                        if(_pxl_indexes_of_selection.has(index)) {
-
-                            new_pxl_indexes_of_selection.add(new_index);
-                        }
-
-                        if(_select_shape_index_a === index){
-
-                            new_select_shape_index_a = new_index;
-                        }
-
-                        if(_shape_index_a === index) {
-
-                            new_shape_index_a = new_index;
-                        }
-                    }
-
                 });
-                ns_pxls[i] = new_pxls;
+                _s_pxls[i] = new_pxls;
             }
 
         }
 
-        //
-        if(typeof _base64_original_images[_original_image_index] !== "undefined" && !_imported_image_pxls.length) {
+        if(!_imported_image_pxls.length) {
 
-            const degrees = right ? 90: -90;
+            if(typeof _base64_original_images[_original_image_index] !== "undefined" && !_imported_image_pxls.length) {
 
-            let image = new Image();
-            image.onload = () => {
+                const degrees = right ? 90: -90;
 
-                let [ctx, canvas] = this._get_new_ctx_from_canvas(image.naturalHeight, image.naturalWidth);
+                let image = new Image();
+                image.onload = () => {
 
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                ctx.save();
-                ctx.translate(canvas.width / 2, canvas.height / 2);
-                ctx.rotate(degrees * Math.PI / 180);
-                ctx.drawImage(image, -image.naturalWidth / 2, -image.naturalHeight / 2);
-                ctx.restore();
+                    let [ctx, canvas] = this._get_new_ctx_from_canvas(image.naturalHeight, image.naturalWidth);
 
-                let base64_original_image = image.src.includes("image/png") ?
-                    canvas.toDataURL("image/png") :
-                    canvas.toDataURL("image/jpeg");
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.save();
+                    ctx.translate(canvas.width / 2, canvas.height / 2);
+                    ctx.rotate(degrees * Math.PI / 180);
+                    ctx.drawImage(image, -image.naturalWidth / 2, -image.naturalHeight / 2);
+                    ctx.restore();
 
-                if(!_base64_original_images.includes(base64_original_image)) {
-                    _base64_original_images.push(base64_original_image);
-                    _original_image_index++
-                }
+                    let base64_original_image = image.src.includes("image/png") ?
+                        canvas.toDataURL("image/png") :
+                        canvas.toDataURL("image/jpeg");
+
+                    if(!_base64_original_images.includes(base64_original_image)) {
+                        _base64_original_images.push(base64_original_image);
+                        _original_image_index++
+                    }
+
+                    this.super_state.set_state({
+                        pxl_width: new_pxl_width,
+                        pxl_height: new_pxl_height,
+                        _s_pxls: _s_pxls,
+                        _pxl_indexes_of_selection: new_pxl_indexes_of_selection,
+                        _select_shape_index_a: new_select_shape_index_a,
+                        _shape_index_a: new_shape_index_a,
+                        _base64_original_images: _base64_original_images,
+                        _original_image_index: _original_image_index,
+                        _last_action_timestamp: Date.now(),
+                    }).then(() => {
+
+                        this._set_size();
+                    });
+                };
+
+                image.src = _base64_original_images[_original_image_index];
+
+            }else {
 
                 this.super_state.set_state({
                     pxl_width: new_pxl_width,
                     pxl_height: new_pxl_height,
-                    _s_pxls: ns_pxls,
+                    _s_pxls: _s_pxls,
                     _pxl_indexes_of_selection: new_pxl_indexes_of_selection,
                     _select_shape_index_a: new_select_shape_index_a,
                     _shape_index_a: new_shape_index_a,
-                    _base64_original_images: _base64_original_images,
-                    _original_image_index: _original_image_index,
                     _last_action_timestamp: Date.now(),
                 }).then(() => {
 
                     this._set_size();
                 });
-            };
-
-            image.src = _base64_original_images[_original_image_index];
-
+            }
         }else {
 
             this.super_state.set_state({
-                pxl_width: new_pxl_width,
-                pxl_height: new_pxl_height,
-                _s_pxls: ns_pxls,
                 _imported_image_width: new_imported_image_width,
                 _imported_image_height: new_imported_image_height,
                 _imported_image_pxls: n_imported_image_pxls,
                 _pxl_indexes_of_selection: new_pxl_indexes_of_selection,
-                _select_shape_index_a: new_select_shape_index_a,
-                _shape_index_a: new_shape_index_a,
                 _last_action_timestamp: Date.now(),
             }).then(() => {
 
-                this._set_size();
+                this.super_master_meta.update_canvas(true);
             });
+
         }
     };
 
