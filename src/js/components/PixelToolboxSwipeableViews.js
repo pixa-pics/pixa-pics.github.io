@@ -18,7 +18,6 @@ import {
     FormControlLabel,
     Button,
     Menu,
-    Fade,
     IconButton
 } from "@material-ui/core";
 
@@ -68,6 +67,7 @@ import SelectAddIcon from "../icons/SelectAdd";
 import SelectInImageIcon from "../icons/SelectInImage";
 import SelectColorIcon from "../icons/SelectColor";
 import MagicIcon from "../icons/Magic";
+import StoreIcon from "../icons/Store";
 import SquareSmallIcon from "../icons/SquareSmall";
 import SelectionRectangleIcon from "../icons/SelectionRectangle";
 import SelectionEllipseIcon from "../icons/SelectionEllipse";
@@ -1318,6 +1318,15 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                             disabled: !is_image_import_mode,
                             on_click: () => {
                                 canvas.confirm_import()
+                            }
+                        },
+                        {
+                            icon: <StoreIcon/>,
+                            text: "Asset Store",
+                            sub: "Buy tremendous images to add in your drawing",
+                            disabled: false,
+                            on_click: () => {
+                                window.open("https://www.artstation.com/pixapics/store")
                             }
                         },
                     ]

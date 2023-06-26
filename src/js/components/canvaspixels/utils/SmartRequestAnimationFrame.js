@@ -98,15 +98,14 @@ const SmartRequestAnimationFrame = {
                             var id = s.caf_id | 0;
                             if(!do_not_cancel_animation) {
 
-                                s.caf_id = s.raf.call(window, render);
+                                s.caf_id = s.raf.call(window, function (){render();});
                             }else {
 
-                                s.raf.call(window, render);
+                                s.raf.call(window, function (){render();});
                             }
                             s.lasts_raf_time = requested_at_t | 0;
                             if(id === s.caf_id) { s.caf_id = null;}
                             resolve();
-
 
                         }else if(!running_smoothly || s.caf_id !== null && deltaT > 1000 / (skip_frame_rate * 1.5)){ // Low
 
@@ -122,10 +121,10 @@ const SmartRequestAnimationFrame = {
                             var id = s.caf_id | 0;
                             if(!do_not_cancel_animation) {
 
-                                s.caf_id = s.raf.call(window, render);
+                                s.caf_id = s.raf.call(window, function (){render();});
                             }else {
 
-                                s.raf.call(window, render);
+                                s.raf.call(window, function (){render();});
                             }
                             s.lasts_raf_time = requested_at_t | 0;
                             if(id === s.caf_id) { s.caf_id = null;}
