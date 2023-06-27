@@ -1417,19 +1417,11 @@ const SuperMasterMeta = {
                 }
 
                 let layer_pixel_colors = new Uint32Array(_s_pxl_colors.length);
-                let start_i = -1;
-                start_i++;
+                let start_i = 0;
 
                 for (let i = _s_pxl_colors.length - 1; i >= 0; i--) {
 
                     layer_pixel_colors[i] = ((_s_pxl_colors[i][_s_pxls[i][pxl_index]|0]|0)>>>0) & 0xFFFFFFFF;
-
-                    if(SIMDopeColor.new_uint32(layer_pixel_colors[i]).is_fully_opaque() && !Boolean((_layers[i] || {}).hidden)) {
-
-                        start_i = i;
-                        break;
-                    }
-
                 }
 
                 let pixel_color_uint32 = SIMDopeColor.new_zero();
@@ -1439,7 +1431,7 @@ const SuperMasterMeta = {
                     if(typeof _layers[i] != "undefined") {
                         if (!_layers[i].hidden) {
 
-                            pixel_color_uint32.blend_with(SIMDopeColor.new_uint32(layer_pixel_colors[i]), parseInt(parseFloat(_layers[i].opacity) * 255), false, false);
+                            pixel_color_uint32.blend_first_with(SIMDopeColor.new_uint32(layer_pixel_colors[i]), Math.round(parseFloat(_layers[i].opacity) * 255), false, false);
                         }
                     }
                 }

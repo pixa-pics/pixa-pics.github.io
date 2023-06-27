@@ -1806,25 +1806,28 @@ class CanvasPixels extends React.PureComponent {
     };
 
     import_JS_state = (js, callback_function) => {
-
+        "use strict";
         var _base64_original_images = Array.from(js._base64_original_images);
-        Promise.all(_base64_original_images.map((entry) => {return Promise.resolve(toBase64(entry[1])); }))
+        Promise.all(_base64_original_images.map((entry) => {return toBase64(entry[1]); }))
             .then((response) => {
-                response.forEach((img_1, index) => {
+                "use strict";
+                response.forEach(function(img_1, index) {
                     _base64_original_images[index] = _base64_original_images[index][0] + "," + img_1;
                 });
 
                 let _json_state_history = {
                     history_position: parseInt(js._json_state_history.history_position),
                     state_history: js._json_state_history.state_history.map(function(state){
+                        "use strict";
                         return Object.assign({}, {
                             _original_image_index: parseInt(state._original_image_index),
                             pxl_width: parseInt(state.pxl_width),
                             pxl_height: parseInt(state.pxl_height),
-                            _pxl_indexes_of_selection: Boolean(state._pxl_indexes_of_selection.length) ? new SetFixed(state._pxl_indexes_of_selection) : new SetFixed(state.pxl_width * state.pxl_height),
+                            _pxl_indexes_of_selection: new SetFixed(state._pxl_indexes_of_selection),
                             _s_pxls: Array.from(state._s_pxls.map(function(a){return Uint16Array.from(a)})),
                             _s_pxl_colors:  Array.from(state._s_pxl_colors.map(function(a){return Uint32Array.from(a)})),
                             _layers: Array.from(state._layers.map(function(l) {
+                                "use strict";
                                 return Object.assign({}, {
                                     id: parseInt(l.id),
                                     hash: l.hash + "",
@@ -1851,6 +1854,7 @@ class CanvasPixels extends React.PureComponent {
                     _base64_original_images: Array.from(_base64_original_images),
                     _original_image_index: parseInt(sh._original_image_index),
                     _layers: Array.from(sh._layers.map(function(l) {
+                        "use strict";
                         return {
                             id: parseInt(l.id),
                             hash: l.hash + "",
@@ -1882,28 +1886,30 @@ class CanvasPixels extends React.PureComponent {
     export_JS_state = (callback_function) => {
 
         this._maybe_save_state((_json_state_history) => {
-
+            "use strict";
             var base64_o_i = this.super_state.get_state()._base64_original_images.map(function(img){ return img.split(","); });
             Promise.all([
-                Promise.all(base64_o_i.map((entry) => {return Promise.resolve(toBytes(entry[1])); })),
-                this.get_base64_png_data_url(1, false, 7, 35, 70)
+                Promise.all(base64_o_i.map((entry) => {return toBytes(entry[1]); })),
+                this.get_base64_png_data_url(1, false, 9, 30, 50)
             ]).then((responses) => {
-
-                Array.from(responses[0]).forEach((img_1, index) => {
+                "use strict";
+                Array.from(responses[0]).forEach(function (img_1, index) {
                     base64_o_i[index][1] = img_1;
                 });
 
                 _json_state_history = {
                     history_position: parseInt(_json_state_history.history_position),
                     state_history: _json_state_history.state_history.map(function(state){
+                        "use strict";
                         return Object.assign({}, {
                             _original_image_index: parseInt(state._original_image_index),
                             pxl_width: parseInt(state.pxl_width),
                             pxl_height: parseInt(state.pxl_height),
-                            _pxl_indexes_of_selection: Boolean(state._pxl_indexes_of_selection.length) ? new SetFixed(state._pxl_indexes_of_selection) : new SetFixed(state.pxl_width * state.pxl_height),
+                            _pxl_indexes_of_selection: state._pxl_indexes_of_selection.indexes,
                             _s_pxls: Array.from(state._s_pxls.map(function(a){return Uint16Array.from(a)})),
                             _s_pxl_colors:  Array.from(state._s_pxl_colors.map(function(a){return Uint32Array.from(a)})),
                             _layers: Array.from(state._layers.map(function(l) {
+                                "use strict";
                                 return Object.assign({}, {
                                     id: parseInt(l.id),
                                     hash: l.hash + "",
@@ -2923,7 +2929,7 @@ class CanvasPixels extends React.PureComponent {
         let min_sat = 100;
         let max_sat = 0;
 
-        intensity = parseFloat(intensity) * 255 | 0;
+        intensity = Math.round(parseFloat(intensity) * 255) | 0;
         let saturation = 0;
         let color;
         let colors = SIMDopeColors(pxl_colors);
@@ -3345,7 +3351,7 @@ class CanvasPixels extends React.PureComponent {
         let min_grey = 255;
         let max_grey = 0;
 
-        intensity = parseFloat(intensity) * 255 | 0;
+        intensity = Math.round(parseFloat(intensity) * 255) | 0;
         let greyscale = 0;
         let color =  new SIMDopeColor(new ArrayBuffer(4));
         let colors = SIMDopeColors(pxl_colors);

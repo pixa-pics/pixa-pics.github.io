@@ -188,7 +188,7 @@ const CanvasFilters = {
                 "use strict";
 
                 pxl_colors = Uint32Array.from(pxl_colors);
-                intensity = parseFloat(intensity) * 255 | 0;
+                intensity = Math.round(parseFloat(intensity) * 255) | 0;
                 let colors_length = pxl_colors.length | 0;
                 let rgba_colors_length = colors_length * 4 | 0;
                 let old_pxl_colors = new Uint8Array(pxl_colors.buffer);
@@ -196,7 +196,7 @@ const CanvasFilters = {
                 let rgba = new Uint8ClampedArray(4);
 
                 function CLAMP_INT( x,min,max ) {
-
+                    "use strict";
                     x = x|0; min = min|0; max = max|0;
                     x = (x - ((x - max) & ((max - x) >> 31))) | 0;
                     return (x - ((x - min) & ((x - min) >> 31))) | 0;
@@ -238,10 +238,11 @@ const CanvasFilters = {
 
                 var new_colors = new SIMDopeColors(pxl_colors_rgba.buffer);
                 var old_colors = new SIMDopeColors(pxl_colors.buffer);
+                var color_a = new SIMDopeColor(new ArrayBuffer(4)), color_b = new SIMDopeColor(new ArrayBuffer(4));
 
                 for(var i = 0; (i|0) < (colors_length|0); i = (i+1|0)>>>0){
 
-                    old_colors.get_element(i|0).blend_with(new_colors.get_element(i|0), intensity, false, false);
+                    old_colors.get_element(i|0, color_a).blend_with(new_colors.get_element(i|0, color_b), intensity, false, false);
                 }
 
                 return new_colors.slice_uint32(0, old_colors.length);

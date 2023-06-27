@@ -2140,7 +2140,7 @@ class Pixel extends React.PureComponent {
 
         if(typeof color.rgb !== "undefined") {
 
-            color = SIMDopeColor.new_of(color.rgb.r, color.rgb.g, color.rgb.b, parseInt(color.rgb.a * 255)).hex;
+            color = SIMDopeColor.new_of(color.rgb.r, color.rgb.g, color.rgb.b, Math.round(parseInt(color.rgb.a * 255))).hex;
         }else {
 
             color = SIMDopeColor.new_hex(color).hex;

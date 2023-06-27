@@ -247,7 +247,7 @@ SuperBlend.prototype.blend = function(should_return_transparent, alpha_addition)
 
             if((hover_data_in_layer[i | 0]|0) > 0) {
                 layers_colors[0].blend_first_with_tails(alpha_addition)
-                layers_colors[0].blend_first_with(layers_colors[0].is_dark() ? color_less_uint8x4 : color_full_uint8x4, hover_data_in_layer[i | 0], false, alpha_addition);
+                layers_colors[0].blend_first_with(layers_colors[0].is_dark() ? color_less_uint8x4 : color_full_uint8x4, hover_data_in_layer[i | 0], false, false);
             }else {
                 layers_colors[0].blend_first_with_tails(alpha_addition);
             }

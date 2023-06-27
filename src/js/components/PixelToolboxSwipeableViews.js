@@ -826,7 +826,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                         >
                             <RgbaColorPicker className={classes.materialPicker}
                                           color={current_color_rgba}
-                                          onChange={(c) => {this._handle_current_color_change(SIMDopeColor.new_of(c.r, c.g, c.b, c.a*255|0).hex)}}/>
+                                          onChange={(c) => {this._handle_current_color_change(SIMDopeColor.new_of(c.r, c.g, c.b, Math.round(c.a*255)|0).hex)}}/>
                         </Menu>
 
                         <div style={{textAlign: "center"}}>

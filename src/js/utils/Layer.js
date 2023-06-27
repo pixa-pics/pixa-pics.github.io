@@ -265,7 +265,7 @@ Layer.prototype.auto_adjust_contrast = function (intensity) {
     let min_sat = 100;
     let max_sat = 0;
 
-    intensity = parseFloat(intensity) * 255 | 0;
+    intensity = Math.round(parseFloat(intensity) * 255) | 0;
     let saturation = 0;
     let color;
     let colors = this.simdope_colors_;

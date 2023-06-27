@@ -123,7 +123,7 @@ const SuperState = {
                 s = s || {};
                 callback_function = callback_function || function(){};
                 color = color | 0;
-                opacity = opacity * 255 | 0;
+                opacity = Math.round(opacity * 255) | 0;
                 let indexes_length = pxl_indexes.length|0;
 
                 if(indexes_length > 0) {
@@ -132,25 +132,24 @@ const SuperState = {
                     let pxl_colors = state_._s_pxl_colors[state_._layer_index];
                     let pxls = state_._s_pxls[state_._layer_index];
                     let sd_color_a = new Uint32Array(indexes_length);
-                    let sd_color_a2 = new Uint32Array(indexes_length);
-                        sd_color_a2.fill(color|0);
+                    let sd_color_a2 = Uint32Array.of(color);
                     let sd_colors = new SIMDopeColors(sd_color_a);
                     let sd_colors2 = new SIMDopeColors(sd_color_a2);
-                    let color_a = new SIMDopeColor(new ArrayBuffer(4)), color_b = new SIMDopeColor(new ArrayBuffer(4));
+                    let color_a = new SIMDopeColor(new ArrayBuffer(4)), color_b = sd_colors2.get_element(0);
 
                     for(let i = 0; (i|0) < (indexes_length|0); i = (i + 1 | 0)>>>0) {
                         sd_color_a[i|0] = pxl_colors[pxls[pxl_indexes[i|0]|0]] & 0xFFFFFFFF;
                     }
 
                     for(let i = 0; (i|0) < (indexes_length|0); i = (i + 1 | 0)>>>0) {
-                        sd_colors.get_element(i|0, color_a).blend_with(sd_colors2.get_element(i|0, color_b), opacity, false, false);
+                        sd_colors.get_element(i|0, color_a).blend_first_with(color_b, opacity, false, false);
                     }
 
                     let new_ui32_colors = sd_colors.subarray_uint32(0, indexes_length);
                     let colors = new Set(pxl_colors);
 
                     new_ui32_colors.forEach(function (ui32){
-
+                        "use strict";
                         colors.add(ui32);
                     });
 
