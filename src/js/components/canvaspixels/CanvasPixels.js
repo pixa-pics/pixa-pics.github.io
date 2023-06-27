@@ -1276,10 +1276,10 @@ class CanvasPixels extends React.PureComponent {
 
     _set_canvas_ref = (can) => {
 
-        if(typeof can === "undefined") {return}
-        if(can === null) {return}
-        if(typeof can.width === "undefined") {return}
-        if(can.width === null) {return}
+        if(typeof can === "undefined") {return this._set_size();}
+        if(can === null) {return this._set_size();}
+        if(typeof can.width === "undefined") {return this._set_size();}
+        if(can.width === null) {return this._set_size();}
 
         let { pxl_width, pxl_height } = this.super_state.get_state();
         this.super_canvas.new(can, pxl_width, pxl_height);
@@ -1986,6 +1986,8 @@ class CanvasPixels extends React.PureComponent {
 
                     if(has_new_dimension) {
                         this._set_size();
+                    }else {
+                        this.super_master_meta.update_canvas(true);
                     }
                     this._notify_is_something_selected();
                     this._notify_can_undo_redo_change();
@@ -2039,6 +2041,8 @@ class CanvasPixels extends React.PureComponent {
 
                     if(has_new_dimension) {
                         this._set_size();
+                    }else {
+                        this.super_master_meta.update_canvas(true);
                     }
 
                     this._notify_is_something_selected();

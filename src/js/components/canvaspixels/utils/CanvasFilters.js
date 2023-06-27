@@ -238,14 +238,13 @@ const CanvasFilters = {
 
                 var new_colors = new SIMDopeColors(pxl_colors_rgba.buffer);
                 var old_colors = new SIMDopeColors(pxl_colors.buffer);
-                var color_a = new SIMDopeColor(new ArrayBuffer(4)), color_b = new SIMDopeColor(new ArrayBuffer(4));
 
                 for(var i = 0; (i|0) < (colors_length|0); i = (i+1|0)>>>0){
 
-                    old_colors.get_element(i|0, color_a).blend_with(new_colors.get_element(i|0, color_b), intensity, false, false);
+                    old_colors.get_element(i|0).blend_with(new_colors.get_element(i|0), intensity, false, false);
                 }
 
-                return new_colors.slice_uint32(0, old_colors.length);
+                return pxl_colors;
             }
         };
     }

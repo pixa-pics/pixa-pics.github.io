@@ -70,6 +70,7 @@ import ZoomIn from "@material-ui/icons/ZoomIn";
 import ZoomOut from "@material-ui/icons/ZoomOut";
 import PixelDialogText from "../components/PixelDialogText";
 import {SIMDopeColor} from "simdope";
+import SmartRequestAnimationFrame from "../components/canvaspixels/utils/SmartRequestAnimationFrame";
 
 const styles = theme => ({
     green: {
@@ -665,6 +666,7 @@ class Pixel extends React.PureComponent {
             _time_ago_initiated: false,
             _settings: JSON.parse(props.settings)
         };
+        this.sraf = Object.create(SmartRequestAnimationFrame).init();
     };
 
     setSt4te(st4te, callback) {
@@ -697,7 +699,7 @@ class Pixel extends React.PureComponent {
 
             this.setSt4te({_time_ago_initiated: true}, () => {
 
-                this.forceUpdate();
+                this._request_force_update();
             });
         }, true);
     }
@@ -756,6 +758,18 @@ class Pixel extends React.PureComponent {
         this._set_saved_at_element();
     }
 
+    _request_force_update = (can_be_cancelable, especially_dont_force) => {
+
+        "use strict";
+        can_be_cancelable = typeof can_be_cancelable == "undefined" ? true: can_be_cancelable;
+        especially_dont_force = typeof especially_dont_force == "undefined" ? true: especially_dont_force;
+
+        return this.sraf.run_frame(  () => {
+            "use strict";
+            this.forceUpdate();
+        }, !Boolean(can_be_cancelable), !Boolean(especially_dont_force)).catch(this._request_force_update)
+    }
+
     _set_fps_and_xy_elements = () => {
         
         this.setSt4te({_fps_el: document.getElementById("fps_el"), _xy_el: document.getElementById("xy_el")});
@@ -803,7 +817,7 @@ class Pixel extends React.PureComponent {
 
             api.get_settings(this._process_settings_info_result);
             setTimeout(() => {
-                this.setSt4te({_is_pixel_dialog_create_open: Boolean(load_with.length === 0)}, () => { this.forceUpdate(); });
+                this.setSt4te({_is_pixel_dialog_create_open: Boolean(load_with.length === 0)}, () => { this._request_force_update(); });
             }, 725);
         }else {
 
@@ -822,7 +836,7 @@ class Pixel extends React.PureComponent {
 
                             this.setSt4te({_kb: 0, _saved_at: 1/0}, () => {
 
-                                this.forceUpdate();
+                                this._request_force_update();
                             });
                             this.st4te._canvas.set_canvas_from_image(img, base64, {}, true);
                             this._handle_load_complete("image_preload", {});
@@ -893,7 +907,7 @@ class Pixel extends React.PureComponent {
 
             this.setSt4te({_kb: current_state.kb, _saved_at: Date.now()}, () => {
 
-                this.forceUpdate();
+                this._request_force_update();
                 api.set_settings({}, (err, res) => {
 
                     if(err) {
@@ -957,7 +971,7 @@ class Pixel extends React.PureComponent {
                 let ap = Object.assign({}, this.st4te._attachment_previews);
                 delete ap["json_state-ID" + id + ".json.lz"];
                 this.setSt4te({_attachment_previews: ap}, () => {
-                    this.forceUpdate();
+                    this._request_force_update();
                 });
             }else {
 
@@ -980,10 +994,8 @@ class Pixel extends React.PureComponent {
             
             if(update){
                 
-                this.forceUpdate(() => {
-                    
-                   this._set_fps_and_xy_elements(); 
-                });
+                this._request_force_update();
+               this._set_fps_and_xy_elements();
             }
         })
     }
@@ -1023,7 +1035,7 @@ class Pixel extends React.PureComponent {
 
         this.setSt4te({_menu_mouse_x: null, _menu_mouse_y: null}, () => {
 
-            this.forceUpdate();
+            this._request_force_update();
         });
     };
 
@@ -1039,7 +1051,7 @@ class Pixel extends React.PureComponent {
             _menu_event: event,
         }, () => {
 
-            this.forceUpdate();
+            this._request_force_update();
         });
     };
 
@@ -1062,7 +1074,7 @@ class Pixel extends React.PureComponent {
 
             this.setSt4te({_attachment_previews}, () => {
 
-                this.forceUpdate();
+                this._request_force_update();
             });
         }
     };
@@ -1082,14 +1094,14 @@ class Pixel extends React.PureComponent {
 
             this.setSt4te({_kb: data.kb, _saved_at: Date.now()}, () => {
 
-                this.forceUpdate();
+                this._request_force_update();
             });
 
             import_JS_state(data, () => {
 
                 this.setSt4te({ _is_pixel_dialog_create_open: false, _attachment_previews: {}}, () => {
 
-                    this.forceUpdate();
+                    this._request_force_update();
                 });
             });
         }
@@ -1117,7 +1129,8 @@ class Pixel extends React.PureComponent {
 
         this.setSt4te({...props, _previous_view_name_index: previous_name_index || this.st4te._view_name_index, _view_name_index}, () => {
 
-            this.forceUpdate();
+            this._set_props_bypass_this();
+            this._request_force_update();
         });
     }
 
@@ -1148,7 +1161,8 @@ class Pixel extends React.PureComponent {
 
             this.setSt4te({...props, _previous_view_name_index: previous_name_index || this.st4te._view_name_index, _view_name_index}, () => {
 
-                this.forceUpdate();
+                this._set_props_bypass_this();
+                this._request_force_update();
             });
         }
     };
@@ -1428,7 +1442,7 @@ class Pixel extends React.PureComponent {
                     });
                     this.setSt4te({_files_waiting_download}, () => {
 
-                        this.forceUpdate();
+                        this._request_force_update();
                     });
 
                     actions.trigger_voice("processing");
@@ -1441,7 +1455,7 @@ class Pixel extends React.PureComponent {
                         });
                         this.setSt4te({_files_waiting_download}, () => {
 
-                            this.forceUpdate();
+                            this._request_force_update();
 
                             if(maybe_upscale_with_ai) {
 
@@ -1462,7 +1476,7 @@ class Pixel extends React.PureComponent {
                                                         url: ""+base_64_out
                                                     });
 
-                                                    this.setSt4te({_files_waiting_download}, this.forceUpdate);
+                                                    this.setSt4te({_files_waiting_download}, this._request_force_update);
 
                                                 }).catch(function(e){
 
@@ -1475,7 +1489,7 @@ class Pixel extends React.PureComponent {
                                                                 url: ""+base_64_out
                                                             });
 
-                                                            this.setSt4te({_files_waiting_download}, this.forceUpdate);
+                                                            this.setSt4te({_files_waiting_download}, this._request_force_update);
 
                                                         }).catch(function(e){
 
@@ -1518,7 +1532,7 @@ class Pixel extends React.PureComponent {
                             });
                             this.setSt4te({_files_waiting_download}, () => {
 
-                                this.forceUpdate();
+                                this._request_force_update();
                             });
                         }
 
@@ -1539,7 +1553,7 @@ class Pixel extends React.PureComponent {
                             });
                             this.setSt4te({_files_waiting_download}, () => {
 
-                                this.forceUpdate();
+                                this._request_force_update();
                             });
                         }
 
@@ -1595,7 +1609,7 @@ class Pixel extends React.PureComponent {
 
             this.setSt4te({_files_waiting_download}, () => {
 
-                this.forceUpdate();
+                this._request_force_update();
             });
         }
     };
@@ -1633,7 +1647,7 @@ class Pixel extends React.PureComponent {
 
         this.setSt4te({_library_dialog_open: true, _library_type: "open"}, () => {
 
-            this.forceUpdate();
+            this._request_force_update();
         });
     };
 
@@ -1641,7 +1655,7 @@ class Pixel extends React.PureComponent {
 
         this.setSt4te({_library_dialog_open: false}, () => {
 
-            this.forceUpdate();
+            this._request_force_update();
         });
     };
 
@@ -1658,7 +1672,7 @@ class Pixel extends React.PureComponent {
 
                 this.setSt4te({_kb: 0, _saved_at: 1/0}, () => {
 
-                    this.forceUpdate();
+                    this._request_force_update();
                 });
                 set_canvas_from_image(img);
             }else if(_library_type === "import"){
@@ -1997,7 +2011,7 @@ class Pixel extends React.PureComponent {
 
         this.setSt4te({_library_dialog_open: true, _library_type: "import"}, () => {
 
-            this.forceUpdate();
+            this._request_force_update();
         });
     };
 
@@ -2006,7 +2020,7 @@ class Pixel extends React.PureComponent {
         actions.trigger_loading_update(0);
         this.setSt4te({_loading: true, _loading_process: process}, () => {
 
-            this.forceUpdate();
+            this._request_force_update();
         });
 
         if(process === "image_preload"){
@@ -2022,7 +2036,7 @@ class Pixel extends React.PureComponent {
         actions.trigger_loading_update(100);
         this.setSt4te({_loading: false, _loading_process: process}, () => {
 
-            this.forceUpdate();
+            this._request_force_update();
         });
 
         if(process === "less_color" || process === "less_color_auto") {
@@ -2123,7 +2137,7 @@ class Pixel extends React.PureComponent {
         const update = Boolean(this.st4te._can_undo !== _can_undo || this.st4te._can_redo !== _can_redo);
         this.setSt4te({_can_undo, _can_redo}, () => {
 
-            if(update){this.forceUpdate();}
+            if(update){this._request_force_update();}
         })
     }
 
@@ -2132,7 +2146,7 @@ class Pixel extends React.PureComponent {
         const update = Boolean(this.st4te._width !== _width || this.st4te._height !== _height);
         this.setSt4te({_width, _height}, () => {
 
-            if(update){this.forceUpdate();}
+            if(update){this._request_force_update();}
         });
     }
 
@@ -2181,23 +2195,32 @@ class Pixel extends React.PureComponent {
         const update = Boolean(this.st4te._is_something_selected !== _is_something_selected);
         this.setSt4te({_is_something_selected}, () => {
 
-            if(update){this.forceUpdate();}
+            if(update){this._request_force_update();}
         });
     };
 
     _set_value_from_slider_with_update = (event, value) => {
 
-        this.setSt4te({_slider_value: value || event.target.value});
+        this.setSt4te({_slider_value: value || event.target.value}, () => {
+
+            this._set_props_bypass_this();
+        });
     };
 
     _set_width_from_slider = (event, value) => {
 
-        this.setSt4te({_slider_value_width: value || event.target.value});
+        this.setSt4te({_slider_value_width: value || event.target.value}, () => {
+
+            this._set_props_bypass_this();
+        });
     };
 
     _set_height_from_slider = (event, value) => {
 
-        this.setSt4te({_slider_value_height: value || event.target.value});
+        this.setSt4te({_slider_value_height: value || event.target.value}, () => {
+
+            this._set_props_bypass_this();
+        });
     };
 
     _set_import_size = (event, value) => {
@@ -2281,7 +2304,7 @@ class Pixel extends React.PureComponent {
 
         this.setSt4te({_is_image_import_mode: is_image_import_mode}, () => {
 
-            this.forceUpdate();
+            this._request_force_update();
         });
     };
 
@@ -2309,7 +2332,7 @@ class Pixel extends React.PureComponent {
     };
 
     _set_props_bypass_this = () => {
-
+        "use strict";
         const {
             _view_name_index,
             _previous_view_name_index,
@@ -2418,7 +2441,7 @@ class Pixel extends React.PureComponent {
         const update = Boolean(this.st4te._is_edit_drawer_open !== _is_edit_drawer_open || this.st4te._view_name_index !== _view_name_index);
         this.setSt4te({_is_edit_drawer_open, _view_name_index, _view_name_sub_index}, () => {
 
-            if(update){this.forceUpdate();}
+            if(update){this._request_force_update();}
         });
     };
 
@@ -2427,7 +2450,7 @@ class Pixel extends React.PureComponent {
         const update = Boolean(this.st4te._is_edit_drawer_open !== false);
         this.setSt4te({_is_edit_drawer_open: false}, () => {
 
-            if(update){this.forceUpdate();}
+            if(update){this._request_force_update();}
         });
     };
 
@@ -2503,7 +2526,7 @@ class Pixel extends React.PureComponent {
 
         this.setSt4te({_is_pixel_dialog_create_open: false, _attachment_previews: {}}, () => {
 
-            this.forceUpdate();
+            this._request_force_update();
         });
     };
 
@@ -2515,7 +2538,7 @@ class Pixel extends React.PureComponent {
 
         api.get_settings(this._process_settings_info_result);
         setTimeout(() => {
-            this.setSt4te({_is_pixel_dialog_create_open: true}, () => { this.forceUpdate(); });
+            this.setSt4te({_is_pixel_dialog_create_open: true}, () => { this._request_force_update(); });
         }, 1450);
 
     };
@@ -2574,7 +2597,7 @@ class Pixel extends React.PureComponent {
 
         this.setSt4te({_perspective: new_perspective}, () => {
 
-            this.forceUpdate();
+            this._request_force_update();
         });
     };
 
@@ -2587,7 +2610,7 @@ class Pixel extends React.PureComponent {
 
         this.setSt4te({_text_dialog_open: false}, () => {
 
-            this.forceUpdate();
+            this._request_force_update();
         });
     };
 
@@ -2595,7 +2618,7 @@ class Pixel extends React.PureComponent {
 
         this.setSt4te({_text_dialog_open: true}, () => {
 
-            this.forceUpdate();
+            this._request_force_update();
         });
     };
 
@@ -2707,9 +2730,10 @@ class Pixel extends React.PureComponent {
                                     Effect strength :
                                 </Typography>
                                 <Slider
+                                    key={"slider-"+(_slider_value*255 | 0)}
                                     className={classes.effectSlider}
                                     defaultValue={_slider_value}
-                                    step={1/32}
+                                    step={1/255}
                                     min={0}
                                     max={1}
                                     onChangeCommitted={this._set_value_from_slider_with_update}
@@ -2805,10 +2829,10 @@ class Pixel extends React.PureComponent {
                                 Effect strength :
                             </Typography>
                             <Slider
-                                key={"slider-"+(_slider_value*64 | 0)}
+                                key={"slider-"+(_slider_value*255 | 0)}
                                 defaultValue={_slider_value}
                                 className={classes.effectSlider}
-                                step={1/64}
+                                step={1/255}
                                 min={0}
                                 max={1}
                                 onChangeCommitted={this._set_value_from_slider_with_update}
