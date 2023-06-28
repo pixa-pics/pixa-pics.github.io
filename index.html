@@ -216,6 +216,9 @@
                             }
                         }
                         document.body.innerHTML = null;
+                        var element = document.createElement("div");
+                        element.setAttribute("id", "app");
+                        document.body.appendChild(element);
                         console.log("Made cleaning in source files to load the application.")
                     }
 
