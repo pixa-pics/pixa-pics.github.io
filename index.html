@@ -1,333 +1,341 @@
 <!DOCTYPE html>
 <html lang="en" translate="no" style="overflow: hidden">
-    <head>
-        <meta name="google" content="notranslate" />
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<head>
+    <meta name="google" content="notranslate" />
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 
-        <!-- Title + Description meta data -->
-        <title id="meta-title">PIXA.PICS - Pixel-Art/NFTs LAB. Make potential possible yet (un)limited.</title>
-        <meta name="description" content="Apply effects into it? Yes? Let's draw with «PIXA.PICS» lovely minima of real-life pictures to enhance well privacy and for selling it greatly as NFTs too.">
-        <meta name="keywords" content="Pixel, Art, Anonymous, NFT, Crypto, Red, Free, Secure, Progressive, Web, App, Offline, Free, Open-Source, ">
+    <!-- Title + Description meta data -->
+    <title id="meta-title">PIXA.PICS - Pixel-Art Editor & NFTs Laboratory</title>
+    <meta name="description" content="Make pixel art from real life images and draw on the image you can edit for free, filters, layers, library, are within the editor.">
+    <meta name="keywords" content="Pixel, Art, Anonymous, NFT, Crypto, Red, Free, Secure, Progressive, Web, App, Offline, Free, Open-Source, ">
 
+    <!-- CSS -->
+    <style>
+        body.loaded {
+            content-visibility: initial;
+            background-color: #fafafa;
+        }
+        body.loaded::after {
+            content: "";
+            content-visibility: auto;
+            contain: paint style size layout !important;
+            position: fixed;
+            width: 100vw;
+            z-index: 9999999;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            background-image: radial-gradient(#0d00cd22 30%, #0d00cdbf 40%, #5e4eff00 45%, #0d00cdbf 60%, #00000000 65%) !important;
+            background-color: transparent !important;
+            background-size: 400% 150% !important;
+            background-position: 50% 50% !important;
+            animation-iteration-count: 1 !important;
+            animation-delay: 250ms !important;
+            animation-fill-mode: both !important;
+            animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1) !important;
+            animation-name: ripup !important;
+            animation-duration: 1250ms !important;
+        }
+        @keyframes ripup {
+            0% {display: block !important; transform: translateY(175%); opacity: .6 }
+            15% { display: block !important; transform: translateY(75%); opacity: 1  }
+            30% { display: block !important; transform: translateY(25%); opacity: 0  }
+            60% { display: block !important; transform: translateY(-75%); opacity: 0  }
+            100% { display: block !important; transform: translateY(-100%); opacity: 0  }
+        }
+        @keyframes ripup {
+            0% {display: block !important; transform: translateY(175%); opacity: .6 }
+            15% { display: block !important; transform: translateY(75%); opacity: 1  }
+            30% { display: block !important; transform: translateY(25%); opacity: 0  }
+            60% { display: block !important; transform: translateY(-75%); opacity: 0  }
+            100% { display: block !important; transform: translateY(-100%); opacity: 0  }
+        }
+        body.loaded > #app {
+            contain: paint style layout;
+            content-visibility: visible;
+            position: fixed;
+            will-change: auto;
+            overflow: hidden;
+        }
+        body.loading[datainitiated=true] > #app {
+            contain: paint style layout;
+            will-change: contents;
+            content-visibility: visible;
+        }
+        body.loading[datainitiated=false] > #app {
+            contain: size paint style layout;
+            will-change: auto;
+            content-visibility: hidden;
+        }
+        body.loading[datainitiated=false] {
+            animation-fill-mode: both;
+            animation-name: bounce;
+            animation-duration: 1000ms;
+            animation-delay: 450ms;
+            animation-timing-function: ease-in-out;
+            animation-iteration-count: infinite;
+            overflow: hidden;
+        }
+        @keyframes bounce {
+            0% {filter: brightness(1) contrast(1);transform: scale(1.1);}
+            25% {filter: brightness(1.3) contrast(0.85);transform: scale(1.15);}
+            50% {filter: brightness(1) contrast(1);transform: scale(1);}
+            75% { filter: brightness(1.1) contrast(0.95); transform: scale(1.15); }
+            100% { filter: brightness(1) contrast(1); transform: scale(1.1); }
+        }
+        body::after {
+            content-visibility: auto;
+            pointer-events: none;
+            contain: size paint style layout;
+            content: " ";
+            position: fixed;
+            z-index: 9999999;
+            -ms-interpolation-mode: nearest-neighbor;
+            image-rendering: optimizeSpeed;
+            image-rendering: -o-crisp-edges;
+            image-rendering: -webkit-crisp-edges;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+            image-rendering: pixelated;
+            background-color: #fff;
+            background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACYAAAAmBAMAAABaE/SdAAAAIVBMVEVHcEzu+PfCGDQGAAWFDT2XtsNc1sXroqWZXNYKQaNl1lzIuMb2AAAAAXRSTlMAQObYZgAAAOlJREFUKM/VkkFqAjEUhgM5wRMk3fp8xS5Dnw51O74LTCF6ghHaXWfjAUSR7tyIJxCP2X8iygw9gVl+fMn78yfOPenyihX7qKAR87gHZ4koGI+72rIiogFzR/Q1DQG57IhFDRJGEPWhnb7avRS4FEWEzH6/qywys8T3t/bU+cv+CNY0Agi2bZm/gP1gCCMPq2aWvc2kFJwoMT48jIBnsshz5259pBB4KGJmN+YP+5xlJabTxS2iP19b1kywz9/bKdbooEkI59z9yh+7uqL0ydbtoFim9Mqmvf7qVUpisV/91FT134M80/f5A7PVL60QaHlpAAAAAElFTkSuQmCC");
+            background-size: 50%;
+            background-position: center;
+            background-repeat: no-repeat;
+            box-sizing: border-box;
+            background-clip: padding-box;
+            padding: 0;
+            margin: 0;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            height: 100vh;
+            width: 100vw;
+            transform-origin: center;
+            will-change: auto;
+            animation-fill-mode: both;
+            animation-name: bounce-in;
+            animation-duration: 400ms;
+            animation-delay: 0ms;
+            animation-timing-function: ease;
+            animation-iteration-count: 1;
+        }
+        @keyframes bounce-in {
+            0% {
+                filter: opacity(0);
+                transform: scale(0);
+            }
+            50% {
+                filter: opacity(1.1);
+                transform: scale(1.2);
+            }
+            75% { transform: scale(1); }
+            100% { transform: scale(1.1); }
+        }
+        body.loading  {
+            font-size: 0 !important;
+            content-visibility: visible;
+            background-color: #fff;
+            contain: size paint style layout;
+            padding: 0;
+            margin: 0;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            min-height: 100vh;
+            min-width: 100vw;
+        }
+        body[datainitiated=true]::after {
+            contain: size paint style layout;
+            animation-iteration-count: 1;
+            animation-delay: 5ms;
+            animation-fill-mode: both;
+            animation-timing-function: ease-out;
+            animation-name: zoom-out;
+            animation-duration: 75ms;
+        }
+        @keyframes zoom-out {
+            0% {
+                transform: translateZ(10px) scale(1);
+                filter: opacity(1);
+                content-visibility: auto !important;
+            }
+            100% {
+                transform: translateZ(10px) scale(6);
+                filter: opacity(0);
+                content-visibility: hidden !important;
+            }
+        }
+    </style>
 
-        <!-- CSS -->
-        <style>
-            body.loaded {
-                content-visibility: visible;
-                background-color: #fafafa;
-            }
-            body.loaded::after {
-                content: "";
-                content-visibility: auto;
-                contain: paint style size layout !important;
-                position: fixed;
-                width: 100vw;
-                z-index: 9999999;
-                top: 0;
-                left: 0;
-                height: 100vh;
-                background-image: radial-gradient(#0d00cd22 30%, #0d00cdbf 40%, #5e4eff00 45%, #0d00cdbf 60%, #00000000 65%) !important;
-                background-color: transparent !important;
-                background-size: 400% 150% !important;
-                background-position: 50% 50% !important;
-                animation-iteration-count: 1 !important;
-                animation-delay: 250ms !important;
-                animation-fill-mode: both !important;
-                animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1) !important;
-                animation-name: ripup !important;
-                animation-duration: 1250ms !important;
-            }
-            @keyframes ripup {
-                0% {display: block !important; transform: translateY(175%); opacity: .6 }
-                15% { display: block !important; transform: translateY(75%); opacity: 1  }
-                30% { display: block !important; transform: translateY(25%); opacity: 0  }
-                60% { display: block !important; transform: translateY(-75%); opacity: 0  }
-                100% { display: block !important; transform: translateY(-100%); opacity: 0  }
-            }
-            body.loaded > #app {
-                contain: paint style layout;
-                content-visibility: initial;
-                position: fixed;
-                will-change: auto;
-                overflow: hidden;
-            }
-            body.loading[datainitiated=true] > #app {
-                contain: paint style layout;
-                will-change: contents;
-                content-visibility: visible;
-            }
-            body.loading[datainitiated=false] > #app {
-                contain: size paint style layout;
-                will-change: auto;
-                content-visibility: hidden;
-            }
-            body.loading[datainitiated=false] {
-                animation-fill-mode: both;
-                animation-name: bounce;
-                animation-duration: 1000ms;
-                animation-delay: 450ms;
-                animation-timing-function: ease-in-out;
-                animation-iteration-count: infinite;
-                overflow: hidden;
-            }
-            @keyframes bounce {
-                0% {filter: brightness(1) contrast(1);transform: scale(1.1);}
-                25% {filter: brightness(1.3) contrast(0.85);transform: scale(1.15);}
-                50% {filter: brightness(1) contrast(1);transform: scale(1);}
-                75% { filter: brightness(1.1) contrast(0.95); transform: scale(1.15); }
-                100% { filter: brightness(1) contrast(1); transform: scale(1.1); }
-            }
-            body::after {
-                content-visibility: auto;
-                pointer-events: none;
-                contain: size paint style layout;
-                content: " ";
-                position: fixed;
-                z-index: 9999999;
-                -ms-interpolation-mode: nearest-neighbor;
-                image-rendering: optimizeSpeed;
-                image-rendering: -o-pixelated;
-                image-rendering: -webkit-optimize-contrast;
-                image-rendering: -webkit-crisp-edges;
-                image-rendering: -moz-crisp-edges;
-                image-rendering: crisp-edges;
-                image-rendering: pixelated;
-                background-color: #fff;
-                background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACYAAAAmBAMAAABaE/SdAAAAIVBMVEVHcEzu+PfCGDQGAAWFDT2XtsNc1sXroqWZXNYKQaNl1lzIuMb2AAAAAXRSTlMAQObYZgAAAOlJREFUKM/VkkFqAjEUhgM5wRMk3fp8xS5Dnw51O74LTCF6ghHaXWfjAUSR7tyIJxCP2X8iygw9gVl+fMn78yfOPenyihX7qKAR87gHZ4koGI+72rIiogFzR/Q1DQG57IhFDRJGEPWhnb7avRS4FEWEzH6/qywys8T3t/bU+cv+CNY0Agi2bZm/gP1gCCMPq2aWvc2kFJwoMT48jIBnsshz5259pBB4KGJmN+YP+5xlJabTxS2iP19b1kywz9/bKdbooEkI59z9yh+7uqL0ydbtoFim9Mqmvf7qVUpisV/91FT134M80/f5A7PVL60QaHlpAAAAAElFTkSuQmCC");
-                background-size: 50%;
-                background-position: center;
-                background-repeat: no-repeat;
-                box-sizing: border-box;
-                background-clip: padding-box;
-                padding: 0;
-                margin: 0;
-                top: 0;
-                left: 0;
-                bottom: 0;
-                right: 0;
-                height: 100vh;
-                width: 100vw;
-                transform-origin: center;
-                will-change: auto;
-                animation-fill-mode: both;
-                animation-name: bounce-in;
-                animation-duration: 400ms;
-                animation-delay: 0ms;
-                animation-timing-function: ease;
-                animation-iteration-count: 1;
-            }
-            @keyframes bounce-in {
-                0% {
-                    filter: opacity(0);
-                    transform: scale(0);
-                }
-                50% {
-                    filter: opacity(1.1);
-                    transform: scale(1.2);
-                }
-                75% { transform: scale(1); }
-                100% { transform: scale(1.1); }
-            }
-            body.loading  {
-                font-size: 0 !important;
-                content-visibility: visible;
-                background-color: #fff;
-                contain: size paint style layout;
-                padding: 0;
-                margin: 0;
-                top: 0;
-                left: 0;
-                bottom: 0;
-                right: 0;
-                min-height: 100vh;
-                min-width: 100vw;
-            }
-            body[datainitiated=true]::after {
-                contain: size paint style layout;
-                animation-iteration-count: 1;
-                animation-delay: 5ms;
-                animation-fill-mode: both;
-                animation-timing-function: ease-out;
-                animation-name: zoom-out;
-                animation-duration: 75ms;
-            }
-            @keyframes zoom-out {
-                0% {
-                    transform: translateZ(10px) scale(1);
-                    background-blend-mode: darken;
-                    filter: opacity(1);
-                    content-visibility: auto !important;
-                }
-                100% {
-                    transform: translateZ(10px) scale(6);
-                    background-blend-mode: darken;
-                    filter: opacity(0);
-                    content-visibility: hidden !important;
-                }
-            }
-        </style>
+    <!-- Service worker -->
+    <script type="text/javascript">
 
-        <!-- Service worker -->
-        <script type="text/javascript">
-
+        "use strict";
+        /* LOAD JS FILE (in two "moves") */
+        var _FIRED_IT_STATE = "";
+        var _LET_FIRE_IT = function(is_service_worker_activation_successful) {
             "use strict";
-            /* LOAD JS FILE (in two "moves") */
-            var _FIRED_IT_STATE = "";
-            var _LET_FIRE_IT = function(is_service_worker_activation_successful) {
+            return new Promise(function(resolve, reject){
+                "use strict";
+                var _MAIN_JS_FILE_ENDS_WITH = "norris.min.js";
+                var _PRE_FILES = Array.of("/client/chunk_main_690b702c.min.js", "/client/chunk_main_748942c6.min.js",);
+                var _POST_FILES = Array.of( "/src/fonts/jura/index.css", "/client/chunk_norris.min.js", "/src/fonts/baksheesh/index.css");
 
-                return new Promise(function(resolve, reject){
+                if (is_service_worker_activation_successful) { console.log("GREAT, the service worker has been activated with success.") } else {console.log("GOOD, the service worker installation has been ignored successfully.")}
 
-                    var _MAIN_JS_FILE_ENDS_WITH = "norris.min.js";
-                    var _PRE_FILES = Array.of("/client/chunk_main_690b702c.min.js", "/client/chunk_main_748942c6.min.js",);
-                    var _POST_FILES = Array.of( "/src/fonts/jura/index.css", "/client/chunk_norris.min.js", "/src/fonts/baksheesh/index.css");
+                // Load pre-used (PRE) file or finally used ones (POST)
+                var fire_it = function (what) {
+                    "use strict";
+                    var hrefs = [];
+                    var ss = "";
+                    var e = null;
+                    var i = 0;
+                    var clean = false;
 
-                    if (is_service_worker_activation_successful) { console.log("GREAT, the service worker has been activated with success.") } else {console.log("GOOD, the service worker installation has been ignored successfully.")}
+                    if(_FIRED_IT_STATE === "") {clean = true;}
 
-                    // Load pre-used (PRE) file or finally used ones (POST)
-                    var fire_it = function (what) {
-
-                        var hrefs = new Array();
-                        var ss = "";
-                        var e = null;
-                        var i = 0;
-                        var clean = false;
-
-                        if(_FIRED_IT_STATE === "") {
-                            clean = true;
-                        }
-
-                        if (Boolean(what === "FIRST" && Boolean(_FIRED_IT_STATE !== "FIRST" && _FIRED_IT_STATE !== "LAST")) || Boolean(what === "LAST" && Boolean(_FIRED_IT_STATE !== "FIRST" && _FIRED_IT_STATE !== "LAST"))) {
-                            hrefs = hrefs.concat(_PRE_FILES); console.log("First files to load have been ignited.")
-                            _FIRED_IT_STATE = "FIRST";
-                        }
-
-                        if (Boolean(what === "LAST" && Boolean(_FIRED_IT_STATE === "FIRST" || _FIRED_IT_STATE !== "LAST"))) {
-                            hrefs = hrefs.concat(_POST_FILES); console.log("Last files to load have been ignited.")
-                            _FIRED_IT_STATE = "LAST";
-                        }
-
-                        if(clean){
-                            /*var all_hrefs = new Array(0).concat(_PRE_FILES, _POST_FILES);
-                            for (i = 0; i < all_hrefs.length; i++) {
-                               ss = all_hrefs[i];
-                               if (ss.endsWith(".js")) {
-                                   document.querySelectorAll('script[src$="' + ss + '"]').forEach(function (node) {node.remove();});
-                               }
-                           }*/
-                            document.body.innerText = "";
-                        }
-
-                        for (i = 0; i < hrefs.length; i++) {
-                            ss = hrefs[i];
-                            if (ss.endsWith(".js")) {
-                                e = document.createElement("script"); e.setAttribute("src", ss); e.setAttribute("type", "text/javascript"); e.setAttribute(ss.endsWith(_MAIN_JS_FILE_ENDS_WITH) ? "defer" : "defer", "true");
-                                document.body.appendChild(e);
-                            } else if (ss.endsWith(".css")) {
-                                e = document.createElement("link"); e.setAttribute("href", ss); e.setAttribute("rel", "stylesheet");
-                                document.body.appendChild(e);
-                            }
-                        }
-
-                        return true;
+                    if ((what === "FIRST" && _FIRED_IT_STATE === "") || (what === "LAST" && _FIRED_IT_STATE === "")) {
+                        hrefs = hrefs.concat(_PRE_FILES); console.log("First files to load have been ignited.")
+                        _FIRED_IT_STATE = "FIRST";
+                    }else if ((what === "LAST" && (_FIRED_IT_STATE === "FIRST" || _FIRED_IT_STATE !== "LAST"))) {
+                        hrefs = hrefs.concat(_POST_FILES); console.log("Last files to load have been ignited.")
+                        _FIRED_IT_STATE = "LAST";
+                    }else if(_FIRED_IT_STATE === "LAST"){
+                        clean = true;
+                        hrefs = hrefs.concat(_PRE_FILES); console.log("First files to load have been ignited.")
+                        hrefs = hrefs.concat(_POST_FILES); console.log("Last files to load have been ignited.")
                     }
 
-                    // This event fires after doc ready state is interactive and before it is complete, it doesn't wait on resources to be loaded
-                    document.addEventListener('DOMContentLoaded', function () {resolve(fire_it("LAST"));});
-                    document.addEventListener('readystatechange', function () {
+                    if(clean){
+                        var all_hrefs = new Array(0).concat(_PRE_FILES, _POST_FILES);
+                        for (i = 0; i < all_hrefs.length; i++) {
+                            ss = all_hrefs[i];
+                            if (ss.endsWith(".js")) {
+                                document.querySelectorAll('script[src$="' + ss + '"]').forEach(function (node) {node.remove();});
+                            }
+                        }
+                        document.body.innerHTML = null;
+                        console.log("Made cleaning in source files to load the application.")
+                    }
 
-                        if (document.readyState === "interactive") {fire_it("FIRST");}
-                        if (document.readyState === "complete") {resolve(fire_it("LAST"));}
-                    });
+                    for (i = 0; i < hrefs.length; i++) {
+                        ss = hrefs[i];
+                        if (ss.endsWith(".js")) {
+                            e = document.createElement("script"); e.setAttribute("src", ss); e.setAttribute("type", "text/javascript"); e.setAttribute(ss.endsWith(_MAIN_JS_FILE_ENDS_WITH) ? "defer" : "defer", "true");
+                            document.body.appendChild(e);
+                        } else if (ss.endsWith(".css")) {
+                            e = document.createElement("link"); e.setAttribute("href", ss); e.setAttribute("rel", "stylesheet");
+                            document.body.appendChild(e);
+                        }
+                    }
+                    console.log("Some files to load are completely up to date.")
+                    return true;
+                }
 
-                    // Prevent this function from being executed none, twice or more using parameters what
+                // This event fires after doc ready state is interactive and before it is complete, it doesn't wait on resources to be loaded
+                document.addEventListener('DOMContentLoaded', function () {
+                    "use strict";
+                    resolve(fire_it("LAST"));
+                });
+                document.addEventListener('readystatechange', function () {
+                    "use strict";
                     if (document.readyState === "interactive") {fire_it("FIRST");}
                     if (document.readyState === "complete") {resolve(fire_it("LAST"));}
-
                 });
-            };
 
-            /* TRY INSTALL SERVICE WORKER, FINALLY LOAD JS FILE */
-            var _REGISTER_SERVICE_WORKER = function() {
-                _FIRED_IT_STATE = "";
-                return new Promise(function(resolve, reject){
-                    if ("serviceWorker" in navigator) {
-                        navigator.serviceWorker.register("/service-worker.js", {
-                            scope: "/"
-                        }).then(function(r) {
-                            var sw = r.installing || r.waiting || r.active || null;
-                            if (sw !== null) {
-                                sw.addEventListener('statechange', function(e) {
-                                    if(e.target.state === "activated") { _LET_FIRE_IT(true).then(function(){resolve(r);}); }
-                                });
-                                if(sw.state === "activated") { _LET_FIRE_IT(true).then(function(){resolve(r);}); }
-                            }else { _LET_FIRE_IT(false).then(function(){resolve(r);}); }
-                        }).catch(function(){
-                            _LET_FIRE_IT(false).then(function(){resolve(null);});
-                        });
-                    }else { _LET_FIRE_IT(false).then(function(){resolve(null);}); }
-                });
-            };
+                // Prevent this function from being executed none, twice or more using parameters what
+                if (document.readyState === "interactive") {fire_it("FIRST");}
+                if (document.readyState === "complete") {resolve(fire_it("LAST"));}
 
-            var _LISTEN_RELOAD = function(registration) {
+            });
+        };
 
-                window.addEventListener("DOMContentLoaded", function () {
-                    _REGISTER_SERVICE_WORKER().then(_LISTEN_RELOAD);
-                });
-            };
+        /* TRY INSTALL SERVICE WORKER, FINALLY LOAD JS FILE */
+        var _REGISTER_SERVICE_WORKER = function() {
+            "use strict";
+            _FIRED_IT_STATE = "";
+            return new Promise(function(resolve, reject){
+                "use strict";
+                if ("serviceWorker" in navigator) {
+                    navigator.serviceWorker.register("/service-worker.js", {
+                        scope: "/"
+                    }).then(function(r) {
+                        "use strict";
+                        var sw = r.installing || r.waiting || r.active || null;
+                        if (sw !== null) {
+                            sw.addEventListener('statechange', function(e) {
+                                if(e.target.state === "activated") { _LET_FIRE_IT(true).then(function(){resolve(r);}); }
+                            });
+                            if(sw.state === "activated") { _LET_FIRE_IT(true).then(function(){resolve(r);}); }
+                        }else { _LET_FIRE_IT(false).then(function(){resolve(r);}); }
+                    }).catch(function(){
+                        _LET_FIRE_IT(false).then(function(){resolve(null);});
+                    });
+                }else { _LET_FIRE_IT(false).then(function(){resolve(null);}); }
+            });
+        };
 
-            _REGISTER_SERVICE_WORKER().then(_LISTEN_RELOAD);
+        var _LISTEN_RELOAD = function(registration) {
+            "use strict";
+            window.addEventListener("DOMContentLoaded", function () {
+                _REGISTER_SERVICE_WORKER().then(_LISTEN_RELOAD);
+            });
+        };
 
-        </script>
+        _REGISTER_SERVICE_WORKER().then(_LISTEN_RELOAD);
 
-        <!-- Open graph metadata -->
-        <meta property="og:type" content="website"/>
-        <meta property="og:url" content="https://pixa.pics"/>
-        <meta property="og:site_name" content="PIXA PICS | WEBAPP" />
-        <meta property="og:title" content="Pixel-Art/NFTs LAB. Make potential possible while (un)limited."/>
-        <meta property="og:description" content="Apply effects into it? Yes? Let's draw with «PIXA.PICS» lovely minima of real-life pictures to enhance well privacy and for selling it greatly as NFTs too."/>
+    </script>
 
-        <meta property="og:image" content="https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/master/src/images/og/pixapics_logo_og_s.jpeg"/>
-        <meta property="og:image:type" content="image/jpeg" />
-        <meta property="og:image:width" content="384" />
-        <meta property="og:image:height" content="384" />
-        <meta property="og:image:alt" content="Preview of the logo of the pixel art editor as a web app named pixa.pics." />
+    <!-- Open graph metadata -->
+    <meta property="og:type" content="website"/>
+    <meta property="og:url" content="https://pixa.pics"/>
+    <meta property="og:site_name" content="PIXA.PICS" />
+    <meta property="og:title" content="Pixel-Art Editor & NFTs Laboratory"/>
+    <meta property="og:description" content="Make pixel art from real life images and draw on the image you can edit for free, filters, layers, library, are within the editor."/>
 
-        <meta property="og:image" content="https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/master/src/images/og/pixapics_logo_og_m.jpeg"/>
-        <meta property="og:image:type" content="image/jpeg" />
-        <meta property="og:image:width" content="1200" />
-        <meta property="og:image:height" content="630" />
-        <meta property="og:image:alt" content="Preview of the pixel art editor as a web app named pixa.pics." />
+    <meta property="og:image" content="https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/master/src/images/og/pixapics_logo_og_s.jpeg"/>
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="384" />
+    <meta property="og:image:height" content="384" />
+    <meta property="og:image:alt" content="Preview of the logo of the pixel art editor as a web app named pixa.pics." />
+
+    <meta property="og:image" content="https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/master/src/images/og/pixapics_logo_og_m.jpeg"/>
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Preview of the pixel art editor as a web app named pixa.pics." />
 
 
-        <!-- Mobile chrome toolbar color + Favicon -->
-        <link rel="icon" href="/src/images/favicon.ico">
-        <meta name="theme-color" content="#060f23" />
+    <!-- Mobile chrome toolbar color + Favicon -->
+    <link rel="icon" href="/src/images/favicon.ico">
+    <meta name="theme-color" content="#060E23FF" />
 
-        <!-- Add to homescreen for Chrome on Android. Fallback for manifest.json -->
-        <link rel="manifest" href="/manifest.json">
-        <meta name="mobile-web-app-capable" content="yes">
-        <meta name="application-name" content="PIXA PICS">
+    <!-- Add to homescreen for Chrome on Android. Fallback for manifest.json -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="PIXA PICS">
 
-        <!-- Add to homescreen for Safari on iOS -->
-        <meta name="apple-mobile-web-app-capable" content="yes">
-        <meta name="apple-mobile-web-app-status-bar-style" content="default">
-        <meta name="apple-mobile-web-app-title" content="PIXA PICS">
+    <!-- Add to homescreen for Safari on iOS -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="PIXA PICS">
 
-        <!-- Homescreen icons -->
-        <link rel="apple-touch-icon" href="/src/images/manifest/logo-white.png">
+    <!-- Homescreen icons -->
+    <link rel="apple-touch-icon" href="/src/images/manifest/logo-white.png">
 
-        <!-- Tile icon for Windows 8 (144x144 + tile color) -->
-        <meta name="msapplication-TileImage" content="/src/images/manifest/logo-white.png">
-        <meta name="msapplication-TileColor" content="#ffffff">
-        <meta name="msapplication-tap-highlight" content="no">
-
-        <!-- PASSIONATE ANONYMOUS SWISS ANALYTICS since using friendly.ch -->
-        <script id="matomo-analytics"></script>
-        <script id="matomo-container"></script>
-    </head>
-    <body class="loading" datainitiated="false">
-        <div id="app"></div>
-    </body>
+    <!-- Tile icon for Windows 8 (144x144 + tile color) -->
+    <meta name="msapplication-TileImage" content="/src/images/manifest/logo-white.png">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-tap-highlight" content="no">
+</head>
+<body class="loading">
+<div id="app"></div>
+<!-- Cloudflare Cookieless Analytics -->
+<script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "3f18a915cd7d481d94711fdebfa555a2"}'></script>
+</body>
 </html>

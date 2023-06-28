@@ -7,14 +7,14 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 
         <!-- Title + Description meta data -->
-        <title id="meta-title">PIXA.PICS - Pixel-Art/NFTs LAB. Make potential possible yet (un)limited.</title>
-        <meta name="description" content="Apply effects into it? Yes? Let's draw with «PIXA.PICS» lovely minima of real-life pictures to enhance well privacy and for selling it greatly as NFTs too.">
+        <title id="meta-title">PIXA.PICS - Pixel-Art Editor & NFTs Laboratory</title>
+        <meta name="description" content="Make pixel art from real life images and draw on the image you can edit for free, filters, layers, library, are within the editor.">
         <meta name="keywords" content="Pixel, Art, Anonymous, NFT, Crypto, Red, Free, Secure, Progressive, Web, App, Offline, Free, Open-Source, ">
 
         <!-- CSS -->
         <style>
             body.loaded {
-                content-visibility: visible;
+                content-visibility: initial;
                 background-color: #fafafa;
             }
             body.loaded::after {
@@ -54,7 +54,7 @@
             }
             body.loaded > #app {
                 contain: paint style layout;
-                content-visibility: initial;
+                content-visibility: visible;
                 position: fixed;
                 will-change: auto;
                 overflow: hidden;
@@ -94,8 +94,7 @@
                 z-index: 9999999;
                 -ms-interpolation-mode: nearest-neighbor;
                 image-rendering: optimizeSpeed;
-                image-rendering: -o-pixelated;
-                image-rendering: -webkit-optimize-contrast;
+                image-rendering: -o-crisp-edges;
                 image-rendering: -webkit-crisp-edges;
                 image-rendering: -moz-crisp-edges;
                 image-rendering: crisp-edges;
@@ -180,9 +179,9 @@
             /* LOAD JS FILE (in two "moves") */
             var _FIRED_IT_STATE = "";
             var _LET_FIRE_IT = function(is_service_worker_activation_successful) {
-
+                "use strict";
                 return new Promise(function(resolve, reject){
-
+                    "use strict";
                     var _MAIN_JS_FILE_ENDS_WITH = "norris.min.js";
                     var _PRE_FILES = Array.of("/client/chunk_main_690b702c.min.js", "/client/chunk_main_748942c6.min.js",);
                     var _POST_FILES = Array.of( "/src/fonts/jura/index.css", "/client/chunk_norris.min.js", "/src/fonts/baksheesh/index.css");
@@ -191,36 +190,37 @@
 
                     // Load pre-used (PRE) file or finally used ones (POST)
                     var fire_it = function (what) {
-
-                        var hrefs = new Array();
+                        "use strict";
+                        var hrefs = [];
                         var ss = "";
                         var e = null;
                         var i = 0;
                         var clean = false;
 
-                        if(_FIRED_IT_STATE === "") {
-                            clean = true;
-                        }
+                        if(_FIRED_IT_STATE === "") {clean = true;}
 
-                        if (Boolean(what === "FIRST" && Boolean(_FIRED_IT_STATE !== "FIRST" && _FIRED_IT_STATE !== "LAST")) || Boolean(what === "LAST" && Boolean(_FIRED_IT_STATE !== "FIRST" && _FIRED_IT_STATE !== "LAST"))) {
+                        if ((what === "FIRST" && _FIRED_IT_STATE === "") || (what === "LAST" && _FIRED_IT_STATE === "")) {
                             hrefs = hrefs.concat(_PRE_FILES); console.log("First files to load have been ignited.")
                             _FIRED_IT_STATE = "FIRST";
-                        }
-
-                        if (Boolean(what === "LAST" && Boolean(_FIRED_IT_STATE === "FIRST" || _FIRED_IT_STATE !== "LAST"))) {
+                        }else if ((what === "LAST" && (_FIRED_IT_STATE === "FIRST" || _FIRED_IT_STATE !== "LAST"))) {
                             hrefs = hrefs.concat(_POST_FILES); console.log("Last files to load have been ignited.")
                             _FIRED_IT_STATE = "LAST";
+                        }else if(_FIRED_IT_STATE === "LAST"){
+                            clean = true;
+                            hrefs = hrefs.concat(_PRE_FILES); console.log("First files to load have been ignited.")
+                            hrefs = hrefs.concat(_POST_FILES); console.log("Last files to load have been ignited.")
                         }
 
                         if(clean){
-                            /*var all_hrefs = new Array(0).concat(_PRE_FILES, _POST_FILES);
+                            var all_hrefs = new Array(0).concat(_PRE_FILES, _POST_FILES);
                             for (i = 0; i < all_hrefs.length; i++) {
                                 ss = all_hrefs[i];
                                 if (ss.endsWith(".js")) {
                                     document.querySelectorAll('script[src$="' + ss + '"]').forEach(function (node) {node.remove();});
                                 }
-                            }*/
-                            document.body.innerText = "";
+                            }
+                            document.body.innerHTML = null;
+                            console.log("Made cleaning in source files to load the application.")
                         }
 
                         for (i = 0; i < hrefs.length; i++) {
@@ -233,14 +233,17 @@
                                 document.body.appendChild(e);
                             }
                         }
-
+                        console.log("Some files to load are completely up to date.")
                         return true;
                     }
 
                     // This event fires after doc ready state is interactive and before it is complete, it doesn't wait on resources to be loaded
-                    document.addEventListener('DOMContentLoaded', function () {resolve(fire_it("LAST"));});
+                    document.addEventListener('DOMContentLoaded', function () {
+                        "use strict";
+                        resolve(fire_it("LAST"));
+                    });
                     document.addEventListener('readystatechange', function () {
-
+                        "use strict";
                         if (document.readyState === "interactive") {fire_it("FIRST");}
                         if (document.readyState === "complete") {resolve(fire_it("LAST"));}
                     });
@@ -254,12 +257,15 @@
 
             /* TRY INSTALL SERVICE WORKER, FINALLY LOAD JS FILE */
             var _REGISTER_SERVICE_WORKER = function() {
+                "use strict";
                 _FIRED_IT_STATE = "";
                 return new Promise(function(resolve, reject){
+                    "use strict";
                     if ("serviceWorker" in navigator) {
                         navigator.serviceWorker.register("/service-worker.js", {
                             scope: "/"
                         }).then(function(r) {
+                            "use strict";
                             var sw = r.installing || r.waiting || r.active || null;
                             if (sw !== null) {
                                 sw.addEventListener('statechange', function(e) {
@@ -275,7 +281,7 @@
             };
 
             var _LISTEN_RELOAD = function(registration) {
-
+                "use strict";
                 window.addEventListener("DOMContentLoaded", function () {
                     _REGISTER_SERVICE_WORKER().then(_LISTEN_RELOAD);
                 });
@@ -288,9 +294,9 @@
         <!-- Open graph metadata -->
         <meta property="og:type" content="website"/>
         <meta property="og:url" content="https://pixa.pics"/>
-        <meta property="og:site_name" content="PIXA PICS | WEBAPP" />
-        <meta property="og:title" content="Pixel-Art/NFTs LAB. Make potential possible while (un)limited."/>
-        <meta property="og:description" content="Apply effects into it? Yes? Let's draw with «PIXA.PICS» lovely minima of real-life pictures to enhance well privacy and for selling it greatly as NFTs too."/>
+        <meta property="og:site_name" content="PIXA.PICS" />
+        <meta property="og:title" content="Pixel-Art Editor & NFTs Laboratory"/>
+        <meta property="og:description" content="Make pixel art from real life images and draw on the image you can edit for free, filters, layers, library, are within the editor."/>
 
         <meta property="og:image" content="https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/master/src/images/og/pixapics_logo_og_s.jpeg"/>
         <meta property="og:image:type" content="image/jpeg" />
@@ -307,7 +313,7 @@
 
         <!-- Mobile chrome toolbar color + Favicon -->
         <link rel="icon" href="/src/images/favicon.ico">
-        <meta name="theme-color" content="#060f23" />
+        <meta name="theme-color" content="#060E23FF" />
 
         <!-- Add to homescreen for Chrome on Android. Fallback for manifest.json -->
         <link rel="manifest" href="/manifest.json">
@@ -326,12 +332,10 @@
         <meta name="msapplication-TileImage" content="/src/images/manifest/logo-white.png">
         <meta name="msapplication-TileColor" content="#ffffff">
         <meta name="msapplication-tap-highlight" content="no">
-
-        <!-- PASSIONATE ANONYMOUS SWISS ANALYTICS since using friendly.ch -->
-        <script id="matomo-analytics"></script>
-        <script id="matomo-container"></script>
     </head>
     <body class="loading">
         <div id="app"></div>
+        <!-- Cloudflare Cookieless Analytics -->
+        <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "3f18a915cd7d481d94711fdebfa555a2"}'></script>
     </body>
 </html>
