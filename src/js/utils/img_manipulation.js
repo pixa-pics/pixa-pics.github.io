@@ -222,6 +222,7 @@ window.imagedata_to_base64_process_function = new AFunction(`var t = function(im
 
     "use strict"
     type = type || "image/png";
+    var quality = type.includes("webp") ? 1: type.includes("png") ? undefined: 0.7;
     try {
     
         return new Promise(function(resolve, _) {
@@ -237,7 +238,7 @@ window.imagedata_to_base64_process_function = new AFunction(`var t = function(im
                     ctx.imageSmoothingEnabled = false;
                     ctx.transferFromImageBitmap(bmp);
                 
-                canvas.convertToBlob({type: type, quality: 0.75}).then((blb) => {
+                canvas.convertToBlob({type: type, quality: quality}).then((blb) => {
                     try {
                         resolve(new FileReaderSync().readAsDataURL(blb));
                     } catch(e2) {
@@ -259,7 +260,7 @@ window.imagedata_to_base64_process_function = new AFunction(`var t = function(im
             ctx.imageSmoothingEnabled = false;
             ctx.putImageData(imagedata, 0, 0);
             
-            var base64 = canvas.toDataURL(type, 0.75);
+            var base64 = canvas.toDataURL(type, quality);
             canvas = null;
             resolve(base64);
         });

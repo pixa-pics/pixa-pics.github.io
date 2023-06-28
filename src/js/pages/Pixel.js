@@ -1702,7 +1702,7 @@ class Pixel extends React.PureComponent {
         }else if(smart_file !== null) {
 
             const is_type_png = Boolean(smart_file.type === "image/png"); //image/png
-            const mimetype = is_type_png ? "image/png": "image/jpeg";
+            const mimetype = is_type_png ? "image/png": smart_file.type;
 
             const { _import_colorize, _import_size } = this.st4te;
             const { set_canvas_from_image } = this.st4te._canvas;
@@ -1801,7 +1801,7 @@ class Pixel extends React.PureComponent {
 
                                                         bitmap_to_imagedata(bitmap_received, resize_to_finally, (imagedata_received_2) => {
 
-                                                            imagedata_to_base64(imagedata_received_2, "image/png", (base64_final) => {
+                                                            imagedata_to_base64(imagedata_received_2, "image/png",(base64_final) => {
 
                                                                 let img = new Image();
                                                                 img.addEventListener("load", () => {
@@ -1851,7 +1851,7 @@ class Pixel extends React.PureComponent {
 
                                                             bitmap_to_imagedata(bitmap_received_2, resize_to_finally, (imagedata_received_2) => {
 
-                                                                imagedata_to_base64(imagedata_received_2, "image/png", (base64_final) => {
+                                                                imagedata_to_base64(imagedata_received_2, "image/png",(base64_final) => {
 
                                                                     let img = new Image();
                                                                     img.addEventListener("load", () => {
@@ -1942,7 +1942,7 @@ class Pixel extends React.PureComponent {
 
                                                         bitmap_to_imagedata(bitmap_received, resize_to_finally, (imagedata_received_2) => {
 
-                                                            imagedata_to_base64(imagedata_received_2, "image/png", (base64_final) => {
+                                                            imagedata_to_base64(imagedata_received_2, "image/png",(base64_final) => {
 
                                                                 let img = new Image();
                                                                 img.addEventListener("load", () => {

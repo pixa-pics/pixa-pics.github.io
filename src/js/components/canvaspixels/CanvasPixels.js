@@ -2412,9 +2412,11 @@ class CanvasPixels extends React.PureComponent {
                         s_height
                     );
 
-                    let base64_original_image = image.src.includes("image/png") ?
-                        canvas.toDataURL("image/png") :
-                        canvas.toDataURL("image/jpeg");
+                    let base64_original_image =  image.src.includes("image/webp") ?
+                        canvas.toDataURL("image/webp") :
+                        image.src.includes("image/png") ?
+                            canvas.toDataURL("image/png") :
+                            canvas.toDataURL("image/jpeg");
 
                     const new_base64_original_images = !_base64_original_images.includes(base64_original_image) ?
                         _base64_original_images.concat([base64_original_image]) :
@@ -3526,10 +3528,7 @@ class CanvasPixels extends React.PureComponent {
     render() {
 
         const {
-            show_original_image_in_background,
-            show_transparent_image_in_background,
             className,
-            _original_image_index,
             canvas_wrapper_background_color,
             canvas_wrapper_background_color_focused,
             canvas_wrapper_border_radius,
@@ -3539,7 +3538,7 @@ class CanvasPixels extends React.PureComponent {
             select_mode,
             _mouse_inside,
             perspective,
-            _base64_original_images,
+            cached_background_image,
             pxl_width, pxl_height
         } = this.super_state.get_state();
 
@@ -3555,11 +3554,6 @@ class CanvasPixels extends React.PureComponent {
         const canvas_wrapper_width = pxl_width * screen_zoom_ratio * scale.current + 0.5 | 0;
         const canvas_wrapper_height = pxl_height * screen_zoom_ratio * scale.current + 0.5 | 0;
         const padding = canvas_wrapper.padding / device_pixel_ratio * scale.current | 0;
-
-        const background_image_style_props = Boolean(show_original_image_in_background && typeof _base64_original_images[_original_image_index] !== "undefined") ?
-            {background: `center / cover no-repeat url("${_base64_original_images[_original_image_index]}")`}:
-            show_transparent_image_in_background ?
-                {background: `repeating-conic-gradient(rgb(248 248 248 / 100%) 0% 25%, rgb(235 235 235 / 100%) 0% 50%) left top 50% / calc(200% / ${pxl_width}) calc(200% / ${pxl_height})`}: {};
 
         return (
             <div onContextMenu={function (e){e.preventDefault()}}
@@ -3637,7 +3631,7 @@ class CanvasPixels extends React.PureComponent {
                                 transformOrigin: "left top",
                                 boxSizing: "content-box",
                                 borderWidth: 0,
-                                ...background_image_style_props,
+                                background: cached_background_image,
                             }}
                             className={"Canvas-Pixels"}
                             ref={this._set_canvas_ref}

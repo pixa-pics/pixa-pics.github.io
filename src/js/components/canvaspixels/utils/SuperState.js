@@ -190,6 +190,12 @@ const SuperState = {
                     if("pxl_current_color" in new_props){
                         state_["pxl_current_color_uint32"] = SIMDopeColor.new_hex(new_props["pxl_current_color"]).uint32;
                     }
+                    if("show_original_image_in_background" in new_props || "_base64_original_images" in new_props || "_original_image_index" in new_props || "show_transparent_image_in_background" in new_props || "pxl_width" in new_props || "pxl_height" in new_props){
+                        state_["cached_background_image"] = Boolean(state_.show_original_image_in_background && typeof state_._base64_original_images[state_._original_image_index] !== "undefined") ?
+                            `center / cover no-repeat url("${state_._base64_original_images[state_._original_image_index]}")${state_.show_transparent_image_in_background ? `, repeating-conic-gradient(rgb(248 248 248 / 100%) 0% 25%, rgb(235 235 235 / 100%) 0% 50%) left top 50% / calc(200% / ${state_.pxl_width}) calc(200% / ${state_.pxl_height})`: ""}` :
+                            state_.show_transparent_image_in_background ?
+                                `repeating-conic-gradient(rgb(248 248 248 / 100%) 0% 25%, rgb(235 235 235 / 100%) 0% 50%) left top 50% / calc(200% / ${state_.pxl_width}) calc(200% / ${state_.pxl_height})`: "";
+                    }
                     resolve();
                 });
             },

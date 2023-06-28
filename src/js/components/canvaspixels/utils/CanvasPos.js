@@ -42,7 +42,7 @@ const CanvasPos = {
             return (s.canvas_container.width - s.canvas_wrapper.padding / s.device_pixel_ratio * 2) / s.sizes.width;
         }
     },
-    _get_pos(s, szr){
+    _get_pos(s, szr, o){
         "use strict";
         const canvas_wrapper_border_box_extra_size = Math.round(s.canvas_wrapper.padding / s.device_pixel_ratio * s.scale.current + s.canvas_wrapper.border_width) * 2  | 0;
         const canvas_wrapper_width = Math.round(s.sizes.width * szr * s.scale.current) + canvas_wrapper_border_box_extra_size | 0;
@@ -61,7 +61,7 @@ const CanvasPos = {
         const canvas_right = canvas_wrapper_right - canvas_wrapper_border_box_extra_size / 2 | 0;
         const canvas_bottom = canvas_wrapper_bottom - canvas_wrapper_border_box_extra_size / 2 | 0;
 
-        return {
+        o = {
             canvas: {
                 offset_left: canvas_offset_left | 0,
                 offset_top: canvas_offset_top | 0,
@@ -93,6 +93,8 @@ const CanvasPos = {
                 height: s.canvas_container.height | 0,
             }
         };
+
+        return o;
     },
     _get_init_pointer_state() {
         "use strict";
@@ -285,7 +287,7 @@ const CanvasPos = {
             },
             get_screen_zoom_ratio: function() {
                 "use strict";
-                return parseFloat(szr);
+                return Math.fround(parseFloat(szr));
             },
             compute_perspective_from_pointer_event: function(pageX, pageY) {
                 "use strict";
@@ -376,8 +378,8 @@ const CanvasPos = {
                 let moves_speed_average = moves_speeds.slice(-max_move_speed).reduce((p,c,i,a) => p+(c/a.length), 0);
                 moves_speed_average = Math.max(1, Math.round(Math.floor(moves_speed_average * max_move_speed/200 )))
                 const is_new_scale = Boolean(new_scale !== null);
-                s.scale.default = parseFloat(scale.default);
-                s.scale.current = parseFloat(!is_new_scale ? current: new_scale);
+                s.scale.default = Math.fround(parseFloat(scale.default));
+                s.scale.current = Math.fround(parseFloat(!is_new_scale ? current: new_scale));
                 s.scale.move_x = new_scale_move_x | 0;
                 s.scale.move_y = new_scale_move_y | 0;
                 s.scale.move_speed_timestamp = Date.now();
@@ -385,7 +387,7 @@ const CanvasPos = {
                 s.scale.moves_speed_average_now = Boolean(new_scale !== null && new_scale > current) ? max_move_speed: Boolean(new_scale !== null && new_scale < current) ? 0: parseInt(moves_speed_average);
 
                 szr = gszr(s);
-                p = gp(s, szr);
+                p = gp(s, szr, p);
                 this.notify_moved(callback_function);
             },
             set_notifiers: function(callback_function_update = function(){}, callback_function_menu = function(){}, callback_function_move = function(){}, callback_function_up = function(){}, callback_function_down = function(){}, callback_function_middle = function(){}) {
@@ -792,7 +794,7 @@ const CanvasPos = {
                 "use strict";
                 s.scale.current = parseFloat(s.scale.default);
                 szr = gszr(s);
-                p = gp(s, szr);
+                p = gp(s, szr, p);
                 this.set_canvas_moves_middle();
             },
             set_canvas_moves_middle: function() {
