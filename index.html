@@ -205,10 +205,6 @@
                     }else if ((what === "LAST" && (_FIRED_IT_STATE === "FIRST" || _FIRED_IT_STATE !== "LAST"))) {
                         hrefs = hrefs.concat(_POST_FILES); console.log("Last files to load have been ignited.")
                         _FIRED_IT_STATE = "LAST";
-                    }else if(_FIRED_IT_STATE === "LAST"){
-                        clean = true;
-                        hrefs = hrefs.concat(_PRE_FILES); console.log("First files to load have been ignited.")
-                        hrefs = hrefs.concat(_POST_FILES); console.log("Last files to load have been ignited.")
                     }
 
                     if(clean){
@@ -283,12 +279,12 @@
         var _LISTEN_RELOAD = function(registration) {
             "use strict";
             window.addEventListener("DOMContentLoaded", function () {
+                _FIRED_IT_STATE = "";
                 _REGISTER_SERVICE_WORKER().then(_LISTEN_RELOAD);
             });
         };
 
         _REGISTER_SERVICE_WORKER().then(_LISTEN_RELOAD);
-
     </script>
 
     <!-- Open graph metadata -->
