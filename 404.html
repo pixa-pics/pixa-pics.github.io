@@ -179,9 +179,9 @@
             /* LOAD JS FILE (in two "moves") */
             var _FIRED_IT_STATE = "";
             var _LET_FIRE_IT = function(is_service_worker_activation_successful) {
-                "use strict";
+
                 return new Promise(function(resolve, reject){
-                    "use strict";
+
                     var _MAIN_JS_FILE_ENDS_WITH = "norris.min.js";
                     var _PRE_FILES = Array.of("/client/chunk_main_690b702c.min.js", "/client/chunk_main_748942c6.min.js",);
                     var _POST_FILES = Array.of( "/src/fonts/jura/index.css", "/client/chunk_norris.min.js", "/src/fonts/baksheesh/index.css");
@@ -190,18 +190,36 @@
 
                     // Load pre-used (PRE) file or finally used ones (POST)
                     var fire_it = function (what) {
-                        "use strict";
-                        var hrefs = [];
+
+                        var hrefs = new Array();
                         var ss = "";
                         var e = null;
                         var i = 0;
+                        var clean = false;
 
-                        if ((what === "FIRST" && _FIRED_IT_STATE === "") || (what === "LAST" && _FIRED_IT_STATE === "")) {
+                        if(_FIRED_IT_STATE === "") {
+                            clean = true;
+                        }
+
+                        if (Boolean(what === "FIRST" && Boolean(_FIRED_IT_STATE !== "FIRST" && _FIRED_IT_STATE !== "LAST")) || Boolean(what === "LAST" && Boolean(_FIRED_IT_STATE !== "FIRST" && _FIRED_IT_STATE !== "LAST"))) {
                             hrefs = hrefs.concat(_PRE_FILES); console.log("First files to load have been ignited.")
                             _FIRED_IT_STATE = "FIRST";
-                        }else if ((what === "LAST" && (_FIRED_IT_STATE === "FIRST" || _FIRED_IT_STATE !== "LAST"))) {
+                        }
+
+                        if (Boolean(what === "LAST" && Boolean(_FIRED_IT_STATE === "FIRST" || _FIRED_IT_STATE !== "LAST"))) {
                             hrefs = hrefs.concat(_POST_FILES); console.log("Last files to load have been ignited.")
                             _FIRED_IT_STATE = "LAST";
+                        }
+
+                        if(clean){
+                            /*var all_hrefs = new Array(0).concat(_PRE_FILES, _POST_FILES);
+                            for (i = 0; i < all_hrefs.length; i++) {
+                               ss = all_hrefs[i];
+                               if (ss.endsWith(".js")) {
+                                   document.querySelectorAll('script[src$="' + ss + '"]').forEach(function (node) {node.remove();});
+                               }
+                           }*/
+                            document.body.innerText = "";
                         }
 
                         for (i = 0; i < hrefs.length; i++) {
@@ -214,17 +232,14 @@
                                 document.body.appendChild(e);
                             }
                         }
-                        console.log("Some files to load are completely up to date.")
+
                         return true;
                     }
 
                     // This event fires after doc ready state is interactive and before it is complete, it doesn't wait on resources to be loaded
-                    document.addEventListener('DOMContentLoaded', function () {
-                        "use strict";
-                        resolve(fire_it("LAST"));
-                    });
+                    document.addEventListener('DOMContentLoaded', function () {resolve(fire_it("LAST"));});
                     document.addEventListener('readystatechange', function () {
-                        "use strict";
+
                         if (document.readyState === "interactive") {fire_it("FIRST");}
                         if (document.readyState === "complete") {resolve(fire_it("LAST"));}
                     });
@@ -238,15 +253,12 @@
 
             /* TRY INSTALL SERVICE WORKER, FINALLY LOAD JS FILE */
             var _REGISTER_SERVICE_WORKER = function() {
-                "use strict";
                 _FIRED_IT_STATE = "";
                 return new Promise(function(resolve, reject){
-                    "use strict";
                     if ("serviceWorker" in navigator) {
                         navigator.serviceWorker.register("/service-worker.js", {
                             scope: "/"
                         }).then(function(r) {
-                            "use strict";
                             var sw = r.installing || r.waiting || r.active || null;
                             if (sw !== null) {
                                 sw.addEventListener('statechange', function(e) {
@@ -262,19 +274,14 @@
             };
 
             var _LISTEN_RELOAD = function(registration) {
-                "use strict";
+
                 window.addEventListener("DOMContentLoaded", function () {
-                    _FIRED_IT_STATE = "";
-                    document.body.innerHTML = null;
-                    var element = document.createElement("div");
-                    element.setAttribute("id", "app");
-                    document.body.appendChild(element);
-                    console.log("Made cleaning in source files to load the application.")
-                    _REGISTER_SERVICE_WORKER();
+                    _REGISTER_SERVICE_WORKER().then(_LISTEN_RELOAD);
                 });
             };
 
             _REGISTER_SERVICE_WORKER().then(_LISTEN_RELOAD);
+
         </script>
 
         <!-- Open graph metadata -->
