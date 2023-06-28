@@ -198,15 +198,6 @@
                         var clean = false;
 
                         if(_FIRED_IT_STATE === "") {clean = true;}
-
-                        if ((what === "FIRST" && _FIRED_IT_STATE === "") || (what === "LAST" && _FIRED_IT_STATE === "")) {
-                            hrefs = hrefs.concat(_PRE_FILES); console.log("First files to load have been ignited.")
-                            _FIRED_IT_STATE = "FIRST";
-                        }else if ((what === "LAST" && (_FIRED_IT_STATE === "FIRST" || _FIRED_IT_STATE !== "LAST"))) {
-                            hrefs = hrefs.concat(_POST_FILES); console.log("Last files to load have been ignited.")
-                            _FIRED_IT_STATE = "LAST";
-                        }
-
                         if(clean){
                             var all_hrefs = new Array(0).concat(_PRE_FILES, _POST_FILES);
                             for (i = 0; i < all_hrefs.length; i++) {
@@ -217,9 +208,17 @@
                             }
                             document.body.innerHTML = null;
                             var element = document.createElement("div");
-                                element.setAttribute("id", "app");
+                            element.setAttribute("id", "app");
                             document.body.appendChild(element);
                             console.log("Made cleaning in source files to load the application.")
+                        }
+
+                        if ((what === "FIRST" && _FIRED_IT_STATE === "") || (what === "LAST" && _FIRED_IT_STATE === "")) {
+                            hrefs = hrefs.concat(_PRE_FILES); console.log("First files to load have been ignited.")
+                            _FIRED_IT_STATE = "FIRST";
+                        }else if ((what === "LAST" && (_FIRED_IT_STATE === "FIRST" || _FIRED_IT_STATE !== "LAST"))) {
+                            hrefs = hrefs.concat(_POST_FILES); console.log("Last files to load have been ignited.")
+                            _FIRED_IT_STATE = "LAST";
                         }
 
                         for (i = 0; i < hrefs.length; i++) {
