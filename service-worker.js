@@ -338,19 +338,9 @@ self.addEventListener("fetch", function(event) {
 
         event.respondWith(
             Promise.race([
-                required_cache.then(function (cache) {
-                    return cache.match(url).then(function (response) {
-                        if(response) { return response.clone(); }
-                    });
-                }),
                 useful_cache.then(function (cache) {
                     return cache.match(url).then(function (response) {
-                        if(response) { return response.clone(); }
-                    });
-                }),
-                static_cache.then(function (cache) {
-                    return cache.match(url).then(function (response) {
-                        if(response) { return response.clone(); }
+                        if(response) { return  Promise.resolve(response.clone()) }
                     });
                 }),
                 fetch(url).then(function (response) { // Fetch and serve
