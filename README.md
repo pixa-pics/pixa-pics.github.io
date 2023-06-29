@@ -39,7 +39,7 @@ Storing pixel art 1000 years: https://www.youtube.com/watch?v=cctknQhVX1w
 # Pixa.Pics - Pixel Art Editor and NFT Laboratory
 Pixa.Pics is an all-in-one pixel art editor and NFT laboratory designed for users of all ages and skill levels. The application provides an accessible and secure way for individuals to create, store, and share pixel art while preserving their anonymity and utilizing cutting-edge blockchain technology.
 
-![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/EDITOR-HALO.png)
+![](https://raw.githubusercontent.com/pixa-pics/pixa-pics.github.io/main/src/images/screenshots/EDITOR7.png)
 
 # Table of Contents
 * Introduction
