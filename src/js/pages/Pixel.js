@@ -1403,17 +1403,19 @@ class Pixel extends React.PureComponent {
 
         window.dispatchEvent(new Event(`art-download-raster${size}`));
 
-        get_base64_png_data_url(size, false, 1, 100, 100).then(({url}) => {
+        JSLoader( () => import("../utils/png_quant")).then(({png_quant}) => {
+            JSLoader( () => import("../utils/oxi_png")).then(({oxi_png}) => {
+                get_base64_png_data_url(size, false, 1, 100, 100, png_quant, oxi_png).then(({url}) => {
+                    const hash = xxhashthat(url);
+                    let a = document.createElement("a"); //Create <a>
+                    a.download = `PIXAPICS-${hash}-PIXELATED-${size}x_RAS.png`; //File name Here
+                    a.href = url;
+                    a.click();
+                    a.remove();
 
-            const hash = xxhashthat(url);
-
-            let a = document.createElement("a"); //Create <a>
-            a.download = `PIXAPICS-${hash}-PIXELATED-${size}x_RAS.png`; //File name Here
-            a.href = url;
-            a.click();
-            a.remove();
-
-            this._propose_selling_nft();
+                    this._propose_selling_nft();
+                });
+            });
         });
     };
 
@@ -1428,140 +1430,138 @@ class Pixel extends React.PureComponent {
         actions.jamy_update("happy");
 
         this.setSt4te({_loading: true, _loading_process: "image_render"}, () => {
+            JSLoader( () => import("../utils/png_quant")).then(({png_quant}) => {
+                JSLoader( () => import("../utils/oxi_png")).then(({oxi_png}) => {
+                    get_base64_png_data_url(1, true, 1, 100, 100, png_quant, oxi_png).then(({url, colors}) => {
 
-            setTimeout(() => {
-
-                get_base64_png_data_url(1, true, 1, 100, 100).then(({url, colors}) => {
-
-                    const hash = xxhashthat(url);
-
-                    let { _files_waiting_download } = this.st4te;
-                    _files_waiting_download.push({
-                        name: `PIXAPICS-${hash}-PIXELATED-1x_RAS.png`,
-                        url: url
-                    });
-                    this.setSt4te({_files_waiting_download}, () => {
-
-                        this._request_force_update();
-                    });
-
-                    actions.trigger_voice("processing");
-                    base64png_to_xbrz_svg(url, (image_base64, size, width, height) => {
+                        const hash = xxhashthat(url);
 
                         let { _files_waiting_download } = this.st4te;
                         _files_waiting_download.push({
-                            name: `PIXAPICS-${hash}-${using.toUpperCase()}-${size}x_RAS.png`,
-                            url: ""+image_base64
+                            name: `PIXAPICS-${hash}-PIXELATED-1x_RAS.png`,
+                            url: url
                         });
                         this.setSt4te({_files_waiting_download}, () => {
 
                             this._request_force_update();
+                        });
 
-                            if(maybe_upscale_with_ai) {
+                        actions.trigger_voice("processing");
+                        base64png_to_xbrz_svg(url, (image_base64, size, width, height) => {
 
-                                if(width * height < 1600 * 1600) {
+                            let { _files_waiting_download } = this.st4te;
+                            _files_waiting_download.push({
+                                name: `PIXAPICS-${hash}-${using.toUpperCase()}-${size}x_RAS.png`,
+                                url: ""+image_base64
+                            });
+                            this.setSt4te({_files_waiting_download}, () => {
 
-                                    postJSON("https://deepai.pixa-pics.workers.dev/waifu2x", ""+image_base64, (err, res) => {
+                                this._request_force_update();
 
-                                        let { _files_waiting_download } = this.st4te;
+                                if(maybe_upscale_with_ai) {
 
-                                        if(res) {
+                                    if(width * height < 1600 * 1600) {
 
-                                            JSLoader( () => import("../utils/png_quant")).then(({png_quant}) => {
+                                        postJSON("https://deepai.pixa-pics.workers.dev/waifu2x", ""+image_base64, (err, res) => {
 
-                                                png_quant(""+res, 25, 50, 1, pool).then((base_64_out) => {
+                                            let { _files_waiting_download } = this.st4te;
 
-                                                    _files_waiting_download.push({
-                                                        name: `PIXAPICS-${hash}-${using.toUpperCase()}-${size}+AI-2x_RAS.png`,
-                                                        url: ""+base_64_out
-                                                    });
+                                            if(res) {
 
-                                                    this.setSt4te({_files_waiting_download}, this._request_force_update);
+                                                JSLoader( () => import("../utils/png_quant")).then(({png_quant}) => {
 
-                                                }).catch(function(e){
+                                                    png_quant(""+res, 25, 50, 1, pool).then((base_64_out) => {
 
-                                                    JSLoader( () => import("../utils/oxi_png.js")).then(({oxi_png}) => {
+                                                        _files_waiting_download.push({
+                                                            name: `PIXAPICS-${hash}-${using.toUpperCase()}-${size}+AI-2x_RAS.png`,
+                                                            url: ""+base_64_out
+                                                        });
 
-                                                        oxi_png(""+res, Math.floor(100/30), false, pool).then((base_64_out) => {
+                                                        this.setSt4te({_files_waiting_download}, this._request_force_update);
 
-                                                            _files_waiting_download.push({
-                                                                name: `PIXAPICS-${hash}-${using.toUpperCase()}-${size}+AI-2x_RAS.png`,
-                                                                url: ""+base_64_out
+                                                    }).catch(function(e){
+
+                                                        JSLoader( () => import("../utils/oxi_png.js")).then(({oxi_png}) => {
+
+                                                            oxi_png(""+res, Math.floor(100/30), false, pool).then((base_64_out) => {
+
+                                                                _files_waiting_download.push({
+                                                                    name: `PIXAPICS-${hash}-${using.toUpperCase()}-${size}+AI-2x_RAS.png`,
+                                                                    url: ""+base_64_out
+                                                                });
+
+                                                                this.setSt4te({_files_waiting_download}, this._request_force_update);
+
+                                                            }).catch(function(e){
+
+                                                                actions.trigger_snackbar("Looks like we had an unexpected issue with our image optimizer", 5700);
+                                                                actions.jamy_update("angry");
+
+                                                                _files_waiting_download.push({
+                                                                    name: `PIXAPICS-${hash}-${using.toUpperCase()}-${size}+AI-2x_RAS.png`,
+                                                                    url: ""+res
+                                                                });
+
+                                                                this.setSt4te({_files_waiting_download}, this.forceUpdate);
+
+
                                                             });
-
-                                                            this.setSt4te({_files_waiting_download}, this._request_force_update);
-
-                                                        }).catch(function(e){
-
-                                                            actions.trigger_snackbar("Looks like we had an unexpected issue with our image optimizer", 5700);
-                                                            actions.jamy_update("angry");
-
-                                                            _files_waiting_download.push({
-                                                                name: `PIXAPICS-${hash}-${using.toUpperCase()}-${size}+AI-2x_RAS.png`,
-                                                                url: ""+res
-                                                            });
-
-                                                            this.setSt4te({_files_waiting_download}, this.forceUpdate);
-
-
                                                         });
                                                     });
                                                 });
-                                            });
 
-                                        }else {
+                                            }else {
 
-                                            console.log(err, res)
-                                            actions.trigger_snackbar("Looks like we had an unexpected issue with deepai.org", 5700);
-                                            actions.jamy_update("angry");
-                                        }
-                                    }, "application/text");
+                                                console.log(err, res)
+                                                actions.trigger_snackbar("Looks like we had an unexpected issue with deepai.org", 5700);
+                                                actions.jamy_update("angry");
+                                            }
+                                        }, "application/text");
+                                    }
                                 }
+
+                            });
+
+                        }, (svg_base64, size) => {
+
+                            if(svg_base64.length > 0) {
+
+                                let { _files_waiting_download } = this.st4te;
+                                _files_waiting_download.push({
+                                    name: `PIXAPICS-${hash}-${using.toUpperCase()}-${size}x_VEC.svg`,
+                                    url: svg_base64
+                                });
+                                this.setSt4te({_files_waiting_download}, () => {
+
+                                    this._request_force_update();
+                                });
                             }
 
-                        });
+                            this.setSt4te({_loading: false, _loading_process: ""}, () => {
 
-                    }, (svg_base64, size) => {
+                                this._propose_selling_nft();
 
-                        if(svg_base64.length > 0) {
-
-                            let { _files_waiting_download } = this.st4te;
-                            _files_waiting_download.push({
-                                name: `PIXAPICS-${hash}-${using.toUpperCase()}-${size}x_VEC.svg`,
-                                url: svg_base64
                             });
-                            this.setSt4te({_files_waiting_download}, () => {
 
-                                this._request_force_update();
-                            });
-                        }
+                        }, (crt_base64, size) => {
 
-                        this.setSt4te({_loading: false, _loading_process: ""}, () => {
+                            if(crt_base64.length > 0) {
 
-                            this._propose_selling_nft();
+                                let { _files_waiting_download } = this.st4te;
+                                _files_waiting_download.push({
+                                    name: `PIXAPICS-${hash}-${using.toUpperCase()}-${size}+CRT.png`,
+                                    url: crt_base64
+                                });
+                                this.setSt4te({_files_waiting_download}, () => {
 
-                        });
+                                    this._request_force_update();
+                                });
+                            }
 
-                    }, (crt_base64, size) => {
-
-                        if(crt_base64.length > 0) {
-
-                            let { _files_waiting_download } = this.st4te;
-                            _files_waiting_download.push({
-                                name: `PIXAPICS-${hash}-${using.toUpperCase()}-${size}+CRT.png`,
-                                url: crt_base64
-                            });
-                            this.setSt4te({_files_waiting_download}, () => {
-
-                                this._request_force_update();
-                            });
-                        }
-
-                    }, Array.from(colors), using, Boolean(optimize_render_size), Boolean(download_svg), Boolean(download_crt));
+                        }, Array.from(colors), using, Boolean(optimize_render_size), Boolean(download_svg), Boolean(download_crt));
+                    });
                 });
-
-            }, 750);
-
+            });
         });
     };
 

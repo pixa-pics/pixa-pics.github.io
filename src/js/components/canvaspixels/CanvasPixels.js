@@ -644,12 +644,12 @@ class CanvasPixels extends React.PureComponent {
         this.bmp_layer.render(pxl_width, pxl_height, pxls, pxl_colors, callback_function);
     };
 
-    get_base64_png_data_url = (scale = 1, with_palette = false, with_compression_speed = 0, with_compression_quality_min = 30, with_compression_quality_max = 35) => {
+    get_base64_png_data_url = (scale = 1, with_palette = false, with_compression_speed = 0, with_compression_quality_min = 30, with_compression_quality_max = 35, png_quant, oxi_png) => {
 
-        return this._get_base64_png_data_url(scale, with_palette, with_compression_speed, with_compression_quality_min, with_compression_quality_max);
+        return this._get_base64_png_data_url(scale, with_palette, with_compression_speed, with_compression_quality_min, with_compression_quality_max, png_quant, oxi_png);
     };
 
-    _get_base64_png_data_url = (scale = 1, with_palette = false, with_compression_speed = 0, with_compression_quality_min = 30, with_compression_quality_max = 35) => {
+    _get_base64_png_data_url = (scale = 1, with_palette = false, with_compression_speed = 0, with_compression_quality_min = 30, with_compression_quality_max = 35, png_quant, oxi_png) => {
 
         const { _json_state_history, pxl_width, pxl_height } = this.super_state.get_state();
         const { _s_pxls, _s_pxl_colors, _layers } = _json_state_history.state_history[_json_state_history.history_position];
@@ -661,33 +661,24 @@ class CanvasPixels extends React.PureComponent {
 
                 if(with_compression_speed !== 0 && result.colors.length <= 256) {
 
-                    JSLoader( () => import("../../utils/png_quant")).then(({png_quant}) => {
+                    png_quant(""+result.url, with_compression_quality_min, with_compression_quality_max, with_compression_speed, pool).then((base_64_out) => {
+                        result.url = base_64_out;
+                        resolve(result);
+                    }).catch(function(e){ reject(e);});
+
+                }else if(with_compression_speed !== 0 && result.colors.length > 256){
+
+                    oxi_png(""+result.url, Math.floor(with_compression_quality_max/30), false, pool).then((base_64_out) => {
+
+                            result.url = base_64_out;
+                            resolve(result);
+                    }).catch(function(e){
 
                         png_quant(""+result.url, with_compression_quality_min, with_compression_quality_max, with_compression_speed, pool).then((base_64_out) => {
 
                             result.url = base_64_out;
                             resolve(result);
                         }).catch(function(e){ reject(e);});
-                    });
-                }else if(with_compression_speed !== 0 && result.colors.length > 256){
-
-                    JSLoader( () => import("../../utils/oxi_png.js")).then(({oxi_png}) => {
-
-                        oxi_png(""+result.url, Math.floor(with_compression_quality_max/30), false, pool).then((base_64_out) => {
-
-                            result.url = base_64_out;
-                            resolve(result);
-                        }).catch(function(e){
-
-                            JSLoader( () => import("../../utils/png_quant")).then(({png_quant}) => {
-
-                                png_quant(""+result.url, with_compression_quality_min, with_compression_quality_max, with_compression_speed, pool).then((base_64_out) => {
-
-                                    result.url = base_64_out;
-                                    resolve(result);
-                                }).catch(function(e){ reject(e);});
-                            });
-                        });
                     });
                 }else {
 
