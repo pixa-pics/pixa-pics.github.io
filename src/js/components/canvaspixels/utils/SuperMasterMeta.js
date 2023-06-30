@@ -361,17 +361,11 @@ const SuperMasterMeta = {
                                         meta.super_canvas.render();
                                     }, false, false,  Date.now()).then(function (){
                                         "use strict";
-                                        _pxl_indexes_of_selection_drawn.clear();
-                                        _old_pxls_hovered.clear();
-                                        _pxl_indexes_of_old_shape.clear();
-                                        _previous_imported_image_pxls_positioned_keyset.clear();
-                                        _pxl_indexes_of_selection_drawn.bulkAdd(_pxl_indexes_of_selection.indexes);
-                                        _old_pxls_hovered.add(_pxls_hovered);
-                                        _old_pxls_hovered.add(image_imported_resizer_index);
-                                        _pxl_indexes_of_old_shape.bulkAdd(_pxl_indexes_of_current_shape.indexes);
-                                        _previous_imported_image_pxls_positioned_keyset.bulkAdd(imported_image_pxls_positioned_keyset.indexes);
+                                        _pxl_indexes_of_selection_drawn.clearAndBulkAdd(_pxl_indexes_of_selection.indexes);
+                                        _pxl_indexes_of_old_shape.clearAndBulkAdd(_pxl_indexes_of_current_shape.indexes);
+                                        _previous_imported_image_pxls_positioned_keyset.clearAndBulkAdd(imported_image_pxls_positioned_keyset.indexes);
+                                        _old_pxls_hovered.clearAndBulkAdd(Uint32Array.of(_pxls_hovered, image_imported_resizer_index));
                                         old_full_pxls.set(full_pxls);
-                                        state._previous_imported_image_pxls_positioned_keyset = imported_image_pxls_positioned_keyset;
                                         state._old_selection_pair_highlight = _selection_pair_highlight;
                                         state._old_layers_string_id = old_layers_string_id;
                                         state._did_hide_canvas_content = hide_canvas_content;
@@ -471,7 +465,7 @@ const SuperMasterMeta = {
             },
             _handle_canvas_mouse_move(event) {
                 "use strict";
-                let { _pxl_indexes_of_selection, _imported_image_pxls, pxl_current_color_uint32, tool, pxl_width, pxl_height, _pxls_hovered, hide_canvas_content, _is_on_resize_element } = meta.super_state.get_state();
+                let { _pxl_indexes_of_selection, _imported_image_pxls, pxl_current_color_uint32, tool, pxl_width, pxl_height, _pxls_hovered, hide_canvas_content, _is_on_resize_element, _paint_or_select_hover_pxl_indexes, _paint_hover_old_pxls_snapshot, _last_action_timestamp, _paint_or_select_hover_pxl_indexes_exception, _paint_or_select_hover_actions_latest_index, _s_pxls, _layer_index, pxl_current_opacity,  _select_hover_old_pxls_snapshot, select_mode  } = meta.super_state.get_state();
                 const { event_button, mouse_down } = meta.canvas_pos.get_pointer_state();
                 const event_which = event_button+1|0;
 
@@ -499,7 +493,7 @@ const SuperMasterMeta = {
 
                         if(event_which === 1 && mouse_down) {
 
-                            if(!is_on_resize_element) {
+                            if(!is_on_resize_element && !_is_on_resize_element) {
 
                                 _imported_image_start_x = _imported_image_start_x + x_difference | 0;
                                 _imported_image_start_x = (_imported_image_start_x < -_imported_image_final_width) ? -_imported_image_final_width: _imported_image_start_x | 0;
@@ -564,7 +558,6 @@ const SuperMasterMeta = {
 
                     }else if((tool === "PENCIL" || tool === "PENCIL PERFECT" || tool === "CONTOUR") && event_which === 1 && mouse_down){
 
-                        let { _paint_hover_old_pxls_snapshot, _last_action_timestamp, _paint_or_select_hover_pxl_indexes, _paint_or_select_hover_pxl_indexes_exception, _paint_or_select_hover_actions_latest_index, _s_pxls, _s_pxl_colors, _layer_index, pxl_current_opacity } = meta.super_state.get_state();
                         // PAINT HACK: compute the pixel between the previous and latest paint by hover pixel (Bresenham’s Line Algorithm)
                         if(_paint_or_select_hover_actions_latest_index === -1) {
                             _paint_or_select_hover_actions_latest_index = pxl_index | 0;
@@ -694,8 +687,6 @@ const SuperMasterMeta = {
 
                     }else if((tool === "SELECT PIXEL" || tool === "SELECT PIXEL PERFECT" || tool === "SELECT PATH") && event_which === 1 && mouse_down) {
 
-                        let { _select_hover_old_pxls_snapshot, _last_action_timestamp, _paint_or_select_hover_actions_latest_index, _paint_or_select_hover_pxl_indexes, select_mode } = meta.super_state.get_state();
-
                         // PAINT HACK: compute the pixel between the previous and latest paint by hover pixel (Bresenham’s Line Algorithm)
                         if(_paint_or_select_hover_actions_latest_index === -1) {
 
@@ -775,13 +766,14 @@ const SuperMasterMeta = {
 
                         const { _s_pxls, _layer_index } = meta.super_state.get_state();
 
+                        _paint_or_select_hover_pxl_indexes.clear();
                         meta.super_state.set_state({
                             _pxls_hovered: pxl_index | 0,
                             _mouse_inside: true,
                             _paint_or_select_hover_actions_latest_index: -1,
                             _paint_hover_old_pxls_snapshot: new Uint16Array(_s_pxls[_layer_index].buffer),
                             _select_hover_old_pxls_snapshot: Uint16Array.from(_pxl_indexes_of_selection),
-                            _paint_or_select_hover_pxl_indexes: new SetFixed(_s_pxls[_layer_index].length)
+                            _paint_or_select_hover_pxl_indexes
                         }).then(() => {
 
                             this.update_canvas();

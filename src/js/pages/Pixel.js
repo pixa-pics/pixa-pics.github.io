@@ -1393,19 +1393,25 @@ class Pixel extends React.PureComponent {
     }
     _backup_state = () => {
 
-        const { export_state } = this.st4te._canvas;
-        export_state();
+        const { export_state, set_png_compressors } = this.st4te._canvas;
+        JSLoader( () => import("../utils/png_quant")).then(({png_quant}) => {
+            JSLoader(() => import("../utils/oxi_png")).then(({oxi_png}) => {
+                set_png_compressors(png_quant, oxi_png);
+                export_state();
+            });
+        });
     };
 
     _download_image = (size) => {
 
-        const { get_base64_png_data_url, xxhashthat } = this.st4te._canvas;
+        const { get_base64_png_data_url, xxhashthat, set_png_compressors } = this.st4te._canvas;
 
         window.dispatchEvent(new Event(`art-download-raster${size}`));
 
         JSLoader( () => import("../utils/png_quant")).then(({png_quant}) => {
             JSLoader( () => import("../utils/oxi_png")).then(({oxi_png}) => {
-                get_base64_png_data_url(size, false, 1, 100, 100, png_quant, oxi_png).then(({url}) => {
+                set_png_compressors(png_quant, oxi_png);
+                get_base64_png_data_url(size, false, 1, 100, 100).then(({url}) => {
                     const hash = xxhashthat(url);
                     let a = document.createElement("a"); //Create <a>
                     a.download = `PIXAPICS-${hash}-PIXELATED-${size}x_RAS.png`; //File name Here
@@ -1421,7 +1427,7 @@ class Pixel extends React.PureComponent {
 
     _download_svg = (using = "xbrz", optimize_render_size = false, download_svg = false, download_crt = false, maybe_upscale_with_ai = false) => {
 
-        const { get_base64_png_data_url, xxhashthat } = this.st4te._canvas;
+        const { get_base64_png_data_url, set_png_compressors, xxhashthat } = this.st4te._canvas;
 
         window.dispatchEvent(new Event(`art-download-vector${using.toLowerCase()}`));
 
@@ -1432,7 +1438,8 @@ class Pixel extends React.PureComponent {
         this.setSt4te({_loading: true, _loading_process: "image_render"}, () => {
             JSLoader( () => import("../utils/png_quant")).then(({png_quant}) => {
                 JSLoader( () => import("../utils/oxi_png")).then(({oxi_png}) => {
-                    get_base64_png_data_url(1, true, 1, 100, 100, png_quant, oxi_png).then(({url, colors}) => {
+                    set_png_compressors(png_quant, oxi_png);
+                    get_base64_png_data_url(1, true, 1, 100, 100).then(({url, colors}) => {
 
                         const hash = xxhashthat(url);
 
@@ -1467,46 +1474,37 @@ class Pixel extends React.PureComponent {
                                             let { _files_waiting_download } = this.st4te;
 
                                             if(res) {
+                                                oxi_png(""+res, Math.floor(100/30), false, pool).then((base_64_out) => {
 
-                                                JSLoader( () => import("../utils/png_quant")).then(({png_quant}) => {
+                                                    _files_waiting_download.push({
+                                                        name: `PIXAPICS-${hash}-${using.toUpperCase()}-${size}+AI-2x_RAS.png`,
+                                                        url: ""+base_64_out
+                                                    });
+
+                                                    this.setSt4te({_files_waiting_download}, this._request_force_update);
+
+                                                }).catch(function(e){
 
                                                     png_quant(""+res, 25, 50, 1, pool).then((base_64_out) => {
 
-                                                        _files_waiting_download.push({
-                                                            name: `PIXAPICS-${hash}-${using.toUpperCase()}-${size}+AI-2x_RAS.png`,
-                                                            url: ""+base_64_out
-                                                        });
+                                                    _files_waiting_download.push({
+                                                        name: `PIXAPICS-${hash}-${using.toUpperCase()}-${size}+AI-2x_RAS.png`,
+                                                        url: ""+base_64_out
+                                                    });
 
-                                                        this.setSt4te({_files_waiting_download}, this._request_force_update);
+                                                    this.setSt4te({_files_waiting_download}, this._request_force_update);
 
                                                     }).catch(function(e){
 
-                                                        JSLoader( () => import("../utils/oxi_png.js")).then(({oxi_png}) => {
+                                                        actions.trigger_snackbar("Looks like we had an unexpected issue with our image optimizer", 5700);
+                                                        actions.jamy_update("angry");
 
-                                                            oxi_png(""+res, Math.floor(100/30), false, pool).then((base_64_out) => {
-
-                                                                _files_waiting_download.push({
-                                                                    name: `PIXAPICS-${hash}-${using.toUpperCase()}-${size}+AI-2x_RAS.png`,
-                                                                    url: ""+base_64_out
-                                                                });
-
-                                                                this.setSt4te({_files_waiting_download}, this._request_force_update);
-
-                                                            }).catch(function(e){
-
-                                                                actions.trigger_snackbar("Looks like we had an unexpected issue with our image optimizer", 5700);
-                                                                actions.jamy_update("angry");
-
-                                                                _files_waiting_download.push({
-                                                                    name: `PIXAPICS-${hash}-${using.toUpperCase()}-${size}+AI-2x_RAS.png`,
-                                                                    url: ""+res
-                                                                });
-
-                                                                this.setSt4te({_files_waiting_download}, this.forceUpdate);
-
-
-                                                            });
+                                                        _files_waiting_download.push({
+                                                            name: `PIXAPICS-${hash}-${using.toUpperCase()}-${size}+AI-2x_RAS.png`,
+                                                            url: ""+res
                                                         });
+
+                                                        this.setSt4te({_files_waiting_download}, this.forceUpdate);
                                                     });
                                                 });
 
@@ -2098,7 +2096,9 @@ class Pixel extends React.PureComponent {
             }
         });
 
-        this.setSt4te({_canvas: new_element, _filters: new_element.get_filter_names()});
+        this.setSt4te({_canvas: new_element, _filters: new_element.get_filter_names()}, () => {
+            this._backup_state();
+        });
     };
 
     _handle_position_change = (position) => {

@@ -1,6 +1,7 @@
 import pool from "../utils/worker-pool";
 import JSLoader from "./JSLoader";
 import depixelize from "../utils/depixelize/index";
+import actions from "../actions/utils";
 
 const base64png_to_xbrz_svg = (base64png, callback_function_for_image, callback_function_for_svg, callback_function_for_crt, pal= [], using = "xbrz", optimize_render_size = false, download_svg = false, also_crt= false) => {
 
@@ -29,13 +30,28 @@ const base64png_to_xbrz_svg = (base64png, callback_function_for_image, callback_
         const process_optimize_render_size = (base64_out, first_scale_size, second_image_data_width, second_image_data_height, callb) => {
             if(optimize_render_size) {
 
-                JSLoader( () => import("../utils/png_quant")).then(({png_quant}) => {
+                JSLoader( () => import("../utils/oxi_png")).then(({oxi_png}) => {
 
-                    png_quant(base64_out, 70, 80, 5, pool).then((base64_out_second) => {
+                    oxi_png(base64_out, Math.floor(100/30), false, pool).then((base64_out_second) => {
 
                         callb(base64_out_second, first_scale_size, second_image_data_width, second_image_data_height);
+                    }).catch(() => {
+                        JSLoader( () => import("../utils/png_quant")).then(({png_quant}) => {
+
+                            png_quant(base64_out, 25, 50, 1, pool).then((base64_out_second) => {
+
+                                callb(base64_out_second, first_scale_size, second_image_data_width, second_image_data_height);
+                            }).catch(() => {
+                                callb(base64_out, first_scale_size, second_image_data_width, second_image_data_height);
+                            });
+                        }).catch(() => {
+                            callb(base64_out, first_scale_size, second_image_data_width, second_image_data_height);
+                        });
                     });
+                }).catch(() => {
+                    callb(base64_out, first_scale_size, second_image_data_width, second_image_data_height);
                 });
+
             }else {
 
                 callb(base64_out, first_scale_size, second_image_data_width, second_image_data_height);

@@ -102,6 +102,8 @@ const SuperState = {
             _last_filters_hash: "",
             _saving_json_state_history_ran_timestamp: 0,
             _processing_filters: false,
+            canvas_event_target: "CANVAS_WRAPPER_OVERFLOW",
+            mouse_down: false,
         };
     },
     from: function(props){
