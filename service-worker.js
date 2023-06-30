@@ -1,6 +1,6 @@
-var REQUIRED_CACHE = "unless-update-cache-v777-required";
-var USEFUL_CACHE = "unless-update-cache-v777-useful";
-var STATIC_CACHE = "unless-update-cache-v777-static";
+var REQUIRED_CACHE = "unless-update-cache-v778-required";
+var USEFUL_CACHE = "unless-update-cache-v778-useful";
+var STATIC_CACHE = "unless-update-cache-v778-static";
 var MAIN_CHILD_CHUNK_REGEX = /chunk_(main_[a-z0-9]+)\.min\.js$/i;
 var CHILD_CHUNK_REGEX = /chunk_([0-9]+)\.min\.js$/i;
 
@@ -102,10 +102,12 @@ self.addEventListener("fetch", function(event) {
                         "/src/images/infographics/ShareWho.svg",
                         "/src/images/Gallery/Banshee.png",
                         "/src/images/Gallery/Banshee.svg",
-                        "/src/images/Gallery/Falcon.png",
-                        "/src/images/Gallery/Falcon.svg",
-                        "/src/images/Gallery/Cortanade.png",
-                        "/src/images/Gallery/Cortanade.svg",
+                        "/src/images/Gallery/Dom.png",
+                        "/src/images/Gallery/Dom.svg",
+                        "/src/images/Gallery/Dev.png",
+                        "/src/images/Gallery/Dev.svg",
+                        "/src/images/Gallery/Bud.png",
+                        "/src/images/Gallery/Bud.svg",
                         "/src/images/infographics/Rambo.svg",
                         "/src/images/infographics/TestBag.svg",
                         "/src/images/infographics/Explosion.svg",
