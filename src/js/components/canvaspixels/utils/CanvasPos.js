@@ -1,3 +1,4 @@
+const {SIMDopeColor} = require("simdope");
 const CanvasPos = {
 
     _get_init_state(pxl_width, pxl_height, default_scale, canvas_wrapper_padding, canvas_wrapper_border_width, perspective) {
@@ -341,9 +342,21 @@ const CanvasPos = {
                     filter
                 };
             },
-            set_pointer_state: function(object) {
+            set_pointer_state: function(new_props) {
                 "use strict";
-                ps = Object.assign(ps, object);
+                var key = "", notify_cursor = false;
+                if("mouse_down" in new_props){
+                    if(ps.mouse_down !== new_props.mouse_down) {
+                        notify_cursor = true;
+                    }
+                }
+                for (key in new_props) {
+
+                    ps[key] = new_props[key];
+                }
+                if(notify_cursor) {
+                    this.notify_cursor();
+                }
             },
             set_moves: function(new_scale_move_x, new_scale_move_y,  new_scale, callback_function) {
                 "use strict";
@@ -390,7 +403,7 @@ const CanvasPos = {
                 p = gp(s, szr, p);
                 this.notify_moved(callback_function);
             },
-            set_notifiers: function(callback_function_update = function(){}, callback_function_menu = function(){}, callback_function_move = function(){}, callback_function_up = function(){}, callback_function_down = function(){}, callback_function_middle = function(){}) {
+            set_notifiers: function(callback_function_update = function(){}, callback_function_menu = function(){}, callback_function_move = function(){}, callback_function_up = function(){}, callback_function_down = function(){}, callback_function_middle = function(){}, callback_function_cursor = function(){}) {
 
                 notifiers = {
                     update: callback_function_update,
@@ -398,7 +411,8 @@ const CanvasPos = {
                     move: callback_function_move,
                     up: callback_function_up,
                     down: callback_function_down,
-                    middle: callback_function_middle
+                    middle: callback_function_middle,
+                    cursor: callback_function_cursor
                 };
             },
             notify_moved: function(callback_function) {
@@ -424,6 +438,9 @@ const CanvasPos = {
             },
             notify_middle: function() {
                 notifiers.middle(false, false);
+            },
+            notify_cursor: function () {
+                notifiers.cursor(ps.mouse_down, s.canvas_event_target);
             },
             set_shadow_color: function(hex) {
 
@@ -810,16 +827,14 @@ const CanvasPos = {
                 pageY = pageY | 0;
                 this.compute_perspective_from_pointer_event(pageX, pageY);
                 const {canvas, canvas_wrapper} = p;
+                let new_canvas_event_target = "CANVAS_WRAPPER_OVERFLOW",notify_cursor = false;
                 if(pageX >= canvas.left && pageY >= canvas.top && pageX <= canvas.right && pageY <= canvas.bottom) { // Canvas
-
-                    s.canvas_event_target = "CANVAS";
+                    new_canvas_event_target = "CANVAS";
                 }else if(pageX >= canvas_wrapper.left && pageY >= canvas_wrapper.top && pageX <= canvas_wrapper.right && pageY <= canvas_wrapper.bottom) { // Canvas wrapper
-
-                    s.canvas_event_target = "CANVAS_WRAPPER";
-                }else {
-
-                    s.canvas_event_target = "CANVAS_WRAPPER_OVERFLOW";
+                    new_canvas_event_target = "CANVAS_WRAPPER";
                 }
+                if(s.canvas_event_target !== new_canvas_event_target) {notify_cursor = true;s.canvas_event_target = new_canvas_event_target;}
+                if(notify_cursor){ this.notify_cursor(); }
             },
             set_move_speed_average_now: function() {
                 "use strict";

@@ -24,7 +24,7 @@ SOFTWARE.
  */
 
 "use strict";
-import JSLoader from "../../utils/JSLoader";
+const HISTORY_TIME_GAP = 625;
 import {SetFixed} from "@asaitama/boolean-array";
 
 import React from "react";
@@ -77,7 +77,7 @@ class CanvasPixels extends React.PureComponent {
 
         let _intervals = [];
 
-        _intervals[0] = setInterval(this._maybe_save_state, 1250);
+        _intervals[0] = setInterval(this._maybe_save_state, HISTORY_TIME_GAP);
         _intervals[1] = setInterval(this._maybe_update_selection_highlight, this.sraf.get_state().is_mobile_or_tablet ? 2000: 1000);
         _intervals[2] = setInterval(this._notify_export_state, this.super_state.get_state().export_state_every_ms);
 
@@ -209,10 +209,13 @@ class CanvasPixels extends React.PureComponent {
             this._super_master_meta_handle_canvas_mouse_move,
             this._super_master_meta_handle_canvas_mouse_up,
             this._super_master_meta_handle_canvas_mouse_down,
-            this._request_force_update
+            this._request_force_update,
+            this.super_state.set_cursor
         );
         this.canvas_pos.init_speed_interval();
-
+        this.super_state.set_notifiers(
+            this._request_force_update
+        );
         this._update_canvas_container_size();
         this._notify_image_load_complete(true);
     }
@@ -1612,14 +1615,14 @@ class CanvasPixels extends React.PureComponent {
         let _json_state_history = super_state_object._json_state_history;
         if(requested_at > super_state_object._saving_json_state_history_ran_timestamp || force) {
 
-            if(super_state_object._last_action_timestamp + 1250 <= Date.now() || force || _json_state_history.state_history.length === 0){
+            if(super_state_object._last_action_timestamp + HISTORY_TIME_GAP <= Date.now() || force || _json_state_history.state_history.length === 0){
 
                 if(super_state_object._saving_json_state_history_running || (will_change && !force)) {
 
                     setTimeout(() => {
 
                         this._maybe_save_state(set_anyway_if_changes_callback, force, requested_at);
-                    }, 250);
+                    }, HISTORY_TIME_GAP / 5 | 0);
 
                 }else {
 
@@ -3523,10 +3526,8 @@ class CanvasPixels extends React.PureComponent {
             canvas_wrapper_background_color,
             canvas_wrapper_background_color_focused,
             canvas_wrapper_border_radius,
-            _is_on_resize_element,
-            _is_image_import_mode,
             tool,
-            select_mode,
+            cursor,
             _mouse_inside,
             perspective,
             cached_background_image,
@@ -3535,12 +3536,10 @@ class CanvasPixels extends React.PureComponent {
 
         const is_there_new_dimension = this.super_master_meta.is_there_new_dimension();
         const {canvas_wrapper, device_pixel_ratio, scale, canvas_event_target} = this.canvas_pos.get_state();
-        const {mouse_down} = this.canvas_pos.get_pointer_state();
         const screen_zoom_ratio = this.canvas_pos.get_screen_zoom_ratio();
         const {box_shadow, will_change} = this.canvas_pos.get_style();
         const {background_image, transform_rotate, filter} = perspective ? this.canvas_pos.get_perspective_state(): {};
         const is_mobile_or_tablet = this.sraf.get_state().is_mobile_or_tablet;
-        const cursor = this.super_state.get_cursor(_is_on_resize_element, _is_image_import_mode, mouse_down, tool, select_mode, canvas_event_target);
 
         const canvas_wrapper_width = pxl_width * screen_zoom_ratio * scale.current + 0.5 | 0;
         const canvas_wrapper_height = pxl_height * screen_zoom_ratio * scale.current + 0.5 | 0;
