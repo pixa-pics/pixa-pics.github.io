@@ -63,6 +63,7 @@ import TuneIcon from "../icons/Tune";
 import ImageAutoAdjustIcon from "../icons/ImageAutoAdjust";
 
 import HexGrid from "../icons/HexGrid";
+import HaloGrid from "../icons/HaloGrid";
 import get_svg_in_b64 from "../utils/svgToBase64";
 import { l, t } from "../utils/t";
 
@@ -748,7 +749,7 @@ class Pixel extends React.PureComponent {
         document.getElementById("tabs-desktop").addEventListener("wheel", (event) => {this._handle_wheel(event)}, {passive: false});
         dispatcher.register(this._handle_events.bind(this));
         this._try_load_with_payload(this.st4te.load_with + "");
-        this.setSt4te({_h_svg: get_svg_in_b64(<HexGrid color={"#e5e5e5"}/>)});
+        this.setSt4te({_h_svg: get_svg_in_b64(<HexGrid color={"#e5e5e5"}/>),_h_svg_size: `${Math.ceil(.5*200)}px ${Math.ceil(.5*229.3)}px`});
         JSLoader( () => import("../utils/ressource_pixel")).then((RESSOURCE_PIXELS) => {
 
             this.setSt4te({_library: RESSOURCE_PIXELS});
@@ -2682,6 +2683,7 @@ class Pixel extends React.PureComponent {
             _less_than_1280w,
             _is_pixel_dialog_create_open,
             _h_svg,
+            _h_svg_size,
             _attachment_previews,
             _is_cursor_fuck_you_active,
             _perspective,
@@ -2926,7 +2928,7 @@ class Pixel extends React.PureComponent {
                         backgroundColor: "#f7f7f7",
                         backgroundImage: `url("${_h_svg}")`,
                         backgroundRepeat: "repeat",
-                        backgroundSize: `${Math.ceil(.5*200)}px ${Math.ceil(.5*229.3)}px`,
+                        backgroundSize: _h_svg_size,
                         textRendering: "optimizespeed",
                         imageRendering: "optimizespeed",
                     }}>
