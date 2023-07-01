@@ -746,7 +746,11 @@ class Pixel extends React.PureComponent {
         this._updated_dimensions();
         document.addEventListener("keydown", this._handle_keydown);
         document.addEventListener("keyup", this._handle_keyup);
-        document.getElementById("tabs-desktop").addEventListener("wheel", (event) => {this._handle_wheel(event)}, {passive: false});
+        try {
+            document.getElementById("tabs-desktop").addEventListener("wheel", (event) => {
+                this._handle_wheel(event)
+            }, {passive: false});
+        } catch (e){}
         dispatcher.register(this._handle_events.bind(this));
         this._try_load_with_payload(this.st4te.load_with + "");
         this.setSt4te({_h_svg: get_svg_in_b64(<HexGrid color={"#e5e5e5"}/>),_h_svg_size: `${Math.ceil(.5*200)}px ${Math.ceil(.5*229.3)}px`});
@@ -1006,7 +1010,11 @@ class Pixel extends React.PureComponent {
         actions.stop_sound();
         window.removeEventListener("resize", this._updated_dimensions);
         window.removeEventListener('wheel', this._prevent_ctrl_zoom);
-        document.getElementById("tabs-desktop").removeEventListener("wheel", (event) => {this._handle_wheel(event)}, {passive: false});
+        try {
+            document.getElementById("tabs-desktop").removeEventListener("wheel", (event) => {
+                this._handle_wheel(event)
+            }, {passive: false});
+        } catch (e){}
         document.removeEventListener("keydown", this._handle_keydown);
         document.removeEventListener("keyup", this._handle_keyup);
         clearInterval(this.st4te._saved_at_interval);
