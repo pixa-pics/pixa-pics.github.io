@@ -121,23 +121,30 @@ const styles = theme => ({
         animationFillMode: "both",
     },
     backgroundImageWrapper: {
-        right: "max(9vw, 9vh)",
-        bottom: "max(12vw, 12vh)",
-        width: "min(47.5vw, 47.5vh)",
+        right: "min(9vw, 12vh)",
+        bottom: "min(12vw, 16vh)",
+        width: "auto",
+        height: "auto",
+        minWidth: "min(67.5vw, 47.5vh)",
+        minHeight: "min(67.5vw, 47.5vh)",
+        maxHeight: "47.5vh",
+        maxWidth: "67.5vw",
         filter: "drop-shadow(0px 0px 6px #00000099) drop-shadow(0px 0px 9px #00000066)",
         webkitFilter: "drop-shadow(0px 0px 6px #00000099) drop-shadow(0px 0px 9px #00000066)",
-        contain: "paint style layout",
+        willChange: "opacity transform",
+        contain: "style size",
         position: "absolute",
         display: "relative",
-        transform: "translate(min(50vh, 50%), min(50vh, 50%))",
         cursor: "pointer",
         "& > img, & > h2": {
+            contain: "paint style layout",
+            willChange: "filter",
             userSelect: "none",
             width: "100%",
             height: "100%",
             filter: "opacity(0.66)",
+            transform: "translate3D(-15%, -30%, 0px)",
             webkitFilter: "opacity(0.75)",
-            transform: "translateZ(10px)",
             imageRendering: "optimizeSpeed",
             transition: "filter cubic-bezier(0.4, 0, 0.2, 1) 625ms !important"
         },
@@ -148,9 +155,10 @@ const styles = theme => ({
         },
         [theme.breakpoints.down("md")]: {
             fontSize: 12,
-            right: "max(6vw, 6vh)",
-            bottom: "max(18vw, 18vh)",
-            width: "min(60vw, 40vh)",
+            right: "min(6vw, 6vh)",
+            bottom: "min(18vw, 18vh)",
+            maxWidth: "60vw",
+            maxHeight: "40vh",
         },
     },
     backgroundImageInfo: {
@@ -375,7 +383,7 @@ class Home extends React.PureComponent {
 
     componentDidMount() {
 
-        const all_image_name_infographics = ["Banshee.png", "Banshee.svg", "Dom.png", "Dom.svg", "Dev.png", "Dev.svg", "Bud.png", "Bud.svg"];
+        const all_image_name_infographics = ["Ban.png", "Ban.svg", "Hun.png", "Hun.svg", "Bud.png", "Bud.svg", "Pun.png", "Pun.svg"];
 
         let _image_index = -1;
         let _image_name_infographics;

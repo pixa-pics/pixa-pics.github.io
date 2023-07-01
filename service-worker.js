@@ -1,6 +1,6 @@
-var REQUIRED_CACHE = "unless-update-cache-v778-required";
-var USEFUL_CACHE = "unless-update-cache-v778-useful";
-var STATIC_CACHE = "unless-update-cache-v778-static";
+var REQUIRED_CACHE = "unless-update-cache-v779-required";
+var USEFUL_CACHE = "unless-update-cache-v779-useful";
+var STATIC_CACHE = "unless-update-cache-v779-static";
 var MAIN_CHILD_CHUNK_REGEX = /chunk_(main_[a-z0-9]+)\.min\.js$/i;
 var CHILD_CHUNK_REGEX = /chunk_([0-9]+)\.min\.js$/i;
 
@@ -100,14 +100,14 @@ self.addEventListener("fetch", function(event) {
                     return cache.addAll([
                         "/src/fonts/baksheesh/index.css",
                         "/src/images/infographics/ShareWho.svg",
-                        "/src/images/Gallery/Banshee.png",
-                        "/src/images/Gallery/Banshee.svg",
-                        "/src/images/Gallery/Dom.png",
-                        "/src/images/Gallery/Dom.svg",
-                        "/src/images/Gallery/Dev.png",
-                        "/src/images/Gallery/Dev.svg",
+                        "/src/images/Gallery/Ban.png",
+                        "/src/images/Gallery/Ban.svg",
+                        "/src/images/Gallery/Hun.png",
+                        "/src/images/Gallery/Hun.svg",
                         "/src/images/Gallery/Bud.png",
                         "/src/images/Gallery/Bud.svg",
+                        "/src/images/Gallery/Pun.png",
+                        "/src/images/Gallery/Pun.svg",
                         "/src/images/infographics/Rambo.svg",
                         "/src/images/infographics/TestBag.svg",
                         "/src/images/infographics/Explosion.svg",
