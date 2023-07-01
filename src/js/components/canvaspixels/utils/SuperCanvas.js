@@ -294,15 +294,15 @@ Object.defineProperty(SuperCanvas.prototype, 'unpile', {
                 y = divide_uint(minus_uint(index, x), width);
 
                 if (uint_greater_equal(pr_top_left_x, x)) {
-                    pr_top_left_x = max_int(0, minus_int(x, 7));
+                    pr_top_left_x = max_int(0, minus_int(x, 12));
                 } else if (uint_less_equal(pr_bottom_right_x, x)) {
-                    pr_bottom_right_x = min_int(width, plus_int(x, 7));
+                    pr_bottom_right_x = min_int(width, plus_int(x, 12));
                 }
 
                 if (uint_greater_equal(pr_top_left_y, y)) {
-                    pr_top_left_y = max_int(0, minus_int(y, 7));
+                    pr_top_left_y = max_int(0, minus_int(y, 12));
                 } else if (uint_less_equal(pr_bottom_right_y, y)) {
-                    pr_bottom_right_y = min_int(height, plus_int(y, 7));
+                    pr_bottom_right_y = min_int(height, plus_int(y, 12));
                 }
             }
 

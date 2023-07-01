@@ -43,21 +43,14 @@
             15% { display: block !important; transform: translateY(75%); opacity: 1  }
             30% { display: block !important; transform: translateY(25%); opacity: 0  }
             60% { display: block !important; transform: translateY(-75%); opacity: 0  }
-            100% { display: block !important; transform: translateY(-100%); opacity: 0  }
-        }
-        @keyframes ripup {
-            0% {display: block !important; transform: translateY(175%); opacity: .6 }
-            15% { display: block !important; transform: translateY(75%); opacity: 1  }
-            30% { display: block !important; transform: translateY(25%); opacity: 0  }
-            60% { display: block !important; transform: translateY(-75%); opacity: 0  }
-            100% { display: block !important; transform: translateY(-100%); opacity: 0  }
+            100% { display: none !important; transform: translateY(-100%); opacity: 0  }
         }
         body.loaded > #app {
             contain: paint style layout;
             content-visibility: visible;
             position: fixed;
             will-change: auto;
-            overflow: hidden;
+            overflow: auto;
         }
         body.loading[datainitiated=true] > #app {
             contain: paint style layout;
@@ -76,7 +69,7 @@
             animation-delay: 450ms;
             animation-timing-function: ease-in-out;
             animation-iteration-count: infinite;
-            overflow: hidden;
+            overflow: auto;
         }
         @keyframes bounce {
             0% {filter: brightness(1) contrast(1);transform: scale(1.1);}
@@ -163,11 +156,13 @@
                 transform: translateZ(10px) scale(1);
                 filter: opacity(1);
                 content-visibility: auto !important;
+                display: initial;
             }
             100% {
                 transform: translateZ(10px) scale(6);
                 filter: opacity(0);
                 content-visibility: hidden !important;
+                display: none;
             }
         }
     </style>

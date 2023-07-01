@@ -16,6 +16,7 @@ const styles = theme => ({
     },
     backdrop:{
         background: "rgba(1,3,15,0.9)",
+        userSelect: "none",
         zIndex: 1,
     },
     revelantText: {
@@ -121,8 +122,8 @@ const styles = theme => ({
         animationFillMode: "both",
     },
     backgroundImageWrapper: {
-        right: "min(3vw, 4vh)",
-        bottom: "min(4vw, 5vh)",
+        right: 32,
+        bottom: 32,
         width: "auto",
         height: "auto",
         minWidth: "40vw",
@@ -131,34 +132,38 @@ const styles = theme => ({
         maxWidth: "60vw",
         filter: "drop-shadow(0px 0px 6px #00000099) drop-shadow(0px 0px 9px #00000066)",
         webkitFilter: "drop-shadow(0px 0px 6px #00000099) drop-shadow(0px 0px 9px #00000066)",
-        willChange: "opacity transform",
-        contain: "style size",
+        willChange: "transform",
+        contain: "style size layout",
         position: "absolute",
         display: "relative",
         cursor: "pointer",
         "& > img, & > h2": {
             contain: "paint style layout",
-            willChange: "filter",
-            userSelect: "none",
             width: "100%",
             height: "100%",
             filter: "opacity(0.66)",
-            transform: "translate3D(-5%, -50%, 0px)",
+            transform: "translate3d(0%, -50%, 5px)",
             webkitFilter: "opacity(0.75)",
             imageRendering: "optimizeSpeed",
-            transition: "filter cubic-bezier(0.4, 0, 0.2, 1) 625ms !important"
+            transition: "filter 220ms cubic-bezier(0.4, 0, 0.2, 1) 5ms !important"
         },
         "&:hover > img, &:hover > h2": {
+            willChange: "filter",
             filter: "opacity(1)",
-            webkitFilter: "opacity(1)",
-            transition: "filter cubic-bezier(0.4, 0, 0.2, 1) 125ms !important"
+            webkitFilter: "opacity(1)"
         },
         [theme.breakpoints.down("md")]: {
             fontSize: 12,
-            right: "min(3vw, 3vh)",
-            bottom: "min(6vw, 6vh)",
-            maxWidth: "60vw",
-            maxHeight: "40vh",
+            minWidth: "70vw",
+            minHeight: "70vh",
+            maxHeight: "90vh",
+            maxWidth: "90vw",
+            "& > img, & > h2": {
+                transform: "translate3d(0%, calc(45vh - 75%), 5px) !important",
+                filter: "opacity(1)",
+                webkitFilter: "opacity(1)",
+                transition: "none"
+            },
         },
     },
     backgroundImageInfo: {
@@ -181,6 +186,7 @@ const styles = theme => ({
         margin: theme.spacing(1, 2)
     },
     movingBackground: {
+        userSelect: "none",
         animationFillMode: "both",
         animationName: "$movingbackground",
         animationDuration: "40s",

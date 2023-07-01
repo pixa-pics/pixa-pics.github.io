@@ -5,6 +5,10 @@ const styles = theme => ({
     player: {
         display: "inline-flex",
         verticalAlign: "inherit",
+        contain: "paint style size layout",
+        "& svg": {
+            willChange: "content"
+        }
     }
 });
 
