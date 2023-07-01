@@ -1,6 +1,6 @@
-var REQUIRED_CACHE = "unless-update-cache-v780-required";
-var USEFUL_CACHE = "unless-update-cache-v780-useful";
-var STATIC_CACHE = "unless-update-cache-v780-static";
+var REQUIRED_CACHE = "unless-update-cache-v781-required";
+var USEFUL_CACHE = "unless-update-cache-v781-useful";
+var STATIC_CACHE = "unless-update-cache-v781-static";
 var MAIN_CHILD_CHUNK_REGEX = /chunk_(main_[a-z0-9]+)\.min\.js$/i;
 var CHILD_CHUNK_REGEX = /chunk_([0-9]+)\.min\.js$/i;
 
@@ -45,19 +45,8 @@ var static_cache = new Promise(function(resolve, reject){
 self.addEventListener("install", function(event) {
 
     if (!navigator.onLine) {
-
         return true;
     }
-
-    event.waitUntil(useful_cache.then(function (cache) {
-        return cache.addAll([
-            "/src/images/favicon.ico",
-            "/src/images/manifest/logo-white.png",
-            "/src/images/illusion.jpg",
-            "/src/fonts/jura/index.css",
-        ]);
-    }));
-
     required_cache.then(function (cache) {
         cache.addAll([
             "/client/chunk_main_690b702c.min.js",
@@ -66,18 +55,13 @@ self.addEventListener("install", function(event) {
             "/",
         ])
     });
-    static_cache.then(function (cache) {
-        cache.addAll([
-            "/src/videos/presentation.mp4",
-            "/src/videos/tutorial.mp4",
-            "/src/videos/create.mp4",
-            "/src/videos/enhanced.mp4",
-            "/src/videos/pixelated.mp4",
-            "/src/videos/upload.mp4",
-            "/src/videos/share1.mp4",
-            "/src/videos/joke1.mp4"
-        ])
-    });
+    event.waitUntil(useful_cache.then(function (cache) {
+        return cache.addAll([
+            "/src/images/favicon.ico",
+            "/src/images/manifest/logo-white.png",
+            "/src/fonts/jura/index.css",
+        ]);
+    }));
 });
 
 self.addEventListener("fetch", function(event) {
@@ -100,15 +84,13 @@ self.addEventListener("fetch", function(event) {
                 useful_cache.then(function (cache) {
                     return cache.addAll([
                         "/src/fonts/baksheesh/index.css",
-                        "/src/images/infographics/ShareWho.svg",
+                        "/src/images/illusion.jpg",
                         "/src/images/Gallery/Ban.png",
                         "/src/images/Gallery/Ban.svg",
                         "/src/images/Gallery/Hun.png",
                         "/src/images/Gallery/Hun.svg",
                         "/src/images/Gallery/Bud.png",
                         "/src/images/Gallery/Bud.svg",
-                        "/src/images/Gallery/Pun.png",
-                        "/src/images/Gallery/Pun.svg",
                         "/src/images/infographics/Rambo.svg",
                         "/src/images/infographics/TestBag.svg",
                         "/src/images/infographics/Explosion.svg",
@@ -188,6 +170,14 @@ self.addEventListener("fetch", function(event) {
                         "/src/sounds/voice/cn/vision_deactivated.mp3",
                         "/src/sounds/voice/cn/filtering.mp3",
                         "/src/sounds/music/redeclipse/track_09.mp3",
+                        "/src/videos/presentation.mp4",
+                        "/src/videos/tutorial.mp4",
+                        "/src/videos/create.mp4",
+                        "/src/videos/enhanced.mp4",
+                        "/src/videos/pixelated.mp4",
+                        "/src/videos/upload.mp4",
+                        "/src/videos/share1.mp4",
+                        "/src/videos/joke1.mp4",
                         "/src/videos/create.mp4",
                         "/src/videos/enhanced.mp4",
                         "/src/videos/pixelated.mp4",

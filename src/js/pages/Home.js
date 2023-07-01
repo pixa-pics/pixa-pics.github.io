@@ -121,14 +121,14 @@ const styles = theme => ({
         animationFillMode: "both",
     },
     backgroundImageWrapper: {
-        right: "min(9vw, 12vh)",
-        bottom: "min(12vw, 16vh)",
+        right: "min(3vw, 4vh)",
+        bottom: "min(4vw, 5vh)",
         width: "auto",
         height: "auto",
-        minWidth: "min(67.5vw, 47.5vh)",
-        minHeight: "min(67.5vw, 47.5vh)",
-        maxHeight: "47.5vh",
-        maxWidth: "67.5vw",
+        minWidth: "40vw",
+        minHeight: "40vh",
+        maxHeight: "60h",
+        maxWidth: "60vw",
         filter: "drop-shadow(0px 0px 6px #00000099) drop-shadow(0px 0px 9px #00000066)",
         webkitFilter: "drop-shadow(0px 0px 6px #00000099) drop-shadow(0px 0px 9px #00000066)",
         willChange: "opacity transform",
@@ -143,7 +143,7 @@ const styles = theme => ({
             width: "100%",
             height: "100%",
             filter: "opacity(0.66)",
-            transform: "translate3D(-15%, -30%, 0px)",
+            transform: "translate3D(-5%, -50%, 0px)",
             webkitFilter: "opacity(0.75)",
             imageRendering: "optimizeSpeed",
             transition: "filter cubic-bezier(0.4, 0, 0.2, 1) 625ms !important"
@@ -155,8 +155,8 @@ const styles = theme => ({
         },
         [theme.breakpoints.down("md")]: {
             fontSize: 12,
-            right: "min(6vw, 6vh)",
-            bottom: "min(18vw, 18vh)",
+            right: "min(3vw, 3vh)",
+            bottom: "min(6vw, 6vh)",
             maxWidth: "60vw",
             maxHeight: "40vh",
         },
@@ -183,7 +183,7 @@ const styles = theme => ({
     movingBackground: {
         animationFillMode: "both",
         animationName: "$movingbackground",
-        animationDuration: "120s",
+        animationDuration: "40s",
         animationTimingFunction: "linear",
         animationDirection: "alternate",
         animationIterationCount: "infinite",
@@ -383,7 +383,7 @@ class Home extends React.PureComponent {
 
     componentDidMount() {
 
-        const all_image_name_infographics = ["Ban.png", "Ban.svg", "Hun.png", "Hun.svg", "Bud.png", "Bud.svg", "Pun.png", "Pun.svg"];
+        const all_image_name_infographics = ["Ban.png", "Ban.svg", "Sco.png", "Sco.svg", "Bud.png", "Bud.svg"];
 
         let _image_index = -1;
         let _image_name_infographics;
@@ -548,8 +548,8 @@ class Home extends React.PureComponent {
                          overflow: "hidden",
                          position: "relative",
                          display: "flex",
-                         backgroundColor: "#363e6e",
-                         backgroundImage:`radial-gradient(rgb(0 0 0 / 57%) 57%, rgb(1, 3, 15) 75%, rgb(1, 3, 15) 77%), url("/src/images/illusion.jpg")`,
+                         backgroundColor: "#010728bf",
+                         backgroundImage:`radial-gradient(rgb(2 1 15 / 44%) 14%, rgb(1 2 16 / 88%) 57%, rgb(1, 3, 16) 75%), url(/src/images/illusion.jpg)`,
                          backgroundSize:  "cover",
                          backgroundBlendMode: "luminosity",
                          backgroundPosition: "50% 100%",
