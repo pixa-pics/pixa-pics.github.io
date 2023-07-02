@@ -1,6 +1,6 @@
-var REQUIRED_CACHE = "unless-update-cache-v785-required";
-var USEFUL_CACHE = "unless-update-cache-v785-useful";
-var STATIC_CACHE = "unless-update-cache-v785-static";
+var REQUIRED_CACHE = "unless-update-cache-v786-required";
+var USEFUL_CACHE = "unless-update-cache-v786-useful";
+var STATIC_CACHE = "unless-update-cache-v786-static";
 var MAIN_CHILD_CHUNK_REGEX = /chunk_(main_[a-z0-9]+)\.min\.js$/i;
 var CHILD_CHUNK_REGEX = /chunk_([0-9]+)\.min\.js$/i;
 
@@ -85,12 +85,16 @@ self.addEventListener("fetch", function(event) {
                     return cache.addAll([
                         "/src/fonts/baksheesh/index.css",
                         "/src/images/illusion.jpg",
-                        "/src/images/Gallery/Ban.png",
-                        "/src/images/Gallery/Ban.svg",
-                        "/src/images/Gallery/sco.png",
-                        "/src/images/Gallery/Sco.svg",
-                        "/src/images/Gallery/Bud.png",
-                        "/src/images/Gallery/Bud.svg",
+                        "/src/images/gallery/Ban.png",
+                        "/src/images/gallery/Ban.svg",
+                        "/src/images/gallery/sco.png",
+                        "/src/images/gallery/Sco.svg",
+                        "/src/images/gallery/Bud.png",
+                        "/src/images/gallery/Bud.svg",
+                        "/src/images/demo/Beast.jpg",
+                        "/src/images/demo/PortraitB.jpg",
+                        "/src/images/demo/Cartoon.jpg",
+                        "/src/images/demo/Illustration.jpg",
                         "/src/images/infographics/Rambo.svg",
                         "/src/images/infographics/TestBag.svg",
                         "/src/images/infographics/Explosion.svg",
@@ -332,17 +336,17 @@ self.addEventListener("fetch", function(event) {
             Promise.race([
                 required_cache.then(function (cache) {
                     return cache.match(url).then(function (response) {
-                        if(response) { return Promise.resolve(response.clone()); }
+                        if(response.status === 200) { return Promise.resolve(response.clone()); }
                     });
                 }),
                 useful_cache.then(function (cache) {
                     return cache.match(url).then(function (response) {
-                        if(response) { return Promise.resolve(response.clone()); }
+                        if(response.status === 200) { return Promise.resolve(response.clone()); }
                     });
                 }),
                 static_cache.then(function (cache) {
                     return cache.match(url).then(function (response) {
-                        if(response) { return Promise.resolve(response.clone()); }
+                        if(response.status === 200) { return Promise.resolve(response.clone()); }
                     });
                 }),
                 fetch(url).then(function (response) { // Fetch and serve

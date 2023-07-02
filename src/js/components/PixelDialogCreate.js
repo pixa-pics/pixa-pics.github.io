@@ -33,7 +33,6 @@ const styles = theme => ({
             cursor: "pointer",
             float: "left",
             width: "384px",
-            backgroundImage: "url(/src/images/infographics/Leana.svg)",
             backgroundSize: "100%",
             backgroundPosition: "center",
             backgroundRepeat: "no-repeat",
@@ -350,7 +349,7 @@ class PixelDialogCreate extends React.PureComponent {
                                     {
 
                                         Boolean(Object.keys(pixel_arts).length === 0) ?
-                                            ["/src/images/demo/Portrait.jpg", "/src/images/demo/Wolfseal.jpg", "/src/images/demo/Cortana.jpg", "/src/images/demo/Leister.jpg", ].map((u, id) => {
+                                            ["/src/images/demo/Beast.jpg", "/src/images/demo/PortraitB.jpg", "/src/images/demo/Cartoon.jpg", "/src/images/demo/Illustration.jpg"].map((u, id) => {
 
                                                 return (
                                                     <ImageListItem style={{

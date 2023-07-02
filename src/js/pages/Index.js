@@ -294,7 +294,7 @@ class Index extends React.PureComponent {
                             this._handle_labactivate_dialog_open();
                         }else {
                             this.forceUpdate(() => {
-                                _history.push("/pixel/");
+                                _history.push("/pixe1");
                             })
                         }
                     });
@@ -454,7 +454,7 @@ class Index extends React.PureComponent {
 
     _should_play_music_pathname = (pathname = "/") => {
 
-        if(pathname.match(/\/(pixel)$/)) {
+        if(pathname.match(/\/(pixe)l?1?$/)) {
 
             let random = Math.ceil(Math.random()*3.0)
             if(random === 1) {
@@ -561,7 +561,7 @@ class Index extends React.PureComponent {
 
             this.setSt4te({_is_activatelab_dialog_open: -Math.abs(this.st4te._is_activatelab_dialog_open)}, () => {
                 this.forceUpdate(() => {
-                    this.st4te._history.push("/pixel");
+                    this.st4te._history.push("/pixe1");
                 });
             });
         }, 400);
