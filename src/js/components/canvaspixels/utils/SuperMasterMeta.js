@@ -106,12 +106,12 @@ const SuperMasterMeta = {
                         state._is_there_new_dimension = true;
                         shape_creator.update_state();
 
-                        setTimeout(() => {
-                            state._is_there_new_dimension = false;
-                        }, 500);
-
                         // Update html for css animation
                         notifiers.update(false, false).then(function () {
+                            setTimeout(() => {
+                                state._is_there_new_dimension = false;
+                                notifiers.update(false, false);
+                            }, 500);
                             render_canvas(is_there_new_dimension, is_there_different_dimension, force_update, requested_at).catch(function (){
                                 setTimeout(update_canvas_promise, 5, resolve0, reject0, force_update, requested_at);
                             });
@@ -291,9 +291,10 @@ const SuperMasterMeta = {
                         bool_new_pixel ||
                         bool_old_hover ||
                         bool_new_hover ||
+                        bool_old_import ||
+                        bool_new_import ||
                         (bool_old_shape != bool_new_shape) ||
                         (bool_old_selection != bool_new_selection) ||
-                        (bool_old_import != bool_new_import) ||
                         (bool_old_selection && bool_new_highlight) ||
                         bool_is_resize
                     ) {
@@ -357,14 +358,14 @@ const SuperMasterMeta = {
                                     "use strict";
                                     meta.sraf.run_frame(function(){
                                         "use strict";
-                                        meta.super_canvas.render();
                                         state._old_selection_pair_highlight = _selection_pair_highlight;
                                         state._old_layers_string_id = old_layers_string_id;
                                         state._did_hide_canvas_content = hide_canvas_content;
                                         state._old_pxl_width = parseInt(pxl_width);
                                         state._old_pxl_height = parseInt(pxl_height);
                                         state._last_paint_timestamp = requested_at;
-                                    }, false, false,  Date.now()).then(function (){
+                                        return meta.super_canvas.render();
+                                    }, false, false,  Date.now(), "render").then(function (){
                                         "use strict";
                                         resolve0();
                                     }).catch(handle_reject0);
@@ -503,7 +504,7 @@ const SuperMasterMeta = {
                                     _imported_image_start_x,
                                     _imported_image_start_y,
                                     _imported_image_move_from: Array.of(
-                                    _imported_image_move_from[0],
+                                        _imported_image_move_from[0],
                                         _imported_image_move_from[1]
                                     )
                                 }).then(() => {

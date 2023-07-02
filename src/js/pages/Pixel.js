@@ -671,7 +671,7 @@ class Pixel extends React.PureComponent {
     };
 
     setSt4te(st4te, callback) {
-
+        "use strict";
         let keys = Object.keys(st4te);
         let keys_length = keys.length | 0;
         let key = "";
@@ -747,9 +747,7 @@ class Pixel extends React.PureComponent {
         document.addEventListener("keydown", this._handle_keydown);
         document.addEventListener("keyup", this._handle_keyup);
         try {
-            document.getElementById("tabs-desktop").addEventListener("wheel", (event) => {
-                this._handle_wheel(event)
-            }, {passive: false});
+            document.getElementById("tabs-desktop").addEventListener("wheel", this._handle_wheel, {passive: false});
         } catch (e){}
         dispatcher.register(this._handle_events.bind(this));
         this._try_load_with_payload(this.st4te.load_with + "");
@@ -766,21 +764,27 @@ class Pixel extends React.PureComponent {
     _request_force_update = (can_be_cancelable, especially_dont_force) => {
 
         "use strict";
+
         can_be_cancelable = typeof can_be_cancelable == "undefined" ? true: can_be_cancelable;
-        especially_dont_force = typeof especially_dont_force == "undefined" ? true: especially_dont_force;
+        especially_dont_force = typeof especially_dont_force == "undefined" ? false: especially_dont_force;
 
         return this.sraf.run_frame(  () => {
             "use strict";
-            this.forceUpdate();
-        }, !Boolean(can_be_cancelable), !Boolean(especially_dont_force)).catch(this._request_force_update)
-    }
+            return new Promise((resolve, reject) => {
+                "use strict";
+                this.forceUpdate(resolve);
+            });
+        }, !Boolean(can_be_cancelable), !Boolean(especially_dont_force), Date.now(),"page_pixel").catch(() => {return this._request_force_update(can_be_cancelable, especially_dont_force)});
+    };
+
 
     _set_fps_and_xy_elements = () => {
-        
+        "use strict";
         this.setSt4te({_fps_el: document.getElementById("fps_el"), _xy_el: document.getElementById("xy_el")});
     };
 
     _prevent_ctrl_zoom = (e) => {
+        "use strict";
         if (e.ctrlKey) {
             e.preventDefault();
         }
@@ -987,7 +991,7 @@ class Pixel extends React.PureComponent {
     };
 
     _updated_dimensions = () => {
-
+        "use strict";
         let documentElement = document.documentElement,
             body = document.body || document.getElementsByTagName('body')[0],
             _window_width = window.innerWidth || documentElement.clientWidth || body.clientWidth,
@@ -1011,32 +1015,29 @@ class Pixel extends React.PureComponent {
         window.removeEventListener("resize", this._updated_dimensions);
         window.removeEventListener('wheel', this._prevent_ctrl_zoom);
         try {
-            document.getElementById("tabs-desktop").removeEventListener("wheel", (event) => {
-                this._handle_wheel(event)
-            }, {passive: false});
+            document.getElementById("tabs-desktop").removeEventListener("wheel", this._handle_wheel, {passive: false});
         } catch (e){}
         document.removeEventListener("keydown", this._handle_keydown);
         document.removeEventListener("keyup", this._handle_keyup);
         clearInterval(this.st4te._saved_at_interval);
     }
 
-    _handle_wheel = ({deltaY}) => {
-
-        if((this.st4te._handle_wheel_timestamp + 250) < Date.now()) {
-            let switch_of = deltaY === 0 ? 0: deltaY > 0 ? -1: 1;
-            let vni = this.st4te._view_name_index+switch_of;
-
+    _handle_wheel = (params) => {
+        "use strict";
+        const deltaY = params.deltaY;
+        if((this.st4te._handle_wheel_timestamp + 150) < Date.now()) {
+            let switch_of = deltaY === 0 ? 0: deltaY > 0 ? 1: -1;
+            let vni = this.st4te._view_name_index+switch_of|0;
             if(vni < 0){
-                vni = this.st4te._view_name_index = this.st4te._view_names.length-1;
+                vni = this.st4te._view_name_index = this.st4te._view_names.length-1|0;
             }else {
-                vni = vni % this.st4te._view_names.length;
+                vni = vni % (this.st4te._view_names.length + 1 | 0);
             }
-
-            this.setSt4te({
-                _handle_wheel_timestamp: Date.now()
-            }, () => {
-                this._handle_view_name_change(vni, this.st4te._view_name_index);
-            })
+            this._handle_view_name_change(vni, this.st4te._view_name_index, () => {
+                this.setSt4te({
+                    _handle_wheel_timestamp: Date.now()
+                });
+            });
         }
     };
 
@@ -1116,7 +1117,7 @@ class Pixel extends React.PureComponent {
         }
     };
 
-    _handle_view_name_change = (view_name_index, previous_name_index = null) => {
+    _handle_view_name_change = (view_name_index, previous_name_index = null, callback = function(){}) => {
 
         const { _view_names, _toolbox_container_ref } = this.st4te;
         previous_name_index = previous_name_index === null ? this.st4te._view_name_index: previous_name_index;
@@ -1140,6 +1141,7 @@ class Pixel extends React.PureComponent {
 
             this._set_props_bypass_this();
             this._request_force_update();
+            callback();
         });
     }
 
@@ -2111,10 +2113,10 @@ class Pixel extends React.PureComponent {
     };
 
     _handle_position_change = (position) => {
-
+        "use strict";
         this.setSt4te({_x: position.x, _y: position.y}, () => {
 
-            if(!this.st4te._less_than_1280w){
+            if(!this.st4te._less_than_1280w && Boolean((this.st4te._xy_el || {}).textContent)){
 
                 const { _x, _y } = this.st4te;
                 let x = _x === -1 ? "out": _x + 1;
@@ -2127,20 +2129,17 @@ class Pixel extends React.PureComponent {
     };
 
     _handle_fps_change = (fps) => {
-
+        "use strict";
         this.setSt4te({_fps: parseInt(fps)}, () => {
-
-            if(!this.st4te._less_than_1280w){
-
-                const { _fps } = this.st4te;
-                let fps_text = `FPS: ${_fps}`;
+            if(!this.st4te._less_than_1280w && Boolean((this.st4te._fps_el || {}).textContent)){
+                let fps_text = `FPS: ${this.st4te._fps}`;
                 this.st4te._fps_el.textContent = fps_text;
             }
         });
     };
 
     _handle_can_undo_redo_change = (_can_undo, _can_redo) => {
-
+        "use strict";
         _can_undo = parseInt(_can_undo);
         _can_redo = parseInt(_can_redo);
         const update = Boolean(this.st4te._can_undo !== _can_undo || this.st4te._can_redo !== _can_redo);
@@ -2160,7 +2159,7 @@ class Pixel extends React.PureComponent {
     }
 
     _handle_current_color_change = (color, event) => {
-
+        "use strict";
         if(typeof color.rgb !== "undefined") {
 
             color = SIMDopeColor.new_of(color.rgb.r, color.rgb.g, color.rgb.b, Math.round(parseInt(color.rgb.a * 255))).hex;
@@ -2174,11 +2173,11 @@ class Pixel extends React.PureComponent {
         this.setSt4te({_current_color: color, _hue: h});
     };
 
-    _handle_relevant_action_event = (event, color = "#ffffff", opacity = 0, sound = false) => {
+    _handle_relevant_action_event = (event, color = "#ffffff", opacity = 0, sound = true) => {
 
         const { _ripple } = this.st4te;
 
-        if(event && _ripple) {
+        if(Boolean(event) && Boolean(_ripple)) {
 
             if(sound) {
 

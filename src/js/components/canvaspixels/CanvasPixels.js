@@ -159,7 +159,7 @@ class CanvasPixels extends React.PureComponent {
                   100% { top: 100% } 
             }` +
             ".Canvas-Pixels-Cover::after {" +
-                `top: 0;
+            `top: 0;
                 left: 0;
                 width: calc(60% - 12px);
                 content: ""attr(datatexttop)"";
@@ -193,8 +193,8 @@ class CanvasPixels extends React.PureComponent {
             "}";
 
         var canvas_style = document.createElement("style");
-            canvas_style.innerHTML = body_css + pixelated_css + canvas_wrapper_css;
-            canvas_style.id = "canvas-style";
+        canvas_style.innerHTML = body_css + pixelated_css + canvas_wrapper_css;
+        canvas_style.id = "canvas-style";
         document.head.appendChild(canvas_style);
         this.super_state.set_state({_intervals});
 
@@ -681,8 +681,8 @@ class CanvasPixels extends React.PureComponent {
 
                     this.oxi_png(""+result.url, Math.floor(with_compression_quality_max/30), false, pool).then((base_64_out) => {
 
-                            result.url = base_64_out;
-                            resolve(result);
+                        result.url = base_64_out;
+                        resolve(result);
                     }).catch(function(e){
 
                         this.png_quant(""+result.url, with_compression_quality_min, with_compression_quality_max, with_compression_speed, pool).then((base_64_out) => {
@@ -3490,18 +3490,21 @@ class CanvasPixels extends React.PureComponent {
         });
     };
 
+
     _request_force_update = (can_be_cancelable, especially_dont_force) => {
 
         "use strict";
 
         can_be_cancelable = typeof can_be_cancelable == "undefined" ? true: can_be_cancelable;
         especially_dont_force = typeof especially_dont_force == "undefined" ? true: especially_dont_force;
-
         return this.sraf.run_frame(  () => {
+            "use strict";
+            return new Promise((resolve, reject) => {
                 "use strict";
-            this.forceUpdate();
-        }, !Boolean(can_be_cancelable), !Boolean(especially_dont_force)).catch(this._request_force_update)
-    }
+                this.forceUpdate(resolve);
+            });
+        }, !Boolean(can_be_cancelable), !Boolean(especially_dont_force), Date.now(), "inner_pixel_page").catch(() => {return this._request_force_update(can_be_cancelable, especially_dont_force)});
+    };
 
     _update_canvas_container_size = () => {
 

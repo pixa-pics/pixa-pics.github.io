@@ -318,7 +318,6 @@ class Home extends React.PureComponent {
 
     componentWillMount() {
 
-        this._updated_dimensions();
         window.addEventListener("resize", this._updated_dimensions);
         actions.trigger_page_render_complete();
         actions.trigger_loading_update(0);
@@ -369,7 +368,7 @@ class Home extends React.PureComponent {
     }
 
     setSt4te(st4te, callback) {
-
+        "use strict";
         let keys = Object.keys(st4te);
         let keys_length = keys.length | 0;
         let key = "";
@@ -389,6 +388,7 @@ class Home extends React.PureComponent {
 
     componentDidMount() {
 
+        this._updated_dimensions();
         const all_image_name_infographics = ["Ban.png", "Ban.svg", "Sco.png", "Sco.svg", "Bud.png", "Bud.svg"];
 
         let _image_index = -1;
@@ -455,16 +455,15 @@ class Home extends React.PureComponent {
     }
 
     componentWillUnmount() {
-
-        window.removeEventListener("resize", this._updated_dimensions);
+        try {
+            window.removeEventListener("resize", this._updated_dimensions);
+        } catch(e) {}
 
         try {
             actions.stop_sound();
             clearInterval(this.st4te._image_auto_interval);
             clearInterval(this.st4te._button_interval);
-        } catch(e) {
-
-        }
+        } catch(e) {}
     }
 
     _go_to_editor = (load_with = "", trigger_activation = false) => {

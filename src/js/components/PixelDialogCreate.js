@@ -107,12 +107,13 @@ class PixelDialogCreate extends React.PureComponent {
             size: props.size,
             pixel_arts: props.pixel_arts,
             theme_day: props.theme_day,
-            _paperplane: null
+            _paperplane: null,
+            _horizontal_projects_list_el: {}
         };
     };
 
     setSt4te(st4te, callback) {
-
+        "use strict";
         let keys = Object.keys(st4te);
         let keys_length = keys.length | 0;
         let key = "";
@@ -150,6 +151,12 @@ class PixelDialogCreate extends React.PureComponent {
 
             this.forceUpdate();
         })
+    }
+
+    componentWillUnmount() {
+        try {
+            this.st4te._horizontal_projects_list_el.removeEventListener("wheel", this._horizontal_projects_list_el_wheel);
+        } catch (e) {}
     }
 
     componentWillReceiveProps(new_props) {
@@ -207,6 +214,27 @@ class PixelDialogCreate extends React.PureComponent {
             var video = document.getElementById("tutorial-video");
             video.play();
         }catch(e){}
+    };
+
+    _set_horizontal_projects_list_el_ref = (el) => {
+
+        if(typeof el === "undefined") {return null;}
+        if(el === null) {return null;}
+        this.setSt4te({_horizontal_projects_list_el: el}, () => {
+            try {
+                this.st4te._horizontal_projects_list_el.addEventListener("wheel", this._horizontal_projects_list_el_wheel, {passive: false});
+            } catch (e) { }
+        });
+    };
+
+    _horizontal_projects_list_el_wheel = (e) => {
+        if (e.deltaY > 0) {
+            this.st4te._horizontal_projects_list_el.scrollLeft += 100;
+            e.preventDefault();
+        } else {
+            this.st4te._horizontal_projects_list_el.scrollLeft -= 100;
+            e.preventDefault();
+        }
     };
 
     render() {
@@ -295,7 +323,8 @@ class PixelDialogCreate extends React.PureComponent {
                                         <source src="/src/videos/tutorial.mp4" type="video/mp4"/>
                                     </video>
                                 </div> :
-                                <div style={{
+                                <div
+                                    style={{
                                     padding: "8px 24px",
                                     position: "relative",
                                     display: "flex",
@@ -305,12 +334,15 @@ class PixelDialogCreate extends React.PureComponent {
                                     boxSizing: "border-box",
                                     width: "100%"
                                 }}>
-                                    <ImageList rowHeight={288} cols={2.0} style={{
-                                        flexWrap: "nowrap",
-                                        contain: "paint style layout",
-                                        contains: "strict",
-                                        maxWidth: "min(576px, (100vw - 96px))"
-                                    }}>
+                                    <ImageList rowHeight={288}
+                                               cols={2.0}
+                                               ref={this._set_horizontal_projects_list_el_ref}
+                                               style={{
+                                                    flexWrap: "nowrap",
+                                                    contain: "paint style layout",
+                                                    contains: "strict",
+                                                    maxWidth: "min(576px, (100vw - 96px))"
+                                                }}>
                                         {
                                             Object.values(pixel_arts).sort((a, b) => b.timestamp - a.timestamp).map((v, i) => {
 

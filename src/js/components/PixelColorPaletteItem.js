@@ -29,7 +29,7 @@ class PixelColorPaletteItem extends React.PureComponent {
     };
 
     setSt4te(st4te, callback) {
-
+        "use strict";
         let keys = Object.keys(st4te);
         let keys_length = keys.length | 0;
         let key = "";
