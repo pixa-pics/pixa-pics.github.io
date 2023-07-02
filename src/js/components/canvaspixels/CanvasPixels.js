@@ -24,8 +24,6 @@ SOFTWARE.
  */
 
 "use strict";
-import png_quant from "../../utils/png_quant";
-
 const HISTORY_TIME_GAP = 625;
 import {SetFixed} from "@asaitama/boolean-array";
 
@@ -45,7 +43,6 @@ import CanvasPos from "../canvaspixels/utils/CanvasPos"
 import CanvasFilters from "../canvaspixels/utils/CanvasFilters"
 import SIMDope from "simdope";
 import {toBytes, toBase64} from 'fast-base64';
-import {oxi_png} from "../../utils/oxi_png";
 const simdops = SIMDope.simdops;
 const SIMDopeColors = SIMDope.SIMDopeColors;
 const SIMDopeColor = SIMDope.SIMDopeColor;

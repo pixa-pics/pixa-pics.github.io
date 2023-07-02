@@ -43,10 +43,10 @@ const SmartRequestAnimationFrame = {
                 fps_intereval = setInterval(function() {
                     "use strict";
                     window._sraf_state[state_id].second_previous_cpaf_fps = parseInt(window._sraf_state[state_id].previous_cpaf_fps);
-                    window._sraf_state[state_id].previous_cpaf_fps = window._sraf_state[state_id].cpaf_frames * 1.5 | 0;
+                    window._sraf_state[state_id].previous_cpaf_fps = window._sraf_state[state_id].cpaf_frames * 2 | 0;
                     window._sraf_state[state_id].cpaf_frames = 0;
                     nfpsc((window._sraf_state[state_id].second_previous_cpaf_fps + window._sraf_state[state_id].previous_cpaf_fps | 0) / 2 | 0);
-                }, 666);
+                }, 500);
             },
             set_notify_fps_callback(notify_fps_callback = function(){}) {
 
@@ -76,7 +76,7 @@ const SmartRequestAnimationFrame = {
                         reject();
                     }else {
 
-                        let skip_frame_rate = window._sraf_state[state_id].is_mobile_or_tablet ? 20: 40;
+                        let skip_frame_rate = Math.max(window._sraf_state[state_id].second_previous_cpaf_fps + window._sraf_state[state_id].previous_cpaf_fps | 0, window._sraf_state[state_id].is_mobile_or_tablet ? 30: 60);
 
                         let running_smoothly = true;
 
@@ -92,10 +92,9 @@ const SmartRequestAnimationFrame = {
 
                                 window._sraf_state[state_id].caf.call(window, window._sraf_state[state_id].caf_id[type]);
                                 window._sraf_state[state_id].caf_id[type] = null;
-                                window._sraf_state[state_id].cpaf_frames--;
                             }
 
-                            window._sraf_state[state_id].cpaf_frames++;
+
 
                             var id = window._sraf_state[state_id].caf_id[type] | 0;
                             if(!do_not_cancel_animation) {
@@ -113,10 +112,7 @@ const SmartRequestAnimationFrame = {
 
                                 window._sraf_state[state_id].caf.call(window, window._sraf_state[state_id].caf_id[type]);
                                 window._sraf_state[state_id].caf_id[type] = null;
-                                window._sraf_state[state_id].cpaf_frames--;
                             }
-
-                            window._sraf_state[state_id].cpaf_frames++;
 
                             var id = window._sraf_state[state_id].caf_id[type] | 0;
                             if(!do_not_cancel_animation) {
@@ -141,8 +137,11 @@ const SmartRequestAnimationFrame = {
 
                     function render() {
                         window._sraf_state[state_id].lasts_raf_time = requested_at_t | 0;
-                        render_final().then(resolve).catch(reject);
-                        if(id === window._sraf_state[state_id].caf_id[type]) { window._sraf_state[state_id].caf_id[type] = null;}
+                        render_final().then(function (){
+                            window._sraf_state[state_id].cpaf_frames++;
+                            if(id === window._sraf_state[state_id].caf_id[type]) { window._sraf_state[state_id].caf_id = null;}
+                            resolve();
+                        }).catch(reject);
                     }
                 });
             },

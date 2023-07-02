@@ -468,8 +468,6 @@ class Home extends React.PureComponent {
 
     _go_to_editor = (load_with = "", trigger_activation = false) => {
 
-        window.dispatchEvent(new Event("home-action-tryeditor"));
-
         if (load_with.startsWith("data:image/png;base64,")) {
 
             actions.load_with(load_with, trigger_activation);

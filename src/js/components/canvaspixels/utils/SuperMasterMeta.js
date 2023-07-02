@@ -351,7 +351,6 @@ const SuperMasterMeta = {
                                 _pxl_indexes_of_selection_drawn.clearAndBulkAdd(_pxl_indexes_of_selection.indexes);
                                 _pxl_indexes_of_old_shape.clearAndBulkAdd(_pxl_indexes_of_current_shape.indexes);
                                 _previous_imported_image_pxls_positioned_keyset.clearAndBulkAdd(imported_image_pxls_positioned_keyset.indexes);
-                                _old_pxls_hovered.clearAndBulkAdd(Uint32Array.of(_pxls_hovered, image_imported_resizer_index));
                                 _pxl_indexes_of_current_shape.clear();
                                 old_full_pxls.set(full_pxls);
                                 meta.super_canvas.prender().then(function () {
@@ -364,6 +363,7 @@ const SuperMasterMeta = {
                                         state._old_pxl_width = parseInt(pxl_width);
                                         state._old_pxl_height = parseInt(pxl_height);
                                         state._last_paint_timestamp = requested_at;
+                                        _old_pxls_hovered.clearAndBulkAdd(Uint32Array.of(_pxls_hovered, image_imported_resizer_index));
                                         return meta.super_canvas.render();
                                     }, false, false,  Date.now(), "render").then(function (){
                                         "use strict";

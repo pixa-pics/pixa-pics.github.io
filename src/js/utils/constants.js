@@ -17,12 +17,12 @@ const PAGE_ROUTES = [
         tabs: ""
     },
     {
-        page_regex: /\/(settings)$/,
+        page_regex: /\/(settings)\/?$/,
         page_name: "settings",
         tabs: ""
     },
     {
-        page_regex: /\/(pixel)$/,
+        page_regex: /\/(pixel)\/?$/,
         page_name: "pixel",
         tabs: ""
     }

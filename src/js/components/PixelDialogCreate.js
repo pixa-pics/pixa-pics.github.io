@@ -82,16 +82,6 @@ const styles = theme => ({
         [theme.breakpoints.up("lg")]: {
             display: "none",
         }
-    },
-    tutorial: {
-        contain: "layout paint size style",
-        position: "absolute",
-        bottom: 0,
-        left: 0,
-        padding: 0,
-        margin: 0,
-        width: 512,
-        height: 288
     }
 });
 
@@ -192,6 +182,43 @@ class PixelDialogCreate extends React.PureComponent {
         }
     }
 
+    _go_to_editor = (load_with = "", trigger_activation = false) => {
+
+        if (load_with.startsWith("data:image/png;base64,")) {
+
+            actions.load_with(load_with, trigger_activation);
+        } else {
+
+            if (load_with.length > 0) {
+
+                fetch(load_with).then((resp) => {
+
+                    resp.blob().then((blob) => {
+
+                        new Promise(function (resolve, _) {
+                            var reader = new FileReader();
+                            reader.onload = function () {
+                                resolve(reader.result)
+                            };
+                            reader.onerror = function () {
+                                var u = URL.createObjectURL(blob);
+                                resolve(u);
+                            };
+                            reader.readAsDataURL(blob);
+                        }).then((base64) => {
+
+                            actions.load_with(base64, trigger_activation);
+                        });
+                    });
+                });
+
+            } else {
+
+                actions.load_with(load_with, trigger_activation)
+            }
+        }
+    };
+
     _notify_size_from_slider = (event, value) => {
 
         if(this.props.on_import_size_change) {
@@ -206,14 +233,6 @@ class PixelDialogCreate extends React.PureComponent {
 
             this.props.on_pixel_art_delete(id);
         }
-    };
-
-    _resume_video = () => {
-
-        try {
-            var video = document.getElementById("tutorial-video");
-            video.play();
-        }catch(e){}
     };
 
     _set_horizontal_projects_list_el_ref = (el) => {
@@ -308,43 +327,53 @@ class PixelDialogCreate extends React.PureComponent {
                                 UPLOAD
                             </Button>
                             <Typography component={"h2"} variant={"h6"} style={{marginTop: 16, marginLeft: 24}}>{Boolean(Object.keys(pixel_arts).length === 0) ? <span>How to use it?</span>: <span>Unsaved minima</span>}</Typography>
-                            {Boolean(Object.keys(pixel_arts).length === 0) ?
-                                <div className={classes.tutorial} style={{
-                                    padding: "8px 24px",
-                                    position: "relative",
-                                    display: "flex",
-                                    flexWrap: "wrap",
-                                    justifyContent: "space-around",
-                                    overflow: "hidden",
-                                    boxSizing: "content-box",
-                                    maxWidth: "calc(100vw - 96px)",
-                                }}>
-                                    <video width="512" height="288" style={{transform: "translateZ(10px)", maxWidth: "calc(100vw - 48px)"}} id="tutorial-video" onClick={this._resume_video}>
-                                        <source src="/src/videos/tutorial.mp4" type="video/mp4"/>
-                                    </video>
-                                </div> :
-                                <div
-                                    style={{
-                                    padding: "8px 24px",
-                                    position: "relative",
-                                    display: "flex",
-                                    flexWrap: "wrap",
-                                    justifyContent: "space-around",
-                                    overflow: "hidden",
-                                    boxSizing: "border-box",
-                                    width: "100%"
-                                }}>
-                                    <ImageList rowHeight={288}
-                                               cols={2.0}
-                                               ref={this._set_horizontal_projects_list_el_ref}
-                                               style={{
-                                                    flexWrap: "nowrap",
-                                                    contain: "paint style layout",
-                                                    contains: "strict",
-                                                    maxWidth: "min(576px, (100vw - 96px))"
-                                                }}>
-                                        {
-                                            Object.values(pixel_arts).sort((a, b) => b.timestamp - a.timestamp).map((v, i) => {
+                            <div
+                                style={{
+                                padding: "8px 24px",
+                                position: "relative",
+                                display: "flex",
+                                flexWrap: "wrap",
+                                justifyContent: "space-around",
+                                overflow: "hidden",
+                                boxSizing: "border-box",
+                                width: "100%"
+                            }}>
+                                <ImageList rowHeight={288}
+                                           cols={2.0}
+                                           ref={this._set_horizontal_projects_list_el_ref}
+                                           style={{
+                                                flexWrap: "nowrap",
+                                                contain: "paint style layout",
+                                                contains: "strict",
+                                                maxWidth: "min(576px, (100vw - 96px))"
+                                            }}>
+                                    {
+
+                                        Boolean(Object.keys(pixel_arts).length === 0) ?
+                                            ["/src/images/demo/Portrait.jpg", "/src/images/demo/Wolfseal.jpg", "/src/images/demo/Cortana.jpg", "/src/images/demo/Leister.jpg", ].map((u, id) => {
+
+                                                return (
+                                                    <ImageListItem style={{
+                                                        display: "inline-block",
+                                                        width: "auto",
+                                                        userSelect: "none"
+                                                    }} key={id}>
+                                                        <img onClick={() => {
+                                                            this._go_to_editor(u);
+                                                        }} src={u} alt={`demo #${id}`} style={{
+                                                            zIndex: 0,
+                                                            width: "auto",
+                                                            height: "100%",
+                                                            cursor: "pointer"
+                                                        }}/>
+                                                        <ImageListItemBar
+                                                            title={"Try with this image"}
+                                                            subtitle={"This is a demo"}
+                                                        />
+                                                    </ImageListItem>
+                                                );
+                                            })
+                                            : Object.values(pixel_arts).sort((a, b) => b.timestamp - a.timestamp).map((v, i) => {
 
                                                 const {id, kb, preview, timestamp} = v;
                                                 return (
@@ -355,7 +384,7 @@ class PixelDialogCreate extends React.PureComponent {
                                                     }} className={"pixelated"} key={id}>
                                                         <img onClick={() => {
                                                             this.props.import_JSON_state(id)
-                                                        }} src={v.preview} alt={`preview ${i}`} style={{
+                                                        }} src={preview} alt={`preview ${i}`} style={{
                                                             zIndex: 0,
                                                             width: "auto",
                                                             height: "100%",
@@ -373,12 +402,12 @@ class PixelDialogCreate extends React.PureComponent {
                                                                 </IconButton>
                                                             }
                                                         />
-                                                    </ImageListItem>);
+                                                    </ImageListItem>
+                                                );
                                             })
-                                        }
-                                    </ImageList>
-                                </div>
-                            }
+                                    }
+                                </ImageList>
+                            </div>
                         </div>
                     </div>
                  </DialogContent>

@@ -923,6 +923,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                             </span>
                             {this._get_list_sub_header_content_scarlett("upload", "Define a size before uploading an image from the library or your device, this size will be the one used in the laboratory, but before! You can optionally define a retouching setting by artificial intelligence of your starting image, you can enlarge, colorize or even do both at the same time! That's how it's done to open an image in the lab, have fun.")}
                         </ListSubheader>
+                        <FormLabel style={{padding: "24px 0px 12px 24px"}} component="legend">START BY UPLOADING A NEW IMAGE</FormLabel>
                         <div className={"image " + classes.listItems}>
                             <input
                                 accept="image/jpg, image/jpeg, image/png, image/svg, image/webp, image/gif"
@@ -939,16 +940,25 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                                     <ImagePlusIcon/>
                                 </ListItemIcon>
                                 <ListItemText className={classes.ListItemText}
-                                              primary={"Open image"} secondary={"[CTRL + O]"}/>
+                                              primary={"OPEN A NEW IMAGE"} secondary={"[CTRL + O]"}/>
                             </ListItem>
-                            <ListItem button onClick={() => {
+                            {false && <ListItem button onClick={() => {
                                 this._upload_image_from_library()
                             }}>
                                 <ListItemIcon className={classes.listItemIcon}>
                                     <ImagePlusIcon/>
                                 </ListItemIcon>
                                 <ListItemText className={classes.ListItemText}
-                                              primary={"Library to new"} secondary={""}/>
+                                              primary={"OPEN FROM LIBRARY"} secondary={""}/>
+                            </ListItem>}
+                            <ListItem button onClick={() => {
+                                window.open("https://www.artstation.com/pixapics/store")
+                            }}>
+                                <ListItemIcon className={classes.listItemIcon}>
+                                    <StoreIcon/>
+                                </ListItemIcon>
+                                <ListItemText className={classes.ListItemText}
+                                              primary={"BUY PREMIUM IMAGES"} secondary={"ASSET STORE"}/>
                             </ListItem>
                         </div>
                         <div className={"image " + classes.listItems}>

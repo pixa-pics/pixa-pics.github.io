@@ -294,7 +294,7 @@ class Index extends React.PureComponent {
                             this._handle_labactivate_dialog_open();
                         }else {
                             this.forceUpdate(() => {
-                                _history.push("/pixel");
+                                _history.push("/pixel/");
                             })
                         }
                     });

@@ -63,7 +63,6 @@ import TuneIcon from "../icons/Tune";
 import ImageAutoAdjustIcon from "../icons/ImageAutoAdjust";
 
 import HexGrid from "../icons/HexGrid";
-import HaloGrid from "../icons/HaloGrid";
 import get_svg_in_b64 from "../utils/svgToBase64";
 import { l, t } from "../utils/t";
 
@@ -82,6 +81,7 @@ const styles = theme => ({
     },
     root: {
         contain: "layout size style paint",
+        contentVisibility: "auto",
         width: "100%",
         height: "100%",
         position: "relative",
@@ -204,6 +204,7 @@ const styles = theme => ({
         color: "#050c4c",
         boxShadow: "inset 0px 3px 6px #050c4c4d",
         whiteSpace: "nowrap",
+        willChange: "content"
     },
     drawerModalBackdropRoot: {
         contain: "layout size style paint",
@@ -780,7 +781,9 @@ class Pixel extends React.PureComponent {
 
     _set_fps_and_xy_elements = () => {
         "use strict";
-        this.setSt4te({_fps_el: document.getElementById("fps_el"), _xy_el: document.getElementById("xy_el")});
+        this._request_force_update().then(() => {
+            this.setSt4te({_fps_el: document.getElementById("fps_el"), _xy_el: document.getElementById("xy_el")});
+        });
     };
 
     _prevent_ctrl_zoom = (e) => {
@@ -798,7 +801,7 @@ class Pixel extends React.PureComponent {
 
                 let _saved_at_interval = setInterval(() => {
 
-                    this.st4te._saved_at_el.innerText = t(this.st4te._saved_at, {mini: true});
+                    this.st4te._saved_at_el.innerText = t(this.st4te._saved_at||Date.now(), {mini: true});
                 }, 1000);
 
                 this.setSt4te({_saved_at_interval});
@@ -822,41 +825,135 @@ class Pixel extends React.PureComponent {
 
     _try_load_with_payload = (load_with) => {
 
-        if(load_with.length === 0){
+            if(load_with.length === 0) {
+                api.get_settings(this._process_settings_info_result);
+                setTimeout(() => {
+                    this.setSt4te({_is_pixel_dialog_create_open: Boolean(load_with.length === 0)}, () => { this._request_force_update(); });
+                }, 725);
+            }else {
 
-            api.get_settings(this._process_settings_info_result);
-            setTimeout(() => {
-                this.setSt4te({_is_pixel_dialog_create_open: Boolean(load_with.length === 0)}, () => { this._request_force_update(); });
-            }, 725);
-        }else {
+                const is_type_png = Boolean(load_with.startsWith("data:image/png;base64,")); //image/png
+                const mimetype = is_type_png ? "image/png": "image/jpeg";
 
-            actions.trigger_sfx("alert_high-intensity");
-            this._handle_load("image_preload");
-            base64_sanitize(load_with + "", (base64) => {
+                const { _import_size } = this.st4te;
 
-                let img = new Image();
-                img.addEventListener("load", () => {
-                    const try_again = () => {
+                this._handle_load("image_preload");
+                base64_to_bitmap(load_with, (bitmap_input) => {
 
-                        if(!Boolean(this.st4te._canvas)) {
+                    actions.trigger_voice("data_upload");
 
-                            setTimeout(() => {try_again()}, 100);
-                        }else {
+                    const max_original_size = is_mobile_or_tablet ? Math.sqrt(1280 * 720): Math.sqrt(1920 * 1080);
+                    const max_size = is_mobile_or_tablet ? Math.sqrt(512 * 512): Math.sqrt(512 * 512);
+                    let min_size = is_mobile_or_tablet ? 512: 1024;
+                    const resize_original_to = parseInt(max_original_size * max_original_size);
+                    const resize_to_before = Math.min(parseInt(max_size * max_size), Math.max(parseInt(_import_size * _import_size), parseInt(min_size * min_size)));
+                    const resize_to_finally = Math.min(parseInt(max_size * max_size), parseInt(_import_size * _import_size));
 
-                            this.setSt4te({_kb: 0, _saved_at: 1/0}, () => {
+                    bitmap_to_imagedata(bitmap_input, resize_original_to, (imagedata) => {
 
-                                this._request_force_update();
-                            });
-                            this.st4te._canvas.set_canvas_from_image(img, base64, {}, true);
+                        JSLoader( () => import("../utils/quantimat/QuantiMat")).then(({QuantiMatGlobal}) => {
+
+                                imagedata_to_base64(imagedata, mimetype, (base64_resized) => {
+
+                                    base64_to_bitmap(base64_resized, (bitmap) => {
+
+                                        bitmap_to_imagedata(bitmap, resize_to_before, (imagedata_received) => {
+
+                                            QuantiMatGlobal(imagedata_received, 777).then(([imagedata2, color_removed_n, resulting_color_n, time_ms]) => {
+
+                                                if(imagedata2 === null) {
+
+                                                    window.dispatchEvent(new Event("art-upload-browsererror"));
+                                                    this._handle_load_complete("image_preload", {});
+                                                    this._handle_load("browser");
+                                                    actions.trigger_sfx("alert_high-intensity", 0.6);
+                                                    actions.jamy_update("flirty");
+                                                    actions.trigger_snackbar("That's our end my little diddy! My instinctive dwelling require a browser I am supporting.", 6000);
+
+                                                    setTimeout(() => {
+
+                                                        actions.trigger_sfx("alert_high-intensity", 0.7);
+                                                        actions.jamy_update("sad");
+                                                        actions.trigger_snackbar("Abandon, misfortune, sadness... I can't live in this strange place.", 7000);
+
+                                                        setTimeout(() => {
+
+                                                            actions.trigger_sfx("alert_high-intensity", 0.8);
+                                                            actions.jamy_update("suspicious");
+                                                            actions.trigger_snackbar("Ho no! I just can't, but someone needs to give me back my usual laboratory environment!", 7000);
+
+                                                            setTimeout(() => {
+
+                                                                actions.trigger_sfx("alert_high-intensity", 0.9);
+                                                                actions.jamy_update("shocked");
+                                                                actions.trigger_snackbar("Yes my enjoyable smartness, gladly you hear me now! Everything gonna be alright to look at me!", 9000);
+
+                                                                setTimeout(() => {
+
+                                                                    actions.jamy_update("happy");
+                                                                    actions.trigger_sfx("alert_high-intensity", 1);
+
+                                                                    setTimeout(() => {
+
+                                                                        actions.trigger_sfx("alert_high-intensity", 1);
+
+                                                                    }, 750);
+
+                                                                }, 4000);
+
+                                                            }, 8000);
+
+                                                        }, 8000);
+
+                                                    }, 7000);
+
+                                                }else {
+
+                                                    setTimeout(function (){
+                                                        actions.trigger_snackbar(`I am really awesome, within ${parseFloat(time_ms/1000).toFixed(3)}sec. I've made disappears ${color_removed_n} colors, now there are ${resulting_color_n} colors!`, 5700);
+                                                        setTimeout(function (){actions.jamy_update("happy");}, 2000);
+                                                    }, 15000);
+
+                                                    imagedata_to_base64(imagedata2, "image/png", (base64) => {
+
+                                                        base64_to_bitmap(base64, (bitmap_received) => {
+
+                                                            bitmap_to_imagedata(bitmap_received, resize_to_finally, (imagedata_received_2) => {
+
+                                                                imagedata_to_base64(imagedata_received_2, "image/png",(base64_final) => {
+
+                                                                    let img = new Image();
+                                                                    img.addEventListener("load", () => {
+
+                                                                        this._handle_load_complete("image_preload", {});
+                                                                        this.setSt4te({_kb: 0, _saved_at: 1/0});
+                                                                        this.st4te._canvas.set_canvas_from_image(img, base64_resized, {}, false);
+                                                                    }, {once: true, capture: true});
+                                                                    img.src = base64_final;
+                                                                });
+                                                            });
+                                                        });
+                                                    }, pool);
+                                                }
+                                            }, pool);
+                                        });
+                                    }, pool);
+                                }, pool);
+
+
+                        }).catch((e) => {
+
                             this._handle_load_complete("image_preload", {});
-                        }
-                    };
-                    try_again();
-                }, {once: true, capture: true});
-                img.src = base64;
+                            actions.trigger_snackbar("Be sure to have a recent browser or install Google Chrome for using it.", 5700);
+                            actions.jamy_update("angry");
 
-            });
-        }
+                        });
+
+                    });
+
+                }, pool);
+            }
+
     };
 
     _handle_events(event) {
@@ -3007,77 +3104,72 @@ class Pixel extends React.PureComponent {
                             }
                         >
                             <span style={{textAlign: "left", padding: "12px 8px", color: "#666"}}>X: {_menu_data.pos_x}, Y: {_menu_data.pos_y}</span>
-                            {
-                                (_tool === "SET PENCIL MIRROR" || _pencil_mirror_mode !== "NONE") &&
-                                <div>
-                                    <ListSubheader className={classes.contextMenuSubheader}>Tools</ListSubheader>
-                                    <ListItem button divider disabled={_tool === "PENCIL"} onClick={() => {this._set_tool("PENCIL")}}>
-                                        <ListItemIcon>
-                                            <PencilIcon />
-                                        </ListItemIcon>
-                                        <ListItemText primary="Pencil" />
-                                    </ListItem>
-                                    <ListItem button divider disabled={_tool === "PENCIL PERFECT"} onClick={() => {this._set_tool("PENCIL PERFECT")}}>
-                                        <ListItemIcon>
-                                            <PencilPerfectIcon />
-                                        </ListItemIcon>
-                                        <ListItemText primary="Pencil perfect" />
-                                    </ListItem>
+                            <div style={(_tool === "SET PENCIL MIRROR" || _pencil_mirror_mode !== "NONE") ? {}: {display: "none"}}>
+                                <ListSubheader className={classes.contextMenuSubheader}>Tools</ListSubheader>
+                                <ListItem button divider disabled={_tool === "PENCIL"} onClick={() => {this._set_tool("PENCIL")}}>
+                                    <ListItemIcon>
+                                        <PencilIcon />
+                                    </ListItemIcon>
+                                    <ListItemText primary="Pencil" />
+                                </ListItem>
+                                <ListItem button divider disabled={_tool === "PENCIL PERFECT"} onClick={() => {this._set_tool("PENCIL PERFECT")}}>
+                                    <ListItemIcon>
+                                        <PencilPerfectIcon />
+                                    </ListItemIcon>
+                                    <ListItemText primary="Pencil perfect" />
+                                </ListItem>
 
-                                    <ListSubheader className={classes.contextMenuSubheader}>Mirror mode</ListSubheader>
-                                    {
-                                        [
-                                            {icon: <MirrorIcon />, disabled: _pencil_mirror_mode === "NONE",text: "None", on_click: () => {this._set_pencil_mirror_mode("NONE")}},
-                                            {icon: <MirrorIcon />, disabled: _pencil_mirror_mode === "VERTICAL", text: "Vertical", on_click: () => {this._set_pencil_mirror_mode("VERTICAL")}},
-                                            {icon: <MirrorIcon />, disabled: _pencil_mirror_mode === "HORIZONTAL", text: "Horizontal", on_click: () => {this._set_pencil_mirror_mode("HORIZONTAL")}},
-                                            {icon: <MirrorIcon />, disabled: _pencil_mirror_mode === "BOTH", text: "Both", on_click: () => {this._set_pencil_mirror_mode("BOTH")}},
-                                        ].map((item) => {
+                                <ListSubheader className={classes.contextMenuSubheader}>Mirror mode</ListSubheader>
+                                {
+                                    [
+                                        {icon: <MirrorIcon />, disabled: _pencil_mirror_mode === "NONE",text: "None", on_click: () => {this._set_pencil_mirror_mode("NONE")}},
+                                        {icon: <MirrorIcon />, disabled: _pencil_mirror_mode === "VERTICAL", text: "Vertical", on_click: () => {this._set_pencil_mirror_mode("VERTICAL")}},
+                                        {icon: <MirrorIcon />, disabled: _pencil_mirror_mode === "HORIZONTAL", text: "Horizontal", on_click: () => {this._set_pencil_mirror_mode("HORIZONTAL")}},
+                                        {icon: <MirrorIcon />, disabled: _pencil_mirror_mode === "BOTH", text: "Both", on_click: () => {this._set_pencil_mirror_mode("BOTH")}},
+                                    ].map((item) => {
 
-                                            return (
-                                                <ListItem key={item.text} button divider disabled={item.disabled} onClick={item.on_click}>
-                                                    <ListItemIcon>
-                                                        {item.icon}
-                                                    </ListItemIcon>
-                                                    <ListItemText primary={item.text} />
-                                                </ListItem>
-                                            );
+                                        return (
+                                            <ListItem key={item.text} button divider disabled={item.disabled} onClick={item.on_click}>
+                                                <ListItemIcon>
+                                                    {item.icon}
+                                                </ListItemIcon>
+                                                <ListItemText primary={item.text} />
+                                            </ListItem>
+                                        );
 
-                                        })
-                                    }
-                                </div>
-                            }
-                            {
-                                _is_something_selected &&
-                                <div>
-                                    <ListSubheader className={classes.contextMenuSubheader}>Apply to selection</ListSubheader>
-                                    {
-                                        [
-                                            {icon: <SelectRemoveDifferenceIcon />, text: "Unselect", on_click: () => {_canvas.to_selection_none()}},
-                                            {icon: <BucketIcon />, text: "Colorize dynamical", on_click: () => {_canvas.to_selection_changes(_current_color, false)}},
-                                            {icon: <SelectColorIcon />, text: "Get average color", on_click: () => {this._get_average_color_of_selection()}},
-                                            {icon: <SelectInImageIcon />, text: "Shrink", on_click: () => {_canvas.to_selection_size(-1)}},
-                                            {icon: <SelectInImageIcon />, text: "Grow", on_click: () => {_canvas.to_selection_size(1)}},
-                                            {icon: <BorderBottomIcon />, text: "Border", on_click: () => {_canvas.to_selection_border()}},
-                                            {icon: <BucketIcon />, text: "Bucket", on_click: () => {_canvas.to_selection_bucket()}},
-                                            {icon: <SelectInImageIcon />, text: "Crop", on_click: () => {_canvas.to_selection_crop()}},
-                                            {icon: <SelectInvertIcon />, text: "Invert", on_click: () => {_canvas.to_selection_invert()}},
-                                            {icon: <CopyIcon />, text: "Copy", on_click: () => {_canvas.copy_selection()}},
-                                            {icon: <CutIcon />, text: "Cut", on_click: () => {_canvas.cut_selection()}},
-                                            {icon: <EraserIcon />, text: "Erase", on_click: () => {_canvas.erase_selection()}},
-                                        ].map((item) => {
+                                    })
+                                }
+                            </div>
 
-                                            return (
-                                                <ListItem key={item.text} button divider onClick={item.on_click}>
-                                                    <ListItemIcon>
-                                                        {item.icon}
-                                                    </ListItemIcon>
-                                                    <ListItemText primary={item.text} />
-                                                </ListItem>
-                                            );
-                                        })
-                                    }
-                                </div>
-                            }
+                            <div style={_is_something_selected ? {}: {display: "none"}}>
+                                <ListSubheader className={classes.contextMenuSubheader}>Apply to selection</ListSubheader>
+                                {
+                                    [
+                                        {icon: <SelectRemoveDifferenceIcon />, text: "Unselect", on_click: () => {_canvas.to_selection_none()}},
+                                        {icon: <BucketIcon />, text: "Colorize dynamical", on_click: () => {_canvas.to_selection_changes(_current_color, false)}},
+                                        {icon: <SelectColorIcon />, text: "Get average color", on_click: () => {this._get_average_color_of_selection()}},
+                                        {icon: <SelectInImageIcon />, text: "Shrink", on_click: () => {_canvas.to_selection_size(-1)}},
+                                        {icon: <SelectInImageIcon />, text: "Grow", on_click: () => {_canvas.to_selection_size(1)}},
+                                        {icon: <BorderBottomIcon />, text: "Border", on_click: () => {_canvas.to_selection_border()}},
+                                        {icon: <BucketIcon />, text: "Bucket", on_click: () => {_canvas.to_selection_bucket()}},
+                                        {icon: <SelectInImageIcon />, text: "Crop", on_click: () => {_canvas.to_selection_crop()}},
+                                        {icon: <SelectInvertIcon />, text: "Invert", on_click: () => {_canvas.to_selection_invert()}},
+                                        {icon: <CopyIcon />, text: "Copy", on_click: () => {_canvas.copy_selection()}},
+                                        {icon: <CutIcon />, text: "Cut", on_click: () => {_canvas.cut_selection()}},
+                                        {icon: <EraserIcon />, text: "Erase", on_click: () => {_canvas.erase_selection()}},
+                                    ].map((item) => {
+
+                                        return (
+                                            <ListItem key={item.text} button divider onClick={item.on_click}>
+                                                <ListItemIcon>
+                                                    {item.icon}
+                                                </ListItemIcon>
+                                                <ListItemText primary={item.text} />
+                                            </ListItem>
+                                        );
+                                    })
+                                }
+                            </div>
                             <ListSubheader style={_menu_data.pxl_color === null ? {display: "none"}: {}} className={classes.contextMenuSubheader}>Color</ListSubheader>
                             <ListItem button divider style={_menu_data.pxl_color === null ? {display: "none"}: {}} disabled={_menu_data.pxl_color === _current_color || _menu_data.pxl_color === null} onClick={(event) => {this._set_current_color(_menu_data.pxl_color); this._handle_relevant_action_event(_menu_event, _menu_data.pxl_color, 1, true);}}>
                                 <ListItemIcon>
