@@ -17,6 +17,7 @@ import {
     Divider,
     FormControlLabel,
     Button,
+    Badge,
     Menu,
     IconButton
 } from "@material-ui/core";
@@ -206,6 +207,11 @@ const styles = theme => ({
     listItemIcon: {
         color: theme.palette.secondary.dark
     },
+    listItemIconBlue: {
+        "& svg": {
+            color: theme.palette.secondary.light
+        }
+    },
 
     menu: {
         "& .MuiPaper-root":{
@@ -243,6 +249,15 @@ const styles = theme => ({
     ListItemText: {
         "& .MuiTypography-colorTextSecondary": {
             color: "rgb(25 25 51 / 54%)"
+        }
+    },
+    ListItemTextBold: {
+        "& span.MuiListItemText-primary": {
+            fontWeight: "bold",
+            color: theme.palette.secondary.light
+        },
+        "& p.MuiListItemText-secondary": {
+            color: theme.palette.secondary.contrast
         }
     },
     animatedDownload: {
@@ -298,7 +313,7 @@ const styles = theme => ({
             padding: "8px !important",
             textAlign: "center",
             boxSizing: "content-box",
-            contain: "paint style layout",
+            contain: "style layout",
             "&:hover": {
                 animation: "$wiggle linear 325ms both",
                 transition: "all cubic-bezier(0.4, 0, 0.2, 1) 325ms",
@@ -307,7 +322,7 @@ const styles = theme => ({
             },
             "& .MuiListItemIcon-root": {
                 minWidth: 0,
-                contain: "paint style layout",
+                contain: "style layout",
             },
             "& .MuiListItemText-root": {
                 "& .MuiListItemText-primary": {
@@ -936,28 +951,30 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                             <ListItem component="label" button
                                       key={`list-item-button-file-drawer-upload-key-${(layers[layer_index] || {}).hash}`}
                                       htmlFor={`button-file-drawer-upload-key-${(layers[layer_index] || {}).hash}`}>
-                                <ListItemIcon className={classes.listItemIcon}>
+                                <ListItemIcon className={classes.listItemIconBlue}>
                                     <ImagePlusIcon/>
                                 </ListItemIcon>
-                                <ListItemText className={classes.ListItemText}
+                                <ListItemText className={classes.ListItemTextBold}
                                               primary={"OPEN A NEW IMAGE"} secondary={"[CTRL + O]"}/>
                             </ListItem>
                             {false && <ListItem button onClick={() => {
                                 this._upload_image_from_library()
                             }}>
-                                <ListItemIcon className={classes.listItemIcon}>
+                                <ListItemIcon className={classes.listItemIconBlue}>
                                     <ImagePlusIcon/>
                                 </ListItemIcon>
-                                <ListItemText className={classes.ListItemText}
+                                <ListItemText className={classes.ListItemTextBold}
                                               primary={"OPEN FROM LIBRARY"} secondary={""}/>
                             </ListItem>}
                             <ListItem button onClick={() => {
                                 window.open("https://www.artstation.com/pixapics/store")
                             }}>
-                                <ListItemIcon className={classes.listItemIcon}>
-                                    <StoreIcon/>
+                                <ListItemIcon className={classes.listItemIconBlue}>
+                                    <Badge color="primary" badgeContent={1}>
+                                        <StoreIcon/>
+                                    </Badge>
                                 </ListItemIcon>
-                                <ListItemText className={classes.ListItemText}
+                                <ListItemText className={classes.ListItemTextBold}
                                               primary={"BUY PREMIUM IMAGES"} secondary={"ASSET STORE"}/>
                             </ListItem>
                         </div>
