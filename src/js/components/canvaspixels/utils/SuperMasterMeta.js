@@ -288,14 +288,13 @@ const SuperMasterMeta = {
 
                     if (
                         clear_canvas ||
-                        bool_new_pixel ||
-                        bool_old_hover ||
-                        bool_new_hover ||
-                        bool_old_import ||
-                        bool_new_import ||
+                        (bool_old_hover != bool_new_hover) ||
                         (bool_old_shape != bool_new_shape) ||
                         (bool_old_selection != bool_new_selection) ||
                         (bool_old_selection && bool_new_highlight) ||
+                        bool_new_pixel ||
+                        bool_old_import ||
+                        bool_new_import ||
                         bool_is_resize
                     ) {
 
@@ -316,7 +315,8 @@ const SuperMasterMeta = {
                             meta_super_blend.for((index | 0) >>> 0, 72 + ((((pos_x + pos_y + (_selection_pair_highlight ? 1 : 0) | 0) & 1) | 0) * 48) | 0);
                         } else {
 
-                            meta_super_blend.for((index | 0) >>> 0, 0)
+                            meta_super_blend.for((index | 0) >>> 0, 0);
+
                         }
 
                         for (i = 0; (i | 0) < (layers_length | 0); i = plus_uint(i, 1)) {
@@ -348,14 +348,21 @@ const SuperMasterMeta = {
                             "use strict";
                             meta.super_canvas.unpile(pxl_width, pxl_height).then(function () {
                                 "use strict";
+                                old_full_pxls.set(full_pxls);
                                 _pxl_indexes_of_selection_drawn.clearAndBulkAdd(_pxl_indexes_of_selection.indexes);
                                 _pxl_indexes_of_old_shape.clearAndBulkAdd(_pxl_indexes_of_current_shape.indexes);
                                 _previous_imported_image_pxls_positioned_keyset.clearAndBulkAdd(imported_image_pxls_positioned_keyset.indexes);
                                 _pxl_indexes_of_current_shape.clear();
-                                old_full_pxls.set(full_pxls);
+                                var old_pxls_hovered = Uint32Array.of(_pxls_hovered, _pxls_hovered);
+                                var older_pxls_hovered = _old_pxls_hovered.indexes;
+                                _old_pxls_hovered.clearAndBulkAdd(old_pxls_hovered);
+                                _old_pxls_hovered.bulkAdd(older_pxls_hovered);
                                 meta.super_canvas.prender().then(function () {
                                     "use strict";
                                     meta.sraf.run_frame(function(){
+                                        "use strict";
+                                        return meta.super_canvas.render();
+                                    }, false, clear_canvas || is_there_new_dimension || force_update,  Date.now(), "render").then(function (){
                                         "use strict";
                                         state._old_selection_pair_highlight = _selection_pair_highlight;
                                         state._old_layers_string_id = old_layers_string_id;
@@ -363,10 +370,6 @@ const SuperMasterMeta = {
                                         state._old_pxl_width = parseInt(pxl_width);
                                         state._old_pxl_height = parseInt(pxl_height);
                                         state._last_paint_timestamp = requested_at;
-                                        _old_pxls_hovered.clearAndBulkAdd(Uint32Array.of(_pxls_hovered, image_imported_resizer_index));
-                                        return meta.super_canvas.render();
-                                    }, false, false,  Date.now(), "render").then(function (){
-                                        "use strict";
                                         resolve0();
                                     }).catch(handle_reject0);
                                 }).catch(handle_reject0);

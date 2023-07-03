@@ -1,12 +1,13 @@
-var REQUIRED_CACHE = "unless-update-cache-v787-required";
-var USEFUL_CACHE = "unless-update-cache-v787-useful";
-var STATIC_CACHE = "unless-update-cache-v787-static";
+"use strict";
+var REQUIRED_CACHE = "unless-update-cache-v788-required";
+var USEFUL_CACHE = "unless-update-cache-v788-useful";
+var STATIC_CACHE = "unless-update-cache-v788-static";
 var MAIN_CHILD_CHUNK_REGEX = /chunk_(main_[a-z0-9]+)\.min\.js$/i;
 var CHILD_CHUNK_REGEX = /chunk_([0-9]+)\.min\.js$/i;
 
 var required_cache_object = {};
 var required_cache = new Promise(function(resolve, reject){
-
+    "use strict";
     if(typeof required_cache_object.addAll !== "undefined") {
 
         resolve(required_cache_object);
@@ -18,7 +19,7 @@ var required_cache = new Promise(function(resolve, reject){
 
 var useful_cache_object = {};
 var useful_cache = new Promise(function(resolve, reject){
-
+    "use strict";
     if(typeof useful_cache_object.addAll !== "undefined") {
 
         resolve(useful_cache_object);
@@ -30,7 +31,7 @@ var useful_cache = new Promise(function(resolve, reject){
 
 var static_cache_object = {};
 var static_cache = new Promise(function(resolve, reject){
-
+    "use strict";
     if(typeof static_cache_object.addAll !== "undefined") {
 
         resolve(static_cache_object);
@@ -40,32 +41,69 @@ var static_cache = new Promise(function(resolve, reject){
     }
 });
 
+var serve_cache = function (cache_origin, url){
+    "use strict";
+    return cache_origin.then(function (cache) {
+        return cache.match(url).then(function (response) {
+            return response.status === 200 ? response.clone(): fetch(url).then(function (response) { // Fetch, clone, and serve
+                if(response.status === 200) { cache.put(url, response.clone()); return Promise.resolve(response.clone()); } else { return Promise.reject(); }
+            });
+        }).catch(function(){
+            return fetch(url).then(function (response) { // Fetch, clone, and serve
+                if(response.status === 200) { cache.put(url, response.clone()); return Promise.resolve(response.clone()); } else { return Promise.reject(); }
+            });
+        });
+    })
+};
+
+var either_ends_with = function (possibilities, onto){
+    "use strict";
+    var result = false;
+    possibilities.forEach(function (possibility){
+        if(onto.endsWith(possibility)){result = true;}
+    });
+    return result;
+};
+var either_starts_with = function (possibilities, onto){
+    "use strict";
+    var result = false;
+    possibilities.forEach(function (possibility){
+        if(onto.startsWith(possibility)){result = true;}
+    });
+    return result;
+};
+
+var F_IMG = function (n){return `/src/images/${n}`;};
+var F_CNK = function (n,i){return `/client/chunk_${typeof n == "undefined" ? (i|0): (n|0)}.min.js`;};
+var F_SND = function (n){return `/src/sounds/${n}.mp3`;};
+var F_VID = function (n){return `/src/videos/${n}.mp4`;};
+
+var INSTALL_FILES_REQUIRED = ["/client/chunk_main_690b702c.min.js", "/client/chunk_main_748942c6.min.js", "/client/chunk_norris.min.js", "/"];
+var INSTALL_FILES_USEFUL = ["/src/images/favicon.ico", "/src/images/manifest/logo-white.png", "/src/fonts/jura/index.css"];
+var LOAD_FILES_REQUIRED = ["/"].concat(new Array(31).map(F_CNK));
+var LOAD_FILES_USEFUL = ["/src/fonts/baksheesh/index.css"].concat(["illusion.jpg", "gallery/Ban.png", "gallery/Ban.svg", "gallery/sco.png", "gallery/Sco.svg", "gallery/Bud.png", "gallery/Bud.svg", "demo/Beast.jpg", "demo/PortraitB.jpg", "demo/Cartoon.jpg", "demo/Illustration.jpg", "infographics/Rambo.svg", "infographics/TestBag.svg", "infographics/Explosion.svg", "labostration/ABDUCTION.svg", "labostration/CHEMISTRY.svg", "labostration/COMPUTING.svg", "labostration/DOWNLOAD.svg", "labostration/GENOMA.svg", "labostration/MOLECULE.svg", "labostration/NUCLEAR.svg", "labostration/SCIENCE.svg", "REMINDER.svg", "Error.svg", "laboratory.svg", "illustrations/Camo.svg", "league/Bronze.png", "league/Diamond.png", "league/Gold.png", "league/Silver.png"].map(F_IMG));
+var LOAD_FILES_STATIC = ["sfx/md/hero_decorative-celebration-02", "sfx/md/navigation_selection-complete-celebration", "sfx/md/navigation_transition-left", "sfx/md/state-change_confirm-down", "sfx/md/ui_lock", "sfx/md/ui_unlock", "sfx/md/ui_scan", "sfx/md/alert_high-intensity", "sfx/md/navigation_transition-right", "voice/cn/accessing_memory", "voice/cn/complete", "voice/cn/please_wait", "voice/cn/data_upload", "voice/cn/processing", "voice/cn/enhanced", "voice/cn/rewriting_deep_layer_protocols", "voice/cn/vision_activated", "voice/cn/vision_deactivated", "voice/cn/filtering", "music/redeclipse/track_09"].map(F_SND).concat(["presentation", "tutorial", "create", "enhanced", "pixelated", "upload", "share1", "joke1", "create", "enhanced", "pixelated", "presentation", "presentation2", "sponsors", "tutorial", "upload", "labintro", "share2", "share3", "share4", "share5", "share6", "share7", "joke2", "joke3", "joke4", "joke5", "joke6", "joke7", "joke8", "joke9", "joke10", "joke11"].map(F_VID));
 
 // On install, cache some resource.
 self.addEventListener("install", function(event) {
-
+    "use strict";
     if (!navigator.onLine) {
         return true;
     }
-    required_cache.then(function (cache) {
-        cache.addAll([
-            "/client/chunk_main_690b702c.min.js",
-            "/client/chunk_main_748942c6.min.js",
-            "/client/chunk_norris.min.js",
-            "/",
+    event.waitUntil(
+        Promise.allSettled([
+            required_cache.then(function (cache) {
+                cache.addAll(INSTALL_FILES_REQUIRED)
+            }),
+            useful_cache.then(function (cache) {
+                return cache.addAll(INSTALL_FILES_USEFUL);
+            })
         ])
-    });
-    event.waitUntil(useful_cache.then(function (cache) {
-        return cache.addAll([
-            "/src/images/favicon.ico",
-            "/src/images/manifest/logo-white.png",
-            "/src/fonts/jura/index.css",
-        ]);
-    }));
+    );
 });
 
 self.addEventListener("fetch", function(event) {
-
+    "use strict";
     const url = event.request.url;
     const same_site = true //event.request.referrer.startsWith(U.hostname);
 
@@ -73,262 +111,58 @@ self.addEventListener("fetch", function(event) {
 
         event.respondWith(fetch(event.request));
 
-    }else if(url.startsWith("data:image") || url.startsWith("blob:http") || url.startsWith("data:application")) {
+    }else if(either_starts_with(["data:image", "blob:http", "data:application"], url)) {
 
-        event.respondWith(Promise.resolve(fetch(url)));
+        event.respondWith(fetch(url));
 
-    }else if(url.startsWith("data:,all")) {
+    }else if(either_starts_with(["data:,all"], url)) {
 
         event.respondWith(
             Promise.allSettled([
                 useful_cache.then(function (cache) {
-                    return cache.addAll([
-                        "/src/fonts/baksheesh/index.css",
-                        "/src/images/illusion.jpg",
-                        "/src/images/gallery/Ban.png",
-                        "/src/images/gallery/Ban.svg",
-                        "/src/images/gallery/sco.png",
-                        "/src/images/gallery/Sco.svg",
-                        "/src/images/gallery/Bud.png",
-                        "/src/images/gallery/Bud.svg",
-                        "/src/images/demo/Beast.jpg",
-                        "/src/images/demo/PortraitB.jpg",
-                        "/src/images/demo/Cartoon.jpg",
-                        "/src/images/demo/Illustration.jpg",
-                        "/src/images/infographics/Rambo.svg",
-                        "/src/images/infographics/TestBag.svg",
-                        "/src/images/infographics/Explosion.svg",
-                        "/src/images/labostration/ABDUCTION.svg",
-                        "/src/images/labostration/CHEMISTRY.svg",
-                        "/src/images/labostration/COMPUTING.svg",
-                        "/src/images/labostration/DOWNLOAD.svg",
-                        "/src/images/labostration/GENOMA.svg",
-                        "/src/images/labostration/MOLECULE.svg",
-                        "/src/images/labostration/NUCLEAR.svg",
-                        "/src/images/labostration/SCIENCE.svg",
-                        "/src/images/REMINDER.svg",
-                        "/src/images/Error.svg",
-                        "/src/images/laboratory.svg",
-                        "/src/images/illustrations/Camo.svg",
-                        "/src/images/league/Bronze.png",
-                        "/src/images/league/Diamond.png",
-                        "/src/images/league/Gold.png",
-                        "/src/images/league/Silver.png",
-                    ]);
+                    return cache.addAll(LOAD_FILES_USEFUL);
                 }),
                 required_cache.then(function (cache) {
-                    return cache.addAll([
-                        "/",
-                        "/client/chunk_0.min.js",
-                        "/client/chunk_1.min.js",
-                        "/client/chunk_2.min.js",
-                        "/client/chunk_3.min.js",
-                        "/client/chunk_4.min.js",
-                        "/client/chunk_5.min.js",
-                        "/client/chunk_6.min.js",
-                        "/client/chunk_7.min.js",
-                        "/client/chunk_8.min.js",
-                        "/client/chunk_9.min.js",
-                        "/client/chunk_10.min.js",
-                        "/client/chunk_11.min.js",
-                        "/client/chunk_12.min.js",
-                        "/client/chunk_13.min.js",
-                        "/client/chunk_14.min.js",
-                        "/client/chunk_15.min.js",
-                        "/client/chunk_16.min.js",
-                        "/client/chunk_17.min.js",
-                        "/client/chunk_18.min.js",
-                        "/client/chunk_19.min.js",
-                        "/client/chunk_20.min.js",
-                        "/client/chunk_21.min.js",
-                        "/client/chunk_22.min.js",
-                        "/client/chunk_23.min.js",
-                        "/client/chunk_24.min.js",
-                        "/client/chunk_25.min.js",
-                        "/client/chunk_26.min.js",
-                        "/client/chunk_27.min.js",
-                        "/client/chunk_28.min.js",
-                        "/client/chunk_29.min.js",
-                        "/client/chunk_30.min.js"
-                    ]);
+                    return cache.addAll(LOAD_FILES_REQUIRED);
                 }),
                 static_cache.then(function (cache) {
-                    return cache.addAll([
-                        "/src/sounds/sfx/md/hero_decorative-celebration-02.mp3",
-                        "/src/sounds/sfx/md/navigation_selection-complete-celebration.mp3",
-                        "/src/sounds/sfx/md/navigation_transition-left.mp3",
-                        "/src/sounds/sfx/md/state-change_confirm-down.mp3",
-                        "/src/sounds/sfx/md/ui_lock.mp3",
-                        "/src/sounds/sfx/md/ui_unlock.mp3",
-                        "/src/sounds/sfx/md/ui_scan.mp3",
-                        "/src/sounds/sfx/md/alert_high-intensity.mp3",
-                        "/src/sounds/sfx/md/navigation_transition-right.mp3",
-                        "/src/sounds/voice/cn/accessing_memory.mp3",
-                        "/src/sounds/voice/cn/complete.mp3",
-                        "/src/sounds/voice/cn/please_wait.mp3",
-                        "/src/sounds/voice/cn/data_upload.mp3",
-                        "/src/sounds/voice/cn/processing.mp3",
-                        "/src/sounds/voice/cn/enhanced.mp3",
-                        "/src/sounds/voice/cn/rewriting_deep_layer_protocols.mp3",
-                        "/src/sounds/voice/cn/vision_activated.mp3",
-                        "/src/sounds/voice/cn/vision_deactivated.mp3",
-                        "/src/sounds/voice/cn/filtering.mp3",
-                        "/src/sounds/music/redeclipse/track_09.mp3",
-                        "/src/videos/presentation.mp4",
-                        "/src/videos/tutorial.mp4",
-                        "/src/videos/create.mp4",
-                        "/src/videos/enhanced.mp4",
-                        "/src/videos/pixelated.mp4",
-                        "/src/videos/upload.mp4",
-                        "/src/videos/share1.mp4",
-                        "/src/videos/joke1.mp4",
-                        "/src/videos/create.mp4",
-                        "/src/videos/enhanced.mp4",
-                        "/src/videos/pixelated.mp4",
-                        "/src/videos/presentation.mp4",
-                        "/src/videos/presentation2.mp4",
-                        "/src/videos/sponsors.mp4",
-                        "/src/videos/tutorial.mp4",
-                        "/src/videos/upload.mp4",
-                        "/src/videos/labintro.mp4",
-                        "/src/videos/share2.mp4",
-                        "/src/videos/share3.mp4",
-                        "/src/videos/share4.mp4",
-                        "/src/videos/share5.mp4",
-                        "/src/videos/share6.mp4",
-                        "/src/videos/share7.mp4",
-                        "/src/videos/joke2.mp4",
-                        "/src/videos/joke3.mp4",
-                        "/src/videos/joke4.mp4",
-                        "/src/videos/joke5.mp4",
-                        "/src/videos/joke6.mp4",
-                        "/src/videos/joke7.mp4",
-                        "/src/videos/joke8.mp4",
-                        "/src/videos/joke9.mp4",
-                        "/src/videos/joke10.mp4",
-                        "/src/videos/joke11.mp4",
-                    ]);
+                    return cache.addAll(LOAD_FILES_STATIC);
                 })
             ])
                 .then(function(){return new Response("all",{status: 200})})
                 .catch(function(){return new Response("all", {status: 500})})
         );
 
-    }else if(Boolean(url.endsWith(".wasm") || url.endsWith(".png") || url.endsWith(".json") || url.endsWith(".svg") || url.endsWith(".jpg") || url.endsWith(".jpeg") || url.endsWith(".gif") || url.endsWith(".ico")) && same_site) {
+    }else if(same_site && either_ends_with([".wasm", ".png", ".json", ".svg", ".jpg", ".jpeg", ".gif", ".ico"], url)) {
 
         // Serve cached image if doesn't fail
-        event.respondWith(
-            useful_cache.then(function (cache) {
-                return cache.match(url).then(function (response) {
-                    return response.status === 200 ? response.clone(): fetch(url).then(function (response) { // Fetch, clone, and serve
-                        if(response.status === 200) { cache.put(url, response.clone());} return Promise.resolve(response.clone());
-                    });
-                }).catch(function(){
-                    return fetch(url).then(function (response) { // Fetch, clone, and serve
-                        if(response.status === 200) { cache.put(url, response.clone());} return Promise.resolve(response.clone());
-                    });
-                });
-            })
-        );
+        event.respondWith(serve_cache(useful_cache, url));
 
-    }else if(Boolean(url.endsWith(".wav") || url.endsWith(".mp3") || url.endsWith(".mp4")) && same_site) {
+    }else if(same_site && either_ends_with([".wav", ".mp3", ".mp4"])) {
 
-        event.respondWith(
-            static_cache.then(function (cache) {
-                return cache.match(url).then(function (response) {
-                    return response.status === 200 ? response.clone(): fetch(url).then(function (response) { // Fetch, clone, and serve
-                        if(response.status === 200) { cache.put(url, response.clone());} return Promise.resolve(response.clone());
-                    });
-                }).catch(function(){
-                    return fetch(url).then(function (response) { // Fetch, clone, and serve
-                        if(response.status === 200) { cache.put(url, response.clone());} return Promise.resolve(response.clone());
-                    });
-                });
-            })
-        );
+        event.respondWith(serve_cache(static_cache, url));
 
-    }else if(Boolean(url.endsWith(".woff2") || url.endsWith(".ttf") || url.endsWith(".css") || url.endsWith(".json")) && same_site ) {
+    }else if(same_site && either_ends_with([".woff2", ".ttf", ".css", ".json"])) {
 
-        event.respondWith(
-            useful_cache.then(function (cache) {
-                return cache.match(url).then(function (response) {
-                    return response.status === 200 ? response.clone(): fetch(url).then(function (response) { // Fetch, clone, and serve
-                        if(response.status === 200) { cache.put(url, response.clone());} return Promise.resolve(response.clone());
-                    });
-                }).catch(function(){
-                    return fetch(url).then(function (response) { // Fetch, clone, and serve
-                        if(response.status === 200) { cache.put(url, response.clone());} return Promise.resolve(response.clone());
-                    });
-                });
-            })
-        );
+        event.respondWith(serve_cache(useful_cache, url));
 
-    }else if(url.endsWith("chunk_norris.min.js") && same_site) {
+    }else if(same_site && url.endsWith("chunk_norris.min.js")) {
 
-        event.respondWith(
-            required_cache.then(function (cache) {
-                return cache.match("/client/chunk_norris.min.js").then(function (response) {
-                    return response.status === 200 ? response.clone(): fetch("/client/chunk_norris.min.js").then(function (response) { // Fetch, clone, and serve
-                        if(response.status === 200) { cache.put("/client/chunk_norris.min.js", response.clone());} return Promise.resolve(response.clone());
-                    });
-                }).catch(function(){
-                    return fetch(`/client/chunk_norris.min.js`).then(function (response) { // Fetch, clone, and serve
-                        if(response.status === 200) { cache.put("/client/chunk_norris.min.js", response.clone());} return Promise.resolve(response.clone());
-                    });
-                });
-            })
-        );
+        event.respondWith(serve_cache(required_cache, "/client/chunk_norris.min.js"));
 
-    }else if((url.match(MAIN_CHILD_CHUNK_REGEX) || []).length >= 2 && same_site) {
+    }else if(same_site && (url.match(MAIN_CHILD_CHUNK_REGEX) || []).length >= 2) {
 
         const middle_name = url.match(MAIN_CHILD_CHUNK_REGEX)[1];
-        event.respondWith(
-            required_cache.then(function (cache) {
-                return cache.match(`/client/chunk_${middle_name}.min.js`).then(function (response) {
-                    return response.status === 200 ? response.clone(): fetch(`/client/chunk_${middle_name}.min.js`).then(function (response) { // Fetch, clone, and serve
-                        if(response.status === 200) { cache.put(`/client/chunk_${middle_name}.min.js`, response.clone());} return Promise.resolve(response.clone());
-                    });
-                }).catch(function(){
-                    return fetch(`/client/chunk_${middle_name}.min.js`).then(function (response) { // Fetch, clone, and serve
-                        if(response.status === 200) { cache.put(`/client/chunk_${middle_name}.min.js`, response.clone());} return Promise.resolve(response.clone());
-                    });
-                });
-            })
-        );
+        event.respondWith(serve_cache(required_cache, `/client/chunk_${middle_name}.min.js`));
 
-    }else if((url.match(CHILD_CHUNK_REGEX) || []).length >= 2 && same_site) {
+    }else if(same_site && (url.match(CHILD_CHUNK_REGEX) || []).length >= 2) {
 
         const middle_name = url.match(CHILD_CHUNK_REGEX)[1];
-        event.respondWith(
-            required_cache.then(function (cache) {
-                return cache.match(`/client/chunk_${middle_name}.min.js`).then(function (response) {
-                    return response.status === 200 ? response.clone(): fetch(`/client/chunk_${middle_name}.min.js`).then(function (response) { // Fetch, clone, and serve
-                        if(response.status === 200) { cache.put(`/client/chunk_${middle_name}.min.js`, response.clone());} return Promise.resolve(response.clone());
-                    });
-                }).catch(function(){
-                    return fetch(`/client/chunk_${middle_name}.min.js`).then(function (response) { // Fetch, clone, and serve
-                        if(response.status === 200) { cache.put(`/client/chunk_${middle_name}.min.js`, response.clone());} return Promise.resolve(response.clone());
-                    });
-                });
-            })
-        );
+        event.respondWith(serve_cache(required_cache, `/client/chunk_${middle_name}.min.js`));
 
     }else if(event.request.mode === "navigate") {
 
-        event.respondWith(
-
-            required_cache.then(function (cache) {
-                return cache.match(`/`).then(function (response) {
-                    return response.status === 200 ? response.clone(): fetch(`/`).then(function (response) { // Fetch, clone, and serve
-                        if(response.status === 200) { cache.put(`/`, response.clone());} return Promise.resolve(response.clone());
-                    });
-                }).catch(function(){
-                    return fetch(`/`).then(function (response) { // Fetch, clone, and serve
-                        if(response.status === 200) { cache.put(`/`, response.clone());} return Promise.resolve(response.clone());
-                    });
-                });
-            })
-        );
+        event.respondWith(serve_cache(required_cache, "/"));
 
     } else if(event.request.method === "GET") {
 
@@ -351,7 +185,7 @@ self.addEventListener("fetch", function(event) {
                 }),
                 fetch(url).then(function (response) { // Fetch and serve
                     return useful_cache.then(function (cache) {
-                        if(response.status === 200) { cache.put(url, response.clone());} return Promise.resolve(response.clone());
+                        if(response.status === 200) { cache.put(url, response.clone()); return Promise.resolve(response.clone()); } else { return Promise.reject(); }
                     });
                 })
             ])
@@ -363,7 +197,7 @@ self.addEventListener("fetch", function(event) {
 });
 
 self.addEventListener("activate", function(event) {
-
+    "use strict";
     event.waitUntil(
         caches.keys().then(function(keys) { return Promise.allSettled(
             keys.filter(function(key){

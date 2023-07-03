@@ -3,34 +3,29 @@ const {clamp_uint32, modulo_uint, divide_uint, minus_uint, uint_greater, uint_le
 
 function draw_2d(ctx2d, _state) {
     "use strict";
-    return new Promise(function (resolve){
+    let s_width = _state.s.width | 0;
+    let pr_width = _state.pr.width | 0;
+    let pr_height = _state.pr.height | 0;
+    let pr_top_left_x = _state.pr.top_left.x | 0;
+    let pr_top_left_y = _state.pr.top_left.y | 0;
+    let pr_uint8a = _state.pr_uint8a;
 
-        "use strict";
+    var imul = Math.imul;
+    let fp_square = ctx2d.getImageData(pr_top_left_x, pr_top_left_y, pr_width, pr_height);
+    let fp_square_data = fp_square.data;
+    let current_offset_start_index = 0;
+    for(var i = 0; (i|0) < (pr_height|0) ; i = (i + 1 | 0)>>>0) {
+        current_offset_start_index = (imul(s_width, (i + pr_top_left_y | 0)) + pr_top_left_x | 0) >>> 0;
+        fp_square_data.set(pr_uint8a.subarray((current_offset_start_index << 2|0)>>>0, ((current_offset_start_index + pr_width | 0)<<2|0)>>>0), (imul(i,pr_width)<<2|0)>>>0);
+    }
 
-        let s_width = _state.s.width | 0;
-        let pr_width = _state.pr.width | 0;
-        let pr_height = _state.pr.height | 0;
-        let pr_top_left_x = _state.pr.top_left.x | 0;
-        let pr_top_left_y = _state.pr.top_left.y | 0;
-        let pr_uint8a = _state.pr_uint8a;
+    _state.pr.top_left.x = _state.s.width | 0;
+    _state.pr.top_left.y = _state.s.height | 0;
+    _state.pr.bottom_right.x = 0;
+    _state.pr.bottom_right.y = 0;
 
-        var imul = Math.imul;
-        let fp_square = ctx2d.getImageData(pr_top_left_x, pr_top_left_y, pr_width, pr_height);
-        let fp_square_data = fp_square.data;
-        let current_offset_start_index = 0;
-        for(var i = 0; (i|0) < (pr_height|0) ; i = (i + 1 | 0)>>>0) {
-            current_offset_start_index = (imul(s_width, (i + pr_top_left_y | 0)) + pr_top_left_x | 0) >>> 0;
-            fp_square_data.set(pr_uint8a.subarray((current_offset_start_index << 2|0)>>>0, ((current_offset_start_index + pr_width | 0)<<2|0)>>>0), (imul(i,pr_width)<<2|0)>>>0);
-        }
-
-        _state.pr.top_left.x = _state.s.width | 0;
-        _state.pr.top_left.y = _state.s.height | 0;
-        _state.pr.bottom_right.x = 0;
-        _state.pr.bottom_right.y = 0;
-
-        ctx2d.putImageData(fp_square, pr_top_left_x, pr_top_left_y, 0, 0, pr_width, pr_height);
-        resolve();
-    });
+    ctx2d.putImageData(fp_square, pr_top_left_x, pr_top_left_y, 0, 0, pr_width, pr_height);
+    return Promise.resolve();
 }
 
 const AFunction = Object.getPrototypeOf( function(){}).constructor;
@@ -170,7 +165,6 @@ Object.defineProperty(SuperCanvas.prototype, 'render', {
     get: function() { "use strict"; return function () {
         "use strict";
         var b2 = this.state_.b2;
-        var d2d = draw_2d;
         "use strict";
         this.state_.pr.top_left.x = this.state_.s.width | 0;
         this.state_.pr.top_left.y = this.state_.s.height | 0;
@@ -194,15 +188,13 @@ Object.defineProperty(SuperCanvas.prototype, 'render', {
             return Promise.resolve();
         }else {
 
-            return d2d(this.state_.s.canvas_context, this.state_).then(function (){return Promise.resolve()});
+            return draw_2d(this.state_.s.canvas_context, this.state_).then(function (){return Promise.resolve()});
         }
     }}
 });
 Object.defineProperty(SuperCanvas.prototype, 'prender', {
     get: function() { "use strict"; return function () {
         "use strict";
-        var d2d = draw_2d;
-
         if (this.state_.enable_paint_type === "bitmap") {
 
             if((this.state_.b.old_bmp.width|0) === 0) {
@@ -253,7 +245,7 @@ Object.defineProperty(SuperCanvas.prototype, 'prender', {
 
         }else if (this.state_.enable_paint_type === "offscreen") {
 
-            return d2d(this.state_.s.offscreen_canvas_context, this.state_).then(function (){return Promise.resolve()});
+            return draw_2d(this.state_.s.offscreen_canvas_context, this.state_).then(function (){return Promise.resolve()});
 
         }else {
 
@@ -285,7 +277,6 @@ Object.defineProperty(SuperCanvas.prototype, 'unpile', {
             let index = 0;
 
             for (let i = 0, l = index_changes.length | 0; uint_less(i, l); i = plus_uint(i, 1)) {
-                "use strict";
 
                 index = (index_changes[i | 0] | 0) >>> 0;
                 uint32a[(index | 0) >>> 0] = (color_changes[i | 0] | 0) >>> 0;
@@ -294,20 +285,20 @@ Object.defineProperty(SuperCanvas.prototype, 'unpile', {
                 y = divide_uint(minus_uint(index, x), width);
 
                 if (uint_greater_equal(pr_top_left_x, x)) {
-                    pr_top_left_x = max_int(0, minus_int(x, 12));
+                    pr_top_left_x = x|0;
                 } else if (uint_less_equal(pr_bottom_right_x, x)) {
-                    pr_bottom_right_x = min_int(width, plus_int(x, 12));
+                    pr_bottom_right_x = x|0;
                 }
 
                 if (uint_greater_equal(pr_top_left_y, y)) {
-                    pr_top_left_y = max_int(0, minus_int(y, 12));
+                    pr_top_left_y = y|0;
                 } else if (uint_less_equal(pr_bottom_right_y, y)) {
-                    pr_bottom_right_y = min_int(height, plus_int(y, 12));
+                    pr_bottom_right_y = y|0;
                 }
             }
 
-            pr.width = pr_bottom_right_x - pr_top_left_x | 0;
-            pr.height = pr_bottom_right_y - pr_top_left_y | 0;
+            pr.width = pr_bottom_right_x - pr_top_left_x + 1 | 0;
+            pr.height = pr_bottom_right_y - pr_top_left_y + 1 | 0;
 
             pr.top_left.x = pr_top_left_x | 0;
             pr.top_left.y = pr_top_left_y | 0;

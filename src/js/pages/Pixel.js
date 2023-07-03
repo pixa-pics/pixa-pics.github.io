@@ -697,6 +697,13 @@ class Pixel extends React.PureComponent {
 
             actions.trigger_loading_update(100);
         }, 300);
+    }
+
+    componentDidMount() {
+
+
+        actions.trigger_snackbar(`Awesome diddy! Welcome back to the laboratory.`, 3500);
+
         l(null, () => {
 
             this.setSt4te({_time_ago_initiated: true}, () => {
@@ -704,11 +711,6 @@ class Pixel extends React.PureComponent {
                 this._request_force_update();
             });
         }, true);
-    }
-
-    componentDidMount() {
-
-        actions.trigger_snackbar(`Awesome diddy! Welcome back to the laboratory.`, 3500);
 
         setTimeout(() => {
 
@@ -751,7 +753,6 @@ class Pixel extends React.PureComponent {
             document.getElementById("tabs-desktop").addEventListener("wheel", this._handle_wheel, {passive: false});
         } catch (e){}
         dispatcher.register(this._handle_events.bind(this));
-        this._try_load_with_payload(this.st4te.load_with + "");
         this.setSt4te({_h_svg: get_svg_in_b64(<HexGrid color={"#e5e5e5"}/>),_h_svg_size: `${Math.ceil(.5*200)}px ${Math.ceil(.5*229.3)}px`});
         JSLoader( () => import("../utils/ressource_pixel")).then((RESSOURCE_PIXELS) => {
 
@@ -760,6 +761,7 @@ class Pixel extends React.PureComponent {
         
         this._set_fps_and_xy_elements();
         this._set_saved_at_element();
+        this._try_load_with_payload(this.st4te.load_with);
     }
 
     _request_force_update = (can_be_cancelable, especially_dont_force) => {
@@ -813,14 +815,16 @@ class Pixel extends React.PureComponent {
 
         if(new_props.load_with !== this.st4te.load_with) {
 
-            this.setSt4te({load_with: ""+new_props.load_with, _settings: JSON.parse(new_props.settings)}, ()  => {
+            this.setSt4te({_settings: JSON.parse(new_props.settings), ...new_props}, ()  => {
 
-                this._try_load_with_payload(""+new_props.load_with);
+                this._request_force_update().then(() => {
+
+                    this._try_load_with_payload(this.st4te.load_with);
+                });
             });
+        }else {
+            this.setSt4te({_settings: JSON.parse(new_props.settings), ...new_props});
         }
-
-        this.setSt4te(new_props);
-
     }
 
     _try_load_with_payload = (load_with) => {
@@ -2644,7 +2648,7 @@ class Pixel extends React.PureComponent {
         api.get_settings(this._process_settings_info_result);
         setTimeout(() => {
             this.setSt4te({_is_pixel_dialog_create_open: true}, () => { this._request_force_update(); });
-        }, 1450);
+        }, 725);
 
     };
 
@@ -3295,7 +3299,7 @@ class Pixel extends React.PureComponent {
                                    on_import_size_change={this._set_import_size}
                                    on_pixel_art_delete={this._delete_unsaved_pixel_art}
                                    import_JSON_state={this._handle_import_json_state_id}
-                                   on_upload={(e) => {window.dispatchEvent(new Event("art-upload-dialog")); this._upload_image(e);}}
+                                   on_upload={this._upload_image}
                                    onClose={this._handle_pixel_dialog_create_close}/>
 
                 <TouchRipple

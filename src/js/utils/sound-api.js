@@ -15,7 +15,13 @@ function play_sound(category, pack, name, volume_optional, global_optional) {
             html5: true,
             loop: true,
             preload: true,
-            volume
+            volume,
+            onplayerror: function() {
+                window._sound_object_music.once('unlock', function() {
+                    window._sound_object_music.stop();
+                    window._sound_object_music.play();
+                });
+            }
         });
 
         window._sound_object_music.play();

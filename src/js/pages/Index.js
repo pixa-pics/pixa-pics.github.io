@@ -561,7 +561,7 @@ class Index extends React.PureComponent {
 
             this.setSt4te({_is_activatelab_dialog_open: -Math.abs(this.st4te._is_activatelab_dialog_open)}, () => {
                 this.forceUpdate(() => {
-                    this.st4te._history.push("/pixe1");
+                    this.st4te._history.push("/pixel");
                 });
             });
         }, 400);
