@@ -2,7 +2,7 @@
       "relation": ["delegate_permission/common.handle_all_urls"],
       "target": {
         "namespace": "android_app",
-        "package_name": "pics.pixa.twa",
-        "sha256_cert_fingerprints": ["1B:86:56:EB:67:1F:E6:14:B8:B0:19:8B:31:99:19:5A:73:28:AA:18:D4:EF:05:62:D9:E7:F7:4B:EB:67:2D:F2"]
+        "package_name": "pics.pixa.app.twa",
+        "sha256_cert_fingerprints": ["62:6E:72:E4:1B:FA:D2:64:19:07:3D:62:FB:62:11:F3:77:81:57:D8:5F:57:B3:5E:CE:99:FE:20:AF:C6:D6:5B"]
       }
     }]
