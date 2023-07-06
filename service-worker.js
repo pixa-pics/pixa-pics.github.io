@@ -1,7 +1,7 @@
 "use strict";
-var REQUIRED_CACHE = "unless-update-cache-v791-required";
-var USEFUL_CACHE = "unless-update-cache-v791-useful";
-var STATIC_CACHE = "unless-update-cache-v791-static";
+var REQUIRED_CACHE = "unless-update-cache-v792-required";
+var USEFUL_CACHE = "unless-update-cache-v792-useful";
+var STATIC_CACHE = "unless-update-cache-v792-static";
 var MAIN_CHILD_CHUNK_REGEX = /chunk_(main_[a-z0-9]+)\.min\.js$/i;
 var CHILD_CHUNK_REGEX = /chunk_([0-9]+)\.min\.js$/i;
 
@@ -44,12 +44,17 @@ var static_cache = new Promise(function(resolve, reject){
 var serve_cache = function (cache_origin, url){
     "use strict";
     return cache_origin.then(function (cache) {
+        "use strict";
         return cache.match(url).then(function (response) {
+            "use strict";
             return response.status === 200 ? response.clone(): fetch(url).then(function (response) { // Fetch, clone, and serve
+                "use strict";
                 if(response.status === 200) { cache.put(url, response.clone()); return Promise.resolve(response.clone()); } else { return Promise.reject(); }
             });
         }).catch(function(){
+            "use strict";
             return fetch(url).then(function (response) { // Fetch, clone, and serve
+                "use strict";
                 if(response.status === 200) { cache.put(url, response.clone()); return Promise.resolve(response.clone()); } else { return Promise.reject(); }
             });
         });
@@ -60,6 +65,7 @@ var either_ends_with = function (possibilities, onto){
     "use strict";
     var result = false;
     possibilities.forEach(function (possibility){
+        "use strict";
         if(onto.endsWith(possibility)){result = true;}
     });
     return result;
@@ -68,6 +74,7 @@ var either_starts_with = function (possibilities, onto){
     "use strict";
     var result = false;
     possibilities.forEach(function (possibility){
+        "use strict";
         if(onto.startsWith(possibility)){result = true;}
     });
     return result;
@@ -138,11 +145,11 @@ self.addEventListener("fetch", function(event) {
         // Serve cached image if doesn't fail
         event.respondWith(serve_cache(useful_cache, url));
 
-    }else if(same_site && either_ends_with([".wav", ".mp3", ".mp4"])) {
+    }else if(same_site && either_ends_with([".wav", ".mp3", ".mp4"], url)) {
 
         event.respondWith(serve_cache(static_cache, url));
 
-    }else if(same_site && either_ends_with([".woff2", ".ttf", ".css", ".json"])) {
+    }else if(same_site && either_ends_with([".woff2", ".ttf", ".css", ".json"], url)) {
 
         event.respondWith(serve_cache(useful_cache, url));
 
