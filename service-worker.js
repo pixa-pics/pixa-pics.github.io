@@ -1,7 +1,7 @@
 "use strict";
-var REQUIRED_CACHE = "unless-update-cache-v793-required";
-var USEFUL_CACHE = "unless-update-cache-v793-useful";
-var STATIC_CACHE = "unless-update-cache-v793-static";
+var REQUIRED_CACHE = "unless-update-cache-v794-required";
+var USEFUL_CACHE = "unless-update-cache-v794-useful";
+var STATIC_CACHE = "unless-update-cache-v794-static";
 var MAIN_CHILD_CHUNK_REGEX = /chunk_(main_[a-z0-9]+)\.min\.js$/i;
 var CHILD_CHUNK_REGEX = /chunk_([0-9]+)\.min\.js$/i;
 
@@ -98,7 +98,7 @@ self.addEventListener("install", function(event) {
         return true;
     }
     event.waitUntil(
-        Promise.allSettled([
+        Promise.race([
             required_cache.then(function (cache) {
                 cache.addAll(INSTALL_FILES_REQUIRED)
             }),

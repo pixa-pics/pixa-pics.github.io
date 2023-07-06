@@ -278,7 +278,7 @@ class PixelDialogCreate extends React.PureComponent {
                     disablePortal={false}
                     keepMounted={keepMounted}>
                 <DialogContent>
-                    <Typography component={"h2"} variant={"h6"}>New/old pixel art (minima)</Typography>
+                    <Typography component={"h2"} variant={"h6"}>Latest artworks</Typography>
                     <div className={classes.dialogContentContainer}>
                         <div className={classes.leftImage}>
                             <input
@@ -298,7 +298,7 @@ class PixelDialogCreate extends React.PureComponent {
                         </div>
                         <div className={classes.rightImagesContainer}>
                             <div className={classes.rightImagesContainer} style={{padding: "8px 24px", position: "relative", overflow: "hidden", boxSizing: "border-box", width: "100%"}}>
-                                <Typography id="size-slider" gutterBottom>Reduce size of minima to :</Typography>
+                                <Typography id="size-slider" gutterBottom>Reduce size of the image down to :</Typography>
                                 <Slider key={size}
                                         defaultValue={parseInt(size)}
                                         step={8}
@@ -349,7 +349,7 @@ class PixelDialogCreate extends React.PureComponent {
                                     {
 
                                         Boolean(Object.keys(pixel_arts).length === 0) ?
-                                            ["/src/images/demo/Beast.jpg", "/src/images/demo/PortraitB.jpg", "/src/images/demo/Cartoon.jpg", "/src/images/demo/Illustration.jpg"].map((u, id) => {
+                                            ["/src/images/demo/Beast.jpg", "/src/images/demo/PortraitB.jpg", "/src/images/demo/Illustration.jpg", "/src/images/demo/Cartoon.jpg"].map((u, id) => {
 
                                                 return (
                                                     <ImageListItem style={{
