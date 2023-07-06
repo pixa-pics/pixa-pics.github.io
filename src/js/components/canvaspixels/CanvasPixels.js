@@ -225,6 +225,28 @@ class CanvasPixels extends React.PureComponent {
         return this.xxhash.base58_that(array);
     };
 
+    _new_blank = (width = 0, height = 0) => {
+
+        this.super_state.set_state({
+            _id: Date.now(),
+            pxl_width: parseInt(width),
+            pxl_height: parseInt(height),
+            _pxl_indexes_of_selection: new SetFixed(width * height),
+            _base64_original_images: [],
+            _layers: [{id: Date.now(), name: "Layer 0", hidden: false, opacity: 1}],
+            _json_state_history: {history_position: 0, state_history: []},
+            _s_pxl_colors: [new Uint32Array(0)],
+            _s_pxls: [new Uint16Array(width*height)],
+            _layer_index: 0,
+            _pxls_hovered: -1,
+            _original_image_index: -1,
+            _last_action_timestamp: Date.now(),
+        }).then(() => {
+
+            this._set_size();
+        });
+    }
+
     _set_size = (width = 0, height = 0) => {
 
         width = width || this.super_state.get_state().pxl_width;
@@ -3554,7 +3576,7 @@ class CanvasPixels extends React.PureComponent {
         return (
             <div onContextMenu={function (e){e.preventDefault()}}
                  ref={this._set_canvas_container_ref} draggable={"false"}
-                 style={{zIndex: 11, boxSizing: "border-box", position: "relative", overflow: "hidden", touchAction: "none", userSelect: "none", display: "block"}}
+                 style={{zIndex: 11, boxSizing: "border-box", position: "relative", pointerEvents: "none", overflow: "hidden", touchAction: "none", userSelect: "none", display: "block"}}
                  className={className}>
                 <div ref={this._set_canvas_wrapper_overflow_ref}
                      className={"Canvas-Wrapper-Overflow" + ( !is_there_new_dimension ? " Shown ": " Not-Shown ")}
@@ -3567,8 +3589,8 @@ class CanvasPixels extends React.PureComponent {
                          overflow: "hidden",
                          position: "absolute",
                          boxSizing: "border-box",
-                         touchAction: "manipulation",
-                         pointerEvents: "auto",
+                         touchAction: "none",
+                         pointerEvents: "all",
                          userSelect: "none",
                          perspective: `${Math.round(Math.max(Math.floor(pxl_width), Math.floor(pxl_height)))}px`,
                          zIndex: 9,
@@ -3671,7 +3693,7 @@ class CanvasPixels extends React.PureComponent {
                         userSelect: "none",
                         contain: "layout size style paint",
                         zIndex: 10,
-                    }} onContextMenu={(e) => {e.preventDefault()}} />
+                    }} onContextMenu={function (e){e.preventDefault()}} />
                     {!is_mobile_or_tablet && <div style={{
                         display: "block",
                         zIndex: 1,

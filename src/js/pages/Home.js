@@ -189,18 +189,18 @@ const styles = theme => ({
         userSelect: "none",
         animationFillMode: "both",
         animationName: "$movingbackground",
-        animationDuration: "40s",
+        animationDuration: "60s",
         animationTimingFunction: "linear",
         animationDirection: "alternate",
         animationIterationCount: "infinite",
         animationDelay: "75ms",
     },
     "@keyframes movingbackground": {
-        "0%": { backgroundPosition: "40% 20%" },
-        "25%": { backgroundPosition: "60% 45%" },
-        "50%": { backgroundPosition: "40% 70%" },
-        "75%": { backgroundPosition: "60% 45%" },
-        "100%": { backgroundPosition: "40% 20%" },
+        "0%": { backgroundPosition: "0% 0%" },
+        "25%": { backgroundPosition: "50% 50%" },
+        "50%": { backgroundPosition: "100% 100%" },
+        "75%": { backgroundPosition: "75% 75%" },
+        "100%": { backgroundPosition: "25% 25%" },
     },
     headerContainer: {
         pointerEvents: "none",
@@ -389,7 +389,7 @@ class Home extends React.PureComponent {
     componentDidMount() {
 
         this._updated_dimensions();
-        const all_image_name_infographics = ["Ban.png", "Ban.svg", "Sco.png", "Sco.svg", "Bud.png", "Bud.svg", "Cop.png", "Cop.svg"];
+        const all_image_name_infographics = ["Ban.png", "Ban.svg", "Sco.png", "Sco.svg", "Bud.png", "Bud.svg"];
 
         let _image_index = -1;
         let _image_name_infographics;

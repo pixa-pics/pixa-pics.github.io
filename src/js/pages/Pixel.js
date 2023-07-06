@@ -272,7 +272,7 @@ const styles = theme => ({
         contain: "layout paint size style",
     },
     drawerContainer: {
-        transform: "translateZ(0px)",
+        transform: "translateZ(10px)",
         scrollBehavior: "smooth",
         contain: "size style paint layout",
         height: "100% !important",
@@ -2463,6 +2463,8 @@ class Pixel extends React.PureComponent {
             _is_something_selected,
             _import_size,
             _import_colorize,
+            _slider_value_width,
+            _slider_value_height
         } = this.st4te;
 
         this.st4te._canvas._set_props({
@@ -2492,6 +2494,8 @@ class Pixel extends React.PureComponent {
             current_color: _current_color,
             second_color: _second_color,
             slider_value: _slider_value,
+            slider_value_width: _slider_value_width,
+            slider_value_height: _slider_value_height,
             tool: _tool,
             width: parseInt(_width),
             height: parseInt(_height),

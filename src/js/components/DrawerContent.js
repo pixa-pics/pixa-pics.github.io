@@ -85,8 +85,8 @@ const styles = theme => ({
     styledBadgeConnected: {
         "& .MuiBadge-badge": {
             marginRight: -8,
-            backgroundColor: "#44b700",
-            color: "#44b700",
+            backgroundColor: "#43e",
+            color: "#43e",
             boxShadow: `0 0 0 2px ${theme.palette.secondary.dark}`,
             "&::after": {
                 position: "absolute",

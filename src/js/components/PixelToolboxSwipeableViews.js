@@ -212,7 +212,45 @@ const styles = theme => ({
             color: theme.palette.secondary.light
         }
     },
-
+    listItemIconBlueBold: {
+        "& svg": {
+            color: theme.palette.secondary.dark,
+            width: "1.314em",
+            height: "1.314em"
+        }
+    },
+    styledBadgeConnected: {
+        "& .MuiBadge-badge": {
+            transform: "scale(1.618) translate(50% -50%) !important",
+            marginRight: -12,
+            backgroundColor: "#050c4c",
+            color: "#fafafa",
+            boxShadow: `0 0 0 2px #fafafa`,
+            "&::after": {
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "100%",
+                borderRadius: "50%",
+                animation: "$ripple 1.2s infinite ease-in-out",
+                border: "1px solid #050c4c",
+                content: "\"\"",
+            },
+        },
+        "@global": {
+            "@keyframes ripple": {
+                "0%": {
+                    transform: "scale(.8)",
+                    opacity: 1,
+                },
+                "100%": {
+                    transform: "scale(2.4)",
+                    opacity: 0,
+                },
+            }
+        }
+    },
     menu: {
         "& .MuiPaper-root":{
             overflow: "inherit",
@@ -254,9 +292,12 @@ const styles = theme => ({
     ListItemTextBold: {
         "& span.MuiListItemText-primary": {
             fontWeight: "bold",
-            color: theme.palette.secondary.light
+            fontSize: "15px !important",
+            color: theme.palette.primary.dark
         },
         "& p.MuiListItemText-secondary": {
+            fontSize: "11px !important",
+            fontWeight: "bold",
             color: theme.palette.secondary.contrast
         }
     },
@@ -313,12 +354,19 @@ const styles = theme => ({
             padding: "8px !important",
             textAlign: "center",
             boxSizing: "content-box",
-            contain: "style layout",
+            contain: "paint style layout",
+            transition: "all cubic-bezier(0.4, 0, 0.2, 1) 125ms",
             "&:hover": {
-                animation: "$wiggle linear 325ms both",
                 transition: "all cubic-bezier(0.4, 0, 0.2, 1) 325ms",
                 color: "#050c4c",
                 background: "#D7D7FD7D",
+            },
+            "& div svg.MuiSvgIcon-root": {
+                transition: "all cubic-bezier(0.4, 0, 0.2, 1) 125ms"
+            },
+            "&:hover div svg.MuiSvgIcon-root": {
+                transition: "all cubic-bezier(0.4, 0, 0.2, 1) 325ms",
+                color: "#050c4c !important",
             },
             "& .MuiListItemIcon-root": {
                 minWidth: 0,
@@ -428,6 +476,8 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
             previous_view_name_index: props.previous_view_name_index,
             hue: props.hue,
             should_update: props.should_update || false,
+            slider_value_width: props.slider_value_width,
+            slider_value_height: props.slider_value_height,
             _layer_opened: false,
             _anchor_el: null,
             _saturation: 60,
@@ -446,12 +496,19 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
             _upscale: false,
             _vectorized: false,
             _crt: false,
-            _list_sub_header_opened: "",
-            _slider_value_width: props.slider_value_width,
-            _slider_value_height: props.slider_value_height,
+            _list_sub_header_opened: ""
         };
 
         this._cache = {
+            "palette": null,
+            "image": null,
+            "layers": null,
+            "tools": null,
+            "selection": null,
+            "effects": null,
+            "filters": null
+        };
+        this._cache_empty = {
             "palette": null,
             "image": null,
             "layers": null,
@@ -464,6 +521,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
         Object.keys(this._cache).map((name) => {
 
             this.update_cache_view(name);
+            this._cache_empty[name] = (<List key={"empty-"+name} style={{ willChange: "none", minHeight: "100%", contain: "style layout paint", overflow: "auto", contentVisibility: "hidden", paddingTop: 0}} />);
         });
     };
 
@@ -495,6 +553,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
     _handle_filters_thumbnail_change = (filters_thumbnail, last_filters_hash, filters_preview_progression) => {
 
+        "use strict";
         filters_preview_progression = filters_preview_progression+"";
         if(this.st4te.filters_preview_progression === "0") {
             actions.trigger_voice("filtering");
@@ -549,11 +608,13 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
     _set_props = (props) => {
 
-        this.componentWillReceiveProps(Object.assign(Object.assign({}, this.props), props));
+        "use strict";
+        this.componentWillReceiveProps(props);
     };
 
     componentWillReceiveProps(new_props) {
 
+        "use strict";
         const {
             should_update,
             view_name_index,
@@ -649,6 +710,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
     _to_filter = (name) => {
 
+        "use strict";
         this.st4te.canvas.to_filter(name, this.st4te.slider_value);
         if(!this.is_mobile) {
             this.compute_filters_preview();
@@ -657,16 +719,19 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
     get_action_panel_names = () => {
 
+        "use strict";
         return PANEL_NAMES;
     };
 
     get_action_panel_cache = (name) => {
 
+        "use strict";
         return this._cache[name];
     };
 
     _set_list_subheader_collapse = (name) => {
 
+        "use strict";
         this.setSt4te({_list_sub_header_opened: (this.st4te._list_sub_header_opened && this.st4te._list_sub_header_opened === name) ? "": name}, () => {
 
             this.update_cache_view(null, true);
@@ -675,6 +740,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
     _get_list_sub_header_content_scarlett = (name, tutorial) => {
 
+        "use strict";
         const _list_sub_header_opened = this.st4te._list_sub_header_opened;
         const classes = this.st4te.classes;
        return <React.Fragment>
@@ -697,6 +763,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
     get_before_action_panel = (index) => {
 
+        "use strict";
         const {
             classes,
             canvas,
@@ -938,7 +1005,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                             </span>
                             {this._get_list_sub_header_content_scarlett("upload", "Define a size before uploading an image from the library or your device, this size will be the one used in the laboratory, but before! You can optionally define a retouching setting by artificial intelligence of your starting image, you can enlarge, colorize or even do both at the same time! That's how it's done to open an image in the lab, have fun.")}
                         </ListSubheader>
-                        <FormLabel style={{padding: "24px 0px 12px 24px"}} component="legend">START BY UPLOADING A NEW IMAGE</FormLabel>
+                        <FormLabel style={{padding: "32px 24px 12px 32px"}} component="legend">START HERE, CONVERT PICTURES INTO PIXEL ART!</FormLabel>
                         <div className={"image " + classes.listItems}>
                             <input
                                 accept="image/jpg, image/jpeg, image/png, image/svg, image/webp, image/gif"
@@ -951,11 +1018,11 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                             <ListItem component="label" button
                                       key={`list-item-button-file-drawer-upload-key-${(layers[layer_index] || {}).hash}`}
                                       htmlFor={`button-file-drawer-upload-key-${(layers[layer_index] || {}).hash}`}>
-                                <ListItemIcon className={classes.listItemIconBlue}>
+                                <ListItemIcon className={classes.listItemIconBlueBold}>
                                     <ImagePlusIcon/>
                                 </ListItemIcon>
                                 <ListItemText className={classes.ListItemTextBold}
-                                              primary={"OPEN A NEW IMAGE"} secondary={"[CTRL + O]"}/>
+                                              primary={"OPEN IMAGE"} secondary={"NETWORK NOT REQUIRED"}/>
                             </ListItem>
                             {false && <ListItem button onClick={() => {
                                 this._upload_image_from_library()
@@ -963,19 +1030,19 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                                 <ListItemIcon className={classes.listItemIconBlue}>
                                     <ImagePlusIcon/>
                                 </ListItemIcon>
-                                <ListItemText className={classes.ListItemTextBold}
+                                <ListItemText className={classes.listItemIconBlueBold}
                                               primary={"OPEN FROM LIBRARY"} secondary={""}/>
                             </ListItem>}
-                            <ListItem button onClick={() => {
+                            <ListItem button style={{contain: "style size layout"}} onClick={() => {
                                 window.open("https://www.artstation.com/pixapics/store")
                             }}>
-                                <ListItemIcon className={classes.listItemIconBlue}>
-                                    <Badge color="primary" badgeContent={1}>
+                                <ListItemIcon className={classes.listItemIconBlueBold}>
+                                    <Badge className={classes.styledBadgeConnected} overlap="rectangular" badgeContent="NEW" variant="standard">
                                         <StoreIcon/>
                                     </Badge>
                                 </ListItemIcon>
                                 <ListItemText className={classes.ListItemTextBold}
-                                              primary={"BUY PREMIUM IMAGES"} secondary={"ASSET STORE"}/>
+                                              primary={"BUY ASSETS"} secondary={"DOWNLOAD THEM NOW"}/>
                             </ListItem>
                         </div>
                         <div className={"image " + classes.listItems}>
@@ -986,15 +1053,15 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                                 boxSizing: "border-box",
                                 width: "100%"
                             }}>
-                                <Typography id="size-slider" gutterBottom>RESIZE NEW IMAGE TO : </Typography>
+                                <Typography id="size-slider" style={{textAlignLast: "left"}} gutterBottom>NEW IMAGE SIZE</Typography>
                                 <Slider defaultValue={import_size} step={8} valueLabelDisplay="auto" min={0}
                                         max={import_size > 512 ? import_size : 512}
                                         onChangeCommitted={this._set_import_size}
+                                        onTouch={function (e){e.stopImmediatePropagation();e.stopPropagation();e.preventDefault();}}
                                         aria-labelledby="size-slider"/>
                             </div>
                         </div>
-                        <FormLabel style={{padding: "24px 0px 12px 24px"}} component="legend">AI TUNING BEFORE
-                            IMPORT</FormLabel>
+                        <FormLabel style={{padding: "16px 24px 12px 32px"}} component="legend">ONLINE TOOLS TO ENHANCE YOUR SELECTION</FormLabel>
                         <div className={"image " + classes.listItems}>
                             <RadioGroup row name="Colorize" onChange={this._set_import_colorize}
                                         key={"colorize-mode-n-"+import_colorize}
@@ -1048,6 +1115,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
     get_action_panel = (index) => {
 
+        "use strict";
         const {
             canvas,
             classes,
@@ -1962,15 +2030,16 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
     canvas_set_size = () => {
 
-        this.st4te.canvas._set_size(this.st4te._slider_value_width, this.st4te._slider_value_height);
+        this.st4te.canvas._new_blank(this.st4te.slider_value_width, this.st4te.slider_value_height);
     };
 
     get_after_action_panel = (index) => {
 
+        "use strict";
         const {
             classes,
-            _slider_value_width,
-            _slider_value_height
+            slider_value_width,
+            slider_value_height
         } = this.st4te;
 
         const panel_names = this.get_action_panel_names();
@@ -1986,20 +2055,20 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                         {this._get_list_sub_header_content_scarlett("create", "This is where you can create a new transparent canvas of any size you want. This is how it's done, have fun!")}
                     </ListSubheader>
                     <div style={{
-                        padding: "8px 24px",
+                        padding: "32px 24px",
                         position: "relative",
                         overflow: "hidden",
                         boxSizing: "border-box",
                         width: "100%"
                     }}>
                         <Typography id="width-slider" gutterBottom>Width</Typography>
-                        <Slider defaultValue={_slider_value_width} step={1} valueLabelDisplay="auto" min={0}
-                                max={512} key={"slider-width-"+_slider_value_width}
+                        <Slider defaultValue={slider_value_width} step={1} valueLabelDisplay="auto" min={0}
+                                max={512} key={"slider-width"}
                                 onChangeCommitted={this._set_width_from_slider}
                                 aria-labelledby="width-slider"/>
                         <Typography id="height-slider" gutterBottom>Height</Typography>
-                        <Slider defaultValue={_slider_value_height} step={1} valueLabelDisplay="auto" min={0}
-                                max={512} key={"slider-height-"+_slider_value_height}
+                        <Slider defaultValue={slider_value_height} step={1} valueLabelDisplay="auto" min={0}
+                                max={512} key={"slider-height"}
                                 onChangeCommitted={this._set_height_from_slider}
                                 aria-labelledby="height-slider"/>
                         <Typography id="confirm-slider" gutterBottom>Confirm</Typography>
@@ -2298,6 +2367,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
     update_cache_view = (name, force_update) => {
 
+        "use strict";
         const {
             classes,
             canvas,
@@ -2313,7 +2383,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
         name = names[index];
 
         this._cache[name] = (
-            <List key={name} style={{willChange: (Boolean(parseInt(_filters_preview_progression_stepped) === 0 || name !== "filters") ? "": "contents")+"", minHeight: "100%", contain: "style layout paint", overflow: "visible", paddingTop: 0}}>
+            <List key={name} style={{willChange: (Boolean(parseInt(_filters_preview_progression_stepped) === 0 || name !== "filters") ? "inherit": "contents")+"", contentVisibility: "auto", minHeight: "100%", contain: "style layout paint", overflow: "visible", paddingTop: 0}}>
 
                 {this.get_before_action_panel(index)}
 
@@ -2453,26 +2523,29 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
     render() {
 
+        "use strict";
         const {view_name_index, previous_view_name_index} = this.st4te;
         const cache = this._cache;
+        const cache_empty = this._cache_empty;
 
         return (
             <SwipeableViews
+                ignoreNativeScroll={true}
                 containerStyle={{overflow: "visible", contain: "style paint size layout"}}
                 animateHeight={true}
                 animateTransitions={true}
                 disableLazyLoading={true}
                 resistance={true}
-                springConfig={{tension: 450, friction: 60, duration: '175ms', easeFunction: 'cubic-bezier(0.4, 0, 0.2, 1)', delay: '5ms'}}
+                springConfig={{tension: 450, friction: 60, duration: '175ms', easeFunction: 'cubic-bezier(0.280, 0.840, 0.420, 1)', delay: '5ms'}}
                 index={view_name_index}
                 onChangeIndex={this._handle_view_name_change}
                 disabled={false}
                 key={"swipe-able-view"}
             >
                 {this.get_action_panel_names().map(function (name, index){
-
+                    "use strict";
                     if(view_name_index !== index && previous_view_name_index !== index) {
-                        return (<List key={name} style={{ willChange: "none", minHeight: "100%", contain: "style layout paint", overflow: "auto", contentVisibility: "visible", paddingTop: 0}} />);
+                        return cache_empty[name];
                     }else {
                         return cache[name];
                     }
