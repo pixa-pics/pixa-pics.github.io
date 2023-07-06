@@ -689,6 +689,8 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
             }else if(view_name_changed) {
 
                 this.forceUpdate();
+            }else {
+                this.update_cache_view(null, false);
             }
         });
     }
@@ -761,6 +763,16 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
             </React.Fragment>;
     };
 
+    _get_colors = (s, l, o) => {
+        "use strict";
+        let colors = [];
+        for (let i = 1; i <= 128; i++) {
+
+            colors.push(SIMDopeColor.new_hsla((i / 128) * 360 | 0, s, l, o).hex);
+        }
+
+        return colors;
+    };
     get_before_action_panel = (index) => {
 
         "use strict";
@@ -787,12 +799,6 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
         const ccsd = SIMDopeColor.new_hex(current_color);
         const current_color_rgba = {r: ccsd.r, g: ccsd.g, b: ccsd.b, a: ccsd.a/255};
-
-        let colors = [];
-        for (let i = 1; i <= 128; i++) {
-
-            colors.push(SIMDopeColor.new_hsla((i / 128) * 360 | 0, _saturation, _luminosity, _opacity).hex);
-        }
 
         const [r_1, g_1, b_1] = current_color === "#ffffff" ? [196, 196, 196] : SIMDopeColor.new_hex(current_color).get_slice();
         const is_current_color_dark = r_1 + g_1 + b_1 < 152 * 3;
@@ -953,7 +959,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                             padding="12px 16px 24px 24px"
                             gap="0px"
                             align="left"
-                            colors={colors}
+                            colors={this._get_colors(_saturation, _luminosity, _opacity)}
                             selected_colors={[current_color]}
                             onColorClick={(event, color) => {
                                 this._handle_current_color_change(color)
@@ -970,7 +976,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                             <div className={classes.sliderContainer}>
                                 <Typography className={classes.sliderLabel} id="opacity-slider"
                                             gutterBottom>α</Typography>
-                                <Slider defaultValue={_opacity} step={10} valueLabelDisplay="auto"
+                                <Slider defaultValue={_opacity} key={"0-"+_opacity} step={10} valueLabelDisplay="auto"
                                         min={0} max={100}
                                         onChangeCommitted={this._set_opacity_from_slider}
                                         aria-labelledby="opacity-slider"/>
@@ -978,7 +984,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                             <div className={classes.sliderContainer}>
                                 <Typography className={classes.sliderLabel} id="luminosity-slider"
                                             gutterBottom>L</Typography>
-                                <Slider defaultValue={_luminosity} step={10}
+                                <Slider defaultValue={_luminosity} key={"0-"+_luminosity} step={10}
                                         valueLabelDisplay="auto" min={0} max={100}
                                         onChangeCommitted={this._set_luminosity_from_slider}
                                         aria-labelledby="luminosity-slider"/>
@@ -986,7 +992,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                             <div className={classes.sliderContainer}>
                                 <Typography className={classes.sliderLabel} id="saturation-slider"
                                             gutterBottom>S</Typography>
-                                <Slider defaultValue={_saturation} step={10}
+                                <Slider defaultValue={_saturation} key={"0-"+_saturation} step={10}
                                         valueLabelDisplay="auto" min={0} max={100}
                                         onChangeCommitted={this._set_saturation_from_slider}
                                         aria-labelledby="strength-slider"/>
@@ -2216,7 +2222,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
         this.setSt4te({_saturation: value}, () => {
 
-            this.update_cache_view(null, true);
+            this.update_cache_view("palette", true);
         });
     };
 
@@ -2224,7 +2230,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
         this.setSt4te({_luminosity: value}, () => {
 
-            this.update_cache_view(null, true);
+            this.update_cache_view("palette", true);
         });
     };
 
@@ -2232,7 +2238,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
         this.setSt4te({_opacity: value}, () => {
 
-            this.update_cache_view(null, true);
+            this.update_cache_view("palette", true);
         });
     };
 

@@ -1,6 +1,8 @@
 import React from "react";
 import { withStyles } from "@material-ui/core";
-import {ButtonBase, Tooltip} from "@material-ui/core";
+import {IconButton, Tooltip} from "@material-ui/core";
+import CheckIcon from "@material-ui/icons/Check";
+import {SIMDopeColor} from "simdope";
 
 const styles = theme => ({
     colorPaletteItem: {
@@ -23,6 +25,7 @@ class PixelColorPaletteItem extends React.PureComponent {
             size: props.size || "inherit",
             full_width: props.full_width || false,
             icon: props.icon || null,
+            key: props.key || Math.round(Math.random()*10000).toString(16),
             style: props.style || {},
             _is_dark: false //SIMDopeColor.new_hex(props.color||"#00000000").is_dark(),
         };
@@ -67,21 +70,23 @@ class PixelColorPaletteItem extends React.PureComponent {
     render() {
 
         const { classes, full_width, selected, size, color, style, key } = this.st4te;
+        let c = SIMDopeColor.new_hex(color).is_dark() ? "#fff": "#000";
 
         return (
             <Tooltip title={color} key={key}>
-                <ButtonBase
+                <IconButton
+                    disableRipple={true}
                     onClick={(event) => {this.props.onClick(event, color)}}
                     style={{
                         background: color,
-                        /*boxShadow: `inset 0px 2px 4px -1px rgb(${0} ${0} ${0} / 20%), inset 0px 4px 5px 0px rgb(${0} ${0} ${0} / 14%), inset 0px 1px 10px 0px rgb(${0} ${0} ${0} / 12%)`,*/
                         width: full_width ? "100%": size,
                         height: size,
-                        borderRadius: selected ? "50%": "0%",
+                        borderRadius: "2px",
                         ...style
                     }}
                     className={!full_width ? classes.colorPaletteItem: null}>
-                </ButtonBase>
+                    {selected && <CheckIcon style={{ color: c }} />}
+                </IconButton>
             </Tooltip>
         );
     }

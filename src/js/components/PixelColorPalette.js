@@ -67,7 +67,7 @@ class PixelColorPalette extends React.PureComponent {
     componentWillReceiveProps(new_props) {
 
         const { colors, selected_colors } = this.st4te;
-        const update = Boolean(new_props.colors.length !== colors.length || new_props.selected_colors.length !== selected_colors.length || (new_props.selected_colors || ["#"])[0] !== (selected_colors || ["#"])[0]);
+        const update = Boolean(new_props.colors[0] !== colors[0].length || new_props.colors.length !== colors.length || new_props.selected_colors.length !== selected_colors.length || (new_props.selected_colors || ["#"])[0] !== (selected_colors || ["#"])[0]);
 
         if(update){
             this.setSt4te(new_props, () => {
