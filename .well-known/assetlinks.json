@@ -1,8 +1,15 @@
-[{
-      "relation": ["delegate_permission/common.handle_all_urls"],
-      "target": {
-        "namespace": "android_app",
-        "package_name": "pics.pixa.app.twa",
-        "sha256_cert_fingerprints": ["62:6E:72:E4:1B:FA:D2:64:19:07:3D:62:FB:62:11:F3:77:81:57:D8:5F:57:B3:5E:CE:99:FE:20:AF:C6:D6:5B"]
-      }
-    }]
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "pics.pixa.app.twa",
+      "sha256_cert_fingerprints": [
+        "62:6E:72:E4:1B:FA:D2:64:19:07:3D:62:FB:62:11:F3:77:81:57:D8:5F:57:B3:5E:CE:99:FE:20:AF:C6:D6:5B",
+        "1A:A6:C6:1D:E3:14:47:05:73:D0:BD:24:E1:1A:81:38:41:7A:68:C3:D9:D2:FF:97:39:46:41:9F:97:C6:BB:4C"
+      ]
+    }
+  }
+]
