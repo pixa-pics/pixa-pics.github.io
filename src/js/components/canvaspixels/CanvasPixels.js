@@ -681,13 +681,10 @@ class CanvasPixels extends React.PureComponent {
 
     _get_base64_png_data_url = (scale = 1, with_palette = false, with_compression_speed = 0, with_compression_quality_min = 30, with_compression_quality_max = 35) => {
 
-        const { _json_state_history, pxl_width, pxl_height } = this.super_state.get_state();
-        const { _s_pxls, _s_pxl_colors, _layers } = _json_state_history.state_history[_json_state_history.history_position];
-
-        const b64pngcanvas = B64PngCanvas.from(pool, parseInt(pxl_width), parseInt(pxl_height), _s_pxls, _s_pxl_colors, _layers, parseInt(scale), true);
+        const { pxl_width, pxl_height,  _s_pxls, _s_pxl_colors, _layers } = this.super_state.get_state();
 
         return new Promise( (resolve, reject) => {
-            b64pngcanvas.render().then((result) => {
+            B64PngCanvas.from(pool, parseInt(pxl_width), parseInt(pxl_height), _s_pxls, _s_pxl_colors, _layers, parseInt(scale), true).render().then((result) => {
 
                 if(with_compression_speed !== 0 && result.colors.length <= 256) {
 
@@ -1586,7 +1583,7 @@ class CanvasPixels extends React.PureComponent {
             if(old_hash !== new_hash || !Boolean(old_hash) || !Boolean(old_thumbnail)) {
 
                 this.get_layer_bitmap_image(new_current_state.pxl_width, new_current_state.pxl_height, p, pc, (new_thumbnail) => {
-
+                    "use strict";
                     has_updated = true;
                     if(old_hash !== new_hash || !Boolean(old_hash)) {
 
@@ -1674,7 +1671,7 @@ class CanvasPixels extends React.PureComponent {
                     new_current_state.pxl_width = parseInt(pxl_width);
                     new_current_state.pxl_height = parseInt(pxl_height);
                     new_current_state._original_image_index = parseInt(_original_image_index);
-                    new_current_state._layers = Array.from(_layers.map((l) => {
+                    new_current_state._layers = Array.from(_layers.map(function (l){
                         return {
                             id: parseInt(l.id),
                             hash: l.hash + "",
@@ -1687,13 +1684,14 @@ class CanvasPixels extends React.PureComponent {
                         };
                     }));
                     new_current_state._layer_index = parseInt(_layer_index);
-                    new_current_state._s_pxls = _s_pxls.map(function (a) {return Uint16Array.from(a);});
-                    new_current_state._s_pxl_colors = _s_pxl_colors.map(function (a) {return Uint32Array.from(a);});
+                    new_current_state._s_pxls = Array.from(_s_pxls.map(function (a) {return Uint16Array.from(a);}));
+                    new_current_state._s_pxl_colors = Array.from(_s_pxl_colors.map(function (a) {return Uint32Array.from(a);}));
                     new_current_state._pxl_indexes_of_selection = _pxl_indexes_of_selection.indexes;
                     new_current_state._pencil_mirror_index = parseInt(_pencil_mirror_index);
 
                     this._notify_layers_and_compute_thumbnails_change(Object.assign({}, old_current_state), Object.assign({}, new_current_state), (layers, layer_index, layers_changed_state) => {
 
+                        "use strict";
                         let {_state_history_length, _saving_json_state_history_ran_timestamp } = super_state_object;
                         const first_change = Boolean(_json_state_history.state_history.length === 0);
                         const new_current_history_position = parseInt(_json_state_history.history_position);
@@ -1718,7 +1716,7 @@ class CanvasPixels extends React.PureComponent {
                                 while(dsh.length) { // Yet inbetween state history get added the reverse order to not break timeline of changes
 
                                     if(dshi === 0){
-                                        _json_state_history.state_history.push(Object.assign({},dsh.pop()));
+                                        _json_state_history.state_history.push(Object.assign({},dsh.shift()));
                                     }else {
                                         _json_state_history.state_history.push(Object.assign({},dsh.shift()));
                                     }
@@ -1842,7 +1840,7 @@ class CanvasPixels extends React.PureComponent {
                             _original_image_index: parseInt(state._original_image_index),
                             pxl_width: parseInt(state.pxl_width),
                             pxl_height: parseInt(state.pxl_height),
-                            _pxl_indexes_of_selection: new SetFixed(state._pxl_indexes_of_selection),
+                            _pxl_indexes_of_selection: new SetFixed(state._pxl_indexes_of_selection.indexes || state._pxl_indexes_of_selection),
                             _s_pxls: Array.from(state._s_pxls.map(function(a){return Uint16Array.from(a)})),
                             _s_pxl_colors:  Array.from(state._s_pxl_colors.map(function(a){return Uint32Array.from(a)})),
                             _layers: Array.from(state._layers.map(function(l) {
@@ -1885,7 +1883,7 @@ class CanvasPixels extends React.PureComponent {
                     _layer_index: parseInt(sh._layer_index),
                     _s_pxls: Array.from(sh._s_pxls.map(function(a){return Uint16Array.from(a)})),
                     _s_pxl_colors:  Array.from(sh._s_pxl_colors.map(function(a){return Uint32Array.from(a)})),
-                    _pxl_indexes_of_selection: new SetFixed(sh._pxl_indexes_of_selection),
+                    _pxl_indexes_of_selection: new SetFixed(sh._pxl_indexes_of_selection.indexes || sh._pxl_indexes_of_selection),
                     _pencil_mirror_index: parseInt(sh._pencil_mirror_index),
                     _json_state_history: _json_state_history,
                     _pxls_hovered: -1,
@@ -1997,7 +1995,7 @@ class CanvasPixels extends React.PureComponent {
                     _layer_index: parseInt(sh._layer_index),
                     _s_pxls: Array.from(sh._s_pxls.map(function(a){return Uint16Array.from(a);})),
                     _s_pxl_colors: Array.from(sh._s_pxl_colors.map(function(a){return Uint32Array.from(a);})),
-                    _pxl_indexes_of_selection: new SetFixed(sh._pxl_indexes_of_selection),
+                    _pxl_indexes_of_selection: new SetFixed(sh._pxl_indexes_of_selection.indexes || sh._pxl_indexes_of_selection),
                     _pencil_mirror_index: parseInt(sh._pencil_mirror_index),
                     _json_state_history: _json_state_history,
                     _last_action_timestamp: Date.now(),
@@ -2052,7 +2050,7 @@ class CanvasPixels extends React.PureComponent {
                     _layer_index: parseInt(sh._layer_index),
                     _s_pxls: Array.from(sh._s_pxls.map(function(a){return Uint16Array.from(a);})),
                     _s_pxl_colors: Array.from(sh._s_pxl_colors.map(function(a){return Uint32Array.from(a);})),
-                    _pxl_indexes_of_selection: new SetFixed(sh._pxl_indexes_of_selection),
+                    _pxl_indexes_of_selection: new SetFixed(sh._pxl_indexes_of_selection.indexes || sh._pxl_indexes_of_selection),
                     _pencil_mirror_index: parseInt(sh._pencil_mirror_index),
                     _json_state_history: _json_state_history,
                     _last_action_timestamp: Date.now(),

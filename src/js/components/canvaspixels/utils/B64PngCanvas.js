@@ -102,7 +102,7 @@ var fu = function(
         }
 
         const pixel_length = pxl_width * pxl_height | 0;
-        const layer_length = layers.length | 0;
+        const layer_length = pxl_colors.length | 0;
         const super_blend = SuperBlend.init(layer_length, pixel_length, Uint8Array.from(layers.map(function (l) {
             return l.hidden ? 0: Math.round(parseFloat(l.opacity)*255);
         })));
@@ -154,9 +154,9 @@ const B64PngCanvas = {
         scale,
         with_palette
     ) {
-        _s_pxls = Array.from(_s_pxls.map(function (a){return Uint16Array.from(a)}));
-        _s_pxl_colors = Array.from(_s_pxl_colors.map(function (a){return Uint32Array.from(a)}));
-        _layers = Array.from(_layers.map(function (o){return Object.assign({}, o)}));
+        let s_pxls = Array.from(_s_pxls.map(function (a){return Uint16Array.from(a)}));
+        let s_pxl_colors = Array.from(_s_pxl_colors.map(function (a){return Uint32Array.from(a)}));
+        let layers = Array.from(_layers.map(function (o){return Object.assign({}, o)}));
         pxl_width = pxl_width | 0;
         pxl_height = pxl_height | 0
 
@@ -165,9 +165,9 @@ const B64PngCanvas = {
             // Compute properties
             w: pxl_width,
             h: pxl_height,
-            sp: _s_pxls,
-            spc: _s_pxl_colors,
-            l: _layers,
+            sp: s_pxls,
+            spc: s_pxl_colors,
+            l: layers,
             s: scale,
             wp: with_palette
         });
