@@ -248,7 +248,6 @@
 
         /* TRY INSTALL SERVICE WORKER, FINALLY LOAD JS FILE */
         var _REGISTER_SERVICE_WORKER = function() {
-            _FIRED_IT_STATE = "";
             return new Promise(function(resolve, reject){
                 if ("serviceWorker" in navigator) {
                     navigator.serviceWorker.register("/service-worker.js", {
@@ -269,7 +268,7 @@
         };
 
         var _LISTEN_RELOAD = function(registration) {
-
+            _FIRED_IT_STATE = "";
             window.addEventListener("DOMContentLoaded", function () {
                 _REGISTER_SERVICE_WORKER().then(_LISTEN_RELOAD);
             });

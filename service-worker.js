@@ -47,7 +47,7 @@ var serve_cache = function (cache_origin, url){
         "use strict";
         return cache.match(url).then(function (response) {
             "use strict";
-            return response.status === 200 ? response.clone(): fetch(url).then(function (response) { // Fetch, clone, and serve
+            return !response ? Promise.reject(): response.status === 200 ? response.clone(): fetch(url).then(function (response) { // Fetch, clone, and serve
                 "use strict";
                 if(response.status === 200) { cache.put(url, response.clone()); return Promise.resolve(response.clone()); } else { return Promise.reject(); }
             });
@@ -174,20 +174,20 @@ self.addEventListener("fetch", function(event) {
     } else if(event.request.method === "GET") {
 
         event.respondWith(
-            Promise.race([
+            Promise.any([
                 required_cache.then(function (cache) {
                     return cache.match(url).then(function (response) {
-                        if(response.status === 200) { return Promise.resolve(response.clone()); }
+                        return !response ? Promise.reject(): response.status === 200 ? Promise.resolve(response.clone()): Promise.reject();
                     });
                 }),
                 useful_cache.then(function (cache) {
                     return cache.match(url).then(function (response) {
-                        if(response.status === 200) { return Promise.resolve(response.clone()); }
+                        return !response ? Promise.reject(): response.status === 200 ? Promise.resolve(response.clone()): Promise.reject();
                     });
                 }),
                 static_cache.then(function (cache) {
                     return cache.match(url).then(function (response) {
-                        if(response.status === 200) { return Promise.resolve(response.clone()); }
+                        return !response ? Promise.reject(): response.status === 200 ? Promise.resolve(response.clone()): Promise.reject();
                     });
                 }),
                 fetch(url).then(function (response) { // Fetch and serve
