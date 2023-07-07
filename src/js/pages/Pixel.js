@@ -273,13 +273,14 @@ const styles = theme => ({
         contain: "layout paint size style",
     },
     drawerContainer: {
+        willChange: "scroll-position",
         transform: "translateZ(10px)",
         scrollBehavior: "smooth",
         contain: "size style paint layout",
         height: "100% !important",
         overflow: "overlay",
         [theme.breakpoints.down("md")]: {
-            height: "calc(100vh - 128px) !important"
+            height: "calc(100vh - 180px) !important"
         },
         [theme.breakpoints.up("lg")]: {
             overflowX: "hidden",
@@ -3144,22 +3145,25 @@ class Pixel extends React.PureComponent {
                             className={_is_cursor_fuck_you_active ? classes.contextMenuFuckYouActive: classes.contextMenuFuckYouDisable}
                             PaperProps={{
                                 style: {
-                                    maxHeight: 350,
-                                    width: 250,
+                                    maxHeight: 380,
+                                    width: 240,
                                     overflowY: "overlay",
-                                    contain: "paint style layout"
+                                    contain: "paint style layout",
+                                    willChange: "scroll-position"
                                 },
                             }}
                             onContextMenu={(e) => {e.preventDefault()}}
                             MenuListProps={{dense: true}}
-                            transitionDuration={{enter: 25, exit: 50}}
+                            transitionDuration={{enter: 50, exit: 100}}
+                            transitionDelay={{enter: 5, exit: 10}}
                             open={_menu_mouse_y !== null}
                             onClose={this._handle_menu_close}
+                            keepMounted
                             anchorReference="anchorPosition"
                             anchorPosition={
                                 _menu_mouse_y !== null && _menu_mouse_x !== null
                                     ? { top: _menu_mouse_y, left: _menu_mouse_x }
-                                    : undefined
+                                    : { top: 0, left: 0 }
                             }
                         >
                             <span style={{textAlign: "left", padding: "12px 8px", color: "#666"}}>X: {_menu_data.pos_x}, Y: {_menu_data.pos_y}</span>

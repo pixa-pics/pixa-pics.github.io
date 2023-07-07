@@ -188,7 +188,8 @@ const overrides = {
                 verticalAlign: "middle",
             },
             "*::-webkit-scrollbar": {
-                width: "8px"
+                width: "4px",
+                padding: "2px"
             },
             "*::-webkit-scrollbar-track": {
                 backgroundColor: "transparent"
@@ -196,7 +197,7 @@ const overrides = {
             "*::-webkit-scrollbar-thumb": {
                 backgroundColor: "rgba(124,124,124,.3)",
                 zIndex: "1",
-                borderRadius: 8
+                borderRadius: "2px"
             },
             ".MuiAvatar-root": {
                 contain: "paint style layout",
