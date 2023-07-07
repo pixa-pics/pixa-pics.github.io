@@ -414,12 +414,17 @@ const styles = theme => ({
             color: "#181063",
         }
     },
+    "@keyframes backdropanim": {
+        "0%": {filter: "drop-shadow(0px, 0px, 20px, 20px, #131c955c)"}
+    },
     backdrop: {
         zIndex: 2000,
         color: "#fff",
-        background: "radial-gradient(farthest-corner, #041952 20%, #131c9588 70%, #b4b9ff66)",
+        filter: "brightness(1.1) contrast(1.2) drop-shadow(0 0 12px #070b32)",
+        background: "radial-gradient(farthest-corner, #001856d1 20%, #636eff52 80%, #474e9b2b)",
         contain: "layout paint size style",
         userSelect: "none",
+        animation: "$backdropanim 16s linear infinite both",
     },
     backdropTextContent: {
         display: "block",
@@ -468,7 +473,8 @@ const styles = theme => ({
     ripple: {
         contain: "layout paint size style",
         "& > .MuiTouchRipple-rippleVisible": {
-            animation: "MuiTouchRipple-keyframes-enter 275ms cubic-bezier(0.4, 0, 0.2, 1)"
+            contain: "layout paint size style",
+            animation: "MuiTouchRipple-keyframes-enter 175ms cubic-bezier(0.4, 0, 0.2, 1)"
         }
     },
     infoIcon: {

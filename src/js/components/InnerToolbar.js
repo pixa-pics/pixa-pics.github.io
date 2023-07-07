@@ -72,6 +72,7 @@ const styles = theme => ({
             contain: "paint layout",
             height: 40,
             width: "60%",
+            mixBlendMode: "plus-lighter",
             background: "linear-gradient(to right, transparent, rgb(155 163 220 / 44%), transparent)",
             animationFillMode: "both",
             animationName: "$innerToolbarCyberPunkAnimation",
@@ -443,7 +444,7 @@ class InnerToolbar extends React.PureComponent {
             }
 
 
-            return element === "" ? null: <Fade in={true} timeout={index*125}><a key={index} onClick={() => {this._go_to(link_to)}} className={classes.link} >&nbsp;►&nbsp;{element}</a></Fade>;
+            return element === "" ? null: <Fade key={index} in={true} timeout={index*125}><a onClick={() => {this._go_to(link_to)}} className={classes.link} >&nbsp;►&nbsp;{element}</a></Fade>;
         }): null;
 
         const usrnm = (know_if_logged ? logged_account ? logged_account.name: t( "components.inner_toolbar.guest"): "");
