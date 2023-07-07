@@ -216,6 +216,7 @@ const styles = theme => ({
         overflow: "hidden",
     },
     contentDrawerFixed: {
+        zIndex: 20,
         contain: "style size paint layout",
         boxShadow: "-2px 0px 4px 0px rgb(0 0 0 / 20%), -4px 0px 5px 0px rgb(0 0 0 / 14%), -6px 0px 10px 0px rgb(0 0 0 / 12%)",
         maxHeight: "100%",
@@ -240,7 +241,7 @@ const styles = theme => ({
             animationTimingFunction: "cubic-bezier(0.4, 0, 0.2, 1)",
             animationDirection: "alternate",
             animationIterationCount: "1",
-            animationDelay: "125ms",
+            animationDelay: "150ms",
         }
     },
     "@keyframes drawer": {
@@ -1795,15 +1796,20 @@ class Pixel extends React.PureComponent {
     };
     _handle_file_upload = (event) => {
 
-        event.preventDefault();
-        event.stopPropagation();
+        if("dataTransfer" in event) {
+            if(event.dataTransfer.files.length > 0) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+        }
+
         if(this.st4te._drag_file) {
             this.setSt4te({_drag_file: 0}, () => {
                 this._request_force_update();
             });
         }
 
-        const files = (event.target || {}).files || (event.dataTransfer || {}).files || (event.srcElement || {}).files || (event.currentTarget || {}).files || ((event.path || [])[0] || {}).files || [];
+        const files = (event.target || {}).files || (event.srcElement || {}).files || (event.currentTarget || {}).files || ((event.path || [])[0] || {}).files || (event.dataTransfer || {}).files || [];
         const dumb_file = files[0] || null;
         let smart_file = null;
         for (let i = 0; i < files.length; i++) {
@@ -3300,7 +3306,7 @@ class Pixel extends React.PureComponent {
 
                 {drawer_mobile}
 
-                <div className={classes.fatabs} style={_is_edit_drawer_open && _less_than_1280w ? {minHeight: 48, height: 48, backgroundColor: "#fff"}: {}}>
+                {_less_than_1280w && <div className={classes.fatabs} style={_is_edit_drawer_open && _less_than_1280w ? {minHeight: 48, height: 48, backgroundColor: "#fff"}: {}}>
                     <Tabs className={classes.tabs} style={_is_edit_drawer_open && _less_than_1280w ? {minHeight: 48, height: 48}: {}}
                           variant="fullWidth"
                           scrollButtons="off"
@@ -3316,7 +3322,7 @@ class Pixel extends React.PureComponent {
                         <Tab onPointerEnter={(e) => {this._handle_view_name_switch(e, 5)}} className={classes.tab} label={"effects"} icon={<TuneIcon />} />
                         <Tab onPointerEnter={(e) => {this._handle_view_name_switch(e, 6)}}  className={classes.tab} label={"filters"} icon={<ImageAutoAdjustIcon />} />
                     </Tabs>
-                </div>
+                </div>}
 
                 <ImageFileDialog
                     keepMounted={false}
@@ -3342,7 +3348,7 @@ class Pixel extends React.PureComponent {
                                    on_import_size_change={this._set_import_size}
                                    on_pixel_art_delete={this._delete_unsaved_pixel_art}
                                    import_JSON_state={this._handle_import_json_state_id}
-                                   on_upload={this._upload_image}
+                                   on_upload={this._handle_file_upload}
                                    onClose={this._handle_pixel_dialog_create_close}/>
 
                 <TouchRipple
@@ -3351,7 +3357,7 @@ class Pixel extends React.PureComponent {
                     center={false}
                     style={{color: _ripple_color, opacity: _ripple_opacity, position: "fixed", width: "100%", height: "100%"}}/>
 
-                <Backdrop onDrag={this._upload_image} className={classes.backdrop} open={_loading || _files_waiting_download.length > 0 || (_drag_file + 1000 > Date.now())} onClick={this._continue_download}>
+                <Backdrop onDrag={this._handle_file_upload} className={classes.backdrop} open={_loading || _files_waiting_download.length > 0 || (_drag_file + 1000 > Date.now())} onClick={this._continue_download}>
                     <div className={classes.backdropTextContent} style={{ fontFamily: `"Jura"`, textTransform: "uppercase", cursor: "pointer"}}>
                         {!_drag_file && Boolean(_loading || _files_waiting_download.length > 0) && <h1><ShufflingSpanText key={_loading_process || _loading} text={_loading_process === "browser" ? "Laboratory in DANGER!": "LABORATORY PROCESSING"} animation_delay_ms={0} animation_duration_ms={200}/></h1>}
                         {!_drag_file && _files_waiting_download.length > 0 && <h3><ShufflingSpanText key={_files_waiting_download[0].name} text={`ACTION REQUIRED... ${String(_files_waiting_download[0].name)}`} animation_delay_ms={300} animation_duration_ms={500}/></h3>}

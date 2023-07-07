@@ -1852,7 +1852,7 @@ class CanvasPixels extends React.PureComponent {
                                     hash: l.hash + "",
                                     name: l.name + "",
                                     hidden: Boolean(l.hidden),
-                                    opacity: parseInt(l.opacity),
+                                    opacity: parseFloat(l.opacity),
                                 });
                             })),
                             _layer_index: parseInt(state._layer_index),
@@ -1879,7 +1879,7 @@ class CanvasPixels extends React.PureComponent {
                             hash: l.hash + "",
                             name: l.name + "",
                             hidden: Boolean(l.hidden),
-                            opacity: parseInt(l.opacity),
+                            opacity: parseFloat(l.opacity),
                         };
                     })),
                     _layer_index: parseInt(sh._layer_index),
@@ -1924,18 +1924,18 @@ class CanvasPixels extends React.PureComponent {
                             _original_image_index: parseInt(state._original_image_index),
                             pxl_width: parseInt(state.pxl_width),
                             pxl_height: parseInt(state.pxl_height),
-                            _pxl_indexes_of_selection: state._pxl_indexes_of_selection.indexes,
+                            _pxl_indexes_of_selection: state._pxl_indexes_of_selection.indexes || state._pxl_indexes_of_selection,
                             _s_pxls: Array.from(state._s_pxls.map(function(a){return Uint16Array.from(a)})),
                             _s_pxl_colors:  Array.from(state._s_pxl_colors.map(function(a){return Uint32Array.from(a)})),
                             _layers: Array.from(state._layers.map(function(l) {
                                 "use strict";
-                                return Object.assign({}, {
+                                return {
                                     id: parseInt(l.id),
                                     hash: l.hash + "",
                                     name: l.name + "",
                                     hidden: Boolean(l.hidden),
-                                    opacity: parseInt(l.opacity),
-                                });
+                                    opacity: parseFloat(l.opacity),
+                                };
                             })),
                             _layer_index: parseInt(state._layer_index),
                             _pencil_mirror_index: parseInt(state._pencil_mirror_index),
@@ -1991,7 +1991,7 @@ class CanvasPixels extends React.PureComponent {
                             hash: l.hash + "",
                             name: l.name + "",
                             hidden: Boolean(l.hidden),
-                            opacity: parseInt(l.opacity),
+                            opacity: parseFloat(l.opacity),
                         };
                     })),
                     _layer_index: parseInt(sh._layer_index),
@@ -2046,7 +2046,7 @@ class CanvasPixels extends React.PureComponent {
                             hash: l.hash + "",
                             name: l.name + "",
                             hidden: Boolean(l.hidden),
-                            opacity: parseInt(l.opacity),
+                            opacity: parseFloat(l.opacity),
                         };
                     })),
                     _layer_index: parseInt(sh._layer_index),
