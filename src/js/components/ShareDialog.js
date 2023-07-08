@@ -305,8 +305,8 @@ class ShareDialog extends React.PureComponent {
         return (
             <div>
                 <Dialog
-                    disablePortal={true}
-                    keepMounted={false}
+                    disablePortal={false}
+                    keepMounted={true}
                     open={open || _keep_open > 0}
                     onClose={(event) => {this.props.onClose(event)}}
                     PaperProps={{style: {background: "none", boxShadow: "none"}}}

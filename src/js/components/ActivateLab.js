@@ -1,7 +1,7 @@
 import React from "react";
 import { withStyles } from "@material-ui/core/styles"
 
-import {Dialog, Button, DialogContent, Typography, DialogActions} from "@material-ui/core";
+import {Dialog} from "@material-ui/core";
 import LabActivate from "../icons/LabActivate";
 import actions from "../actions/utils";
 import RestrictedArea from "../icons/RestrictedArea";
@@ -66,7 +66,6 @@ class ActivateLab extends React.PureComponent {
         super(props);
         this.st4te = {
             classes: props.classes,
-            keepMounted: props.keepMounted || false,
             open: props.open
         };
     };
@@ -138,8 +137,7 @@ class ActivateLab extends React.PureComponent {
 
         const {
             classes,
-            open,
-            keepMounted,
+            open
         } = this.st4te;
 
         return (
@@ -148,8 +146,8 @@ class ActivateLab extends React.PureComponent {
                         className={classes.dialogMobileFullscreen}
                         maxWidth={"xl"}
                         onClose={this.props.onClose}
-                        disablePortal={false}
-                        keepMounted={keepMounted}>
+                        disablePortal={true}
+                        keepMounted={false}>
                     <LabActivate className={classes.activateSVG} style={{height: "min(75vh, 75vw)", width: "min(75vh, 75vw)", margin: "auto"}} onClick={this.props.onClose}/>
                     <video width="480" height="480" style={{cursor: "pointer", transform: "translateZ(10px)", maxWidth: "20%", maxHeight: "20%", position: "fixed", left: "5%", top: "0%", mixBlendMode: "multiply", clipPath: "circle(50% at 50% 50%)"}} autoPlay={open} id="activation-video" onClick={this._resume_video}>
                         <source src="/src/videos/activation.mp4" type="video/mp4"/>

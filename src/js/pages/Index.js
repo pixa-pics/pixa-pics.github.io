@@ -36,7 +36,8 @@ import ActivateLab from "../components/ActivateLab";
 
 const styles = theme => ({
     root: {
-        overflow: "overlay",
+        contain: "size paint style layout",
+        overflow: "hidden",
         height: "100%",
         width: "100vw",
     },
@@ -61,7 +62,8 @@ const styles = theme => ({
     snackbar: {
         "& .MuiSnackbarContent-root	": {
             backgroundColor: theme.palette.primary.actionDarker,
-            zIndex: "9630 !important"
+            zIndex: "9630 !important",
+            contain: "paint style layout"
         }
     },
     snackbarSuccess: {
@@ -135,6 +137,15 @@ class Index extends React.PureComponent {
         };
         this.pathname = "";
         this._page_component = null;
+        this.JAMY = {
+            angry: <JamyAngry className={this.st4te.classes.jamy} />,
+            annoyed: <JamyAnnoyed className={this.st4te.classes.jamy} />,
+            flirty: <JamyFlirty className={this.st4te.classes.jamy} />,
+            happy: <JamyHappy className={this.st4te.classes.jamy} />,
+            sad: <JamySad className={this.st4te.classes.jamy} />,
+            shocked: <JamyShocked className={this.st4te.classes.jamy} />,
+            suspicious: <JamySuspicious className={this.st4te.classes.jamy} />,
+        };
     };
 
     setSt4te(st4te, callback) {
@@ -608,22 +619,10 @@ class Index extends React.PureComponent {
     };
 
     render() {
-
-        const { classes } = this.st4te;
-        const { _snackbar_open, _snackbar_message, _snackbar_auto_hide_duration } = this.st4te;
-        const {  _is_share_dialog_open, _count_presentation_open, _is_activatelab_dialog_open, _presentation_n } = this.st4te;
-        const { _know_if_logged, _loaded_progress_percent, _jamy_state_of_mind } = this.st4te;
+        "use strict";
+        const { classes, _snackbar_open, _snackbar_message, _snackbar_auto_hide_duration, _is_share_dialog_open, _count_presentation_open, _is_activatelab_dialog_open, _presentation_n, _know_if_logged, _loaded_progress_percent, _jamy_state_of_mind } = this.st4te;
         const {_ret, _camo, _bdi, _music_enabled, _jamy_enabled, _language, _know_the_settings} = this.settings;
-
-        const JAMY = {
-            angry: <JamyAngry className={classes.jamy} />,
-            annoyed: <JamyAnnoyed className={classes.jamy} />,
-            flirty: <JamyFlirty className={classes.jamy} />,
-            happy: <JamyHappy className={classes.jamy} />,
-            sad: <JamySad className={classes.jamy} />,
-            shocked: <JamyShocked className={classes.jamy} />,
-            suspicious: <JamySuspicious className={classes.jamy} />,
-        };
+        const JAMY = this.JAMY;
 
         return (
             <React.Fragment>
@@ -649,7 +648,7 @@ class Index extends React.PureComponent {
                         language={_language}/>
                     <Toolbar />
                     <main className={classes.content}>
-                        {_know_the_settings && this._page_component}
+                        {this._page_component}
                     </main>
                 </div>
                 <Snackbar

@@ -792,9 +792,7 @@ class Pixel extends React.PureComponent {
 
     _set_fps_and_xy_elements = () => {
         "use strict";
-        this._request_force_update().then(() => {
-            this.setSt4te({_fps_el: document.getElementById("fps_el"), _xy_el: document.getElementById("xy_el")});
-        });
+        this.setSt4te({_fps_el: document.getElementById("fps_el"), _xy_el: document.getElementById("xy_el")});
     };
 
     _prevent_ctrl_zoom = (e) => {

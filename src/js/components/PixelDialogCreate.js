@@ -349,7 +349,7 @@ class PixelDialogCreate extends React.PureComponent {
                                     {
 
                                         Boolean(Object.keys(pixel_arts).length === 0) ?
-                                            ["/src/images/demo/Beast.jpg", "/src/images/demo/PortraitB.jpg", "/src/images/demo/Illustration.jpg", "/src/images/demo/Cartoon.jpg"].map((u, id) => {
+                                            ["/src/images/demo/Beast.jpg", "/src/images/demo/Portrait.jpg", "/src/images/demo/Picture.jpg", "/src/images/demo/Cartoon.jpg"].map((u, id) => {
 
                                                 return (
                                                     <ImageListItem style={{
