@@ -521,7 +521,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
         Object.keys(this._cache).map((name) => {
 
             this.update_cache_view(name);
-            this._cache_empty[name] = (<List key={"empty-"+name} style={{ willChange: "none", minHeight: "100%", contain: "style layout paint", overflow: "auto", contentVisibility: "hidden", paddingTop: 0}} />);
+            this._cache_empty[name] = (<List key={name} style={{ willChange: "none", minHeight: "100%", contain: "size style layout paint", overflow: "auto", contentVisibility: "hidden", paddingTop: 0}} />);
         });
     };
 
@@ -1043,12 +1043,12 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                                 window.open("https://www.artstation.com/pixapics/store")
                             }}>
                                 <ListItemIcon className={classes.listItemIconBlueBold}>
-                                    <Badge className={classes.styledBadgeConnected} overlap="rectangular" badgeContent="NEW" variant="standard">
+                                    <Badge className={classes.styledBadgeConnected} overlap="rectangular" badgeContent="3+" variant="standard">
                                         <StoreIcon/>
                                     </Badge>
                                 </ListItemIcon>
                                 <ListItemText className={classes.ListItemTextBold}
-                                              primary={"BUY ASSETS"} secondary={"DOWNLOAD THEM NOW"}/>
+                                              primary={"BUY PREMIUM ASSETS"} secondary={"DON'T WAIT ANYMORE"}/>
                             </ListItem>
                         </div>
                         <div className={"image " + classes.listItems}>

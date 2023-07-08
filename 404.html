@@ -207,14 +207,13 @@
                     }
 
                     if(clean){
-                        /*var all_hrefs = new Array(0).concat(_PRE_FILES, _POST_FILES);
+                        var all_hrefs = new Array(0).concat(_PRE_FILES, _POST_FILES);
                         for (i = 0; i < all_hrefs.length; i++) {
-                           ss = all_hrefs[i];
-                           if (ss.endsWith(".js")) {
-                               document.querySelectorAll('script[src$="' + ss + '"]').forEach(function (node) {node.remove();});
-                           }
-                       }*/
-                        document.body.innerText = "";
+                            ss = all_hrefs[i];
+                            if (ss.endsWith(".js")) {
+                                document.querySelectorAll('script[src$="' + ss + '"]').forEach(function (node) {node.remove();});
+                            }
+                        }
                     }
 
                     for (i = 0; i < hrefs.length; i++) {
@@ -232,7 +231,6 @@
                 }
 
                 // This event fires after doc ready state is interactive and before it is complete, it doesn't wait on resources to be loaded
-                document.addEventListener('DOMContentLoaded', function () {resolve(fire_it("LAST"));});
                 document.addEventListener('readystatechange', function () {
 
                     if (document.readyState === "interactive") {fire_it("FIRST");}
@@ -248,6 +246,7 @@
 
         /* TRY INSTALL SERVICE WORKER, FINALLY LOAD JS FILE */
         var _REGISTER_SERVICE_WORKER = function() {
+            _FIRED_IT_STATE = "";
             return new Promise(function(resolve, reject){
                 if ("serviceWorker" in navigator) {
                     navigator.serviceWorker.register("/service-worker.js", {
@@ -268,9 +267,10 @@
         };
 
         var _LISTEN_RELOAD = function(registration) {
-            _FIRED_IT_STATE = "";
-            window.addEventListener("DOMContentLoaded", function () {
-                _REGISTER_SERVICE_WORKER().then(_LISTEN_RELOAD);
+            document.addEventListener('readystatechange', function () {
+                if (document.readyState === "interactive") {
+                    _REGISTER_SERVICE_WORKER().then(_LISTEN_RELOAD);
+                }
             });
         };
 
@@ -322,7 +322,6 @@
 </head>
 <body class="loading">
 <div id="app"></div>
-<!-- Cloudflare Cookieless Analytics -->
 <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "3f18a915cd7d481d94711fdebfa555a2"}'></script>
 </body>
 </html>
