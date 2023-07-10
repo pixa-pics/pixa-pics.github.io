@@ -325,7 +325,7 @@ class PixelDialogCreate extends React.PureComponent {
                                 autoFocus>
                                 UPLOAD
                             </Button>
-                            <Typography component={"h2"} variant={"h6"} style={{marginTop: 16, marginLeft: 24}}>{Boolean(Object.keys(pixel_arts).length === 0) ? <span>How to use it?</span>: <span>Unsaved minima</span>}</Typography>
+                            <Typography component={"h2"} variant={"h6"} style={{marginTop: 16, marginLeft: 24}}>{Boolean(Object.keys(pixel_arts).length === 0) ? <span>Demo projects</span>: <span>Unsaved projects</span>}</Typography>
                             <div
                                 style={{
                                 padding: "8px 24px",
@@ -349,7 +349,7 @@ class PixelDialogCreate extends React.PureComponent {
                                     {
 
                                         Boolean(Object.keys(pixel_arts).length === 0) ?
-                                            ["/src/images/demo/Beast.jpg", "/src/images/demo/Nord.jpg", "/src/images/demo/Portrait.jpg", "/src/images/demo/Cartoon.jpg"].map((u, id) => {
+                                            ["/src/images/demo/Beauties.jpg", "/src/images/demo/Beast.jpg"].map((u, id) => {
 
                                                 return (
                                                     <ImageListItem style={{
