@@ -91,7 +91,6 @@ class PixelDialogCreate extends React.PureComponent {
         super(props);
         this.st4te = {
             classes: props.classes,
-            keepMounted: props.keepMounted || false,
             open: props.open,
             size: props.size,
             pixel_arts: props.pixel_arts,
@@ -129,7 +128,7 @@ class PixelDialogCreate extends React.PureComponent {
                 loop={true}
                 autoplay={true}
                 src="/src/js/lottie/paperplane.json"
-                style={{ transform: "translateZ(10px)", height: '100%', width: '100%', position: "absolute", top: 0, left: 0, zIndex: 0}}/>,
+                style={{ transform: "translateZ(10px)", height: '75%', width: '100%', position: "absolute", top: 0, left: 0, zIndex: 0}}/>,
             _ufo: <Lottie
                 id={"ufo"}
                 loop={true}
@@ -261,7 +260,6 @@ class PixelDialogCreate extends React.PureComponent {
             classes,
             size,
             open,
-            keepMounted,
             pixel_arts,
             theme_day,
             _paperplane,
@@ -276,7 +274,7 @@ class PixelDialogCreate extends React.PureComponent {
                     maxWidth={"xl"}
                     onClose={this.props.onClose}
                     disablePortal={true}
-                    keepMounted={keepMounted}>
+                    keepMounted={false}>
                 <DialogContent>
                     <Typography component={"h2"} variant={"h6"}>Latest artworks</Typography>
                     <div className={classes.dialogContentContainer}>
@@ -294,7 +292,7 @@ class PixelDialogCreate extends React.PureComponent {
                                 fullWidth variant="contained"
                                 color="secondary"
                                 className={_is_ufo ? classes.uploadButtonDesktopUfo: classes.uploadButtonDesktopPaperplane}
-                                autoFocus onClick={this.props.on_upload}>{_is_ufo ? _ufo: _paperplane} <span style={{zIndex: 1, pointerEvents: "none"}}>Let's upload!</span></Button>
+                                autoFocus onClick={this.props.on_upload}>{_is_ufo ? _ufo: _paperplane} <span style={{zIndex: 1, pointerEvents: "none", transform: "translateY(200%)"}}>Let's upload!</span></Button>
                         </div>
                         <div className={classes.rightImagesContainer}>
                             <div className={classes.rightImagesContainer} style={{padding: "8px 24px", position: "relative", overflow: "hidden", boxSizing: "border-box", width: "100%"}}>
@@ -349,7 +347,7 @@ class PixelDialogCreate extends React.PureComponent {
                                     {
 
                                         Boolean(Object.keys(pixel_arts).length === 0) ?
-                                            ["/src/images/demo/Beauties.jpg", "/src/images/demo/Beast.jpg"].map((u, id) => {
+                                            ["/src/images/demo/Beast.jpg",  "/src/images/demo/Skiing.jpg", "/src/images/demo/Man.jpg", "/src/images/demo/Miami.jpg"].map((u, id) => {
 
                                                 return (
                                                     <ImageListItem style={{

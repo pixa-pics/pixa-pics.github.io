@@ -473,6 +473,10 @@ const styles = theme => ({
     },
     ripple: {
         contain: "layout paint size style",
+        pointerEvents: "none",
+        contentVisibility: "auto",
+        mixBlendMode: "dodge",
+        transform: "translateZ(10px)",
         "& > .MuiTouchRipple-rippleVisible": {
             contain: "layout paint size style",
             animation: "MuiTouchRipple-keyframes-enter 175ms cubic-bezier(0.4, 0, 0.2, 1)"
@@ -675,6 +679,8 @@ class Pixel extends React.PureComponent {
             _toolbox_container_ref: null,
             _files_waiting_download: [],
             _time_ago_initiated: false,
+            _fps_el: {},
+            _xy_el: {},
             _settings: JSON.parse(props.settings)
         };
         this.sraf = Object.create(SmartRequestAnimationFrame).init();
@@ -767,8 +773,7 @@ class Pixel extends React.PureComponent {
 
             this.setSt4te({_library: RESSOURCE_PIXELS});
         });
-        
-        this._set_fps_and_xy_elements();
+
         this._set_saved_at_element();
         this._try_load_with_payload(this.st4te.load_with);
     }
@@ -792,7 +797,13 @@ class Pixel extends React.PureComponent {
 
     _set_fps_and_xy_elements = () => {
         "use strict";
-        this.setSt4te({_fps_el: document.getElementById("fps_el"), _xy_el: document.getElementById("xy_el")});
+        setTimeout(() => {
+            if(!this.st4te._less_than_1280w){
+                this.setSt4te({_fps_el: document.getElementById("fps_el"), _xy_el: document.getElementById("xy_el")});
+            }else {
+                this.setSt4te({_fps_el: {}, _xy_el: {}});
+            }
+        }, 1000);
     };
 
     _prevent_ctrl_zoom = (e) => {
@@ -1053,6 +1064,7 @@ class Pixel extends React.PureComponent {
             });
         }else {
 
+            actions.trigger_loading_update(100);
             window.onbeforeunload = function(e) {};
             setTimeout(() => {
                 actions.trigger_snackbar("Huh, we don't store nearly empty file up here, diddy.", 2000);
@@ -1106,14 +1118,10 @@ class Pixel extends React.PureComponent {
             _window_height = window.innerHeight|| documentElement.clientHeight || body.clientHeight;
 
         const _less_than_1280w = Boolean(_window_width < 1280);
-        const update = this.st4te._less_than_1280w !== _less_than_1280w;
         this.setSt4te({_less_than_1280w}, () => {
-            
-            if(update){
-                
-                this._request_force_update();
-               this._set_fps_and_xy_elements();
-            }
+            this._request_force_update(false, false).then(() => {
+                this._set_fps_and_xy_elements();
+            });
         })
     }
 
@@ -2199,63 +2207,28 @@ class Pixel extends React.PureComponent {
     _set_ripple_ref = (element) => {
 
         if(element === null || this.st4te._ripple !== null) {return}
-
-        let new_element = {};
-
-        Object.keys(element).forEach((k) => {
-
-            if(typeof element[k] === "function") {
-
-                new_element[k] = element[k];
-            }
-        });
-
-        this.setSt4te({_ripple: new_element});
+        this.setSt4te({_ripple: element});
     };
 
     _set_canvas_ref = (element) => {
 
         if(element === null || this.st4te._filters.length > 0) {return}
 
-        let new_element = {};
-
-        Object.keys(element).forEach((k) => {
-
-            if(typeof element[k] === "function") {
-
-                new_element[k] = element[k];
-            }
-        });
-
-        this.setSt4te({_canvas: new_element, _filters: new_element.get_filter_names()}, () => {
+        this.setSt4te({_canvas: element, _filters: element.get_filter_names()}, () => {
             this._backup_state();
         });
     };
 
     _handle_position_change = (position) => {
         "use strict";
-        this.setSt4te({_x: position.x, _y: position.y}, () => {
-
-            if(!this.st4te._less_than_1280w && Boolean((this.st4te._xy_el || {}).textContent)){
-
-                const { _x, _y } = this.st4te;
-                let x = _x === -1 ? "out": _x + 1;
-                let y = _y === -1 ? "out": _y + 1;
-
-                let xy_text = ` | X: ${x}, Y: ${y} `;
-                this.st4te._xy_el.textContent = xy_text;
-            }
-        });
+        let x = position.x === -1 ? "out": position.x + 1;
+        let y = position.y === -1 ? "out": position.y + 1;
+        this.st4te._xy_el.textContent = ` | X: ${x}, Y: ${y} `;
     };
 
     _handle_fps_change = (fps) => {
         "use strict";
-        this.setSt4te({_fps: parseInt(fps)}, () => {
-            if(!this.st4te._less_than_1280w && Boolean((this.st4te._fps_el || {}).textContent)){
-                let fps_text = `FPS: ${this.st4te._fps}`;
-                this.st4te._fps_el.textContent = fps_text;
-            }
-        });
+        this.st4te._fps_el.textContent = `FPS: ${fps}`;
     };
 
     _handle_can_undo_redo_change = (_can_undo, _can_redo) => {
@@ -2293,16 +2266,13 @@ class Pixel extends React.PureComponent {
         this.setSt4te({_current_color: color, _hue: h});
     };
 
-    _handle_relevant_action_event = (event, color = "#ffffff", opacity = 0, sound = true) => {
+    _handle_relevant_action_event = (event, color = "#ffffff", opacity = 0) => {
 
         const { _ripple } = this.st4te;
 
         if(Boolean(event) && Boolean(_ripple)) {
 
-            if(sound) {
-
-                actions.trigger_sfx("navigation_selection-complete-celebration");
-            }
+            actions.trigger_sfx("navigation_selection-complete-celebration");
 
             if(opacity !== 0) {
 
