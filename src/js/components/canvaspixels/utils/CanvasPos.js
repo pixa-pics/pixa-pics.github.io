@@ -1,4 +1,5 @@
 const {SIMDopeColor} = require("simdope");
+const ca = require("../../../notoemoji/react/Ca");
 const CanvasPos = {
 
     _get_init_state(pxl_width, pxl_height, default_scale, canvas_wrapper_padding, canvas_wrapper_border_width, perspective) {
@@ -232,6 +233,7 @@ const CanvasPos = {
             up(){},
             down(){},
             middle(){},
+            ripple(){}
         };
 
         let msi = null;
@@ -403,7 +405,7 @@ const CanvasPos = {
                 p = gp(s, szr, p);
                 this.notify_moved(callback_function);
             },
-            set_notifiers: function(callback_function_update = function(){}, callback_function_menu = function(){}, callback_function_move = function(){}, callback_function_up = function(){}, callback_function_down = function(){}, callback_function_middle = function(){}, callback_function_cursor = function(){}) {
+            set_notifiers: function(callback_function_update = function(){}, callback_function_menu = function(){}, callback_function_move = function(){}, callback_function_up = function(){}, callback_function_down = function(){}, callback_function_middle = function(){}, callback_function_cursor = function(){}, callback_function_ripple = function(){}) {
 
                 notifiers = {
                     update: callback_function_update,
@@ -412,7 +414,9 @@ const CanvasPos = {
                     up: callback_function_up,
                     down: callback_function_down,
                     middle: callback_function_middle,
-                    cursor: callback_function_cursor
+                    cursor: callback_function_cursor,
+                    ripple: callback_function_ripple
+
                 };
             },
             notify_moved: function(callback_function) {
@@ -435,6 +439,9 @@ const CanvasPos = {
             },
             notify_down: function(event) {
                 notifiers.down(event);
+            },
+            notify_ripple: function(event) {
+                notifiers.ripple(event);
             },
             notify_middle: function() {
                 notifiers.middle(false, false);
@@ -569,7 +576,6 @@ const CanvasPos = {
                 "use strict";
                 event.preventDefault();
                 event.stopImmediatePropagation();
-                event = ce(event);
 
                 const {canvas_event_target} = s;
                 const pointer_state = this.get_pointer_state();
@@ -612,12 +618,15 @@ const CanvasPos = {
 
                     this.notify_down(event)
                 }
+
+                if(canvas_event_target === "CANVAS_WRAPPER_OVERFLOW"){
+                    this.notify_ripple(event);
+                }
             },
             handle_pointer_up: function(event){
                 "use strict";
                 event.preventDefault();
                 event.stopImmediatePropagation();
-                event = ce(event);
 
                 const {canvas_event_target} = s;
                 let {
@@ -644,7 +653,6 @@ const CanvasPos = {
                 "use strict";
                 event.preventDefault();
                 event.stopImmediatePropagation();
-                event = ce(event);
 
                 const {canvas_event_target} = s;
                 this.compute_canvas_event_target(parseInt(event.pageX), parseInt(event.pageY));

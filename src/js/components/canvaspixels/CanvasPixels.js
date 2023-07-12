@@ -28,6 +28,7 @@ const HISTORY_TIME_GAP = 625;
 import {SetFixed} from "@asaitama/boolean-array";
 
 import React from "react";
+import TouchRipple from "@material-ui/core/ButtonBase/TouchRipple";
 import pool from "../../utils/worker-pool";
 import B64PngCanvas from "../canvaspixels/utils/B64PngCanvas";
 import BMPLayer from "./utils/BMPLayer";
@@ -64,6 +65,7 @@ class CanvasPixels extends React.PureComponent {
             this.sraf.start_timer();
             this.super_master_meta = Object.create(SuperMasterMeta).init(this.super_state, this.super_canvas, this.super_blend, this.canvas_pos, this.color_conversion, this.sraf);
             this.hasnt_been_mount = true;
+            this._ripple = null;
         }
     };
 
@@ -210,7 +212,8 @@ class CanvasPixels extends React.PureComponent {
             this._super_master_meta_handle_canvas_mouse_up,
             this._super_master_meta_handle_canvas_mouse_down,
             this._request_force_update,
-            this.super_state.set_cursor
+            this.super_state.set_cursor,
+            this._function_ripple
         );
         this.canvas_pos.init_speed_interval();
         this.super_state.set_notifiers(
@@ -1342,6 +1345,14 @@ class CanvasPixels extends React.PureComponent {
     };
     _super_master_meta_handle_canvas_mouse_down = (event) => {
         "use strict"; this.super_master_meta._handle_canvas_mouse_down(event);
+    };
+
+    _function_ripple = (event) => {
+        "use strict";
+        this._ripple.start(event);
+        setTimeout(() => {
+            this._ripple.stop(event);
+        }, 175);
     };
 
     _canvas_pos_handle_wheel = (event) => {
@@ -3496,6 +3507,12 @@ class CanvasPixels extends React.PureComponent {
 
     };
 
+    _set_ripple_ref = (element) => {
+
+        if(element === null || this._ripple !== null) {return}
+        this._ripple = element;
+    };
+
     _remove_close_pxl_colors = (pxls = [], pxl_colors  = [], bucket_threshold = null, threshold_steps = null, color_number_bonus = 54, best_color_number = null) => {
 
         const state_bucket_threshold = this.super_state.get_state().bucket_threshold;
@@ -3572,7 +3589,7 @@ class CanvasPixels extends React.PureComponent {
         const padding = canvas_wrapper.padding / device_pixel_ratio * scale.current | 0;
 
         return (
-            <div onContextMenu={function (e){e.preventDefault()}}
+            <div onContextMenu={function (e){e.preventDefault(); e.stopImmediatePropagation();}}
                  ref={this._set_canvas_container_ref} draggable={"false"}
                  style={{zIndex: 11, boxSizing: "border-box", position: "relative", pointerEvents: "none", overflow: "hidden", touchAction: "none", userSelect: "none", display: "block"}}
                  className={className}>
@@ -3687,11 +3704,11 @@ class CanvasPixels extends React.PureComponent {
                         width: "100%",
                         boxSizing: "border-box",
                         touchAction: "none",
-                        pointerEvents: "auto",
+                        pointerEvents: "visible",
                         userSelect: "none",
                         contain: "layout size style paint",
                         zIndex: 10,
-                    }} onContextMenu={function (e){e.preventDefault()}} />
+                    }} onContextMenu={function (e){e.preventDefault(); e.stopImmediatePropagation();}} />
                     {!is_mobile_or_tablet && <div style={{
                         display: "block",
                         zIndex: 1,
@@ -3710,6 +3727,10 @@ class CanvasPixels extends React.PureComponent {
                         touchAction: "none",
                     }}><span>[{(scale.current * screen_zoom_ratio * 100 | 0) / 100}x]</span></div>}
                 </div>
+                <TouchRipple
+                    style={{color: "#050c4c4d"}}
+                    ref={this._set_ripple_ref}
+                    center={false}/>
             </div>
         );
     }

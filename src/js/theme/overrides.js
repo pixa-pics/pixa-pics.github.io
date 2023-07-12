@@ -199,6 +199,10 @@ const overrides = {
                 zIndex: "1",
                 borderRadius: "2px"
             },
+            ".MuiTouchRipple-rippleVisible": {
+                contain: "layout paint size style",
+                animation: "MuiTouchRipple-keyframes-enter 175ms cubic-bezier(0.4, 0, 0.2, 1)"
+            },
             ".MuiAvatar-root": {
                 contain: "paint style layout",
             },

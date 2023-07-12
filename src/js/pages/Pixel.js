@@ -476,11 +476,7 @@ const styles = theme => ({
         pointerEvents: "none",
         contentVisibility: "auto",
         mixBlendMode: "dodge",
-        transform: "translateZ(10px)",
-        "& > .MuiTouchRipple-rippleVisible": {
-            contain: "layout paint size style",
-            animation: "MuiTouchRipple-keyframes-enter 175ms cubic-bezier(0.4, 0, 0.2, 1)"
-        }
+        transform: "translateZ(10px)"
     },
     infoIcon: {
         position: "absolute",
@@ -2282,7 +2278,7 @@ class Pixel extends React.PureComponent {
                     setTimeout(() => {
 
                         _ripple.stop(event);
-                    }, 250);
+                    }, 175);
                 });
             }
         }
@@ -3117,10 +3113,11 @@ class Pixel extends React.PureComponent {
                                     width: 240,
                                     overflowY: "overlay",
                                     contain: "paint style layout",
-                                    willChange: "scroll-position"
+                                    willChange: "scroll-position",
+                                    userSelect: "none"
                                 },
                             }}
-                            onContextMenu={(e) => {e.preventDefault()}}
+                            onContextMenu={(e) => {e.preventDefault(); e.stopImmediatePropagation();}}
                             MenuListProps={{dense: true}}
                             transitionDuration={{enter: 50, exit: 100}}
                             transitionDelay={{enter: 5, exit: 10}}

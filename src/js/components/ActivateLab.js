@@ -146,7 +146,7 @@ class ActivateLab extends React.PureComponent {
                         className={classes.dialogMobileFullscreen}
                         maxWidth={"xl"}
                         onClose={this.props.onClose}
-                        disablePortal={true}
+                        disablePortal={false}
                         keepMounted={false}>
                     <LabActivate className={classes.activateSVG} style={{height: "min(75vh, 75vw)", width: "min(75vh, 75vw)", margin: "auto"}} onClick={this.props.onClose}/>
                     <video width="480" height="480" style={{cursor: "pointer", transform: "translateZ(10px)", maxWidth: "20%", maxHeight: "20%", position: "fixed", left: "5%", top: "0%", mixBlendMode: "multiply", clipPath: "circle(50% at 50% 50%)"}} autoPlay={open} id="activation-video" onClick={this._resume_video}>
