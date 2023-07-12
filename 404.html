@@ -16,10 +16,20 @@
         body.loaded {
             content-visibility: initial;
             background-color: #fafafa;
+            animation-iteration-count: 1 !important;
+            animation-delay: 250ms !important;
+            animation-fill-mode: both !important;
+            animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1) !important;
+            animation-name: ripupblend !important;
+            animation-duration: 1250ms !important;
+        }
+        @keyframes ripupblend {
+            0% { mix-blend-mode: multiply; }
+            100% { mix-blend-mode: initial;  }
         }
         body.loaded::after {
             content: "";
-            content-visibility: auto;
+            content-visibility: visible;
             contain: paint style size layout !important;
             position: fixed;
             width: 100vw;
@@ -47,8 +57,8 @@
         }
         body.loaded > #app {
             contain: paint style layout;
-            content-visibility: visible;
-            position: fixed;
+            content-visibility: auto;
+            position: relative;
             will-change: auto;
             overflow: auto;
         }
@@ -79,11 +89,12 @@
             100% { filter: brightness(1) contrast(1); transform: scale(1.1); }
         }
         body::after {
+            mix-blend-mode: initial;
             content-visibility: auto;
             pointer-events: none;
             contain: size paint style layout;
             content: " ";
-            position: fixed;
+            position: absolute;
             z-index: 9999999;
             -ms-interpolation-mode: nearest-neighbor;
             image-rendering: optimizeSpeed;
@@ -129,6 +140,7 @@
             100% { transform: scale(1.1); }
         }
         body.loading  {
+            mix-blend-mode: multiply;
             font-size: 0 !important;
             content-visibility: visible;
             background-color: #fff;
@@ -144,25 +156,27 @@
         }
         body[datainitiated=true]::after {
             contain: size paint style layout;
+            will-change: transform, filter;
             animation-iteration-count: 1;
-            animation-delay: 5ms;
+            animation-delay: 10ms;
             animation-fill-mode: both;
             animation-timing-function: ease-out;
             animation-name: zoom-out;
-            animation-duration: 75ms;
+            animation-duration: 120ms;
         }
         @keyframes zoom-out {
             0% {
-                transform: translateZ(10px) scale(1);
+                transform: scale(1);
                 filter: opacity(1);
-                content-visibility: auto !important;
+                content-visibility: visible !important;
                 display: initial;
             }
             100% {
-                transform: translateZ(10px) scale(6);
-                filter: opacity(0);
-                content-visibility: hidden !important;
+                transform: scale(6);
+                filter: opacity(0.2);
+                content-visibility: visible !important;
                 display: none;
+                will-change: none;
             }
         }
     </style>

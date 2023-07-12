@@ -2,7 +2,7 @@
 import React, { Suspense } from "react";
 import JSLoader from "../utils/JSLoader";
 import { withStyles } from "@material-ui/core";
-
+import Slide from '@material-ui/core/Slide';
 import Snackbar from "@material-ui/core/Snackbar";
 import IconButton from "@material-ui/core/IconButton";
 import Toolbar from "@material-ui/core/Toolbar";
@@ -652,6 +652,8 @@ class Index extends React.PureComponent {
                     </main>
                 </div>
                 <Snackbar
+                    TransitionComponent={Slide}
+                    TransitionProps={{direction: "down"}}
                     className={classes.snackbar}
                     open={_snackbar_open}
                     anchorOrigin={{

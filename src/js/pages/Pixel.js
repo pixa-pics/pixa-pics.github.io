@@ -3049,6 +3049,153 @@ class Pixel extends React.PureComponent {
             </Drawer>
         );
 
+        const menu = (
+            <Menu
+                className={_is_cursor_fuck_you_active ? classes.contextMenuFuckYouActive: classes.contextMenuFuckYouDisable}
+                PaperProps={{
+                    style: {
+                        maxHeight: 380,
+                        width: 240,
+                        overflowY: "overlay",
+                        contain: "paint style layout",
+                        willChange: "scroll-position",
+                        userSelect: "none"
+                    },
+                }}
+                onContextMenu={(e) => {e.preventDefault(); e.stopImmediatePropagation();}}
+                MenuListProps={{dense: true}}
+                transitionDuration={{enter: 50, exit: 100}}
+                transitionDelay={{enter: 5, exit: 10}}
+                open={_menu_mouse_y !== null}
+                onClose={this._handle_menu_close}
+                keepMounted
+                anchorReference="anchorPosition"
+                anchorPosition={
+                    _menu_mouse_y !== null && _menu_mouse_x !== null
+                        ? { top: _menu_mouse_y, left: _menu_mouse_x }
+                        : { top: 0, left: 0 }
+                }
+            >
+                <span style={{textAlign: "left", padding: "12px 8px", color: "#666"}}>X: {_menu_data.pos_x}, Y: {_menu_data.pos_y}</span>
+                <div style={(_tool === "SET PENCIL MIRROR" || _pencil_mirror_mode !== "NONE") ? {}: {display: "none"}}>
+                    <ListSubheader className={classes.contextMenuSubheader}>Tools</ListSubheader>
+                    <ListItem button divider disabled={_tool === "PENCIL"} onClick={() => {this._set_tool("PENCIL")}}>
+                        <ListItemIcon>
+                            <PencilIcon />
+                        </ListItemIcon>
+                        <ListItemText primary="Pencil" />
+                    </ListItem>
+                    <ListItem button divider disabled={_tool === "PENCIL PERFECT"} onClick={() => {this._set_tool("PENCIL PERFECT")}}>
+                        <ListItemIcon>
+                            <PencilPerfectIcon />
+                        </ListItemIcon>
+                        <ListItemText primary="Pencil perfect" />
+                    </ListItem>
+
+                    <ListSubheader className={classes.contextMenuSubheader}>Mirror mode</ListSubheader>
+                    {
+                        [
+                            {icon: <MirrorIcon />, disabled: _pencil_mirror_mode === "NONE",text: "None", on_click: () => {this._set_pencil_mirror_mode("NONE")}},
+                            {icon: <MirrorIcon />, disabled: _pencil_mirror_mode === "VERTICAL", text: "Vertical", on_click: () => {this._set_pencil_mirror_mode("VERTICAL")}},
+                            {icon: <MirrorIcon />, disabled: _pencil_mirror_mode === "HORIZONTAL", text: "Horizontal", on_click: () => {this._set_pencil_mirror_mode("HORIZONTAL")}},
+                            {icon: <MirrorIcon />, disabled: _pencil_mirror_mode === "BOTH", text: "Both", on_click: () => {this._set_pencil_mirror_mode("BOTH")}},
+                        ].map((item) => {
+
+                            return (
+                                <ListItem key={item.text} button divider disabled={item.disabled} onClick={item.on_click}>
+                                    <ListItemIcon>
+                                        {item.icon}
+                                    </ListItemIcon>
+                                    <ListItemText primary={item.text} />
+                                </ListItem>
+                            );
+
+                        })
+                    }
+                </div>
+
+                <div style={_is_something_selected ? {}: {display: "none"}}>
+                    <ListSubheader className={classes.contextMenuSubheader}>Apply to selection</ListSubheader>
+                    {
+                        [
+                            {icon: <SelectRemoveDifferenceIcon />, text: "Unselect", on_click: () => {_canvas.to_selection_none()}},
+                            {icon: <BucketIcon />, text: "Colorize dynamical", on_click: () => {_canvas.to_selection_changes(_current_color, false)}},
+                            {icon: <SelectColorIcon />, text: "Get average color", on_click: () => {this._get_average_color_of_selection()}},
+                            {icon: <SelectInImageIcon />, text: "Shrink", on_click: () => {_canvas.to_selection_size(-1)}},
+                            {icon: <SelectInImageIcon />, text: "Grow", on_click: () => {_canvas.to_selection_size(1)}},
+                            {icon: <BorderBottomIcon />, text: "Border", on_click: () => {_canvas.to_selection_border()}},
+                            {icon: <BucketIcon />, text: "Bucket", on_click: () => {_canvas.to_selection_bucket()}},
+                            {icon: <SelectInImageIcon />, text: "Crop", on_click: () => {_canvas.to_selection_crop()}},
+                            {icon: <SelectInvertIcon />, text: "Invert", on_click: () => {_canvas.to_selection_invert()}},
+                            {icon: <CopyIcon />, text: "Copy", on_click: () => {_canvas.copy_selection()}},
+                            {icon: <CutIcon />, text: "Cut", on_click: () => {_canvas.cut_selection()}},
+                            {icon: <EraserIcon />, text: "Erase", on_click: () => {_canvas.erase_selection()}},
+                        ].map((item) => {
+
+                            return (
+                                <ListItem key={item.text} button divider onClick={item.on_click}>
+                                    <ListItemIcon>
+                                        {item.icon}
+                                    </ListItemIcon>
+                                    <ListItemText primary={item.text} />
+                                </ListItem>
+                            );
+                        })
+                    }
+                </div>
+                <ListSubheader style={_menu_data.pxl_color === null ? {display: "none"}: {}} className={classes.contextMenuSubheader}>Color</ListSubheader>
+                <ListItem button divider style={_menu_data.pxl_color === null ? {display: "none"}: {}} disabled={_menu_data.pxl_color === _current_color || _menu_data.pxl_color === null} onClick={(event) => {this._set_current_color(_menu_data.pxl_color); this._handle_relevant_action_event(_menu_event, _menu_data.pxl_color, 1, true);}}>
+                    <ListItemIcon>
+                        <SquareIcon style={{ color: _menu_data.pxl_color, background: `repeating-conic-gradient(#80808055 0% 25%, #00000000 0% 50%) 50% / calc(200% / ${_width}) calc(200% / ${_height})`}} />
+                    </ListItemIcon>
+                    <ListItemText primary="Pick color" />
+                </ListItem>
+                <ListItem button divider style={_menu_data.pxl_color === null ? {display: "none"}: {}} disabled={_menu_data.pxl_color === _current_color || _menu_data.pxl_color === null} onClick={(event) => {this._exchange_pixel_colors(_menu_data.pos_x, _menu_data.pos_y, _current_color+""); this._handle_relevant_action_event(_menu_event, _current_color, 1, true);}}>
+                    <ListItemIcon>
+                        <SquareIcon style={{ color: _current_color, background: `repeating-conic-gradient(#80808055 0% 25%, #00000000 0% 50%) 50% / calc(200% / ${_width}) calc(200% / ${_height})`}} />
+                    </ListItemIcon>
+                    <ListItemText primary="Replace color" />
+                </ListItem>
+                <ListSubheader className={classes.contextMenuSubheader}>Effect</ListSubheader>
+                <ListItem button divider onClick={(event) => this._to_auto_medium_more_contrast()}>
+                    <ListItemIcon>
+                        <ContrastCircleIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="Increase contrast" />
+                </ListItem>
+                <ListItem button divider onClick={(event) => this._to_auto_medium_more_saturation()}>
+                    <ListItemIcon>
+                        <ContrastCircleIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="Increase saturation" />
+                </ListItem>
+                <ListItem button divider onClick={(event) => this._handle_edit_drawer_open(null,6)}>
+                    <ListItemIcon>
+                        <ImageFilterMagicIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="Add a filter" />
+                </ListItem>
+                <ListItem button divider onClick={(event) => this._less_colors_stepped(2)}>
+                    <ListItemIcon>
+                        <LessColorIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="Reduce color number" />
+                </ListItem>
+                <ListItem button divider onClick={this._less_colors_auto}>
+                    <ListItemIcon>
+                        <LessColorIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="To auto colors number" />
+                </ListItem>
+                <ListItem button divider onClick={(event) => this._smooth_adjust(1)}>
+                    <ListItemIcon>
+                        <ImageSmoothIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="Smooth a bit" />
+                </ListItem>
+            </Menu>
+        );
+
         return (
             <div style={{height: "100%", position: "relative"}} ref={this._set_root_ref}>
                 <div className={classes.root}>
@@ -3105,179 +3252,38 @@ class Pixel extends React.PureComponent {
                                 fast_drawing={true}
                                 px_per_px={1}/>
                         </Suspense>
-                        <Menu
-                            className={_is_cursor_fuck_you_active ? classes.contextMenuFuckYouActive: classes.contextMenuFuckYouDisable}
-                            PaperProps={{
-                                style: {
-                                    maxHeight: 380,
-                                    width: 240,
-                                    overflowY: "overlay",
-                                    contain: "paint style layout",
-                                    willChange: "scroll-position",
-                                    userSelect: "none"
-                                },
-                            }}
-                            onContextMenu={(e) => {e.preventDefault(); e.stopImmediatePropagation();}}
-                            MenuListProps={{dense: true}}
-                            transitionDuration={{enter: 50, exit: 100}}
-                            transitionDelay={{enter: 5, exit: 10}}
-                            open={_menu_mouse_y !== null}
-                            onClose={this._handle_menu_close}
-                            keepMounted
-                            anchorReference="anchorPosition"
-                            anchorPosition={
-                                _menu_mouse_y !== null && _menu_mouse_x !== null
-                                    ? { top: _menu_mouse_y, left: _menu_mouse_x }
-                                    : { top: 0, left: 0 }
-                            }
-                        >
-                            <span style={{textAlign: "left", padding: "12px 8px", color: "#666"}}>X: {_menu_data.pos_x}, Y: {_menu_data.pos_y}</span>
-                            <div style={(_tool === "SET PENCIL MIRROR" || _pencil_mirror_mode !== "NONE") ? {}: {display: "none"}}>
-                                <ListSubheader className={classes.contextMenuSubheader}>Tools</ListSubheader>
-                                <ListItem button divider disabled={_tool === "PENCIL"} onClick={() => {this._set_tool("PENCIL")}}>
-                                    <ListItemIcon>
-                                        <PencilIcon />
-                                    </ListItemIcon>
-                                    <ListItemText primary="Pencil" />
-                                </ListItem>
-                                <ListItem button divider disabled={_tool === "PENCIL PERFECT"} onClick={() => {this._set_tool("PENCIL PERFECT")}}>
-                                    <ListItemIcon>
-                                        <PencilPerfectIcon />
-                                    </ListItemIcon>
-                                    <ListItemText primary="Pencil perfect" />
-                                </ListItem>
-
-                                <ListSubheader className={classes.contextMenuSubheader}>Mirror mode</ListSubheader>
-                                {
-                                    [
-                                        {icon: <MirrorIcon />, disabled: _pencil_mirror_mode === "NONE",text: "None", on_click: () => {this._set_pencil_mirror_mode("NONE")}},
-                                        {icon: <MirrorIcon />, disabled: _pencil_mirror_mode === "VERTICAL", text: "Vertical", on_click: () => {this._set_pencil_mirror_mode("VERTICAL")}},
-                                        {icon: <MirrorIcon />, disabled: _pencil_mirror_mode === "HORIZONTAL", text: "Horizontal", on_click: () => {this._set_pencil_mirror_mode("HORIZONTAL")}},
-                                        {icon: <MirrorIcon />, disabled: _pencil_mirror_mode === "BOTH", text: "Both", on_click: () => {this._set_pencil_mirror_mode("BOTH")}},
-                                    ].map((item) => {
-
-                                        return (
-                                            <ListItem key={item.text} button divider disabled={item.disabled} onClick={item.on_click}>
-                                                <ListItemIcon>
-                                                    {item.icon}
-                                                </ListItemIcon>
-                                                <ListItemText primary={item.text} />
-                                            </ListItem>
-                                        );
-
-                                    })
-                                }
-                            </div>
-
-                            <div style={_is_something_selected ? {}: {display: "none"}}>
-                                <ListSubheader className={classes.contextMenuSubheader}>Apply to selection</ListSubheader>
-                                {
-                                    [
-                                        {icon: <SelectRemoveDifferenceIcon />, text: "Unselect", on_click: () => {_canvas.to_selection_none()}},
-                                        {icon: <BucketIcon />, text: "Colorize dynamical", on_click: () => {_canvas.to_selection_changes(_current_color, false)}},
-                                        {icon: <SelectColorIcon />, text: "Get average color", on_click: () => {this._get_average_color_of_selection()}},
-                                        {icon: <SelectInImageIcon />, text: "Shrink", on_click: () => {_canvas.to_selection_size(-1)}},
-                                        {icon: <SelectInImageIcon />, text: "Grow", on_click: () => {_canvas.to_selection_size(1)}},
-                                        {icon: <BorderBottomIcon />, text: "Border", on_click: () => {_canvas.to_selection_border()}},
-                                        {icon: <BucketIcon />, text: "Bucket", on_click: () => {_canvas.to_selection_bucket()}},
-                                        {icon: <SelectInImageIcon />, text: "Crop", on_click: () => {_canvas.to_selection_crop()}},
-                                        {icon: <SelectInvertIcon />, text: "Invert", on_click: () => {_canvas.to_selection_invert()}},
-                                        {icon: <CopyIcon />, text: "Copy", on_click: () => {_canvas.copy_selection()}},
-                                        {icon: <CutIcon />, text: "Cut", on_click: () => {_canvas.cut_selection()}},
-                                        {icon: <EraserIcon />, text: "Erase", on_click: () => {_canvas.erase_selection()}},
-                                    ].map((item) => {
-
-                                        return (
-                                            <ListItem key={item.text} button divider onClick={item.on_click}>
-                                                <ListItemIcon>
-                                                    {item.icon}
-                                                </ListItemIcon>
-                                                <ListItemText primary={item.text} />
-                                            </ListItem>
-                                        );
-                                    })
-                                }
-                            </div>
-                            <ListSubheader style={_menu_data.pxl_color === null ? {display: "none"}: {}} className={classes.contextMenuSubheader}>Color</ListSubheader>
-                            <ListItem button divider style={_menu_data.pxl_color === null ? {display: "none"}: {}} disabled={_menu_data.pxl_color === _current_color || _menu_data.pxl_color === null} onClick={(event) => {this._set_current_color(_menu_data.pxl_color); this._handle_relevant_action_event(_menu_event, _menu_data.pxl_color, 1, true);}}>
-                                <ListItemIcon>
-                                    <SquareIcon style={{ color: _menu_data.pxl_color, background: `repeating-conic-gradient(#80808055 0% 25%, #00000000 0% 50%) 50% / calc(200% / ${_width}) calc(200% / ${_height})`}} />
-                                </ListItemIcon>
-                                <ListItemText primary="Pick color" />
-                            </ListItem>
-                            <ListItem button divider style={_menu_data.pxl_color === null ? {display: "none"}: {}} disabled={_menu_data.pxl_color === _current_color || _menu_data.pxl_color === null} onClick={(event) => {this._exchange_pixel_colors(_menu_data.pos_x, _menu_data.pos_y, _current_color+""); this._handle_relevant_action_event(_menu_event, _current_color, 1, true);}}>
-                                <ListItemIcon>
-                                    <SquareIcon style={{ color: _current_color, background: `repeating-conic-gradient(#80808055 0% 25%, #00000000 0% 50%) 50% / calc(200% / ${_width}) calc(200% / ${_height})`}} />
-                                </ListItemIcon>
-                                <ListItemText primary="Replace color" />
-                            </ListItem>
-                            <ListSubheader className={classes.contextMenuSubheader}>Effect</ListSubheader>
-                            <ListItem button divider onClick={(event) => this._to_auto_medium_more_contrast()}>
-                                <ListItemIcon>
-                                    <ContrastCircleIcon />
-                                </ListItemIcon>
-                                <ListItemText primary="Increase contrast" />
-                            </ListItem>
-                            <ListItem button divider onClick={(event) => this._to_auto_medium_more_saturation()}>
-                                <ListItemIcon>
-                                    <ContrastCircleIcon />
-                                </ListItemIcon>
-                                <ListItemText primary="Increase saturation" />
-                            </ListItem>
-                            <ListItem button divider onClick={(event) => this._handle_edit_drawer_open(null,6)}>
-                                <ListItemIcon>
-                                    <ImageFilterMagicIcon />
-                                </ListItemIcon>
-                                <ListItemText primary="Add a filter" />
-                            </ListItem>
-                            <ListItem button divider onClick={(event) => this._less_colors_stepped(2)}>
-                                <ListItemIcon>
-                                    <LessColorIcon />
-                                </ListItemIcon>
-                                <ListItemText primary="Reduce color number" />
-                            </ListItem>
-                            <ListItem button divider onClick={this._less_colors_auto}>
-                                <ListItemIcon>
-                                    <LessColorIcon />
-                                </ListItemIcon>
-                                <ListItemText primary="To auto colors number" />
-                            </ListItem>
-                            <ListItem button divider onClick={(event) => this._smooth_adjust(1)}>
-                                <ListItemIcon>
-                                    <ImageSmoothIcon />
-                                </ListItemIcon>
-                                <ListItemText primary="Smooth a bit" />
-                            </ListItem>
-                        </Menu>
                         {drawer_desktop}
+                        {menu}
                     </div>
                 </div>
 
-                <IconButton className={classes.perspectiveButton} color={"primary"} size={"small"} onClick={this._toggle_perspective}>
-                    {_perspective ? <PerspectiveOff />: <PerspectiveOn />}
-                </IconButton>
+                <div>
+                    <IconButton className={classes.perspectiveButton} color={"primary"} size={"small"} onClick={this._toggle_perspective}>
+                        {_perspective ? <PerspectiveOff />: <PerspectiveOn />}
+                    </IconButton>
 
-                <Button className={classes.saveButton} variant={"text"} color={"primary"} onClick={this._backup_state}>
-                    <span id={"saved_at"}>?</span> <SaveIcon/> {_kb < 0.5 ? "?": Math.round(_kb * 10) / 10} kB
-                </Button>
+                    <Button className={classes.saveButton} variant={"text"} color={"primary"} onClick={this._backup_state}>
+                        <span id={"saved_at"}>?</span> <SaveIcon/> {_kb < 0.5 ? "?": Math.round(_kb * 10) / 10} kB
+                    </Button>
 
-                <Button disabled={!_is_image_import_mode} className={classes.confirmImportButton} color={"primary"} size={"small"} onClick={() => {_is_image_import_mode ? _canvas.confirm_import(): this._import_image_library()}}>
-                    <FileImportIcon/> {_is_image_import_mode ? "OK": "IMport"}
-                </Button>
+                    <Button disabled={!_is_image_import_mode} className={classes.confirmImportButton} color={"primary"} size={"small"} onClick={() => {_is_image_import_mode ? _canvas.confirm_import(): this._import_image_library()}}>
+                        <FileImportIcon/> {_is_image_import_mode ? "OK": "IMport"}
+                    </Button>
 
-                <IconButton className={classes.zoomOutButton} color={"primary"} size={"small"} onClick={() => {_canvas.zoom_out()}}>
-                    <ZoomOut/>
-                </IconButton>
-                <IconButton className={classes.zoomInButton} color={"primary"} size={"small"} onClick={() => {_canvas.zoom_in()}}>
-                    <ZoomIn/>
-                </IconButton>
+                    <IconButton className={classes.zoomOutButton} color={"primary"} size={"small"} onClick={() => {_canvas.zoom_out()}}>
+                        <ZoomOut/>
+                    </IconButton>
+                    <IconButton className={classes.zoomInButton} color={"primary"} size={"small"} onClick={() => {_canvas.zoom_in()}}>
+                        <ZoomIn/>
+                    </IconButton>
 
-                <Button disabled={!_can_redo} variant={"text"} color={"primary"} size={"small"} className={classes.redoButton} onClick={(event) => {this._redo()}}>
-                    {`${-_can_redo || ""} Redo`} <ChangeHistoryOutlined style={{transition: "ease-out 225ms transform 25m", transform: `rotate(+${_can_redo*360+90}deg)`}}/>
-                </Button>
-                <Button disabled={!_can_undo} variant={"text"} color={"primary"} size={"small"} className={classes.undoButton} onClick={(event) => {this._undo()}}>
-                    <ChangeHistoryOutlined style={{transition: "ease-out 225ms transform 25ms", transform: `rotate(-${_can_undo*360+90}deg)`}}/>{`${+_can_undo || ""} Undo`}
-                </Button>
+                    <Button disabled={!_can_redo} variant={"text"} color={"primary"} size={"small"} className={classes.redoButton} onClick={(event) => {this._redo()}}>
+                        {`${-_can_redo || ""} Redo`} <ChangeHistoryOutlined style={{transition: "ease-out 225ms transform 25m", transform: `rotate(+${_can_redo*360+90}deg)`}}/>
+                    </Button>
+                    <Button disabled={!_can_undo} variant={"text"} color={"primary"} size={"small"} className={classes.undoButton} onClick={(event) => {this._undo()}}>
+                        <ChangeHistoryOutlined style={{transition: "ease-out 225ms transform 25ms", transform: `rotate(-${_can_undo*360+90}deg)`}}/>{`${+_can_undo || ""} Undo`}
+                    </Button>
+                </div>
 
                 {drawer_mobile}
 
@@ -3299,70 +3305,69 @@ class Pixel extends React.PureComponent {
                     </Tabs>
                 </div>}
 
-                <ImageFileDialog
-                    keepMounted={false}
-                    open={_library_dialog_open}
-                    object={_library}
-                    onClose={this._close_library}
-                    onSelectImage={this._from_library}
-                />
+                <div>
+                    <ImageFileDialog
+                        keepMounted={false}
+                        open={_library_dialog_open}
+                        object={_library}
+                        onClose={this._close_library}
+                        onSelectImage={this._from_library}
+                    />
+                    <PixelDialogText
+                        keepMounted={false}
+                        open={_text_dialog_open}
+                        onClose={this._close_text}
+                        onSuccess={this._draw_text}
+                    />
+                    <PixelDialogCreate keepMounted={false}
+                                       theme_day={_settings._theme_day}
+                                       open={_is_pixel_dialog_create_open}
+                                       pixel_arts={_time_ago_initiated ? _attachment_previews: {}}
+                                       size={_import_size}
+                                       on_import_size_change={this._set_import_size}
+                                       on_pixel_art_delete={this._delete_unsaved_pixel_art}
+                                       import_JSON_state={this._handle_import_json_state_id}
+                                       on_upload={this._handle_file_upload}
+                                       onClose={this._handle_pixel_dialog_create_close}/>
 
-                <PixelDialogText
-                    keepMounted={false}
-                    open={_text_dialog_open}
-                    onClose={this._close_text}
-                    onSuccess={this._draw_text}
-                />
+                    <TouchRipple
+                        className={classes.ripple}
+                        ref={this._set_ripple_ref}
+                        center={false}
+                        style={{color: _ripple_color, opacity: _ripple_opacity, position: "fixed", width: "100%", height: "100%"}}/>
 
-
-                <PixelDialogCreate keepMounted={false}
-                                   theme_day={_settings._theme_day}
-                                   open={_is_pixel_dialog_create_open}
-                                   pixel_arts={_time_ago_initiated ? _attachment_previews: {}}
-                                   size={_import_size}
-                                   on_import_size_change={this._set_import_size}
-                                   on_pixel_art_delete={this._delete_unsaved_pixel_art}
-                                   import_JSON_state={this._handle_import_json_state_id}
-                                   on_upload={this._handle_file_upload}
-                                   onClose={this._handle_pixel_dialog_create_close}/>
-
-                <TouchRipple
-                    className={classes.ripple}
-                    ref={this._set_ripple_ref}
-                    center={false}
-                    style={{color: _ripple_color, opacity: _ripple_opacity, position: "fixed", width: "100%", height: "100%"}}/>
-
-                <Backdrop onDrag={this._handle_file_upload} className={classes.backdrop} open={_loading || _files_waiting_download.length > 0 || (_drag_file + 1000 > Date.now())} onClick={this._continue_download}>
-                    <div className={classes.backdropTextContent} style={{ fontFamily: `"Jura"`, textTransform: "uppercase", cursor: "pointer"}}>
-                        {!_drag_file && Boolean(_loading || _files_waiting_download.length > 0) && <h1><ShufflingSpanText key={_loading_process || _loading} text={_loading_process === "browser" ? "Laboratory in DANGER!": "LABORATORY PROCESSING"} animation_delay_ms={0} animation_duration_ms={200}/></h1>}
-                        {!_drag_file && _files_waiting_download.length > 0 && <h3><ShufflingSpanText key={_files_waiting_download[0].name} text={`ACTION REQUIRED... ${String(_files_waiting_download[0].name)}`} animation_delay_ms={300} animation_duration_ms={500}/></h3>}
-                        {!_drag_file && _files_waiting_download.length > 0 && <div><img src={"/src/images/labostration/DOWNLOAD.svg"} style={{width: "min(75vw, 75vh)"}}/></div>}
-                        {!_drag_file && _files_waiting_download.length > 0 && <h4><ShufflingSpanText pre="[... " app=" ...]" style={{textShadow: "0px 0px 16px white"}} text={"CLICK ON THE SCREEN TO CONTINUE DOWNLOAD!"} animation_delay_ms={is_mobile_or_tablet ? 5000: 2500} animation_duration_ms={500}/></h4>}
-                        {!_drag_file && _files_waiting_download.length === 0 && _loading && _loading_process === "browser" && <h3><ShufflingSpanText text={"Doesn't feel like home for our dear code here."} animation_delay_ms={300} animation_duration_ms={500}/></h3>}
-                        {!_drag_file && _files_waiting_download.length === 0 && _loading  && _loading_process === "browser" && <h4><ShufflingSpanText pre="[... " app=" ...]" text={"It can take a while, please download an advanced browser."} animation_delay_ms={is_mobile_or_tablet ? 5000: 2500} animation_duration_ms={500}/></h4>}
-                        {!_drag_file && _files_waiting_download.length === 0 && _loading  && _loading_process === "image_ai" && <h3><ShufflingSpanText text={"AI processing your image"} animation_delay_ms={300} animation_duration_ms={500}/></h3>}
-                        { _drag_file && <div><img src="/src/images/labostration/ABDUCTION.svg" style={{width: "min(75vw, 75vh)"}}/></div>}
-                        { _drag_file && <h4><ShufflingSpanText pre="[... " app=" ...]" text={"Drop the file to the UFO."} animation_delay_ms={is_mobile_or_tablet ? 5000: 2500} animation_duration_ms={500}/></h4>}
-                        { _drag_file && <h3><ShufflingSpanText text={"Ready for a new image abduction?"} animation_delay_ms={300} animation_duration_ms={500}/></h3>}
-                        {!_drag_file && _files_waiting_download.length === 0 && _loading  && _loading_process === "image_ai" && <div><img src="/src/images/labostration/MOLECULE.svg" style={{width: "min(75vw, 75vh)"}}/></div>}
-                        {!_drag_file && _files_waiting_download.length === 0 && _loading  && _loading_process === "image_ai" && <h4><ShufflingSpanText pre="[... " app=" ...]" text={"It can take a while, please wait ~10sec."} animation_delay_ms={is_mobile_or_tablet ? 5000: 2500} animation_duration_ms={500}/></h4>}
-                        {!_drag_file && _files_waiting_download.length === 0 && _loading  && _loading_process === "image_preload" && <h3><ShufflingSpanText text={"Preparing laboratory"} animation_delay_ms={300} animation_duration_ms={500}/></h3>}
-                        {!_drag_file && _files_waiting_download.length === 0 && _loading  && _loading_process === "image_preload" && <div><img src="/src/images/labostration/SCIENCE.svg" style={{width: "min(75vw, 75vh)"}}/></div>}
-                        {!_drag_file && _files_waiting_download.length === 0 && _loading  && _loading_process === "image_preload" && <h4><ShufflingSpanText pre="[... " app=" ...]" text={`It can take a while, please wait ~${parseInt(parseFloat(_import_size / 100) * 3) * (is_mobile_or_tablet ? 3: 1)}sec.`} animation_delay_ms={is_mobile_or_tablet ? 5000: 2500} animation_duration_ms={500}/></h4>}
-                        {!_drag_file && _files_waiting_download.length === 0 && _loading  && _loading_process === "image_load" && <h3><ShufflingSpanText text={"Abducting your image"} animation_delay_ms={300} animation_duration_ms={500}/></h3>}
-                        {!_drag_file && _files_waiting_download.length === 0 && _loading  && _loading_process === "image_load" && <div><img src="/src/images/labostration/ABDUCTION.svg" style={{width: "min(75vw, 75vh)"}}/></div>}
-                        {!_drag_file && _files_waiting_download.length === 0 && _loading  && _loading_process === "image_load" && <h4><ShufflingSpanText pre="[... " app=" ...]" text={`It can take a while, please wait ~${parseInt(parseFloat(_import_size / 100) * 4) * (is_mobile_or_tablet ? 3: 1)}sec.`} animation_delay_ms={is_mobile_or_tablet ? 5000: 2500} animation_duration_ms={500}/></h4>}
-                        {!_drag_file && _files_waiting_download.length === 0 && _loading  && _loading_process === "image_render" && <div><img src="/src/images/labostration/COMPUTING.svg" style={{width: "min(75vw, 75vh)"}}/></div>}
-                        {!_drag_file && _files_waiting_download.length === 0 && _loading  && _loading_process === "image_render" && <h3><ShufflingSpanText text={"Atomic rendering in process"} animation_delay_ms={300} animation_duration_ms={500}/></h3>}
-                        {!_drag_file && _files_waiting_download.length === 0 && _loading  && _loading_process === "image_render" && <h4><ShufflingSpanText pre="[... " app=" ...]" text={"It can take a while, please wait ~14sec."} animation_delay_ms={is_mobile_or_tablet ? 5000: 2500} animation_duration_ms={500}/></h4>}
-                        {!_drag_file && _files_waiting_download.length === 0 && _loading  && _loading_process === "less_color" && <h3><ShufflingSpanText text={"Coupling few color DNA"} animation_delay_ms={300} animation_duration_ms={500}/></h3>}
-                        {!_drag_file && _files_waiting_download.length === 0 && _loading  && _loading_process === "less_color" && <div><img src="/src/images/labostration/GENOMA.svg" style={{width: "min(75vw, 75vh)"}}/></div>}
-                        {!_drag_file && _files_waiting_download.length === 0 && _loading  && _loading_process === "less_color" && <h4><ShufflingSpanText pre="[... " app=" ...]" text={"It can take a while, please wait ~4sec."} animation_delay_ms={is_mobile_or_tablet ? 5000: 2500} animation_duration_ms={500}/></h4>}
-                        {!_drag_file && _files_waiting_download.length === 0 && _loading  && _loading_process === "less_color_auto" && <h3><ShufflingSpanText text={"Coupling the DNA of many color"} animation_delay_ms={500} animation_duration_ms={500}/></h3>}
-                        {!_drag_file && _files_waiting_download.length === 0 && _loading  && _loading_process === "less_color_auto" && <div><img src="/src/images/labostration/GENOMA.svg" style={{width: "min(75vw, 75vh)"}}/></div>}
-                        {!_drag_file && _files_waiting_download.length === 0 && _loading  && _loading_process === "less_color_auto" && <h4><ShufflingSpanText pre="[... " app=" ...]" text={"It can take a while, please wait ~7sec."} animation_delay_ms={is_mobile_or_tablet ? 5000: 2500} animation_duration_ms={500}/></h4>}
-                    </div>
-                </Backdrop>
+                    <Backdrop onDrag={this._handle_file_upload} className={classes.backdrop} open={_loading || _files_waiting_download.length > 0 || (_drag_file + 1000 > Date.now())} onClick={this._continue_download}>
+                        <div className={classes.backdropTextContent} style={{ fontFamily: `"Jura"`, textTransform: "uppercase", cursor: "pointer"}}>
+                            {!_drag_file && Boolean(_loading || _files_waiting_download.length > 0) && <h1><ShufflingSpanText key={_loading_process || _loading} text={_loading_process === "browser" ? "Laboratory in DANGER!": "LABORATORY PROCESSING"} animation_delay_ms={0} animation_duration_ms={200}/></h1>}
+                            {!_drag_file && _files_waiting_download.length > 0 && <h3><ShufflingSpanText key={_files_waiting_download[0].name} text={`ACTION REQUIRED... ${String(_files_waiting_download[0].name)}`} animation_delay_ms={300} animation_duration_ms={500}/></h3>}
+                            {!_drag_file && _files_waiting_download.length > 0 && <div><img src={"/src/images/labostration/DOWNLOAD.svg"} style={{width: "min(75vw, 75vh)"}}/></div>}
+                            {!_drag_file && _files_waiting_download.length > 0 && <h4><ShufflingSpanText pre="[... " app=" ...]" style={{textShadow: "0px 0px 16px white"}} text={"CLICK ON THE SCREEN TO CONTINUE DOWNLOAD!"} animation_delay_ms={is_mobile_or_tablet ? 5000: 2500} animation_duration_ms={500}/></h4>}
+                            {!_drag_file && _files_waiting_download.length === 0 && _loading && _loading_process === "browser" && <h3><ShufflingSpanText text={"Doesn't feel like home for our dear code here."} animation_delay_ms={300} animation_duration_ms={500}/></h3>}
+                            {!_drag_file && _files_waiting_download.length === 0 && _loading  && _loading_process === "browser" && <h4><ShufflingSpanText pre="[... " app=" ...]" text={"It can take a while, please download an advanced browser."} animation_delay_ms={is_mobile_or_tablet ? 5000: 2500} animation_duration_ms={500}/></h4>}
+                            {!_drag_file && _files_waiting_download.length === 0 && _loading  && _loading_process === "image_ai" && <h3><ShufflingSpanText text={"AI processing your image"} animation_delay_ms={300} animation_duration_ms={500}/></h3>}
+                            { _drag_file && <div><img src="/src/images/labostration/ABDUCTION.svg" style={{width: "min(75vw, 75vh)"}}/></div>}
+                            { _drag_file && <h4><ShufflingSpanText pre="[... " app=" ...]" text={"Drop the file to the UFO."} animation_delay_ms={is_mobile_or_tablet ? 5000: 2500} animation_duration_ms={500}/></h4>}
+                            { _drag_file && <h3><ShufflingSpanText text={"Ready for a new image abduction?"} animation_delay_ms={300} animation_duration_ms={500}/></h3>}
+                            {!_drag_file && _files_waiting_download.length === 0 && _loading  && _loading_process === "image_ai" && <div><img src="/src/images/labostration/MOLECULE.svg" style={{width: "min(75vw, 75vh)"}}/></div>}
+                            {!_drag_file && _files_waiting_download.length === 0 && _loading  && _loading_process === "image_ai" && <h4><ShufflingSpanText pre="[... " app=" ...]" text={"It can take a while, please wait ~10sec."} animation_delay_ms={is_mobile_or_tablet ? 5000: 2500} animation_duration_ms={500}/></h4>}
+                            {!_drag_file && _files_waiting_download.length === 0 && _loading  && _loading_process === "image_preload" && <h3><ShufflingSpanText text={"Preparing laboratory"} animation_delay_ms={300} animation_duration_ms={500}/></h3>}
+                            {!_drag_file && _files_waiting_download.length === 0 && _loading  && _loading_process === "image_preload" && <div><img src="/src/images/labostration/SCIENCE.svg" style={{width: "min(75vw, 75vh)"}}/></div>}
+                            {!_drag_file && _files_waiting_download.length === 0 && _loading  && _loading_process === "image_preload" && <h4><ShufflingSpanText pre="[... " app=" ...]" text={`It can take a while, please wait ~${parseInt(parseFloat(_import_size / 100) * 3) * (is_mobile_or_tablet ? 3: 1)}sec.`} animation_delay_ms={is_mobile_or_tablet ? 5000: 2500} animation_duration_ms={500}/></h4>}
+                            {!_drag_file && _files_waiting_download.length === 0 && _loading  && _loading_process === "image_load" && <h3><ShufflingSpanText text={"Abducting your image"} animation_delay_ms={300} animation_duration_ms={500}/></h3>}
+                            {!_drag_file && _files_waiting_download.length === 0 && _loading  && _loading_process === "image_load" && <div><img src="/src/images/labostration/ABDUCTION.svg" style={{width: "min(75vw, 75vh)"}}/></div>}
+                            {!_drag_file && _files_waiting_download.length === 0 && _loading  && _loading_process === "image_load" && <h4><ShufflingSpanText pre="[... " app=" ...]" text={`It can take a while, please wait ~${parseInt(parseFloat(_import_size / 100) * 4) * (is_mobile_or_tablet ? 3: 1)}sec.`} animation_delay_ms={is_mobile_or_tablet ? 5000: 2500} animation_duration_ms={500}/></h4>}
+                            {!_drag_file && _files_waiting_download.length === 0 && _loading  && _loading_process === "image_render" && <div><img src="/src/images/labostration/COMPUTING.svg" style={{width: "min(75vw, 75vh)"}}/></div>}
+                            {!_drag_file && _files_waiting_download.length === 0 && _loading  && _loading_process === "image_render" && <h3><ShufflingSpanText text={"Atomic rendering in process"} animation_delay_ms={300} animation_duration_ms={500}/></h3>}
+                            {!_drag_file && _files_waiting_download.length === 0 && _loading  && _loading_process === "image_render" && <h4><ShufflingSpanText pre="[... " app=" ...]" text={"It can take a while, please wait ~14sec."} animation_delay_ms={is_mobile_or_tablet ? 5000: 2500} animation_duration_ms={500}/></h4>}
+                            {!_drag_file && _files_waiting_download.length === 0 && _loading  && _loading_process === "less_color" && <h3><ShufflingSpanText text={"Coupling few color DNA"} animation_delay_ms={300} animation_duration_ms={500}/></h3>}
+                            {!_drag_file && _files_waiting_download.length === 0 && _loading  && _loading_process === "less_color" && <div><img src="/src/images/labostration/GENOMA.svg" style={{width: "min(75vw, 75vh)"}}/></div>}
+                            {!_drag_file && _files_waiting_download.length === 0 && _loading  && _loading_process === "less_color" && <h4><ShufflingSpanText pre="[... " app=" ...]" text={"It can take a while, please wait ~4sec."} animation_delay_ms={is_mobile_or_tablet ? 5000: 2500} animation_duration_ms={500}/></h4>}
+                            {!_drag_file && _files_waiting_download.length === 0 && _loading  && _loading_process === "less_color_auto" && <h3><ShufflingSpanText text={"Coupling the DNA of many color"} animation_delay_ms={500} animation_duration_ms={500}/></h3>}
+                            {!_drag_file && _files_waiting_download.length === 0 && _loading  && _loading_process === "less_color_auto" && <div><img src="/src/images/labostration/GENOMA.svg" style={{width: "min(75vw, 75vh)"}}/></div>}
+                            {!_drag_file && _files_waiting_download.length === 0 && _loading  && _loading_process === "less_color_auto" && <h4><ShufflingSpanText pre="[... " app=" ...]" text={"It can take a while, please wait ~7sec."} animation_delay_ms={is_mobile_or_tablet ? 5000: 2500} animation_duration_ms={500}/></h4>}
+                        </div>
+                    </Backdrop>
+                </div>
             </div>
         );
     }
