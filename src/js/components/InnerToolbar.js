@@ -24,11 +24,12 @@ const styles = theme => ({
     glow: {
         animationFillMode: "both",
         animationName: "$glow",
-        animationDuration: "777ms",
+        animationDuration: "1000ms",
         animationTimingFunction: "linear",
         animationDirection: "alternate",
         animationIterationCount: "infinite",
         animationDelay: "75ms",
+        willChange: "filter"
     },
     "@keyframes glow": {
         "0%": { filter: "drop-shadow(0px 0px 2px currentColor) drop-shadow(0px 0px 5px currentColor)"},
@@ -41,9 +42,11 @@ const styles = theme => ({
         display: "flex",
         position: "relative",
         width: "100%",
+        contain: "style layout paint"
     },
     innerToolbar: {
         contain: "size style layout paint",
+        overflow: "hidden",
         cursor: "pointer",
         height: 40,
         lineHeight: "40px",
@@ -51,7 +54,6 @@ const styles = theme => ({
         display: "flex",
         position: "relative",
         width: "100%",
-        overflow: "auto",
         textTransform: "none",
         textAlign: "inherit",
         padding: 0,
@@ -81,6 +83,7 @@ const styles = theme => ({
             animationDirection: "alternate",
             animationIterationCount: "infinite",
             animationDelay: "75ms",
+            willChange: "transform"
         },
         backColor: "rgba(108,114,183,0.18)",
         //boxShadow: "inset 0px 0px 6px #475db3ab, inset 0px 0px 24px #838fdc61, inset 0px 0px 48px #cbd4ff40",
@@ -447,7 +450,7 @@ class InnerToolbar extends React.PureComponent {
             return element === "" ? null: <Fade key={index} in={true} timeout={index*125}><a onClick={() => {this._go_to(link_to)}} className={classes.link} >&nbsp;►&nbsp;{element}</a></Fade>;
         }): null;
 
-        const usrnm = (know_if_logged ? logged_account ? logged_account.name: t( "components.inner_toolbar.guest"): "");
+        const usrnm = (know_if_logged ? logged_account ? logged_account.name: "https://pixa.pics/": "https://pixa.pics/");
 
         const tip_items = _is_info_bar_active ? [
             <a key="tip-contrast"
