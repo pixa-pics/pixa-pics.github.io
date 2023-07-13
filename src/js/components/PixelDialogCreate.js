@@ -273,7 +273,7 @@ class PixelDialogCreate extends React.PureComponent {
                     className={classes.dialogMobileFullscreen}
                     maxWidth={"xl"}
                     onClose={this.props.onClose}
-                    disablePortal={true}
+                    disablePortal={false}
                     keepMounted={false}>
                 <DialogContent>
                     <Typography component={"h2"} variant={"h6"}>Latest artworks</Typography>

@@ -136,6 +136,7 @@ const styles = theme => ({
         position: "absolute",
         display: "relative",
         cursor: "pointer",
+        pointerEvents: "all",
         "& > img, & > h2": {
             contain: "paint style layout",
             width: "100%",
@@ -191,7 +192,7 @@ const styles = theme => ({
         animationFillMode: "both",
         animationName: "$movingbackground",
         animationDuration: "16s",
-        animationTimingFunction: "ease.in-out",
+        animationTimingFunction: "ease-in-out",
         animationDirection: "alternate",
         animationIterationCount: "infinite",
         animationDelay: "75ms",
@@ -552,6 +553,7 @@ class Home extends React.PureComponent {
                          overflow: "hidden",
                          position: "relative",
                          display: "flex",
+                         backgroundSize: "cover",
                          backgroundColor: "#010728bf",
                          backgroundImage:`radial-gradient(rgb(2 1 15 / 44%) 14%, rgb(1 2 16 / 88%) 57%, rgb(1, 3, 16) 75%), url(/src/images/illusion.jpg)`,
                          backgroundBlendMode: "luminosity",
@@ -569,7 +571,7 @@ class Home extends React.PureComponent {
                                 <div className={classes.backgroundImageWrapper} onClick={() => {this._go_to_editor(_image_name_infographics.replace(".svg", ".png"), true)}}>
                                     <img src={_image_name_infographics}
                                          alt="Image demo."
-                                         style={first_image ? {aspectRatio: "1/1"}: {}}
+                                         style={{userSelect: "none"}}
                                          className={(first_image ? " pixelated ": _image_name_infographics.endsWith(".png") ? "pixelated ": " speed ").toString()}
                                     />
                                 </div>

@@ -2846,6 +2846,7 @@ class Pixel extends React.PureComponent {
                     ModalProps={{disablePortal: true, BackdropProps:{classes: {root: classes.drawerModalBackdropRoot}}}}
                     variant="temporary"
                     anchor="bottom"
+                    style={{pointerEvents: "all"}}
                 >
                     <div className={classes.mobileintrovideowrapper}>
                         <video className={classes.mobileintrovideo} id="labintro-video" width="56" height="56" onClick={this._resume_video} style={{aspectRatio: "1", transform: "translateZ(10px)"}}>
@@ -2943,7 +2944,7 @@ class Pixel extends React.PureComponent {
                     paper: classes.drawerPaper,
                 }}
             >
-                <div style={{display: "contents"}}>
+                <div style={{display: "contents", pointerEvents: "all"}}>
                     <div style={{boxShadow: "rgb(0 0 0 / 20%) 0px 2px 4px -1px, rgb(0 0 0 / 14%) 0px 4px 5px 0px, rgb(0 0 0 / 12%) 0px 1px 10px 0px", zIndex: 1}}>
                         <div className={classes.drawerHeader}>
                             <div className={classes.desktopintrovideowrapper}>
@@ -3059,7 +3060,8 @@ class Pixel extends React.PureComponent {
                         overflowY: "overlay",
                         contain: "paint style layout",
                         willChange: "scroll-position",
-                        userSelect: "none"
+                        userSelect: "none",
+                        pointerEvents: "all"
                     },
                 }}
                 onContextMenu={(e) => {e.preventDefault(); e.stopImmediatePropagation();}}
@@ -3197,7 +3199,7 @@ class Pixel extends React.PureComponent {
         );
 
         return (
-            <div style={{height: "100%", position: "relative"}} ref={this._set_root_ref}>
+            <div style={{height: "100%", position: "relative", pointerEvents: "none",  userSelect: "none"}} ref={this._set_root_ref}>
                 <div className={classes.root}>
                     <div className={classes.contentInner} style={{
                         backgroundColor: "#f7f7f7",
@@ -3257,7 +3259,7 @@ class Pixel extends React.PureComponent {
                     </div>
                 </div>
 
-                <div>
+                <div style={{pointerEvents: "all"}}>
                     <IconButton className={classes.perspectiveButton} color={"primary"} size={"small"} onClick={this._toggle_perspective}>
                         {_perspective ? <PerspectiveOff />: <PerspectiveOn />}
                     </IconButton>
@@ -3288,7 +3290,7 @@ class Pixel extends React.PureComponent {
                 {drawer_mobile}
 
                 {_less_than_1280w && <div className={classes.fatabs} style={_is_edit_drawer_open && _less_than_1280w ? {minHeight: 48, height: 48, backgroundColor: "#fff"}: {}}>
-                    <Tabs className={classes.tabs} style={_is_edit_drawer_open && _less_than_1280w ? {minHeight: 48, height: 48}: {}}
+                    <Tabs className={classes.tabs} style={_is_edit_drawer_open && _less_than_1280w ? {minHeight: 48, height: 48, pointerEvents: "all"}: {pointerEvents: "all"}}
                           variant="fullWidth"
                           scrollButtons="off"
                           indicatorColor="primary"
@@ -3336,8 +3338,8 @@ class Pixel extends React.PureComponent {
                         center={false}
                         style={{color: _ripple_color, opacity: _ripple_opacity, position: "fixed", width: "100%", height: "100%"}}/>
 
-                    <Backdrop onDrag={this._handle_file_upload} className={classes.backdrop} open={_loading || _files_waiting_download.length > 0 || (_drag_file + 1000 > Date.now())} onClick={this._continue_download}>
-                        <div className={classes.backdropTextContent} style={{ fontFamily: `"Jura"`, textTransform: "uppercase", cursor: "pointer"}}>
+                    <Backdrop style={{pointerEvents: "all", cursor: "pointer"}} onDrag={this._handle_file_upload} className={classes.backdrop} open={_loading || _files_waiting_download.length > 0 || (_drag_file + 1000 > Date.now())} onClick={this._continue_download}>
+                        <div className={classes.backdropTextContent} style={{ fontFamily: `"Jura"`, textTransform: "uppercase", pointerEvents: "none"}}>
                             {!_drag_file && Boolean(_loading || _files_waiting_download.length > 0) && <h1><ShufflingSpanText key={_loading_process || _loading} text={_loading_process === "browser" ? "Laboratory in DANGER!": "LABORATORY PROCESSING"} animation_delay_ms={0} animation_duration_ms={200}/></h1>}
                             {!_drag_file && _files_waiting_download.length > 0 && <h3><ShufflingSpanText key={_files_waiting_download[0].name} text={`ACTION REQUIRED... ${String(_files_waiting_download[0].name)}`} animation_delay_ms={300} animation_duration_ms={500}/></h3>}
                             {!_drag_file && _files_waiting_download.length > 0 && <div><img src={"/src/images/labostration/DOWNLOAD.svg"} style={{width: "min(75vw, 75vh)"}}/></div>}
