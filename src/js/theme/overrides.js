@@ -12,7 +12,6 @@ const overrides = {
             "body.loaded": {
                 fontFamily: `"Baksheesh", "Jura"`,
                 fontSize: "auto !important",
-                position: "fixed",
                 overflow: "hidden",
                 backgroundColor: "#FAFAFA",
                 height: "100%",

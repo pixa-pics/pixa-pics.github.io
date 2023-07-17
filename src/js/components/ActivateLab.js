@@ -152,7 +152,7 @@ class ActivateLab extends React.PureComponent {
                     <video width="480" height="480" style={{cursor: "pointer", transform: "translateZ(10px)", maxWidth: "20%", maxHeight: "20%", position: "fixed", left: "5%", top: "0%", mixBlendMode: "multiply", clipPath: "circle(50% at 50% 50%)"}} autoPlay={open} id="activation-video" onClick={this._resume_video}>
                         <source src="/src/videos/activation.mp4" type="video/mp4"/>
                     </video>
-                    <RestrictedArea className={classes.restrictedSVG} style={{height: "auto", width: "min(100vh, 100vw)", position: "fixed", bottom: "0%"}}/>
+                    <RestrictedArea className={classes.restrictedSVG} style={{height: "auto", width: "100%", position: "fixed", bottom: "0%"}}/>
                 </Dialog>
             </React.Fragment>
         );

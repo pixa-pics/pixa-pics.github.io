@@ -6,7 +6,7 @@ import Lottie from "../components/Lottie";
 
 const styles = theme => ({
     backgroundImage: {
-        minHeight: "calc(100vh - 64px)",
+        minHeight: "calc(100% - 64px)",
         position: "relative",
         backgroundSize: "contain",
         backgroundPosition: "center center",

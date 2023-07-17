@@ -39,7 +39,7 @@ const styles = theme => ({
         contain: "size paint style layout",
         overflow: "hidden",
         height: "100%",
-        width: "100vw",
+        width: "100%",
     },
     carouselImage: {
         padding: 32,
@@ -48,7 +48,7 @@ const styles = theme => ({
     content: {
         position: "absolute",
         contain: "size paint style layout",
-        width: "calc(100vw - 64px)",
+        width: "calc(100% - 64px)",
         marginLeft: 64,
         height: "calc(100% - 64px)",
         [theme.breakpoints.down("xs")]: {

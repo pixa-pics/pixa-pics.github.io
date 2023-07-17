@@ -325,9 +325,9 @@ const styles = theme => ({
             [theme.breakpoints.up("lg")]: {
                 width: 480,
             },
-            width: "calc(100vw - 64px)",
+            width: "calc(100% - 64px)",
             [theme.breakpoints.down("sm")]: {
-                width: "100vw",
+                width: "100%",
             },
         },
     },
@@ -439,19 +439,19 @@ const styles = theme => ({
             display: "none",
         },
         [theme.breakpoints.up("md")]: {
-            width: "calc(100vw - 64px)",
+            width: "calc(100% - 64px)",
         },
         zIndex: 1300,
         position: "fixed",
         bottom: 0,
         right: 0,
-        width: "100vw",
+        width: "100%",
         height: 72,
     },
     listOfTools: {
         paddingTop: 0,
         [theme.breakpoints.down("md")]: {
-            width: "100vw",
+            width: "100%",
         },
         width: 360,
     },

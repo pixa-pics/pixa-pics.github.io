@@ -342,7 +342,7 @@ class PixelDialogCreate extends React.PureComponent {
                                                 flexWrap: "nowrap",
                                                 contain: "paint style layout",
                                                 contains: "strict",
-                                                maxWidth: "min(576px, (100vw - 96px))"
+                                                maxWidth: "min(576px, calc(100vw - 96px))"
                                             }}>
                                     {
 
