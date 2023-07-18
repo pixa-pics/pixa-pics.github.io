@@ -5,12 +5,12 @@ const styles = theme => ({
     player: {
         display: "inline-flex",
         verticalAlign: "inherit",
-        pointerEvents: "none",
         userSelect: "none",
         "& svg": {
             willChange: "content",
             contain: "paint style size layout",
-            contentVisibility: "auto"
+            contentVisibility: "auto",
+            pointerEvents: "none",
         }
     }
 });

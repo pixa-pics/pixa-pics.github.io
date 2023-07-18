@@ -2,12 +2,11 @@ const overrides = {
     MuiCssBaseline: {
         "@global": {
             html: {
-                overflow: "overlay",
-                overscrollBehavior: "none",
                 textRendering: "optimizespeed",
-                touchAction: "none",
                 fontFamily: `"Baksheesh", "Jura"`,
+                overflow: "hidden",
                 height: "100%",
+                maxHeight: "100%",
             },
             "body.loaded": {
                 fontFamily: `"Baksheesh", "Jura"`,
@@ -15,6 +14,7 @@ const overrides = {
                 overflow: "hidden",
                 backgroundColor: "#FAFAFA",
                 height: "100%",
+                maxHeight: "min(100vh, 100%)",
                 overscrollBehavior: "none",
             },
             "body > #app": {

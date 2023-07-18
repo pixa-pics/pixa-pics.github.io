@@ -597,6 +597,10 @@ const styles = theme => ({
         "0%": { filter: "opacity(0)"},
         "190%": { filter: "opacity(1)"},
     },
+    imageBackdrop: {
+        filter: "brightness(1.5) contrast(0.75) drop-shadow(2px 4px 6px black)",
+        width: "min(75vw, 75vh)"
+    }
 });
 
 
@@ -3342,30 +3346,30 @@ class Pixel extends React.PureComponent {
                         <div className={classes.backdropTextContent} style={{ fontFamily: `"Jura"`, textTransform: "uppercase", pointerEvents: "none"}}>
                             {!_drag_file && Boolean(_loading || _files_waiting_download.length > 0) && <h1><ShufflingSpanText key={_loading_process || _loading} text={_loading_process === "browser" ? "Laboratory in DANGER!": "LABORATORY PROCESSING"} animation_delay_ms={0} animation_duration_ms={200}/></h1>}
                             {!_drag_file && _files_waiting_download.length > 0 && <h3><ShufflingSpanText key={_files_waiting_download[0].name} text={`ACTION REQUIRED... ${String(_files_waiting_download[0].name)}`} animation_delay_ms={300} animation_duration_ms={500}/></h3>}
-                            {!_drag_file && _files_waiting_download.length > 0 && <div><img src={"/src/images/labostration/DOWNLOAD.svg"} style={{width: "min(75vw, 75vh)"}}/></div>}
+                            {!_drag_file && _files_waiting_download.length > 0 && <div><img src={"/src/images/labostration/DOWNLOAD.svg"} className={classes.imageBackdrop}/></div>}
                             {!_drag_file && _files_waiting_download.length > 0 && <h4><ShufflingSpanText pre="[... " app=" ...]" style={{textShadow: "0px 0px 16px white"}} text={"CLICK ON THE SCREEN TO CONTINUE DOWNLOAD!"} animation_delay_ms={is_mobile_or_tablet ? 5000: 2500} animation_duration_ms={500}/></h4>}
                             {!_drag_file && _files_waiting_download.length === 0 && _loading && _loading_process === "browser" && <h3><ShufflingSpanText text={"Doesn't feel like home for our dear code here."} animation_delay_ms={300} animation_duration_ms={500}/></h3>}
                             {!_drag_file && _files_waiting_download.length === 0 && _loading  && _loading_process === "browser" && <h4><ShufflingSpanText pre="[... " app=" ...]" text={"It can take a while, please download an advanced browser."} animation_delay_ms={is_mobile_or_tablet ? 5000: 2500} animation_duration_ms={500}/></h4>}
                             {!_drag_file && _files_waiting_download.length === 0 && _loading  && _loading_process === "image_ai" && <h3><ShufflingSpanText text={"AI processing your image"} animation_delay_ms={300} animation_duration_ms={500}/></h3>}
-                            { _drag_file && <div><img src="/src/images/labostration/ABDUCTION.svg" style={{width: "min(75vw, 75vh)"}}/></div>}
+                            { _drag_file && <div><img src="/src/images/labostration/ABDUCTION.svg" className={classes.imageBackdrop}/></div>}
                             { _drag_file && <h4><ShufflingSpanText pre="[... " app=" ...]" text={"Drop the file to the UFO."} animation_delay_ms={is_mobile_or_tablet ? 5000: 2500} animation_duration_ms={500}/></h4>}
                             { _drag_file && <h3><ShufflingSpanText text={"Ready for a new image abduction?"} animation_delay_ms={300} animation_duration_ms={500}/></h3>}
-                            {!_drag_file && _files_waiting_download.length === 0 && _loading  && _loading_process === "image_ai" && <div><img src="/src/images/labostration/MOLECULE.svg" style={{width: "min(75vw, 75vh)"}}/></div>}
+                            {!_drag_file && _files_waiting_download.length === 0 && _loading  && _loading_process === "image_ai" && <div><img src="/src/images/labostration/MOLECULE.svg" className={classes.imageBackdrop}/></div>}
                             {!_drag_file && _files_waiting_download.length === 0 && _loading  && _loading_process === "image_ai" && <h4><ShufflingSpanText pre="[... " app=" ...]" text={"It can take a while, please wait ~10sec."} animation_delay_ms={is_mobile_or_tablet ? 5000: 2500} animation_duration_ms={500}/></h4>}
                             {!_drag_file && _files_waiting_download.length === 0 && _loading  && _loading_process === "image_preload" && <h3><ShufflingSpanText text={"Preparing laboratory"} animation_delay_ms={300} animation_duration_ms={500}/></h3>}
-                            {!_drag_file && _files_waiting_download.length === 0 && _loading  && _loading_process === "image_preload" && <div><img src="/src/images/labostration/SCIENCE.svg" style={{width: "min(75vw, 75vh)"}}/></div>}
+                            {!_drag_file && _files_waiting_download.length === 0 && _loading  && _loading_process === "image_preload" && <div><img src="/src/images/labostration/SCIENCE.svg" className={classes.imageBackdrop}/></div>}
                             {!_drag_file && _files_waiting_download.length === 0 && _loading  && _loading_process === "image_preload" && <h4><ShufflingSpanText pre="[... " app=" ...]" text={`It can take a while, please wait ~${parseInt(parseFloat(_import_size / 100) * 3) * (is_mobile_or_tablet ? 3: 1)}sec.`} animation_delay_ms={is_mobile_or_tablet ? 5000: 2500} animation_duration_ms={500}/></h4>}
                             {!_drag_file && _files_waiting_download.length === 0 && _loading  && _loading_process === "image_load" && <h3><ShufflingSpanText text={"Abducting your image"} animation_delay_ms={300} animation_duration_ms={500}/></h3>}
-                            {!_drag_file && _files_waiting_download.length === 0 && _loading  && _loading_process === "image_load" && <div><img src="/src/images/labostration/ABDUCTION.svg" style={{width: "min(75vw, 75vh)"}}/></div>}
+                            {!_drag_file && _files_waiting_download.length === 0 && _loading  && _loading_process === "image_load" && <div><img src="/src/images/labostration/ABDUCTION.svg" className={classes.imageBackdrop}/></div>}
                             {!_drag_file && _files_waiting_download.length === 0 && _loading  && _loading_process === "image_load" && <h4><ShufflingSpanText pre="[... " app=" ...]" text={`It can take a while, please wait ~${parseInt(parseFloat(_import_size / 100) * 4) * (is_mobile_or_tablet ? 3: 1)}sec.`} animation_delay_ms={is_mobile_or_tablet ? 5000: 2500} animation_duration_ms={500}/></h4>}
-                            {!_drag_file && _files_waiting_download.length === 0 && _loading  && _loading_process === "image_render" && <div><img src="/src/images/labostration/COMPUTING.svg" style={{width: "min(75vw, 75vh)"}}/></div>}
+                            {!_drag_file && _files_waiting_download.length === 0 && _loading  && _loading_process === "image_render" && <div><img src="/src/images/labostration/COMPUTING.svg" className={classes.imageBackdrop}/></div>}
                             {!_drag_file && _files_waiting_download.length === 0 && _loading  && _loading_process === "image_render" && <h3><ShufflingSpanText text={"Atomic rendering in process"} animation_delay_ms={300} animation_duration_ms={500}/></h3>}
                             {!_drag_file && _files_waiting_download.length === 0 && _loading  && _loading_process === "image_render" && <h4><ShufflingSpanText pre="[... " app=" ...]" text={"It can take a while, please wait ~14sec."} animation_delay_ms={is_mobile_or_tablet ? 5000: 2500} animation_duration_ms={500}/></h4>}
                             {!_drag_file && _files_waiting_download.length === 0 && _loading  && _loading_process === "less_color" && <h3><ShufflingSpanText text={"Coupling few color DNA"} animation_delay_ms={300} animation_duration_ms={500}/></h3>}
-                            {!_drag_file && _files_waiting_download.length === 0 && _loading  && _loading_process === "less_color" && <div><img src="/src/images/labostration/GENOMA.svg" style={{width: "min(75vw, 75vh)"}}/></div>}
+                            {!_drag_file && _files_waiting_download.length === 0 && _loading  && _loading_process === "less_color" && <div><img src="/src/images/labostration/GENOMA.svg" className={classes.imageBackdrop}/></div>}
                             {!_drag_file && _files_waiting_download.length === 0 && _loading  && _loading_process === "less_color" && <h4><ShufflingSpanText pre="[... " app=" ...]" text={"It can take a while, please wait ~4sec."} animation_delay_ms={is_mobile_or_tablet ? 5000: 2500} animation_duration_ms={500}/></h4>}
                             {!_drag_file && _files_waiting_download.length === 0 && _loading  && _loading_process === "less_color_auto" && <h3><ShufflingSpanText text={"Coupling the DNA of many color"} animation_delay_ms={500} animation_duration_ms={500}/></h3>}
-                            {!_drag_file && _files_waiting_download.length === 0 && _loading  && _loading_process === "less_color_auto" && <div><img src="/src/images/labostration/GENOMA.svg" style={{width: "min(75vw, 75vh)"}}/></div>}
+                            {!_drag_file && _files_waiting_download.length === 0 && _loading  && _loading_process === "less_color_auto" && <div><img src="/src/images/labostration/GENOMA.svg" className={classes.imageBackdrop}/></div>}
                             {!_drag_file && _files_waiting_download.length === 0 && _loading  && _loading_process === "less_color_auto" && <h4><ShufflingSpanText pre="[... " app=" ...]" text={"It can take a while, please wait ~7sec."} animation_delay_ms={is_mobile_or_tablet ? 5000: 2500} animation_duration_ms={500}/></h4>}
                         </div>
                     </Backdrop>
