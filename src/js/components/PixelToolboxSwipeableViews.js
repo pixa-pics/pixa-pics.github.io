@@ -19,7 +19,7 @@ import {
     Button,
     Badge,
     Menu,
-    IconButton
+    IconButton, ButtonBase
 } from "@material-ui/core";
 
 import {SIMDopeColor} from "simdope";
@@ -129,6 +129,30 @@ const styles = theme => ({
         marginRight: 150,
         minHeight: 126,
         marginLeft: 48
+    },
+    advertising: {
+        contain: "layout paint style",
+        maxWidth: "calc(100% - 64px)",
+        cursor: "pointer",
+        borderRadius: 8,
+        border: "2px solid #76e000",
+        margin: "32px 32px 64px 32px",
+        padding: "24px 12px",
+        boxSizing: "border-box",
+        backgroundColor: "#e5ffe1",
+        boxShadow: "rgb(2 41 2 / 56%) 0px 5px 6px -3px, rgb(2 41 3 / 36%) 0px 9px 12px 1px, rgb(3 41 2 / 24%) 0px 3px 16px 2px",
+        transformOrigin: "center",
+        "& > img": {
+            userSelect: "none",
+            pointerEvents: "none",
+            maxWidth: "100%",
+            transform: "scale(1)",
+            transition: "transform cubic-bezier(0.4, 0, 0.2, 1) 150ms",
+        },
+        "&:hover > img": {
+            transform: "scale(1.05)",
+            transition: "transform cubic-bezier(0.4, 0, 0.2, 1) 225ms",
+        }
     },
     listSubHeaderToggle: {
         position: "absolute",
@@ -2518,8 +2542,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                         <br/>
                         <span>— Matias A.</span>
                     </p>*/}
-                <h2 style={{marginLeft: 24, marginTop: 32, textTransform: "initial"}}>Keep on being creative! (SPONSORED)</h2>
-                <img style={{maxWidth: "100%", cursor: "pointer", marginBottom: 128}} src={"/src/images/adaragon.png"} onClick={() => {window.open("https://aragon.ai/?via=pixa-pics")}}/>
+                <ButtonBase className={classes.advertising} onClick={() => {window.open("https://aragon.ai/?via=pixa-pics")}}><img src={"/src/images/adaragon.png"}/></ButtonBase>
             </List>
         );
 
