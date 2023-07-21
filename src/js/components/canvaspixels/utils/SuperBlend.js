@@ -32,7 +32,7 @@ function _build_state(layer_number, max_length, layers_opacity_255) {
     }
 
     let state = {
-        number_length_index: Uint32Array.of(layer_number, max_length, 0),
+        number_length_index_byte: Uint32Array.of(layer_number, max_length, 0, 0),
         hover_data_in_layer: new Uint8Array(new ArrayBuffer(max_length)),
         indexes_data_for_layers: new Uint32Array(max_length),
         colors_data_in_layers_uint32: new Uint32Array(max_length*layer_number),
@@ -77,9 +77,10 @@ function _update_state(state, layer_number, max_length, layers_opacity_255) {
             return _build_state(layer_number, max_length, layers_opacity_255);
         }else {
 
-            state.number_length_index[0] = layer_number | 0;
-            state.number_length_index[1] = max_length | 0;
-            state.number_length_index[2] = 0;
+            state.number_length_index_byte[0] = layer_number | 0;
+            state.number_length_index_byte[1] = max_length | 0;
+            state.number_length_index_byte[2] = 0;
+            state.number_length_index_byte[3] = 0;
             if(typeof layers_opacity_255 != "undefined") {
                 state.layers_opacity_255.fill(255);
                 state.layers_opacity_255.set(layers_opacity_255);
@@ -100,50 +101,55 @@ var SuperBlend = function(opts) {
     }
 
     this.state_ = _build_state(opts.layer_number || 1, opts.max_length || 1, opts.layers_opacity_255 || new Uint8Array(0));
-    this.number_length_index_ = this.state_.number_length_index;
+    this.number_length_index_byte_ = this.state_.number_length_index_byte;
     this.hover_data_in_layer_ = this.state_.hover_data_in_layer;
     this.indexes_data_for_layers_ = this.state_.indexes_data_for_layers;
     this.colors_data_in_layers_uint32_ = this.state_.colors_data_in_layers_uint32;
     this.shadow_state_ = _build_shadow_state();
-    this.bytes_index_ = 0;
 
     return this;
 }
 
 Object.defineProperty(SuperBlend.prototype, 'state', {
-    get: function() { "use strict"; return this.state_;}
+    get: function() { "use strict"; return this.state_;},
+    enumerable: false,
+    configurable: false
 });
 
 Object.defineProperty(SuperBlend.prototype, 'set_state', {
     get: function() { "use strict"; return function (s) {
         "use strict";
         this.state_ = s;
-        this.number_length_index_ = this.state_.number_length_index;
+        this.number_length_index_byte_ = this.state_.number_length_index_byte;
         this.hover_data_in_layer_ = this.state_.hover_data_in_layer;
         this.indexes_data_for_layers_ = this.state_.indexes_data_for_layers;
         this.colors_data_in_layers_uint32_ = this.state_.colors_data_in_layers_uint32;
         return this.state_;
-    }}
+    }},
+    enumerable: false,
+    configurable: false
 });
 
 Object.defineProperty(SuperBlend.prototype, 'set_shadow_state', {
     get: function() { "use strict"; return function (ss) {
         "use strict";
         return  this.shadow_state_  = ss;
-    }}
+    }},
+    enumerable: false,
+    configurable: false
 });
 
 Object.defineProperty(SuperBlend.prototype, 'get_updated_shadow_state', {
     get: function() { "use strict"; return function() {
         "use strict";
         // Create a shadow state for computation
-        if(this.shadow_state_.all_layers_length < this.number_length_index_[0]) {
-            this.shadow_state_.layers_colors = new Array(this.number_length_index_[0] + 1 | 0).fill(null).map(function (){return new SIMDopeColor(new ArrayBuffer(4))});
+        if(this.shadow_state_.all_layers_length < this.number_length_index_byte_[0]) {
+            this.shadow_state_.layers_colors = new Array(this.number_length_index_byte_[0] + 1 | 0).fill(null).map(function (){return new SIMDopeColor(new ArrayBuffer(4))});
         }
 
-        this.shadow_state_.all_layers_length = this.number_length_index_[0] | 0;
-        this.shadow_state_.max_used_colors_length = this.number_length_index_[1] | 0;
-        this.shadow_state_.used_colors_length = this.number_length_index_[2] | 0;
+        this.shadow_state_.all_layers_length = this.number_length_index_byte_[0] | 0;
+        this.shadow_state_.max_used_colors_length = this.number_length_index_byte_[1] | 0;
+        this.shadow_state_.used_colors_length = this.number_length_index_byte_[2] | 0;
 
         if(this.shadow_state_.base_rgba_colors_for_blending.length >= this.shadow_state_.used_colors_length) {
             this.shadow_state_.base_rgba_colors_for_blending.fill(0, 0, this.shadow_state_.used_colors_length);
@@ -153,24 +159,32 @@ Object.defineProperty(SuperBlend.prototype, 'get_updated_shadow_state', {
         }
 
         return this.shadow_state_;
-    }}
+    }},
+    enumerable: false,
+    configurable: false
 });
 
 Object.defineProperty(SuperBlend.prototype, 'shadow_state', {
-    get: function() { "use strict"; return this.shadow_state_;}
+    get: function() { "use strict"; return this.shadow_state_;},
+    enumerable: false,
+    configurable: false
 });
 
 Object.defineProperty(SuperBlend.prototype, 'set_bytes_index', {
     get: function() { "use strict"; return function (i) {
         "use strict";
-        return  this.bytes_index_  = i | 0;
-    }}
+        return  this.number_length_index_byte_[3]  = i | 0;
+    }},
+    enumerable: false,
+    configurable: false
 });
 Object.defineProperty(SuperBlend.prototype, 'bytes_index', {
     get: function() { "use strict"; return function () {
         "use strict";
-        return  this.bytes_index_ | 0;
-    }}
+        return  this.number_length_index_byte_[3] | 0;
+    }},
+    enumerable: false,
+    configurable: false
 });
 
 SuperBlend.init = function (lay_n, pxl_len, layers_opacity_255) {
@@ -181,28 +195,30 @@ SuperBlend.init = function (lay_n, pxl_len, layers_opacity_255) {
 Object.defineProperty(SuperBlend.prototype, 'for', {
     get: function() { "use strict"; return function (pixel_index, amount_hover) {
         "use strict";
-        pixel_index = (pixel_index | 0) >>> 0;
-        amount_hover = (amount_hover | 0) >>> 0;
-        this.indexes_data_for_layers_[this.number_length_index_[2]] = clamp_uint32(pixel_index);
-        this.hover_data_in_layer_[this.number_length_index_[2]] = clamp_uint8(amount_hover);
-        this.number_length_index_[2] = plus_uint(this.number_length_index_[2], 1);
-    }}
+        this.indexes_data_for_layers_[this.number_length_index_byte_[2]] = clamp_uint32(pixel_index);
+        this.hover_data_in_layer_[this.number_length_index_byte_[2]] = clamp_uint8(amount_hover);
+        this.number_length_index_byte_[2] = plus_uint(this.number_length_index_byte_[2], 1);
+    }},
+    enumerable: false,
+    configurable: false
 });
 
 Object.defineProperty(SuperBlend.prototype, 'next', {
     get: function() { "use strict"; return function () {
         "use strict";
-        this.bytes_index_ = plus_uint(this.bytes_index_,1);
-    }}
+        this.number_length_index_byte_[3] = plus_uint(this.number_length_index_byte_[3],1);
+    }},
+    enumerable: false,
+    configurable: false
 });
 
 Object.defineProperty(SuperBlend.prototype, 'stack', {
     get: function() { "use strict"; return function (for_layer_index, ui32color) {
         "use strict";
-        for_layer_index = (for_layer_index | 0) >>> 0;
-        ui32color = (ui32color | 0) >>> 0;
-        this.colors_data_in_layers_uint32_[plus_uint(multiply_uint(this.bytes_index_, this.number_length_index_[0]), clamp_uint8(for_layer_index))] = clamp_uint32(ui32color);
-    }}
+        this.colors_data_in_layers_uint32_[plus_uint(multiply_uint(this.number_length_index_byte_[0], this.number_length_index_byte_[3]), clamp_uint8(for_layer_index))] = clamp_uint32(ui32color);
+    }},
+    enumerable: false,
+    configurable: false
 });
 
 SuperBlend.prototype.blend = function(should_return_transparent, alpha_addition) {
@@ -228,6 +244,8 @@ SuperBlend.prototype.blend = function(should_return_transparent, alpha_addition)
         indexes_data_for_layers
     } = this.state;
 
+    var layers_color_0 = layers_colors[0];
+
     return new Promise(function (resolve) {
         "use strict";
 
@@ -235,7 +253,7 @@ SuperBlend.prototype.blend = function(should_return_transparent, alpha_addition)
 
         for (i  = 0; uint_less(i | 0, used_colors_length); i = plus_uint(i, 1)) {
 
-            base_rgba_colors_for_blending_SIMDope.get_use_element(i | 0, layers_colors[0]);
+            base_rgba_colors_for_blending_SIMDope.get_use_element(i | 0, layers_color_0);
             off[0] = multiply_uint(i, all_layers_length);
             // Sum up all colors above
             for (layer_n = 0; uint_less(layer_n, all_layers_length); layer_n = plus_uint(layer_n, 1)) {
@@ -246,10 +264,10 @@ SuperBlend.prototype.blend = function(should_return_transparent, alpha_addition)
             }
 
             if((hover_data_in_layer[i | 0]|0) > 0) {
-                layers_colors[0].blend_first_with_tails(alpha_addition)
-                layers_colors[0].blend_first_with(layers_colors[0].is_dark() ? color_less_uint8x4 : color_full_uint8x4, hover_data_in_layer[i | 0], false, false);
+                layers_color_0.blend_first_with_tails(alpha_addition)
+                layers_color_0.blend_first_with(layers_color_0.is_dark() ? color_less_uint8x4 : color_full_uint8x4, hover_data_in_layer[i | 0], false, false);
             }else {
-                layers_colors[0].blend_first_with_tails(alpha_addition);
+                layers_color_0.blend_first_with_tails(alpha_addition);
             }
         }
 

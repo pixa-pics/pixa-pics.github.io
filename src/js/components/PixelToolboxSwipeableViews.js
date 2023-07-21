@@ -2518,6 +2518,8 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                         <br/>
                         <span>— Matias A.</span>
                     </p>*/}
+                <h2 style={{marginLeft: 24, marginTop: 32, textTransform: "initial"}}>Keep on being creative! (SPONSORED)</h2>
+                <img style={{maxWidth: "100%", cursor: "pointer"}} src={"/src/images/adaragon.png"} onClick={() => {window.open("https://aragon.ai/?via=pixa-pics")}}/>
             </List>
         );
 
