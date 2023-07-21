@@ -117,6 +117,14 @@ const styles = theme => ({
             "25%": {transform: "translateX(0%)"},
             "30%": {transform: "translateX(10%)"},
             "40%, 100%": {transform: "translateX(0%)"}
+        },
+        "@keyframes glowgreen": {
+            "0%, 7%": {filter: "drop-shadow(0px 0px 6px green) drop-shadow(0px 0px 14px lightgreen)"},
+            "15%": {filter: "drop-shadow(0px 0px 3px green) drop-shadow(0px 0px 22px lightgreen)"},
+            "20%": {filter: "drop-shadow(0px 0px 12px green) drop-shadow(0px 0px 28px lightgreen)"},
+            "25%": {filter: "drop-shadow(0px 0px 3px green) drop-shadow(0px 0px 14px lightgreen)"},
+            "30%": {filter: "drop-shadow(0px 0px 12px green) drop-shadow(0px 0px 28px lightgreen)"},
+            "40%, 100%": {filter: "drop-shadow(0px 0px 6px green) drop-shadow(0px 0px 14px lightgreen)"}
         }
     },
     listSubHeaderDescription: {
@@ -140,7 +148,10 @@ const styles = theme => ({
         padding: "24px 12px",
         boxSizing: "border-box",
         backgroundColor: "#e5ffe1",
-        boxShadow: "rgb(2 41 2 / 56%) 0px 5px 6px -3px, rgb(2 41 3 / 36%) 0px 9px 12px 1px, rgb(3 41 2 / 24%) 0px 3px 16px 2px",
+        animationFillMode: "both",
+        animationName: "$glowgreen",
+        animationTimingFunction: "ease-in-out",
+        animationDuration: "7777ms",
         transformOrigin: "center",
         "& > img": {
             userSelect: "none",
@@ -2542,7 +2553,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                         <br/>
                         <span>— Matias A.</span>
                     </p>*/}
-                <ButtonBase className={classes.advertising} onClick={() => {window.open("https://aragon.ai/?via=pixa-pics")}}><img src={"/src/images/adaragon.png"}/></ButtonBase>
+                <ButtonBase color={"lightgreen"} className={classes.advertising} onClick={() => {window.open("https://aragon.ai/?via=pixa-pics")}}><img src={"/src/images/adaragon.png"}/></ButtonBase>
             </List>
         );
 
