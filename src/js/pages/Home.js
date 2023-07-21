@@ -191,7 +191,7 @@ const styles = theme => ({
         backgroundSize: "inherit",
         animationFillMode: "both",
         animationName: "$movingbackground",
-        animationDuration: "16s",
+        animationDuration: "60s",
         animationTimingFunction: "ease-in-out",
         animationDirection: "alternate",
         animationIterationCount: "infinite",

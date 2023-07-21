@@ -432,6 +432,7 @@ const styles = theme => ({
         textAlign: "center",
     },
     fatabs: {
+        transition: "transform 45ms cubic-bezier(0.4, 0, 0.2, 1) 5ms",
         backgroundColor: "#fafafa",
         boxShadow: "0px 2px 4px -1px rgb(0 0 0 / 20%), 0px 4px 5px 0px rgb(0 0 0 / 14%), 0px 1px 10px 0px rgb(0 0 0 / 12%)",
         contain: "paint size style layout",
@@ -2549,7 +2550,7 @@ class Pixel extends React.PureComponent {
 
     _handle_edit_drawer_close = () => {
 
-        const update = Boolean(this.st4te._is_edit_drawer_open !== false);
+        const update = Boolean(this.st4te._is_edit_drawer_open);
         this.setSt4te({_is_edit_drawer_open: false}, () => {
 
             if(update){this._request_force_update();}
@@ -2835,10 +2836,13 @@ class Pixel extends React.PureComponent {
                 <SwipeableDrawer
                     className={classes.contentDrawer}
                     disableBackdropTransition={false}
-                    disableSwipeToOpen={true}
-                    disableDiscovery={true}
+                    disableSwipeToOpen={false}
+                    disableDiscovery={false}
                     disablePortal={true}
                     keepMounted={true}
+                    hysteresis={0.314}
+                    minFlingVelocity={314}
+                    swipeAreaWidth={128}
                     open={_is_edit_drawer_open}
                     onOpen={this._handle_edit_drawer_open}
                     onClose={this._handle_edit_drawer_close}
@@ -3064,23 +3068,21 @@ class Pixel extends React.PureComponent {
                         overflowY: "overlay",
                         contain: "paint style layout",
                         willChange: "scroll-position",
+                        scrollBehavior: "smooth",
                         userSelect: "none",
                         pointerEvents: "all"
                     },
                 }}
-                onContextMenu={(e) => {e.preventDefault(); e.stopImmediatePropagation();}}
+                onContextMenu={function (e){e.preventDefault(); e.stopImmediatePropagation();}}
                 MenuListProps={{dense: true}}
-                transitionDuration={{enter: 50, exit: 100}}
-                transitionDelay={{enter: 5, exit: 10}}
-                open={_menu_mouse_y !== null}
+                transitionDuration={{enter: 35, exit: 60}}
+                transitionDelay={{enter: 15, exit: 15}}
+                open={Boolean(_menu_mouse_y) || Boolean(_menu_mouse_x)}
                 onClose={this._handle_menu_close}
-                keepMounted
+                disablePortal={false}
+                keepMounted={true}
                 anchorReference="anchorPosition"
-                anchorPosition={
-                    _menu_mouse_y !== null && _menu_mouse_x !== null
-                        ? { top: _menu_mouse_y, left: _menu_mouse_x }
-                        : { top: 0, left: 0 }
-                }
+                anchorPosition={{ top: _menu_mouse_y|0, left: _menu_mouse_x|0 }}
             >
                 <span style={{textAlign: "left", padding: "12px 8px", color: "#666"}}>X: {_menu_data.pos_x}, Y: {_menu_data.pos_y}</span>
                 <div style={(_tool === "SET PENCIL MIRROR" || _pencil_mirror_mode !== "NONE") ? {}: {display: "none"}}>
@@ -3293,21 +3295,22 @@ class Pixel extends React.PureComponent {
 
                 {drawer_mobile}
 
-                {_less_than_1280w && <div className={classes.fatabs} style={_is_edit_drawer_open && _less_than_1280w ? {minHeight: 48, height: 48, backgroundColor: "#fff"}: {}}>
-                    <Tabs className={classes.tabs} style={_is_edit_drawer_open && _less_than_1280w ? {minHeight: 48, height: 48, pointerEvents: "all"}: {pointerEvents: "all"}}
+                {_less_than_1280w && <div className={classes.fatabs} style={_is_edit_drawer_open && _less_than_1280w ? {transform: "translateY(24px)", backgroundColor: "#fff"}: {}}>
+                    <Tabs className={classes.tabs} style={{pointerEvents: "all"}}
                           variant="fullWidth"
                           scrollButtons="off"
                           indicatorColor="primary"
                           textColor="primary"
                           selectionFollowsFocus={true}
-                          value={_view_name_index} onChange={(event, index) => {this._handle_edit_drawer_open(event, index)}}>>
-                        <Tab onPointerEnter={(e) => {this._handle_view_name_switch(e, 0)}} className={classes.tab} label={"colors"} icon={<PaletteIcon />} />
-                        <Tab onPointerEnter={(e) => {this._handle_view_name_switch(e, 1)}} className={classes.tab} label={"image"} icon={<FolderImageIcon />} />
-                        <Tab onPointerEnter={(e) => {this._handle_view_name_switch(e, 2)}} className={classes.tab} label={"layers"} icon={<FolderIcon />} />
-                        <Tab onPointerEnter={(e) => {this._handle_view_name_switch(e, 3)}} className={classes.tab} label={"tools"} icon={<DrawIcon />} />
-                        <Tab onPointerEnter={(e) => {this._handle_view_name_switch(e, 4)}} className={classes.tab} label={"select"} icon={<SelectDragIcon />} />
-                        <Tab onPointerEnter={(e) => {this._handle_view_name_switch(e, 5)}} className={classes.tab} label={"effects"} icon={<TuneIcon />} />
-                        <Tab onPointerEnter={(e) => {this._handle_view_name_switch(e, 6)}}  className={classes.tab} label={"filters"} icon={<ImageAutoAdjustIcon />} />
+                          value={_view_name_index}
+                          onChange={this._handle_edit_drawer_open}>
+                        <Tab className={classes.tab} label={"colors"} icon={<PaletteIcon />} />
+                        <Tab className={classes.tab} label={"image"} icon={<FolderImageIcon />} />
+                        <Tab className={classes.tab} label={"layers"} icon={<FolderIcon />} />
+                        <Tab className={classes.tab} label={"tools"} icon={<DrawIcon />} />
+                        <Tab className={classes.tab} label={"select"} icon={<SelectDragIcon />} />
+                        <Tab className={classes.tab} label={"effects"} icon={<TuneIcon />} />
+                        <Tab className={classes.tab} label={"filters"} icon={<ImageAutoAdjustIcon />} />
                     </Tabs>
                 </div>}
 
