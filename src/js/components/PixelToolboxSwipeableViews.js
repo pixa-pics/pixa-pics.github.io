@@ -117,14 +117,6 @@ const styles = theme => ({
             "25%": {transform: "translateX(0%)"},
             "30%": {transform: "translateX(10%)"},
             "40%, 100%": {transform: "translateX(0%)"}
-        },
-        "@keyframes glowgreen": {
-            "0%, 7%": {filter: "drop-shadow(0px 0px 6px green) drop-shadow(0px 0px 14px lightgreen)"},
-            "15%": {filter: "drop-shadow(0px 0px 3px green) drop-shadow(0px 0px 22px lightgreen)"},
-            "20%": {filter: "drop-shadow(0px 0px 12px green) drop-shadow(0px 0px 28px lightgreen)"},
-            "25%": {filter: "drop-shadow(0px 0px 3px green) drop-shadow(0px 0px 14px lightgreen)"},
-            "30%": {filter: "drop-shadow(0px 0px 12px green) drop-shadow(0px 0px 28px lightgreen)"},
-            "40%, 100%": {filter: "drop-shadow(0px 0px 6px green) drop-shadow(0px 0px 14px lightgreen)"}
         }
     },
     listSubHeaderDescription: {
@@ -143,15 +135,12 @@ const styles = theme => ({
         maxWidth: "calc(100% - 64px)",
         cursor: "pointer",
         borderRadius: 8,
-        border: "2px solid #76e000",
+        border: "2px solid #050c4c",
         margin: "32px 32px 64px 32px",
         padding: "24px 12px",
         boxSizing: "border-box",
-        backgroundColor: "#e5ffe1",
-        animationFillMode: "both",
-        animationName: "$glowgreen",
-        animationTimingFunction: "ease-in-out",
-        animationDuration: "7777ms",
+        backgroundColor: "#E5E9F5FF",
+        boxShadow: "0px 0px 6px #050c4c",
         transformOrigin: "center",
         "& > img": {
             userSelect: "none",
