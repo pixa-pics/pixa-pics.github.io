@@ -30,6 +30,14 @@ const styles = theme => ({
         },
         "& .MuiListItemText-secondary": {
             color: "#8e93b7 !important"
+        },
+        "& .MuiTouchRipple-root": {
+            backgroundColor: "#0057FF00",
+            color: "#77A7FF77",
+            transition: "all ease-out 500ms !important"
+        },
+        "&:hover .MuiTouchRipple-root": {
+            backgroundColor: "rgba(0,87,255,0.12)"
         }
     },
     iconColor: {
@@ -192,25 +200,25 @@ class DrawerContent extends React.PureComponent {
             <div>
                 <List style={{paddingTop: 0}} className={classes.labList}>
                     <Fade in={true} timeout={100}>
-                        <ListItem button className={classes.listItemGrey} onClick={this._open_pixel_page}>
+                        <ListItem button className={classes.listItemGrey} TouchRippleProps={{className: classes.rippleBlue}} onClick={this._open_pixel_page}>
                             <ListItemIcon><PaletteIcon className={classes.iconColor} /></ListItemIcon>
                             <ListItemText primary="Draw" />
                         </ListItem>
                     </Fade>
                     <Fade in={true} timeout={300}>
-                        <ListItem button className={classes.listItemGrey} onClick={(event) => this._open_link(event, "https://opencollective.com/pixapics")}>
+                        <ListItem button className={classes.listItemGrey} TouchRippleProps={{className: classes.rippleBlue}} onClick={(event) => this._open_link(event, "https://opencollective.com/pixapics")}>
                             <ListItemIcon><DonateIcon className={classes.iconColorGold} /></ListItemIcon>
                             <ListItemText primary="Donate" />
                         </ListItem>
                     </Fade>
                     <Fade in={true} timeout={500}>
-                        <ListItem button className={classes.listItemGrey} onClick={(event) => this._open_link(event, "https://www.ebook-nft-pixel.art/")}>
+                        <ListItem button className={classes.listItemGrey} TouchRippleProps={{className: classes.rippleBlue}} onClick={(event) => this._open_link(event, "https://www.ebook-nft-pixel.art/")}>
                             <ListItemIcon><InfoIcon className={classes.iconColor} /></ListItemIcon>
                             <ListItemText primary="Free Guide" />
                         </ListItem>
                     </Fade>
                     <Fade in={true} timeout={700}>
-                        <ListItem button className={classes.listItemGrey} onClick={(event) => this._open_link(event, "https://github.com/pixa-pics/pixa-pics.github.io")}>
+                        <ListItem button className={classes.listItemGrey} TouchRippleProps={{className: classes.rippleBlue}} onClick={(event) => this._open_link(event, "https://github.com/pixa-pics/pixa-pics.github.io")}>
                             <Badge className={classes.styledBadgeConnected} overlap="circular" badgeContent=" " variant="dot"><ListItemIcon><CodeIcon className={classes.iconColor} /></ListItemIcon></Badge>
                             <ListItemText primary="Source code" />
                         </ListItem>

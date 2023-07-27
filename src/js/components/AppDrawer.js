@@ -15,8 +15,9 @@ const styles = theme => ({
         contain: "layout paint size style",
         boxShadow: "2px 0px 4px 0px rgb(0 0 0 / 20%), 4px 0px 5px 0px rgb(0 0 0 / 14%), 6px 0px 10px 0px rgb(0 0 0 / 12%)",
         width: 256,
-        clipPath: "inset(0 192px 0 0)",
-        transition: "clip-path cubic-bezier(0.4, 0, 0.2, 1) 275ms",
+        minWidth: 64,
+        maxWidth: 64,
+        transition: "all cubic-bezier(0.4, 0, 0.2, 1) 275ms",
         "&:not(:hover) > .MuiDrawer-paper": {
             background: `${theme.palette.secondary.dark} !important`
         },
@@ -26,8 +27,9 @@ const styles = theme => ({
         },
         "&:hover": {
             width: 256,
-            clipPath: "inset(0 0 0 0)",
-            transition: "clip-path cubic-bezier(0.4, 0, 0.2, 1) 175ms",
+            minWidth: 256,
+            maxWidth: 256,
+            transition: "all cubic-bezier(0.4, 0, 0.2, 1) 175ms",
             "& .playstorebadge": {
                 opacity: "1",
                 transition: "opacity 275ms cubic-bezier(0.4, 0, 0.2, 1) 275ms"
