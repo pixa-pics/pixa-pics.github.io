@@ -362,13 +362,27 @@ const styles = theme => ({
         "90%": {transform: "translate3d(0, 0px, 0) scaleY(1.00)"}
     },
     tab: {
-        backgroundColor: "#fff",
+        backgroundColor: "#fafafa",
         color: "#050c4c",
-        transition: "color, background-color ease-in .175s",
+        transition: "color, background-color cubic-bezier(0.4, 0, 0.2, 1) .275s",
         "&.Mui-selected": {
             fontWeight: "bold",
             backgroundColor: "#dfddf2",
             color: "#050c4c",
+            transition: "color, background-color cubic-bezier(0.4, 0, 0.2, 1) .175s",
+            borderRadius: "4px 4px 0px 0px",
+            "& .MuiTab-wrapper": {
+                animationDuration: "375ms",
+                animationTimingFunction: "linear",
+                animationName: "$bounce",
+                transformOrigin: "center bottom"
+            }
+        },
+        "&:hover": {
+            fontWeight: "bold",
+            backgroundColor: "#e8e6f5",
+            color: "#050c4c",
+            transition: "color, background-color cubic-bezier(0.4, 0, 0.2, 1) .175s",
             borderRadius: "4px 4px 0px 0px",
             "& .MuiTab-wrapper": {
                 animationDuration: "375ms",

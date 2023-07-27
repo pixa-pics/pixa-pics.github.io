@@ -28,6 +28,10 @@ const styles = theme => ({
             width: 256,
             clipPath: "inset(0 0 0 0)",
             transition: "clip-path cubic-bezier(0.4, 0, 0.2, 1) 175ms",
+            "& .playstorebadge": {
+                opacity: "1",
+                transition: "opacity 275ms cubic-bezier(0.4, 0, 0.2, 1) 275ms"
+            },
         },
         [theme.breakpoints.down("sm")]: {
             display: "none"
@@ -35,6 +39,11 @@ const styles = theme => ({
         "& > div > div": {
             transition: "opacity cubic-bezier(0.4, 0, 0.2, 1) 175ms",
             opacity: 1,
+        },
+        "& .playstorebadge": {
+            cursor: "pointer",
+            opacity: "0",
+            transition: "opacity cubic-bezier(0.4, 0, 0.2, 1) 275ms"
         },
     },
     drawerOpen: {
@@ -46,13 +55,17 @@ const styles = theme => ({
         boxShadow: "2px 0px 4px 0px rgb(0 0 0 / 20%), 4px 0px 5px 0px rgb(0 0 0 / 14%), 6px 0px 10px 0px rgb(0 0 0 / 12%)",
         width: 256,
         clipPath: "inset(0 0 0 0)",
+        "& .playstorebadge": {
+            opacity: "1",
+            transition: "opacity cubic-bezier(0.4, 0, 0.2, 1) 175ms"
+        },
         transition: "clip-path cubic-bezier(0.4, 0, 0.2, 1) 175ms",
         [theme.breakpoints.down("sm")]: {
             display: "none"
         },
         "& > div > div": {
             transition: "opacity cubic-bezier(0.4, 0, 0.2, 1) 175ms",
-            opacity: 1,
+            opacity: "1",
         },
     },
     drawerPaper: {

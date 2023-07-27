@@ -130,18 +130,25 @@ const styles = theme => ({
         minHeight: 126,
         marginLeft: 48
     },
+    rippleGreen: {
+        "& > *": {
+            color: "#00FF16CB"
+        }
+    },
     advertising: {
         contain: "layout paint style",
         maxWidth: "calc(100% - 64px)",
         cursor: "pointer",
         borderRadius: 8,
-        border: "2px solid #050c4c",
+        border: "2px solid #00FF16",
         margin: "32px 32px 64px 32px",
         padding: "24px 12px",
         boxSizing: "border-box",
-        backgroundColor: "#E5E9F5FF",
-        boxShadow: "0px 0px 6px #050c4c",
+        backgroundColor: "#e7f5e5",
+        boxShadow: "0px 0px 12px #008f09",
         transformOrigin: "center",
+        filter: "sepia(1) hue-rotate(192deg) saturate(1.314) opacity(0.666)",
+        transition: "filter cubic-bezier(0.4, 0, 0.2, 1) 225ms",
         "& > img": {
             userSelect: "none",
             pointerEvents: "none",
@@ -152,6 +159,9 @@ const styles = theme => ({
         "&:hover > img": {
             transform: "scale(1.05)",
             transition: "transform cubic-bezier(0.4, 0, 0.2, 1) 225ms",
+        },
+        "&:hover, &:active": {
+            filter: "sepia(0) hue-rotate(0deg) saturate(1) opacity(1)",
         }
     },
     listSubHeaderToggle: {
@@ -191,13 +201,16 @@ const styles = theme => ({
         right: 0,
         height: 150,
         width: 150,
-        background: "linear-gradient(to top, #ededfff1 2.5%,  #ededffbf 5%, #ededff78 15%, transparent 30%)"
+        background: "linear-gradient(to top, #ededfff1 2.5%,  #ededffbf 5%, #ededff78 15%, transparent 30%)",
     },
 
     listSubHeader: {
+        borderRadius: "none !important",
         "&:hover": {
-            boxShadow: "0px 2px 5px #050c4c4d",
-            transition: "box-shadow cubic-bezier(0.4, 0, 0.2, 1) 350ms",
+            backgroundColor: "#d4d4ff",
+            color: "#050c4c",
+            transition: "all cubic-bezier(0.4, 0, 0.2, 1) 350ms",
+            boxShadow: "0px 3px 6px #3729c14d",
             "& .list-sub-header-main-text svg": {
                 animation: "$shift linear 675ms both",
             }
@@ -205,12 +218,39 @@ const styles = theme => ({
         display: "inline-table",
         cursor: "pointer",
         transition: "all cubic-bezier(0.4, 0, 0.2, 1) 275ms",
-        boxShadow: "0px 3px 6px #050c4c4d",
+        boxShadow: "0px 2px 5px #050c4c4d",
         width: "100%",
         alignSelf: "flex-start",
         color: "#3729c1",
-        fontWeight: "bold",
         backgroundColor: "#ededff",
+        fontWeight: "bold",
+        textTransform: "capitalize",
+        "& span svg": {
+            verticalAlign: "middle",
+            color: "#050c4c",
+            marginRight: theme.spacing(1),
+        }
+    },
+    listSubHeaderOpen: {
+        borderRadius: "none !important",
+        "&:hover": {
+            backgroundColor: "#ededff",
+            color: "#3729c1",
+            transition: "all cubic-bezier(0.4, 0, 0.2, 1) 350ms",
+            boxShadow: "0px 3px 6px #3729c14d",
+            "& .list-sub-header-main-text svg": {
+                animation: "$shift linear 675ms both",
+            }
+        },
+        display: "inline-table",
+        cursor: "pointer",
+        transition: "all cubic-bezier(0.4, 0, 0.2, 1) 275ms",
+        boxShadow: "0px 2px 5px #050c4c4d",
+        width: "100%",
+        alignSelf: "flex-start",
+        color: "#3729c1",
+        backgroundColor: "#ededff",
+        fontWeight: "bold",
         textTransform: "capitalize",
         "& span svg": {
             verticalAlign: "middle",
@@ -355,14 +395,16 @@ const styles = theme => ({
             textAlignLast: "left",
         },
         "&.filters > .MuiListItem-root:hover > .MuiListItemText-root": {
-            background: "linear-gradient(to top, #00000080 100%, #ffffff00)",
-            opacity: "1",
-            transition: "opacity, background 375ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
+            color: "#fff !important",
+            background: "linear-gradient(to top, #020519 10%, #02052990 35%, #02052960 65%, #02052900 95%)",
+            transition: "all cubic-bezier(0.4, 0, 0.2, 1) 700ms",
+            fontWeight: "bold"
         },
         "&.filters > .MuiListItem-root > .MuiListItemText-root": {
-            background: "linear-gradient(to top, #00000040 75%, #ffffff00)",
-            opacity: ".75",
-            transition: "opacity, background 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
+            color: "#ffffffe0 !important",
+            background: "linear-gradient(to top, #020529 5%, #020529a0 25%, #02052980 50%, #02052900 75%)",
+            transition: "all cubic-bezier(0.4, 0, 0.2, 1) 350ms",
+            fontWeight: "bold"
         },
         "& .MuiFormGroup-root": {
             flexWrap: "nowrap",
@@ -787,6 +829,14 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
             </React.Fragment>;
     };
 
+    _get_list_sub_header_classname = (name, tutorial) => {
+
+        "use strict";
+        const _list_sub_header_opened = this.st4te._list_sub_header_opened;
+        const classes = this.st4te.classes;
+        return _list_sub_header_opened === name ? classes.listSubHeaderOpen : classes.listSubHeader;
+    };
+
     _get_colors = (s, l, o) => {
         "use strict";
         let colors = [];
@@ -1028,7 +1078,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
             case "image":
                 return (
                     <div key={"image-image-upload"} className={`swipetoolbox_i_${index}_${0}`}>
-                        <ListSubheader className={classes.listSubHeader} onClick={() => {this._scroll_to_id(`swipetoolbox_i_${index}_${0}`)}} active={_list_sub_header_opened === "upload"}>
+                        <ListSubheader className={this._get_list_sub_header_classname("upload")} onClick={() => {this._scroll_to_id(`swipetoolbox_i_${index}_${0}`)}} active={_list_sub_header_opened === "upload"}>
                             <span className={"list-sub-header-main-text"}>
                                 <span><ImportIcon/></span>
                                 <span>Upload</span>
@@ -1084,7 +1134,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                                 width: "100%"
                             }}>
                                 <Typography id="size-slider" style={{textAlignLast: "left"}} gutterBottom>NEW IMAGE SIZE</Typography>
-                                <Slider defaultValue={import_size} step={8} valueLabelDisplay="auto" min={0}
+                                <Slider defaultValue={import_size} step={1} valueLabelDisplay="auto" min={0}
                                         max={import_size > 512 ? import_size : 512}
                                         onChangeCommitted={this._set_import_size}
                                         onTouch={function (e){e.stopImmediatePropagation();e.stopPropagation();e.preventDefault();}}
@@ -2421,7 +2471,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                     this.get_action_panel(index).map((action_set) => {
                         return (
                             <div key={name + "-" + action_set.label + "-" + action_set.text.toLowerCase() + "-wrapper"} className={`swipetoolbox_i_${index}_${action_set.local_i}`}>
-                                <ListSubheader className={classes.listSubHeader} onClick={() => {this._scroll_to_id(`swipetoolbox_i_${index}_${action_set.local_i}`)}}>
+                                <ListSubheader className={this._get_list_sub_header_classname(action_set.name)} onClick={() => {this._scroll_to_id(`swipetoolbox_i_${index}_${action_set.local_i}`)}}>
                                     <span className={"list-sub-header-main-text"}>
                                         <span>{action_set.icon}</span>
                                         <span>{action_set.text}</span>
@@ -2542,7 +2592,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                         <br/>
                         <span>— Matias A.</span>
                     </p>*/}
-                <ButtonBase color={"lightgreen"} className={classes.advertising} onClick={() => {window.open("https://aragon.ai/?via=pixa-pics")}}><img src={"/src/images/adaragon.png"}/></ButtonBase>
+                <ButtonBase TouchRippleProps={{className: classes.rippleGreen}} className={classes.advertising} onClick={() => {window.open("https://aragon.ai/?via=pixa-pics")}}><img src={"/src/images/adaragon.png"}/></ButtonBase>
             </List>
         );
 
