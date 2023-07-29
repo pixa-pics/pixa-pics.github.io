@@ -1567,7 +1567,7 @@ class Pixel extends React.PureComponent {
         });
     };
 
-    _download_svg = (using = "xbrz", optimize_render_size = false, download_svg = false, download_crt = false, maybe_upscale_with_ai = false) => {
+    _download_svg = (using = "xbrz", optimize_render_size = false, download_svg = false, download_crt = false, photo = false) => {
 
         const { get_base64_png_data_url, set_png_compressors, xxhashthat } = this.st4te._canvas;
 
@@ -1607,60 +1607,48 @@ class Pixel extends React.PureComponent {
 
                                 this._request_force_update();
 
-                                if(maybe_upscale_with_ai) {
+                                if (photo) {
 
-                                    if(width * height < 1600 * 1600) {
+                                    postJSON("https://real-life-image.pixa-pics.workers.dev/", "" + image_base64, (err, res) => {
 
-                                        postJSON("https://deepai.pixa-pics.workers.dev/waifu2x", ""+image_base64, (err, res) => {
+                                        if (res) {
 
-                                            let { _files_waiting_download } = this.st4te;
+                                                fetch(res).then((resp) => {
 
-                                            if(res) {
-                                                oxi_png(""+res, Math.floor(100/30), false, pool).then((base_64_out) => {
+                                                    resp.blob().then((blob) => {
 
-                                                    _files_waiting_download.push({
-                                                        name: `PIXAPICS-${hash}-${using.toUpperCase()}-${size}+AI-2x_RAS.png`,
-                                                        url: ""+base_64_out
-                                                    });
+                                                        new Promise(function (resolve, _) {
+                                                            var reader = new FileReader();
+                                                            reader.onload = function () {
+                                                                resolve(reader.result)
+                                                            };
+                                                            reader.onerror = function () {
+                                                                var u = URL.createObjectURL(blob);
+                                                                resolve(u);
+                                                            };
+                                                            reader.readAsDataURL(blob);
+                                                        }).then((base64) => {
 
-                                                    this.setSt4te({_files_waiting_download}, this._request_force_update);
+                                                            _files_waiting_download.push({
+                                                                name: `PIXAPICS-${hash}-${"PHOTO-REAL"}-${"BIG"}+AI_RAS.jpg`,
+                                                                url: "" + base64
+                                                            });
 
-                                                }).catch(function(e){
-
-                                                    png_quant(""+res, 25, 50, 1, pool).then((base_64_out) => {
-
-                                                    _files_waiting_download.push({
-                                                        name: `PIXAPICS-${hash}-${using.toUpperCase()}-${size}+AI-2x_RAS.png`,
-                                                        url: ""+base_64_out
-                                                    });
-
-                                                    this.setSt4te({_files_waiting_download}, this._request_force_update);
-
-                                                    }).catch(function(e){
-
-                                                        actions.trigger_snackbar("Looks like we had an unexpected issue with our image optimizer", 5700);
-                                                        actions.jamy_update("angry");
-
-                                                        _files_waiting_download.push({
-                                                            name: `PIXAPICS-${hash}-${using.toUpperCase()}-${size}+AI-2x_RAS.png`,
-                                                            url: ""+res
+                                                            this.setSt4te({_files_waiting_download}, this._request_force_update);
                                                         });
-
-                                                        this.setSt4te({_files_waiting_download}, this.forceUpdate);
                                                     });
                                                 });
 
-                                            }else {
+                                        } else {
 
-                                                console.log(err, res)
-                                                actions.trigger_snackbar("Looks like we had an unexpected issue with deepai.org", 5700);
-                                                actions.jamy_update("angry");
-                                            }
-                                        }, "application/text");
-                                    }
+                                            console.log(err, res)
+                                            actions.trigger_snackbar("Looks like we had an unexpected issue with deepai.org", 5700);
+                                            actions.jamy_update("angry");
+                                        }
+                                    }, "application/text");
                                 }
-
                             });
+
 
                         }, (svg_base64, size) => {
 

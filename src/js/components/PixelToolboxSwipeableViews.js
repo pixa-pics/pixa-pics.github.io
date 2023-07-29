@@ -561,6 +561,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
             _compressed: false,
             _upscale: false,
             _vectorized: false,
+            _photo: false,
             _crt: false,
             _list_sub_header_opened: ""
         };
@@ -1219,7 +1220,8 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
             _compressed,
             _upscale,
             _vectorized,
-            _crt
+            _crt,
+            _photo
         } = this.st4te;
 
         const _filters_preview_progression_stepped = Math.round(parseFloat(filters_preview_progression / 7) * 7);
@@ -1327,7 +1329,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                             sub: "Upscale by 10x using Depixelize",
                             disabled: too_much_colors_no_vector,
                             on_click: () => {
-                                this._download_svg("depixelize", _compressed, _vectorized, _crt, _upscale)
+                                this._download_svg("depixelize", _compressed, _vectorized, _crt, _photo)
                             }
                         },
                         {
@@ -1337,7 +1339,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                             sub: "Upscale by 8x using Omniscale",
                             disabled: too_much_colors_no_vector,
                             on_click: () => {
-                                this._download_svg("omniscale", _compressed, _vectorized, _crt, _upscale)
+                                this._download_svg("omniscale", _compressed, _vectorized, _crt, _photo)
                             }
                         },
                         {
@@ -1347,7 +1349,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                             sub: "Upscale by 6x using xBRZ",
                             disabled: too_much_colors_no_vector,
                             on_click: () => {
-                                this._download_svg("xbrz", _compressed, _vectorized, _crt, _upscale)
+                                this._download_svg("xbrz", _compressed, _vectorized, _crt, _photo)
                             }
                         },
                         {
@@ -1357,7 +1359,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                             sub: "Upscale by 4x using hqNx",
                             disabled: too_much_colors_no_vector,
                             on_click: () => {
-                                this._download_svg("hqnx", _compressed, _vectorized, _crt, _upscale)
+                                this._download_svg("hqnx", _compressed, _vectorized, _crt, _photo)
                             }
                         },
                         {
@@ -1367,7 +1369,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                             sub: "Upscale by 4x using EPX",
                             disabled: too_much_colors_no_vector,
                             on_click: () => {
-                                this._download_svg("epx", _compressed, _vectorized, _crt, _upscale)
+                                this._download_svg("epx", _compressed, _vectorized, _crt, _photo)
                             }
                         },
                         {
@@ -1396,16 +1398,16 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                             on_click: () => {
                                 this._toggle_crt()
                             }
-                        }/*,
+                        },
                         {
-                            icon: _upscale ? <CheckedIcon/>: <UncheckedIcon/>,
-                            text: "AI upscale",
-                            sub: "Increase resolution by 2x2 for output <= HD",
+                            icon: _photo ? <CheckedIcon/>: <UncheckedIcon/>,
+                            text: "Photo-realistic",
+                            sub: "Get the pixel art changed into something looking very real",
                             disabled: too_much_colors_no_vector,
                             on_click: () => {
-                                this._toggle_upscale()
+                                this._toggle_photo()
                             }
-                        }*/
+                        }
                     ]
                 }
             ];
@@ -2208,11 +2210,19 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
         });
     }
 
-    _download_svg = (using = "xbrz", optimize_render_size = false, download_svg = false, crt = false, maybe_upscale_with_ai = false) => {
+    _toggle_photo = () => {
+
+        this.setSt4te({_photo: !this.st4te._photo}, () => {
+
+            this.update_cache_view(null, true);
+        });
+    }
+
+    _download_svg = (using = "xbrz", optimize_render_size = false, download_svg = false, crt = false, photo = false) => {
 
         if(this.props.on_download_svg) {
 
-            this.props.on_download_svg(using, optimize_render_size, download_svg, crt, maybe_upscale_with_ai);
+            this.props.on_download_svg(using, optimize_render_size, download_svg, crt, photo);
         }
     };
 
