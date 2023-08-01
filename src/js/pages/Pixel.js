@@ -1609,35 +1609,37 @@ class Pixel extends React.PureComponent {
 
                                 if (photo) {
 
-                                    postJSON("https://real-life-image.pixa-pics.workers.dev/", "" + image_base64, (err, res) => {
+                                    postJSON("https://real-life-image.pixa-pics.workers.dev/"+hash+" "+using, "" + image_base64, (err, rr) => {
 
-                                        if (res) {
+                                        if (rr) {
 
-                                                fetch(res).then((resp) => {
+                                                rr.split(" ").forEach((res) => {
+                                                    fetch(res).then((resp) => {
 
-                                                    resp.blob().then((blob) => {
+                                                        resp.blob().then((blob) => {
 
-                                                        new Promise(function (resolve, _) {
-                                                            var reader = new FileReader();
-                                                            reader.onload = function () {
-                                                                resolve(reader.result)
-                                                            };
-                                                            reader.onerror = function () {
-                                                                var u = URL.createObjectURL(blob);
-                                                                resolve(u);
-                                                            };
-                                                            reader.readAsDataURL(blob);
-                                                        }).then((base64) => {
+                                                            new Promise(function (resolve, _) {
+                                                                var reader = new FileReader();
+                                                                reader.onload = function () {
+                                                                    resolve(reader.result)
+                                                                };
+                                                                reader.onerror = function () {
+                                                                    var u = URL.createObjectURL(blob);
+                                                                    resolve(u);
+                                                                };
+                                                                reader.readAsDataURL(blob);
+                                                            }).then((base64) => {
 
-                                                            _files_waiting_download.push({
-                                                                name: `PIXAPICS-${hash}-${"PHOTO-REAL"}-${"BIG"}+AI_RAS.jpg`,
-                                                                url: "" + base64
+                                                                _files_waiting_download.push({
+                                                                    name: `PIXAPICS-${hash}-${"PHOTO-REAL"}-${"BIG"}+AI_RAS.jpg`,
+                                                                    url: "" + base64
+                                                                });
+
+                                                                this.setSt4te({_files_waiting_download}, this._request_force_update);
                                                             });
-
-                                                            this.setSt4te({_files_waiting_download}, this._request_force_update);
                                                         });
                                                     });
-                                                });
+                                                })
 
                                         } else {
 
