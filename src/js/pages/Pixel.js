@@ -1644,7 +1644,7 @@ class Pixel extends React.PureComponent {
                                                         });
                                                     });
                                                 }
-                                            })
+                                            }, "application/text")
                                         }
                                     }, "application/text")
                                 } else {
@@ -1652,7 +1652,7 @@ class Pixel extends React.PureComponent {
                                     actions.trigger_snackbar("Looks like we had an unexpected issue", 5700);
                                     actions.jamy_update("angry");
                                 }
-                            }, "application/text");
+                            });
                         }, (svg_base64, size) => {
 
                             if(svg_base64.length > 0) {

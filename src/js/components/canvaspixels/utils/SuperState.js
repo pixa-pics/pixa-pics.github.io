@@ -523,7 +523,7 @@ const SuperState = {
                     },
                     from_text: function (size, text, onto) {
 
-                        
+
                         context.clearRect(0, 0, width, height);
                         context.font = `${size}px "Jura"`;
                         context.fillStyle = "#ffffffff";
@@ -618,7 +618,7 @@ const SuperState = {
                     from_path: function(path_indexes, onto){
                         "use strict";
                         onto = typeof onto == "undefined" ? new SetFixed(width*height): onto;
-                        
+
                         context.clearRect(0, 0, width, height);
                         context.lineWidth = 0;
 
