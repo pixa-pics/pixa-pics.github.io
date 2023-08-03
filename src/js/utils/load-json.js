@@ -134,7 +134,7 @@ function postJSON(url, payload, callback_function, content_type = "application/x
         body: content_type === "application/text" ? payload: content_type === "application/json" ? clean_json_text(JSON.stringify(payload)): bodyencoded,
     };
 
-    fetch(url, request_options)
+    fetch(url, request_options, 180 * 1000)
         .then(response => response.text())
         .then(result => callback_function(null, result))
         .catch(error => callback_function(error, null));

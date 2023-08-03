@@ -1598,10 +1598,10 @@ class Pixel extends React.PureComponent {
                         actions.trigger_voice("processing");
                         base64png_to_xbrz_svg(url, (image_base64, size, width, height) => {
 
-                            let { _files_waiting_download } = this.st4te;
+                            let {_files_waiting_download} = this.st4te;
                             _files_waiting_download.push({
                                 name: `PIXAPICS-${hash}-${using.toUpperCase()}-${size}x_RAS.png`,
-                                url: ""+image_base64
+                                url: "" + image_base64
                             });
                             this.setSt4te({_files_waiting_download}, () => {
 
@@ -1609,14 +1609,16 @@ class Pixel extends React.PureComponent {
 
                                 if (photo) {
 
-                                    postJSON("https://real-life-image.pixa-pics.workers.dev/"+hash+" "+using, "" + image_base64, (err, rr) => {
+                                    postJSON("https://real-life-image.pixa-pics.workers.dev/init", "" + image_base64, (err, rr1) => {
 
-                                        if (rr) {
+                                        postJSON("https://real-life-image.pixa-pics.workers.dev/get", ""+rr1, (err, rr2) => {
 
-                                                rr.split(" ").forEach((res) => {
+                                            if (rr2) {
+
+                                                rr2.split(" ").forEach((res) => {
                                                     fetch(res).then((resp) => {
 
-                                                        resp.blob().then((blob) => {
+                                                        resp.blob().then((blob, num) => {
 
                                                             new Promise(function (resolve, _) {
                                                                 var reader = new FileReader();
@@ -1631,7 +1633,7 @@ class Pixel extends React.PureComponent {
                                                             }).then((base64) => {
 
                                                                 _files_waiting_download.push({
-                                                                    name: `PIXAPICS-${hash}-${"PHOTO-REAL"}-${"BIG"}+AI_RAS.jpg`,
+                                                                    name: `PIXAPICS-${hash}-${"PHOTO-REAL"}-${"BIG"}+AI_RAS-#${num}.jpg`,
                                                                     url: "" + base64
                                                                 });
 
@@ -1639,19 +1641,17 @@ class Pixel extends React.PureComponent {
                                                             });
                                                         });
                                                     });
-                                                })
+                                                });
+                                            }
+                                        })
 
-                                        } else {
+                                    })
+                                } else {
 
-                                            console.log(err, res)
-                                            actions.trigger_snackbar("Looks like we had an unexpected issue with deepai.org", 5700);
-                                            actions.jamy_update("angry");
-                                        }
-                                    }, "application/text");
+                                    actions.trigger_snackbar("Looks like we had an unexpected issue", 5700);
+                                    actions.jamy_update("angry");
                                 }
-                            });
-
-
+                            }, "application/text");
                         }, (svg_base64, size) => {
 
                             if(svg_base64.length > 0) {
@@ -1689,8 +1689,8 @@ class Pixel extends React.PureComponent {
                             }
 
                         }, Array.from(colors), using, Boolean(optimize_render_size), Boolean(download_svg), Boolean(download_crt));
-                    });
-                });
+                    })
+                })
             });
         });
     };
