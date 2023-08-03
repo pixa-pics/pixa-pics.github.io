@@ -1611,41 +1611,42 @@ class Pixel extends React.PureComponent {
 
                                     postJSON("https://real-life-image.pixa-pics.workers.dev/init", "" + image_base64, (err, rr1) => {
 
-                                        postJSON("https://real-life-image.pixa-pics.workers.dev/get", ""+rr1, (err, rr2) => {
+                                        if (rr1) {
+                                            postJSON("https://real-life-image.pixa-pics.workers.dev/get", ""+rr1, (err, rr2) => {
 
-                                            if (rr2) {
+                                                if (rr2) {
 
-                                                rr2.split(" ").forEach((res) => {
-                                                    fetch(res).then((resp) => {
+                                                    rr2.split(" ").forEach((res) => {
+                                                        fetch(res).then((resp) => {
 
-                                                        resp.blob().then((blob, num) => {
+                                                            resp.blob().then((blob, num) => {
 
-                                                            new Promise(function (resolve, _) {
-                                                                var reader = new FileReader();
-                                                                reader.onload = function () {
-                                                                    resolve(reader.result)
-                                                                };
-                                                                reader.onerror = function () {
-                                                                    var u = URL.createObjectURL(blob);
-                                                                    resolve(u);
-                                                                };
-                                                                reader.readAsDataURL(blob);
-                                                            }).then((base64) => {
+                                                                new Promise(function (resolve, _) {
+                                                                    var reader = new FileReader();
+                                                                    reader.onload = function () {
+                                                                        resolve(reader.result)
+                                                                    };
+                                                                    reader.onerror = function () {
+                                                                        var u = URL.createObjectURL(blob);
+                                                                        resolve(u);
+                                                                    };
+                                                                    reader.readAsDataURL(blob);
+                                                                }).then((base64) => {
 
-                                                                _files_waiting_download.push({
-                                                                    name: `PIXAPICS-${hash}-${"PHOTO-REAL"}-${"BIG"}+AI_RAS-#${num}.jpg`,
-                                                                    url: "" + base64
+                                                                    _files_waiting_download.push({
+                                                                        name: `PIXAPICS-${hash}-${"PHOTO-REAL"}-${"BIG"}+AI_RAS-#${num}.jpg`,
+                                                                        url: "" + base64
+                                                                    });
+
+                                                                    this.setSt4te({_files_waiting_download}, this._request_force_update);
                                                                 });
-
-                                                                this.setSt4te({_files_waiting_download}, this._request_force_update);
                                                             });
                                                         });
                                                     });
-                                                });
-                                            }
-                                        })
-
-                                    })
+                                                }
+                                            })
+                                        }
+                                    }, "application/text")
                                 } else {
 
                                     actions.trigger_snackbar("Looks like we had an unexpected issue", 5700);
