@@ -24,14 +24,14 @@ const styles = theme => ({
         display: "inline !important",
         color: "#ffffffff",
         filter: "drop-shadow(0px 0px 3px #000080a8)",
-        webkitFilter: "drop-shadow(0px 0px 3px #000080a8)",
+        WebkitFilter: "drop-shadow(0px 0px 3px #000080a8)",
     },
     revelantTextDesktop: {
         fontWeight: "bold",
         display: "inline !important",
         color: "#ffffffff",
         filter: "drop-shadow(0px 0px 3px #000080a8)",
-        webkitFilter: "drop-shadow(0px 0px 3px #000080a8)",
+        WebkitFilter: "drop-shadow(0px 0px 3px #000080a8)",
         [theme.breakpoints.down("md")]: {
             display: "none",
         },
@@ -56,12 +56,12 @@ const styles = theme => ({
         color: "#ffffff",
         textShadow: "0px 0px 4px white",
         filter: "drop-shadow(0px 0px 4px lightskyblue) brightness(1)",
-        webkitFilter: "drop-shadow(0px 0px 4px lightskyblue) brightness(1)",
+        WebkitFilter: "drop-shadow(0px 0px 4px lightskyblue) brightness(1)",
         backgroundImage: "linear-gradient(32deg, #6100fd, #5dbff3, #7be2f1, #98ecff, #32c4ff, #6d5bff, #020562)",
         "&:hover": {
             color: "#ffffff",
             filter: "drop-shadow(0px 0px 16px lightskyblue) contrast(1.15) brightness(1.2)",
-            webkitFilter: "drop-shadow(0px 0px 16px lightskyblue) contrast(1.15) brightness(1.2)",
+            WebkitFilter: "drop-shadow(0px 0px 16px lightskyblue) contrast(1.15) brightness(1.2)",
             transform: "translateY(-3.4px) scale(1.15)  !important",
         },
         transition: "color, filter, transform cubic-bezier(0.4, 0, 0.2, 1) 125ms !important",
@@ -84,11 +84,11 @@ const styles = theme => ({
         color: "#6f440d",
         backgroundImage: "linear-gradient(-32deg, goldenrod, #fff9f0, gold, darkgoldenrod, #fff8aa, goldenrod, blanchedalmond)",
         filter: "drop-shadow(0px 0px 4px darkgoldenrod)",
-        webkitFilter: "drop-shadow(0px 0px 4px darkgoldenrod)",
+        WebkitFilter: "drop-shadow(0px 0px 4px darkgoldenrod)",
         "&:hover": {
             color: "#402303",
             filter: "drop-shadow(0px 0px 16px goldenrod) contrast(1.15) brightness(1.2)",
-            webkitFilter: "drop-shadow(0px 0px 16px goldenrod) contrast(1.15) brightness(1.2)",
+            WebkitFilter: "drop-shadow(0px 0px 16px goldenrod) contrast(1.15) brightness(1.2)",
             transform: "translateY(-3.4px) scale(1.15)  !important",
         },
         transformOrigin: "center",
@@ -130,7 +130,7 @@ const styles = theme => ({
         maxHeight: "60h",
         maxWidth: "60vw",
         filter: "drop-shadow(0px 0px 6px #00000099) drop-shadow(0px 0px 9px #00000066)",
-        webkitFilter: "drop-shadow(0px 0px 6px #00000099) drop-shadow(0px 0px 9px #00000066)",
+        WebkitFilter: "drop-shadow(0px 0px 6px #00000099) drop-shadow(0px 0px 9px #00000066)",
         willChange: "transform",
         contain: "style size layout",
         position: "absolute",
@@ -143,14 +143,14 @@ const styles = theme => ({
             height: "100%",
             filter: "opacity(0.66)",
             transform: "translate3d(0%, -50%, 5px)",
-            webkitFilter: "opacity(0.75)",
+            WebkitFilter: "opacity(0.75)",
             imageRendering: "optimizeSpeed",
             transition: "filter 220ms cubic-bezier(0.4, 0, 0.2, 1) 5ms !important"
         },
         "&:hover > img, &:hover > h2": {
             willChange: "filter",
             filter: "opacity(1)",
-            webkitFilter: "opacity(1)"
+            WebkitFilter: "opacity(1)"
         },
         [theme.breakpoints.down("md")]: {
             fontSize: 12,
@@ -161,7 +161,7 @@ const styles = theme => ({
             "& > img, & > h2": {
                 transform: "translate3d(0%, calc(45vh - 75%), 5px) !important",
                 filter: "opacity(1)",
-                webkitFilter: "opacity(1)",
+                WebkitFilter: "opacity(1)",
                 transition: "none"
             },
         },
@@ -610,7 +610,7 @@ class Home extends React.PureComponent {
                         <Fade in={true} timeout={750}>
                             <Button key={_join_now_button_update} className={classes.homeCTAuseit} variant={"contained"} size={"large"} color="primary" onClick={() => {this._go_to_editor("", true)}}>
                                 <ShufflingSpanText placeholder={_join_now_button_update % 5 ? "START " : "JOIN LAB "} text={_join_now_button_update % 5 ? "START " : "JOIN LAB "} animation_delay_ms={_join_now_button_update === 0 ? 3000: 0} animation_duration_ms={1000} />
-                                <ScientistEmojiSvg alt="Laboratory decoration" width={24} height={24} style={{transform: "scale(3.5)", width: 24, height: 24, marginRight: "2em", marginLeft: "2em", filter: "drop-shadow(white 0px 0px 6px)", webkitFilter: "drop-shadow(white 0px 0px 6px)"}} className="emoji-150" />
+                                <ScientistEmojiSvg alt="Laboratory decoration" width={24} height={24} style={{transform: "scale(3.5)", width: 24, height: 24, marginRight: "2em", marginLeft: "2em", filter: "drop-shadow(white 0px 0px 6px)", WebkitFilter: "drop-shadow(white 0px 0px 6px)"}} className="emoji-150" />
                                 <ShufflingSpanText placeholder={_join_now_button_update % 5 ? " SOON" : " NOW"} text={_join_now_button_update % 5 ? " NOW" : " SOON"} app="..." animation_delay_ms={_join_now_button_update === 0 ? 3000: 500} animation_duration_ms={1000} />
                             </Button>
                         </Fade>

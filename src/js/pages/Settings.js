@@ -323,7 +323,7 @@ class Settings extends React.Component {
                                 <div className={classes.sliderContainer}>
                                     <Typography className={classes.sliderLabel} id="bdi-slider"
                                                 gutterBottom>Drawer's background</Typography>
-                                    <Slider defaultValue={_bdi} step={1}
+                                    <Slider defaultValue={parseInt(_bdi)} step={1}
                                             valueLabelFormat={(value) => { return Array.of("no", "plm", "rid", "bmb")[value]}}
                                             valueLabelDisplay="auto" min={0} max={3}
                                             onChangeCommitted={this._set_bdi_from_slider}
@@ -332,7 +332,7 @@ class Settings extends React.Component {
                                 <div className={classes.sliderContainer}>
                                     <Typography className={classes.sliderLabel} id="ret-slider"
                                                 gutterBottom>Toolbar's symbol</Typography>
-                                    <Slider defaultValue={_ret} step={1}
+                                    <Slider defaultValue={parseInt(_ret)} step={1}
                                             valueLabelFormat={(value) => { return Array.of("no", "hnd", "sly", "sun", "bhz", "evl", "ptn", "skl", "ncl", "ufo", "msc", "tgr", "rvn")[value]}}
                                             valueLabelDisplay="auto" min={0} max={12}
                                             onChangeCommitted={this._set_ret_from_slider}
@@ -341,7 +341,7 @@ class Settings extends React.Component {
                                 <div className={classes.sliderContainer}>
                                     <Typography className={classes.sliderLabel} id="camo-slider"
                                                 gutterBottom>Toolbar's skin</Typography>
-                                    <Slider defaultValue={_camo} step={1}
+                                    <Slider defaultValue={parseInt(_camo)} step={1}
                                             valueLabelFormat={(value) => { return Array.of("no", "dgt", "jgl", "snd", "cns", "mny", "rpt", "mgk", "npn", "lf", "dth", "fr", "blt")[value]}}
                                             valueLabelDisplay="auto" min={0} max={12}
                                             onChangeCommitted={this._set_camo_from_slider}

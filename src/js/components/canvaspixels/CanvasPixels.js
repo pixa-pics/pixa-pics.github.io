@@ -3633,7 +3633,7 @@ class CanvasPixels extends React.PureComponent {
                              height: canvas_wrapper_height | 0,
                              boxShadow: box_shadow,
                              filter: `opacity(${!is_there_new_dimension ? "1": "0"}) ${perspective ? filter: ""}`,
-                             webkitFilter: `opacity(${!is_there_new_dimension ? "1": "0"}) ${perspective ? filter: ""}`,
+                             WebkitFilter: `opacity(${!is_there_new_dimension ? "1": "0"}) ${perspective ? filter: ""}`,
                              transform: `translate(${((scale.move_x * 100 | 0) / 100).toFixed(2)}px, ${((scale.move_y * 100 | 0) / 100).toFixed(2)}px) ${perspective ? transform_rotate: ""}`,
                              willChange: will_change ? "transform, box-shadow": "",
                              transformOrigin: "center middle",

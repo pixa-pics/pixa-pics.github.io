@@ -405,7 +405,7 @@ const SuperMasterMeta = {
             },
             is_there_new_dimension: function() {
                 "use strict";
-                return Boolean(state._is_there_new_dimension);
+                return state._is_there_new_dimension && true;
             },
             update_canvas: function(force_update, requested_at) {
                 "use strict";

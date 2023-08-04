@@ -5,6 +5,7 @@ window.mobileAndTabletCheck = function() {
     return check;
 };
 
+import { createLocalBlob } from "../utils/objectURL";
 import {UJS} from "../utils/ujs";
 import JSLoader from "../utils/JSLoader";
 let is_mobile_or_tablet = window.mobileAndTabletCheck();
@@ -318,7 +319,7 @@ const styles = theme => ({
         '& > div > .react-swipeable-view-container': {
             display: "flex !important",
             filter: "opacity(1) !important",
-            webkitFilter: "opacity(1) !important",
+            WebkitFilter: "opacity(1) !important",
             willChange: "none !important",
             contain: "size style !important",
             height: "100% !important",
@@ -783,7 +784,7 @@ class Pixel extends React.PureComponent {
             document.getElementById("tabs-desktop").addEventListener("wheel", this._handle_wheel, {passive: false});
         } catch (e){}
         dispatcher.register(this._handle_events.bind(this));
-        this.setSt4te({_h_svg: get_svg_in_b64(<HexGrid color={"#e5e5e5"}/>),_h_svg_size: `${Math.ceil(.5*200)}px ${Math.ceil(.5*229.3)}px`});
+        this.setSt4te({_h_svg: createLocalBlob(get_svg_in_b64(<HexGrid color={"#e5e5e5"}/>)),_h_svg_size: `${Math.ceil(.5*200)}px ${Math.ceil(.5*229.3)}px`});
         JSLoader( () => import("../utils/ressource_pixel")).then((RESSOURCE_PIXELS) => {
 
             this.setSt4te({_library: RESSOURCE_PIXELS});
@@ -2848,14 +2849,14 @@ class Pixel extends React.PureComponent {
                     hysteresis={0.314}
                     minFlingVelocity={314}
                     swipeAreaWidth={128}
-                    open={_is_edit_drawer_open}
+                    open={Boolean(_is_edit_drawer_open)}
                     onOpen={this._handle_edit_drawer_open}
                     onClose={this._handle_edit_drawer_close}
                     classes={{
                         paper: classes.swipeableDrawerPaper,
                         modal: classes.drawerModal,
                     }}
-                    transitionDuration={{enter: 50, exit: 75}}
+                    transitionDuration={{appear: 5, enter: 50, exit: 75}}
                     ModalProps={{disablePortal: true, BackdropProps:{classes: {root: classes.drawerModalBackdropRoot}}}}
                     variant="temporary"
                     anchor="bottom"
@@ -2876,7 +2877,7 @@ class Pixel extends React.PureComponent {
                                 <Slider
                                     key={"slider-"+(_slider_value*255 | 0)}
                                     className={classes.effectSlider}
-                                    defaultValue={_slider_value}
+                                    defaultValue={parseInt(_slider_value)}
                                     step={1/255}
                                     min={0}
                                     max={1}
@@ -2974,7 +2975,7 @@ class Pixel extends React.PureComponent {
                             </Typography>
                             <Slider
                                 key={"slider-"+(_slider_value*255 | 0)}
-                                defaultValue={_slider_value}
+                                defaultValue={parseInt(_slider_value)}
                                 className={classes.effectSlider}
                                 step={1/255}
                                 min={0}
@@ -3078,10 +3079,9 @@ class Pixel extends React.PureComponent {
                         pointerEvents: "all"
                     },
                 }}
-                onContextMenu={function (e){e.preventDefault(); e.stopImmediatePropagation();}}
+                onContextMenu={function (e){e.preventDefault();}}
                 MenuListProps={{dense: true}}
-                transitionDuration={{enter: 35, exit: 60}}
-                transitionDelay={{enter: 15, exit: 15}}
+                transitionDuration={{appear: 5, enter: 35, exit: 60}}
                 open={Boolean(_menu_mouse_y) || Boolean(_menu_mouse_x)}
                 onClose={this._handle_menu_close}
                 disablePortal={false}
@@ -3322,20 +3322,20 @@ class Pixel extends React.PureComponent {
                 <div>
                     <ImageFileDialog
                         keepMounted={false}
-                        open={_library_dialog_open}
+                        open={Boolean(_library_dialog_open)}
                         object={_library}
                         onClose={this._close_library}
                         onSelectImage={this._from_library}
                     />
                     <PixelDialogText
                         keepMounted={false}
-                        open={_text_dialog_open}
+                        open={Boolean(_text_dialog_open)}
                         onClose={this._close_text}
                         onSuccess={this._draw_text}
                     />
                     <PixelDialogCreate keepMounted={false}
                                        theme_day={_settings._theme_day}
-                                       open={_is_pixel_dialog_create_open}
+                                       open={Boolean(_is_pixel_dialog_create_open)}
                                        pixel_arts={_time_ago_initiated ? _attachment_previews: {}}
                                        size={_import_size}
                                        on_import_size_change={this._set_import_size}
@@ -3350,7 +3350,7 @@ class Pixel extends React.PureComponent {
                         center={false}
                         style={{color: _ripple_color, opacity: _ripple_opacity, position: "fixed", width: "100%", height: "100%"}}/>
 
-                    <Backdrop style={{pointerEvents: "all", cursor: "pointer"}} onDrag={this._handle_file_upload} className={classes.backdrop} open={_loading || _files_waiting_download.length > 0 || (_drag_file + 1000 > Date.now())} onClick={this._continue_download}>
+                    <Backdrop style={{pointerEvents: "all", cursor: "pointer"}} onDrag={this._handle_file_upload} className={classes.backdrop} open={Boolean(_loading || _files_waiting_download.length > 0 || (_drag_file + 1000 > Date.now()))} onClick={this._continue_download}>
                         <div className={classes.backdropTextContent} style={{ fontFamily: `"Jura"`, textTransform: "uppercase", pointerEvents: "none"}}>
                             {!_drag_file && Boolean(_loading || _files_waiting_download.length > 0) && <h1><ShufflingSpanText key={_loading_process || _loading} text={_loading_process === "browser" ? "Laboratory in DANGER!": "LABORATORY PROCESSING"} animation_delay_ms={0} animation_duration_ms={200}/></h1>}
                             {!_drag_file && _files_waiting_download.length > 0 && <h3><ShufflingSpanText key={_files_waiting_download[0].name} text={`ACTION REQUIRED... ${String(_files_waiting_download[0].name)}`} animation_delay_ms={300} animation_duration_ms={500}/></h3>}

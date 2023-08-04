@@ -1,7 +1,7 @@
 const {SIMDopeColor} = require("simdope");
 const ca = require("../../../notoemoji/react/Ca");
+const tempInt32 = new Int32Array(15);
 const CanvasPos = {
-
     _get_init_state(pxl_width, pxl_height, default_scale, canvas_wrapper_padding, canvas_wrapper_border_width, perspective) {
         "use strict";
         return {
@@ -46,55 +46,74 @@ const CanvasPos = {
     },
     _get_pos(s, szr, o){
         "use strict";
-        const canvas_wrapper_border_box_extra_size = Math.round(s.canvas_wrapper.padding / s.device_pixel_ratio * s.scale.current + s.canvas_wrapper.border_width) * 2  | 0;
-        const canvas_wrapper_width = Math.round(s.sizes.width * szr * s.scale.current) + canvas_wrapper_border_box_extra_size | 0;
-        const canvas_wrapper_height = Math.round(s.sizes.height * szr * s.scale.current) + canvas_wrapper_border_box_extra_size | 0;
-        const canvas_wrapper_offset_left = s.scale.move_x | 0;
-        const canvas_wrapper_offset_top = s.scale.move_y | 0;
-        const canvas_wrapper_left = s.canvas_container.left + canvas_wrapper_offset_left | 0;
-        const canvas_wrapper_top = s.canvas_container.top + canvas_wrapper_offset_top | 0;
-        const canvas_wrapper_right = canvas_wrapper_left + canvas_wrapper_width | 0;
-        const canvas_wrapper_bottom = canvas_wrapper_top + canvas_wrapper_height | 0;
+        // canvas_wrapper_border_box_extra_size
+        tempInt32[0] = Math.round(s.canvas_wrapper.padding / s.device_pixel_ratio * s.scale.current + s.canvas_wrapper.border_width) * 2 | 0;
+        // canvas_wrapper_width
+        tempInt32[1] = Math.round(s.sizes.width * szr * s.scale.current) + tempInt32[0] | 0;
+        // canvas_wrapper_height
+        tempInt32[2] = Math.round(s.sizes.height * szr * s.scale.current) + tempInt32[0] | 0;
+        // canvas_wrapper_offset_left
+        tempInt32[3] = s.scale.move_x | 0;
+        // canvas_wrapper_offset_top
+        tempInt32[4] = s.scale.move_y | 0;
+        // canvas_wrapper_left
+        tempInt32[5] = s.canvas_container.left + tempInt32[3] | 0;
+        // canvas_wrapper_top
+        tempInt32[6] = s.canvas_container.top + tempInt32[4] | 0;
+        // canvas_wrapper_right
+        tempInt32[7] = tempInt32[5] + tempInt32[1] | 0;
+        // canvas_wrapper_bottom
+        tempInt32[8] = tempInt32[6] + tempInt32[2] | 0;
+        // canvas_offset_left
+        tempInt32[9] = tempInt32[0] / 2 | 0;
+        // canvas_offset_top
+        tempInt32[10] = tempInt32[0] / 2 | 0;
+        // canvas_left
+        tempInt32[11] = tempInt32[5] + tempInt32[9] | 0;
+        // canvas_top
+        tempInt32[12] = tempInt32[6] + tempInt32[10] | 0;
+        // canvas_right
+        tempInt32[13] = tempInt32[7] - tempInt32[0] / 2 | 0;
+        // canvas_bottom
+        tempInt32[14] = tempInt32[8] - tempInt32[0] / 2 | 0;
 
-        const canvas_offset_left = canvas_wrapper_border_box_extra_size / 2 | 0;
-        const canvas_offset_top = canvas_wrapper_border_box_extra_size / 2 | 0;
-        const canvas_left = canvas_wrapper_left + canvas_offset_left | 0;
-        const canvas_top = canvas_wrapper_top + canvas_offset_top | 0;
-        const canvas_right = canvas_wrapper_right - canvas_wrapper_border_box_extra_size / 2 | 0;
-        const canvas_bottom = canvas_wrapper_bottom - canvas_wrapper_border_box_extra_size / 2 | 0;
+        if (typeof o === 'undefined'){ o = {}};
 
-        o = {
-            canvas: {
-                offset_left: canvas_offset_left | 0,
-                offset_top: canvas_offset_top | 0,
-                left: canvas_left | 0,
-                top: canvas_top | 0,
-                right: canvas_right | 0,
-                bottom: canvas_bottom | 0,
-                width: canvas_right - canvas_left | 0,
-                height: canvas_bottom - canvas_top | 0,
-            },
-            canvas_wrapper: {
-                offset_left: canvas_wrapper_offset_left | 0,
-                offset_top: canvas_wrapper_offset_top | 0,
-                left: canvas_wrapper_left | 0,
-                top: canvas_wrapper_top | 0,
-                right: canvas_wrapper_right | 0,
-                bottom: canvas_wrapper_bottom | 0,
-                width: canvas_wrapper_right - canvas_wrapper_left | 0,
-                height: canvas_wrapper_bottom - canvas_wrapper_top | 0,
-            },
-            canvas_container: {
-                offset_left: s.canvas_container.left | 0,
-                offset_top: s.canvas_container.top | 0,
-                left: s.canvas_container.left | 0,
-                top: s.canvas_container.top | 0,
-                right: s.canvas_container.left + s.canvas_container.width | 0,
-                bottom: s.canvas_container.top + s.canvas_container.height | 0,
-                width: s.canvas_container.width | 0,
-                height: s.canvas_container.height | 0,
-            }
-        };
+        if (typeof o.canvas === 'undefined') {
+            o.canvas = {};
+        }
+        o.canvas.offset_left = tempInt32[9];
+        o.canvas.offset_top = tempInt32[10];
+        o.canvas.left = tempInt32[11];
+        o.canvas.top = tempInt32[12];
+        o.canvas.right = tempInt32[13];
+        o.canvas.bottom = tempInt32[14];
+        o.canvas.width = tempInt32[13] - tempInt32[11] | 0;
+        o.canvas.height = tempInt32[14] - tempInt32[12] | 0;
+
+        if (typeof o.canvas_wrapper === 'undefined') {
+            o.canvas_wrapper = {};
+        }
+        o.canvas_wrapper.offset_left = tempInt32[3];
+        o.canvas_wrapper.offset_top = tempInt32[4];
+        o.canvas_wrapper.left = tempInt32[5];
+        o.canvas_wrapper.top = tempInt32[6];
+        o.canvas_wrapper.right = tempInt32[7];
+        o.canvas_wrapper.bottom = tempInt32[8];
+        o.canvas_wrapper.width = tempInt32[7] - tempInt32[5]| 0;
+        o.canvas_wrapper.height = tempInt32[8] - tempInt32[6]| 0;
+
+        if (typeof o.canvas_container === 'undefined') {
+            o.canvas_container = {};
+        }
+        o.canvas_container.offset_left = s.canvas_container.left | 0;
+        o.canvas_container.offset_top = s.canvas_container.top | 0;
+        o.canvas_container.left = s.canvas_container.left | 0;
+        o.canvas_container.top = s.canvas_container.top | 0;
+        o.canvas_container.right = s.canvas_container.left + s.canvas_container.width | 0;
+        o.canvas_container.bottom = s.canvas_container.top + s.canvas_container.height | 0;
+        o.canvas_container.width = s.canvas_container.width | 0;
+        o.canvas_container.height = s.canvas_container.height | 0;
 
         return o;
     },
@@ -238,6 +257,7 @@ const CanvasPos = {
 
         let msi = null;
         let pe = null;
+        let style = {box_shadow: "", will_change: false};
 
         return {
             // Methods
@@ -283,14 +303,11 @@ const CanvasPos = {
             },
             get_perspective_state: function() {
                 "use strict";
-                return Object.assign({
-                    transform_rotate: "",
-                    background_image: "",
-                }, pe);
+                return pe;
             },
             get_screen_zoom_ratio: function() {
                 "use strict";
-                return Math.fround(parseFloat(szr));
+                return Math.fround(parseFloat(szr)).toFixed(2);
             },
             compute_perspective_from_pointer_event: function(pageX, pageY) {
                 "use strict";
@@ -578,7 +595,6 @@ const CanvasPos = {
                 event.stopImmediatePropagation();
 
                 const {canvas_event_target} = s;
-                const pointer_state = this.get_pointer_state();
                 let {
                     latest_pointers_distance,
                     latest_pointers_client_x_center,
@@ -586,11 +602,11 @@ const CanvasPos = {
                     previous_single_pointer_down_timestamp,
                     previous_double_pointer_down_timestamp,
                     pointer_events,
-                } = pointer_state;
+                } = this.get_pointer_state();
 
                 const old_previous_single_pointer_down_timestamp = parseInt(previous_single_pointer_down_timestamp);
                 const old_previous_double_pointer_down_timestamp = parseInt(previous_double_pointer_down_timestamp);
-                pointer_events.set(event.pointerId, event);
+                pointer_events.set(""+event.pointerId, event);
                 const one_pointer = Boolean(pointer_events.size === 1);
                 const two_pointer = Boolean(pointer_events.size === 2);
                 previous_single_pointer_down_timestamp = one_pointer ? Date.now(): old_previous_single_pointer_down_timestamp;
@@ -633,7 +649,7 @@ const CanvasPos = {
                     pointer_events,
                 } = this.get_pointer_state();
 
-                pointer_events.delete(event.pointerId);
+                pointer_events.delete(""+event.pointerId);
 
                 this.set_pointer_state({
                     pointer_events: pointer_events,
@@ -667,12 +683,11 @@ const CanvasPos = {
                     previous_double_pointer_move_timestamp,
                     previous_single_pointer_down_timestamp,
                 } = this.get_pointer_state();
-
-                pointer_events.set(event.pointerId, event);
+                pointer_events.set(""+event.pointerId, event);
 
                 if (pointer_events.size === 2) {
 
-                    const pointer_events_array = Object.values(pointer_events);
+                    const pointer_events_array = Array.from(pointer_events.values());
                     const x_diff = pointer_events_array[0].clientX - pointer_events_array[1].clientX;
                     const y_diff = pointer_events_array[0].clientY - pointer_events_array[1].clientY;
                     const anchor_diff = Math.sqrt((x_diff * x_diff) + (y_diff * y_diff));
@@ -790,9 +805,9 @@ const CanvasPos = {
             },
             get_style: function() {
                 "use strict";
-                const msan = s.scale.moves_speed_average_now;
-                const shadow_depth = msan < 0 ? Math.round(Math.abs(msan) / 2): msan;
-                return  {box_shadow: sh[shadow_depth], will_change: Boolean(msan > -24 && msan !== -18)};
+                style.msan = s.scale.moves_speed_average_now;
+                style.box_shadow = sh[style.msan < 0 ? Math.round(Math.abs(style.msan) / 2): style.msan];
+                return  style;
             },
             get_canvas_pos_from_event: function(pageX, pageY) {
                 "use strict";

@@ -30,11 +30,6 @@ class ImageFileDialog extends React.PureComponent {
         });
     }
 
-    shouldComponentUpdate(nextProps, nextState, nextContext) {
-
-        return false;
-    }
-
     _handle_path_open_index = (index) => {
 
         const {_path} = this.state;

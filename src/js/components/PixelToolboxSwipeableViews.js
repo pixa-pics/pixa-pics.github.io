@@ -1051,7 +1051,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                             <div className={classes.sliderContainer}>
                                 <Typography className={classes.sliderLabel} id="opacity-slider"
                                             gutterBottom>α</Typography>
-                                <Slider defaultValue={_opacity} key={"0-"+_opacity} step={10} valueLabelDisplay="auto"
+                                <Slider defaultValue={parseInt(_opacity)} key={"0-"+_opacity} step={10} valueLabelDisplay="auto"
                                         min={0} max={100}
                                         onChangeCommitted={this._set_opacity_from_slider}
                                         aria-labelledby="opacity-slider"/>
@@ -1059,7 +1059,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                             <div className={classes.sliderContainer}>
                                 <Typography className={classes.sliderLabel} id="luminosity-slider"
                                             gutterBottom>L</Typography>
-                                <Slider defaultValue={_luminosity} key={"0-"+_luminosity} step={10}
+                                <Slider defaultValue={parseInt(_luminosity)} key={"0-"+_luminosity} step={10}
                                         valueLabelDisplay="auto" min={0} max={100}
                                         onChangeCommitted={this._set_luminosity_from_slider}
                                         aria-labelledby="luminosity-slider"/>
@@ -1067,7 +1067,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                             <div className={classes.sliderContainer}>
                                 <Typography className={classes.sliderLabel} id="saturation-slider"
                                             gutterBottom>S</Typography>
-                                <Slider defaultValue={_saturation} key={"0-"+_saturation} step={10}
+                                <Slider defaultValue={parseInt(_saturation)} key={"0-"+_saturation} step={10}
                                         valueLabelDisplay="auto" min={0} max={100}
                                         onChangeCommitted={this._set_saturation_from_slider}
                                         aria-labelledby="strength-slider"/>
@@ -1079,7 +1079,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
             case "image":
                 return (
                     <div key={"image-image-upload"} className={`swipetoolbox_i_${index}_${0}`}>
-                        <ListSubheader className={this._get_list_sub_header_classname("upload")} onClick={() => {this._scroll_to_id(`swipetoolbox_i_${index}_${0}`)}} active={_list_sub_header_opened === "upload"}>
+                        <ListSubheader className={this._get_list_sub_header_classname("upload")} onClick={() => {this._scroll_to_id(`swipetoolbox_i_${index}_${0}`)}} disabled={_list_sub_header_opened != "upload"}>
                             <span className={"list-sub-header-main-text"}>
                                 <span><ImportIcon/></span>
                                 <span>Upload</span>
@@ -1135,10 +1135,10 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                                 width: "100%"
                             }}>
                                 <Typography id="size-slider" style={{textAlignLast: "left"}} gutterBottom>NEW IMAGE SIZE</Typography>
-                                <Slider defaultValue={import_size} step={1} valueLabelDisplay="auto" min={0}
+                                <Slider defaultValue={parseInt(import_size)} step={1} valueLabelDisplay="auto" min={0}
                                         max={import_size > 512 ? import_size : 512}
                                         onChangeCommitted={this._set_import_size}
-                                        onTouch={function (e){e.stopImmediatePropagation();e.stopPropagation();e.preventDefault();}}
+                                        onClick={function (e){e.stopImmediatePropagation();e.stopPropagation();e.preventDefault();}}
                                         aria-labelledby="size-slider"/>
                             </div>
                         </div>
@@ -2144,17 +2144,17 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                         width: "100%"
                     }}>
                         <Typography id="width-slider" gutterBottom>Width</Typography>
-                        <Slider defaultValue={slider_value_width} step={1} valueLabelDisplay="auto" min={0}
+                        <Slider defaultValue={parseInt(slider_value_width)} step={1} valueLabelDisplay="auto" min={0}
                                 max={512} key={"slider-width"}
                                 onChangeCommitted={this._set_width_from_slider}
                                 aria-labelledby="width-slider"/>
                         <Typography id="height-slider" gutterBottom>Height</Typography>
-                        <Slider defaultValue={slider_value_height} step={1} valueLabelDisplay="auto" min={0}
+                        <Slider defaultValue={parseInt(slider_value_height)} step={1} valueLabelDisplay="auto" min={0}
                                 max={512} key={"slider-height"}
                                 onChangeCommitted={this._set_height_from_slider}
                                 aria-labelledby="height-slider"/>
                         <Typography id="confirm-slider" gutterBottom>Confirm</Typography>
-                        <Button fullWidth textPrimary onClick={() => {this.canvas_set_size()}} >Create my new canvas</Button>
+                        <Button fullWidth onClick={() => {this.canvas_set_size()}} >Create my new canvas</Button>
                     </div>
                 </div>
             );

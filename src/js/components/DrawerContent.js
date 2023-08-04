@@ -70,7 +70,7 @@ const styles = theme => ({
     },
     iconLeft: {
         filter: "drop-shadow(0px 0px 15px #011562)",
-        webkitFilter: "drop-shadow(0px 0px 15px #011562)",
+        WebkitFilter: "drop-shadow(0px 0px 15px #011562)",
         color: theme.palette.secondary.contrastText,
         margin: "-12px 16px -12px -16px",
         width: "96px",
@@ -124,12 +124,12 @@ const styles = theme => ({
     labList: {
         "& > div:first-child": {
             filter: "brightness(1) contrast(1)",
-            webkitFilter: "brightness(1) contrast(1)",
+            WebkitFilter: "brightness(1) contrast(1)",
             transition: "filter ease-in 750ms !important",
         },
         "&:hover > div:first-child": {
             filter: "brightness(1.5) contrast(1.1) !important",
-            webkitFilter: "brightness(1.5) contrast(1.1) !important",
+            WebkitFilter: "brightness(1.5) contrast(1.1) !important",
             transition: "filter ease-out 500ms !important",
         }
     }

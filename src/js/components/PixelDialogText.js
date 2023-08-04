@@ -30,11 +30,6 @@ class PixelDialogText extends React.PureComponent {
         });
     }
 
-    shouldComponentUpdate(nextProps, nextState, nextContext) {
-
-        return false;
-    }
-
     _handle_text_change = (event) => {
 
        this.setState({_text: event.target.value.toString()}, () => {
