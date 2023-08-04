@@ -691,12 +691,10 @@ const CanvasPos = {
                     const x_diff = pointer_events_array[0].clientX - pointer_events_array[1].clientX;
                     const y_diff = pointer_events_array[0].clientY - pointer_events_array[1].clientY;
                     const anchor_diff = Math.sqrt((x_diff * x_diff) + (y_diff * y_diff));
-                    const page_x_center = parseInt(pointer_events_array[0].pageX + pointer_events_array[1].pageX) / 2;
-                    const page_y_center = parseInt(pointer_events_array[0].pageY + pointer_events_array[1].pageY) / 2;
                     const client_x_center = parseInt(pointer_events_array[0].clientX + pointer_events_array[1].clientX) / 2;
                     const client_y_center = parseInt(pointer_events_array[0].clientY + pointer_events_array[1].clientY) / 2;
-                    const move_x = latest_pointers_client_x_center - client_x_center;
-                    const move_y = latest_pointers_client_y_center - client_y_center;
+                    const move_x = client_x_center - latest_pointers_client_x_center;
+                    const move_y = client_y_center - latest_pointers_client_y_center;
 
                     const of = Boolean(latest_pointers_distance > 0) ? parseFloat(anchor_diff / latest_pointers_distance) : 1;
 
@@ -709,7 +707,7 @@ const CanvasPos = {
                     };
 
                     if(previous_single_pointer_down_timestamp + 30 < Date.now()) {
-                        this.set_zoom(of, page_x_center, page_y_center, move_x, move_y);
+                        this.set_moves(move_x, move_y, s.scale.current*of);
                         this.set_pointer_state(pointer_state_object);
                     }else {
 
