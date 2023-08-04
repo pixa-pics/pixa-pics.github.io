@@ -707,7 +707,7 @@ const CanvasPos = {
                     };
 
                     if(previous_single_pointer_down_timestamp + 30 < Date.now()) {
-                        this.set_moves(move_x, move_y, s.scale.current*of);
+                        this.set_moves(s.scale.move_x + move_x, s.scale.move_y + move_y, s.scale.current*of);
                         this.set_pointer_state(pointer_state_object);
                     }else {
 
