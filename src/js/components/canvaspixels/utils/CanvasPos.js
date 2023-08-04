@@ -695,8 +695,8 @@ const CanvasPos = {
                     const page_y_center = parseInt(pointer_events_array[0].pageY + pointer_events_array[1].pageY) / 2;
                     const client_x_center = parseInt(pointer_events_array[0].clientX + pointer_events_array[1].clientX) / 2;
                     const client_y_center = parseInt(pointer_events_array[0].clientY + pointer_events_array[1].clientY) / 2;
-                    const move_x = latest_pointers_client_x_center > 0 ? latest_pointers_client_x_center - client_x_center: 0;
-                    const move_y = latest_pointers_client_y_center > 0 ? latest_pointers_client_y_center - client_y_center: 0;
+                    const move_x = latest_pointers_client_x_center - client_x_center;
+                    const move_y = latest_pointers_client_y_center - client_y_center;
 
                     const of = Boolean(latest_pointers_distance > 0) ? parseFloat(anchor_diff / latest_pointers_distance) : 1;
 
@@ -709,8 +709,8 @@ const CanvasPos = {
                     };
 
                     if(previous_single_pointer_down_timestamp + 30 < Date.now()) {
+                        this.set_zoom(of, page_x_center, page_y_center, move_x, move_y);
                         this.set_pointer_state(pointer_state_object);
-                        this.set_zoom(of, page_x_center, page_y_center, -move_x, -move_y);
                     }else {
 
                         this.set_pointer_state(pointer_state_object);
