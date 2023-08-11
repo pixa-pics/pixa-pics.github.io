@@ -625,61 +625,63 @@ class Index extends React.PureComponent {
         const JAMY = this.JAMY;
 
         return (
-            <React.Fragment>
-                <div className={classes.root}>
-                    <AppToolbar
-                        ret={_ret}
-                        camo={_camo}
-                        language={_language}
-                        count_presentation_open={_count_presentation_open}
-                        presentation_n={_presentation_n}
-                        loaded_progress_percent={_loaded_progress_percent}
-                        know_if_logged={_know_if_logged}
-                        know_the_settings={_know_the_settings}
-                        pathname={this.pathname}
-                        music_enabled={_music_enabled}
-                        jamy_enabled={_jamy_enabled}
-                        jamy_state_of_mind={_jamy_state_of_mind}/>
-                    <AppDrawer
-                        bdi={_bdi}
-                        count_presentation_open={_count_presentation_open}
-                        presentation_n={_presentation_n}
-                        know_the_settings={_know_the_settings}
-                        language={_language}/>
-                    <Toolbar />
-                    <main className={classes.content}>
-                        {this._page_component}
-                    </main>
-                </div>
-                <Snackbar
-                    TransitionComponent={Slide}
-                    TransitionProps={{direction: "down"}}
-                    className={classes.snackbar}
-                    open={_snackbar_open}
-                    anchorOrigin={{
-                        vertical: "top",
-                        horizontal: "center",
-                    }}
-                    message={<div>
-                        {_jamy_enabled ? <span className={classes.jamyContainer}>{JAMY[_jamy_state_of_mind]}</span>: null}
-                        <span>{_snackbar_message}</span>
-                    </div>}
-                    action={
-                        <IconButton size="small" aria-label="close" color="inherit" onClick={this._close_snackbar}>
-                            <CloseIcon fontSize="small" />
-                        </IconButton>
-                    }
-                    autoHideDuration={_snackbar_auto_hide_duration}
-                    onClose={this._close_snackbar}
-                />
-                {_language && <ShareDialog
-                    open={_is_share_dialog_open > 0}
-                    keep_open={_is_share_dialog_open > 3 ? 0: _is_share_dialog_open > 2 ? 2: _is_share_dialog_open > 1 ? 5: _is_share_dialog_open > 0 ? 7: 9}
-                    onClose={this._handle_share_dialog_close}/>}
-                {_language && <ActivateLab
-                    open={_is_activatelab_dialog_open > 0}
-                     onClose={this._handle_labactivate_dialog_close}/>}
-            </React.Fragment>
+            <React.StrictMode>
+                <React.Fragment>
+                    <div className={classes.root}>
+                        <AppToolbar
+                            ret={_ret}
+                            camo={_camo}
+                            language={_language}
+                            count_presentation_open={_count_presentation_open}
+                            presentation_n={_presentation_n}
+                            loaded_progress_percent={_loaded_progress_percent}
+                            know_if_logged={_know_if_logged}
+                            know_the_settings={_know_the_settings}
+                            pathname={this.pathname}
+                            music_enabled={_music_enabled}
+                            jamy_enabled={_jamy_enabled}
+                            jamy_state_of_mind={_jamy_state_of_mind}/>
+                        <AppDrawer
+                            bdi={_bdi}
+                            count_presentation_open={_count_presentation_open}
+                            presentation_n={_presentation_n}
+                            know_the_settings={_know_the_settings}
+                            language={_language}/>
+                        <Toolbar />
+                        <main className={classes.content}>
+                            {this._page_component}
+                        </main>
+                    </div>
+                    <Snackbar
+                        TransitionComponent={Slide}
+                        TransitionProps={{direction: "down"}}
+                        className={classes.snackbar}
+                        open={_snackbar_open}
+                        anchorOrigin={{
+                            vertical: "top",
+                            horizontal: "center",
+                        }}
+                        message={<div>
+                            {_jamy_enabled ? <span className={classes.jamyContainer}>{JAMY[_jamy_state_of_mind]}</span>: null}
+                            <span>{_snackbar_message}</span>
+                        </div>}
+                        action={
+                            <IconButton size="small" aria-label="close" color="inherit" onClick={this._close_snackbar}>
+                                <CloseIcon fontSize="small" />
+                            </IconButton>
+                        }
+                        autoHideDuration={_snackbar_auto_hide_duration}
+                        onClose={this._close_snackbar}
+                    />
+                    {_language && <ShareDialog
+                        open={_is_share_dialog_open > 0}
+                        keep_open={_is_share_dialog_open > 3 ? 0: _is_share_dialog_open > 2 ? 2: _is_share_dialog_open > 1 ? 5: _is_share_dialog_open > 0 ? 7: 9}
+                        onClose={this._handle_share_dialog_close}/>}
+                    {_language && <ActivateLab
+                        open={_is_activatelab_dialog_open > 0}
+                        onClose={this._handle_labactivate_dialog_close}/>}
+                </React.Fragment>
+            </React.StrictMode>
         );
     }
 }

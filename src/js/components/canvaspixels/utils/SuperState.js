@@ -1,5 +1,6 @@
 import {SetFixed} from "@asaitama/boolean-array";
 import {SIMDopeColors, SIMDopeColor} from "simdope";
+import {Layer} from "../../../utils/Layer"
 import { createLocalBlob } from "../../../utils/objectURL";
 
 const SuperState = {
@@ -50,8 +51,8 @@ const SuperState = {
             _layers: [{id: Date.now(), name: "Layer 0", hidden: false, opacity: 1}],
             _layers_defined_at: 0,
             _layer_index: 0,
-            _s_pxl_colors: [Uint32Array.of(0)],
-            _s_pxls: [new Uint16Array((props.pxl_width || 32) * (props.pxl_height || 32)).fill(0)],
+            _current_layer: new Layer(Uint32Array.of(0), 1, 1),
+            _s_layers: [new Layer(Uint32Array.of(0), new Uint16Array((props.pxl_width || 32) * (props.pxl_height || 32)).fill(0), (props.pxl_width || 32), (props.pxl_height || 32), true)],
             _json_state_history: {history_position: 0, state_history: []},
             _saving_json_state_history_running: false,
             _pxls_hovered: -1,
@@ -148,55 +149,16 @@ const SuperState = {
             paint_shape(pxl_indexes, color, opacity, s, callback_function) {
                 "use strict";
 
-                s = s || {};
-                callback_function = callback_function || function(){};
-                color = color | 0;
-                opacity = Math.round(opacity * 255) | 0;
-                let indexes_length = pxl_indexes.length|0;
+                s = typeof s == "undefined" ? {}: s;
+                callback_function = typeof callback_function == "undefined" ? function(){}: callback_function;
 
-                if(indexes_length > 0) {
+                if((pxl_indexes.length|0) > 0) {
 
-                    let pxl_indexes_newly_painted = state_._pxl_indexes_newly_painted;
-                    let pxl_colors = state_._s_pxl_colors[state_._layer_index];
-                    let pxls = state_._s_pxls[state_._layer_index];
-                    let sd_color_a = new Uint32Array(indexes_length);
-                    let sd_color_a2 = Uint32Array.of(color);
-                    let sd_colors = new SIMDopeColors(sd_color_a);
-                    let sd_colors2 = new SIMDopeColors(sd_color_a2);
-                    let color_a = new SIMDopeColor(new ArrayBuffer(4)), color_b = sd_colors2.get_element(0);
-
-                    for(let i = 0; (i|0) < (indexes_length|0); i = (i + 1 | 0)>>>0) {
-                        sd_color_a[i|0] = pxl_colors[pxls[pxl_indexes[i|0]|0]] & 0xFFFFFFFF;
-                    }
-
-                    for(let i = 0; (i|0) < (indexes_length|0); i = (i + 1 | 0)>>>0) {
-                        sd_colors.get_element(i|0, color_a).blend_first_with(color_b, opacity, false, false);
-                    }
-
-                    let new_ui32_colors = sd_colors.subarray_uint32(0, indexes_length);
-                    let colors = new Set(pxl_colors);
-
-                    new_ui32_colors.forEach(function (ui32){
-                        "use strict";
-                        colors.add(ui32);
-                    });
-
-                    if(colors.size !== pxl_colors.length){
-
-                        pxl_colors = Uint32Array.from(colors);
-                    }
-
-                    for(let i = 0; (i|0) < (indexes_length|0); i = (i + 1 | 0)>>>0) {
-                        pxls[pxl_indexes[i|0]|0] = pxl_colors.lastIndexOf(new_ui32_colors[i|0]) & 0xFFFF;
-                        pxl_indexes_newly_painted.add(pxl_indexes[i|0]|0);
-                    }
-
-                    state_._s_pxl_colors[state_._layer_index] = pxl_colors;
-
+                    state_._s_layers[state_._layer_index].paint_uint32a(typeof pxl_indexes.indexes != "undefined" ? pxl_indexes.indexes: pxl_indexes, (color | 0) >>> 0, Math.fround(opacity));
                     this.set_state(s).then(callback_function);
                 }else {
 
-                    callback_function();
+                    this.set_state(s).then(callback_function);
                 }
             },
             set_state: function(new_props, is_large_object) {
@@ -382,7 +344,7 @@ const SuperState = {
 
                         const pos_x = index % state_._imported_image_width;
                         const pos_y = (index - pos_x) / state_._imported_image_width;
-                        canvas_ctx.fillStyle = "#".concat("00000000".concat(state_._imported_image_pxl_colors[pxl].toString(16)).slice(-8));
+                        canvas_ctx.fillStyle = SIMDopeColor.new_uint32(state_._imported_image_pxl_colors[pxl]).hex;
                         canvas_ctx.fillRect(pos_x, pos_y, 1, 1);
                     });
 
@@ -432,7 +394,7 @@ const SuperState = {
             get_pixels_palette_and_list_from_image_data: function(image_data) {
                 "use strict";
                 function to_uint32_from_rgba(rgba) {
-                    return new Uint32Array(rgba.reverse().buffer)[0];
+                    return new Uint32Array(rgba.buffer)[0];
                 }
 
                 let new_pxl_colors = [];
@@ -453,10 +415,11 @@ const SuperState = {
                     }
                     new_pxls[i / 4] = color_uint32_index;
                 }
+
                 return {
-                    ratio_pixel_per_color: new_pxls.length / new_pxl_colors.length,
-                    new_pxl_colors: Uint32Array.from(new_pxl_colors),
-                    new_pxls: Array.from(new_pxls),
+                    ratio_pixel_per_color: Math.fround(new_pxls.length / new_pxl_colors.length),
+                    new_pxl_colors,
+                    new_pxls,
                 };
             },
             new_canvas_context_2d: function(width, height, old_context) {

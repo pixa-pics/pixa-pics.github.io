@@ -178,6 +178,22 @@ Object.defineProperty(SuperBlend.prototype, 'set_bytes_index', {
     enumerable: false,
     configurable: false
 });
+Object.defineProperty(SuperBlend.prototype, 'data_array', {
+    get: function() { "use strict";
+        "use strict";
+        return this.data_array_;
+    },
+    enumerable: false,
+    configurable: false
+});
+Object.defineProperty(SuperBlend.prototype, 'set_data_array', {
+    get: function() { "use strict"; return function (da) {
+        "use strict";
+        return this.data_array_  = da;
+    }},
+    enumerable: false,
+    configurable: false
+});
 Object.defineProperty(SuperBlend.prototype, 'bytes_index', {
     get: function() { "use strict"; return function () {
         "use strict";
@@ -244,6 +260,10 @@ SuperBlend.prototype.blend = function(should_return_transparent, alpha_addition)
         indexes_data_for_layers
     } = this.state;
 
+    var da = this.data_array || [];
+    var dal= da.length|0;
+    var da_sd = da.map(function (x){ return new SIMDopeColors(x);});
+
     var layers_color_0 = layers_colors[0];
 
     return new Promise(function (resolve) {
@@ -251,12 +271,17 @@ SuperBlend.prototype.blend = function(should_return_transparent, alpha_addition)
 
         var i = 0, off = new Uint32Array(2), layer_n = 0;
 
-        for (i  = 0; uint_less(i | 0, used_colors_length); i = plus_uint(i, 1)) {
+        for (; uint_less(i | 0, used_colors_length); i = plus_uint(i, 1)) {
 
-            base_rgba_colors_for_blending_SIMDope.get_use_element(i | 0, layers_color_0);
+            base_rgba_colors_for_blending_SIMDope.get_use_element(i | 0, layers_colors[0]);
             off[0] = multiply_uint(i, all_layers_length);
             // Sum up all colors above
-            for (layer_n = 0; uint_less(layer_n, all_layers_length); layer_n = plus_uint(layer_n, 1)) {
+            for (layer_n = 0; uint_less(layer_n, dal); layer_n = plus_uint(layer_n, 1)) {
+
+                da_sd[layer_n|0].get_use_element(indexes_data_for_layers[i|0], layers_colors[layer_n+1|0]);
+                layers_colors[layer_n|0].set_tail(layers_colors[layer_n+1|0], layers_opacity_255[layer_n|0]);
+            }
+            for (layer_n = dal|0; uint_less(layer_n, all_layers_length); layer_n = plus_uint(layer_n, 1)) {
 
                 off[1] = plus_uint(off[0], layer_n);
                 colors_data_in_layers_uint32_SIMDope.get_use_element(off[1], layers_colors[layer_n+1|0]);
@@ -264,10 +289,10 @@ SuperBlend.prototype.blend = function(should_return_transparent, alpha_addition)
             }
 
             if((hover_data_in_layer[i | 0]|0) > 0) {
-                layers_color_0.blend_first_with_tails(alpha_addition)
-                layers_color_0.blend_first_with(layers_color_0.is_dark() ? color_less_uint8x4 : color_full_uint8x4, hover_data_in_layer[i | 0], false, false);
+                layers_colors[0].blend_first_with_tails(alpha_addition)
+                layers_colors[0].blend_first_with(layers_colors[0].is_dark() ? color_less_uint8x4 : color_full_uint8x4, hover_data_in_layer[i | 0], false, false);
             }else {
-                layers_color_0.blend_first_with_tails(alpha_addition);
+                layers_colors[0].blend_first_with_tails(alpha_addition);
             }
         }
 
@@ -283,13 +308,14 @@ SuperBlend.prototype.build = function(layer_number, max_length, layers_opacity_2
     this.set_bytes_index(0);
     this.set_state(_build_state(layer_number, max_length, layers_opacity_255));
 }
-SuperBlend.prototype.update = function(layer_number, max_length, layers_opacity_255) {
+SuperBlend.prototype.update = function(layer_number, max_length, layers_opacity_255, data_array) {
     "use strict";
 
     layer_number = (layer_number | 0) >>> 0;
     max_length = (max_length | 0) >>> 0;
 
     this.set_bytes_index(0);
+    this.set_data_array(data_array);
     this.set_state(_update_state(this.state, layer_number, max_length, layers_opacity_255));
 }
 SuperBlend.prototype.clear = function() {

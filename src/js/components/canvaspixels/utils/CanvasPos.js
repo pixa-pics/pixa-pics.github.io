@@ -592,7 +592,6 @@ const CanvasPos = {
             handle_pointer_down: function(event) {
                 "use strict";
                 event.preventDefault();
-                event.stopImmediatePropagation();
 
                 const {canvas_event_target} = s;
                 let {
@@ -642,7 +641,6 @@ const CanvasPos = {
             handle_pointer_up: function(event){
                 "use strict";
                 event.preventDefault();
-                event.stopImmediatePropagation();
 
                 const {canvas_event_target} = s;
                 let {
@@ -668,11 +666,11 @@ const CanvasPos = {
             handle_pointer_move: function(event){
                 "use strict";
                 event.preventDefault();
-                event.stopImmediatePropagation();
 
-                const {canvas_event_target} = s;
+                const canvas_event_target = ""+s.canvas_event_target;
                 this.compute_canvas_event_target(parseInt(event.pageX), parseInt(event.pageY));
-                const new_canvas_event_target = canvas_event_target;
+                const new_canvas_event_target = ""+s.canvas_event_target;
+
                 let {
                     mouse_down,
                     event_button,
@@ -693,8 +691,12 @@ const CanvasPos = {
                     const anchor_diff = Math.sqrt((x_diff * x_diff) + (y_diff * y_diff));
                     const client_x_center = parseInt(pointer_events_array[0].clientX + pointer_events_array[1].clientX) / 2;
                     const client_y_center = parseInt(pointer_events_array[0].clientY + pointer_events_array[1].clientY) / 2;
-                    const move_x = client_x_center - latest_pointers_client_x_center;
-                    const move_y = client_y_center - latest_pointers_client_y_center;
+                    const client_x_page = parseInt(pointer_events_array[0].pageX + pointer_events_array[1].pageX) / 2;
+                    const client_y_page = parseInt(pointer_events_array[0].pageY + pointer_events_array[1].pageY) / 2;
+                    const movement_x = client_x_center - latest_pointers_client_x_center;
+                    const movement_y = client_y_center - latest_pointers_client_y_center;
+                    const move_x = s.scale.move_x + movement_x;
+                    const move_y = s.scale.move_y + movement_y;
 
                     const of = Boolean(latest_pointers_distance > 0) ? parseFloat(anchor_diff / latest_pointers_distance) : 1;
 
@@ -707,7 +709,39 @@ const CanvasPos = {
                     };
 
                     if(previous_single_pointer_down_timestamp + 30 < Date.now()) {
-                        this.set_moves(s.scale.move_x + move_x, s.scale.move_y + move_y, s.scale.current*of);
+
+                        const { canvas_container, canvas_wrapper } = this.get_pos();
+                        const { current } = s.scale;
+
+                        let new_scale = current * of;
+
+                        if(!(new_scale > 6) && !(new_scale < 1/6)) {
+
+                            let ratio = 1 - current / new_scale;
+                            let ratio2 = new_scale / current;
+                            let pos_x_in_canvas_container, pos_y_in_canvas_container;
+
+                            pos_x_in_canvas_container = client_x_page - canvas_container.left | 0;
+                            pos_y_in_canvas_container = client_y_page - canvas_container.top | 0;
+
+                            let new_scale_move_x = (move_x - (pos_x_in_canvas_container * ratio)) * ratio2 + movement_x | 0;
+                            let new_scale_move_y = (move_y - (pos_y_in_canvas_container * ratio)) * ratio2 + movement_y | 0;
+
+                            const for_middle_x = (canvas_container.width - canvas_wrapper.width) / 2 | 0;
+                            const for_middle_y = (canvas_container.height - canvas_wrapper.height) / 2 | 0;
+
+                            const scale_move_x_max = 3 / 4 * canvas_wrapper.width + for_middle_x;
+                            const scale_move_y_max = 3 / 4 * canvas_wrapper.height + for_middle_y;
+
+                            new_scale_move_y -= for_middle_y;
+                            new_scale_move_x -= for_middle_x;
+
+                            let new_scale_move_x_rigged = Math.min(Math.abs(new_scale_move_x), scale_move_x_max) * (new_scale_move_x < 0 ? - 1 : 1) + for_middle_x;
+                            let new_scale_move_y_rigged = Math.min(Math.abs(new_scale_move_y), scale_move_y_max) * (new_scale_move_y < 0 ? - 1 : 1) + for_middle_y;
+
+                            this.set_moves(new_scale_move_x_rigged, new_scale_move_y_rigged, new_scale);
+                        }
+
                         this.set_pointer_state(pointer_state_object);
                     }else {
 
@@ -873,17 +907,17 @@ const CanvasPos = {
                     s.scale.moves_speed_average_now = new_moves_speed_average_now;
                     s.scale.move_speed_timestamp = now | 0;
 
-                    notifiers.update(false, true);
+                    notifiers.update(true, true);
 
                 }else if(now - s.scale.move_speed_timestamp >= 20 && s.scale.moves_speed_average_now < -max_move_speed && max_move_speed < 24) {
 
                     s.scale.moves_speed_average_now = Math.max(s.scale.moves_speed_average_now + 1, -max_move_speed) | 0;
                     s.scale.move_speed_timestamp = now | 0;
 
-                    notifiers.update(false, true);
+                    notifiers.update(true, true);
                 }else if(s.perspective > 0) {
 
-                    notifiers.update(false, true);
+                    notifiers.update(true, true);
                 }
             }
         };

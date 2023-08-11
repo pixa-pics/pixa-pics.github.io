@@ -61,8 +61,8 @@ const XXHash = {
             base58_that: function (array_buffer) {
                 "use strict";
                 let c = 0;
-                let remainder = Number(0);
-                let num =  s.xxh_f.create64(0xFADE).update(
+                let remainder = BigInt(0);
+                let num = BigInt( s.xxh_f.create64(0xFADE).update(
                     (array_buffer instanceof Uint8Array || array_buffer instanceof Uint8ClampedArray) ?
                         array_buffer:
                         new Uint8Array(
@@ -72,12 +72,12 @@ const XXHash = {
                                     array_buffer.buffer:
                                     array_buffer
                         )
-                ).digest();
+                ).digest());
 
                 while (num > 0) {
-                    remainder = Number(num % base_58) & 0xFFFF;
+                    remainder = num % base_58;
                     num = num / base_58;
-                    encoded[c|0] = (alphabet_58[(remainder|0) & 0xFFFF] | 0) & 0xFFFF;
+                    encoded[c|0] = (alphabet_58[remainder] | 0) & 0xFFFF;
                     c = (c + 1 | 0) & 0xF;
                 }
 

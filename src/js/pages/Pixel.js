@@ -737,6 +737,7 @@ class Pixel extends React.PureComponent {
 
         l(null, () => {
 
+            this._compute_menu_drawer();
             this.setSt4te({_time_ago_initiated: true}, () => {
 
                 this._request_force_update();
@@ -851,6 +852,7 @@ class Pixel extends React.PureComponent {
 
             this.setSt4te({_settings: JSON.parse(new_props.settings), ...new_props}, ()  => {
 
+                this._compute_menu_drawer();
                 this._request_force_update().then(() => {
 
                     this._try_load_with_payload(this.st4te.load_with);
@@ -866,7 +868,7 @@ class Pixel extends React.PureComponent {
             if(load_with.length === 0) {
                 api.get_settings(this._process_settings_info_result);
                 setTimeout(() => {
-                    this.setSt4te({_is_pixel_dialog_create_open: Boolean(load_with.length === 0)}, () => { this._request_force_update(); });
+                    this.setSt4te({_is_pixel_dialog_create_open: Boolean(load_with.length === 0)}, () => { this._compute_menu_drawer(); this._request_force_update(); });
                 }, 725);
             }else {
 
@@ -1050,7 +1052,7 @@ class Pixel extends React.PureComponent {
             attachment_array["json_state-ID" + current_state.id + ".json.lz"] = current_state;
 
             this.setSt4te({_kb: current_state.kb, _saved_at: Date.now()}, () => {
-
+                this._compute_menu_drawer();
                 this._request_force_update();
                 api.set_settings({}, (err, res) => {
 
@@ -1135,6 +1137,8 @@ class Pixel extends React.PureComponent {
 
         const _less_than_1280w = Boolean(_window_width < 1280);
         this.setSt4te({_less_than_1280w}, () => {
+            this._compute_menu_drawer();
+            this._compute_menu_drawer();
             this._request_force_update(false, false).then(() => {
                 this._set_fps_and_xy_elements();
             });
@@ -1177,6 +1181,7 @@ class Pixel extends React.PureComponent {
 
         this.setSt4te({_menu_mouse_x: null, _menu_mouse_y: null}, () => {
 
+            this._compute_menu_right_click();
             this._request_force_update();
         });
     };
@@ -1193,6 +1198,7 @@ class Pixel extends React.PureComponent {
             _menu_event: event,
         }, () => {
 
+            this._compute_menu_right_click();
             this._request_force_update();
         });
     };
@@ -1272,6 +1278,7 @@ class Pixel extends React.PureComponent {
         this.setSt4te({...props, _previous_view_name_index: previous_name_index || this.st4te._view_name_index, _view_name_index}, () => {
 
             this._set_props_bypass_this();
+            this._compute_menu_drawer();
             this._request_force_update();
             callback();
         });
@@ -1303,8 +1310,8 @@ class Pixel extends React.PureComponent {
             }
 
             this.setSt4te({...props, _previous_view_name_index: previous_name_index || this.st4te._view_name_index, _view_name_index}, () => {
-
                 this._set_props_bypass_this();
+                this._compute_menu_drawer();
                 this._request_force_update();
             });
         }
@@ -1535,14 +1542,17 @@ class Pixel extends React.PureComponent {
         this.st4te._canvas.redo()
     }
     _backup_state = () => {
-
-        const { export_state, set_png_compressors } = this.st4te._canvas;
-        JSLoader( () => import("../utils/png_quant")).then(({png_quant}) => {
-            JSLoader(() => import("../utils/oxi_png")).then(({oxi_png}) => {
-                set_png_compressors(png_quant, oxi_png);
-                export_state();
+        try {
+            const { export_state, set_png_compressors } = this.st4te._canvas;
+            JSLoader( () => import("../utils/png_quant")).then(({png_quant}) => {
+                JSLoader(() => import("../utils/oxi_png")).then(({oxi_png}) => {
+                    set_png_compressors(png_quant, oxi_png);
+                    export_state();
+                });
             });
-        });
+        } catch(e) {
+            this._request_force_update().finally(() => {this._backup_state()})
+        }
     };
 
     _download_image = (size) => {
@@ -1550,22 +1560,23 @@ class Pixel extends React.PureComponent {
         const { get_base64_png_data_url, xxhashthat, set_png_compressors } = this.st4te._canvas;
 
         window.dispatchEvent(new Event(`art-download-raster${size}`));
+        if(typeof get_base64_png_data_url != "undefined" && typeof xxhashthat != "undefined" && typeof set_png_compressors != "undefined"){
+            JSLoader( () => import("../utils/png_quant")).then(({png_quant}) => {
+                JSLoader( () => import("../utils/oxi_png")).then(({oxi_png}) => {
+                    set_png_compressors(png_quant, oxi_png);
+                    get_base64_png_data_url(size, false, 1, 100, 100).then(({url}) => {
+                        const hash = xxhashthat(url);
+                        let a = document.createElement("a"); //Create <a>
+                        a.download = `PIXAPICS-${hash}-PIXELATED-${size}x_RAS.png`; //File name Here
+                        a.href = url;
+                        a.click();
+                        a.remove();
 
-        JSLoader( () => import("../utils/png_quant")).then(({png_quant}) => {
-            JSLoader( () => import("../utils/oxi_png")).then(({oxi_png}) => {
-                set_png_compressors(png_quant, oxi_png);
-                get_base64_png_data_url(size, false, 1, 100, 100).then(({url}) => {
-                    const hash = xxhashthat(url);
-                    let a = document.createElement("a"); //Create <a>
-                    a.download = `PIXAPICS-${hash}-PIXELATED-${size}x_RAS.png`; //File name Here
-                    a.href = url;
-                    a.click();
-                    a.remove();
-
-                    this._propose_selling_nft();
+                        this._propose_selling_nft();
+                    });
                 });
             });
-        });
+        }
     };
 
     _download_svg = (using = "xbrz", optimize_render_size = false, download_svg = false, download_crt = false, photo = false) => {
@@ -2179,8 +2190,9 @@ class Pixel extends React.PureComponent {
 
         actions.trigger_loading_update(100);
         this.setSt4te({_loading: false, _loading_process: process}, () => {
-
-            this._request_force_update();
+            this._request_force_update().then(() => {
+                this._backup_state();
+            });
         });
 
         if(process === "less_color" || process === "less_color_auto") {
@@ -2220,10 +2232,7 @@ class Pixel extends React.PureComponent {
     _set_canvas_ref = (element) => {
 
         if(element === null || this.st4te._filters.length > 0) {return}
-
-        this.setSt4te({_canvas: element, _filters: element.get_filter_names()}, () => {
-            this._backup_state();
-        });
+        this.setSt4te({_canvas: element, _filters: element.get_filter_names()});
     };
 
     _handle_position_change = (position) => {
@@ -2254,7 +2263,7 @@ class Pixel extends React.PureComponent {
         const update = Boolean(this.st4te._width !== _width || this.st4te._height !== _height);
         this.setSt4te({_width, _height}, () => {
 
-            if(update){this._request_force_update();}
+            if(update){this._compute_menu_drawer(); this._request_force_update();}
         });
     }
 
@@ -2550,7 +2559,7 @@ class Pixel extends React.PureComponent {
         const update = Boolean(this.st4te._is_edit_drawer_open !== _is_edit_drawer_open || this.st4te._view_name_index !== _view_name_index);
         this.setSt4te({_is_edit_drawer_open, _view_name_index, _view_name_sub_index}, () => {
 
-            if(update){this._request_force_update();}
+            if(update){this._compute_menu_drawer(); this._request_force_update();}
         });
     };
 
@@ -2559,7 +2568,7 @@ class Pixel extends React.PureComponent {
         const update = Boolean(this.st4te._is_edit_drawer_open);
         this.setSt4te({_is_edit_drawer_open: false}, () => {
 
-            if(update){this._request_force_update();}
+            if(update){this._compute_menu_drawer(); this._request_force_update();}
         });
     };
 
@@ -2776,15 +2785,176 @@ class Pixel extends React.PureComponent {
         }catch(e){}
     };
 
-    render() {
+    _compute_menu_right_click = () => {
+
+        const {
+            classes,
+            _canvas,
+            _current_color,
+            _tool,
+            _width,
+            _height,
+            _pencil_mirror_mode,
+            _is_something_selected,
+            _menu_mouse_y,
+            _menu_mouse_x,
+            _menu_data,
+            _menu_event,
+        } = this.st4te;
+
+        _menu_data.pos_x = _menu_data.pos_x === -1 ? "out": _menu_data.pos_x;
+        _menu_data.pos_y = _menu_data.pos_y === -1 ? "out": _menu_data.pos_y;
+
+        this.menu = <Menu
+            className={classes.contextMenuFuckYouDisable}
+            PaperProps={{
+                style: {
+                    maxHeight: 380,
+                    width: 240,
+                    overflowY: "overlay",
+                    contain: "paint style layout",
+                    scrollBehavior: "smooth",
+                    userSelect: "none",
+                    pointerEvents: "all"
+                },
+            }}
+            onContextMenu={function (e){e.preventDefault();}}
+            MenuListProps={{dense: true}}
+            transitionDuration={{appear: 5, enter: 35, exit: 60}}
+            open={Boolean(_menu_mouse_y) || Boolean(_menu_mouse_x)}
+            onClose={this._handle_menu_close}
+            disablePortal={false}
+            keepMounted={true}
+            anchorReference="anchorPosition"
+            anchorPosition={{ top: _menu_mouse_y|0, left: _menu_mouse_x|0 }}
+        >
+            <span style={{textAlign: "left", padding: "12px 8px", color: "#666"}}>X: {_menu_data.pos_x}, Y: {_menu_data.pos_y}</span>
+            <div style={(_tool === "SET PENCIL MIRROR" || _pencil_mirror_mode !== "NONE") ? {}: {display: "none"}}>
+                <ListSubheader className={classes.contextMenuSubheader}>Tools</ListSubheader>
+                <ListItem button divider disabled={_tool === "PENCIL"} onClick={() => {this._set_tool("PENCIL")}}>
+                    <ListItemIcon>
+                        <PencilIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="Pencil" />
+                </ListItem>
+                <ListItem button divider disabled={_tool === "PENCIL PERFECT"} onClick={() => {this._set_tool("PENCIL PERFECT")}}>
+                    <ListItemIcon>
+                        <PencilPerfectIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="Pencil perfect" />
+                </ListItem>
+
+                <ListSubheader className={classes.contextMenuSubheader}>Mirror mode</ListSubheader>
+                {
+                    [
+                        {icon: <MirrorIcon />, disabled: _pencil_mirror_mode === "NONE",text: "None", on_click: () => {this._set_pencil_mirror_mode("NONE")}},
+                        {icon: <MirrorIcon />, disabled: _pencil_mirror_mode === "VERTICAL", text: "Vertical", on_click: () => {this._set_pencil_mirror_mode("VERTICAL")}},
+                        {icon: <MirrorIcon />, disabled: _pencil_mirror_mode === "HORIZONTAL", text: "Horizontal", on_click: () => {this._set_pencil_mirror_mode("HORIZONTAL")}},
+                        {icon: <MirrorIcon />, disabled: _pencil_mirror_mode === "BOTH", text: "Both", on_click: () => {this._set_pencil_mirror_mode("BOTH")}},
+                    ].map((item) => {
+
+                        return (
+                            <ListItem key={item.text} button divider disabled={item.disabled} onClick={item.on_click}>
+                                <ListItemIcon>
+                                    {item.icon}
+                                </ListItemIcon>
+                                <ListItemText primary={item.text} />
+                            </ListItem>
+                        );
+
+                    })
+                }
+            </div>
+
+            <div style={_is_something_selected ? {}: {display: "none"}}>
+                <ListSubheader className={classes.contextMenuSubheader}>Apply to selection</ListSubheader>
+                {
+                    [
+                        {icon: <SelectRemoveDifferenceIcon />, text: "Unselect", on_click: () => {_canvas.to_selection_none()}},
+                        {icon: <BucketIcon />, text: "Colorize dynamical", on_click: () => {_canvas.to_selection_changes(_current_color, false)}},
+                        {icon: <SelectColorIcon />, text: "Get average color", on_click: () => {this._get_average_color_of_selection()}},
+                        {icon: <SelectInImageIcon />, text: "Shrink", on_click: () => {_canvas.to_selection_size(-1)}},
+                        {icon: <SelectInImageIcon />, text: "Grow", on_click: () => {_canvas.to_selection_size(1)}},
+                        {icon: <BorderBottomIcon />, text: "Border", on_click: () => {_canvas.to_selection_border()}},
+                        {icon: <BucketIcon />, text: "Bucket", on_click: () => {_canvas.to_selection_bucket()}},
+                        {icon: <SelectInImageIcon />, text: "Crop", on_click: () => {_canvas.to_selection_crop()}},
+                        {icon: <SelectInvertIcon />, text: "Invert", on_click: () => {_canvas.to_selection_invert()}},
+                        {icon: <CopyIcon />, text: "Copy", on_click: () => {_canvas.copy_selection()}},
+                        {icon: <CutIcon />, text: "Cut", on_click: () => {_canvas.cut_selection()}},
+                        {icon: <EraserIcon />, text: "Erase", on_click: () => {_canvas.erase_selection()}},
+                    ].map((item) => {
+
+                        return (
+                            <ListItem key={item.text} button divider onClick={item.on_click}>
+                                <ListItemIcon>
+                                    {item.icon}
+                                </ListItemIcon>
+                                <ListItemText primary={item.text} />
+                            </ListItem>
+                        );
+                    })
+                }
+            </div>
+            <ListSubheader style={_menu_data.pxl_color === null ? {display: "none"}: {}} className={classes.contextMenuSubheader}>Color</ListSubheader>
+            <ListItem button divider style={_menu_data.pxl_color === null ? {display: "none"}: {}} disabled={_menu_data.pxl_color === _current_color || _menu_data.pxl_color === null} onClick={(event) => {this._set_current_color(_menu_data.pxl_color); this._handle_relevant_action_event(_menu_event, _menu_data.pxl_color, 1, true);}}>
+                <ListItemIcon>
+                    <SquareIcon style={{ color: _menu_data.pxl_color, background: `repeating-conic-gradient(#80808055 0% 25%, #00000000 0% 50%) 50% / calc(200% / ${_width}) calc(200% / ${_height})`}} />
+                </ListItemIcon>
+                <ListItemText primary="Pick color" />
+            </ListItem>
+            <ListItem button divider style={_menu_data.pxl_color === null ? {display: "none"}: {}} disabled={_menu_data.pxl_color === _current_color || _menu_data.pxl_color === null} onClick={(event) => {this._exchange_pixel_colors(_menu_data.pos_x, _menu_data.pos_y, _current_color+""); this._handle_relevant_action_event(_menu_event, _current_color, 1, true);}}>
+                <ListItemIcon>
+                    <SquareIcon style={{ color: _current_color, background: `repeating-conic-gradient(#80808055 0% 25%, #00000000 0% 50%) 50% / calc(200% / ${_width}) calc(200% / ${_height})`}} />
+                </ListItemIcon>
+                <ListItemText primary="Replace color" />
+            </ListItem>
+            <ListSubheader className={classes.contextMenuSubheader}>Effect</ListSubheader>
+            <ListItem button divider onClick={(event) => this._to_auto_medium_more_contrast()}>
+                <ListItemIcon>
+                    <ContrastCircleIcon />
+                </ListItemIcon>
+                <ListItemText primary="Increase contrast" />
+            </ListItem>
+            <ListItem button divider onClick={(event) => this._to_auto_medium_more_saturation()}>
+                <ListItemIcon>
+                    <ContrastCircleIcon />
+                </ListItemIcon>
+                <ListItemText primary="Increase saturation" />
+            </ListItem>
+            <ListItem button divider onClick={(event) => this._handle_edit_drawer_open(null,6)}>
+                <ListItemIcon>
+                    <ImageFilterMagicIcon />
+                </ListItemIcon>
+                <ListItemText primary="Add a filter" />
+            </ListItem>
+            <ListItem button divider onClick={(event) => this._less_colors_stepped(2)}>
+                <ListItemIcon>
+                    <LessColorIcon />
+                </ListItemIcon>
+                <ListItemText primary="Reduce color number" />
+            </ListItem>
+            <ListItem button divider onClick={this._less_colors_auto}>
+                <ListItemIcon>
+                    <LessColorIcon />
+                </ListItemIcon>
+                <ListItemText primary="To auto colors number" />
+            </ListItem>
+            <ListItem button divider onClick={(event) => this._smooth_adjust(1)}>
+                <ListItemIcon>
+                    <ImageSmoothIcon />
+                </ListItemIcon>
+                <ListItemText primary="Smooth a bit" />
+            </ListItem>
+        </Menu>
+    };
+
+    _compute_menu_drawer = () => {
 
         const {
             classes,
             _canvas,
             _view_name_index,
             _previous_view_name_index,
-            _loading,
-            _loading_process,
             _view_names,
             _layers,
             _layer_index,
@@ -2806,78 +2976,45 @@ class Pixel extends React.PureComponent {
             _filters,
             _select_mode,
             _pencil_mirror_mode,
-            _kb,
             _is_something_selected,
-            _mine_player_direction,
             _is_edit_drawer_open,
-            _menu_mouse_y,
-            _menu_mouse_x,
             _menu_data,
-            _ripple_color,
-            _ripple_opacity,
-            _menu_event,
-            _library_dialog_open,
-            _library,
             _less_than_1280w,
-            _is_pixel_dialog_create_open,
-            _h_svg,
-            _h_svg_size,
-            _attachment_previews,
-            _is_cursor_fuck_you_active,
-            _perspective,
-            _files_waiting_download,
-            _time_ago_initiated,
-            _settings,
-            _text_dialog_open,
             _slider_value_width,
             _slider_value_height,
-            _drag_file
         } = this.st4te;
 
         _menu_data.pos_x = _menu_data.pos_x === -1 ? "out": _menu_data.pos_x;
         _menu_data.pos_y = _menu_data.pos_y === -1 ? "out": _menu_data.pos_y;
 
-        const drawer_mobile = _less_than_1280w &&
-            (
-                <SwipeableDrawer
-                    className={classes.contentDrawer}
-                    disableBackdropTransition={false}
-                    disableSwipeToOpen={false}
-                    disableDiscovery={false}
-                    disablePortal={true}
-                    keepMounted={true}
-                    hysteresis={0.314}
-                    minFlingVelocity={314}
-                    swipeAreaWidth={128}
-                    open={Boolean(_is_edit_drawer_open)}
-                    onOpen={this._handle_edit_drawer_open}
-                    onClose={this._handle_edit_drawer_close}
+        if(!_less_than_1280w){
+            this.drawer_desktop = <Drawer
+                    className={classes.contentDrawerFixed}
+                    variant="permanent"
+                    anchor="right"
                     classes={{
-                        paper: classes.swipeableDrawerPaper,
-                        modal: classes.drawerModal,
+                        paper: classes.drawerPaper,
                     }}
-                    transitionDuration={{appear: 5, enter: 50, exit: 75}}
-                    ModalProps={{disablePortal: true, BackdropProps:{classes: {root: classes.drawerModalBackdropRoot}}}}
-                    variant="temporary"
-                    anchor="bottom"
-                    style={{pointerEvents: "all"}}
                 >
-                    <div className={classes.mobileintrovideowrapper}>
-                        <video className={classes.mobileintrovideo} id="labintro-video" width="56" height="56" onClick={this._resume_video} style={{aspectRatio: "1", transform: "translateZ(10px)"}}>
-                            <source src={"/src/videos/labintro.mp4"} type="video/mp4"/>
-                        </video>
-                    </div>
-                    <DialogCloseButton onClick={this._handle_edit_drawer_close} />
-                    <div style={{display: "grid", contain: "layout paint style"}}>
+                    <div style={{display: "contents", pointerEvents: "all"}}>
                         <div style={{boxShadow: "rgb(0 0 0 / 20%) 0px 2px 4px -1px, rgb(0 0 0 / 14%) 0px 4px 5px 0px, rgb(0 0 0 / 12%) 0px 1px 10px 0px", zIndex: 1}}>
                             <div className={classes.drawerHeader}>
+                                <div className={classes.desktopintrovideowrapper}>
+                                    <video className={classes.desktopintrovideo} id="labintro-video" width="56" height="56" onClick={this._resume_video} style={{aspectRatio: "1", transform: "translateZ(10px)"}}>
+                                        <source src={"/src/videos/labintro.mp4"} type="video/mp4"/>
+                                    </video>
+                                </div>
+                                <span className={classes.coordinate}>
+                                <span id={"fps_el"}>{`FPS: 0`}</span>
+                                <span id={"xy_el"}>{` | X: out, Y: out `}</span>
+                            </span>
                                 <Typography className={classes.effectSliderText} id="strength-slider" gutterBottom>
                                     Effect strength :
                                 </Typography>
                                 <Slider
                                     key={"slider-"+(_slider_value*255 | 0)}
-                                    className={classes.effectSlider}
                                     defaultValue={parseInt(_slider_value)}
+                                    className={classes.effectSlider}
                                     step={1/255}
                                     min={0}
                                     max={1}
@@ -2885,16 +3022,31 @@ class Pixel extends React.PureComponent {
                                     aria-labelledby="strength-slider"
                                 />
                             </div>
+                            <Tabs id="tabs-desktop"
+                                  className={classes.tabs}
+                                  variant="fullWidth"
+                                  indicatorColor="primary"
+                                  textColor="primary"
+                                  selectionFollowsFocus={false}
+                                  value={_view_name_index}
+                                  onChange={(event, index) => {this._handle_view_name_change(index)}}>
+                                <Tab className={classes.tab} label={"colors"} icon={<PaletteIcon />} />
+                                <Tab className={classes.tab} label={"image"} icon={<FolderImageIcon />} />
+                                <Tab className={classes.tab} label={"layers"} icon={<FolderIcon />} />
+                                <Tab className={classes.tab} label={"tools"} icon={<DrawIcon />} />
+                                <Tab className={classes.tab} label={"select"} icon={<SelectDragIcon />} />
+                                <Tab className={classes.tab} label={"effects"} icon={<TuneIcon />} />
+                                <Tab className={classes.tab} label={"filters"} icon={<ImageAutoAdjustIcon />} />
+                            </Tabs>
                         </div>
                         <div className={classes.drawerContainer} ref={this._set_toolbox_container_ref}>
                             <PixelToolboxSwipeableViews
-                                should_update={_is_edit_drawer_open}
+                                should_update={!_is_edit_drawer_open}
                                 slider_value_width={_slider_value_width}
                                 slider_value_height={_slider_value_height}
-                                onActionClose={this._handle_edit_drawer_close}
                                 canvas={_canvas}
-                                is_mobile={is_mobile_or_tablet}
                                 view_class={classes.listOfTools}
+                                is_mobile={is_mobile_or_tablet}
                                 view_names={_view_names}
                                 is_image_import_mode={_is_image_import_mode}
                                 can_undo={_can_undo}
@@ -2938,7 +3090,7 @@ class Pixel extends React.PureComponent {
                                 on_view_name_change={this._handle_view_name_change}
                                 on_upload_image={(e) => {window.dispatchEvent(new Event("art-upload-drawer")); this._upload_image(e);}}
                                 on_upload_image_library={this._upload_image_library}
-                                on_import_image={(e) => {window.dispatchEvent(new Event("art-import-drawer")); this._handle_file_import(e);}}
+                                on_import_image={this._handle_file_import}
                                 on_import_image_library={this._import_image_library}
                                 on_request_draw_text={this._open_text}
                                 on_download_image={this._download_image}
@@ -2947,267 +3099,181 @@ class Pixel extends React.PureComponent {
                             />
                         </div>
                     </div>
-                </SwipeableDrawer>
-            );
-        const drawer_desktop = !_less_than_1280w && (
-            <Drawer
-                className={classes.contentDrawerFixed}
-                variant="permanent"
-                anchor="right"
-                classes={{
-                    paper: classes.drawerPaper,
-                }}
-            >
-                <div style={{display: "contents", pointerEvents: "all"}}>
-                    <div style={{boxShadow: "rgb(0 0 0 / 20%) 0px 2px 4px -1px, rgb(0 0 0 / 14%) 0px 4px 5px 0px, rgb(0 0 0 / 12%) 0px 1px 10px 0px", zIndex: 1}}>
-                        <div className={classes.drawerHeader}>
-                            <div className={classes.desktopintrovideowrapper}>
-                                <video className={classes.desktopintrovideo} id="labintro-video" width="56" height="56" onClick={this._resume_video} style={{aspectRatio: "1", transform: "translateZ(10px)"}}>
+                </Drawer>
+        }else {
+            this.drawer_mobile = <React.Fragment>
+                        <SwipeableDrawer
+                            className={classes.contentDrawer}
+                            disableBackdropTransition={false}
+                            disableSwipeToOpen={false}
+                            disableDiscovery={false}
+                            disablePortal={true}
+                            keepMounted={true}
+                            hysteresis={0.314}
+                            minFlingVelocity={314}
+                            swipeAreaWidth={128}
+                            open={Boolean(_is_edit_drawer_open)}
+                            onOpen={this._handle_edit_drawer_open}
+                            onClose={this._handle_edit_drawer_close}
+                            classes={{
+                                paper: classes.swipeableDrawerPaper,
+                                modal: classes.drawerModal,
+                            }}
+                            transitionDuration={{appear: 5, enter: 50, exit: 75}}
+                            ModalProps={{disablePortal: true, BackdropProps:{classes: {root: classes.drawerModalBackdropRoot}}}}
+                            variant="temporary"
+                            anchor="bottom"
+                            style={{pointerEvents: "all"}}
+                        >
+                            <div className={classes.mobileintrovideowrapper}>
+                                <video className={classes.mobileintrovideo} id="labintro-video" width="56" height="56" onClick={this._resume_video} style={{aspectRatio: "1", transform: "translateZ(10px)"}}>
                                     <source src={"/src/videos/labintro.mp4"} type="video/mp4"/>
                                 </video>
                             </div>
-                            <span className={classes.coordinate}>
-                                <span id={"fps_el"}>{`FPS: 0`}</span>
-                                <span id={"xy_el"}>{` | X: out, Y: out `}</span>
-                            </span>
-                            <Typography className={classes.effectSliderText} id="strength-slider" gutterBottom>
-                                Effect strength :
-                            </Typography>
-                            <Slider
-                                key={"slider-"+(_slider_value*255 | 0)}
-                                defaultValue={parseInt(_slider_value)}
-                                className={classes.effectSlider}
-                                step={1/255}
-                                min={0}
-                                max={1}
-                                onChangeCommitted={this._set_value_from_slider_with_update}
-                                aria-labelledby="strength-slider"
-                            />
+                            <DialogCloseButton onClick={this._handle_edit_drawer_close} />
+                            <div style={{display: "grid", contain: "layout paint style"}}>
+                                <div style={{boxShadow: "rgb(0 0 0 / 20%) 0px 2px 4px -1px, rgb(0 0 0 / 14%) 0px 4px 5px 0px, rgb(0 0 0 / 12%) 0px 1px 10px 0px", zIndex: 1}}>
+                                    <div className={classes.drawerHeader}>
+                                        <Typography className={classes.effectSliderText} id="strength-slider" gutterBottom>
+                                            Effect strength :
+                                        </Typography>
+                                        <Slider
+                                            key={"slider-"+(_slider_value*255 | 0)}
+                                            className={classes.effectSlider}
+                                            defaultValue={parseInt(_slider_value)}
+                                            step={1/255}
+                                            min={0}
+                                            max={1}
+                                            onChangeCommitted={this._set_value_from_slider_with_update}
+                                            aria-labelledby="strength-slider"
+                                        />
+                                    </div>
+                                </div>
+                                <div className={classes.drawerContainer} ref={this._set_toolbox_container_ref}>
+                                    <PixelToolboxSwipeableViews
+                                        should_update={_is_edit_drawer_open}
+                                        slider_value_width={_slider_value_width}
+                                        slider_value_height={_slider_value_height}
+                                        onActionClose={this._handle_edit_drawer_close}
+                                        canvas={_canvas}
+                                        is_mobile={is_mobile_or_tablet}
+                                        view_class={classes.listOfTools}
+                                        view_names={_view_names}
+                                        is_image_import_mode={_is_image_import_mode}
+                                        can_undo={_can_undo}
+                                        can_redo={_can_redo}
+
+                                        view_name_index={_view_name_index}
+                                        previous_view_name_index={_previous_view_name_index}
+                                        layers={_layers}
+                                        layer_index={_layer_index}
+                                        hide_canvas_content={_hide_canvas_content}
+                                        show_original_image_in_background={_show_original_image_in_background}
+                                        show_transparent_image_in_background={_show_transparent_image_in_background}
+                                        hue={_hue}
+                                        current_color={_current_color}
+                                        second_color={_second_color}
+                                        slider_value={_slider_value}
+                                        tool={_tool}
+                                        width={parseInt(_width)}
+                                        height={parseInt(_height)}
+                                        filters={_filters}
+                                        select_mode={_select_mode}
+                                        pencil_mirror_mode={_pencil_mirror_mode}
+                                        is_something_selected={_is_something_selected}
+                                        import_size={_import_size}
+                                        import_colorize={_import_colorize}
+
+                                        set_filters_callback={this._set_filters_callback}
+                                        set_props_callback={this._set_props_callback}
+                                        set_tool={this._set_tool}
+                                        set_select_mode={this._set_select_mode}
+                                        set_pencil_mirror_mode={this._set_pencil_mirror_mode}
+                                        set_width_from_slider={this._set_width_from_slider}
+                                        set_height_from_slider={this._set_height_from_slider}
+                                        set_import_size={this._set_import_size}
+                                        set_import_colorize={this._set_import_colorize}
+                                        switch_with_second_color={this._switch_with_second_color}
+                                        show_hide_canvas_content={this._show_hide_canvas_content}
+                                        show_hide_background_image={this._show_hide_background_image}
+                                        show_hide_transparent_image={this._show_hide_transparent_image}
+                                        on_current_color_change={this._handle_current_color_change}
+                                        on_view_name_change={this._handle_view_name_change}
+                                        on_upload_image={(e) => {window.dispatchEvent(new Event("art-upload-drawer")); this._upload_image(e);}}
+                                        on_upload_image_library={this._upload_image_library}
+                                        on_import_image={(e) => {window.dispatchEvent(new Event("art-import-drawer")); this._handle_file_import(e);}}
+                                        on_import_image_library={this._import_image_library}
+                                        on_request_draw_text={this._open_text}
+                                        on_download_image={this._download_image}
+                                        on_download_svg={this._download_svg}
+                                        on_scroll_to={this._scroll_to_drawer}
+                                    />
+                                </div>
+                            </div>
+                        </SwipeableDrawer>
+                        <div className={classes.fatabs} style={_is_edit_drawer_open && _less_than_1280w ? {transform: "translateY(24px)", backgroundColor: "#fff"}: {}}>
+                            <Tabs className={classes.tabs} style={{pointerEvents: "all"}}
+                                  variant="fullWidth"
+                                  scrollButtons="off"
+                                  indicatorColor="primary"
+                                  textColor="primary"
+                                  selectionFollowsFocus={true}
+                                  value={_view_name_index}
+                                  onChange={this._handle_edit_drawer_open}>
+                                <Tab className={classes.tab} label={"colors"} icon={<PaletteIcon />} />
+                                <Tab className={classes.tab} label={"image"} icon={<FolderImageIcon />} />
+                                <Tab className={classes.tab} label={"layers"} icon={<FolderIcon />} />
+                                <Tab className={classes.tab} label={"tools"} icon={<DrawIcon />} />
+                                <Tab className={classes.tab} label={"select"} icon={<SelectDragIcon />} />
+                                <Tab className={classes.tab} label={"effects"} icon={<TuneIcon />} />
+                                <Tab className={classes.tab} label={"filters"} icon={<ImageAutoAdjustIcon />} />
+                            </Tabs>
                         </div>
-                        <Tabs id="tabs-desktop"
-                              className={classes.tabs}
-                              variant="fullWidth"
-                              indicatorColor="primary"
-                              textColor="primary"
-                              selectionFollowsFocus={false}
-                              value={_view_name_index}
-                              onChange={(event, index) => {this._handle_view_name_change(index)}}>
-                            <Tab className={classes.tab} label={"colors"} icon={<PaletteIcon />} />
-                            <Tab className={classes.tab} label={"image"} icon={<FolderImageIcon />} />
-                            <Tab className={classes.tab} label={"layers"} icon={<FolderIcon />} />
-                            <Tab className={classes.tab} label={"tools"} icon={<DrawIcon />} />
-                            <Tab className={classes.tab} label={"select"} icon={<SelectDragIcon />} />
-                            <Tab className={classes.tab} label={"effects"} icon={<TuneIcon />} />
-                            <Tab className={classes.tab} label={"filters"} icon={<ImageAutoAdjustIcon />} />
-                        </Tabs>
-                    </div>
-                    <div className={classes.drawerContainer} ref={this._set_toolbox_container_ref}>
-                        <PixelToolboxSwipeableViews
-                            should_update={!_is_edit_drawer_open}
-                            slider_value_width={_slider_value_width}
-                            slider_value_height={_slider_value_height}
-                            canvas={_canvas}
-                            view_class={classes.listOfTools}
-                            is_mobile={is_mobile_or_tablet}
-                            view_names={_view_names}
-                            is_image_import_mode={_is_image_import_mode}
-                            can_undo={_can_undo}
-                            can_redo={_can_redo}
+                    </React.Fragment>
+        }
+    };
 
-                            view_name_index={_view_name_index}
-                            previous_view_name_index={_previous_view_name_index}
-                            layers={_layers}
-                            layer_index={_layer_index}
-                            hide_canvas_content={_hide_canvas_content}
-                            show_original_image_in_background={_show_original_image_in_background}
-                            show_transparent_image_in_background={_show_transparent_image_in_background}
-                            hue={_hue}
-                            current_color={_current_color}
-                            second_color={_second_color}
-                            slider_value={_slider_value}
-                            tool={_tool}
-                            width={parseInt(_width)}
-                            height={parseInt(_height)}
-                            filters={_filters}
-                            select_mode={_select_mode}
-                            pencil_mirror_mode={_pencil_mirror_mode}
-                            is_something_selected={_is_something_selected}
-                            import_size={_import_size}
-                            import_colorize={_import_colorize}
+    render() {
 
-                            set_filters_callback={this._set_filters_callback}
-                            set_props_callback={this._set_props_callback}
-                            set_tool={this._set_tool}
-                            set_select_mode={this._set_select_mode}
-                            set_pencil_mirror_mode={this._set_pencil_mirror_mode}
-                            set_width_from_slider={this._set_width_from_slider}
-                            set_height_from_slider={this._set_height_from_slider}
-                            set_import_size={this._set_import_size}
-                            set_import_colorize={this._set_import_colorize}
-                            switch_with_second_color={this._switch_with_second_color}
-                            show_hide_canvas_content={this._show_hide_canvas_content}
-                            show_hide_background_image={this._show_hide_background_image}
-                            show_hide_transparent_image={this._show_hide_transparent_image}
-                            on_current_color_change={this._handle_current_color_change}
-                            on_view_name_change={this._handle_view_name_change}
-                            on_upload_image={(e) => {window.dispatchEvent(new Event("art-upload-drawer")); this._upload_image(e);}}
-                            on_upload_image_library={this._upload_image_library}
-                            on_import_image={this._handle_file_import}
-                            on_import_image_library={this._import_image_library}
-                            on_request_draw_text={this._open_text}
-                            on_download_image={this._download_image}
-                            on_download_svg={this._download_svg}
-                            on_scroll_to={this._scroll_to_drawer}
-                        />
-                    </div>
-                </div>
-            </Drawer>
-        );
+        const {
+            classes,
+            _canvas,
+            _loading,
+            _loading_process,
+            _is_image_import_mode,
+            _hide_canvas_content,
+            _show_original_image_in_background,
+            _show_transparent_image_in_background,
+            _can_undo,
+            _can_redo,
+            _current_color,
+            _slider_value,
+            _tool,
+            _import_size,
+            _hue,
+            _select_mode,
+            _pencil_mirror_mode,
+            _kb,
+            _mine_player_direction,
+            _menu_data,
+            _ripple_color,
+            _ripple_opacity,
+            _library_dialog_open,
+            _library,
+            _is_pixel_dialog_create_open,
+            _h_svg,
+            _h_svg_size,
+            _attachment_previews,
+            _perspective,
+            _files_waiting_download,
+            _time_ago_initiated,
+            _settings,
+            _text_dialog_open,
+            _drag_file
+        } = this.st4te;
 
-        const menu = (
-            <Menu
-                className={_is_cursor_fuck_you_active ? classes.contextMenuFuckYouActive: classes.contextMenuFuckYouDisable}
-                PaperProps={{
-                    style: {
-                        maxHeight: 380,
-                        width: 240,
-                        overflowY: "overlay",
-                        contain: "paint style layout",
-                        willChange: "scroll-position",
-                        scrollBehavior: "smooth",
-                        userSelect: "none",
-                        pointerEvents: "all"
-                    },
-                }}
-                onContextMenu={function (e){e.preventDefault();}}
-                MenuListProps={{dense: true}}
-                transitionDuration={{appear: 5, enter: 35, exit: 60}}
-                open={Boolean(_menu_mouse_y) || Boolean(_menu_mouse_x)}
-                onClose={this._handle_menu_close}
-                disablePortal={false}
-                keepMounted={true}
-                anchorReference="anchorPosition"
-                anchorPosition={{ top: _menu_mouse_y|0, left: _menu_mouse_x|0 }}
-            >
-                <span style={{textAlign: "left", padding: "12px 8px", color: "#666"}}>X: {_menu_data.pos_x}, Y: {_menu_data.pos_y}</span>
-                <div style={(_tool === "SET PENCIL MIRROR" || _pencil_mirror_mode !== "NONE") ? {}: {display: "none"}}>
-                    <ListSubheader className={classes.contextMenuSubheader}>Tools</ListSubheader>
-                    <ListItem button divider disabled={_tool === "PENCIL"} onClick={() => {this._set_tool("PENCIL")}}>
-                        <ListItemIcon>
-                            <PencilIcon />
-                        </ListItemIcon>
-                        <ListItemText primary="Pencil" />
-                    </ListItem>
-                    <ListItem button divider disabled={_tool === "PENCIL PERFECT"} onClick={() => {this._set_tool("PENCIL PERFECT")}}>
-                        <ListItemIcon>
-                            <PencilPerfectIcon />
-                        </ListItemIcon>
-                        <ListItemText primary="Pencil perfect" />
-                    </ListItem>
-
-                    <ListSubheader className={classes.contextMenuSubheader}>Mirror mode</ListSubheader>
-                    {
-                        [
-                            {icon: <MirrorIcon />, disabled: _pencil_mirror_mode === "NONE",text: "None", on_click: () => {this._set_pencil_mirror_mode("NONE")}},
-                            {icon: <MirrorIcon />, disabled: _pencil_mirror_mode === "VERTICAL", text: "Vertical", on_click: () => {this._set_pencil_mirror_mode("VERTICAL")}},
-                            {icon: <MirrorIcon />, disabled: _pencil_mirror_mode === "HORIZONTAL", text: "Horizontal", on_click: () => {this._set_pencil_mirror_mode("HORIZONTAL")}},
-                            {icon: <MirrorIcon />, disabled: _pencil_mirror_mode === "BOTH", text: "Both", on_click: () => {this._set_pencil_mirror_mode("BOTH")}},
-                        ].map((item) => {
-
-                            return (
-                                <ListItem key={item.text} button divider disabled={item.disabled} onClick={item.on_click}>
-                                    <ListItemIcon>
-                                        {item.icon}
-                                    </ListItemIcon>
-                                    <ListItemText primary={item.text} />
-                                </ListItem>
-                            );
-
-                        })
-                    }
-                </div>
-
-                <div style={_is_something_selected ? {}: {display: "none"}}>
-                    <ListSubheader className={classes.contextMenuSubheader}>Apply to selection</ListSubheader>
-                    {
-                        [
-                            {icon: <SelectRemoveDifferenceIcon />, text: "Unselect", on_click: () => {_canvas.to_selection_none()}},
-                            {icon: <BucketIcon />, text: "Colorize dynamical", on_click: () => {_canvas.to_selection_changes(_current_color, false)}},
-                            {icon: <SelectColorIcon />, text: "Get average color", on_click: () => {this._get_average_color_of_selection()}},
-                            {icon: <SelectInImageIcon />, text: "Shrink", on_click: () => {_canvas.to_selection_size(-1)}},
-                            {icon: <SelectInImageIcon />, text: "Grow", on_click: () => {_canvas.to_selection_size(1)}},
-                            {icon: <BorderBottomIcon />, text: "Border", on_click: () => {_canvas.to_selection_border()}},
-                            {icon: <BucketIcon />, text: "Bucket", on_click: () => {_canvas.to_selection_bucket()}},
-                            {icon: <SelectInImageIcon />, text: "Crop", on_click: () => {_canvas.to_selection_crop()}},
-                            {icon: <SelectInvertIcon />, text: "Invert", on_click: () => {_canvas.to_selection_invert()}},
-                            {icon: <CopyIcon />, text: "Copy", on_click: () => {_canvas.copy_selection()}},
-                            {icon: <CutIcon />, text: "Cut", on_click: () => {_canvas.cut_selection()}},
-                            {icon: <EraserIcon />, text: "Erase", on_click: () => {_canvas.erase_selection()}},
-                        ].map((item) => {
-
-                            return (
-                                <ListItem key={item.text} button divider onClick={item.on_click}>
-                                    <ListItemIcon>
-                                        {item.icon}
-                                    </ListItemIcon>
-                                    <ListItemText primary={item.text} />
-                                </ListItem>
-                            );
-                        })
-                    }
-                </div>
-                <ListSubheader style={_menu_data.pxl_color === null ? {display: "none"}: {}} className={classes.contextMenuSubheader}>Color</ListSubheader>
-                <ListItem button divider style={_menu_data.pxl_color === null ? {display: "none"}: {}} disabled={_menu_data.pxl_color === _current_color || _menu_data.pxl_color === null} onClick={(event) => {this._set_current_color(_menu_data.pxl_color); this._handle_relevant_action_event(_menu_event, _menu_data.pxl_color, 1, true);}}>
-                    <ListItemIcon>
-                        <SquareIcon style={{ color: _menu_data.pxl_color, background: `repeating-conic-gradient(#80808055 0% 25%, #00000000 0% 50%) 50% / calc(200% / ${_width}) calc(200% / ${_height})`}} />
-                    </ListItemIcon>
-                    <ListItemText primary="Pick color" />
-                </ListItem>
-                <ListItem button divider style={_menu_data.pxl_color === null ? {display: "none"}: {}} disabled={_menu_data.pxl_color === _current_color || _menu_data.pxl_color === null} onClick={(event) => {this._exchange_pixel_colors(_menu_data.pos_x, _menu_data.pos_y, _current_color+""); this._handle_relevant_action_event(_menu_event, _current_color, 1, true);}}>
-                    <ListItemIcon>
-                        <SquareIcon style={{ color: _current_color, background: `repeating-conic-gradient(#80808055 0% 25%, #00000000 0% 50%) 50% / calc(200% / ${_width}) calc(200% / ${_height})`}} />
-                    </ListItemIcon>
-                    <ListItemText primary="Replace color" />
-                </ListItem>
-                <ListSubheader className={classes.contextMenuSubheader}>Effect</ListSubheader>
-                <ListItem button divider onClick={(event) => this._to_auto_medium_more_contrast()}>
-                    <ListItemIcon>
-                        <ContrastCircleIcon />
-                    </ListItemIcon>
-                    <ListItemText primary="Increase contrast" />
-                </ListItem>
-                <ListItem button divider onClick={(event) => this._to_auto_medium_more_saturation()}>
-                    <ListItemIcon>
-                        <ContrastCircleIcon />
-                    </ListItemIcon>
-                    <ListItemText primary="Increase saturation" />
-                </ListItem>
-                <ListItem button divider onClick={(event) => this._handle_edit_drawer_open(null,6)}>
-                    <ListItemIcon>
-                        <ImageFilterMagicIcon />
-                    </ListItemIcon>
-                    <ListItemText primary="Add a filter" />
-                </ListItem>
-                <ListItem button divider onClick={(event) => this._less_colors_stepped(2)}>
-                    <ListItemIcon>
-                        <LessColorIcon />
-                    </ListItemIcon>
-                    <ListItemText primary="Reduce color number" />
-                </ListItem>
-                <ListItem button divider onClick={this._less_colors_auto}>
-                    <ListItemIcon>
-                        <LessColorIcon />
-                    </ListItemIcon>
-                    <ListItemText primary="To auto colors number" />
-                </ListItem>
-                <ListItem button divider onClick={(event) => this._smooth_adjust(1)}>
-                    <ListItemIcon>
-                        <ImageSmoothIcon />
-                    </ListItemIcon>
-                    <ListItemText primary="Smooth a bit" />
-                </ListItem>
-            </Menu>
-        );
+        _menu_data.pos_x = _menu_data.pos_x === -1 ? "out": _menu_data.pos_x;
+        _menu_data.pos_y = _menu_data.pos_y === -1 ? "out": _menu_data.pos_y;
 
         return (
             <div style={{height: "100%", position: "relative", pointerEvents: "none",  userSelect: "none"}} ref={this._set_root_ref}>
@@ -3265,8 +3331,8 @@ class Pixel extends React.PureComponent {
                                 fast_drawing={true}
                                 px_per_px={1}/>
                         </Suspense>
-                        {drawer_desktop}
-                        {menu}
+                        {this.drawer_desktop}
+                        {this.menu}
                     </div>
                 </div>
 
@@ -3298,52 +3364,33 @@ class Pixel extends React.PureComponent {
                     </Button>
                 </div>
 
-                {drawer_mobile}
+                {this.drawer_mobile}
 
-                {_less_than_1280w && <div className={classes.fatabs} style={_is_edit_drawer_open && _less_than_1280w ? {transform: "translateY(24px)", backgroundColor: "#fff"}: {}}>
-                    <Tabs className={classes.tabs} style={{pointerEvents: "all"}}
-                          variant="fullWidth"
-                          scrollButtons="off"
-                          indicatorColor="primary"
-                          textColor="primary"
-                          selectionFollowsFocus={true}
-                          value={_view_name_index}
-                          onChange={this._handle_edit_drawer_open}>
-                        <Tab className={classes.tab} label={"colors"} icon={<PaletteIcon />} />
-                        <Tab className={classes.tab} label={"image"} icon={<FolderImageIcon />} />
-                        <Tab className={classes.tab} label={"layers"} icon={<FolderIcon />} />
-                        <Tab className={classes.tab} label={"tools"} icon={<DrawIcon />} />
-                        <Tab className={classes.tab} label={"select"} icon={<SelectDragIcon />} />
-                        <Tab className={classes.tab} label={"effects"} icon={<TuneIcon />} />
-                        <Tab className={classes.tab} label={"filters"} icon={<ImageAutoAdjustIcon />} />
-                    </Tabs>
-                </div>}
+                <ImageFileDialog
+                    keepMounted={false}
+                    open={Boolean(_library_dialog_open)}
+                    object={_library}
+                    onClose={this._close_library}
+                    onSelectImage={this._from_library}
+                />
+                <PixelDialogText
+                    keepMounted={false}
+                    open={Boolean(_text_dialog_open)}
+                    onClose={this._close_text}
+                    onSuccess={this._draw_text}
+                />
+                <PixelDialogCreate keepMounted={false}
+                                   theme_day={_settings._theme_day}
+                                   open={Boolean(_is_pixel_dialog_create_open)}
+                                   pixel_arts={_time_ago_initiated ? _attachment_previews: {}}
+                                   size={_import_size}
+                                   on_import_size_change={this._set_import_size}
+                                   on_pixel_art_delete={this._delete_unsaved_pixel_art}
+                                   import_JSON_state={this._handle_import_json_state_id}
+                                   on_upload={this._handle_file_upload}
+                                   onClose={this._handle_pixel_dialog_create_close}/>
 
-                <div>
-                    <ImageFileDialog
-                        keepMounted={false}
-                        open={Boolean(_library_dialog_open)}
-                        object={_library}
-                        onClose={this._close_library}
-                        onSelectImage={this._from_library}
-                    />
-                    <PixelDialogText
-                        keepMounted={false}
-                        open={Boolean(_text_dialog_open)}
-                        onClose={this._close_text}
-                        onSuccess={this._draw_text}
-                    />
-                    <PixelDialogCreate keepMounted={false}
-                                       theme_day={_settings._theme_day}
-                                       open={Boolean(_is_pixel_dialog_create_open)}
-                                       pixel_arts={_time_ago_initiated ? _attachment_previews: {}}
-                                       size={_import_size}
-                                       on_import_size_change={this._set_import_size}
-                                       on_pixel_art_delete={this._delete_unsaved_pixel_art}
-                                       import_JSON_state={this._handle_import_json_state_id}
-                                       on_upload={this._handle_file_upload}
-                                       onClose={this._handle_pixel_dialog_create_close}/>
-
+                <div style={{position: "absolute", width: "100%", height: "100%", top: 0, left: 0, contain: "paint size style layout", visibility: "auto"}}>
                     <TouchRipple
                         className={classes.ripple}
                         ref={this._set_ripple_ref}
@@ -3351,7 +3398,7 @@ class Pixel extends React.PureComponent {
                         style={{color: _ripple_color, opacity: _ripple_opacity, position: "fixed", width: "100%", height: "100%"}}/>
 
                     <Backdrop style={{pointerEvents: "all", cursor: "pointer"}} onDrag={this._handle_file_upload} className={classes.backdrop} open={Boolean(_loading || _files_waiting_download.length > 0 || (_drag_file + 1000 > Date.now()))} onClick={this._continue_download}>
-                        <div className={classes.backdropTextContent} style={{ fontFamily: `"Jura"`, textTransform: "uppercase", pointerEvents: "none"}}>
+                        <div className={classes.backdropTextContent} style={{ fontFamily: `"Jura"`, textTransform: "uppercase"}}>
                             {!_drag_file && Boolean(_loading || _files_waiting_download.length > 0) && <h1><ShufflingSpanText key={_loading_process || _loading} text={_loading_process === "browser" ? "Laboratory in DANGER!": "LABORATORY PROCESSING"} animation_delay_ms={0} animation_duration_ms={200}/></h1>}
                             {!_drag_file && _files_waiting_download.length > 0 && <h3><ShufflingSpanText key={_files_waiting_download[0].name} text={`ACTION REQUIRED... ${String(_files_waiting_download[0].name)}`} animation_delay_ms={300} animation_duration_ms={500}/></h3>}
                             {!_drag_file && _files_waiting_download.length > 0 && <div><img src={"/src/images/labostration/DOWNLOAD.svg"} className={classes.imageBackdrop}/></div>}

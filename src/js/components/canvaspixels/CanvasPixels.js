@@ -26,6 +26,7 @@ SOFTWARE.
 "use strict";
 const HISTORY_TIME_GAP = 625;
 import {SetFixed} from "@asaitama/boolean-array";
+import {Layer} from "../../utils/Layer";
 
 import React from "react";
 import TouchRipple from "@material-ui/core/ButtonBase/TouchRipple";
@@ -238,8 +239,7 @@ class CanvasPixels extends React.PureComponent {
             _base64_original_images: [],
             _layers: [{id: Date.now(), name: "Layer 0", hidden: false, opacity: 1}],
             _json_state_history: {history_position: 0, state_history: []},
-            _s_pxl_colors: [new Uint32Array(0)],
-            _s_pxls: [new Uint16Array(width*height)],
+            _s_layers: [Layer.new_from_colors_and_indexes(new Uint32Array(1), new Uint16Array(parseInt(width)*parseInt(height)), parseInt(width), parseInt(height), true)],
             _layer_index: 0,
             _pxls_hovered: -1,
             _original_image_index: -1,
@@ -384,20 +384,18 @@ class CanvasPixels extends React.PureComponent {
 
     current_layer_up = () => {
 
-        let { _layers, _layer_index, _s_pxl_colors, _s_pxls } = this.super_state.get_state();
+        let { _layers, _layer_index, _s_layers } = this.super_state.get_state();
 
         if(_layer_index < _layers.length-1) {
 
             _layers.splice(_layer_index+1, 0, _layers.splice(_layer_index, 1)[0]);
-            _s_pxl_colors.splice(_layer_index+1, 0, _s_pxl_colors.splice(_layer_index, 1)[0]);
-            _s_pxls.splice(_layer_index+1, 0, _s_pxls.splice(_layer_index, 1)[0]);
+            _s_layers.splice(_layer_index+1, 0, _s_layers.splice(_layer_index, 1)[0]);
 
 
             this.super_state.set_state({
                 _layers,
                 _layer_index: parseInt(_layer_index + 1),
-                _s_pxl_colors,
-                _s_pxls,
+                _s_layers,
                 _last_action_timestamp: Date.now()
             }).then(() => {this._maybe_save_state(null, true)});
         }
@@ -405,20 +403,18 @@ class CanvasPixels extends React.PureComponent {
 
     current_layer_down = () => {
 
-        let { _layers, _layer_index, _s_pxl_colors, _s_pxls } = this.super_state.get_state();
+        let { _layers, _layer_index, _s_layers } = this.super_state.get_state();
 
         if(_layer_index > 0) {
 
             _layers.splice(_layer_index-1, 0, _layers.splice(_layer_index, 1)[0]);
-            _s_pxl_colors.splice(_layer_index-1, 0, _s_pxl_colors.splice(_layer_index, 1)[0]);
-            _s_pxls.splice(_layer_index-1, 0, _s_pxls.splice(_layer_index, 1)[0]);
+            _s_layers.splice(_layer_index-1, 0, _s_layers.splice(_layer_index, 1)[0]);
 
 
             this.super_state.set_state({
                 _layers,
+                _s_layers,
                 _layer_index: parseInt(_layer_index - 1),
-                _s_pxl_colors,
-                _s_pxls,
                 _last_action_timestamp: Date.now()
             }).then(() => {this._maybe_save_state(null, true)});
         }
@@ -427,36 +423,34 @@ class CanvasPixels extends React.PureComponent {
     new_layer = (at_index) => {
 
         const {pxl_width, pxl_height} = this.super_state.get_state();
-        let { _layers, _s_pxl_colors, _s_pxls } = this.super_state.get_state();
-        at_index = typeof at_index === "undefined" ? _s_pxl_colors.length: at_index;
+        let { _layers, _s_layers } = this.super_state.get_state();
+        at_index = typeof at_index === "undefined" ? _s_layers.length: at_index;
 
-        _s_pxl_colors.splice(at_index+1, 0, Uint32Array.of(0));
-        _s_pxls.splice(at_index+1, 0, new Uint16Array(pxl_width * pxl_height));
-        _layers.splice(at_index+1, 0, {id: Date.now(), name: `Layer ${at_index+1}`, hidden: false, opacity: 1});
+        _s_layers.splice(at_index+1, 0, Layer.new_from_colors_and_indexes(Uint32Array.of(0), new Uint8Array(pxl_width * pxl_height), pxl_width, pxl_height, true));
+        _layers.splice(at_index+1, 0, {id: Date.now(), hash: "", name: `Layer ${at_index+1}`, hidden: false, opacity: 1, colors: ["#00000000"], number_of_colors: 1});
 
         this.super_state.set_state({
             _layers,
-            _layer_index: at_index,
-            _s_pxl_colors,
-            _s_pxls,
+            _s_layers,
+            _layer_index: at_index + 1,
             _last_action_timestamp: Date.now(),
         }).then(() => {this._maybe_save_state(null, true)});
     };
 
     duplicate_layer = (at_index) => {
 
-        let { _layers, _s_pxl_colors, _s_pxls } = this.super_state.get_state();
-        at_index = typeof at_index === "undefined" ? _s_pxl_colors.length: at_index;
+        let { _layers, _s_layers, pxl_width, pxl_height } = this.super_state.get_state();
+        at_index = typeof at_index === "undefined" ? _s_layers.length: at_index;
 
-        _s_pxl_colors.splice(at_index + 1, 0, Uint32Array.from(_s_pxl_colors[at_index]));
-        _s_pxls.splice(at_index + 1, 0, Uint16Array.from(_s_pxls[at_index]));
+        _s_layers.splice(at_index+1, 0, Layer.new_from_colors_and_indexes(_s_layers[at_index].colors_copy, _s_layers[at_index].indexes_copy, pxl_width, pxl_height, true));
+
         _layers.splice(at_index + 1, 0, {
             id: Date.now(),
             hash: _layers[at_index].hash,
             name: `${_layers[at_index].name} (copy)`,
             hidden: Boolean(_layers[at_index].hidden),
             opacity: parseFloat(_layers[at_index].opacity),
-            colors: Array.from(_layers[at_index].colors),
+            colors: Array.from(_layers[at_index].colors || []),
             number_of_colors: parseInt(_layers[at_index].number_of_colors),
             thumbnail: _layers[at_index].thumbnail,
         });
@@ -464,8 +458,7 @@ class CanvasPixels extends React.PureComponent {
         this.super_state.set_state({
             _layers,
             _layer_index: at_index + 1,
-            _s_pxl_colors,
-            _s_pxls,
+            _s_layers,
             _last_action_timestamp: Date.now(),
         }).then(() => {this._maybe_save_state(null, true)});
 
@@ -473,12 +466,11 @@ class CanvasPixels extends React.PureComponent {
 
     delete_layer = (at_index) => {
 
-        let { _layers, _s_pxl_colors, _s_pxls, _layer_index } = this.super_state.get_state();
+        let { _layers, _s_layers, _layer_index } = this.super_state.get_state();
 
         if(_layers.length > 1) {
 
-            _s_pxl_colors.splice(at_index, 1);
-            _s_pxls.splice(at_index, 1);
+            _s_layers.splice(at_index, 1);
             _layers.splice(at_index, 1);
 
             _layer_index = at_index-1;
@@ -487,8 +479,7 @@ class CanvasPixels extends React.PureComponent {
             this.super_state.set_state({
                 _layers,
                 _layer_index,
-                _s_pxl_colors,
-                _s_pxls,
+                _s_layers,
                 _last_action_timestamp: Date.now(),
             }).then(() => {this._maybe_save_state(null, true)});
         }
@@ -530,14 +521,14 @@ class CanvasPixels extends React.PureComponent {
 
     merge_down_layer = (at_index) => {
 
-        let { _layers, _s_pxls, _s_pxl_colors, pxl_width, pxl_height } = this.super_state.get_state();
+        let { _layers, _s_layers, pxl_width, pxl_height } = this.super_state.get_state();
 
         if(typeof _layers[at_index] !== "undefined" && typeof _layers[at_index - 1] !== "undefined") {
 
-            const top_layer_pxls =  _s_pxls[at_index];
-            const bottom_layer_pxls =  _s_pxls[at_index - 1];
-            const top_layer_pxl_colors = _s_pxl_colors[at_index];
-            const bottom_layer_pxl_colors = _s_pxl_colors[at_index - 1];
+            const top_layer_pxls =  _s_layers[at_index].indexes;
+            const bottom_layer_pxls =  _s_layers[at_index - 1].indexes;
+            const top_layer_pxl_colors = _s_layers[at_index].colors;
+            const bottom_layer_pxl_colors = _s_layers[at_index - 1].colors;
             const top_layer_opacity = Math.round(parseFloat(_layers[at_index].opacity) * 255) & 0xFF ;
             const bottom_layer_opacity = Math.round(parseFloat(_layers[at_index-1].opacity) * 255) & 0xFF;
 
@@ -573,15 +564,13 @@ class CanvasPixels extends React.PureComponent {
                 super_blend.clear();
 
                 _layers.splice(at_index-1, 2, new_layer);
-                _s_pxls.splice(at_index-1, 2, new_pxls);
-                _s_pxl_colors.splice(at_index-1, 2, new_pxl_colors);
+                _s_layers.splice(at_index-1, 2, Layer.new_from_colors_and_indexes(new_pxl_colors, new_pxls, pxl_width, pxl_height, true));
 
                 this.super_state.set_state({
                     _layer_index: at_index-1,
                     _layers,
-                    _s_pxls,
-                    _s_pxl_colors,
-                    _old_pxl_colors: new Uint32Array(_s_pxl_colors[0].length),
+                    _s_layers,
+                    _old_pxl_colors: new Uint32Array(_s_layers[0].indexes.length),
                     _last_action_timestamp: Date.now(),
                 }).then(() => {this._maybe_save_state(null, true)});
             });
@@ -603,62 +592,45 @@ class CanvasPixels extends React.PureComponent {
                 _last_filters_hash,
                 pxl_width,
                 pxl_height,
-                _s_pxls,
-                _s_pxl_colors,
+                _s_layers,
                 _filter_thumbnails
             } = this.super_state.get_state();
 
-            const p = _s_pxls[_layer_index];
-            const pc = _s_pxl_colors[_layer_index];
+            _s_layers[_layer_index].hash_hex_async().then((hash) => {
 
-            const p_buffer_length =  p.length * 2 | 0;
-            const pc_buffer_length = pc.length * 4 | 0;
-            const total_length = p_buffer_length + pc_buffer_length;
+                if (_last_filters_hash !== hash || _processing_filters === false) {
 
-            var uint8 = new Uint8Array(p_buffer_length + pc_buffer_length);
-            uint8.set(new Uint8Array(p.buffer), 0);
-            uint8.set(new Uint8Array(pc.buffer), p_buffer_length);
-            const hash = this.xxhash.base58_that(uint8);
+                    let thumbnails = _filter_thumbnails || new Map();
+                    let progression = 0.0;
+                    let n_processed = 0;
 
-            if (_last_filters_hash !== hash || _processing_filters === false) {
+                    this.super_state.set_state({_last_filters_hash: hash, _processing_filters: true}).then(() => {
 
-                let thumbnails = _filter_thumbnails || new Map()
-                let old_thumbnail = new Map();
-                let progression = 0.0;
-                let n_processed = 0;
+                        this.get_filter_names().forEach((name, index, filter_names) => {
 
-                this.super_state.set_state({_last_filters_hash: hash, _processing_filters: true}).then(() => {
+                            this.get_layer_bitmap_image(
+                                pxl_width,
+                                pxl_height,
+                                _s_layers[_layer_index].indexes,
+                                this.canvas_filters.filter(name, force,  _s_layers[_layer_index].colors), (result) => {
+                                    n_processed++;
+                                    thumbnails.set(name, result);
+                                    progression = Math.round(n_processed / filter_names.length * 100).toString();
+                                    this.props.onFiltersThumbnailChange(thumbnails, hash, progression);
+                                    if (thumbnails.size === filter_names.length) {
 
-                    this.get_filter_names().forEach((name, index, filter_names) => {
-
-                        this.get_layer_bitmap_image(
-                            pxl_width,
-                            pxl_height,
-                            p,
-                            this.canvas_filters.filter(name, force, pc), (result) => {
-                                n_processed++;
-                                old_thumbnail.set(name, thumbnails.get(name));
-                                thumbnails.set(name, result);
-                                progression = Math.round(n_processed / filter_names.length * 100).toString();
-                                this.props.onFiltersThumbnailChange(thumbnails, hash, progression);
-                                if (thumbnails.size === filter_names.length) {
-
-                                    this.super_state.set_state({
-                                        _filter_thumbnails: thumbnails,
-                                        _processing_filters: false
-                                    }).then(() => {
-
-                                        Object.values(old_thumbnail).forEach(function (bmp) {
-                                            bmp.close();
-                                        })
-                                    });
+                                        this.super_state.set_state({
+                                            _filter_thumbnails: thumbnails,
+                                            _processing_filters: false
+                                        });
+                                    }
                                 }
-                            }
-                        );
-                    });
+                            );
+                        });
 
-                });
-            }
+                    });
+                }
+            });
         }
     };
 
@@ -684,10 +656,10 @@ class CanvasPixels extends React.PureComponent {
 
     _get_base64_png_data_url = (scale = 1, with_palette = false, with_compression_speed = 0, with_compression_quality_min = 30, with_compression_quality_max = 35) => {
 
-        const { pxl_width, pxl_height,  _s_pxls, _s_pxl_colors, _layers } = this.super_state.get_state();
+        const { pxl_width, pxl_height, _s_layers, _layers } = this.super_state.get_state();
 
         return new Promise( (resolve, reject) => {
-            B64PngCanvas.from(pool, parseInt(pxl_width), parseInt(pxl_height), _s_pxls, _s_pxl_colors, _layers, parseInt(scale), true).render().then((result) => {
+            B64PngCanvas.from(pool, parseInt(pxl_width), parseInt(pxl_height), _s_layers.map(function (l){return l.indexes}), _s_layers.map(function (l){return l.colors}), _layers, parseInt(scale), true).render().then((result) => {
 
                 if(with_compression_speed !== 0 && result.colors.length <= 256) {
 
@@ -732,7 +704,7 @@ class CanvasPixels extends React.PureComponent {
             new_pxls = new Uint16Array(image_data.width * image_data.height).fill(0);
             for (let i = 0; i < image_data.data.length; i += 4) {
 
-                const color_uint32 = (this.color_conversion.to_uint32_from_rgba(Uint8ClampedArray.of(image_data.data[i+0], image_data.data[i+1], image_data.data[i+2], image_data.data[i+3]))|0)>>>0;
+                const color_uint32 = new SIMDopeColor(Uint8ClampedArray.of(image_data.data[i+0], image_data.data[i+1], image_data.data[i+2], image_data.data[i+3])).uint32;
 
                 const deja_vu_color_hex = new_pxl_colors_set.has((color_uint32|0)>>>0);
                 let color_uint32_index = deja_vu_color_hex ? new_pxl_colors.indexOf((color_uint32|0)>>>0): -1;
@@ -761,7 +733,7 @@ class CanvasPixels extends React.PureComponent {
                 for (let i = 0; i < image_data.width * 4; i += 4) {
 
                     let x = i + first_pixel_in_this_row;
-                    const color_uint32 = this.color_conversion.to_uint32_from_rgba(Uint8ClampedArray.of(image_data.data[x+0], image_data.data[x+1], image_data.data[x+2], image_data.data[x+3]));
+                    const color_uint32 = new SIMDopeColor(Uint8ClampedArray.of(image_data.data[x+0], image_data.data[x+1], image_data.data[x+2], image_data.data[x+3])).uint32;
 
                     // Push color hex in palette if necessary
                     if(!new_pxl_colors.includes(color_uint32)) {
@@ -824,30 +796,27 @@ class CanvasPixels extends React.PureComponent {
 
     erase_selection = () => {
 
-        let { _s_pxls, _s_pxl_colors, _layer_index, _pxl_indexes_of_selection, pxl_width, pxl_height } = this.super_state.get_state();
+        let { _s_layers, _layer_index, _pxl_indexes_of_selection, pxl_width, pxl_height } = this.super_state.get_state();
 
-        let pxl_colors = Array.from(_s_pxl_colors[_layer_index]);
+        let pxl_colors = Array.from(_s_layers[_layer_index].colors);
         if(_pxl_indexes_of_selection.size > 0) {
 
             if(!pxl_colors.includes(0)) {
 
                 pxl_colors.push(0);
-                _s_pxl_colors[_layer_index] = Uint32Array.from(pxl_colors);
+                _s_layers[_layer_index].set_colors(pxl_colors);
             }
-
-            const transparent_color_index = _s_pxl_colors[_layer_index].indexOf(0);
 
             _pxl_indexes_of_selection.forEach((pxl_index) => {
 
                 const x = pxl_index % pxl_width;
                 const y = (pxl_index - x) / pxl_width;
 
-                _s_pxls[_layer_index][pxl_index] = transparent_color_index;
+                _s_layers[_layer_index].set_uint32(pxl_index, 0);
             });
 
             this.super_state.set_state({
-                _s_pxls,
-                _s_pxl_colors,
+                _s_layers,
                 _last_action_timestamp: Date.now()
             }).then(() => {
 
@@ -858,7 +827,7 @@ class CanvasPixels extends React.PureComponent {
 
     import_image_on_canvas_from_selection = () => {
 
-        let { _s_pxls, _s_pxl_colors, _layer_index, _pxl_indexes_of_selection, pxl_width, pxl_height } = this.super_state.get_state();
+        let { _s_layers, _layer_index, _pxl_indexes_of_selection, pxl_width, pxl_height } = this.super_state.get_state();
 
         if(_pxl_indexes_of_selection.size > 0) {
 
@@ -881,9 +850,9 @@ class CanvasPixels extends React.PureComponent {
             const new_width = 1 + bottom_right[0] - top_left[0];
             const new_height = 1 + bottom_right[1] - top_left[1];
 
-            let pxls = _s_pxls[_layer_index];
+            let pxls = _s_layers[_layer_index].indexes;
             let new_pxls =  new Uint16Array(new_width * new_height);
-            let new_pxl_colors = Array.from(_s_pxl_colors[_layer_index]);
+            let new_pxl_colors = Array.from(_s_layers[_layer_index].colors);
 
             for (let i = 0; i < new_width * new_height; i++) {
 
@@ -909,7 +878,7 @@ class CanvasPixels extends React.PureComponent {
                 }
             }
 
-            [ new_pxls, new_pxl_colors ] = this.color_conversion.clean_duplicate_colors(new_pxls, Uint32Array.from(new_pxl_colors));
+            [ new_pxls, new_pxl_colors ] = this.color_conversion.clean_duplicate_colors(new_pxls, new_pxl_colors);
 
             this.super_state.set_state({
                 _imported_image_start_x: top_left[0],
@@ -992,8 +961,7 @@ class CanvasPixels extends React.PureComponent {
                 pxl_height: parseInt(img_d.height),
                 _pxl_indexes_of_selection: new SetFixed(img_d.width * img_d.height),
                 _base64_original_images: [loading_base64_img],
-                _s_pxl_colors: [img_d.pxl_colors],
-                _s_pxls: [img_d.pxls],
+                _s_layers: [Layer.new_from_colors_and_indexes(img_d.pxl_colors, img_d.pxls, parseInt(img_d.width), parseInt(img_d.height), true)],
                 _layers: [{id: Date.now(), name: "Layer 0", hidden: false, opacity: 1}],
                 _layer_index,
                 _pxls_hovered: -1,
@@ -1044,7 +1012,7 @@ class CanvasPixels extends React.PureComponent {
                         let last_occ = -1;
 
                         occ_list[1] = 0;
-                        Uint32Array.from(new_pxls).forEach((value, index) => {
+                        new_pxls.forEach((value, index) => {
 
                             // If like the last occurrence increment the min occurrence variable
                             if(last_occ === value || index === 0) {
@@ -1268,18 +1236,17 @@ class CanvasPixels extends React.PureComponent {
                     new_base64_original_images.push(base64_original_image);
                 }
 
-                const [pxls_copy, pxl_colors_copy] = this.color_conversion.clean_duplicate_colors(new_pxl_data.new_pxls, Uint32Array.from(new_pxl_data.new_pxl_colors));
+                const [pxls_copy, pxl_colors_copy] = this.color_conversion.clean_duplicate_colors(new_pxl_data.new_pxls, new_pxl_data.new_pxl_colors);
 
                 this.super_state.set_state({
                     _id: Date.now(),
                     pxl_width: parseInt(width),
                     pxl_height: parseInt(height),
-                    _pxl_indexes_of_selection: new SetFixed(img_d.width * img_d.height),
+                    _pxl_indexes_of_selection: new SetFixed(width * height),
                     _base64_original_images: new_base64_original_images,
                     _layers: [{id: Date.now(), name: "Layer 0", hidden: false, opacity: 1}],
                     _json_state_history: {history_position: 0, state_history: []},
-                    _s_pxl_colors: [pxl_colors_copy],
-                    _s_pxls: [pxls_copy],
+                    _s_layers: [Layer.new_from_colors_and_indexes(pxl_colors_copy, pxls_copy, parseInt(width), parseInt(height), true)],
                     _layer_index: 0,
                     _pxls_hovered: -1,
                     _original_image_index: new_base64_original_images.indexOf(base64_original_image),
@@ -1439,9 +1406,9 @@ class CanvasPixels extends React.PureComponent {
 
     exchange_pixel_color = (x, y, new_color) => {
 
-        let { pxl_width, _s_pxls, _s_pxl_colors, _layer_index } = this.super_state.get_state();
+        let { pxl_width, _s_layers, _layer_index } = this.super_state.get_state();
 
-        const old_color = _s_pxl_colors[_layer_index][_s_pxls[_layer_index][y*pxl_width+x]];
+        const old_color = _s_layers[_layer_index].colors[_s_layers[_layer_index].indexes[y*pxl_width+x]];
         if((""+new_color).startsWith("#")) {
             new_color = new SIMDopeColor.new_hex(new_color).uint32;
         }
@@ -1455,14 +1422,14 @@ class CanvasPixels extends React.PureComponent {
 
     set_selection_by_colors = (color, threshold) => {
 
-        const { _s_pxl_colors, _s_pxls, _layer_index } = this.super_state.get_state();
+        const { _s_layers, _layer_index } = this.super_state.get_state();
         let { _pxl_indexes_of_selection } = this.super_state.get_state();
-        const _pxls_copy =  new Uint16Array(_s_pxls[_layer_index].buffer);
+        const _pxls_copy =  new Uint16Array(_s_layers[_layer_index].indexes.buffer);
 
 
         _pxl_indexes_of_selection.clear();
 
-        _s_pxl_colors[_layer_index].forEach((c, c_i) => {
+        _s_layers[_layer_index].colors.forEach((c, c_i) => {
 
             if(this._match_color(color, c, threshold)) {
 
@@ -1523,7 +1490,7 @@ class CanvasPixels extends React.PureComponent {
                 hidden: l.hidden && true,
                 opacity: parseFloat(l.opacity),
                 colors: Array.from(l.colors),
-                number_of_colors: l.number_of_colors | 0,
+                number_of_colors: l.number_of_colors | 0
             };
         }));
 
@@ -1553,7 +1520,7 @@ class CanvasPixels extends React.PureComponent {
 
         "use strict";
         limit = Math.min(pxl_colors.length, limit || 256);
-        let colors = new SIMDopeColors(new SIMDopeColors(pxl_colors).get_deduplicated_sorted_uint32a(limit).buffer);
+        let colors = new SIMDopeColors(new SIMDopeColors(pxl_colors.buffer).get_deduplicated_sorted_uint32a(limit).buffer);
         var hexs = new Array(limit);
         for(var i = 0; i < limit; i++) {
             hexs[i] = colors.get_element(i).hex;
@@ -1577,23 +1544,15 @@ class CanvasPixels extends React.PureComponent {
 
         for(let index = 0; index < all_layers_length; index++){
 
-            const p =  new_current_state._s_pxls[index];
-            const p_buffer_length =  p.length * 2 | 0;
-            const pc = new_current_state._s_pxl_colors[index];
-            const pc_buffer_length = pc.length * 4 | 0;
+            new_current_state._s_layers[index].bitmap_async(true).then((bmp) => {
 
-            var uint8 = new Uint8Array(p_buffer_length + pc_buffer_length);
-            uint8.set(new Uint8Array(p.buffer), 0);
-            uint8.set(new Uint8Array(pc.buffer), p_buffer_length);
+                const new_hash = ""+bmp.hash;
+                const old_layer = Object.assign({}, (old_current_state._layers || [])[index]);
+                const old_thumbnail = old_layer.thumbnail;
+                const old_hash = old_layer.hash;
 
-            const new_hash = this.xxhash.base58_that(uint8);
-            const old_layer = Object.assign({}, (old_current_state._layers || [])[index]);
-            const old_thumbnail = old_layer.thumbnail;
-            const old_hash = old_layer.hash;
+                if(old_hash !== new_hash || !Boolean(old_hash) || !Boolean(old_thumbnail) || !Boolean(new_current_state._s_layers[index].thumbnail)) {
 
-            if(old_hash !== new_hash || !Boolean(old_hash) || !Boolean(old_thumbnail)) {
-
-                this.get_layer_bitmap_image(new_current_state.pxl_width, new_current_state.pxl_height, p, pc, (new_thumbnail) => {
                     "use strict";
                     has_updated = true;
                     if(old_hash !== new_hash || !Boolean(old_hash)) {
@@ -1602,9 +1561,9 @@ class CanvasPixels extends React.PureComponent {
                         timestamp = new_timestamp;
                     }
                     new_current_state._layers[index].hash = new_hash;
-                    new_current_state._layers[index].thumbnail = new_thumbnail;
-                    new_current_state._layers[index].colors = this._get_most_used_color_sorted(p, pc, 256);
-                    new_current_state._layers[index].number_of_colors = parseInt(pc.length);
+                    new_current_state._layers[index].thumbnail = bmp;
+                    new_current_state._layers[index].colors = this._get_most_used_color_sorted(new_current_state._s_layers[index].indexes_copy, new_current_state._s_layers[index].colors_copy, 256);
+                    new_current_state._layers[index].number_of_colors = parseInt(new_current_state._s_layers[index].colors.length);
                     current_layers_length++;
 
                     if(current_layers_length === all_layers_length) {
@@ -1612,30 +1571,30 @@ class CanvasPixels extends React.PureComponent {
                         new_current_state._timestamp = parseInt(timestamp);
                         this.maybe_set_layers(new_current_state, callback_function, start, has_updated, has_changed);
                     }
-                });
 
-            }else {
+                }else {
 
 
-                new_current_state._layers[index].hash = new_hash;
-                new_current_state._layers[index].thumbnail = old_thumbnail;
+                    new_current_state._layers[index].hash = new_hash;
+                    new_current_state._layers[index].thumbnail = old_thumbnail;
 
-                if(
-                    new_current_state._layers[index].colors.length === 0 ||
-                    Boolean(new_current_state._layers[index].colors.length !== new_current_state._layers[index].number_of_colors)
-                ) {
+                    if(
+                        new_current_state._layers[index].colors.length === 0 ||
+                        Boolean(new_current_state._layers[index].colors.length !== new_current_state._layers[index].number_of_colors)
+                    ) {
 
-                    new_current_state._layers[index].colors = this._get_most_used_color_sorted(p, pc, 256);
-                    new_current_state._layers[index].number_of_colors = parseInt(pc.length);
+                        new_current_state._layers[index].colors = this._get_most_used_color_sorted(new_current_state._s_layers[index].indexes_copy, new_current_state._s_layers[index].colors_copy, 256);
+                        new_current_state._layers[index].number_of_colors = parseInt(new_current_state._s_layers[index].colors.length);
+                    }
+
+                    current_layers_length++;
+                    if(current_layers_length === all_layers_length) {
+
+                        new_current_state._timestamp = parseInt(timestamp);
+                        this.maybe_set_layers(new_current_state, callback_function, start, has_updated, has_changed);
+                    }
                 }
-
-                current_layers_length++;
-                if(current_layers_length === all_layers_length) {
-
-                    new_current_state._timestamp = parseInt(timestamp);
-                    this.maybe_set_layers(new_current_state, callback_function, start, has_updated, has_changed);
-                }
-            }
+            });
         }
     };
 
@@ -1666,8 +1625,7 @@ class CanvasPixels extends React.PureComponent {
                         _layers,
                         pxl_width,
                         pxl_height,
-                        _s_pxls,
-                        _s_pxl_colors,
+                        _s_layers,
                         _original_image_index,
                         _layer_index,
                         _pxl_indexes_of_selection,
@@ -1695,8 +1653,7 @@ class CanvasPixels extends React.PureComponent {
                         };
                     }));
                     new_current_state._layer_index = parseInt(_layer_index);
-                    new_current_state._s_pxls = Array.from(_s_pxls.map(function (a) {return Uint16Array.from(a);}));
-                    new_current_state._s_pxl_colors = Array.from(_s_pxl_colors.map(function (a) {return Uint32Array.from(a);}));
+                    new_current_state._s_layers = Array.from(_s_layers.map(function (l){return Layer.new_from_colors_and_indexes(l.colors_copy, l.indexes_copy, parseInt(pxl_width), parseInt(pxl_height), true)}));
                     new_current_state._pxl_indexes_of_selection = _pxl_indexes_of_selection.indexes;
                     new_current_state._pencil_mirror_index = parseInt(_pencil_mirror_index);
 
@@ -1800,12 +1757,12 @@ class CanvasPixels extends React.PureComponent {
 
     _notify_image_load_complete = (only_scan = false) => {
 
-        const { _s_pxl_colors, pxl_width, pxl_height } = this.super_state.get_state();
+        const { _s_layers, pxl_width, pxl_height } = this.super_state.get_state();
 
         let image_details = {
             width: pxl_width,
             height: pxl_height,
-            number_of_colors: _s_pxl_colors[0].length,
+            number_of_colors: _s_layers[0].colors.length,
             only_scan
         };
 
@@ -1852,8 +1809,7 @@ class CanvasPixels extends React.PureComponent {
                             pxl_width: parseInt(state.pxl_width),
                             pxl_height: parseInt(state.pxl_height),
                             _pxl_indexes_of_selection: new SetFixed(state._pxl_indexes_of_selection.indexes || state._pxl_indexes_of_selection),
-                            _s_pxls: Array.from(state._s_pxls.map(function(a){return Uint16Array.from(a)})),
-                            _s_pxl_colors:  Array.from(state._s_pxl_colors.map(function(a){return Uint32Array.from(a)})),
+                            _s_layers: new Array(state._s_pxls.length).fill({}).map(function (o, i){return Layer.new_from_colors_and_indexes(state._s_pxl_colors[i], state._s_pxls[i], parseInt(state.pxl_width), parseInt(state.pxl_height), true)}),
                             _layers: Array.from(state._layers.map(function(l) {
                                 "use strict";
                                 return Object.assign({}, {
@@ -1892,8 +1848,7 @@ class CanvasPixels extends React.PureComponent {
                         };
                     })),
                     _layer_index: parseInt(sh._layer_index),
-                    _s_pxls: Array.from(sh._s_pxls.map(function(a){return Uint16Array.from(a)})),
-                    _s_pxl_colors:  Array.from(sh._s_pxl_colors.map(function(a){return Uint32Array.from(a)})),
+                    _s_layers: Array.from(sh._s_layers.map(function (l){return Layer.new_from_colors_and_indexes(l.colors_copy, l.indexes_copy, parseInt(sh.pxl_width), parseInt(sh.pxl_height), true)})),
                     _pxl_indexes_of_selection: new SetFixed(sh._pxl_indexes_of_selection.indexes || sh._pxl_indexes_of_selection),
                     _pencil_mirror_index: parseInt(sh._pencil_mirror_index),
                     _json_state_history: _json_state_history,
@@ -1914,6 +1869,7 @@ class CanvasPixels extends React.PureComponent {
     export_JS_state = (callback_function) => {
 
         this._maybe_save_state((_json_state_history) => {
+
             "use strict";
             var base64_o_i = this.super_state.get_state()._base64_original_images.map(function(img){ return img.split(","); });
             Promise.all([
@@ -1934,8 +1890,8 @@ class CanvasPixels extends React.PureComponent {
                             pxl_width: parseInt(state.pxl_width),
                             pxl_height: parseInt(state.pxl_height),
                             _pxl_indexes_of_selection: state._pxl_indexes_of_selection.indexes || state._pxl_indexes_of_selection,
-                            _s_pxls: Array.from(state._s_pxls.map(function(a){return Uint16Array.from(a)})),
-                            _s_pxl_colors:  Array.from(state._s_pxl_colors.map(function(a){return Uint32Array.from(a)})),
+                            _s_pxls: Array.from(state._s_layers).map(function(l){return l.indexes_copy}),
+                            _s_pxl_colors:  Array.from(state._s_layers).map(function(l){return l.colors_copy}),
                             _layers: Array.from(state._layers.map(function(l) {
                                 "use strict";
                                 return {
@@ -2004,8 +1960,7 @@ class CanvasPixels extends React.PureComponent {
                         };
                     })),
                     _layer_index: parseInt(sh._layer_index),
-                    _s_pxls: Array.from(sh._s_pxls.map(function(a){return Uint16Array.from(a);})),
-                    _s_pxl_colors: Array.from(sh._s_pxl_colors.map(function(a){return Uint32Array.from(a);})),
+                    _s_layers: Array.from(sh._s_layers.map(function (l){return Layer.new_from_colors_and_indexes(l.colors_copy, l.indexes_copy, parseInt(sh.pxl_width), parseInt(sh.pxl_height), true)})),
                     _pxl_indexes_of_selection: new SetFixed(sh._pxl_indexes_of_selection.indexes || sh._pxl_indexes_of_selection),
                     _pencil_mirror_index: parseInt(sh._pencil_mirror_index),
                     _json_state_history: _json_state_history,
@@ -2059,8 +2014,7 @@ class CanvasPixels extends React.PureComponent {
                         };
                     })),
                     _layer_index: parseInt(sh._layer_index),
-                    _s_pxls: Array.from(sh._s_pxls.map(function(a){return Uint16Array.from(a);})),
-                    _s_pxl_colors: Array.from(sh._s_pxl_colors.map(function(a){return Uint32Array.from(a);})),
+                    _s_layers: Array.from(sh._s_layers.map(function (l){return Layer.new_from_colors_and_indexes(l.colors_copy, l.indexes_copy, parseInt(sh.pxl_width), parseInt(sh.pxl_height), true)})),
                     _pxl_indexes_of_selection: new SetFixed(sh._pxl_indexes_of_selection.indexes || sh._pxl_indexes_of_selection),
                     _pencil_mirror_index: parseInt(sh._pencil_mirror_index),
                     _json_state_history: _json_state_history,
@@ -2082,10 +2036,10 @@ class CanvasPixels extends React.PureComponent {
 
     to_selection_border = () => {
 
-        const { pxl_current_color_uint32, _s_pxls,  _pxl_indexes_of_selection, _s_pxl_colors, _layer_index, pxl_current_opacity } = this.super_state.get_state();
+        const { pxl_current_color_uint32,  _pxl_indexes_of_selection, _s_layers, _layer_index, pxl_current_opacity } = this.super_state.get_state();
 
-        let pxls =  new Uint16Array(_s_pxls[_layer_index].buffer);
-        let pxl_colors = Array.from(_s_pxl_colors[_layer_index]);
+        let pxls =  new Uint16Array(_s_layers[_layer_index].indexes.buffer);
+        let pxl_colors = Array.from(_s_layers[_layer_index].colors);
         let pxls_of_the_border = this._get_border_from_selection(_pxl_indexes_of_selection);
 
         pxls_of_the_border.forEach((pxl_index) => {
@@ -2104,21 +2058,18 @@ class CanvasPixels extends React.PureComponent {
             pxls[pxl_index] = current_pxl_new_color_index;
         });
 
-        let ns_pxl_colors = this.super_state.get_state()._s_pxl_colors;
-        ns_pxl_colors[_layer_index] = Uint32Array.from(pxl_colors);
+        _s_layers[_layer_index].set_colors(pxl_colors);
+        _s_layers[_layer_index].set_indexes(pxls);
 
-        let ns_pxls = this.super_state.get_state()._s_pxls;
-        ns_pxls[_layer_index] =  new Uint16Array(pxls.buffer);
-
-        this.super_state.set_state({_s_pxl_colors: ns_pxl_colors, _s_pxls: ns_pxls, _last_action_timestamp: Date.now()}).then(() => this.super_master_meta.update_canvas());
+        this.super_state.set_state({ _s_layers, _last_action_timestamp: Date.now()}).then(() => this.super_master_meta.update_canvas());
     }
 
     to_selection_bucket = () => {
 
-        const { _s_pxls, _pxl_indexes_of_selection, _s_pxl_colors, _layer_index, pxl_current_opacity, pxl_current_color_uint32 } = this.super_state.get_state();
+        const { _s_layers, _pxl_indexes_of_selection, _layer_index, pxl_current_opacity, pxl_current_color_uint32 } = this.super_state.get_state();
 
-        let pxls =  new Uint16Array(_s_pxls[_layer_index].buffer);
-        let pxl_colors = Array.from(_s_pxl_colors[_layer_index])
+        let pxls = Array.from(_s_layers[_layer_index].indexes);
+        let pxl_colors = Array.from(_s_layers[_layer_index].colors)
         _pxl_indexes_of_selection.forEach((pxl_index) => {
 
             const current_pxl_color_index = pxls[pxl_index];
@@ -2135,23 +2086,20 @@ class CanvasPixels extends React.PureComponent {
             pxls[pxl_index] = current_pxl_new_color_index;
         });
 
-        let ns_pxl_colors = this.super_state.get_state()._s_pxl_colors;
-        ns_pxl_colors[_layer_index] = Uint32Array.from(pxl_colors);
+        _s_layers[_layer_index].set_colors(pxl_colors);
+        _s_layers[_layer_index].set_indexes(pxls);
 
-        let ns_pxls = this.super_state.get_state()._s_pxls;
-        ns_pxls[_layer_index] =  new Uint16Array(pxls.buffer);
-
-        this.super_state.set_state({_s_pxl_colors: ns_pxl_colors, _s_pxls: ns_pxls, _last_action_timestamp: Date.now()}).then(() => this.super_master_meta.update_canvas());
+        this.super_state.set_state({_s_layers, _last_action_timestamp: Date.now()}).then(() => this.super_master_meta.update_canvas());
     }
 
     to_selection_invert = () => {
 
-        const { _s_pxls, _pxl_indexes_of_selection, _layer_index, pxl_width, pxl_height } = this.super_state.get_state();
+        const { _s_layers, _pxl_indexes_of_selection, _layer_index, pxl_width, pxl_height } = this.super_state.get_state();
 
         const pxl_indexes_of_selection_set = _pxl_indexes_of_selection;
         let pxl_indexes_of_selection = new SetFixed(pxl_width * pxl_height);
 
-        for (let i = 0; i < _s_pxls[_layer_index].length; i++) {
+        for (let i = 0; i < _s_layers[_layer_index].indexes.length; i++) {
 
             if(!pxl_indexes_of_selection_set.has(i)) {
                 pxl_indexes_of_selection.add(i);
@@ -2168,10 +2116,10 @@ class CanvasPixels extends React.PureComponent {
 
     _get_average_color_of_selection = (_pxl_indexes_of_selection, pxls, pxl_colors ) => {
 
-        const { _s_pxls, _s_pxl_colors, _layer_index, pxl_width, pxl_height } = this.super_state.get_state();
+        const {_s_layers, _layer_index, pxl_width, pxl_height } = this.super_state.get_state();
 
-        pxls = pxls ||  new Uint16Array(_s_pxls[_layer_index].buffer);
-        pxl_colors = pxl_colors || new Uint32Array(_s_pxl_colors[_layer_index].buffer);
+        pxls = pxls ||  _s_layers[_layer_index].indexes_copy;
+        pxl_colors = pxl_colors || _s_layers[_layer_index].colors_copy;
 
         let colors_index = new SetFixed(pxl_width * pxl_height);
         let colors_in_selection_with_occurrence = [];
@@ -2209,10 +2157,10 @@ class CanvasPixels extends React.PureComponent {
         const [o_r, o_g, o_b, o_a] = this.color_conversion.to_rgba_from_uint32(color);
         let [hue, saturation, luminosity, alpha] = this.color_conversion.to_hsla_from_rgba(Uint8ClampedArray.of(o_r, o_g, o_b, o_a));
 
-        const { _s_pxls, _pxl_indexes_of_selection, _s_pxl_colors, _layer_index } = this.super_state.get_state();
+        const {_s_layers, _pxl_indexes_of_selection, _layer_index } = this.super_state.get_state();
 
-        let pxls =  new Uint16Array(_s_pxls[_layer_index].buffer);
-        let pxl_colors = Array.from(_s_pxl_colors[_layer_index]);
+        let pxls =  Array.from(_s_layers[_layer_index].indexes);
+        let pxl_colors = Array.from(_s_layers[_layer_index].colors);
 
         const average_color = this._get_average_color_of_selection();
         const [ac_r, ac_g, ac_b, ac_a] = this.color_conversion.to_rgba_from_uint32(average_color)
@@ -2260,15 +2208,12 @@ class CanvasPixels extends React.PureComponent {
 
         });
 
-        let ns_pxl_colors = this.super_state.get_state()._s_pxl_colors;
-        ns_pxl_colors[_layer_index] = Uint32Array.from(pxl_colors);
+        _s_layers[_layer_index].set_colors(pxl_colors);
+        _s_layers[_layer_index].set_indexes(pxls);
 
-        let ns_pxls = this.super_state.get_state()._s_pxls;
-        ns_pxls[_layer_index] =  new Uint16Array(pxls.buffer);
 
         this.super_state.set_state( {
-            _s_pxl_colors: ns_pxl_colors,
-            _s_pxls: ns_pxls,
+            _s_layers,
             _last_action_timestamp: Date.now()
         }).then(() => this.super_master_meta.update_canvas());
     };
@@ -2359,12 +2304,9 @@ class CanvasPixels extends React.PureComponent {
 
     _to_selection_crop = () => {
 
-        let { _s_pxls, _s_pxl_colors, _layer_index, _pxl_indexes_of_selection, pxl_width, pxl_height, _base64_original_images, _original_image_index } = this.super_state.get_state();
+        let { _s_layers, _layer_index, _pxl_indexes_of_selection, pxl_width, pxl_height, _base64_original_images, _original_image_index } = this.super_state.get_state();
 
         if(_pxl_indexes_of_selection.size > 0) {
-
-            let ns_pxls = Array.from(_s_pxls);
-            let ns_pxl_colors = Array.from(_s_pxl_colors);
 
             let top_left = [pxl_width, pxl_height];
             let bottom_right = [-1, -1];
@@ -2393,9 +2335,9 @@ class CanvasPixels extends React.PureComponent {
             const new_width = 1 + bottom_right[0] - top_left[0];
             const new_height = 1 + bottom_right[1] - top_left[1];
 
-            for (let l = 0; l < _s_pxls.length; l++) {
+            for (let l = 0; l < _s_layers.length; l++) {
 
-                let pxls = _s_pxls[l];
+                let pxls = _s_layers[l].indexes;
                 let new_pxls = new Uint16Array(new_width * new_height);
                 let new_pxl_colors = [];
 
@@ -2412,9 +2354,9 @@ class CanvasPixels extends React.PureComponent {
                     new_pxls[i] = pxls[index];
                 }
 
-                [new_pxls, new_pxl_colors] = this.color_conversion.clean_duplicate_colors(new_pxls, Uint32Array.from(_s_pxl_colors[l]));
-                ns_pxls[l] = new_pxls;
-                ns_pxl_colors[l] = new_pxl_colors;
+                [new_pxls, new_pxl_colors] = this.color_conversion.clean_duplicate_colors(new_pxls, _s_layers[l].colors_copy);
+                _s_layers[l].set_indexes(new_pxls);
+                _s_layers[l].set_colors(new_pxl_colors);
             }
 
             if (typeof _base64_original_images[_original_image_index] !== "undefined") {
@@ -2451,8 +2393,7 @@ class CanvasPixels extends React.PureComponent {
                         _base64_original_images;
 
                     this.super_state.set_state({
-                        _s_pxls: ns_pxls,
-                        _s_pxl_colors: ns_pxl_colors,
+                        _s_layers,
                         pxl_width: new_width,
                         pxl_height: new_height,
                         _pxl_indexes_of_selection: new SetFixed(new_width * new_height),
@@ -2470,8 +2411,7 @@ class CanvasPixels extends React.PureComponent {
             }else {
 
                 this.super_state.set_state({
-                    _s_pxls: ns_pxls,
-                    _s_pxl_colors: ns_pxl_colors,
+                    _s_layers,
                     pxl_width: new_width,
                     pxl_height: new_height,
                     _pxl_indexes_of_selection: new SetFixed(new_width * new_height),
@@ -2536,15 +2476,15 @@ class CanvasPixels extends React.PureComponent {
     _merge_import = () => {
 
         const {imported_image_pxls_positioned, imported_image_pxl_colors} = this.super_state.get_imported_image_data()
-        let { _s_pxls, _s_pxl_colors, _layer_index } = this.super_state.get_state();
+        let { _s_layers, _layer_index } = this.super_state.get_state();
 
-        let pxl_colors = Array.from(_s_pxl_colors[_layer_index]);
+        let pxl_colors = Array.from(_s_layers[_layer_index].colors);
         Object.entries(imported_image_pxls_positioned).forEach((entry) => {
 
             const [pixel_index, color_index] = entry;
 
-            const old_pixel_color_index = _s_pxls[_layer_index][pixel_index];
-            const old_pixel_color_hex = _s_pxl_colors[_layer_index][old_pixel_color_index];
+            const old_pixel_color_index = _s_layers[_layer_index].indexes[pixel_index];
+            const old_pixel_color_hex = _s_layers[_layer_index].colors[old_pixel_color_index];
             const top_pixel_color_hex = imported_image_pxl_colors[color_index];
             const new_pixel_color_hex = this.color_conversion.blend_colors(old_pixel_color_hex, top_pixel_color_hex, 1, false, false);
 
@@ -2553,13 +2493,12 @@ class CanvasPixels extends React.PureComponent {
                 pxl_colors.push(new_pixel_color_hex);
             }
 
-            _s_pxls[_layer_index][pixel_index] = pxl_colors.indexOf(new_pixel_color_hex);
+            _s_layers[_layer_index].indexes[pixel_index] = pxl_colors.indexOf(new_pixel_color_hex);
         });
-        _s_pxl_colors[_layer_index] = Uint32Array.from(pxl_colors);
+        _s_layers[_layer_index].set_colors(pxl_colors);
 
         this.super_state.set_state({
-            _s_pxls,
-            _s_pxl_colors,
+            _s_layers,
             _imported_image_start_x: 0,
             _imported_image_start_y: 0,
             _imported_image_scale_delta_x: 0,
@@ -2715,14 +2654,13 @@ class CanvasPixels extends React.PureComponent {
 
     _invert_pixel = (direction) => {
 
-        let { _s_pxls, pxl_width, pxl_height, _base64_original_images, _original_image_index, _pxl_indexes_of_selection, _shape_index_a, _select_shape_index_a, _layer_index } = this.super_state.get_state();
+        let { _s_layers, pxl_width, pxl_height, _base64_original_images, _original_image_index, _pxl_indexes_of_selection, _shape_index_a, _select_shape_index_a, _layer_index } = this.super_state.get_state();
         let {_imported_image_pxls, _imported_image_width, _imported_image_height} = this.super_state.get_state();
 
-        let pxls =  Uint16Array.from(_s_pxls[_layer_index]);
+        let pxls =  Array.from(_s_layers[_layer_index].indexes);
         let new_pxl_indexes_of_selection = new SetFixed(pxls.length);
         let new_shape_index_a = _shape_index_a;
         let new_select_shape_index_a = _select_shape_index_a;
-        let ns_pxls = Array.from(_s_pxls);
         let x_scale = 1;
         let y_scale = 1;
 
@@ -2796,7 +2734,7 @@ class CanvasPixels extends React.PureComponent {
                 _imported_image_pxls = n_imported_image_pxls;
             }else {
 
-                ns_pxls[_layer_index].forEach(function(pxl, index) {
+                _s_layers[_layer_index].indexes.forEach(function(pxl, index) {
 
                     let x = index % pxl_width;
                     let y = (index - x) / pxl_width;
@@ -2822,7 +2760,7 @@ class CanvasPixels extends React.PureComponent {
                 });
 
                 y_scale = -1;
-                ns_pxls[_layer_index] = pxls;
+                _s_layers[_layer_index].set_indexes(pxls);
 
             }
 
@@ -2855,7 +2793,7 @@ class CanvasPixels extends React.PureComponent {
                     _shape_index_a: new_shape_index_a,
                     _select_shape_index_a: new_select_shape_index_a,
                     _pxl_indexes_of_selection: new_pxl_indexes_of_selection,
-                    _s_pxls: ns_pxls,
+                    _s_layers,
                     _base64_original_images: _base64_original_images,
                     _original_image_index: _original_image_index,
                     _imported_image_pxls,
@@ -2872,7 +2810,7 @@ class CanvasPixels extends React.PureComponent {
                 _shape_index_a: new_shape_index_a,
                 _select_shape_index_a: new_select_shape_index_a,
                 _pxl_indexes_of_selection: new_pxl_indexes_of_selection,
-                _s_pxls: ns_pxls,
+                _s_layers,
                 _last_action_timestamp: Date.now(),
                 _imported_image_pxls
             }).then(() => this.super_master_meta.update_canvas());
@@ -2900,36 +2838,33 @@ class CanvasPixels extends React.PureComponent {
 
     _to_alpha = (color = 0, intensity = 1) => {
 
-        const { _s_pxls, _s_pxl_colors, _layer_index } = this.super_state.get_state();
-        const [ new_pxls, new_pxl_colors ] = this._pxl_colors_to_alpha(_s_pxls[_layer_index], _s_pxl_colors[_layer_index], color, intensity);
+        const { _s_layers, _layer_index } = this.super_state.get_state();
+        const [ new_pxls, new_pxl_colors ] = this._pxl_colors_to_alpha(_s_layers[_layer_index].indexes, _s_layers[_layer_index].colors, color, intensity);
 
-        let ns_pxl_colors = this.super_state.get_state()._s_pxl_colors;
-        ns_pxl_colors[_layer_index] = new_pxl_colors;
+        _s_layers[_layer_index].set_indexes(new_pxls);
+        _s_layers[_layer_index].set_colors(new_pxl_colors);
 
-        let ns_pxls = this.super_state.get_state()._s_pxls;
-        ns_pxls[_layer_index] = new_pxls;
-
-        this.super_state.set_state({_s_pxls: ns_pxls, _s_pxl_colors: ns_pxl_colors, _last_action_timestamp: Date.now()}).then(() => this.super_master_meta.update_canvas(true));
+        this.super_state.set_state({_layer_index, _last_action_timestamp: Date.now()}).then(() => this.super_master_meta.update_canvas(true));
     }
 
     _to_less_color = (threshold, callback_function = () => {}) => {
 
         const { _layer_index } = this.super_state.get_state();
-        let { _s_pxls, _s_pxl_colors } = this.super_state.get_state();
+        let { _s_layers } = this.super_state.get_state();
 
-        const color_number = _s_pxl_colors[_layer_index].length;
-        this._remove_close_pxl_colors(Array.from(_s_pxls[_layer_index]), new Uint32Array(_s_pxl_colors[_layer_index].buffer), threshold).then(([pxls, pxl_colors]) => {
+        const color_number = _s_layers[_layer_index].colors.length;
+        this._remove_close_pxl_colors(_s_layers[_layer_index].indexes_copy, _s_layers[_layer_index].colors_copy, threshold).then(([pxls, pxl_colors]) => {
 
-            _s_pxls[_layer_index] =  new Uint16Array(pxls.buffer);
-            _s_pxl_colors[_layer_index] = Uint32Array.from(pxl_colors);
+            _s_layers[_layer_index].set_indexes(pxls);
+            _s_layers[_layer_index].set_colors(pxl_colors);
 
-            const color_remaining_number = _s_pxl_colors[_layer_index].length;
+            const color_remaining_number = _s_layers[_layer_index].colors.length;
             let results = {
                 colors_removed: color_number - color_remaining_number,
                 colors_remaining: color_remaining_number,
             };
 
-            this.super_state.set_state({_s_pxls, _s_pxl_colors, _last_action_timestamp: Date.now()}).then(() => {
+            this.super_state.set_state({_s_layers, _last_action_timestamp: Date.now()}).then(() => {
 
                 this.super_master_meta.update_canvas(true);
                 callback_function(results);
@@ -2939,23 +2874,24 @@ class CanvasPixels extends React.PureComponent {
 
     _auto_adjust_contrast = (intensity = 1) => {
 
-        const { _layer_index } = this.super_state.get_state();
-        let { _s_pxls, _s_pxl_colors } = this.super_state.get_state();
+        const { _layer_index, _s_layers } = this.super_state.get_state();
 
-        [ _s_pxls[_layer_index], _s_pxl_colors[_layer_index] ] = this._pxl_adjust_contrast(_s_pxls[_layer_index], _s_pxl_colors[_layer_index], intensity);
+        var result = this._pxl_adjust_contrast(_s_layers[_layer_index].indexes, _s_layers[_layer_index].colors, intensity);
+        _s_layers[_layer_index].set_indexes(result[0]);
+        _s_layers[_layer_index].set_colors(result[1]);
 
-
-        this.super_state.set_state({_s_pxls, _s_pxl_colors, _last_action_timestamp: Date.now()}).then(() => this.super_master_meta.update_canvas(true));
+        this.super_state.set_state({_s_layers, _last_action_timestamp: Date.now()}).then(() => this.super_master_meta.update_canvas(true));
     };
 
     _auto_adjust_saturation = (intensity = 1) => {
 
-        const { _layer_index } = this.super_state.get_state();
-        let { _s_pxls, _s_pxl_colors } = this.super_state.get_state();
+        const { _s_layers, _layer_index } = this.super_state.get_state();
 
-        [ _s_pxls[_layer_index], _s_pxl_colors[_layer_index] ] = this._pxl_adjust_saturation(_s_pxls[_layer_index], _s_pxl_colors[_layer_index], intensity);
+        var result =  this._pxl_adjust_saturation(_s_layers[_layer_index].indexes, _s_layers[_layer_index].colors, intensity);
+        _s_layers[_layer_index].set_indexes(result[0]);
+        _s_layers[_layer_index].set_colors(result[1]);
 
-        this.super_state.set_state({_s_pxls, _s_pxl_colors, _last_action_timestamp: Date.now()}).then(() => this.super_master_meta.update_canvas(true));
+        this.super_state.set_state({_s_layers, _last_action_timestamp: Date.now()}).then(() => this.super_master_meta.update_canvas(true));
     }
 
     _pxl_adjust_saturation = (pxls, pxl_colors, intensity) => {
@@ -3002,11 +2938,10 @@ class CanvasPixels extends React.PureComponent {
 
     _selection_pxl_adjust_sat_lum = (bonus_malus_sat = 0, bonus_malus_lum = 0) => {
 
-        const { _layer_index } = this.super_state.get_state();
-        let { _s_pxls, _s_pxl_colors, _pxl_indexes_of_selection } = this.super_state.get_state();
+        const { _layer_index, _s_layers, _pxl_indexes_of_selection } = this.super_state.get_state();
 
-        let pixels = _s_pxls[_layer_index];
-        let colors = Array.from(_s_pxl_colors[_layer_index]);
+        let pixels = _s_layers[_layer_index].indexes;
+        let colors = Array.from(_s_layers[_layer_index].colors);
 
         _pxl_indexes_of_selection.forEach((pixel_index) => {
 
@@ -3023,21 +2958,21 @@ class CanvasPixels extends React.PureComponent {
             pixels[pixel_index] = colors.indexOf(new_color);
         });
 
-        colors = Uint32Array.from(colors);
-        _s_pxl_colors[_layer_index] = colors;
-        _s_pxls[_layer_index] = pixels;
+        _s_layers[_layer_index].set_colors(colors);
+        _s_layers[_layer_index].set_indexes(pixels);
 
-        this.super_state.set_state({_s_pxl_colors, _s_pxls});
+        this.super_state.set_state({_s_layers});
     }
 
     _auto_adjust_smoothness = () => {
 
-        let { _layer_index,  _s_pxls, _s_pxl_colors, pxl_width, pxl_height } = this.super_state.get_state();
+        let { _layer_index,  _s_layers, pxl_width, pxl_height } = this.super_state.get_state();
 
-        [ _s_pxls[_layer_index], _s_pxl_colors[_layer_index] ] = this._pxl_adjust_smoothness(_s_pxls[_layer_index], _s_pxl_colors[_layer_index], pxl_width, pxl_height);
+        var result = this._pxl_adjust_smoothness(_s_layers[_layer_index].indexes, _s_layers[_layer_index].colors, pxl_width, pxl_height);
+        _s_layers[_layer_index].set_indexes(result[0]);
+        _s_layers[_layer_index].set_colors(result[1]);
 
-
-        this.super_state.set_state({_s_pxls, _s_pxl_colors, _last_action_timestamp: Date.now()}).then(() => this.super_master_meta.update_canvas(true));
+        this.super_state.set_state({_s_layers, _last_action_timestamp: Date.now()}).then(() => this.super_master_meta.update_canvas(true));
     };
 
     _pxl_to_vignette = (pxls, pxl_colors, color, intensity, callback_function) => {
@@ -3098,7 +3033,7 @@ class CanvasPixels extends React.PureComponent {
 
             new_pxl_colors = brand_new_pxl_colors;
 
-            callback_function(Array.of(Uint16Array.from(new_pxls), Uint32Array.from(new_pxl_colors)));
+            callback_function(Array.of(new_pxls, new_pxl_colors));
         });
     };
 
@@ -3107,13 +3042,14 @@ class CanvasPixels extends React.PureComponent {
         if(intensity > 0) {
 
             const {_layer_index} = this.super_state.get_state();
-            let {_s_pxls, _s_pxl_colors} = this.super_state.get_state();
+            let { _s_layers} = this.super_state.get_state();
 
-            this._pxl_to_vignette(_s_pxls[_layer_index], _s_pxl_colors[_layer_index], color, intensity, (result) => {
+            this._pxl_to_vignette(_s_layers[_layer_index].indexes, _s_layers[_layer_index].colors, color, intensity, (result) => {
 
-                [_s_pxls[_layer_index], _s_pxl_colors[_layer_index]] = result;
+                _s_layers[_layer_index].set_indexes(result[0]);
+                _s_layers[_layer_index].set_colors(result[1]);
 
-                this.super_state.set_state({_s_pxls, _s_pxl_colors, _last_action_timestamp: Date.now()}).then(() => this.super_master_meta.update_canvas(true));
+                this.super_state.set_state({_s_layers, _last_action_timestamp: Date.now()}).then(() => this.super_master_meta.update_canvas(true));
             });
         }
     };
@@ -3121,10 +3057,10 @@ class CanvasPixels extends React.PureComponent {
 
     _to_colorized = (hue = null, opacity = null, blend_with_a_saturation_of = null, blend_with_a_luminosity_of = null) => {
 
-        const { _s_pxl_colors, _layer_index } = this.super_state.get_state();
+        const { _s_layers, _layer_index } = this.super_state.get_state();
         opacity = opacity === null ? 1: opacity;
 
-        const _new_pxl_colors = _s_pxl_colors[_layer_index].map((color) => {
+        const _new_pxl_colors = _s_layers[_layer_index].colors.map((color) => {
 
             const [r, g, b, a] = this.color_conversion.to_rgba_from_uint32(color);
             let [hue2, saturation2, luminosity2, op2] = this.color_conversion.to_hsla_from_rgba(Uint8ClampedArray.of(r, g, b, a));
@@ -3156,10 +3092,9 @@ class CanvasPixels extends React.PureComponent {
             return color;
         });
 
-        let ns_pxl_colors = this.super_state.get_state()._s_pxl_colors;
-        ns_pxl_colors[_layer_index] = _new_pxl_colors;
+        _s_layers[_layer_index].set_colors(_new_pxl_colors);
 
-        this.super_state.set_state({_s_pxl_colors: ns_pxl_colors, _last_action_timestamp: Date.now()}).then(() => this.super_master_meta.update_canvas(true));
+        this.super_state.set_state({_s_layers, _last_action_timestamp: Date.now()}).then(() => this.super_master_meta.update_canvas(true));
     };
 
     get_filter_names = () => {
@@ -3169,9 +3104,6 @@ class CanvasPixels extends React.PureComponent {
 
     _dutone_pixels = (contrast, color_a, color_b, pxls, pxl_colors) => {
 
-        pxls =  new Uint16Array(pxls.buffer);
-        pxl_colors = new Uint32Array(pxl_colors.buffer);
-
         pxl_colors = pxl_colors.map((pxl_color) => {
 
             const l = this.color_conversion.to_hsla_from_rgba(this.color_conversion.to_rgba_from_uint32(pxl_color))[2];
@@ -3179,32 +3111,34 @@ class CanvasPixels extends React.PureComponent {
 
         });
 
-        return this.color_conversion.clean_duplicate_colors(pxls, Uint32Array.from(pxl_colors));
+        return this.color_conversion.clean_duplicate_colors(pxls, pxl_colors);
     };
 
     _to_dutone = (contrast = 0.8, color_a = "#ffffffff", color_b = "#000000ff") => {
 
-        const { _s_pxls, _s_pxl_colors, _layer_index } = this.super_state.get_state();
+        const { _layer_index, _s_layers } = this.super_state.get_state();
 
-        [_s_pxls[_layer_index], _s_pxl_colors[_layer_index]] = this._dutone_pixels(contrast, color_a, color_b, _s_pxls[_layer_index], _s_pxl_colors[_layer_index]);
+        var result = this._dutone_pixels(contrast, color_a, color_b, _s_layers[_layer_index].indexes, _s_layers[_layer_index].colors);
+        _s_layers[_layer_index].set_indexes(result[0]);
+        _s_layers[_layer_index].set_colors(result[1]);
 
-        this.super_state.set_state({_s_pxls, _s_pxl_colors, _pxls_hovered: -1, _last_action_timestamp: Date.now()}).then(() => this.super_master_meta.update_canvas(true));
+        this.super_state.set_state({_s_layers, _pxls_hovered: -1, _last_action_timestamp: Date.now()}).then(() => this.super_master_meta.update_canvas(true));
 
     };
 
     _to_filter = (name, intensity) => {
 
-        const { _s_pxl_colors, _layer_index } = this.super_state.get_state();
+        const { _s_layers, _layer_index } = this.super_state.get_state();
 
-        _s_pxl_colors[_layer_index] = this.canvas_filters.filter(name, intensity, _s_pxl_colors[_layer_index]);
+        _s_layers[_layer_index].set_colors(this.canvas_filters.filter(name, intensity, _s_layers[_layer_index].colors));
 
-        this.super_state.set_state({_s_pxl_colors, _pxls_hovered: -1, _last_action_timestamp: Date.now() }).then(() => this.super_master_meta.update_canvas(true));
+        this.super_state.set_state({_s_layers, _pxls_hovered: -1, _last_action_timestamp: Date.now() }).then(() => this.super_master_meta.update_canvas(true));
 
     }
 
     _to_rotation = (right = true) => {
 
-        let {_imported_image_pxls, _imported_image_width, _imported_image_height, pxl_width, pxl_height, _s_pxls, _pxl_indexes_of_selection, _select_shape_index_a, _shape_index_a, _base64_original_images, _original_image_index, _layer_index } = this.super_state.get_state();
+        let {_imported_image_pxls, _imported_image_width, _imported_image_height, pxl_width, pxl_height, _s_layers, _pxl_indexes_of_selection, _select_shape_index_a, _shape_index_a, _base64_original_images, _original_image_index, _layer_index } = this.super_state.get_state();
 
         const new_imported_image_width = _imported_image_height;
         const new_imported_image_height = _imported_image_width;
@@ -3241,7 +3175,7 @@ class CanvasPixels extends React.PureComponent {
 
         }else {
 
-            for (let index = 0, l = _s_pxls[0].length; index < l; index++) {
+            for (let index = 0, l = _s_layers[0].indexes.length; index < l; index++) {
 
                 x = index % pxl_width;
                 y = (index - x) / pxl_width;
@@ -3266,11 +3200,11 @@ class CanvasPixels extends React.PureComponent {
                 }
             }
 
-            for (let i = 0; i < _s_pxls.length; i++) {
+            for (let i = 0; i < _s_layers.length; i++) {
 
                 let new_pxls = new Uint16Array(new_pxl_width * new_pxl_height);
 
-                _s_pxls[i].forEach(function(pxl, index) {
+                _s_layers[i].indexes.forEach(function(pxl, index) {
 
                     x = index % pxl_width;
                     y = (index - x) / pxl_width;
@@ -3282,7 +3216,7 @@ class CanvasPixels extends React.PureComponent {
 
                     new_pxls[new_index] = pxl;
                 });
-                _s_pxls[i] = new_pxls;
+                _s_layers[i].set_indexes(new_pxls);
             }
 
         }
@@ -3317,7 +3251,7 @@ class CanvasPixels extends React.PureComponent {
                     this.super_state.set_state({
                         pxl_width: new_pxl_width,
                         pxl_height: new_pxl_height,
-                        _s_pxls: _s_pxls,
+                        _s_layers,
                         _pxl_indexes_of_selection: new_pxl_indexes_of_selection,
                         _select_shape_index_a: new_select_shape_index_a,
                         _shape_index_a: new_shape_index_a,
@@ -3337,7 +3271,7 @@ class CanvasPixels extends React.PureComponent {
                 this.super_state.set_state({
                     pxl_width: new_pxl_width,
                     pxl_height: new_pxl_height,
-                    _s_pxls: _s_pxls,
+                    _s_layers,
                     _pxl_indexes_of_selection: new_pxl_indexes_of_selection,
                     _select_shape_index_a: new_select_shape_index_a,
                     _shape_index_a: new_shape_index_a,
@@ -3364,9 +3298,6 @@ class CanvasPixels extends React.PureComponent {
     };
 
     _pxl_colors_to_alpha = (pxls, pxl_colors, color, intensity) => {
-
-        pxls =  new Uint16Array(pxls.buffer);
-        pxl_colors = new Uint32Array(pxl_colors.buffer);
 
         pxl_colors = pxl_colors.map((pxl_color) => {
 
@@ -3589,7 +3520,7 @@ class CanvasPixels extends React.PureComponent {
         const padding = canvas_wrapper.padding / device_pixel_ratio * scale.current | 0;
 
         return (
-            <div onContextMenu={function (e){e.preventDefault(); e.stopImmediatePropagation();}}
+            <div onContextMenu={function (e){e.preventDefault(); }}
                  ref={this._set_canvas_container_ref} draggable={"false"}
                  style={{zIndex: 11, boxSizing: "border-box", position: "relative", pointerEvents: "none", overflow: "hidden", touchAction: "none", userSelect: "none", display: "block"}}
                  className={className}>
@@ -3708,8 +3639,8 @@ class CanvasPixels extends React.PureComponent {
                         userSelect: "none",
                         contain: "layout size style paint",
                         zIndex: 10,
-                    }} onContextMenu={function (e){e.preventDefault(); e.stopImmediatePropagation();}} />
-                    {!is_mobile_or_tablet && <div style={{
+                    }} onContextMenu={function (e){e.preventDefault();}} />
+                    <div style={{
                         display: "block",
                         zIndex: 1,
                         color: canvas_wrapper_background_color,
@@ -3725,7 +3656,7 @@ class CanvasPixels extends React.PureComponent {
                         backgroundSize: `${scale.current * screen_zoom_ratio * 5 * 5 | 0}px`,
                         pointerEvents: "none",
                         touchAction: "none",
-                    }}><span>[{(scale.current * screen_zoom_ratio * 100 | 0) / 100}x]</span></div>}
+                    }}><span>[{(scale.current * screen_zoom_ratio * 100 | 0) / 100}x]</span></div>
                 </div>
                 <TouchRipple
                     style={{color: "#050c4c4d"}}

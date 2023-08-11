@@ -1138,7 +1138,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                                 <Slider defaultValue={parseInt(import_size)} step={1} valueLabelDisplay="auto" min={0}
                                         max={import_size > 512 ? import_size : 512}
                                         onChangeCommitted={this._set_import_size}
-                                        onClick={function (e){e.stopImmediatePropagation();e.stopPropagation();e.preventDefault();}}
+                                        onClick={function (e){e.stopPropagation();e.preventDefault();}}
                                         aria-labelledby="size-slider"/>
                             </div>
                         </div>

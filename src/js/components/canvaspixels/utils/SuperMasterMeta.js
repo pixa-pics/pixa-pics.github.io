@@ -1,5 +1,6 @@
 import {SetFixed} from "@asaitama/boolean-array";
 import SIMDope from "simdope";
+import {Layer} from "../../../utils/Layer";
 const simdops = SIMDope.simdops;
 const SIMDopeColor = SIMDope.SIMDopeColor;
 
@@ -169,8 +170,7 @@ const SuperMasterMeta = {
 
                 // Importing state variables
                 let {
-                    _s_pxl_colors,
-                    _s_pxls,
+                    _s_layers,
                     _layer_index,
                     _layers,
                     select_mode,
@@ -195,16 +195,6 @@ const SuperMasterMeta = {
                 const layers_opacity_255 = Uint8ClampedArray.from(_layers.map(function (l) {
                     return (l.hidden || hide_canvas_content) ? 0 :  Math.round(parseFloat(l.opacity) * 255);
                 }).concat([255]));
-
-                // This is a list of color index that we explore
-                const colors_in_current_layer = _s_pxl_colors[_layer_index];
-                const pixels_in_current_layer = _s_pxls[_layer_index];
-                const pixels_in_current_layer_length = pixels_in_current_layer.length;
-
-                full_pxls = (full_pxls.length < pixels_in_current_layer_length) ? new Uint32Array(pixels_in_current_layer_length) : full_pxls;
-                for (let i = 0; (i | 0) < (pixels_in_current_layer_length | 0); i = (i + 1 | 0) >>> 0) {
-                    full_pxls[i | 0] = (colors_in_current_layer[pixels_in_current_layer[i | 0] | 0] | 0)>>>0;
-                }
 
                 if (Boolean(tool === "LINE" || tool === "RECTANGLE" || tool === "ELLIPSE" || tool === "TRIANGLE") && _shape_index_a !== - 1 && _pxls_hovered !== - 1) {
 
@@ -255,6 +245,7 @@ const SuperMasterMeta = {
 
                 const clear_canvas = (_did_hide_canvas_content !== hide_canvas_content) || has_layers_visibility_or_opacity_changed || _is_there_new_dimension || is_there_new_dimension || force_update;
                 const layers_length = _layers.length | 0;
+                const full_pxls_length = _s_layers[0].indexes.length;
 
                 const {
                     imported_image_pxls_positioned,
@@ -263,15 +254,15 @@ const SuperMasterMeta = {
                     image_imported_resizer_index
                 } = meta.super_state.get_imported_image_data();
 
-                let full_pxls_length = pixels_in_current_layer_length | 0;
                 let pos_x = 0;
                 let pos_y = 0;
                 let i = 0;
                 let index = 0;
+                let _current_layer = _s_layers[_layer_index];
 
-                old_full_pxls = (old_full_pxls.length < full_pxls_length) ? new Uint32Array(full_pxls_length) : old_full_pxls;
-                meta_super_blend.update(plus_uint(_layers.length, 1), full_pxls_length | 0, layers_opacity_255);
+                meta_super_blend.update(plus_uint(_layers.length, 1), full_pxls_length | 0, layers_opacity_255, _s_layers.map(function (l){return l.data}));
                 bool_new_highlight = _selection_pair_highlight != _old_selection_pair_highlight;
+
 
                 for (; int_less(index, full_pxls_length); index = plus_uint(index, 1)) {
 
@@ -284,7 +275,7 @@ const SuperMasterMeta = {
                     bool_old_selection = _pxl_indexes_of_selection_drawn.has((index | 0) >>> 0);
                     bool_new_import = imported_image_pxls_positioned_keyset.has((index | 0) >>> 0);
                     bool_old_import = _previous_imported_image_pxls_positioned_keyset.has((index | 0) >>> 0);
-                    bool_new_pixel = uint_not_equal(full_pxls[(index | 0) >>> 0], old_full_pxls[(index | 0) >>> 0]);
+                    bool_new_pixel = _current_layer.changes_has((index|0)>>>0);
 
                     if (
                         clear_canvas ||
@@ -298,10 +289,7 @@ const SuperMasterMeta = {
                         bool_is_resize
                     ) {
 
-                        if(bool_is_resize) {
-
-                            meta_super_blend.for((index | 0) >>> 0, 192);
-                        }else if (bool_new_hover) {
+                        if (bool_new_hover) {
 
                             meta_super_blend.for((index | 0) >>> 0, 96);
 
@@ -313,6 +301,9 @@ const SuperMasterMeta = {
                             pos_x = (index % pxl_width) | 0;
                             pos_y = ((index - pos_x) / pxl_width) | 0;
                             meta_super_blend.for((index | 0) >>> 0, 72 + ((((pos_x + pos_y + (_selection_pair_highlight ? 1 : 0) | 0) & 1) | 0) * 48) | 0);
+                        }else if(bool_is_resize) {
+
+                            meta_super_blend.for((index | 0) >>> 0, 192);
                         } else {
 
                             meta_super_blend.for((index | 0) >>> 0, 0);
@@ -321,7 +312,7 @@ const SuperMasterMeta = {
 
                         for (i = 0; (i | 0) < (layers_length | 0); i = plus_uint(i, 1)) {
 
-                            meta_super_blend.stack((i | 0) >>> 0, (_s_pxl_colors[(i | 0) >>> 0][_s_pxls[(i | 0) >>> 0][(index | 0) >>> 0] | 0] | 0) >>> 0);
+                            meta_super_blend.stack((i | 0) >>> 0, (_s_layers[(i | 0) >>> 0].get_uint32(index | 0) | 0) >>> 0);
                         }
 
                         if (bool_new_import) {
@@ -348,28 +339,30 @@ const SuperMasterMeta = {
                             "use strict";
                             meta.super_canvas.unpile(pxl_width, pxl_height).then(function () {
                                 "use strict";
-                                old_full_pxls.set(full_pxls);
-                                _pxl_indexes_of_selection_drawn.clearAndBulkAdd(_pxl_indexes_of_selection.indexes);
-                                _pxl_indexes_of_old_shape.clearAndBulkAdd(_pxl_indexes_of_current_shape.indexes);
-                                _previous_imported_image_pxls_positioned_keyset.clearAndBulkAdd(imported_image_pxls_positioned_keyset.indexes);
-                                _pxl_indexes_of_current_shape.clear();
-                                var old_pxls_hovered = Uint32Array.of(_pxls_hovered, _pxls_hovered);
-                                var older_pxls_hovered = _old_pxls_hovered.indexes;
-                                _old_pxls_hovered.clearAndBulkAdd(old_pxls_hovered);
-                                _old_pxls_hovered.bulkAdd(older_pxls_hovered);
                                 meta.super_canvas.prender().then(function () {
                                     "use strict";
                                     meta.sraf.run_frame(function(){
                                         "use strict";
-                                        return meta.super_canvas.render();
-                                    }, false, clear_canvas || is_there_new_dimension || force_update,  Date.now(), "render").then(function (){
-                                        "use strict";
+                                        _pxl_indexes_of_selection_drawn.clearAndBulkAdd(_pxl_indexes_of_selection.indexes);
+                                        _pxl_indexes_of_old_shape.clearAndBulkAdd(_pxl_indexes_of_current_shape.indexes);
+                                        _previous_imported_image_pxls_positioned_keyset.clearAndBulkAdd(imported_image_pxls_positioned_keyset.indexes);
+                                        _pxl_indexes_of_current_shape.clear();
+                                        var old_pxls_hovered = Uint32Array.of(image_imported_resizer_index, _pxls_hovered);
+                                        var older_pxls_hovered = _old_pxls_hovered.indexes;
+                                        _old_pxls_hovered.clearAndBulkAdd(old_pxls_hovered);
+                                        _old_pxls_hovered.bulkAdd(older_pxls_hovered);
                                         state._old_selection_pair_highlight = _selection_pair_highlight;
                                         state._old_layers_string_id = old_layers_string_id;
                                         state._did_hide_canvas_content = hide_canvas_content;
                                         state._old_pxl_width = parseInt(pxl_width);
                                         state._old_pxl_height = parseInt(pxl_height);
                                         state._last_paint_timestamp = requested_at;
+                                        _current_layer.clear_changes();
+
+                                        return meta.super_canvas.render();
+
+                                    }, false, clear_canvas || is_there_new_dimension || force_update,  Date.now(), "render").then(function (){
+                                        "use strict";
                                         resolve0();
                                     }).catch(handle_reject0);
                                 }).catch(handle_reject0);
@@ -463,7 +456,7 @@ const SuperMasterMeta = {
             },
             _handle_canvas_mouse_move(event) {
                 "use strict";
-                let { _pxl_indexes_of_selection, _imported_image_pxls, pxl_current_color_uint32, tool, pxl_width, pxl_height, _pxls_hovered, hide_canvas_content, _is_on_resize_element, _paint_or_select_hover_pxl_indexes, _paint_hover_old_pxls_snapshot, _last_action_timestamp, _paint_or_select_hover_pxl_indexes_exception, _paint_or_select_hover_actions_latest_index, _s_pxls, _layer_index, pxl_current_opacity,  _select_hover_old_pxls_snapshot, select_mode  } = meta.super_state.get_state();
+                let { _pxl_indexes_of_selection, _imported_image_pxls, pxl_current_color_uint32, tool, pxl_width, pxl_height, _pxls_hovered, hide_canvas_content, _is_on_resize_element, _paint_or_select_hover_pxl_indexes, _paint_hover_old_pxls_snapshot, _last_action_timestamp, _paint_or_select_hover_pxl_indexes_exception, _paint_or_select_hover_actions_latest_index, _s_layers, _layer_index, pxl_current_opacity,  _select_hover_old_pxls_snapshot, select_mode  } = meta.super_state.get_state();
                 const { event_button, mouse_down } = meta.canvas_pos.get_pointer_state();
                 const event_which = event_button+1|0;
 
@@ -608,7 +601,7 @@ const SuperMasterMeta = {
 
                                 pixel_index_stack.forEach((second_latest_pixel_drawn) => {
 
-                                    _s_pxls[_layer_index][second_latest_pixel_drawn] = _paint_hover_old_pxls_snapshot[second_latest_pixel_drawn];
+                                    _s_layers[_layer_index].set_uint32(second_latest_pixel_drawn, _paint_hover_old_pxls_snapshot[second_latest_pixel_drawn]);
                                 });
                             }
                         }
@@ -762,15 +755,15 @@ const SuperMasterMeta = {
 
                     }else {
 
-                        const { _s_pxls, _layer_index } = meta.super_state.get_state();
+                        const { _s_layers, _layer_index } = meta.super_state.get_state();
 
                         _paint_or_select_hover_pxl_indexes.clear();
                         meta.super_state.set_state({
                             _pxls_hovered: pxl_index | 0,
                             _mouse_inside: true,
                             _paint_or_select_hover_actions_latest_index: -1,
-                            _paint_hover_old_pxls_snapshot: new Uint16Array(_s_pxls[_layer_index].buffer),
-                            _select_hover_old_pxls_snapshot: Uint16Array.from(_pxl_indexes_of_selection),
+                            _paint_hover_old_pxls_snapshot: _s_layers[_layer_index].indexes_copy,
+                            _select_hover_old_pxls_snapshot: new SetFixed(_pxl_indexes_of_selection.indexes),
                             _paint_or_select_hover_pxl_indexes
                         }).then(() => {
 
@@ -892,9 +885,9 @@ const SuperMasterMeta = {
 
                 if(pos_x === -1 || pos_y === -1) { return; }
 
-                let { _shape_index_a, _select_shape_index_a, _shape_index_b, _select_shape_index_b, _pxl_indexes_of_selection, _s_pxls, _s_pxl_colors, _layer_index, hue } = meta.super_state.get_state();
+                let { _shape_index_a, _select_shape_index_a, _shape_index_b, _select_shape_index_b, _pxl_indexes_of_selection, _s_layers, _layer_index, hue } = meta.super_state.get_state();
                 const pxl_index = (pos_y * pxl_width) + pos_x;
-                const pxl_color_index = _s_pxls[_layer_index][pxl_index];
+                const pxl_color_index = _s_layers[_layer_index].indexes[pxl_index];
 
                 if (event_which === -1) {
 
@@ -914,10 +907,9 @@ const SuperMasterMeta = {
 
                 if(!hide_canvas_content) {
 
-                    const pxls_copy_immutable = new Uint16Array(_s_pxls[_layer_index].buffer);
-                    let pxls_copy = new Uint16Array(_s_pxls[_layer_index].buffer);
-                    let pxl_colors_copy = Array.from(_s_pxl_colors[_layer_index]);
-                    const pxl_color = pxl_colors_copy[pxl_color_index];
+                    const pxls_copy_immutable = _s_layers[_layer_index].indexes;
+                    let pxls_copy = _s_layers[_layer_index].indexes;
+                    let pxl_colors_copy = Array.from(_s_layers[_layer_index].colors);
 
                     if(_imported_image_pxls.length > 0 && event_which === 1){
 
@@ -934,7 +926,7 @@ const SuperMasterMeta = {
                         this._notify_relevant_action_event(event, pixel_color_hex, 1);
                     }else if (tool === "EXCHANGE" && event_which === 1) {
 
-                        const pixel_color_uint32 = _s_pxl_colors[_layer_index][pxl_color_index];
+                        const pixel_color_uint32 = _s_layers[_layer_index].colors[pxl_color_index];
                         this.exchange_pixel_color(pixel_color_uint32, pxl_current_color_uint32);
                         this._notify_relevant_action_event(event, pxl_current_color_uint32, 1);
 
@@ -1070,7 +1062,7 @@ const SuperMasterMeta = {
                                 pixel_stack.add(Array.of(x, y));
                                 const index = y * pxl_width + x;
 
-                                const v_pxl_color_index = _s_pxls[_layer_index][index];
+                                const v_pxl_color_index = _s_layers[_layer_index].indexes[index];
                                 const v_pxl_color = pxl_colors_copy[v_pxl_color_index];
                                 const v_pxl_color_new = meta.color_conversion.blend_colors(v_pxl_color, pxl_current_color_uint32, pxl_current_opacity, true, false);
 
@@ -1095,7 +1087,7 @@ const SuperMasterMeta = {
 
                                     const index = y * pxl_width + x;
 
-                                    const v_pxl_color_index = _s_pxls[_layer_index][index];
+                                    const v_pxl_color_index = _s_layers[_layer_index].indexes[index];
                                     const v_pxl_color = pxl_colors_copy[v_pxl_color_index];
                                     const v_pxl_color_new = meta.color_conversion.blend_colors(v_pxl_color, pxl_current_color_uint32, pxl_current_opacity, true, false);
 
@@ -1115,14 +1107,14 @@ const SuperMasterMeta = {
                             {
                                 _paint_or_select_hover_pxl_indexes: new SetFixed([pxl_index]),
                                 _paint_or_select_hover_actions_latest_index: pxl_index,
-                                _paint_hover_old_pxls_snapshot: new Uint16Array(meta.super_state.get_state()._s_pxls[_layer_index].buffer),
+                                _paint_hover_old_pxls_snapshot: meta.super_state.get_state()._s_layers[_layer_index].indexes_copy,
                                 _last_action_timestamp: Date.now()
                             }, () => {this.update_canvas();});
 
                     }else if ((tool === "BUCKET" || tool === "HUE BUCKET" || tool === "SELECT COLOR THRESHOLD" || tool === "BORDER") && event_which === 1) {
 
-                        const { _s_pxls, _layer_index } = meta.super_state.get_state();
-                        const old_pxls_copy = new Uint16Array(_s_pxls[_layer_index].buffer);
+                        const { _s_layers, _layer_index } = meta.super_state.get_state();
+                        const old_pxls_copy = _s_layers[_layer_index].indexes;
 
                         const pixel_start = [pos_x, pos_y];
                         const index_color_start = old_pxls_copy[pxl_index];
@@ -1135,7 +1127,7 @@ const SuperMasterMeta = {
                         const hue_difference_with_color_start = c_s_h < hue ? hue - c_s_h: 360 - c_s_h + hue;
 
                         let pixel_stack = [pixel_start];
-                        let colored_pxl_indexes = new SetFixed(_s_pxls[0].length);
+                        let colored_pxl_indexes = new SetFixed(_s_layers[0].indexes.length);
 
                         const match_color_start = (index) => {
 
@@ -1304,12 +1296,13 @@ const SuperMasterMeta = {
                                 color_pixel(pxl_index, true);
                             });
 
-                            let {_s_pxls, _s_pxl_colors} = meta.super_state.get_state();
-                            [_s_pxls[_layer_index], _s_pxl_colors[_layer_index]] = meta.color_conversion.clean_duplicate_colors(pxls_copy, pxl_colors_copy);
+                            let {_s_layers, pxl_width, pxl_height} = meta.super_state.get_state();
+                            let res = meta.color_conversion.clean_duplicate_colors(pxls_copy, pxl_colors_copy);
+                            _s_layers[_layer_index] = Layer.new_from_colors_and_indexes(res[0], res[1], pxl_width, pxl_height, true);
 
 
                             // Update pixels list and pixel colours
-                            meta.super_state.set_state({_s_pxls, _s_pxl_colors, _last_action_timestamp: Date.now()}).then(() => {this.update_canvas();});
+                            meta.super_state.set_state({_s_layers, _last_action_timestamp: Date.now()}).then(() => {this.update_canvas();});
 
                         }else if(tool === "SELECT COLOR THRESHOLD") {
 
@@ -1337,11 +1330,12 @@ const SuperMasterMeta = {
 
                         }else if(tool === "BUCKET" || tool === "HUE BUCKET"){
 
-                            let {_s_pxls, _s_pxl_colors} = meta.super_state.get_state();
-                            [_s_pxls[_layer_index], _s_pxl_colors[_layer_index]] = meta.color_conversion.clean_duplicate_colors(pxls_copy, pxl_colors_copy);
+                            let {_s_layers, pxl_width, pxl_height} = meta.super_state.get_state();
+                            let res = meta.color_conversion.clean_duplicate_colors(pxls_copy, pxl_colors_copy);
+                            _s_layers[_layer_index] = Layer.new_from_colors_and_indexes(res[1], res[0], pxl_width, pxl_height, true);
 
                             // Update pixels list and pixel colours
-                            meta.super_state.set_state({_s_pxls, _s_pxl_colors, _last_action_timestamp: Date.now()}).then(() => {
+                            meta.super_state.set_state({_s_layers, _last_action_timestamp: Date.now()}).then(() => {
 
                                 this.update_canvas();
                                 this._notify_relevant_action_event(event, pxl_current_color, 1);
@@ -1351,15 +1345,15 @@ const SuperMasterMeta = {
 
                     }else if ((tool === "SELECT COLOR") && event_which === 1) {
 
-                        const { _s_pxls } = meta.super_state.get_state();
-                        const index_color_start = _s_pxls[_layer_index][pxl_index];
+                        const { _s_layers } = meta.super_state.get_state();
+                        const index_color_start = _s_layers[_layer_index].indexes[pxl_index];
 
                         if(select_mode === "REPLACE") {
 
                             _pxl_indexes_of_selection.clear();
                         }
 
-                        _s_pxls[_layer_index].forEach((pxl, pxl_index) => {
+                        _s_layers[_layer_index].indexes.forEach((pxl, pxl_index) => {
 
                             if(pxl === index_color_start) {
 
@@ -1399,7 +1393,7 @@ const SuperMasterMeta = {
             },
             get_pixel_color_from_pos(x, y) {
                 "use strict";
-                const { pxl_height, pxl_width, _s_pxls, _s_pxl_colors, _layers } = meta.super_state.get_state();
+                const { pxl_height, pxl_width, _s_layers, _layers } = meta.super_state.get_state();
 
                 const pxl_index = y * pxl_width + x;
 
@@ -1408,17 +1402,17 @@ const SuperMasterMeta = {
                     return "#00000000";
                 }
 
-                let layer_pixel_colors = new Uint32Array(_s_pxl_colors.length);
+                let layer_pixel_colors = new Uint32Array(_s_layers.length);
                 let start_i = 0;
 
-                for (let i = _s_pxl_colors.length - 1; i >= 0; i--) {
+                for (let i = _s_layers.length - 1; i >= 0; i--) {
 
-                    layer_pixel_colors[i] = ((_s_pxl_colors[i][_s_pxls[i][pxl_index]|0]|0)>>>0) & 0xFFFFFFFF;
+                    layer_pixel_colors[i] = (_s_layers[i].get_uint32(pxl_index|0) | 0) & 0xFFFFFFFF;
                 }
 
                 let pixel_color_uint32 = SIMDopeColor.new_zero();
 
-                for (let i = start_i; i < _s_pxl_colors.length ; i++) {
+                for (let i = start_i; i < _s_layers.length ; i++) {
 
                     if(typeof _layers[i] != "undefined") {
                         if (!_layers[i].hidden) {
@@ -1453,35 +1447,30 @@ const SuperMasterMeta = {
             },
             exchange_pixel_color (old_color, new_color) {
 
-                const { _s_pxl_colors, _s_pxls, _layer_index } = meta.super_state.get_state();
+                const { _s_layers, pxl_width, pxl_height, _layer_index } = meta.super_state.get_state();
 
-                let pxls_copy = new Uint16Array(_s_pxls[_layer_index].buffer);
-                const pxl_color_index = _s_pxl_colors[_layer_index].indexOf(old_color);
+                let pxls_copy = _s_layers[_layer_index].indexes;
+                const pxl_color_index = _s_layers[_layer_index].colors.indexOf(old_color);
 
                 // Eventually add current color to color list
-                if (!_s_pxl_colors[_layer_index].includes(new_color)) {
+                if (!_s_layers[_layer_index].colors.includes(new_color)) {
 
-                    let pxl_colors = new Uint32Array(_s_pxl_colors[_layer_index].length+1);
-                    pxl_colors.set(_s_pxl_colors[_layer_index], 0);
+                    let pxl_colors = new Uint32Array(_s_layers[_layer_index].colors.length+1);
+                    pxl_colors.set(_s_layers[_layer_index].colors, 0);
                     pxl_colors[pxl_colors.length-1] = (new_color | 0) >>> 0;
-                    _s_pxl_colors[_layer_index] = pxl_colors;
+                    _s_layers[_layer_index].set_colors(pxl_colors);
                 }
 
-                const new_color_index = _s_pxl_colors[_layer_index].indexOf(new_color);
+                const new_color_index = _s_layers[_layer_index].colors.indexOf(new_color);
                 pxls_copy = pxls_copy.map((pxl) => {
 
                     return pxl === pxl_color_index ? new_color_index: pxl;
                 });
 
-                const [pxls_c, pxl_colors_c] = meta.color_conversion.clean_duplicate_colors(pxls_copy, _s_pxl_colors[_layer_index]);
+                const [pxls_c, pxl_colors_c] = meta.color_conversion.clean_duplicate_colors(pxls_copy, _s_layers[_layer_index].colors);
+                _s_layers[_layer_index] = Layer.new_from_colors_and_indexes(pxl_colors_c, pxls_c, pxl_width, pxl_height, true);
 
-                let ns_pxl_colors = meta.super_state.get_state()._s_pxl_colors;
-                ns_pxl_colors[_layer_index] = pxl_colors_c;
-
-                let ns_pxls = meta.super_state.get_state()._s_pxls;
-                ns_pxls[_layer_index] = pxls_c;
-
-                meta.super_state.set_state({_s_pxls: ns_pxls, _s_pxl_colors: ns_pxl_colors, _last_action_timestamp: Date.now()}).then(() => {this.update_canvas()});
+                meta.super_state.set_state({_s_layers, _last_action_timestamp: Date.now()}).then(() => {this.update_canvas()});
             }
         }
     }

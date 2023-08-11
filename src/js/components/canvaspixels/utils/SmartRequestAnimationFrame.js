@@ -36,7 +36,7 @@ const SmartRequestAnimationFrame = {
         return {
             // Methods
             start_timer: function (){
-
+                "use strict";
                 clearInterval(fps_intereval);
                 if(fps_intereval) { clearInterval(fps_intereval) }
                 window._sraf_state[state_id] = cs();
@@ -62,25 +62,38 @@ const SmartRequestAnimationFrame = {
                     callback_function("ok");
                 }
             },
-            run_frame(render_final, do_not_cancel_animation , force_update, requested_at_t, type, not_a_promise = false) {
+            run_frame(render_final, do_not_cancel_animation , force_update, requested_at_t, type) {
 
+                "use strict";
                 do_not_cancel_animation = do_not_cancel_animation || false;
                 force_update = force_update || false;
                 requested_at_t = requested_at_t || Date.now();
                 type = "_"+type;
 
                 return new Promise(function(resolve, reject){
+                    "use strict";
 
-                    if(requested_at_t < (window._sraf_state[state_id].lasts_raf_time|0)) {
+                    function render() {
+                        "use strict";
+                        window._sraf_state[state_id].lasts_raf_time[type] = requested_at_t | 0;
+                        render_final().then(function (){
+                            "use strict";
+                            window._sraf_state[state_id].cpaf_frames++;
+                            if(id === window._sraf_state[state_id].caf_id[type]) { window._sraf_state[state_id].caf_id = null;}
+                            resolve();
+                        }).catch(reject);
+                    }
 
-                        reject();
+                    if(requested_at_t < (window._sraf_state[state_id].lasts_raf_time[type]|0)) {
+
+                        resolve();
                     }else {
 
-                        let skip_frame_rate = Math.max(window._sraf_state[state_id].second_previous_cpaf_fps + window._sraf_state[state_id].previous_cpaf_fps | 0, window._sraf_state[state_id].is_mobile_or_tablet ? 30: 60);
+                        let skip_frame_rate = Math.max(window._sraf_state[state_id].second_previous_cpaf_fps + window._sraf_state[state_id].previous_cpaf_fps | 0, window._sraf_state[state_id].is_mobile_or_tablet ? 20: 40);
 
                         let running_smoothly = true;
 
-                        let deltaT = Date.now() - window._sraf_state[state_id].lasts_raf_time;
+                        let deltaT = Date.now() - window._sraf_state[state_id].lasts_raf_time[type];
                         // do not render frame when deltaT is too high
                         if ( deltaT > 1000 / skip_frame_rate) {
                             running_smoothly = false;
@@ -125,27 +138,19 @@ const SmartRequestAnimationFrame = {
 
                         }else if(deltaT < 1000 / (skip_frame_rate * 2)){
 
-                            setTimeout(this, 1000 / (skip_frame_rate * 2), resolve, reject);
+                            setTimeout(this, 1000 / (skip_frame_rate * 1.75), resolve, reject);
                         }else if(force_update || do_not_cancel_animation) {
 
-                            setTimeout(this, 1000 / (skip_frame_rate * 4), resolve, reject);
+                            setTimeout(this, 1000 / (skip_frame_rate * 2.5), resolve, reject);
                         }else {
 
                             setTimeout(this, 1000 / skip_frame_rate, resolve, reject);
                         }
                     }
-
-                    function render() {
-                        window._sraf_state[state_id].lasts_raf_time = requested_at_t | 0;
-                        render_final().then(function (){
-                            window._sraf_state[state_id].cpaf_frames++;
-                            if(id === window._sraf_state[state_id].caf_id[type]) { window._sraf_state[state_id].caf_id = null;}
-                            resolve();
-                        }).catch(reject);
-                    }
                 });
             },
             get_state() {
+                "use strict";
                 return window._sraf_state[state_id];
             }
         };
