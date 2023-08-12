@@ -2395,6 +2395,7 @@ class Pixel extends React.PureComponent {
         this.setSt4te({_hide_canvas_content: !this.st4te._hide_canvas_content}, () => {
 
             this._set_props_bypass_this();
+            this.forceUpdate();
         });
     }
 

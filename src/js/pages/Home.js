@@ -335,7 +335,7 @@ class Home extends React.PureComponent {
                 loop={true}
                 autoplay={true}
                 src="/src/js/lottie/camera.json"
-                style={{ transform: "translateZ(10px)", height: '1.5em', width: '1.5em' }}/>
+                style={{ height: '1.5em', width: '1.5em' }}/>
                 }, () => {
             this.forceUpdate();
         });
@@ -346,8 +346,8 @@ class Home extends React.PureComponent {
                     id={"hundred"}
                     loop={true}
                     autoplay={true}
-                    src="/src/js/lottie/halo.json"
-                    style={{ transform: "translateZ(10px)", height: '1.5em', width: '1.5em' }}/>
+                    src="/src/js/lottie/uni.json"
+                    style={{ height: '1.5em', width: '1.5em' }}/>
             }, () => {
 
                 this.forceUpdate();
@@ -360,8 +360,8 @@ class Home extends React.PureComponent {
                     id={"money"}
                     loop={true}
                     autoplay={true}
-                    src="/src/js/lottie/zap.json"
-                    style={{ transform: "translateZ(10px)", height: '1.5em', width: '1.5em' }}/>
+                    src="/src/js/lottie/spark.json"
+                    style={{  height: '1.5em', width: '1.5em' }}/>
             }, () => {
 
                 this.forceUpdate();

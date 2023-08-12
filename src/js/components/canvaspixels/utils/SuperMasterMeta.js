@@ -1,6 +1,7 @@
 import {SetFixed} from "@asaitama/boolean-array";
 import SIMDope from "simdope";
 import {Layer} from "../../../utils/Layer";
+import {BookmarkOutlined} from "@material-ui/icons";
 const simdops = SIMDope.simdops;
 const SIMDopeColor = SIMDope.SIMDopeColor;
 
@@ -186,11 +187,11 @@ const SuperMasterMeta = {
                     _selection_pair_highlight
                 } = meta.super_state.get_state();
 
-                const old_layers_string_id = _layers.map(function (l) {
-                    return "".concat(l.id).concat(l.hidden ? "h" : "v").concat(l.opacity);
-                }).join("");
+                const old_layers_string_id = ""+Array.from(_layers).map(function (l, i) {
+                    return ""+i+l.id+(l.hidden || hide_canvas_content ? "h" : "v")+l.opacity;
+                }).join("+");
 
-                const has_layers_visibility_or_opacity_changed = _old_layers_string_id !== old_layers_string_id;
+                const has_layers_visibility_or_opacity_changed = (_old_layers_string_id !== old_layers_string_id);
 
                 const layers_opacity_255 = Uint8ClampedArray.from(_layers.map(function (l) {
                     return (l.hidden || hide_canvas_content) ? 0 :  Math.round(parseFloat(l.opacity) * 255);
@@ -243,7 +244,7 @@ const SuperMasterMeta = {
                 }
 
 
-                const clear_canvas = (_did_hide_canvas_content !== hide_canvas_content) || has_layers_visibility_or_opacity_changed || _is_there_new_dimension || is_there_new_dimension || force_update;
+                const clear_canvas = Boolean(_did_hide_canvas_content != hide_canvas_content) || has_layers_visibility_or_opacity_changed || _is_there_new_dimension || is_there_new_dimension || force_update;
                 const layers_length = _layers.length | 0;
                 const full_pxls_length = _s_layers[0].indexes.length;
 
@@ -262,7 +263,6 @@ const SuperMasterMeta = {
 
                 meta_super_blend.update(plus_uint(_layers.length, 1), full_pxls_length | 0, layers_opacity_255, _s_layers.map(function (l){return l.data}));
                 bool_new_highlight = _selection_pair_highlight != _old_selection_pair_highlight;
-
 
                 for (; int_less(index, full_pxls_length); index = plus_uint(index, 1)) {
 
@@ -310,10 +310,10 @@ const SuperMasterMeta = {
 
                         }
 
-                        for (i = 0; (i | 0) < (layers_length | 0); i = plus_uint(i, 1)) {
+                        /*for (i = 0; (i | 0) < (layers_length | 0); i = plus_uint(i, 1)) {
 
                             meta_super_blend.stack((i | 0) >>> 0, (_s_layers[(i | 0) >>> 0].get_uint32(index | 0) | 0) >>> 0);
-                        }
+                        }*/
 
                         if (bool_new_import) {
 
@@ -339,26 +339,25 @@ const SuperMasterMeta = {
                             "use strict";
                             meta.super_canvas.unpile(pxl_width, pxl_height).then(function () {
                                 "use strict";
+                                _pxl_indexes_of_selection_drawn.clearAndBulkAdd(_pxl_indexes_of_selection.indexes);
+                                _pxl_indexes_of_old_shape.clearAndBulkAdd(_pxl_indexes_of_current_shape.indexes);
+                                _previous_imported_image_pxls_positioned_keyset.clearAndBulkAdd(imported_image_pxls_positioned_keyset.indexes);
+                                _pxl_indexes_of_current_shape.clear();
+                                var old_pxls_hovered = Uint32Array.of(image_imported_resizer_index, _pxls_hovered);
+                                var older_pxls_hovered = _old_pxls_hovered.indexes;
+                                _old_pxls_hovered.clearAndBulkAdd(old_pxls_hovered);
+                                _old_pxls_hovered.bulkAdd(older_pxls_hovered);
+                                state._old_selection_pair_highlight = _selection_pair_highlight;
+                                state._old_layers_string_id = ""+old_layers_string_id;
+                                state._did_hide_canvas_content = Boolean(hide_canvas_content);
+                                state._old_pxl_width = parseInt(pxl_width);
+                                state._old_pxl_height = parseInt(pxl_height);
+                                state._last_paint_timestamp = +requested_at;
+                                _current_layer.clear_changes();
                                 meta.super_canvas.prender().then(function () {
                                     "use strict";
                                     meta.sraf.run_frame(function(){
                                         "use strict";
-                                        _pxl_indexes_of_selection_drawn.clearAndBulkAdd(_pxl_indexes_of_selection.indexes);
-                                        _pxl_indexes_of_old_shape.clearAndBulkAdd(_pxl_indexes_of_current_shape.indexes);
-                                        _previous_imported_image_pxls_positioned_keyset.clearAndBulkAdd(imported_image_pxls_positioned_keyset.indexes);
-                                        _pxl_indexes_of_current_shape.clear();
-                                        var old_pxls_hovered = Uint32Array.of(image_imported_resizer_index, _pxls_hovered);
-                                        var older_pxls_hovered = _old_pxls_hovered.indexes;
-                                        _old_pxls_hovered.clearAndBulkAdd(old_pxls_hovered);
-                                        _old_pxls_hovered.bulkAdd(older_pxls_hovered);
-                                        state._old_selection_pair_highlight = _selection_pair_highlight;
-                                        state._old_layers_string_id = old_layers_string_id;
-                                        state._did_hide_canvas_content = hide_canvas_content;
-                                        state._old_pxl_width = parseInt(pxl_width);
-                                        state._old_pxl_height = parseInt(pxl_height);
-                                        state._last_paint_timestamp = requested_at;
-                                        _current_layer.clear_changes();
-
                                         return meta.super_canvas.render();
 
                                     }, false, clear_canvas || is_there_new_dimension || force_update,  Date.now(), "render").then(function (){

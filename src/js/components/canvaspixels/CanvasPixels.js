@@ -500,23 +500,17 @@ class CanvasPixels extends React.PureComponent {
     toggle_layer_visibility = (at_index) => {
 
         let _layers = Array.from(this.super_state.get_state()._layers);
-        _layers[at_index].hidden = !_layers[at_index].hidden;
+        _layers[parseInt(at_index)].hidden = !_layers[parseInt(at_index)].hidden;
 
-        this.super_state.set_state({
-            _layers,
-            _last_action_timestamp: Date.now(),
-        }).then(() => {this._maybe_save_state(null, true)});
+        this.super_state.set_state({_layers, _last_action_timestamp: Date.now()}).then(() => this.super_master_meta.update_canvas(true));
     };
 
     change_layer_opacity = (at_index, opacity) => {
 
-        let _layers = this.super_state.get_state()._layers;
-        _layers[at_index].opacity = parseFloat(opacity);
+        let _layers = Array.from(this.super_state.get_state()._layers);
+        _layers[parseInt(at_index)].opacity = parseFloat(opacity);
 
-        this.super_state.set_state({
-            _layers,
-            _last_action_timestamp: Date.now(),
-        }).then(() => {this._maybe_save_state(null, true)});
+        this.super_state.set_state({_layers, _last_action_timestamp: Date.now()}).then(() => this.super_master_meta.update_canvas(true));
     };
 
     merge_down_layer = (at_index) => {
