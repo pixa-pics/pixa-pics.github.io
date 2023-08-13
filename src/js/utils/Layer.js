@@ -16,32 +16,38 @@ var Layer = function(image_data_or_colors_and_indexes, width, height, with_plain
 
     if(image_data_or_colors_and_indexes.length === 2){
 
+        // Initialize the matrix data width and height
         this.width_ = width | 0;
         this.height_ = height | 0;
+        // Initialize the graphic bitmap image of the layer
         this.bitmap_ = typeof bmp == "undefined" ? {height: this.height_, width: this.width_, destroy: function (){}, hash: ""}: bmp;
+        // Initialize the tracking of pixel change
         this.changes_ = new SetFixed(this.width_ * this.height_);
-        this.changes_.charge();
+        // Initialize and fill the matrix table
         this.uint32_colors_ = Uint32Array.from(new Set(image_data_or_colors_and_indexes[0]));
-        this.color_indexes_length_ = image_data_or_colors_and_indexes[1].length|0;
+        // Initialize the matrix data length
+        this.color_indexes_length_ = image_data_or_colors_and_indexes[1].length || (this.width_ * this.height_);
+        // Initialize the matrix data
         this.color_indexes_ = this.uint32_colors_.length < (1 << 8) ? new Uint8Array(this.color_indexes_length_) : (this.uint32_colors_.length+1|0) < (1 << 16) ? new Uint16Array(this.color_indexes_length_): new Uint32Array(this.color_indexes_length_);
-        this.color_indexes_.set(image_data_or_colors_and_indexes[1], 0);
-        this.force_update_data(true);
-
+        // Initialize and fill image data for the matrix table and data
+        this.force_update_data(true, image_data_or_colors_and_indexes[0], image_data_or_colors_and_indexes[1]);
+        // Fill the matrix data
         for(var i = 0, l = this.color_indexes_length_ | 0; (i|0) < (l|0); i = (i + 1 | 0) >>> 0) {
             this.color_indexes_[i|0] = (this.uint32_colors_.indexOf(this.uint32_pixel_color_[i|0]) | 0) >>> 0;
         }
 
     }else{
-        if(typeof image_data_or_colors_and_indexes.data != "undefined") { // image_data
+        if(image_data_or_colors_and_indexes.data instanceof Uint8ClampedArray) { // image_data
 
             this.uint32_pixel_color_ = new Uint32Array(image_data_or_colors_and_indexes.data.buffer);
-            this.width_ = width | 0;
-            this.height_ = height | 0;
+            this.width_ = image_data_or_colors_and_indexes.width | 0;
+            this.height_ = image_data_or_colors_and_indexes.height | 0;
+
         }else if(image_data_or_colors_and_indexes instanceof Uint8Array || image_data_or_colors_and_indexes instanceof Uint8ClampedArray){ // uint32 buffer
 
             this.uint32_pixel_color_ = new Uint32Array(image_data_or_colors_and_indexes.buffer);
-            this.width_ = (width | 0) || image_data_or_colors_and_indexes.width | 0;
-            this.height_ = (height | 0) || image_data_or_colors_and_indexes.height | 0;
+            this.width_ = width | 0;
+            this.height_ = height | 0;
         }else {
 
             this.uint32_pixel_color_ = new Uint32Array(image_data_or_colors_and_indexes);
@@ -74,21 +80,33 @@ Layer.new_from_colors_and_indexes = function (colors, indexes, width, height, wi
 Object.defineProperty(Layer.prototype, 'force_update_data', {
     get: function() {
         "use strict";
-        return function (must_init){
+        return function (must_init, colors, indexes){
             "use strict";
             must_init = typeof must_init == "undefined" ? false: Boolean(must_init) && true;
+            colors = typeof colors == "undefined" ? this.uint32_colors_: colors;
+            indexes = typeof indexes == "undefined" ? this.color_indexes_: indexes;
 
             if(must_init) {
                 this.color_indexes_length_ = (this.width_ * this.height_ | 0) >>> 0;
                 this.uint32_pixel_color_ =  new Uint32Array((this.color_indexes_length_|0)>>>0);
                 this.simdope_pixel_color_ =  new Colors(this.uint32_pixel_color_);
-            }
 
-            for(var i = 0, l = this.color_indexes_length_ | 0; (i|0) < (l|0); i = (i + 1 | 0) >>> 0) {
-                this.uint32_pixel_color_[(i|0)>>>0] = (this.uint32_colors_[this.color_indexes_[i|0]]|0) >>> 0;
-            }
+                for(var i = 0, l = this.color_indexes_length_ | 0; (i|0) < (l|0); i = (i + 1 | 0) >>> 0) {
+                    this.uint32_pixel_color_[(i|0)>>>0] = (colors[indexes[i|0]]|0) >>> 0;
+                }
 
-            this.changes_.charge();
+                this.changes_.charge();
+
+            }else {
+                var coloruint32 = 0;
+                for(var i = 0, l = this.color_indexes_length_ | 0; (i|0) < (l|0); i = (i + 1 | 0) >>> 0) {
+                    coloruint32 = (colors[indexes[i|0]]|0) >>> 0;
+                    if(((this.uint32_pixel_color_[(i|0)>>>0]|0)>>>0) != ((coloruint32|0)>>>0)){
+                        this.uint32_pixel_color_[(i|0)>>>0] = (coloruint32|0)>>>0;
+                        this.changes_.add((i|0)>>>0);
+                    }
+                }
+            }
         };
     },
     enumerable: false,
@@ -98,15 +116,11 @@ Object.defineProperty(Layer.prototype, 'force_update_data', {
 Object.defineProperty(Layer.prototype, 'image_data', {
     get: function() {
         "use strict";
-        try {
-            return new ImageData(new Uint8ClampedArray(this.uint32_pixel_color_.buffer), this.width_, this.height_);
-        } catch(e) {
-            console.log(this.uint32_pixel_color_, this.width_, this.height_)
-        }
+        return new ImageData(new Uint8ClampedArray(this.uint32_pixel_color_.buffer), this.width_|0, this.height_|0);
     },
     enumerable: false,
     configurable: false
-});
+})
 
 Object.defineProperty(Layer.prototype, 'set_bitmap', {
     get: function() {
@@ -114,8 +128,9 @@ Object.defineProperty(Layer.prototype, 'set_bitmap', {
         return function (bmp){
             "use strict";
             this.bitmap_.destroy();
+            this.bitmap_.hash = "";
             this.bitmap_ = bmp;
-            return this.get_bitmap();
+            return this.bitmap_;
         }
     },
     enumerable: false,
@@ -162,7 +177,7 @@ Object.defineProperty(Layer.prototype, 'bitmap_async', {
             if(maybe && this.changes_.size === 0) {
                 var b = get_bitmap();
                 return hash_hex_async().then(function (h){
-                    if(b.hash != "" && (""+h) == (""+b.hash)){
+                    if(b.hash !== "" && (""+h) === (""+b.hash)){
                         return Promise.resolve(b);
                     }else {
                         return new Promise(compute);
@@ -260,10 +275,15 @@ Object.defineProperty(Layer.prototype, 'set_indexes', {
         "use strict";
         return function (indexes){
             "use strict";
+            var rethink_simdope = false;
+            if(this.color_indexes_.length !== indexes.length){
+                rethink_simdope = true;
+            }
+
             var constructor = this.uint32_colors_.length < (1 << 8) ? Uint8Array : (this.uint32_colors_.length+1|0) < (1 << 16) ? Uint16Array: Uint32Array;
             if(indexes instanceof constructor){
                 if(indexes.length !== this.color_indexes_.length) {
-                    if(indexes.legend < this.color_indexes_.length) {
+                    if(indexes.length < this.color_indexes_.length) {
                         this.color_indexes_ = this.color_indexes_.slice(0, indexes.length);
                         this.color_indexes_.set(indexes, 0);
                     }else {
@@ -276,7 +296,13 @@ Object.defineProperty(Layer.prototype, 'set_indexes', {
                 this.color_indexes_ = constructor.from(indexes);
             }
 
-            this.force_update_data();
+            if(rethink_simdope){
+                this.force_update_data(true);
+            }else {
+                this.force_update_data();
+
+            }
+
         };
     },
     enumerable: false,

@@ -21,8 +21,8 @@ SOFTWARE.
 
 const base64abcCC = Uint8Array.of(65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 43, 47);
 const CHUNCK_LENGTH = 256;
- 
-function bytesToBase64(bytes) {
+
+export function bytesToBase64(bytes) {
     "use strict";
     let i = 2, j = 0;
     let l = bytes.length | 0;
@@ -120,7 +120,7 @@ function getBase64CodesBuffer(str_char_codes, start) {
     return (getBase64Code(str_char_codes[start+0|0]) << 18 | getBase64Code(str_char_codes[start+1|0]) << 12 | getBase64Code(str_char_codes[start+2|0]) << 6 | getBase64Code(str_char_codes[start+3|0]) | 0) >>> 0;
 }
 
-function base64ToBytes(str) {
+export function base64ToBytes(str) {
 
     if ((str.length % 4 | 0) > 0) {
         throw new Error("Unable to parse base64 string.");

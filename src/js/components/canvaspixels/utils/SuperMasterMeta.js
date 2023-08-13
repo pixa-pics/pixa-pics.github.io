@@ -1,7 +1,6 @@
 import {SetFixed} from "@asaitama/boolean-array";
 import SIMDope from "simdope";
 import {Layer} from "../../../utils/Layer";
-import {BookmarkOutlined} from "@material-ui/icons";
 const simdops = SIMDope.simdops;
 const SIMDopeColor = SIMDope.SIMDopeColor;
 
@@ -188,13 +187,13 @@ const SuperMasterMeta = {
                 } = meta.super_state.get_state();
 
                 const old_layers_string_id = ""+Array.from(_layers).map(function (l, i) {
-                    return ""+i+l.id+(l.hidden || hide_canvas_content ? "h" : "v")+l.opacity;
+                    return ""+i+l.id+(Boolean(l.hidden || hide_canvas_content) ? "h" : "v")+parseInt(l.opacity*255).toString(16);
                 }).join("+");
 
                 const has_layers_visibility_or_opacity_changed = (_old_layers_string_id !== old_layers_string_id);
 
-                const layers_opacity_255 = Uint8ClampedArray.from(_layers.map(function (l) {
-                    return (l.hidden || hide_canvas_content) ? 0 :  Math.round(parseFloat(l.opacity) * 255);
+                const layers_opacity_255 = Uint8Array.from(_layers.map(function (l) {
+                    return parseInt(Boolean(l.hidden || hide_canvas_content) ? 1 :  Math.round(parseFloat(l.opacity) * 255));
                 }).concat([255]));
 
                 if (Boolean(tool === "LINE" || tool === "RECTANGLE" || tool === "ELLIPSE" || tool === "TRIANGLE") && _shape_index_a !== - 1 && _pxls_hovered !== - 1) {
@@ -244,7 +243,7 @@ const SuperMasterMeta = {
                 }
 
 
-                const clear_canvas = Boolean(_did_hide_canvas_content != hide_canvas_content) || has_layers_visibility_or_opacity_changed || _is_there_new_dimension || is_there_new_dimension || force_update;
+                const clear_canvas = (_did_hide_canvas_content !== hide_canvas_content) || has_layers_visibility_or_opacity_changed || _is_there_new_dimension || is_there_new_dimension || force_update;
                 const layers_length = _layers.length | 0;
                 const full_pxls_length = _s_layers[0].indexes.length;
 
@@ -261,8 +260,12 @@ const SuperMasterMeta = {
                 let index = 0;
                 let _current_layer = _s_layers[_layer_index];
 
+                if(has_layers_visibility_or_opacity_changed){
+                    _current_layer.force_update_data(true);
+                }
+
                 meta_super_blend.update(plus_uint(_layers.length, 1), full_pxls_length | 0, layers_opacity_255, _s_layers.map(function (l){return l.data}));
-                bool_new_highlight = _selection_pair_highlight != _old_selection_pair_highlight;
+                bool_new_highlight = _selection_pair_highlight !== _old_selection_pair_highlight;
 
                 for (; int_less(index, full_pxls_length); index = plus_uint(index, 1)) {
 
@@ -347,12 +350,6 @@ const SuperMasterMeta = {
                                 var older_pxls_hovered = _old_pxls_hovered.indexes;
                                 _old_pxls_hovered.clearAndBulkAdd(old_pxls_hovered);
                                 _old_pxls_hovered.bulkAdd(older_pxls_hovered);
-                                state._old_selection_pair_highlight = _selection_pair_highlight;
-                                state._old_layers_string_id = ""+old_layers_string_id;
-                                state._did_hide_canvas_content = Boolean(hide_canvas_content);
-                                state._old_pxl_width = parseInt(pxl_width);
-                                state._old_pxl_height = parseInt(pxl_height);
-                                state._last_paint_timestamp = +requested_at;
                                 _current_layer.clear_changes();
                                 meta.super_canvas.prender().then(function () {
                                     "use strict";
@@ -362,6 +359,12 @@ const SuperMasterMeta = {
 
                                     }, false, clear_canvas || is_there_new_dimension || force_update,  Date.now(), "render").then(function (){
                                         "use strict";
+                                        state._old_selection_pair_highlight = _selection_pair_highlight;
+                                        state._old_layers_string_id = ""+old_layers_string_id;
+                                        state._did_hide_canvas_content = Boolean(hide_canvas_content);
+                                        state._old_pxl_width = parseInt(pxl_width);
+                                        state._old_pxl_height = parseInt(pxl_height);
+                                        state._last_paint_timestamp = +requested_at;
                                         resolve0();
                                     }).catch(handle_reject0);
                                 }).catch(handle_reject0);

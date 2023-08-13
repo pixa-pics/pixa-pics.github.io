@@ -442,7 +442,7 @@ class CanvasPixels extends React.PureComponent {
         let { _layers, _s_layers, pxl_width, pxl_height } = this.super_state.get_state();
         at_index = typeof at_index === "undefined" ? _s_layers.length: at_index;
 
-        _s_layers.splice(at_index+1, 0, Layer.new_from_colors_and_indexes(_s_layers[at_index].colors_copy, _s_layers[at_index].indexes_copy, pxl_width, pxl_height, true));
+        _s_layers.splice(at_index+1, 0, Layer.new_from_colors_and_indexes(_s_layers[at_index].colors, _s_layers[at_index].indexes, pxl_width, pxl_height, true));
 
         _layers.splice(at_index + 1, 0, {
             id: Date.now(),
@@ -1556,7 +1556,7 @@ class CanvasPixels extends React.PureComponent {
                     }
                     new_current_state._layers[index].hash = new_hash;
                     new_current_state._layers[index].thumbnail = bmp;
-                    new_current_state._layers[index].colors = this._get_most_used_color_sorted(new_current_state._s_layers[index].indexes_copy, new_current_state._s_layers[index].colors_copy, 256);
+                    new_current_state._layers[index].colors = this._get_most_used_color_sorted(new_current_state._s_layers[index].indexes, new_current_state._s_layers[index].colors, 256);
                     new_current_state._layers[index].number_of_colors = parseInt(new_current_state._s_layers[index].colors.length);
                     current_layers_length++;
 
@@ -1577,7 +1577,7 @@ class CanvasPixels extends React.PureComponent {
                         Boolean(new_current_state._layers[index].colors.length !== new_current_state._layers[index].number_of_colors)
                     ) {
 
-                        new_current_state._layers[index].colors = this._get_most_used_color_sorted(new_current_state._s_layers[index].indexes_copy, new_current_state._s_layers[index].colors_copy, 256);
+                        new_current_state._layers[index].colors = this._get_most_used_color_sorted(new_current_state._s_layers[index].indexes, new_current_state._s_layers[index].colors, 256);
                         new_current_state._layers[index].number_of_colors = parseInt(new_current_state._s_layers[index].colors.length);
                     }
 
@@ -1647,7 +1647,7 @@ class CanvasPixels extends React.PureComponent {
                         };
                     }));
                     new_current_state._layer_index = parseInt(_layer_index);
-                    new_current_state._s_layers = Array.from(_s_layers.map(function (l){return Layer.new_from_colors_and_indexes(l.colors_copy, l.indexes_copy, parseInt(pxl_width), parseInt(pxl_height), true)}));
+                    new_current_state._s_layers = Array.from(_s_layers.map(function (l){return Layer.new_from_colors_and_indexes(l.colors, l.indexes, parseInt(pxl_width), parseInt(pxl_height), true)}));
                     new_current_state._pxl_indexes_of_selection = _pxl_indexes_of_selection.indexes;
                     new_current_state._pencil_mirror_index = parseInt(_pencil_mirror_index);
 
@@ -1842,7 +1842,7 @@ class CanvasPixels extends React.PureComponent {
                         };
                     })),
                     _layer_index: parseInt(sh._layer_index),
-                    _s_layers: Array.from(sh._s_layers.map(function (l){return Layer.new_from_colors_and_indexes(l.colors_copy, l.indexes_copy, parseInt(sh.pxl_width), parseInt(sh.pxl_height), true)})),
+                    _s_layers: Array.from(sh._s_layers.map(function (l){return Layer.new_from_colors_and_indexes(l.colors, l.indexes, parseInt(sh.pxl_width), parseInt(sh.pxl_height), true)})),
                     _pxl_indexes_of_selection: new SetFixed(sh._pxl_indexes_of_selection.indexes || sh._pxl_indexes_of_selection),
                     _pencil_mirror_index: parseInt(sh._pencil_mirror_index),
                     _json_state_history: _json_state_history,
@@ -1884,8 +1884,8 @@ class CanvasPixels extends React.PureComponent {
                             pxl_width: parseInt(state.pxl_width),
                             pxl_height: parseInt(state.pxl_height),
                             _pxl_indexes_of_selection: state._pxl_indexes_of_selection.indexes || state._pxl_indexes_of_selection,
-                            _s_pxls: Array.from(state._s_layers).map(function(l){return l.indexes_copy}),
-                            _s_pxl_colors:  Array.from(state._s_layers).map(function(l){return l.colors_copy}),
+                            _s_pxls: Array.from(state._s_layers).map(function(l){return l.indexes}),
+                            _s_pxl_colors:  Array.from(state._s_layers).map(function(l){return l.colors}),
                             _layers: Array.from(state._layers.map(function(l) {
                                 "use strict";
                                 return {
@@ -1954,7 +1954,7 @@ class CanvasPixels extends React.PureComponent {
                         };
                     })),
                     _layer_index: parseInt(sh._layer_index),
-                    _s_layers: Array.from(sh._s_layers.map(function (l){return Layer.new_from_colors_and_indexes(l.colors_copy, l.indexes_copy, parseInt(sh.pxl_width), parseInt(sh.pxl_height), true)})),
+                    _s_layers: Array.from(sh._s_layers.map(function (l){return Layer.new_from_colors_and_indexes(l.colors, l.indexes, parseInt(sh.pxl_width), parseInt(sh.pxl_height), true)})),
                     _pxl_indexes_of_selection: new SetFixed(sh._pxl_indexes_of_selection.indexes || sh._pxl_indexes_of_selection),
                     _pencil_mirror_index: parseInt(sh._pencil_mirror_index),
                     _json_state_history: _json_state_history,
@@ -2008,7 +2008,7 @@ class CanvasPixels extends React.PureComponent {
                         };
                     })),
                     _layer_index: parseInt(sh._layer_index),
-                    _s_layers: Array.from(sh._s_layers.map(function (l){return Layer.new_from_colors_and_indexes(l.colors_copy, l.indexes_copy, parseInt(sh.pxl_width), parseInt(sh.pxl_height), true)})),
+                    _s_layers: Array.from(sh._s_layers.map(function (l){return Layer.new_from_colors_and_indexes(l.colors, l.indexes, parseInt(sh.pxl_width), parseInt(sh.pxl_height), true)})),
                     _pxl_indexes_of_selection: new SetFixed(sh._pxl_indexes_of_selection.indexes || sh._pxl_indexes_of_selection),
                     _pencil_mirror_index: parseInt(sh._pencil_mirror_index),
                     _json_state_history: _json_state_history,
@@ -2112,8 +2112,8 @@ class CanvasPixels extends React.PureComponent {
 
         const {_s_layers, _layer_index, pxl_width, pxl_height } = this.super_state.get_state();
 
-        pxls = pxls ||  _s_layers[_layer_index].indexes_copy;
-        pxl_colors = pxl_colors || _s_layers[_layer_index].colors_copy;
+        pxls = pxls ||  _s_layers[_layer_index].indexes;
+        pxl_colors = pxl_colors || _s_layers[_layer_index].colors;
 
         let colors_index = new SetFixed(pxl_width * pxl_height);
         let colors_in_selection_with_occurrence = [];
@@ -2348,7 +2348,7 @@ class CanvasPixels extends React.PureComponent {
                     new_pxls[i] = pxls[index];
                 }
 
-                [new_pxls, new_pxl_colors] = this.color_conversion.clean_duplicate_colors(new_pxls, _s_layers[l].colors_copy);
+                [new_pxls, new_pxl_colors] = this.color_conversion.clean_duplicate_colors(new_pxls, _s_layers[l].colors);
                 _s_layers[l].set_indexes(new_pxls);
                 _s_layers[l].set_colors(new_pxl_colors);
             }
@@ -2847,7 +2847,7 @@ class CanvasPixels extends React.PureComponent {
         let { _s_layers } = this.super_state.get_state();
 
         const color_number = _s_layers[_layer_index].colors.length;
-        this._remove_close_pxl_colors(_s_layers[_layer_index].indexes_copy, _s_layers[_layer_index].colors_copy, threshold).then(([pxls, pxl_colors]) => {
+        this._remove_close_pxl_colors(_s_layers[_layer_index].indexes, _s_layers[_layer_index].colors, threshold).then(([pxls, pxl_colors]) => {
 
             _s_layers[_layer_index].set_indexes(pxls);
             _s_layers[_layer_index].set_colors(pxl_colors);
