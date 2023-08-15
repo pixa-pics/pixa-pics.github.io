@@ -86,7 +86,7 @@ Object.defineProperty(Layer.prototype, 'force_update_data', {
             colors = typeof colors == "undefined" ? this.uint32_colors_: colors;
             indexes = typeof indexes == "undefined" ? this.color_indexes_: indexes;
 
-            if(must_init) {
+            if(must_init && (this.uint32_pixel_color_||{length: 0}).length !== (this.width_ * this.height_ | 0)) {
                 this.color_indexes_length_ = (this.width_ * this.height_ | 0) >>> 0;
                 this.uint32_pixel_color_ =  new Uint32Array((this.color_indexes_length_|0)>>>0);
                 this.simdope_pixel_color_ =  new Colors(this.uint32_pixel_color_);

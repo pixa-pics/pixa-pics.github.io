@@ -2309,7 +2309,7 @@ class Pixel extends React.PureComponent {
         const update = Boolean(this.st4te._is_something_selected !== _is_something_selected);
         this.setSt4te({_is_something_selected}, () => {
 
-            if(update){this._request_force_update();}
+            if(update){this._compute_menu_right_click(); this._request_force_update();}
         });
     };
 
