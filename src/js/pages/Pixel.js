@@ -2284,7 +2284,7 @@ class Pixel extends React.PureComponent {
 
     _handle_relevant_action_event = (event, color = "#ffffff", opacity = 0) => {
 
-        const { _ripple } = this.st4te;
+        const _ripple = this.st4te._ripple;
 
         if(Boolean(event) && Boolean(_ripple)) {
 
@@ -2292,13 +2292,13 @@ class Pixel extends React.PureComponent {
 
             if(opacity !== 0) {
 
-                this.setSt4te({_ripple_color: color, _ripple_opacity: opacity}, () => {
-                    _ripple.start(event);
-
-                    setTimeout(() => {
-
+                this.setSt4te({_ripple_color: color, _ripple_opacity: opacity}, function () {
+                    setTimeout(function(){
+                        _ripple.start(event);
+                    }, 25);
+                    setTimeout(function(){
                         _ripple.stop(event);
-                    }, 175);
+                    }, 175+25);
                 });
             }
         }
@@ -2821,7 +2821,7 @@ class Pixel extends React.PureComponent {
             }}
             onContextMenu={function (e){e.preventDefault();}}
             MenuListProps={{dense: true}}
-            transitionDuration={{appear: 5, enter: 35, exit: 60}}
+            transitionDuration={{enter: 125, exit: 250}}
             open={Boolean(_menu_mouse_y) || Boolean(_menu_mouse_x)}
             onClose={this._handle_menu_close}
             disablePortal={false}

@@ -2032,7 +2032,7 @@ class CanvasPixels extends React.PureComponent {
 
         const { pxl_current_color_uint32,  _pxl_indexes_of_selection, _s_layers, _layer_index, pxl_current_opacity } = this.super_state.get_state();
 
-        let pxls =  new Uint16Array(_s_layers[_layer_index].indexes.buffer);
+        let pxls =  _s_layers[_layer_index].indexes_copy;
         let pxl_colors = Array.from(_s_layers[_layer_index].colors);
         let pxls_of_the_border = this._get_border_from_selection(_pxl_indexes_of_selection);
 
@@ -2052,8 +2052,7 @@ class CanvasPixels extends React.PureComponent {
             pxls[pxl_index] = current_pxl_new_color_index;
         });
 
-        _s_layers[_layer_index].set_colors(pxl_colors);
-        _s_layers[_layer_index].set_indexes(pxls);
+        _s_layers[_layer_index].set_colors_and_indexes(pxl_colors, pxls);
 
         this.super_state.set_state({ _s_layers, _last_action_timestamp: Date.now()}).then(() => this.super_master_meta.update_canvas());
     }
@@ -2080,8 +2079,8 @@ class CanvasPixels extends React.PureComponent {
             pxls[pxl_index] = current_pxl_new_color_index;
         });
 
-        _s_layers[_layer_index].set_colors(pxl_colors);
-        _s_layers[_layer_index].set_indexes(pxls);
+
+        _s_layers[_layer_index].set_colors_and_indexes(pxl_colors, pxls);
 
         this.super_state.set_state({_s_layers, _last_action_timestamp: Date.now()}).then(() => this.super_master_meta.update_canvas());
     }
@@ -2202,9 +2201,7 @@ class CanvasPixels extends React.PureComponent {
 
         });
 
-        _s_layers[_layer_index].set_colors(pxl_colors);
-        _s_layers[_layer_index].set_indexes(pxls);
-
+        _s_layers[_layer_index].set_colors_and_indexes(pxl_colors, pxls);
 
         this.super_state.set_state( {
             _s_layers,
@@ -2349,8 +2346,7 @@ class CanvasPixels extends React.PureComponent {
                 }
 
                 [new_pxls, new_pxl_colors] = this.color_conversion.clean_duplicate_colors(new_pxls, _s_layers[l].colors);
-                _s_layers[l].set_indexes(new_pxls);
-                _s_layers[l].set_colors(new_pxl_colors);
+                _s_layers[_layer_index].set_colors_and_indexes(new_pxl_colors, new_pxls);
             }
 
             if (typeof _base64_original_images[_original_image_index] !== "undefined") {
@@ -2835,8 +2831,7 @@ class CanvasPixels extends React.PureComponent {
         const { _s_layers, _layer_index } = this.super_state.get_state();
         const [ new_pxls, new_pxl_colors ] = this._pxl_colors_to_alpha(_s_layers[_layer_index].indexes, _s_layers[_layer_index].colors, color, intensity);
 
-        _s_layers[_layer_index].set_indexes(new_pxls);
-        _s_layers[_layer_index].set_colors(new_pxl_colors);
+        _s_layers[_layer_index].set_colors_and_indexes(new_pxl_colors, new_pxls);
 
         this.super_state.set_state({_layer_index, _last_action_timestamp: Date.now()}).then(() => this.super_master_meta.update_canvas(true));
     }
@@ -2849,8 +2844,7 @@ class CanvasPixels extends React.PureComponent {
         const color_number = _s_layers[_layer_index].colors.length;
         this._remove_close_pxl_colors(_s_layers[_layer_index].indexes, _s_layers[_layer_index].colors, threshold).then(([pxls, pxl_colors]) => {
 
-            _s_layers[_layer_index].set_indexes(pxls);
-            _s_layers[_layer_index].set_colors(pxl_colors);
+            _s_layers[_layer_index].set_colors_and_indexes(pxl_colors, pxls);
 
             const color_remaining_number = _s_layers[_layer_index].colors.length;
             let results = {
@@ -2871,8 +2865,7 @@ class CanvasPixels extends React.PureComponent {
         const { _layer_index, _s_layers } = this.super_state.get_state();
 
         var result = this._pxl_adjust_contrast(_s_layers[_layer_index].indexes, _s_layers[_layer_index].colors, intensity);
-        _s_layers[_layer_index].set_indexes(result[0]);
-        _s_layers[_layer_index].set_colors(result[1]);
+        _s_layers[_layer_index].set_colors_and_indexes(result[1], result[0]);
 
         this.super_state.set_state({_s_layers, _last_action_timestamp: Date.now()}).then(() => this.super_master_meta.update_canvas(true));
     };
@@ -2882,8 +2875,7 @@ class CanvasPixels extends React.PureComponent {
         const { _s_layers, _layer_index } = this.super_state.get_state();
 
         var result =  this._pxl_adjust_saturation(_s_layers[_layer_index].indexes, _s_layers[_layer_index].colors, intensity);
-        _s_layers[_layer_index].set_indexes(result[0]);
-        _s_layers[_layer_index].set_colors(result[1]);
+        _s_layers[_layer_index].set_colors_and_indexes(result[1], result[0]);
 
         this.super_state.set_state({_s_layers, _last_action_timestamp: Date.now()}).then(() => this.super_master_meta.update_canvas(true));
     }
@@ -2952,8 +2944,7 @@ class CanvasPixels extends React.PureComponent {
             pixels[pixel_index] = colors.indexOf(new_color);
         });
 
-        _s_layers[_layer_index].set_colors(colors);
-        _s_layers[_layer_index].set_indexes(pixels);
+        _s_layers[_layer_index].set_colors_and_indexes(colors,pixels);
 
         this.super_state.set_state({_s_layers});
     }
@@ -2963,8 +2954,7 @@ class CanvasPixels extends React.PureComponent {
         let { _layer_index,  _s_layers, pxl_width, pxl_height } = this.super_state.get_state();
 
         var result = this._pxl_adjust_smoothness(_s_layers[_layer_index].indexes, _s_layers[_layer_index].colors, pxl_width, pxl_height);
-        _s_layers[_layer_index].set_indexes(result[0]);
-        _s_layers[_layer_index].set_colors(result[1]);
+        _s_layers[_layer_index].set_colors_and_indexes(result[1],result[0]);
 
         this.super_state.set_state({_s_layers, _last_action_timestamp: Date.now()}).then(() => this.super_master_meta.update_canvas(true));
     };
@@ -3039,10 +3029,7 @@ class CanvasPixels extends React.PureComponent {
             let { _s_layers} = this.super_state.get_state();
 
             this._pxl_to_vignette(_s_layers[_layer_index].indexes, _s_layers[_layer_index].colors, color, intensity, (result) => {
-
-                _s_layers[_layer_index].set_indexes(result[0]);
-                _s_layers[_layer_index].set_colors(result[1]);
-
+                _s_layers[_layer_index].set_colors_and_indexes(result[1],result[0]);
                 this.super_state.set_state({_s_layers, _last_action_timestamp: Date.now()}).then(() => this.super_master_meta.update_canvas(true));
             });
         }
