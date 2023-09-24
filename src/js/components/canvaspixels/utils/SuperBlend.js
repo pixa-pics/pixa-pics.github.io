@@ -192,7 +192,7 @@ Object.defineProperty(SuperBlend.prototype, 'data_array', {
 Object.defineProperty(SuperBlend.prototype, 'set_data_array', {
     get: function() { "use strict"; return function (da) {
         "use strict";
-        return this.data_array_  = da.map(function (d){return new Colors(d.data);});
+        return this.data_array_  = da;
     }},
     enumerable: false,
     configurable: false
@@ -263,7 +263,7 @@ SuperBlend.prototype.blend = function(should_return_transparent, alpha_addition)
         indexes_data_for_layers
     } = this.state;
 
-    var dasd = this.data_array || [];
+    var dasd = this.data_array.map(function (d){return new Colors(d.data.buffer);});
     var dasdl = dasd.length||0;
     var layers_color_0 = layers_colors[0];
 
@@ -288,6 +288,8 @@ SuperBlend.prototype.blend = function(should_return_transparent, alpha_addition)
                 colors_data_in_layers_uint32_SIMDope.get_use_element(off[1], layers_colors[layer_n+1|0]);
                 layers_colors[layer_n|0].set_tail(layers_colors[layer_n+1|0], layers_opacity_255[layer_n|0]);
             }
+
+            layers_colors[layer_n|0].reset_tail();
 
             if((hover_data_in_layer[i | 0]|0) > 0) {
                 layers_color_0.blend_first_with_tails(alpha_addition)

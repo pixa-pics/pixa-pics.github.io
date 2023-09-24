@@ -1,5 +1,4 @@
 const {SIMDopeColor} = require("simdope");
-const ca = require("../../../notoemoji/react/Ca");
 const tempInt32 = new Int32Array(15);
 const CanvasPos = {
     _get_init_state(pxl_width, pxl_height, default_scale, canvas_wrapper_padding, canvas_wrapper_border_width, perspective) {

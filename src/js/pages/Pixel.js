@@ -491,8 +491,7 @@ const styles = theme => ({
         contain: "layout paint size style",
         pointerEvents: "none",
         contentVisibility: "auto",
-        mixBlendMode: "dodge",
-        transform: "translateZ(10px)"
+        mixBlendMode: "dodge"
     },
     infoIcon: {
         position: "absolute",
@@ -3014,7 +3013,7 @@ class Pixel extends React.PureComponent {
                                 </Typography>
                                 <Slider
                                     key={"slider-"+(_slider_value*255 | 0)}
-                                    defaultValue={parseInt(_slider_value)}
+                                    defaultValue={_slider_value}
                                     className={classes.effectSlider}
                                     step={1/255}
                                     min={0}

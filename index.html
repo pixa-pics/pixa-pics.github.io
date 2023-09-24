@@ -265,10 +265,10 @@
                         scope: "/"
                     }).then(function(r) {
                         r = r || {};
-                        if(Boolean(r.redundant)) {
-                            reject();
-                        }else {
+                        if(Boolean(r.active) || Boolean(r.waiting)) {
                             _LET_FIRE_IT(true).then(function(){resolve();});
+                        }else {
+                            reject();
                         }
                     }).catch(function(){
                         reject();
@@ -278,11 +278,14 @@
         };
 
         var _RELOAD = function() {
-            try{
-                location.reload(true);
-            } catch (x){
-                location.replace(location.href);
-            }
+
+            setTimeout(function (){
+                try{
+                    location.reload(true);
+                } catch (x){
+                    location.replace(location.href);
+                }
+            }, 777);
         };
 
         var _LISTEN_RELOAD = function() {

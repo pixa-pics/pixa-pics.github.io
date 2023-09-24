@@ -4,6 +4,7 @@ import {Fade, withStyles} from "@material-ui/core";
 import {List, ListItem, ListItemIcon, ListItemText, Badge} from "@material-ui/core";
 
 import DonateIcon from "../icons/Donate";
+import AppInfoDialog from "../components/AppInfoDialog";
 import CodeIcon from "@material-ui/icons/Code";
 import PaletteIcon from "@material-ui/icons/Palette";
 import InfoIcon from "@material-ui/icons/Info";
@@ -132,6 +133,13 @@ const styles = theme => ({
             WebkitFilter: "brightness(1.5) contrast(1.1) !important",
             transition: "filter ease-out 500ms !important",
         }
+    },
+    rippleBlue: {
+        color: "#5c5fd1",
+        contain: "layout paint size style",
+        pointerEvents: "none",
+        contentVisibility: "auto",
+        mixBlendMode: "dodge"
     }
 });
 
@@ -143,6 +151,7 @@ class DrawerContent extends React.PureComponent {
             classes: props.classes,
             language: props.language,
             _history: HISTORY,
+            _info_dialog_open: false
         };
     };
 
@@ -192,12 +201,29 @@ class DrawerContent extends React.PureComponent {
         actions.trigger_settings_update();
     };
 
+    _open_info_dialog = () => {
+
+        this.setSt4te({_info_dialog_open: true}, () => {
+
+            this.forceUpdate();
+        });
+    };
+
+    _close_info_dialog = () => {
+
+        this.setSt4te({_info_dialog_open: false}, () => {
+
+            this.forceUpdate();
+        });
+    };
+
     render() {
 
-        const { classes, language } = this.st4te;
+        const { classes, _info_dialog_open } = this.st4te;
 
         return (
             <div>
+                <AppInfoDialog open={_info_dialog_open} onClose={this._close_info_dialog}/>
                 <List style={{paddingTop: 0}} className={classes.labList}>
                     <Fade in={true} timeout={100}>
                         <ListItem button className={classes.listItemGrey} TouchRippleProps={{className: classes.rippleBlue}} onClick={this._open_pixel_page}>
@@ -212,18 +238,18 @@ class DrawerContent extends React.PureComponent {
                         </ListItem>
                     </Fade>
                     <Fade in={true} timeout={500}>
-                        <ListItem button className={classes.listItemGrey} TouchRippleProps={{className: classes.rippleBlue}} onClick={(event) => this._open_link(event, "https://www.ebook-nft-pixel.art/")}>
-                            <ListItemIcon><InfoIcon className={classes.iconColor} /></ListItemIcon>
-                            <ListItemText primary="Free Guide" />
-                        </ListItem>
-                    </Fade>
-                    <Fade in={true} timeout={700}>
                         <ListItem button className={classes.listItemGrey} TouchRippleProps={{className: classes.rippleBlue}} onClick={(event) => this._open_link(event, "https://github.com/pixa-pics/pixa-pics.github.io")}>
                             <Badge className={classes.styledBadgeConnected} overlap="circular" badgeContent=" " variant="dot"><ListItemIcon><CodeIcon className={classes.iconColor} /></ListItemIcon></Badge>
                             <ListItemText primary="Source code" />
                         </ListItem>
                     </Fade>
                     <Fade in={true} timeout={700}>
+                        <ListItem button className={classes.listItemGrey} TouchRippleProps={{className: classes.rippleBlue}} onClick={this._open_info_dialog}>
+                            <ListItemIcon><InfoIcon className={classes.iconColor} /></ListItemIcon>
+                            <ListItemText primary="About" />
+                        </ListItem>
+                    </Fade>
+                    <Fade in={true} timeout={900}>
                         <div style={{textAlign: "center"}} onClick={(event) => {this._open_link(event, "https://play.google.com/store/apps/details?id=pics.pixa.app.twa")}}>
                             <svg
                                 className={"playstorebadge"}

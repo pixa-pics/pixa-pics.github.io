@@ -32,11 +32,11 @@ const styles = theme => ({
         willChange: "filter"
     },
     "@keyframes glow": {
-        "0%": { filter: "drop-shadow(0px 0px 2px currentColor) drop-shadow(0px 0px 5px currentColor)"},
-        "25%": { filter: "drop-shadow(0px 0px 1px currentColor) drop-shadow(0px 0px 4px currentColor)"},
-        "50%": { filter: "drop-shadow(0px 0px 3px currentColor) drop-shadow(0px 0px 5px currentColor)"},
-        "75%": { filter: "drop-shadow(0px 0px 6px currentColor) drop-shadow(0px 0px 8px currentColor)"},
-        "100%": { filter: "drop-shadow(0px 0px 4px currentColor) drop-shadow(0px 0px 6px currentColor)"}
+        "0%": { filter: "drop-shadow(0px 0px 2px #0f0f2f) drop-shadow(0px 0px 5px #0f0f2f)"},
+        "25%": { filter: "drop-shadow(0px 0px 1px #0f0f2f) drop-shadow(0px 0px 4px #0f0f2f)"},
+        "50%": { filter: "drop-shadow(0px 0px 3px #0f0f2f) drop-shadow(0px 0px 5px #0f0f2f)"},
+        "75%": { filter: "drop-shadow(0px 0px 6px #0f0f2f) drop-shadow(0px 0px 8px #0f0f2f)"},
+        "100%": { filter: "drop-shadow(0px 0px 4px #0f0f2f) drop-shadow(0px 0px 6px #0f0f2f)"}
     },
     root: {
         display: "flex",
@@ -57,12 +57,14 @@ const styles = theme => ({
         textTransform: "none",
         textAlign: "inherit",
         padding: 0,
-        boxShadow: "inset 0px 0px 12px #00185d, inset 0px 0px 24px #1a43bb",
+        boxShadow: "inset 0px 0px 12px #00185dba, inset 0px 0px 24px #1a43bb61",
         backgroundColor: theme.palette.secondary.main, // #030435
         backgroundPosition: `${parseInt(Math.random() * 100)}% ${parseInt(Math.random() * 100)}%`,
         backgroundSize: "auto 175%",
+        transition: "background-color cubic-bezier(0.4, 0, 0.2, 1) 125ms",
         "&:hover": {
-            backgroundColor: theme.palette.secondary.lighter,
+            backgroundColor: "#0f0f2f",
+            transition: "background-color cubic-bezier(0.4, 0, 0.2, 1) 175ms",
         },
         color: "#d7dbff",
         "&::before": {
@@ -75,7 +77,7 @@ const styles = theme => ({
             height: 40,
             width: "60%",
             mixBlendMode: "plus-lighter",
-            background: "linear-gradient(to right, transparent, rgb(155 163 220 / 44%), transparent)",
+            background: "linear-gradient(to right, transparent, rgb(155 163 220 / 22%), transparent)",
             animationFillMode: "both",
             animationName: "$innerToolbarCyberPunkAnimation",
             animationDuration: "7770ms",

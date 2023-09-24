@@ -154,7 +154,7 @@ const SuperState = {
 
                 if((pxl_indexes.length|0) > 0) {
 
-                    state_._s_layers[state_._layer_index].paint_uint32a(typeof pxl_indexes.indexes != "undefined" ? pxl_indexes.indexes: pxl_indexes, (color | 0) >>> 0, Math.fround(opacity));
+                    state_._s_layers[state_._layer_index].paint_uint32a(pxl_indexes.indexes || pxl_indexes, (color | 0) >>> 0, Math.fround(opacity));
                     this.set_state(s).then(callback_function);
                 }else {
 

@@ -26,6 +26,7 @@ SOFTWARE.
 "use strict";
 const HISTORY_TIME_GAP = 625;
 import {SetFixed} from "@asaitama/boolean-array";
+
 import {Layer} from "../../utils/Layer";
 
 import React from "react";
@@ -42,7 +43,7 @@ import ColorConversion from "../canvaspixels/utils/ColorConversion";
 import SmartRequestAnimationFrame from "../canvaspixels/utils/SmartRequestAnimationFrame";
 import XXHash from "../canvaspixels/utils/XXHash";
 import CanvasPos from "../canvaspixels/utils/CanvasPos"
-import CanvasFilters from "../canvaspixels/utils/CanvasFilters"
+import {Filters} from "../../../js/utils/Layer"
 import SIMDope from "simdope";
 import {toBytes, toBase64} from 'fast-base64';
 const simdops = SIMDope.simdops;
@@ -62,11 +63,11 @@ class CanvasPixels extends React.PureComponent {
             this.super_canvas = new SuperCanvas(null, 32, 32);
             this.canvas_pos = Object.create(CanvasPos).from(32,  32,  0.9,  32, 0, 0);
             this.sraf = Object.create(SmartRequestAnimationFrame).init();
-            this.canvas_filters = Object.create(CanvasFilters).init(SIMDopeColors);
             this.sraf.start_timer();
             this.super_master_meta = Object.create(SuperMasterMeta).init(this.super_state, this.super_canvas, this.super_blend, this.canvas_pos, this.color_conversion, this.sraf);
             this.hasnt_been_mount = true;
             this._ripple = null;
+            this.filters = new Filters();
         }
     };
 
@@ -600,14 +601,19 @@ class CanvasPixels extends React.PureComponent {
 
                     this.super_state.set_state({_last_filters_hash: hash, _processing_filters: true}).then(() => {
 
-                        this.get_filter_names().forEach((name, index, filter_names) => {
+                        this.filters.names.forEach((name, index, filter_names) => {
 
-                            this.get_layer_bitmap_image(
-                                pxl_width,
-                                pxl_height,
-                                _s_layers[_layer_index].indexes,
-                                this.canvas_filters.filter(name, force,  _s_layers[_layer_index].colors), (result) => {
-                                    n_processed++;
+                            this.filters.use(name, _s_layers[_layer_index], force, true).bitmap_async().then((result) => {
+                                    n_processed ++;
+
+                                    var old = thumbnails.get(name);
+
+                                    if(typeof old != "undefined"){
+                                        if(typeof old.destroy != "undefined"){
+                                            old.destroy();
+                                        }
+                                    }
+
                                     thumbnails.set(name, result);
                                     progression = Math.round(n_processed / filter_names.length * 100).toString();
                                     this.props.onFiltersThumbnailChange(thumbnails, hash, progression);
@@ -621,7 +627,6 @@ class CanvasPixels extends React.PureComponent {
                                 }
                             );
                         });
-
                     });
                 }
             });
@@ -1418,7 +1423,7 @@ class CanvasPixels extends React.PureComponent {
 
         const { _s_layers, _layer_index } = this.super_state.get_state();
         let { _pxl_indexes_of_selection } = this.super_state.get_state();
-        const _pxls_copy =  new Uint16Array(_s_layers[_layer_index].indexes.buffer);
+        const _pxls_copy =  _s_layers[_layer_index].indexes;
 
 
         _pxl_indexes_of_selection.clear();
@@ -1668,13 +1673,13 @@ class CanvasPixels extends React.PureComponent {
 
                         }else if(layers_changed_state) {
 
-                            const backward_of = parseInt(_json_state_history.state_history.length - 1) - new_current_history_position;
+                            const backward_of = _json_state_history.state_history.length - new_current_history_position;
 
                             // An action have been performed while being in the past
                             if(backward_of > 0) {
 
                                 let dshi = 0;
-                                let dsh = _json_state_history.state_history.splice(-backward_of+1); // Not cutting current state but the next one unless we go in past
+                                let dsh = _json_state_history.state_history.splice(-backward_of); // Not cutting current state but the next one unless we go in past
                                 while(dsh.length) { // Yet inbetween state history get added the reverse order to not break timeline of changes
 
                                     if(dshi === 0){
@@ -1687,13 +1692,12 @@ class CanvasPixels extends React.PureComponent {
                                 }
                             }
 
-                            if(_json_state_history.state_history.length-1 > _state_history_length) { _json_state_history.state_history.shift(); } // As we limit edit history, just delete the first element if it will be above max size
+                            if(_json_state_history.state_history.length >= _state_history_length) { _json_state_history.state_history.shift(); } // As we limit edit history, just delete the first element if it will be above max size
                             _json_state_history.state_history.push(Object.assign({}, new_current_state)); // Then we add the current state history
                             _json_state_history.history_position = parseInt(_json_state_history.state_history.length-1);
                             _saving_json_state_history_ran_timestamp = now;
                         } else {
 
-                            // History states just got shuffled and we need to update the right moment in time (in the not-now-that-is-now)
                             for (let i = 0; i < _json_state_history.state_history.length; i++) {
 
                                 if ((_json_state_history.state_history[i]._timestamp|0) === new_current_state_timestamp) {
@@ -1884,8 +1888,8 @@ class CanvasPixels extends React.PureComponent {
                             pxl_width: parseInt(state.pxl_width),
                             pxl_height: parseInt(state.pxl_height),
                             _pxl_indexes_of_selection: state._pxl_indexes_of_selection.indexes || state._pxl_indexes_of_selection,
-                            _s_pxls: Array.from(state._s_layers).map(function(l){return l.indexes}),
-                            _s_pxl_colors:  Array.from(state._s_layers).map(function(l){return l.colors}),
+                            _s_pxls: Array.from(state._s_layers).map(function(l){return l.indexes_copy}),
+                            _s_pxl_colors:  Array.from(state._s_layers).map(function(l){return l.colors_copy}),
                             _layers: Array.from(state._layers.map(function(l) {
                                 "use strict";
                                 return {
@@ -2033,7 +2037,7 @@ class CanvasPixels extends React.PureComponent {
         const { pxl_current_color_uint32,  _pxl_indexes_of_selection, _s_layers, _layer_index, pxl_current_opacity } = this.super_state.get_state();
 
         let pxls =  _s_layers[_layer_index].indexes_copy;
-        let pxl_colors = Array.from(_s_layers[_layer_index].colors);
+        let pxl_colors = Array.from(_s_layers[_layer_index].colors_copy);
         let pxls_of_the_border = this._get_border_from_selection(_pxl_indexes_of_selection);
 
         pxls_of_the_border.forEach((pxl_index) => {
@@ -2346,7 +2350,7 @@ class CanvasPixels extends React.PureComponent {
                 }
 
                 [new_pxls, new_pxl_colors] = this.color_conversion.clean_duplicate_colors(new_pxls, _s_layers[l].colors);
-                _s_layers[_layer_index].set_colors_and_indexes(new_pxl_colors, new_pxls);
+                _s_layers[_layer_index] = Layer.new_from_colors_and_indexes(new_pxl_colors, new_pxls, new_width, new_height);
             }
 
             if (typeof _base64_original_images[_original_image_index] !== "undefined") {
@@ -2673,7 +2677,7 @@ class CanvasPixels extends React.PureComponent {
                 _imported_image_pxls = n_imported_image_pxls;
             }else {
 
-                ns_pxls[_layer_index].forEach(function(pxl, index) {
+                _s_layers[_layer_index].indexes.forEach(function(pxl, index) {
 
                     let x = index % pxl_width;
                     let y = (index - x) / pxl_width;
@@ -2699,9 +2703,8 @@ class CanvasPixels extends React.PureComponent {
 
                 });
 
-
+                _s_layers[_layer_index].set_indexes(pxls);
                 x_scale = -1;
-                ns_pxls[_layer_index] = pxls;
 
             }
 
@@ -3080,7 +3083,7 @@ class CanvasPixels extends React.PureComponent {
 
     get_filter_names = () => {
 
-        return this.canvas_filters.get_names();
+        return this.filters.names;
     };
 
     _dutone_pixels = (contrast, color_a, color_b, pxls, pxl_colors) => {
@@ -3109,9 +3112,9 @@ class CanvasPixels extends React.PureComponent {
 
     _to_filter = (name, intensity) => {
 
-        const { _s_layers, _layer_index } = this.super_state.get_state();
+        let { _s_layers, _layer_index } = this.super_state.get_state();
 
-        _s_layers[_layer_index].set_colors(this.canvas_filters.filter(name, intensity, _s_layers[_layer_index].colors));
+        _s_layers[_layer_index] = this.filters.use(name, _s_layers[_layer_index], intensity, true)
 
         this.super_state.set_state({_s_layers, _pxls_hovered: -1, _last_action_timestamp: Date.now() }).then(() => this.super_master_meta.update_canvas(true));
 
@@ -3546,7 +3549,7 @@ class CanvasPixels extends React.PureComponent {
                              boxShadow: box_shadow,
                              filter: `opacity(${!is_there_new_dimension ? "1": "0"}) ${perspective ? filter: ""}`,
                              WebkitFilter: `opacity(${!is_there_new_dimension ? "1": "0"}) ${perspective ? filter: ""}`,
-                             transform: `translate(${((scale.move_x * 100 | 0) / 100).toFixed(2)}px, ${((scale.move_y * 100 | 0) / 100).toFixed(2)}px) ${perspective ? transform_rotate: ""}`,
+                             transform: `translate(${scale.move_x|0}px, ${scale.move_y|0}px) ${perspective ? transform_rotate: ""}`,
                              willChange: will_change ? "transform, box-shadow": "",
                              transformOrigin: "center middle",
                              mixBlendMode: perspective ? "screen": "inherit",
@@ -3570,9 +3573,9 @@ class CanvasPixels extends React.PureComponent {
                                 width: pxl_width | 0,
                                 height: pxl_height | 0,
                                 minWidth: screen_zoom_ratio * scale.current * pxl_width | 0,
-                                maxWidth: screen_zoom_ratio * scale.current * pxl_width | 0,
+                                maxWidth: screen_zoom_ratio * scale.current * pxl_width + 1 | 0,
                                 minHeight: screen_zoom_ratio * scale.current * pxl_height | 0,
-                                maxHeight: screen_zoom_ratio * scale.current * pxl_height | 0,
+                                maxHeight: screen_zoom_ratio * scale.current * pxl_height + 1 | 0,
                                 transformOrigin: "left top",
                                 boxSizing: "content-box",
                                 borderWidth: 0,

@@ -1,4 +1,4 @@
-import SIMDope from "simdope";
+import SIMDope, {SIMDopeColors, SIMDopeColor} from "simdope";
 const {clamp_uint32, modulo_uint, divide_uint, minus_uint, uint_greater, uint_less, uint_greater_equal, uint_less_equal, plus_uint, minus_int, int_greater, int_less, int_greater_equal, int_less_equal, plus_int, max_int, min_int} = SIMDope.simdops;
 
 function draw_2d(ctx2d, _state) {
@@ -14,13 +14,13 @@ function draw_2d(ctx2d, _state) {
     let fp_square = ctx2d.getImageData(pr_top_left_x, pr_top_left_y, pr_width, pr_height);
     let fp_square_data = fp_square.data;
     let current_offset_start_index = 0;
-    for(var i = 0; (i|0) < (pr_height|0) ; i = (i + 1 | 0)>>>0) {
+    for (var i = 0; (i | 0) < (pr_height | 0); i = (i + 1 | 0) >>> 0) {
         current_offset_start_index = (imul(s_width, (i + pr_top_left_y | 0)) + pr_top_left_x | 0) >>> 0;
-        fp_square_data.set(pr_uint8a.subarray((current_offset_start_index << 2|0)>>>0, ((current_offset_start_index + pr_width | 0)<<2|0)>>>0), (imul(i,pr_width)<<2|0)>>>0);
+        fp_square_data.set(pr_uint8a.subarray((current_offset_start_index << 2 | 0) >>> 0, ((current_offset_start_index + pr_width | 0) << 2 | 0) >>> 0), (imul(i, pr_width) << 2 | 0) >>> 0);
     }
 
-    _state.pr.top_left.x = _state.s.width | 0;
-    _state.pr.top_left.y = _state.s.height | 0;
+    _state.pr.top_left.x = _state.s.width - 1 | 0;
+    _state.pr.top_left.y = _state.s.height - 1 | 0;
     _state.pr.bottom_right.x = 0;
     _state.pr.bottom_right.y = 0;
 
@@ -165,21 +165,22 @@ Object.defineProperty(SuperCanvas.prototype, 'render', {
     get: function() { "use strict"; return function () {
         "use strict";
         var b2 = this.state_.b2;
-        "use strict";
-        this.state_.pr.top_left.x = this.state_.s.width | 0;
-        this.state_.pr.top_left.y = this.state_.s.height | 0;
+        this.state_.pr.top_left.x = this.state_.s.width - 1 | 0;
+        this.state_.pr.top_left.y = this.state_.s.height - 1 | 0;
         this.state_.pr.bottom_right.x = 0;
         this.state_.pr.bottom_right.y = 0;
 
+        "use strict";
         if (typeof b2 !== "undefined" && this.state_.enable_paint_type === "bitmap") {
 
-
             this.state_.b.old_bmp.close();
-            /*this.state_.s.canvas_context.clearRect(b2.bmp_x, b2.bmp_y, b2.bmp.width, b2.bmp.height);
+            this.state_.s.canvas_context.clearRect(b2.bmp_x, b2.bmp_y, b2.bmp.width, b2.bmp.height);
             this.state_.s.canvas_context.globalCompositeOperation = "source-over";
-            this.state_.s.canvas_context.drawImage(b2.bmp, b2.bmp_x, b2.bmp_y, b2.bmp.width, b2.bmp.height);*/
-            this.state_.s.canvas_context.globalCompositeOperation = "copy";
-            this.state_.s.canvas_context.drawImage(b2.bmp, 0, 0, b2.bmp.width, b2.bmp.height);
+            this.state_.s.canvas_context.drawImage(b2.bmp, b2.bmp_x, b2.bmp_y, b2.bmp.width, b2.bmp.height);
+
+            /*this.state_.s.canvas_context.globalCompositeOperation = "copy";
+            this.state_.s.canvas_context.drawImage(b2.bmp, 0, 0, b2.bmp.width, b2.bmp.height);*/
+
             this.state_.b = b2;
             return Promise.resolve();
         } else if (this.state_.enable_paint_type === "offscreen") {
@@ -189,7 +190,7 @@ Object.defineProperty(SuperCanvas.prototype, 'render', {
             return Promise.resolve();
         }else {
 
-            return draw_2d(this.state_.s.canvas_context, this.state_).then(function (){return Promise.resolve()});
+            return Promise.resolve();
         }
     }}
 });
@@ -198,68 +199,21 @@ Object.defineProperty(SuperCanvas.prototype, 'prender', {
         "use strict";
         if (this.state_.enable_paint_type === "bitmap") {
 
-            if((this.state_.b.old_bmp.width|0) === 0) {
-
-                /*
-                let new_bmp_t = Date.now();
-                let new_bmp_x = this.state_.pr.top_left.x | 0;
-                let new_bmp_y = this.state_.pr.top_left.y | 0;
-                let s_width = this.state_.s.width | 0;
-                let pr_width = this.state_.pr.width | 0;
-                let pr_height = this.state_.pr.height | 0;
-                let pr_top_left_x = this.state_.pr.top_left.x | 0;
-                let pr_top_left_y = this.state_.pr.top_left.y | 0;
-                let pr_uint8a = this.state_.pr_uint8a;
-
-                return bpro(s_width, pr_width, pr_height, pr_top_left_x, pr_top_left_y, pr_uint8a).then(function(bitmap){
-
-                    if(this.state_.b.bmp_t < new_bmp_t) {
-
-                        this.state_.b2.old_bmp = this.state_.b.bmp;
-                        this.state_.b2.bmp = bitmap;
-                        this.state_.b2.bmp_t = new_bmp_t | 0;
-                        this.state_.b2.bmp_x = new_bmp_x | 0;
-                        this.state_.b2.bmp_y = new_bmp_y | 0;
-
-                        return Promise.resolve();
-                    }else {
-
-                        this.state_.b2 = this.state_.b;
-                        return Promise.resolve();
-                    }
-
+            let new_bmp_t = Date.now();
+            let new_bmp_x = this.state_.pr.top_left.x | 0;
+            let new_bmp_y = this.state_.pr.top_left.y | 0;
+            let pr_width = this.state_.pr.width | 0;
+            let pr_height = this.state_.pr.height | 0;
+            return new Promise((resolve, reject) => {
+                createImageBitmap(new ImageData(new Uint8ClampedArray(this.state_.pr_uint8a.buffer), this.state_.s.width|0, this.state_.s.height|0), new_bmp_x, new_bmp_y, pr_width, pr_height).then((bitmap) => {
+                    this.state_.b2.old_bmp = this.state_.b.bmp;
+                    this.state_.b2.bmp = bitmap;
+                    this.state_.b2.bmp_x = new_bmp_x | 0;
+                    this.state_.b2.bmp_y = new_bmp_y | 0;
+                    this.state_.b2.bmp_t = new_bmp_t | 0;
+                    return resolve();
                 });
-                */
-                let new_bmp_t = Date.now();
-                return createImageBitmap(new ImageData(new Uint8ClampedArray(this.state_.pr_uint8a.buffer), this.state_.s.width|0, this.state_.s.height|0)).then((bitmap) => {
-                    if(this.state_.b.bmp_t < new_bmp_t) {
-
-                        this.state_.b2.old_bmp = this.state_.b.bmp;
-                        this.state_.b2.bmp = bitmap;
-                        this.state_.b2.bmp_t = new_bmp_t | 0;
-
-                        return Promise.resolve();
-                    }else {
-
-                        this.state_.b2 = this.state_.b;
-                        return Promise.resolve();
-                    }
-                });
-
-            }else {
-
-                this.state_.b.old_bmp.close();
-
-                if(this.state_.bmp.width !== 0){
-
-                    this.state_.b2 = this.state_.b;
-                    return Promise.resolve();
-                }else {
-
-                    return Promise.reject();
-                }
-            }
-
+            });
 
         }else if (this.state_.enable_paint_type === "offscreen") {
 
@@ -277,16 +231,17 @@ Object.defineProperty(SuperCanvas.prototype, 'unpile', {
 
         let width = this.state_.s.width | 0;
         let height = this.state_.s.height | 0;
+        let index_changes = this.state_.ic.indexes;
+        let color_changes = this.state_.ic.colors;
+
         this.state_.enable_paint_type =  this.state_.s.is_bitmap ? "bitmap" : this.state_.s.is_offscreen ? "offscreen" : "";
 
         if (width !== w || height !== h) {
 
             return Promise.reject();
-        } else if(this.state_.enable_paint_type !== "bitmap"){
+        } else if(index_changes.length > 0){
 
             let x, y;
-            let index_changes = this.state_.ic.indexes;
-            let color_changes = this.state_.ic.colors;
             let uint32a = this.state_.fp;
             let pr = this.state_.pr;
             let pr_top_left_x = pr.top_left.x | 0;
@@ -294,39 +249,71 @@ Object.defineProperty(SuperCanvas.prototype, 'unpile', {
             let pr_bottom_right_x = pr.bottom_right.x | 0;
             let pr_bottom_right_y = pr.bottom_right.y | 0;
             let index = 0;
+            let context = this.state_.s.canvas_context;
 
-            for (let i = 0, l = index_changes.length | 0; uint_less(i, l); i = plus_uint(i, 1)) {
+            if(index_changes.length < 64 || this.state_.enable_paint_type === "") {
 
-                index = (index_changes[i | 0] | 0) >>> 0;
-                uint32a[(index | 0) >>> 0] = (color_changes[i | 0] | 0) >>> 0;
+                let colors = new SIMDopeColors(color_changes.buffer, color_changes.byteOffset, color_changes.byteLength);
+                let color = new SIMDopeColor(new ArrayBuffer(4));
+                for (let i = 0, l = index_changes.length | 0; uint_less(i, l); i = plus_uint(i, 1)) {
 
-                x = modulo_uint(index, width);
-                y = divide_uint(minus_uint(index, x), width);
+                    index = (index_changes[i | 0] | 0) >>> 0;
+                    uint32a[(index | 0) >>> 0] = (color_changes[i | 0] | 0) >>> 0;
 
-                if (uint_greater_equal(pr_top_left_x, x)) {
-                    pr_top_left_x = x|0;
-                } else if (uint_less_equal(pr_bottom_right_x, x)) {
-                    pr_bottom_right_x = x|0;
+                    x = modulo_uint(index, width);
+                    y = divide_uint(minus_uint(index, x), width);
+                    context.fillStyle = colors.get_element(i, color).hex;
+                    context.clearRect(x, y, 1, 1);
+                    context.fillRect(x, y, 1, 1);
                 }
 
-                if (uint_greater_equal(pr_top_left_y, y)) {
-                    pr_top_left_y = y|0;
-                } else if (uint_less_equal(pr_bottom_right_y, y)) {
-                    pr_bottom_right_y = y|0;
+
+                this.state_.enable_paint_type = "";
+            }else {
+
+                for (let i = 0, l = index_changes.length | 0; uint_less(i, l); i = plus_uint(i, 1)) {
+
+                    index = (index_changes[i | 0] | 0) >>> 0;
+                    uint32a[(index | 0) >>> 0] = (color_changes[i | 0] | 0) >>> 0;
+
+                    x = modulo_uint(index, width);
+                    y = divide_uint(minus_uint(index, x), width);
+
+                    if (uint_greater_equal(pr_top_left_x, x)) {
+                        pr_top_left_x = x|0;
+                    }
+
+                    if (uint_less_equal(pr_bottom_right_x, x)) {
+                        pr_bottom_right_x = x|0;
+                    }
+
+                    if (uint_greater_equal(pr_top_left_y, y)) {
+                        pr_top_left_y = y|0;
+                    }
+
+                    if (uint_less_equal(pr_bottom_right_y, y)) {
+                        pr_bottom_right_y = y|0;
+                    }
                 }
+
+                pr.width = pr_bottom_right_x - pr_top_left_x + 1 | 0;
+                pr.height = pr_bottom_right_y - pr_top_left_y + 1 | 0;
+
+                pr.top_left.x = pr_top_left_x | 0;
+                pr.top_left.y = pr_top_left_y | 0;
+                pr.bottom_right.x = pr_bottom_right_x | 0;
+                pr.bottom_right.y = pr_bottom_right_y | 0;
+                this.state_.pr = pr;
             }
 
-            pr.width = pr_bottom_right_x - pr_top_left_x + 1 | 0;
-            pr.height = pr_bottom_right_y - pr_top_left_y + 1 | 0;
-
-            pr.top_left.x = pr_top_left_x | 0;
-            pr.top_left.y = pr_top_left_y | 0;
-            pr.bottom_right.x = pr_bottom_right_x | 0;
-            pr.bottom_right.y = pr_bottom_right_y | 0;
-            this.state_.pr = pr;
-
+            this.state_.ic.indexes = new Uint32Array(0);
+            this.state_.ic.colors = new Uint32Array(0);
             return Promise.resolve();
         }else {
+            this.state_.enable_paint_type = "";
+            return Promise.resolve();
+        }
+        /*else {
 
             let index_changes = this.state_.ic.indexes;
             let color_changes = this.state_.ic.colors;
@@ -339,7 +326,7 @@ Object.defineProperty(SuperCanvas.prototype, 'unpile', {
             }
 
             return Promise.resolve();
-        }
+        }*/
     }}
 });
 Object.defineProperty(SuperCanvas.prototype, 'pile', {
@@ -369,17 +356,17 @@ Object.defineProperty(SuperCanvas.prototype, 'set_dimensions', {
 Object.defineProperty(SuperCanvas.prototype, 'secure_context', {
     get: function() { "use strict"; return function () {
         "use strict";
-        this.state_.s.canvas_context.canvas.addEventListener("contextlost", function(){
+        this.state_.s.canvas_context.canvas.addEventListener("contextlost", () => {
 
-            let cc2d = this.state_.s.canvas_context.canvas.getContext('2d', {desynchronized: false, willReadFrequently: false});
+            let cc2d = this.state_.s.canvas_context.canvas.getContext('2d', {willReadFrequently: true});
             cc2d.imageSmoothingEnabled = false;
             cc2d.webkitImageSmoothingEnabled = false;
             cc2d.globalCompositeOperation = "copy";
             this.state_.s.canvas_context = cc2d;
         });
-        this.state_.s.offscreen_canvas_context.canvas.addEventListener("contextlost", function(){
+        this.state_.s.offscreen_canvas_context.canvas.addEventListener("contextlost", () => {
 
-            let occ2d = this.state_.s.offscreen_canvas_context.canvas.getContext("2d", {willReadFrequently: false});
+            let occ2d = this.state_.s.offscreen_canvas_context.canvas.getContext("2d", {willReadFrequently: true});
             occ2d.imageSmoothingEnabled = false;
             occ2d.webkitImageSmoothingEnabled = false;
             this.state_.s.offscreen_canvas_context = occ2d;

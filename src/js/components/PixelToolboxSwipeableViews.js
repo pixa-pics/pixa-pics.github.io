@@ -588,7 +588,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
         Object.keys(this._cache).map((name) => {
 
             this.update_cache_view(name);
-            this._cache_empty[name] = (<List key={name} style={{ willChange: "none", minHeight: "100%", contain: "size style layout paint", overflow: "auto", contentVisibility: "hidden", paddingTop: 0}} />);
+            this._cache_empty[name] = (<List key={"list-empty-"+name} style={{ willChange: "none", minHeight: "100%", contain: "size style layout paint", overflow: "auto", contentVisibility: "hidden", paddingTop: 0}} />);
         });
     };
 
@@ -2473,7 +2473,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
         name = names[index];
 
         this._cache[name] = (
-            <List key={name} style={{willChange: (Boolean(parseInt(_filters_preview_progression_stepped) === 0 || name !== "filters") ? "inherit": "contents")+"", contentVisibility: "auto", minHeight: "100%", contain: "style layout paint", overflow: "visible", paddingTop: 0}}>
+            <List key={"list-filled-"+name} style={{willChange: (Boolean(parseInt(_filters_preview_progression_stepped) === 0 || name !== "filters") ? "inherit": "contents")+"", contentVisibility: "auto", minHeight: "100%", contain: "style layout paint", overflow: "visible", paddingTop: 0}}>
 
                 {this.get_before_action_panel(index)}
 
@@ -2602,7 +2602,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                         <br/>
                         <span>— Matias A.</span>
                     </p>*/}
-                <ButtonBase TouchRippleProps={{className: classes.rippleGreen}} className={classes.advertising} onClick={() => {window.open("https://aragon.ai/?via=pixa-pics")}}><img src={"/src/images/adaragon.png"}/></ButtonBase>
+                {/*<ButtonBase TouchRippleProps={{className: classes.rippleGreen}} className={classes.advertising} onClick={() => {window.open("https://aragon.ai/?via=pixa-pics")}}><img src={"/src/images/adaragon.png"}/></ButtonBase>*/}
             </List>
         );
 
