@@ -2349,8 +2349,7 @@ class CanvasPixels extends React.PureComponent {
                     new_pxls[i] = pxls[index];
                 }
 
-                [new_pxls, new_pxl_colors] = this.color_conversion.clean_duplicate_colors(new_pxls, _s_layers[l].colors);
-                _s_layers[_layer_index] = Layer.new_from_colors_and_indexes(new_pxl_colors, new_pxls, new_width, new_height);
+                _s_layers[l] = Layer.new_from_colors_and_indexes(_s_layers[l].colors, new_pxls, new_width, new_height);
             }
 
             if (typeof _base64_original_images[_original_image_index] !== "undefined") {

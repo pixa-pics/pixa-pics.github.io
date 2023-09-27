@@ -152,14 +152,9 @@ const SuperState = {
                 s = typeof s == "undefined" ? {}: s;
                 callback_function = typeof callback_function == "undefined" ? function(){}: callback_function;
 
-                if((pxl_indexes.length|0) > 0) {
+                state_._s_layers[state_._layer_index].paint_uint32a(pxl_indexes instanceof SetFixed ? pxl_indexes.indexes: pxl_indexes, (color | 0) >>> 0, Math.fround(opacity));
+                this.set_state(s).then(callback_function);
 
-                    state_._s_layers[state_._layer_index].paint_uint32a(pxl_indexes.indexes || pxl_indexes, (color | 0) >>> 0, Math.fround(opacity));
-                    this.set_state(s).then(callback_function);
-                }else {
-
-                    this.set_state(s).then(callback_function);
-                }
             },
             set_state: function(new_props, is_large_object) {
                 "use strict";
@@ -354,19 +349,37 @@ const SuperState = {
                     let canvas_resized_ctx = this.new_canvas_context_2d(scaled_width, scaled_height);
                     canvas_resized_ctx.drawImage(canvas_ctx.canvas, 0, 0, state_._imported_image_width, state_._imported_image_height, 0, 0, scaled_width, scaled_height);
                     let resized_image_data = canvas_resized_ctx.getImageData(0, 0, scaled_width, scaled_height);
+
                     const {new_pxls, new_pxl_colors} = this.get_pixels_palette_and_list_from_image_data(resized_image_data);
                     //state_._imported_image_width = scaled_width;
                     //state_._imported_image_height = scaled_height;
 
 
                     let pxls_positioned = {};
+                    let imported_image_pxls_positioned_keyset = new SetFixed(state_.pxl_width*state_.pxl_height)
                     let image_imported_resizer_index = -1;
                     if (new_pxls.length > 0) {
 
                         image_imported_resizer_index = state_._imported_image_start_x + scaled_width + (state_._imported_image_start_y + scaled_height) * state_.pxl_width | 0;
-                        new_pxls.forEach(function(pxl, index) {
 
-                            const pos_x = index % scaled_width;
+                        var constemp = Uint32Array.of(scaled_width, state_._imported_image_start_x, state_._imported_image_start_y, state_.pxl_width, state_.pxl_height);
+                        var temp = Uint32Array.of(0, 0, 0, 0, 0); // x, y, x2, y2, i2
+                        for(var i = 0, l = new_pxls.length; (i|0) < (l|0); i = i + 1 | 0) {
+                            temp[0] = i % constemp[0];
+                            temp[1] = (i - temp[0]) / constemp[0];
+                            temp[2] = temp[0] + constemp[1];
+                            temp[3] = temp[1] + constemp[2];
+                            temp[4] = temp[3] * constemp[3] + temp[2];
+                            if (temp[2] >= 0 && temp[2] < constemp[3] && temp[3] >= 0 && temp[3] < constemp[4]) {
+
+                                pxls_positioned[temp[4]] = new_pxls[i|0];
+                                imported_image_pxls_positioned_keyset.add(temp[4])
+                            }
+                        }
+
+                        /*new_pxls.forEach(function(pxl, index) {
+
+                            const posX = index % scaled_width;
                             const pos_y = (index - pos_x) / scaled_width;
                             const current_pos_x_positioned = pos_x + state_._imported_image_start_x;
                             const current_pos_y_positioned = pos_y + state_._imported_image_start_y;
@@ -375,16 +388,17 @@ const SuperState = {
                             if (current_pos_x_positioned >= 0 && current_pos_x_positioned < state_.pxl_width && current_pos_y_positioned >= 0 && current_pos_y_positioned < state_.pxl_height) {
 
                                 pxls_positioned[imported_image_pxl_positioned_index] = pxl | 0;
+                                imported_image_pxls_positioned_keyset.add(imported_image_pxl_positioned_index)
                             }
 
-                        });
+                        });*/
                     }
 
                     return {
                         imported_image_pxls_positioned: pxls_positioned,
                         imported_image_pxl_colors: new_pxl_colors,
                         image_imported_resizer_index: image_imported_resizer_index,
-                        imported_image_pxls_positioned_keyset: new SetFixed(Object.entries(pxls_positioned).map(function(e){return e[0] | 0;})),
+                        imported_image_pxls_positioned_keyset: imported_image_pxls_positioned_keyset,
                     };
                 }else {
 
@@ -393,33 +407,20 @@ const SuperState = {
             },
             get_pixels_palette_and_list_from_image_data: function(image_data) {
                 "use strict";
-                function to_uint32_from_rgba(rgba) {
-                    return new Uint32Array(rgba.buffer)[0];
-                }
 
-                let new_pxl_colors = [];
-                let new_pxl_colors_set = new Set();
-                let new_pxls = new Uint32Array(image_data.width * image_data.height).fill(0);
+                let new_pxls = new Uint16Array(image_data.width * image_data.height);
+                let colorsuint32 = new Uint32Array(image_data.data.buffer);
+                let uint32colorssorted = Uint32Array.from(new Set(Array.from(colorsuint32)));
 
-                for (let i = 0; i < image_data.data.length; i += 4) {
+                for (let i = 0; i < colorsuint32.length; i += 1) {
 
-                    const color_uint32 = to_uint32_from_rgba(Uint8ClampedArray.of(image_data.data[i+0], image_data.data[i+1], image_data.data[i+2], image_data.data[i+3]));
-
-                    const deja_vu_color_hex = new_pxl_colors_set.has(color_uint32);
-                    let color_uint32_index = deja_vu_color_hex ? new_pxl_colors.indexOf(color_uint32): -1;
-
-                    if (color_uint32_index === -1) {
-
-                        color_uint32_index = new_pxl_colors.push(color_uint32)-1;
-                        new_pxl_colors_set.add(color_uint32);
-                    }
-                    new_pxls[i / 4] = color_uint32_index;
+                    new_pxls[i|0] = uint32colorssorted.indexOf(colorsuint32[i|0]);
                 }
 
                 return {
-                    ratio_pixel_per_color: Math.fround(new_pxls.length / new_pxl_colors.length),
-                    new_pxl_colors,
-                    new_pxls,
+                    ratio_pixel_per_color: new_pxls.length / uint32colorssorted.length,
+                    new_pxl_colors: uint32colorssorted,
+                    new_pxls: new_pxls
                 };
             },
             new_canvas_context_2d: function(width, height, old_context) {

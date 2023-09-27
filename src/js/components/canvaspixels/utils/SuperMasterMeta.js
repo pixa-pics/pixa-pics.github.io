@@ -194,16 +194,22 @@ const SuperMasterMeta = {
                     image_imported_resizer_index
                 } = meta.super_state.get_imported_image_data();
 
+                const with_imported_image = imported_image_pxls_positioned_keyset.size > 0;
+                const layers_length = _s_layers.length | 0;
+                const full_pxls_length = _s_layers[0].indexes.length;
+                var length_l = layers_length + (with_imported_image ? 1 : 0);
+                var size_l = length_l - 1;
 
                 const old_layers_string_id = "" + Array.from(_layers).map(function (l, i) {
                     return "" + i + "-id-" + l.id + "-v-" + (Boolean(l.hidden || hide_canvas_content) ? "0" : "1") + "-o-" + parseInt(l.opacity * 255).toString(16)+"-w-"+l.width+"-h-"+l.height+"-end";
                 }).join("+");
 
                 const has_layers_visibility_or_opacity_changed = (_old_layers_string_id !== old_layers_string_id);
+                const clear_canvas = (_did_hide_canvas_content !== hide_canvas_content) || has_layers_visibility_or_opacity_changed || _is_there_new_dimension || is_there_new_dimension || force_update;
 
                 const layers_opacity_255 = Uint8Array.from(_layers.map(function (l) {
                     return parseInt(Boolean(l.hidden || hide_canvas_content) ? 0 : Math.round(parseFloat(l.opacity) * 255));
-                }));
+                }).concat(with_imported_image ? [196]: []));
 
                 if (Boolean(tool === "LINE" || tool === "RECTANGLE" || tool === "ELLIPSE" || tool === "TRIANGLE") && _shape_index_a !== - 1 && _pxls_hovered !== - 1) {
 
@@ -251,20 +257,11 @@ const SuperMasterMeta = {
                     }
                 }
 
-
-                const clear_canvas = (_did_hide_canvas_content !== hide_canvas_content) || has_layers_visibility_or_opacity_changed || _is_there_new_dimension || is_there_new_dimension || force_update;
-                const layers_length = _s_layers.length | 0;
-                const full_pxls_length = _s_layers[0].indexes.length;
-
                 let pos_x = 0;
                 let pos_y = 0;
                 let i = 0;
                 let index = 0;
                 let _current_layer = _s_layers[_layer_index];
-                const with_imported_image = imported_image_pxls_positioned_keyset.size > 0;
-
-                var length_l = layers_length + (with_imported_image ? 1 : 0);
-                var size_l = length_l - 1;
 
                 bool_new_highlight = _selection_pair_highlight !== _old_selection_pair_highlight;
 
@@ -335,28 +332,26 @@ const SuperMasterMeta = {
                         meta.super_canvas.pile(params[0], params[1]).then(function () {
                             "use strict";
                             meta.super_canvas.unpile(pxl_width, pxl_height).then(function () {
-
-                                _current_layer.clear_changes();
-                                _pxl_indexes_of_selection_drawn.clearAndBulkAdd(_pxl_indexes_of_selection.indexes);
-                                _pxl_indexes_of_old_shape.clearAndBulkAdd(_pxl_indexes_of_current_shape.indexes);
-                                _previous_imported_image_pxls_positioned_keyset.clearAndBulkAdd(imported_image_pxls_positioned_keyset.indexes);
-                                _pxl_indexes_of_current_shape.clear();
-                                _old_pxls_hovered.clearAndBulkAdd(Uint32Array.of(image_imported_resizer_index, _pxls_hovered));
+                                "use strict";
 
                                 meta.super_canvas.prender().then(function () {
                                     "use strict";
-
-                                    meta.sraf.run_frame(render_binding, clear_canvas || is_there_new_dimension || force_update, clear_canvas || is_there_new_dimension || force_update,  Date.now(), "render").then(function (){
+                                    meta.sraf.run_frame(function () {
                                         "use strict";
+                                        _old_pxls_hovered.clearAndBulkAdd(Uint32Array.of(image_imported_resizer_index, _pxls_hovered));
+                                        _current_layer.clear_changes();
+                                        _pxl_indexes_of_selection_drawn.setFromSetFixed(_pxl_indexes_of_selection);
+                                        _pxl_indexes_of_old_shape.setFromSetFixed(_pxl_indexes_of_current_shape);
+                                        _previous_imported_image_pxls_positioned_keyset.setFromSetFixed(imported_image_pxls_positioned_keyset);
+                                        _pxl_indexes_of_current_shape.clear();
                                         state._old_selection_pair_highlight = _selection_pair_highlight;
                                         state._old_layers_string_id = ""+old_layers_string_id;
                                         state._did_hide_canvas_content = Boolean(hide_canvas_content);
                                         state._old_pxl_width = parseInt(pxl_width);
                                         state._old_pxl_height = parseInt(pxl_height);
                                         state._last_paint_timestamp = +requested_at;
-                                        resolve0();
-
-                                    }).catch(handle_reject0);
+                                        return render_binding();
+                                    }, false, clear_canvas || is_there_new_dimension || force_update,  Date.now(), "render").then(resolve0).catch(handle_reject0);
                                 }).catch(handle_reject0);
 
                             }).catch(handle_reject0);
