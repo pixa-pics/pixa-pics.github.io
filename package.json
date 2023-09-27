@@ -38,7 +38,7 @@
     "readable-stream": "~4.1.0",
     "regenerator-runtime": "~0.13.9",
     "simdope": "~5.1.0",
-    "@asaitama/boolean-array": "~3.0.0",
+    "@asaitama/boolean-array": "~3.3.3",
     "superjsonatural": "~3.2.0",
     "svg64": "~1.1.0",
     "svgo": "~2.8.0",

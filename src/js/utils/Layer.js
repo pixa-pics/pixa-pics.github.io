@@ -1,6 +1,95 @@
 import {Colors, Color} from "simdope";
 import {SetFixed} from "@asaitama/boolean-array";
-import {h32} from "./xxhash";
+import XXHashJS from "./xxhash";
+import XXHashWASM from "xxhash-wasm";
+
+const XXHash = {
+    _get_64_js() {
+
+        return {
+            // Compute properties
+            xxh_f: {create64: function(seed){return XXHashJS.h64(seed); }},
+            xxh_v: "64",
+            xxh_t: "js",
+            xxh_tt: Date.now()
+        };
+    },
+    _get_64_wasm() {
+
+        return new Promise(function(resolve, reject){
+
+            try {
+
+                XXHashWASM().then(function(hasher){
+
+                    resolve({
+                        xxh_f: {hasher: hasher, create64: function(seed){return this.hasher.create64(BigInt(seed))}} ,
+                        xxh_v: "64",
+                        xxh_t: "wasm",
+                        xxh_tt: Date.now()
+                    });
+                }).catch(function(e){
+
+                    reject();
+                });
+
+            } catch (e) {
+
+                reject();
+            }
+        });
+    },
+    new(){
+
+        const alphabet_58 = Uint8Array.from("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").map(function(v){return v.charCodeAt(0)}));
+        const base_58 = BigInt(alphabet_58.length); // base is the length of the alphabet (58 in this case)
+        let encoded = new Uint8Array(14);
+
+        let cs_64_js = this._get_64_js;
+        let cs_64_wasm = this._get_64_wasm;
+
+        let s = cs_64_js();
+        cs_64_wasm().then(function(r){s = r;});
+
+        return {
+            // Methods
+            get_info: function() {
+                return {
+                    version: s.xxh_v,
+                    type: s.xxh_t,
+                    timestamp: s.xxh_tt
+                };
+            },
+            base58_that: function (array_buffer) {
+                "use strict";
+                let c = 0;
+                let remainder = BigInt(0);
+                let num = BigInt( s.xxh_f.create64(0xF4D3).update(
+                    (array_buffer instanceof Uint8Array || array_buffer instanceof Uint8ClampedArray) ?
+                        array_buffer:
+                        new Uint8Array(
+                            typeof array_buffer === "string" ?
+                                Buffer.from(array_buffer):
+                                "buffer" in array_buffer ?
+                                    array_buffer.buffer:
+                                    array_buffer
+                        )
+                ).digest());
+
+                while (num > 0) {
+                    remainder = num % base_58;
+                    num = num / base_58;
+                    encoded[c|0] = (alphabet_58[remainder] | 0) & 0xFFFF;
+                    c = (c + 1 | 0) & 0xF;
+                }
+
+                return "" + String.fromCharCode.apply(null, encoded.slice(0, c|0));
+            }
+        };
+    }
+};
+
+var xxhash = Object.create(XXHash).new();
 
 function Uint4ArrayCustom(s) {
     "use strict";
@@ -452,6 +541,19 @@ Uint8ArrayCustom.prototype.bits = 8;
 Uint6ArrayCustom.prototype.bits = 6;
 Uint4ArrayCustom.prototype.bits = 4;
 
+function uint_equal(a, b) {
+    "use strict";
+    a = (a | 0) >>> 0;
+    b = (b | 0) >>> 0;
+    return ((a | 0) >>> 0) == ((b | 0) >>> 0);
+}
+function uint_not_equal(a, b) {
+    "use strict";
+    a = (a | 0) >>> 0;
+    b = (b | 0) >>> 0;
+    return ((a | 0) >>> 0) != ((b | 0) >>> 0);
+}
+
 var Layer = function(image_data_or_colors_and_indexes, width, height, with_plain_data, bmp){
     "use strict";
 
@@ -500,11 +602,15 @@ var Layer = function(image_data_or_colors_and_indexes, width, height, with_plain
         this.simdope_pixel_color_ =  new Colors(this.uint32_pixel_color_.buffer);
         this.uint32_colors_ = Uint32Array.from(new Set(this.uint32_pixel_color_));
         this.uint32_colors_length_ = this.uint32_colors_.length;
+        this.uint32_colors_map_ = {};
+        for(var i = 0; (i|0) < (this.uint32_colors_length_|0); i = i + 1 | 0){
+            this.uint32_colors_map_[this.uint32_colors_[i|0]] = i|0;
+        }
         this.color_indexes_length_ = this.uint32_pixel_color_.length;
         this.color_indexes_ = this.uint32_colors_length_ < (1 << 8) ? new Uint8Array(this.color_indexes_length_) : (this.uint32_colors_length_+1|0) < (1 << 16) ? new Uint16Array(this.color_indexes_length_): new Uint32Array(this.color_indexes_length_);
 
         for(var i = 0, l = this.color_indexes_length_ | 0; (i|0) < (l|0); i = (i + 1 | 0) >>> 0) {
-            this.color_indexes_[i|0] = (this.uint32_colors_.indexOf(this.uint32_pixel_color_[i|0]) | 0) >>> 0;
+            this.color_indexes_[i|0] = (this.uint32_colors_map_[this.uint32_pixel_color_[i|0]] | 0) >>> 0;
         }
 
         this.bitmap_ = typeof bmp == "undefined" ? {height: this.height_, width: this.width_, destroy: function (){}, hash: ""}: bmp;
@@ -527,18 +633,22 @@ Object.defineProperty(Layer.prototype, 'force_update_data', {
             must_init = typeof must_init == "undefined" ? false: Boolean(must_init) && true;
             var is_new_colors = typeof colors != "undefined";
             var is_new_indexes = typeof indexes != "undefined";
-            colors = is_new_colors ? colors: this.uint32_colors_;
+            colors = is_new_colors ? colors instanceof Uint32Array ? colors: Uint32Array.from(colors): this.uint32_colors_;
             indexes = is_new_indexes ? indexes: this.color_indexes_;
 
             if(must_init || (is_new_colors && is_new_indexes)) {
-                if(is_new_colors){
+                if(is_new_colors) {
                     // Initialize and fill the matrix table
                     this.uint32_colors_ = Uint32Array.from(new Set(colors));
-                    this.uint32_colors_length_ = this.uint32_colors_.length|0;
+                    this.uint32_colors_length_ = this.uint32_colors_.length;
+                    this.uint32_colors_map_ = {};
+                    for(var i = 0; (i|0) < (this.uint32_colors_length_|0); i = i + 1 | 0){
+                        this.uint32_colors_map_[this.uint32_colors_[i|0]] = i|0;
+                    }
                     // Initialize the matrix data length
                     this.color_indexes_length_ = this.width_ * this.height_;
                     // Initialize the matrix data
-                    this.color_indexes_ = this.uint32_colors_length_ <= (1 << 8) ? new Uint8Array(this.color_indexes_length_) : this.uint32_colors_length_ <= (1 << 16) ? new Uint16Array(this.color_indexes_length_): new Uint32Array(this.color_indexes_length_);
+                    this.color_indexes_ = this.uint32_colors_length_ <= (1 << 8) ? new Uint8Array(this.color_indexes_length_) : this.uint32_colors_length_ <= (1 << 16) ? new Uint16Array(this.color_indexes_length_) : new Uint32Array(this.color_indexes_length_);
                 }
 
                 // Initialize and fill image data and linked simdope element for the matrix table and data
@@ -551,18 +661,21 @@ Object.defineProperty(Layer.prototype, 'force_update_data', {
 
                 // Fill image data and indexes
                 for(var i = 0, l = this.color_indexes_length_ | 0; (i|0) < (l|0); i = (i + 1 | 0) >>> 0) {
-                    this.uint32_pixel_color_[(i|0)>>>0] = (colors[indexes[i|0]]|0) >>> 0;
-                    this.color_indexes_[i|0] = (this.uint32_colors_.indexOf(this.uint32_pixel_color_[(i|0)>>>0]) | 0) >>> 0;
+                    this.uint32_pixel_color_[(i|0)>>>0] = (colors[indexes[(i|0)>>>0]]|0) >>> 0;
+                    this.color_indexes_[i|0] = (this.uint32_colors_map_[this.uint32_pixel_color_[(i|0)>>>0]] | 0) >>> 0;
                 }
 
                 this.changes_.charge();
+
             }else {
 
                 for(var i = 0, l = this.color_indexes_length_ | 0; (i|0) < (l|0); i = (i + 1 | 0) >>> 0) {
-                    this.uint32_pixel_color_[(i|0)>>>0] = (colors[indexes[i|0]]|0) >>> 0;
-                }
 
-                this.changes_.charge();
+                    if(uint_not_equal(this.uint32_pixel_color_[(i|0)>>>0], colors[indexes[(i|0)>>>0]])){
+                        this.uint32_pixel_color_[(i|0)>>>0] = (colors[indexes[(i|0)>>>0]]|0) >>> 0;
+                        this.changes_.add((i|0)>>>0);
+                    }
+                }
             }
         };
     },
@@ -674,33 +787,18 @@ Object.defineProperty(Layer.prototype, 'hash_hex_async', {
         return function (data){
             "use strict";
             data = typeof data == "undefined" ? this.uint8c_pixel_color_: data;
-            var uint8a = Boolean(data instanceof Uint8Array || data instanceof Uint8ClampedArray) ?
-                data:
-                typeof data.buffer != "undefined" ?
-                    new Uint8Array(data.buffer):
-                    typeof data == "string" ?
-                        new TextEncoder().encode(data):
-                        Uint8ClampedArray.from(data);
-
-            if(typeof (crypto || {}).subtle !== "undefined"){
-                return new Promise(function (resolve, reject){
-                    crypto.subtle.digest("SHA-1", uint8a).then(function (buffer){
-                        resolve(new Uint8Array(buffer).map(function (byte_value){ return byte_value.toString(16).padStart(2, "0"); }).join(""));
-                    }).catch(reject);
-                });
-            }else {
-
-                return new Promise(function (resolve){
-                    var xxhash = new h32(0xFADE);
-                        xxhash.init(uint8a);
-                    var str = xxhash.digest().toString(16);
-                    resolve(str);
-                });
-            }
+            return new Promise(function (resolve){
+                var uint8a = Boolean(data instanceof Uint8Array || data instanceof Uint8ClampedArray) ?
+                    data:
+                    typeof data.buffer != "undefined" ?
+                        new Uint8Array(data.buffer):
+                        typeof data == "string" ?
+                            new TextEncoder().encode(data):
+                            Uint8ClampedArray.from(data);
+                resolve(xxhash.base58_that(uint8a));
+            });
         }
-    },
-    enumerable: false,
-    configurable: false
+    }
 });
 
 Object.defineProperty(Layer.prototype, 'data', {
@@ -751,7 +849,7 @@ Object.defineProperty(Layer.prototype, 'set_indexes', {
         return function (indexes){
             "use strict";
             if(indexes.length !== this.color_indexes_.length) {
-                this.force_update_data(true, this.uint32_colors_, indexes);
+                this.force_update_data(true, undefined, indexes);
             }else {
                 this.color_indexes_.set(indexes, 0);
                 this.force_update_data();
@@ -889,8 +987,8 @@ Object.defineProperty(Layer.prototype, 'set_uint32', {
             this.uint32_pixel_color_[index|0] = (uint32 | 0) >>> 0;
 
             // Change the color within indexed color pixel matrix
-            var pos = this.uint32_colors_.indexOf(this.uint32_pixel_color_[index|0]) | 0;
-            if((pos|0) >= 0 && (pos|0) < (this.uint32_colors_length_|0)){ // Color already exist
+            var pos = this.uint32_colors_map_[this.uint32_pixel_color_[index|0]];
+            if(typeof pos != "undefined" && (pos|0) < (this.uint32_colors_length_|0)){ // Color already exist
                 // Edit the index of the color used by the pixel at a specific position
                 this.color_indexes_[index|0] = (pos | 0) >>> 0;
                 return false; // Didn't add a color
@@ -953,7 +1051,7 @@ Layer.prototype.auto_adjust_contrast = function (intensity) {
     intensity = Math.round(parseFloat(intensity) * 255) | 0;
     let saturation = 0;
     let color;
-    let colors = this.simdope_colors_;
+    let colors = this.simdope_pixel_color_;
     let length = colors.length;
     let hsla;
     let a = new Color(new ArrayBuffer(4));

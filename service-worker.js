@@ -1,7 +1,7 @@
 "use strict";
-var REQUIRED_CACHE = "unless-update-cache-v838-required";
-var USEFUL_CACHE = "unless-update-cache-v838-useful";
-var STATIC_CACHE = "unless-update-cache-v838-static";
+var REQUIRED_CACHE = "unless-update-cache-v839-required";
+var USEFUL_CACHE = "unless-update-cache-v839-useful";
+var STATIC_CACHE = "unless-update-cache-v839-static";
 var MAIN_CHILD_CHUNK_REGEX = /chunk_(main_[a-z0-9]+)\.min\.js$/i;
 var CHILD_CHUNK_REGEX = /chunk_([0-9]+)\.min\.js$/i;
 
@@ -208,7 +208,7 @@ self.addEventListener("activate", function(event) {
     event.waitUntil(
         caches.keys().then(function(keys) { return Promise.allSettled(
             keys.filter(function(key){
-                return Boolean(key !== REQUIRED_CACHE && key !== STATIC_CACHE && key !== USEFUL_CACHE && key.toString().startsWith("unless-update-cache"));
+                return Boolean(key !== REQUIRED_CACHE && key !== STATIC_CACHE && key !== USEFUL_CACHE);
             }).map(function(key){
                 return caches.delete(key);
             })

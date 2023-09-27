@@ -267,18 +267,31 @@ const SuperMasterMeta = {
 
                 meta_super_blend.update(length_l|0, full_pxls_length | 0, layers_opacity_255, _s_layers);
 
+                var meta_super_blend_for = meta_super_blend.for.bind(meta_super_blend);
+                var meta_super_blend_next = meta_super_blend.next.bind(meta_super_blend);
+                var meta_super_blend_stack = meta_super_blend.stack.bind(meta_super_blend);
+
+                var old_pxls_hovered_has = _old_pxls_hovered.has.bind(_old_pxls_hovered);
+                var pxl_indexes_of_current_shape_has = _pxl_indexes_of_current_shape.has.bind(_pxl_indexes_of_current_shape);
+                var pxl_indexes_of_old_shape_has = _pxl_indexes_of_old_shape.has.bind(_pxl_indexes_of_old_shape);
+                var pxl_indexes_of_selection_has = _pxl_indexes_of_selection.has.bind(_pxl_indexes_of_selection);
+                var pxl_indexes_of_selection_drawn_has = _pxl_indexes_of_selection_drawn.has.bind(_pxl_indexes_of_selection_drawn);
+                var imported_image_pxls_positioned_keyset_has = imported_image_pxls_positioned_keyset.has.bind(imported_image_pxls_positioned_keyset);
+                var previous_imported_image_pxls_positioned_keyset_has = _previous_imported_image_pxls_positioned_keyset.has.bind(_previous_imported_image_pxls_positioned_keyset);
+                var current_layer_changes_has = _current_layer.changes_has.bind(_current_layer);
+
                 for (; int_less(index, full_pxls_length); index = plus_uint(index, 1)) {
 
                     bool_is_resize = uint_equal(image_imported_resizer_index, (index | 0) >>> 0);
                     bool_new_hover = uint_equal(_pxls_hovered, (index | 0) >>> 0);
-                    bool_old_hover = _old_pxls_hovered.has((index | 0) >>> 0);
-                    bool_new_shape = _pxl_indexes_of_current_shape.has((index | 0) >>> 0);
-                    bool_old_shape = _pxl_indexes_of_old_shape.has((index | 0) >>> 0);
-                    bool_new_selection = _pxl_indexes_of_selection.has((index | 0) >>> 0);
-                    bool_old_selection = _pxl_indexes_of_selection_drawn.has((index | 0) >>> 0);
-                    bool_new_import = imported_image_pxls_positioned_keyset.has((index | 0) >>> 0);
-                    bool_old_import = _previous_imported_image_pxls_positioned_keyset.has((index | 0) >>> 0);
-                    bool_new_pixel = _current_layer.changes_has((index | 0) >>> 0);
+                    bool_old_hover = old_pxls_hovered_has((index | 0) >>> 0);
+                    bool_new_shape = pxl_indexes_of_current_shape_has((index | 0) >>> 0);
+                    bool_old_shape = pxl_indexes_of_old_shape_has((index | 0) >>> 0);
+                    bool_new_selection = pxl_indexes_of_selection_has((index | 0) >>> 0);
+                    bool_old_selection = pxl_indexes_of_selection_drawn_has((index | 0) >>> 0);
+                    bool_new_import = imported_image_pxls_positioned_keyset_has((index | 0) >>> 0);
+                    bool_old_import = previous_imported_image_pxls_positioned_keyset_has((index | 0) >>> 0);
+                    bool_new_pixel = current_layer_changes_has((index | 0) >>> 0);
 
                     if (
                         clear_canvas ||
@@ -294,30 +307,30 @@ const SuperMasterMeta = {
 
                         if (bool_new_hover) {
 
-                            meta_super_blend.for((index | 0) >>> 0, 96);
+                            meta_super_blend_for((index | 0) >>> 0, 96);
 
                         } else if (bool_new_shape) {
 
-                            meta_super_blend.for((index | 0) >>> 0, 128);
+                            meta_super_blend_for((index | 0) >>> 0, 128);
                         } else if (bool_new_selection) {
 
                             pos_x = (index % pxl_width) | 0;
                             pos_y = ((index - pos_x) / pxl_width) | 0;
-                            meta_super_blend.for((index | 0) >>> 0, 72 + ((((pos_x + pos_y + (_selection_pair_highlight ? 1 : 0) | 0) & 1) | 0) * 48) | 0);
+                            meta_super_blend_for((index | 0) >>> 0, 72 + ((((pos_x + pos_y + (_selection_pair_highlight ? 1 : 0) | 0) & 1) | 0) * 48) | 0);
                         } else if (bool_is_resize) {
 
-                            meta_super_blend.for((index | 0) >>> 0, 192);
+                            meta_super_blend_for((index | 0) >>> 0, 192);
                         } else {
 
-                            meta_super_blend.for((index | 0) >>> 0, 0);
+                            meta_super_blend_for((index | 0) >>> 0, 0);
 
                         }
 
                         if(bool_new_import){
-                            meta_super_blend.stack((size_l | 0) >>> 0, (imported_image_pxl_colors[imported_image_pxls_positioned[(index | 0) >>> 0] | 0] | 0) >>> 0);
+                            meta_super_blend_stack((size_l | 0) >>> 0, (imported_image_pxl_colors[imported_image_pxls_positioned[(index | 0) >>> 0] | 0] | 0) >>> 0);
                         }
 
-                        meta_super_blend.next();
+                        meta_super_blend_next();
                     }
                 }
 

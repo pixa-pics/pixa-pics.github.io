@@ -265,7 +265,7 @@
                         scope: "/"
                     }).then(function(r) {
                         r = r || {};
-                        if(Boolean(r.active) || Boolean(r.waiting)) {
+                        if(Boolean(r.active)) {
                             _LET_FIRE_IT(true).then(function(){resolve();});
                         }else {
                             reject();
@@ -290,11 +290,12 @@
 
         var _LISTEN_RELOAD = function() {
             document.addEventListener('load', function () {
-                _REGISTER_SERVICE_WORKER().then(_LISTEN_RELOAD).catch(_RELOAD);
+                _REGISTER_SERVICE_WORKER().catch(_RELOAD).then(_LISTEN_RELOAD);
             });
         };
 
-        _REGISTER_SERVICE_WORKER().then(_LISTEN_RELOAD).catch(_RELOAD);
+        _REGISTER_SERVICE_WORKER().catch(_RELOAD).then(_LISTEN_RELOAD);
+
 
     </script>
 
