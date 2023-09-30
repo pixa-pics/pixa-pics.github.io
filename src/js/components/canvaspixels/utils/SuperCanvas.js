@@ -6,8 +6,8 @@ function draw_2d(ctx2d, _state) {
     let s_width = _state.s.width | 0;
     let pr_width = _state.pr.width | 0;
     let pr_height = _state.pr.height | 0;
-    let pr_top_left_x = _state.pr.top_left.x | 0;
-    let pr_top_left_y = _state.pr.top_left.y | 0;
+    let pr_top_left_x = _state.pr.xy1xy2[0];
+    let pr_top_left_y = _state.pr.xy1xy2[1];
     let pr_uint8a = _state.pr_uint8a;
 
     var imul = Math.imul;
@@ -19,10 +19,10 @@ function draw_2d(ctx2d, _state) {
         fp_square_data.set(pr_uint8a.subarray((current_offset_start_index << 2 | 0) >>> 0, ((current_offset_start_index + pr_width | 0) << 2 | 0) >>> 0), (imul(i, pr_width) << 2 | 0) >>> 0);
     }
 
-    _state.pr.top_left.x = _state.s.width - 1 | 0;
-    _state.pr.top_left.y = _state.s.height - 1 | 0;
-    _state.pr.bottom_right.x = 0;
-    _state.pr.bottom_right.y = 0;
+    _state.pr.xy1xy2[0] = _state.s.width - 1 | 0;
+    _state.pr.xy1xy2[1] = _state.s.height - 1 | 0;
+    _state.pr.xy1xy2[2] = 0;
+    _state.pr.xy1xy2[3] = 0;
 
     ctx2d.putImageData(fp_square, pr_top_left_x, pr_top_left_y, 0, 0, pr_width, pr_height);
     return Promise.resolve();
@@ -62,24 +62,45 @@ function template(c, pxl_width, pxl_height){
         let is_bitmap = Boolean('createImageBitmap' in window);
         let is_offscreen = Boolean('OffscreenCanvas' in window);
         let cc2d;
+        let oc;
         let occ2d;
         if (is_offscreen) {
+            try {
+                oc = new OffscreenCanvas(pxl_width, pxl_height).getContext("2d");
+                occ2d = new oc.getContext("2d");
 
-            occ2d = new OffscreenCanvas(pxl_width, pxl_height).getContext("2d", {willReadFrequently: true});
-            occ2d.imageSmoothingEnabled = false;
-            occ2d.webkitImageSmoothingEnabled = false;
-            occ2d.mozImageSmoothingEnabled = false;
-            occ2d.msImageSmoothingEnabled = false;
+                if(occ2d.getContextAttributes){
+                    var attr = occ2d.getContextAttributes();
+                    if("willReadFrequently" in attr) {
+                        occ2d = oc.getContext('2d', {willReadFrequently: true});
+                    }
+                }
 
+                try {
+                    occ2d.imageSmoothingEnabled = false;
+                    occ2d.webkitImageSmoothingEnabled = false;
+                    occ2d.mozImageSmoothingEnabled = false;
+                    occ2d.msImageSmoothingEnabled = false;
+                } catch (e){}
+            } catch (e) {
+                is_offscreen = false;
+            }
         }
 
-        cc2d = c.getContext('2d', {desynchronized: !is_mobile, willReadFrequently: true} );
+        cc2d = c.getContext('2d');
 
-        cc2d.mozImageSmoothingEnabled = false;
-        cc2d.webkitImageSmoothingEnabled = false;
-        cc2d.msImageSmoothingEnabled = false;
-        cc2d.imageSmoothingEnabled = false;
-        cc2d.globalCompositeOperation = "copy";
+        if(cc2d.getContextAttributes){
+            var attr = cc2d.getContextAttributes();
+            if("willReadFrequently" in attr) {
+                cc2d = c.getContext('2d', {willReadFrequently: true});
+            }
+        }
+        try {
+            cc2d.mozImageSmoothingEnabled = false;
+            cc2d.webkitImageSmoothingEnabled = false;
+            cc2d.msImageSmoothingEnabled = false;
+            cc2d.imageSmoothingEnabled = false;
+        } catch (e){}
 
         return {
             is_bitmap: is_bitmap,
@@ -97,7 +118,8 @@ function template(c, pxl_width, pxl_height){
         fp_buffer: new ArrayBuffer(pxl_height * pxl_width * 4),
         ic: {
             indexes: new Uint16Array(0),
-            colors: new Uint32Array(0)
+            colors: new Uint32Array(0),
+            used: true
         },
         b: {
             bmp_x: 0,
@@ -114,8 +136,7 @@ function template(c, pxl_width, pxl_height){
             old_bmp: {close(){}, width: 0, height: 0},
         },
         pr: {
-            top_left: {x:0, y:0},
-            bottom_right: {x:0, y:0},
+            xy1xy2: new Uint16Array(4), // Top left: 0=x 1=y... Bottom right: 0=x 1=y...
             width: 0,
             height: 0
         }
@@ -165,12 +186,11 @@ Object.defineProperty(SuperCanvas.prototype, 'render', {
     get: function() { "use strict"; return function () {
         "use strict";
         var b2 = this.state_.b2;
-        this.state_.pr.top_left.x = this.state_.s.width - 1 | 0;
-        this.state_.pr.top_left.y = this.state_.s.height - 1 | 0;
-        this.state_.pr.bottom_right.x = 0;
-        this.state_.pr.bottom_right.y = 0;
+        this.state_.pr.xy1xy2[0] = this.state_.s.width - 1 | 0;
+        this.state_.pr.xy1xy2[1] = this.state_.s.height - 1 | 0;
+        this.state_.pr.xy1xy2[2] = 0;
+        this.state_.pr.xy1xy2[3] = 0;
 
-        "use strict";
         if (typeof b2 !== "undefined" && this.state_.enable_paint_type === "bitmap") {
 
             this.state_.b.old_bmp.close();
@@ -200,8 +220,8 @@ Object.defineProperty(SuperCanvas.prototype, 'prender', {
         if (this.state_.enable_paint_type === "bitmap") {
 
             let new_bmp_t = Date.now();
-            let new_bmp_x = this.state_.pr.top_left.x | 0;
-            let new_bmp_y = this.state_.pr.top_left.y | 0;
+            let new_bmp_x = this.state_.pr.xy1xy2[0];
+            let new_bmp_y = this.state_.pr.xy1xy2[1];
             let pr_width = this.state_.pr.width | 0;
             let pr_height = this.state_.pr.height | 0;
             return new Promise((resolve, reject) => {
@@ -239,75 +259,72 @@ Object.defineProperty(SuperCanvas.prototype, 'unpile', {
         if (width !== w || height !== h) {
 
             return Promise.reject();
-        } else if(index_changes.length > 0){
+        } else if(index_changes.length > 0 && this.state_.ic.used === false){
 
-            let x, y;
+            let xyarray = new Uint16Array(2);
             let uint32a = this.state_.fp;
             let pr = this.state_.pr;
-            let pr_top_left_x = pr.top_left.x | 0;
-            let pr_top_left_y = pr.top_left.y | 0;
-            let pr_bottom_right_x = pr.bottom_right.x | 0;
-            let pr_bottom_right_y = pr.bottom_right.y | 0;
-            let index = 0;
+            let xy1xy2 = pr.xy1xy2;
+            let index = new Uint32Array(1);
             let context = this.state_.s.canvas_context;
 
             if(index_changes.length < 64 || this.state_.enable_paint_type === "") {
 
                 let colors = new SIMDopeColors(color_changes.buffer, color_changes.byteOffset, color_changes.byteLength);
                 let color = new SIMDopeColor(new ArrayBuffer(4));
-                for (let i = 0, l = index_changes.length | 0; uint_less(i, l); i = plus_uint(i, 1)) {
 
-                    index = (index_changes[i | 0] | 0) >>> 0;
-                    uint32a[(index | 0) >>> 0] = (color_changes[i | 0] | 0) >>> 0;
-
-                    x = modulo_uint(index, width);
-                    y = divide_uint(minus_uint(index, x), width);
-                    context.fillStyle = colors.get_element(i, color).hex;
-                    context.clearRect(x, y, 1, 1);
-                    context.fillRect(x, y, 1, 1);
+                function paint(context, xya, hex) {
+                    "use strict";
+                    context.fillStyle = hex;
+                    context.clearRect(xya[0], xya[1], 1, 1);
+                    context.fillRect(xya[0], xya[1], 1, 1);
                 }
 
+                for (let i = 0, l = index_changes.length | 0; uint_less(i, l); i = plus_uint(i, 1)) {
 
+                    index[0] = index_changes[i];
+                    uint32a[index[0]] = color_changes[i];
+
+                    xyarray[0] = modulo_uint(index[0], width);
+                    xyarray[1] = divide_uint(minus_uint(index[0], xyarray[0]), width);
+                    paint(context, xyarray, colors.get_element(i, color).hex);
+                }
+
+                this.state_.ic.used = true;
                 this.state_.enable_paint_type = "";
             }else {
 
                 for (let i = 0, l = index_changes.length | 0; uint_less(i, l); i = plus_uint(i, 1)) {
 
-                    index = (index_changes[i | 0] | 0) >>> 0;
-                    uint32a[(index | 0) >>> 0] = (color_changes[i | 0] | 0) >>> 0;
+                    index[0] = index_changes[i];
+                    uint32a[index[0]] = color_changes[i];
 
-                    x = modulo_uint(index, width);
-                    y = divide_uint(minus_uint(index, x), width);
+                    xyarray[0] = modulo_uint(index[0], width);
+                    xyarray[1] = divide_uint(minus_uint(index[0], xyarray[0]), width);
 
-                    if (uint_greater_equal(pr_top_left_x, x)) {
-                        pr_top_left_x = x|0;
+                    if (uint_greater_equal(xy1xy2[0], xyarray[0])) {
+                        xy1xy2[0] = xyarray[0];
                     }
 
-                    if (uint_less_equal(pr_bottom_right_x, x)) {
-                        pr_bottom_right_x = x|0;
+                    if (uint_less_equal(xy1xy2[2], xyarray[0])) {
+                        xy1xy2[2] = xyarray[0];
                     }
 
-                    if (uint_greater_equal(pr_top_left_y, y)) {
-                        pr_top_left_y = y|0;
+                    if (uint_greater_equal(xy1xy2[1], xyarray[1])) {
+                        xy1xy2[1] = xyarray[1];
                     }
 
-                    if (uint_less_equal(pr_bottom_right_y, y)) {
-                        pr_bottom_right_y = y|0;
+                    if (uint_less_equal(xy1xy2[3], xyarray[1])) {
+                        xy1xy2[3] = xyarray[1];
                     }
                 }
 
-                pr.width = pr_bottom_right_x - pr_top_left_x + 1 | 0;
-                pr.height = pr_bottom_right_y - pr_top_left_y + 1 | 0;
-
-                pr.top_left.x = pr_top_left_x | 0;
-                pr.top_left.y = pr_top_left_y | 0;
-                pr.bottom_right.x = pr_bottom_right_x | 0;
-                pr.bottom_right.y = pr_bottom_right_y | 0;
+                pr.width = xy1xy2[2] - xy1xy2[0] + 1 | 0;
+                pr.height = xy1xy2[3] - xy1xy2[1] + 1 | 0;
                 this.state_.pr = pr;
             }
 
-            this.state_.ic.indexes = new Uint32Array(0);
-            this.state_.ic.colors = new Uint32Array(0);
+            this.state_.ic.used = true;
             return Promise.resolve();
         }else {
             this.state_.enable_paint_type = "";
@@ -334,6 +351,7 @@ Object.defineProperty(SuperCanvas.prototype, 'pile', {
         "use strict";
         this.state_.ic.indexes = index_changes;
         this.state_.ic.colors = color_changes;
+        this.state_.ic.used = false;
 
         return Promise.resolve();
 
