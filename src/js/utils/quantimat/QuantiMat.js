@@ -1255,23 +1255,23 @@ var QuantiMat = (function (){
     QuantiMat.prototype.run =  function() {
         "use strict";
 
-            var t = 2 * (this.new_pxl_colors_length > 32768 ? 6: this.new_pxl_colors_length > 16384 ? 5: this.new_pxl_colors_length > 8192 ? 4: this.new_pxl_colors_length > 4096 ? 3: this.new_pxl_colors_length > 2048 ? 2: 1) | 0;
-            for (; (t|0) <= 0xFF;) {
+        var t = 2 * (this.new_pxl_colors_length > 32768 ? 6: this.new_pxl_colors_length > 16384 ? 5: this.new_pxl_colors_length > 8192 ? 4: this.new_pxl_colors_length > 4096 ? 3: this.new_pxl_colors_length > 2048 ? 2: 1) | 0;
+        for (; (t|0) <= 0xFF;) {
 
-                if(this.process_threshold(t|0)) {
-                    this.deduplicate();
-                    this.clusterize();
-                }else {
-
-                    t = t + (this.new_pxl_colors_length > 32768 ? 6: this.new_pxl_colors_length > 16384 ? 5: this.new_pxl_colors_length > 8192 ? 4: this.new_pxl_colors_length > 4096 ? 3: this.new_pxl_colors_length > 2048 ? 2: 1) | 0;
-                }
+            if(this.process_threshold(t|0)) {
+                this.deduplicate();
+                this.clusterize();
+            }else {
 
                 t = t + (this.new_pxl_colors_length > 32768 ? 6: this.new_pxl_colors_length > 16384 ? 5: this.new_pxl_colors_length > 8192 ? 4: this.new_pxl_colors_length > 4096 ? 3: this.new_pxl_colors_length > 2048 ? 2: 1) | 0;
-
-                if(this.new_pxl_colors_length <= this.best_color_number){
-                    break;
-                }
             }
+
+            t = t + (this.new_pxl_colors_length > 32768 ? 6: this.new_pxl_colors_length > 16384 ? 5: this.new_pxl_colors_length > 8192 ? 4: this.new_pxl_colors_length > 4096 ? 3: this.new_pxl_colors_length > 2048 ? 2: 1) | 0;
+
+            if(this.new_pxl_colors_length <= this.best_color_number){
+                break;
+            }
+        }
 
 
         return this;
