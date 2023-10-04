@@ -2,7 +2,7 @@ import React from "react";
 import { withStyles } from "@material-ui/core";
 import {IconButton, Tooltip} from "@material-ui/core";
 import CheckIcon from "@material-ui/icons/Check";
-import {SIMDopeColor} from "simdope";
+import {Color} from "simdope";
 
 const styles = theme => ({
     colorPaletteItem: {
@@ -27,7 +27,7 @@ class PixelColorPaletteItem extends React.PureComponent {
             icon: props.icon || null,
             key: props.key || Math.round(Math.random()*10000).toString(16),
             style: props.style || {},
-            _is_dark: false //SIMDopeColor.new_hex(props.color||"#00000000").is_dark(),
+            _is_dark: false //Color.new_hex(props.color||"#00000000").is_dark(),
         };
     };
 
@@ -70,7 +70,7 @@ class PixelColorPaletteItem extends React.PureComponent {
     render() {
 
         const { classes, full_width, selected, size, color, style, key } = this.st4te;
-        let c = SIMDopeColor.new_hex(color).is_dark() ? "#fff": "#000";
+        let c = Color.new_hex(color).is_dark() ? "#fff": "#000";
 
         return (
             <Tooltip title={color} key={key}>

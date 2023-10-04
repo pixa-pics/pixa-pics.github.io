@@ -332,10 +332,10 @@ var t = function(buffer) {
 
 
 // NEW BASIC : Number object with 4 times 0-255
-    var SIMDopeColor = function(with_main_buffer, offset_4bytes){
+    var Color = function(with_main_buffer, offset_4bytes){
         "use strict";
-        if (!(this instanceof SIMDopeColor)) {
-            return new SIMDopeColor(with_main_buffer, offset_4bytes);
+        if (!(this instanceof Color)) {
+            return new Color(with_main_buffer, offset_4bytes);
         }
         offset_4bytes = offset_4bytes | 0;
         this.storage_uint8_ = new Uint8Array( with_main_buffer, multiply_uint_4(offset_4bytes), max_int(min_int(rgba_bytes, minus_int(with_main_buffer.byteLength, multiply_uint_4(offset_4bytes))), 0));
@@ -343,13 +343,13 @@ var t = function(buffer) {
 
 
 // Properties of number object
-    Object.defineProperty(SIMDopeColor.prototype, 'r', {
+    Object.defineProperty(Color.prototype, 'r', {
         get: function() { "use strict"; return clamp_uint8(this.storage_uint8_[3]); },
     });
-    Object.defineProperty(SIMDopeColor.prototype, 'g', {
+    Object.defineProperty(Color.prototype, 'g', {
         get: function() { "use strict"; return clamp_uint8(this.storage_uint8_[2]); },
     });
-    Object.defineProperty(SIMDopeColor.prototype, 'b', {
+    Object.defineProperty(Color.prototype, 'b', {
         get: function() { "use strict"; return clamp_uint8(this.storage_uint8_[1]); },
     });
     Object.defineProperty(SIMDopeColor.prototype, 'a', {

@@ -1,4 +1,4 @@
-import SIMDope, {SIMDopeColors, SIMDopeColor} from "simdope";
+import SIMDope, {Colors, Color} from "simdope";
 const {clamp_uint32, modulo_uint, divide_uint, minus_uint, uint_greater, uint_less, uint_greater_equal, uint_less_equal, plus_uint, minus_int, int_greater, int_less, int_greater_equal, int_less_equal, plus_int, max_int, min_int} = SIMDope.simdops;
 
 function draw_2d(ctx2d, _state) {
@@ -270,8 +270,8 @@ Object.defineProperty(SuperCanvas.prototype, 'unpile', {
 
             if(index_changes.length < 64 || this.state_.enable_paint_type === "") {
 
-                let colors = new SIMDopeColors(color_changes.buffer, color_changes.byteOffset, color_changes.byteLength);
-                let color = new SIMDopeColor(new ArrayBuffer(4));
+                let colors = new Colors(color_changes.buffer, color_changes.byteOffset, color_changes.byteLength);
+                let color = new Color(new ArrayBuffer(4));
 
                 function paint(context, xya, hex) {
                     "use strict";

@@ -331,10 +331,10 @@ var QuantiMat = (function (){
 
 
 // NEW BASIC : Number object with 4 times 0-255
-    var SIMDopeColor = function(with_main_buffer, offset_4bytes){
+    var Color = function(with_main_buffer, offset_4bytes){
         "use strict";
-        if (!(this instanceof SIMDopeColor)) {
-            return new SIMDopeColor(with_main_buffer, offset_4bytes);
+        if (!(this instanceof Color)) {
+            return new Color(with_main_buffer, offset_4bytes);
         }
         offset_4bytes = offset_4bytes | 0;
         this.storage_uint8_ = new Uint8Array( with_main_buffer, multiply_uint_4(offset_4bytes), max_int(min_int(rgba_bytes, minus_int(with_main_buffer.byteLength, multiply_uint_4(offset_4bytes))), 0));
@@ -342,26 +342,26 @@ var QuantiMat = (function (){
 
 
 // Properties of number object
-    Object.defineProperty(SIMDopeColor.prototype, 'r', {
+    Object.defineProperty(Color.prototype, 'r', {
         get: function() { "use strict"; return clamp_uint8(this.storage_uint8_[3]); },
     });
-    Object.defineProperty(SIMDopeColor.prototype, 'g', {
+    Object.defineProperty(Color.prototype, 'g', {
         get: function() { "use strict"; return clamp_uint8(this.storage_uint8_[2]); },
     });
-    Object.defineProperty(SIMDopeColor.prototype, 'b', {
+    Object.defineProperty(Color.prototype, 'b', {
         get: function() { "use strict"; return clamp_uint8(this.storage_uint8_[1]); },
     });
-    Object.defineProperty(SIMDopeColor.prototype, 'a', {
+    Object.defineProperty(Color.prototype, 'a', {
         get: function() { "use strict"; return clamp_uint8(this.storage_uint8_[0]); },
     });
 
-    Object.defineProperty(SIMDopeColor.prototype, 'uint32', {
+    Object.defineProperty(Color.prototype, 'uint32', {
         get: function() { "use strict";
             return ((this.storage_uint8_[3] << 24) | (this.storage_uint8_[2] << 16) | (this.storage_uint8_[1] <<  8) | this.storage_uint8_[0]) >>> 0;
         }
     });
 
-    Object.defineProperty(SIMDopeColor.prototype, 'laba', {
+    Object.defineProperty(Color.prototype, 'laba', {
         get: function() {
             "use strict";
             var r = rgb2lrgb(this.r),
@@ -378,7 +378,7 @@ var QuantiMat = (function (){
         configurable: false
     });
 
-    Object.defineProperty(SIMDopeColor.prototype, 'rgbaon4bits', {
+    Object.defineProperty(Color.prototype, 'rgbaon4bits', {
         get: function() {
             "use strict";
             var r = divide_128_uint(this.storage_uint8_[3]);
@@ -390,7 +390,7 @@ var QuantiMat = (function (){
         }
     });
 
-    Object.defineProperty(SIMDopeColor.prototype, 'rgbaon6bits', {
+    Object.defineProperty(Color.prototype, 'rgbaon6bits', {
         get: function() {
             "use strict";
             var r = divide_85_uint(this.storage_uint8_[3]);
@@ -402,7 +402,7 @@ var QuantiMat = (function (){
         }
     });
 
-    Object.defineProperty(SIMDopeColor.prototype, 'rgbaon8bits', {
+    Object.defineProperty(Color.prototype, 'rgbaon8bits', {
         get: function() {
             "use strict";
             var r = divide_64_uint(this.storage_uint8_[3]);
@@ -414,7 +414,7 @@ var QuantiMat = (function (){
         }
     });
 
-    Object.defineProperty(SIMDopeColor.prototype, 'rgbaon12bits', {
+    Object.defineProperty(Color.prototype, 'rgbaon12bits', {
         get: function() {
             "use strict";
             var r = divide_32_uint(this.storage_uint8_[3]);
@@ -426,17 +426,17 @@ var QuantiMat = (function (){
         }
     });
 
-    Object.defineProperty(SIMDopeColor.prototype, 'offset', {
+    Object.defineProperty(Color.prototype, 'offset', {
         get: function() { "use strict"; return divide_4_uint(this.storage_uint8_.byteOffset);}
     });
 
-    Object.defineProperty(SIMDopeColor.prototype, 'buffer', {
+    Object.defineProperty(Color.prototype, 'buffer', {
         get: function() {  "use strict"; return this.storage_uint8_.buffer.slice(this.storage_uint8_.byteOffset, plus_uint(this.storage_uint8_.byteOffset, rgba_bytes)); }
     });
-    Object.defineProperty(SIMDopeColor.prototype, 'subarray', {
+    Object.defineProperty(Color.prototype, 'subarray', {
         get: function() {  "use strict"; return this.storage_uint8_.subarray(0, rgba_bytes); }
     });
-    Object.defineProperty(SIMDopeColor.prototype, 'skin', {
+    Object.defineProperty(Color.prototype, 'skin', {
         get: function() {
             "use strict";
             var rgb_sum = (this.b + this.g + this.r | 0) >>> 0;
@@ -454,7 +454,7 @@ var QuantiMat = (function (){
             }
         }
     });
-    Object.defineProperty(SIMDopeColor.prototype, 'set_from_array', {
+    Object.defineProperty(Color.prototype, 'set_from_array', {
         get: function() {  "use strict"; return function(with_buffer) {
             "use strict";
             this.storage_uint8_[0] = clamp_uint8(with_buffer[0]);
@@ -463,11 +463,11 @@ var QuantiMat = (function (){
             this.storage_uint8_[3] = clamp_uint8(with_buffer[3]);
         }}
     });
-    Object.defineProperty(SIMDopeColor.prototype, 'slice', {
+    Object.defineProperty(Color.prototype, 'slice', {
         get: function() { "use strict"; return function(start, end) { return this.storage_uint8_.slice(start, end); }}
     });
 
-    Object.defineProperty(SIMDopeColor.prototype, 'simplify', {
+    Object.defineProperty(Color.prototype, 'simplify', {
         get: function() {  "use strict"; return function(of) {
             "use strict";
             of = fr(of);
@@ -478,7 +478,7 @@ var QuantiMat = (function (){
         }}
     });
 
-    SIMDopeColor.blend_all = function (base, colors, amounts) {
+    Color.blend_all = function (base, colors, amounts) {
         "use strict";
         var sum_r = base.r | 0, sum_g = base.g | 0, sum_b = base.b | 0, sum_a = base.a | 0, sum_amount = fr(1);
         var color, amount = fr(0), length = colors.length|0, i = 0;
@@ -504,7 +504,7 @@ var QuantiMat = (function (){
         }
     }
 
-    SIMDopeColor.prototype.euclidean_match_with = function(color, threshold_float) {
+    Color.prototype.euclidean_match_with = function(color, threshold_float) {
         "use strict";
         threshold_float = fr(threshold_float);
         TEMPFLOAT32X1[0] = fr(FLOATONE - fr(abs_int(this.a - color.a|0)/XD[3]));
@@ -516,7 +516,7 @@ var QuantiMat = (function (){
         ) / EUCLMAX) < fr(threshold_float*TEMPFLOAT32X1[1]));
     };
 
-    SIMDopeColor.prototype.manhattan_match_with = function(color, threshold_float) {
+    Color.prototype.manhattan_match_with = function(color, threshold_float) {
         "use strict";
         threshold_float = fr(threshold_float);
         TEMPFLOAT32X1[0] = fr(FLOATONE - fr(abs_int(this.a - color.a|0)/XD[3]));
@@ -528,7 +528,7 @@ var QuantiMat = (function (){
         ) / MANHMAX) < fr(threshold_float*TEMPFLOAT32X1[1]);
     };
 
-    SIMDopeColor.prototype.cie76_match_with = function(color, threshold_float) {
+    Color.prototype.cie76_match_with = function(color, threshold_float) {
         "use strict";
         threshold_float = fr(threshold_float);
         TEMPFLOAT32X1[0] = fr(FLOATONE - fr(abs_int(this.a - color.a|0)/XD[3]));
@@ -542,16 +542,16 @@ var QuantiMat = (function (){
         ) / LABMAX) < fr(threshold_float*TEMPFLOAT32X1[1]));
     };
 
-    SIMDopeColor.prototype.copy = function(a) {
+    Color.prototype.copy = function(a) {
         "use strict";
-        return SIMDopeColor(this.slice(0, rgba_bytes));
+        return Color(this.slice(0, rgba_bytes));
     };
 
-    var SIMDopeColors = function(with_main_buffer, bytes_offset, bytes_length){
+    var Colors = function(with_main_buffer, bytes_offset, bytes_length){
         "use strict";
 
-        if (!(this instanceof SIMDopeColors)) {
-            return new SIMDopeColors(with_main_buffer);
+        if (!(this instanceof Colors)) {
+            return new Colors(with_main_buffer);
         }
 
         this.storage_ = "buffer" in with_main_buffer ? with_main_buffer.buffer: with_main_buffer;
@@ -561,27 +561,27 @@ var QuantiMat = (function (){
         this.storage_uint32_array_ = new Uint32Array(this.storage_, bytes_offset, divide_4_uint(bytes_length));
     };
 
-    Object.defineProperty(SIMDopeColors.prototype, 'length', {
+    Object.defineProperty(Colors.prototype, 'length', {
         get: function() { "use strict"; return this.storage_uint32_array_.length; }
     });
-    Object.defineProperty(SIMDopeColors.prototype, 'buffer', {
+    Object.defineProperty(Colors.prototype, 'buffer', {
         get: function() { "use strict"; return this.storage_; }
     });
-    Object.defineProperty(SIMDopeColors.prototype, 'buffer_getUint32', {
+    Object.defineProperty(Colors.prototype, 'buffer_getUint32', {
         get: function() { "use strict"; return function (i) {
             return  this.storage_uint32_array_[i|0];
         }}
     });
-    Object.defineProperty(SIMDopeColors.prototype, 'slice_uint32', {
+    Object.defineProperty(Colors.prototype, 'slice_uint32', {
         get: function() { "use strict"; return function (start, end){ start = start|0; end = end | 0; end = end || this.length; return this.storage_uint32_array_.slice(start, end); }}
     });
-    Object.defineProperty(SIMDopeColors.prototype, 'subarray_uint32', {
+    Object.defineProperty(Colors.prototype, 'subarray_uint32', {
         get: function() { "use strict"; return function (start, end){ start = start|0; end = end | 0; end = end || this.length; return this.storage_uint32_array_.subarray(start, end); }}
     });
 
-    SIMDopeColors.prototype.get_element = function (i) {
+    Colors.prototype.get_element = function (i) {
         "use strict";
-        return SIMDopeColor(this.buffer, i|0);
+        return Color(this.buffer, i|0);
     }
 
     function BitArray(s) {
@@ -793,7 +793,7 @@ var QuantiMat = (function (){
         opts.pxl_colors = opts.pxl_colors || new Uint32Array(0);
         opts.pxls = opts.pxls || new Uint32Array(0);
         this.new_pxls_ = "buffer" in opts.pxls ? new Uint32Array(opts.pxls.buffer) : Uint32Array.from(opts.pxls);
-        this.new_pxl_colors_ = "buffer" in opts.pxl_colors ? SIMDopeColors(opts.pxl_colors.buffer) : SIMDopeColors(Uint32Array.from(opts.pxl_colors));
+        this.new_pxl_colors_ = "buffer" in opts.pxl_colors ? Colors(opts.pxl_colors.buffer) : Colors(Uint32Array.from(opts.pxl_colors));
         var l = this.new_pxl_colors_.length|0;
         this.new_pxl_colors_is_skin_mask_ = new SetFixed(l|0);
         this.set_new_pxl_skin_mask();
@@ -924,14 +924,14 @@ var QuantiMat = (function (){
     Object.defineProperty(QuantiMat.prototype, 'set_new_pxl_colors', {
         get: function() { "use strict"; return function(pxl_colors_length) {
             "use strict";
-            this.new_pxl_colors_ = SIMDopeColors(this.clean_pxl_colors_.buffer.slice(0, multiply_uint_4(pxl_colors_length|0)));
+            this.new_pxl_colors_ = Colors(this.clean_pxl_colors_.buffer.slice(0, multiply_uint_4(pxl_colors_length|0)));
             this.set_new_pxl_skin_mask();
         }}
     });
     Object.defineProperty(QuantiMat.prototype, 'set_new_pxl_skin_mask', {
         get: function() { "use strict"; return function() {
             "use strict";
-            var c = new SIMDopeColor(new ArrayBuffer(4)), l = this.new_pxl_colors_.length|0, i = 0;
+            var c = new Color(new ArrayBuffer(4)), l = this.new_pxl_colors_.length|0, i = 0;
             this.new_pxl_colors_is_skin_mask_ = new SetFixed(l|0);
             for(; (i|0) < (l|0); i = i + 1 | 0) {
                 if(this.new_pxl_colors_.get_element(i|0, c).skin){
@@ -1216,7 +1216,7 @@ var QuantiMat = (function (){
                 }
 
                 if((latest_colors.length|0) > 0) {
-                    SIMDopeColor.blend_all(color_a, latest_colors, latest_amounts);
+                    Color.blend_all(color_a, latest_colors, latest_amounts);
                     p = (p+latest_colors.length+1|0) >>> 0;
                     latest_colors = []; latest_amounts = [];
                 }

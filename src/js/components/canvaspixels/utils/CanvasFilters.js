@@ -1,4 +1,4 @@
-import {SIMDopeColors, SIMDopeColor} from "simdope";
+import {Colors, Color} from "simdope";
 "use strict";
 
 const CanvasFilters = {
@@ -236,8 +236,8 @@ const CanvasFilters = {
                     }
                 }
 
-                var new_colors = new SIMDopeColors(pxl_colors_rgba.buffer);
-                var old_colors = new SIMDopeColors(pxl_colors.buffer);
+                var new_colors = new Colors(pxl_colors_rgba.buffer);
+                var old_colors = new Colors(pxl_colors.buffer);
 
                 for(var i = 0; (i|0) < (colors_length|0); i = (i+1|0)>>>0){
 

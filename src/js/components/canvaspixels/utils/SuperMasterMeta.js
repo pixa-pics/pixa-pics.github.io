@@ -2,7 +2,7 @@ import {SetFixed} from "@asaitama/boolean-array";
 import SIMDope from "simdope";
 import {Layer} from "../../../utils/Layer";
 const simdops = SIMDope.simdops;
-const SIMDopeColor = SIMDope.SIMDopeColor;
+const Color = SIMDope.Color;
 
 const SuperMasterMeta = {
     init(super_state, super_canvas, super_blend, canvas_pos, color_conversion, sraf){
@@ -1411,14 +1411,14 @@ const SuperMasterMeta = {
                     layer_pixel_colors[i] = (_s_layers[i].get_uint32(pxl_index|0) | 0) & 0xFFFFFFFF;
                 }
 
-                let pixel_color_uint32 = SIMDopeColor.new_zero();
+                let pixel_color_uint32 = Color.new_zero();
 
                 for (let i = start_i; i < _s_layers.length ; i++) {
 
                     if(typeof _layers[i] != "undefined") {
                         if (!_layers[i].hidden) {
 
-                            pixel_color_uint32.blend_first_with(SIMDopeColor.new_uint32(layer_pixel_colors[i]), Math.round(parseFloat(_layers[i].opacity) * 255), false, false);
+                            pixel_color_uint32.blend_first_with(Color.new_uint32(layer_pixel_colors[i]), Math.round(parseFloat(_layers[i].opacity) * 255), false, false);
                         }
                     }
                 }
@@ -1441,7 +1441,7 @@ const SuperMasterMeta = {
                 if(notifiers.action) {
 
                     if(typeof color == "number") {
-                        color = SIMDopeColor.new_uint32(color).hex;
+                        color = Color.new_uint32(color).hex;
                     }
                     notifiers.action(event, color, opacity);
                 }

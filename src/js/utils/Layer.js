@@ -1,4 +1,5 @@
-import {Colors, Color} from "simdope";
+import {SIMDopeCreate} from "simdope";
+var {Colors, Color} = SIMDopeCreate(1);
 import {SetFixed} from "@asaitama/boolean-array";
 import XXHashJS from "./xxhash";
 import XXHashWASM from "xxhash-wasm";
@@ -1042,7 +1043,7 @@ Object.defineProperty(Layer.prototype, 'paint_uint32a', {
     enumerable: false,
     configurable: false
 });
-
+/*
 Layer.prototype.auto_adjust_contrast = function (intensity) {
     "use strict";
     let min_sat = 100;
@@ -1084,7 +1085,7 @@ Layer.prototype.auto_adjust_contrast = function (intensity) {
 
     this.force_update_data(true);
 }
-
+*/
 
 var Layers = function(image_data_array, meta_data_array, width, height){
     "use strict";

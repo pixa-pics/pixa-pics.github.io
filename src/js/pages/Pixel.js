@@ -70,7 +70,7 @@ import { l, t } from "../utils/t";
 import ZoomIn from "@material-ui/icons/ZoomIn";
 import ZoomOut from "@material-ui/icons/ZoomOut";
 import PixelDialogText from "../components/PixelDialogText";
-import {SIMDopeColor} from "simdope";
+import {Color} from "simdope";
 import SmartRequestAnimationFrame from "../components/canvaspixels/utils/SmartRequestAnimationFrame";
 
 const styles = theme => ({
@@ -2270,13 +2270,13 @@ class Pixel extends React.PureComponent {
         "use strict";
         if(typeof color.rgb !== "undefined") {
 
-            color = SIMDopeColor.new_of(color.rgb.r, color.rgb.g, color.rgb.b, Math.round(parseInt(color.rgb.a * 255))).hex;
+            color = Color.new_of(color.rgb.r, color.rgb.g, color.rgb.b, Math.round(parseInt(color.rgb.a * 255))).hex;
         }else {
 
-            color = SIMDopeColor.new_hex(color).hex;
+            color = Color.new_hex(color).hex;
         }
 
-        const h = SIMDopeColor.new_hex(color).hsla[0];
+        const h = Color.new_hex(color).hsla[0];
 
         this.setSt4te({_current_color: color, _hue: h});
     };

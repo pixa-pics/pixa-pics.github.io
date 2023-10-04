@@ -47,8 +47,8 @@ import {Filters} from "../../../js/utils/Layer"
 import SIMDope from "simdope";
 import {toBytes, toBase64} from 'fast-base64';
 const simdops = SIMDope.simdops;
-const SIMDopeColors = SIMDope.SIMDopeColors;
-const SIMDopeColor = SIMDope.SIMDopeColor;
+const Colors = SIMDope.Colors;
+const Color = SIMDope.Color;
 class CanvasPixels extends React.PureComponent {
 
     constructor(props) {
@@ -703,7 +703,7 @@ class CanvasPixels extends React.PureComponent {
             new_pxls = new Uint16Array(image_data.width * image_data.height).fill(0);
             for (let i = 0; i < image_data.data.length; i += 4) {
 
-                const color_uint32 = new SIMDopeColor(Uint8ClampedArray.of(image_data.data[i+0], image_data.data[i+1], image_data.data[i+2], image_data.data[i+3])).uint32;
+                const color_uint32 = new Color(Uint8ClampedArray.of(image_data.data[i+0], image_data.data[i+1], image_data.data[i+2], image_data.data[i+3])).uint32;
 
                 const deja_vu_color_hex = new_pxl_colors_set.has((color_uint32|0)>>>0);
                 let color_uint32_index = deja_vu_color_hex ? new_pxl_colors.indexOf((color_uint32|0)>>>0): -1;
@@ -732,7 +732,7 @@ class CanvasPixels extends React.PureComponent {
                 for (let i = 0; i < image_data.width * 4; i += 4) {
 
                     let x = i + first_pixel_in_this_row;
-                    const color_uint32 = new SIMDopeColor(Uint8ClampedArray.of(image_data.data[x+0], image_data.data[x+1], image_data.data[x+2], image_data.data[x+3])).uint32;
+                    const color_uint32 = new Color(Uint8ClampedArray.of(image_data.data[x+0], image_data.data[x+1], image_data.data[x+2], image_data.data[x+3])).uint32;
 
                     // Push color hex in palette if necessary
                     if(!new_pxl_colors.includes(color_uint32)) {
@@ -1409,7 +1409,7 @@ class CanvasPixels extends React.PureComponent {
 
         const old_color = _s_layers[_layer_index].colors[_s_layers[_layer_index].indexes[y*pxl_width+x]];
         if((""+new_color).startsWith("#")) {
-            new_color = new SIMDopeColor.new_hex(new_color).uint32;
+            new_color = new Color.new_hex(new_color).uint32;
         }
         this._exchange_pixel_color(old_color, new_color);
     };
@@ -1519,7 +1519,7 @@ class CanvasPixels extends React.PureComponent {
 
         "use strict";
         limit = Math.min(pxl_colors.length, limit || 256);
-        let colors = new SIMDopeColors(new SIMDopeColors(pxl_colors.buffer).get_deduplicated_sorted_uint32a(limit).buffer);
+        let colors = new Colors(new Colors(pxl_colors.buffer).get_deduplicated_sorted_uint32a(limit).buffer);
         var hexs = new Array(limit);
         for(var i = 0; i < limit; i++) {
             hexs[i] = colors.get_element(i).hex;
@@ -2890,7 +2890,7 @@ class CanvasPixels extends React.PureComponent {
         intensity = Math.round(parseFloat(intensity) * 255) | 0;
         let saturation = 0;
         let color;
-        let colors = SIMDopeColors(pxl_colors);
+        let colors = Colors(pxl_colors);
         let length = colors.length;
         let hsla;
 
@@ -2912,7 +2912,7 @@ class CanvasPixels extends React.PureComponent {
             color = colors.get_element(i);
             hsla = color.hsla;
             color.blend_with(
-                SIMDopeColor.new_hsla(
+                Color.new_hsla(
                     hsla[0],
                     hsla[1] * alpha + beta | 0,
                     hsla[2],
@@ -3301,8 +3301,8 @@ class CanvasPixels extends React.PureComponent {
 
         intensity = Math.round(parseFloat(intensity) * 255) | 0;
         let greyscale = 0;
-        let color =  new SIMDopeColor(new ArrayBuffer(4));
-        let colors = SIMDopeColors(pxl_colors);
+        let color =  new Color(new ArrayBuffer(4));
+        let colors = Colors(pxl_colors);
         let {clamp_int} = simdops;
         let length = colors.length;
 
@@ -3324,7 +3324,7 @@ class CanvasPixels extends React.PureComponent {
             color = colors.get_element(i|0, color);
 
             color.blend_with(
-                SIMDopeColor.new_of(
+                Color.new_of(
                     clamp_int(color.r * alpha + beta | 0, 0, 255),
                     clamp_int(color.g * alpha + beta | 0, 0, 255),
                     clamp_int(color.b * alpha + beta | 0, 0, 255),
@@ -3405,8 +3405,8 @@ class CanvasPixels extends React.PureComponent {
                     bigger_pxl_around_occurrence_occurrence + second_bigger_pxl_around_occurrence_occurrence >= 8
                     && bigger_pxl_around_occurrence_occurrence >= 5 ){
 
-                    if(SIMDopeColor.new_uint32(pxl_colors[pxls[i]]).match_with(
-                        SIMDopeColor.new_uint32(pxl_colors[bigger_pxl_around_occurrence_color_index]).blend_with(SIMDopeColor.new_uint32(pxl_colors[second_bigger_pxl_around_occurrence_color_index]), 128, false, false)
+                    if(Color.new_uint32(pxl_colors[pxls[i]]).match_with(
+                        Color.new_uint32(pxl_colors[bigger_pxl_around_occurrence_color_index]).blend_with(SIMDopeColor.new_uint32(pxl_colors[second_bigger_pxl_around_occurrence_color_index]), 128, false, false)
                         , 24
                     )){
                         pxls[i] = bigger_pxl_around_occurrence_color_index;

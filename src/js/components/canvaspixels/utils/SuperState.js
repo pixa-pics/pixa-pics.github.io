@@ -1,5 +1,5 @@
 import {SetFixed} from "@asaitama/boolean-array";
-import {SIMDopeColors, SIMDopeColor} from "simdope";
+import {Colors, Color} from "simdope";
 import {Layer} from "../../../utils/Layer"
 import { createLocalBlob } from "../../../utils/objectURL";
 
@@ -27,7 +27,7 @@ const SuperState = {
             pxl_width: 32,
             pxl_height: 32,
             pxl_current_color: props.pxl_current_color || "#00000000",
-            pxl_current_color_uint32: SIMDopeColor.new_hex(props.pxl_current_color || "#00000000").uint32,
+            pxl_current_color_uint32: Color.new_hex(props.pxl_current_color || "#00000000").uint32,
             pxl_current_opacity: props.pxl_current_opacity || 1,
             bucket_threshold: props.bucket_threshold || 0,
             color_loss: props.color_loss || 0.25,
@@ -179,7 +179,7 @@ const SuperState = {
                     }
 
                     if("pxl_current_color" in new_props){
-                        state_["pxl_current_color_uint32"] = SIMDopeColor.new_hex(new_props["pxl_current_color"]).uint32;
+                        state_["pxl_current_color_uint32"] = Color.new_hex(new_props["pxl_current_color"]).uint32;
                     }
                     if("show_original_image_in_background" in new_props || "_base64_original_images" in new_props || "_original_image_index" in new_props || "show_transparent_image_in_background" in new_props || "pxl_width" in new_props || "pxl_height" in new_props){
                         if(Boolean(state_.show_original_image_in_background && typeof state_._base64_original_images[state_._original_image_index] !== "undefined")){
@@ -339,7 +339,7 @@ const SuperState = {
 
                         const pos_x = index % state_._imported_image_width;
                         const pos_y = (index - pos_x) / state_._imported_image_width;
-                        canvas_ctx.fillStyle = SIMDopeColor.new_uint32(state_._imported_image_pxl_colors[pxl]).hex;
+                        canvas_ctx.fillStyle = Color.new_uint32(state_._imported_image_pxl_colors[pxl]).hex;
                         canvas_ctx.fillRect(pos_x, pos_y, 1, 1);
                     });
 

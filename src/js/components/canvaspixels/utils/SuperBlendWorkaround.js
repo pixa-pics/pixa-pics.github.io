@@ -1,4 +1,4 @@
-import {simdops, SIMDopeColor, SIMDopeColors, SIMDopeBlend} from "simdope";
+import {simdops, Color, Colors, SIMDopeBlend} from "simdope";
 const {
     minus_int,
     int_not_equal,
@@ -46,8 +46,8 @@ function _build_shadow_state (old_shadow_state) {
     // Create a shadow state for computation
     old_shadow_state = old_shadow_state || {
         base_rgba_colors_for_blending: new Uint32Array(0),
-        color_less_uint8x4: SIMDopeColor.new_of(255, 255, 255, 255),
-        color_full_uint8x4: SIMDopeColor.new_of(0, 0, 0, 255),
+        color_less_uint8x4: Color.new_of(255, 255, 255, 255),
+        color_full_uint8x4: Color.new_of(0, 0, 0, 255),
         all_layers_length: 0,
         used_colors_length: 0,
     };

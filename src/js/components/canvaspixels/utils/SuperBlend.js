@@ -1,5 +1,5 @@
-import SD from "simdope/conf";
-const {simdops, Color, Colors} = SD(2);
+import {SIMDopeCreate} from "simdope";
+const {simdops, Color, Colors} = SIMDopeCreate(1);
 const {
     minus_int,
     int_not_equal,

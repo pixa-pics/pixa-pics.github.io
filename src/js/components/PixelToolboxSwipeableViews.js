@@ -22,7 +22,7 @@ import {
     IconButton, ButtonBase
 } from "@material-ui/core";
 
-import {SIMDopeColor} from "simdope";
+import {Color} from "simdope";
 import {HISTORY} from "../utils/constants";
 
 import AllLayersIcon from "../icons/AllLayers";
@@ -843,7 +843,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
         let colors = [];
         for (let i = 1; i <= 128; i++) {
 
-            colors.push(SIMDopeColor.new_hsla((i / 128) * 360 | 0, s, l, o).hex);
+            colors.push(Color.new_hsla((i / 128) * 360 | 0, s, l, o).hex);
         }
 
         return colors;
@@ -872,13 +872,13 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
             _list_sub_header_opened
         } = this.st4te;
 
-        const ccsd = SIMDopeColor.new_hex(current_color);
+        const ccsd = Color.new_hex(current_color);
         const current_color_rgba = {r: ccsd.r, g: ccsd.g, b: ccsd.b, a: ccsd.a/255};
 
-        const [r_1, g_1, b_1] = current_color === "#ffffff" ? [196, 196, 196] : SIMDopeColor.new_hex(current_color).get_slice();
+        const [r_1, g_1, b_1] = current_color === "#ffffff" ? [196, 196, 196] : Color.new_hex(current_color).get_slice();
         const is_current_color_dark = r_1 + g_1 + b_1 < 152 * 3;
 
-        const [r_2, g_2, b_2] = second_color === "#ffffff" ? [196, 196, 196] : SIMDopeColor.new_hex(second_color).get_slice();
+        const [r_2, g_2, b_2] = second_color === "#ffffff" ? [196, 196, 196] : Color.new_hex(second_color).get_slice();
         const is_second_color_dark = r_2 + g_2 + b_2 < 152 * 3;
 
         const panel_names = this.get_action_panel_names();
@@ -989,7 +989,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                         >
                             <RgbaColorPicker className={classes.materialPicker}
                                           color={current_color_rgba}
-                                          onChange={(c) => {this._handle_current_color_change(SIMDopeColor.new_of(c.r, c.g, c.b, Math.round(c.a*255)|0).hex)}}/>
+                                          onChange={(c) => {this._handle_current_color_change(Color.new_of(c.r, c.g, c.b, Math.round(c.a*255)|0).hex)}}/>
                         </Menu>
 
                         <div style={{textAlign: "center"}}>
@@ -2237,7 +2237,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
         const { current_color, slider_value } = this.st4te;
         const { to_color } = this.st4te.canvas;
 
-        const [h, s, l, a] = SIMDopeColor.new_hex(current_color).hsla;
+        const [h, s, l, a] = Color.new_hex(current_color).hsla;
 
         to_color(h, slider_value, s === 0 ? null: s, l === 0 ? null: l);
     }
