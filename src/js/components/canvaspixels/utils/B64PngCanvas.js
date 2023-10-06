@@ -24,8 +24,7 @@ SOFTWARE.
 */
 
 import SuperBlend from "./SuperBlend";
-import {Colors, Color} from "simdope";
-
+import {Color, Colors} from "simdope";
 var fu = function(
             pxl_width,
             pxl_height,

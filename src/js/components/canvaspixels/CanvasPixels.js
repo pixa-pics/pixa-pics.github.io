@@ -44,11 +44,8 @@ import SmartRequestAnimationFrame from "../canvaspixels/utils/SmartRequestAnimat
 import XXHash from "../canvaspixels/utils/XXHash";
 import CanvasPos from "../canvaspixels/utils/CanvasPos"
 import {Filters} from "../../../js/utils/Layer"
-import SIMDope from "simdope";
+import {Color, Colors, simdops} from "simdope";
 import {toBytes, toBase64} from 'fast-base64';
-const simdops = SIMDope.simdops;
-const Colors = SIMDope.Colors;
-const Color = SIMDope.Color;
 class CanvasPixels extends React.PureComponent {
 
     constructor(props) {
@@ -3406,7 +3403,7 @@ class CanvasPixels extends React.PureComponent {
                     && bigger_pxl_around_occurrence_occurrence >= 5 ){
 
                     if(Color.new_uint32(pxl_colors[pxls[i]]).match_with(
-                        Color.new_uint32(pxl_colors[bigger_pxl_around_occurrence_color_index]).blend_with(SIMDopeColor.new_uint32(pxl_colors[second_bigger_pxl_around_occurrence_color_index]), 128, false, false)
+                        Color.new_uint32(pxl_colors[bigger_pxl_around_occurrence_color_index]).blend_with(Color.new_uint32(pxl_colors[second_bigger_pxl_around_occurrence_color_index]), 128, false, false)
                         , 24
                     )){
                         pxls[i] = bigger_pxl_around_occurrence_color_index;

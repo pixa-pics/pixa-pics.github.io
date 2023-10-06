@@ -23,6 +23,7 @@ import {
 } from "@material-ui/core";
 
 import {Color} from "simdope";
+
 import {HISTORY} from "../utils/constants";
 
 import AllLayersIcon from "../icons/AllLayers";

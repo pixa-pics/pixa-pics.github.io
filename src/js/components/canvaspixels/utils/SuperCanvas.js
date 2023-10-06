@@ -1,5 +1,17 @@
-import SIMDope, {Colors, Color} from "simdope";
-const {clamp_uint32, modulo_uint, divide_uint, minus_uint, uint_greater, uint_less, uint_greater_equal, uint_less_equal, plus_uint, minus_int, int_greater, int_less, int_greater_equal, int_less_equal, plus_int, max_int, min_int} = SIMDope.simdops;
+import {SIMDopeCreate, SIMDopeCreateConfAdd} from "simdope";
+var MODE = SIMDopeCreateConfAdd({
+    "create": {
+        "new_zero": true
+    },
+    "properties": {
+        "hex": true
+    },
+    "methods": {
+        "get_use_element": true,
+    }
+});
+const {simdops, Color, Colors} = SIMDopeCreate(MODE);
+const {clamp_uint32, modulo_uint, divide_uint, minus_uint, uint_greater, uint_less, uint_greater_equal, uint_less_equal, plus_uint, minus_int, int_greater, int_less, int_greater_equal, int_less_equal, plus_int, max_int, min_int} = simdops;
 
 function draw_2d(ctx2d, _state) {
     "use strict";
@@ -268,7 +280,7 @@ Object.defineProperty(SuperCanvas.prototype, 'unpile', {
             let index = new Uint32Array(1);
             let context = this.state_.s.canvas_context;
 
-            if(index_changes.length < 64 || this.state_.enable_paint_type === "") {
+            if(index_changes.length < 2048 || this.state_.enable_paint_type === "") {
 
                 let colors = new Colors(color_changes.buffer, color_changes.byteOffset, color_changes.byteLength);
                 let color = new Color(new ArrayBuffer(4));
@@ -287,7 +299,7 @@ Object.defineProperty(SuperCanvas.prototype, 'unpile', {
 
                     xyarray[0] = modulo_uint(index[0], width);
                     xyarray[1] = divide_uint(minus_uint(index[0], xyarray[0]), width);
-                    paint(context, xyarray, colors.get_element(i, color).hex);
+                    paint(context, xyarray, colors.get_use_element(i, color).hex);
                 }
 
                 this.state_.ic.used = true;

@@ -1,5 +1,16 @@
 import {SIMDopeCreate} from "simdope";
-var {Colors, Color} = SIMDopeCreate(1);
+const {Color, Colors} = SIMDopeCreate({
+    "create": {
+        "new_uint32": true,
+        "new_zero": true
+    },
+    "properties": {},
+    "methods": {
+        "get_use_element": true,
+        "blend_first_with": true,
+        "blend_with": true
+    }
+});
 import {SetFixed} from "@asaitama/boolean-array";
 import XXHashJS from "./xxhash";
 import XXHashWASM from "xxhash-wasm";
@@ -634,7 +645,7 @@ Object.defineProperty(Layer.prototype, 'force_update_data', {
             must_init = typeof must_init == "undefined" ? false: Boolean(must_init) && true;
             var is_new_colors = typeof colors != "undefined";
             var is_new_indexes = typeof indexes != "undefined";
-            colors = is_new_colors ? colors instanceof Uint32Array ? colors: Uint32Array.from(colors): this.uint32_colors_;
+            colors = is_new_colors ? (colors instanceof Uint32Array) ? colors: Uint32Array.from(colors): this.uint32_colors_;
             indexes = is_new_indexes ? indexes: this.color_indexes_;
 
             if(must_init || (is_new_colors && is_new_indexes)) {
@@ -850,7 +861,7 @@ Object.defineProperty(Layer.prototype, 'set_indexes', {
         return function (indexes){
             "use strict";
             if(indexes.length !== this.color_indexes_.length) {
-                this.force_update_data(true, undefined, indexes);
+                this.force_update_data(false, undefined, indexes);
             }else {
                 this.color_indexes_.set(indexes, 0);
                 this.force_update_data();
@@ -905,7 +916,7 @@ Object.defineProperty(Layer.prototype, 'set_colors', {
                 this.force_update_data();
             }else {
 
-                this.force_update_data(true, colors);
+                this.force_update_data(false, colors);
             }
         };
     },
@@ -918,7 +929,7 @@ Object.defineProperty(Layer.prototype, 'set_colors_and_indexes', {
         "use strict";
         return function (colors, indexes){
             "use strict";
-            this.force_update_data(true, colors, indexes);
+            this.force_update_data(false, colors, indexes);
         };
     },
     enumerable: false,
@@ -1034,7 +1045,7 @@ Object.defineProperty(Layer.prototype, 'paint_uint32a', {
 
                 let sd_color = Color.new_uint32((color | 0) >>> 0),  a = new Color(new ArrayBuffer(4)), i = 0;
                 for (; (i | 0) < (indexes_length | 0); i = (i + 1 | 0) >>> 0) {
-                    this.simdope_pixel_color_.get_element(pxl_indexes[i | 0], a).blend_first_with(sd_color, opacity, false, false);
+                    this.simdope_pixel_color_.get_use_element(pxl_indexes[i | 0], a).blend_first_with(sd_color, opacity, false, false);
                     this.set_uint32(pxl_indexes[i | 0], this.uint32_pixel_color_[pxl_indexes[i | 0]]);
                 }
             }
@@ -1059,7 +1070,7 @@ Layer.prototype.auto_adjust_contrast = function (intensity) {
 
     for(let i = 0; (i|0) < (length|0); i = (i+1|0)>>>0) {
 
-        color = colors.get_element(i, a);
+        color = colors.get_use_element(i, a);
         saturation = color.hsla[1];
         if((color.a | 0) > 0) {
             if((saturation|0) > (max_sat|0)) {max_sat = saturation | 0;}
@@ -1072,7 +1083,7 @@ Layer.prototype.auto_adjust_contrast = function (intensity) {
 
     for(let i = 0; (i|0) < (length|0); i = (i+1|0)>>>0) {
 
-        color = colors.get_element(i, a);
+        color = colors.get_use_element(i, a);
         hsla = color.hsla;
         color.blend_with(
             Color.new_hsla(
@@ -1332,7 +1343,7 @@ Object.defineProperty(FilterGreyscale.prototype, 'filter_colors', {
                 var new_uint32_colors_length = new_uint32_colors.length|0;
 
                 for(var i = 0; (i|0) < (new_uint32_colors_length|0); i = (i+1|0)>>>0){
-                    old_simdope_colors.get_element(i|0, temp_simdope_colors_a).blend_with(new_simdope_colors.get_element(i|0,temp_simdope_colors_b), intensity, false, false);
+                    old_simdope_colors.get_use_element(i|0, temp_simdope_colors_a).blend_with(new_simdope_colors.get_use_element(i|0,temp_simdope_colors_b), intensity, false, false);
                 }
 
                 return colors;
@@ -1392,7 +1403,7 @@ Object.defineProperty(FilterSepia.prototype, 'filter_colors', {
                 var new_uint32_colors_length = new_uint32_colors.length|0;
 
                 for(var i = 0; (i|0) < (new_uint32_colors_length|0); i = (i+1|0)>>>0){
-                    old_simdope_colors.get_element(i|0, temp_simdope_colors_a).blend_with(new_simdope_colors.get_element(i|0,temp_simdope_colors_b), intensity, false, false);
+                    old_simdope_colors.get_use_element(i|0, temp_simdope_colors_a).blend_with(new_simdope_colors.get_use_element(i|0,temp_simdope_colors_b), intensity, false, false);
                 }
 
                 return colors;
@@ -1435,7 +1446,7 @@ Object.defineProperty(Filter.prototype, 'filter_colors', {
                 var new_uint32_colors_length = new_uint32_colors.length|0;
 
                 for(var i = 0; (i|0) < (new_uint32_colors_length|0); i = (i+1|0)>>>0){
-                    old_simdope_colors.get_element(i|0, temp_simdope_colors_a).blend_with(new_simdope_colors.get_element(i|0, temp_simdope_colors_b), intensity, false, false);
+                    old_simdope_colors.get_use_element(i|0, temp_simdope_colors_a).blend_with(new_simdope_colors.get_use_element(i|0, temp_simdope_colors_b), intensity, false, false);
                 }
 
                 return colors;

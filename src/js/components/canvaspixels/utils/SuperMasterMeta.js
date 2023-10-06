@@ -1,8 +1,6 @@
 import {SetFixed} from "@asaitama/boolean-array";
-import SIMDope from "simdope";
+import {Color, simdops} from "simdope";
 import {Layer} from "../../../utils/Layer";
-const simdops = SIMDope.simdops;
-const Color = SIMDope.Color;
 
 const SuperMasterMeta = {
     init(super_state, super_canvas, super_blend, canvas_pos, color_conversion, sraf){

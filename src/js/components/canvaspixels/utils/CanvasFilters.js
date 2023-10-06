@@ -1,4 +1,4 @@
-import {Colors, Color} from "simdope";
+import {Color, Colors} from "simdope";
 "use strict";
 
 const CanvasFilters = {

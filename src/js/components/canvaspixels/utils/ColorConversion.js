@@ -1,5 +1,4 @@
-import SIMDope from "simdope";
-const simdops = SIMDope.simdops;
+import {simdops} from "simdope";
 
 const ColorConversion = {
     new: function(){
