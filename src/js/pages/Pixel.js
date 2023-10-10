@@ -2418,6 +2418,7 @@ class Pixel extends React.PureComponent {
 
         this.setSt4te({_is_image_import_mode: is_image_import_mode}, () => {
 
+            this._set_props_bypass_this();
             this._request_force_update();
         });
     };
@@ -2466,6 +2467,7 @@ class Pixel extends React.PureComponent {
             _select_mode,
             _pencil_mirror_mode,
             _is_something_selected,
+            _is_image_import_mode,
             _import_size,
             _import_colorize,
             _slider_value_width,
@@ -2508,6 +2510,7 @@ class Pixel extends React.PureComponent {
             select_mode: _select_mode,
             pencil_mirror_mode: _pencil_mirror_mode,
             is_something_selected: _is_something_selected,
+            is_image_import_mode: _is_image_import_mode,
             import_size: _import_size,
             import_colorize: _import_colorize
         });
@@ -3346,7 +3349,7 @@ class Pixel extends React.PureComponent {
                     </Button>
 
                     <Button disabled={!_is_image_import_mode} className={classes.confirmImportButton} color={"primary"} size={"small"} onClick={() => {_is_image_import_mode ? _canvas.confirm_import(): this._import_image_library()}}>
-                        <FileImportIcon/> {_is_image_import_mode ? "OK": "IMport"}
+                        <FileImportIcon/> {_is_image_import_mode ? "OK": "Import"}
                     </Button>
 
                     <IconButton className={classes.zoomOutButton} color={"primary"} size={"small"} onClick={() => {_canvas.zoom_out()}}>

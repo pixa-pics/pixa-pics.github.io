@@ -22,8 +22,21 @@ import {
     IconButton, ButtonBase
 } from "@material-ui/core";
 
-import {Color} from "simdope";
-
+import {SIMDopeCreate} from "simdope";
+const {Color} = SIMDopeCreate({
+    "create": {
+        "new_hex": true,
+        "new_hsla": true,
+        "new_of": true
+    },
+    "properties": {
+        "hex": true,
+        "hsla": true
+    },
+    "methods": {
+        "get_slice": true
+    }
+});
 import {HISTORY} from "../utils/constants";
 
 import AllLayersIcon from "../icons/AllLayers";

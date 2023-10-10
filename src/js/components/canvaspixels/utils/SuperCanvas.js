@@ -58,11 +58,13 @@ const bpro = AFunction(
             }; return bpro;`)();
 
 function template(c, pxl_width, pxl_height){
+    "use strict";
 
     pxl_width = pxl_width | 0;
     pxl_height = pxl_height | 0;
 
     function cs(c, pxl_width, pxl_height) {
+        "use strict";
 
         pxl_width = pxl_width | 0;
         pxl_height = pxl_height | 0;
@@ -79,7 +81,7 @@ function template(c, pxl_width, pxl_height){
         if (is_offscreen) {
             try {
                 oc = new OffscreenCanvas(pxl_width, pxl_height).getContext("2d");
-                occ2d = new oc.getContext("2d");
+                occ2d = oc.getContext("2d");
 
                 if(occ2d.getContextAttributes){
                     var attr = occ2d.getContextAttributes();
@@ -88,8 +90,8 @@ function template(c, pxl_width, pxl_height){
                     }
                 }
 
+                occ2d.imageSmoothingEnabled = false;
                 try {
-                    occ2d.imageSmoothingEnabled = false;
                     occ2d.webkitImageSmoothingEnabled = false;
                     occ2d.mozImageSmoothingEnabled = false;
                     occ2d.msImageSmoothingEnabled = false;
@@ -101,17 +103,20 @@ function template(c, pxl_width, pxl_height){
 
         cc2d = c.getContext('2d');
 
-        if(cc2d.getContextAttributes){
-            var attr = cc2d.getContextAttributes();
-            if("willReadFrequently" in attr) {
-                cc2d = c.getContext('2d', {willReadFrequently: true});
+        try {
+            if(cc2d.getContextAttributes){
+                var attr = cc2d.getContextAttributes();
+                if("willReadFrequently" in attr) {
+                    cc2d = c.getContext('2d', {willReadFrequently: true});
+                }
             }
-        }
+        } catch (e){}
+
+        cc2d.imageSmoothingEnabled = false;
         try {
             cc2d.mozImageSmoothingEnabled = false;
             cc2d.webkitImageSmoothingEnabled = false;
             cc2d.msImageSmoothingEnabled = false;
-            cc2d.imageSmoothingEnabled = false;
         } catch (e){}
 
         return {
@@ -158,7 +163,7 @@ function template(c, pxl_width, pxl_height){
     state.pr_uint8a = new Uint8Array(state.fp.buffer);
 
     return state;
-};
+}
 
 var SuperCanvas = function(c, pxl_width, pxl_height) {
     "use strict";
@@ -243,13 +248,16 @@ Object.defineProperty(SuperCanvas.prototype, 'prender', {
                     this.state_.b2.bmp_x = new_bmp_x | 0;
                     this.state_.b2.bmp_y = new_bmp_y | 0;
                     this.state_.b2.bmp_t = new_bmp_t | 0;
-                    return resolve();
+                    resolve();
+                }).catch(() => {
+                    this.state_.s.is_bitmap = false;
+                    reject();
                 });
             });
 
         }else if (this.state_.enable_paint_type === "offscreen") {
 
-            return draw_2d(this.state_.s.offscreen_canvas_context, this.state_).then(function (){return Promise.resolve()});
+            return draw_2d(this.state_.s.offscreen_canvas_context, this.state_);
 
         }else {
 
@@ -280,7 +288,7 @@ Object.defineProperty(SuperCanvas.prototype, 'unpile', {
             let index = new Uint32Array(1);
             let context = this.state_.s.canvas_context;
 
-            if(index_changes.length < 2048 || this.state_.enable_paint_type === "") {
+            if(index_changes.length < 192 || this.state_.enable_paint_type === "") {
 
                 let colors = new Colors(color_changes.buffer, color_changes.byteOffset, color_changes.byteLength);
                 let color = new Color(new ArrayBuffer(4));

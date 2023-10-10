@@ -2467,25 +2467,11 @@ class CanvasPixels extends React.PureComponent {
 
         const {imported_image_pxls_positioned, imported_image_pxl_colors} = this.super_state.get_imported_image_data()
         let { _s_layers, _layer_index } = this.super_state.get_state();
-
-        let pxl_colors = Array.from(_s_layers[_layer_index].colors);
+        let layer = _s_layers[_layer_index];
         Object.entries(imported_image_pxls_positioned).forEach((entry) => {
-
             const [pixel_index, color_index] = entry;
-
-            const old_pixel_color_index = _s_layers[_layer_index].indexes[pixel_index];
-            const old_pixel_color_hex = _s_layers[_layer_index].colors[old_pixel_color_index];
-            const top_pixel_color_hex = imported_image_pxl_colors[color_index];
-            const new_pixel_color_hex = this.color_conversion.blend_colors(old_pixel_color_hex, top_pixel_color_hex, 1, false, false);
-
-
-            if(!pxl_colors.includes(new_pixel_color_hex)) {
-                pxl_colors.push(new_pixel_color_hex);
-            }
-
-            _s_layers[_layer_index].indexes[pixel_index] = pxl_colors.indexOf(new_pixel_color_hex);
+            layer.set_uint32(pixel_index, imported_image_pxl_colors[color_index]);
         });
-        _s_layers[_layer_index].set_colors(pxl_colors);
 
         this.super_state.set_state({
             _s_layers,
@@ -3110,8 +3096,7 @@ class CanvasPixels extends React.PureComponent {
 
         let { _s_layers, _layer_index } = this.super_state.get_state();
 
-        _s_layers[_layer_index] = this.filters.use(name, _s_layers[_layer_index], intensity, true)
-
+        this.filters.use(name, _s_layers[_layer_index], intensity)
         this.super_state.set_state({_s_layers, _pxls_hovered: -1, _last_action_timestamp: Date.now() }).then(() => this.super_master_meta.update_canvas(true));
 
     }
