@@ -1096,7 +1096,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                         <ListSubheader className={this._get_list_sub_header_classname("upload")} onClick={() => {this._scroll_to_id(`swipetoolbox_i_${index}_${0}`)}} disabled={_list_sub_header_opened != "upload"}>
                             <span className={"list-sub-header-main-text"}>
                                 <span><ImportIcon/></span>
-                                <span>Upload</span>
+                                <span>New Artwork</span>
                             </span>
                             {this._get_list_sub_header_content_scarlett("upload", "Define a size before uploading an image from the library or your device, this size will be the one used in the laboratory, but before! You can optionally define a retouching setting by artificial intelligence of your starting image, you can enlarge, colorize or even do both at the same time! That's how it's done to open an image in the lab, have fun.")}
                         </ListSubheader>
@@ -1117,7 +1117,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                                     <ImagePlusIcon/>
                                 </ListItemIcon>
                                 <ListItemText className={classes.ListItemTextBold}
-                                              primary={"OPEN IMAGE"} secondary={"NETWORK NOT REQUIRED"}/>
+                                              primary={"UPLOAD IMAGE"} secondary={"NETWORK NOT REQUIRED"}/>
                             </ListItem>
                             {false && <ListItem button onClick={() => {
                                 this._upload_image_from_library()
@@ -1128,7 +1128,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                                 <ListItemText className={classes.listItemIconBlueBold}
                                               primary={"OPEN FROM LIBRARY"} secondary={""}/>
                             </ListItem>}
-                            <ListItem button style={{contain: "style size layout"}} onClick={() => {
+                            {false && <ListItem button style={{contain: "style size layout"}} onClick={() => {
                                 window.open("https://www.artstation.com/pixapics/store")
                             }}>
                                 <ListItemIcon className={classes.listItemIconBlueBold}>
@@ -1138,7 +1138,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                                 </ListItemIcon>
                                 <ListItemText className={classes.ListItemTextBold}
                                               primary={"BUY PREMIUM ASSETS"} secondary={"DON'T WAIT ANYMORE"}/>
-                            </ListItem>
+                            </ListItem>}
                         </div>
                         <div className={"image " + classes.listItems}>
                             <div style={{
@@ -1339,6 +1339,16 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                         {
                             icon: <FileDownloadIcon/>,
                             class: classes.animatedDownload,
+                            text: "Hexagon",
+                            sub: "Upscale by 24x using an hexagonal grid",
+                            disabled: too_much_colors_no_vector,
+                            on_click: () => {
+                                this._download_svg("hexagon", _compressed, _vectorized, _crt, _photo)
+                            }
+                        },
+                        {
+                            icon: <FileDownloadIcon/>,
+                            class: classes.animatedDownload,
                             text: "Depixelize",
                             sub: "Upscale by 10x using Depixelize",
                             disabled: too_much_colors_no_vector,
@@ -1346,6 +1356,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                                 this._download_svg("depixelize", _compressed, _vectorized, _crt, _photo)
                             }
                         },
+
                         {
                             icon: <FileDownloadIcon/>,
                             class: classes.animatedDownload,
