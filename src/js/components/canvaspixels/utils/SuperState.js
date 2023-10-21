@@ -59,7 +59,7 @@ const SuperState = {
             _canvas_container: null,
             _canvas_wrapper: null,
             _canvas_wrapper_overflow: null,
-            _state_history_length: 20,
+            _state_history_length: 100,
             _last_action_timestamp: Date.now(),
             _lazy_lazy_compute_time_ms: 10 * 1000,
             _undo_buffer_time_ms: parseInt(parseInt(props.pxl_width || 32) + parseInt(props.pxl_height || 32) + 1000),

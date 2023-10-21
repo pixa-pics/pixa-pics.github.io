@@ -36,6 +36,69 @@ function generateFinalBase64(originalImageData, radius) {
         return uint32ToHex(getUint32(data, index));
     }
 
+    function findMidpoint(xy1, xy2) {
+        const xMid = (xy1[0] + xy2[0]) / 2;
+        const yMid = (xy1[1] + xy2[1]) / 2;
+        return [xMid, yMid];
+    }
+
+    function findDistanceXY(xy1, xy2) {
+        const dX = xy1[0] - xy2[0];
+        const dY = xy1[1] - xy2[1];
+        return [Math.sqrt(dX * dX), Math.sqrt(dY * dY)];
+    }
+
+    function drawKikko(ctx, x, y, color) {
+        // Define the style of painting on our canvas context
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = color;
+        ctx.fillStyle = color;
+        ctx.beginPath();
+
+        // Draw all intersections in a new path
+        var middleIntersection = [x, y];
+
+        var visibleIntersections = [
+            [x + r * Math.cos(a * 0), y + r * Math.sin(a * 0)],
+            [x + r * Math.cos(a * 2), y + r * Math.sin(a * 2)],
+            [x + r * Math.cos(a * 4), y + r * Math.sin(a * 4)]
+        ];
+
+        var ghostIntersections = [
+            [x + r * Math.cos(a * 1), y + r * Math.sin(a * 1)],
+            [x + r * Math.cos(a * 3), y + r * Math.sin(a * 3)],
+            [x + r * Math.cos(a * 5), y + r * Math.sin(a * 5)]
+        ];
+
+        var intersection = [0, 0]
+        ctx.lineTo(visibleIntersections[0][0], visibleIntersections[0][1]);
+        intersection = findMidpoint(visibleIntersections[0], ghostIntersections[0]);
+        ctx.lineTo(intersection[0], intersection[1]);
+        intersection = findMidpoint(middleIntersection, ghostIntersections[0]);
+        ctx.lineTo(intersection[0], intersection[1]);
+        intersection = findMidpoint(visibleIntersections[1], ghostIntersections[0]);
+        ctx.lineTo(intersection[0], intersection[1]);
+
+        ctx.lineTo(visibleIntersections[1][0], visibleIntersections[1][1]);
+        intersection = findMidpoint(visibleIntersections[1], ghostIntersections[1]);
+        ctx.lineTo(intersection[0], intersection[1]);
+        intersection = findMidpoint(middleIntersection, ghostIntersections[1]);
+        ctx.lineTo(intersection[0], intersection[1]);
+        intersection = findMidpoint(visibleIntersections[2], ghostIntersections[1]);
+        ctx.lineTo(intersection[0], intersection[1]);
+
+        ctx.lineTo(visibleIntersections[2][0], visibleIntersections[2][1]);
+        intersection = findMidpoint(visibleIntersections[2], ghostIntersections[2]);
+        ctx.lineTo(intersection[0], intersection[1]);
+        intersection = findMidpoint(middleIntersection, ghostIntersections[2]);
+        ctx.lineTo(intersection[0], intersection[1]);
+        intersection = findMidpoint(visibleIntersections[0], ghostIntersections[2]);
+        ctx.lineTo(intersection[0], intersection[1]);
+
+        // Close the path and fill the area
+        ctx.closePath(); ctx.stroke(); ctx.fill();
+    }
+
     function drawHexagon(ctx, x, y, color) {
         // Define the style of painting on our canvas context
         ctx.lineWidth = 1;
@@ -55,7 +118,29 @@ function generateFinalBase64(originalImageData, radius) {
         // When we return to a new line, if we have an odd number of column
         // We end up going to the bottom from a higher y coordinate (ZIGZAG in Y)
         let RorD = sizeX % 2 === 1 ? r: d; // Must go once or twice to the bottom
+        var distance = findDistanceXY(findMidpoint([r + r * Math.cos(a * 0), r + r * Math.sin(a * 0)], [r + r * Math.cos(a * 1), r + r * Math.sin(a * 1)]), findMidpoint([r + r * Math.cos(a * 1), r + r * Math.sin(a * 1)], [r, r]))
+        var padding = distance[0];
+        //var paddingApplied = padding;
 
+        // As long as we have column to then change y coordinate to the new lower line
+        for (let y = r; posY < sizeY; y += RorD * Math.sin(a)) {
+            posX = 0;
+            for (
+                let x = r, j = 0; // Reset cursor x
+                posX < sizeX; // As long as we still have some column in line
+                // Do the zigzag magic between hexagon of a line
+                x += r * (1 + Math.cos(a)),
+                    y += (-1) ** j++ * r * Math.sin(a)
+            ) {
+                //paddingApplied = (x % 2) === (y % 2) ? +padding: -padding;
+                // Get the hexadecimal HTML5 color and draw the shape
+                drawHexagon(ctx, x, y, getColor(data, sizeX, posX, posY));
+                posX++; // Update current coordinate X
+            }
+            posY++; // Update current coordinate Y
+        }
+
+        posX = 0; posY = 0;
         // As long as we have column to then change y coordinate to the new lower line
         for (let y = r; posY < sizeY; y += RorD * Math.sin(a)) {
             posX = 0;
@@ -66,8 +151,9 @@ function generateFinalBase64(originalImageData, radius) {
                     x += r * (1 + Math.cos(a)),
                     y += (-1) ** j++ * r * Math.sin(a)
             ) {
+                //paddingApplied = (x % 2) === (y % 2) ? +padding: -padding;
                 // Get the hexadecimal HTML5 color and draw the shape
-                drawHexagon(ctx, x, y, getColor(data, sizeX, posX, posY));
+                drawKikko(ctx, x-padding, y-padding, getColor(data, sizeX, posX, posY));
                 posX++; // Update current coordinate X
             }
             posY++; // Update current coordinate Y
@@ -91,10 +177,10 @@ function generateFinalBase64(originalImageData, radius) {
 }
 
 // This function return a promise that return the up scaled image data
-function hexagonrender(image_data, scale, pool) {
+function zaprender(image_data, scale, pool) {
     return new Promise( function(resolve, reject){
         resolve(generateFinalBase64(image_data, scale));
     });
 }
 
-module.exports = { hexagonrender: hexagonrender };
+module.exports = { zaprender: zaprender };

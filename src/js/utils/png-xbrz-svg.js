@@ -1,7 +1,6 @@
 import pool from "../utils/worker-pool";
 import JSLoader from "./JSLoader";
 import depixelize from "../utils/depixelize/index";
-import actions from "../actions/utils";
 
 const base64png_to_xbrz_svg = (base64png, callback_function_for_image, callback_function_for_svg, callback_function_for_crt, pal= [], using = "xbrz", optimize_render_size = false, download_svg = false, also_crt= false) => {
 
@@ -233,6 +232,40 @@ const base64png_to_xbrz_svg = (base64png, callback_function_for_image, callback_
                 const first_scale_size = 24;
 
                 hexagonrender(image_data, first_scale_size/2, pool).then((second_image_data) => {
+
+                    let third_canvas = document.createElement("canvas");
+                    third_canvas.width = second_image_data.width;
+                    third_canvas.height = second_image_data.height;
+                    let third_canvas_ctx = third_canvas.getContext("2d");
+                    third_canvas_ctx.putImageData(second_image_data, 0, 0);
+                    let base64_out = third_canvas_ctx.canvas.toDataURL("image/png");
+
+                    if(also_crt) {
+
+                        process_crt(second_image_data, 1).then(function (imgd){
+                            let fourth_canvas = document.createElement("canvas");
+                            fourth_canvas.width = imgd.width;
+                            fourth_canvas.height = imgd.height;
+                            let fourth_canvas_ctx = fourth_canvas.getContext("2d");
+                            fourth_canvas_ctx.putImageData(imgd, 0, 0);
+                            let base64_crt_out = fourth_canvas.toDataURL("image/png");
+                            process_optimize_render_size(base64_crt_out, first_scale_size/2, imgd.width, imgd.height, callback_function_for_crt);
+                        });
+                    }
+
+                    process_svg(second_image_data, first_scale_size/6);
+                    process_optimize_render_size(base64_out, first_scale_size, second_image_data.width, second_image_data.height, callback_function_for_image);
+
+                });
+            });
+
+        }else if(using === "zap") {
+
+            JSLoader( () => import("../utils/zaprender")).then(({zaprender}) => {
+
+                const first_scale_size = 24;
+
+                zaprender(image_data, first_scale_size/2, pool).then((second_image_data) => {
 
                     let third_canvas = document.createElement("canvas");
                     third_canvas.width = second_image_data.width;

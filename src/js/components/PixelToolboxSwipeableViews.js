@@ -1339,6 +1339,16 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                         {
                             icon: <FileDownloadIcon/>,
                             class: classes.animatedDownload,
+                            text: "Zap",
+                            sub: "Upscale by 24x using a Kikko & Hexagonal grid",
+                            disabled: too_much_colors_no_vector,
+                            on_click: () => {
+                                this._download_svg("zap", _compressed, _vectorized, _crt, _photo)
+                            }
+                        },
+                        {
+                            icon: <FileDownloadIcon/>,
+                            class: classes.animatedDownload,
                             text: "Hexagon",
                             sub: "Upscale by 24x using an hexagonal grid",
                             disabled: too_much_colors_no_vector,
