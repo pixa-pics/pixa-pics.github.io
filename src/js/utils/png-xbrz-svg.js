@@ -259,13 +259,13 @@ const base64png_to_xbrz_svg = (base64png, callback_function_for_image, callback_
                 });
             });
 
-        }else if(using === "zap") {
+        }else if(using === "kikko") {
 
-            JSLoader( () => import("../utils/zaprender")).then(({zaprender}) => {
+            JSLoader( () => import("../utils/kikkorender")).then(({kikkorender}) => {
 
-                const first_scale_size = 24;
+                const first_scale_size = 32;
 
-                zaprender(image_data, first_scale_size/2, pool).then((second_image_data) => {
+                kikkorender(image_data, first_scale_size/2, pool).then((second_image_data) => {
 
                     let third_canvas = document.createElement("canvas");
                     third_canvas.width = second_image_data.width;

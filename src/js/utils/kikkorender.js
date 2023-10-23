@@ -1,5 +1,5 @@
 /* MIT License, Copyright (c) 2023 Affolter Matias */
-function generateFinalBase64(originalImageData, radius) {
+function generateFinalImageData(originalImageData, radius) {
 
     if (radius <= 2 || radius >= 36) {
         throw new Error("Invalid radius value. Must within 2 and 36");
@@ -10,10 +10,22 @@ function generateFinalBase64(originalImageData, radius) {
     const r = radius;
     const d = r * 2;
 
+    var heightElement = d * Math.sin(a);
+    var distanceEdge = findDistanceXY(findMidpoint([r + r * Math.cos(a * 0), r + r * Math.sin(a * 0)], [r + r * Math.cos(a * 1), r + r * Math.sin(a * 1)]), findMidpoint([r + r * Math.cos(a * 1), r + r * Math.sin(a * 1)], [r, r]))
+    var paddingXBig = distanceEdge[0];
+    var paddingXSmall = (r - paddingXBig) / 2;
+
+    var paddingXSum = paddingXBig + paddingXSmall;
+    var paddingYSum = (heightElement/2) + paddingXBig;
+
+    var widthElement = heightElement + paddingXSmall;
+    var distanceElementX = paddingXSum * 2;
+    var distanceElementY = paddingYSum * 2;
+
     // Create an intermediate canvas to draw hexagon onto it
     const canvas = document.createElement("canvas");
-    canvas.width = originalImageData.width * d - (Math.floor(originalImageData.width/2)*r); // Hexagons are taking 1x Diameter less 1/2 radius of width
-    canvas.height = originalImageData.height * (d * Math.sin(a)) + (originalImageData.width % 2 === 0 ? d: r); // Hexagons are taking a height that is computed differently
+    canvas.width = originalImageData.width * distanceElementX + widthElement; // Hexagons are taking 1x Diameter less 1/2 radius of width
+    canvas.height = originalImageData.height * paddingYSum + heightElement; // Hexagons are taking a height that is computed differently
     const ctx = canvas.getContext('2d');
 
     function getUint32(data, index) {
@@ -50,7 +62,7 @@ function generateFinalBase64(originalImageData, radius) {
 
     function drawKikko(ctx, x, y, color) {
         // Define the style of painting on our canvas context
-        ctx.lineWidth = 1;
+        ctx.lineWidth = 2;
         ctx.strokeStyle = color;
         ctx.fillStyle = color;
         ctx.beginPath();
@@ -99,88 +111,39 @@ function generateFinalBase64(originalImageData, radius) {
         ctx.closePath(); ctx.stroke(); ctx.fill();
     }
 
-    function drawHexagon(ctx, x, y, color) {
-        // Define the style of painting on our canvas context
-        ctx.lineWidth = 1;
-        ctx.strokeStyle = color;
-        ctx.fillStyle = color;
-        ctx.beginPath();
-        // Draw all intersections in a new path
-        for (let i = 0; i < 6; i++) {
-            ctx.lineTo(x + r * Math.cos(a * i), y + r * Math.sin(a * i));
-        }
-        // Close the path and fill the area
-        ctx.closePath(); ctx.stroke(); ctx.fill();
-    }
-
     function drawGrid(ctx, data, width, height, sizeX, sizeY) {
         let posX = 0, posY = 0;
-        // When we return to a new line, if we have an odd number of column
-        // We end up going to the bottom from a higher y coordinate (ZIGZAG in Y)
-        let RorD = sizeX % 2 === 1 ? r: d; // Must go once or twice to the bottom
-        var distance = findDistanceXY(findMidpoint([r + r * Math.cos(a * 0), r + r * Math.sin(a * 0)], [r + r * Math.cos(a * 1), r + r * Math.sin(a * 1)]), findMidpoint([r + r * Math.cos(a * 1), r + r * Math.sin(a * 1)], [r, r]))
-        var padding = distance[0];
-        //var paddingApplied = padding;
 
         // As long as we have column to then change y coordinate to the new lower line
-        for (let y = r; posY < sizeY; y += RorD * Math.sin(a)) {
+        for (let y = heightElement/2; posY < sizeY; y += paddingYSum) {
             posX = 0;
             for (
-                let x = r, j = 0; // Reset cursor x
+                let x = (posY % 2 === 0 ? 0: paddingXSum); // Reset cursor x
                 posX < sizeX; // As long as we still have some column in line
                 // Do the zigzag magic between hexagon of a line
-                x += r * (1 + Math.cos(a)),
-                    y += (-1) ** j++ * r * Math.sin(a)
+                    x += distanceElementX
             ) {
                 //paddingApplied = (x % 2) === (y % 2) ? +padding: -padding;
                 // Get the hexadecimal HTML5 color and draw the shape
-                drawHexagon(ctx, x, y, getColor(data, sizeX, posX, posY));
-                posX++; // Update current coordinate X
+                drawKikko(ctx, x, y, getColor(data, sizeX, posX, posY));
+                posX ++; // Update current coordinate X
             }
-            posY++; // Update current coordinate Y
-        }
-
-        posX = 0; posY = 0;
-        // As long as we have column to then change y coordinate to the new lower line
-        for (let y = r; posY < sizeY; y += RorD * Math.sin(a)) {
-            posX = 0;
-            for (
-                let x = r, j = 0; // Reset cursor x
-                posX < sizeX; // As long as we still have some column in line
-                // Do the zigzag magic between hexagon of a line
-                    x += r * (1 + Math.cos(a)),
-                    y += (-1) ** j++ * r * Math.sin(a)
-            ) {
-                //paddingApplied = (x % 2) === (y % 2) ? +padding: -padding;
-                // Get the hexadecimal HTML5 color and draw the shape
-                drawKikko(ctx, x-padding, y-padding, getColor(data, sizeX, posX, posY));
-                posX++; // Update current coordinate X
-            }
-            posY++; // Update current coordinate Y
+            posY ++; // Update current coordinate Y
         }
     }
 
     // Paint our new image into our working canvas
     drawGrid(ctx, originalImageData.data, canvas.width, canvas.height, originalImageData.width, originalImageData.height);
 
-    // Paint the working canvas into a new one with a ratio that is not distorted
-    // Since hexagon are placed asymmetrically in columns and lines, we have to flatten the height a bit
-    const canvas2 = document.createElement("canvas");
-    canvas2.width = canvas.width; // The width doesn't change
-    // Yet we apply the same mathematical operation of the one used for the width yet for the height
-    canvas2.height = originalImageData.height * d - (Math.floor(originalImageData.height/2)*r);
-    const ctx2 = canvas2.getContext('2d');
-    // Draw the image with a correct ratio
-    ctx2.drawImage(canvas, 0, 0, canvas.width, canvas.height, 0, 0, canvas2.width, canvas2.height);
     // Return the new image data
-    return ctx2.getImageData(0, 0, canvas2.width, canvas2.height);
+    return ctx.getImageData(0, 0, canvas.width, canvas.height);
 }
 
 // This function return a promise that return the up scaled image data
-function zaprender(image_data, scale, pool) {
+function kikkorender(image_data, scale, pool) {
     return new Promise( function(resolve, reject){
-        resolve(generateFinalBase64(image_data, scale));
+        resolve(generateFinalImageData(image_data, scale));
     });
 }
 
-module.exports = { zaprender: zaprender };
+module.exports = { "kikkorender": kikkorender };

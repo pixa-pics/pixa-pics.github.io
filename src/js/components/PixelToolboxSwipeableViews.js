@@ -1339,11 +1339,11 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                         {
                             icon: <FileDownloadIcon/>,
                             class: classes.animatedDownload,
-                            text: "Zap",
-                            sub: "Upscale by 24x using a Kikko & Hexagonal grid",
+                            text: "Kikko",
+                            sub: "Upscale by 32x using a 400 years old Japanese pattern",
                             disabled: too_much_colors_no_vector,
                             on_click: () => {
-                                this._download_svg("zap", _compressed, _vectorized, _crt, _photo)
+                                this._download_svg("kikko", _compressed, _vectorized, _crt, _photo)
                             }
                         },
                         {
@@ -1356,7 +1356,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                                 this._download_svg("hexagon", _compressed, _vectorized, _crt, _photo)
                             }
                         },
-                        {
+                        /*{
                             icon: <FileDownloadIcon/>,
                             class: classes.animatedDownload,
                             text: "Depixelize",
@@ -1365,8 +1365,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                             on_click: () => {
                                 this._download_svg("depixelize", _compressed, _vectorized, _crt, _photo)
                             }
-                        },
-
+                        },*/
                         {
                             icon: <FileDownloadIcon/>,
                             class: classes.animatedDownload,
@@ -1387,7 +1386,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                                 this._download_svg("xbrz", _compressed, _vectorized, _crt, _photo)
                             }
                         },
-                        {
+                        /*{
                             icon: <FileDownloadIcon/>,
                             class: classes.animatedDownload,
                             text: "hqNx",
@@ -1406,7 +1405,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                             on_click: () => {
                                 this._download_svg("epx", _compressed, _vectorized, _crt, _photo)
                             }
-                        },
+                        },*/
                         {
                             icon: _compressed ? <CheckedIcon/>: <UncheckedIcon/>,
                             text: "Compressed",
