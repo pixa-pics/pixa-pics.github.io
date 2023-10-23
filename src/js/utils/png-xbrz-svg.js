@@ -229,7 +229,7 @@ const base64png_to_xbrz_svg = (base64png, callback_function_for_image, callback_
 
             JSLoader( () => import("../utils/hexagonrender")).then(({hexagonrender}) => {
 
-                const first_scale_size = 24;
+                const first_scale_size = 32;
 
                 hexagonrender(image_data, first_scale_size/2, pool).then((second_image_data) => {
 
@@ -263,7 +263,7 @@ const base64png_to_xbrz_svg = (base64png, callback_function_for_image, callback_
 
             JSLoader( () => import("../utils/kikkorender")).then(({kikkorender}) => {
 
-                const first_scale_size = 32;
+                const first_scale_size = 48;
 
                 kikkorender(image_data, first_scale_size/2, pool).then((second_image_data) => {
 
@@ -287,7 +287,7 @@ const base64png_to_xbrz_svg = (base64png, callback_function_for_image, callback_
                         });
                     }
 
-                    process_svg(second_image_data, first_scale_size/6);
+                    process_svg(second_image_data, first_scale_size/8);
                     process_optimize_render_size(base64_out, first_scale_size, second_image_data.width, second_image_data.height, callback_function_for_image);
 
                 });

@@ -1283,27 +1283,10 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                         {
                             icon: <FileDownloadIcon/>,
                             class: classes.animatedDownload,
-                            text: "Render (6x size)",
-                            sub: "Upscale 6x",
-                            on_click: () => {
-                                this._download_png(6)
-                            }
-                        },
-                        {
-                            icon: <FileDownloadIcon/>,
-                            class: classes.animatedDownload,
                             text: "Render (8x size)",
                             sub: "Upscale 8x",
                             on_click: () => {
                                 this._download_png(8)
-                            }
-                        },
-                        {
-                            icon: <FileDownloadIcon/>,
-                            class: classes.animatedDownload,
-                            text: "Render (12x size)",
-                            sub: "[CTRL + S]", on_click: () => {
-                                this._download_png(12)
                             }
                         },
                         {
@@ -1321,6 +1304,24 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                             sub: "Upscale 24x",
                             on_click: () => {
                                 this._download_png(24)
+                            }
+                        },
+                        {
+                            icon: <FileDownloadIcon/>,
+                            class: classes.animatedDownload,
+                            text: "Render (32x size)",
+                            sub: "Upscale 32x",
+                            on_click: () => {
+                                this._download_png(32)
+                            }
+                        },
+                        {
+                            icon: <FileDownloadIcon/>,
+                            class: classes.animatedDownload,
+                            text: "Render (48x size)",
+                            sub: "Upscale 48x",
+                            on_click: () => {
+                                this._download_png(48)
                             }
                         }
                     ]
@@ -1340,7 +1341,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                             icon: <FileDownloadIcon/>,
                             class: classes.animatedDownload,
                             text: "Kikko",
-                            sub: "Upscale by 32x using a 400 years old Japanese pattern",
+                            sub: "Upscale by 48x using a 400 years old Japanese pattern",
                             disabled: too_much_colors_no_vector,
                             on_click: () => {
                                 this._download_svg("kikko", _compressed, _vectorized, _crt, _photo)
@@ -1350,7 +1351,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                             icon: <FileDownloadIcon/>,
                             class: classes.animatedDownload,
                             text: "Hexagon",
-                            sub: "Upscale by 24x using an hexagonal grid",
+                            sub: "Upscale by 32x using an hexagonal grid",
                             disabled: too_much_colors_no_vector,
                             on_click: () => {
                                 this._download_svg("hexagon", _compressed, _vectorized, _crt, _photo)

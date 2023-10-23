@@ -8,10 +8,11 @@
  * @return {ImageData} - The rotated ImageData.
  */
 function rotateImageData(imageData, direction) {
+    "use strict";
     // Create an off-screen canvas and context
     let canvas = document.createElement('canvas');
     let ctx = canvas.getContext('2d');
-
+        ctx.imageSmoothingEnabled = false;
     // Set the canvas size to the ImageData size
     canvas.width = imageData.width;
     canvas.height = imageData.height;
@@ -22,7 +23,7 @@ function rotateImageData(imageData, direction) {
     // Create another canvas for rotation
     let rotatedCanvas = document.createElement('canvas');
     let rotatedCtx = rotatedCanvas.getContext('2d');
-
+        rotatedCtx.imageSmoothingEnabled = false;
     // Set the size of the rotated canvas
     if (direction === 'left' || direction === 'right') {
         rotatedCanvas.width = canvas.height;
@@ -47,10 +48,12 @@ function rotateImageData(imageData, direction) {
 function generateFinalImageData(originalImageData, radius) {
 
     "use strict";
-    if (radius <= 2 || radius >= 36) {
-        throw new Error("Invalid radius value. Must within 2 and 36");
+    if (radius <= 2 || radius >= 32) {
+        throw new Error("Invalid radius value. Must within 2 and 32");
     }
 
+    var lineWidth = Math.ceil(radius/16)/2;
+    var ratio = originalImageData.height / originalImageData.width;
     originalImageData = rotateImageData(originalImageData, "right");
     // Create constant
     const a = 2 * Math.PI / 6;
@@ -63,9 +66,7 @@ function generateFinalImageData(originalImageData, radius) {
     var paddingXSmall = (r - paddingXBig) / 2;
 
     var paddingXSum = paddingXBig + paddingXSmall;
-    var paddingYSum = (heightElement/2) + paddingXBig;
-
-    var widthElement = heightElement + paddingXSmall;
+    var paddingYSum = (heightElement/2) + paddingXBig * Math.sin(a);
     var distanceElementX = paddingXSum * 2;
     var distanceElementY = paddingYSum * 2;
 
@@ -74,9 +75,11 @@ function generateFinalImageData(originalImageData, radius) {
     canvas.width = originalImageData.width * distanceElementX + paddingXSum; // Hexagons are taking 1x Diameter less 1/2 radius of width
     canvas.height = originalImageData.height * paddingYSum + paddingYSum; // Hexagons are taking a height that is computed differently
     const ctx = canvas.getContext('2d');
+    ctx.imageSmoothingEnabled = false;
 
     function getUint32(data, index) {
         "use strict";
+        index = (index | 0) >>> 0;
         // Verify the given index is within the bounds of the r, g, b, a uint8array
         if (index >= 0 && index < data.length) {
             // "Sum up" 4 x 8bits into 1 x 32 bit unsigned integer
@@ -87,6 +90,7 @@ function generateFinalImageData(originalImageData, radius) {
 
     function uint32ToHex(uint32) {
         "use strict";
+        uint32 = (uint32 | 0) >>> 0;
         // Converting the number to a hexadecimal string which is added to a string made of zeroes
         // The hexadecimal with padding is cut to represent a fixed length of rrggbbaa which are added to "#"
        return "#".concat("00000000".concat(uint32.toString(16)).slice(-8));
@@ -94,7 +98,7 @@ function generateFinalImageData(originalImageData, radius) {
 
     function getColor(data, w, x, y) {
         "use strict";
-        let index = (y * w + x) * 4; // Compute the index (within the data where 4 elements gives a color
+        let index = (y * w + x | 0) << 2; // Compute the index (within the data where 4 elements gives a color
         return uint32ToHex(getUint32(data, index));
     }
 
@@ -115,7 +119,7 @@ function generateFinalImageData(originalImageData, radius) {
     function drawKikko(ctx, x, y, color) {
         "use strict";
         // Define the style of painting on our canvas context
-        ctx.lineWidth = 2;
+        ctx.lineWidth = lineWidth;
         ctx.strokeStyle = color;
         ctx.fillStyle = color;
         ctx.beginPath();
@@ -189,14 +193,32 @@ function generateFinalImageData(originalImageData, radius) {
     // Paint our new image into our working canvas
     drawGrid(ctx, originalImageData.data, canvas.width, canvas.height, originalImageData.width, originalImageData.height);
 
-    // Return the new image data
+    // Get the new rotated (back) image data
     var finalImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    return rotateImageData(finalImageData, "left");
+        finalImageData = rotateImageData(finalImageData, "left");
+        // Resize the current canvas and paint the rotated image back
+        canvas.width = finalImageData.width;
+        canvas.height = finalImageData.height;
+        ctx.putImageData(finalImageData, 0, 0);
+
+    // Draw the image with a correct ratio
+    var canvas2 = document.createElement("canvas");
+        canvas2.width = finalImageData.width; // The width doesn't change
+        // The height get adjusted by the ratio initially computed
+        canvas2.height = Math.round(finalImageData.width * ratio);
+    var ctx2 = canvas2.getContext('2d');
+        //ctx2.imageSmoothingEnabled = false;
+        ctx2.drawImage(canvas, 0, 0, canvas.width, canvas.height, 0, 0, canvas2.width, canvas2.height);
+
+    // Return the new image data
+    return ctx2.getImageData(0, 0, canvas2.width, canvas2.height);
 }
 
 // This function return a promise that return the up scaled image data
 function kikkorender(image_data, scale, pool) {
+    "use strict";
     return new Promise( function(resolve, reject){
+        "use strict";
         resolve(generateFinalImageData(image_data, scale));
     });
 }
