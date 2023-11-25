@@ -1,5 +1,5 @@
 import {SIMDopeCreate} from "simdope";
-const {Color, Colors} = SIMDopeCreate({
+const {Color, Colors, simdops} = SIMDopeCreate({
     "create": {
         "new_uint32": true,
         "new_zero": true
@@ -11,6 +11,8 @@ const {Color, Colors} = SIMDopeCreate({
         "blend_with": true
     }
 });
+var {abs_int, clamp_int, minus_int} = simdops;
+var fr = Math.fround;
 import {SetFixed} from "@asaitama/boolean-array";
 import XXHashJS from "./xxhash";
 import XXHashWASM from "xxhash-wasm";
@@ -958,6 +960,14 @@ Object.defineProperty(Layer.prototype, 'changes_has', {
     configurable: false
 });
 
+Object.defineProperty(Layer.prototype, 'setFixed', {
+    get: function() {
+        "use strict";
+        return this.changes_;
+    },
+    enumerable: false,
+    configurable: false
+});
 
 Object.defineProperty(Layer.prototype, 'clear_changes', {
     get: function() {
@@ -1356,14 +1366,6 @@ Object.defineProperty(FilterGreyscale.prototype, 'filter_colors', {
     configurable: false
 });
 
-var FilterSepia = function(){
-    "use strict";
-
-    if (!(this instanceof FilterSepia)) {
-        return new FilterSepia();
-    }
-};
-
 var SEPIA_FLOATS = Float32Array.of(.393, .769, .189, .349, .686, .168, .272, .534, .131);
 function CLAMP_UINT( x,min,max ) {
     "use strict";
@@ -1371,6 +1373,116 @@ function CLAMP_UINT( x,min,max ) {
     x = (x - ((x - max|0) & ((max - x|0) >> 31)) | 0) >>> 0;
     return (x - ((x - min|0) & ((x - min|0) >> 31)) | 0) >>> 0;
 }
+
+// Result Color = Top Color + Bottom Color − (Top Color × Bottom Color)
+function SCREEN_COMP(uint8) {
+    "use strict";
+    var float32 = fr(uint8 / 255);
+    return 255 - clamp_int(uint8 + uint8 - Math.round(float32 * float32 * 255 | 0) | 0, 0, 255);
+}
+
+// Result Color = absolute ( Top Color − Bottom Color )
+function DIFFERENCE_COMP(uint8) {
+    "use strict";
+    return abs_int(minus_int(uint8, uint8));
+}
+
+var FilterScreen = function(){
+    "use strict";
+
+    if (!(this instanceof FilterScreen)) {
+        return new FilterScreen();
+    }
+};
+
+
+Object.defineProperty(FilterScreen.prototype, 'filter_colors', {
+    get: function() {
+        "use strict";
+        return function (colors, intensity){
+            "use strict";
+            intensity = Math.round(parseFloat(intensity) / 4 * 255) | 0;
+            var uint8_colors = new Uint8Array(colors.buffer);
+            var new_uint8_colors_length = uint8_colors.length|0;
+            var new_uint8_colors = new Uint8Array(new_uint8_colors_length|0);
+            var new_uint32_colors = new Uint32Array(new_uint8_colors.buffer);
+
+            for(var i4 = 0; (i4|0) < (new_uint8_colors_length|0); i4 = (i4+4|0)>>>0){
+                new_uint8_colors[i4|0] = SCREEN_COMP(new_uint8_colors[i4|0]);
+                new_uint8_colors[i4+1|0] = SCREEN_COMP(new_uint8_colors[i4+1|0]);
+                new_uint8_colors[i4+2|0] = SCREEN_COMP(new_uint8_colors[i4+2|0]);
+                new_uint8_colors[i4+3|0] = uint8_colors[i4+3|0];
+            }
+
+            var old_simdope_colors = new Colors(colors);
+            var new_simdope_colors = new Colors(new_uint32_colors);
+            var temp_simdope_colors_a = new Color(new ArrayBuffer(4));
+            var temp_simdope_colors_b = new Color(new ArrayBuffer(4));
+            var new_uint32_colors_length = new_uint32_colors.length|0;
+
+            for(var i = 0; (i|0) < (new_uint32_colors_length|0); i = (i+1|0)>>>0){
+                old_simdope_colors.get_use_element(i|0, temp_simdope_colors_a).blend_with(new_simdope_colors.get_use_element(i|0,temp_simdope_colors_b), intensity, false, false);
+            }
+
+            return colors;
+        };
+    },
+    enumerable: false,
+    configurable: false
+});
+
+
+var FilterDifference = function(){
+    "use strict";
+
+    if (!(this instanceof FilterDifference)) {
+        return new FilterDifference();
+    }
+};
+
+
+Object.defineProperty(FilterDifference.prototype, 'filter_colors', {
+    get: function() {
+        "use strict";
+        return function (colors, intensity){
+            "use strict";
+            intensity = Math.round(parseFloat(intensity) / 2 * 255) | 0;
+            var uint8_colors = new Uint8Array(colors.buffer);
+            var new_uint8_colors_length = uint8_colors.length|0;
+            var new_uint8_colors = new Uint8Array(new_uint8_colors_length|0);
+            var new_uint32_colors = new Uint32Array(new_uint8_colors.buffer);
+
+            for(var i4 = 0; (i4|0) < (new_uint8_colors_length|0); i4 = (i4+4|0)>>>0){
+                new_uint8_colors[i4|0] = DIFFERENCE_COMP(new_uint8_colors[i4|0]);
+                new_uint8_colors[i4+1|0] = DIFFERENCE_COMP(new_uint8_colors[i4+1|0]);
+                new_uint8_colors[i4+2|0] = DIFFERENCE_COMP(new_uint8_colors[i4+2|0]);
+                new_uint8_colors[i4+3|0] = uint8_colors[i4+3|0];
+            }
+
+            var old_simdope_colors = new Colors(colors);
+            var new_simdope_colors = new Colors(new_uint32_colors);
+            var temp_simdope_colors_a = new Color(new ArrayBuffer(4));
+            var temp_simdope_colors_b = new Color(new ArrayBuffer(4));
+            var new_uint32_colors_length = new_uint32_colors.length|0;
+
+            for(var i = 0; (i|0) < (new_uint32_colors_length|0); i = (i+1|0)>>>0){
+                old_simdope_colors.get_use_element(i|0, temp_simdope_colors_a).blend_with(new_simdope_colors.get_use_element(i|0,temp_simdope_colors_b), intensity, false, false);
+            }
+
+            return colors;
+        };
+    },
+    enumerable: false,
+    configurable: false
+});
+
+var FilterSepia = function(){
+    "use strict";
+
+    if (!(this instanceof FilterSepia)) {
+        return new FilterSepia();
+    }
+};
 
 Object.defineProperty(FilterSepia.prototype, 'filter_colors', {
     get: function() {
@@ -1453,9 +1565,11 @@ var Filters = function(data){
     data = data || DEFAULT_FILTERS;
     this.names_ = Object.keys(data);
     this.filters_ = Object.values(data).map(function (o){return Filter(o);});
-    this.special_names_ = Array.of("Greyscale","Sepia");
+    this.special_names_ = Array.of("Greyscale","Sepia", "Screen", "Difference");
     this.filter_sepia_ = new FilterSepia();
     this.filter_greyscale_ = new FilterGreyscale();
+    this.filter_screen_ = new FilterScreen();
+    this.filter_difference_ = new FilterDifference();
 };
 Object.defineProperty(Filters.prototype, 'names', {
     get: function() {
@@ -1478,6 +1592,10 @@ Object.defineProperty(Filters.prototype, 'use', {
                     switch (name){
                         case "Sepia":
                             return Layer.new_from_colors_and_indexes(this.filter_sepia_.filter_colors(layer.colors_copy, intensity), layer.indexes, layer.width, layer.height);
+                        case "Screen":
+                            return Layer.new_from_colors_and_indexes(this.filter_screen_.filter_colors(layer.colors_copy, intensity), layer.indexes, layer.width, layer.height);
+                        case "Difference":
+                            return Layer.new_from_colors_and_indexes(this.filter_difference_.filter_colors(layer.colors_copy, intensity), layer.indexes, layer.width, layer.height);
                         default:
                             return Layer.new_from_colors_and_indexes(this.filter_greyscale_.filter_colors(layer.colors_copy, intensity), layer.indexes, layer.width, layer.height);
                     }
@@ -1485,6 +1603,12 @@ Object.defineProperty(Filters.prototype, 'use', {
                     switch (name){
                         case "Sepia":
                             layer.set_colors(this.filter_sepia_.filter_colors(layer.colors_copy, intensity));
+                            return layer;
+                        case "Screen":
+                            layer.set_colors(this.filter_screen_.filter_colors(layer.colors_copy, intensity));
+                            return layer;
+                        case "Difference":
+                            layer.set_colors(this.filter_difference_.filter_colors(layer.colors_copy, intensity));
                             return layer;
                         default:
                             layer.set_colors(this.filter_greyscale_.filter_colors(layer.colors_copy, intensity));

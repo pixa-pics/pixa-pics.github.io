@@ -7,6 +7,9 @@ var MODE = SIMDopeCreateConfAdd({
     "methods": {
         "get_use_element": true,
         "set_tail": true,
+        "get_tail": true,
+        "get_tail_opacity": true,
+        "reset_tail": true,
         "is_dark": true,
         "blend_first_with": true,
         "blend_first_with_tails": true
@@ -302,6 +305,8 @@ SuperBlend.prototype.blend = function(should_return_transparent, alpha_addition)
                 colors_data_in_layers_uint32_SIMDope.get_use_element(off[1], layers_colors[layer_n+1|0]);
                 layers_colors[layer_n|0].set_tail(layers_colors[layer_n+1|0], layers_opacity_255[layer_n|0]);
             }
+
+            //layers_colors[layer_n|0].reset_tail();
 
             if((hover_data_in_layer[i | 0]|0) > 0) {
                 layers_color_0.blend_first_with_tails(alpha_addition)

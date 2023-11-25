@@ -223,7 +223,7 @@ Object.defineProperty(SuperCanvas.prototype, 'render', {
         } else if (this.state_.enable_paint_type === "offscreen") {
 
             this.state_.s.canvas_context.globalCompositeOperation = "copy";
-            this.state_.s.canvas_context.drawImage(this.state_.s.offscreen_canvas_context.canvas, 0, 0, this.state_.s.width, this.state_.s.height);
+            this.state_.s.canvas_context.drawImage(this.state_.s.offscreen_canvas_context.canvas, 0, 0);
             return Promise.resolve();
         }else {
 
@@ -257,7 +257,8 @@ Object.defineProperty(SuperCanvas.prototype, 'prender', {
 
         }else if (this.state_.enable_paint_type === "offscreen") {
 
-            return draw_2d(this.state_.s.offscreen_canvas_context, this.state_);
+            return Promise.resolve();
+            //return draw_2d(this.state_.s.offscreen_canvas_context, this.state_);
 
         }else {
 
@@ -286,32 +287,46 @@ Object.defineProperty(SuperCanvas.prototype, 'unpile', {
             let pr = this.state_.pr;
             let xy1xy2 = pr.xy1xy2;
             let index = new Uint32Array(1);
-            let context = this.state_.s.canvas_context;
 
-            if(index_changes.length < 192 || this.state_.enable_paint_type === "") {
+            if(index_changes.length < 1024 || this.state_.enable_paint_type !== "bitmap") {
 
+                let context = this.state_.enable_paint_type === "offscreen" ? this.state_.s.offscreen_canvas_context: this.state_.s.canvas_context;
                 let colors = new Colors(color_changes.buffer, color_changes.byteOffset, color_changes.byteLength);
                 let color = new Color(new ArrayBuffer(4));
+                let uint32HEXMap = {};
+                let uint32PATHSMap = {};
 
-                function paint(context, xya, hex) {
+                function paint(context, path, hex) {
                     "use strict";
                     context.fillStyle = hex;
-                    context.clearRect(xya[0], xya[1], 1, 1);
-                    context.fillRect(xya[0], xya[1], 1, 1);
+                    context.fill(path);
                 }
 
                 for (let i = 0, l = index_changes.length | 0; uint_less(i, l); i = plus_uint(i, 1)) {
 
-                    index[0] = index_changes[i];
-                    uint32a[index[0]] = color_changes[i];
+                    index[0] = index_changes[i|0];
+                    uint32a[index[0]] = color_changes[i|0];
 
                     xyarray[0] = modulo_uint(index[0], width);
                     xyarray[1] = divide_uint(minus_uint(index[0], xyarray[0]), width);
-                    paint(context, xyarray, colors.get_use_element(i, color).hex);
+
+                    if (typeof uint32HEXMap[color_changes[i|0]] == "undefined"){
+                        uint32HEXMap[color_changes[i|0]] = colors.get_use_element(i, color).hex;
+                        uint32PATHSMap[color_changes[i|0]] = new Path2D();
+                    }
+
+                    context.clearRect(xyarray[0], xyarray[1], 1, 1);
+                    uint32PATHSMap[color_changes[i|0]].rect(xyarray[0], xyarray[1], 1, 1);
+                }
+
+                var keys = Uint32Array.from(Object.keys(uint32PATHSMap));
+
+                for (let i = 0, l = keys.length | 0; uint_less(i, l); i = plus_uint(i, 1)) {
+                    paint(context, uint32PATHSMap[keys[i]], uint32HEXMap[keys[i]])
                 }
 
                 this.state_.ic.used = true;
-                this.state_.enable_paint_type = "";
+                this.state_.enable_paint_type = this.state_.enable_paint_type === "offscreen" ? "offscreen": "";
             }else {
 
                 for (let i = 0, l = index_changes.length | 0; uint_less(i, l); i = plus_uint(i, 1)) {
@@ -347,7 +362,7 @@ Object.defineProperty(SuperCanvas.prototype, 'unpile', {
             this.state_.ic.used = true;
             return Promise.resolve();
         }else {
-            this.state_.enable_paint_type = "";
+            //this.state_.enable_paint_type = "";
             return Promise.resolve();
         }
         /*else {
