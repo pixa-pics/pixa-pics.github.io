@@ -2,9 +2,19 @@ import React from "react";
 import { withStyles} from "@material-ui/core";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
+import Tabs from "@material-ui/core/Tabs";
+import Tab from "@material-ui/core/Tab";
 import Masonry, {ResponsiveMasonry} from "react-responsive-masonry"
 
 import actions from "../actions/utils";
+import {
+    AccountBalanceWallet,
+    ArrowDownward,
+    ArrowUpward,
+    History,
+    Image,
+    Message
+} from "@material-ui/icons";
 
 const styles = theme => ({
     root: {
@@ -42,7 +52,7 @@ const styles = theme => ({
         height: "100%",
         background: "url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHoAAAA0CAMAAABy1dzKAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAAzUExURaPW9oWypldrhPX031Gx81uCk26Xn2m87t3q9iah9qfRtJzAlmmcde7dtEuDbeXGlbCRd1/hoPIAAAOMSURBVFjD7ZbretsgDIYVD0zqJrPv/2qHJXQCkSZbtv6Zni7m9PFKMsKDj28z+I8mK9+GLqV80N8/Rhdjb0KkFHfA98tfQ/OvssD3HflP4LxjfWKTGAkfba5D+7B/n81bpmbS4D6ibe+96JHo4MBNwryHnJ4yEDKC3oJOr6D1XL2D/Qq6TO370P2NcL/v/oaY3BtP4W3Ce5OqwEOQEH3fU8TWYnoUOm35DLrwcjp+yp4Wk6nSkOzYDxOuy/FR/+4+7tYI7os0QysdEnancPlp/f1k72mT0ALMHOySCeUlS+nY9/uxH3IzfwT31MdDMmdR0dcr/UODqUvpOGrKb1uaXpNfBc15BCWTIRTm6DPj91tQKmgPamnYCThiRdchqANMl0wQudo93UbwD7RX4MARw9XA6VfmzPrjCG+HH2IwreQg6ga8GjajWzb84UTDEgvInm0kJUi4wXmzQ4ZNm9USO0KyYVt3ywyNR2RkX0c2B/IEuqvjMkn4yG1hs0fttGkOld2Rhe3fUogu19ioXKLQKe79KA/RmvAeTgcYTF2FcDegOrxQv0D7wC2ZLg/KNsRHTNAg6Kbb+UMSo8cX3KHrGQPJrEdJH8xobTIa2RROgB4CLR1YI1a0ec3yti26mV5HczRHCjH5CvatmlgFaRp2Ri76oLiGKIv7MPVox3DBwsRoz/QYzctMfRCjvz+9tUl4ZEHYMGQX6N4q55bmIwnu8rKR9z4FvkVsaP8PAIs2GaaiGq+xS7UNzRU0aesozpvdMJ72tVbtRl/vog6L1layEtosbtAaJh8r2cXApSISWC23LnpYrHb4RKCzdeacR61BrWzbxmM1Kyp3Wiu2aqs16I2dPefIaVx9WXPOpNhQvdEGLTryedTW5sWqT3GkBcnPKc7cvDQHt0x62tBtwPnptSh26li7QSg2CduW5ju/rG01G4xafT+qjrWg4syDOJ9V3+CiWT181K7ZqSdaYB/5tbIws0lz1RUX0+61TszqSAvMqvOLX1+7SzUaOp9tF0bkNdIyzKpjLfAcrRRU0+kQsiWcVX0JtHnx6kibG9ost73aX7S1UOIkrH517sWijrXQGixeRPvZjBomqoXSTPuN2k9ni1inXSrazWmePm/Nqv58mGULv7Be66m8w5IjbUV7p1oMWXTGTO5biEbLLEf9WY2GRm1eQP0RU4dRbGzxhhr1DUE3ZrOGR5Ze/Atgf5Vlt4TeBQAAAABJRU5ErkJggg==)",
         backgroundSize: "cover",
-        backgroundPosition: "50% 66%",
+        backgroundPosition: "50% 90%",
     },
     profileBannerOverlay: {
         position: "absolute",
@@ -69,18 +79,23 @@ const styles = theme => ({
         position: "absolute",
         left: "auto",
         marginLeft: 169,
-        top: 256,
+        top: 224,
         transform: "translate(-50%, -50%)",
         backgroundPosition: "50% 50%",
         backgroundSize: "cover",
         boxShadow: "0px 3px 5px -1px rgba(0,0,0,0.2), 0px 6px 10px 0px rgba(0,0,0,0.14), 0px 1px 18px 0px rgba(0,0,0,0.12)",
         transition: "box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
+        zIndex: 1,
         "&:hover": {
             boxShadow: "0px 7px 8px -4px rgba(0,0,0,0.2), 0px 12px 17px 2px rgba(0,0,0,0.14), 0px 5px 22px 4px rgba(0,0,0,0.12)",
         }
     },
     profileInformation: {
-        margin: "72px 16px 24px 16px",
+        padding: "72px 16px 24px 16px",
+        marginTop: 96,
+        width: "100%",
+        position: "relative",
+        zIndex: 0,
     },
     profileName: {
         color: "white",
@@ -168,6 +183,106 @@ const styles = theme => ({
         left: 0,
         color: "white",
     },
+    profileTabs: {
+        position: "absolute",
+        left: 0,
+        bottom: 0,
+        margin: 0,
+        padding: 0,
+        width: "100%",
+        contain: "paint size style layout",
+        animationFillMode: "both",
+        animationName: "$menu",
+        animationDuration: "175ms",
+        animationTimingFunction: "cubic-bezier(0.4, 0, 0.2, 1)",
+        animationDirection: "alternate",
+        animationIterationCount: "1",
+        animationDelay: "0ms",
+        height: 72,
+        display: "grid",
+        "& .MuiTabs-scroller": {
+            overflowY: "hidden",
+        },
+        "& .MuiTab-root": {
+            minWidth: "auto",
+            flex: "auto",
+        },
+        "& .MuiTabs-indicator": {
+            backgroundColor: "#050c4c",
+        }
+    },
+    "@keyframes bounce": {
+        "0%": {transform: "translate3d(0, 0px, 0) scaleY(1.00)"},
+        "20%": {transform: "translate3d(0, 2px, 0) scaleY(0.95)"},
+        "40%": {transform: "translate3d(0, 0px, 0) scaleY(1.00)"},
+        "70%": {transform: "translate3d(0, -2px, 0) scaleY(1.10)"},
+        "80%": {transform: "translate3d(0, 1px, 0) scaleY(0.95)"},
+        "90%": {transform: "translate3d(0, 0px, 0) scaleY(1.00)"}
+    },
+    profileTab: {
+        backgroundColor: "#fafafa",
+            color: "#050c4c",
+            transition: "color, background-color cubic-bezier(0.4, 0, 0.2, 1) .275s",
+            "&.Mui-selected": {
+            fontWeight: "bold",
+                backgroundColor: "#dfddf2",
+                color: "#050c4c",
+                transition: "color, background-color cubic-bezier(0.4, 0, 0.2, 1) .175s",
+                borderRadius: "4px 4px 0px 0px",
+                "& .MuiTab-wrapper": {
+                animationDuration: "375ms",
+                    animationTimingFunction: "linear",
+                    animationName: "$bounce",
+                    transformOrigin: "center bottom"
+            }
+        },
+        "&:hover": {
+            fontWeight: "bold",
+                backgroundColor: "#e8e6f5",
+                color: "#050c4c",
+                transition: "color, background-color cubic-bezier(0.4, 0, 0.2, 1) .175s",
+                borderRadius: "4px 4px 0px 0px",
+                "& .MuiTab-wrapper": {
+                animationDuration: "375ms",
+                    animationTimingFunction: "linear",
+                    animationName: "$bounce",
+                    transformOrigin: "center bottom"
+            }
+        },
+        "&:first-child": {
+            borderRadius: "0px 4px 0px 0px",
+        },
+        "&:last-child": {
+            borderRadius: "4px 0px 0px 0px",
+        },
+        "& .MuiTab-wrapper": {
+            fontSize: "11px",
+        },
+        "& .MuiTab-wrapper svg": {
+            width: 32,
+                height: 32,
+                contentVisibility: "auto",
+        }
+    },
+    mediaPriceUnavailable: {
+        fontSize: "16px",
+        fontWeight: "bold",
+        position: "absolute",
+        margin: 14,
+        bottom: 0,
+        right: 0,
+        color: "white",
+        textDecoration: "line-through"
+    },
+    mediaPriceAvailable: {
+        fontSize: "16px",
+        fontWeight: "bold",
+        position: "absolute",
+        margin: 14,
+        bottom: 0,
+        right: 0,
+        color: "white",
+    },
 });
 
 class Marketplace extends React.Component {
@@ -176,7 +291,8 @@ class Marketplace extends React.Component {
         super(props);
         this.state = {
             classes: props.classes,
-            _settings: JSON.parse(props.settings)
+            _settings: JSON.parse(props.settings),
+            tabValue: 0,
         };
     };
 
@@ -200,9 +316,15 @@ class Marketplace extends React.Component {
         return false;
     }
 
+    handleTabChange = (event, number) => {
+        this.setState({tabValue: number}, () => {
+            this.forceUpdate();
+        })
+    }
+
     render() {
 
-        const { classes } = this.state;
+        const { classes, tabValue } = this.state;
 
         return (
             <div className={classes.root}>
@@ -218,7 +340,20 @@ class Marketplace extends React.Component {
                     </div>
                     <div className={classes.profileImage+" pixelated"}></div>
                     <CardContent className={classes.profileInformation}>
-
+                        <Tabs className={classes.profileTabs}
+                              variant="fullWidth"
+                              indicatorColor="primary"
+                              textColor="primary"
+                              selectionFollowsFocus={true}
+                              value={tabValue}
+                              onChange={this.handleTabChange}>
+                            <Tab className={classes.profileTab} label={"pictures"} icon={<Image />} />
+                            <Tab className={classes.profileTab} label={"comments"} icon={<Message />} />
+                            <Tab className={classes.profileTab} label={"history"} icon={<History />} />
+                            <Tab className={classes.profileTab} label={"followers"} icon={<ArrowDownward />} />
+                            <Tab className={classes.profileTab} label={"following"} icon={<ArrowUpward />} />
+                            <Tab className={classes.profileTab} label={"wallet"} icon={<AccountBalanceWallet />} />
+                        </Tabs>
                     </CardContent>
                 </Card>
                 <div className={classes.profileCards}>
@@ -236,6 +371,7 @@ class Marketplace extends React.Component {
                                 </img>
                                 <div className={classes.mediaOverlay}>
                                     <span className={classes.mediaTitle}>Business Roses</span>
+                                    <span className={classes.mediaPriceUnavailable}>150 USDPixa</span>
                                 </div>
                             </div>
                             <div className={classes.mediaCard}>
@@ -247,6 +383,7 @@ class Marketplace extends React.Component {
                                 </img>
                                 <div className={classes.mediaOverlay}>
                                     <span className={classes.mediaTitle}>Gold Doberman</span>
+                                    <span className={classes.mediaPriceAvailable}>100 USDPixa</span>
                                 </div>
                             </div>
                             <div className={classes.mediaCard}>
@@ -258,6 +395,7 @@ class Marketplace extends React.Component {
                                 </img>
                                 <div className={classes.mediaOverlay}>
                                     <span className={classes.mediaTitle}>Crystal Castle</span>
+                                    <span className={classes.mediaPriceAvailable}>100 USDPixa</span>
                                 </div>
                             </div>
                             <div className={classes.mediaCard}>
@@ -269,6 +407,7 @@ class Marketplace extends React.Component {
                                 </img>
                                 <div className={classes.mediaOverlay}>
                                     <span className={classes.mediaTitle}>Portrait Sophia</span>
+                                    <span className={classes.mediaPriceUnavailable}>175 USDPixa</span>
                                 </div>
                             </div>
                             <div className={classes.mediaCard}>
@@ -280,6 +419,7 @@ class Marketplace extends React.Component {
                                 </img>
                                 <div className={classes.mediaOverlay}>
                                     <span className={classes.mediaTitle}>Eye Sophia</span>
+                                    <span className={classes.mediaPriceUnavailable}>100 USDPixa</span>
                                 </div>
                             </div>
                             <div className={classes.mediaCard}>
@@ -291,6 +431,7 @@ class Marketplace extends React.Component {
                                 </img>
                                 <div className={classes.mediaOverlay}>
                                     <span className={classes.mediaTitle}>Blood Tempest</span>
+                                    <span className={classes.mediaPriceAvailable}>125 USDPixa</span>
                                 </div>
                             </div>
                             <div className={classes.mediaCard}>
@@ -302,6 +443,31 @@ class Marketplace extends React.Component {
                                 </img>
                                 <div className={classes.mediaOverlay}>
                                     <span className={classes.mediaTitle}>Buddha Galaxy</span>
+                                    <span className={classes.mediaPriceAvailable}>100 USDPixa</span>
+                                </div>
+                            </div>
+                            <div className={classes.mediaCard}>
+                                <img
+                                    className={classes.media + " pixelated"}
+                                    src="data:image/png;base64,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"
+                                    title="Peachy Classy"
+                                >
+                                </img>
+                                <div className={classes.mediaOverlay}>
+                                    <span className={classes.mediaTitle}>Peachy Classy</span>
+                                    <span className={classes.mediaPriceAvailable}>75 USDPixa</span>
+                                </div>
+                            </div>
+                            <div className={classes.mediaCard}>
+                                <img
+                                    className={classes.media + " pixelated"}
+                                    src="data:image/png;base64,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"
+                                    title="Fashion Cop"
+                                >
+                                </img>
+                                <div className={classes.mediaOverlay}>
+                                    <span className={classes.mediaTitle}>Fashion Cop</span>
+                                    <span className={classes.mediaPriceUnavailable}>75 USDPixa</span>
                                 </div>
                             </div>
                         </Masonry>
