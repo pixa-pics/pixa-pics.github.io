@@ -7,14 +7,13 @@ import Tab from "@material-ui/core/Tab";
 import Masonry, {ResponsiveMasonry} from "react-responsive-masonry"
 
 import actions from "../actions/utils";
-import {
-    AccountBalanceWallet,
-    ArrowDownward,
-    ArrowUpward,
-    History,
-    Image,
-    Message
-} from "@material-ui/icons";
+
+import AccountBalanceWallet from "@material-ui/icons/AccountBalanceWallet";
+import ArrowDownward from "@material-ui/icons/ArrowDownward";
+import ArrowUpward from "@material-ui/icons/ArrowUpward";
+import History from "@material-ui/icons/History";
+import Image from "@material-ui/icons/Image";
+import Message from "@material-ui/icons/Message";
 
 const styles = theme => ({
     root: {
