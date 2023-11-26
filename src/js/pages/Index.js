@@ -20,6 +20,7 @@ import Home from "./Home";
 const Pixel = React.lazy(() => import("../pages/Pixel"));
 const Unknown = React.lazy(() => import("../pages/Unknown"));
 const Settings = React.lazy(() =>  import("../pages/Settings"));
+const Marketplace = React.lazy(() =>  import("../pages/Marketplace"));
 
 import JamyAngry from "../icons/JamyAngry";
 import JamyAnnoyed from "../icons/JamyAnnoyed";
@@ -264,6 +265,9 @@ class Index extends React.PureComponent {
             case "settings":
 
                 return <Suspense fallback={<div/>}><Settings settings={settings} /></Suspense>;
+            case "marketplace":
+
+                return <Suspense fallback={<div/>}><Marketplace settings={settings} /></Suspense>;
         }
     }
 

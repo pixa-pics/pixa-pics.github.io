@@ -289,9 +289,10 @@ const SuperMasterMeta = {
                 if(image_imported_resizer_index >= 0) {_pxl_indexes_of_current_shape.add(image_imported_resizer_index);}
                 _pxl_indexes_of_current_shape.add(_pxls_hovered);
 
-                var changesCompute = function (INDEX, newPixel, oldHover, oldShape, newShape, oldSelection, newSelection, oldImport, newImport) {
+                var changesCompute = function (I, newPixel, oldHover, oldShape, newShape, oldSelection, newSelection, oldImport, newImport) {
                     "use strict";
-                    return newPixel[INDEX] | oldHover[INDEX] | (oldShape[INDEX] ^ newShape[INDEX]) | (oldSelection[INDEX] ^ newSelection[INDEX]) | (oldSelection[INDEX] & newHighlight[INDEX]) | oldImport[INDEX] | newImport[INDEX];
+                    I = (I | 0) >>> 0;
+                    return newPixel[I|0] | oldHover[I|0] | (oldShape[I|0] ^ newShape[I|0]) | (oldSelection[I|0] ^ newSelection[I|0]) | (oldSelection[I|0] & newHighlight[I|0]) | oldImport[I|0] | newImport[I|0];
                 }
 
                 if(pxl_indexes_of_changes.length !== full_pxls_length) {

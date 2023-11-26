@@ -25,6 +25,11 @@ const PAGE_ROUTES = [
         page_regex: /\/(pixe)l?1?$/,
         page_name: "pixel",
         tabs: ""
+    },
+    {
+        page_regex: /\/(marketplace)$/,
+        page_name: "marketplace",
+        tabs: ""
     }
 ];
 

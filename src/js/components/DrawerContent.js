@@ -3,9 +3,10 @@ import {Fade, withStyles} from "@material-ui/core";
 
 import {List, ListItem, ListItemIcon, ListItemText, Badge} from "@material-ui/core";
 
-import DonateIcon from "../icons/Donate";
+import DnaIcon from "../icons/Dna";
 import AppInfoDialog from "../components/AppInfoDialog";
 import CodeIcon from "@material-ui/icons/Code";
+import StoreIcon from "@material-ui/icons/Store";
 import PaletteIcon from "@material-ui/icons/Palette";
 import InfoIcon from "@material-ui/icons/Info";
 
@@ -196,6 +197,12 @@ class DrawerContent extends React.PureComponent {
         window.open(url);
     };
 
+    _go_to = (url) => {
+
+        const { _history } = this.st4te;
+        _history.push(url);
+    };
+
     _on_settings_changed = () => {
 
         actions.trigger_settings_update();
@@ -225,31 +232,31 @@ class DrawerContent extends React.PureComponent {
             <div>
                 <AppInfoDialog open={_info_dialog_open} onClose={this._close_info_dialog}/>
                 <List style={{paddingTop: 0}} className={classes.labList}>
-                    <Fade in={true} timeout={100}>
+                    <Fade in={true} timeout={0}>
                         <ListItem button className={classes.listItemGrey} TouchRippleProps={{className: classes.rippleBlue}} onClick={this._open_pixel_page}>
                             <ListItemIcon><PaletteIcon className={classes.iconColor} /></ListItemIcon>
                             <ListItemText primary="Draw" />
                         </ListItem>
                     </Fade>
                     <Fade in={true} timeout={300}>
-                        <ListItem button className={classes.listItemGrey} TouchRippleProps={{className: classes.rippleBlue}} onClick={(event) => this._open_link(event, "https://opencollective.com/pixapics")}>
-                            <ListItemIcon><DonateIcon className={classes.iconColorGold} /></ListItemIcon>
-                            <ListItemText primary="Donate" />
-                        </ListItem>
-                    </Fade>
-                    <Fade in={true} timeout={500}>
                         <ListItem button className={classes.listItemGrey} TouchRippleProps={{className: classes.rippleBlue}} onClick={(event) => this._open_link(event, "https://github.com/pixa-pics/pixa-pics.github.io")}>
                             <Badge className={classes.styledBadgeConnected} overlap="circular" badgeContent=" " variant="dot"><ListItemIcon><CodeIcon className={classes.iconColor} /></ListItemIcon></Badge>
                             <ListItemText primary="Source code" />
                         </ListItem>
                     </Fade>
-                    <Fade in={true} timeout={700}>
+                    <Fade in={true} timeout={600}>
                         <ListItem button className={classes.listItemGrey} TouchRippleProps={{className: classes.rippleBlue}} onClick={this._open_info_dialog}>
                             <ListItemIcon><InfoIcon className={classes.iconColor} /></ListItemIcon>
                             <ListItemText primary="About" />
                         </ListItem>
                     </Fade>
                     <Fade in={true} timeout={900}>
+                        <ListItem button className={classes.listItemGrey} TouchRippleProps={{className: classes.rippleBlue}} onClick={() => {this._go_to("marketplace")}}>
+                            <ListItemIcon><StoreIcon className={classes.iconColor} /></ListItemIcon>
+                            <ListItemText primary="Marketplace Demo" />
+                        </ListItem>
+                    </Fade>
+                    <Fade in={true} timeout={1200}>
                         <div style={{textAlign: "center"}} onClick={(event) => {this._open_link(event, "https://play.google.com/store/apps/details?id=pics.pixa.app.twa")}}>
                             <svg
                                 className={"playstorebadge"}
