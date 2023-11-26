@@ -22,6 +22,7 @@ const styles = theme => ({
         maxHeight: "100%",
     },
     profileCard: {
+        backgroundColor: "#fafafa",
         width: 1152,
         "@media (max-width: 1260px)": {
             margin: "24px 16px 16px 16px",
@@ -210,15 +211,17 @@ const styles = theme => ({
             backgroundColor: "#050c4c",
         }
     },
-    "@keyframes bounce": {
-        "0%": {transform: "translate3d(0, 0px, 0) scaleY(1.00)"},
-        "20%": {transform: "translate3d(0, 2px, 0) scaleY(0.95)"},
-        "40%": {transform: "translate3d(0, 0px, 0) scaleY(1.00)"},
-        "70%": {transform: "translate3d(0, -2px, 0) scaleY(1.10)"},
-        "80%": {transform: "translate3d(0, 1px, 0) scaleY(0.95)"},
-        "90%": {transform: "translate3d(0, 0px, 0) scaleY(1.00)"}
-    },
     profileTab: {
+        "@media (max-width: 700px)": {
+            "& .MuiTab-wrapper": {
+                fontSize: "10px",
+            },
+        },
+        "@media (max-width: 400px)": {
+            "& .MuiTab-wrapper": {
+                fontSize: "9px",
+            },
+        },
         backgroundColor: "#fafafa",
             color: "#050c4c",
             transition: "color, background-color cubic-bezier(0.4, 0, 0.2, 1) .275s",
@@ -228,12 +231,6 @@ const styles = theme => ({
                 color: "#050c4c",
                 transition: "color, background-color cubic-bezier(0.4, 0, 0.2, 1) .175s",
                 borderRadius: "4px 4px 0px 0px",
-                "& .MuiTab-wrapper": {
-                animationDuration: "375ms",
-                    animationTimingFunction: "linear",
-                    animationName: "$bounce",
-                    transformOrigin: "center bottom"
-            }
         },
         "&:hover": {
             fontWeight: "bold",
@@ -241,12 +238,6 @@ const styles = theme => ({
                 color: "#050c4c",
                 transition: "color, background-color cubic-bezier(0.4, 0, 0.2, 1) .175s",
                 borderRadius: "4px 4px 0px 0px",
-                "& .MuiTab-wrapper": {
-                animationDuration: "375ms",
-                    animationTimingFunction: "linear",
-                    animationName: "$bounce",
-                    transformOrigin: "center bottom"
-            }
         },
         "&:first-child": {
             borderRadius: "0px 4px 0px 0px",
