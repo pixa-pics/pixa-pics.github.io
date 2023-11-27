@@ -158,14 +158,14 @@ const styles = theme => ({
             transform: "translate(-50%, -50%) scale(1.05)",
         },
         "& .MuiBadge-badge": {
-            backgroundColor: '#44b700',
+            backgroundColor: '#51d106',
             color: '#ffffff',
-            boxShadow: `0 0 0 2px #08ff00`,
+            boxShadow: `0 0 2px 4px #51d106`,
             width: 36,
             height: 36,
             borderRadius: "50%",
             fontWeight: "bold",
-            fontSize: "16px",
+            fontSize: "18px",
             '&::after': {
                 position: 'absolute',
                 top: 0,
@@ -174,7 +174,7 @@ const styles = theme => ({
                 height: '100%',
                 borderRadius: '50%',
                 animation: '$ripple 0.7s infinite cubic-bezier(0.4, 0, 0.2, 1)',
-                border: '2px solid #08ff00',
+                border: '2px solid #51d10699',
                 content: '""',
             },
             '&::before': {
@@ -185,7 +185,7 @@ const styles = theme => ({
                 height: '100%',
                 borderRadius: '50%',
                 animation: '$ripple 1.7s infinite cubic-bezier(0.4, 0, 0.2, 1)',
-                border: '1px solid #44b700',
+                border: '1px solid #51d106ee',
                 content: '""',
             }
         }
@@ -301,7 +301,7 @@ const styles = theme => ({
         height: "100%",
         borderRadius: "4px",
         transition: "filter 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
-        background: "linear-gradient(to top, #000000cc 5%,  #000000b8 10%, #00000096 15%, #0000001a 25%, #00000000 85%, #00000047 90%, #000000a1 100%)",
+        background: "linear-gradient(to top, #000000cc 25px,  #000000b8 50px, #00000096 75px, #0000001a 125px, #00000000 185px), linear-gradient(to bottom, #000000cc 20px,  #000000b8 35px, #00000096 45px, #0000001a 75px, #00000000 105px)",
         filter: "opacity(0)",
         "&:hover, &:active": {
             filter: "opacity(1)",
@@ -327,13 +327,13 @@ const styles = theme => ({
         textAlign: "left"
     },
     mediaTitleAuthor: {
-        fontSize: "14px",
+        fontSize: "16px",
         fontWeight: "inherit",
         margin: "4px 0px 12px 12px",
         display: "block"
     },
     mediaTitleName: {
-        fontSize: "16px",
+        fontSize: "21px",
         fontWeight: "bold",
         margin: "0px 0px 0px 12px",
         display: "block"
@@ -433,7 +433,7 @@ const styles = theme => ({
         fontWeight: "bold"
     },
     mediaValue: {
-        fontSize: "14px",
+        fontSize: "16px",
         fontWeight: "inherit",
         margin: "0px",
         display: "block",
