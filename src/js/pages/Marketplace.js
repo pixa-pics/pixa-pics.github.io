@@ -18,13 +18,14 @@ import ArrowUpward from "@material-ui/icons/ArrowUpward";
 import History from "@material-ui/icons/History";
 import Image from "@material-ui/icons/Image";
 import Message from "@material-ui/icons/Message";
-import Done from "@material-ui/icons/Done"
+import PersonAdd from "@material-ui/icons/PersonAdd"
 import FavoriteOutlined from "@material-ui/icons/FavoriteOutlined";
 import FavoriteBorder from "@material-ui/icons/FavoriteBorder";
 import KeyboardArrowDownOutlined from "@material-ui/icons/KeyboardArrowDownOutlined"
 import KeyboardArrowUpOutlined from "@material-ui/icons/KeyboardArrowUpOutlined"
 import AutorenewSharpIcon from '@material-ui/icons/AutorenewSharp';
 import SettingsSharpIcon from '@material-ui/icons/SettingsSharp';
+import MyLocation from '@material-ui/icons/MyLocation';
 import PixaDollar from "../icons/PixaDollar";
 import PixaCoin from "../icons/PixaCoin";
 
@@ -51,6 +52,7 @@ const styles = theme => ({
         }
     },
     profileBanner: {
+        cursor: "pointer",
         width: "100%",
         height: 256,
         position: "relative",
@@ -227,10 +229,10 @@ const styles = theme => ({
         top: 0,
     },
     followButton: {
-        margin: "16px 8px 8px 8px"
+        margin: "16px 4px 8px 8px"
     },
     settingButton: {
-        margin: "16px 16px 8px 8px",
+        margin: "16px 16px 8px 4px",
         transform: "rotate(0deg)",
         transition: "transform 720ms linear 0ms",
         "&:hover": {
@@ -307,18 +309,34 @@ const styles = theme => ({
     mediaOverlay: {
         overflow: "hidden",
         "& > .top": {
-            top: "-40px",
-            transition: "all 225ms cubic-bezier(0.4, 0, 0.2, 1) 75ms",
-            opacity: 0
+            position: "absolute",
+            textAlign: "left",
+            left: 4,
+            "& > button, & > button:nth-child(1), & > button:nth-child(2), & > button:nth-child(3), ": {
+                opacity: 0,
+                marginTop: -40,
+                padding: 8,
+            },
+            "& > button:nth-child(1)": {
+                transition: "all 225ms cubic-bezier(0.4, 0, 0.2, 1) 75ms",
+            },
+            "& > button:nth-child(2)": {
+                transition: "all 225ms cubic-bezier(0.4, 0, 0.2, 1) 50ms",
+            },
+            "& > button:nth-child(3)": {
+                transition: "all 225ms cubic-bezier(0.4, 0, 0.2, 1) 25ms",
+            },
+            "& > button": {
+                transition: "all 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
+            }
         },
         "& > .bottom": {
             bottom: "-60px",
-            transition: "all 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
+            transition: "all 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
             opacity: 0
         },
         position: "absolute",
         top: 0,
-        left: 0,
         width: "100%",
         height: "100%",
         borderRadius: "4px",
@@ -327,12 +345,24 @@ const styles = theme => ({
         filter: "opacity(0)",
         "&:hover, &:active": {
             filter: "opacity(1)",
-            "& *": {
-                touchAction: "none",
-            },
             "& > .top": {
-                top: 8,
-                opacity: 1
+                textAlign: "left",
+                "& > button, & > button:nth-child(1), & > button:nth-child(2), & > button:nth-child(3), ": {
+                    marginTop: 0,
+                    opacity: 1,
+                },
+                "& > button:nth-child(1)": {
+                    transition: "all 225ms cubic-bezier(0.4, 0, 0.2, 1) 25ms",
+                },
+                "& > button:nth-child(2)": {
+                    transition: "all 225ms cubic-bezier(0.4, 0, 0.2, 1) 50ms",
+                },
+                "& > button:nth-child(3)": {
+                    transition: "all 225ms cubic-bezier(0.4, 0, 0.2, 1) 75ms",
+                },
+                "& > button": {
+                    transition: "all 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
+                }
             },
             "& > .bottom": {
                 bottom: 0,
@@ -458,8 +488,7 @@ const styles = theme => ({
         }
     },
     mediaPriceUnavailable: {
-        textDecoration: "line-through",
-        color: "#eee",
+        color: "#ff3333",
         fontSize: "21px",
         fontWeight: "bold",
         "@media (max-width: 800px)": {
@@ -476,6 +505,7 @@ const styles = theme => ({
     mediaPriceAvailable: {
         fontSize: "21px",
         fontWeight: "bold",
+        color: "#66ff33",
         "@media (max-width: 800px)": {
             "& .MuiTab-wrapper": {
                 fontSize: "18px !important",
@@ -529,8 +559,12 @@ const styles = theme => ({
         position: "absolute",
         color: "#ff1200",
         margin: 0,
-        top: 8,
-        right: 8,
+        width: "48px !important",
+        top: 16,
+        right: "12px !important",
+        left: "auto !important",
+        borderRadius: "100%",
+        transition: "all 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
         "&::after": {
             content: `""`,
             position: "absolute",
@@ -548,14 +582,22 @@ const styles = theme => ({
         position: "absolute",
         color: "#ffffff",
         margin: 0,
-        top: 8,
-        right: 8,
+        width: "48px !important",
+        top: 16,
+        right: "12px !important",
+        left: "auto !important",
         borderRadius: "100%",
-        transition: "all 400ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
+        transition: "all 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
     },
     iconCount: {
         marginLeft: 4,
         fontSize: "16px",
+    },
+    location: {
+        color: "#05009d",
+        position: "absolute",
+        top: "72px",
+        right: "24px"
     }
 });
 
@@ -736,10 +778,11 @@ class Marketplace extends React.Component {
                         </Badge>
                         <CardContent className={classes.profileInformation}>
                             <div className={classes.profileInformationOverlay}>
+                                <div className={classes.location}>
+                                    <span>Zermatt, Glacier Paradise, Switzerland</span>
+                                </div>
                                 <div className={classes.profileInformationButtons}>
-                                    <Button className={classes.followButton} variant={"text"} color={"primary"} onClick={this._backup_state}>
-                                        <span>Following</span> <Done/>
-                                    </Button>
+                                    <IconButton color={"primary"} className={classes.followButton}><PersonAdd/></IconButton>
                                     <IconButton color={"primary"} className={classes.settingButton}><SettingsSharpIcon/></IconButton>
                                 </div>
                             </div>
