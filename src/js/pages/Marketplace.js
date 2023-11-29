@@ -8,6 +8,10 @@ import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import Badge from "@material-ui/core/Badge";
 import Fade from "@material-ui/core/Fade";
+import Backdrop from '@material-ui/core/Backdrop';
+import SpeedDial from '@material-ui/lab/SpeedDial';
+import SpeedDialIcon from '@material-ui/lab/SpeedDialIcon';
+import SpeedDialAction from '@material-ui/lab/SpeedDialAction';
 import Masonry, {ResponsiveMasonry} from "react-responsive-masonry"
 
 import actions from "../actions/utils";
@@ -25,7 +29,11 @@ import KeyboardArrowDownOutlined from "@material-ui/icons/KeyboardArrowDownOutli
 import KeyboardArrowUpOutlined from "@material-ui/icons/KeyboardArrowUpOutlined"
 import AutorenewSharpIcon from '@material-ui/icons/AutorenewSharp';
 import SettingsSharpIcon from '@material-ui/icons/SettingsSharp';
-import MyLocation from '@material-ui/icons/MyLocation';
+import Group from '@material-ui/icons/Group';
+import Person from '@material-ui/icons/Person';
+import StarCircleIcon from '../icons/StarCircle';
+import Hashtag from '../icons/Hashtag';
+import LinkBox from '../icons/LinkBox';
 import PixaDollar from "../icons/PixaDollar";
 import PixaCoin from "../icons/PixaCoin";
 
@@ -230,6 +238,9 @@ const styles = theme => ({
     },
     followButton: {
         margin: "16px 4px 8px 8px"
+    },
+    linkButton: {
+        margin: "16px 4px 8px 4px"
     },
     settingButton: {
         margin: "16px 16px 8px 4px",
@@ -598,6 +609,23 @@ const styles = theme => ({
         position: "absolute",
         top: "72px",
         right: "24px"
+    },
+    actions: {
+        position: "fixed",
+        bottom: 16,
+        right: 16,
+        "& .MuiButtonBase-root.MuiFab-root": {
+            borderRadius: 8,
+        }
+    },
+    actionButton: {
+        borderRadius: 8,
+        "&.MuiSpeedDialAction-fab, &.MuiSpeedDialAction-fab .MuiSvgIcon-root": {
+            color: "white",
+            width: 56,
+            height: 56,
+            padding: 16
+        }
     }
 });
 
@@ -709,6 +737,13 @@ class Marketplace extends React.Component {
                     sold: true,
                     favorite: false,
                 }
+            ],
+            isSpeedDialOpen: true,
+            actions: [
+                { icon: <StarCircleIcon />, name: 'Feed' },
+                { icon: <FavoriteOutlined />, name: 'Saved' },
+                { icon: <Hashtag />, name: 'Explore' },
+                { icon: <Group />, name: 'Communities' }
             ]
         };
     };
@@ -749,9 +784,22 @@ class Marketplace extends React.Component {
         })
     };
 
+    handleSpeedDialClose = () => {
+
+        this.setState({isSpeedDialOpen: false}, () => {
+            this.forceUpdate();
+        })
+    };
+    handleSpeedDialOpen = () => {
+
+        this.setState({isSpeedDialOpen: true}, () => {
+            this.forceUpdate();
+        })
+    };
+
     render() {
 
-        const { classes, tabValue, images } = this.state;
+        const { classes, tabValue, images, isSpeedDialOpen, actions } = this.state;
 
         return (
             <div className={classes.root}>
@@ -783,6 +831,7 @@ class Marketplace extends React.Component {
                                 </div>
                                 <div className={classes.profileInformationButtons}>
                                     <IconButton color={"primary"} className={classes.followButton}><PersonAdd/></IconButton>
+                                    <IconButton color={"primary"} className={classes.linkButton}><LinkBox/></IconButton>
                                     <IconButton color={"primary"} className={classes.settingButton}><SettingsSharpIcon/></IconButton>
                                 </div>
                             </div>
@@ -839,12 +888,29 @@ class Marketplace extends React.Component {
                                         </Fade>);
                                 })
                             }
-
-
-
                         </Masonry>
                     </ResponsiveMasonry>
                 </div>
+                <SpeedDial
+                    ariaLabel="SpeedDial tooltip example"
+                    className={classes.actions}
+                    hidden={false}
+                    icon={<SpeedDialIcon />}
+                    onClose={this.handleSpeedDialClose}
+                    onOpen={this.handleSpeedDialOpen}
+                    open={isSpeedDialOpen}
+                >
+                    {actions.map((action) => (
+                        <SpeedDialAction
+                            className={classes.actionButton}
+                            key={action.name}
+                            icon={action.icon}
+                            tooltipTitle={action.name}
+                            tooltipOpen
+                            onClick={this.handleSpeedDialClose}
+                        />
+                    ))}
+                </SpeedDial>
             </div>
         );
     }
