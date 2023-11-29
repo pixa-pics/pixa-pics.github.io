@@ -43,6 +43,7 @@ function getIdealDimension(width, height){
         wy -= 56;
     }else {
         wx -= 384;
+        wx -= 64;
         wy -= 64;
     }
 
@@ -51,10 +52,10 @@ function getIdealDimension(width, height){
     var finalWidth = 0, finalHeight = 0;
 
     if(r < wr){
-        finalHeight = wy * 0.777;
+        finalHeight = wy - 64;
         finalWidth = finalHeight * r;
     }else {
-        finalWidth = wx * 0.777;
+        finalWidth = wx - 64;
         finalHeight = finalWidth / r;
     }
 

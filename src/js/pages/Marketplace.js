@@ -686,7 +686,11 @@ const styles = theme => ({
     },
     colors: {
         textAlign: "end",
-
+    },
+    drawer: {
+        "@media (max-width: 800px)": {
+            display: "none !important",
+        },
     }
 });
 
@@ -1053,8 +1057,8 @@ class Marketplace extends React.Component {
                         />
                     ))}
                 </SpeedDial>
-                <Backdrop className={classes.backdrop} open={openedMediaData != null} onClick={this.closeMediaCard}>
-                    {(openedMediaData && openedMediaDataData) && <div className={classes.leftFromDrawer}>
+                <Backdrop className={classes.backdrop} open={openedMediaData != null}>
+                    {(openedMediaData && openedMediaDataData) && <div onClick={this.closeMediaCard} className={classes.leftFromDrawer}>
                         <Card className={classes.fullCard}
                               style={{
                                   marginTop: openedMediaDataData.marginTop,
