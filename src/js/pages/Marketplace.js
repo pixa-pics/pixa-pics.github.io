@@ -8,7 +8,7 @@ import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import Badge from "@material-ui/core/Badge";
 import Fade from "@material-ui/core/Fade";
-import Backdrop from '@material-ui/core/Backdrop';
+import Pagination from '@material-ui/lab/Pagination';
 import SpeedDial from '@material-ui/lab/SpeedDial';
 import SpeedDialIcon from '@material-ui/lab/SpeedDialIcon';
 import SpeedDialAction from '@material-ui/lab/SpeedDialAction';
@@ -30,12 +30,21 @@ import KeyboardArrowUpOutlined from "@material-ui/icons/KeyboardArrowUpOutlined"
 import AutorenewSharpIcon from '@material-ui/icons/AutorenewSharp';
 import SettingsSharpIcon from '@material-ui/icons/SettingsSharp';
 import Group from '@material-ui/icons/Group';
-import Person from '@material-ui/icons/Person';
+import Icon from '@material-ui/core/Icon';
 import StarCircleIcon from '../icons/StarCircle';
 import Hashtag from '../icons/Hashtag';
 import LinkBox from '../icons/LinkBox';
 import PixaDollar from "../icons/PixaDollar";
 import PixaCoin from "../icons/PixaCoin";
+
+import Timeline from '@material-ui/lab/Timeline';
+import TimelineItem from '@material-ui/lab/TimelineItem';
+import TimelineSeparator from '@material-ui/lab/TimelineSeparator';
+import TimelineConnector from '@material-ui/lab/TimelineConnector';
+import TimelineContent from '@material-ui/lab/TimelineContent';
+import TimelineDot from '@material-ui/lab/TimelineDot';
+import TimelineOppositeContent from '@material-ui/lab/TimelineOppositeContent';
+import Typography from '@material-ui/core/Typography';
 
 const styles = theme => ({
     root: {
@@ -47,6 +56,10 @@ const styles = theme => ({
         borderRadius: "4px",
         backgroundColor: "#fafafa",
         width: 1152,
+        "@media (max-width: 800px)": {
+            margin: "24px 0px 16px 0px",
+            maxWidth: "100%",
+        },
         "@media (max-width: 1260px)": {
             margin: "24px 16px 16px 16px",
             maxWidth: "calc(100% - 32px)",
@@ -240,7 +253,7 @@ const styles = theme => ({
         margin: "16px 4px 8px 8px"
     },
     linkButton: {
-        margin: "16px 4px 8px 4px"
+        margin: "16px 4px 8px 4px",
     },
     settingButton: {
         margin: "16px 16px 8px 4px",
@@ -290,6 +303,15 @@ const styles = theme => ({
         },
     },
     profileCards: {
+        width: 1152,
+        maxWidth: "100%",
+        margin: "32px auto 16px auto",
+        "@media (max-width: 1260px)": {
+            margin: "24px 16px 16px 16px",
+            maxWidth: "calc(100% - 32px)",
+        },
+    },
+    profileHistory: {
         width: 1152,
         maxWidth: "100%",
         margin: "32px auto 16px auto",
@@ -626,6 +648,18 @@ const styles = theme => ({
             height: 56,
             padding: 16
         }
+    },
+    timeLine: {
+      "& .MuiTimelineOppositeContent-root.MuiTimelineItem-oppositeContent": {
+          maxWidth: 96
+      }
+    },
+    timeLineTime: {
+        fontWeight: "bold"
+    },
+    timeLineDescription: {
+        color: theme.palette.primary,
+        textAlign: "left"
     }
 });
 
@@ -744,6 +778,44 @@ class Marketplace extends React.Component {
                 { icon: <FavoriteOutlined />, name: 'Saved' },
                 { icon: <Hashtag />, name: 'Explore' },
                 { icon: <Group />, name: 'Communities' }
+            ],
+            history: [
+                {
+                    time: "11:36 AM",
+                    event: "Commented on @lena666's post named \"A Dance History\""
+                },
+                {
+                    time: "11:34 AM",
+                    event: "Bought an NFT from @caspericks (USDPIXA 76.00)!"
+                },
+                {
+                    time: "11:31 AM",
+                    event: "Transferred 26.50 PIXACOIN to @lena666 with a memo."
+                },
+                {
+                    time: "10:56 AM",
+                    event: "Received 24.50 PIXACOIN from @jah.math."
+                },
+                {
+                    time: "10:44 AM",
+                    event: "Modified a comment on @lena666's post named \"A Great Paradox\""
+                },
+                {
+                    time: "10:41 AM",
+                    event: "Commented on @lena666's post named \"A Great Paradox\""
+                },
+                {
+                    time: "10:36 AM",
+                    event: "UpVoted (100%) on @lena666's post named \"A Great Paradox\""
+                },
+                {
+                    time: "08:00 AM",
+                    event: "Claimed reward for posting 20.55 PIXAPOWER and 12.69 USDPIXA."
+                },
+                {
+                    time: "07:56 AM",
+                    event: "Commented on @primerz's post named \"Follow MeStory\""
+                }
             ]
         };
     };
@@ -797,9 +869,10 @@ class Marketplace extends React.Component {
         })
     };
 
+
     render() {
 
-        const { classes, tabValue, images, isSpeedDialOpen, actions } = this.state;
+        const { classes, tabValue, images, isSpeedDialOpen, actions, history } = this.state;
 
         return (
             <div className={classes.root}>
@@ -831,7 +904,7 @@ class Marketplace extends React.Component {
                                 </div>
                                 <div className={classes.profileInformationButtons}>
                                     <IconButton color={"primary"} className={classes.followButton}><PersonAdd/></IconButton>
-                                    <IconButton color={"primary"} className={classes.linkButton}><LinkBox/></IconButton>
+                                    <IconButton color={"primary"} className={classes.linkButton}><Icon><LinkBox/></Icon></IconButton>
                                     <IconButton color={"primary"} className={classes.settingButton}><SettingsSharpIcon/></IconButton>
                                 </div>
                             </div>
@@ -852,7 +925,7 @@ class Marketplace extends React.Component {
                         </CardContent>
                     </Card>
                 </Fade>
-                <div className={classes.profileCards}>
+                {tabValue === 0 && <div className={classes.profileCards}>
                     <ResponsiveMasonry
                         columnsCountBreakPoints={{266: 1, 532: 2, 800: 3, 1152: 4}}
                         gutter={"16px"}
@@ -890,7 +963,31 @@ class Marketplace extends React.Component {
                             }
                         </Masonry>
                     </ResponsiveMasonry>
-                </div>
+                    <Pagination count={10} disabled />
+                </div>}
+                {tabValue === 2 && <div className={classes.profileHistory}>
+                    <Timeline align="left">
+                        {
+                            history.map((event, index) => {
+
+                                return (<Fade in timeout={index*150} key={index}>
+                                        <TimelineItem className={classes.timeLine}>
+                                            <TimelineOppositeContent>
+                                                <Typography color="textPrimary" className={classes.timeLineTime}>{event.time}</Typography>
+                                            </TimelineOppositeContent>
+                                            <TimelineSeparator>
+                                                <TimelineDot />
+                                                <TimelineConnector />
+                                            </TimelineSeparator>
+                                            <TimelineContent>
+                                                <Typography className={classes.timeLineDescription}>{event.event}</Typography>
+                                            </TimelineContent>
+                                        </TimelineItem>
+                                </Fade>);
+                            })
+                        }
+                    </Timeline>
+                </div>}
                 <SpeedDial
                     ariaLabel="SpeedDial tooltip example"
                     className={classes.actions}
