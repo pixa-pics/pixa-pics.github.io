@@ -817,7 +817,7 @@ class Marketplace extends React.Component {
                     favorite: false,
                 }
             ],
-            isSpeedDialOpen: true,
+            isSpeedDialOpen: false,
             actions: [
                 { icon: <StarCircleIcon />, name: 'Feed' },
                 { icon: <FavoriteOutlined />, name: 'Saved' },
@@ -1108,6 +1108,7 @@ class Marketplace extends React.Component {
                     </Timeline>
                 </div>}
                 <SpeedDial
+                    ariaLabel="SpeedDial tooltip example"
                     className={classes.actions}
                     hidden={true}
                     icon={<SpeedDialIcon />}
