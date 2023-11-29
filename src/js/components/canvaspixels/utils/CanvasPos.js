@@ -301,7 +301,7 @@ const CanvasPos = {
             },
             get_perspective_state: function() {
                 "use strict";
-                return pe;
+                return pe || {};
             },
             get_screen_zoom_ratio: function() {
                 "use strict";

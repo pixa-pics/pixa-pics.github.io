@@ -54,6 +54,8 @@ import List from '@material-ui/core/List';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
 
+import CanvasPos from "../components/canvaspixels/utils/CanvasPos"
+
 const styles = theme => ({
     root: {
         textAlign: "center",
@@ -678,7 +680,8 @@ const styles = theme => ({
         color: '#fff',
     },
     leftFromDrawer: {
-        diplay: "block",
+        position: "absolute",
+        display: "block",
         width: "100%",
         height: "100%"
     },
@@ -862,6 +865,7 @@ class Marketplace extends React.Component {
                 }
             ]
         };
+        this.canvas_pos = Object.create(CanvasPos).from(32,  32,  0.9,  0, 0, 0);
     };
 
     componentWillMount() {
@@ -874,8 +878,13 @@ class Marketplace extends React.Component {
         }, 300);
     }
 
-    componentDidMount() {
-
+    componentDidMount = () => {
+        this.canvas_pos.set_notifiers(
+            this.requestForceUpdate,
+            this.closeMediaCard
+        );
+        this.canvas_pos.set_boolean_move_on_click(true);
+        this.canvas_pos.init_speed_interval();
         actions.jamy_update("flirty");
     }
 
@@ -912,11 +921,19 @@ class Marketplace extends React.Component {
             this.forceUpdate();
         })
     };
+
+    requestForceUpdate = () => {
+
+        this.forceUpdate();
+    };
+
     openMediaCard = (img) => {
 
         this.setState({openedMediaData: img}, () => {
             this.forceUpdate();
             getImageDataFromBase64(img.src).then((data) => {
+                this.canvas_pos.set_sizes(data.width, data.height);
+                this.canvas_pos.set_current_scale_default();
                 this.setState({openedMediaDataData: data}, () => {
                     this.forceUpdate();
                 })
@@ -931,10 +948,50 @@ class Marketplace extends React.Component {
         })
     };
 
+    setRefFromLeft = (element) => {
 
+        if(element != null) {
+
+            this.setState({refleft: element}, () => {
+
+                var wx = window.innerWidth;
+                const rect = element.getBoundingClientRect();
+                const _canvas_container_width = wx > 800 ? rect.width - 384: rect.width;
+                const _canvas_container_height = rect.height || 0;
+                const _canvas_container_left = rect.left || 0;
+                const _canvas_container_top = rect.top || 0;
+                this.canvas_pos.set_canvas_container(_canvas_container_top, _canvas_container_left, _canvas_container_height, _canvas_container_width);
+                element.addEventListener("wheel", this._canvas_pos_handle_wheel, {passive: false});
+                element.addEventListener("pointerdown", this._canvas_pos_handle_pointer_down, {passive: false});
+                element.addEventListener("pointermove", this._canvas_pos_handle_pointer_move, {passive: false});
+                element.addEventListener("pointerup", this._canvas_pos_handle_pointer_up, {passive: false});
+                element.addEventListener("pointercancel", this._canvas_pos_handle_pointer_up, {passive: false});
+                element.addEventListener("pointerout", this._canvas_pos_handle_pointer_up, {passive: false});
+                element.addEventListener("pointerleave", this._canvas_pos_handle_pointer_up, {passive: false});
+            });
+        }
+    };
+
+    _canvas_pos_handle_wheel = (event) => {
+        "use strict"; this.canvas_pos.handle_wheel(event);
+    };
+    _canvas_pos_handle_pointer_down = (event) => {
+        "use strict"; this.canvas_pos.handle_pointer_down(event);
+    };
+    _canvas_pos_handle_pointer_move = (event) => {
+        "use strict"; this.canvas_pos.handle_pointer_move(event);
+    };
+    _canvas_pos_handle_pointer_up = (event) => {
+        "use strict"; this.canvas_pos.handle_pointer_up(event);
+    };
     render() {
 
         const { classes, tabValue, images, isSpeedDialOpen, actions, history, openedMediaData, openedMediaDataData } = this.state;
+
+        const {canvas_wrapper, device_pixel_ratio, scale, canvas_event_target} = this.canvas_pos.get_state();
+        const screen_zoom_ratio = this.canvas_pos.get_screen_zoom_ratio();
+        const {box_shadow, will_change} = this.canvas_pos.get_style();
+        const {transform_rotate, filter} = this.canvas_pos.get_perspective_state();
 
         return (
             <div className={classes.root}>
@@ -997,7 +1054,7 @@ class Marketplace extends React.Component {
                                 images.map((img, index) => {
 
                                     return (<Grow in={true} timeout={600+index*300} key={index}>
-                                                <div className={classes.mediaCard} >
+                                                <div className={classes.mediaCard}>
                                                     <img
                                                         className={classes.media + " pixelated"}
                                                         src={img.src}
@@ -1051,9 +1108,8 @@ class Marketplace extends React.Component {
                     </Timeline>
                 </div>}
                 <SpeedDial
-                    ariaLabel="SpeedDial tooltip example"
                     className={classes.actions}
-                    hidden={false}
+                    hidden={true}
                     icon={<SpeedDialIcon />}
                     onClose={this.handleSpeedDialClose}
                     onOpen={this.handleSpeedDialOpen}
@@ -1069,17 +1125,26 @@ class Marketplace extends React.Component {
                     ))}
                 </SpeedDial>
                 <Backdrop className={classes.backdrop} open={openedMediaData != null}>
-                    {(openedMediaData && openedMediaDataData) && <div onClick={this.closeMediaCard} className={classes.leftFromDrawer}>
+                    {(openedMediaData && openedMediaDataData) && <div className={classes.leftFromDrawer} style={{pointerEvents: "none"}}>
                         <Card className={classes.fullCard}
                               style={{
-                                  marginTop: openedMediaDataData.marginTop,
-                                  marginLeft: openedMediaDataData.marginLeft,
-                                  width: openedMediaDataData.finalWidth,
-                                  height: openedMediaDataData.finalHeight
+                                  boxShadow: box_shadow,
+                                  zIndex: 1,
+                                  filter: filter,
+                                  transform: transform_rotate,
+                                  marginLeft: scale.move_x|0,
+                                  marginTop: scale.move_y|0,
+                                  width: openedMediaDataData.width | 0,
+                                  height: openedMediaDataData.height | 0,
+                                  minWidth: screen_zoom_ratio * scale.current * openedMediaDataData.width | 0,
+                                  maxWidth: screen_zoom_ratio * scale.current * openedMediaDataData.width + 1 | 0,
+                                  minHeight: screen_zoom_ratio * scale.current * openedMediaDataData.height | 0,
+                                  maxHeight: screen_zoom_ratio * scale.current * openedMediaDataData.height + 1 | 0,
                         }}>
                             <img className={"pixelated"} src={openedMediaData.src} style={{width: "100%", height: "100%"}}/>
                         </Card>
                     </div>}
+                    <div className={classes.leftFromDrawer} style={{zIndex: 10}} ref={this.setRefFromLeft} ></div>
                     {(openedMediaData && openedMediaDataData) && <Drawer
                         className={classes.drawer}
                         variant="persistent"

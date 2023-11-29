@@ -34,7 +34,7 @@ function getImageDataFromBase64(base64) {
     });
 }
 
-function getIdealDimension(width, height){
+function getIdealDimension(width, height, zoom, padding = [32, 32, 32, 32]){
     var wx = window.innerWidth;
     var wy = window.innerHeight;
 
@@ -52,20 +52,28 @@ function getIdealDimension(width, height){
     var finalWidth = 0, finalHeight = 0;
 
     if(r < wr){
-        finalHeight = wy - 64;
+        finalHeight = wy - (padding[0]+padding[2]);
         finalWidth = finalHeight * r;
     }else {
-        finalWidth = wx - 64;
+        finalWidth = wx - (padding[1]+padding[3]);
         finalHeight = finalWidth / r;
     }
+
+    finalHeight *= zoom;
+    finalWidth *= zoom;
+
+    var maxLeft = -finalWidth / 2;
+    var maxRight = wx + finalWidth / 2;
+
+
 
     return {
         finalWidth: Math.round(finalWidth),
         finalHeight: Math.round(finalHeight),
         width,
         height,
-        marginLeft: Math.round((wx-finalWidth) / 2),
-        marginTop: Math.round((wy-finalHeight) / 2),
+        marginLeft: Math.round((wx-finalWidth) / 2) + (padding[0]-padding[2]),
+        marginTop: Math.round((wy-finalHeight) / 2) + (padding[1]-padding[3]),
     };
 }
 
