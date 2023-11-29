@@ -1,5 +1,5 @@
 import React from "react";
-import { withStyles} from "@material-ui/core";
+import {Backdrop, Tooltip, withStyles} from "@material-ui/core";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import Button from "@material-ui/core/Button";
@@ -8,6 +8,7 @@ import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import Badge from "@material-ui/core/Badge";
 import Fade from "@material-ui/core/Fade";
+import Grow from "@material-ui/core/Grow";
 import Pagination from '@material-ui/lab/Pagination';
 import SpeedDial from '@material-ui/lab/SpeedDial';
 import SpeedDialIcon from '@material-ui/lab/SpeedDialIcon';
@@ -46,6 +47,12 @@ import TimelineDot from '@material-ui/lab/TimelineDot';
 import TimelineOppositeContent from '@material-ui/lab/TimelineOppositeContent';
 import Typography from '@material-ui/core/Typography';
 
+import Drawer from '@material-ui/core/Drawer';
+
+import {getImageDataFromBase64} from "../utils/computeMediaPost"
+import PixelColorPalette from "../components/PixelColorPalette";
+import CheckIcon from "@material-ui/icons/Check";
+
 const styles = theme => ({
     root: {
         textAlign: "center",
@@ -57,8 +64,9 @@ const styles = theme => ({
         backgroundColor: "#fafafa",
         width: 1152,
         "@media (max-width: 800px)": {
-            margin: "24px 0px 16px 0px",
-            maxWidth: "100%",
+            margin: "24px 0px 16px 0px !important",
+            maxWidth: "100% !important",
+            borderRadius: "0px !important",
         },
         "@media (max-width: 1260px)": {
             margin: "24px 16px 16px 16px",
@@ -641,12 +649,12 @@ const styles = theme => ({
         }
     },
     actionButton: {
-        borderRadius: 8,
+        borderRadius: 4,
         "&.MuiSpeedDialAction-fab, &.MuiSpeedDialAction-fab .MuiSvgIcon-root": {
             color: "white",
-            width: 56,
-            height: 56,
-            padding: 16
+            width: 48,
+            height: 48,
+            padding: 14
         }
     },
     timeLine: {
@@ -660,6 +668,25 @@ const styles = theme => ({
     timeLineDescription: {
         color: theme.palette.primary,
         textAlign: "left"
+    },
+    drawerPaper: {
+        width: 384,
+    },
+    backdrop: {
+        zIndex: theme.zIndex.drawer + 1,
+        color: '#fff',
+    },
+    leftFromDrawer: {
+        diplay: "block",
+        width: "100%",
+        height: "100%"
+    },
+    fullCard: {
+        borderRadius: 8
+    },
+    colors: {
+        textAlign: "end",
+
     }
 });
 
@@ -779,6 +806,8 @@ class Marketplace extends React.Component {
                 { icon: <Hashtag />, name: 'Explore' },
                 { icon: <Group />, name: 'Communities' }
             ],
+            openedMediaData: null,
+            openedMediaDataData: {},
             history: [
                 {
                     time: "11:36 AM",
@@ -868,11 +897,29 @@ class Marketplace extends React.Component {
             this.forceUpdate();
         })
     };
+    openMediaCard = (img) => {
+
+        this.setState({openedMediaData: img}, () => {
+            this.forceUpdate();
+            getImageDataFromBase64(img.src).then((data) => {
+                this.setState({openedMediaDataData: data}, () => {
+                    this.forceUpdate();
+                })
+            });
+        });
+    };
+
+    closeMediaCard = () => {
+
+        this.setState({openedMediaData: null}, () => {
+            this.forceUpdate();
+        })
+    };
 
 
     render() {
 
-        const { classes, tabValue, images, isSpeedDialOpen, actions, history } = this.state;
+        const { classes, tabValue, images, isSpeedDialOpen, actions, history, openedMediaData, openedMediaDataData } = this.state;
 
         return (
             <div className={classes.root}>
@@ -934,14 +981,14 @@ class Marketplace extends React.Component {
                             {
                                 images.map((img, index) => {
 
-                                    return (<Fade in={true} timeout={600+index*300} key={index}>
-                                                <div className={classes.mediaCard}>
+                                    return (<Grow in={true} timeout={600+index*300} key={index}>
+                                                <div className={classes.mediaCard} >
                                                     <img
                                                         className={classes.media + " pixelated"}
                                                         src={img.src}
                                                         title={img.name}
                                                     ></img>
-                                                <div className={classes.mediaOverlay}>
+                                                <div className={classes.mediaOverlay} onClick={() => {this.openMediaCard(img)}} >
                                                     <div className={classes.votes + " top"}>
                                                         <IconButton><AutorenewSharpIcon/><span className={classes.iconCount}>14</span></IconButton>
                                                         <IconButton><KeyboardArrowUpOutlined/><span className={classes.iconCount}>88</span></IconButton>
@@ -958,7 +1005,7 @@ class Marketplace extends React.Component {
                                                     </span>
                                                 </div>
                                             </div>
-                                        </Fade>);
+                                        </Grow>);
                                 })
                             }
                         </Masonry>
@@ -1002,12 +1049,54 @@ class Marketplace extends React.Component {
                             className={classes.actionButton}
                             key={action.name}
                             icon={action.icon}
-                            tooltipTitle={action.name}
-                            tooltipOpen
                             onClick={this.handleSpeedDialClose}
                         />
                     ))}
                 </SpeedDial>
+                <Backdrop className={classes.backdrop} open={openedMediaData != null} onClick={this.closeMediaCard}>
+                    {(openedMediaData && openedMediaDataData) && <div className={classes.leftFromDrawer}>
+                        <Card className={classes.fullCard}
+                              style={{
+                                  marginTop: openedMediaDataData.marginTop,
+                                  marginLeft: openedMediaDataData.marginLeft,
+                                  width: openedMediaDataData.finalWidth,
+                                  height: openedMediaDataData.finalHeight
+                        }}>
+                            <img className={"pixelated"} src={openedMediaData.src} style={{width: "100%", height: "100%"}}/>
+                        </Card>
+                    </div>}
+                    {(openedMediaData && openedMediaDataData) && <Drawer
+                        className={classes.drawer}
+                        variant="persistent"
+                        anchor="right"
+                        open={openedMediaData != null && openedMediaData != null}
+                        classes={{
+                            paper: classes.drawerPaper,
+                        }}
+                    >
+                        <h1>{openedMediaData.name}</h1>
+                        <div className={classes.colors}>
+                            {
+                                (openedMediaDataData.colors || []).map((color, key) => {
+
+                                    return (<Tooltip title={color} key={key}>
+                                        <IconButton
+                                            disableRipple={true}
+                                            onClick={(event) => {this.props.onClick(event, color)}}
+                                            style={{
+                                                background: color,
+                                                width: 36,
+                                                height: 36,
+                                                borderRadius: "2px",
+                                                margin: 4
+                                            }}>
+                                        </IconButton>
+                                    </Tooltip>);
+                                })
+                            }
+                        </div>
+                    </Drawer>}
+                </Backdrop>
             </div>
         );
     }
