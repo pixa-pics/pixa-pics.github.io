@@ -28,6 +28,7 @@ import KeyboardArrowDownOutlined from "@material-ui/icons/KeyboardArrowDownOutli
 import KeyboardArrowUpOutlined from "@material-ui/icons/KeyboardArrowUpOutlined"
 import AutorenewSharpIcon from '@material-ui/icons/AutorenewSharp';
 import SettingsSharpIcon from '@material-ui/icons/SettingsSharp';
+import CloseIcon from '@material-ui/icons/Close';
 import Group from '@material-ui/icons/Group';
 import Icon from '@material-ui/core/Icon';
 import StarCircleIcon from '../icons/StarCircle';
@@ -640,6 +641,7 @@ const styles = theme => ({
         transition: "all 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
     },
     iconCount: {
+        color: "white",
         marginLeft: 4,
         fontSize: "16px",
     },
@@ -679,13 +681,30 @@ const styles = theme => ({
         textAlign: "left"
     },
     drawerPaper: {
+        position: "absolute",
+        "@media (max-width: 800px)": {
+            width: "100% !important",
+        },
         width: 384,
+        textAlign: "left",
+        "& h1": {
+            display: "block",
+            margin: "12px auto"
+        },
+        "& h3": {
+            display: "block",
+            margin: "8px 16px"
+        },
+
     },
     backdrop: {
         zIndex: theme.zIndex.drawer + 1,
         color: '#fff',
         "&.MuiBackdrop-root": {
             backgroundColor: "rgba(0,0,0,0.88)",
+        },
+        "& .MuiIconButton-root": {
+            color: "white"
         }
     },
     leftFromDrawer: {
@@ -707,19 +726,26 @@ const styles = theme => ({
     colors: {
         flexFlow: "wrap",
         placeContent: "stretch flex-start",
+        margin: "8px 16px"
     },
     drawer: {
-        "@media (max-width: 800px)": {
-            display: "none !important",
-        },
+
     },
     list: {
+        "& .MuiListItem-container": {
+            lineHeight: 32,
+            height: 32
+        },
         "& .MuiListItemText-root span": {
-            fontWeight: "bold"
+            fontWeight: "bold",
         },
         "& .MuiListItemSecondaryAction-root": {
             color: theme.palette.secondary.main
         },
+        "& svg": {
+            height: "24px",
+            verticalAlign: "middle"
+        }
     }
 });
 
@@ -878,7 +904,8 @@ class Marketplace extends React.Component {
                     time: "07:56 AM",
                     event: "Commented on @primerz's post named \"Follow MeStory\""
                 }
-            ]
+            ],
+            openedDrawer: (window.innerWidth < 800) ? false: true
         };
         this.canvas_pos = Object.create(CanvasPos).from(32,  32,  0.666,  0, 0, 0);
     };
@@ -1106,9 +1133,12 @@ class Marketplace extends React.Component {
     edit = (b64) => {
         actions.load_with(b64);
     }
+    toggleDrawer = () => {
+        this.setState({openedDrawer: !this.state.openedDrawer});
+    }
     render() {
 
-        const { classes, tabValue, images, isSpeedDialOpen, actions, history, openedMediaData, openedMediaDataData, _h_svg_size, _h_svg, src } = this.state;
+        const { classes, tabValue, images, isSpeedDialOpen, actions, history, openedMediaData, openedMediaDataData, _h_svg_size, _h_svg, src, openedDrawer } = this.state;
 
         const {canvas_wrapper, device_pixel_ratio, scale, canvas_event_target} = this.canvas_pos.get_state();
         const screen_zoom_ratio = this.canvas_pos.get_screen_zoom_ratio();
@@ -1272,30 +1302,37 @@ class Marketplace extends React.Component {
                                   contain: "paint size style layout"
                         }}>
                             <img className={"pixelated"} src={src} style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%"}}/>
-                            <div style={{background: background_image,  position: "absolute", top: 0, left: 0, width: "100%", height: "100%"}}></div>
+                            <div style={{filter: "opacity(0.5)", background: background_image,  position: "absolute", top: 0, left: 0, width: "100%", height: "100%"}}></div>
                         </Card>
                     </div>}
                     <div className={classes.leftFromDrawer} style={{zIndex: 10, pointerEvents: "all"}} ref={this.setRefFromLeft} >
                         <div style={{position: "absolute", top: 16, left: 16}}>
                             <Button style={{color: "white"}} onClick={() => {this.renderMedia("pixelated", openedMediaDataData.data)}}>Pixelated</Button>
                             <Button style={{color: "white"}} onClick={() => {this.renderMedia("xbrz", openedMediaDataData.data)}}>Smooth</Button>
-                        </div><div style={{position: "absolute", bottom: 16, left: 16}}>
                             <Button style={{color: "white"}} onClick={() => {this.edit(openedMediaData.src);}}>Edit</Button>
                         </div>
+                        <div style={{position: "absolute", bottom: 16, left: 16}}>
+                            <IconButton><AutorenewSharpIcon/><span className={classes.iconCount}>14</span></IconButton>
+                            <IconButton><KeyboardArrowUpOutlined/><span className={classes.iconCount}>88</span></IconButton>
+                            <IconButton><KeyboardArrowDownOutlined/><span className={classes.iconCount}>0</span></IconButton>
+                        </div>
+                        <div style={{position: "absolute", bottom: 16, right: 16, display: window.innerWidth >= 800 ? "none": "block"}}>
+                            <Button style={{color: "white"}} onClick={() => {this.toggleDrawer(openedMediaData.src);}}>Details</Button>
+                        </div>
+
                     </div>
                     {(openedMediaData && openedMediaDataData) && <Drawer
                         className={classes.drawer}
                         variant="persistent"
-                        anchor="right"
-                        open={openedMediaData != null && openedMediaData != null}
+                        anchor={window.innerWidth >= 800 ? "right": "bottom"}
+                        open={openedDrawer}
                         classes={{
                             paper: classes.drawerPaper,
                         }}
                     >
+                        <IconButton onClick={this.toggleDrawer} style={{display: window.innerWidth >= 800 ? "none": "block", color: "#060e23", width: 64, height: 64, position: "fixed", right: 4, top: 4}}><CloseIcon/></IconButton>
                         <h1>{openedMediaData.name}</h1>
-                        <h3>Description</h3>
-                        <p style={{textAlign: "justify", margin: "8px 16px"}}>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-                        <h3>Colors</h3>
+                        <h3>{(openedMediaDataData.colors || []).length} Colors</h3>
                         <div className={classes.colors}>
                             {
                                 (openedMediaDataData.colors || []).map((color, key) => {
@@ -1316,7 +1353,9 @@ class Marketplace extends React.Component {
                                 })
                             }
                         </div>
-                        <h3>States</h3>
+                        <h3>Description</h3>
+                        <p style={{textAlign: "justify", margin: "8px 16px"}}>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                        <h3>State</h3>
                         <List dense={true} className={classes.list}>
                             <ListItem divider>
                                 <ListItemText primary="Created:"/>
@@ -1332,36 +1371,24 @@ class Marketplace extends React.Component {
                             </ListItem>
                             <ListItem divider>
                                 <ListItemText primary="Status:"/>
-                                <ListItemSecondaryAction>
-                                    {openedMediaData.sold ? "Sold": "For sale"}
+                                <ListItemSecondaryAction style={{color: openedMediaData.sold ? "red": "green"}}>
+                                    {openedMediaData.sold ? "Sold": "For sale!"}
                                 </ListItemSecondaryAction>
                             </ListItem>
                             <ListItem divider>
                                 <ListItemText primary="Price:"/>
                                 <ListItemSecondaryAction>
-                                    {openedMediaData.price} {openedMediaDataData.unit}
+                                    {openedMediaData.price} {openedMediaData.money}
                                 </ListItemSecondaryAction>
                             </ListItem>
                             <ListItem divider>
-                                <ListItemText primary="Colors:"/>
+                                <ListItemText primary="Dimension:"/>
                                 <ListItemSecondaryAction>
-                                    {(openedMediaDataData.colors || []).length} Colors
-                                </ListItemSecondaryAction>
-                            </ListItem>
-                            <ListItem divider>
-                                <ListItemText primary="Width:"/>
-                                <ListItemSecondaryAction>
-                                    {openedMediaDataData.width}px
-                                </ListItemSecondaryAction>
-                            </ListItem>
-                            <ListItem divider>
-                                <ListItemText primary="Height:"/>
-                                <ListItemSecondaryAction>
-                                    {openedMediaDataData.height}px
+                                    {openedMediaDataData.width}x{openedMediaDataData.height}
                                 </ListItemSecondaryAction>
                             </ListItem>
                         </List>
-
+                        <Button style={{fontWeight: "bold", margin: "8px 16px 32px 16px", backgroundColor: "rgb(0 28 255 / 25%)", color: "#001238", width: "calc(100% - 32px)"}} color={"primary"}>BUY NOW</Button>
                     </Drawer>}
                 </Backdrop>
             </div>
