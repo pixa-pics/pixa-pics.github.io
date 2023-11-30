@@ -329,25 +329,25 @@ const CanvasPos = {
                 const any_rotation = Boolean(rotate_x || rotate_y);
 
                 const transform_rotate = any_rotation ? `rotateX(${rotate_x}deg) rotateY(${rotate_y}deg)`: ``
-                const background_image = any_rotation ? `linear-gradient(to left, rgba(
-                            ${p_x_things},
-                            ${p_x_things},
-                            ${p_x_things}, 
+                const background_image = any_rotation ? `linear-gradient(to right, rgba(
+                            ${p_x_things.toFixed(3)},
+                            ${p_x_things.toFixed(3)},
+                            ${p_x_things.toFixed(3)}, 
                             ${(Math.abs(p_x * 0.1) / (s.perspective*2)).toFixed(2)}
                             ), rgba(
-                            ${p_x_things},
-                            ${p_x_things},
-                            ${p_x_things}, 
+                            ${p_x_things.toFixed(3)},
+                            ${p_x_things.toFixed(3)},
+                            ${p_x_things.toFixed(3)}, 
                             ${(Math.abs(p_x * 0.6) / (s.perspective*2)).toFixed(2)}
                             )), linear-gradient(to top, rgba(
-                            ${p_y_things},
-                            ${p_y_things},
-                            ${p_y_things}, 
+                            ${p_y_things.toFixed(3)},
+                            ${p_y_things.toFixed(3)},
+                            ${p_y_things.toFixed(3)}, 
                             ${(Math.abs(p_y * 0.75) / (s.perspective*2)).toFixed(2)}
                             ), rgba(
-                            ${p_y_things},
-                            ${p_y_things},
-                            ${p_y_things}, 
+                            ${p_y_things.toFixed(3)},
+                            ${p_y_things.toFixed(3)},
+                            ${p_y_things.toFixed(3)}, 
                             ${(Math.abs(p_y  * 0.25) / (s.perspective*2)).toFixed(2)}
                             ))`: ``;
                 const filter_force = (1 + (-rotate_y + rotate_x) / 80).toFixed(2);

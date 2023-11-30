@@ -5,7 +5,6 @@ window.mobileAndTabletCheck = function() {
     return check;
 };
 
-import { createLocalBlob } from "../utils/objectURL";
 import {UJS} from "../utils/ujs";
 import JSLoader from "../utils/JSLoader";
 let is_mobile_or_tablet = window.mobileAndTabletCheck();
@@ -63,6 +62,7 @@ import SelectDragIcon from "../icons/SelectDrag";
 import TuneIcon from "../icons/Tune";
 import ImageAutoAdjustIcon from "../icons/ImageAutoAdjust";
 
+import { createLocalBlob } from "../utils/objectURL";
 import HexGrid from "../icons/HexGrid";
 import get_svg_in_b64 from "../utils/svgToBase64";
 import { l, t } from "../utils/t";
