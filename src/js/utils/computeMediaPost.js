@@ -25,6 +25,7 @@ function getImageDataFromBase64(base64) {
 
                 resolve({
                     colors: hexs,
+                    data: image_data,
                     width: image_data.width,
                     height: image_data.height,
                     ...getIdealDimension(image_data.width, image_data.height)
