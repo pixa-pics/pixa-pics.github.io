@@ -207,7 +207,7 @@ const styles = theme => ({
     headerContainer: {
         pointerEvents: "none",
         fontWeight: "bold",
-        fontFamily: `"Jura"`,
+        fontFamily: `"IBM Plex Sans"`,
         position: "absolute",
         padding: "0px 48px",
         height: "100%",

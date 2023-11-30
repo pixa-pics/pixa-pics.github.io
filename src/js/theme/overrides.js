@@ -3,13 +3,13 @@ const overrides = {
         "@global": {
             html: {
                 textRendering: "optimizespeed",
-                fontFamily: `"Baksheesh", "Jura"`,
+                fontFamily: `"IBM Plex Sans", "Red Hat Display"`,
                 overflow: "hidden",
                 height: "100%",
                 maxHeight: "100%",
             },
             "body.loaded": {
-                fontFamily: `"Baksheesh", "Jura"`,
+                fontFamily: `"IBM Plex Sans", "Red Hat Display"`,
                 fontSize: "auto !important",
                 overflow: "hidden",
                 backgroundColor: "#FAFAFA",

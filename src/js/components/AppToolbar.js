@@ -82,13 +82,13 @@ const styles = theme => ({
     appTitle: {
         verticalAlign: "middle",
         fontWeight: "bold",
-        fontFamily: `"Jura"`,
+        fontFamily: `"IBM Plex Sans"`,
         userSelect: "none",
     },
     swipeableDrawerAppTitle: {
         verticalAlign: "middle",
         fontWeight: "bold",
-        fontFamily: `"Jura"`,
+        fontFamily: `"IBM Plex Sans"`,
         userSelect: "none",
     },
     jamyContainer: {

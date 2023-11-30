@@ -10,7 +10,7 @@ const ManualWarning = (props) => (
     >
         <style>
             {
-                `.B{fill:#fff}.C{font-family:"Jura", Arial, Sans-Serif}`
+                `.B{fill:#fff}.C{font-family:"IBM Plex Sans", Arial, Sans-Serif}`
             }
         </style>
         <defs>

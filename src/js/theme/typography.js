@@ -1,48 +1,48 @@
 const typography = {
     h1: {
-        fontFamily: `"Baksheesh", "Jura"`
+        fontFamily: `"IBM Plex Sans", "Red Hat Display"`
     },
     h2: {
-        fontFamily: `"Baksheesh", "Jura"`
+        fontFamily: `"IBM Plex Sans", "Red Hat Display"`
     },
     h3: {
-        fontFamily: `"Baksheesh", "Jura"`
+        fontFamily: `"IBM Plex Sans", "Red Hat Display"`
     },
     h4: {
-        fontFamily: `"Baksheesh", "Jura"`
+        fontFamily: `"IBM Plex Sans", "Red Hat Display"`
     },
     h5: {
-        fontFamily: `"Baksheesh", "Jura"`
+        fontFamily: `"IBM Plex Sans", "Red Hat Display"`
     },
     h6: {
-        fontFamily: `"Baksheesh", "Jura"`
+        fontFamily: `"IBM Plex Sans", "Red Hat Display"`
     },
     subtitle1: {
-        fontFamily: `"Baksheesh", "Jura"`
+        fontFamily: `"IBM Plex Sans", "Red Hat Display"`
     },
     subtitle2: {
-        fontFamily: `"Baksheesh", "Jura"`
+        fontFamily: `"IBM Plex Sans", "Red Hat Display"`
     },
     body1: {
-        fontFamily: `"Baksheesh", "Jura"`
+        fontFamily: `"Red Hat Display", "IBM Plex Sans"`
     },
     body2: {
-        fontFamily: `"Baksheesh", "Jura"`
+        fontFamily: `"Red Hat Display", "IBM Plex Sans"`
     },
     button: {
-        fontFamily: `"Baksheesh", "Jura"`
+        fontFamily: `"IBM Plex Sans", "Red Hat Display"`
     },
     caption: {
-        fontFamily: `"Baksheesh", "Jura"`
+        fontFamily: `"Red Hat Display", "IBM Plex Sans"`
     },
     overline: {
-        fontFamily: `"Baksheesh", "Jura"`
+        fontFamily: `"Red Hat Display", "IBM Plex Sans"`
     },
     text: {
-        fontFamily: `"Baksheesh", "Jura"`
+        fontFamily: `"Red Hat Display", "IBM Plex Sans"`
     },
     label: {
-        fontFamily: `"Baksheesh", "Jura"`
+        fontFamily: `"Red Hat Display", "IBM Plex Sans"`
     },
 }
 

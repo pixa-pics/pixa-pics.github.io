@@ -166,7 +166,7 @@ class CanvasPixels extends React.PureComponent {
                 transform: translate(0px, -100%);
                 line-height: 20px;
                 font-size: 14px;
-                font-family: "Jura";
+                font-family: "IBM Plex Sans";
                 color: #FAFAFAAA;` +
             "}" +
             ".Canvas-Pixels-Cover::before {" +
@@ -180,7 +180,7 @@ class CanvasPixels extends React.PureComponent {
                 transform: translate(0px, 100%);
                 line-height: 20px;
                 font-size: 14px;
-                font-family: "Jura";
+                font-family: "IBM Plex Sans";
                 color: #FAFAFAAA;` +
             "}" +
             ".Canvas-Wrapper.MOVE:not(.Canvas-Focused), .Canvas-Wrapper.PICKER:not(.Canvas-Focused) {" +

@@ -517,7 +517,7 @@ const SuperState = {
 
 
                         context.clearRect(0, 0, width, height);
-                        context.font = `${size}px "Jura"`;
+                        context.font = `${size}px "IBM Plex Sans"`;
                         context.fillStyle = "#ffffffff";
                         context.textAlign = "center";
                         context.fillText(text, width/2, height/2);

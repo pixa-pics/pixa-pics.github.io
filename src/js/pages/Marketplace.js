@@ -31,6 +31,9 @@ import SettingsSharpIcon from '@material-ui/icons/SettingsSharp';
 import CloseIcon from '@material-ui/icons/Close';
 import Group from '@material-ui/icons/Group';
 import Icon from '@material-ui/core/Icon';
+import ImageEditIcon from '../icons/ImageEdit';
+import SquareIcon from '../icons/Square';
+import SquareRoundedIcon from '../icons/SquareRounded';
 import StarCircleIcon from '../icons/StarCircle';
 import Hashtag from '../icons/Hashtag';
 import LinkBox from '../icons/LinkBox';
@@ -62,6 +65,8 @@ import pool from "../utils/worker-pool";
 import JSLoader from "../utils/JSLoader";
 import actions from "../actions/utils";
 import xbrz from "../utils/xBRZ";
+import GamePadRound from "../icons/GamePadRound";
+import CloudDownload from "@material-ui/icons/CloudDownload";
 
 const styles = theme => ({
     root: {
@@ -95,7 +100,7 @@ const styles = theme => ({
         width: "100%",
         height: 256,
         position: "relative",
-        "&:hover > div > h3": {
+        "&:hover > div > h1": {
             bottom: "-60px",
             opacity: 0,
             transition: "all 700ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
@@ -691,7 +696,7 @@ const styles = theme => ({
             display: "block",
             margin: "12px auto"
         },
-        "& h3": {
+        "& h2": {
             display: "block",
             margin: "8px 16px"
         },
@@ -726,7 +731,7 @@ const styles = theme => ({
     colors: {
         flexFlow: "wrap",
         placeContent: "stretch flex-start",
-        margin: "8px 16px"
+        margin: "8px 14px 8px 14px"
     },
     drawer: {
 
@@ -1029,7 +1034,7 @@ class Marketplace extends React.Component {
         this.forceUpdate();
     };
 
-    renderMedia = (type, data) => {
+    renderMedia = (type, data, colors) => {
 
         switch (type) {
             case "pixelated":
@@ -1052,11 +1057,63 @@ class Marketplace extends React.Component {
                     obj.default(data, 6, pool).then(callback);
                 });
                 break;
-            case "omniscale":
-                JSLoader( () => import("../utils/omniscale")).then(({omniscale}) => {
-                    omniscale(data, 8, pool).then(callback);
+            case "svg":
+                JSLoader( () => import("../utils/xBRZ")).then((obj) => {
+                    obj.default(data, 6, pool).then((imageData) => {
+                        JSLoader( () => import("../utils/image_tracer")).then(({image_tracer}) => {
+                            var scale = 3;
+                            image_tracer(data, {
+
+                                // Palette
+                                pal: colors.map((c) => {
+
+                                    const r = parseInt(c.slice(1, 3), 16);
+                                    const g = parseInt(c.slice(3, 5), 16);
+                                    const b = parseInt(c.slice(5, 7), 16);
+                                    const a = parseInt(c.slice(7, 9), 16);
+
+                                    return {r, g, b, a};
+                                }),
+
+                                // Tracing
+                                corsenabled: false,
+                                ltres: scale,
+                                qtres: scale,
+                                pathomit: scale,
+                                rightangleenhance: false,
+
+                                // Color quantization
+                                colorsampling: 2,
+                                numberofcolors: colors.length,
+                                mincolorratio: 0,
+                                colorquantcycles: 1,
+
+                                // Layering method
+                                layering: 0,
+
+                                // SVG rendering
+                                strokewidth: Math.ceil(scale / 2),
+                                linefilter: true,
+                                scale: 1,
+                                roundcoords: 2,
+                                viewbox: true,
+                                desc: false,
+                                lcpr: 0,
+                                qcpr: 0,
+
+                                // Blur
+                                blurradius: scale,
+                                blurdelta: scale * 4
+
+                            }, pool).then((svg_source) => {
+
+                                this.setState({src: "data:image/svg+xml;base64," + window.btoa(svg_source)}, () => {
+                                    this.forceUpdate();
+                                })
+                            });
+                        });
+                    });
                 });
-                break;
         }
 
 
@@ -1136,6 +1193,14 @@ class Marketplace extends React.Component {
     toggleDrawer = () => {
         this.setState({openedDrawer: !this.state.openedDrawer});
     }
+    download = (src, title, artist) => {
+        let ext = src.startsWith("data:image/svg+xml;base64,") ? "svg": "png";
+        let a = document.createElement("a"); //Create <a>
+        a.download = `PIXAPICS-${title}-${artist}.${ext}`; //File name Here
+        a.href = src;
+        a.click();
+        a.remove();
+    }
     render() {
 
         const { classes, tabValue, images, isSpeedDialOpen, actions, history, openedMediaData, openedMediaDataData, _h_svg_size, _h_svg, src, openedDrawer } = this.state;
@@ -1151,7 +1216,7 @@ class Marketplace extends React.Component {
                         <div className={classes.profileBanner}>
                             <div className={classes.profileBannerOverlay}></div>
                             <div className={classes.profileBannerImage+" pixelated"}>
-                                <h3 className={classes.profileName}>Sophia Julio</h3>
+                                <h1 className={classes.profileName}>Sophia Julio</h1>
                                 <p className={classes.profileDescription}>
                                     Crypto Crusader | Educator with a Heart | Dog Mom Extraordinaire... Join me!
                                 </p>
@@ -1307,14 +1372,24 @@ class Marketplace extends React.Component {
                     </div>}
                     <div className={classes.leftFromDrawer} style={{zIndex: 10, pointerEvents: "all"}} ref={this.setRefFromLeft} >
                         <div style={{position: "absolute", top: 16, left: 16}}>
-                            <Button style={{color: "white"}} onClick={() => {this.renderMedia("pixelated", openedMediaDataData.data)}}>Pixelated</Button>
-                            <Button style={{color: "white"}} onClick={() => {this.renderMedia("xbrz", openedMediaDataData.data)}}>Smooth</Button>
-                            <Button style={{color: "white"}} onClick={() => {this.edit(openedMediaData.src);}}>Edit</Button>
+                            <IconButton style={{color: "white"}} onClick={() => {this.renderMedia("pixelated", openedMediaDataData.data)}}><Icon><SquareIcon/></Icon></IconButton>
+                            <IconButton style={{color: "white"}} onClick={() => {this.renderMedia("xbrz", openedMediaDataData.data)}}><Icon><SquareRoundedIcon/></Icon></IconButton>
+                            <IconButton style={{color: "white"}} onClick={() => {this.renderMedia("svg", openedMediaDataData.data, openedMediaDataData.colors)}}><Icon><GamePadRound/></Icon></IconButton>
+                        </div>
+                        <div style={{position: "absolute", top: 64, left: 16}}>
+                            <IconButton style={{color: "grey"}} onClick={() => {this.download(src, openedMediaData.name, "sophia.julio")}}><Icon><CloudDownload/></Icon></IconButton>
+                            <IconButton style={{color: "grey"}} onClick={() => {this.edit(openedMediaData.src);}}><Icon><ImageEditIcon/></Icon></IconButton>
                         </div>
                         <div style={{position: "absolute", bottom: 16, left: 16}}>
-                            <IconButton><AutorenewSharpIcon/><span className={classes.iconCount}>14</span></IconButton>
-                            <IconButton><KeyboardArrowUpOutlined/><span className={classes.iconCount}>88</span></IconButton>
-                            <IconButton><KeyboardArrowDownOutlined/><span className={classes.iconCount}>0</span></IconButton>
+                            <Tooltip title={"14"}>
+                                <IconButton><Icon><AutorenewSharpIcon/></Icon></IconButton>
+                            </Tooltip>
+                            <Tooltip title={"88"}>
+                                <IconButton><Icon><KeyboardArrowUpOutlined/></Icon></IconButton>
+                            </Tooltip>
+                            <Tooltip title={"0"}>
+                                <IconButton><Icon><KeyboardArrowDownOutlined/></Icon></IconButton>
+                            </Tooltip>
                         </div>
                         <div style={{position: "absolute", bottom: 16, right: 16, display: window.innerWidth >= 800 ? "none": "block"}}>
                             <Button style={{color: "white"}} onClick={() => {this.toggleDrawer(openedMediaData.src);}}>Details</Button>
@@ -1332,7 +1407,7 @@ class Marketplace extends React.Component {
                     >
                         <IconButton onClick={this.toggleDrawer} style={{display: window.innerWidth >= 800 ? "none": "block", color: "#060e23", width: 64, height: 64, position: "fixed", right: 4, top: 4}}><CloseIcon/></IconButton>
                         <h1>{openedMediaData.name}</h1>
-                        <h3>{(openedMediaDataData.colors || []).length} Colors</h3>
+                        <h2>{(openedMediaDataData.colors || []).length} Colors</h2>
                         <div className={classes.colors}>
                             {
                                 (openedMediaDataData.colors || []).map((color, key) => {
@@ -1343,8 +1418,8 @@ class Marketplace extends React.Component {
                                             onClick={(event) => {this.props.onClick(event, color)}}
                                             style={{
                                                 background: color,
-                                                width: 36,
-                                                height: 36,
+                                                width: 24,
+                                                height: 24,
                                                 borderRadius: "2px",
                                                 margin: 4
                                             }}>
@@ -1353,9 +1428,9 @@ class Marketplace extends React.Component {
                                 })
                             }
                         </div>
-                        <h3>Description</h3>
+                        <h2>Description</h2>
                         <p style={{textAlign: "justify", margin: "8px 16px"}}>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-                        <h3>State</h3>
+                        <h2>State</h2>
                         <List dense={true} className={classes.list}>
                             <ListItem divider>
                                 <ListItemText primary="Created:"/>
