@@ -1008,15 +1008,15 @@ function drawSVG(graph, scale) {
         var lines = "L";
         var vertices = node.vertices;
         var v = vertices[0];
-        for (var i = 1; i < vertices.length; ++i) {
+        for (var i = 0; i < vertices.length; ++i) {
             v = vertices[i];
-            lines += `${v.x * scale},${v.y * scale} `;
+            lines += `${Math.round(v.x * scale)},${Math.round(v.y * scale)} `;
         }
 
-        paths.push(`<path stroke="${node.color}" stroke-width="3.4" fill="${node.color}" d="M${vertices[0].x * scale},${vertices[0].y * scale} ${lines} Z"/>`)
+        paths.push(`<path stroke="${node.color}" fill="${node.color}" d="M${Math.round(vertices[0].x * scale)},${Math.round(vertices[0].y * scale)} ${lines}Z"/>`)
     }
 
-    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width*scale} ${height*scale}">${paths.join("\n\t")}</svg>`;
+    return `<svg xmlns="http://www.w3.org/2000/svg" stroke-width="8" viewBox="0 0 ${width*scale} ${height*scale}">${paths.join("\n\t")}</svg>`;
 }
 
 function createEmptyCanvas(graph, scale) {
@@ -1034,6 +1034,7 @@ function drawContour(canvas, vertices, color, scale) {
     context.strokeStyle = "black";
 
     var stroke_color = 'rgba(255,75,75,255)';
+    context.lineWidth = 2;
     context.strokeStyle = "" + stroke_color;
     context.fillStyle = "" + color;
     context.beginPath();
@@ -1055,7 +1056,7 @@ const fu = function (image_data, compute_svg_string = false) {
     graph.createSimilarityGraph();
     graph.createVoronoiDiagram();
     var image_data = drawCanvas(graph, scale, false, false).getImageData(0, 0, image_data.width*scale, image_data.height*scale);
-    var svg_string = compute_svg_string ? drawSVG(graph, scale): null;
+    var svg_string = compute_svg_string ? drawSVG(graph, 20): null;
 
     return Array.of(image_data, svg_string);
 }

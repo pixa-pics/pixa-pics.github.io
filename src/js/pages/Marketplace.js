@@ -67,6 +67,7 @@ import actions from "../actions/utils";
 import xbrz from "../utils/xBRZ";
 import GamePadRound from "../icons/GamePadRound";
 import CloudDownload from "@material-ui/icons/CloudDownload";
+import depixelize from "../utils/depixelize";
 
 const styles = theme => ({
     root: {
@@ -1058,10 +1059,17 @@ class Marketplace extends React.Component {
                 });
                 break;
             case "svg":
+                var results = depixelize(data, true);
+                var svg_source = results[1];
+                this.setState({src: "data:image/svg+xml;base64," + window.btoa(svg_source)}, () => {
+                    this.forceUpdate();
+                });
+
+                /*
                 JSLoader( () => import("../utils/xBRZ")).then((obj) => {
                     obj.default(data, 6, pool).then((imageData) => {
                         JSLoader( () => import("../utils/image_tracer")).then(({image_tracer}) => {
-                            var scale = 3;
+                            var scale = 6;
                             image_tracer(data, {
 
                                 // Palette
@@ -1076,34 +1084,34 @@ class Marketplace extends React.Component {
                                 }),
 
                                 // Tracing
-                                corsenabled: false,
-                                ltres: scale,
-                                qtres: scale,
-                                pathomit: scale,
-                                rightangleenhance: false,
+                                corsenabled : false,
+                                ltres : 1,
+                                qtres : 1,
+                                pathomit : 1,
+                                rightangleenhance : true,
 
                                 // Color quantization
-                                colorsampling: 2,
-                                numberofcolors: colors.length,
-                                mincolorratio: 0,
-                                colorquantcycles: 1,
+                                colorsampling : 2,
+                                numberofcolors : colors.length,
+                                mincolorratio : 0,
+                                colorquantcycles : 1,
 
                                 // Layering method
-                                layering: 0,
+                                layering : true,
 
                                 // SVG rendering
-                                strokewidth: Math.ceil(scale / 2),
-                                linefilter: true,
-                                scale: 1,
-                                roundcoords: 2,
-                                viewbox: true,
-                                desc: false,
-                                lcpr: 0,
-                                qcpr: 0,
+                                strokewidth : 2,
+                                linefilter : true,
+                                scale : 1,
+                                roundcoords : 6,
+                                viewbox : true,
+                                desc : false,
+                                lcpr : 0,
+                                qcpr : 0,
 
                                 // Blur
-                                blurradius: scale,
-                                blurdelta: scale * 4
+                                blurradius : 1,
+                                blurdelta : 1
 
                             }, pool).then((svg_source) => {
 
@@ -1113,7 +1121,7 @@ class Marketplace extends React.Component {
                             });
                         });
                     });
-                });
+                });*/
         }
 
 
@@ -1372,27 +1380,27 @@ class Marketplace extends React.Component {
                     </div>}
                     <div className={classes.leftFromDrawer} style={{zIndex: 10, pointerEvents: "all"}} ref={this.setRefFromLeft} >
                         <div style={{position: "absolute", top: 16, left: 16}}>
-                            <IconButton style={{color: "white"}} onClick={() => {this.renderMedia("pixelated", openedMediaDataData.data)}}><Icon><SquareIcon/></Icon></IconButton>
-                            <IconButton style={{color: "white"}} onClick={() => {this.renderMedia("xbrz", openedMediaDataData.data)}}><Icon><SquareRoundedIcon/></Icon></IconButton>
-                            <IconButton style={{color: "white"}} onClick={() => {this.renderMedia("svg", openedMediaDataData.data, openedMediaDataData.colors)}}><Icon><GamePadRound/></Icon></IconButton>
+                            <IconButton style={{color: "#a0c1ff"}} onClick={() => {this.renderMedia("pixelated", openedMediaDataData.data)}}><Icon><SquareIcon/></Icon></IconButton>
+                            <IconButton style={{color: "#a0c1ff"}} onClick={() => {this.renderMedia("xbrz", openedMediaDataData.data)}}><Icon><SquareRoundedIcon/></Icon></IconButton>
+                            <IconButton style={{color: "#a0c1ff"}} onClick={() => {this.renderMedia("svg", openedMediaDataData.data, openedMediaDataData.colors)}}><Icon><GamePadRound/></Icon></IconButton>
                         </div>
-                        <div style={{position: "absolute", top: 64, left: 16}}>
-                            <IconButton style={{color: "grey"}} onClick={() => {this.download(src, openedMediaData.name, "sophia.julio")}}><Icon><CloudDownload/></Icon></IconButton>
-                            <IconButton style={{color: "grey"}} onClick={() => {this.edit(openedMediaData.src);}}><Icon><ImageEditIcon/></Icon></IconButton>
+                        <div style={{position: "absolute", right: window.innerWidth > 800 ? 400: 14, top: 16}}>
+                            <IconButton style={{color: "#a0c1ff"}} onClick={() => {this.download(src, openedMediaData.name, "sophia.julio")}}><Icon><CloudDownload/></Icon></IconButton>
+                            <IconButton style={{color: "#a0c1ff"}} onClick={() => {this.edit(openedMediaData.src);}}><Icon><ImageEditIcon/></Icon></IconButton>
                         </div>
                         <div style={{position: "absolute", bottom: 16, left: 16}}>
-                            <Tooltip title={"14"}>
+                            <Tooltip title={"14 Reposts"}>
                                 <IconButton><Icon><AutorenewSharpIcon/></Icon></IconButton>
                             </Tooltip>
-                            <Tooltip title={"88"}>
+                            <Tooltip title={"88 UpVotes"}>
                                 <IconButton><Icon><KeyboardArrowUpOutlined/></Icon></IconButton>
                             </Tooltip>
-                            <Tooltip title={"0"}>
+                            <Tooltip title={"0 DownVote"}>
                                 <IconButton><Icon><KeyboardArrowDownOutlined/></Icon></IconButton>
                             </Tooltip>
                         </div>
                         <div style={{position: "absolute", bottom: 16, right: 16, display: window.innerWidth >= 800 ? "none": "block"}}>
-                            <Button style={{color: "white"}} onClick={() => {this.toggleDrawer(openedMediaData.src);}}>Details</Button>
+                            <Button style={{color: "white", fontWeight: "bold"}} onClick={() => {this.toggleDrawer(openedMediaData.src);}}>Details</Button>
                         </div>
 
                     </div>
