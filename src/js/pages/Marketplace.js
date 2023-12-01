@@ -32,8 +32,8 @@ import CloseIcon from '@material-ui/icons/Close';
 import Group from '@material-ui/icons/Group';
 import Icon from '@material-ui/core/Icon';
 import ImageEditIcon from '../icons/ImageEdit';
-import SquareIcon from '../icons/Square';
-import SquareRoundedIcon from '../icons/SquareRounded';
+import HQ from '../icons/HQ';
+import HD from '../icons/HD';
 import StarCircleIcon from '../icons/StarCircle';
 import Hashtag from '../icons/Hashtag';
 import LinkBox from '../icons/LinkBox';
@@ -65,9 +65,10 @@ import pool from "../utils/worker-pool";
 import JSLoader from "../utils/JSLoader";
 import actions from "../actions/utils";
 import xbrz from "../utils/xBRZ";
-import GamePadRound from "../icons/GamePadRound";
+import HD4K from "../icons/HD4K";
 import CloudDownload from "@material-ui/icons/CloudDownload";
 import depixelize from "../utils/depixelize";
+import {base64_sanitize, base64_to_bitmap} from "../utils/img_manipulation";
 
 const styles = theme => ({
     root: {
@@ -1043,27 +1044,21 @@ class Marketplace extends React.Component {
                     this.forceUpdate();
                 })
                 break;
-            case "hexagon":
-                JSLoader( () => import("../utils/hexagonrender")).then(({hexagonrender}) => {
-                    hexagonrender(data, 12, pool).then(callback);
-                });
-                break;
-            case "kikko":
-                JSLoader( () => import("../utils/kikkorender")).then(({kikkorender}) => {
-                    kikkorender(data, 12, pool).then(callback);
-                });
-                break;
             case "xbrz":
                 JSLoader( () => import("../utils/xBRZ")).then((obj) => {
                     obj.default(data, 6, pool).then(callback);
                 });
                 break;
             case "svg":
-                var results = depixelize(data, true);
+                var results = depixelize(data, true, false);
                 var svg_source = results[1];
-                this.setState({src: "data:image/svg+xml;base64," + window.btoa(svg_source)}, () => {
-                    this.forceUpdate();
-                });
+                var b64 = "data:image/svg+xml;base64," + btoa(svg_source);
+
+                base64_sanitize(b64,  (jpgBase64) => {
+                    this.setState({src: jpgBase64}, () => {
+                        this.forceUpdate();
+                    });
+                }, pool, 10);
 
                 /*
                 JSLoader( () => import("../utils/xBRZ")).then((obj) => {
@@ -1123,19 +1118,6 @@ class Marketplace extends React.Component {
                     });
                 });*/
         }
-
-
-        const callback = (second_image_data) => {
-            let third_canvas = document.createElement("canvas");
-            third_canvas.width = second_image_data.width;
-            third_canvas.height = second_image_data.height;
-            let third_canvas_ctx = third_canvas.getContext("2d");
-            third_canvas_ctx.putImageData(second_image_data, 0, 0);
-            let base64_out = third_canvas_ctx.canvas.toDataURL("image/png");
-            this.setState({src: base64_out}, () => {
-                this.forceUpdate();
-            })
-        };
 
     };
     openMediaCard = (img) => {
@@ -1202,7 +1184,7 @@ class Marketplace extends React.Component {
         this.setState({openedDrawer: !this.state.openedDrawer});
     }
     download = (src, title, artist) => {
-        let ext = src.startsWith("data:image/svg+xml;base64,") ? "svg": "png";
+        let ext = src.startsWith("data:image/jpeg") ? "jpeg": src.startsWith("data:image/svg+xml;base64,") ? "svg": "png";
         let a = document.createElement("a"); //Create <a>
         a.download = `PIXAPICS-${title}-${artist}.${ext}`; //File name Here
         a.href = src;
@@ -1380,9 +1362,9 @@ class Marketplace extends React.Component {
                     </div>}
                     <div className={classes.leftFromDrawer} style={{zIndex: 10, pointerEvents: "all"}} ref={this.setRefFromLeft} >
                         <div style={{position: "absolute", top: 16, left: 16}}>
-                            <IconButton style={{color: "#a0c1ff"}} onClick={() => {this.renderMedia("pixelated", openedMediaDataData.data)}}><Icon><SquareIcon/></Icon></IconButton>
-                            <IconButton style={{color: "#a0c1ff"}} onClick={() => {this.renderMedia("xbrz", openedMediaDataData.data)}}><Icon><SquareRoundedIcon/></Icon></IconButton>
-                            <IconButton style={{color: "#a0c1ff"}} onClick={() => {this.renderMedia("svg", openedMediaDataData.data, openedMediaDataData.colors)}}><Icon><GamePadRound/></Icon></IconButton>
+                            <IconButton style={{color: "#a0c1ff"}} onClick={() => {this.renderMedia("pixelated", openedMediaDataData.data)}}><Icon><HQ/></Icon></IconButton>
+                            <IconButton style={{color: "#a0c1ff"}} onClick={() => {this.renderMedia("xbrz", openedMediaDataData.data)}}><Icon><HD/></Icon></IconButton>
+                            <IconButton style={{color: "#a0c1ff"}} onClick={() => {this.renderMedia("svg", openedMediaDataData.data, openedMediaDataData.colors)}}><Icon><HD4K/></Icon></IconButton>
                         </div>
                         <div style={{position: "absolute", right: window.innerWidth > 800 ? 400: 14, top: 16}}>
                             <IconButton style={{color: "#a0c1ff"}} onClick={() => {this.download(src, openedMediaData.name, "sophia.julio")}}><Icon><CloudDownload/></Icon></IconButton>

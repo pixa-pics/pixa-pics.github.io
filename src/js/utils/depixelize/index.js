@@ -915,7 +915,6 @@ var depixel = function () {
     function Path() {
         this.vertices = [];
     }
-    ;
     Path.prototype = Object.create(null, {
         push: {
             enumerable: false,
@@ -1001,7 +1000,8 @@ function drawSVG(graph, scale) {
     var width = graph.width;
     var height = graph.height;
     var nodes = graph.nodes;
-    var paths = [];
+    var pathsA = [];
+    var pathsB = [];
 
     for (let node of graph.nodes()) {
 
@@ -1010,13 +1010,14 @@ function drawSVG(graph, scale) {
         var v = vertices[0];
         for (var i = 0; i < vertices.length; ++i) {
             v = vertices[i];
-            lines += `${Math.round(v.x * scale)},${Math.round(v.y * scale)} `;
+            lines += `${Math.ceil(v.x * scale)},${Math.ceil(v.y * scale)} `;
         }
 
-        paths.push(`<path stroke="${node.color}" fill="${node.color}" d="M${Math.round(vertices[0].x * scale)},${Math.round(vertices[0].y * scale)} ${lines}Z"/>`)
+        pathsA.push(`<path stroke-width="10" stroke="${node.color}" d="M${Math.ceil(vertices[0].x * scale)},${Math.ceil(vertices[0].y * scale)} ${lines}Z"/>`)
+        pathsB.push(`<path fill="${node.color}" d="M${Math.ceil(vertices[0].x * scale)},${Math.ceil(vertices[0].y * scale)} ${lines}Z"/>`)
     }
 
-    return `<svg xmlns="http://www.w3.org/2000/svg" stroke-width="8" viewBox="0 0 ${width*scale} ${height*scale}">${paths.join("\n\t")}</svg>`;
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width*scale} ${height*scale}">${pathsA.join("\n\t") + pathsB.join("\n\t")}</svg>`;
 }
 
 function createEmptyCanvas(graph, scale) {
@@ -1050,11 +1051,12 @@ function drawContour(canvas, vertices, color, scale) {
     return canvas;
 }
 
-const fu = function (image_data, compute_svg_string = false) {
+const fu = function (image_data, compute_svg_string = false, image) {
     var scale = 10;
     var graph = depixel(image_data.data, image_data.width, image_data.height);
     graph.createSimilarityGraph();
     graph.createVoronoiDiagram();
+
     var image_data = drawCanvas(graph, scale, false, false).getImageData(0, 0, image_data.width*scale, image_data.height*scale);
     var svg_string = compute_svg_string ? drawSVG(graph, 20): null;
 

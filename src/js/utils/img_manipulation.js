@@ -51,8 +51,7 @@ const file_to_base64 = (file, callback_function = () => {}, pool = null) => {
         });
     }
 };
-
-window.base64_sanitize_process_function = new AFunction(`var t = function(base64) {
+window.base64_sanitize_process_function = new AFunction(`var t = function(base64, scale) {
     "use strict";
     return new Promise(function(resolve, reject) {
         var img = new Image();
@@ -63,11 +62,13 @@ window.base64_sanitize_process_function = new AFunction(`var t = function(base64
            try {
            
                 createImageBitmap(img, {
-                    resizeQuality: 'pixelated'
+                    resizeQuality:  is_png ? 'pixelated': 'high',
+                    resizeWidth: (img.naturalWidth || img.width) * scale,
+                    resizeHeight: (img.naturalHeight || img.height) * scale
                 }).then(function(bmp){
                 
                     var canvas;
-                        canvas = new OffscreenCanvas(img.naturalWidth || img.width, img.naturalHeight || img.height);
+                        canvas = new OffscreenCanvas(bmp.width, bmp.height);
                     var ctx = canvas.getContext("bitmaprenderer");
                         ctx.imageSmoothingEnabled = false;
                         ctx.transferFromImageBitmap(bmp);
@@ -86,8 +87,8 @@ window.base64_sanitize_process_function = new AFunction(`var t = function(base64
                 
             } catch(e){
                 canvas = document.createElement("canvas");
-                canvas.width = img.naturalWidth || img.width;
-                canvas.height = img.naturalHeight || img.height;
+                canvas.width = (img.naturalWidth || img.width) * scale;
+                canvas.height = (img.naturalHeight || img.height) * scale;
                 var ctx = canvas.getContext("2d");
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
                 resolve(canvas.toDataURL(is_png ? "image/png": "image/jpeg")); 
@@ -98,23 +99,25 @@ window.base64_sanitize_process_function = new AFunction(`var t = function(base64
     });
 }; return t;`)();
 
-const base64_sanitize = (base64, callback_function = () => {}, pool = null) => {
+const base64_sanitize = (base64, callback_function = () => {}, pool = null, scale = 1) => {
 
     if(pool !== null) {
 
         pool.exec(window.base64_sanitize_process_function, [
-            base64
+            base64, scale
         ]).catch((e) => {
 
-            return window.base64_sanitize_process_function(base64);
-        }).timeout(5 * 1000).then((r) => {
+            window.base64_sanitize_process_function(base64, scale).then((r) => {
+                callback_function(r);
+            });
+        }).timeout(15 * 1000).then((r) => {
 
             callback_function(r);
         });
 
     }else {
 
-        window.base64_sanitize_process_function(base64).then((r) => {
+        window.base64_sanitize_process_function(base64, scale).then((r) => {
 
             callback_function(r);
         });
