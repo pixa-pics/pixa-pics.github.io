@@ -61,22 +61,15 @@ var depixel = function () {
             this.y = Math.round(y);
             this.u = Math.round(0.492 * (b - y));
             this.v = Math.round(0.877 * (r - y));
+            this.r = r;
+            this.g = g;
+            this.b = b;
+            this.rgb = [r, g, b];
         }
         _createClass(Color, [{
-            key: "rgb",
-            get: function get() {
-                var y = this.y,
-                    u = this.u,
-                    v = this.v;
-                var r = y + 1.140 * v;
-                var g = y - 0.394 * u - 0.581 * v;
-                var b = y + 2.032 * u;
-                return [r, g, b].map(Math.round);
-            }
-        }, {
             key: "dissimilar",
             value: function dissimilar(color) {
-                return Math.abs(this.y - color.y) > 48 || Math.abs(this.u - color.u) > 7 || Math.abs(this.v - color.v) > 6;
+                return Math.abs(this.r - color.r) + Math.abs(this.g - color.g) + Math.abs(this.b - color.b) >= 1;
             }
         }, {
             key: "toString",
@@ -620,16 +613,14 @@ var depixel = function () {
     var neighbours = [down, right];
     function getSquare(nodes, x, y) {
         return [down(nodes, x, y), right(nodes, x, y), down(nodes, x + 1, y), right(nodes, x, y + 1)];
-    }
-    ;
+    };
     function getRect(nodes, x, y, w, h) {
         var rect = new Array(h);
         for (var i = 0; i < h; ++i) {
             rect[i] = nodes[i + y].slice(x, x + w);
         }
         return rect;
-    }
-    ;
+    };
     Graph.prototype.getDiagonals = function getDiagonals(x, y) {
         return [slant(this.nodes_old, x, y), rise(this.nodes_old, x, y + 1)];
     };
@@ -920,7 +911,7 @@ var depixel = function () {
             enumerable: false,
             value: function push(v) {
                 this.vertices.push(v);
-                // v.addPath(this);
+                v.addPath(this);
             }
         },
 
@@ -930,9 +921,9 @@ var depixel = function () {
                 var p = new Path();
                 p.vertices = this.vertices.slice(i);
                 this.vertices.length = i + 1;
-                p.vertices.forEach(function (v) {
-                    // v.removePath(this);
-                    // v.addPath(p);
+                p.vertices.forEach(function (v)  {
+                    v.removePath(this);
+                    v.addPath(p);
                 });
             }
         }
@@ -999,14 +990,15 @@ function drawSVG(graph, scale) {
 
     var width = graph.width;
     var height = graph.height;
-    var nodes = graph.nodes;
+    var nodes = graph.nodes();
     var pathsA = [];
     var pathsB = [];
 
-    for (let node of graph.nodes()) {
+    for (let node of nodes) {
 
         var lines = "L";
         var vertices = node.vertices;
+
         var v = vertices[0];
         for (var i = 0; i < vertices.length; ++i) {
             v = vertices[i];
@@ -1035,7 +1027,7 @@ function drawContour(canvas, vertices, color, scale) {
     context.strokeStyle = "black";
 
     var stroke_color = 'rgba(255,75,75,255)';
-    context.lineWidth = 2;
+    context.lineWidth = 0;
     context.strokeStyle = "" + stroke_color;
     context.fillStyle = "" + color;
     context.beginPath();
@@ -1051,13 +1043,14 @@ function drawContour(canvas, vertices, color, scale) {
     return canvas;
 }
 
-const fu = function (image_data, compute_svg_string = false, image) {
+const fu = function (image_data, compute_svg_string = false, image = false) {
     var scale = 10;
     var graph = depixel(image_data.data, image_data.width, image_data.height);
     graph.createSimilarityGraph();
     graph.createVoronoiDiagram();
+    graph.linearize()
 
-    var image_data = drawCanvas(graph, scale, false, false).getImageData(0, 0, image_data.width*scale, image_data.height*scale);
+    var image_data = image ? drawCanvas(graph, scale, false, false).getImageData(0, 0, image_data.width*scale, image_data.height*scale): null;
     var svg_string = compute_svg_string ? drawSVG(graph, 20): null;
 
     return Array.of(image_data, svg_string);

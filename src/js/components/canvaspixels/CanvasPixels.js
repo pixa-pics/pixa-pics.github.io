@@ -341,7 +341,9 @@ class CanvasPixels extends React.PureComponent {
 
         if(state.tool !== new_props.tool && !new_props.tool.includes("SELECT")) {
 
-            this.super_state.set_state({_pxl_indexes_of_selection: new SetFixed(new_props.width * new_props.height), _pxl_indexes_of_selection_drawn: state._pxl_indexes_of_selection}).then(() => {
+            var state = this.super_state.get_state();
+            state._pxl_indexes_of_selection.clear()
+            this.super_state.set_state({_pxl_indexes_of_selection_drawn: state._pxl_indexes_of_selection}).then(() => {
 
                 this._request_force_update();
                 this._notify_is_something_selected();
@@ -1739,7 +1741,7 @@ class CanvasPixels extends React.PureComponent {
 
             this.super_state.set_state({
                 _is_something_selected: Boolean(_pxl_indexes_of_selection.size),
-                _previous_pxl_indexes_of_selection: new SetFixed(_pxl_indexes_of_selection.indexes)
+                _previous_pxl_indexes_of_selection: new SetFixed(_pxl_indexes_of_selection)
             }).then(() => {
 
                 if(this.props.onSomethingSelectedChange) {
@@ -1803,7 +1805,7 @@ class CanvasPixels extends React.PureComponent {
                             _original_image_index: parseInt(state._original_image_index),
                             pxl_width: parseInt(state.pxl_width),
                             pxl_height: parseInt(state.pxl_height),
-                            _pxl_indexes_of_selection: new SetFixed(state._pxl_indexes_of_selection.indexes || state._pxl_indexes_of_selection),
+                            _pxl_indexes_of_selection: new SetFixed(state._pxl_indexes_of_selection),
                             _s_layers: new Array(state._s_pxls.length).fill({}).map(function (o, i){return Layer.new_from_colors_and_indexes(state._s_pxl_colors[i], state._s_pxls[i], parseInt(state.pxl_width), parseInt(state.pxl_height), true)}),
                             _layers: Array.from(state._layers.map(function(l) {
                                 "use strict";
@@ -1844,7 +1846,7 @@ class CanvasPixels extends React.PureComponent {
                     })),
                     _layer_index: parseInt(sh._layer_index),
                     _s_layers: Array.from(sh._s_layers.map(function (l){return Layer.new_from_colors_and_indexes(l.colors, l.indexes, parseInt(sh.pxl_width), parseInt(sh.pxl_height), true)})),
-                    _pxl_indexes_of_selection: new SetFixed(sh._pxl_indexes_of_selection.indexes || sh._pxl_indexes_of_selection),
+                    _pxl_indexes_of_selection: new SetFixed(sh._pxl_indexes_of_selection),
                     _pencil_mirror_index: parseInt(sh._pencil_mirror_index),
                     _json_state_history: _json_state_history,
                     _pxls_hovered: -1,
@@ -1956,7 +1958,7 @@ class CanvasPixels extends React.PureComponent {
                     })),
                     _layer_index: parseInt(sh._layer_index),
                     _s_layers: Array.from(sh._s_layers.map(function (l){return Layer.new_from_colors_and_indexes(l.colors, l.indexes, parseInt(sh.pxl_width), parseInt(sh.pxl_height), true)})),
-                    _pxl_indexes_of_selection: new SetFixed(sh._pxl_indexes_of_selection.indexes || sh._pxl_indexes_of_selection),
+                    _pxl_indexes_of_selection: new SetFixed(sh._pxl_indexes_of_selection),
                     _pencil_mirror_index: parseInt(sh._pencil_mirror_index),
                     _json_state_history: _json_state_history,
                     _last_action_timestamp: Date.now(),
@@ -2010,7 +2012,7 @@ class CanvasPixels extends React.PureComponent {
                     })),
                     _layer_index: parseInt(sh._layer_index),
                     _s_layers: Array.from(sh._s_layers.map(function (l){return Layer.new_from_colors_and_indexes(l.colors, l.indexes, parseInt(sh.pxl_width), parseInt(sh.pxl_height), true)})),
-                    _pxl_indexes_of_selection: new SetFixed(sh._pxl_indexes_of_selection.indexes || sh._pxl_indexes_of_selection),
+                    _pxl_indexes_of_selection: new SetFixed(sh._pxl_indexes_of_selection),
                     _pencil_mirror_index: parseInt(sh._pencil_mirror_index),
                     _json_state_history: _json_state_history,
                     _last_action_timestamp: Date.now(),

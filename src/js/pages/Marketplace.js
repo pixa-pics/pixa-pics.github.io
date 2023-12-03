@@ -67,8 +67,8 @@ import actions from "../actions/utils";
 import xbrz from "../utils/xBRZ";
 import HD4K from "../icons/HD4K";
 import CloudDownload from "@material-ui/icons/CloudDownload";
-import depixelize from "../utils/depixelize";
-import {base64_sanitize, base64_to_bitmap} from "../utils/img_manipulation";
+//import {depixelize} from "../utils/depixelize/new/index";
+//import {base64_sanitize, base64_to_bitmap, bitmap_to_imagedata} from "../utils/img_manipulation";
 
 const styles = theme => ({
     root: {
@@ -1038,6 +1038,18 @@ class Marketplace extends React.Component {
 
     renderMedia = (type, data, colors) => {
 
+        const callback = (second_image_data) => {
+            let third_canvas = document.createElement("canvas");
+            third_canvas.width = second_image_data.width;
+            third_canvas.height = second_image_data.height;
+            let third_canvas_ctx = third_canvas.getContext("2d");
+            third_canvas_ctx.putImageData(second_image_data, 0, 8);
+            let base64_out = third_canvas_ctx.canvas.toDataURL("image/png");
+            this.setState({src: base64_out}, () => {
+                this.forceUpdate();
+            })
+        };
+
         switch (type) {
             case "pixelated":
                 this.setState({src: this.state.openedMediaData.src}, () => {
@@ -1049,16 +1061,18 @@ class Marketplace extends React.Component {
                     obj.default(data, 6, pool).then(callback);
                 });
                 break;
-            case "svg":
-                var results = depixelize(data, true, false);
-                var svg_source = results[1];
-                var b64 = "data:image/svg+xml;base64," + btoa(svg_source);
+            /*case "svg":
 
-                base64_sanitize(b64,  (jpgBase64) => {
-                    this.setState({src: jpgBase64}, () => {
-                        this.forceUpdate();
+                //var b64 = "data:image/svg+xml;base64," + btoa(svg_source);
+
+                base64_to_bitmap(this.state.openedMediaData.src, (bmp) => {
+                    bitmap_to_imagedata(bmp, 9999999999999999999, (data) => {
+                        this.setState({src: depixelize(data.data, data.width, data.height)}, () => {
+                            this.forceUpdate();
+                        });
                     });
-                }, pool, 10);
+                });
+
 
                 /*
                 JSLoader( () => import("../utils/xBRZ")).then((obj) => {
@@ -1362,13 +1376,12 @@ class Marketplace extends React.Component {
                     </div>}
                     <div className={classes.leftFromDrawer} style={{zIndex: 10, pointerEvents: "all"}} ref={this.setRefFromLeft} >
                         <div style={{position: "absolute", top: 16, left: 16}}>
-                            <IconButton style={{color: "#a0c1ff"}} onClick={() => {this.renderMedia("pixelated", openedMediaDataData.data)}}><Icon><HQ/></Icon></IconButton>
-                            <IconButton style={{color: "#a0c1ff"}} onClick={() => {this.renderMedia("xbrz", openedMediaDataData.data)}}><Icon><HD/></Icon></IconButton>
-                            <IconButton style={{color: "#a0c1ff"}} onClick={() => {this.renderMedia("svg", openedMediaDataData.data, openedMediaDataData.colors)}}><Icon><HD4K/></Icon></IconButton>
+                            <IconButton style={{color: "#ffffff"}} onClick={() => {this.renderMedia("pixelated", openedMediaDataData.data)}}><Icon><HQ/></Icon></IconButton>
+                            <IconButton style={{color: "#ffffff"}} onClick={() => {this.renderMedia("xbrz", openedMediaDataData.data)}}><Icon><HD/></Icon></IconButton>
                         </div>
                         <div style={{position: "absolute", right: window.innerWidth > 800 ? 400: 14, top: 16}}>
-                            <IconButton style={{color: "#a0c1ff"}} onClick={() => {this.download(src, openedMediaData.name, "sophia.julio")}}><Icon><CloudDownload/></Icon></IconButton>
-                            <IconButton style={{color: "#a0c1ff"}} onClick={() => {this.edit(openedMediaData.src);}}><Icon><ImageEditIcon/></Icon></IconButton>
+                            <IconButton style={{color: "#ffffff"}} onClick={() => {this.download(src, openedMediaData.name, "sophia.julio")}}><Icon><CloudDownload/></Icon></IconButton>
+                            <IconButton style={{color: "#ffffff"}} onClick={() => {this.edit(openedMediaData.src);}}><Icon><ImageEditIcon/></Icon></IconButton>
                         </div>
                         <div style={{position: "absolute", bottom: 16, left: 16}}>
                             <Tooltip title={"14 Reposts"}>

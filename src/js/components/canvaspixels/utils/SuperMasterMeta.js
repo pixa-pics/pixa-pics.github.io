@@ -606,7 +606,7 @@ const SuperMasterMeta = {
 
                         if(pencil_mirror_mode !== "NONE") {
 
-                            const _paint_or_select_hover_pxl_indexes_copy = new SetFixed(_paint_or_select_hover_pxl_indexes.indexes);
+                            const _paint_or_select_hover_pxl_indexes_copy = new SetFixed(_paint_or_select_hover_pxl_indexes);
                             let pixel_stack = new Set(
                                 _paint_or_select_hover_pxl_indexes
                                     .filter(function (index){return !_paint_or_select_hover_pxl_indexes_copy.has(index|0) && !_paint_or_select_hover_pxl_indexes_exception.has(index|0);})
@@ -904,7 +904,7 @@ const SuperMasterMeta = {
                     _mouse_inside: true,
                     _paint_or_select_hover_actions_latest_index: -1,
                     _paint_hover_old_pxls_snapshot: _s_layers[_layer_index].indexes_copy,
-                    _select_hover_old_pxls_snapshot: new SetFixed(_pxl_indexes_of_selection.indexes)
+                    _select_hover_old_pxls_snapshot: new SetFixed(_pxl_indexes_of_selection)
                 });
 
                 if(!hide_canvas_content) {
