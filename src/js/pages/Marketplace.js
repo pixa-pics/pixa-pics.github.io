@@ -708,7 +708,7 @@ const styles = theme => ({
         zIndex: theme.zIndex.drawer + 1,
         color: '#fff',
         "&.MuiBackdrop-root": {
-            backgroundColor: "rgba(0,0,0,0.88)",
+            backgroundColor: "rgba(1,2,18,0.92)",
         },
         "& .MuiIconButton-root": {
             color: "white"
@@ -993,7 +993,7 @@ class Marketplace extends React.Component {
         canvas_style.innerHTML = style;
         canvas_style.id = "media-style";
         document.head.appendChild(canvas_style);
-        this.setState({_h_svg: createLocalBlob(get_svg_in_b64(<HexGrid color={"rgba(255,255,255,0.07)"}/>)),_h_svg_size: `${Math.ceil(.5*200)}px ${Math.ceil(.5*229.3)}px`});
+        this.setState({_h_svg: createLocalBlob(get_svg_in_b64(<HexGrid color={"rgba(1,17,255,0.1)"}/>)),_h_svg_size: `${Math.ceil(.5*200)}px ${Math.ceil(.5*229.3)}px`});
 
     }
 
