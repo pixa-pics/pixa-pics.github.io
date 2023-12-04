@@ -32,8 +32,8 @@ import CloseIcon from '@material-ui/icons/Close';
 import Group from '@material-ui/icons/Group';
 import Icon from '@material-ui/core/Icon';
 import ImageEditIcon from '../icons/ImageEdit';
-import HQ from '../icons/HQ';
-import HD from '../icons/HD';
+import SquareRoundedIcon from '../icons/SquareRounded';
+import GamePadRoundIcon from '../icons/GamePadRound';
 import StarCircleIcon from '../icons/StarCircle';
 import Hashtag from '../icons/Hashtag';
 import LinkBox from '../icons/LinkBox';
@@ -67,8 +67,8 @@ import actions from "../actions/utils";
 import xbrz from "../utils/xBRZ";
 import HD4K from "../icons/HD4K";
 import CloudDownload from "@material-ui/icons/CloudDownload";
-//import {depixelize} from "../utils/depixelize/new/index";
-//import {base64_sanitize, base64_to_bitmap, bitmap_to_imagedata} from "../utils/img_manipulation";
+import {depixelize} from "../utils/depixelize/new/index";
+import {base64_sanitize, base64_to_bitmap, bitmap_to_imagedata} from "../utils/img_manipulation";
 
 const styles = theme => ({
     root: {
@@ -1043,7 +1043,7 @@ class Marketplace extends React.Component {
             third_canvas.width = second_image_data.width;
             third_canvas.height = second_image_data.height;
             let third_canvas_ctx = third_canvas.getContext("2d");
-            third_canvas_ctx.putImageData(second_image_data, 0, 8);
+            third_canvas_ctx.putImageData(second_image_data, 0, 0);
             let base64_out = third_canvas_ctx.canvas.toDataURL("image/png");
             this.setState({src: base64_out}, () => {
                 this.forceUpdate();
@@ -1061,16 +1061,13 @@ class Marketplace extends React.Component {
                     obj.default(data, 6, pool).then(callback);
                 });
                 break;
-            /*case "svg":
+            case "svg":
 
-                //var b64 = "data:image/svg+xml;base64," + btoa(svg_source);
+                var svg_source = depixelize(data.data, data.width, data.height)
+                var b64 = "data:image/svg+xml;base64," + btoa(svg_source);
 
-                base64_to_bitmap(this.state.openedMediaData.src, (bmp) => {
-                    bitmap_to_imagedata(bmp, 9999999999999999999, (data) => {
-                        this.setState({src: depixelize(data.data, data.width, data.height)}, () => {
-                            this.forceUpdate();
-                        });
-                    });
+                 this.setState({src: b64}, () => {
+                    this.forceUpdate();
                 });
 
 
@@ -1376,8 +1373,8 @@ class Marketplace extends React.Component {
                     </div>}
                     <div className={classes.leftFromDrawer} style={{zIndex: 10, pointerEvents: "all"}} ref={this.setRefFromLeft} >
                         <div style={{position: "absolute", top: 16, left: 16}}>
-                            <IconButton style={{color: "#ffffff"}} onClick={() => {this.renderMedia("pixelated", openedMediaDataData.data)}}><Icon><HQ/></Icon></IconButton>
-                            <IconButton style={{color: "#ffffff"}} onClick={() => {this.renderMedia("xbrz", openedMediaDataData.data)}}><Icon><HD/></Icon></IconButton>
+                            <IconButton style={{color: "#ffffff"}} onClick={() => {this.renderMedia("pixelated", openedMediaDataData.data)}}><Icon><SquareRoundedIcon/></Icon></IconButton>
+                            <IconButton style={{color: "#ffffff"}} onClick={() => {this.renderMedia("xbrz", openedMediaDataData.data)}}><Icon><GamePadRoundIcon/></Icon></IconButton>
                         </div>
                         <div style={{position: "absolute", right: window.innerWidth > 800 ? 400: 14, top: 16}}>
                             <IconButton style={{color: "#ffffff"}} onClick={() => {this.download(src, openedMediaData.name, "sophia.julio")}}><Icon><CloudDownload/></Icon></IconButton>

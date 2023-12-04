@@ -1,11 +1,24 @@
 import {Graph, GraphView, Path} from './All';
 const post = function (){};
 
-//$FlowFixMe
-let lastProgress = 0;
+function createColors(data, width, height) {
+    const rgbs = new Array(width * height);
 
-function onProgress(step?: number, percent?: number) {
+    for (let j = 0; j < height; j ++) {
+        for (let i = 0; i < width; i ++) {
+            const current = j * width + i;
+            const rgb = {
+                r: data[current * 4],
+                g: data[current * 4 + 1],
+                b: data[current * 4 + 2]
+            };
 
+            // We set node color
+            rgbs[current] = rgb;
+        }
+    }
+
+    return rgbs;
 }
 
 function createSimilarityGraph(data, width, height) {
@@ -61,7 +74,6 @@ function createSimilarityGraph(data, width, height) {
                 // Up
                 g.addEdge(current, current - width, 'up');
             }
-            onProgress(0, Math.floor(current / (height * width - 1) * 100));
         }
     }
 
@@ -116,7 +128,6 @@ function removeDissimilarConnectedPixels(graph) {
             }
             // console.log(`======`);
         }
-        onProgress(1, Math.floor(i / (nodes.length - 1) * 100));
     }
     return graph;
 }
@@ -282,7 +293,6 @@ function removeDiagonals(graph, width, height) {
                 graph.removeEdge(i + 1, i + width);
             }
         }
-        onProgress(2, Math.floor(i / (nodes.length - 1) * 100));
     }
     return graph;
 }
@@ -371,7 +381,6 @@ function reshape(graph, width, height) {
                 adjust(graph, gr, adj_node.id, id, px_x, px_y, pn, mpn, npn);
             }
         }
-        onProgress(3, Math.floor(i / (nodes.length - 1) * 100));
     }
 
     // We optimize the graph by removing 2-valences nodes
@@ -411,7 +420,6 @@ function reshape(graph, width, height) {
             }
         }
     }
-    onProgress(3, 100);
 
     return gr;
 }
@@ -428,9 +436,7 @@ function getVisibleEdgesGraph(reshape, graph) {
             const intersection = corners.filter(c => edgeNode.corners.some(c2 => c.x === c2.x && c.y === c2.y));
 
             if (intersection.length !== 2) {
-                console.error(`we migth have a conflict here ${JSON.stringify(intersection)}`);
-                console.log(`(${nodes[i].x},${nodes[i].y}) ${JSON.stringify(corners)}`);
-                console.log(`(${edgeNode.x},${edgeNode.y}) ${JSON.stringify(edgeNode.corners)}`);
+
             } else {
                 const n1 = reshape.findNode(intersection[0].x, intersection[0].y);
                 const n2 = reshape.findNode(intersection[1].x, intersection[1].y);
@@ -440,7 +446,6 @@ function getVisibleEdgesGraph(reshape, graph) {
                 }
             }
         }
-        onProgress(4, Math.floor(i / (nodes.length - 1) * 100));
     }
 
     for (let i = 0; i < reshape.nodes.length; ++i) {
@@ -460,21 +465,17 @@ function startPath(outlines, visited, startId) {
     let end = startId;
     let current = startId;
 
-    console.error(`starting path at ${startId}`);
     do {
         const node = outlines.getNode(current);
         const { edges, x, y } = node;
-        console.log(`current node ${current} is (${x}, ${y})   appending to path (edges.length: ${edges.length})`);
         let edgeNode = null;
 
         path.append(x, y);
         for (let i = 0; i < edges.length; ++i) {
             const { nodeId } = edges[i];
-            console.log(`processing edge ${nodeId}`);
 
             // If we already treat this edge, we skip it
             if (visited[`${current}-${nodeId}`] || visited[`${nodeId}-${current}`]) {
-                console.log(`  -> already processed... skipping`);
                 continue;
             }
 
@@ -485,20 +486,16 @@ function startPath(outlines, visited, startId) {
         if (edgeNode !== null) {
             visited[`${current}-${edgeNode}`] = true;
             const next = outlines.getNode(edgeNode);
-            console.log(`going to edge (${next.x}, ${next.y})   (edges length: ${next.edges.length}`);
 
             if (next.edges.length > 2) {
-                console.log(`len > 2  ending path here`);
                 path.append(next.x, next.y);
                 end = edgeNode;
                 break;
             } else if (next.edges.length === 1) {
-                console.log(`len == 1  ending path here`);
                 path.append(next.x, next.y);
                 end = null;
                 break;
             } else {
-                console.log(`len === 2, we move to this edge`);
                 current = edgeNode;
             }
         } else {
@@ -514,7 +511,6 @@ function startPath(outlines, visited, startId) {
         }
     }
 
-    console.error(`returning path`);
     path.dump();
     return {
         path,
@@ -522,7 +518,7 @@ function startPath(outlines, visited, startId) {
     };
 }
 
-function createShapePath(outlines) {
+function createShapePath(outlines, colors, width) {
     const paths = [];
     const { nodes } = outlines;
     const visited = {};
@@ -530,17 +526,10 @@ function createShapePath(outlines) {
     let i = 0;
     let result = null;
 
-    console.error('go !');
-
     while (i < nodes.length) {
-        while ((result = startPath(outlines, visited, nodes[n].id))) {
-            post({
-                type: 'step',
-                data: {
-                    type: 'paths',
-                    paths: [result.path.cp]
-                }
-            });
+        var nodeN = nodes[n];
+        while ((result = startPath(outlines, visited, nodeN.id))) {
+            result.path.rgb = colors[nodeN.y * width + nodeN.x];
             paths.push(result.path);
         }
 
@@ -550,34 +539,7 @@ function createShapePath(outlines) {
     return paths;
 }
 
-function processImage(binaryData, width, height) {
-    var graph = createSimilarityGraph(binaryData, width, height);
-    graph = removeDissimilarConnectedPixels(graph);
-    graph = removeDiagonals(graph, width, height);
-    graph = reshape(graph, width, height);
-    var serializedReshape = graph.serialize();
-    var reshapeCopy = Graph.unserialize(serializedReshape);
-    reshapeCopy = getVisibleEdgesGraph(reshapeCopy, graph);
-    //const paths = createShapePath(outlines);
 
-    // post({
-    //   type: 'step',
-    //   data: {
-    //     type: 'svg',
-    //     graph: outlines.serialize()
-    //   }
-    // });
-
-    // post({
-    //   type: 'step',
-    //   data: {
-    //     type: 'shapes',
-    //     graph: outlines.serialize()
-    //   }
-    // });
-
-    return GraphView.unserialize(reshapeCopy.serialize()).updateCanvas();
-}
 
 function toSvgPath(p) {
     return p.cp;
@@ -590,14 +552,14 @@ function toSvg(graph) {
 }
 
 
-function pathToSvg(paths, colors, width, height, f) {
+function pathToSvg(paths, width, height, f) {
     const factor = f || 1;
     const svgPaths = [];
-    console.log(colors)
+
     for (let i = 0; i < paths.length; ++i) {
         // svgPaths.push(<path d={Path.toSvgPathLine(p, factor)} key={'pathline' + i} fill="transparent" stroke="grey" />);
-        var {r, g, b} = {r: 12, g: 77, b : 102};
-        svgPaths.push(`<path d="${Path.toSvgPath(paths[i], factor)}" key="path-${i}" fill="rgb(${r} ${g} ${b})" />`);
+        var {r, g, b} = paths[i].rgb || {r: 0, g: 0, b: 0};
+        svgPaths.push(`<path d="${Path.toSvgPath(paths[i].cp, factor)}" fill="rgb(${r}, ${g}, ${b})" />`);
     }
     for (let i = 0; i < paths.length; ++i) {
         const p = paths[i];
@@ -609,7 +571,7 @@ function pathToSvg(paths, colors, width, height, f) {
         }
     }
 
-    return svgPaths;
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width*factor}px ${height*factor}px">${svgPaths.join("\n\t")}</svg>`;
 }
 
 function saveToSvg(svgData, name) {
@@ -620,8 +582,29 @@ function saveToSvg(svgData, name) {
     var downloadLink = document.createElement('a');
     downloadLink.href = svgUrl;
     downloadLink.download = name;
+    return svgUrl;
 }
 
+function processImage(binaryData, width, height) {
+    var colors = createColors(binaryData, width, height);
+    var graph = createSimilarityGraph(binaryData, width, height);
+    var graphCopy = Graph.unserialize(graph.serialize());
+    graph = removeDissimilarConnectedPixels(graph);
+    graph = removeDiagonals(graph, width, height);
+    graph = reshape(graph, width, height);
+    var serializedReshape = graph.serialize();
+    var reshapeCopy = Graph.unserialize(serializedReshape);
+    //reshapeCopy = getVisibleEdgesGraph(reshapeCopy, graph);
+
+    var shapes = Graph.unserialize(graph.serialize()).shapes(colors, width, height);
+    console.log(shapes)
+    var finalSVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width*10}px ${height*10}px">${shapes.map(s => s.svg(10)).join("\n")}</svg>`;
+    //const paths = createShapePath(reshapeCopy, colors, width);
+    //console.log(Graph.unserialize(serializedReshape).shapes(), paths)
+    //return GraphView.unserialize(reshapeCopy.serialize()).updateCanvas(colors);
+    //return pathToSvg(paths, width, height, 25);
+    return finalSVG;
+}
 
 
 

@@ -22,9 +22,21 @@ export class Node {
             : [];
     }
 }
+
+function fromPointsToPath(points, f){
+    var s = `M${points[0].x*f},${points[0].y*f} `;
+
+    for (var i = 1; i < points.length;i++){
+        s += `L${points[i].x*f},${points[i].y*f} `;
+    }
+    s+= "Z";
+
+    return s;
+}
 export class Shape {
-    constructor() {
+    constructor(rgb) {
         this.points = [];
+        this.rgb = rgb;
     }
     addPoint(x, y, rgb, corners) {
         // We always add the top-left point in first to skip a step in the
@@ -41,10 +53,25 @@ export class Shape {
         return Array.prototype.concat(...this.points.map((n) => n.corners));
     }
     color() {
-        return `rgb(${this.points[0].rgb.r} ${this.points[0].rgb.g} ${this.points[0].rgb.b})`
+        return `rgb(${this.rgb.r} ${this.rgb.g} ${this.rgb.b})`
     }
-    svg(f) {
-        return `<path d="${Path.toSvgPath(this.points, f)}" fill="${this.color()}" />`
+    svg(factor) {
+        var p = [];
+        for (let i = 0; i < this.points.length; ++i) {
+            const { rgb, corners } = this.points[i];
+            var s = "";
+            if (corners.length) {
+                s += `M${corners[0].x * factor + Margin},${corners[0].y * factor + Margin} `;
+
+                for (let j = 1; j < corners.length; ++j) {
+                    const { x, y } = corners[j];
+                    s += `L${x * factor + Margin},${y * factor + Margin} `;
+                }
+                s += "Z";
+                p.push(`<path d="${s}" fill="rgb(${rgb.r} ${rgb.g} ${rgb.b})}" />`);
+            }
+        }
+        return p.join("");
     }
 }
 
@@ -123,6 +150,7 @@ let degree = 2;
 export class Path {
     constructor() {
         this.cp = [];
+        this.rgb = null;
     }
     append(x, y) {
         this.cp.push([x, y]);
@@ -133,7 +161,7 @@ export class Path {
             return "";
         }
         if (cp.length === 2) {
-            return this.toSvgPathLine(cp, factor);
+            return Path.toSvgPathLine(cp, factor);
         }
         let p = "";
         factor = factor || 1;
@@ -163,13 +191,13 @@ export class Path {
             knots.push(cp.length - 1);
         }
         let point = bspline(0, degree, cp, knots);
-        p += `M${point[0] * factor},${point[1] * factor} `;
+        p += `M${(point[0] * factor).toFixed(2)},${(point[1] * factor).toFixed(2)} `;
         for (let i = 0.001; i < 1; i += 0.001) {
             point = bspline(i, degree, cp, knots);
-            p += `L${point[0] * factor},${point[1] * factor} `;
+            p += `L${(point[0] * factor).toFixed(2)},${(point[1] * factor).toFixed(2)} `;
         }
         point = bspline(1, degree, cp, knots);
-        p += `L${point[0] * factor},${point[1] * factor}`;
+        p += `L${(point[0] * factor).toFixed(2)},${(point[1] * factor).toFixed(2)} `;
         return p;
     }
     static toSvgPathLine(cp, factor) {
@@ -179,9 +207,9 @@ export class Path {
         let p = "";
         factor = factor || 1;
         if (cp.length > 1) {
-            p += `M${cp[0][0] * factor},${cp[0][1] * factor} `;
+            p += `M${(cp[0][0] * factor).toFixed(2)},${(cp[0][1] * factor).toFixed(2)} `;
             for (let i = 1; i < cp.length; ++i) {
-                p += `L${cp[i][0] * factor},${cp[i][1] * factor} `;
+                p += `L${(cp[i][0] * factor).toFixed(2)},${(cp[i][1] * factor).toFixed(2)} `;
             }
         }
         return p;
@@ -390,42 +418,47 @@ export class Graph {
             }
         }
     }
-    shapes() {
+    shapes(colors, width, height) {
         const nodes = this.nodes;
         const shapes = [];
         const seen = [];
 
-        for (let i = 0; i < nodes.length; ++i) {
-            const node = nodes[i];
+        for (let i = 0; i < this.nodes.length; ++i) {
+            const node = this.nodes[i];
 
-            if (seen.indexOf(node.id) !== -1) {
-                continue;
-            }
+            if(node){
+                if (seen.indexOf(findNodeIdx(this.nodes, node.id)) !== -1) {
+                    continue;
+                }
 
-            const shape = new Shape();
-            const stack = [node.id];
+                const shape = new Shape();
+                const stack = [findNodeIdx(this.nodes, node.id)];
 
-            seen.push(node.id);
-            shape.addPoint(node.x, node.y, node.rgb, node.corners);
+                seen.push(findNodeIdx(this.nodes, node.id));
+                shape.addPoint(node.x, node.y, colors[Math.round(node.y) * width + Math.round(node.x)], node.corners);
 
-            while (stack.length) {
-                const id = stack.pop();
-                const n = nodes[id];
+                while (stack.length) {
+                    const id = stack.pop();
+                    const n =  this.nodes[id];
 
-                for (let j = 0; j < n.edges.length; ++j) {
-                    const edgeId = n.edges[j].nodeId;
-                    const edgeNode = nodes[edgeId];
+                    if(n){
+                        for (let j = 0; j < n.edges.length; ++j) {
+                            const edgeId = findNodeIdx(this.nodes, n.edges[j].nodeId);
+                            const edgeNode =  this.getNode(edgeId);
 
-                    if (seen.indexOf(edgeId) === -1) {
-                        stack.push(edgeId);
-                        seen.push(edgeId);
-                        shape.addPoint(edgeNode.x, edgeNode.y, edgeNode.rgb, edgeNode.corners);
+                            if (edgeNode) {
+                                stack.push(edgeId);
+                                seen.push(edgeId);
+                                shape.addPoint(edgeNode.x, edgeNode.y, colors[Math.round(edgeNode.y) * width + Math.round(edgeNode.x)], edgeNode.corners);
+                            }
+                        }
                     }
                 }
+                shapes.push(shape);
             }
-            shapes.push(shape);
         }
-
+        console.log(`there is ${shapes.length} shapes`);
+        console.log(`there is ${JSON.stringify(shapes, null, 1)} shapes`);
         return shapes;
     }
     subgraph(points) {
@@ -495,22 +528,24 @@ export class GraphView extends Graph{
         return this;
     }
 
-    clear() {
+    clear(f) {
 
         if(!this.canvas){
             this.canvas = document.createElement("canvas");
         }
         if (this.canvas) {
-            this.canvas.width = this.width + 2 * Margin;
-            this.canvas.height =  this.height + 2 * Margin;
+            this.canvas.width = this.width * f + 2 * Margin;
+            this.canvas.height =  this.height * f + 2 * Margin;
         }
     }
 
-    drawPixels(ctx: Object, nodes, factor) {
+    drawPixels(ctx: Object, nodes, factor, colors, width) {
         for (let i = 0; i < nodes.length; ++i) {
-            const { rgb, x, y } = nodes[i];
+            const { x, y } = nodes[i];
+            const current = y * width + x;
+            const rgb = colors[current];
             if (rgb) {
-                ctx.fillStyle = `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
+                ctx.fillStyle = `rgb(${rgb.r} ${rgb.g} ${rgb.b})`;
             } else {
                 ctx.fillStyle = `white`;
             }
@@ -518,30 +553,32 @@ export class GraphView extends Graph{
         }
     }
 
-    updateCanvas() {
-        this.clear();
+    updateCanvas(colors) {
+        const factor = 25;
+        this.clear(factor);
         const { nodes, width, height, lattice } = this;
         const ctx = this.canvas.getContext('2d');
         if (true) {
-            const factor = this.factor();
-
-            this.drawPixels(ctx, nodes, factor);
+            //console.log(nodes)
+            this.drawPixels(ctx, nodes, factor, colors, width);
 
             for (let i = 0; i < nodes.length; ++i) {
-                const { edges, corners, rgb, x, y } = nodes[i];
+                const { edges, corners, x, y } = nodes[i];
+                const current = y * width + x;
+                const rgb = colors[current];
+                if (rgb) {
+                    ctx.fillStyle = `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
+                } else {
+                    ctx.fillStyle = `black`;
+                }
                 ctx.beginPath();
                 if (lattice) {
                     ctx.arc(x * factor + Margin, y * factor + Margin, 5, 0, Math.PI * 2, true);
-                    if (rgb) {
-                        ctx.fillStyle = `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
-                    } else {
-                        ctx.fillStyle = `black`;
-                    }
                 } else {
                     ctx.arc(x * factor + Margin + factor / 2, y * factor + Margin + factor / 2, 5, 0, Math.PI * 2, true);
-                    ctx.fillStyle = `black`;
                 }
                 ctx.fill();
+
 
                 for (let j = 0; j < edges.length; ++j) {
                     const dest = this.getNode(edges[j].nodeId);
@@ -554,7 +591,7 @@ export class GraphView extends Graph{
                         ctx.lineTo(dest.x * factor + Margin + factor / 2, dest.y * factor + Margin + factor / 2);
                     }
                     ctx.strokeStyle = 'rgb(150, 50, 50)';
-                    ctx.stroke();
+                    ctx.fill();
                 }
 
                 const color = getRandomColor(x, y);
@@ -571,11 +608,11 @@ export class GraphView extends Graph{
                     }
 
                     ctx.fillStyle = color;
-                    ctx.fillRect(posX, posY, 0.12 * factor, 0.12 * factor);
+                    //ctx.fillRect(posX, posY, 0.12 * factor, 0.12 * factor);
                 }
             }
 
-            return this.canvas.toDataURL();
+            return this.canvas.toDataURL("image/png");
         }
 
     }
