@@ -950,19 +950,35 @@ function drawCanvas(graph, scale, reshaped, similar) {
     context.strokeStyle = "black";
 
     for (let node of graph.nodes()) {
-        var stroke_color = 'rgba(255,75,75,255)';
-        context.strokeStyle = "" + stroke_color;
-        context.fillStyle = "" + node.color;
+        //var stroke_color = 'rgba(255,75,75,255)';
+        context.strokeStyle = node.color;
+        context.lineWidth = scale;
         var vertices = node.vertices;
         context.beginPath();
         var v = vertices[0];
         context.moveTo(v.x * scale, v.y * scale);
-        for (var i = 1; i < vertices.length; ++i) {
+        for (var i = 1; i < vertices.length; ++ i) {
+            v = vertices[i];
+            context.lineTo(v.x * scale, v.y * scale);
+        }
+        context.closePath();
+        context.stroke();
+    }
+    for (let node of graph.nodes()) {
+        //var stroke_color = 'rgba(255,75,75,255)';
+        context.fillStyle = node.color;
+        var vertices = node.vertices;
+        context.beginPath();
+        var v = vertices[0];
+        context.moveTo(v.x * scale, v.y * scale);
+        for (var i = 1; i < vertices.length; ++ i) {
             v = vertices[i];
             context.lineTo(v.x * scale, v.y * scale);
         }
         context.closePath();
         context.fill();
+    }
+        /*
         if (reshaped) {
             context.stroke();
         }
@@ -981,8 +997,7 @@ function drawCanvas(graph, scale, reshaped, similar) {
         if (similar) {
             context.stroke();
         }
-    }
-
+         */
     return context;
 }
 function drawSVG(graph, scale) {
@@ -1043,17 +1058,17 @@ function drawContour(canvas, vertices, color, scale) {
     return canvas;
 }
 
-const fu = function (image_data, compute_svg_string = false, image = false) {
-    var scale = 10;
+const fu = function (image_data, scale, q) {
+    //var scale = 10;
     var graph = depixel(image_data.data, image_data.width, image_data.height);
     graph.createSimilarityGraph();
     graph.createVoronoiDiagram();
     graph.linearize()
 
-    var image_data = image ? drawCanvas(graph, scale, false, false).getImageData(0, 0, image_data.width*scale, image_data.height*scale): null;
-    var svg_string = compute_svg_string ? drawSVG(graph, 20): null;
+    var dataurl = drawCanvas(graph, scale, true, true).canvas.toDataURL("image/jpeg", q);
+    var svg_string = drawSVG(graph, scale);
 
-    return Array.of(image_data, svg_string);
+    return dataurl;
 }
 
 export default fu;

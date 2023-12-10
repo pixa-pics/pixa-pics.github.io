@@ -22,7 +22,7 @@ const XXHash = {
 
         return {
             // Compute properties
-            xxh_f: {create64: function(seed){return XXHashJS.h64(seed); }},
+            xxh_f: {create: function(seed){return XXHashJS.h64(seed); }},
             xxh_v: "64",
             xxh_t: "js",
             xxh_tt: Date.now()
@@ -37,7 +37,7 @@ const XXHash = {
                 XXHashWASM().then(function(hasher){
 
                     resolve({
-                        xxh_f: {hasher: hasher, create64: function(seed){return this.hasher.create64(BigInt(seed))}} ,
+                        xxh_f: {hasher: hasher, create: function(seed){return this.hasher.create64(BigInt(seed))}} ,
                         xxh_v: "64",
                         xxh_t: "wasm",
                         xxh_tt: Date.now()
@@ -78,7 +78,7 @@ const XXHash = {
                 "use strict";
                 let c = 0;
                 let remainder = BigInt(0);
-                let num = BigInt( s.xxh_f.create64(0xF4D3).update(
+                let num = BigInt( s.xxh_f.create(0xF4D3).update(
                     (array_buffer instanceof Uint8Array || array_buffer instanceof Uint8ClampedArray) ?
                         array_buffer:
                         new Uint8Array(
@@ -647,13 +647,13 @@ Object.defineProperty(Layer.prototype, 'force_update_data', {
             must_init = typeof must_init == "undefined" ? false: Boolean(must_init) && true;
             var is_new_colors = typeof colors != "undefined";
             var is_new_indexes = typeof indexes != "undefined";
-            colors = is_new_colors ? (colors instanceof Uint32Array) ? colors: Uint32Array.from(colors): this.uint32_colors_;
+            colors = is_new_colors ? (colors instanceof Uint32Array) ? colors: Uint32Array.from(new Set(colors)): this.uint32_colors_;
             indexes = is_new_indexes ? indexes: this.color_indexes_;
 
             if(must_init || (is_new_colors && is_new_indexes)) {
                 if(is_new_colors) {
                     // Initialize and fill the matrix table
-                    this.uint32_colors_ = Uint32Array.from(new Set(colors));
+                    this.uint32_colors_ = colors;
                     this.uint32_colors_length_ = this.uint32_colors_.length;
                     this.uint32_colors_map_ = {};
                     for(var i = 0; (i|0) < (this.uint32_colors_length_|0); i = i + 1 | 0){

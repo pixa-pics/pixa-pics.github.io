@@ -67,7 +67,7 @@ import actions from "../actions/utils";
 import xbrz from "../utils/xBRZ";
 import HD4K from "../icons/HD4K";
 import CloudDownload from "@material-ui/icons/CloudDownload";
-import {depixelize} from "../utils/depixelize/new/index";
+import depixelize from "../utils/depixelize/index";
 import {base64_sanitize, base64_to_bitmap, bitmap_to_imagedata} from "../utils/img_manipulation";
 
 const styles = theme => ({
@@ -993,6 +993,7 @@ class Marketplace extends React.Component {
         canvas_style.innerHTML = style;
         canvas_style.id = "media-style";
         document.head.appendChild(canvas_style);
+        window.addEventListener("resize", this.updateDimension);
         this.setState({_h_svg: createLocalBlob(get_svg_in_b64(<HexGrid color={"rgba(1,17,255,0.1)"}/>)),_h_svg_size: `${Math.ceil(.5*200)}px ${Math.ceil(.5*229.3)}px`});
 
     }
@@ -1000,6 +1001,10 @@ class Marketplace extends React.Component {
     shouldComponentUpdate(nextProps, nextState, nextContext) {
 
         return false;
+    }
+
+    updateDimension = () => {
+        this.setRefFromLeft(null);
     }
 
     handleTabChange = (event, number) => {
@@ -1063,61 +1068,54 @@ class Marketplace extends React.Component {
                 break;
             case "svg":
 
-                var svg_source = depixelize(data.data, data.width, data.height)
-                var b64 = "data:image/svg+xml;base64," + btoa(svg_source);
+                //var url = depixelize(data, 12, 0.70);
+                //var b64 = "data:image/svg+xml;base64," + btoa(svg_source);
 
-                 this.setState({src: b64}, () => {
+                 /*this.setState({src: url}, () => {
                     this.forceUpdate();
-                });
-
-
-                /*
+                });*/
                 JSLoader( () => import("../utils/xBRZ")).then((obj) => {
                     obj.default(data, 6, pool).then((imageData) => {
                         JSLoader( () => import("../utils/image_tracer")).then(({image_tracer}) => {
                             var scale = 6;
-                            image_tracer(data, {
-
+                            image_tracer(imageData, {
                                 // Palette
                                 pal: colors.map((c) => {
-
                                     const r = parseInt(c.slice(1, 3), 16);
                                     const g = parseInt(c.slice(3, 5), 16);
                                     const b = parseInt(c.slice(5, 7), 16);
                                     const a = parseInt(c.slice(7, 9), 16);
-
                                     return {r, g, b, a};
                                 }),
-
                                 // Tracing
                                 corsenabled : false,
-                                ltres : 1,
-                                qtres : 1,
-                                pathomit : 1,
-                                rightangleenhance : true,
+                                ltres : scale,
+                                qtres : scale,
+                                pathomit : scale,
+                                rightangleenhance : false,
 
                                 // Color quantization
                                 colorsampling : 2,
-                                numberofcolors : colors.length,
+                                numberofcolors : 512,
                                 mincolorratio : 0,
                                 colorquantcycles : 1,
 
                                 // Layering method
-                                layering : true,
+                                layering : 0,
 
                                 // SVG rendering
-                                strokewidth : 2,
+                                strokewidth : Math.ceil(scale/2),
                                 linefilter : true,
                                 scale : 1,
-                                roundcoords : 6,
+                                roundcoords : 2,
                                 viewbox : true,
                                 desc : false,
                                 lcpr : 0,
                                 qcpr : 0,
 
                                 // Blur
-                                blurradius : 1,
-                                blurdelta : 1
+                                blurradius : scale,
+                                blurdelta : scale*4
 
                             }, pool).then((svg_source) => {
 
@@ -1127,7 +1125,7 @@ class Marketplace extends React.Component {
                             });
                         });
                     });
-                });*/
+                });
         }
 
     };
@@ -1154,24 +1152,26 @@ class Marketplace extends React.Component {
 
     setRefFromLeft = (element) => {
 
-        if(element != null) {
+        if(element != null || this.state.refleft != null) {
 
-            this.setState({refleft: element}, () => {
+            this.setState({refleft: element || this.state.refleft}, () => {
 
                 var wx = window.innerWidth;
-                const rect = element.getBoundingClientRect();
+                const rect = this.state.refleft.getBoundingClientRect();
                 const _canvas_container_width = wx > 800 ? rect.width - 384: rect.width;
                 const _canvas_container_height = rect.height || 0;
                 const _canvas_container_left = rect.left || 0;
                 const _canvas_container_top = rect.top || 0;
                 this.canvas_pos.set_canvas_container(_canvas_container_top, _canvas_container_left, _canvas_container_height, _canvas_container_width);
-                element.addEventListener("wheel", this._canvas_pos_handle_wheel, {passive: false});
-                element.addEventListener("pointerdown", this._canvas_pos_handle_pointer_down, {passive: false});
-                element.addEventListener("pointermove", this._canvas_pos_handle_pointer_move, {passive: false});
-                element.addEventListener("pointerup", this._canvas_pos_handle_pointer_up, {passive: false});
-                element.addEventListener("pointercancel", this._canvas_pos_handle_pointer_up, {passive: false});
-                element.addEventListener("pointerout", this._canvas_pos_handle_pointer_up, {passive: false});
-                element.addEventListener("pointerleave", this._canvas_pos_handle_pointer_up, {passive: false});
+                if(element){
+                    element.addEventListener("wheel", this._canvas_pos_handle_wheel, {passive: false});
+                    element.addEventListener("pointerdown", this._canvas_pos_handle_pointer_down, {passive: false});
+                    element.addEventListener("pointermove", this._canvas_pos_handle_pointer_move, {passive: false});
+                    element.addEventListener("pointerup", this._canvas_pos_handle_pointer_up, {passive: false});
+                    element.addEventListener("pointercancel", this._canvas_pos_handle_pointer_up, {passive: false});
+                    element.addEventListener("pointerout", this._canvas_pos_handle_pointer_up, {passive: false});
+                    element.addEventListener("pointerleave", this._canvas_pos_handle_pointer_up, {passive: false});
+                }
             });
         }
     };
@@ -1375,10 +1375,12 @@ class Marketplace extends React.Component {
                         <div style={{position: "absolute", top: 16, left: 16}}>
                             <IconButton style={{color: "#ffffff"}} onClick={() => {this.renderMedia("pixelated", openedMediaDataData.data)}}><Icon><SquareRoundedIcon/></Icon></IconButton>
                             <IconButton style={{color: "#ffffff"}} onClick={() => {this.renderMedia("xbrz", openedMediaDataData.data)}}><Icon><GamePadRoundIcon/></Icon></IconButton>
+                            <IconButton style={{color: "#ffffff"}} onClick={() => {this.renderMedia("svg", openedMediaDataData.data, openedMediaDataData.colors)}}><Icon><HD4K/></Icon></IconButton>
                         </div>
                         <div style={{position: "absolute", right: window.innerWidth > 800 ? 400: 14, top: 16}}>
                             <IconButton style={{color: "#ffffff"}} onClick={() => {this.download(src, openedMediaData.name, "sophia.julio")}}><Icon><CloudDownload/></Icon></IconButton>
                             <IconButton style={{color: "#ffffff"}} onClick={() => {this.edit(openedMediaData.src);}}><Icon><ImageEditIcon/></Icon></IconButton>
+                            <IconButton style={{color: "#ffffff"}} onClick={() => {this.closeMediaCard();}}><Icon><CloseIcon/></Icon></IconButton>
                         </div>
                         <div style={{position: "absolute", bottom: 16, left: 16}}>
                             <Tooltip title={"14 Reposts"}>

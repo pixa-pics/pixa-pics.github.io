@@ -3401,7 +3401,7 @@ class Pixel extends React.PureComponent {
                         style={{color: _ripple_color, opacity: _ripple_opacity, position: "fixed", width: "100%", height: "100%"}}/>
 
                     <Backdrop style={{pointerEvents: "all", cursor: "pointer"}} onDrag={this._handle_file_upload} className={classes.backdrop} open={Boolean(_loading || _files_waiting_download.length > 0 || (_drag_file + 1000 > Date.now()))} onClick={this._continue_download}>
-                        <div className={classes.backdropTextContent} style={{ fontFamily: `"IBM Plex Sans"`, textTransform: "uppercase"}}>
+                        <div className={classes.backdropTextContent} style={{ fontFamily: `"Industry Book"`, textTransform: "uppercase"}}>
                             {!_drag_file && Boolean(_loading || _files_waiting_download.length > 0) && <h1><ShufflingSpanText key={_loading_process || _loading} text={_loading_process === "browser" ? "Laboratory in DANGER!": "LABORATORY PROCESSING"} animation_delay_ms={0} animation_duration_ms={200}/></h1>}
                             {!_drag_file && _files_waiting_download.length > 0 && <h3><ShufflingSpanText key={_files_waiting_download[0].name} text={`ACTION REQUIRED... ${String(_files_waiting_download[0].name)}`} animation_delay_ms={300} animation_duration_ms={500}/></h3>}
                             {!_drag_file && _files_waiting_download.length > 0 && <div><img src={"/src/images/labostration/DOWNLOAD.svg"} className={classes.imageBackdrop}/></div>}

@@ -207,7 +207,7 @@ const styles = theme => ({
     headerContainer: {
         pointerEvents: "none",
         fontWeight: "bold",
-        fontFamily: `"IBM Plex Sans"`,
+        fontFamily: `"Industry Book"`,
         position: "absolute",
         padding: "0px 48px",
         height: "100%",

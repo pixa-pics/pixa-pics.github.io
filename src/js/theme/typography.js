@@ -1,48 +1,48 @@
 const typography = {
     h1: {
-        fontFamily: `"IBM Plex Sans", "Red Hat Display"`
+        fontFamily: `"Industry Book", "Normative Pro"`
     },
     h2: {
-        fontFamily: `"IBM Plex Sans", "Red Hat Display"`
+        fontFamily: `"Industry Book", "Normative Pro"`
     },
     h3: {
-        fontFamily: `"IBM Plex Sans", "Red Hat Display"`
+        fontFamily: `"Industry Book", "Normative Pro"`
     },
     h4: {
-        fontFamily: `"IBM Plex Sans", "Red Hat Display"`
+        fontFamily: `"Industry Book", "Normative Pro"`
     },
     h5: {
-        fontFamily: `"IBM Plex Sans", "Red Hat Display"`
+        fontFamily: `"Industry Book", "Normative Pro"`
     },
     h6: {
-        fontFamily: `"IBM Plex Sans", "Red Hat Display"`
+        fontFamily: `"Industry Book", "Normative Pro"`
     },
     subtitle1: {
-        fontFamily: `"IBM Plex Sans", "Red Hat Display"`
+        fontFamily: `"Industry Book", "Normative Pro"`
     },
     subtitle2: {
-        fontFamily: `"IBM Plex Sans", "Red Hat Display"`
+        fontFamily: `"Industry Book", "Normative Pro"`
     },
     body1: {
-        fontFamily: `"Red Hat Display", "IBM Plex Sans"`
+        fontFamily: `"Normative Pro", "Industry Book"`
     },
     body2: {
-        fontFamily: `"Red Hat Display", "IBM Plex Sans"`
+        fontFamily: `"Normative Pro", "Industry Book"`
     },
     button: {
-        fontFamily: `"IBM Plex Sans", "Red Hat Display"`
+        fontFamily: `"Industry Book", "Normative Pro"`
     },
     caption: {
-        fontFamily: `"Red Hat Display", "IBM Plex Sans"`
+        fontFamily: `"Normative Pro", "Industry Book"`
     },
     overline: {
-        fontFamily: `"Red Hat Display", "IBM Plex Sans"`
+        fontFamily: `"Normative Pro", "Industry Book"`
     },
     text: {
-        fontFamily: `"Red Hat Display", "IBM Plex Sans"`
+        fontFamily: `"Normative Pro", "Industry Book"`
     },
     label: {
-        fontFamily: `"Red Hat Display", "IBM Plex Sans"`
+        fontFamily: `"Normative Pro", "Industry Book"`
     },
 }
 
