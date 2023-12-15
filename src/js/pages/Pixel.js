@@ -315,16 +315,14 @@ const styles = theme => ({
         },
         '& > div > .react-swipeable-view-container': {
             display: "flex !important",
-            filter: "opacity(1) !important",
-            WebkitFilter: "opacity(1) !important",
+            filter: "inherit !important",
+            WebkitFilter: "inherit",
             willChange: "none !important",
-            contain: "size layout style !important",
             height: "100% !important",
             [theme.breakpoints.up("lg")]: {
                 width: 480,
             },
-            width: "calc(100% - 64px)",
-            [theme.breakpoints.down("sm")]: {
+            [theme.breakpoints.down("md")]: {
                 width: "100%",
             },
         },
