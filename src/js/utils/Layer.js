@@ -809,7 +809,8 @@ Object.defineProperty(Layer.prototype, 'hash_hex_async', {
                         typeof data == "string" ?
                             new TextEncoder().encode(data):
                             Uint8ClampedArray.from(data);
-                resolve(xxhash.base58_that(uint8a));
+                var h = xxhash.base58_that(uint8a);
+                resolve(h);
             });
         }
     }

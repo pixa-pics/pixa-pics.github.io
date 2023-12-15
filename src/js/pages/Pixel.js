@@ -204,8 +204,7 @@ const styles = theme => ({
         backgroundColor: "#ededffff",
         color: "#050c4c",
         boxShadow: "inset 0px 3px 6px #050c4c4d",
-        whiteSpace: "nowrap",
-        willChange: "content"
+        whiteSpace: "nowrap"
     },
     drawerModalBackdropRoot: {
         contain: "layout size style paint",
@@ -264,7 +263,6 @@ const styles = theme => ({
         contain: "layout paint size style",
     },
     swipeableDrawerPaper: {
-        willChange: "scroll-position",
         maxWidth: "100%",
         overscrollBehavior: "none",
         overflow: "hidden",
@@ -274,7 +272,6 @@ const styles = theme => ({
         contain: "layout paint size style",
     },
     drawerContainer: {
-        willChange: "scroll-position",
         transform: "translateZ(10px)",
         scrollBehavior: "smooth",
         contain: "size style paint layout",
@@ -321,7 +318,7 @@ const styles = theme => ({
             filter: "opacity(1) !important",
             WebkitFilter: "opacity(1) !important",
             willChange: "none !important",
-            contain: "size style !important",
+            contain: "size layout style !important",
             height: "100% !important",
             [theme.breakpoints.up("lg")]: {
                 width: 480,

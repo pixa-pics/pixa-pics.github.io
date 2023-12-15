@@ -1,26 +1,5 @@
 import React from "react";
-import {
-    withStyles,
-    List,
-    ListItem,
-    ListItemAvatar,
-    ListItemIcon,
-    LinearProgress,
-    ListItemText,
-    ListSubheader,
-    Typography,
-    Slider,
-    RadioGroup,
-    Radio,
-    FormLabel,
-    Collapse,
-    Divider,
-    FormControlLabel,
-    Button,
-    Badge,
-    Menu,
-    IconButton, ButtonBase
-} from "@material-ui/core";
+import {withStyles, List, ListItem, ListItemAvatar, ListItemIcon, LinearProgress, ListItemText, ListSubheader, Typography, Slider, RadioGroup, Radio, FormLabel, Collapse, Divider, FormControlLabel, Button, Badge, Menu, IconButton, ButtonBase} from "@material-ui/core";
 
 import {SIMDopeCreate} from "simdope";
 const {Color} = SIMDopeCreate({
@@ -44,6 +23,9 @@ import SelectIcon from "../icons/Select";
 import ImageEffectIcon from "../icons/ImageEffect";
 import ImageFilterMagicIcon from "../icons/ImageFilterMagic";
 import SwipeableViews from "react-swipeable-views";
+import { virtualize } from 'react-swipeable-views-utils';
+const VirtualizeSwipeableViews = virtualize(SwipeableViews);
+
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import PixelColorPalette from "./PixelColorPalette";
 import { RgbaColorPicker } from "react-colorful";
@@ -542,8 +524,8 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
             can_redo: props.can_redo,
             width: props.width,
             height: props.height,
-            default_width: !this.default_width ? (props.default_width || props.width || 96): 96,
-            default_height: !this.default_height ? (props.default_height || props.height || 96): 96,
+            default_width: !this.default_width ? (props.default_width || props.width || 96) : 96,
+            default_height: !this.default_height ? (props.default_height || props.height || 96) : 96,
             is_image_import_mode: props.is_image_import_mode,
             hide_canvas_content: props.hide_canvas_content,
             show_original_image_in_background: props.show_original_image_in_background,
@@ -602,7 +584,14 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
         Object.keys(this._cache).map((name) => {
 
             this.update_cache_view(name);
-            this._cache_empty[name] = (<List key={"list-empty-"+name} style={{ willChange: "none", minHeight: "100%", contain: "size style layout paint", overflow: "auto", contentVisibility: "hidden", paddingTop: 0}} />);
+            this._cache_empty[name] = (<List key={"list-empty-" + name} style={{
+                willChange: "none",
+                minHeight: "100%",
+                contain: "size style layout paint",
+                overflow: "auto",
+                contentVisibility: "hidden",
+                paddingTop: 0
+            }}/>);
         });
     };
 
@@ -612,13 +601,13 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
         let keys_length = keys.length | 0;
         let key = "";
 
-        for (let i = 0; (i|0) < (keys_length|0); i = (i+1|0)>>>0) {
+        for (let i = 0; (i | 0) < (keys_length | 0); i = (i + 1 | 0) >>> 0) {
 
-            key = keys[i]+"";
+            key = keys[i] + "";
             this.st4te[key] = st4te[key];
         }
 
-        if(typeof callback === "function") {
+        if (typeof callback === "function") {
 
             callback();
         }
@@ -626,7 +615,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
     _scroll_to_id = (classname) => {
 
-        if(typeof this.props.on_scroll_to === "function"){
+        if (typeof this.props.on_scroll_to === "function") {
 
             this.props.on_scroll_to(classname);
         }
@@ -635,8 +624,8 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
     _handle_filters_thumbnail_change = (filters_thumbnail, last_filters_hash, filters_preview_progression) => {
 
         "use strict";
-        filters_preview_progression = filters_preview_progression+"";
-        if(this.st4te.filters_preview_progression === "0") {
+        filters_preview_progression = filters_preview_progression + "";
+        if (this.st4te.filters_preview_progression === "0") {
             actions.trigger_voice("filtering");
         }
 
@@ -646,7 +635,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
             let ar = "";
             let processed = false;
 
-            for (let i = 0; i < this.st4te.filters.length; i++) {
+            for (let i = 0; i < this.st4te.filters.length; i ++) {
 
                 bmp = filters_thumbnail[this.st4te.filters[i]] || {};
 
@@ -665,9 +654,14 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
             }
         }
 
-        this.setSt4te({filters_thumbnail, last_filters_hash, filters_preview_progression, filter_layer_index: this.st4te.layer_index}, () => {
+        this.setSt4te({
+            filters_thumbnail,
+            last_filters_hash,
+            filters_preview_progression,
+            filter_layer_index: this.st4te.layer_index
+        }, () => {
 
-            if(filters_preview_progression === "100") {
+            if (filters_preview_progression === "100") {
 
                 this.update_cache_view(null, true);
             }
@@ -676,12 +670,12 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
     componentDidMount() {
 
-        if(this.props.set_filters_callback) {
+        if (this.props.set_filters_callback) {
 
             this.props.set_filters_callback(this._handle_filters_thumbnail_change);
         }
 
-        if(this.props.set_props_callback) {
+        if (this.props.set_props_callback) {
 
             this.props.set_props_callback(this._set_props);
         }
@@ -723,55 +717,63 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
         } = this.st4te;
 
         const layer_index_changed = Boolean(filter_layer_index !== new_props.layer_index);
-        const _history_changed = Boolean(can_undo !== new_props.can_undo) ||  Boolean(can_redo !== new_props.can_redo);
-        const must_compute_filter = Boolean(Boolean(view_name_index !== new_props.view_name_index || _history_changed || layer_index_changed) && Boolean(new_props.view_name_index === 6));
+        const _history_changed = Boolean(can_undo !== new_props.can_undo) || Boolean(can_redo !== new_props.can_redo);
+        const must_compute_filter = Boolean(Boolean(Boolean(view_name_index !== new_props.view_name_index) || _history_changed || layer_index_changed) && Boolean(new_props.view_name_index === 6));
 
         let props_override = {};
         let layers_colors_max = 0;
-        Array.from(new_props.layers).forEach(function(l){ if(layers_colors_max < parseInt(l.number_of_colors)) { layers_colors_max = parseInt(l.number_of_colors);}});
+        Array.from(new_props.layers).forEach(function (l) {
+            if (layers_colors_max < parseInt(l.number_of_colors)) {
+                layers_colors_max = parseInt(l.number_of_colors);
+            }
+        });
         const too_much_colors_no_vector = Boolean(layers_colors_max > 256);
 
-        const layers_changed = Boolean(layers.map(function(l, i){return i+"_"+l.hidden +"_"+l.opacity+"_"+l.number_of_colors+"_w"+l.thumbnail.width+"-h"+l.thumbnail.height+"-d"+l.thumbnail.drawn}).join("-") !== new_props.layers.map(function(l, i){return i+"_"+l.hidden +"_"+l.opacity+"_"+l.number_of_colors+"_w"+l.thumbnail.width+"-h"+l.thumbnail.height+"-d"+l.thumbnail.drawn}).join("-"));
+        const layers_changed = Boolean(layers.map(function (l, i) {
+            return i + "_" + l.hidden + "_" + l.opacity + "_" + l.number_of_colors + "_h" + l.thumbnail.hash
+        }).join("-") !== new_props.layers.map(function (l, i) {
+            return i + "_" + l.hidden + "_" + l.opacity + "_" + l.number_of_colors + "_h" + l.thumbnail.hash
+        }).join("-"));
         const view_name_changed = Boolean(view_name_index !== new_props.view_name_index);
         const something_changed_in_view = Boolean(Boolean(new_props.should_update || should_update) && Boolean(
             layers_changed ||
-            select_mode+"" !== new_props.select_mode+"" ||
+            select_mode + "" !== new_props.select_mode + "" ||
             Boolean(too_much_colors_no_vector) !== Boolean(this.st4te.too_much_colors_no_vector) ||
-            parseInt(previous_view_name_index) !== parseInt(new_props.previous_view_name_index) ||
             parseInt(layer_index) !== parseInt(new_props.layer_index) ||
-            Boolean(is_image_import_mode) !==  Boolean(new_props.is_image_import_mode) ||
-            Boolean(hide_canvas_content) !==  Boolean(new_props.hide_canvas_content) ||
-            Boolean(show_original_image_in_background) !==  Boolean(new_props.show_original_image_in_background) ||
-            Boolean(show_transparent_image_in_background) !==  Boolean(new_props.show_transparent_image_in_background) ||
-            Boolean(can_undo) !==  Boolean(new_props.can_undo) ||
-            Boolean(can_redo) !==  Boolean(new_props.can_redo) ||
-            current_color+"" !== new_props.current_color+"" ||
-            second_color+"" !== new_props.second_color+"" ||
-            tool+"" !== new_props.tool+"" ||
+            Boolean(is_image_import_mode) !== Boolean(new_props.is_image_import_mode) ||
+            Boolean(hide_canvas_content) !== Boolean(new_props.hide_canvas_content) ||
+            Boolean(show_original_image_in_background) !== Boolean(new_props.show_original_image_in_background) ||
+            Boolean(show_transparent_image_in_background) !== Boolean(new_props.show_transparent_image_in_background) ||
+            Boolean(can_undo) !== Boolean(new_props.can_undo) ||
+            Boolean(can_redo) !== Boolean(new_props.can_redo) ||
+            current_color + "" !== new_props.current_color + "" ||
+            second_color + "" !== new_props.second_color + "" ||
+            tool + "" !== new_props.tool + "" ||
             parseInt(width) !== parseInt(new_props.width) ||
             parseInt(height) !== parseInt(new_props.height) ||
             Boolean(pencil_mirror_mode) !== Boolean(new_props.pencil_mirror_mode) ||
             Boolean(is_something_selected) !== Boolean(new_props.is_something_selected) ||
             parseInt(import_size) !== parseInt(new_props.import_size) ||
-            (import_colorize | 0) !== (new_props.import_colorize | 0) ||
-            Math.round(filters_preview_progression * 10) !== Math.round(new_props.filters_preview_progression * 10)
+            (import_colorize | 0) !== (new_props.import_colorize | 0)
         ));
 
-        if(must_compute_filter) {
+        if (must_compute_filter) {
 
             this.compute_filters_preview();
         }
 
-        this.setSt4te({...new_props, ...props_override, slider_value: parseFloat(new_props.slider_value), too_much_colors_no_vector}, () => {
-
-            if(something_changed_in_view) {
-
+        console.log(something_changed_in_view)
+        this.setSt4te({
+            ...new_props, ...props_override,
+            slider_value: parseFloat(new_props.slider_value),
+            too_much_colors_no_vector
+        }, () => {
+            if (something_changed_in_view) {
                 this.update_cache_view(null, true);
-            }else if(view_name_changed) {
-
+            } else if (view_name_changed) {
                 this.forceUpdate();
-            }else {
-                this.update_cache_view(null, false);
+            } else {
+                //this.update_cache_view(null, false);
             }
         });
     }
@@ -783,7 +785,8 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
                 this.st4te.canvas.compute_filters_preview();
             });
-        } catch (e) {}
+        } catch (e) {
+        }
     };
 
     _text_to_new_layer = () => {
@@ -795,7 +798,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
         "use strict";
         this.st4te.canvas.to_filter(name, this.st4te.slider_value);
-        if(!this.is_mobile) {
+        if (!this.is_mobile) {
             this.compute_filters_preview();
         }
     };
@@ -815,7 +818,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
     _set_list_subheader_collapse = (name) => {
 
         "use strict";
-        this.setSt4te({_list_sub_header_opened: (this.st4te._list_sub_header_opened && this.st4te._list_sub_header_opened === name) ? "": name}, () => {
+        this.setSt4te({_list_sub_header_opened: (this.st4te._list_sub_header_opened && this.st4te._list_sub_header_opened === name) ? "" : name}, () => {
 
             this.update_cache_view(null, true);
         });
@@ -826,22 +829,25 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
         "use strict";
         const _list_sub_header_opened = this.st4te._list_sub_header_opened;
         const classes = this.st4te.classes;
-       return <React.Fragment>
-                <Collapse className={classes.listSubHeaderCollapse} in={_list_sub_header_opened === name}>
-                    <p className={classes.listSubHeaderDescription}>{tutorial}</p>
-                </Collapse>
-                {_list_sub_header_opened === name &&
-                    <div className={classes.listSubHeaderVideo}>
-                        <video id="upload-video" width="150" height="150" style={{aspectRatio: "1", transform: "translateZ(10px)"}} autoPlay>
-                            <source src={"/src/videos/"+name+".mp4"} type="video/mp4"/>
-                        </video>
-                        <div className={classes.listSubHeaderVideoOverlay}></div>
-                        <div className={classes.listSubHeaderVideoFade}></div>
-                    </div>}
-               <IconButton className={classes.listSubHeaderToggle} onClick={() => {this._set_list_subheader_collapse(name)}}>
-                   {_list_sub_header_opened === name ? <CloseIcon/>: <InfoOutlined/>}
-               </IconButton>
-            </React.Fragment>;
+        return <React.Fragment>
+            <Collapse className={classes.listSubHeaderCollapse} in={_list_sub_header_opened === name}>
+                <p className={classes.listSubHeaderDescription}>{tutorial}</p>
+            </Collapse>
+            {_list_sub_header_opened === name &&
+                <div className={classes.listSubHeaderVideo}>
+                    <video id="upload-video" width="150" height="150"
+                           style={{aspectRatio: "1", transform: "translateZ(10px)"}} autoPlay>
+                        <source src={"/src/videos/" + name + ".mp4"} type="video/mp4"/>
+                    </video>
+                    <div className={classes.listSubHeaderVideoOverlay}></div>
+                    <div className={classes.listSubHeaderVideoFade}></div>
+                </div>}
+            <IconButton className={classes.listSubHeaderToggle} onClick={() => {
+                this._set_list_subheader_collapse(name)
+            }}>
+                {_list_sub_header_opened === name ? <CloseIcon/> : <InfoOutlined/>}
+            </IconButton>
+        </React.Fragment>;
     };
 
     _get_list_sub_header_classname = (name, tutorial) => {
@@ -855,7 +861,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
     _get_colors = (s, l, o) => {
         "use strict";
         let colors = [];
-        for (let i = 1; i <= 128; i++) {
+        for (let i = 1; i <= 128; i ++) {
 
             colors.push(Color.new_hsla((i / 128) * 360 | 0, s, l, o).hex);
         }
@@ -887,7 +893,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
         } = this.st4te;
 
         const ccsd = Color.new_hex(current_color);
-        const current_color_rgba = {r: ccsd.r, g: ccsd.g, b: ccsd.b, a: ccsd.a/255};
+        const current_color_rgba = {r: ccsd.r, g: ccsd.g, b: ccsd.b, a: ccsd.a / 255};
 
         const [r_1, g_1, b_1] = current_color === "#ffffff" ? [196, 196, 196] : Color.new_hex(current_color).get_slice();
         const is_current_color_dark = r_1 + g_1 + b_1 < 152 * 3;
@@ -901,11 +907,13 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
             case "layers":
                 return (
                     <div key={"layers-layers-main"} className={`swipetoolbox_i_${index}_${0}`}>
-                        <ListSubheader className={classes.listSubHeader} onClick={() => {this._scroll_to_id(`swipetoolbox_i_${index}_${0}`)}}>
+                        <ListSubheader className={classes.listSubHeader} onClick={() => {
+                            this._scroll_to_id(`swipetoolbox_i_${index}_${0}`)
+                        }}>
                             <span><AllLayersIcon/></span>
                             <span>All layers</span>
                         </ListSubheader>
-                        <div key={"layers-wrapper-index-"+index}>
+                        <div key={"layers-wrapper-index-" + index}>
                             {Array.from(layers).reverse().map((layer, index2, array) => {
 
                                 const index_reverse_order = (array.length - 1) - index2;
@@ -914,7 +922,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                                 }
 
                                 return (
-                                    <div key={"layers-list-item-n-"+index_reverse_order}>
+                                    <div key={"layers-list-item-n-" + index_reverse_order}>
                                         <ListItem
                                             divider
                                             className={layer_index === index_reverse_order ? classes.layerSelected : null}
@@ -923,8 +931,10 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                                             <ListItemAvatar>
                                                 <canvas
                                                     className={"pixelated " + classes.layerThumbnail + " " + index}
-                                                    ref={(el) => {this._set_canvas_ref(el, layer.thumbnail, true)}}
-                                                    key={"layer-n-"+index_reverse_order+"-w-"+layer.thumbnail.width+"-h-"+layer.thumbnail.height}
+                                                    ref={(el) => {
+                                                        this._set_canvas_ref(el, layer.thumbnail, true)
+                                                    }}
+                                                    key={"layer-n-" + index_reverse_order + "-w-" + layer.thumbnail.width + "-h-" + layer.thumbnail.height}
                                                     width={layer.thumbnail.width || 0}
                                                     height={layer.thumbnail.height || 0}
                                                     style={{background: `repeating-conic-gradient(rgb(248 248 248 / 100%) 0% 25%, rgb(224 224 224 / 100%) 0% 50%) left top 50% / calc(200% / ${width}) calc(200% / ${height})`}}
@@ -942,7 +952,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                                                 <div style={{padding: "12px 0px 12px 32px"}}>
                                                     <span>Colours: ({layer.colors.length}/{layer.number_of_colors})</span>
                                                     <PixelColorPalette
-                                                        key={"layer-n-"+index+"-color-palette"}
+                                                        key={"layer-n-" + index + "-color-palette"}
                                                         transparent={true}
                                                         padding="12px 0px"
                                                         size={32}
@@ -1002,8 +1012,10 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                             style={{padding: 0}}
                         >
                             <RgbaColorPicker className={classes.materialPicker}
-                                          color={current_color_rgba}
-                                          onChange={(c) => {this._handle_current_color_change(Color.new_of(c.r, c.g, c.b, Math.round(c.a*255)|0).hex)}}/>
+                                             color={current_color_rgba}
+                                             onChange={(c) => {
+                                                 this._handle_current_color_change(Color.new_of(c.r, c.g, c.b, Math.round(c.a * 255) | 0).hex)
+                                             }}/>
                         </Menu>
 
                         <div style={{textAlign: "center"}}>
@@ -1065,7 +1077,8 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                             <div className={classes.sliderContainer}>
                                 <Typography className={classes.sliderLabel} id="opacity-slider"
                                             gutterBottom>α</Typography>
-                                <Slider defaultValue={parseInt(_opacity)} key={"0-"+_opacity} step={10} valueLabelDisplay="auto"
+                                <Slider defaultValue={parseInt(_opacity)} key={"0-" + _opacity} step={10}
+                                        valueLabelDisplay="auto"
                                         min={0} max={100}
                                         onChangeCommitted={this._set_opacity_from_slider}
                                         aria-labelledby="opacity-slider"/>
@@ -1073,7 +1086,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                             <div className={classes.sliderContainer}>
                                 <Typography className={classes.sliderLabel} id="luminosity-slider"
                                             gutterBottom>L</Typography>
-                                <Slider defaultValue={parseInt(_luminosity)} key={"0-"+_luminosity} step={10}
+                                <Slider defaultValue={parseInt(_luminosity)} key={"0-" + _luminosity} step={10}
                                         valueLabelDisplay="auto" min={0} max={100}
                                         onChangeCommitted={this._set_luminosity_from_slider}
                                         aria-labelledby="luminosity-slider"/>
@@ -1081,7 +1094,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                             <div className={classes.sliderContainer}>
                                 <Typography className={classes.sliderLabel} id="saturation-slider"
                                             gutterBottom>S</Typography>
-                                <Slider defaultValue={parseInt(_saturation)} key={"0-"+_saturation} step={10}
+                                <Slider defaultValue={parseInt(_saturation)} key={"0-" + _saturation} step={10}
                                         valueLabelDisplay="auto" min={0} max={100}
                                         onChangeCommitted={this._set_saturation_from_slider}
                                         aria-labelledby="strength-slider"/>
@@ -1093,14 +1106,17 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
             case "image":
                 return (
                     <div key={"image-image-upload"} className={`swipetoolbox_i_${index}_${0}`}>
-                        <ListSubheader className={this._get_list_sub_header_classname("upload")} onClick={() => {this._scroll_to_id(`swipetoolbox_i_${index}_${0}`)}} disabled={_list_sub_header_opened != "upload"}>
+                        <ListSubheader className={this._get_list_sub_header_classname("upload")} onClick={() => {
+                            this._scroll_to_id(`swipetoolbox_i_${index}_${0}`)
+                        }} disabled={_list_sub_header_opened != "upload"}>
                             <span className={"list-sub-header-main-text"}>
                                 <span><ImportIcon/></span>
                                 <span>New Artwork</span>
                             </span>
                             {this._get_list_sub_header_content_scarlett("upload", "Define a size before uploading an image from the library or your device, this size will be the one used in the laboratory, but before! You can optionally define a retouching setting by artificial intelligence of your starting image, you can enlarge, colorize or even do both at the same time! That's how it's done to open an image in the lab, have fun.")}
                         </ListSubheader>
-                        <FormLabel style={{padding: "32px 24px 12px 32px"}} component="legend">START HERE, CONVERT PICTURES INTO PIXEL ART!</FormLabel>
+                        <FormLabel style={{padding: "32px 24px 12px 32px"}} component="legend">START HERE, CONVERT
+                            PICTURES INTO PIXEL ART!</FormLabel>
                         <div className={"image " + classes.listItems}>
                             <input
                                 accept="image/jpg, image/jpeg, image/png, image/svg, image/webp, image/gif"
@@ -1132,7 +1148,8 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                                 window.open("https://www.artstation.com/pixapics/store")
                             }}>
                                 <ListItemIcon className={classes.listItemIconBlueBold}>
-                                    <Badge className={classes.styledBadgeConnected} overlap="rectangular" badgeContent="3+" variant="standard">
+                                    <Badge className={classes.styledBadgeConnected} overlap="rectangular"
+                                           badgeContent="3+" variant="standard">
                                         <StoreIcon/>
                                     </Badge>
                                 </ListItemIcon>
@@ -1148,18 +1165,23 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                                 boxSizing: "border-box",
                                 width: "100%"
                             }}>
-                                <Typography id="size-slider" style={{textAlignLast: "left"}} gutterBottom>NEW IMAGE SIZE</Typography>
+                                <Typography id="size-slider" style={{textAlignLast: "left"}} gutterBottom>NEW IMAGE
+                                    SIZE</Typography>
                                 <Slider defaultValue={parseInt(import_size)} step={1} valueLabelDisplay="auto" min={0}
                                         max={import_size > 512 ? import_size : 512}
                                         onChangeCommitted={this._set_import_size}
-                                        onClick={function (e){e.stopPropagation();e.preventDefault();}}
+                                        onClick={function (e) {
+                                            e.stopPropagation();
+                                            e.preventDefault();
+                                        }}
                                         aria-labelledby="size-slider"/>
                             </div>
                         </div>
-                        <FormLabel style={{padding: "16px 24px 12px 32px"}} component="legend">ONLINE TOOLS TO ENHANCE YOUR SELECTION</FormLabel>
+                        <FormLabel style={{padding: "16px 24px 12px 32px"}} component="legend">ONLINE TOOLS TO ENHANCE
+                            YOUR SELECTION</FormLabel>
                         <div className={"image " + classes.listItems}>
                             <RadioGroup row name="Colorize" onChange={this._set_import_colorize}
-                                        key={"colorize-mode-n-"+import_colorize}
+                                        key={"colorize-mode-n-" + import_colorize}
                                         value={import_colorize} style={{padding: "12px 0px", margin: "0px 11px"}}>
                                 <FormControlLabel
                                     value={"0"}
@@ -1194,13 +1216,27 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
     _set_canvas_ref = (can, bmp, force = false) => {
 
-        if(typeof bmp == "undefined") {return}
-        if(typeof bmp.width == "undefined") {return}
-        if(force != true && bmp.drawn == true) {return}
-        if(typeof can == "undefined") {return}
-        if(can == null) {return}
-        if(typeof can.width == "undefined") {return}
-        if(!can.width) {return}
+        if (typeof bmp == "undefined") {
+            return
+        }
+        if (typeof bmp.width == "undefined") {
+            return
+        }
+        if (force != true && bmp.drawn == true) {
+            return
+        }
+        if (typeof can == "undefined") {
+            return
+        }
+        if (can == null) {
+            return
+        }
+        if (typeof can.width == "undefined") {
+            return
+        }
+        if (!can.width) {
+            return
+        }
 
         let ctx = can.getContext("2d");
         ctx.globalCompositeOperation = "copy"
@@ -1243,853 +1279,877 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
         const panel_names = this.get_action_panel_names();
 
         switch (panel_names[index]) {
-            case "palette": return [];
-            case "image": return [
-                {
-                    name: "pixelated",
-                    tutorial: "Here are the buttons to download your image in simple size or enlarged so as to have enlarged but still very clear edges!",
-                    icon: <DownloadIcon/>,
-                    text: "Download pixelated",
-                    description: "Simple way to upscale your source file to be sure to have a file that is interpreted correctly with crisp edges.",
-                    local_i: 1,
-                    label: "matrix",
-                    tools: [
-                        {
-                            icon: <FileDownloadIcon/>,
-                            class: classes.animatedDownload,
-                            text: "Render (1x size)",
-                            sub: "[CTRL + Q]", on_click: () => {
-                                this._download_png(1)
-                            }
-                        },
-                        {
-                            icon: <FileDownloadIcon/>,
-                            class: classes.animatedDownload,
-                            text: "Render (2x size)",
-                            sub: "Upscale 2x",
-                            on_click: () => {
-                                this._download_png(2)
-                            }
-                        },
-                        {
-                            icon: <FileDownloadIcon/>,
-                            class: classes.animatedDownload,
-                            text: "Render (4x size)",
-                            sub: "Upscale 4x",
-                            on_click: () => {
-                                this._download_png(4)
-                            }
-                        },
-                        {
-                            icon: <FileDownloadIcon/>,
-                            class: classes.animatedDownload,
-                            text: "Render (8x size)",
-                            sub: "Upscale 8x",
-                            on_click: () => {
-                                this._download_png(8)
-                            }
-                        },
-                        {
-                            icon: <FileDownloadIcon/>,
-                            class: classes.animatedDownload,
-                            text: "Render (16x size)",
-                            sub: "Upscale 16x", on_click: () => {
-                                this._download_png(16)
-                            }
-                        },
-                        {
-                            icon: <FileDownloadIcon/>,
-                            class: classes.animatedDownload,
-                            text: "Render (24x size)",
-                            sub: "Upscale 24x",
-                            on_click: () => {
-                                this._download_png(24)
-                            }
-                        },
-                        {
-                            icon: <FileDownloadIcon/>,
-                            class: classes.animatedDownload,
-                            text: "Render (32x size)",
-                            sub: "Upscale 32x",
-                            on_click: () => {
-                                this._download_png(32)
-                            }
-                        },
-                        {
-                            icon: <FileDownloadIcon/>,
-                            class: classes.animatedDownload,
-                            text: "Render (48x size)",
-                            sub: "Upscale 48x",
-                            on_click: () => {
-                                this._download_png(48)
-                            }
-                        }
-                    ]
-                },
-                {
-                    name: "enhanced",
-                    tutorial: "Here are the buttons to download your image enlarged, yet having sleek, clean and humanized or rounded edges! It is possible to request a non-raster version of your image, it can be enlarged at will without loss of quality. The other options are provided for the purpose of reducing the size of your incoming file or even enlarging the result by two at most.",
-                    icon: <DownloadIcon/>,
-                    text: `Download enhanced${too_much_colors_no_vector ? " (Disabled)": ""}`,
-                    description: too_much_colors_no_vector ?
-                        "It will look like a painting! Yet, we need to have less than 256 colors for each layers because there should be a few shapes to get a beautiful result.":
-                        "After 2000's, great minds have found ways to up-scale late 80's pixel art within modern emulators while always being cool and absolutely right. Hey! It can look like a nice painting^^",
-                    local_i: 2,
-                    label: "vector",
-                    tools: [
-                        {
-                            icon: <FileDownloadIcon/>,
-                            class: classes.animatedDownload,
-                            text: "Kikko",
-                            sub: "Upscale by 48x using a 400 years old Japanese pattern",
-                            disabled: too_much_colors_no_vector,
-                            on_click: () => {
-                                this._download_svg("kikko", _compressed, _vectorized, _crt, _photo)
-                            }
-                        },
-                        {
-                            icon: <FileDownloadIcon/>,
-                            class: classes.animatedDownload,
-                            text: "Hexagon",
-                            sub: "Upscale by 32x using an hexagonal grid",
-                            disabled: too_much_colors_no_vector,
-                            on_click: () => {
-                                this._download_svg("hexagon", _compressed, _vectorized, _crt, _photo)
-                            }
-                        },
-                        /*{
-                            icon: <FileDownloadIcon/>,
-                            class: classes.animatedDownload,
-                            text: "Depixelize",
-                            sub: "Upscale by 10x using Depixelize",
-                            disabled: too_much_colors_no_vector,
-                            on_click: () => {
-                                this._download_svg("depixelize", _compressed, _vectorized, _crt, _photo)
-                            }
-                        },*/
-                        {
-                            icon: <FileDownloadIcon/>,
-                            class: classes.animatedDownload,
-                            text: "Omni",
-                            sub: "Upscale by 8x using Omniscale",
-                            disabled: too_much_colors_no_vector,
-                            on_click: () => {
-                                this._download_svg("omniscale", _compressed, _vectorized, _crt, _photo)
-                            }
-                        },
-                        {
-                            icon: <FileDownloadIcon/>,
-                            class: classes.animatedDownload,
-                            text: "xBRZ",
-                            sub: "Upscale by 6x using xBRZ",
-                            disabled: too_much_colors_no_vector,
-                            on_click: () => {
-                                this._download_svg("xbrz", _compressed, _vectorized, _crt, _photo)
-                            }
-                        },
-                        /*{
-                            icon: <FileDownloadIcon/>,
-                            class: classes.animatedDownload,
-                            text: "hqNx",
-                            sub: "Upscale by 4x using hqNx",
-                            disabled: too_much_colors_no_vector,
-                            on_click: () => {
-                                this._download_svg("hqnx", _compressed, _vectorized, _crt, _photo)
-                            }
-                        },
-                        {
-                            icon: <FileDownloadIcon/>,
-                            class: classes.animatedDownload,
-                            text: "EPX",
-                            sub: "Upscale by 4x using EPX",
-                            disabled: too_much_colors_no_vector,
-                            on_click: () => {
-                                this._download_svg("epx", _compressed, _vectorized, _crt, _photo)
-                            }
-                        },*/
-                        {
-                            icon: _compressed ? <CheckedIcon/>: <UncheckedIcon/>,
-                            text: "Compressed",
-                            sub: "Reduce file weight",
-                            disabled: too_much_colors_no_vector,
-                            on_click: () => {
-                                this._toggle_compressed()
-                            }
-                        },
-                        {
-                            icon: _vectorized ? <CheckedIcon/>: <UncheckedIcon/>,
-                            text: "Vectorized",
-                            sub: "Download an SVG file with it",
-                            disabled: too_much_colors_no_vector,
-                            on_click: () => {
-                                this._toggle_vectorized()
-                            }
-                        },
-                        {
-                            icon: _crt ? <CheckedIcon/>: <UncheckedIcon/>,
-                            text: "Retro",
-                            sub: "Download a PNG file with a retro effect",
-                            disabled: too_much_colors_no_vector,
-                            on_click: () => {
-                                this._toggle_crt()
-                            }
-                        },
-                        {
-                            icon: _photo ? <CheckedIcon/>: <UncheckedIcon/>,
-                            text: "Photo-realistic",
-                            sub: "Get the pixel art changed into something looking very real",
-                            disabled: too_much_colors_no_vector,
-                            on_click: () => {
-                                this._toggle_photo()
-                            }
-                        }
-                    ]
-                }
-            ];
-            case "layers": return [
-                {
-                    icon: <LayerSearchIcon/>,
-                    local_i: 1,
-                    text: `Layer tools`,
-                    label: "tools",
-                    tools: [
-                        {
-                            icon: hide_canvas_content ? <LayerOutlineIcon/> : <LayerOffOutlineIcon/>,
-                            text: hide_canvas_content ? "Show canvas content" : "Hide canvas content",
-                            on_click: () => {
-                                this._show_hide_canvas_content()
-                            }
-                        },
-                        {
-                            icon: show_original_image_in_background ? <ImageOffOutlineIcon/> : <ImageOutlineIcon/>,
-                            text: show_original_image_in_background ? "Hide bg img" : "Show bg img",
-                            on_click: () => {
-                                this._show_hide_background_image()
-                            }
-                        },
-                        {
-                            icon: show_transparent_image_in_background ? <ImageOffOutlineIcon/> : <ImageOutlineIcon/>,
-                            text: show_transparent_image_in_background ? "Hide chessboard" : "Show chessboard",
-                            on_click: () => {
-                                this._show_hide_transparent_image()
-                            }
-                        },
-                    ]
-                },
-                {
-                    icon: <LayerEditIcon/>,
-                    text: `Layer actions`,
-                    local_i: 2,
-                    label: "actions",
-                    tools: [
-                        {
-                            icon: <LayerAddIcon/>, text: "New layer", on_click: () => {
-                                canvas.new_layer(layer_index)
-                            }
-                        },
-                        {
-                            icon: <LayerDeleteIcon/>, text: "Delete layer", on_click: () => {
-                                canvas.delete_layer(layer_index)
-                            }
-                        },
-                        {
-                            icon: <ContentDuplicateIcon/>, text: "Duplicate layer", on_click: () => {
-                                canvas.duplicate_layer(layer_index)
-                            }
-                        },
-                        {
-                            icon: <MergeIcon/>, text: "Merge down layer", on_click: () => {
-                                canvas.merge_down_layer(layer_index)
-                            }
-                        },
-                    ]
-                },
-                {
-                    icon: <ImportIcon/>,
-                    text: "Import image",
-                    local_i: 3,
-                    label: "importing",
-                    tools: [
-                        /*{
-                            icon: <FileImportIcon/>, text: "Text to new layer", sub: "", on_click: () => {
-                                this._text_to_new_layer()
-                            }
-                        },*/
-                        {
-                            icon: <FileImportIcon/>, text: "Library to import", sub: "", on_click: () => {
-                                this._import_image_from_libary()
-                            }
-                        },
-                        {
-                            icon: <FileImportIcon/>, text: "Import image", sub: "[CTRL + I]", for: "button-file-dialog-main", on_click: this.props.on_import_image
-                        },
-                        {
-                            icon: <FileImportIcon/>,
-                            text: "Confirm import",
-                            sub: "[Enter]",
-                            disabled: !is_image_import_mode,
-                            on_click: () => {
-                                canvas.confirm_import()
-                            }
-                        },
-                        {
-                            icon: <StoreIcon/>,
-                            text: "Asset Store",
-                            sub: "Buy tremendous images to add in your drawing",
-                            disabled: false,
-                            on_click: () => {
-                                window.open("https://www.artstation.com/pixapics/store")
-                            }
-                        },
-                    ]
-                },
-            ];
-            case "tools": return [
-                {
-                    icon: <DrawIcon/>,
-                    text: "Drawing tools",
-                    label: "drawing",
-                    local_i: 1,
-                    tools: [
-                        {
-                            icon: <ColorPickerIcon/>,
-                            disabled: tool === "PICKER",
-                            text: "Picker",
-                            sub: "[CTRL (HOLD)]",
-                            on_click: () => {
-                                this._set_tool("PICKER")
-                            }
-                        },
-                        {
-                            icon: <PencilIcon/>,
-                            disabled: tool === "PENCIL",
-                            text: "Pencil",
-                            sub: "[P]",
-                            on_click: () => {
-                                this._set_tool("PENCIL")
-                            }
-                        },
-                        {
-                            icon: <PencilPerfectIcon/>,
-                            disabled: tool === "PENCIL PERFECT",
-                            text: "Pencil perfect",
-                            sub: "[N]",
-                            on_click: () => {
-                                this._set_tool("PENCIL PERFECT")
-                            }
-                        },
-                        {
-                            icon: <MirrorIcon/>,
-                            disabled: tool === "SET PENCIL MIRROR",
-                            text: "Set pencil mirror",
-                            sub: "[M]",
-                            on_click: () => {
-                                this._set_tool("SET PENCIL MIRROR")
-                            }
-                        },
-                        {
-                            icon: <MoveIcon/>,
-                            disabled: tool === "MOVE",
-                            text: "Move",
-                            sub: "Middle mouse click moves it too...",
-                            on_click: () => {
-                                this._set_tool("MOVE")
-                            }
-                        },
-                    ]
-                },
-                {
-                    icon: <ShapesIcon/>,
-                    text: "Shapes tools",
-                    label: "shapes",
-                    local_i: 2,
-                    tools: [
-                        {
-                            icon: <LineIcon/>, disabled: tool === "LINE", text: "Line", sub: "[L]", on_click: () => {
-                                this._set_tool("LINE")
-                            }
-                        },
-                        {
-                            icon: <RectangleIcon/>,
-                            disabled: tool === "RECTANGLE",
-                            text: "Rectangle",
-                            sub: "[R]",
-                            on_click: () => {
-                                this._set_tool("RECTANGLE")
-                            }
-                        },
-                        {
-                            icon: <EllipseIcon/>,
-                            disabled: tool === "ELLIPSE",
-                            text: "Ellipse",
-                            sub: "[E]",
-                            on_click: () => {
-                                this._set_tool("ELLIPSE")
-                            }
-                        },
-                        {
-                            icon: <ContourIcon/>,
-                            disabled: tool === "CONTOUR",
-                            text: "Free path",
-                            sub: "[F]",
-                            on_click: () => {
-                                this._set_tool("CONTOUR")
-                            }
-                        },
-                    ]
-                },
-                {
-                    icon: <PaintIcon/>,
-                    text: "Paint tools",
-                    label: "basic",
-                    local_i: 3,
-                    tools: [
-                        {
-                            icon: <BucketIcon/>,
-                            disabled: tool === "BUCKET",
-                            text: "Bucket",
-                            sub: "[B]",
-                            on_click: () => {
-                                this._set_tool("BUCKET")
-                            }
-                        },
-                        {
-                            icon: <BucketIcon/>,
-                            disabled: tool === "HUE BUCKET",
-                            text: "Hue bucket",
-                            sub: "[H]",
-                            on_click: () => {
-                                this._set_tool("HUE BUCKET")
-                            }
-                        },
-                        {
-                            icon: <PaletteSwatchIcon/>,
-                            disabled: tool === "EXCHANGE",
-                            text: "Exchange",
-                            sub: "[X]",
-                            on_click: () => {
-                                this._set_tool("EXCHANGE")
-                            }
-                        },
-                        {
-                            icon: <BorderBottomIcon/>,
-                            disabled: tool === "BORDER",
-                            text: "Border",
-                            sub: "[U]",
-                            on_click: () => {
-                                this._set_tool("BORDER")
-                            }
-                        },
-                    ]
-                },
-                {
-                    icon: <MirrorIcon/>,
-                    text: "Set pencil mirrors",
-                    label: "mirror",
-                    local_i: 4,
-                    tools: [
-                        {
-                            icon: <MirrorIcon/>,
-                            disabled: pencil_mirror_mode === "NONE",
-                            text: "None",
-                            on_click: () => {
-                                this._set_pencil_mirror_mode("NONE")
-                            }
-                        },
-                        {
-                            icon: <MirrorIcon/>,
-                            disabled: pencil_mirror_mode === "VERTICAL",
-                            text: "Vertical",
-                            on_click: () => {
-                                this._set_pencil_mirror_mode("VERTICAL")
-                            }
-                        },
-                        {
-                            icon: <MirrorIcon/>,
-                            disabled: pencil_mirror_mode === "HORIZONTAL",
-                            text: "Horizontal",
-                            on_click: () => {
-                                this._set_pencil_mirror_mode("HORIZONTAL")
-                            }
-                        },
-                        {
-                            icon: <MirrorIcon/>,
-                            disabled: pencil_mirror_mode === "BOTH",
-                            text: "Both",
-                            on_click: () => {
-                                this._set_pencil_mirror_mode("BOTH")
-                            }
-                        },
-                    ]
-                },
-            ];
-            case "selection": return [
-                {
-                    icon: <SelectCompareIcon/>,
-                    text: "Select mode",
-                    local_i: 0,
-                    label: "mode",
-                    tools: [
-                        {
-                            icon: <SelectRemoveDifferenceIcon/>,
-                            disabled: select_mode === "REMOVE",
-                            text: "Select remove",
-                            sub: "[CTRL (HOLD)]",
-                            on_click: () => {
-                                this._set_select_mode("REMOVE")
-                            }
-                        },
-                        {
-                            icon: <SelectAddIcon/>,
-                            disabled: select_mode === "ADD",
-                            text: "Select add",
-                            sub: "[SHIFT (HOLD)]",
-                            on_click: () => {
-                                this._set_select_mode("ADD")
-                            }
-                        },
-                        {
-                            icon: <SelectIcon/>,
-                            disabled: select_mode === "REPLACE",
-                            text: "Select replace",
-                            on_click: () => {
-                                this._set_select_mode("REPLACE")
-                            }
-                        },
-                    ]
-                },
-                {
-                    icon: <SelectInImageIcon/>,
-                    text: "Select tool",
-                    label: "selecting",
-                    local_i: 1,
-                    tools: [
-                        {
-                            icon: <SelectIcon/>,
-                            disabled: tool === "SELECT PATH",
-                            text: "Select path",
-                            sub: "[CTRL + F]",
-                            on_click: () => {
-                                this._set_tool("SELECT PATH")
-                            }
-                        },
-                        {
-                            icon: <SelectColorIcon/>,
-                            disabled: tool === "SELECT COLOR",
-                            text: "Select color",
-                            sub: "[CTRL + G]",
-                            on_click: () => {
-                                this._set_tool("SELECT COLOR")
-                            }
-                        },
-                        {
-                            icon: <MagicIcon/>,
-                            disabled: tool === "SELECT COLOR THRESHOLD",
-                            text: "Select color threshold",
-                            sub: "[CTRL + K]",
-                            on_click: () => {
-                                this._set_tool("SELECT COLOR THRESHOLD")
-                            }
-                        },
-                        {
-                            icon: <SquareSmallIcon/>,
-                            disabled: tool === "SELECT PIXEL",
-                            text: "Select pixel",
-                            sub: "[CTRL + P]",
-                            on_click: () => {
-                                this._set_tool("SELECT PIXEL")
-                            }
-                        },
-                        {
-                            icon: <SquareSmallIcon/>,
-                            disabled: tool === "SELECT PIXEL PERFECT",
-                            text: "Select pixel perfect",
-                            sub: "[CTRL + N]",
-                            on_click: () => {
-                                this._set_tool("SELECT PIXEL PERFECT")
-                            }
-                        },
-                        {
-                            icon: <SelectIcon/>,
-                            disabled: tool === "SELECT LINE",
-                            text: "Select line",
-                            sub: "[CTRL + L]",
-                            on_click: () => {
-                                this._set_tool("SELECT LINE")
-                            }
-                        },
-                        {
-                            icon: <SelectionRectangleIcon/>,
-                            disabled: tool === "SELECT RECTANGLE",
-                            text: "Select rectangle",
-                            sub: "[CTRL + R]",
-                            on_click: () => {
-                                this._set_tool("SELECT RECTANGLE")
-                            }
-                        },
-                        {
-                            icon: <SelectionEllipseIcon/>,
-                            disabled: tool === "SELECT ELLIPSE",
-                            text: "Select ellipse",
-                            sub: "[CTRL + E]",
-                            on_click: () => {
-                                this._set_tool("SELECT ELLIPSE")
-                            }
-                        },
-                    ]
-                },
-                {
-                    icon: <ImageMoveIcon/>,
-                    text: "Apply to selection",
-                    label: "applying",
-                    local_i: 2,
-                    tools: [
-                        {
-                            icon: <SelectInImageIcon/>,
-                            disabled: !is_something_selected,
-                            text: "Shrink",
-                            on_click: () => {
-                                canvas.to_selection_size(-1)
-                            }
-                        },
-                        {
-                            icon: <SelectInImageIcon/>,
-                            disabled: !is_something_selected,
-                            text: "Grow",
-                            on_click: () => {
-                                canvas.to_selection_size(1)
-                            }
-                        },
-                        {
-                            icon: <BorderBottomIcon/>,
-                            disabled: !is_something_selected,
-                            text: "Border",
-                            on_click: () => {
-                                canvas.to_selection_border()
-                            }
-                        },
-                        {
-                            icon: <BucketIcon/>, disabled: !is_something_selected, text: "Bucket", on_click: () => {
-                                canvas.to_selection_bucket()
-                            }
-                        },
-                        {
-                            icon: <SelectInImageIcon/>,
-                            disabled: !is_something_selected,
-                            text: "Crop",
-                            on_click: () => {
-                                canvas.to_selection_crop()
-                            }
-                        },
-                        {
-                            icon: <SelectInvertIcon/>,
-                            disabled: !is_something_selected,
-                            text: "Invert",
-                            on_click: () => {
-                                canvas.to_selection_invert()
-                            }
-                        },
-                        {
-                            icon: <SelectRemoveDifferenceIcon/>,
-                            disabled: !is_something_selected,
-                            text: "Unselect",
-                            on_click: () => {
-                                canvas.to_selection_none()
-                            }
-                        },
-                        {
-                            icon: <CopyIcon/>, disabled: !is_something_selected, text: "Copy", on_click: () => {
-                                canvas.copy_selection()
-                            }
-                        },
-                        {
-                            icon: <CutIcon/>, disabled: !is_something_selected, text: "Cut", on_click: () => {
-                                canvas.cut_selection()
-                            }
-                        },
-                        {
-                            icon: <EraserIcon/>, disabled: !is_something_selected, text: "Erase", on_click: () => {
-                                canvas.erase_selection()
-                            }
-                        },
-                        {
-                            icon: <BucketIcon/>,
-                            disabled: !is_something_selected,
-                            text: "Colorize dynamical",
-                            on_click: () => {
-                                canvas.to_selection_changes(current_color, false)
-                            }
-                        },
-                        {
-                            icon: <SelectColorIcon/>,
-                            disabled: !is_something_selected,
-                            text: "Get average color",
-                            on_click: () => {
-                                this._get_average_color_of_selection()
-                            }
-                        },
-                        {
-                            icon: <SelectColorIcon/>,
-                            disabled: !is_something_selected,
-                            text: "Luminance +10",
-                            on_click: () => {
-                                canvas._selection_pxl_adjust_sat_lum(0, 10);
-                            }
-                        },
-                        {
-                            icon: <SelectColorIcon/>,
-                            disabled: !is_something_selected,
-                            text: "Luminance -10",
-                            on_click: () => {
-                                canvas._selection_pxl_adjust_sat_lum(0, -10);
-                            }
-                        },
-                        {
-                            icon: <SelectColorIcon/>,
-                            disabled: !is_something_selected,
-                            text: "Saturation +10",
-                            on_click: () => {
-                                canvas._selection_pxl_adjust_sat_lum(10, 0);
-                            }
-                        },
-                        {
-                            icon: <SelectColorIcon/>,
-                            disabled: !is_something_selected,
-                            text: "Saturation -10",
-                            on_click: () => {
-                                canvas._selection_pxl_adjust_sat_lum(-10, 0);
-                            }
-                        },
-                    ]
-                },
-            ];
-            case "effects": return [
-                {
-                    icon: <ImageEffectIcon/>,
-                    text: "Effects",
-                    label: "primary",
-                    local_i: 0,
-                    tools: [
-                        {
-                            icon: <ImageSmoothIcon/>, text: "Smooth", sub: "Run smooth effect once", on_click: () => {
-                                canvas.smooth_adjust(1);
-                                this._handle_action_close();
-                            }
-                        },
-                        {
-                            icon: <ContrastCircleIcon/>,
-                            text: "To auto contrast",
-                            sub: "Effect strength have an impact",
-                            on_click: () => {
-                                canvas.auto_adjust_contrast(slider_value);
-                                this._handle_action_close();
-                            }
-                        },
-                        {
-                            icon: <ContrastCircleIcon/>,
-                            text: "To auto saturation",
-                            sub: "Effect strength have an impact",
-                            on_click: () => {
-                                canvas.auto_adjust_saturation(slider_value);
-                                this._handle_action_close();
-                            }
-                        },
-                        {
-                            icon: <ImageVignetteIcon/>,
-                            text: "To vignette",
-                            sub: "Current color and effect strength have an impact",
-                            on_click: () => {
-                                canvas.to_vignette(current_color, slider_value);
-                                this._handle_action_close();
-                            }
-                        },
-                        {
-                            icon: <LessColorIcon/>,
-                            text: "Less colors by strength",
-                            sub: "Effect strength have an impact",
-                            on_click: () => {
-                                canvas.to_less_color(slider_value / 5);
-                                this._handle_action_close();
-                            }
-                        },
-                        {
-                            icon: <LessColorIcon/>,
-                            text: "Less colors by small steps",
-                            sub: "Remove colors slowly",
-                            on_click: () => {
-                                this._less_colors_stepped();
-                                this._handle_action_close();
-                            }
-                        },
-                        {
-                            icon: <LessColorAutoIcon/>,
-                            text: "Less colors auto",
-                            sub: "Apply to current layer",
-                            on_click: () => {
-                                canvas.to_less_color("auto");
-                                this._handle_action_close();
-                            }
-                        },
-                        {
-                            icon: <DutoneIcon/>,
-                            text: "To dutone",
-                            sub: "Current color and effect strength have an impact",
-                            on_click: () => {
-                                canvas.to_dutone(slider_value, second_color, current_color);
-                                this._handle_action_close();
-                            }
-                        },
-                        {
-                            icon: <ColorizedIcon/>,
-                            text: "To colorized",
-                            sub: "Current color and effect strength have an impact",
-                            on_click: () => {
-                                this._colorize();
-                                this._handle_action_close();
-                            }
-                        },
-                        {
-                            icon: <AlphaIcon/>,
-                            text: "To alpha",
-                            sub: "Current color and effect strength have an impact",
-                            on_click: () => {
-                                canvas.to_alpha(current_color, slider_value);
-                                this._handle_action_close();
-                            }
-                        },
-                        {
-                            icon: <SwapVerticalIcon/>,
-                            text: "Mirror vertical",
-                            sub: "Apply to current layer",
-                            on_click: () => {
-                                canvas.to_mirror(false);
-                                this._handle_action_close();
-                            }
-                        },
-                        {
-                            icon: <SwapHorizontalIcon/>,
-                            text: "Mirror horizontal",
-                            sub: "Apply to current layer",
-                            on_click: () => {
-                                canvas.to_mirror(true);
-                                this._handle_action_close();
-                            }
-                        },
-                        {
-                            icon: <RotateRightIcon/>, text: "Rotate 90°", sub: "Apply to all layers", on_click: () => {
-                                canvas.to_rotation(true);
-                                this._handle_action_close();
-                            }
-                        },
-                        {
-                            icon: <RotateLeftIcon/>, text: "Rotate - 90°", sub: "Apply to all layers", on_click: () => {
-                                canvas.to_rotation(false);
-                                this._handle_action_close();
-                            }
-                        }
-                    ]
-                }
-            ];
+            case "palette":
+                return [];
+            case "image":
+                return [
+                    {
+                        name: "pixelated",
+                        tutorial: "Here are the buttons to download your image in simple size or enlarged so as to have enlarged but still very clear edges!",
+                        icon: <DownloadIcon/>,
+                        text: "Download pixelated",
+                        description: "Simple way to upscale your source file to be sure to have a file that is interpreted correctly with crisp edges.",
+                        local_i: 1,
+                        label: "matrix",
+                        tools: [
+                            {
+                                icon: <FileDownloadIcon/>,
+                                class: classes.animatedDownload,
+                                text: "Render (1x size)",
+                                sub: "[CTRL + Q]", on_click: () => {
+                                    this._download_png(1)
+                                }
+                            },
+                            {
+                                icon: <FileDownloadIcon/>,
+                                class: classes.animatedDownload,
+                                text: "Render (2x size)",
+                                sub: "Upscale 2x",
+                                on_click: () => {
+                                    this._download_png(2)
+                                }
+                            },
+                            {
+                                icon: <FileDownloadIcon/>,
+                                class: classes.animatedDownload,
+                                text: "Render (4x size)",
+                                sub: "Upscale 4x",
+                                on_click: () => {
+                                    this._download_png(4)
+                                }
+                            },
+                            {
+                                icon: <FileDownloadIcon/>,
+                                class: classes.animatedDownload,
+                                text: "Render (8x size)",
+                                sub: "Upscale 8x",
+                                on_click: () => {
+                                    this._download_png(8)
+                                }
+                            },
+                            {
+                                icon: <FileDownloadIcon/>,
+                                class: classes.animatedDownload,
+                                text: "Render (16x size)",
+                                sub: "Upscale 16x", on_click: () => {
+                                    this._download_png(16)
+                                }
+                            },
+                            {
+                                icon: <FileDownloadIcon/>,
+                                class: classes.animatedDownload,
+                                text: "Render (24x size)",
+                                sub: "Upscale 24x",
+                                on_click: () => {
+                                    this._download_png(24)
+                                }
+                            },
+                            {
+                                icon: <FileDownloadIcon/>,
+                                class: classes.animatedDownload,
+                                text: "Render (32x size)",
+                                sub: "Upscale 32x",
+                                on_click: () => {
+                                    this._download_png(32)
+                                }
+                            },
+                            {
+                                icon: <FileDownloadIcon/>,
+                                class: classes.animatedDownload,
+                                text: "Render (48x size)",
+                                sub: "Upscale 48x",
+                                on_click: () => {
+                                    this._download_png(48)
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        name: "enhanced",
+                        tutorial: "Here are the buttons to download your image enlarged, yet having sleek, clean and humanized or rounded edges! It is possible to request a non-raster version of your image, it can be enlarged at will without loss of quality. The other options are provided for the purpose of reducing the size of your incoming file or even enlarging the result by two at most.",
+                        icon: <DownloadIcon/>,
+                        text: `Download enhanced${too_much_colors_no_vector ? " (Disabled)" : ""}`,
+                        description: too_much_colors_no_vector ?
+                            "It will look like a painting! Yet, we need to have less than 256 colors for each layers because there should be a few shapes to get a beautiful result." :
+                            "After 2000's, great minds have found ways to up-scale late 80's pixel art within modern emulators while always being cool and absolutely right. Hey! It can look like a nice painting^^",
+                        local_i: 2,
+                        label: "vector",
+                        tools: [
+                            {
+                                icon: <FileDownloadIcon/>,
+                                class: classes.animatedDownload,
+                                text: "Kikko",
+                                sub: "Upscale by 48x using a 400 years old Japanese pattern",
+                                disabled: too_much_colors_no_vector,
+                                on_click: () => {
+                                    this._download_svg("kikko", _compressed, _vectorized, _crt, _photo)
+                                }
+                            },
+                            {
+                                icon: <FileDownloadIcon/>,
+                                class: classes.animatedDownload,
+                                text: "Hexagon",
+                                sub: "Upscale by 32x using an hexagonal grid",
+                                disabled: too_much_colors_no_vector,
+                                on_click: () => {
+                                    this._download_svg("hexagon", _compressed, _vectorized, _crt, _photo)
+                                }
+                            },
+                            /*{
+                                icon: <FileDownloadIcon/>,
+                                class: classes.animatedDownload,
+                                text: "Depixelize",
+                                sub: "Upscale by 10x using Depixelize",
+                                disabled: too_much_colors_no_vector,
+                                on_click: () => {
+                                    this._download_svg("depixelize", _compressed, _vectorized, _crt, _photo)
+                                }
+                            },*/
+                            {
+                                icon: <FileDownloadIcon/>,
+                                class: classes.animatedDownload,
+                                text: "Omni",
+                                sub: "Upscale by 8x using Omniscale",
+                                disabled: too_much_colors_no_vector,
+                                on_click: () => {
+                                    this._download_svg("omniscale", _compressed, _vectorized, _crt, _photo)
+                                }
+                            },
+                            {
+                                icon: <FileDownloadIcon/>,
+                                class: classes.animatedDownload,
+                                text: "xBRZ",
+                                sub: "Upscale by 6x using xBRZ",
+                                disabled: too_much_colors_no_vector,
+                                on_click: () => {
+                                    this._download_svg("xbrz", _compressed, _vectorized, _crt, _photo)
+                                }
+                            },
+                            /*{
+                                icon: <FileDownloadIcon/>,
+                                class: classes.animatedDownload,
+                                text: "hqNx",
+                                sub: "Upscale by 4x using hqNx",
+                                disabled: too_much_colors_no_vector,
+                                on_click: () => {
+                                    this._download_svg("hqnx", _compressed, _vectorized, _crt, _photo)
+                                }
+                            },
+                            {
+                                icon: <FileDownloadIcon/>,
+                                class: classes.animatedDownload,
+                                text: "EPX",
+                                sub: "Upscale by 4x using EPX",
+                                disabled: too_much_colors_no_vector,
+                                on_click: () => {
+                                    this._download_svg("epx", _compressed, _vectorized, _crt, _photo)
+                                }
+                            },*/
+                            {
+                                icon: _compressed ? <CheckedIcon/> : <UncheckedIcon/>,
+                                text: "Compressed",
+                                sub: "Reduce file weight",
+                                disabled: too_much_colors_no_vector,
+                                on_click: () => {
+                                    this._toggle_compressed()
+                                }
+                            },
+                            {
+                                icon: _vectorized ? <CheckedIcon/> : <UncheckedIcon/>,
+                                text: "Vectorized",
+                                sub: "Download an SVG file with it",
+                                disabled: too_much_colors_no_vector,
+                                on_click: () => {
+                                    this._toggle_vectorized()
+                                }
+                            },
+                            {
+                                icon: _crt ? <CheckedIcon/> : <UncheckedIcon/>,
+                                text: "Retro",
+                                sub: "Download a PNG file with a retro effect",
+                                disabled: too_much_colors_no_vector,
+                                on_click: () => {
+                                    this._toggle_crt()
+                                }
+                            },
+                            {
+                                icon: _photo ? <CheckedIcon/> : <UncheckedIcon/>,
+                                text: "Photo-realistic",
+                                sub: "Get the pixel art changed into something looking very real",
+                                disabled: too_much_colors_no_vector,
+                                on_click: () => {
+                                    this._toggle_photo()
+                                }
+                            }
+                        ]
+                    }
+                ];
+            case "layers":
+                return [
+                    {
+                        icon: <LayerSearchIcon/>,
+                        local_i: 1,
+                        text: `Layer tools`,
+                        label: "tools",
+                        tools: [
+                            {
+                                icon: hide_canvas_content ? <LayerOutlineIcon/> : <LayerOffOutlineIcon/>,
+                                text: hide_canvas_content ? "Show canvas content" : "Hide canvas content",
+                                on_click: () => {
+                                    this._show_hide_canvas_content()
+                                }
+                            },
+                            {
+                                icon: show_original_image_in_background ? <ImageOffOutlineIcon/> : <ImageOutlineIcon/>,
+                                text: show_original_image_in_background ? "Hide bg img" : "Show bg img",
+                                on_click: () => {
+                                    this._show_hide_background_image()
+                                }
+                            },
+                            {
+                                icon: show_transparent_image_in_background ? <ImageOffOutlineIcon/> :
+                                    <ImageOutlineIcon/>,
+                                text: show_transparent_image_in_background ? "Hide chessboard" : "Show chessboard",
+                                on_click: () => {
+                                    this._show_hide_transparent_image()
+                                }
+                            },
+                        ]
+                    },
+                    {
+                        icon: <LayerEditIcon/>,
+                        text: `Layer actions`,
+                        local_i: 2,
+                        label: "actions",
+                        tools: [
+                            {
+                                icon: <LayerAddIcon/>, text: "New layer", on_click: () => {
+                                    canvas.new_layer(layer_index)
+                                }
+                            },
+                            {
+                                icon: <LayerDeleteIcon/>, text: "Delete layer", on_click: () => {
+                                    canvas.delete_layer(layer_index)
+                                }
+                            },
+                            {
+                                icon: <ContentDuplicateIcon/>, text: "Duplicate layer", on_click: () => {
+                                    canvas.duplicate_layer(layer_index)
+                                }
+                            },
+                            {
+                                icon: <MergeIcon/>, text: "Merge down layer", on_click: () => {
+                                    canvas.merge_down_layer(layer_index)
+                                }
+                            },
+                        ]
+                    },
+                    {
+                        icon: <ImportIcon/>,
+                        text: "Import image",
+                        local_i: 3,
+                        label: "importing",
+                        tools: [
+                            /*{
+                                icon: <FileImportIcon/>, text: "Text to new layer", sub: "", on_click: () => {
+                                    this._text_to_new_layer()
+                                }
+                            },*/
+                            {
+                                icon: <FileImportIcon/>, text: "Library to import", sub: "", on_click: () => {
+                                    this._import_image_from_libary()
+                                }
+                            },
+                            {
+                                icon: <FileImportIcon/>,
+                                text: "Import image",
+                                sub: "[CTRL + I]",
+                                for: "button-file-dialog-main",
+                                on_click: this.props.on_import_image
+                            },
+                            {
+                                icon: <FileImportIcon/>,
+                                text: "Confirm import",
+                                sub: "[Enter]",
+                                disabled: !is_image_import_mode,
+                                on_click: () => {
+                                    canvas.confirm_import()
+                                }
+                            },
+                            {
+                                icon: <StoreIcon/>,
+                                text: "Asset Store",
+                                sub: "Buy tremendous images to add in your drawing",
+                                disabled: false,
+                                on_click: () => {
+                                    window.open("https://www.artstation.com/pixapics/store")
+                                }
+                            },
+                        ]
+                    },
+                ];
+            case "tools":
+                return [
+                    {
+                        icon: <DrawIcon/>,
+                        text: "Drawing tools",
+                        label: "drawing",
+                        local_i: 1,
+                        tools: [
+                            {
+                                icon: <ColorPickerIcon/>,
+                                disabled: tool === "PICKER",
+                                text: "Picker",
+                                sub: "[CTRL (HOLD)]",
+                                on_click: () => {
+                                    this._set_tool("PICKER")
+                                }
+                            },
+                            {
+                                icon: <PencilIcon/>,
+                                disabled: tool === "PENCIL",
+                                text: "Pencil",
+                                sub: "[P]",
+                                on_click: () => {
+                                    this._set_tool("PENCIL")
+                                }
+                            },
+                            {
+                                icon: <PencilPerfectIcon/>,
+                                disabled: tool === "PENCIL PERFECT",
+                                text: "Pencil perfect",
+                                sub: "[N]",
+                                on_click: () => {
+                                    this._set_tool("PENCIL PERFECT")
+                                }
+                            },
+                            {
+                                icon: <MirrorIcon/>,
+                                disabled: tool === "SET PENCIL MIRROR",
+                                text: "Set pencil mirror",
+                                sub: "[M]",
+                                on_click: () => {
+                                    this._set_tool("SET PENCIL MIRROR")
+                                }
+                            },
+                            {
+                                icon: <MoveIcon/>,
+                                disabled: tool === "MOVE",
+                                text: "Move",
+                                sub: "Middle mouse click moves it too...",
+                                on_click: () => {
+                                    this._set_tool("MOVE")
+                                }
+                            },
+                        ]
+                    },
+                    {
+                        icon: <ShapesIcon/>,
+                        text: "Shapes tools",
+                        label: "shapes",
+                        local_i: 2,
+                        tools: [
+                            {
+                                icon: <LineIcon/>,
+                                disabled: tool === "LINE",
+                                text: "Line",
+                                sub: "[L]",
+                                on_click: () => {
+                                    this._set_tool("LINE")
+                                }
+                            },
+                            {
+                                icon: <RectangleIcon/>,
+                                disabled: tool === "RECTANGLE",
+                                text: "Rectangle",
+                                sub: "[R]",
+                                on_click: () => {
+                                    this._set_tool("RECTANGLE")
+                                }
+                            },
+                            {
+                                icon: <EllipseIcon/>,
+                                disabled: tool === "ELLIPSE",
+                                text: "Ellipse",
+                                sub: "[E]",
+                                on_click: () => {
+                                    this._set_tool("ELLIPSE")
+                                }
+                            },
+                            {
+                                icon: <ContourIcon/>,
+                                disabled: tool === "CONTOUR",
+                                text: "Free path",
+                                sub: "[F]",
+                                on_click: () => {
+                                    this._set_tool("CONTOUR")
+                                }
+                            },
+                        ]
+                    },
+                    {
+                        icon: <PaintIcon/>,
+                        text: "Paint tools",
+                        label: "basic",
+                        local_i: 3,
+                        tools: [
+                            {
+                                icon: <BucketIcon/>,
+                                disabled: tool === "BUCKET",
+                                text: "Bucket",
+                                sub: "[B]",
+                                on_click: () => {
+                                    this._set_tool("BUCKET")
+                                }
+                            },
+                            {
+                                icon: <BucketIcon/>,
+                                disabled: tool === "HUE BUCKET",
+                                text: "Hue bucket",
+                                sub: "[H]",
+                                on_click: () => {
+                                    this._set_tool("HUE BUCKET")
+                                }
+                            },
+                            {
+                                icon: <PaletteSwatchIcon/>,
+                                disabled: tool === "EXCHANGE",
+                                text: "Exchange",
+                                sub: "[X]",
+                                on_click: () => {
+                                    this._set_tool("EXCHANGE")
+                                }
+                            },
+                            {
+                                icon: <BorderBottomIcon/>,
+                                disabled: tool === "BORDER",
+                                text: "Border",
+                                sub: "[U]",
+                                on_click: () => {
+                                    this._set_tool("BORDER")
+                                }
+                            },
+                        ]
+                    },
+                    {
+                        icon: <MirrorIcon/>,
+                        text: "Set pencil mirrors",
+                        label: "mirror",
+                        local_i: 4,
+                        tools: [
+                            {
+                                icon: <MirrorIcon/>,
+                                disabled: pencil_mirror_mode === "NONE",
+                                text: "None",
+                                on_click: () => {
+                                    this._set_pencil_mirror_mode("NONE")
+                                }
+                            },
+                            {
+                                icon: <MirrorIcon/>,
+                                disabled: pencil_mirror_mode === "VERTICAL",
+                                text: "Vertical",
+                                on_click: () => {
+                                    this._set_pencil_mirror_mode("VERTICAL")
+                                }
+                            },
+                            {
+                                icon: <MirrorIcon/>,
+                                disabled: pencil_mirror_mode === "HORIZONTAL",
+                                text: "Horizontal",
+                                on_click: () => {
+                                    this._set_pencil_mirror_mode("HORIZONTAL")
+                                }
+                            },
+                            {
+                                icon: <MirrorIcon/>,
+                                disabled: pencil_mirror_mode === "BOTH",
+                                text: "Both",
+                                on_click: () => {
+                                    this._set_pencil_mirror_mode("BOTH")
+                                }
+                            },
+                        ]
+                    },
+                ];
+            case "selection":
+                return [
+                    {
+                        icon: <SelectCompareIcon/>,
+                        text: "Select mode",
+                        local_i: 0,
+                        label: "mode",
+                        tools: [
+                            {
+                                icon: <SelectRemoveDifferenceIcon/>,
+                                disabled: select_mode === "REMOVE",
+                                text: "Select remove",
+                                sub: "[CTRL (HOLD)]",
+                                on_click: () => {
+                                    this._set_select_mode("REMOVE")
+                                }
+                            },
+                            {
+                                icon: <SelectAddIcon/>,
+                                disabled: select_mode === "ADD",
+                                text: "Select add",
+                                sub: "[SHIFT (HOLD)]",
+                                on_click: () => {
+                                    this._set_select_mode("ADD")
+                                }
+                            },
+                            {
+                                icon: <SelectIcon/>,
+                                disabled: select_mode === "REPLACE",
+                                text: "Select replace",
+                                on_click: () => {
+                                    this._set_select_mode("REPLACE")
+                                }
+                            },
+                        ]
+                    },
+                    {
+                        icon: <SelectInImageIcon/>,
+                        text: "Select tool",
+                        label: "selecting",
+                        local_i: 1,
+                        tools: [
+                            {
+                                icon: <SelectIcon/>,
+                                disabled: tool === "SELECT PATH",
+                                text: "Select path",
+                                sub: "[CTRL + F]",
+                                on_click: () => {
+                                    this._set_tool("SELECT PATH")
+                                }
+                            },
+                            {
+                                icon: <SelectColorIcon/>,
+                                disabled: tool === "SELECT COLOR",
+                                text: "Select color",
+                                sub: "[CTRL + G]",
+                                on_click: () => {
+                                    this._set_tool("SELECT COLOR")
+                                }
+                            },
+                            {
+                                icon: <MagicIcon/>,
+                                disabled: tool === "SELECT COLOR THRESHOLD",
+                                text: "Select color threshold",
+                                sub: "[CTRL + K]",
+                                on_click: () => {
+                                    this._set_tool("SELECT COLOR THRESHOLD")
+                                }
+                            },
+                            {
+                                icon: <SquareSmallIcon/>,
+                                disabled: tool === "SELECT PIXEL",
+                                text: "Select pixel",
+                                sub: "[CTRL + P]",
+                                on_click: () => {
+                                    this._set_tool("SELECT PIXEL")
+                                }
+                            },
+                            {
+                                icon: <SquareSmallIcon/>,
+                                disabled: tool === "SELECT PIXEL PERFECT",
+                                text: "Select pixel perfect",
+                                sub: "[CTRL + N]",
+                                on_click: () => {
+                                    this._set_tool("SELECT PIXEL PERFECT")
+                                }
+                            },
+                            {
+                                icon: <SelectIcon/>,
+                                disabled: tool === "SELECT LINE",
+                                text: "Select line",
+                                sub: "[CTRL + L]",
+                                on_click: () => {
+                                    this._set_tool("SELECT LINE")
+                                }
+                            },
+                            {
+                                icon: <SelectionRectangleIcon/>,
+                                disabled: tool === "SELECT RECTANGLE",
+                                text: "Select rectangle",
+                                sub: "[CTRL + R]",
+                                on_click: () => {
+                                    this._set_tool("SELECT RECTANGLE")
+                                }
+                            },
+                            {
+                                icon: <SelectionEllipseIcon/>,
+                                disabled: tool === "SELECT ELLIPSE",
+                                text: "Select ellipse",
+                                sub: "[CTRL + E]",
+                                on_click: () => {
+                                    this._set_tool("SELECT ELLIPSE")
+                                }
+                            },
+                        ]
+                    },
+                    {
+                        icon: <ImageMoveIcon/>,
+                        text: "Apply to selection",
+                        label: "applying",
+                        local_i: 2,
+                        tools: [
+                            {
+                                icon: <SelectInImageIcon/>,
+                                disabled: !is_something_selected,
+                                text: "Shrink",
+                                on_click: () => {
+                                    canvas.to_selection_size(- 1)
+                                }
+                            },
+                            {
+                                icon: <SelectInImageIcon/>,
+                                disabled: !is_something_selected,
+                                text: "Grow",
+                                on_click: () => {
+                                    canvas.to_selection_size(1)
+                                }
+                            },
+                            {
+                                icon: <BorderBottomIcon/>,
+                                disabled: !is_something_selected,
+                                text: "Border",
+                                on_click: () => {
+                                    canvas.to_selection_border()
+                                }
+                            },
+                            {
+                                icon: <BucketIcon/>, disabled: !is_something_selected, text: "Bucket", on_click: () => {
+                                    canvas.to_selection_bucket()
+                                }
+                            },
+                            {
+                                icon: <SelectInImageIcon/>,
+                                disabled: !is_something_selected,
+                                text: "Crop",
+                                on_click: () => {
+                                    canvas.to_selection_crop()
+                                }
+                            },
+                            {
+                                icon: <SelectInvertIcon/>,
+                                disabled: !is_something_selected,
+                                text: "Invert",
+                                on_click: () => {
+                                    canvas.to_selection_invert()
+                                }
+                            },
+                            {
+                                icon: <SelectRemoveDifferenceIcon/>,
+                                disabled: !is_something_selected,
+                                text: "Unselect",
+                                on_click: () => {
+                                    canvas.to_selection_none()
+                                }
+                            },
+                            {
+                                icon: <CopyIcon/>, disabled: !is_something_selected, text: "Copy", on_click: () => {
+                                    canvas.copy_selection()
+                                }
+                            },
+                            {
+                                icon: <CutIcon/>, disabled: !is_something_selected, text: "Cut", on_click: () => {
+                                    canvas.cut_selection()
+                                }
+                            },
+                            {
+                                icon: <EraserIcon/>, disabled: !is_something_selected, text: "Erase", on_click: () => {
+                                    canvas.erase_selection()
+                                }
+                            },
+                            {
+                                icon: <BucketIcon/>,
+                                disabled: !is_something_selected,
+                                text: "Colorize dynamical",
+                                on_click: () => {
+                                    canvas.to_selection_changes(current_color, false)
+                                }
+                            },
+                            {
+                                icon: <SelectColorIcon/>,
+                                disabled: !is_something_selected,
+                                text: "Get average color",
+                                on_click: () => {
+                                    this._get_average_color_of_selection()
+                                }
+                            },
+                            {
+                                icon: <SelectColorIcon/>,
+                                disabled: !is_something_selected,
+                                text: "Luminance +10",
+                                on_click: () => {
+                                    canvas._selection_pxl_adjust_sat_lum(0, 10);
+                                }
+                            },
+                            {
+                                icon: <SelectColorIcon/>,
+                                disabled: !is_something_selected,
+                                text: "Luminance -10",
+                                on_click: () => {
+                                    canvas._selection_pxl_adjust_sat_lum(0, - 10);
+                                }
+                            },
+                            {
+                                icon: <SelectColorIcon/>,
+                                disabled: !is_something_selected,
+                                text: "Saturation +10",
+                                on_click: () => {
+                                    canvas._selection_pxl_adjust_sat_lum(10, 0);
+                                }
+                            },
+                            {
+                                icon: <SelectColorIcon/>,
+                                disabled: !is_something_selected,
+                                text: "Saturation -10",
+                                on_click: () => {
+                                    canvas._selection_pxl_adjust_sat_lum(- 10, 0);
+                                }
+                            },
+                        ]
+                    },
+                ];
+            case "effects":
+                return [
+                    {
+                        icon: <ImageEffectIcon/>,
+                        text: "Effects",
+                        label: "primary",
+                        local_i: 0,
+                        tools: [
+                            {
+                                icon: <ImageSmoothIcon/>,
+                                text: "Smooth",
+                                sub: "Run smooth effect once",
+                                on_click: () => {
+                                    canvas.smooth_adjust(1);
+                                    this._handle_action_close();
+                                }
+                            },
+                            {
+                                icon: <ContrastCircleIcon/>,
+                                text: "To auto contrast",
+                                sub: "Effect strength have an impact",
+                                on_click: () => {
+                                    canvas.auto_adjust_contrast(slider_value);
+                                    this._handle_action_close();
+                                }
+                            },
+                            {
+                                icon: <ContrastCircleIcon/>,
+                                text: "To auto saturation",
+                                sub: "Effect strength have an impact",
+                                on_click: () => {
+                                    canvas.auto_adjust_saturation(slider_value);
+                                    this._handle_action_close();
+                                }
+                            },
+                            {
+                                icon: <ImageVignetteIcon/>,
+                                text: "To vignette",
+                                sub: "Current color and effect strength have an impact",
+                                on_click: () => {
+                                    canvas.to_vignette(current_color, slider_value);
+                                    this._handle_action_close();
+                                }
+                            },
+                            {
+                                icon: <LessColorIcon/>,
+                                text: "Less colors by strength",
+                                sub: "Effect strength have an impact",
+                                on_click: () => {
+                                    canvas.to_less_color(slider_value / 5);
+                                    this._handle_action_close();
+                                }
+                            },
+                            {
+                                icon: <LessColorIcon/>,
+                                text: "Less colors by small steps",
+                                sub: "Remove colors slowly",
+                                on_click: () => {
+                                    this._less_colors_stepped();
+                                    this._handle_action_close();
+                                }
+                            },
+                            {
+                                icon: <LessColorAutoIcon/>,
+                                text: "Less colors auto",
+                                sub: "Apply to current layer",
+                                on_click: () => {
+                                    canvas.to_less_color("auto");
+                                    this._handle_action_close();
+                                }
+                            },
+                            {
+                                icon: <DutoneIcon/>,
+                                text: "To dutone",
+                                sub: "Current color and effect strength have an impact",
+                                on_click: () => {
+                                    canvas.to_dutone(slider_value, second_color, current_color);
+                                    this._handle_action_close();
+                                }
+                            },
+                            {
+                                icon: <ColorizedIcon/>,
+                                text: "To colorized",
+                                sub: "Current color and effect strength have an impact",
+                                on_click: () => {
+                                    this._colorize();
+                                    this._handle_action_close();
+                                }
+                            },
+                            {
+                                icon: <AlphaIcon/>,
+                                text: "To alpha",
+                                sub: "Current color and effect strength have an impact",
+                                on_click: () => {
+                                    canvas.to_alpha(current_color, slider_value);
+                                    this._handle_action_close();
+                                }
+                            },
+                            {
+                                icon: <SwapVerticalIcon/>,
+                                text: "Mirror vertical",
+                                sub: "Apply to current layer",
+                                on_click: () => {
+                                    canvas.to_mirror(false);
+                                    this._handle_action_close();
+                                }
+                            },
+                            {
+                                icon: <SwapHorizontalIcon/>,
+                                text: "Mirror horizontal",
+                                sub: "Apply to current layer",
+                                on_click: () => {
+                                    canvas.to_mirror(true);
+                                    this._handle_action_close();
+                                }
+                            },
+                            {
+                                icon: <RotateRightIcon/>,
+                                text: "Rotate 90°",
+                                sub: "Apply to all layers",
+                                on_click: () => {
+                                    canvas.to_rotation(true);
+                                    this._handle_action_close();
+                                }
+                            },
+                            {
+                                icon: <RotateLeftIcon/>,
+                                text: "Rotate - 90°",
+                                sub: "Apply to all layers",
+                                on_click: () => {
+                                    canvas.to_rotation(false);
+                                    this._handle_action_close();
+                                }
+                            }
+                        ]
+                    }
+                ];
             case "filters":
                 const {height, width} = filters_thumbnail.get(filters[0]) || {};
                 return [
@@ -2106,14 +2166,27 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
                             const bmp = filters_thumbnail.get(name) || {};
                             return {
-                                style: {position: "relative", width: "100%", height: "100%" },
+                                style: {position: "relative", width: "100%", height: "100%"},
                                 icon: <canvas
                                     className={"pixelated"}
-                                    ref={(el) => {this._set_canvas_ref(el, bmp, true)}}
+                                    ref={(el) => {
+                                        this._set_canvas_ref(el, bmp, true)
+                                    }}
                                     width={width || 1}
                                     height={height || 1}
-                                    style={{ zIndex: "-1", aspectRatio: _filter_aspect_ratio, boxSizing: "border-box", height: "100%", minWidth: "100%", width: 128, boxShadow: "0px 1px 2px #3729c1a8", border: "4px solid #020529", borderRadius: 2, contain: "paint style size"}}
-                                    key={"name-" + name + "-ratio-" + _filter_aspect_ratio + "-over-" + (bmp.width || 0)+"" + "x" + (bmp.height || 0)+""}
+                                    style={{
+                                        zIndex: "-1",
+                                        aspectRatio: _filter_aspect_ratio,
+                                        boxSizing: "border-box",
+                                        height: "100%",
+                                        minWidth: "100%",
+                                        width: 128,
+                                        boxShadow: "0px 1px 2px #3729c1a8",
+                                        border: "4px solid #020529",
+                                        borderRadius: 2,
+                                        contain: "paint style size"
+                                    }}
+                                    key={"name-" + name + "-ratio-" + _filter_aspect_ratio + "-over-" + (bmp.width || 0) + "" + "x" + (bmp.height || 0) + ""}
                                 />,
                                 text: name,
                                 text_style: {
@@ -2141,7 +2214,8 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                         })
                     },
                 ];
-            default: return [];
+            default:
+                return [];
         }
     };
 
@@ -2162,52 +2236,61 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
         const panel_names = this.get_action_panel_names();
 
         switch (panel_names[index]) {
-            case "image": return (
-                <div key={"image-image-create"} className={`swipetoolbox_i_${index}_${3}`}>
-                    <ListSubheader className={classes.listSubHeader} onClick={() => {this._scroll_to_id(`swipetoolbox_i_${index}_${3}`)}}>
+            case "image":
+                return (
+                    <div key={"image-image-create"} className={`swipetoolbox_i_${index}_${3}`}>
+                        <ListSubheader className={classes.listSubHeader} onClick={() => {
+                            this._scroll_to_id(`swipetoolbox_i_${index}_${3}`)
+                        }}>
                         <span className={"list-sub-header-main-text"}>
                             <span><ImagePlusIcon/></span>
                             <span>Create new</span>
                         </span>
-                        {this._get_list_sub_header_content_scarlett("create", "This is where you can create a new transparent canvas of any size you want. This is how it's done, have fun!")}
-                    </ListSubheader>
-                    <div style={{
-                        padding: "32px 24px",
-                        position: "relative",
-                        overflow: "hidden",
-                        boxSizing: "border-box",
-                        width: "100%"
-                    }}>
-                        <Typography id="width-slider" gutterBottom>Width</Typography>
-                        <Slider defaultValue={parseInt(slider_value_width)} step={1} valueLabelDisplay="auto" min={0}
-                                max={512} key={"slider-width"}
-                                onChangeCommitted={this._set_width_from_slider}
-                                aria-labelledby="width-slider"/>
-                        <Typography id="height-slider" gutterBottom>Height</Typography>
-                        <Slider defaultValue={parseInt(slider_value_height)} step={1} valueLabelDisplay="auto" min={0}
-                                max={512} key={"slider-height"}
-                                onChangeCommitted={this._set_height_from_slider}
-                                aria-labelledby="height-slider"/>
-                        <Typography id="confirm-slider" gutterBottom>Confirm</Typography>
-                        <Button fullWidth onClick={() => {this.canvas_set_size()}} >Create my new canvas</Button>
+                            {this._get_list_sub_header_content_scarlett("create", "This is where you can create a new transparent canvas of any size you want. This is how it's done, have fun!")}
+                        </ListSubheader>
+                        <div style={{
+                            padding: "32px 24px",
+                            position: "relative",
+                            overflow: "hidden",
+                            boxSizing: "border-box",
+                            width: "100%"
+                        }}>
+                            <Typography id="width-slider" gutterBottom>Width</Typography>
+                            <Slider defaultValue={parseInt(slider_value_width)} step={1} valueLabelDisplay="auto"
+                                    min={0}
+                                    max={512} key={"slider-width"}
+                                    onChangeCommitted={this._set_width_from_slider}
+                                    aria-labelledby="width-slider"/>
+                            <Typography id="height-slider" gutterBottom>Height</Typography>
+                            <Slider defaultValue={parseInt(slider_value_height)} step={1} valueLabelDisplay="auto"
+                                    min={0}
+                                    max={512} key={"slider-height"}
+                                    onChangeCommitted={this._set_height_from_slider}
+                                    aria-labelledby="height-slider"/>
+                            <Typography id="confirm-slider" gutterBottom>Confirm</Typography>
+                            <Button fullWidth onClick={() => {
+                                this.canvas_set_size()
+                            }}>Create my new canvas</Button>
+                        </div>
                     </div>
-                </div>
-            );
+                );
         }
     };
 
     _rgba_from_hex = (hex) => {
 
-        const { get_rgba_from_hex } = this.st4te.canvas;
+        const {get_rgba_from_hex} = this.st4te.canvas;
 
-        if(!Boolean(get_rgba_from_hex)) { return [0, 0, 0, 0] }
+        if (!Boolean(get_rgba_from_hex)) {
+            return [0, 0, 0, 0]
+        }
 
         return get_rgba_from_hex(hex);
     };
 
     _download_png = (scale) => {
 
-        if(this.props.on_download_image) {
+        if (this.props.on_download_image) {
 
             this.props.on_download_image(scale);
         }
@@ -2255,7 +2338,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
     _download_svg = (using = "xbrz", optimize_render_size = false, download_svg = false, crt = false, photo = false) => {
 
-        if(this.props.on_download_svg) {
+        if (this.props.on_download_svg) {
 
             this.props.on_download_svg(using, optimize_render_size, download_svg, crt, photo);
         }
@@ -2263,23 +2346,23 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
     _less_colors_stepped = (increase = 1) => {
 
-        const { _less_colors_stepped } = this.st4te.canvas;
+        const {_less_colors_stepped} = this.st4te.canvas;
         _less_colors_stepped(increase)
     };
 
     _colorize = () => {
 
-        const { current_color, slider_value } = this.st4te;
-        const { to_color } = this.st4te.canvas;
+        const {current_color, slider_value} = this.st4te;
+        const {to_color} = this.st4te.canvas;
 
         const [h, s, l, a] = Color.new_hex(current_color).hsla;
 
-        to_color(h, slider_value, s === 0 ? null: s, l === 0 ? null: l);
+        to_color(h, slider_value, s === 0 ? null : s, l === 0 ? null : l);
     }
 
     _import_image_from_libary = () => {
 
-        if(this.props.on_import_image_library) {
+        if (this.props.on_import_image_library) {
 
             this.props.on_import_image_library();
         }
@@ -2287,7 +2370,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
     _upload_image = (event) => {
 
-        if(this.props.on_upload_image) {
+        if (this.props.on_upload_image) {
 
             this.props.on_upload_image(event);
         }
@@ -2295,7 +2378,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
     _upload_image_from_library = () => {
 
-        if(this.props.on_upload_image_library) {
+        if (this.props.on_upload_image_library) {
 
             this.props.on_upload_image_library();
         }
@@ -2303,7 +2386,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
     _handle_current_color_change = (color) => {
 
-        if(this.props.on_current_color_change) {
+        if (this.props.on_current_color_change) {
 
             this.props.on_current_color_change(color);
         }
@@ -2315,7 +2398,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
     _handle_view_name_change = (view_name_index, previous_name_index = null) => {
 
-        if(this.props.on_view_name_change) {
+        if (this.props.on_view_name_change) {
 
             this.props.on_view_name_change(view_name_index, previous_name_index);
         }
@@ -2363,7 +2446,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
     _set_tool = (name) => {
 
-        if(this.props.set_tool) {
+        if (this.props.set_tool) {
 
             this.props.set_tool(name);
         }
@@ -2371,7 +2454,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
     _set_select_mode = (mode) => {
 
-        if(this.props.set_select_mode) {
+        if (this.props.set_select_mode) {
 
             this.props.set_select_mode(mode);
         }
@@ -2379,7 +2462,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
     _set_pencil_mirror_mode = (mode) => {
 
-        if(this.props.set_pencil_mirror_mode) {
+        if (this.props.set_pencil_mirror_mode) {
 
             this.props.set_pencil_mirror_mode(mode);
         }
@@ -2387,7 +2470,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
     _switch_with_second_color = () => {
 
-        if(this.props.switch_with_second_color) {
+        if (this.props.switch_with_second_color) {
 
             this.props.switch_with_second_color();
         }
@@ -2395,7 +2478,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
     _show_hide_canvas_content = () => {
 
-        if(this.props.show_hide_canvas_content) {
+        if (this.props.show_hide_canvas_content) {
 
             this.props.show_hide_canvas_content();
         }
@@ -2403,7 +2486,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
     _show_hide_background_image = () => {
 
-        if(this.props.show_hide_background_image) {
+        if (this.props.show_hide_background_image) {
 
             this.props.show_hide_background_image();
         }
@@ -2411,7 +2494,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
     _show_hide_transparent_image = () => {
 
-        if(this.props.show_hide_transparent_image) {
+        if (this.props.show_hide_transparent_image) {
 
             this.props.show_hide_transparent_image();
         }
@@ -2419,7 +2502,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
     _set_width_from_slider = (event, value) => {
 
-        if(this.props.set_width_from_slider) {
+        if (this.props.set_width_from_slider) {
 
             this.props.set_width_from_slider(event, value);
         }
@@ -2427,7 +2510,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
     _set_height_from_slider = (event, value) => {
 
-        if(this.props.set_height_from_slider) {
+        if (this.props.set_height_from_slider) {
 
             this.props.set_height_from_slider(event, value);
         }
@@ -2435,7 +2518,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
     _set_import_size = (event, value) => {
 
-        if(this.props.set_import_size) {
+        if (this.props.set_import_size) {
 
             this.props.set_import_size(event, value);
         }
@@ -2443,7 +2526,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
     _set_import_colorize = (event) => {
 
-        if(this.props.set_import_colorize) {
+        if (this.props.set_import_colorize) {
 
             this.props.set_import_colorize(event);
         }
@@ -2451,7 +2534,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
     _get_average_color_of_selection = () => {
 
-        const { get_average_color_of_selection } = this.st4te.canvas;
+        const {get_average_color_of_selection} = this.st4te.canvas;
         const color = get_average_color_of_selection();
 
         this._handle_current_color_change(color);
@@ -2459,12 +2542,12 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
     _change_active_layer = (index) => {
 
-        const { layer_index, _layer_opened } = this.st4te;
-        const { change_active_layer } = this.st4te.canvas;
+        const {layer_index, _layer_opened} = this.st4te;
+        const {change_active_layer} = this.st4te.canvas;
 
-        if(layer_index !== index) {
+        if (layer_index !== index) {
 
-            if(_layer_opened) {
+            if (_layer_opened) {
 
                 this.setSt4te({_layer_opened: false}, () => {
 
@@ -2473,7 +2556,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
             }
 
             change_active_layer(index);
-        }else {
+        } else {
 
             this.setSt4te({_layer_opened: !_layer_opened}, () => {
 
@@ -2484,7 +2567,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
     _handle_action_close = () => {
 
-        if(this.props.onActionClose) {
+        if (this.props.onActionClose) {
 
             this.props.onActionClose();
         }
@@ -2504,19 +2587,30 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
         const _list_sub_header_opened = this.st4te._list_sub_header_opened;
         const names = this.get_action_panel_names();
         const _filters_preview_progression_stepped = Math.round(parseFloat(filters_preview_progression / 7) * 7);
-        const index = name ? names.indexOf(name): view_name_index;
+        const index = name ? names.indexOf(name) : view_name_index;
         name = names[index];
 
         this._cache[name] = (
-            <List key={"list-filled-"+name} style={{willChange: (Boolean(parseInt(_filters_preview_progression_stepped) === 0 || name !== "filters") ? "inherit": "contents")+"", contentVisibility: "auto", minHeight: "100%", contain: "style layout paint", overflow: "visible", paddingTop: 0}}>
+            <List key={"list-filled-" + name} style={{
+                willChange: (Boolean(parseInt(_filters_preview_progression_stepped) === 0 || name !== "filters") ? "inherit" : "contents") + "",
+                contentVisibility: "auto",
+                minHeight: "100%",
+                contain: "style layout paint",
+                overflow: "visible",
+                paddingTop: 0
+            }}>
 
                 {this.get_before_action_panel(index)}
 
                 {
                     this.get_action_panel(index).map((action_set) => {
                         return (
-                            <div key={name + "-" + action_set.label + "-" + action_set.text.toLowerCase() + "-wrapper"} className={`swipetoolbox_i_${index}_${action_set.local_i}`}>
-                                <ListSubheader className={this._get_list_sub_header_classname(action_set.name)} onClick={() => {this._scroll_to_id(`swipetoolbox_i_${index}_${action_set.local_i}`)}}>
+                            <div key={name + "-" + action_set.label + "-" + action_set.text.toLowerCase() + "-wrapper"}
+                                 className={`swipetoolbox_i_${index}_${action_set.local_i}`}>
+                                <ListSubheader className={this._get_list_sub_header_classname(action_set.name)}
+                                               onClick={() => {
+                                                   this._scroll_to_id(`swipetoolbox_i_${index}_${action_set.local_i}`)
+                                               }}>
                                     <span className={"list-sub-header-main-text"}>
                                         <span>{action_set.icon}</span>
                                         <span>{action_set.text}</span>
@@ -2526,26 +2620,35 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                                         <LinearProgress
                                             color="primary"
                                             variant="determinate"
-                                            role="progressbar" aria-valuenow={action_set.progression} aria-valuemin="0" aria-valuemax="100"
+                                            role="progressbar" aria-valuenow={action_set.progression} aria-valuemin="0"
+                                            aria-valuemax="100"
                                             aria-label={`main-progressbar-${action_set.text}`}
                                             className={classes.linearProgress}
-                                            value={parseInt(action_set.progression) % 100} />
+                                            value={parseInt(action_set.progression) % 100}/>
                                     }
                                 </ListSubheader>
-                                {(action_set.description || null) && <p className={classes.info} style={{margin: "24px 32px"}}>{action_set.description}</p>}
+                                {(action_set.description || null) && <p className={classes.info}
+                                                                        style={{margin: "24px 32px"}}>{action_set.description}</p>}
                                 {
                                     Boolean(Boolean(name === "filters" || action_set.label === "vector") && too_much_colors_no_vector) ?
-                                        <ListItem classes={{root: classes.relevantTextBlue}} button={name !== "filters"} onClick={() => {canvas.to_less_color("auto")}}>
-                                            <ListItemIcon><LessColorAutoIcon className={classes.listItemIcon} /></ListItemIcon>
-                                            <ListItemText primary="Auto reduce color palette" secondary={"May you need less color in your palette?"} />
-                                        </ListItem>: Boolean(name === "filters") ?
-                                            <blockquote className={classes.info}>DID YOU KNOW? Just double-tap/right-click around the drawing area to open a context menu with shortcuts including some to adjust saturation and contrast like a professional...</blockquote>: null
+                                        <ListItem classes={{root: classes.relevantTextBlue}} button={name !== "filters"}
+                                                  onClick={() => {
+                                                      canvas.to_less_color("auto")
+                                                  }}>
+                                            <ListItemIcon><LessColorAutoIcon
+                                                className={classes.listItemIcon}/></ListItemIcon>
+                                            <ListItemText primary="Auto reduce color palette"
+                                                          secondary={"May you need less color in your palette?"}/>
+                                        </ListItem> : Boolean(name === "filters") ?
+                                            <blockquote className={classes.info}>DID YOU KNOW? Just double-tap/right-click
+                                                around the drawing area to open a context menu with shortcuts including some
+                                                to adjust saturation and contrast like a professional...</blockquote> : null
                                 }
                                 {
-                                    Boolean(name === "filters" ) &&
+                                    Boolean(name === "filters") &&
                                     <ListItem button={true} onClick={this.compute_filters_preview}>
-                                        <ListItemIcon><TimeIcon className={classes.listItemIcon} /></ListItemIcon>
-                                        <ListItemText primary="Refresh filter previews" />
+                                        <ListItemIcon><TimeIcon className={classes.listItemIcon}/></ListItemIcon>
+                                        <ListItemText primary="Refresh filter previews"/>
                                     </ListItem>
                                 }
                                 <div className={name + " " + classes.listItems}
@@ -2555,10 +2658,14 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                                          alignContent: "stretch",
                                          flexDirection: "row",
                                          justifyContent: "flex-start",
-                                     }, Boolean(action_set.text.toLowerCase().includes("filter")) ? {padding: "0px !important", margin: "8px !important"}: {})}>
+                                     }, Boolean(action_set.text.toLowerCase().includes("filter")) ? {
+                                         padding: "0px !important",
+                                         margin: "8px !important"
+                                     } : {})}>
                                     {action_set.tools.map((tool, index) => {
                                         return tool.for ? (
-                                                <div key={name + "-" + action_set.label + tool.text.toLowerCase().replaceAll(" ", "-")}>
+                                                <div
+                                                    key={name + "-" + action_set.label + tool.text.toLowerCase().replaceAll(" ", "-")}>
                                                     <input
                                                         accept="image/jpg, image/jpeg, image/png, image/svg, image/webp, image/gif"
                                                         style={{display: "none"}}
@@ -2566,22 +2673,29 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                                                         type="file"
                                                         onChange={tool.on_click}
                                                     />
-                                                    <ListItem className={tool.class ? tool.class: null} component="label" key={index + (tool.disabled ? "-0": "-1")+""} htmlFor={tool.for} button disabled={tool.disabled}>
-                                                        <ListItemIcon className={classes.listItemIcon} style={tool.style || {}}>
+                                                    <ListItem className={tool.class ? tool.class : null} component="label"
+                                                              key={index + (tool.disabled ? "-0" : "-1") + ""}
+                                                              htmlFor={tool.for} button disabled={tool.disabled}>
+                                                        <ListItemIcon className={classes.listItemIcon}
+                                                                      style={tool.style || {}}>
                                                             {tool.icon}
                                                         </ListItemIcon>
                                                         <ListItemText className={classes.ListItemText}
                                                                       primary={tool.text} secondary={tool.sub}/>
                                                     </ListItem>
                                                 </div>
-                                            ):
+                                            ) :
                                             (
-                                                <ListItem className={tool.class ? tool.class: null} key={name + "-" + action_set.label + (tool.text || "").toLowerCase().replaceAll(" ", "-")} button disabled={tool.disabled || false}
+                                                <ListItem className={tool.class ? tool.class : null}
+                                                          key={name + "-" + action_set.label + (tool.text || "").toLowerCase().replaceAll(" ", "-")}
+                                                          button disabled={tool.disabled || false}
                                                           onClick={tool.on_click}>
-                                                    <ListItemIcon className={classes.listItemIcon} style={tool.style || {}}>
+                                                    <ListItemIcon className={classes.listItemIcon}
+                                                                  style={tool.style || {}}>
                                                         {tool.icon}
                                                     </ListItemIcon>
-                                                    <ListItemText className={classes.ListItemText} style={tool.text_style ||{}}
+                                                    <ListItemText className={classes.ListItemText}
+                                                                  style={tool.text_style || {}}
                                                                   primary={tool.text} secondary={tool.sub}/>
                                                 </ListItem>
                                             );
@@ -2641,42 +2755,41 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
             </List>
         );
 
-        if(force_update) {
+        if (force_update) {
 
             this.forceUpdate();
         }
     }
 
+
+    slideRenderer = ({ index, key }) => {
+        const name = this.get_action_panel_names()[index];
+        if(index === this.st4te.view_name_index || index === this.st4te.previous_view_name_index){
+
+            return this._cache[name]
+        }else {
+
+            return this._cache_empty[name]
+        }
+    };
+
     render() {
-
         "use strict";
-        const {view_name_index, previous_view_name_index} = this.st4te;
-        const cache = this._cache;
-        const cache_empty = this._cache_empty;
-
         return (
-            <SwipeableViews
+            <VirtualizeSwipeableViews
                 ignoreNativeScroll={true}
-                containerStyle={{overflow: "visible", contain: "style paint size layout"}}
+                containerStyle={{overflow: "visible", contain: "style paint size layout", willChange: "inherit"}}
                 animateHeight={true}
                 animateTransitions={true}
                 disableLazyLoading={true}
                 resistance={true}
-                springConfig={{tension: 450, friction: 60, duration: '175ms', easeFunction: 'cubic-bezier(0.280, 0.840, 0.420, 1)', delay: '5ms'}}
-                index={view_name_index}
+                springConfig={{tension: 450, friction: 60, duration: '120ms', easeFunction: 'cubic-bezier(0.4, 0, 0.2, 1)', delay: '5ms'}}
+                index={this.st4te.view_name_index}
                 onChangeIndex={this._handle_view_name_change}
                 disabled={false}
                 key={"swipe-able-view"}
-            >
-                {this.get_action_panel_names().map(function (name, index){
-                    "use strict";
-                    if(view_name_index !== index && previous_view_name_index !== index) {
-                        return cache_empty[name];
-                    }else {
-                        return cache[name];
-                    }
-                })}
-            </SwipeableViews>
+                slideRenderer={this.slideRenderer}
+            />
         );
     }
 }
