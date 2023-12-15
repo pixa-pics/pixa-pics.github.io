@@ -2778,7 +2778,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
         return (
             <VirtualizeSwipeableViews
                 ignoreNativeScroll={true}
-                containerStyle={{overflow: "visible", contain: "size layout style", willChange: "inherit"}}
+                containerStyle={{overflow: "visible", contain: "size style", willChange: "inherit"}}
                 animateHeight={true}
                 animateTransitions={true}
                 disableLazyLoading={true}
