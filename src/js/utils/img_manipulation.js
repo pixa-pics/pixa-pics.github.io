@@ -1,47 +1,124 @@
+import JSLoader from "./JSLoader";
+import * as sizer from 'isomorphic-image-size/index.js'
 const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
 const AFunction = Object.getPrototypeOf( function(){}).constructor;
-
-import initJPEG, {decode as decodeJPEG} from './jsquash/decode/jpeg';
-import initWEBP, {decode as decodeWEBP} from './jsquash/decode/webp';
-import initPNG, {decode as decodePNG} from './jsquash/decode/png';
-
-import initRESIZE, {resize} from './jsquash/resize';
-
-initRESIZE();
-initJPEG();
-initWEBP();
-initPNG();
+import init, {resize} from './jsquash/resize';
 
 const file_to_imagedata_resized = (file, resize_original_to, callback_function = () => {}, pool = null) => {
 
+    var t1 = Date.now();
     const is_type_png = Boolean(file.type === "image/png");
     const is_type_jpeg = Boolean(file.type === "image/jpg" || file.type === "image/jpeg");
     const is_type_webp = Boolean(file.type === "image/webp");
 
     if(is_type_png || is_type_jpeg || is_type_webp) {
 
-        file.arrayBuffer().then(function (ab){
-            if(is_type_png){
-                imagedcallback(decodePNG(ab));
-            }else if(is_type_jpeg){
-                imagedcallback(decodeJPEG(ab));
-            }else if(is_type_webp){
-                imagedcallback(decodeWEBP(ab));
-            }else {
+        var promise_arraybuffer = file.arrayBuffer();
+        var promise_decoder = Promise.resolve();
+
+        if(is_type_png){
+            promise_decoder = JSLoader( () => import("./jsquash/decode/png"));
+        }else if(is_type_jpeg){
+            promise_decoder = JSLoader( () => import("./jsquash/decode/jpeg"));
+        }else if(is_type_webp){
+            promise_decoder = JSLoader( () => import("./jsquash/decode/webp"));
+        }
+
+        Promise.allSettled([
+            promise_arraybuffer,
+            promise_decoder
+        ]).then(function (results){
+            try {
+                var arraybuffer = results[0].value;
+                var global = results[1].value;
+                    global.default().then(function (funcs){
+                        imagedcallback(global.decode(new Uint8Array(arraybuffer)));
+                    });
+
+            } catch (e) {
                 imagedfailedcallback();
             }
-        }).catch(imagedfailedcallback)
+        }).catch(imagedfailedcallback);
+
     }else {
         imagedfailedcallback();
     }
 
     function imagedcallback(imgd){
         let scale = 1;
+        //var info = sizer.default(imgd, file.type.split("/")[1])
         while (Math.round(imgd.width * scale) * Math.round(imgd.height * scale) > resize_original_to) { scale -= 0.01; }
-        callback_function(resize(imgd, { height: Math.round(imgd.width * scale), width: Math.round(imgd.height * scale) }));
+
+        createImageBitmap(imgd, {
+            resizeQuality:  is_type_png ? 'pixelated': 'high',
+            resizeWidth:  Math.round(imgd.width * scale),
+            resizeHeight:  Math.round(imgd.height * scale)
+        }).then(function(bmp){
+
+            // Create a canvas
+
+            const canvas = document.createElement('canvas');
+            canvas.width = bmp.width;
+            canvas.height = bmp.height;
+
+            // Get canvas context
+            const ctx = canvas.getContext('2d');
+            // Draw the image onto the canvas
+            ctx.drawImage(bmp, 0, 0);
+
+
+            var imgdata = ctx.getImageData(0, 0, bmp.width, bmp.height);
+            var t2 = Date.now();
+            console.log(t2-t1);
+
+            callback_function(imgdata);
+        });
+
+        /*init().then(function (funcs){
+            var imgd2 = resize(new Uint8Array(imgd), { height: Math.round(imgd.width * scale), width: Math.round(imgd.height * scale) });
+            arrayBufferToImageData(imgd2).then(callback_function);
+        });
+         */
     }
 
-    function imagedfailedcallback(imgd){
+    function arrayBufferToImageData(arrayBuffer) {
+        return new Promise((resolve, reject) => {
+            // Convert ArrayBuffer to Blob
+            const blob = new Blob([arrayBuffer], {type: file.type});
+
+            // Create an image element
+            const img = new Image();
+
+            // Resolve ImageData once the image is loaded
+            img.onload = () => {
+                // Create a canvas
+                const canvas = document.createElement('canvas');
+                canvas.width = img.width;
+                canvas.height = img.height;
+
+                // Get canvas context
+                const ctx = canvas.getContext('2d');
+
+                // Draw the image onto the canvas
+                ctx.drawImage(img, 0, 0);
+
+                // Get the ImageData
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+                resolve(imageData);
+                URL.revokeObjectURL(img.src);
+            };
+
+            // Reject on error
+            img.onerror = reject;
+
+            // Set the source of the image element
+            img.src = URL.createObjectURL(blob);
+        });
+    }
+
+
+    function imagedfailedcallback(){
         file_to_base64(file, function (b64a){
             base64_sanitize(b64a, function (b64b){
                 base64_to_bitmap(b64b, function (imgbmp){

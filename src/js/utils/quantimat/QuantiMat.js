@@ -500,7 +500,7 @@ QuantiMat.prototype.process_threshold = function(t) {
 
                         m = (m+1|0) >>> 0;
                         // The less a color is used the less it requires a great distance to be merged (so we don't have many color used only a few time in the whole image, heavily used color gets preserved better than lowly used ones)
-                        if(color_a.manhattan_match_with(color_b,  (color_a_skin && color_b_skin) ? weighted_threshold_skin_skin: (color_a_skin || color_b_skin) ? weighted_threshold_skin: weighted_threshold)) {
+                        if(color_a.euclidean_match_with(color_b,  (color_a_skin && color_b_skin) ? weighted_threshold_skin_skin: (color_a_skin || color_b_skin) ? weighted_threshold_skin: weighted_threshold)) {
 
                             // Update color usage and relative variables
                             index_merged = true;
@@ -535,7 +535,7 @@ QuantiMat.prototype.round = function() {
 
     if(this.new_pxl_colors_length > 8192) {
 
-        var simplify_of = (this.new_pxl_colors_length > 32768 ? 12: this.new_pxl_colors_length > 16384 ? 10: this.new_pxl_colors_length > 8192 ? 8: this.new_pxl_colors_length > 2048 ? 6: this.new_pxl_colors_length > 512 ? 4: 2) | 0;
+        var simplify_of = (this.new_pxl_colors_length > 32768 ? 24: this.new_pxl_colors_length > 32768 ? 20: this.new_pxl_colors_length > 16384 ? 16: this.new_pxl_colors_length > 8192 ? 12: this.new_pxl_colors_length > 2048 ? 8: this.new_pxl_colors_length > 1024 ? 4: 1) | 0;
         for(var l = 0; (l|0) < (this.new_pxl_colors_length|0); l = (l+1|0)>>>0) {
             this.get_a_new_pxl_color((l|0)>>>0).simplify(simplify_of);
         }
@@ -554,7 +554,7 @@ QuantiMat.prototype.init = function() {
 QuantiMat.prototype.run =  function() {
     "use strict";
 
-    var t = 2 * (this.new_pxl_colors_length > 32768 ? 6: this.new_pxl_colors_length > 16384 ? 5: this.new_pxl_colors_length > 8192 ? 4: this.new_pxl_colors_length > 4096 ? 3: this.new_pxl_colors_length > 2048 ? 2: 1) | 0;
+    var t = (this.new_pxl_colors_length > 60000 ? 60: this.new_pxl_colors_length > 32000 ? 32: this.new_pxl_colors_length > 16000 ? 16: this.new_pxl_colors_length > 8192 ? 8: this.new_pxl_colors_length > 4096 ? 4: this.new_pxl_colors_length > 2048 ? 2: 1) | 0;
     for (; (t|0) <= 0xFF;) {
 
         if(this.process_threshold(t|0)) {
@@ -562,10 +562,10 @@ QuantiMat.prototype.run =  function() {
             this.clusterize();
         }else {
 
-            t = t + (this.new_pxl_colors_length > 32768 ? 6: this.new_pxl_colors_length > 16384 ? 5: this.new_pxl_colors_length > 8192 ? 4: this.new_pxl_colors_length > 4096 ? 3: this.new_pxl_colors_length > 2048 ? 2: 1) | 0;
+            t = t + (this.new_pxl_colors_length > 60000 ? 60: this.new_pxl_colors_length > 32000 ? 32: this.new_pxl_colors_length > 16000 ? 16: this.new_pxl_colors_length > 8192 ? 8: this.new_pxl_colors_length > 4096 ? 4: this.new_pxl_colors_length > 2048 ? 2: 1) | 0;
         }
 
-        t = t + (this.new_pxl_colors_length > 32768 ? 6: this.new_pxl_colors_length > 16384 ? 5: this.new_pxl_colors_length > 8192 ? 4: this.new_pxl_colors_length > 4096 ? 3: this.new_pxl_colors_length > 2048 ? 2: 1) | 0;
+        t = t + (this.new_pxl_colors_length > 60000 ? 60: this.new_pxl_colors_length > 32000 ? 32: this.new_pxl_colors_length > 16000 ? 16: this.new_pxl_colors_length > 8192 ? 8: this.new_pxl_colors_length > 4096 ? 4: this.new_pxl_colors_length > 2048 ? 2: 1) | 0;
 
         if(this.new_pxl_colors_length <= this.best_color_number){
             break;
