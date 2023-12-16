@@ -22,7 +22,7 @@ const XXHash = {
 
         return {
             // Compute properties
-            xxh_f: {create: function(seed){return XXHashJS.h64(seed); }},
+            xxh_f: {hasher: XXHashJS, create: function(seed){return this.hasher.h64(BigInt(seed)); }},
             xxh_v: "64",
             xxh_t: "js",
             xxh_tt: Date.now()
@@ -74,21 +74,19 @@ const XXHash = {
                     timestamp: s.xxh_tt
                 };
             },
-            base58_that: function (array_buffer) {
+            base58_that: function (array_buffers) {
                 "use strict";
                 let c = 0;
                 let remainder = BigInt(0);
-                let num = BigInt( s.xxh_f.create(0xF4D3).update(
-                    (array_buffer instanceof Uint8Array || array_buffer instanceof Uint8ClampedArray) ?
-                        array_buffer:
-                        new Uint8Array(
-                            typeof array_buffer === "string" ?
-                                Buffer.from(array_buffer):
-                                "buffer" in array_buffer ?
-                                    array_buffer.buffer:
-                                    array_buffer
-                        )
-                ).digest());
+                let xxh = s.xxh_f.create(0xF4D3);
+                if(array_buffers instanceof Uint8Array || array_buffers instanceof Uint8ClampedArray){
+                    xxh.update(array_buffers)
+                }else {
+                    array_buffers.forEach(function(ab){
+                       xxh.update(ab);
+                    });
+                }
+                let num = BigInt(xxh.digest());
 
                 while (num > 0) {
                     remainder = num % base_58;
@@ -587,48 +585,33 @@ var Layer = function(image_data_or_colors_and_indexes, width, height, with_plain
         // Initialize the graphic bitmap image of the layer
         this.bitmap_ = typeof bmp == "undefined" ? {height: this.height_, width: this.width_, destroy: function (){}, hash: ""}: bmp;
         // Initialize the tracking of pixel change
-        this.changes_ = new SetFixed(this.width_ * this.height_);
         // Fill the dual data set (linear, matrix) from color and indexes
-        this.force_update_data(true, image_data_or_colors_and_indexes[0], image_data_or_colors_and_indexes[1]);
+        this.force_update_data(image_data_or_colors_and_indexes[0], image_data_or_colors_and_indexes[1]);
 
 
     }else{
         if(image_data_or_colors_and_indexes.data instanceof Uint8ClampedArray) { // image_data
 
-            this.uint32_pixel_color_ = new Uint32Array(image_data_or_colors_and_indexes.data.buffer);
             this.width_ = image_data_or_colors_and_indexes.width | 0;
             this.height_ = image_data_or_colors_and_indexes.height | 0;
+            this.populate_data(new Uint32Array(image_data_or_colors_and_indexes.data.buffer));
 
         }else if(image_data_or_colors_and_indexes instanceof Uint8Array || image_data_or_colors_and_indexes instanceof Uint8ClampedArray){ // uint32 buffer
 
-            this.uint32_pixel_color_ = new Uint32Array(image_data_or_colors_and_indexes.buffer);
             this.width_ = width | 0;
             this.height_ = height | 0;
+            this.populate_data(new Uint32Array(image_data_or_colors_and_indexes.buffer));
         }else {
 
-            this.uint32_pixel_color_ = new Uint32Array(image_data_or_colors_and_indexes);
             this.width_ = width | 0;
             this.height_ = height | 0;
-
-        }
-
-        this.uint8c_pixel_color_ =  new Uint8ClampedArray(this.uint32_pixel_color_.buffer);
-        this.simdope_pixel_color_ =  new Colors(this.uint32_pixel_color_.buffer);
-        this.uint32_colors_ = Uint32Array.from(new Set(this.uint32_pixel_color_));
-        this.uint32_colors_length_ = this.uint32_colors_.length;
-        this.uint32_colors_map_ = {};
-        for(var i = 0; (i|0) < (this.uint32_colors_length_|0); i = i + 1 | 0){
-            this.uint32_colors_map_[this.uint32_colors_[i|0]] = i|0;
-        }
-        this.color_indexes_length_ = this.uint32_pixel_color_.length;
-        this.color_indexes_ = this.uint32_colors_length_ < (1 << 8) ? new Uint8Array(this.color_indexes_length_) : (this.uint32_colors_length_+1|0) < (1 << 16) ? new Uint16Array(this.color_indexes_length_): new Uint32Array(this.color_indexes_length_);
-
-        for(var i = 0, l = this.color_indexes_length_ | 0; (i|0) < (l|0); i = (i + 1 | 0) >>> 0) {
-            this.color_indexes_[i|0] = (this.uint32_colors_map_[this.uint32_pixel_color_[i|0]] | 0) >>> 0;
+            this.populate_data(Uint32Array.from(image_data_or_colors_and_indexes));
         }
 
         this.bitmap_ = typeof bmp == "undefined" ? {height: this.height_, width: this.width_, destroy: function (){}, hash: ""}: bmp;
-        this.changes_ = new SetFixed(this.width_ * this.height_);
+
+        this.populate_colors(this.uint32_pixel_color_);
+        this.populate_indexes();
         this.changes_.charge();
     }
 
@@ -642,54 +625,24 @@ Layer.new_from_colors_and_indexes = function (colors, indexes, width, height, wi
 Object.defineProperty(Layer.prototype, 'force_update_data', {
     get: function() {
         "use strict";
-        return function (must_init, colors, indexes){
+        return function (colors, indexes){
             "use strict";
-            must_init = typeof must_init == "undefined" ? false: Boolean(must_init) && true;
             var is_new_colors = typeof colors != "undefined";
             var is_new_indexes = typeof indexes != "undefined";
-            colors = is_new_colors ? (colors instanceof Uint32Array) ? colors: Uint32Array.from(new Set(colors)): this.uint32_colors_;
-            indexes = is_new_indexes ? indexes: this.color_indexes_;
 
-            if(must_init || (is_new_colors && is_new_indexes)) {
-                if(is_new_colors) {
-                    // Initialize and fill the matrix table
-                    this.uint32_colors_ = colors;
-                    this.uint32_colors_length_ = this.uint32_colors_.length;
-                    this.uint32_colors_map_ = {};
-                    for(var i = 0; (i|0) < (this.uint32_colors_length_|0); i = i + 1 | 0){
-                        this.uint32_colors_map_[this.uint32_colors_[i|0]] = i|0;
-                    }
-                    // Initialize the matrix data length
-                    this.color_indexes_length_ = this.width_ * this.height_;
-                    // Initialize the matrix data
-                    this.color_indexes_ = this.uint32_colors_length_ <= (1 << 8) ? new Uint8Array(this.color_indexes_length_) : this.uint32_colors_length_ <= (1 << 16) ? new Uint16Array(this.color_indexes_length_) : new Uint32Array(this.color_indexes_length_);
-                }
+            if(is_new_colors && is_new_indexes) {
+                // Initialize and fill the matrix table
+                this.populate_colors(colors);
+                this.populate_indexes(indexes);
+                this.populate_data();
+            }else if(is_new_indexes){
 
-                // Initialize and fill image data and linked simdope element for the matrix table and data
-                if(typeof this.uint32_pixel_color_ == "undefined") {
+                this.populate_indexes(indexes);
+                this.compute_data();
+            }else if(is_new_colors) {
 
-                    this.uint32_pixel_color_ =  new Uint32Array((this.color_indexes_length_|0)>>>0);
-                    this.uint8c_pixel_color_ =  new Uint8ClampedArray(this.uint32_pixel_color_.buffer);
-                    this.simdope_pixel_color_ =  new Colors(this.uint32_pixel_color_.buffer);
-                }
-
-                // Fill image data and indexes
-                for(var i = 0, l = this.color_indexes_length_ | 0; (i|0) < (l|0); i = (i + 1 | 0) >>> 0) {
-                    this.uint32_pixel_color_[(i|0)>>>0] = (colors[indexes[(i|0)>>>0]]|0) >>> 0;
-                    this.color_indexes_[i|0] = (this.uint32_colors_map_[this.uint32_pixel_color_[(i|0)>>>0]] | 0) >>> 0;
-                }
-
-                this.changes_.charge();
-
-            }else {
-
-                for(var i = 0, l = this.color_indexes_length_ | 0; (i|0) < (l|0); i = (i + 1 | 0) >>> 0) {
-
-                    if(uint_not_equal(this.uint32_pixel_color_[(i|0)>>>0], colors[indexes[(i|0)>>>0]])){
-                        this.uint32_pixel_color_[(i|0)>>>0] = (colors[indexes[(i|0)>>>0]]|0) >>> 0;
-                        this.changes_.add((i|0)>>>0);
-                    }
-                }
+                this.populate_colors(colors);
+                this.compute_data();
             }
         };
     },
@@ -697,13 +650,112 @@ Object.defineProperty(Layer.prototype, 'force_update_data', {
     configurable: false
 });
 
+Object.defineProperty(Layer.prototype, 'populate_data', {
+    get: function() {
+        "use strict";
+        return function(data){
+            "use strict";
+            if(typeof data === "undefined") {
+
+                this.uint32_pixel_color_ =  new Uint32Array(this.width_ * this.height_);
+                this.changes_ = new SetFixed(this.uint32_pixel_color_.length);
+                this.changes_.charge();
+                this.uint8c_pixel_color_ =  new Uint8ClampedArray(this.uint32_pixel_color_.buffer);
+                this.simdope_pixel_color_ =  new Colors(this.uint32_pixel_color_.buffer);
+
+                for(var i = 0, l = this.color_indexes_length_ | 0; (i|0) < (l|0); i = (i + 1 | 0) >>> 0) {
+                    this.uint32_pixel_color_[(i|0)>>>0] = (this.colors[this.indexes[(i|0)>>>0]]|0) >>> 0;
+                }
+
+            }else {
+                this.uint32_pixel_color_ = data;
+                this.changes_ = new SetFixed(this.uint32_pixel_color_.length);
+                this.changes_.charge();
+                this.uint8c_pixel_color_ =  new Uint8ClampedArray(this.uint32_pixel_color_.buffer);
+                this.simdope_pixel_color_ =  new Colors(this.uint32_pixel_color_.buffer);
+            }
+        }
+    }
+});
+Object.defineProperty(Layer.prototype, 'compute_data', {
+    get: function() {
+        "use strict";
+        return function(){
+            "use strict";
+            for(var i = 0, l = this.color_indexes_length_ | 0; (i|0) < (l|0); i = (i + 1 | 0) >>> 0) {
+
+                if(uint_not_equal(this.uint32_pixel_color_[(i|0)>>>0], this.colors[this.indexes[(i|0)>>>0]])){
+                    this.uint32_pixel_color_[(i|0)>>>0] = (this.colors[this.indexes[(i|0)>>>0]]|0) >>> 0;
+                    this.changes_.add((i|0)>>>0);
+                }
+            }
+        }
+    }
+});
+Object.defineProperty(Layer.prototype, 'populate_colors', {
+    get: function() {
+        "use strict";
+        return function(colors){
+            "use strict";
+
+            this.uint32_colors_ = colors;
+            this.uint32_colors_length_ = this.uint32_colors_.length;
+            this.uint32_colors_map_ = {};
+            for(var i = 0; (i|0) < (this.uint32_colors_length_|0); i = i + 1 | 0){
+                this.uint32_colors_map_[this.uint32_colors_[i|0]] = (i|0) >>> 0;
+            }
+        }
+    }
+});
+
+Object.defineProperty(Layer.prototype, 'populate_indexes', {
+    get: function() {
+        "use strict";
+        return function(indexes){
+            "use strict";
+            if(typeof indexes != "undefined"){
+
+                this.color_indexes_ = indexes;
+                this.color_indexes_length_ = this.color_indexes_.length;
+                this.color_indexes_constructor_ = this.uint32_colors_length_ < (1 << 8) ? Uint8Array : (this.uint32_colors_length_ + 1 | 0) < (1 << 16) ? Uint16Array : Uint32Array;
+            }else {
+                this.color_indexes_length_ = this.uint32_pixel_color_.length;
+                this.color_indexes_constructor_ = this.uint32_colors_length_ < (1 << 8) ? Uint8Array : (this.uint32_colors_length_ + 1 | 0) < (1 << 16) ? Uint16Array : Uint32Array;
+                this.color_indexes_ = new this.color_indexes_constructor_(this.color_indexes_length_);
+
+                for (var i = 0, l = this.color_indexes_length_ | 0; (i | 0) < (l | 0); i = (i + 1 | 0) >>> 0) {
+                    this.color_indexes_[i | 0] = (this.get_color_index(this.uint32_pixel_color_[i | 0]) | 0) >>> 0;
+                }
+            }
+        }
+    }
+});
+
+
+Object.defineProperty(Layer.prototype, 'get_color_index', {
+    get: function() {
+        "use strict";
+        return function (uint32) {
+            "use strict";
+            return this.uint32_colors_map_[(uint32 | 0) >>> 0] | 0;
+        }
+    }
+});
+Object.defineProperty(Layer.prototype, 'has_color', {
+    get: function() {
+        "use strict";
+        return function (uint32) {
+            "use strict";
+            return typeof this.uint32_colors_map_[(uint32 | 0) >>> 0] != "undefined";
+        }
+    }
+});
+
 Object.defineProperty(Layer.prototype, 'image_data', {
     get: function() {
         "use strict";
         return new ImageData(this.uint8c_pixel_color_, this.width_|0, this.height_|0);
-    },
-    enumerable: false,
-    configurable: false
+    }
 })
 Object.defineProperty(Layer.prototype, 'width', {
     get: function() {
@@ -863,13 +915,7 @@ Object.defineProperty(Layer.prototype, 'set_indexes', {
         "use strict";
         return function (indexes){
             "use strict";
-            if(indexes.length !== this.color_indexes_.length) {
-                this.force_update_data(false, undefined, indexes);
-            }else {
-                this.color_indexes_.set(indexes, 0);
-                this.force_update_data();
-            }
-
+            this.force_update_data(undefined, indexes);
         };
     },
     enumerable: false,
@@ -914,13 +960,7 @@ Object.defineProperty(Layer.prototype, 'set_colors', {
         "use strict";
         return function (colors){
             "use strict";
-            if(colors.length === this.uint32_colors_length_) {
-                this.uint32_colors_.set(colors);
-                this.force_update_data();
-            }else {
-
-                this.force_update_data(false, colors);
-            }
+            this.force_update_data(colors, undefined);
         };
     },
     enumerable: false,
@@ -932,7 +972,7 @@ Object.defineProperty(Layer.prototype, 'set_colors_and_indexes', {
         "use strict";
         return function (colors, indexes){
             "use strict";
-            this.force_update_data(false, colors, indexes);
+            this.force_update_data(colors, indexes);
         };
     },
     enumerable: false,
@@ -989,9 +1029,7 @@ Object.defineProperty(Layer.prototype, 'charge_changes', {
             "use strict";
             this.changes_.charge();
         }
-    },
-    enumerable: false,
-    configurable: false
+    }
 });
 
 Object.defineProperty(Layer.prototype, 'get_uint32', {
@@ -1001,9 +1039,7 @@ Object.defineProperty(Layer.prototype, 'get_uint32', {
             "use strict";
             return (this.uint32_pixel_color_[(index|0)>>>0]|0)>>>0;
         }
-    },
-    enumerable: false,
-    configurable: false
+    }
 });
 
 Object.defineProperty(Layer.prototype, 'set_uint32', {
@@ -1021,10 +1057,9 @@ Object.defineProperty(Layer.prototype, 'set_uint32', {
             this.uint32_pixel_color_[index|0] = (uint32 | 0) >>> 0;
 
             // Change the color within indexed color pixel matrix
-            var pos = this.uint32_colors_map_[(uint32 | 0) >>> 0];
-            if(typeof pos != "undefined" && (pos|0) < (this.uint32_colors_length_|0)){ // Color already exist
+            if(this.has_color((uint32 | 0) >>> 0)){// Color already exist
                 // Edit the index of the color used by the pixel at a specific position
-                this.color_indexes_[index|0] = (pos | 0) >>> 0;
+                this.color_indexes_[index|0] = this.get_color_index((uint32 | 0) >>> 0);
                 return false; // Didn't add a color
             }else {
                 // Increase the index capability (eventually)
@@ -1036,19 +1071,12 @@ Object.defineProperty(Layer.prototype, 'set_uint32', {
                         this.color_indexes_ = Uint32Array.from(this.color_indexes_);
                         break;
                 }
-
                 // Add more space to the colors array
-                pos = (this.uint32_colors_length_|0) >>> 0;
-                this.uint32_colors_length_ = this.uint32_colors_length_+1|0;
-                var new_uint32_colors = new Uint32Array(this.uint32_colors_length_|0);
+                var new_uint32_colors = new Uint32Array(this.uint32_colors_length_+1|0);
                     new_uint32_colors.set(this.uint32_colors_, 0);
-                this.uint32_colors_ = new_uint32_colors;
-                // Add color within the list and get its index while it updates
-                this.uint32_colors_[(pos | 0) >>> 0] = (uint32|0) >>> 0;
-                // Edit the index of the color used by the pixel at a specific position
-                this.color_indexes_[index|0] = (pos | 0) >>> 0;
-                // Index the new color with the position it has
-                this.uint32_colors_map_[(uint32 | 0) >>> 0] = (pos | 0) >>> 0;
+                    new_uint32_colors[(this.uint32_colors_length_|0) >>> 0] = (uint32|0) >>> 0;
+                this.populate_colors(new_uint32_colors);
+                this.color_indexes_[index|0] = this.get_color_index((uint32 | 0) >>> 0);
                 return true; // Added a color
             }
         }
@@ -1633,237 +1661,7 @@ Object.defineProperty(Filters.prototype, 'use', {
 });
 
 
-function SmartRunLengthCompress(data_uintX, width) {
-
-    var values_constructor_bits = data_uintX instanceof Uint32Array ? 32: data_uintX instanceof Uint16Array ? 16: 8;
-    var values_constructor = values_constructor_bits === 32 ? Uint32Array: values_constructor_bits === 16 ? Uint16Array: Uint8Array;
-    var values = new values_constructor(data_uintX.length);
-    var values_l = 0;
-    if(typeof width != "undefined") {
-
-        var brother_matchmaking = new SetFixed(data_uintX.length);
-        var sister_matchmaking = new SetFixed(data_uintX.length);
-        var height = data_uintX.length / width | 0;
-        var x = 0, y = 0, i = 0;
-        for (; (y|0) < (height|0); y = y + 1 | 0) {
-            for (x = 0; (x|0) < (width|0); x = x + 1 | 0) {
-                i = y * width + x | 0;
-                if ((x|0) > 0 && data_uintX[i] == data_uintX[i - 1  | 0]) {
-                    brother_matchmaking.add(i);
-                }
-                if ((y|0) > 0 && data_uintX[i] == data_uintX[i - width | 0]) {
-                    sister_matchmaking.add(i);
-                }
-
-                if (brother_matchmaking.hasnt(i) && sister_matchmaking.hasnt(i)) {
-                    values[values_l] = data_uintX[i];
-                    values_l = values_l + 1 | 0;
-                }
-            }
-        }
-
-        var value_data = values_constructor.from(new Set(values.slice(0, values_l)));
-        var unique_value_index_constructor = value_data.length >= (1 << 16) ? Uint32ArrayCustom: value_data.length >= (1 << 12) ? Uint16ArrayCustom: value_data.length >= (1 << 10) ? Uint12ArrayCustom: value_data.length >= (1 << 8) ? Uint10ArrayCustom:  value_data.length >= (1 << 6) ? Uint8ArrayCustom: value_data.length >= (1 << 4) ? Uint6ArrayCustom: Uint4ArrayCustom;
-        var value_indexes = new unique_value_index_constructor(values_l);
-        for(var i = 0; (i||0) < (values_l|0); i = i + 1 |0) {
-            value_indexes.write(i, value_data.indexOf(values[i]));
-        }
-
-        var result = {
-            two_axis: true,
-            width: width,
-            height: height,
-            bits: values_constructor_bits,
-            value_indexes: value_indexes.a,
-            value_indexes_bits: value_indexes.bits|0,
-            value_data: value_data,
-            matchmaking_x: brother_matchmaking.uint32array,
-            matchmaking_y: sister_matchmaking.uint32array
-        };
-
-        return result;
-
-    }else {
-        var lengths = new Uint8Array(data_uintX.length);
-        var lengths_l = 0;
-        var values_using_compression = new SetFixed(data_uintX.length);
-
-        var current = data_uintX[0], latest = data_uintX[1], repeated = 1;
-        var i = 1, l = data_uintX.length;
-
-        for(; (i|0) < (l|0);){
-
-            latest = data_uintX[i];
-
-            if((latest|0) != (current|0)){ // The value is new or surpass chunk length
-                if((repeated|0) > 1){
-
-                    while((repeated|0) > 0x3F) {
-                        // We set the index of the current value to hold a length
-                        values_using_compression.add(i-repeated);
-                        repeated = repeated - 0x3F|0;
-                        // We add the number of repetition inside the lengths array
-                        lengths[lengths_l] = 0x3F|0
-                        lengths_l = lengths_l+1|0;
-                        // We add the value inside the values array
-                        values[values_l] = (current|0)>>>0;
-                        values_l = values_l+1|0;
-                    }
-
-                    // We set the index of the current value to hold a length
-                    values_using_compression.add(i-repeated);
-                    // We add the number of repetition inside the lengths array
-                    lengths[lengths_l] = repeated|0
-                    lengths_l = lengths_l+1|0;
-                    // We add the value inside the values array
-                    values[values_l] = (current|0)>>>0;
-                    values_l = values_l+1|0;
-                }else {
-                    // We add the value inside the values array
-                    values[values_l] = (current|0)>>>0;
-                    values_l = values_l+1|0;
-                }
-                i = i + 1 | 0;
-                repeated = 1;
-                current = (latest|0)>>>0;
-            }else { // The value is repeated
-                i = i + 1 | 0;
-                repeated = repeated+1|0;
-            }
-        }
-
-        if((repeated|0) > 1){
-
-            while(repeated > 0x3F) {
-                // We set the index of the current value to hold a length
-                values_using_compression.add(i-repeated);
-                // We add the number of repetition inside the lengths array
-                lengths[lengths_l] = 0x3F|0
-                lengths_l = lengths_l+1|0;
-                // We add the value inside the values array
-                values[values_l] = (current|0)>>>0;
-                values_l = values_l+1|0;
-                repeated = repeated - 0x3F|0;
-            }
-
-            // We set the index of the current value to hold a length
-            values_using_compression.add(i-repeated);
-            // We add the number of repetition inside the lengths array
-            lengths[lengths_l] = repeated|0
-            lengths_l = lengths_l+1|0;
-            // We add the value inside the values array
-            values[values_l] = (current|0)>>>0;
-            values_l = values_l+1|0;
-        }else {
-            // We add the value inside the values array
-            values[values_l] = (current|0)>>>0;
-            values_l = values_l+1|0;
-        }
-
-        var length_uint6a = new Uint6ArrayCustom(lengths_l);
-        for(var i = 0; (i||0) < (lengths_l|0); i = i + 1 |0) {
-            length_uint6a.write(i, lengths[i]);
-        }
-
-        var value_data = values_constructor.from(new Set(values.slice(0, values_l)));
-        var unique_value_index_constructor = value_data.length >= (1 << 16) ? Uint32ArrayCustom: value_data.length >= (1 << 12) ? Uint16ArrayCustom: value_data.length >= (1 << 10) ? Uint12ArrayCustom: value_data.length >= (1 << 8) ? Uint10ArrayCustom:  value_data.length >= (1 << 6) ? Uint8ArrayCustom: value_data.length >= (1 << 4) ? Uint6ArrayCustom: Uint4ArrayCustom;
-        var value_indexes = new unique_value_index_constructor(values_l);
-        for(var i = 0; (i||0) < (values_l|0); i = i + 1 |0) {
-            value_indexes.write(i, value_data.indexOf(values[i]));
-        }
-
-        var result = {
-            two_axis: false,
-            bits: values_constructor_bits,
-            lengths: length_uint6a.a,
-            value_indexes: value_indexes.a,
-            value_indexes_bits: value_indexes.bits|0,
-            value_data: value_data,
-            matchmaking: values_using_compression.uint32array
-        };
-
-        result.originalBytesLength = data_uintX.byteLength;
-        result.byteslength = result.lengths.length + values_l * (result.bits/8) + result.matchmaking.length * 4;
-
-        console.log(result)
-        console.log(result.originalBytesLength, result.byteslength, result.originalBytesLength / result.byteslength);
-
-        return result;
-    }
-
-}
-
-function SmartRunLengthDecompress(object) {
-
-    var constructor = object.bits === 32 ? Uint32Array: object.bits === 16 ? Uint16Array: Uint8Array;
-
-    var constructor_indexes = object.value_indexes_bits === 32 ? Uint32ArrayCustom: object.value_indexes_bits === 16 ? Uint16ArrayCustom: object.value_indexes_bits === 12 ? Uint12ArrayCustom: object.value_indexes_bits === 10 ? Uint10ArrayCustom: object.value_indexes_bits === 8 ? Uint8ArrayCustom: object.value_indexes_bits === 6 ? Uint6ArrayCustom: Uint4ArrayCustom;
-    var value_indexes = new constructor_indexes(object.value_indexes);
-    var value_data = object.value_data;
-    var values_length = value_indexes.length;
-    var values = new constructor(values_length);
-    for(var i = 0; (i|0) < (values_length|0); i = i + 1 | 0){
-        values[i] = value_data[value_indexes.read(i)];
-    }
-
-    if(object.two_axis){
-
-        var width = object.width;
-        var height = object.height;
-        var brother_matchmaking = new SetFixed(new BitArray(object.matchmaking_x));
-        var sister_matchmaking = new SetFixed(new BitArray(object.matchmaking_y));
-
-        var output = new constructor(width * height);
-        var current_value_index = 0;
-
-        var x = 0, y = 0, i = 0;
-        for (; (y|0) < (height|0); y = y + 1 | 0) {
-            for (x = 0; (x|0) < (width|0); x = x + 1 | 0) {
-                i = y * width + x | 0;
-                if(brother_matchmaking.hasnt(i) && sister_matchmaking.hasnt(i)){
-                    output[i] = values[current_value_index];
-                    current_value_index = current_value_index + 1 | 0;
-                }
-
-                if (sister_matchmaking.has(i)) {
-                    output[i] = output[i-width|0];
-                }else if (brother_matchmaking.has(i)) {
-                    output[i] = output[i-1|0];
-                }
-            }
-        }
-
-        console.log(output.byteLength|0, values.byteLength + object.matchmaking_x.byteLength + object.matchmaking_y.byteLength|0)
-        return output;
-
-    }else {
-
-        var lengths = new Uint6ArrayCustom(object.lengths);
-        var matchmaking = new SetFixed(new BitArray(object.matchmaking));
-        var total_length = values.length - lengths.length; // values that aren't alone
-        for(var i = 0, l = lengths.length; (i|0) < (l|0); i = i + 1|0){
-            total_length = total_length+lengths.read(i)|0; // values that are repeated
-        }
-
-        var output = new constructor(total_length);
-        for(var i = 0, l = 0, v = 0; (i|0) < (total_length|0);){
-            if(matchmaking.has(i)){
-                output.fill(values[v], i, i+lengths.read(l)|0);
-                i = i + lengths.read(l) | 0;
-                l = l + 1 |0;
-            }else {
-                output[i] = values[v];
-                i = i + 1 |0;
-            }
-
-            v = v + 1 |0;
-        }
-
-        return output;
-    }
-}
-
 
 module.exports = {
-    Layer, Layers, Filters, SmartRunLengthCompress, SmartRunLengthDecompress
+    Layer, Layers, Filters
 }

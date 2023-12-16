@@ -762,7 +762,6 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
             this.compute_filters_preview();
         }
 
-        console.log(something_changed_in_view)
         this.setSt4te({
             ...new_props, ...props_override,
             slider_value: parseFloat(new_props.slider_value),

@@ -734,7 +734,9 @@ class Pixel extends React.PureComponent {
             this._compute_menu_drawer();
             this.setSt4te({_time_ago_initiated: true}, () => {
 
-                this._request_force_update();
+                this._request_force_update(false, true).then(() => {
+                    this._updated_dimensions();
+                });
             });
         }, true);
 
@@ -772,7 +774,6 @@ class Pixel extends React.PureComponent {
         window.addEventListener("resize", this._updated_dimensions);
         window.addEventListener('wheel', this._prevent_ctrl_zoom, { passive: false });
 
-        this._updated_dimensions();
         document.addEventListener("keydown", this._handle_keydown);
         document.addEventListener("keyup", this._handle_keyup);
         try {
@@ -810,7 +811,7 @@ class Pixel extends React.PureComponent {
         "use strict";
         setTimeout(() => {
             if(!this.st4te._less_than_1280w){
-                this.setSt4te({_fps_el: document.getElementById("fps_el"), _xy_el: document.getElementById("xy_el")});
+                this.setSt4te({_fps_el: document.getElementById("fps_el") || {}, _xy_el: document.getElementById("xy_el") || {}});
             }else {
                 this.setSt4te({_fps_el: {}, _xy_el: {}});
             }
@@ -2231,14 +2232,18 @@ class Pixel extends React.PureComponent {
 
     _handle_position_change = (position) => {
         "use strict";
-        let x = position.x === -1 ? "out": position.x + 1;
-        let y = position.y === -1 ? "out": position.y + 1;
-        this.st4te._xy_el.textContent = ` | X: ${x}, Y: ${y} `;
+        if(typeof this.st4te._xy_el != "undefined"){
+            let x = position.x === -1 ? "out": position.x + 1;
+            let y = position.y === -1 ? "out": position.y + 1;
+            this.st4te._xy_el.textContent = ` | X: ${x}, Y: ${y} `;
+        }
     };
 
     _handle_fps_change = (fps) => {
         "use strict";
-        this.st4te._fps_el.textContent = `FPS: ${fps}`;
+        if(typeof this.st4te._fps_el != "undefined"){
+            this.st4te._fps_el.textContent = `FPS: ${fps}`;
+        }
     };
 
     _handle_can_undo_redo_change = (_can_undo, _can_redo) => {

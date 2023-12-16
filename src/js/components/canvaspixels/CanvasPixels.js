@@ -1630,7 +1630,7 @@ class CanvasPixels extends React.PureComponent {
                         _pencil_mirror_index
                     } = super_state_object;
                     const old_current_history_position = parseInt(_json_state_history.history_position);
-                    const old_current_state = _json_state_history.state_history.length === 0 ? {} : _json_state_history.state_history[old_current_history_position];// First state let's not save current history timestamp
+                    const old_current_state = _json_state_history.state_history.length === 0 ? {} : _json_state_history.state_history[old_current_history_position-1];// First state let's not save current history timestamp
 
                     let new_current_state = {};
                     new_current_state._timestamp = parseInt(Date.now());
@@ -1651,7 +1651,7 @@ class CanvasPixels extends React.PureComponent {
                         };
                     }));
                     new_current_state._layer_index = parseInt(_layer_index);
-                    new_current_state._s_layers = Array.from(_s_layers.map(function (l){return Layer.new_from_colors_and_indexes(l.colors, l.indexes, parseInt(pxl_width), parseInt(pxl_height), true)}));
+                    new_current_state._s_layers = Array.from(_s_layers.map(function (l){return Layer.new_from_colors_and_indexes(l.colors_copy, l.indexes_copy, parseInt(pxl_width), parseInt(pxl_height), true)}));
                     new_current_state._pxl_indexes_of_selection = _pxl_indexes_of_selection.indexes;
                     new_current_state._pencil_mirror_index = parseInt(_pencil_mirror_index);
 
@@ -1666,8 +1666,9 @@ class CanvasPixels extends React.PureComponent {
 
                         if(first_change && new_current_state_timestamp !== 0) { // Fist state
 
-                            _json_state_history.state_history = Array.of(Object.assign({}, new_current_state));
-                            _json_state_history.history_position = 0;
+                            _json_state_history.state_history = [];
+                            _json_state_history.state_history.push(Object.assign({}, new_current_state));
+                            _json_state_history.history_position = 1;
                             _saving_json_state_history_ran_timestamp = now;
 
                         }else if(layers_changed_state) {
@@ -1678,7 +1679,7 @@ class CanvasPixels extends React.PureComponent {
                             if(backward_of > 0) {
 
                                 let dshi = 0;
-                                let dsh = _json_state_history.state_history.splice(-backward_of); // Not cutting current state but the next one unless we go in past
+                                let dsh = _json_state_history.state_history.splice(new_current_history_position); // Not cutting current state but the next one unless we go in past
                                 while(dsh.length) { // Yet inbetween state history get added the reverse order to not break timeline of changes
 
                                     if(dshi === 0){
@@ -1691,22 +1692,22 @@ class CanvasPixels extends React.PureComponent {
                                 }
                             }
 
-                            if(_json_state_history.state_history.length >= _state_history_length) { _json_state_history.state_history.shift(); } // As we limit edit history, just delete the first element if it will be above max size
-                            _json_state_history.state_history.push(Object.assign({}, new_current_state)); // Then we add the current state history
-                            _json_state_history.history_position = parseInt(_json_state_history.state_history.length-1);
-                            _saving_json_state_history_ran_timestamp = now;
-                        } else {
+                            if(_json_state_history.state_history.length >= _state_history_length) { _json_state_history.state_history.splice(1, 1); } // As we limit edit history, just delete the first element if it will be above max size
+                                _json_state_history.state_history.push(Object.assign({}, new_current_state)); // Then we add the current state history
+                                _json_state_history.history_position = parseInt(_json_state_history.state_history.length);
+                                _saving_json_state_history_ran_timestamp = now;
+                            } else {
 
-                            for (let i = 0; i < _json_state_history.state_history.length; i++) {
+                                for (let i = 0; i < _json_state_history.state_history.length; i++) {
 
-                                if ((_json_state_history.state_history[i]._timestamp|0) === new_current_state_timestamp) {
+                                    if ((_json_state_history.state_history[i]._timestamp|0) === new_current_state_timestamp) {
 
-                                    _json_state_history.state_history[i] = Object.assign({}, new_current_state);
-                                    _saving_json_state_history_ran_timestamp = now;
-                                    i = _json_state_history.state_history.length;
+                                        _json_state_history.state_history[i] = Object.assign({}, new_current_state);
+                                        _saving_json_state_history_ran_timestamp = now;
+                                        i = _json_state_history.state_history.length;
+                                    }
                                 }
                             }
-                        }
 
                         this.super_state.set_state({_json_state_history: Object.assign({}, _json_state_history), _saving_json_state_history_running: false, _saving_json_state_history_ran_timestamp: _saving_json_state_history_ran_timestamp}).then(() => {
 
@@ -1826,7 +1827,7 @@ class CanvasPixels extends React.PureComponent {
 
                 js = null;
 
-                let sh = _json_state_history.state_history[_json_state_history.history_position];
+                let sh = _json_state_history.state_history[_json_state_history.history_position-1];
 
                 this.super_state.set_state({
                     _id: sh._id.toString(),
@@ -1927,7 +1928,7 @@ class CanvasPixels extends React.PureComponent {
             _json_state_history = this.super_state.get_state()._json_state_history;
         }
 
-        return parseInt(_json_state_history.history_position);
+        return parseInt(_json_state_history.history_position-1);
     };
 
     undo = () => {
@@ -1939,7 +1940,7 @@ class CanvasPixels extends React.PureComponent {
 
                 _json_state_history.history_position = parseInt(_json_state_history.history_position-1);
 
-                const sh = _json_state_history.state_history[_json_state_history.history_position];
+                const sh = _json_state_history.state_history[_json_state_history.history_position-1];
                 const has_new_dimension = Boolean(sh.pxl_width !== this.super_state.get_state().pxl_width || sh.pxl_height !== this.super_state.get_state().pxl_height);
 
                 this.super_state.set_state({
@@ -1983,7 +1984,7 @@ class CanvasPixels extends React.PureComponent {
             _json_state_history = this.super_state.get_state()._json_state_history;
         }
 
-        return _json_state_history.state_history.length - parseInt(_json_state_history.history_position) - 1 | 0;
+        return _json_state_history.state_history.length - parseInt(_json_state_history.history_position-1) - 1 | 0;
     }
 
     redo = () => {
@@ -1993,7 +1994,7 @@ class CanvasPixels extends React.PureComponent {
             if (this._can_redo(_json_state_history) > 0) {
 
                 _json_state_history.history_position =  parseInt(_json_state_history.history_position+1);
-                const sh = _json_state_history.state_history[_json_state_history.history_position];
+                const sh = _json_state_history.state_history[_json_state_history.history_position-1];
                 const has_new_dimension = Boolean(sh.pxl_width !== this.super_state.get_state().pxl_width || sh.pxl_height !== this.super_state.get_state().pxl_height);
 
                 this.super_state.set_state({
