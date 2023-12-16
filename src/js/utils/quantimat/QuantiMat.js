@@ -500,7 +500,7 @@ QuantiMat.prototype.process_threshold = function(t) {
 
                         m = (m+1|0) >>> 0;
                         // The less a color is used the less it requires a great distance to be merged (so we don't have many color used only a few time in the whole image, heavily used color gets preserved better than lowly used ones)
-                        if(color_a.euclidean_match_with(color_b,  (color_a_skin && color_b_skin) ? weighted_threshold_skin_skin: (color_a_skin || color_b_skin) ? weighted_threshold_skin: weighted_threshold)) {
+                        if(color_a.manhattan_match_with(color_b,  (color_a_skin && color_b_skin) ? weighted_threshold_skin_skin: (color_a_skin || color_b_skin) ? weighted_threshold_skin: weighted_threshold)) {
 
                             // Update color usage and relative variables
                             index_merged = true;

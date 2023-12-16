@@ -1,5 +1,6 @@
 var webpack = require('webpack');
 var path = require('path');
+var urlLoader = require("url-loader");
 var TerserPlugin = require('terser-webpack-plugin');
 var BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 var HtmlWebpackPlugin = require("html-webpack-plugin");
@@ -46,6 +47,8 @@ module.exports = {
                     properties: {
                         reserved: [
                             'Object',
+                            'Colors',
+                            'Color',
                             'canvas',
                             'getUint8',
                             'setUint8',
@@ -187,19 +190,30 @@ module.exports = {
                         }
                     }
                 ]
-            }/*,
+            },
             {
                 test: /\.(wasm)$/i,
-                exclude: [],
                 use: [
                     {
                         loader: 'url-loader',
                         options: {
-                            limit: 2048 * 1024,
-                        },
-                    },
-                ],
-            }*/
+                            encoding: 'base64',
+                            limit: false,
+                            // The `mimetype` and `encoding` arguments will be obtained from your options
+                            // The `resourcePath` argument is path to file.
+                            generator: (content, mimetype, encoding, resourcePath) => {
+                                if (/\.html$/i.test(resourcePath)) {
+                                    return `data:${mimetype},${content.toString()}`;
+                                }
+
+                                return `data:${mimetype}${
+                                    encoding ? `;${encoding}` : ''
+                                },${content.toString(encoding)}`;
+                            }
+                        }
+                    }
+                ]
+            }
         ]
     },
     output: {

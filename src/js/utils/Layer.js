@@ -95,7 +95,8 @@ const XXHash = {
                     c = (c + 1 | 0) & 0xF;
                 }
 
-                return "" + String.fromCharCode.apply(null, encoded.slice(0, c|0));
+                var str = String.fromCharCode.apply(null, encoded.slice(0, c|0));
+                return str;
             }
         };
     }
@@ -852,18 +853,8 @@ Object.defineProperty(Layer.prototype, 'hash_hex_async', {
         "use strict";
         return function (data){
             "use strict";
-            data = typeof data == "undefined" ? this.uint8c_pixel_color_: data;
-            return new Promise(function (resolve){
-                var uint8a = Boolean(data instanceof Uint8Array || data instanceof Uint8ClampedArray) ?
-                    data:
-                    typeof data.buffer != "undefined" ?
-                        new Uint8Array(data.buffer):
-                        typeof data == "string" ?
-                            new TextEncoder().encode(data):
-                            Uint8ClampedArray.from(data);
-                var h = xxhash.base58_that(uint8a);
-                resolve(h);
-            });
+            var h = xxhash.base58_that(new Uint8Array(this.colors.buffer), new Uint8Array(this.indexes.buffer));
+            return Promise.resolve(h);
         }
     }
 });

@@ -856,6 +856,5 @@ function createCanvas(graph, scale) {
 export function run(imagedata){
 
     var canvas = createCanvas(depixel(imagedata.data, imagedata.width, imagedata.height).createSimilarityGraph(), 10);
-    console.log(canvas.toDataURL())
     return canvas.toDataURL("image/png");
 }

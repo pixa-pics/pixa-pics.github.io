@@ -1,12 +1,57 @@
 const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
 const AFunction = Object.getPrototypeOf( function(){}).constructor;
 
-const file_to_bmp_sanitized = (file, callback_function = () => {}, pool = null) => {
-    file_to_base64(file, function (b64a){
-        base64_sanitize(b64a, function (b64b){
-            base64_to_bitmap(b64b, callback_function, pool);
+import initJPEG, {decode as decodeJPEG} from './jsquash/decode/jpeg';
+import initWEBP, {decode as decodeWEBP} from './jsquash/decode/webp';
+import initPNG, {decode as decodePNG} from './jsquash/decode/png';
+
+import initRESIZE, {resize} from './jsquash/resize';
+
+initRESIZE();
+initJPEG();
+initWEBP();
+initPNG();
+
+const file_to_imagedata_resized = (file, resize_original_to, callback_function = () => {}, pool = null) => {
+
+    const is_type_png = Boolean(file.type === "image/png");
+    const is_type_jpeg = Boolean(file.type === "image/jpg" || file.type === "image/jpeg");
+    const is_type_webp = Boolean(file.type === "image/webp");
+
+    if(is_type_png || is_type_jpeg || is_type_webp) {
+
+        file.arrayBuffer().then(function (ab){
+            if(is_type_png){
+                imagedcallback(decodePNG(ab));
+            }else if(is_type_jpeg){
+                imagedcallback(decodeJPEG(ab));
+            }else if(is_type_webp){
+                imagedcallback(decodeWEBP(ab));
+            }else {
+                imagedfailedcallback();
+            }
+        }).catch(imagedfailedcallback)
+    }else {
+        imagedfailedcallback();
+    }
+
+    function imagedcallback(imgd){
+        let scale = 1;
+        while (Math.round(imgd.width * scale) * Math.round(imgd.height * scale) > resize_original_to) { scale -= 0.01; }
+        callback_function(resize(imgd, { height: Math.round(imgd.width * scale), width: Math.round(imgd.height * scale) }));
+    }
+
+    function imagedfailedcallback(imgd){
+        file_to_base64(file, function (b64a){
+            base64_sanitize(b64a, function (b64b){
+                base64_to_bitmap(b64b, function (imgbmp){
+                    bitmap_to_imagedata(imgbmp, resize_original_to, function (imagedata2){
+                        callback_function(imagedata2);
+                    }, pool)
+                }, pool);
+            }, pool);
         }, pool);
-    }, pool);
+    }
 };
 
 window.file_to_base64_process_function = new AFunction(`var t = function(file) {
@@ -171,8 +216,8 @@ const file_to_bitmap = (file_or_blob, callback_function) => {
 
 const bitmap_to_imagedata = (bitmap, resize_to =  1920*1080, callback_function = () => {}) => {
 
-        let scale = 1;
-        while (Math.round(bitmap.width * scale) * Math.round(bitmap.height * scale) > resize_to) { scale -= 0.01; }
+    let scale = 1;
+    while (Math.round(bitmap.width * scale) * Math.round(bitmap.height * scale) > resize_to) { scale -= 0.01; }
 
         try {
 
@@ -218,6 +263,29 @@ const bitmap_to_imagedata = (bitmap, resize_to =  1920*1080, callback_function =
             ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
 
             callback_function(ctx.getImageData(0, 0, canvas.width, canvas.height));  // "getImageData" isn't available in web worker
+        }
+};
+
+const imagedata_to_bitmap = (imgd, resize_to =  1920*1080, callback_function = () => {}) => {
+
+        let scale = 1;
+        while (Math.round(imgd.width * scale) * Math.round(imgd.height * scale) > resize_to) { scale -= 0.01; }
+
+
+        try {
+
+            createImageBitmap(imgd, 0, 0, imgd.width, imgd.height, {
+                resizeWidth: Math.round(imgd.width * scale),
+                resizeHeight: Math.round(imgd.height * scale),
+                resizeQuality: "pixelated"
+            }).then(function (bitmap_resized){
+
+                callback_function(bitmap_resized);  // "getImageData" isn't available in web worker
+            });
+
+        } catch(err) {
+
+            callback_function(null)
         }
 };
 
@@ -295,4 +363,4 @@ const imagedata_to_base64 = (imagedata, type= "image/png", callback_function = (
 
 };
 
-module.exports = { file_to_bmp_sanitized, file_to_base64, base64_to_bitmap, bitmap_to_imagedata, imagedata_to_base64, base64_sanitize, file_to_bitmap }
+module.exports = { file_to_imagedata_resized, file_to_base64, base64_to_bitmap, bitmap_to_imagedata, imagedata_to_base64, base64_sanitize, file_to_bitmap }
