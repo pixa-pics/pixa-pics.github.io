@@ -79,10 +79,6 @@ async function init() {
         }
         const imports = {};
 
-
-        
-
-
         const {instance, module} = await load(input, imports);
 
         wasm = instance.exports;

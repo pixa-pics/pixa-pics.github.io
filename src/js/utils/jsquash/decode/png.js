@@ -1,4 +1,4 @@
-import {base64ToBytes} from "../../../utils/b64"
+import {base64ToBytes} from "../../b64"
 let wasm;
 
 let cachedTextDecoder = new TextDecoder('utf-8', { ignoreBOM: true, fatal: true });
@@ -144,26 +144,3 @@ async function init() {
 }
 
 export default init;
-
-const isServiceWorker = globalThis.ServiceWorkerGlobalScope !== undefined;
-const isRunningInCloudFlareWorkers = isServiceWorker && typeof self !== 'undefined' && globalThis.caches && globalThis.caches.default !== undefined;
-const isRunningInNode = typeof process === 'object' && process.release && process.release.name === 'node';
-
-if (isRunningInCloudFlareWorkers || isRunningInNode) {
-    if (!globalThis.ImageData) {
-        // Simple Polyfill for ImageData Object
-        globalThis.ImageData = class ImageData {
-            constructor(data, width, height) {
-                this.data = data;
-                this.width = width;
-                this.height = height;
-            }
-        };
-    }
-
-    
-
-    if (typeof self !== 'undefined' && self.location === undefined) {
-        self.location = { href: '' };
-    }
-}

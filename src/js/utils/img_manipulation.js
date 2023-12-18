@@ -11,7 +11,7 @@ const file_to_imagedata_resized = (file, resize_original_to, callback_function =
     const is_type_jpeg = Boolean(file.type === "image/jpg" || file.type === "image/jpeg");
     const is_type_webp = Boolean(file.type === "image/webp");
 
-    if(is_type_png || is_type_jpeg || is_type_webp) {
+    if(is_type_png) {
 
         var promise_arraybuffer = file.arrayBuffer();
         var promise_decoder = Promise.resolve();
@@ -19,9 +19,9 @@ const file_to_imagedata_resized = (file, resize_original_to, callback_function =
         if(is_type_png){
             promise_decoder = JSLoader( () => import("./jsquash/decode/png"));
         }else if(is_type_jpeg){
-            promise_decoder = JSLoader( () => import("./jsquash/decode/jpeg"));
+            //promise_decoder = JSLoader( () => import("./jsquash/decode/jpeg"));
         }else if(is_type_webp){
-            promise_decoder = JSLoader( () => import("./jsquash/decode/webp"));
+            //promise_decoder = JSLoader( () => import("./jsquash/decode/webp"));
         }
 
         Promise.allSettled([
