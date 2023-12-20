@@ -450,7 +450,7 @@ const styles = theme => ({
             display: "none",
         },
         [theme.breakpoints.up("md")]: {
-            width: "calc(100% - 64px)",
+            width: "100%",
         },
         zIndex: 1300,
         position: "fixed",
