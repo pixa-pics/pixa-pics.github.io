@@ -1,10 +1,9 @@
 import UraniumJS from "uraniumjs/UraniumJS";
 import UraniumCompressJS from "uraniumjs/UraniumCompressJS";
-import SuperJSONatural from "superjsonatural";
+import JOYSON from "joyson";
 
 UraniumJS.enrichFunctionCalls = UraniumCompressJS.UraniumJSEnrichFunctionCalls;
 UraniumJS.depleteFunctionCalls = UraniumCompressJS.UraniumJSDepleteFunctionCalls;
-var SJSON = new SuperJSONatural();
 
 const UJS = (uint8a_or_obj, mode = "COMPRESS_OBJECT", pool = null) => {
 
@@ -12,12 +11,12 @@ const UJS = (uint8a_or_obj, mode = "COMPRESS_OBJECT", pool = null) => {
 
         if (mode === "COMPRESS_OBJECT") {
 
-            resolve(new Uint8ClampedArray(UraniumJS.withinEnrich(SJSON.pack(uint8a_or_obj)).buffer));
+            resolve(new Uint8ClampedArray(UraniumJS.withinEnrich(JOYSON.pack(uint8a_or_obj)).buffer));
 
 
         } else if (mode === "DECOMPRESS_UINT8A") {
 
-            resolve(SJSON.unpack(UraniumJS.withinDeplete(uint8a_or_obj)));
+            resolve(JOYSON.unpack(UraniumJS.withinDeplete(uint8a_or_obj)));
 
         }
     });

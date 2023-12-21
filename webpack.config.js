@@ -174,10 +174,10 @@ module.exports = {
                                     targets: {
                                         "chrome": "72",
                                     },
-                                    /*forceAllTransforms: true,*/
+                                    forceAllTransforms: false,
                                     shippedProposals: true,
-                                    /*loose: true,
-                                    bugfixes: true,*/
+                                    loose: true,
+                                    bugfixes: true,
                                     useBuiltIns: "entry"
                                 }],
                                 'stage-0'
