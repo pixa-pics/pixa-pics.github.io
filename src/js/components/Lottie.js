@@ -29,7 +29,7 @@ class Lottie extends React.PureComponent {
             autoplay: props.autoplay || false,
             path: props.path  || props.src || "",
             initialSegment: props.initialSegment,
-            id: "n"+props.id || "n"+(Math.random()*10000|0).toString(16),
+            id: "n"+props.id || "n"+(Math.random()*65553|0).toString(16),
         };
         this._lottie;
     };
@@ -50,7 +50,7 @@ class Lottie extends React.PureComponent {
             container: document.getElementById(id),
             loop: loop,
             autoplay: autoplay,
-            quality: "high",
+            quality: "medium",
             path: path,
             name: id,
             hover: hover,
@@ -60,8 +60,12 @@ class Lottie extends React.PureComponent {
 
     componentWillUnmount() {
 
-        this._lottie.destroy(this.state.id);
-        delete this._lottie;
+        if(typeof this._lottie != "undefined"){
+            if(this._lottie !== null) {
+                this._lottie.destroy(this.state.id);
+                delete this._lottie;
+            }
+        }
     }
 
     render() {
