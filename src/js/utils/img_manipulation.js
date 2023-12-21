@@ -1,8 +1,6 @@
 import JSLoader from "./JSLoader";
-import * as sizer from 'isomorphic-image-size/index.js'
 const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
 const AFunction = Object.getPrototypeOf( function(){}).constructor;
-import init, {resize} from './jsquash/resize';
 
 const file_to_imagedata_resized = (file, resize_original_to, callback_function = () => {}, pool = null) => {
 
