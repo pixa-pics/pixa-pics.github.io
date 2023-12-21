@@ -172,7 +172,9 @@ module.exports = {
                                 'react',
                                 ["env", {
                                     targets: {
-                                        "chrome": "72",
+                                        "chrome": "58",
+                                        "firefox": "53",
+                                        "safari": "11"
                                     },
                                     forceAllTransforms: false,
                                     shippedProposals: true,
@@ -180,7 +182,7 @@ module.exports = {
                                     bugfixes: true,
                                     useBuiltIns: "entry"
                                 }],
-                                'stage-0'
+                                'stage-1'
                             ]
                         }
                     }
