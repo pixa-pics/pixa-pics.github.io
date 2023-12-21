@@ -172,9 +172,10 @@ module.exports = {
                                 'react',
                                 ["env", {
                                     targets: {
-                                        "chrome": "58",
+                                        "chrome": "88"
+                                        /*"chrome": "58",
                                         "firefox": "53",
-                                        "safari": "11"
+                                        "safari": "11"*/
                                     },
                                     forceAllTransforms: false,
                                     shippedProposals: true,
