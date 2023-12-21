@@ -27,7 +27,7 @@ SOFTWARE.
 const HISTORY_TIME_GAP = 625;
 import {SetFixed} from "@asaitama/boolean-array";
 
-import {Layer} from "../../utils/Layer";
+import {Layer, Filters} from "../../utils/Layer";
 
 import React from "react";
 import TouchRipple from "@material-ui/core/ButtonBase/TouchRipple";
@@ -43,7 +43,6 @@ import ColorConversion from "../canvaspixels/utils/ColorConversion";
 import SmartRequestAnimationFrame from "../canvaspixels/utils/SmartRequestAnimationFrame";
 import XXHash from "../canvaspixels/utils/XXHash";
 import CanvasPos from "../canvaspixels/utils/CanvasPos"
-import {Filters} from "../../../js/utils/Layer"
 import {Color, Colors, simdops} from "simdope";
 import {toBytes, toBase64} from 'fast-base64';
 class CanvasPixels extends React.PureComponent {
@@ -442,7 +441,7 @@ class CanvasPixels extends React.PureComponent {
         let { _layers, _s_layers, pxl_width, pxl_height } = this.super_state.get_state();
         at_index = typeof at_index === "undefined" ? _s_layers.length: at_index;
 
-        _s_layers.splice(at_index+1, 0, Layer.new_from_colors_and_indexes(_s_layers[at_index].colors, _s_layers[at_index].indexes, pxl_width, pxl_height, true));
+        _s_layers.splice(at_index+1, 0, Layer.new_from_colors_and_indexes(_s_layers[at_index].colors_copy, _s_layers[at_index].indexes_copy, pxl_width, pxl_height, true));
 
         _layers.splice(at_index + 1, 0, {
             id: Date.now(),
@@ -1958,7 +1957,7 @@ class CanvasPixels extends React.PureComponent {
                         };
                     })),
                     _layer_index: parseInt(sh._layer_index),
-                    _s_layers: Array.from(sh._s_layers.map(function (l){return Layer.new_from_colors_and_indexes(l.colors, l.indexes, parseInt(sh.pxl_width), parseInt(sh.pxl_height), true)})),
+                    _s_layers: Array.from(sh._s_layers.map(function (l){return Layer.new_from_colors_and_indexes(l.colors_copy, l.indexes_copy, parseInt(sh.pxl_width), parseInt(sh.pxl_height), true)})),
                     _pxl_indexes_of_selection: new SetFixed(sh._pxl_indexes_of_selection),
                     _pencil_mirror_index: parseInt(sh._pencil_mirror_index),
                     _json_state_history: _json_state_history,
@@ -2012,7 +2011,7 @@ class CanvasPixels extends React.PureComponent {
                         };
                     })),
                     _layer_index: parseInt(sh._layer_index),
-                    _s_layers: Array.from(sh._s_layers.map(function (l){return Layer.new_from_colors_and_indexes(l.colors, l.indexes, parseInt(sh.pxl_width), parseInt(sh.pxl_height), true)})),
+                    _s_layers: Array.from(sh._s_layers.map(function (l){return Layer.new_from_colors_and_indexes(l.colors_copy, l.indexes_copy, parseInt(sh.pxl_width), parseInt(sh.pxl_height), true)})),
                     _pxl_indexes_of_selection: new SetFixed(sh._pxl_indexes_of_selection),
                     _pencil_mirror_index: parseInt(sh._pencil_mirror_index),
                     _json_state_history: _json_state_history,
