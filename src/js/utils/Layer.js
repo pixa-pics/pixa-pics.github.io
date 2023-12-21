@@ -853,7 +853,7 @@ Object.defineProperty(Layer.prototype, 'hash_hex_async', {
         "use strict";
         return function (data){
             "use strict";
-            var h = xxhash.base58_that(new Uint8Array(this.colors.buffer), new Uint8Array(this.indexes.buffer));
+            var h = xxhash.base58_that(new Uint8Array(this.data.buffer));
             return Promise.resolve(h);
         }
     }

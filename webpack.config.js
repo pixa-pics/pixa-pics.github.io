@@ -132,8 +132,8 @@ module.exports = {
         chunkIds: 'named',
         splitChunks: {
             chunks: 'async',
-            minSize: 128 * 1024,
-            maxSize: 2048 * 1024,
+            minSize: 192 * 1024,
+            maxSize: 384 * 1024,
             minChunks: 5,
             maxAsyncRequests: 12,
             maxInitialRequests: 7,
@@ -147,8 +147,8 @@ module.exports = {
                 },
                 default: {
                     minChunks: 5,
-                    maxAsyncRequests: 12,
-                    maxInitialRequests: 7,
+                    maxAsyncRequests: 20,
+                    maxInitialRequests: 10,
                     priority: -20,
                     reuseExistingChunk: true
                 }
@@ -162,7 +162,7 @@ module.exports = {
         rules: [
             {
                 test: /\.(js||jsx)$/i,
-                exclude: /not_node_modules/,
+                exclude: /node_modules/,
                 use: [
                     {
                         loader: 'babel-loader',
@@ -171,13 +171,12 @@ module.exports = {
                                 'react',
                                 ["env", {
                                     targets: {
-                                        "chrome": "92"
-                                        /*"chrome": "58",
+                                        "chrome": "58",
                                         "firefox": "53",
-                                        "safari": "11"*/
+                                        "safari": "11"
                                     },
-                                    forceAllTransforms: true,
-                                    shippedProposals: false,
+                                    forceAllTransforms: false,
+                                    shippedProposals: true,
                                     bugfixes: true,
                                     useBuiltIns: "entry"
                                 }],
