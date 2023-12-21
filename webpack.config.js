@@ -178,11 +178,10 @@ module.exports = {
                                     },
                                     forceAllTransforms: false,
                                     shippedProposals: true,
-                                    loose: true,
                                     bugfixes: true,
                                     useBuiltIns: "entry"
                                 }],
-                                'stage-1'
+                                'stage-0'
                             ]
                         }
                     }
