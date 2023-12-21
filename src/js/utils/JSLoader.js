@@ -1,4 +1,4 @@
-export default function JSLoader(comp, attempts_left = 500) {
+function JSLoader(comp, attempts_left = 500) {
     return new Promise(function(resolve, reject) {
         comp().then(function (r){
 
@@ -21,3 +21,5 @@ export default function JSLoader(comp, attempts_left = 500) {
             });
     });
 }
+
+module.exports = JSLoader;

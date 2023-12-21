@@ -1,6 +1,5 @@
 var webpack = require('webpack');
 var path = require('path');
-var urlLoader = require("url-loader");
 var TerserPlugin = require('terser-webpack-plugin');
 var BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 var HtmlWebpackPlugin = require("html-webpack-plugin");
@@ -106,7 +105,7 @@ module.exports = {
                             'UINT32',
                             'INT64',
                             'UINT64',
-                            'UINT',
+                            'UINT'
                         ]
                     },
                     compress: {
@@ -163,7 +162,7 @@ module.exports = {
         rules: [
             {
                 test: /\.(js||jsx)$/i,
-                exclude: /node_modules/,
+                exclude: /not_node_modules/,
                 use: [
                     {
                         loader: 'babel-loader',
@@ -172,41 +171,18 @@ module.exports = {
                                 'react',
                                 ["env", {
                                     targets: {
-                                        "chrome": "88"
+                                        "chrome": "92"
                                         /*"chrome": "58",
                                         "firefox": "53",
                                         "safari": "11"*/
                                     },
-                                    forceAllTransforms: false,
-                                    shippedProposals: true,
+                                    forceAllTransforms: true,
+                                    shippedProposals: false,
                                     bugfixes: true,
                                     useBuiltIns: "entry"
                                 }],
                                 'stage-0'
                             ]
-                        }
-                    }
-                ]
-            },
-            {
-                test: /\.(wasm)$/i,
-                use: [
-                    {
-                        loader: 'url-loader',
-                        options: {
-                            encoding: 'base64',
-                            limit: false,
-                            // The `mimetype` and `encoding` arguments will be obtained from your options
-                            // The `resourcePath` argument is path to file.
-                            generator: (content, mimetype, encoding, resourcePath) => {
-                                if (/\.html$/i.test(resourcePath)) {
-                                    return `data:${mimetype},${content.toString()}`;
-                                }
-
-                                return `data:${mimetype}${
-                                    encoding ? `;${encoding}` : ''
-                                },${content.toString(encoding)}`;
-                            }
                         }
                     }
                 ]
