@@ -396,7 +396,10 @@ class CanvasPixels extends React.PureComponent {
                 _layer_index: parseInt(_layer_index + 1),
                 _s_layers,
                 _last_action_timestamp: Date.now()
-            }).then(() => {this._maybe_save_state(null, true)});
+            }).then(() => {
+                this.super_master_meta.update_canvas(true);
+                this._maybe_save_state(null, true);
+            });
         }
     };
 
@@ -415,7 +418,10 @@ class CanvasPixels extends React.PureComponent {
                 _s_layers,
                 _layer_index: parseInt(_layer_index - 1),
                 _last_action_timestamp: Date.now()
-            }).then(() => {this._maybe_save_state(null, true)});
+            }).then(() => {
+                this.super_master_meta.update_canvas(true);
+                this._maybe_save_state(null, true);
+            });
         }
     };
 
@@ -433,7 +439,10 @@ class CanvasPixels extends React.PureComponent {
             _s_layers,
             _layer_index: at_index + 1,
             _last_action_timestamp: Date.now(),
-        }).then(() => {this._maybe_save_state(null, true)});
+        }).then(() => {
+            this.super_master_meta.update_canvas(true);
+            this._maybe_save_state(null, true);
+        });
     };
 
     duplicate_layer = (at_index) => {
@@ -459,7 +468,11 @@ class CanvasPixels extends React.PureComponent {
             _layer_index: at_index + 1,
             _s_layers,
             _last_action_timestamp: Date.now(),
-        }).then(() => {this._maybe_save_state(null, true)});
+        }).then(() => {
+
+            this.super_master_meta.update_canvas(true);
+            this._maybe_save_state(null, true)
+        });
 
     };
 
@@ -480,7 +493,10 @@ class CanvasPixels extends React.PureComponent {
                 _layer_index,
                 _s_layers,
                 _last_action_timestamp: Date.now(),
-            }).then(() => {this._maybe_save_state(null, true)});
+            }).then(() => {
+                this.super_master_meta.update_canvas(true);
+                this._maybe_save_state(null, true);
+            });
         }
 
     };
@@ -565,7 +581,10 @@ class CanvasPixels extends React.PureComponent {
                     _s_layers,
                     _old_pxl_colors: new Uint32Array(_s_layers[0].indexes.length),
                     _last_action_timestamp: Date.now(),
-                }).then(() => {this._maybe_save_state(null, true)});
+                }).then(() => {
+                    this.super_master_meta.update_canvas(true);
+                    this._maybe_save_state(null, true)
+                });
             });
         }
     };
@@ -583,8 +602,6 @@ class CanvasPixels extends React.PureComponent {
                 _processing_filters,
                 _layer_index,
                 _last_filters_hash,
-                pxl_width,
-                pxl_height,
                 _s_layers,
                 _filter_thumbnails
             } = this.super_state.get_state();
@@ -936,6 +953,7 @@ class CanvasPixels extends React.PureComponent {
                     this._notify_image_import_complete();
                     this._notify_is_image_import_mode();
                     this.super_master_meta.update_canvas();
+                    this._maybe_save_state();
                 });
 
             }
@@ -1316,7 +1334,7 @@ class CanvasPixels extends React.PureComponent {
         this._ripple.start(event);
         setTimeout(() => {
             this._ripple.stop(event);
-        }, 175);
+        }, 75);
     };
 
     _canvas_pos_handle_wheel = (event) => {
