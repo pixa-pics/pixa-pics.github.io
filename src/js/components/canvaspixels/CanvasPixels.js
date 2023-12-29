@@ -1807,6 +1807,7 @@ class CanvasPixels extends React.PureComponent {
 
     import_JS_state = (js, callback_function) => {
         "use strict";
+        console.log(js)
         var _base64_original_images = Array.from(js._base64_original_images);
         Promise.all(_base64_original_images.map((entry) => {return toBase64(entry[1]); }))
             .then((response) => {
@@ -1846,12 +1847,13 @@ class CanvasPixels extends React.PureComponent {
 
                 let sh = _json_state_history.state_history[_json_state_history.history_position-1];
 
+                console.log(sh)
                 this.super_state.set_state({
                     _id: sh._id.toString(),
                     pxl_width: parseInt(sh.pxl_width),
                     pxl_height: parseInt(sh.pxl_height),
                     _base64_original_images: Array.from(_base64_original_images),
-                    _original_image_index: parseInt(sh._original_image_index),
+                    _original_image_index: parseInt(sh._original_image_index) || 0,
                     _layers: Array.from(sh._layers.map(function(l) {
                         "use strict";
                         return {
@@ -1862,8 +1864,8 @@ class CanvasPixels extends React.PureComponent {
                             opacity: parseFloat(l.opacity),
                         };
                     })),
-                    _layer_index: parseInt(sh._layer_index),
-                    _s_layers: Array.from(sh._s_layers.map(function (l){return Layer.new_from_colors_and_indexes(l.colors, l.indexes, parseInt(sh.pxl_width), parseInt(sh.pxl_height), true)})),
+                    _layer_index: parseInt(sh._layer_index) || 0,
+                    _s_layers: Array.from(sh._s_layers),
                     _pxl_indexes_of_selection: new SetFixed(sh._pxl_indexes_of_selection),
                     _pencil_mirror_index: parseInt(sh._pencil_mirror_index),
                     _json_state_history: _json_state_history,

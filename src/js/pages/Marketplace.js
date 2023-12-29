@@ -65,10 +65,8 @@ import pool from "../utils/worker-pool";
 import JSLoader from "../utils/JSLoader";
 import actions from "../actions/utils";
 import xbrz from "../utils/xBRZ";
-import HD4K from "../icons/HD4K";
+import HexagonThree from "../icons/HexagonThree";
 import CloudDownload from "@material-ui/icons/CloudDownload";
-import depixelize from "../utils/depixelize/index";
-import {base64_sanitize, base64_to_bitmap, bitmap_to_imagedata} from "../utils/img_manipulation";
 
 const styles = theme => ({
     root: {
@@ -987,10 +985,15 @@ class Marketplace extends React.Component {
         window.addEventListener("resize", this.updateDimension);
         this.setState({_h_svg: createLocalBlob(get_svg_in_b64(<HexGrid color={"rgba(1,17,255,0.1)"}/>)),_h_svg_size: `${Math.ceil(.5*200)}px ${Math.ceil(.5*229.3)}px`}, () => {
             this.forceUpdate(() => {
-                this.setRefFromLeft(null);
+
             })
         });
 
+        setTimeout(() => {
+            this.forceUpdate(() => {
+                this.setRefFromLeft(null);
+            });
+        }, 1000);
     }
 
     shouldComponentUpdate(nextProps, nextState, nextContext) {
@@ -1059,6 +1062,11 @@ class Marketplace extends React.Component {
             case "xbrz":
                 JSLoader( () => import("../utils/xBRZ")).then((obj) => {
                     obj.default(data, 6, pool).then(callback);
+                });
+                break;
+            case "hex":
+                JSLoader( () => import("../utils/hexagonrender")).then((obj) => {
+                    obj.hexagonrender(data, 16, pool).then(callback);
                 });
                 break;
             case "svg":
@@ -1370,7 +1378,7 @@ class Marketplace extends React.Component {
                         <div style={{position: "absolute", top: 16, left: 16}}>
                             <IconButton style={{color: "#ffffff"}} onClick={() => {this.renderMedia("pixelated", openedMediaDataData.data)}}><Icon><SquareRoundedIcon/></Icon></IconButton>
                             <IconButton style={{color: "#ffffff"}} onClick={() => {this.renderMedia("xbrz", openedMediaDataData.data)}}><Icon><GamePadRoundIcon/></Icon></IconButton>
-                            <IconButton style={{color: "#ffffff"}} onClick={() => {this.renderMedia("svg", openedMediaDataData.data, openedMediaDataData.colors)}}><Icon><HD4K/></Icon></IconButton>
+                            <IconButton style={{color: "#ffffff"}} onClick={() => {this.renderMedia("hex", openedMediaDataData.data, openedMediaDataData.colors)}}><Icon><HexagonThree/></Icon></IconButton>
                         </div>
                         <div style={{position: "absolute", right: window.innerWidth > 800 ? 400: 14, top: 16}}>
                             <IconButton style={{color: "#ffffff"}} onClick={() => {this.download(src, openedMediaData.name, "sophia.julio")}}><Icon><CloudDownload/></Icon></IconButton>

@@ -732,12 +732,7 @@ class Pixel extends React.PureComponent {
         l(null, () => {
 
             this._compute_menu_drawer();
-            this.setSt4te({_time_ago_initiated: true}, () => {
-
-                this._request_force_update(false, true).then(() => {
-                    this._updated_dimensions();
-                });
-            });
+            this.setSt4te({_time_ago_initiated: true});
         }, true);
 
         setTimeout(() => {
@@ -788,6 +783,12 @@ class Pixel extends React.PureComponent {
 
         this._set_saved_at_element();
         this._try_load_with_payload(this.st4te.load_with);
+
+        setTimeout(() => {
+            this._request_force_update(false, true).then(() => {
+                this._updated_dimensions();
+            });
+        }, 1000);
     }
 
     _request_force_update = (can_be_cancelable, especially_dont_force) => {
@@ -1040,7 +1041,7 @@ class Pixel extends React.PureComponent {
 
         actions.trigger_loading_update(75);
         actions.jamy_update("flirty");
-        actions.trigger_snackbar("Hold on! Compressing...", 1750);
+        actions.trigger_snackbar("Hold on! Compressing...", 1000);
         if(current_state.kb > 0.5) {
 
             let attachment_array = {};
@@ -1063,9 +1064,11 @@ class Pixel extends React.PureComponent {
 
                         window.onbeforeunload = function(e) {};
                         setTimeout(() => {
-                            actions.jamy_update("happy");
-                        }, 250);
-                        actions.trigger_snackbar("Success! Laboratory's artwork saved!", 2000);
+                            setTimeout(() => {
+                                actions.jamy_update("happy");
+                            }, 500);
+                            actions.trigger_snackbar("Success! Laboratory's artwork saved!", 2000);
+                        }, 1000);
 
                     }else {
 
