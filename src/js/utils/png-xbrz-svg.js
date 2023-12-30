@@ -231,7 +231,7 @@ const base64png_to_xbrz_svg = (base64png, callback_function_for_image, callback_
 
                 const first_scale_size = 32;
 
-                hexagonrender(image_data, first_scale_size/2, pool).then((second_image_data) => {
+                hexagonrender(image_data, first_scale_size/2).then((second_image_data) => {
 
                     let third_canvas = document.createElement("canvas");
                     third_canvas.width = second_image_data.width;

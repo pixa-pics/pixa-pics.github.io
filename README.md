@@ -1,9 +1,6 @@
 # PIXA.PICS | STORING PIXEL-ART NFT ONE THOUSAND YEARS!
 
-
-Storing pixel art 1000 years: https://www.youtube.com/watch?v=cctknQhVX1w
-> Click the link to watch the video on Youtube
-
+[![Thumbnail](https://img.youtube.com/vi/SAJ0rFhyhlw/0.jpg)](https://www.youtube.com/watch?v=SAJ0rFhyhlw)
 
 ---
 

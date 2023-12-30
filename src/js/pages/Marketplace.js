@@ -1066,7 +1066,11 @@ class Marketplace extends React.Component {
                 break;
             case "hex":
                 JSLoader( () => import("../utils/hexagonrender")).then((obj) => {
-                    obj.hexagonrender(data, 16, pool).then(callback);
+                    obj.hexagonrender(data, 12, true).then((out) => {
+                        this.setState({src: out}, () => {
+                            this.forceUpdate();
+                        })
+                    });
                 });
                 break;
             case "svg":
@@ -1356,6 +1360,7 @@ class Marketplace extends React.Component {
                         <div style={{pointerEvents: "none"}} className={"Canvas-Wrapper-Overflow Shown " + classes.leftFromDrawer}>
                         <Card className={classes.fullCard + " Canvas-Wrapper"}
                               style={{
+                                  background: "transparent",
                                   boxShadow: box_shadow,
                                   zIndex: 1,
                                   filter: filter,
@@ -1370,17 +1375,17 @@ class Marketplace extends React.Component {
                                   maxHeight: screen_zoom_ratio * scale.current * openedMediaDataData.height + 1 | 0,
                                   contain: "paint size style layout"
                         }}>
-                            <img className={"pixelated"} src={src} style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%"}}/>
-                            <div style={{filter: "opacity(0.5)", background: background_image,  position: "absolute", top: 0, left: 0, width: "100%", height: "100%"}}></div>
+                            <img className={"pixelated"} src={src} style={{ position: "fixed", top: 0, left: 0, width: "100%", height: "100%", contain: "paint size style layout"}}/>
+                            <div style={{filter: "opacity(0.25)", background: background_image,  position: "fixed", top: 0, left: 0, width: "100%", height: "100%", contain: "paint size style layout"}}></div>
                         </Card>
                     </div>}
                     <div className={classes.leftFromDrawer} style={{zIndex: 10, pointerEvents: "all"}} ref={this.setRefFromLeft} >
-                        <div style={{position: "absolute", top: 16, left: 16}}>
+                        <div style={{position: "fixed", top: 16, left: 16}}>
                             <IconButton style={{color: "#ffffff"}} onClick={() => {this.renderMedia("pixelated", openedMediaDataData.data)}}><Icon><SquareRoundedIcon/></Icon></IconButton>
                             <IconButton style={{color: "#ffffff"}} onClick={() => {this.renderMedia("xbrz", openedMediaDataData.data)}}><Icon><GamePadRoundIcon/></Icon></IconButton>
                             <IconButton style={{color: "#ffffff"}} onClick={() => {this.renderMedia("hex", openedMediaDataData.data, openedMediaDataData.colors)}}><Icon><HexagonThree/></Icon></IconButton>
                         </div>
-                        <div style={{position: "absolute", right: window.innerWidth > 800 ? 400: 14, top: 16}}>
+                        <div style={{position: "fixed", right: window.innerWidth > 800 ? 400: 14, top: 16}}>
                             <IconButton style={{color: "#ffffff"}} onClick={() => {this.download(src, openedMediaData.name, "sophia.julio")}}><Icon><CloudDownload/></Icon></IconButton>
                             <IconButton style={{color: "#ffffff"}} onClick={() => {this.edit(openedMediaData.src);}}><Icon><ImageEditIcon/></Icon></IconButton>
                             <IconButton style={{color: "#ffffff"}} onClick={() => {this.closeMediaCard();}}><Icon><CloseIcon/></Icon></IconButton>
