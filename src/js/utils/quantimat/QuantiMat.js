@@ -54,8 +54,8 @@ var MODE = SIMDopeCreateConfAdd({
 });
 
 var fr = Math.fround;
-var DISTINCT_SKIN_COLOR_MATCH_MULTIPLY = fr(1.0);
-var SAME_SKIN_COLOR_MATCH_MULTIPLY = fr(0.777);
+var DISTINCT_SKIN_COLOR_MATCH_MULTIPLY = fr(.90);
+var SAME_SKIN_COLOR_MATCH_MULTIPLY = fr(.95);
 
 const {simdops, Color, Colors} = SIMDopeCreate(MODE);
 const {
@@ -255,7 +255,7 @@ Object.defineProperty(QuantiMat.prototype, 'reset_cluster', {
 Object.defineProperty(QuantiMat.prototype, 'add_in_indexes_cluster', {
     get: function() { "use strict"; return function(cluster_index, color_index) {
         "use strict";
-        this.index_clusters_[(cluster_index|0)>>>0].push((color_index|0)>>>0);
+        this.index_clusters_[(cluster_index | 0) >>> 0].push((color_index | 0) >>> 0);
     }}
 });
 Object.defineProperty(QuantiMat.prototype, 'set_all_cluster_indexes', {
@@ -428,7 +428,7 @@ QuantiMat.prototype.clusterize = function() {
 
             this.add_in_indexes_cluster((this.get_a_new_pxl_color((l|0)>>>0).rgbaon4bits|0)>>>0, (l|0)>>>0);
         }
-    }else if(this.max_cluster === 1){
+    }else {
 
         for(; (l|0) < (this.new_pxl_colors_length|0); l = (l+1|0)>>>0) {
 
@@ -440,6 +440,7 @@ QuantiMat.prototype.clusterize = function() {
 
         this.set_classify_on_x_bits_ops(this.get_classify_on_x_bits_ops() + this.new_pxl_colors_length);
     }
+
     this.set_all_cluster_indexes();
 }
 
@@ -447,6 +448,8 @@ QuantiMat.prototype.process_threshold = function(t) {
     "use strict";
 
     t = (t | 0) >>> 0;
+
+    var weight_applied_to_color_usage_difference = fr(t / 256);
     var index_merged = false;
     var latest_colors = [];
     var latest_amounts = [];
@@ -455,17 +458,25 @@ QuantiMat.prototype.process_threshold = function(t) {
     var color_a, color_b;
     var color_a_skin = false;
     var color_b_skin = false;
-    var color_a_usage = 0;
-    var color_b_usage = 0;
-    var weighted_threshold = fr(t / 0xFF);
-    var weighted_threshold_skin = 0;
-    var weighted_threshold_skin_skin = 0;
+    var color_a_usage = 0, color_b_usage = 0;
+    var color_a_usage_percent = 0, color_b_usage_percent = 0, average_color_usage_percent = 0;
+    var color_usage_difference_positive = 0.0;
+    var weighted_threshold = 0.0;
+    var weighted_threshold_skin = 0.0;
+    var weighted_threshold_skin_skin = 0.0;
     var index_of_color_a = 0;
     var index_of_color_b = 0;
-    var x = 0, y = 0, c = 0, p = 0, m = 0;
+    var x = 0, y = 0, c = 0;
     var color_n_in_cluster = 0;
+    var threshold = 0;
 
     // 1x Threshold + 1x weight
+    weighted_threshold =
+        fr(
+            // Threshold and weight applied to threshold divided by what is not the threshold
+            fr((t / 256) + (t / 256 * weight_applied_to_color_usage_difference)) /
+            fr(1 + weight_applied_to_color_usage_difference)
+        );  // THRESHOLD + THRESHOLD * WEIGHT / 1 + WEIGHT
     weighted_threshold_skin_skin = fr(weighted_threshold * SAME_SKIN_COLOR_MATCH_MULTIPLY);
     weighted_threshold_skin = fr(weighted_threshold * DISTINCT_SKIN_COLOR_MATCH_MULTIPLY);
 
@@ -473,6 +484,7 @@ QuantiMat.prototype.process_threshold = function(t) {
 
         color_n_in_cluster = (this.get_length_in_index_clusters(c|0) | 0) >>> 0;
         stop = (start + color_n_in_cluster | 0) >>> 0;
+        average_color_usage_percent = this.get_average_color_usage_percent(start|0, stop|0);
 
         for(x = start|0; (x|0) < (stop|0); x = (x+1|0)>>>0) {
 
@@ -498,9 +510,21 @@ QuantiMat.prototype.process_threshold = function(t) {
 
                     if((color_b_usage|0) > 0 && (index_of_color_a|0) != (index_of_color_b|0)) {
 
-                        m = (m+1|0) >>> 0;
-                        // The less a color is used the less it requires a great distance to be merged (so we don't have many color used only a few time in the whole image, heavily used color gets preserved better than lowly used ones)
-                        if(color_a.euclidean_match_with(color_b,  (color_a_skin && color_b_skin) ? weighted_threshold_skin_skin: (color_a_skin || color_b_skin) ? weighted_threshold_skin: weighted_threshold)) {
+                        // Here we find the normalized color usage 0.1-10 in average
+                        color_a_usage_percent = this.get_a_color_usage_percent((index_of_color_a|0)>>>0) / average_color_usage_percent;
+                        color_b_usage_percent = this.get_a_color_usage_percent((index_of_color_b|0)>>>0) / average_color_usage_percent;
+
+                        // Here we have different threshold for skin to skin, skin to environement, and environement to environement color operation
+                        threshold = (color_a_skin && color_b_skin) ? weighted_threshold_skin_skin: (color_a_skin || color_b_skin) ? weighted_threshold_skin: weighted_threshold;
+
+                        // There the more a color is used the less we will probably blend it, also:
+                        // The greater the "usage" distance is, the most probably we'll have to sacrifice the lowest used color
+                        // So the more the usage distance the more probabilities we'll have to blend them together
+                        threshold = threshold + threshold / fr((color_a_usage_percent+color_b_usage_percent) - Math.abs(color_a_usage_percent-color_b_usage_percent));
+                        // CIE LAB 1976 version color scheme is used to measure accurate the distance for the human eye
+                        if(color_a.cie76_match_with(color_b,  threshold/2)) {
+
+                            color_usage_difference_positive = fr(color_b_usage / color_a_usage);
 
                             // Update color usage and relative variables
                             index_merged = true;
@@ -508,7 +532,7 @@ QuantiMat.prototype.process_threshold = function(t) {
                             // Adds color to blend to processed colors and stack it to what will be set to be equals with all other color blended
                             this.set_a_color_usage(index_of_color_b|0, 0);
                             latest_colors.push(color_b);
-                            latest_amounts.push(fr(color_b_usage / color_a_usage));
+                            latest_amounts.push(color_usage_difference_positive);
                         }
                     }
                 }
@@ -516,7 +540,6 @@ QuantiMat.prototype.process_threshold = function(t) {
 
             if((latest_colors.length|0) > 0) {
                 Color.blend_all(color_a, latest_colors, latest_amounts);
-                p = (p+latest_colors.length+1|0) >>> 0;
                 latest_colors = []; latest_amounts = [];
             }
         }
@@ -524,8 +547,6 @@ QuantiMat.prototype.process_threshold = function(t) {
         start = stop | 0;
     }
 
-    this.set_match_ops(this.get_match_ops()+ m);
-    this.set_blend_ops(this.get_blend_ops()+ p);
     return index_merged;
 }
 
