@@ -54,8 +54,8 @@ var MODE = SIMDopeCreateConfAdd({
 });
 
 var fr = Math.fround;
-var DISTINCT_SKIN_COLOR_MATCH_MULTIPLY = fr(0.666);
-var SAME_SKIN_COLOR_MATCH_MULTIPLY = fr(0.666);
+var DISTINCT_SKIN_COLOR_MATCH_MULTIPLY = fr(1.0);
+var SAME_SKIN_COLOR_MATCH_MULTIPLY = fr(0.777);
 
 const {simdops, Color, Colors} = SIMDopeCreate(MODE);
 const {
@@ -533,7 +533,7 @@ QuantiMat.prototype.process_threshold = function(t) {
 QuantiMat.prototype.round = function() {
     "use strict";
 
-    if(this.new_pxl_colors_length > 8192) {
+    if(this.new_pxl_colors_length > 1024) {
 
         var simplify_of = (this.new_pxl_colors_length > 32768 ? 24: this.new_pxl_colors_length > 32768 ? 20: this.new_pxl_colors_length > 16384 ? 16: this.new_pxl_colors_length > 8192 ? 12: this.new_pxl_colors_length > 2048 ? 8: this.new_pxl_colors_length > 1024 ? 4: 1) | 0;
         for(var l = 0; (l|0) < (this.new_pxl_colors_length|0); l = (l+1|0)>>>0) {
@@ -555,21 +555,14 @@ QuantiMat.prototype.run =  function() {
     "use strict";
 
     var t = (this.new_pxl_colors_length > 60000 ? 60: this.new_pxl_colors_length > 32000 ? 32: this.new_pxl_colors_length > 16000 ? 16: this.new_pxl_colors_length > 8192 ? 8: this.new_pxl_colors_length > 4096 ? 4: this.new_pxl_colors_length > 2048 ? 2: 1) | 0;
-    for (; (t|0) <= 0xFF;) {
+    while (this.new_pxl_colors_length > this.best_color_number) {
 
         if(this.process_threshold(t|0)) {
             this.deduplicate();
             this.clusterize();
-        }else {
-
-            t = t + (this.new_pxl_colors_length > 60000 ? 60: this.new_pxl_colors_length > 32000 ? 32: this.new_pxl_colors_length > 16000 ? 16: this.new_pxl_colors_length > 8192 ? 8: this.new_pxl_colors_length > 4096 ? 4: this.new_pxl_colors_length > 2048 ? 2: 1) | 0;
         }
 
         t = t + (this.new_pxl_colors_length > 60000 ? 60: this.new_pxl_colors_length > 32000 ? 32: this.new_pxl_colors_length > 16000 ? 16: this.new_pxl_colors_length > 8192 ? 8: this.new_pxl_colors_length > 4096 ? 4: this.new_pxl_colors_length > 2048 ? 2: 1) | 0;
-
-        if(this.new_pxl_colors_length <= this.best_color_number){
-            break;
-        }
     }
 
 

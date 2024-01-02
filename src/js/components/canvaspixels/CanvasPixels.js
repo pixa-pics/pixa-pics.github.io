@@ -44,7 +44,7 @@ import SmartRequestAnimationFrame from "../canvaspixels/utils/SmartRequestAnimat
 import XXHash from "../canvaspixels/utils/XXHash";
 import CanvasPos from "../canvaspixels/utils/CanvasPos"
 import {Color, Colors, simdops} from "simdope";
-import {toBytes, toBase64} from 'fast-base64';
+import {base64ToBytes as toBytes, bytesToBase64 as toBase64} from '../../utils/b64';
 class CanvasPixels extends React.PureComponent {
 
     constructor(props) {
@@ -953,7 +953,7 @@ class CanvasPixels extends React.PureComponent {
                     this._notify_image_import_complete();
                     this._notify_is_image_import_mode();
                     this.super_master_meta.update_canvas();
-                    this._maybe_save_state();
+                    this._maybe_save_state(null, true);
                 });
 
             }

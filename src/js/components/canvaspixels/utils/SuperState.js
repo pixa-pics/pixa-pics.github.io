@@ -168,6 +168,30 @@ const SuperState = {
                     if("_is_image_import_mode" in new_props) {if(state_._is_image_import_mode == new_props._is_image_import_mode) {update_cursor = true;}}
                     if("" in new_props) {if(state_._is_on_resize_element == new_props._is_on_resize_element) {update_cursor = true;}}
 
+                    if("pxl_current_color" in new_props){
+                        state_["pxl_current_color_uint32"] = Color.new_hex(new_props["pxl_current_color"]).uint32;
+                    }
+                    if("show_original_image_in_background" in new_props || "_base64_original_images" in new_props || "_original_image_index" in new_props || "show_transparent_image_in_background" in new_props || "pxl_width" in new_props || "pxl_height" in new_props){
+                        if(
+                            !Boolean(state_["cached_background_image_url"]) ||
+                            (typeof new_props._original_image_index != "undefined" && state_._original_image_index !== new_props._original_image_index) ||
+                            (typeof new_props.show_original_image_in_background != "undefined" && state_.show_original_image_in_background !== new_props.show_original_image_in_background) ||
+                            (typeof new_props.show_transparent_image_in_background != "undefined" && state_.show_transparent_image_in_background !== new_props.show_transparent_image_in_background) ||
+                            (new_props._base64_original_images && state_._base64_original_images.length !== new_props._base64_original_images.length)
+                        ){
+                            if(Boolean(state_.show_original_image_in_background && typeof state_._base64_original_images[state_._original_image_index] !== "undefined")){
+                                if(Boolean(state_["cached_background_image_url"])){URL.revokeObjectURL(state_["cached_background_image_url"])}
+                                state_["cached_background_image_url"] = createLocalBlob(state_._base64_original_images[state_._original_image_index]);
+                                state_["cached_background_image"] = `center / cover no-repeat url("${state_["cached_background_image_url"]}")${state_.show_transparent_image_in_background ? `, repeating-conic-gradient(rgb(248 248 248 / 100%) 0% 25%, rgb(235 235 235 / 100%) 0% 50%) left top 50% / calc(200% / ${state_.pxl_width}) calc(200% / ${state_.pxl_height})`: ""}`;
+
+                            }else if(state_.show_transparent_image_in_background) {
+                                state_["cached_background_image"] = `repeating-conic-gradient(rgb(248 248 248 / 100%) 0% 25%, rgb(235 235 235 / 100%) 0% 50%) left top 50% / calc(200% / ${state_.pxl_width}) calc(200% / ${state_.pxl_height})`;
+                            }else {
+                                state_["cached_background_image"] = "";
+                            }
+                        }
+
+                    }
                     if(is_large_object){
                         state_ = Object.assign(state_, new_props);
                     }else {
@@ -175,21 +199,6 @@ const SuperState = {
                         for (key in new_props) {
 
                             state_[key] = new_props[key];
-                        }
-                    }
-
-                    if("pxl_current_color" in new_props){
-                        state_["pxl_current_color_uint32"] = Color.new_hex(new_props["pxl_current_color"]).uint32;
-                    }
-                    if("show_original_image_in_background" in new_props || "_base64_original_images" in new_props || "_original_image_index" in new_props || "show_transparent_image_in_background" in new_props || "pxl_width" in new_props || "pxl_height" in new_props){
-                        if(Boolean(state_.show_original_image_in_background && typeof state_._base64_original_images[state_._original_image_index] !== "undefined")){
-                            if(Boolean(state_["cached_background_image_url"])){URL.revokeObjectURL(state_["cached_background_image_url"])}
-                            state_["cached_background_image_url"] = createLocalBlob(state_._base64_original_images[state_._original_image_index]);
-                            state_["cached_background_image"] = `center / cover no-repeat url("${state_["cached_background_image_url"]}")${state_.show_transparent_image_in_background ? `, repeating-conic-gradient(rgb(248 248 248 / 100%) 0% 25%, rgb(235 235 235 / 100%) 0% 50%) left top 50% / calc(200% / ${state_.pxl_width}) calc(200% / ${state_.pxl_height})`: ""}`;
-                        }else if(state_.show_transparent_image_in_background) {
-                            state_["cached_background_image"] = `repeating-conic-gradient(rgb(248 248 248 / 100%) 0% 25%, rgb(235 235 235 / 100%) 0% 50%) left top 50% / calc(200% / ${state_.pxl_width}) calc(200% / ${state_.pxl_height})`;
-                        }else {
-                            state_["cached_background_image"] = "";
                         }
                     }
                     if(update_cursor){ sc(state_.mouse_down, state_.canvas_event_target); }

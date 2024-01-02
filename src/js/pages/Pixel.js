@@ -1186,8 +1186,7 @@ class Pixel extends React.PureComponent {
 
     _handle_right_click = (event, data) => {
 
-        const { get_pixel_color_from_pos } = this.st4te._canvas;
-        data.pxl_color = get_pixel_color_from_pos(data.pos_x, data.pos_y);
+        data.pxl_color = this.st4te._canvas.get_pixel_color_from_pos(data.pos_x, data.pos_y);
 
         this.setSt4te({
             _menu_mouse_x: event.clientX - 2,
@@ -2225,8 +2224,12 @@ class Pixel extends React.PureComponent {
 
     _set_canvas_ref = (element) => {
 
+        if(typeof element === "undefined") {return}
         if(element === null) {return}
-        this.setSt4te({_canvas: element, _filters: element.get_filter_names()});
+        this.setSt4te({_canvas: element, _filters: element.get_filter_names()}, ( )=> {
+
+            this._request_force_update();
+        });
     };
 
     _handle_position_change = (position) => {
@@ -2817,7 +2820,7 @@ class Pixel extends React.PureComponent {
                     contain: "paint style layout",
                     scrollBehavior: "smooth",
                     userSelect: "none",
-                    pointerEvents: "all"
+                    pointerEvents: !Boolean(_menu_mouse_y) && !Boolean(_menu_mouse_x) ? "none": "all"
                 },
             }}
             onContextMenu={function (e){e.preventDefault();}}
@@ -3015,7 +3018,7 @@ class Pixel extends React.PureComponent {
                                 </Typography>
                                 <Slider
                                     key={"slider-"+(_slider_value*255 | 0)}
-                                    defaultValue={_slider_value}
+                                    defaultValue={parseFloat(_slider_value)}
                                     className={classes.effectSlider}
                                     step={1/255}
                                     min={0}
@@ -3142,7 +3145,7 @@ class Pixel extends React.PureComponent {
                                         <Slider
                                             key={"slider-"+(_slider_value*255 | 0)}
                                             className={classes.effectSlider}
-                                            defaultValue={parseInt(_slider_value)}
+                                            defaultValue={parseFloat(_slider_value)}
                                             step={1/255}
                                             min={0}
                                             max={1}

@@ -1,4 +1,4 @@
-import {base64ToBytes} from "./base64";
+import {base64ToBytes} from "./b64";
 
 function createLocalBlob(base64) {
     var pre = (base64.match(/(data\:([a-z]+\/[a-z\+]+)\;base64\,)([a-zA-Z0-9\/\+]+\(\=+)?/) || new Array(2))[1];
