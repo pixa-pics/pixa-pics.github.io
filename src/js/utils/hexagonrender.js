@@ -1,25 +1,26 @@
 /* MIT License, Copyright (c) 2023 Affolter Matias */
 function initConstants(radius) {
+    var fr = Math.fround;
     const CONSTANTS = new Float32Array(18);
-    CONSTANTS[0] = Math.ceil(radius / 16) / 2 - 0.5; // LINE_WIDTH
-    CONSTANTS[1] = 2 * Math.PI / 6; // A
-    CONSTANTS[2] = radius; // R
-    CONSTANTS[3] = radius * 2; // D
-    CONSTANTS[4] = Math.sin(CONSTANTS[1]); // SIN(A)
-    CONSTANTS[5] = Math.cos(CONSTANTS[1]); // COS(A)
-    CONSTANTS[6] = CONSTANTS[2] * Math.cos(CONSTANTS[1] * 0); // rcosai 0
-    CONSTANTS[7] = CONSTANTS[2] * Math.cos(CONSTANTS[1] * 1); // rcosai 1
-    CONSTANTS[8] = CONSTANTS[2] * Math.cos(CONSTANTS[1] * 2); // rcosai 2
-    CONSTANTS[9] = CONSTANTS[2] * Math.cos(CONSTANTS[1] * 3); // rcosai 3
-    CONSTANTS[10] = CONSTANTS[2] * Math.cos(CONSTANTS[1] * 4); // rcosai 4
-    CONSTANTS[11] = CONSTANTS[2] * Math.cos(CONSTANTS[1] * 5); // rcosai 5
+    CONSTANTS[0] = fr(Math.ceil(radius / 16) / 2 - 0.5); // LINE_WIDTH
+    CONSTANTS[1] = fr(2 * Math.PI / 6); // A
+    CONSTANTS[2] = fr(radius); // R
+    CONSTANTS[3] = fr(radius * 2); // D
+    CONSTANTS[4] = fr(Math.sin(CONSTANTS[1])); // SIN(A)
+    CONSTANTS[5] = fr(Math.cos(CONSTANTS[1])); // COS(A)
+    CONSTANTS[6] = fr(CONSTANTS[2] * Math.cos(CONSTANTS[1] * 0)); // rcosai 0
+    CONSTANTS[7] = fr(CONSTANTS[2] * Math.cos(CONSTANTS[1] * 1)); // rcosai 1
+    CONSTANTS[8] = fr(CONSTANTS[2] * Math.cos(CONSTANTS[1] * 2)); // rcosai 2
+    CONSTANTS[9] = fr(CONSTANTS[2] * Math.cos(CONSTANTS[1] * 3)); // rcosai 3
+    CONSTANTS[10] = fr(CONSTANTS[2] * Math.cos(CONSTANTS[1] * 4)); // rcosai 4
+    CONSTANTS[11] = fr(CONSTANTS[2] * Math.cos(CONSTANTS[1] * 5)); // rcosai 5
 
-    CONSTANTS[12] = CONSTANTS[2] * Math.sin(CONSTANTS[1] * 0); // rsinai 1
-    CONSTANTS[13] = CONSTANTS[2] * Math.sin(CONSTANTS[1] * 1); // rsinai 2
-    CONSTANTS[14] = CONSTANTS[2] * Math.sin(CONSTANTS[1] * 2); // rsinai 3
-    CONSTANTS[15] = CONSTANTS[2] * Math.sin(CONSTANTS[1] * 3); // rsinai 4
-    CONSTANTS[16] = CONSTANTS[2] * Math.sin(CONSTANTS[1] * 4); // rsinai 5
-    CONSTANTS[17] = CONSTANTS[2] * Math.sin(CONSTANTS[1] * 5); // rsinai 6
+    CONSTANTS[12] = fr(CONSTANTS[2] * Math.sin(CONSTANTS[1] * 0)); // rsinai 1
+    CONSTANTS[13] = fr(CONSTANTS[2] * Math.sin(CONSTANTS[1] * 1)); // rsinai 2
+    CONSTANTS[14] = fr(CONSTANTS[2] * Math.sin(CONSTANTS[1] * 2)); // rsinai 3
+    CONSTANTS[15] = fr(CONSTANTS[2] * Math.sin(CONSTANTS[1] * 3)); // rsinai 4
+    CONSTANTS[16] = fr(CONSTANTS[2] * Math.sin(CONSTANTS[1] * 4)); // rsinai 5
+    CONSTANTS[17] = fr(CONSTANTS[2] * Math.sin(CONSTANTS[1] * 5)); // rsinai 6
     return CONSTANTS;
 }
 
@@ -57,36 +58,14 @@ function generateFinalImageData(originalImageData, radius, object_url) {
         throw new Error("Invalid radius value. Must within 2 and 32");
     }
 
-    var fr = Math.fround;
-
     return new Promise(function (resolve, reject){
 
         const CONSTANTS = initConstants(radius);
-        const lineWidth = CONSTANTS[0];
-        const a = CONSTANTS[1];
-        const r = CONSTANTS[2];
-        const d = CONSTANTS[3];
-        const sina = CONSTANTS[4];
-        const cosa = CONSTANTS[5];
-
-        const rcosai0 = CONSTANTS[6];
-        const rcosai1 = CONSTANTS[7];
-        const rcosai2 = CONSTANTS[8];
-        const rcosai3 = CONSTANTS[9];
-        const rcosai4 = CONSTANTS[10];
-        const rcosai5 = CONSTANTS[11];
-
-        const rsinai0 = CONSTANTS[12];
-        const rsinai1 = CONSTANTS[13];
-        const rsinai2 = CONSTANTS[14];
-        const rsinai3 = CONSTANTS[15];
-        const rsinai4 = CONSTANTS[16];
-        const rsinai5 = CONSTANTS[17];
 
         // Create an intermediate canvas to draw hexagon onto it
         const ctx = createCanvasWithFallback(
-            originalImageData.width * d - (Math.floor(originalImageData.width/2)*r),// Hexagons are taking 1x Diameter less 1/2 radius of width
-            originalImageData.height * (d * Math.sin(a)) + (originalImageData.width % 2 === 0 ? d: r) // Hexagons are taking a height that is computed differently
+            originalImageData.width * CONSTANTS[3] - (Math.floor(originalImageData.width/2)*CONSTANTS[2]),// Hexagons are taking 1x Diameter less 1/2 radius of width
+            originalImageData.height * (CONSTANTS[3] * CONSTANTS[4]) + (originalImageData.width % 2 === 0 ? CONSTANTS[3]: CONSTANTS[2]) // Hexagons are taking a height that is computed differently
         );
         const canvas = ctx.canvas;
 
@@ -107,20 +86,20 @@ function generateFinalImageData(originalImageData, radius, object_url) {
             return uint32ToHex(getUint32(data, index));
         }
 
-        function drawHexagon(ctx, x, y, color) {
+        function drawHexagon(ctx, vari, color) {
             "use strict";
             // Define the style of painting on our canvas context
-            ctx.lineWidth = lineWidth;
+            ctx.lineWidth = CONSTANTS[0];
             ctx.strokeStyle = color;
             ctx.fillStyle = color;
             ctx.beginPath();
             // Draw all intersections in a new path
-            ctx.lineTo(x + rcosai0, y + rsinai0);
-            ctx.lineTo(x + rcosai1, y + rsinai1);
-            ctx.lineTo(x + rcosai2, y + rsinai2);
-            ctx.lineTo(x + rcosai3, y + rsinai3);
-            ctx.lineTo(x + rcosai4, y + rsinai4);
-            ctx.lineTo(x + rcosai5, y + rsinai5);
+            ctx.lineTo(vari[1] + CONSTANTS[6], vari[2] + CONSTANTS[12]);
+            ctx.lineTo(vari[1] + CONSTANTS[7], vari[2] + CONSTANTS[13]);
+            ctx.lineTo(vari[1] + CONSTANTS[8], vari[2] + CONSTANTS[14]);
+            ctx.lineTo(vari[1] + CONSTANTS[9], vari[2] + CONSTANTS[15]);
+            ctx.lineTo(vari[1] + CONSTANTS[10], vari[2] + CONSTANTS[16]);
+            ctx.lineTo(vari[1] + CONSTANTS[11], vari[2] + CONSTANTS[17]);
             // Close the path and fill the area
             ctx.closePath(); ctx.stroke(); ctx.fill();
         }
@@ -130,20 +109,22 @@ function generateFinalImageData(originalImageData, radius, object_url) {
             let posX = 0, posY = 0;
             // When we return to a new line, if we have an odd number of column
             // We end up going to the bottom from a higher y coordinate (ZIGZAG in Y)
-            let RorD = sizeX % 2 === 1 ? r: d; // Must go once or twice to the bottom
+            let vari = new Float32Array(3);
+            vari[0] = sizeX % 2 === 1 ? CONSTANTS[2]: CONSTANTS[3]; // Must go once or twice to the bottom
 
             // As long as we have column to then change y coordinate to the new lower line
-            for (let y = r; posY < sizeY; y += RorD * sina) {
+            for (vari[2] = CONSTANTS[2]; posY < sizeY; vari[2] += vari[0] * CONSTANTS[4]) {
                 posX = 0;
+                vari[1] = CONSTANTS[2];
                 for (
-                    let x = r, j = 0; // Reset cursor x
+                    var j = 0; // Reset cursor x
                     posX < sizeX; // As long as we still have some column in line
                     // Do the zigzag magic between hexagon of a line
-                    x += r * (1 + cosa),
-                        y += (-1) ** j++ * r * sina
+                    vari[1] = Math.fround(vari[1] + CONSTANTS[2] * (1 + CONSTANTS[5])),
+                        vari[2] = Math.fround(vari[2] + (-1) ** j++ * CONSTANTS[2] * CONSTANTS[4])
                 ) {
                     // Get the hexadecimal HTML5 color and draw the shape
-                    drawHexagon(ctx, x, y, getColor(data, sizeX, posX, posY));
+                    drawHexagon(ctx, vari, getColor(data, sizeX, posX, posY));
                     posX++; // Update current coordinate X
                 }
                 posY++; // Update current coordinate Y
@@ -158,7 +139,7 @@ function generateFinalImageData(originalImageData, radius, object_url) {
         const canvas2 = document.createElement("canvas");
         canvas2.width = canvas.width; // The width doesn't change
         // Yet we apply the same mathematical operation of the one used for the width yet for the height
-        canvas2.height = originalImageData.height * d - (Math.floor(originalImageData.height/2)*r);
+        canvas2.height = originalImageData.height * CONSTANTS[3] - (Math.floor(originalImageData.height/2)*CONSTANTS[2]);
         const ctx2 = canvas2.getContext('2d');
         //ctx2.imageSmoothingEnabled = false;
 

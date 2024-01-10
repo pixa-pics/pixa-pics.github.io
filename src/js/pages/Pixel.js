@@ -686,7 +686,7 @@ class Pixel extends React.PureComponent {
             _attachment_previews: {},
             _swipeable_drawer_handle_filters_thumbnail_change: function(){},
             _swipeable_drawer_set_props: function(){},
-            _toolbox_container_ref: null,
+            _toolbox_container_ref: {},
             _files_waiting_download: [],
             _time_ago_initiated: false,
             _fps_el: {},
@@ -2218,7 +2218,8 @@ class Pixel extends React.PureComponent {
 
     _set_ripple_ref = (element) => {
 
-        if(element === null || this.st4te._ripple !== null) {return}
+        if(typeof element === "undefined") {return}
+        if(element === null) {return}
         this.setSt4te({_ripple: element});
     };
 
@@ -2668,23 +2669,22 @@ class Pixel extends React.PureComponent {
 
     _set_toolbox_container_ref = (element) => {
 
-        if(element !== null) {
-
-            this.setSt4te({_toolbox_container_ref: element});
-        }
+        if(typeof element === "undefined") {return}
+        if(element === null) {return}
+        this.setSt4te({_toolbox_container_ref: element});
     };
 
     _set_root_ref = (element) => {
 
-        if(element != null) {
+        if(typeof element === "undefined") {return}
+        if(element === null) {return}
+        this.setSt4te({_root_ref: element}, () => {
+            this.st4te._root_ref.addEventListener("drop",  this._handle_file_upload, {capture: true});
+            this.st4te._root_ref.addEventListener("dragenter", this._drop_start);
+            this.st4te._root_ref.addEventListener("dragover", this._drop_start);
+            this.st4te._root_ref.addEventListener("dragleave", this._drop_end);
+        });
 
-            this.setSt4te({_root_ref: element}, () => {
-                this.st4te._root_ref.addEventListener("drop",  this._handle_file_upload, {capture: true});
-                this.st4te._root_ref.addEventListener("dragenter", this._drop_start);
-                this.st4te._root_ref.addEventListener("dragover", this._drop_start);
-                this.st4te._root_ref.addEventListener("dragleave", this._drop_end);
-            });
-        }
     };
 
     _drop_start = (e) => {
