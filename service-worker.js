@@ -1,7 +1,7 @@
 "use strict";
-var REQUIRED_CACHE = "unless-update-cache-v907-required";
-var USEFUL_CACHE = "unless-update-cache-v907-useful";
-var STATIC_CACHE = "unless-update-cache-v907-static";
+var REQUIRED_CACHE = "unless-update-cache-v910-required";
+var USEFUL_CACHE = "unless-update-cache-v910-useful";
+var STATIC_CACHE = "unless-update-cache-v910-static";
 var MAIN_CHILD_CHUNK_REGEX = /chunk_(main_[a-z0-9]+)\.min\.js$/i;
 var CHILD_CHUNK_REGEX = /chunk_([0-9]+)\.min\.js$/i;
 
@@ -43,20 +43,19 @@ var static_cache = new Promise(function(resolve, reject){
 
 var serve_cache = function (cache_origin, url){
     "use strict";
-    return cache_origin.then(function (c) {
-        var cache = c;
+    return cache_origin.then(function (cache) {
         "use strict";
         return cache.match(url).then(function (response) {
             "use strict";
             return !response ? Promise.reject(): response.status === 200 ? response.clone(): fetch(url).then(function (response) { // Fetch, clone, and serve
                 "use strict";
-                if(response.status === 200) { cache.put(url, response); return Promise.resolve(response.clone()); } else { return Promise.reject(); }
+                if(response.status === 200) { cache.put(url, response.clone()); return Promise.resolve(response.clone()); } else { return Promise.reject(); }
             });
         }).catch(function(){
             "use strict";
             return fetch(url).then(function (response) { // Fetch, clone, and serve
                 "use strict";
-                if(response.status === 200) { cache.put(url); return Promise.resolve(response.clone()); } else { return Promise.reject(); }
+                if(response.status === 200) { cache.put(url, response.clone()); return Promise.resolve(response.clone()); } else { return Promise.reject(); }
             });
         });
     })
@@ -216,3 +215,86 @@ self.addEventListener("activate", function(event) {
         )})
     );
 });
+
+"use strict";
+var REQUIRED_CACHE = "unless-update-cache-v907-required";
+var USEFUL_CACHE = "unless-update-cache-v907-useful";
+var STATIC_CACHE = "unless-update-cache-v907-static";
+var MAIN_CHILD_CHUNK_REGEX = /chunk_(main_[a-z0-9]+)\.min\.js$/i;
+var CHILD_CHUNK_REGEX = /chunk_([0-9]+)\.min\.js$/i;
+
+var required_cache_object = {};
+var required_cache = new Promise(function(resolve, reject){
+    "use strict";
+    if(typeof required_cache_object.addAll !== "undefined") {
+
+        resolve(required_cache_object);
+    }else {
+
+        caches.open(REQUIRED_CACHE).then(function(cache){required_cache_object = cache;resolve(required_cache_object);}).catch(function(reason){reject(reason)});
+    }
+});
+
+var useful_cache_object = {};
+var useful_cache = new Promise(function(resolve, reject){
+    "use strict";
+    if(typeof useful_cache_object.addAll !== "undefined") {
+
+        resolve(useful_cache_object);
+    }else {
+
+        caches.open(USEFUL_CACHE).then(function(cache){useful_cache_object = cache;resolve(useful_cache_object);}).catch(function(reason){reject(reason)});
+    }
+});
+
+var static_cache_object = {};
+var static_cache = new Promise(function(resolve, reject){
+    "use strict";
+    if(typeof static_cache_object.addAll !== "undefined") {
+
+        resolve(static_cache_object);
+    }else {
+
+        caches.open(STATIC_CACHE).then(function(cache){static_cache_object = cache;resolve(static_cache_object);}).catch(function(reason){reject(reason)});
+    }
+});
+
+var serve_cache = function (cache_origin, url){
+    "use strict";
+    return cache_origin.then(function (c) {
+        var cache = c;
+        "use strict";
+        return cache.match(url).then(function (response) {
+            "use strict";
+            return !response ? Promise.reject(): response.status === 200 ? response.clone(): fetch(url).then(function (response) { // Fetch, clone, and serve
+                "use strict";
+                if(response.status === 200) { cache.put(url, response); return Promise.resolve(response.clone()); } else { return Promise.reject(); }
+            });
+        }).catch(function(){
+            "use strict";
+            return fetch(url).then(function (response) { // Fetch, clone, and serve
+                "use strict";
+                if(response.status === 200) { cache.put(url); return Promise.resolve(response.clone()); } else { return Promise.reject(); }
+            });
+        });
+    })
+};
+
+var either_ends_with = function (possibilities, onto){
+    "use strict";
+    var result = false;
+    possibilities.forEach(function (possibility){
+        "use strict";
+        if(onto.endsWith(possibility)){result = true;}
+    });
+    return result;
+};
+var either_starts_with = function (possibilities, onto){
+    "use strict";
+    var result = false;
+    possibilities.forEach(function (possibility){
+        "use strict";
+        if(onto.startsWith(possibility)){result = true;}
+    });
+    return result;
+};
