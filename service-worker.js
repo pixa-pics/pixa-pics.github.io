@@ -1,7 +1,7 @@
 "use strict";
-var REQUIRED_CACHE = "unless-update-cache-v906-required";
-var USEFUL_CACHE = "unless-update-cache-v906-useful";
-var STATIC_CACHE = "unless-update-cache-v906-static";
+var REQUIRED_CACHE = "unless-update-cache-v907-required";
+var USEFUL_CACHE = "unless-update-cache-v907-useful";
+var STATIC_CACHE = "unless-update-cache-v907-static";
 var MAIN_CHILD_CHUNK_REGEX = /chunk_(main_[a-z0-9]+)\.min\.js$/i;
 var CHILD_CHUNK_REGEX = /chunk_([0-9]+)\.min\.js$/i;
 
@@ -43,19 +43,20 @@ var static_cache = new Promise(function(resolve, reject){
 
 var serve_cache = function (cache_origin, url){
     "use strict";
-    return cache_origin.then(function (cache) {
+    return cache_origin.then(function (c) {
+        var cache = c;
         "use strict";
         return cache.match(url).then(function (response) {
             "use strict";
             return !response ? Promise.reject(): response.status === 200 ? response.clone(): fetch(url).then(function (response) { // Fetch, clone, and serve
                 "use strict";
-                if(response.status === 200) { cache.put(url, response.clone()); return Promise.resolve(response.clone()); } else { return Promise.reject(); }
+                if(response.status === 200) { cache.put(url, response); return Promise.resolve(response.clone()); } else { return Promise.reject(); }
             });
         }).catch(function(){
             "use strict";
             return fetch(url).then(function (response) { // Fetch, clone, and serve
                 "use strict";
-                if(response.status === 200) { cache.put(url, response.clone()); return Promise.resolve(response.clone()); } else { return Promise.reject(); }
+                if(response.status === 200) { cache.put(url); return Promise.resolve(response.clone()); } else { return Promise.reject(); }
             });
         });
     })
