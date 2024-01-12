@@ -1,31 +1,24 @@
-{
-  "manifest_version": 2,
-  "version": "1.1.0.0",
-  "author": "Affolter Matias",
-  "name": "PIXA.PICS",
-  "start_url": "/",
-  "scope": "/",
-  "serviceworker": {
-    "src": "/service-worker.js",
-    "scope": "/"
-  },
-  "short_name": "PIXA PICS",
-  "description": "Pixel-Art & NFTs LAB. Make potential possible and (un)limited.",
-  "display": "fullscreen",
-  "theme_color": "#060f23",
-  "background_color": "#ffffff",
-  "browser_action": {
+\{
+ "name": "PIXA PICS",
+ "short_name": "PIXA PICS",
+ "description": "Pixel-Art & NFTs LAB. Make potential possible and (un)limited.",
+ "start_url": "/",
+ "scope": ".",
+ "display": "fullscreen",
+ "theme_color": "#060f23",
+ "background_color": "#ffffff",
+ "browser_action": {
     "default_icon": "/src/images/logo-transparent.png",
     "default_popup": "index.html"
-  },
-  "icons": [
+ },
+ "icons": [
     {
       "src": "/src/images/manifest/logo-white.png",
       "sizes": "1536x1536",
       "type": "image/png"
     }
-  ],
-  "shortcuts": [
+ ],
+ "shortcuts": [
     {
       "name": "Pixa.Pics",
       "short_name": "Pixa.Pics",
@@ -33,8 +26,8 @@
       "url": "/",
       "icons": [{ "src": "/src/images/logo-transparent.png", "sizes": "1536x1536", "type": "image/png" }]
     }
-  ],
-  "screenshots" : [
+ ],
+ "screenshots" : [
     {
       "src": "/src/images/screenshots/pixa.pics_1.jpg",
       "sizes": "1080x1920",
@@ -80,16 +73,4 @@
     {
       "src": "/src/images/screenshots/pixa.pics_7.jpg",
       "sizes": "1080x1920",
-      "type": "image/png",
-      "platform": "narrow",
-      "label": "View 7 - editor"
-    },
-    {
-      "src": "/src/images/screenshots/pixa.pics_8.jpg",
-      "sizes": "1080x1920",
-      "type": "image/png",
-      "platform": "narrow",
-      "label": "View 8 - editor"
-    }
-  ]
-}
+      "type": "image/
