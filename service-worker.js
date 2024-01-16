@@ -1,7 +1,7 @@
 "use strict";
-var REQUIRED_CACHE = "unless-update-cache-v912-required";
-var USEFUL_CACHE = "unless-update-cache-v912-useful";
-var STATIC_CACHE = "unless-update-cache-v912-static";
+var REQUIRED_CACHE = "unless-update-cache-v913-required";
+var USEFUL_CACHE = "unless-update-cache-v913-useful";
+var STATIC_CACHE = "unless-update-cache-v913-static";
 var MAIN_CHILD_CHUNK_REGEX = /chunk_(main_[a-z0-9]+)\.min\.js$/i;
 var CHILD_CHUNK_REGEX = /chunk_([0-9]+)\.min\.js$/i;
 
@@ -174,35 +174,37 @@ self.addEventListener("fetch", function(event) {
 
         event.respondWith(serve_cache(required_cache, "/"));
 
-    } else if(event.request.method === "GET") {
+    } else {
 
         event.respondWith(
             Promise.any([
                 required_cache.then(function (cache) {
                     return cache.match(url).then(function (response) {
-                        return !response ? Promise.reject(): response.status === 200 ? Promise.resolve(response.clone() || response): Promise.reject();
+                        return !response ? Promise.reject() : response.status === 200 ? Promise.resolve(response.clone() || response) : Promise.reject();
                     });
                 }),
                 useful_cache.then(function (cache) {
                     return cache.match(url).then(function (response) {
-                        return !response ? Promise.reject(): response.status === 200 ? Promise.resolve(response.clone() || response): Promise.reject();
+                        return !response ? Promise.reject() : response.status === 200 ? Promise.resolve(response.clone() || response) : Promise.reject();
                     });
                 }),
                 static_cache.then(function (cache) {
                     return cache.match(url).then(function (response) {
-                        return !response ? Promise.reject(): response.status === 200 ? Promise.resolve(response.clone() || response): Promise.reject();
+                        return !response ? Promise.reject() : response.status === 200 ? Promise.resolve(response.clone() || response) : Promise.reject();
                     });
                 }),
                 fetch(url).then(function (response) { // Fetch and serve
                     return useful_cache.then(function (cache) {
-                        if(response.status === 200) { cache.put(url, response.clone()); return Promise.resolve(response.clone() || response); } else { return Promise.reject(); }
+                        if (response.status === 200) {
+                            cache.put(url, response.clone());
+                            return Promise.resolve(response.clone() || response);
+                        } else {
+                            return Promise.resolve(response);
+                        }
                     });
                 })
             ])
         );
-    }else {
-
-        return Promise.resolve(new Response(new ArrayBuffer(0), {status: 404, statusText: "Not found"}));
     }
 });
 
