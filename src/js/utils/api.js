@@ -4,6 +4,9 @@ import PouchDB from "pouchdb-core";
 import PouchDB_IDB from "pouchdb-adapter-idb";
 import PouchDB_memory from "pouchdb-adapter-memory";
 
+const _merge_object = (obj1, obj2) => {
+    return Object.assign(obj1, obj2);
+};
 const init = () => {
 
     return new Promise(function(resolve, reject){
@@ -76,10 +79,6 @@ const init = () => {
 
 };
 
-const _merge_object = (obj1, obj2) => {
-
-    return Object.assign(obj1, obj2);
-};
 
 const _get_default_settings = () => {
 
