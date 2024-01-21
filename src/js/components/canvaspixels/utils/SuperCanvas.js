@@ -1,62 +1,3 @@
-import {SIMDopeCreate, SIMDopeCreateConfAdd} from "simdope";
-var MODE = SIMDopeCreateConfAdd({
-    "create": {
-        "new_zero": true
-    },
-    "properties": {
-        "hex": true
-    },
-    "methods": {
-        "get_use_element": true,
-    }
-});
-const {simdops, Color, Colors} = SIMDopeCreate(MODE);
-const {clamp_uint32, modulo_uint, divide_uint, minus_uint, uint_greater, uint_less, uint_greater_equal, uint_less_equal, plus_uint, minus_int, int_greater, int_less, int_greater_equal, int_less_equal, plus_int, max_int, min_int} = simdops;
-
-function draw_2d(ctx2d, _state) {
-    "use strict";
-    let s_width = _state.s.width | 0;
-    let pr_width = _state.pr.width | 0;
-    let pr_height = _state.pr.height | 0;
-    let pr_top_left_x = _state.pr.xy1xy2[0];
-    let pr_top_left_y = _state.pr.xy1xy2[1];
-    let pr_uint8a = _state.pr_uint8a;
-
-    var imul = Math.imul;
-    let fp_square = ctx2d.getImageData(pr_top_left_x, pr_top_left_y, pr_width, pr_height);
-    let fp_square_data = fp_square.data;
-    let current_offset_start_index = 0;
-    for (var i = 0; (i | 0) < (pr_height | 0); i = (i + 1 | 0) >>> 0) {
-        current_offset_start_index = (imul(s_width, (i + pr_top_left_y | 0)) + pr_top_left_x | 0) >>> 0;
-        fp_square_data.set(pr_uint8a.subarray((current_offset_start_index << 2 | 0) >>> 0, ((current_offset_start_index + pr_width | 0) << 2 | 0) >>> 0), (imul(i, pr_width) << 2 | 0) >>> 0);
-    }
-
-    _state.pr.xy1xy2[0] = _state.s.width - 1 | 0;
-    _state.pr.xy1xy2[1] = _state.s.height - 1 | 0;
-    _state.pr.xy1xy2[2] = 0;
-    _state.pr.xy1xy2[3] = 0;
-
-    ctx2d.putImageData(fp_square, pr_top_left_x, pr_top_left_y, 0, 0, pr_width, pr_height);
-    return Promise.resolve();
-}
-
-const AFunction = Object.getPrototypeOf( function(){}).constructor;
-const bpro = AFunction(
-    `var bpro = function(s_width, pr_width, pr_height, pr_top_left_x, pr_top_left_y, fp){
-            
-                "use strict";
-                var imul = Math.imul;
-                var fp_square = new Uint8Array(imul(pr_width, pr_height) << 4);
-                var current_offset_start_index = 0;
-                for(var i = 0; (i|0) < (pr_height|0) ; i = (i + 1 | 0)>>>0) {
-                    current_offset_start_index = (imul(s_width, (i + pr_top_left_y | 0)) + pr_top_left_x | 0) >>> 0;
-                    fp_square.set(fp.subarray((current_offset_start_index << 2|0)>>>0, ((current_offset_start_index + pr_width | 0)<<2|0)>>>0), (imul(i,pr_width)<<2|0)>>>0);
-                }
-                
-                return createImageBitmap(new ImageData(new Uint8ClampedArray(fp_square.buffer), pr_width|0, pr_height|0));                
-              
-            }; return bpro;`)();
-
 function template(c, pxl_width, pxl_height){
     "use strict";
 
@@ -83,13 +24,7 @@ function template(c, pxl_width, pxl_height){
         if (is_offscreen) {
             try {
                 oc = c.transferControlToOffscreen();
-                try {
-
-                    occ2d = oc.getContext("2d", {willReadFrequently: true, desynchronized: !is_mobile});
-                } catch (e) {
-
-                    occ2d = oc.getContext("2d", {willReadFrequently: true});
-                }
+                occ2d = oc.getContext("2d", {willReadFrequently: true});
                 occ2d.imageSmoothingEnabled = false;
                 try {
                     occ2d.webkitImageSmoothingEnabled = false;
@@ -104,17 +39,6 @@ function template(c, pxl_width, pxl_height){
                 try {
                     oc = new OffscreenCanvas(pxl_width, pxl_height);
                     occ2d = oc.getContext("2d", {willReadFrequently: true});
-
-                    if(occ2d.getContextAttributes){
-                        var attr = occ2d.getContextAttributes();
-                        if("willReadFrequently" in attr) {
-                            if("desynchronized" in attr) {
-                                occ2d = oc.getContext('2d', {willReadFrequently: true, desynchronized: !is_mobile});
-                            }else {
-                                occ2d = oc.getContext('2d', {willReadFrequently: true});
-                            }
-                        }
-                    }
 
                     occ2d.imageSmoothingEnabled = false;
                     try {
@@ -131,19 +55,6 @@ function template(c, pxl_width, pxl_height){
         if(normal_context || !is_offscreen) {
             cc2d = c.getContext('2d', {willReadFrequently: true});
 
-            try {
-                if(cc2d.getContextAttributes){
-                    var attr = cc2d.getContextAttributes();
-                    if("willReadFrequently" in attr) {
-                        if("desynchronized" in attr) {
-                            cc2d = c.getContext('2d', {willReadFrequently: true, desynchronized: !is_mobile});
-                        }else {
-                            cc2d = c.getContext('2d', {willReadFrequently: true});
-                        }
-                    }
-                }
-            } catch (e){}
-
             cc2d.imageSmoothingEnabled = false;
             try {
                 cc2d.mozImageSmoothingEnabled = false;
@@ -158,6 +69,8 @@ function template(c, pxl_width, pxl_height){
             is_offscreen_linked: is_offscreen_linked,
             width: pxl_width | 0,
             height: pxl_height | 0,
+            canvas: c,
+            offscreen_canvas: oc,
             canvas_context: cc2d,
             offscreen_canvas_context: occ2d
         };
@@ -167,30 +80,6 @@ function template(c, pxl_width, pxl_height){
         s: cs(c, pxl_width, pxl_height),
         enable_paint_type: "",
         fp_buffer: new ArrayBuffer(pxl_height * pxl_width * 4),
-        ic: {
-            indexes: new Uint16Array(0),
-            colors: new Uint32Array(0),
-            used: true
-        },
-        b: {
-            bmp_x: 0,
-            bmp_y: 0,
-            bmp_t: 0,
-            bmp: {close(){}, width: 0, height: 0},
-            old_bmp: {close(){}, width: 0, height: 0},
-        },
-        b2: {
-            bmp_x: 0,
-            bmp_y: 0,
-            bmp_t: 0,
-            bmp: {close(){}, width: 0, height: 0},
-            old_bmp: {close(){}, width: 0, height: 0},
-        },
-        pr: {
-            xy1xy2: new Uint16Array(4), // Top left: 0=x 1=y... Bottom right: 0=x 1=y...
-            width: 0,
-            height: 0
-        }
     };
 
     state.fp = new Uint32Array(state.fp_buffer)
@@ -205,14 +94,25 @@ var SuperCanvas = function(c, pxl_width, pxl_height) {
         return new SuperCanvas(c, pxl_width, pxl_height);
     }
 
-    this.state_ = template(c, pxl_width, pxl_height)
-
+    this.state_ = template(c, pxl_width, pxl_height);
+    this.contextSaver();
     return this;
 }
+Object.defineProperty(SuperCanvas.prototype, 'contextSaver', {
+    get: function() { "use strict"; return function () {
+        "use strict";
+        this.state_.s.canvas.addEventListener("contextlost", () => {
+            this.state_ = template(this.state_.s.canvas, this.state_.s.width, this.state_.s.height);
+        });
+        this.state_.s.offscreen_canvas.addEventListener("contextlost", () => {
+            this.state_ = template(this.state_.s.canvas, this.state_.s.width, this.state_.s.height);
+        });
+    }}
+});
 Object.defineProperty(SuperCanvas.prototype, 'ok', {
     get: function() { "use strict"; return function () {
         "use strict";
-        return Boolean(this.state_.s.canvas_context.canvas);
+        return Boolean(this.state_.s.canvas);
     }}
 });
 Object.defineProperty(SuperCanvas.prototype, 'getUint32', {
@@ -232,7 +132,6 @@ Object.defineProperty(SuperCanvas.prototype, 'clear', {
     get: function() { "use strict"; return function () {
         "use strict";
         return new Promise(function (resolve){
-
             "use strict";
             this.state_.s.canvas_context.clearRect(0, 0, this.state_.s.width, this.state_.s.height);
             resolve();
@@ -243,7 +142,7 @@ Object.defineProperty(SuperCanvas.prototype, 'render', {
     get: function() { "use strict"; return function () {
         "use strict";
         this.state_.s.canvas_context.globalCompositeOperation = "copy";
-        this.state_.s.canvas_context.drawImage(this.state_.s.offscreen_canvas_context.canvas, 0, 0);
+        this.state_.s.canvas_context.drawImage(this.state_.s.offscreen_canvas, 0, 0);
         return Promise.resolve();
     }}
 });
@@ -261,8 +160,6 @@ Object.defineProperty(SuperCanvas.prototype, 'unpile', {
         let width = this.state_.s.width | 0;
         let height = this.state_.s.height | 0;
 
-        this.state_.enable_paint_type =  this.state_.s.is_bitmap ? "bitmap" : this.state_.s.is_offscreen ? "offscreen" : "";
-
         if (width !== w || height !== h) {
 
             return Promise.reject();
@@ -270,21 +167,6 @@ Object.defineProperty(SuperCanvas.prototype, 'unpile', {
 
             return Promise.resolve();
         }
-
-        /*else {
-
-            let index_changes = this.state_.ic.indexes;
-            let color_changes = this.state_.ic.colors;
-            let uint32a = this.state_.fp;
-            let index = 0;
-            for (let i = 0, l = index_changes.length | 0; uint_less(i, l); i = plus_uint(i, 1)) {
-
-                index = (index_changes[i | 0] | 0) >>> 0;
-                uint32a[(index | 0) >>> 0] = (color_changes[i | 0] | 0) >>> 0;
-            }
-
-            return Promise.resolve();
-        }*/
     }}
 });
 Object.defineProperty(SuperCanvas.prototype, 'pile', {

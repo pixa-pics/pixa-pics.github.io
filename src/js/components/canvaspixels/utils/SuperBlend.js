@@ -3,11 +3,14 @@ var MODE = SIMDopeCreateConfAdd({
     "create": {
         "new_of": true
     },
-    "properties": {},
+    "properties": {
+        "buffer": true,
+    },
     "methods": {
         "get_use_element": true,
         "set_tail": true,
         "set_from_simdope": true,
+        "set_from_buffer": true,
         "get_tail": true,
         "get_tail_opacity": true,
         "reset_tail": true,
