@@ -19,12 +19,12 @@ module.exports = {
                     minifyWhitespace: true,
                     minifyIdentifiers: true,
                     minifySyntax: true,
-                    ecma: 5,
+                    ecma: 6,
                     parse: {},
                     module: false,
                     toplevel: true,
                     nameCache: null,
-                    ie8: true,
+                    ie8: false,
                     keep_classnames: false,
                     keep_fnames: false,
                     safari10: true,
@@ -175,9 +175,9 @@ module.exports = {
                                 'react',
                                 ["env", {
                                     targets: {
-                                        "chrome": "58",
-                                        "firefox": "53",
-                                        "safari": "11"
+                                        "chrome": "100",
+                                        "firefox": "100",
+                                        "safari": "15"
                                     },
                                     forceAllTransforms: false,
                                     shippedProposals: true,
