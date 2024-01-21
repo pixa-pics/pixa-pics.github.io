@@ -70,7 +70,13 @@ import { l, t } from "../utils/t";
 import ZoomIn from "@material-ui/icons/ZoomIn";
 import ZoomOut from "@material-ui/icons/ZoomOut";
 import PixelDialogText from "../components/PixelDialogText";
-import {Color} from "simdope";
+import {SIMDopeCreate} from "simdope";
+const {Color} = SIMDopeCreate({
+    "create": {
+        "new_of": true,
+        "new_hex": true
+    }
+});
 import SmartRequestAnimationFrame from "../components/canvaspixels/utils/SmartRequestAnimationFrame";
 
 const styles = theme => ({
