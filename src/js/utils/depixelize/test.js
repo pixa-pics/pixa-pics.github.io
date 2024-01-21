@@ -574,24 +574,6 @@ function pathToSvg(paths, width, height, f) {
 
     return `<svg viewBox="0 0 ${width} ${height}">${svgPaths.join("")}</svg>`;
 }
-function saveToSvg(svgEl, name) {
-    var svgData = svgEl;
-    var preface = '<?xml version="1.0" standalone="no"?>\r\n';
-    var svgBlob = new Blob([preface, svgData], {
-        type: "image/svg+xml;charset=utf-8"
-    });
-    var svgUrl = URL.createObjectURL(svgBlob);
-    var downloadLink = document.createElement("a");
-    downloadLink.href = svgUrl;
-    downloadLink.download = name;
-    if (document.body) {
-        document.body.appendChild(downloadLink);
-    }
-    downloadLink.click();
-    if (document.body) {
-        document.body.removeChild(downloadLink);
-    }
-}
 
 function processImage(binaryData, width, height) {
     const graph = createSimilarityGraph(binaryData, width, height);
@@ -629,7 +611,6 @@ function processImage(binaryData, width, height) {
     console.log(shapes)
     var svgPaths = shapes.map(s => s.svg()).join("\n")
     var finalSVG = `<svg viewBox="0 0 ${width}pt ${height}pt">${svgPaths}</svg>`;
-    saveToSvg(finalSVG, "test.svg");
     return finalSVG;
 }
 module.export = {

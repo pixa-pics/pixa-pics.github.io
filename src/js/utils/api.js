@@ -1,4 +1,4 @@
-import { CURRENCY_COUNTRIES } from "../utils/constants";
+import { CURRENCY_COUNTRIES } from "./constants";
 import get_browser_locales from "../utils/locales";
 import PouchDB from "pouchdb-core";
 import PouchDB_IDB from "pouchdb-adapter-idb";
@@ -11,8 +11,7 @@ const init = () => {
 
     return new Promise(function(resolve, reject){
 
-        if(!Boolean(window.settings_db)) {
-
+        function initiate(){
             PouchDB.on("created",  async function(){
 
                 if(!Boolean(window._pixa_settings)) {
@@ -45,19 +44,23 @@ const init = () => {
                     window.location.reload();
                 });
             }
+        }
 
+        if(typeof (window.settings_db || {}).allDocs !== "function") {
+
+            initiate();
 
         }else if(Boolean(window._pixa_settings)){
 
             resolve(_merge_object({}, window._pixa_settings));
-        }else {
+        }else if(typeof (window.settings_db || {}).allDocs === "function") {
 
             window.settings_db.allDocs({
                 include_docs: true,
                 descending: false,
                 attachments: false,
                 binary: false
-            }).then(async function (response) {
+            }).then(function (response) {
 
                 let settings_docs = response.rows.map((row) => {
                     return row.doc;
@@ -74,6 +77,8 @@ const init = () => {
             }).catch(function (error) {
                 reject(error)
             });
+        }else {
+            initiate();
         }
     });
 

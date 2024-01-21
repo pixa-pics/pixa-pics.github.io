@@ -143,21 +143,21 @@ self.addEventListener("fetch", function(event) {
 
     }else if(same_site && url.endsWith("chunk_norris.min.js")) {
 
-        event.respondWith(serve_cache(required_cache, "/client/chunk_norris.min.js"));
+        event.respondWith(serve_cache(required_cache, "//client/chunk_norris.min.js"));
 
     }else if(same_site && (url.match(MAIN_CHILD_CHUNK_REGEX) || []).length >= 1) {
 
         const middle_name = url.match(MAIN_CHILD_CHUNK_REGEX)[1];
-        event.respondWith(serve_cache(required_cache, `/client/chunk_${middle_name}.min.js`));
+        event.respondWith(serve_cache(required_cache, `//client/chunk_${middle_name}.min.js`));
 
     }else if(same_site && (url.match(CHILD_CHUNK_REGEX) || []).length >= 1) {
 
         const middle_name = url.match(CHILD_CHUNK_REGEX)[1];
-        event.respondWith(serve_cache(required_cache, `/client/chunk_${middle_name}.min.js`));
+        event.respondWith(serve_cache(required_cache, `//client/chunk_${middle_name}.min.js`));
 
     }else if(event.request.mode === "navigate") {
 
-        event.respondWith(serve_cache(required_cache, "/"));
+        event.respondWith(serve_cache(required_cache, "//"));
 
     } else {
 

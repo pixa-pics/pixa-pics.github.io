@@ -14,25 +14,7 @@ import { lightTheme } from "./theme/index";
 // Pages
 import Index from "../js/pages/Index";
 
-let element = document.getElementById("app");
-if(!Boolean(element)) {
-
-    element = document.createElement("div");
-    element.setAttribute("id", "app");
-    document.body.appendChild(element);
-}else {
-    element.innerHTML = "";
-}
-
 api.init().then(function (response){
-
-    ReactDOM.render(
-        <ThemeProvider theme={lightTheme}>
-            <CssBaseline>
-                <Index history={HISTORY}/>
-            </CssBaseline>
-        </ThemeProvider>,
-        element);
 
     const _selected_locales_code = (typeof response.locales !== "undefined" ? response.locales : "en-US").toString();
     const _language = _selected_locales_code.split("-")[0].toString();
@@ -41,3 +23,22 @@ api.init().then(function (response){
         document.body.setAttribute("datainitiated", "true");
     });
 });
+
+let element = document.getElementById("app");
+if(!Boolean(element)) {
+
+    element = document.createElement("div");
+    element.setAttribute("id", "app");
+    document.body.innerHTML = "";
+    document.body.appendChild(element);
+}else {
+    element.innerHTML = "";
+}
+
+ReactDOM.render(
+    <ThemeProvider theme={lightTheme}>
+        <CssBaseline>
+            <Index history={HISTORY}/>
+        </CssBaseline>
+    </ThemeProvider>,
+element);

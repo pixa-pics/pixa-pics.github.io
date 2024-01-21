@@ -21,7 +21,7 @@ module.exports = {
                     minifySyntax: true,
                     ecma: 5,
                     parse: {},
-                    module: true,
+                    module: false,
                     toplevel: true,
                     nameCache: null,
                     ie8: true,
@@ -114,7 +114,7 @@ module.exports = {
                     },
                     compress: {
                         toplevel: true,
-                        unsafe: true,
+                        unsafe: false,
                         drop_console: true,
                         drop_debugger: true,
                         evaluate: "eager",
@@ -135,7 +135,7 @@ module.exports = {
         ],
         chunkIds: 'named',
         splitChunks: {
-            chunks: 'async',
+            chunks: 'initial',
             minSize: 192 * 1024,
             maxSize: 384 * 1024,
             minChunks: 5,
@@ -182,7 +182,7 @@ module.exports = {
                                     forceAllTransforms: false,
                                     shippedProposals: true,
                                     bugfixes: true,
-                                    useBuiltIns: "entry"
+                                    useBuiltIns: "usage"
                                 }],
                                 'stage-0'
                             ]

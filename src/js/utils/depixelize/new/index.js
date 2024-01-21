@@ -574,16 +574,6 @@ function pathToSvg(paths, width, height, f) {
     return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width*factor}px ${height*factor}px">${svgPaths.join("\n\t")}</svg>`;
 }
 
-function saveToSvg(svgData, name) {
-    console.log(svgData);
-    var preface = '<?xml version="1.0" standalone="no"?>\r\n';
-    var svgBlob = new Blob([preface, svgData], { type: 'image/svg+xml;charset=utf-8' });
-    var svgUrl = URL.createObjectURL(svgBlob);
-    var downloadLink = document.createElement('a');
-    downloadLink.href = svgUrl;
-    downloadLink.download = name;
-    return svgUrl;
-}
 
 function processImage(binaryData, width, height) {
     var colors = createColors(binaryData, width, height);
