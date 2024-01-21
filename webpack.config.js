@@ -154,7 +154,7 @@ module.exports = {
                     maxAsyncRequests: 20,
                     maxInitialRequests: 10,
                     priority: -20,
-                    reuseExistingChunk: true
+                    reuseExistingChunk: false
                 }
             }
         }
