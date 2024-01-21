@@ -449,7 +449,7 @@ QuantiMat.prototype.process_threshold = function(t) {
 
     t = (t | 0) >>> 0;
 
-    var weight_applied_to_color_usage_difference = fr(t / 256);
+    var weight_applied_to_color_usage_difference = fr(t / 2048);
     var index_merged = false;
     var latest_colors = [];
     var latest_amounts = [];
