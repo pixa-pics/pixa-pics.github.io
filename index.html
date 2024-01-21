@@ -215,32 +215,30 @@
                     }
 
                     var removed = [];
-                    return new Promise(function (res, rej){
 
-                        if(clean){
-                            var all_hrefs = new Array(0).concat(_PRE_FILES, _POST_FILES);
-                            for (var i = 0; i < all_hrefs.length; i++) {
-                                var ss = all_hrefs[i];
-                                if (ss.endsWith(".js")) {
-                                    removed = removed.concat(Array.from(document.querySelectorAll('script[src$="' + ss + '"]')).map(function (node) {return Promise.resolve(node.remove());}));
-                                }
+                    if(clean){
+                        var all_hrefs = new Array(0).concat(_PRE_FILES, _POST_FILES);
+                        for (var i = 0; i < all_hrefs.length; i++) {
+                            var ss = all_hrefs[i];
+                            if (ss.endsWith(".js")) {
+                                removed = removed.concat(Array.from(document.querySelectorAll('script[src$="' + ss + '"]')).map(function (node) {return Promise.resolve(node.remove());}));
                             }
                         }
-                        removed = removed.concat([Promise.resolve()]);
-                        return Promise.allSettled(removed).finally(function (){
-                            for (var i = 0; i < hrefs.length; i++) {
-                                var ss = hrefs[i];
-                                if (ss.endsWith(".js")) {
-                                    var e = document.createElement("script"); e.setAttribute("src", ss); e.setAttribute("type", "text/javascript"); e.setAttribute(ss.endsWith(_MAIN_JS_FILE_ENDS_WITH) ? "defer" : "defer", "true");
-                                    document.body.appendChild(e);
-                                } else if (ss.endsWith(".css")) {
-                                    var e = document.createElement("link"); e.setAttribute("href", ss); e.setAttribute("rel", "stylesheet");
-                                    document.body.appendChild(e);
-                                }
+                    }
+                    removed = removed.concat([Promise.resolve()]);
+                    return Promise.allSettled(removed).finally(function (){
+                        for (var i = 0; i < hrefs.length; i++) {
+                            var ss = hrefs[i];
+                            if (ss.endsWith(".js")) {
+                                var e = document.createElement("script"); e.setAttribute("src", ss); e.setAttribute("type", "text/javascript"); e.setAttribute(ss.endsWith(_MAIN_JS_FILE_ENDS_WITH) ? "defer" : "defer", "true");
+                                document.body.appendChild(e);
+                            } else if (ss.endsWith(".css")) {
+                                var e = document.createElement("link"); e.setAttribute("href", ss); e.setAttribute("rel", "stylesheet");
+                                document.body.appendChild(e);
                             }
+                        }
 
-                            return Promise.resolve();
-                        });
+                        return Promise.resolve();
                     });
                 };
 
