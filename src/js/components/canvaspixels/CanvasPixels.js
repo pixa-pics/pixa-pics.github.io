@@ -34,7 +34,7 @@ import TouchRipple from "@material-ui/core/ButtonBase/TouchRipple";
 import pool from "../../utils/worker-pool";
 import B64PngCanvas from "../canvaspixels/utils/B64PngCanvas";
 import BMPLayer from "./utils/BMPLayer";
-import ReducePalette from "../canvaspixels/utils/ReducePalette";
+import {QuantiMatGlobal} from "../../utils/quantimat/QuantiMat";
 import SuperMasterMeta from "../canvaspixels/utils/SuperMasterMeta";
 import SuperCanvas from "../canvaspixels/utils/SuperCanvas";
 import SuperState from "../canvaspixels/utils/SuperState";
@@ -50,7 +50,6 @@ class CanvasPixels extends React.PureComponent {
     constructor(props) {
         super(props);
         if(!this.hasnt_been_mount) {
-            this.reduce_palette = ReducePalette.from(pool);
             this.super_state = Object.create(SuperState).from(props);
             this.xxhash = Object.create(XXHash).new();
             this.bmp_layer = Object.create(BMPLayer).from(pool);
@@ -2595,7 +2594,7 @@ class CanvasPixels extends React.PureComponent {
                 this.props.onLoad("less_color_auto");
             }else {
 
-                this.props.onLoad("less_color_auto");
+                this.props.onLoad("less_color");
             }
         }
 
@@ -2608,7 +2607,7 @@ class CanvasPixels extends React.PureComponent {
                     if(this.props.onLoadComplete) { this.props.onLoadComplete("less_color_auto", results); }
                 }else {
 
-                    if(this.props.onLoadComplete) { this.props.onLoadComplete("less_color_auto", results); }
+                    if(this.props.onLoadComplete) { this.props.onLoadComplete("less_color", results); }
                 }
             }
             callback_function(results);
@@ -2849,7 +2848,7 @@ class CanvasPixels extends React.PureComponent {
         let { _s_layers } = this.super_state.get_state();
 
         const color_number = _s_layers[_layer_index].colors.length;
-        this._remove_close_pxl_colors(_s_layers[_layer_index].indexes, _s_layers[_layer_index].colors, threshold).then(([pxls, pxl_colors]) => {
+        this._remove_close_pxl_colors(_s_layers[_layer_index].image_data, threshold).then(([pxls, pxl_colors]) => {
 
             _s_layers[_layer_index].set_colors_and_indexes(pxl_colors, pxls);
 
@@ -2989,12 +2988,7 @@ class CanvasPixels extends React.PureComponent {
         ctx.fillRect(0, 0, pxl_width, pxl_height);
 
         let canvas_image_data = ctx.getImageData(0, 0, pxl_width, pxl_height);
-        ctx = null;
-        canvas = null;
-        let {new_pxls, new_pxl_colors} = this._get_pixels_palette_and_list_from_image_data(canvas_image_data, true, 0);
-        canvas_image_data = null;
-
-        this._remove_close_pxl_colors(new_pxls, new_pxl_colors, 255/6/255, null, 18).then( ([new_pxls, new_pxl_colors]) => {
+        this._remove_close_pxl_colors(canvas_image_data, 18).then( ([new_pxls, new_pxl_colors]) => {
 
             [new_pxls, new_pxl_colors] = this._pxl_colors_to_alpha(new_pxls, new_pxl_colors, inverted_color_uint32, 1);
 
@@ -3431,14 +3425,14 @@ class CanvasPixels extends React.PureComponent {
         this._ripple = element;
     };
 
-    _remove_close_pxl_colors = (pxls = [], pxl_colors  = [], bucket_threshold = null, threshold_steps = null, color_number_bonus = 54, best_color_number = null) => {
+    _remove_close_pxl_colors = (imgd, color_number) => {
 
-        const state_bucket_threshold = this.super_state.get_state().bucket_threshold;
-        const rp = this.reduce_palette;
-        const width = this.super_state.get_state().pxl_width;
-
-        return new Promise(function(resolve){
-            rp.compute(resolve, pxls, pxl_colors, width, bucket_threshold, threshold_steps, color_number_bonus, best_color_number, state_bucket_threshold);
+        return new Promise(function(resolve, reject){
+            QuantiMatGlobal(imgd, color_number).then(function (result){
+                const indexes = result[1];
+                const colors = result[2];
+                return resolve([indexes, colors]);
+            });
         });
     };
 

@@ -895,7 +895,7 @@ class Pixel extends React.PureComponent {
 
                                         bitmap_to_imagedata(bitmap, resize_to_before, (imagedata_received) => {
 
-                                            QuantiMatGlobal(imagedata_received, 777).then(([imagedata2, color_removed_n, resulting_color_n, time_ms]) => {
+                                            QuantiMatGlobal(imagedata_received, 256).then(([imagedata2, a, b, color_removed_n, resulting_color_n, time_ms]) => {
 
                                                 if(imagedata2 === null) {
 
@@ -1888,7 +1888,7 @@ class Pixel extends React.PureComponent {
 
                                     bitmap_to_imagedata(bitmap_received, resize_to_before, (imagedata_received) => {
 
-                                        QuantiMatGlobal(imagedata_received, 777).then(([imagedata2, color_removed_n, resulting_color_n, time_ms]) => {
+                                        QuantiMatGlobal(imagedata_received, 256).then(([imagedata2, a, b, color_removed_n, resulting_color_n, time_ms]) => {
 
                                             setTimeout(function (){
                                                 actions.trigger_snackbar(`I am really awesome, within ${parseFloat(time_ms/1000).toFixed(3)}sec. I've made disappears ${color_removed_n} colors, now there are ${resulting_color_n} colors!`, 5700);
@@ -1937,7 +1937,7 @@ class Pixel extends React.PureComponent {
 
                                     bitmap_to_imagedata(bitmap_received, resize_to_before, (imagedata_received) => {
 
-                                        QuantiMatGlobal(imagedata_received, 777).then(([imagedata2, color_removed_n, resulting_color_n, time_ms]) => {
+                                        QuantiMatGlobal(imagedata_received, 256).then(([imagedata2, a, b, color_removed_n, resulting_color_n, time_ms]) => {
 
                                             setTimeout(function (){
                                                 actions.trigger_snackbar(`I am really awesome, within ${parseFloat(time_ms/1000).toFixed(3)}sec. I've made disappears ${color_removed_n} colors, now there are ${resulting_color_n} colors!`, 5700);
@@ -1988,7 +1988,7 @@ class Pixel extends React.PureComponent {
 
                                         bitmap_to_imagedata(bitmap_received, resize_to_before, (imagedata_received) => {
 
-                                            QuantiMatGlobal(imagedata_received, 777).then(([imagedata2, color_removed_n, resulting_color_n, time_ms]) => {
+                                            QuantiMatGlobal(imagedata_received, 256).then(([imagedata2, a, b, color_removed_n, resulting_color_n, time_ms]) => {
 
                                                 setTimeout(function (){
                                                     actions.trigger_snackbar(`I am really awesome, within ${parseFloat(time_ms/1000).toFixed(3)}sec. I've made disappears ${color_removed_n} colors, now there are ${resulting_color_n} colors!`, 5700);
@@ -2031,7 +2031,7 @@ class Pixel extends React.PureComponent {
 
                                 bitmap_to_imagedata(bitmap, resize_to_before, (imagedata_received) => {
 
-                                    QuantiMatGlobal(imagedata_received, 777).then(([imagedata2, color_removed_n, resulting_color_n, time_ms]) => {
+                                    QuantiMatGlobal(imagedata_received, 256).then(([imagedata2, a, b, color_removed_n, resulting_color_n, time_ms]) => {
 
                                         if(imagedata2 === null) {
 

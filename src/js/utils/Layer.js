@@ -214,12 +214,12 @@ Object.defineProperty(Layer.prototype, 'populate_data', {
                 this.uint8c_pixel_color_ =  new Uint8ClampedArray(this.uint32_pixel_color_.buffer);
                 this.simdope_pixel_color_ =  new Colors(this.uint32_pixel_color_.buffer);
 
-                for(var i = 0, l = this.color_indexes_length_ | 0; (i|0) < (l|0); i = (i + 1 | 0) >>> 0) {
+                for(var i = 0, l = this.uint32_pixel_color_.length | 0; (i|0) < (l|0); i = (i + 1 | 0) >>> 0) {
                     this.uint32_pixel_color_[(i|0)>>>0] = (this.colors[this.indexes[(i|0)>>>0]]|0) >>> 0;
                 }
 
             }else {
-                this.uint32_pixel_color_ = data;
+                this.uint32_pixel_color_ = data instanceof Uint32Array ? data: Uint32Array.from(data);
                 this.changes_ = new SetFixed(this.uint32_pixel_color_.length);
                 this.changes_.charge();
                 this.uint8c_pixel_color_ =  new Uint8ClampedArray(this.uint32_pixel_color_.buffer);
@@ -233,7 +233,7 @@ Object.defineProperty(Layer.prototype, 'compute_data', {
         "use strict";
         return function(){
             "use strict";
-            for(var i = 0, l = this.color_indexes_length_ | 0; (i|0) < (l|0); i = (i + 1 | 0) >>> 0) {
+            for(var i = 0, l = this.uint32_pixel_color_.length | 0; (i|0) < (l|0); i = (i + 1 | 0) >>> 0) {
 
                 if(uint_not_equal(this.uint32_pixel_color_[(i|0)>>>0], this.colors[this.indexes[(i|0)>>>0]])){
                     this.uint32_pixel_color_[(i|0)>>>0] = (this.colors[this.indexes[(i|0)>>>0]]|0) >>> 0;
@@ -249,7 +249,7 @@ Object.defineProperty(Layer.prototype, 'populate_colors', {
         return function(colors){
             "use strict";
 
-            this.uint32_colors_ = colors;
+            this.uint32_colors_ = colors instanceof Uint32Array ? colors: Uint32Array.from(colors);
             this.uint32_colors_length_ = this.uint32_colors_.length;
             this.uint32_colors_map_ = {};
             for(var i = 0; (i|0) < (this.uint32_colors_length_|0); i = i + 1 | 0){
@@ -266,9 +266,9 @@ Object.defineProperty(Layer.prototype, 'populate_indexes', {
             "use strict";
             if(typeof indexes != "undefined"){
 
-                this.color_indexes_ = indexes;
-                this.color_indexes_length_ = this.color_indexes_.length;
+                this.color_indexes_length_ = indexes.length;
                 this.color_indexes_constructor_ = this.uint32_colors_length_ < (1 << 8) ? Uint8Array : (this.uint32_colors_length_ + 1 | 0) < (1 << 16) ? Uint16Array : Uint32Array;
+                this.color_indexes_ = indexes instanceof this.color_indexes_constructor_ ? indexes: this.color_indexes_constructor_.from(indexes);
             }else {
                 this.color_indexes_length_ = this.uint32_pixel_color_.length;
                 this.color_indexes_constructor_ = this.uint32_colors_length_ < (1 << 8) ? Uint8Array : (this.uint32_colors_length_ + 1 | 0) < (1 << 16) ? Uint16Array : Uint32Array;

@@ -20,24 +20,26 @@ var either_starts_with = function (possibilities, onto){
 
 var INSTALL_FILES_REQUIRED = ["/client/chunk_main_5a2dc592.min.js","/client/chunk_main_7a2ee6b6.min.js","/client/chunk_main_8afe242f.min.js","/client/chunk_main_253ae210.min.js","/client/chunk_main_678f84af.min.js","/client/chunk_main_690b702c.min.js","/client/chunk_main_748942c6.min.js","/client/chunk_main_af9f4ef7.min.js","/client/chunk_main_d939e436.min.js","/client/chunk_main_df0f15aa.min.js", "/client/chunk_norris.min.js", "/"];
 var INSTALL_FILES_USEFUL = ["/src/images/favicon.ico", "/src/images/manifest/logo-white.png", "/src/fonts/industry/index.css"];
-var LOAD_FILES_REQUIRED = ["/"].concat(new Array(45).map(F_CNK));
+var LOAD_FILES_REQUIRED = ["/"].concat(new Array(46).map(F_CNK));
 var LOAD_FILES_USEFUL = ["/src/fonts/normative/index.css"].concat(["illusion.jpg", "gallery/Ban.png", "gallery/Ban.svg", "gallery/sco.png", "gallery/Sco.svg", "gallery/Bud.png", "gallery/Bud.svg", "demo/Beast.jpg", "demo/Disney.jpg", "demo/Man.jpg", "demo/Masterc.jpg", "demo/Redstar.jpg",  "demo/Tower.jpg", "infographics/Rambo.svg", "infographics/TestBag.svg", "infographics/Explosion.svg", "labostration/ABDUCTION.svg", "labostration/CHEMISTRY.svg", "labostration/COMPUTING.svg", "labostration/DOWNLOAD.svg", "labostration/GENOMA.svg", "labostration/MOLECULE.svg", "labostration/NUCLEAR.svg", "labostration/SCIENCE.svg", "REMINDER.svg", "Error.svg", "laboratory.svg", "illustrations/Camo.svg", "league/Bronze.png", "league/Diamond.png", "league/Gold.png", "league/Silver.png"].map(F_IMG));
 var LOAD_FILES_STATIC = ["sfx/md/hero_decorative-celebration-02", "sfx/md/navigation_selection-complete-celebration", "sfx/md/navigation_transition-left", "sfx/md/state-change_confirm-down", "sfx/md/ui_lock", "sfx/md/ui_unlock", "sfx/md/ui_scan", "sfx/md/alert_high-intensity", "sfx/md/navigation_transition-right", "voice/cn/accessing_memory", "voice/cn/complete", "voice/cn/please_wait", "voice/cn/data_upload", "voice/cn/processing", "voice/cn/enhanced", "voice/cn/rewriting_deep_layer_protocols", "voice/cn/vision_activated", "voice/cn/vision_deactivated", "voice/cn/filtering", "music/redeclipse/track_09"].map(F_SND).concat(["presentation", "tutorial", "create", "enhanced", "pixelated", "upload", "share1", "joke1", "create", "enhanced", "pixelated", "presentation", "presentation2", "sponsors", "tutorial", "upload", "labintro", "share2", "share3", "share4", "share5", "share6", "share7", "joke2", "joke3", "joke4", "joke5", "joke6", "joke7", "joke8", "joke9", "joke10", "joke11"].map(F_VID));
 
 // Cache names
-var REQUIRED_CACHE = "unless-update-cache-v914-required";
-var USEFUL_CACHE = "unless-update-cache-v914-useful";
-var STATIC_CACHE = "unless-update-cache-v914-static";
+var REQUIRED_CACHE = "unless-update-cache-v915-required";
+var USEFUL_CACHE = "unless-update-cache-v915-useful";
+var STATIC_CACHE = "unless-update-cache-v915-static";
+var OTHER_CACHE = "unless-update-cache-v915-other";
 
 // Regular expressions for chunk matching
 var MAIN_CHILD_CHUNK_REGEX = /chunk_(main_[a-z0-9]+)\.min\.js$/i;
 var CHILD_CHUNK_REGEX = /chunk_([0-9]+)\.min\.js$/i;
 
 // Cache objects and their initialization
-var required_cache_object, useful_cache_object, static_cache_object = {};
+var required_cache_object, useful_cache_object, static_cache_object, other_cache_object;
 var required_cache = initializeCache(REQUIRED_CACHE, required_cache_object);
 var useful_cache = initializeCache(USEFUL_CACHE, useful_cache_object);
 var static_cache = initializeCache(STATIC_CACHE, static_cache_object);
+var other_cache = initializeCache(OTHER_CACHE, other_cache_object);
 
 function initializeCache(cacheName, cacheObject) {
     return caches.open(cacheName).then(function(cache) {
@@ -96,16 +98,17 @@ self.addEventListener("install", function(event) {
 // Fetch event
 self.addEventListener("fetch", function(event) {
     "use strict";
-    const url = event.request.url;
+    const request = event.request;
+    const url = request.url;
     const same_site = true //event.request.referrer.startsWith(U.hostname);
 
     if (event.request.headers.get('range')) {
 
-        event.respondWith(fetch(event.request));
+        event.respondWith(fetch(request));
 
     }else if(either_starts_with(["data:image", "blob:http", "data:application"], url)) {
 
-        event.respondWith(fetch(url));
+        event.respondWith(fetch(request));
 
     }else if(either_starts_with(["data:,all"], url)) {
 
@@ -165,6 +168,11 @@ self.addEventListener("fetch", function(event) {
                         return !response ? Promise.reject() : response.status === 200 ? Promise.resolve(response.clone() || response) : Promise.reject();
                     });
                 }),
+                other_cache.then(function (cache) {
+                    return cache.match(request).then(function (response) {
+                        return !response ? Promise.reject() : response.status === 200 ? Promise.resolve(response.clone() || response) : Promise.reject();
+                    });
+                }),
                 useful_cache.then(function (cache) {
                     return cache.match(url).then(function (response) {
                         return !response ? Promise.reject() : response.status === 200 ? Promise.resolve(response.clone() || response) : Promise.reject();
@@ -175,10 +183,10 @@ self.addEventListener("fetch", function(event) {
                         return !response ? Promise.reject() : response.status === 200 ? Promise.resolve(response.clone() || response) : Promise.reject();
                     });
                 }),
-                fetch(url).then(function (response) { // Fetch and serve
-                    return useful_cache.then(function (cache) {
+                fetch(request).then(function (response) { // Fetch and serve
+                    return other_cache.then(function (cache) {
                         if (response.status === 200) {
-                            cache.put(url, response.clone());
+                            cache.put(request, response.clone());
                             return Promise.resolve(response.clone() || response);
                         } else {
                             return Promise.resolve(response);
@@ -196,7 +204,7 @@ self.addEventListener("activate", function(event) {
         caches.keys().then(function(keys) {
             return Promise.all(
                 keys.filter(function(key) {
-                    return ![REQUIRED_CACHE, STATIC_CACHE, USEFUL_CACHE].includes(key);
+                    return ![REQUIRED_CACHE, STATIC_CACHE, USEFUL_CACHE, OTHER_CACHE].includes(key);
                 }).map(function(key) {
                     return caches.delete(key);
                 })

@@ -508,7 +508,7 @@ QuantiMat.prototype.process_threshold = function(t) {
                     color_b_skin = this.is_pxl_color_skin((index_of_color_b|0)>>>0);
                     color_b_usage = (this.get_a_color_usage((index_of_color_b|0)>>>0)|0)>>>0;
 
-                    if((color_b_usage|0) > 0 && (index_of_color_a|0) != (index_of_color_b|0)) {
+                    if((color_b_usage|0) != 0 && (index_of_color_a|0) != (index_of_color_b|0) && (color_a_skin|0) == (color_b_skin|0)) {
 
                         // Here we find the normalized color usage 0.1-10 in average
                         color_a_usage_percent = this.get_a_color_usage_percent((index_of_color_a|0)>>>0) / average_color_usage_percent;
@@ -520,9 +520,9 @@ QuantiMat.prototype.process_threshold = function(t) {
                         // There the more a color is used the less we will probably blend it, also:
                         // The greater the "usage" distance is, the most probably we'll have to sacrifice the lowest used color
                         // So the more the usage distance the more probabilities we'll have to blend them together
-                        threshold = threshold + threshold / fr((color_a_usage_percent+color_b_usage_percent) - Math.abs(color_a_usage_percent-color_b_usage_percent));
+                        threshold = fr(threshold + threshold / fr((color_a_usage_percent+color_b_usage_percent) - Math.abs(color_a_usage_percent-color_b_usage_percent)));
                         // CIE LAB 1976 version color scheme is used to measure accurate the distance for the human eye
-                        if(color_a.cie76_match_with(color_b,  threshold/2)) {
+                        if(color_a.cie76_match_with(color_b,  fr(threshold/2))) {
 
                             color_usage_difference_positive = fr(color_b_usage / color_a_usage);
 
@@ -618,7 +618,7 @@ var QuantiMatGlobal = function(
         var result = QuantiMat({
             pxls: pxls,
             pxl_colors,
-            number_of_color,
+            number_of_color: number_of_color === "auto" ? original_color_n/1.618|0: (parseFloat(number_of_color) < 1) ? original_color_n-5: number_of_color,
             width: image_data.width,
             height: image_data.height
         }).init().run().output("split");
@@ -636,7 +636,7 @@ var QuantiMatGlobal = function(
 
         image_data = new ImageData(new Uint8ClampedArray(image_data_uint32.buffer), image_data.width, image_data.height);
 
-        resolve([image_data, original_color_n - res_pxl_colors.length, res_pxl_colors.length, t2-t1|0]);
+        resolve([image_data, res_pxls, res_pxl_colors, original_color_n - res_pxl_colors.length, res_pxl_colors.length, t2-t1]);
     });
 };
 
