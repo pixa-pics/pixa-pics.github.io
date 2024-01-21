@@ -15,7 +15,7 @@ const init = () => {
 
             PouchDB.on("created",  async function(){
 
-                if(Boolean(window._pixa_settings)) {
+                if(!Boolean(window._pixa_settings)) {
 
                     window._pixa_settings = _merge_object({}, _get_default_settings());
                     resolve(_merge_object({}, window._pixa_settings));

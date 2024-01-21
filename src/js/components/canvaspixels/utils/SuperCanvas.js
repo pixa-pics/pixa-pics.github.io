@@ -85,10 +85,10 @@ function template(c, pxl_width, pxl_height){
                 oc = c.transferControlToOffscreen();
                 try {
 
-                    occ2d = oc.getContext("2d", {willReadFrequently: true, desynchronized: true});
+                    occ2d = oc.getContext("2d", {willReadFrequently: true, desynchronized: !is_mobile});
                 } catch (e) {
 
-                    occ2d = oc.getContext("2d");
+                    occ2d = oc.getContext("2d", {willReadFrequently: true});
                 }
                 occ2d.imageSmoothingEnabled = false;
                 try {
@@ -102,13 +102,17 @@ function template(c, pxl_width, pxl_height){
 
             } catch (e) {
                 try {
-                    oc = new OffscreenCanvas(pxl_width, pxl_height).getContext("2d");
+                    oc = new OffscreenCanvas(pxl_width, pxl_height);
                     occ2d = oc.getContext("2d");
 
                     if(occ2d.getContextAttributes){
                         var attr = occ2d.getContextAttributes();
                         if("willReadFrequently" in attr) {
-                            occ2d = oc.getContext('2d', {willReadFrequently: true});
+                            if("desynchronized" in attr) {
+                                occ2d = oc.getContext('2d', {willReadFrequently: true, desynchronized: !is_mobile});
+                            }else {
+                                occ2d = oc.getContext('2d', {willReadFrequently: true});
+                            }
                         }
                     }
 
@@ -131,7 +135,11 @@ function template(c, pxl_width, pxl_height){
                 if(cc2d.getContextAttributes){
                     var attr = cc2d.getContextAttributes();
                     if("willReadFrequently" in attr) {
-                        cc2d = c.getContext('2d', {willReadFrequently: true});
+                        if("desynchronized" in attr) {
+                            cc2d = c.getContext('2d', {willReadFrequently: true, desynchronized: !is_mobile});
+                        }else {
+                            cc2d = c.getContext('2d', {willReadFrequently: true});
+                        }
                     }
                 }
             } catch (e){}

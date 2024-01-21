@@ -25,12 +25,11 @@ api.init().then(function (response){
 });
 
 let element = document.getElementById("app");
-if(!Boolean(element)) {
+if(typeof element == "undefined") {
 
     element = document.createElement("div");
     element.setAttribute("id", "app");
     document.body.appendChild(element);
-    element = document.getElementById("app");
 }
 
 ReactDOM.render(
