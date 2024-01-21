@@ -23,8 +23,6 @@ import SelectIcon from "../icons/Select";
 import ImageEffectIcon from "../icons/ImageEffect";
 import ImageFilterMagicIcon from "../icons/ImageFilterMagic";
 import SwipeableViews from "react-swipeable-views";
-import { virtualize } from 'react-swipeable-views-utils';
-const VirtualizeSwipeableViews = virtualize(SwipeableViews);
 
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import PixelColorPalette from "./PixelColorPalette";
@@ -1231,9 +1229,6 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
             return
         }
         if (typeof can.width == "undefined") {
-            return
-        }
-        if (!can.width) {
             return
         }
 
@@ -2760,35 +2755,36 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
         }
     }
 
-
-    slideRenderer = ({ index, key }) => {
-        const name = this.get_action_panel_names()[index];
-        if(index === this.st4te.view_name_index || index === this.st4te.previous_view_name_index){
-
-            return this._cache[name]
-        }else {
-
-            return this._cache_empty[name]
-        }
-    };
-
     render() {
+
         "use strict";
+        const {view_name_index, previous_view_name_index} = this.st4te;
+        const cache = this._cache;
+        const cache_empty = this._cache_empty;
+
         return (
-            <VirtualizeSwipeableViews
+            <SwipeableViews
                 ignoreNativeScroll={true}
-                containerStyle={{overflow: "visible", contain: "size style", willChange: "inherit"}}
+                containerStyle={{overflow: "visible", contain: "style size"}}
                 animateHeight={true}
                 animateTransitions={true}
                 disableLazyLoading={true}
                 resistance={true}
-                springConfig={{tension: 450, friction: 60, duration: '120ms', easeFunction: 'cubic-bezier(0.4, 0, 0.2, 1)', delay: '5ms'}}
-                index={this.st4te.view_name_index}
+                springConfig={{tension: 450, friction: 60, duration: '120ms', easeFunction: 'cubic-bezier(0.280, 0.840, 0.420, 1)', delay: '5ms'}}
+                index={view_name_index}
                 onChangeIndex={this._handle_view_name_change}
                 disabled={false}
                 key={"swipe-able-view"}
-                slideRenderer={this.slideRenderer}
-            />
+            >
+                {this.get_action_panel_names().map(function (name, index){
+                    "use strict";
+                    if(view_name_index !== index && previous_view_name_index !== index) {
+                        return cache_empty[name];
+                    }else {
+                        return cache[name];
+                    }
+                })}
+            </SwipeableViews>
         );
     }
 }

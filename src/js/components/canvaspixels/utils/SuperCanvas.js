@@ -103,7 +103,7 @@ function template(c, pxl_width, pxl_height){
             } catch (e) {
                 try {
                     oc = new OffscreenCanvas(pxl_width, pxl_height);
-                    occ2d = oc.getContext("2d");
+                    occ2d = oc.getContext("2d", {willReadFrequently: true});
 
                     if(occ2d.getContextAttributes){
                         var attr = occ2d.getContextAttributes();
@@ -129,7 +129,7 @@ function template(c, pxl_width, pxl_height){
         }
 
         if(normal_context || !is_offscreen) {
-            cc2d = c.getContext('2d');
+            cc2d = c.getContext('2d', {willReadFrequently: true});
 
             try {
                 if(cc2d.getContextAttributes){

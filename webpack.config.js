@@ -135,7 +135,7 @@ module.exports = {
         ],
         chunkIds: 'named',
         splitChunks: {
-            chunks: 'all',
+            chunks: 'async',
             minSize: 192 * 1024,
             maxSize: 384 * 1024,
             minChunks: 5,
@@ -205,6 +205,10 @@ module.exports = {
             'readable-stream': path.join(__dirname, 'node_modules/readable-stream/lib/ours/browser.js'),
             'readable-stream@4.1.0': path.join(__dirname, 'node_modules/readable-stream/lib/ours/browser.js'),
             "buffer": path.join(__dirname, 'node_modules/buffer'),
+            "react": "preact/compat",
+            "react-dom/test-utils": "preact/test-utils",
+            "react-dom": "preact/compat",
+            "react/jsx-runtime": "preact/jsx-runtime"
         }
     },
     plugins: process.env.NODE_ENV === "development" ? [

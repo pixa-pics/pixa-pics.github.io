@@ -2499,8 +2499,8 @@ class Pixel extends React.PureComponent {
             max_size: _import_size * 1.5,
         });
         this.st4te._swipeable_drawer_set_props({
-            view_name_index: _view_name_index,
-            previous_view_name_index: _previous_view_name_index,
+            view_name_index: _view_name_index % 6,
+            previous_view_name_index: _previous_view_name_index % 6,
             layers: _layers,
             layer_index: _layer_index,
             hide_canvas_content: _hide_canvas_content,
@@ -2509,7 +2509,7 @@ class Pixel extends React.PureComponent {
             hue: _hue,
             current_color: _current_color,
             second_color: _second_color,
-            slider_value: _slider_value,
+            slider_value: parseFloat(_slider_value),
             slider_value_width: _slider_value_width,
             slider_value_height: _slider_value_height,
             tool: _tool,

@@ -1,5 +1,4 @@
-import ReactDOMServer from 'react-dom/server'
-import React from "react";
+import renderToString from 'preact-render-to-string'
 import svg64 from "svg64";
 
 function _hexToRGB(h) {
@@ -25,7 +24,7 @@ function _RGBToHex(r,g,b) {
 
 function get_svg_in_b64(Component, bw = false) {
 
-    let svg_string = ReactDOMServer.renderToString(Component);
+    let svg_string = renderToString(Component);
 
     if(bw) {
         const regex_color_hex = /(?:#)[0-9a-f]{8}|(?:#)[0-9a-f]{6}|(?:#)[0-9a-f]{4}|(?:#)[0-9a-f]{3}/ig;
