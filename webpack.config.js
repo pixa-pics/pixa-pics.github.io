@@ -135,7 +135,7 @@ module.exports = {
         ],
         chunkIds: 'named',
         splitChunks: {
-            chunks: 'initial',
+            chunks: 'all',
             minSize: 192 * 1024,
             maxSize: 384 * 1024,
             minChunks: 5,
