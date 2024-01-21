@@ -54,7 +54,6 @@ function template(c, pxl_width, pxl_height){
 
         if(normal_context || !is_offscreen) {
             cc2d = c.getContext('2d', {willReadFrequently: true});
-
             cc2d.imageSmoothingEnabled = false;
             try {
                 cc2d.mozImageSmoothingEnabled = false;
@@ -141,15 +140,21 @@ Object.defineProperty(SuperCanvas.prototype, 'clear', {
 Object.defineProperty(SuperCanvas.prototype, 'render', {
     get: function() { "use strict"; return function () {
         "use strict";
-        this.state_.s.canvas_context.globalCompositeOperation = "copy";
-        this.state_.s.canvas_context.drawImage(this.state_.s.offscreen_canvas, 0, 0);
+        if(!this.state_.s.is_offscreen){
+            this.state_.s.canvas_context.putImageData(new ImageData(this.state_.pr_uint8a, this.state_.s.width, this.state_.s.height), 0, 0);
+        }else if(!this.state_.s.is_offscreen_linked){
+            this.state_.s.canvas_context.globalCompositeOperation = "copy";
+            this.state_.s.canvas_context.drawImage(this.state_.s.offscreen_canvas, 0, 0);
+        }
         return Promise.resolve();
     }}
 });
 Object.defineProperty(SuperCanvas.prototype, 'prender', {
     get: function() { "use strict"; return function () {
         "use strict";
-        this.state_.s.offscreen_canvas_context.putImageData(new ImageData(this.state_.pr_uint8a, this.state_.s.width, this.state_.s.height), 0, 0);
+        if(this.state_.s.is_offscreen){
+            this.state_.s.offscreen_canvas_context.putImageData(new ImageData(this.state_.pr_uint8a, this.state_.s.width, this.state_.s.height), 0, 0);
+        }
         return Promise.resolve();
     }}
 });
