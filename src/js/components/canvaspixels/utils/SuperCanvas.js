@@ -194,7 +194,7 @@ function template(c, pxl_width, pxl_height){
     };
 
     state.fp = new Uint32Array(state.fp_buffer)
-    state.pr_uint8a = new Uint8Array(state.fp.buffer);
+    state.pr_uint8a = new Uint8ClampedArray(state.fp.buffer);
 
     return state;
 }
@@ -213,6 +213,12 @@ Object.defineProperty(SuperCanvas.prototype, 'ok', {
     get: function() { "use strict"; return function () {
         "use strict";
         return Boolean(this.state_.s.canvas_context.canvas);
+    }}
+});
+Object.defineProperty(SuperCanvas.prototype, 'getUint32', {
+    get: function() { "use strict"; return function () {
+        "use strict";
+        return this.state_.fp;
     }}
 });
 Object.defineProperty(SuperCanvas.prototype, 'new', {
@@ -236,66 +242,16 @@ Object.defineProperty(SuperCanvas.prototype, 'clear', {
 Object.defineProperty(SuperCanvas.prototype, 'render', {
     get: function() { "use strict"; return function () {
         "use strict";
-        var b2 = this.state_.b2;
-        this.state_.pr.xy1xy2[0] = this.state_.s.width - 1 | 0;
-        this.state_.pr.xy1xy2[1] = this.state_.s.height - 1 | 0;
-        this.state_.pr.xy1xy2[2] = 0;
-        this.state_.pr.xy1xy2[3] = 0;
-
-        if (typeof b2 !== "undefined" && this.state_.enable_paint_type === "bitmap") {
-
-            this.state_.b.old_bmp.close();
-            this.state_.s.canvas_context.clearRect(b2.bmp_x, b2.bmp_y, b2.bmp.width, b2.bmp.height);
-            this.state_.s.canvas_context.globalCompositeOperation = "source-over";
-            this.state_.s.canvas_context.drawImage(b2.bmp, b2.bmp_x, b2.bmp_y, b2.bmp.width, b2.bmp.height);
-
-            /*this.state_.s.canvas_context.globalCompositeOperation = "copy";
-            this.state_.s.canvas_context.drawImage(b2.bmp, 0, 0, b2.bmp.width, b2.bmp.height);*/
-
-            this.state_.b = b2;
-            return Promise.resolve();
-        } else if (this.state_.enable_paint_type === "offscreen" && this.state_.is_offscreen_linked === false) {
-
-            this.state_.s.canvas_context.globalCompositeOperation = "copy";
-            this.state_.s.canvas_context.drawImage(this.state_.s.offscreen_canvas_context.canvas, 0, 0);
-            return Promise.resolve();
-        }else {
-
-            return Promise.resolve();
-        }
+        this.state_.s.canvas_context.globalCompositeOperation = "copy";
+        this.state_.s.canvas_context.drawImage(this.state_.s.offscreen_canvas_context.canvas, 0, 0);
+        return Promise.resolve();
     }}
 });
 Object.defineProperty(SuperCanvas.prototype, 'prender', {
     get: function() { "use strict"; return function () {
         "use strict";
-        if (this.state_.enable_paint_type === "bitmap") {
-
-            let new_bmp_t = Date.now();
-            let new_bmp_x = this.state_.pr.xy1xy2[0];
-            let new_bmp_y = this.state_.pr.xy1xy2[1];
-            let pr_width = this.state_.pr.width | 0;
-            let pr_height = this.state_.pr.height | 0;
-            return new Promise((resolve, reject) => {
-                createImageBitmap(new ImageData(new Uint8ClampedArray(this.state_.pr_uint8a.buffer), this.state_.s.width|0, this.state_.s.height|0), new_bmp_x, new_bmp_y, pr_width, pr_height).then((bitmap) => {
-                    this.state_.b2.old_bmp = this.state_.b.bmp;
-                    this.state_.b2.bmp = bitmap;
-                    this.state_.b2.bmp_x = new_bmp_x | 0;
-                    this.state_.b2.bmp_y = new_bmp_y | 0;
-                    this.state_.b2.bmp_t = new_bmp_t | 0;
-                    resolve();
-                }).catch(() => {
-                    this.state_.s.is_bitmap = false;
-                    reject();
-                });
-            });
-
-        }else if (this.state_.enable_paint_type === "offscreen") {
-
-            return draw_2d(this.state_.s.offscreen_canvas_context, this.state_);
-        }else {
-
-            return Promise.resolve();
-        }
+        this.state_.s.offscreen_canvas_context.putImageData(new ImageData(this.state_.pr_uint8a, this.state_.s.width, this.state_.s.height), 0, 0);
+        return Promise.resolve();
     }}
 });
 Object.defineProperty(SuperCanvas.prototype, 'unpile', {
@@ -304,99 +260,17 @@ Object.defineProperty(SuperCanvas.prototype, 'unpile', {
 
         let width = this.state_.s.width | 0;
         let height = this.state_.s.height | 0;
-        let index_changes = this.state_.ic.indexes;
-        let color_changes = this.state_.ic.colors;
 
         this.state_.enable_paint_type =  this.state_.s.is_bitmap ? "bitmap" : this.state_.s.is_offscreen ? "offscreen" : "";
 
         if (width !== w || height !== h) {
 
             return Promise.reject();
-        } else if(index_changes.length > 0 && this.state_.ic.used === false){
+        } else {
 
-            let xyarray = new Uint16Array(2);
-            let uint32a = this.state_.fp;
-            let pr = this.state_.pr;
-            let xy1xy2 = pr.xy1xy2;
-            let index = new Uint32Array(1);
-
-            if(index_changes.length < 1024 || this.state_.enable_paint_type !== "bitmap") {
-
-                let context = this.state_.enable_paint_type === "offscreen" ? this.state_.s.offscreen_canvas_context: this.state_.s.canvas_context;
-                let colors = new Colors(color_changes.buffer, color_changes.byteOffset, color_changes.byteLength);
-                let color = new Color(new ArrayBuffer(4));
-                let uint32HEXMap = {};
-                let uint32PATHSMap = {};
-
-                function paint(context, path, hex) {
-                    "use strict";
-                    context.fillStyle = hex;
-                    context.fill(path);
-                }
-
-                for (let i = 0, l = index_changes.length | 0; uint_less(i, l); i = plus_uint(i, 1)) {
-
-                    index[0] = index_changes[i|0];
-                    uint32a[index[0]] = color_changes[i|0];
-
-                    xyarray[0] = modulo_uint(index[0], width);
-                    xyarray[1] = divide_uint(minus_uint(index[0], xyarray[0]), width);
-
-                    if (typeof uint32HEXMap[color_changes[i|0]] == "undefined"){
-                        uint32HEXMap[color_changes[i|0]] = colors.get_use_element(i, color).hex;
-                        uint32PATHSMap[color_changes[i|0]] = new Path2D();
-                    }
-
-                    context.clearRect(xyarray[0], xyarray[1], 1, 1);
-                    uint32PATHSMap[color_changes[i|0]].rect(xyarray[0], xyarray[1], 1, 1);
-                }
-
-                var keys = Uint32Array.from(Object.keys(uint32PATHSMap));
-
-                for (let i = 0, l = keys.length | 0; uint_less(i, l); i = plus_uint(i, 1)) {
-                    paint(context, uint32PATHSMap[keys[i]], uint32HEXMap[keys[i]])
-                }
-
-                this.state_.ic.used = true;
-                this.state_.enable_paint_type = this.state_.enable_paint_type === "offscreen" ? "offscreen": "";
-            }else {
-
-                for (let i = 0, l = index_changes.length | 0; uint_less(i, l); i = plus_uint(i, 1)) {
-
-                    index[0] = index_changes[i];
-                    uint32a[index[0]] = color_changes[i];
-
-                    xyarray[0] = modulo_uint(index[0], width);
-                    xyarray[1] = divide_uint(minus_uint(index[0], xyarray[0]), width);
-
-                    if (uint_greater_equal(xy1xy2[0], xyarray[0])) {
-                        xy1xy2[0] = xyarray[0];
-                    }
-
-                    if (uint_less_equal(xy1xy2[2], xyarray[0])) {
-                        xy1xy2[2] = xyarray[0];
-                    }
-
-                    if (uint_greater_equal(xy1xy2[1], xyarray[1])) {
-                        xy1xy2[1] = xyarray[1];
-                    }
-
-                    if (uint_less_equal(xy1xy2[3], xyarray[1])) {
-                        xy1xy2[3] = xyarray[1];
-                    }
-                }
-
-                pr.width = xy1xy2[2] - xy1xy2[0] + 1 | 0;
-                pr.height = xy1xy2[3] - xy1xy2[1] + 1 | 0;
-                this.state_.pr = pr;
-            }
-
-            this.state_.ic.used = true;
-            return Promise.resolve();
-        }else {
-            //this.state_.enable_paint_type = "";
             return Promise.resolve();
         }
+
         /*else {
 
             let index_changes = this.state_.ic.indexes;
@@ -414,12 +288,8 @@ Object.defineProperty(SuperCanvas.prototype, 'unpile', {
     }}
 });
 Object.defineProperty(SuperCanvas.prototype, 'pile', {
-    get: function() { "use strict"; return function (index_changes, color_changes) {
+    get: function() { "use strict"; return function () {
         "use strict";
-        this.state_.ic.indexes = index_changes;
-        this.state_.ic.colors = color_changes;
-        this.state_.ic.used = false;
-
         return Promise.resolve();
 
     }}
@@ -436,26 +306,6 @@ Object.defineProperty(SuperCanvas.prototype, 'set_dimensions', {
             return Promise.reject();
         }
 
-    }}
-});
-Object.defineProperty(SuperCanvas.prototype, 'secure_context', {
-    get: function() { "use strict"; return function () {
-        "use strict";
-        this.state_.s.canvas_context.canvas.addEventListener("contextlost", () => {
-
-            let cc2d = this.state_.s.canvas_context.canvas.getContext('2d', {willReadFrequently: true});
-            cc2d.imageSmoothingEnabled = false;
-            cc2d.webkitImageSmoothingEnabled = false;
-            cc2d.globalCompositeOperation = "copy";
-            this.state_.s.canvas_context = cc2d;
-        });
-        this.state_.s.offscreen_canvas_context.canvas.addEventListener("contextlost", () => {
-
-            let occ2d = this.state_.s.offscreen_canvas_context.canvas.getContext("2d", {willReadFrequently: true});
-            occ2d.imageSmoothingEnabled = false;
-            occ2d.webkitImageSmoothingEnabled = false;
-            this.state_.s.offscreen_canvas_context = occ2d;
-        });
     }}
 });
 Object.defineProperty(SuperCanvas.prototype, 'destroy', {

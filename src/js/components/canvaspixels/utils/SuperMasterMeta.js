@@ -275,7 +275,7 @@ const SuperMasterMeta = {
 
                 bool_new_highlight = _selection_pair_highlight !== _old_selection_pair_highlight;
 
-                meta_super_blend.update(length_l|0, full_pxls_length | 0, layers_opacity_255, _s_layers);
+                meta_super_blend.update(length_l|0, full_pxls_length | 0, layers_opacity_255, _s_layers, super_canvas.getUint32());
 
                 var meta_super_blend_for = meta_super_blend.for.bind(meta_super_blend);
                 var meta_super_blend_next = meta_super_blend.next.bind(meta_super_blend);
@@ -336,11 +336,11 @@ const SuperMasterMeta = {
                     setTimeout(update_canvas_promise, 5, resolve0, reject0, force_update, requested_at);
                 }
 
-                meta_super_blend.blend(false, false).then(function (params) {
+                meta_super_blend.blend(false, false).then(function () {
                     "use strict";
-                    if (params[0].length > 0 || clear_canvas || is_there_new_dimension || force_update) {
+                    if (true || clear_canvas || is_there_new_dimension || force_update) {
 
-                        meta.super_canvas.pile(params[0], params[1]).then(function () {
+                        meta.super_canvas.pile().then(function () {
                             "use strict";
                             meta.super_canvas.unpile(pxl_width, pxl_height).then(function () {
                                 "use strict";
