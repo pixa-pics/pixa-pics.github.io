@@ -132,5 +132,5 @@ function euclideanDistance(color1, color2) {
 const scaler = new Scaler();
 const sourceImage = document.createElement('img'); // Assume this is your source image
 sourceImage.onload = () => {
-    console.log(scaler.kCenter(92, 92, 16, 8, sourceImage).toDataURL());
+    console.log(scaler.kCenter(92, 92, 4, 8, sourceImage).toDataURL());
 };

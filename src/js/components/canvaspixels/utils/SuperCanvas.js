@@ -128,7 +128,7 @@ function template(c, pxl_width, pxl_height){
             }
         }
 
-        if(normal_context) {
+        if(normal_context || !is_offscreen) {
             cc2d = c.getContext('2d');
 
             try {
@@ -291,9 +291,7 @@ Object.defineProperty(SuperCanvas.prototype, 'prender', {
 
         }else if (this.state_.enable_paint_type === "offscreen") {
 
-            return Promise.resolve();
-            //return draw_2d(this.state_.s.offscreen_canvas_context, this.state_);
-
+            return draw_2d(this.state_.s.offscreen_canvas_context, this.state_);
         }else {
 
             return Promise.resolve();
