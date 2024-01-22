@@ -153,6 +153,41 @@ const file_to_base64 = (file, callback_function = () => {}, pool = null) => {
 };
 window.base64_sanitize_process_function = new AFunction(`var t = function(base64, scale) {
     "use strict";
+    class Centroid {
+        constructor(r, g, b, a, id, count) {
+            this.storage_ = new ArrayBuffer(10);
+            this.rgba_ = new Uint8Array(this.storage_, 6, 4);
+            this.rgba_[0] = r; this.rgba_[1] = g; this.rgba_[2] = b; this.rgba_[3] = a;
+            this.id_ = new Uint16Array(this.storage_, 4, 1);
+            this.id_[0] = id;
+            this.count_ = new Uint32Array(this.storage_, 0, 1);
+            this.count_[0] = count;
+        }
+        get r(){return this.rgba_[0];}
+        get g(){return this.rgba_[1];}
+        get b(){return this.rgba_[2];}
+        get a(){return this.rgba_[3];}
+        get id(){return this.id_[0];}
+        set id(v){this.id_[0] = (v|0) & 0xFFFF;}
+        get count(){return this.count_[0];}
+        set count(v){this.count_[0] = (v|0) >>> 0;}
+    }
+    class Pixel {
+        constructor(r, g, b, a, id) {
+            this.storage_ = new ArrayBuffer(6);
+            this.rgba_ = new Uint8Array(this.storage_, 0, 4);
+            this.rgba_[0] = r; this.rgba_[1] = g; this.rgba_[2] = b; this.rgba_[3] = a;
+            this.id_ = new Uint16Array(this.storage_, 4, 1);
+            this.id_[0] = id;
+        }
+        get r(){return this.rgba_[0];}
+        get g(){return this.rgba_[1];}
+        get b(){return this.rgba_[2];}
+        get a(){return this.rgba_[3];}
+        get id(){return this.id_[0];}
+        set id(v){this.id_[0] = (v|0) & 0xFFFF;}
+    }
+    
     class Scaler {
         constructor() {
             this.canvas = new OffscreenCanvas(1, 1) || document.createElement('canvas');
@@ -208,11 +243,11 @@ window.base64_sanitize_process_function = new AFunction(`var t = function(base64
             return this.findBiggestCentroid(centroids);
         }
         initCentroids(imageData, k) {
-            const centroids = [];
+            const centroids = new Array(k);
             const pixels = imageData.data;
             for (let i = 0; i < k; i++) {
                 const id = Math.floor(Math.random() * (pixels.length / 4)), idx = id * 4;
-                centroids.push({ i: id, r: pixels[idx], g: pixels[idx + 1], b: pixels[idx + 2], a: pixels[i + 3], count: 0 });
+                centroids[i] = new Centroid(pixels[idx], pixels[idx + 1], pixels[idx + 2], pixels[i + 3], id, 0);
             }
             return centroids;
         }
@@ -224,7 +259,7 @@ window.base64_sanitize_process_function = new AFunction(`var t = function(base64
             centroids.forEach(function (centroid){centroid.count = 0;}); // Reset centroid counts
     
             for (let i = 0; i < pixels.length; i += 4) {
-                const pixel = { i: i/4, r: pixels[i], g: pixels[i + 1], b: pixels[i + 2], a: pixels[i + 3] };
+                const pixel = new Pixel( pixels[i], pixels[i + 1], pixels[i + 2], pixels[i + 3], i/4);
                 let minDist = Infinity;
                 let closestCentroidIndex = -1;
     
@@ -258,7 +293,7 @@ window.base64_sanitize_process_function = new AFunction(`var t = function(base64
                 });
     
                 const len = clusters[index].length;
-                return { r: sumR / len | 0, g: sumG / len| 0, b: sumB / len | 0, a: sumA / len | 0, count: len | 0 };
+                return new Centroid(sumR / len | 0, sumG / len| 0, sumB / len | 0, sumA / len | 0,  0xFFFF,len | 0);
             });
         }
         findBiggestCentroid(centroids) {
@@ -289,8 +324,10 @@ window.base64_sanitize_process_function = new AFunction(`var t = function(base64
             return colorDistance; //alpha * colorDistance + (1 - alpha) * spatialDistance | 0;
         }
     }
-
+    
+    // Usage
     const scaler = new Scaler();
+
     return new Promise(function(resolve, reject) {
         var img = new Image();
         var is_png = base64.startsWith("data:image/png;");
