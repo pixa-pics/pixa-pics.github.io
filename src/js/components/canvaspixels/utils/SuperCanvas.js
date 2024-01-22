@@ -80,13 +80,13 @@ function template(c, pxl_width, pxl_height){
         let occ2d;
         if (is_offscreen) {
             try {
-                oc = new OffscreenCanvas(pxl_width, pxl_height).getContext("2d", {willReadFrequently: true, powerPreference: "high-performance"});
+                oc = new OffscreenCanvas(pxl_width, pxl_height).getContext("2d", {willReadFrequently: true, powerPreference: "high-performance", desynchronized: true});
                 occ2d = oc.getContext("2d");
 
                 if(occ2d.getContextAttributes){
                     var attr = occ2d.getContextAttributes();
                     if("willReadFrequently" in attr) {
-                        occ2d = oc.getContext('2d', {willReadFrequently: true, powerPreference: "high-performance"});
+                        occ2d = oc.getContext('2d', {willReadFrequently: true, powerPreference: "high-performance", desynchronized: true});
                     }
                 }
 
@@ -107,7 +107,7 @@ function template(c, pxl_width, pxl_height){
             if(cc2d.getContextAttributes){
                 var attr = cc2d.getContextAttributes();
                 if("willReadFrequently" in attr) {
-                    cc2d = c.getContext('2d', {willReadFrequently: true, powerPreference: "high-performance"});
+                    cc2d = c.getContext('2d', {willReadFrequently: true, powerPreference: "high-performance", desynchronized: true});
                 }
             }
         } catch (e){}
