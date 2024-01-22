@@ -674,14 +674,14 @@ class CanvasPixels extends React.PureComponent {
         return new Promise( (resolve, reject) => {
             B64PngCanvas.from(pool, parseInt(pxl_width), parseInt(pxl_height), _s_layers.map(function (l){return l.indexes}), _s_layers.map(function (l){return l.colors}), _layers, parseInt(scale), true).render().then((result) => {
 
-                if(with_compression_speed !== 0 && result.colors.length <= 256) {
+                if(this.png_quant && with_compression_speed !== 0 && result.colors.length <= 256) {
 
                     this.png_quant(""+result.url, with_compression_quality_min, with_compression_quality_max, with_compression_speed, pool).then((base_64_out) => {
                         result.url = base_64_out;
                         resolve(result);
                     }).catch(function(e){ reject(e);});
 
-                }else if(with_compression_speed !== 0 && result.colors.length > 256){
+                }else if(this.oxi_png && with_compression_speed !== 0 && result.colors.length > 256){
 
                     this.oxi_png(""+result.url, Math.floor(with_compression_quality_max/30), false, pool).then((base_64_out) => {
 

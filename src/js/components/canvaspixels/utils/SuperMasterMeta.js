@@ -344,7 +344,7 @@ const SuperMasterMeta = {
                             "use strict";
                             meta.super_canvas.unpile(pxl_width, pxl_height).then(function () {
                                 "use strict";
-                                meta.super_canvas.prender().then(function () {
+                                meta.super_canvas.prender().then(function (bmp) {
                                     "use strict";
                                     meta.sraf.run_frame(function () {
                                         "use strict";
@@ -360,7 +360,7 @@ const SuperMasterMeta = {
                                         state._old_pxl_width = parseInt(pxl_width);
                                         state._old_pxl_height = parseInt(pxl_height);
                                         state._last_paint_timestamp = +requested_at;
-                                        return render_binding();
+                                        return render_binding(bmp);
                                     }, false, clear_canvas || is_there_new_dimension || force_update,  Date.now(), "render").then(resolve0).catch(handle_reject0);
                                 }).catch(handle_reject0);
 

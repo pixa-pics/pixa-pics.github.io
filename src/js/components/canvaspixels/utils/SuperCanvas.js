@@ -39,7 +39,6 @@ function template(c, pxl_width, pxl_height){
                 try {
                     oc = new OffscreenCanvas(pxl_width, pxl_height);
                     occ2d = oc.getContext("2d", {willReadFrequently: true, preserveDrawingBuffer: true, powerPreference: "high-performance", alpha: true, desynchronized: true});
-
                     occ2d.imageSmoothingEnabled = false;
                     try {
                         occ2d.webkitImageSmoothingEnabled = false;
@@ -138,24 +137,34 @@ Object.defineProperty(SuperCanvas.prototype, 'clear', {
     }}
 });
 Object.defineProperty(SuperCanvas.prototype, 'render', {
-    get: function() { "use strict"; return function () {
+    get: function() { "use strict"; return function (bmp) {
         "use strict";
-        if(!this.state_.s.is_offscreen){
-            this.state_.s.canvas_context.putImageData(new ImageData(this.state_.pr_uint8a, this.state_.s.width, this.state_.s.height), 0, 0);
-        }else if(!this.state_.s.is_offscreen_linked){
+        if(this.state_.s.is_offscreen && !this.state_.s.is_offscreen_linked){
             this.state_.s.canvas_context.globalCompositeOperation = "copy";
             this.state_.s.canvas_context.drawImage(this.state_.s.offscreen_canvas, 0, 0);
+            return Promise.resolve();
+        }else if(this.state_.s.is_offscreen && this.state_.is_offscreen_linked){
+            return Promise.resolve();
+        }else if(this.state_.is_bitmap) {
+            this.state_.s.canvas_context.globalCompositeOperation = "copy";
+            this.state_.s.canvas_context.drawImage(bmp, 0, 0);
+            return Promise.resolve();
         }
-        return Promise.resolve();
     }}
 });
 Object.defineProperty(SuperCanvas.prototype, 'prender', {
     get: function() { "use strict"; return function () {
         "use strict";
+        const image_data = new ImageData(this.state_.pr_uint8a, this.state_.s.width, this.state_.s.height);
         if(this.state_.s.is_offscreen){
-            this.state_.s.offscreen_canvas_context.putImageData(new ImageData(this.state_.pr_uint8a, this.state_.s.width, this.state_.s.height), 0, 0);
+            this.state_.s.offscreen_canvas_context.putImageData(image_data, 0, 0);
+            return Promise.resolve();
+        }else if(this.state_.s.is_bitmap) {
+            return createImageBitmap(image_data);
+        }else {
+            this.state_.s.canvas_context.putImageData(image_data, 0, 0);
+            return Promise.resolve();
         }
-        return Promise.resolve();
     }}
 });
 Object.defineProperty(SuperCanvas.prototype, 'unpile', {

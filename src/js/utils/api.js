@@ -1,20 +1,18 @@
-import { CURRENCY_COUNTRIES } from "./constants";
+import { CURRENCY_COUNTRIES } from "../utils/constants";
 import get_browser_locales from "../utils/locales";
 import PouchDB from "pouchdb-core";
 import PouchDB_IDB from "pouchdb-adapter-idb";
 import PouchDB_memory from "pouchdb-adapter-memory";
 
-const _merge_object = (obj1, obj2) => {
-    return Object.assign(obj1, obj2);
-};
 const init = () => {
 
     return new Promise(function(resolve, reject){
 
-        function initiate(){
+        if(!Boolean(window.settings_db)) {
+
             PouchDB.on("created",  async function(){
 
-                if(!Boolean(window._pixa_settings)) {
+                if(Boolean(window._pixa_settings)) {
 
                     window._pixa_settings = _merge_object({}, _get_default_settings());
                     resolve(_merge_object({}, window._pixa_settings));
@@ -44,23 +42,19 @@ const init = () => {
                     window.location.reload();
                 });
             }
-        }
 
-        if(typeof (window.settings_db || {}).allDocs !== "function") {
-
-            initiate();
 
         }else if(Boolean(window._pixa_settings)){
 
             resolve(_merge_object({}, window._pixa_settings));
-        }else if(typeof (window.settings_db || {}).allDocs === "function") {
+        }else {
 
             window.settings_db.allDocs({
                 include_docs: true,
                 descending: false,
                 attachments: false,
                 binary: false
-            }).then(function (response) {
+            }).then(async function (response) {
 
                 let settings_docs = response.rows.map((row) => {
                     return row.doc;
@@ -77,13 +71,15 @@ const init = () => {
             }).catch(function (error) {
                 reject(error)
             });
-        }else {
-            initiate();
         }
     });
 
 };
 
+const _merge_object = (obj1, obj2) => {
+
+    return Object.assign(obj1, obj2);
+};
 
 const _get_default_settings = () => {
 
