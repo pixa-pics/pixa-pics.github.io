@@ -221,9 +221,6 @@ Object.defineProperty(SuperBlend.prototype, 'set_data_array', {
         if(dest){
             this.destination_rgba_colors_for_blending_ = dest;
             this.destination_rgba_colors_for_blending_SIMDope_ = new Colors(this.destination_rgba_colors_for_blending_.buffer);
-        }else {
-            this.destination_rgba_colors_for_blending_ = undefined;
-            this.destination_rgba_colors_for_blending_SIMDope_ = undefined;
         }
     }},
     enumerable: false,

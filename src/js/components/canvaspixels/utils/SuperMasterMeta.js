@@ -144,8 +144,6 @@ const SuperMasterMeta = {
 
         let pxl_indexes_of_changes = new SetFixed(sizes.width*sizes.height);
 
-        let render_binding = meta.super_canvas.render.bind(meta.super_canvas);
-        let meta_super_blend = meta.super_blend;
         let {
             bool_is_resize,
             bool_new_hover,
@@ -273,17 +271,19 @@ const SuperMasterMeta = {
                 let index = 0;
                 let _current_layer = _s_layers[_layer_index];
 
-                bool_new_highlight = _selection_pair_highlight !== _old_selection_pair_highlight;
-
-                meta_super_blend.update(length_l|0, full_pxls_length | 0, layers_opacity_255, _s_layers, super_canvas.getUint32());
-
+                let render_binding = meta.super_canvas.render.bind(meta.super_canvas);
+                let meta_super_blend = meta.super_blend;
                 var meta_super_blend_for = meta_super_blend.for.bind(meta_super_blend);
                 var meta_super_blend_next = meta_super_blend.next.bind(meta_super_blend);
                 var meta_super_blend_stack = meta_super_blend.stack.bind(meta_super_blend);
 
+                bool_new_highlight = _selection_pair_highlight !== _old_selection_pair_highlight;
+                meta_super_blend.update(length_l|0, full_pxls_length | 0, layers_opacity_255, _s_layers, super_canvas.getUint32());
+
                 var pxl_indexes_of_current_shape_has = _pxl_indexes_of_current_shape.has.bind(_pxl_indexes_of_current_shape);
                 var pxl_indexes_of_selection_has = _pxl_indexes_of_selection.has.bind(_pxl_indexes_of_selection);
                 var imported_image_pxls_positioned_keyset_has = imported_image_pxls_positioned_keyset.has.bind(imported_image_pxls_positioned_keyset);
+
                 var newHighlight = bool_new_highlight ? 0xFFFFFFFF: 0x00000000;
 
                 if(image_imported_resizer_index >= 0) {_pxl_indexes_of_current_shape.add(image_imported_resizer_index);}
@@ -360,7 +360,9 @@ const SuperMasterMeta = {
                                         state._old_pxl_width = parseInt(pxl_width);
                                         state._old_pxl_height = parseInt(pxl_height);
                                         state._last_paint_timestamp = +requested_at;
-                                        return render_binding(bmp);
+                                        return render_binding().then(function (){
+                                            return Promise.resolve();
+                                        });
                                     }, false, clear_canvas || is_there_new_dimension || force_update,  Date.now(), "render").then(resolve0).catch(handle_reject0);
                                 }).catch(handle_reject0);
 
