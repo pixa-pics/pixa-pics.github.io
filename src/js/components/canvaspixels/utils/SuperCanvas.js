@@ -24,7 +24,7 @@ function template(c, pxl_width, pxl_height){
         if (is_offscreen) {
             try {
                 oc = c.transferControlToOffscreen();
-                occ2d = oc.getContext("2d", {willReadFrequently: true});
+                occ2d = oc.getContext("2d", {willReadFrequently: true, preserveDrawingBuffer: true, powerPreference: "high-performance", alpha: true, desynchronized: true});
                 occ2d.imageSmoothingEnabled = false;
                 try {
                     occ2d.webkitImageSmoothingEnabled = false;
@@ -38,7 +38,7 @@ function template(c, pxl_width, pxl_height){
             } catch (e) {
                 try {
                     oc = new OffscreenCanvas(pxl_width, pxl_height);
-                    occ2d = oc.getContext("2d", {willReadFrequently: true});
+                    occ2d = oc.getContext("2d", {willReadFrequently: true, preserveDrawingBuffer: true, powerPreference: "high-performance", alpha: true, desynchronized: true});
 
                     occ2d.imageSmoothingEnabled = false;
                     try {
@@ -53,7 +53,7 @@ function template(c, pxl_width, pxl_height){
         }
 
         if(normal_context || !is_offscreen) {
-            cc2d = c.getContext('2d', {willReadFrequently: true});
+            cc2d = c.getContext('2d', {willReadFrequently: true, preserveDrawingBuffer: true, powerPreference: "high-performance", alpha: true, desynchronized: true});
             cc2d.imageSmoothingEnabled = false;
             try {
                 cc2d.mozImageSmoothingEnabled = false;
