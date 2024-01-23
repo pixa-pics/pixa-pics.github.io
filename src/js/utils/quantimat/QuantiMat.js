@@ -54,8 +54,8 @@ var MODE = SIMDopeCreateConfAdd({
 });
 
 var fr = Math.fround;
-var DISTINCT_SKIN_COLOR_MATCH_MULTIPLY = fr(1.25);
-var SAME_SKIN_COLOR_MATCH_MULTIPLY = fr(.80);
+var DISTINCT_SKIN_COLOR_MATCH_MULTIPLY = fr(1.14);
+var SAME_SKIN_COLOR_MATCH_MULTIPLY = fr(0.88);
 
 const {simdops, Color, Colors} = SIMDopeCreate(MODE);
 const {
@@ -450,15 +450,15 @@ QuantiMat.prototype.process_threshold = function(t) {
     t = (t | 0) >>> 0;
     function calculateN(t, max) {
         // Apply a power scale to 't'. The exponent (e.g., 0.5) determines the curve's shape.
-        const exponent = 1.5;
+        const exponent = 1.33;
         const scaledT = Math.pow(t, exponent);
 
         // Calculate n using the scaled value of t
         return fr(scaledT / max);
     }
 
-    var max = 2048;
-    var weight_applied_to_color_usage_difference = fr(t / max); // Ensure higher precision when low color (high threshold)
+    var max = Math.pow(255, 1.33);
+    var weight_applied_to_color_usage_difference = calculateN(t, max); // Ensure higher precision when low color (high threshold)
     var index_merged = false;
     var latest_colors = [];
     var latest_amounts = [];
@@ -522,9 +522,9 @@ QuantiMat.prototype.process_threshold = function(t) {
                         // There the more a color is used the less we will probably blend it, also:
                         // The greater the "usage" distance is, the most probably we'll have to sacrifice the lowest used color
                         // So the more the usage distance the more probabilities we'll have to blend them together
-                        threshold = fr(1.5*threshold + threshold / fr((color_a_usage_percent+color_b_usage_percent) - Math.abs(color_a_usage_percent-color_b_usage_percent)));
+                        threshold = fr(threshold + threshold * fr(Math.abs(color_a_usage_percent-color_b_usage_percent) / (color_a_usage_percent+color_b_usage_percent)));
                         // CIE LAB 1976 version color scheme is used to measure accurate the distance for the human eye
-                        if(color_a.cie76_match_with(color_b,  fr(threshold/2.5))) {
+                        if(color_a.cie76_match_with(color_b,  fr(threshold/2.0))) {
 
                             color_usage_difference_positive = fr(color_b_usage / color_a_usage);
 

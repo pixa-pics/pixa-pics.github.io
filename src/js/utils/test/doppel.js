@@ -62,7 +62,7 @@ class ImageProcessor {
         return this.context.getImageData(x * this.tileWidth, y * this.tileHeight, this.tileWidth, this.tileHeight);
     }
 
-    mergeSimilarAreaTiles(threshold = 36) {
+    mergeSimilarAreaTiles(threshold = 24) {
         for (let y = 0; y < this.finalHeight; y++) {
             for (let x = 0; x < this.finalWidth; x++) {
                 const tileIndex = x + y * this.finalWidth;
@@ -86,7 +86,7 @@ class ImageProcessor {
         }
     }
 
-    despeckle(threshold = 48) {
+    despeckle(threshold = 36) {
         for (let y = 0; y < this.finalHeight; y++) {
             for (let x = 0; x < this.finalWidth; x++) {
                 const tileIndex = x + y * this.finalWidth;
@@ -279,10 +279,10 @@ class Tile {
         return colors;
     }
     quantizeColors(k) {
-        k = k || Math.ceil(Math.sqrt(this.imageData.data.length));
+        k = k || Math.ceil(Math.sqrt(this.imageData.data.length))+2;
         const colors = this.extractColorData();
         const colorsArray = colors.map(function (c){return c.rgba; });
-        return new KMeans(colorsArray, k).run(k*2);
+        return new KMeans(colorsArray, k).run(Math.ceil(k/1.5));
     }
 
     getQuantizedColors(quantizedResult) {
