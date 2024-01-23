@@ -1,5 +1,5 @@
 import JSLoader from "./JSLoader";
-import {scaler} from "./test/downscale";
+import {scaler} from "./test/doppel";
 const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
 const AFunction = Object.getPrototypeOf( function(){}).constructor;
 
@@ -49,7 +49,7 @@ const file_to_imagedata_resized = (file, resize_original_to, callback_function =
         while (Math.round(imgd.width * scale) * Math.round(imgd.height * scale) > resize_original_to) { scale -= 0.01; }
         let width = Math.round(imgd.width * scale);
         let height = Math.round(imgd.height * scale);
-        let imgd2 = scaler.kCenter(imgd, width, height).getImageData(0, 0, width, height);
+        let imgd2 = scaler.processImage(imgd, width, height).getImageData(0, 0, width, height);
         callback_function(imgd2);
 
         /*init().then(function (funcs){
@@ -153,199 +153,314 @@ const file_to_base64 = (file, callback_function = () => {}, pool = null) => {
 };
 window.base64_sanitize_process_function = new AFunction(`var t = function(base64, scale) {
     "use strict";
-    class Centroid {
-    constructor(r, g, b, a, id, count) {
-        this.storage_ = new ArrayBuffer(10);
-        this.rgba_ = new Uint8Array(this.storage_, 6, 4);
-        this.rgba_[0] = r; this.rgba_[1] = g; this.rgba_[2] = b; this.rgba_[3] = a;
-        this.id_ = new Uint16Array(this.storage_, 4, 1);
-        this.id_[0] = id;
-        this.count_ = new Uint32Array(this.storage_, 0, 1);
-        this.count_[0] = count;
-    }
-    get r(){return this.rgba_[0];}
-    get g(){return this.rgba_[1];}
-    get b(){return this.rgba_[2];}
-    get a(){return this.rgba_[3];}
-    get id(){return this.id_[0];}
-    set id(v){this.id_[0] = (v|0) & 0xFFFF;}
-    get count(){return this.count_[0];}
-    set count(v){this.count_[0] = (v|0) >>> 0;}
-}
-class Pixel {
-    constructor(r, g, b, a, id) {
-        this.storage_ = new ArrayBuffer(6);
-        this.rgba_ = new Uint8Array(this.storage_, 0, 4);
-        this.rgba_[0] = r; this.rgba_[1] = g; this.rgba_[2] = b; this.rgba_[3] = a;
-        this.id_ = new Uint16Array(this.storage_, 4, 1);
-        this.id_[0] = id;
-    }
-    get r(){return this.rgba_[0];}
-    get g(){return this.rgba_[1];}
-    get b(){return this.rgba_[2];}
-    get a(){return this.rgba_[3];}
-    get id(){return this.id_[0];}
-    set id(v){this.id_[0] = (v|0) & 0xFFFF;}
-}
-
-class Scaler {
+    
+    class ImageProcessor {
     constructor() {
-        this.canvas = new OffscreenCanvas(1, 1) || document.createElement('canvas');
-        this.context = this.canvas.getContext('2d', {willReadFrequently: true, preserveDrawingBuffer: true, powerPreference: "high-performance", alpha: true, desynchronized: true});
-        this.targetCanvas = new OffscreenCanvas(1, 1) || document.createElement('canvas');
-        this.targetContext = this.targetCanvas.getContext('2d', {willReadFrequently: true, preserveDrawingBuffer: true, powerPreference: "high-performance", alpha: true, desynchronized: true});
-        this.fr = Math.fround;
-        this.imul = Math.imul;
-        this.abs = Math.abs;
-        this.width;
-    }
+        this.canvas = document.createElement('canvas');
+        this.targetCanvas = document.createElement('canvas');
+     }
     setCanvas(image, width, height){
+
         if(image instanceof ImageData){
             this.canvas.width = image.width;
             this.canvas.height = image.height;
+            this.context = this.canvas.getContext('2d', {willReadFrequently: true, preserveDrawingBuffer: true, powerPreference: "high-performance", alpha: true, desynchronized: true});
             this.context.putImageData(image, 0, 0);
         }else {
             this.canvas.width = image.width;
             this.canvas.height = image.height;
+            this.context = this.canvas.getContext('2d', {willReadFrequently: true, preserveDrawingBuffer: true, powerPreference: "high-performance", alpha: true, desynchronized: true});
             this.context.drawImage(image, 0, 0);
         }
 
         this.targetCanvas.width = width;
         this.targetCanvas.height = height;
-        this.width = width;
+        this.targetContext = this.targetCanvas.getContext('2d', {willReadFrequently: true, preserveDrawingBuffer: true, powerPreference: "high-performance", alpha: true, desynchronized: true});
+        this.finalWidth = width;
+        this.finalHeight = height;
+        this.tileWidth = Math.fround(this.canvas.width / width);
+        this.tileHeight = Math.fround(this.canvas.height / height);
+
+        //this.imageData = this.context.getImageData(0, 0, this.canvas.width, this.canvas.height)
+        this.targetImageData = this.targetContext.getImageData(0, 0, this.targetCanvas.width, this.targetCanvas.height);
+        this.tiles = new Array(this.finalHeight * this.finalHeight);
     }
-    kCenter(image, width, height, colors, accuracy) {
-        colors = typeof colors == "undefined" ? (((width+height) / 2) > 512) ? 4: (((width+height) / 2) > 256) ? 8: 16: colors;
-        accuracy = typeof accuracy == "undefined" ? (((width+height) / 2) > 512) ? 3: (((width+height) / 2) > 256) ? 6: 9: colors;
-        this.setCanvas(image, width, height);
-
-        const wFactor = this.fr(this.canvas.width / width);
-        const hFactor = this.fr(this.canvas.height / height);
-        const targetImageData = this.targetContext.getImageData(0, 0, this.targetCanvas.width, this.targetCanvas.height);
-        const targetImageDataData = targetImageData.data;
-
-        for (let x = 0; x < width; x++) {
-            for (let y = 0; y < height; y++) {
-                // Overlap factor - how much each tile should overlap
-                const overlapFactor = 1.75; // You can adjust this value as needed
-
-                // Calculate new width and height with overlap
-                const newWFactor = wFactor * overlapFactor;
-                const newHFactor = hFactor * overlapFactor;
-
-                // Adjust x and y to keep tiles centered with the new size
-                const newX = x * wFactor - (newWFactor - wFactor) / 2;
-                const newY = y * hFactor - (newHFactor - hFactor) / 2;
-
-                        // Get the tile image with the new dimensions
-                const tileImage = this.context.getImageData(Math.min(width*wFactor-newWFactor, Math.max(0, newX|0)), Math.min(height*hFactor-newHFactor,Math.max(0, newY|0)), newWFactor|0, newHFactor|0);
-                var color = this.kMeans(tileImage, colors, accuracy);
-                var index = (x + y * width)*4;
-                targetImageDataData[index] = color.r;
-                targetImageDataData[index+1] = color.g;
-                targetImageDataData[index+2] = color.b;
-                targetImageDataData[index+3] = color.a;
+    paintTargetImage(x, y, color) {
+        const targetImageDataData = this.targetImageData.data;
+        const index = (x + y * this.finalWidth)*4;
+        targetImageDataData[index] = color.r;
+        targetImageDataData[index+1] = color.g;
+        targetImageDataData[index+2] = color.b;
+        targetImageDataData[index+3] = color.a;
+    }
+    reconstructImage() {
+        for (let y = 0; y < this.finalHeight; y++) {
+            for (let x = 0; x < this.finalWidth; x++) {
+                const tile = this.tiles[x+y*this.finalWidth];
+                this.paintTargetImage(x, y, tile.meanColor)
             }
         }
-        this.targetContext.putImageData(targetImageData, 0, 0)
+        this.targetContext.putImageData(this.targetImageData, 0, 0)
         return this.targetContext;
     }
-    kMeans(imageData, k, accuracy) {
-        let centroids = this.initCentroids(imageData, k);
-        let clusters;
 
-        for (let iter = 0; iter < accuracy; iter++) {
-            clusters = this.assignPixelsToCentroids(imageData, centroids);
-            centroids = this.recalculateCentroids(imageData, clusters, centroids);
-        }
-
-        return this.findBiggestCentroid(centroids);
-    }
-    initCentroids(imageData, k) {
-        const centroids = new Array(k);
-        const pixels = imageData.data;
-        for (let i = 0; i < k; i++) {
-            const id = Math.floor(Math.random() * (pixels.length / 4)), idx = id * 4;
-            centroids[i] = new Centroid(pixels[idx], pixels[idx + 1], pixels[idx + 2], pixels[i + 3], id, 0);
-        }
-        return centroids;
-    }
-    assignPixelsToCentroids(imageData, centroids) {
-        const enhancedEuclideanDistance = this.enhancedEuclideanDistance.bind(this);
-        const clusters = new Array(centroids.length).fill().map(() => []);
-        const pixels = imageData.data;
-
-        centroids.forEach(function (centroid){centroid.count = 0;}); // Reset centroid counts
-
-        for (let i = 0; i < pixels.length; i += 4) {
-            const pixel = new Pixel( pixels[i], pixels[i + 1], pixels[i + 2], pixels[i + 3], i/4);
-            let minDist = Infinity;
-            let closestCentroidIndex = -1;
-
-            centroids.forEach(function (centroid, index){
-                const dist = enhancedEuclideanDistance(pixel, centroid);
-                if (dist < minDist) {
-                    minDist = dist;
-                    closestCentroidIndex = index;
-                }
-            });
-
-            if(closestCentroidIndex >= 0) {
-                clusters[closestCentroidIndex].push(i/4); // Store the index of the pixel in the cluster
-                centroids[closestCentroidIndex].count++;
+    createTiles() {
+        for (let y = 0; y < this.finalHeight; y++) {
+            for (let x = 0; x < this.finalWidth; x++) {
+                const tileData = this.extractTileData(x, y);
+                const tile = new Tile({x, y},  tileData);
+                tile.calculateMeanColor();
+                this.tiles[x+y*this.finalWidth] = tile;
             }
         }
-
-        return clusters;
     }
-    recalculateCentroids(imageData, clusters, centroids) {
-        const pixels = imageData.data;
-        return centroids.map(function (centroid, index) {
-            if (clusters[index].length === 0) return centroid;
 
-            let sumR = 0, sumG = 0, sumB = 0, sumA = 0;
-            clusters[index].forEach(function(pixelIndex) {
-                sumR += pixels[pixelIndex];
-                sumG += pixels[pixelIndex + 1];
-                sumB += pixels[pixelIndex + 2];
-                sumA += pixels[pixelIndex + 3];
-            });
+    extractTileData(x, y) {
+        return this.context.getImageData(x * this.tileWidth, y * this.tileHeight, this.tileWidth, this.tileHeight);
+    }
 
-            const len = clusters[index].length;
-            return new Centroid(sumR / len | 0, sumG / len| 0, sumB / len | 0, sumA / len | 0,  0xFFFF,len | 0);
+    mergeSimilarTiles(threshold = 256) {
+        for (let y = 0; y < this.finalHeight; y++) {
+            for (let x = 0; x < this.finalWidth; x++) {
+                const tileIndex = x + y * this.finalWidth;
+                const tile = this.tiles[tileIndex];
+                const neighbors = this.getNeighbors(x, y);
+
+                neighbors.forEach(neighbor => {
+                    const neighborIndex = neighbor.position.x + neighbor.position.y * this.finalWidth;
+                    const colorDifference = this.colorDifference(tile.meanColor, neighbor.meanColor);
+
+                    if (colorDifference < threshold) {
+                        this.tiles[neighborIndex].meanColor = this.tiles[tileIndex].meanColor;
+                    }
+                });
+            }
+        }
+    }
+
+    despeckle(threshold = 384) {
+        for (let y = 0; y < this.finalHeight; y++) {
+            for (let x = 0; x < this.finalWidth; x++) {
+                const tileIndex = x + y * this.finalWidth;
+                const tile = this.tiles[tileIndex];
+                const neighbors = this.getNeighbors(x, y);
+
+                const averageNeighborColor = this.averageColor(neighbors);
+                const colorDifference = this.colorDifference(tile.meanColor, averageNeighborColor);
+
+                if (colorDifference > threshold) {
+                    this.tiles[tileIndex].meanColor = averageNeighborColor;
+                }
+            }
+        }
+    }
+
+    getNeighbors(x, y) {
+        const neighbors = [];
+        for (let dx = -1; dx <= 1; dx++) {
+            for (let dy = -1; dy <= 1; dy++) {
+                if (dx === 0 && dy === 0) continue; // Skip the tile itself
+
+                const nx = x + dx;
+                const ny = y + dy;
+
+                if (nx >= 0 && nx < this.finalWidth && ny >= 0 && ny < this.height) {
+                    neighbors.push(this.tiles[nx + ny * this.finalWidth]);
+                }
+            }
+        }
+        return neighbors;
+    }
+
+    averageColor(tiles) {
+        const sumColor = { r: 0, g: 0, b: 0, a: 0 };
+        tiles.forEach(tile => {
+            sumColor.r += tile.meanColor.r;
+            sumColor.g += tile.meanColor.g;
+            sumColor.b += tile.meanColor.b;
+            sumColor.a += tile.meanColor.a;
         });
-    }
-    findBiggestCentroid(centroids) {
-        return centroids.reduce(function (max, centroid){ return centroid.count > max.count ? centroid : max}, centroids[0]);
-    }
-    colorToRgba(color) {
-        return "rgba("+color.r+","+color.g+","+color.b+","+color.a+")";
-    }
-    enhancedEuclideanDistance(color1, color2) {
 
-        //const alpha = 0.5; // Adjust as necessary
-        const distances = Uint8Array.of(this.abs(color1.r - color2.r), this.abs(color1.g - color2.g), this.abs(color1.b - color2.b));
-        // Calculate spatial distance
-        /*const coordinates = Uint16Array.of(
-            color1.i % this.width,
-                Math.floor(color1.i / this.width),
-                color2.i % this.width,
-                Math.floor(color2.i / this.width)
+        const numTiles = tiles.length;
+        return {
+            r: sumColor.r / numTiles,
+            g: sumColor.g / numTiles,
+            b: sumColor.b / numTiles,
+            a: sumColor.a / numTiles
+        };
+    }
+
+    colorDifference(color1, color2) {
+        return Math.sqrt(
+            Math.pow(color1.r - color2.r, 2) +
+            Math.pow(color1.g - color2.g, 2) +
+            Math.pow(color1.b - color2.b, 2) +
+            Math.pow(color1.a - color2.a, 2)
         );
-        const coordinatesDistances = Uint8Array.of(this.abs(coordinates[0] - coordinates[2]), this.abs(coordinates[1] - coordinates[3]));
-        const spatialDistance = Math.sqrt(
-            this.imul(coordinatesDistances[0], coordinatesDistances[0]) +
-            this.imul(coordinatesDistances[1], coordinatesDistances[1])
-        ) * 32;*/
-        const colorDistance = Math.sqrt(this.imul(distances[0], distances[0])+this.imul(distances[1], distances[1])+this.imul(distances[2], distances[2]));
+    }
 
-        // Weight the color and spatial distances
-        return colorDistance; //alpha * colorDistance + (1 - alpha) * spatialDistance | 0;
+    processImage(image, width, height) {
+        this.setCanvas(image, width, height);
+        this.createTiles();
+        this.mergeSimilarTiles();
+        this.despeckle();
+        return this.reconstructImage();
     }
 }
 
-// Usage
-const scaler = new Scaler();
+class KMeans {
+    constructor(data, k) {
+        this.data = data;
+        this.k = k;
+        this.centroids = [];
+        this.clusters = new Array(this.data.length);
+    }
+
+    // Step 1: Initialize centroids
+    initializeCentroids() {
+        // Simple random initialization. For KMeans++, the initialization is more complex.
+        for (let i = 0; i < this.k; i++) {
+            const idx = Math.floor(Math.random() * this.data.length);
+            this.centroids.push(this.data[idx]);
+        }
+    }
+
+    // Step 2: Assign points to the nearest centroid
+    assignClusters() {
+        this.data.forEach((point, idx) => {
+            let minDist = Number.MAX_VALUE;
+            let cluster = -1;
+
+            this.centroids.forEach((centroid, centroidIdx) => {
+                const dist = this.euclideanDistance(point, centroid);
+                if (dist < minDist) {
+                    minDist = dist;
+                    cluster = centroidIdx;
+                }
+            });
+
+            this.clusters[idx] = cluster;
+        });
+    }
+
+    // Step 3: Update centroids
+    updateCentroids() {
+        let newCentroids = new Array(this.k).fill(null).map(() => []);
+
+        this.data.forEach((point, idx) => {
+            const clusterIdx = this.clusters[idx];
+            newCentroids[clusterIdx].push(point);
+        });
+
+        this.centroids = newCentroids.map(cluster => {
+            if (cluster.length === 0) return null; // Handle empty cluster
+            return this.meanPoint(cluster);
+        }).filter(centroid => centroid !== null);
+    }
+
+    // Euclidean distance between two points
+    euclideanDistance(point1, point2) {
+        return Math.sqrt(point1.reduce((sum, val, idx) => sum + Math.pow(val - point2[idx], 2), 0));
+    }
+
+    // Calculate the mean point of a cluster
+    meanPoint(points) {
+        const numPoints = points.length;
+        const dimensions = points[0].length;
+        let mean = new Array(dimensions).fill(0);
+
+        points.forEach(point => {
+            point.forEach((val, idx) => {
+                mean[idx] += val;
+            });
+        });
+
+        return mean.map(val => val / numPoints);
+    }
+
+    // Run the KMeans algorithm
+    run(maxIterations = 100) {
+        this.initializeCentroids();
+        let iterations = 0;
+        let hasConverged = false;
+
+        while (!hasConverged && iterations < maxIterations) {
+            const oldCentroids = [...this.centroids];
+            this.assignClusters();
+            this.updateCentroids();
+            iterations++;
+
+            hasConverged = this.centroids.every((centroid, idx) => {
+                return this.euclideanDistance(centroid, oldCentroids[idx]) < 1e-5;
+            });
+        }
+
+        return { centroids: this.centroids, clusters: this.clusters };
+    }
+}
+
+class Tile {
+    constructor(position, imageData) {
+        this.position = position;
+        this.imageData = imageData;
+        this.meanColor = {r: 0, g: 0, b: 0, a: 0};
+    }
+
+
+    extractColorData() {
+        let colors = [];
+        for (let i = 0; i < this.imageData.data.length; i += 4) {
+            colors.push([
+                this.imageData.data[i],     // Red
+                this.imageData.data[i + 1], // Green
+                this.imageData.data[i + 2], // Blue
+                this.imageData.data[i + 3]  // Alpha
+            ]);
+        }
+        return colors;
+    }
+    quantizeColors(k = 8) {
+        const colors = this.extractColorData();
+        const kmeans = new KMeans(colors, k);
+        return kmeans.run(8);
+    }
+
+    getQuantizedColors(quantizedResult) {
+
+        const map = new Array(quantizedResult.centroids.length).fill(0);
+        quantizedResult.clusters.forEach((cluster, index) => {
+            map[cluster]++;
+            /*
+            this.imageData.data[index * 4] = color[0];
+            this.imageData.data[index * 4 + 1] = color[1];
+            this.imageData.data[index * 4 + 2] = color[2];
+            this.imageData.data[index * 4 + 3] = color[3];
+        */
+        });
+        let dominantClusterPopulation = 0, dominantClusterId = 0;
+        map.forEach((population, clusterId) => {
+            if(dominantClusterPopulation < population){
+                dominantClusterPopulation = population;
+                dominantClusterId = clusterId;
+            }
+        });
+
+        return quantizedResult.centroids[dominantClusterId];
+    }
+
+    calculateMeanColor() {
+        const color = this.getQuantizedColors(this.quantizeColors(8));
+
+        this.meanColor.r = color[0]|0;
+        this.meanColor.g = color[1]|0;
+        this.meanColor.b = color[2]|0;
+        this.meanColor.a = color[3]|0;
+    }
+}
+
+const scaler = new ImageProcessor();
+
+    
     return new Promise(function(resolve, reject) {
         var img = new Image();
         var is_png = base64.startsWith("data:image/png;");
@@ -356,7 +471,7 @@ const scaler = new Scaler();
            
                 let width = (img.naturalWidth || img.width) * scale;
                 let height = (img.naturalHeight || img.height) * scale;
-                let imgd = scaler.kCenter(img, width, height).getImageData(0, 0, width, height);
+                let imgd = scaler.processImage(img, width, height).getImageData(0, 0, width, height);
                 
                 createImageBitmap(imgd).then(function(bmp){
                 
@@ -381,7 +496,7 @@ const scaler = new Scaler();
             } catch(e){
                 let width = (img.naturalWidth || img.width) * scale;
                 let height = (img.naturalHeight || img.height) * scale;
-                let canvas = scaler.kCenter(img, width, height).canvas;
+                let canvas = scaler.processImage(img, width, height).canvas;
                 resolve(canvas.toDataURL(is_png ? "image/png": "image/jpeg")); 
             }
         };
