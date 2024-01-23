@@ -6,21 +6,18 @@ class ImageProcessor {
      }
     setCanvas(image, width, height){
 
+        this.canvas.width = image.width;
+        this.canvas.height = image.height;
+        this.context = this.canvas.getContext('2d', {willReadFrequently: true, powerPreference: "high-performance", alpha: true, desynchronized: true});
         if(image instanceof ImageData){
-            this.canvas.width = image.width;
-            this.canvas.height = image.height;
-            this.context = this.canvas.getContext('2d', {willReadFrequently: true, preserveDrawingBuffer: true, powerPreference: "high-performance", alpha: true, desynchronized: true});
             this.context.putImageData(image, 0, 0);
         }else {
-            this.canvas.width = image.width;
-            this.canvas.height = image.height;
-            this.context = this.canvas.getContext('2d', {willReadFrequently: true, preserveDrawingBuffer: true, powerPreference: "high-performance", alpha: true, desynchronized: true});
             this.context.drawImage(image, 0, 0);
         }
 
         this.targetCanvas.width = width;
         this.targetCanvas.height = height;
-        this.targetContext = this.targetCanvas.getContext('2d', {willReadFrequently: true, preserveDrawingBuffer: true, powerPreference: "high-performance", alpha: true, desynchronized: true});
+        this.targetContext = this.targetCanvas.getContext('2d', {willReadFrequently: true, powerPreference: "high-performance", alpha: true, desynchronized: true});
         this.finalWidth = width;
         this.finalHeight = height;
         this.tileWidth = Math.fround(this.canvas.width / width);
@@ -52,10 +49,11 @@ class ImageProcessor {
     createTiles() {
         for (let y = 0; y < this.finalHeight; y++) {
             for (let x = 0; x < this.finalWidth; x++) {
+                const tileId = x+y*this.finalWidth;
                 const tileData = this.extractTileData(x, y);
                 const tile = new Tile({x, y},  tileData);
                 tile.calculateMeanColor();
-                this.tiles[x+y*this.finalWidth] = tile;
+                this.tiles[tileId] = tile;
             }
         }
     }
@@ -64,7 +62,7 @@ class ImageProcessor {
         return this.context.getImageData(x * this.tileWidth, y * this.tileHeight, this.tileWidth, this.tileHeight);
     }
 
-    mergeSimilarAreaTiles(threshold = 24) {
+    mergeSimilarAreaTiles(threshold = 36) {
         for (let y = 0; y < this.finalHeight; y++) {
             for (let x = 0; x < this.finalWidth; x++) {
                 const tileIndex = x + y * this.finalWidth;
@@ -78,7 +76,7 @@ class ImageProcessor {
                     }
                 });
 
-                if(Object.keys(map).length * 8/5 >= neighbors.length){
+                if(Object.keys(map).length * 8/3 >= neighbors.length){
                     const averageNeighborColor = this.averageColor(neighbors);
                     Object.keys(map).forEach(function (index){
                         neighbors[index] = averageNeighborColor;
@@ -134,12 +132,7 @@ class ImageProcessor {
         });
 
         const numTiles = tiles.length;
-        return {
-            r: sumColor.r / numTiles,
-            g: sumColor.g / numTiles,
-            b: sumColor.b / numTiles,
-            a: sumColor.a / numTiles
-        };
+        return new Pixel(sumColor.r / numTiles|0, sumColor.g / numTiles | 0, sumColor.b / numTiles | 0, sumColor.a / numTiles | 0, 0);
     }
 
     colorDifference(color1, color2) {
@@ -154,7 +147,6 @@ class ImageProcessor {
     processImage(image, width, height) {
         this.setCanvas(image, width, height);
         this.createTiles();
-        //this.mergeSimilarTiles();
         this.despeckle();
         this.mergeSimilarAreaTiles();
         return this.reconstructImage();
@@ -252,30 +244,45 @@ class KMeans {
     }
 }
 
+class Pixel {
+    constructor(r, g, b, a, id) {
+        this.storage_ = new ArrayBuffer(6);
+        this.rgba_ = new Uint8Array(this.storage_, 0, 4);
+        this.rgba_[0] = r; this.rgba_[1] = g; this.rgba_[2] = b; this.rgba_[3] = a;
+        this.id_ = new Uint16Array(this.storage_, 4, 1);
+        this.id_[0] = id;
+    }
+    get r(){return this.rgba_[0];}
+    get g(){return this.rgba_[1];}
+    get b(){return this.rgba_[2];}
+    get a(){return this.rgba_[3];}
+    get rgba(){return this.rgba_;}
+    get id(){return this.id_[0];}
+    set id(v){this.id_[0] = (v|0) & 0xFFFF;}
+}
+
+
 class Tile {
     constructor(position, imageData) {
         this.position = position;
         this.imageData = imageData;
-        this.meanColor = {r: 0, g: 0, b: 0, a: 0};
+        this.meanColor = new Pixel(0, 0, 0, 0, 0);
     }
 
 
     extractColorData() {
+        const data = this.imageData.data;
         let colors = [];
-        for (let i = 0; i < this.imageData.data.length; i += 4) {
-            colors.push([
-                this.imageData.data[i],     // Red
-                this.imageData.data[i + 1], // Green
-                this.imageData.data[i + 2], // Blue
-                this.imageData.data[i + 3]  // Alpha
-            ]);
+        for (let i = 0; i < data.length; i += 4) {
+            colors.push(new Pixel(data[i], data[i+1], data[i+2], data[i+3], i));
         }
         return colors;
     }
-    quantizeColors(k = 8) {
+    quantizeColors(k) {
+        k = k || Math.ceil(Math.sqrt(this.imageData.data.length));
         const colors = this.extractColorData();
-        const kmeans = new KMeans(colors, k);
-        return kmeans.run(16);
+        const colorsArray = colors.map(function (c){return c.rgba; });
+        return new KMeans(colorsArray, k).run(k*2);
     }
 
     getQuantizedColors(quantizedResult) {
@@ -302,12 +309,8 @@ class Tile {
     }
 
     calculateMeanColor() {
-        const color = this.getQuantizedColors(this.quantizeColors(8));
-
-        this.meanColor.r = color[0]|0;
-        this.meanColor.g = color[1]|0;
-        this.meanColor.b = color[2]|0;
-        this.meanColor.a = color[3]|0;
+        const color = this.getQuantizedColors(this.quantizeColors());
+        this.meanColor = new Pixel(color[0]|0, color[1]|0, color[2]|0, color[3]|0, 0);
     }
 }
 

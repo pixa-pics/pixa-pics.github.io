@@ -522,9 +522,9 @@ QuantiMat.prototype.process_threshold = function(t) {
                         // There the more a color is used the less we will probably blend it, also:
                         // The greater the "usage" distance is, the most probably we'll have to sacrifice the lowest used color
                         // So the more the usage distance the more probabilities we'll have to blend them together
-                        threshold = fr(threshold + threshold / fr((color_a_usage_percent+color_b_usage_percent) - Math.abs(color_a_usage_percent-color_b_usage_percent)));
+                        threshold = fr(1.5*threshold + threshold / fr((color_a_usage_percent+color_b_usage_percent) - Math.abs(color_a_usage_percent-color_b_usage_percent)));
                         // CIE LAB 1976 version color scheme is used to measure accurate the distance for the human eye
-                        if(color_a.cie76_match_with(color_b,  fr(threshold/2.0))) {
+                        if(color_a.cie76_match_with(color_b,  fr(threshold/2.5))) {
 
                             color_usage_difference_positive = fr(color_b_usage / color_a_usage);
 

@@ -43,7 +43,7 @@
     "uraniumjs": "~1.5.0",
     "snappyjs": "~0.7.0",
     "util": "~0.12.5",
-    "workerpool": "~6.2.1",
+    "workerpool": "~6.5.1",
     "xxhash-wasm": "~1.0.2",
     "@jsquash/oxipng": "~1.0.0",
     "@jsquash/png": "~2.2.0",
