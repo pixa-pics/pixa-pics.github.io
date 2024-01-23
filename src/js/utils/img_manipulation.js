@@ -219,26 +219,31 @@ window.base64_sanitize_process_function = new AFunction(`var t = function(base64
         return this.context.getImageData(x * this.tileWidth, y * this.tileHeight, this.tileWidth, this.tileHeight);
     }
 
-    mergeSimilarTiles(threshold = 256) {
+    mergeSimilarAreaTiles(threshold = 24) {
         for (let y = 0; y < this.finalHeight; y++) {
             for (let x = 0; x < this.finalWidth; x++) {
                 const tileIndex = x + y * this.finalWidth;
                 const tile = this.tiles[tileIndex];
                 const neighbors = this.getNeighbors(x, y);
-
-                neighbors.forEach(neighbor => {
-                    const neighborIndex = neighbor.position.x + neighbor.position.y * this.finalWidth;
+                const map = {};
+                neighbors.forEach((neighbor, index) => {
                     const colorDifference = this.colorDifference(tile.meanColor, neighbor.meanColor);
-
                     if (colorDifference < threshold) {
-                        this.tiles[neighborIndex].meanColor = this.tiles[tileIndex].meanColor;
+                        map[index] = true;
                     }
                 });
+
+                if(Object.keys(map).length * 8/5 >= neighbors.length){
+                    const averageNeighborColor = this.averageColor(neighbors);
+                    Object.keys(map).forEach(function (index){
+                        neighbors[index] = averageNeighborColor;
+                    });
+                }
             }
         }
     }
 
-    despeckle(threshold = 384) {
+    despeckle(threshold = 48) {
         for (let y = 0; y < this.finalHeight; y++) {
             for (let x = 0; x < this.finalWidth; x++) {
                 const tileIndex = x + y * this.finalWidth;
@@ -248,7 +253,7 @@ window.base64_sanitize_process_function = new AFunction(`var t = function(base64
                 const averageNeighborColor = this.averageColor(neighbors);
                 const colorDifference = this.colorDifference(tile.meanColor, averageNeighborColor);
 
-                if (colorDifference > threshold) {
+                if (colorDifference < threshold) {
                     this.tiles[tileIndex].meanColor = averageNeighborColor;
                 }
             }
@@ -259,12 +264,14 @@ window.base64_sanitize_process_function = new AFunction(`var t = function(base64
         const neighbors = [];
         for (let dx = -1; dx <= 1; dx++) {
             for (let dy = -1; dy <= 1; dy++) {
-                if (dx === 0 && dy === 0) continue; // Skip the tile itself
 
                 const nx = x + dx;
                 const ny = y + dy;
 
-                if (nx >= 0 && nx < this.finalWidth && ny >= 0 && ny < this.height) {
+                if (nx < 0 || ny < 0) continue; // Skip the tile itself
+                if (nx >= this.finalWidth || ny >= this.finalHeight) continue; // Skip the tile itself
+
+                if (nx >= 0 && nx < this.finalWidth && ny >= 0 && ny < this.finalHeight) {
                     neighbors.push(this.tiles[nx + ny * this.finalWidth]);
                 }
             }
@@ -302,8 +309,9 @@ window.base64_sanitize_process_function = new AFunction(`var t = function(base64
     processImage(image, width, height) {
         this.setCanvas(image, width, height);
         this.createTiles();
-        this.mergeSimilarTiles();
+        //this.mergeSimilarTiles();
         this.despeckle();
+        this.mergeSimilarAreaTiles();
         return this.reconstructImage();
     }
 }
@@ -379,7 +387,7 @@ class KMeans {
     }
 
     // Run the KMeans algorithm
-    run(maxIterations = 100) {
+    run(maxIterations = 16) {
         this.initializeCentroids();
         let iterations = 0;
         let hasConverged = false;
@@ -422,20 +430,20 @@ class Tile {
     quantizeColors(k = 8) {
         const colors = this.extractColorData();
         const kmeans = new KMeans(colors, k);
-        return kmeans.run(8);
+        return kmeans.run(16);
     }
 
     getQuantizedColors(quantizedResult) {
 
         const map = new Array(quantizedResult.centroids.length).fill(0);
-        quantizedResult.clusters.forEach((cluster, index) => {
-            map[cluster]++;
+        quantizedResult.clusters.forEach((clusterId, index) => {
+            map[clusterId]++;
             /*
+            const color = quantizedResult.centroids[clusterId];
             this.imageData.data[index * 4] = color[0];
             this.imageData.data[index * 4 + 1] = color[1];
             this.imageData.data[index * 4 + 2] = color[2];
-            this.imageData.data[index * 4 + 3] = color[3];
-        */
+            this.imageData.data[index * 4 + 3] = color[3];*/
         });
         let dominantClusterPopulation = 0, dominantClusterId = 0;
         map.forEach((population, clusterId) => {
@@ -459,8 +467,6 @@ class Tile {
 }
 
 const scaler = new ImageProcessor();
-
-    
     return new Promise(function(resolve, reject) {
         var img = new Image();
         var is_png = base64.startsWith("data:image/png;");

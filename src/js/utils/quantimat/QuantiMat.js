@@ -457,8 +457,8 @@ QuantiMat.prototype.process_threshold = function(t) {
         return fr(scaledT / max);
     }
 
-    var max = 512;
-    var weight_applied_to_color_usage_difference = calculateN(t, max); // Ensure higher precision when low color (high threshold)
+    var max = 2048;
+    var weight_applied_to_color_usage_difference = fr(t / max); // Ensure higher precision when low color (high threshold)
     var index_merged = false;
     var latest_colors = [];
     var latest_amounts = [];
