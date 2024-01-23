@@ -42,8 +42,7 @@ class ImageProcessor {
                 this.paintTargetImage(x, y, tile.meanColor)
             }
         }
-        this.targetContext.putImageData(this.targetImageData, 0, 0)
-        return this.targetContext;
+        this.targetContext.putImageData(this.targetImageData, 0, 0);
     }
 
     createTiles() {
@@ -77,9 +76,9 @@ class ImageProcessor {
                 });
 
                 if(Object.keys(map).length * 8/3 >= neighbors.length){
-                    const averageNeighborColor = this.averageColor(neighbors);
+                    //const averageNeighborColor = this.averageColor(neighbors);
                     Object.keys(map).forEach(function (index){
-                        neighbors[index] = averageNeighborColor;
+                        neighbors[index] = tile.meanColor;
                     });
                 }
             }
@@ -92,12 +91,19 @@ class ImageProcessor {
                 const tileIndex = x + y * this.finalWidth;
                 const tile = this.tiles[tileIndex];
                 const neighbors = this.getNeighbors(x, y);
+                const map = {};
+                neighbors.forEach((neighbor, index) => {
+                    const colorDifference = this.colorDifference(tile.meanColor, neighbor.meanColor);
+                    if (colorDifference < threshold) {
+                        map[index] = true;
+                    }
+                });
 
-                const averageNeighborColor = this.averageColor(neighbors);
-                const colorDifference = this.colorDifference(tile.meanColor, averageNeighborColor);
-
-                if (colorDifference < threshold) {
-                    this.tiles[tileIndex].meanColor = averageNeighborColor;
+                if(Object.keys(map).length * 8/3 >= neighbors.length){
+                    //const averageNeighborColor = this.averageColor(neighbors);
+                    Object.keys(map).forEach(function (index){
+                        tile.meanColor = neighbors[index].meanColor;
+                    });
                 }
             }
         }
@@ -145,11 +151,17 @@ class ImageProcessor {
     }
 
     processImage(image, width, height) {
+
         this.setCanvas(image, width, height);
+        if(image.width === width && image.height === height){
+            return this.context;
+        }
+
         this.createTiles();
         this.despeckle();
         this.mergeSimilarAreaTiles();
-        return this.reconstructImage();
+        this.reconstructImage();
+        return this.targetContext;
     }
 }
 
