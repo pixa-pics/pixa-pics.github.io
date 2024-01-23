@@ -1,3 +1,4 @@
+"use strict";
 class Centroid {
     constructor(r, g, b, a, id, count) {
         this.storage_ = new ArrayBuffer(10);
@@ -60,20 +61,39 @@ class Scaler {
         this.width = width;
     }
     kCenter(image, width, height, colors, accuracy) {
-        colors = typeof colors == "undefined" ? (((width+height) / 2) > 512) ? 1: (((width+height) / 2) > 256) ? 2: 4: colors;
-        accuracy = typeof accuracy == "undefined" ? (((width+height) / 2) > 512) ? 1: (((width+height) / 2) > 256) ? 3: 6: colors;
+        colors = typeof colors == "undefined" ? (((width+height) / 2) > 512) ? 4: (((width+height) / 2) > 256) ? 8: 16: colors;
+        accuracy = typeof accuracy == "undefined" ? (((width+height) / 2) > 512) ? 3: (((width+height) / 2) > 256) ? 6: 9: colors;
         this.setCanvas(image, width, height);
 
         const wFactor = this.fr(this.canvas.width / width);
         const hFactor = this.fr(this.canvas.height / height);
+        const targetImageData = this.targetContext.getImageData(0, 0, this.targetCanvas.width, this.targetCanvas.height);
+        const targetImageDataData = targetImageData.data;
 
         for (let x = 0; x < width; x++) {
             for (let y = 0; y < height; y++) {
-                const tileImage = this.context.getImageData(x * wFactor|0, y * hFactor|0, wFactor|0, hFactor|0);
-                this.targetContext.fillStyle = this.colorToRgba(this.kMeans(tileImage, colors, accuracy));
-                this.targetContext.fillRect(x, y, 1, 1);
+                // Overlap factor - how much each tile should overlap
+                const overlapFactor = 1.75; // You can adjust this value as needed
+
+                // Calculate new width and height with overlap
+                const newWFactor = wFactor * overlapFactor;
+                const newHFactor = hFactor * overlapFactor;
+
+                // Adjust x and y to keep tiles centered with the new size
+                const newX = x * wFactor - (newWFactor - wFactor) / 2;
+                const newY = y * hFactor - (newHFactor - hFactor) / 2;
+
+                        // Get the tile image with the new dimensions
+                const tileImage = this.context.getImageData(Math.min(width*wFactor-newWFactor, Math.max(0, newX|0)), Math.min(height*hFactor-newHFactor,Math.max(0, newY|0)), newWFactor|0, newHFactor|0);
+                var color = this.kMeans(tileImage, colors, accuracy);
+                var index = (x + y * width)*4;
+                targetImageDataData[index] = color.r;
+                targetImageDataData[index+1] = color.g;
+                targetImageDataData[index+2] = color.b;
+                targetImageDataData[index+3] = color.a;
             }
         }
+        this.targetContext.putImageData(targetImageData, 0, 0)
         return this.targetContext;
     }
     kMeans(imageData, k, accuracy) {

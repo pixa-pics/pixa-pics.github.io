@@ -54,8 +54,8 @@ var MODE = SIMDopeCreateConfAdd({
 });
 
 var fr = Math.fround;
-var DISTINCT_SKIN_COLOR_MATCH_MULTIPLY = fr(.90);
-var SAME_SKIN_COLOR_MATCH_MULTIPLY = fr(.95);
+var DISTINCT_SKIN_COLOR_MATCH_MULTIPLY = fr(1.25);
+var SAME_SKIN_COLOR_MATCH_MULTIPLY = fr(.80);
 
 const {simdops, Color, Colors} = SIMDopeCreate(MODE);
 const {
@@ -448,8 +448,17 @@ QuantiMat.prototype.process_threshold = function(t) {
     "use strict";
 
     t = (t | 0) >>> 0;
+    function calculateN(t, max) {
+        // Apply a power scale to 't'. The exponent (e.g., 0.5) determines the curve's shape.
+        const exponent = 1.5;
+        const scaledT = Math.pow(t, exponent);
 
-    var weight_applied_to_color_usage_difference = fr(t / 2048);
+        // Calculate n using the scaled value of t
+        return fr(scaledT / max);
+    }
+
+    var max = 512;
+    var weight_applied_to_color_usage_difference = calculateN(t, max); // Ensure higher precision when low color (high threshold)
     var index_merged = false;
     var latest_colors = [];
     var latest_amounts = [];
@@ -461,7 +470,7 @@ QuantiMat.prototype.process_threshold = function(t) {
     var color_a_usage = 0, color_b_usage = 0;
     var color_a_usage_percent = 0, color_b_usage_percent = 0, average_color_usage_percent = 0;
     var color_usage_difference_positive = 0.0;
-    var weighted_threshold = 0.0;
+    var weighted_threshold = weight_applied_to_color_usage_difference;
     var weighted_threshold_skin = 0.0;
     var weighted_threshold_skin_skin = 0.0;
     var index_of_color_a = 0;
@@ -470,13 +479,6 @@ QuantiMat.prototype.process_threshold = function(t) {
     var color_n_in_cluster = 0;
     var threshold = 0;
 
-    // 1x Threshold + 1x weight
-    weighted_threshold =
-        fr(
-            // Threshold and weight applied to threshold divided by what is not the threshold
-            fr((t / 256) + (t / 256 * weight_applied_to_color_usage_difference)) /
-            fr(1 + weight_applied_to_color_usage_difference)
-        );  // THRESHOLD + THRESHOLD * WEIGHT / 1 + WEIGHT
     weighted_threshold_skin_skin = fr(weighted_threshold * SAME_SKIN_COLOR_MATCH_MULTIPLY);
     weighted_threshold_skin = fr(weighted_threshold * DISTINCT_SKIN_COLOR_MATCH_MULTIPLY);
 
@@ -522,7 +524,7 @@ QuantiMat.prototype.process_threshold = function(t) {
                         // So the more the usage distance the more probabilities we'll have to blend them together
                         threshold = fr(threshold + threshold / fr((color_a_usage_percent+color_b_usage_percent) - Math.abs(color_a_usage_percent-color_b_usage_percent)));
                         // CIE LAB 1976 version color scheme is used to measure accurate the distance for the human eye
-                        if(color_a.cie76_match_with(color_b,  fr(threshold/2))) {
+                        if(color_a.cie76_match_with(color_b,  fr(threshold/2.0))) {
 
                             color_usage_difference_positive = fr(color_b_usage / color_a_usage);
 
