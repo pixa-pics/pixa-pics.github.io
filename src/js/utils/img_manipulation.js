@@ -158,8 +158,8 @@ window.base64_sanitize_process_function = new AFunction(`var t = function(base64
         constructor(despeckleStrength, mergeStrength) {
             this.canvas = document.createElement('canvas');
             this.targetCanvas = document.createElement('canvas');
-            this.despeckleStrength = despeckleStrength || 66/100;
-            this.mergeStrength = mergeStrength || 33/100;
+            this.despeckleStrength = despeckleStrength || 110/100;
+            this.mergeStrength = mergeStrength || 35/100;
          }
         setCanvas(image, width, height){
     
@@ -276,25 +276,39 @@ window.base64_sanitize_process_function = new AFunction(`var t = function(base64
             const adjustedThreshold = baseThreshold * (1 + localContrast);
     
             // Basic edge detection by checking dominant areas
-            const { dominantAreaCount, isEdge } = this.detectEdge(neighbors, adjustedThreshold);
+            const { dominantColor, isEdge } = this.detectEdge(neighbors, adjustedThreshold);
     
-            if (isEdge && dominantAreaCount === 2) {
-                this.applyDespeckling(tile, neighbors, adjustedThreshold);
+            if (isEdge) {
+                this.applyDespeckling(tile, neighbors, adjustedThreshold, dominantColor);
             } else {}
         }
     
         detectEdge(neighbors, threshold) {
+            const colorCountGroups = {};
             const colorGroups = {};
             neighbors.forEach(neighbor => {
                 const key = neighbor.meanColor.uint;
-                colorGroups[key] = (colorGroups[key] || 0) + 1;
+                colorCountGroups[key] = (colorGroups[key] || 0) + 1;
+                colorGroups[key] = neighbor.meanColor;
             });
     
-            const dominantColors = Object.entries(colorGroups).filter(([_, count]) => count > threshold);
+            let dominantColor;
+            let dominantColorCount = 0;
+            let dominantColors = [];
+            Object.entries(colorCountGroups).forEach(function ([key, count]) {
+                const color = colorGroups[key];
+                if(count > threshold) {
+                    dominantColors.push(color);
+                }
+                if(dominantColorCount < count){
+                    dominantColor = color;
+                    dominantColorCount = count;
+                }
+            });
             const dominantAreaCount = dominantColors.length;
-            const isEdge = dominantAreaCount >= 2;
+            const isEdge = dominantAreaCount >= 1 && dominantAreaCount <= 3;
     
-            return { dominantAreaCount, isEdge };
+            return { dominantColor, isEdge };
         }
     
         applyDespeckling(tile, neighbors, adjustedThreshold) {
@@ -381,13 +395,15 @@ window.base64_sanitize_process_function = new AFunction(`var t = function(base64
         processImage(image, width, height) {
     
             this.setCanvas(image, width, height);
-            if(image.width === width && image.height === height){
-                return this.context;
-            }
+            if(image.width === width && image.height === height){ return this.context; }
             this.createTiles();
             const threshold = this.calculateDynamicThreshold();
-            this.despeckle(threshold*this.despeckleStrength);
-            this.mergeSimilarAreaTiles(threshold*this.mergeStrength);
+    
+            for(var i = 8; i >= 1; i /= 2) {
+                this.despeckle(threshold*this.despeckleStrength/i);
+                this.mergeSimilarAreaTiles(threshold*this.mergeStrength/i);
+            }
+    
             this.reconstructImage();
             return this.targetContext;
         }

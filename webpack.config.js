@@ -120,10 +120,10 @@ module.exports = {
                         evaluate: "eager",
                         hoist_funs: true,
                         hoist_vars: true,
-                        passes: 5,
+                        passes: 10,
                     },
                     v8: true,
-                    ie: true,
+                    ie: false,
                     webkit: true,
                     output: {
                         comments: false,
@@ -179,7 +179,7 @@ module.exports = {
                                         "firefox": "90",
                                         "safari": "14"
                                     },
-                                    forceAllTransforms: true,
+                                    forceAllTransforms: false,
                                     shippedProposals: true,
                                     bugfixes: true,
                                     useBuiltIns: "usage"
