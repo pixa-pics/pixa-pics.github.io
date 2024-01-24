@@ -54,8 +54,8 @@ var MODE = SIMDopeCreateConfAdd({
 });
 
 var fr = Math.fround;
-var DISTINCT_SKIN_COLOR_MATCH_MULTIPLY = fr(1.14);
-var SAME_SKIN_COLOR_MATCH_MULTIPLY = fr(0.88);
+var DISTINCT_SKIN_COLOR_MATCH_MULTIPLY = fr(1.0);
+var SAME_SKIN_COLOR_MATCH_MULTIPLY = fr(0.777);
 
 const {simdops, Color, Colors} = SIMDopeCreate(MODE);
 const {

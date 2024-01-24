@@ -153,11 +153,13 @@ const file_to_base64 = (file, callback_function = () => {}, pool = null) => {
 };
 window.base64_sanitize_process_function = new AFunction(`var t = function(base64, scale) {
     
-    "use strict";
+   "use strict";
     class ImageProcessor {
-        constructor() {
+        constructor(despeckleStrength, mergeStrength) {
             this.canvas = document.createElement('canvas');
             this.targetCanvas = document.createElement('canvas');
+            this.despeckleStrength = despeckleStrength || 66/100;
+            this.mergeStrength = mergeStrength || 33/100;
          }
         setCanvas(image, width, height){
     
@@ -216,7 +218,23 @@ window.base64_sanitize_process_function = new AFunction(`var t = function(base64
             return this.context.getImageData(x * this.tileWidth, y * this.tileHeight, this.tileWidth, this.tileHeight);
         }
     
-        mergeSimilarAreaTiles(threshold = 24) {
+        calculateDynamicThreshold() {
+            let colorDifferences = [];
+            for (let y = 0; y < this.finalHeight; y++) {
+                for (let x = 0; x < this.finalWidth; x++) {
+                    const tile = this.tiles[x + y * this.finalWidth];
+                    const neighbors = this.getNeighbors(x, y);
+                    neighbors.forEach(neighbor => {
+                        colorDifferences.push(this.colorDifference(tile.meanColor, neighbor.meanColor));
+                    });
+                }
+            }
+            const mean = colorDifferences.reduce((a, b) => a + b, 0) / colorDifferences.length;
+            const stdDev = Math.sqrt(colorDifferences.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / colorDifferences.length);
+            return mean + stdDev; // Example of dynamic threshold
+        }
+    
+        mergeSimilarAreaTiles(threshold) {
             for (let y = 0; y < this.finalHeight; y++) {
                 for (let x = 0; x < this.finalWidth; x++) {
                     const tileIndex = x + y * this.finalWidth;
@@ -226,43 +244,97 @@ window.base64_sanitize_process_function = new AFunction(`var t = function(base64
                     neighbors.forEach((neighbor, index) => {
                         const colorDifference = this.colorDifference(tile.meanColor, neighbor.meanColor);
                         if (colorDifference < threshold) {
-                            map[index] = true;
+                            map[index] = neighbor;
                         }
                     });
     
-                    if(Object.keys(map).length * 8/3 >= neighbors.length){
-                        //const averageNeighborColor = this.averageColor(neighbors);
-                        Object.keys(map).forEach(function (index){
-                            neighbors[index] = tile.meanColor;
+                    if(Object.keys(map).length >= 3){
+                        const averageNeighborColor = this.averageColor(neighbors);
+                        Object.values(map).forEach(function (neighbor){
+                            neighbor.meanColor = tile.meanColor;
                         });
                     }
                 }
             }
         }
     
-        despeckle(threshold = 36) {
+        despeckle(threshold) {
             for (let y = 0; y < this.finalHeight; y++) {
                 for (let x = 0; x < this.finalWidth; x++) {
-                    const tileIndex = x + y * this.finalWidth;
-                    const tile = this.tiles[tileIndex];
-                    const neighbors = this.getNeighbors(x, y);
-                    const map = {};
-                    neighbors.forEach((neighbor, index) => {
-                        const colorDifference = this.colorDifference(tile.meanColor, neighbor.meanColor);
-                        if (colorDifference < threshold) {
-                            map[index] = true;
-                        }
-                    });
+                    this.adaptiveDespeckleTile(x, y, threshold);
+                }
+            }
+            // Apply any final image-wide processing if needed
+        }
     
-                    if(Object.keys(map).length * 8/3 >= neighbors.length){
-                        //const averageNeighborColor = this.averageColor(neighbors);
-                        Object.keys(map).forEach(function (index){
-                            tile.meanColor = neighbors[index].meanColor;
-                        });
+        adaptiveDespeckleTile(x, y, baseThreshold) {
+            const tile = this.tiles[x + y * this.finalWidth];
+            const neighbors = this.getExtendedNeighbors(x, y, 2); // Larger neighborhood
+    
+            // Calculate local contrast and adjust threshold
+            const localContrast = this.calculateLocalContrast(tile, neighbors);
+            const adjustedThreshold = baseThreshold * (1 + localContrast);
+    
+            // Basic edge detection by checking dominant areas
+            const { dominantAreaCount, isEdge } = this.detectEdge(neighbors, adjustedThreshold);
+    
+            if (isEdge && dominantAreaCount === 2) {
+                this.applyDespeckling(tile, neighbors, adjustedThreshold);
+            } else {}
+        }
+    
+        detectEdge(neighbors, threshold) {
+            const colorGroups = {};
+            neighbors.forEach(neighbor => {
+                const key = neighbor.meanColor.uint;
+                colorGroups[key] = (colorGroups[key] || 0) + 1;
+            });
+    
+            const dominantColors = Object.entries(colorGroups).filter(([_, count]) => count > threshold);
+            const dominantAreaCount = dominantColors.length;
+            const isEdge = dominantAreaCount >= 2;
+    
+            return { dominantAreaCount, isEdge };
+        }
+    
+        applyDespeckling(tile, neighbors, adjustedThreshold) {
+            const similarNeighbors = [];
+            neighbors.forEach((neighbor) => {
+                const diff = this.colorDifference(tile.meanColor, neighbor.meanColor);
+                if(diff < adjustedThreshold){
+                    similarNeighbors.push(neighbor);
+                }
+            });
+            if (similarNeighbors.length > 0) {
+                const averageColor = this.averageColor(similarNeighbors);
+                tile.meanColor = averageColor;
+            }
+        }
+    
+        getExtendedNeighbors(x, y, range) {
+            const neighbors = [];
+            for (let dx = -range; dx <= range; dx++) {
+                for (let dy = -range; dy <= range; dy++) {
+                    if (dx === 0 && dy === 0) continue; // Skip the tile itself
+                    const nx = x + dx;
+                    const ny = y + dy;
+                    if (nx >= 0 && nx < this.finalWidth && ny >= 0 && ny < this.finalHeight) {
+                        neighbors.push(this.tiles[nx + ny * this.finalWidth]);
                     }
                 }
             }
+            return neighbors;
         }
+    
+        calculateLocalContrast(tile, neighbors) {
+            // Example: Simple contrast calculation based on color variance
+            const meanColor = this.averageColor(neighbors.concat([tile]));
+            const variance = neighbors.concat([tile]).reduce((variance, neighbor) => {
+                return variance + Math.pow(this.colorDifference(neighbor.meanColor, meanColor), 2);
+            }, 0) / neighbors.length;
+            return Math.sqrt(variance);
+        }
+    
     
         getNeighbors(x, y) {
             const neighbors = [];
@@ -272,8 +344,9 @@ window.base64_sanitize_process_function = new AFunction(`var t = function(base64
                     const nx = x + dx;
                     const ny = y + dy;
     
-                    if (nx < 0 || ny < 0) continue; // Skip the tile itself
-                    if (nx >= this.finalWidth || ny >= this.finalHeight) continue; // Skip the tile itself
+                    if (dx === 0 && dy === 0) continue;
+                    if (nx < 0 || ny < 0) continue;
+                    if (nx >= this.finalWidth || ny >= this.finalHeight) continue;
     
                     if (nx >= 0 && nx < this.finalWidth && ny >= 0 && ny < this.finalHeight) {
                         neighbors.push(this.tiles[nx + ny * this.finalWidth]);
@@ -311,10 +384,10 @@ window.base64_sanitize_process_function = new AFunction(`var t = function(base64
             if(image.width === width && image.height === height){
                 return this.context;
             }
-    
             this.createTiles();
-            this.despeckle();
-            this.mergeSimilarAreaTiles();
+            const threshold = this.calculateDynamicThreshold();
+            this.despeckle(threshold*this.despeckleStrength);
+            this.mergeSimilarAreaTiles(threshold*this.mergeStrength);
             this.reconstructImage();
             return this.targetContext;
         }
@@ -424,6 +497,7 @@ window.base64_sanitize_process_function = new AFunction(`var t = function(base64
         get b(){return this.rgba_[2];}
         get a(){return this.rgba_[3];}
         get rgba(){return this.rgba_;}
+        get uint(){return new Uint32Array(this.storage_, 0, 1)[0]; }
         get id(){return this.id_[0];}
         set id(v){this.id_[0] = (v|0) & 0xFFFF;}
     }
@@ -481,7 +555,7 @@ window.base64_sanitize_process_function = new AFunction(`var t = function(base64
         }
     }
     
-    const scaler = new ImageProcessor();
+    var scaler = new ImageProcessor();
 
     return new Promise(function(resolve, reject) {
         var img = new Image();

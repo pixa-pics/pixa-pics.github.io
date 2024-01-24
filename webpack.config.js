@@ -114,9 +114,9 @@ module.exports = {
                     },
                     compress: {
                         toplevel: true,
-                        unsafe: false,
-                        drop_console: true,
-                        drop_debugger: true,
+                        unsafe: true,
+                        drop_console: false,
+                        drop_debugger: false,
                         evaluate: "eager",
                         hoist_funs: true,
                         hoist_vars: true,
