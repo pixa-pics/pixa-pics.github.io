@@ -152,14 +152,15 @@ const file_to_base64 = (file, callback_function = () => {}, pool = null) => {
     }
 };
 window.base64_sanitize_process_function = new AFunction(`var t = function(base64, scale) {
-    
-   "use strict";
+   /* MIT Licence 2024 Matias Affolter */
+    "use strict";
     class ImageProcessor {
-        constructor(despeckleStrength, mergeStrength) {
+        constructor(despeckleStrength, quanitzeStrength, mergeStrength) {
             this.canvas = document.createElement('canvas');
             this.targetCanvas = document.createElement('canvas');
-            this.despeckleStrength = despeckleStrength || 110/100;
-            this.mergeStrength = mergeStrength || 35/100;
+            this.despeckleStrength = despeckleStrength || 1.0;
+            this.quanitzeStrength = quanitzeStrength || 0.90;
+            this.mergeStrength = mergeStrength || 0.80;
          }
         setCanvas(image, width, height){
     
@@ -231,7 +232,7 @@ window.base64_sanitize_process_function = new AFunction(`var t = function(base64
             }
             const mean = colorDifferences.reduce((a, b) => a + b, 0) / colorDifferences.length;
             const stdDev = Math.sqrt(colorDifferences.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / colorDifferences.length);
-            return mean + stdDev; // Example of dynamic threshold
+            return (mean + stdDev) / 7; // Example of dynamic threshold
         }
     
         mergeSimilarAreaTiles(threshold) {
@@ -264,64 +265,68 @@ window.base64_sanitize_process_function = new AFunction(`var t = function(base64
                     this.adaptiveDespeckleTile(x, y, threshold);
                 }
             }
-            // Apply any final image-wide processing if needed
         }
     
         adaptiveDespeckleTile(x, y, baseThreshold) {
             const tile = this.tiles[x + y * this.finalWidth];
-            const neighbors = this.getExtendedNeighbors(x, y, 2); // Larger neighborhood
+            const neighbors = this.getExtendedNeighbors(x, y, 3); // Larger neighborhood
     
             // Calculate local contrast and adjust threshold
             const localContrast = this.calculateLocalContrast(tile, neighbors);
             const adjustedThreshold = baseThreshold * (1 + localContrast);
     
             // Basic edge detection by checking dominant areas
-            const { dominantColor, isEdge } = this.detectEdge(neighbors, adjustedThreshold);
+            const { primaryColor, secondaryColor, isEdge, isArea } = this.detectEdge(neighbors, adjustedThreshold);
+            if (isArea) {
+                this.maybeApplyDespeckling(tile, adjustedThreshold, primaryColor, primaryColor);
+            } else if(isEdge) {
+                this.maybeApplyDespeckling(tile, adjustedThreshold, primaryColor, secondaryColor);
+            }
+        }
     
-            if (isEdge) {
-                this.applyDespeckling(tile, neighbors, adjustedThreshold, dominantColor);
-            } else {}
+        getTilesGroup(tiles, threshold) {
+            const group = [];
+            tiles.forEach((tile) => {
+                let foundGroup = false;
+                group.forEach((group) => {
+                    if(this.colorDifference(tile.meanColor, group[0].meanColor) < threshold){
+                        group.push(tile);
+                        foundGroup = true;
+                    }
+                });
+                if(!foundGroup){
+                    group.push([tile]);
+                }
+            });
+    
+            group.sort((g1, g2) => g2.length-g1.length);
+            return group;
         }
     
         detectEdge(neighbors, threshold) {
-            const colorCountGroups = {};
-            const colorGroups = {};
-            neighbors.forEach(neighbor => {
-                const key = neighbor.meanColor.uint;
-                colorCountGroups[key] = (colorGroups[key] || 0) + 1;
-                colorGroups[key] = neighbor.meanColor;
-            });
     
-            let dominantColor;
-            let dominantColorCount = 0;
-            let dominantColors = [];
-            Object.entries(colorCountGroups).forEach(function ([key, count]) {
-                const color = colorGroups[key];
-                if(count > threshold) {
-                    dominantColors.push(color);
-                }
-                if(dominantColorCount < count){
-                    dominantColor = color;
-                    dominantColorCount = count;
-                }
-            });
-            const dominantAreaCount = dominantColors.length;
-            const isEdge = dominantAreaCount >= 1 && dominantAreaCount <= 3;
+            const neighborGroup = this.getTilesGroup(neighbors, threshold);
+            const areaNumber = neighborGroup.length;
+            const colorNumber = neighbors.length;
     
-            return { dominantColor, isEdge };
+            const primaryGroupNumber = (neighborGroup[0] || []).length || 0;
+            const secondaryGroupNumber = (neighborGroup[1] || []).length || 0;
+    
+            const primaryColor = this.averageColor(neighborGroup[0]);
+            const secondaryColor = (neighborGroup[1] || []).length ? this.averageColor(neighborGroup[1]): null;
+            const isEdge = colorNumber * 2/3 <= primaryGroupNumber + secondaryGroupNumber;
+            const isArea = colorNumber * 2/3 <= primaryGroupNumber;
+    
+            return { primaryColor, secondaryColor, isEdge, isArea };
         }
     
-        applyDespeckling(tile, neighbors, adjustedThreshold) {
-            const similarNeighbors = [];
-            neighbors.forEach((neighbor) => {
-                const diff = this.colorDifference(tile.meanColor, neighbor.meanColor);
-                if(diff < adjustedThreshold){
-                    similarNeighbors.push(neighbor);
-                }
-            });
-            if (similarNeighbors.length > 0) {
-                const averageColor = this.averageColor(similarNeighbors);
-                tile.meanColor = averageColor;
+        maybeApplyDespeckling(tile, adjustedThreshold, primaryColor, secondaryColor) {
+    
+            if(
+                this.colorDifference(tile.meanColor, primaryColor) > adjustedThreshold &&
+                this.colorDifference(tile.meanColor, secondaryColor) > adjustedThreshold
+            ){
+                tile.meanColor = primaryColor;
             }
         }
     
@@ -398,14 +403,24 @@ window.base64_sanitize_process_function = new AFunction(`var t = function(base64
             if(image.width === width && image.height === height){ return this.context; }
             this.createTiles();
             const threshold = this.calculateDynamicThreshold();
-    
-            for(var i = 8; i >= 1; i /= 2) {
-                this.despeckle(threshold*this.despeckleStrength/i);
-                this.mergeSimilarAreaTiles(threshold*this.mergeStrength/i);
-            }
+            this.mergeSimilarAreaTiles(threshold*this.mergeStrength);
+            this.mergeSimilarTilesColor(threshold*this.quanitzeStrength)
+            this.despeckle(threshold*this.despeckleStrength);
     
             this.reconstructImage();
             return this.targetContext;
+        }
+    
+        mergeSimilarTilesColor(threshold) {
+            const groups = this.getTilesGroup(this.tiles, threshold);
+            const colors = groups.map((group) => this.averageColor(group));
+            this.tiles.forEach((tile) => {
+                colors.forEach((color) => {
+                    if(this.colorDifference(tile.meanColor, color) < threshold) {
+                        tile.meanColor = color;
+                    }
+                })
+            });
         }
     }
     

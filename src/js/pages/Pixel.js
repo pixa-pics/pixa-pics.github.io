@@ -77,7 +77,9 @@ const {Color} = SIMDopeCreate({
         "new_hex": true
     },
     "properties": {
-        "hsla": true
+        "hsla": true,
+        "hex": true,
+        "rgb": true
     }
 });
 import SmartRequestAnimationFrame from "../components/canvaspixels/utils/SmartRequestAnimationFrame";
