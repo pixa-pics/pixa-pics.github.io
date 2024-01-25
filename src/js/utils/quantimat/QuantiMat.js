@@ -450,14 +450,14 @@ QuantiMat.prototype.process_threshold = function(t) {
     t = (t | 0) >>> 0;
     function calculateN(t, max) {
         // Apply a power scale to 't'. The exponent (e.g., 0.5) determines the curve's shape.
-        const exponent = 1.33;
-        const scaledT = Math.pow(t, exponent);
+        const exponent = 1.5;
+        const scaledT = Math.pow(t, exponent)-t;
 
         // Calculate n using the scaled value of t
         return fr(scaledT / max);
     }
 
-    var max = Math.pow(255, 1.33);
+    var max = Math.pow(100, 1.5) - 100;
     var weight_applied_to_color_usage_difference = calculateN(t, max); // Ensure higher precision when low color (high threshold)
     var index_merged = false;
     var latest_colors = [];
@@ -478,6 +478,9 @@ QuantiMat.prototype.process_threshold = function(t) {
     var x = 0, y = 0, c = 0;
     var color_n_in_cluster = 0;
     var threshold = 0;
+
+    var smoothingFactor = 0.5; // Adjust this value to control sensitivity to usage percent differences
+    var dominanceFactor = 2.0; // Adjust this value to emphasize the effect of one color being more dominant
 
     weighted_threshold_skin_skin = fr(weighted_threshold * SAME_SKIN_COLOR_MATCH_MULTIPLY);
     weighted_threshold_skin = fr(weighted_threshold * DISTINCT_SKIN_COLOR_MATCH_MULTIPLY);
@@ -519,12 +522,13 @@ QuantiMat.prototype.process_threshold = function(t) {
                         // Here we have different threshold for skin to skin, skin to environement, and environement to environement color operation
                         threshold = (color_a_skin && color_b_skin) ? weighted_threshold_skin_skin: (color_a_skin || color_b_skin) ? weighted_threshold_skin: weighted_threshold;
 
-                        // There the more a color is used the less we will probably blend it, also:
-                        // The greater the "usage" distance is, the most probably we'll have to sacrifice the lowest used color
-                        // So the more the usage distance the more probabilities we'll have to blend them together
-                        threshold = fr(threshold + threshold * fr(Math.abs(color_a_usage_percent-color_b_usage_percent) / (color_a_usage_percent+color_b_usage_percent)));
+                        threshold = fr(
+                            17 * threshold +
+                            8 * (threshold * (1 - (color_a_usage_percent + color_b_usage_percent))) +
+                            4 * (threshold * Math.abs(color_a_usage_percent - color_b_usage_percent))
+                        );
                         // CIE LAB 1976 version color scheme is used to measure accurate the distance for the human eye
-                        if(color_a.cie76_match_with(color_b,  fr(threshold/2.0))) {
+                        if(color_a.cie76_match_with(color_b,  fr(threshold/29.0))) {
 
                             color_usage_difference_positive = fr(color_b_usage / color_a_usage);
 
@@ -577,7 +581,7 @@ QuantiMat.prototype.init = function() {
 QuantiMat.prototype.run =  function() {
     "use strict";
 
-    var t = (this.new_pxl_colors_length > 60000 ? 60: this.new_pxl_colors_length > 32000 ? 32: this.new_pxl_colors_length > 16000 ? 16: this.new_pxl_colors_length > 8192 ? 8: this.new_pxl_colors_length > 4096 ? 4: this.new_pxl_colors_length > 2048 ? 2: 1) | 0;
+    var t = (this.new_pxl_colors_length > 60000 ? 12: this.new_pxl_colors_length > 32000 ? 8: this.new_pxl_colors_length > 16000 ? 4: this.new_pxl_colors_length > 8192 ? 3: this.new_pxl_colors_length > 4096 ? 2: 1) | 0;
     while (this.new_pxl_colors_length > this.best_color_number) {
 
         if(this.process_threshold(t|0)) {
@@ -585,7 +589,7 @@ QuantiMat.prototype.run =  function() {
             this.clusterize();
         }
 
-        t = t + (this.new_pxl_colors_length > 60000 ? 60: this.new_pxl_colors_length > 32000 ? 32: this.new_pxl_colors_length > 16000 ? 16: this.new_pxl_colors_length > 8192 ? 8: this.new_pxl_colors_length > 4096 ? 4: this.new_pxl_colors_length > 2048 ? 2: 1) | 0;
+        t = t + (this.new_pxl_colors_length > 60000 ? 12: this.new_pxl_colors_length > 32000 ? 8: this.new_pxl_colors_length > 16000 ? 4: this.new_pxl_colors_length > 8192 ? 3: this.new_pxl_colors_length > 4096 ? 2: 1) | 0;
     }
 
 
