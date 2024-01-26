@@ -533,7 +533,7 @@ class Tile {
         k = k || Math.ceil(Math.sqrt(this.imageData.data.length+100));
         const colors = this.extractColorData();
         const colorsArray = colors.map(function (c){return c.rgba; });
-        return new KMeans(colorsArray, k).run(Math.ceil(k+16));
+        return new KMeans(colorsArray, k).run();
     }
 
     getQuantizedColor(quantizedResult) {
