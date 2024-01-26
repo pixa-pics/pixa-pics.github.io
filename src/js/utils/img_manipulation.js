@@ -3,7 +3,7 @@ import {scaler} from "./test/doppel";
 const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
 const AFunction = Object.getPrototypeOf( function(){}).constructor;
 
-const file_to_imagedata_resized = (file, resize_original_to, callback_function = () => {}, pool = null) => {
+const file_to_imagedata_resized = (file, resize_original_to, callback_function = () => {}, pool = null, resizer="pixelize") => {
 
     var t1 = Date.now();
     const is_type_png = Boolean(file.type === "image/png");
@@ -49,7 +49,26 @@ const file_to_imagedata_resized = (file, resize_original_to, callback_function =
         while (Math.round(imgd.width * scale) * Math.round(imgd.height * scale) > resize_original_to) { scale -= 0.01; }
         let width = Math.round(imgd.width * scale);
         let height = Math.round(imgd.height * scale);
-        let imgd2 = scaler.processImage(imgd, width, height).getImageData(0, 0, width, height);
+
+        let imgd2;
+        if(resizer === "pixelize" || resizer === "normal") {
+            let canvas = document.createElement("canvas");
+            let canvas2 = document.createElement("canvas");
+            canvas.width = imgd.width;
+            canvas.height = imgd.height;
+            canvas2.width = width;
+            canvas2.height = height;
+            let context = canvas.getContext("2d");
+            let context2 = canvas2.getContext("2d");
+                context.imageSmoothingEnabled = Boolean(resizer === "normal");
+                context2.imageSmoothingEnabled = Boolean(resizer === "normal");
+            context.putImageData(imgd, 0, 0);
+            context2.drawImage(canvas, 0, 0, canvas.width, canvas.height, 0, 0, canvas2.width, canvas2.height);
+            imgd2 = context2.getImageData(0, 0, width, height);
+        }else if(resizer === "doppel") {
+            imgd2 = scaler.processImage(imgd, width, height).getImageData(0, 0, width, height);
+        }
+
         callback_function(imgd2);
 
         /*init().then(function (funcs){
@@ -151,7 +170,7 @@ const file_to_base64 = (file, callback_function = () => {}, pool = null) => {
         });
     }
 };
-window.base64_sanitize_process_function = new AFunction(`var t = function(base64, scale) {
+window.base64_sanitize_process_function = new AFunction(`var t = function(base64, scale, ) {
    /* MIT Licence 2024 Matias Affolter */
     "use strict";
     class ImageProcessor {
@@ -159,8 +178,9 @@ window.base64_sanitize_process_function = new AFunction(`var t = function(base64
             this.canvas = document.createElement('canvas');
             this.targetCanvas = document.createElement('canvas');
             this.despeckleStrength = despeckleStrength || 1.0;
-            this.quanitzeStrength = quanitzeStrength || 0.90;
-            this.mergeStrength = mergeStrength || 0.80;
+            this.quanitzeStrength = quanitzeStrength || 1.0;
+            this.mergeStrength = mergeStrength || 1.0;
+            this.overlapFactor = 1.0;
          }
         setCanvas(image, width, height){
     
@@ -216,7 +236,15 @@ window.base64_sanitize_process_function = new AFunction(`var t = function(base64
         }
     
         extractTileData(x, y) {
-            return this.context.getImageData(x * this.tileWidth, y * this.tileHeight, this.tileWidth, this.tileHeight);
+            // Calculate new width and height with overlap
+            const extendedTileWidth = this.tileWidth * this.overlapFactor;
+            const extendedTileHeight = this.tileHeight * this.overlapFactor;
+    
+            // Adjust x and y to keep tiles centered with the new size
+            const newX = x * this.tileWidth - (extendedTileWidth - this.tileWidth) / 2;
+            const newY = y * this.tileHeight - (extendedTileHeight - this.tileHeight) / 2;
+    
+            return this.context.getImageData(newX|0, newY|0, extendedTileWidth|0, extendedTileHeight|0);
         }
     
         calculateDynamicThreshold() {
@@ -334,12 +362,13 @@ window.base64_sanitize_process_function = new AFunction(`var t = function(base64
             const neighbors = [];
             for (let dx = -range; dx <= range; dx++) {
                 for (let dy = -range; dy <= range; dy++) {
-                    if (dx === 0 && dy === 0) continue; // Skip the tile itself
                     const nx = x + dx;
                     const ny = y + dy;
-                    if (nx >= 0 && nx < this.finalWidth && ny >= 0 && ny < this.finalHeight) {
-                        neighbors.push(this.tiles[nx + ny * this.finalWidth]);
-                    }
+                    if (dx === 0 && dy === 0) continue;
+                    if (nx < 0 || ny < 0) continue;
+                    if (nx >= this.finalWidth || ny >= this.finalHeight) continue;
+    
+                    neighbors.push(this.tiles[nx + ny * this.finalWidth]);
                 }
             }
             return neighbors;
@@ -376,16 +405,17 @@ window.base64_sanitize_process_function = new AFunction(`var t = function(base64
         }
     
         averageColor(tiles) {
-            const sumColor = { r: 0, g: 0, b: 0, a: 0 };
+            const sumColor = new Uint32Array(4);
             tiles.forEach(tile => {
-                sumColor.r += tile.meanColor.r;
-                sumColor.g += tile.meanColor.g;
-                sumColor.b += tile.meanColor.b;
-                sumColor.a += tile.meanColor.a;
+                const rgba = tile.meanColor.rgba;
+                sumColor[0] += rgba[0];
+                sumColor[1] += rgba[1];
+                sumColor[2] += rgba[2];
+                sumColor[3] += rgba[3];
             });
     
             const numTiles = tiles.length;
-            return new Pixel(sumColor.r / numTiles|0, sumColor.g / numTiles | 0, sumColor.b / numTiles | 0, sumColor.a / numTiles | 0, 0);
+            return new Pixel(sumColor[0] / numTiles|0, sumColor[1] / numTiles | 0, sumColor[2] / numTiles | 0, sumColor[3] / numTiles | 0, 0);
         }
     
         colorDifference(color1, color2) {
@@ -587,6 +617,29 @@ window.base64_sanitize_process_function = new AFunction(`var t = function(base64
     }
     
     var scaler = new ImageProcessor();
+    
+    function imgToImgD(img, width, height, resizer) {
+        
+        let ctx;
+        if(resizer === "pixelize" || resizer === "normal") {
+            let canvas = document.createElement("canvas");
+            let canvas2 = document.createElement("canvas");
+            canvas.width = img.width;
+            canvas.height = img.height;
+            canvas2.width = width;
+            canvas2.height = height;
+            let context = canvas.getContext("2d");
+            let context2 = canvas2.getContext("2d");
+                context.imageSmoothingEnabled = Boolean(resizer === "normal");
+                context2.imageSmoothingEnabled = Boolean(resizer === "normal");
+            context.drawImage(img, 0, 0, img.width, img.height);
+            context2.drawImage(canvas, 0, 0, canvas.width, canvas.height, 0, 0, canvas2.width, canvas2.height);
+            ctx = context2;
+        }else if(resizer === "doppel") {
+            ctx = scaler.processImage(imgd, width, height);
+        }
+        return ctx;
+    }
 
     return new Promise(function(resolve, reject) {
         var img = new Image();
@@ -598,7 +651,7 @@ window.base64_sanitize_process_function = new AFunction(`var t = function(base64
            
                 let width = (img.naturalWidth || img.width) * scale;
                 let height = (img.naturalHeight || img.height) * scale;
-                let imgd = scaler.processImage(img, width, height).getImageData(0, 0, width, height);
+                let imgd = imgToImgD(img, width, height, resizer).getImageData(0, 0, width, height);
                 
                 createImageBitmap(imgd).then(function(bmp){
                 
@@ -623,7 +676,7 @@ window.base64_sanitize_process_function = new AFunction(`var t = function(base64
             } catch(e){
                 let width = (img.naturalWidth || img.width) * scale;
                 let height = (img.naturalHeight || img.height) * scale;
-                let canvas = scaler.processImage(img, width, height).canvas;
+                let canvas = imgToImgD(img, width, height, resizer).canvas;
                 resolve(canvas.toDataURL(is_png ? "image/png": "image/jpeg")); 
             }
         };
@@ -632,15 +685,15 @@ window.base64_sanitize_process_function = new AFunction(`var t = function(base64
     });
 }; return t;`)();
 
-const base64_sanitize = (base64, callback_function = () => {}, pool = null, scale = 1) => {
+const base64_sanitize = (base64, callback_function = () => {}, pool = null, scale = 1, resizer) => {
 
     if(pool !== null) {
 
         pool.exec(window.base64_sanitize_process_function, [
-            base64, scale
+            base64, scale, resizer
         ]).catch((e) => {
 
-            window.base64_sanitize_process_function(base64, scale).then((r) => {
+            window.base64_sanitize_process_function(base64, scale, resizer).then((r) => {
                 callback_function(r);
             });
         }).timeout(15 * 1000).then((r) => {
@@ -650,7 +703,7 @@ const base64_sanitize = (base64, callback_function = () => {}, pool = null, scal
 
     }else {
 
-        window.base64_sanitize_process_function(base64, scale).then((r) => {
+        window.base64_sanitize_process_function(base64, scale, resizer).then((r) => {
 
             callback_function(r);
         });
