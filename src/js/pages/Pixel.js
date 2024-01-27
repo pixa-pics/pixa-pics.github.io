@@ -1870,42 +1870,47 @@ class Pixel extends React.PureComponent {
             const {_import_colorize, _import_size} = this.st4te;
             const {set_canvas_from_image} = this.st4te._canvas;
 
-            const max_original_size = is_mobile_or_tablet ? Math.sqrt(1280 * 720) : Math.sqrt(1920 * 1080);
+            const max_original_size = is_mobile_or_tablet ? Math.sqrt(540 * 720) : Math.sqrt(720 * 1080);
             const max_size = is_mobile_or_tablet ? Math.sqrt(512 * 512) : Math.sqrt(512 * 512);
             let min_size = is_mobile_or_tablet ? 512 : 1024;
             const resize_original_to = parseInt(max_original_size * max_original_size);
             const resize_to_before = Math.min(parseInt(max_size * max_size), Math.max(parseInt(_import_size * _import_size), parseInt(min_size * min_size)));
             const resize_to_finally = Math.min(parseInt(max_size * max_size), parseInt(_import_size * _import_size));
-
+            let scale = 1;
 
             this._handle_load("image_preload");
             actions.trigger_voice("data_upload");
             file_to_imagedata_resized(smart_file, resize_original_to, (imagedata) => {
                 imagedata_to_base64(imagedata, mimetype, (base64_resized) => {
-                    file_to_imagedata_resized(smart_file, resize_to_finally, (imagedata2) => {
-                        JSLoader(() => import("../utils/quantimat/QuantiMat")).then(({QuantiMatGlobal}) => {
-                            QuantiMatGlobal(imagedata2, 256).then(([imagedata3, a, b, color_removed_n, resulting_color_n, time_ms]) => {
-                                    imagedata_to_base64(imagedata3, "image/png", (base64) => {
-                                        let img = new Image();
-                                        img.addEventListener("load", () => {
-                                            this._handle_load_complete("image_preload", {});
-                                            this.setSt4te({_kb: 0, _saved_at: 1 / 0});
-                                            set_canvas_from_image(img, base64_resized, {}, false);
-                                            setTimeout(function () {
-                                                actions.trigger_snackbar(`I am really awesome, within ${parseFloat(time_ms / 1000).toFixed(3)}sec. I've made disappears ${color_removed_n} colors, now there are ${resulting_color_n} colors!`, 5700);
+                    while (Math.round(imagedata.width * scale) * Math.round(imagedata.height * scale) > resize_to_finally) { scale -= 0.01; }
+                    base64_sanitize(base64_resized,  (b64b) => {
+                        base64_to_bitmap(b64b,  (imgbmp) => {
+                            bitmap_to_imagedata(imgbmp, resize_original_to,  (imagedata2) => {
+                                JSLoader(() => import("../utils/quantimat/QuantiMat")).then(({QuantiMatGlobal}) => {
+                                    QuantiMatGlobal(imagedata2, 256).then(([imagedata3, a, b, color_removed_n, resulting_color_n, time_ms]) => {
+                                        imagedata_to_base64(imagedata3, "image/png", (base64) => {
+                                            let img = new Image();
+                                            img.addEventListener("load", () => {
+                                                this._handle_load_complete("image_preload", {});
+                                                this.setSt4te({_kb: 0, _saved_at: 1 / 0});
+                                                set_canvas_from_image(img, base64_resized, {}, false);
                                                 setTimeout(function () {
-                                                    actions.jamy_update("happy");
-                                                }, 2000);
-                                            }, 1000);
+                                                    actions.trigger_snackbar(`I am really awesome, within ${parseFloat(time_ms / 1000).toFixed(3)}sec. I've made disappears ${color_removed_n} colors, now there are ${resulting_color_n} colors!`, 5700);
+                                                    setTimeout(function () {
+                                                        actions.jamy_update("happy");
+                                                    }, 2000);
+                                                }, 1000);
 
-                                        }, {once: true, capture: true});
-                                        img.src = base64;
+                                            }, {once: true, capture: true});
+                                            img.src = base64;
+                                        }, pool);
                                     }, pool);
-                            }, pool);
-                        });
-                    }, pool, "doppel");
+                                });
+                            }, pool)
+                        }, pool);
+                    }, pool, scale, "doppel");
                 }, pool);
-            }, pool, "pixelize");
+            }, pool);
         }
     };
 

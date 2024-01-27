@@ -14,6 +14,7 @@ class ImageProcessor {
      }
 
      get sizes(){
+         "use strict";
          return {
              finalWidth: this.finalWidth,
              finalHeight: this.finalHeight,
@@ -24,26 +25,31 @@ class ImageProcessor {
      }
 
     updateTilesManager() {
+        "use strict";
          this.tilesManager = new TileManager(this.context, this.targetContext, this.targetImageData, this.sizes);
      }
     updateFilters(threshold) {
+        "use strict";
          this.filters = new Filters(this.options, this.tilesManager, threshold, this.finalWidth, this.finalHeight);
      }
      initializeTiles() {
+         "use strict";
          this.tilesManager.createTiles();
          this.tilesManager.computeTiles();
      }
      paintTiles() {
+         "use strict";
         this.tilesManager.paintTiles();
      }
      filterTiles() {
+         "use strict";
         this.filters.applyFilters()
      }
 
     setCanvas(width, height, image){
-
-        width = width || 1;
-        height = height || 1;
+        "use strict";
+        width = (width|0) || 1;
+        height = (height|0) || 1;
         image = image || {width: 0, height: 0};
 
         const resultPrimaryCanvas = ImageUtils.initializeCanvas(image);
@@ -54,7 +60,7 @@ class ImageProcessor {
         this.targetCanvas = resultSecondaryCanvas.canvas;
         this.targetContext = resultSecondaryCanvas.context;
 
-        this.targetImageData = ImageUtils.canvasContextToImageData(this.targetContext)
+        this.targetImageData = new ImageData(width, height);
 
         this.finalWidth = width;
         this.finalHeight = height;
@@ -63,6 +69,7 @@ class ImageProcessor {
     }
 
     updateThreshold() {
+        "use strict";
         const tiles = this.tilesManager.getTiles();
         let colorDifferences = [];
         for (let y = 0; y < this.finalHeight; y++) {
@@ -80,12 +87,28 @@ class ImageProcessor {
     }
 
     processImage(image, width, height) {
+        "use strict";
+        const t1 = Date.now();
         this.setCanvas(width, height, image);
+        const t2 = Date.now();
         this.updateTilesManager();
+        const t3 = Date.now();
         this.initializeTiles();
+        const t4 = Date.now();
         this.updateFilters(this.updateThreshold());
+        const t5 = Date.now();
         this.filterTiles();
+        const t6 = Date.now();
         this.paintTiles();
+        const t7 = Date.now();
+        console.log({
+            "setCanvas": t2-t1,
+            "updateTilesManager": t3-t2,
+            "initializeTiles": t4-t3,
+            "updateFilters+updateThreshold": t5-t4,
+            "filterTiles": t6-t5,
+            "paintTiles": t7-t5,
+        })
         return this.targetContext;
     }
 }
@@ -93,13 +116,20 @@ class ImageProcessor {
 /* Image Utils Module */
 class ImageUtils {
     static initializeCanvas(image, width, height) {
+        "use strict";
         image = image || {width: 0, height: 0}
         width = image.width || width || 1;
         height = image.height || height || 1;
-        const canvas = document.createElement('canvas');
-        const context = canvas.getContext('2d', { willReadFrequently: true, powerPreference: "high-performance", alpha: true, desynchronized: true });
-        canvas.width = width;
-        canvas.height = height;
+        let canvas, context;
+        try {
+            canvas = new OffscreenCanvas(width, height);
+            context = canvas.getContext('2d', { willReadFrequently: true, desynchronized: true});
+        }catch (e) {
+            canvas = document.createElement("canvas")
+            canvas.width = width;
+            canvas.height = height;
+            context = canvas.getContext('2d', { willReadFrequently: true});
+        }
 
         if (image instanceof ImageData) {
             context.putImageData(image, 0, 0);
@@ -111,6 +141,7 @@ class ImageUtils {
     }
 
     static canvasContextToImageData(context) {
+        "use strict";
         return context.getImageData(0, 0, context.canvas.width, context.canvas.height);
     }
 }
@@ -124,9 +155,10 @@ class Filters {
     }
 
     applyFilters() {
-        this.despeckleFilter.apply();
-        this.quantizeFilter.apply();
+        "use strict";
         this.mergeFilter.apply();
+        this.despeckleFilter.apply();
+        //this.quantizeFilter.apply();
     }
 }
 
@@ -147,6 +179,7 @@ class DespeckleFilter extends Filter{
     }
 
     apply() {
+        "use strict";
         for (let y = 0; y < this.height; y++) {
             for (let x = 0; x < this.width; x++) {
                 this.adaptiveDespeckleTile(x, y, this.strength);
@@ -155,6 +188,7 @@ class DespeckleFilter extends Filter{
     }
 
     adaptiveDespeckleTile(x, y, baseThreshold) {
+        "use strict";
         const tile = this.tiles[x + y * this.width];
         const neighbors = this.tilesManager.getExtendedNeighbors(x, y, 3); // Larger neighborhood
 
@@ -172,6 +206,7 @@ class DespeckleFilter extends Filter{
     }
 
     calculateLocalContrast(tile, neighbors) {
+        "use strict";
         // Example: Simple contrast calculation based on color variance
         const meanColor = ColorAnalysis.averageColor(neighbors.concat([tile]).map(t => t.meanColor));
         const variance = neighbors.concat([tile]).reduce((variance, neighbor) => {
@@ -181,7 +216,7 @@ class DespeckleFilter extends Filter{
     }
 
     detectEdge(neighbors, threshold) {
-
+        "use strict";
         const neighborGroup = TileManager.getTilesGroup(neighbors, threshold);
         const areaNumber = neighborGroup.length;
         const colorNumber = neighbors.length;
@@ -191,19 +226,19 @@ class DespeckleFilter extends Filter{
 
         const primaryColor = ColorAnalysis.averageColor(neighborGroup[0].map(t => t.meanColor));
         const secondaryColor = (neighborGroup[1] || []).length ? ColorAnalysis.averageColor(neighborGroup[1].map(t => t.meanColor)): null;
-        const isEdge = colorNumber * 2/3 <= primaryGroupNumber + secondaryGroupNumber;
-        const isArea = colorNumber * 2/3 <= primaryGroupNumber;
+        const isEdge = colorNumber * 2/4 <= primaryGroupNumber + secondaryGroupNumber;
+        const isArea = colorNumber * 2/4 <= primaryGroupNumber;
 
         return { primaryColor, secondaryColor, isEdge, isArea };
     }
 
     maybeApplyDespeckling(tile, adjustedThreshold, primaryColor, secondaryColor) {
-
+        "use strict";
         if(
             ColorAnalysis.colorDifference(tile.meanColor, primaryColor) > adjustedThreshold &&
             ColorAnalysis.colorDifference(tile.meanColor, secondaryColor) > adjustedThreshold
         ){
-            tile.meanColor = primaryColor;
+            tile.meanColor.setRGBA(primaryColor.rgba);
         }
     }
 }
@@ -214,12 +249,13 @@ class QuantizeFilter extends Filter{
     }
 
     apply() {
+        "use strict";
         const groups = TileManager.getTilesGroup(this.tiles, this.strength);
         const colors = groups.map((group) => ColorAnalysis.averageColor(group.map(t => t.meanColor)));
         this.tiles.forEach((tile) => {
             colors.forEach((color) => {
                 if(ColorAnalysis.colorDifference(tile.meanColor, color) < this.strength) {
-                    tile.meanColor = color;
+                    tile.meanColor.setRGBA(color.rgba);
                 }
             })
         });
@@ -232,6 +268,7 @@ class MergeFilter extends Filter{
     }
 
     apply() {
+        "use strict";
         for (let y = 0; y < this.height; y++) {
             for (let x = 0; x < this.width; x++) {
                 const tileIndex = x + y * this.width;
@@ -247,7 +284,7 @@ class MergeFilter extends Filter{
 
                 if(Object.keys(map).length >= 3){
                     Object.values(map).forEach(function (neighbor){
-                        neighbor.meanColor = tile.meanColor;
+                        neighbor.meanColor.setRGBA(tile.meanColor.rgba);
                     });
                 }
             }
@@ -257,6 +294,7 @@ class MergeFilter extends Filter{
 /* Color Analysis Module */
 class ColorAnalysis {
     static colorDifference(color1, color2) {
+        "use strict";
         return Math.sqrt(
             Math.pow(color1.r - color2.r, 2) +
             Math.pow(color1.g - color2.g, 2) +
@@ -265,17 +303,18 @@ class ColorAnalysis {
         );
     }
     static averageColor(colors){
+        "use strict";
         const sumColor = new Uint32Array(4);
         colors.forEach(color => {
             const rgba = color.rgba;
-            sumColor[0] += rgba[0];
-            sumColor[1] += rgba[1];
-            sumColor[2] += rgba[2];
-            sumColor[3] += rgba[3];
+            sumColor[0] = (sumColor[0] + rgba[0] | 0) >>> 0;
+            sumColor[1] = (sumColor[1] + rgba[1] | 0) >>> 0;
+            sumColor[2] = (sumColor[2] + rgba[2] | 0) >>> 0;
+            sumColor[3] = (sumColor[3] + rgba[3] | 0) >>> 0;
         });
 
         const colorLength = colors.length;
-        return new Pixel(sumColor[0] / colorLength|0, sumColor[1] / colorLength | 0, sumColor[2] / colorLength | 0, sumColor[3] / colorLength | 0, 0);
+        return new Pixel(Uint8Array.of(sumColor[0] / colorLength|0, sumColor[1] / colorLength | 0, sumColor[2] / colorLength | 0, sumColor[3] / colorLength | 0));
     }
 }
 
@@ -291,8 +330,15 @@ class TileManager {
         this.tileWidth = sizes.tileWidth;
         this.tileHeight = sizes.tileHeight;
         this.tiles = new Array(this.finalWidth * this.finalHeight).fill(null);
+        this.tilesColorUint32a = new Uint32Array(this.finalWidth * this.finalHeight);
+        this.tilesColorUint8a = new Uint8ClampedArray(this.tilesColorUint32a.buffer);
+        this.extendedTileWidth = this.tileWidth * this.overlapFactor | 0;
+        this.extendedTileHeight = this.tileHeight * this.overlapFactor | 0;
+        this.tilePaddingWidth = (this.extendedTileWidth - this.tileWidth) / 2 | 0;
+        this.tilePaddingHeight = (this.extendedTileHeight - this.tileHeight) / 2 | 0;
     }
     static getTilesGroup(tiles, threshold) {
+        "use strict";
         const group = [];
         tiles.forEach((tile) => {
             let foundGroup = false;
@@ -311,39 +357,34 @@ class TileManager {
         return group;
     }
     getTiles(){
+        "use strict";
         return this.tiles;
     }
     extractTileData(x, y){
-        // Calculate new width and height with overlap
-        const extendedTileWidth = this.tileWidth * this.overlapFactor;
-        const extendedTileHeight = this.tileHeight * this.overlapFactor;
-
+        "use strict";
         // Adjust x and y to keep tiles centered with the new size
-        const newX = x * this.tileWidth - (extendedTileWidth - this.tileWidth) / 2;
-        const newY = y * this.tileHeight - (extendedTileHeight - this.tileHeight) / 2;
-
-        return this.contextSource.getImageData(newX|0, newY|0, extendedTileWidth|0, extendedTileHeight|0);
-
+        const newX = Math.imul(x, this.tileWidth) - this.tilePaddingWidth | 0;
+        const newY = Math.imul(y, this.tileHeight) - this.tilePaddingHeight | 0;
+        return this.contextSource.getImageData(newX|0, newY|0, this.extendedTileWidth|0, this.extendedTileHeight|0);
     }
     createTiles() {
+        "use strict";
         for (let y = 0; y < this.finalHeight; y++) {
             for (let x = 0; x < this.finalWidth; x++) {
                 const tileId = x+y*this.finalWidth;
-                const tileData = this.extractTileData(x, y);
-                this.tiles[tileId] =  new Tile({x, y},  tileData);;
+                const tileIndexColor = tileId * 4;
+                this.tiles[tileId] =  new Tile(this.extractTileData(x, y), this.tilesColorUint8a.subarray(tileIndexColor, tileIndexColor+4));
             }
         }
     }
     computeTiles() {
-        for (let y = 0; y < this.finalHeight; y++) {
-            for (let x = 0; x < this.finalWidth; x++) {
-                const tileId = x+y*this.finalWidth;
-                const tile = this.tiles[tileId];
-                tile.calculateMeanColor();
-            }
+        "use strict";
+        for (let i = 0; i < this.tiles.length; i++) {
+            this.tiles[i].calculateMeanColor();
         }
     }
     getNeighbors(x, y) {
+        "use strict";
         const neighbors = [];
         for (let dx = -1; dx <= 1; dx++) {
             for (let dy = -1; dy <= 1; dy++) {
@@ -363,6 +404,7 @@ class TileManager {
         return neighbors;
     }
     getExtendedNeighbors(x, y, range) {
+        "use strict";
         const neighbors = [];
         for (let dx = -range; dx <= range; dx++) {
             for (let dy = -range; dy <= range; dy++) {
@@ -377,35 +419,18 @@ class TileManager {
         }
         return neighbors;
     }
-    paintTargetImage(id, color, data) {
-        const index = id * 4;
-        data[index] = color.r;
-        data[index + 1] = color.g;
-        data[index + 2] = color.b;
-        data[index + 3] = color.a;
-    }
     paintTiles() {
-        const data = this.imageData.data;
-        for (let y = 0; y < this.finalHeight; y++) {
-            for (let x = 0; x < this.finalWidth; x++) {
-                const id = x+y*this.finalWidth;
-                const tile = this.tiles[id];
-                this.paintTargetImage(id, tile.meanColor, data)
-            }
-        }
+        "use strict";
+        this.imageData.data.set(this.tilesColorUint8a);
         this.contextDestination.putImageData(this.imageData, 0, 0);
     }
-}
-
-/* Utilities Module */
-class Utils {
-    static deepClone(object) { /* Implementation */ }
-    /* Other utility functions */
 }
 
 class KMeans {
     constructor(data, k) {
         this.data = data;
+        this.dataConstructor = Object.getPrototypeOf(data[0]).constructor;
+        this.mean = new Uint32Array(data[0].length);
         this.k = k;
         this.centroids = new Array(k);
         this.clusters = new Array(this.data.length);
@@ -413,15 +438,17 @@ class KMeans {
 
     // Step 1: Initialize centroids
     initializeCentroids() {
+        "use strict";
         // Simple random initialization. For KMeans++, the initialization is more complex.
         for (let i = 0; i < this.k; i++) {
             const idx = Math.floor(Math.random() * this.data.length);
-            this.centroids[i] = this.data[idx];
+            this.centroids[i] = this.dataConstructor.from(this.data[idx]);
         }
     }
 
     // Step 2: Assign points to the nearest centroid
     assignClusters() {
+        "use strict";
         this.data.forEach((point, idx) => {
             let minDist = Number.MAX_VALUE;
             let cluster = -1;
@@ -440,8 +467,8 @@ class KMeans {
 
     // Step 3: Update centroids
     updateCentroids() {
+        "use strict";
         let newCentroids = new Array(this.k).fill(null).map(() => []);
-
         this.data.forEach((point, idx) => {
             const clusterIdx = this.clusters[idx];
             newCentroids[clusterIdx].push(point);
@@ -455,26 +482,35 @@ class KMeans {
 
     // Euclidean distance between two points
     euclideanDistance(point1, point2) {
+        "use strict";
         return Math.sqrt(point1.reduce((sum, val, idx) => sum + Math.pow(val - point2[idx], 2), 0));
     }
 
     // Calculate the mean point of a cluster
     meanPoint(points) {
+        "use strict";
         const numPoints = points.length;
         const dimensions = points[0].length;
-        let mean = new Array(dimensions).fill(0);
+        this.mean.fill(0);
 
-        points.forEach(point => {
-            point.forEach((val, idx) => {
-                mean[idx] += val;
-            });
-        });
+        for(var p = 0; p < numPoints; p++){
+            for(var i = 0; i < dimensions; i++) {
+                this.mean[i] += points[p][i];
+            }
+        }
 
-        return mean.map(val => val / numPoints);
+        const mean = new this.dataConstructor(dimensions);
+        for(var i = 0; i < dimensions; i++) {
+            mean[i] = this.mean[i] / numPoints | 0;
+        }
+
+        return mean;
     }
 
     // Run the KMeans algorithm
-    run(maxIterations = 16) {
+    run(maxIterations) {
+        "use strict";
+        maxIterations = maxIterations || 16;
         this.initializeCentroids();
         let iterations = 0;
         let hasConverged = false;
@@ -495,54 +531,59 @@ class KMeans {
 }
 
 class Pixel {
-    constructor(r, g, b, a, id) {
-        this.storage_ = new ArrayBuffer(6);
-        this.rgba_ = new Uint8Array(this.storage_, 0, 4);
-        this.rgba_[0] = r; this.rgba_[1] = g; this.rgba_[2] = b; this.rgba_[3] = a;
-        this.id_ = new Uint16Array(this.storage_, 4, 1);
-        this.id_[0] = id;
+    constructor(rgba) {
+        this.rgba_ = rgba;
     }
     get r(){return this.rgba_[0];}
     get g(){return this.rgba_[1];}
     get b(){return this.rgba_[2];}
     get a(){return this.rgba_[3];}
-    get rgba(){return this.rgba_;}
-    get uint(){return new Uint32Array(this.storage_, 0, 1)[0]; }
-    get id(){return this.id_[0];}
-    set id(v){this.id_[0] = (v|0) & 0xFFFF;}
+    get rgba(){return this.rgba_.subarray(0, 4);}
+    setRGBA(array){
+        "use strict";
+        this.rgba_[0] = array[0];
+        this.rgba_[1] = array[1];
+        this.rgba_[2] = array[2];
+        this.rgba_[3] = array[3];
+    }
 }
 
 
 class Tile {
-    constructor(position, imageData) {
-        this.position = position;
+    constructor(imageData, colorUint8a) {
         this.imageData = imageData;
-        this.meanColor = new Pixel(0, 0, 0, 0, 0);
+        this.meanColor = new Pixel(colorUint8a);
+        this.map = new Uint32Array(0)
     }
-
-
-    extractColorData() {
-        const data = this.imageData.data;
+    extractColorData(data) {
+        "use strict";
         let colors = [];
         for (let i = 0; i < data.length; i += 4) {
-            colors.push(new Pixel(data[i], data[i+1], data[i+2], data[i+3], i));
+            colors.push(new Pixel(data.subarray(i, i+4)));
         }
         return colors;
     }
     quantizeColors(k) {
-        k = k || Math.ceil(Math.sqrt(this.imageData.data.length+100));
-        const colors = this.extractColorData();
+        "use strict";
+        k = k || Math.ceil(Math.sqrt(this.imageData.data.length));
+        const data = this.imageData.data;
+        const colors = this.extractColorData(data);
         const colorsArray = colors.map(function (c){return c.rgba; });
-        return new KMeans(colorsArray, k).run();
+        return new KMeans(colorsArray, 7).run(21);
     }
 
     getQuantizedColor(quantizedResult) {
-        const map = new Uint8Array(quantizedResult.centroids.length);
+        "use strict";
+        if(quantizedResult.centroids.length !== this.map.length){
+            this.map = new Uint32Array(quantizedResult.centroids.length)
+        }else {
+            this.map.fill(0);
+        }
         quantizedResult.clusters.forEach((clusterId, index) => {
-            map[clusterId]++;
+            this.map[clusterId] = (this.map[clusterId] + 1|0)>>>0;
         });
         let dominantClusterPopulation = 0, dominantClusterId = 0;
-        map.forEach((population, clusterId) => {
+        this.map.forEach((population, clusterId) => {
             if(dominantClusterPopulation < population){
                 dominantClusterPopulation = population;
                 dominantClusterId = clusterId;
@@ -552,8 +593,9 @@ class Tile {
     }
 
     calculateMeanColor() {
+        "use strict";
         const color = this.getQuantizedColor(this.quantizeColors());
-        this.meanColor = new Pixel(color[0]|0, color[1]|0, color[2]|0, color[3]|0, 0);
+        this.meanColor.setRGBA(color);
     }
 }
 
