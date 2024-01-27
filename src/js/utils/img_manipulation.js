@@ -325,9 +325,9 @@ class QuantizeFilter extends Filter{
 
         // Apply K-Means to find dominant colors
         // The number of centroids (k) can be adjusted based on the desired quantization strength
-        const k = 255 / (this.strength*1.618) | 0; // Adjust 'k' based on strength or other criteria
+          const k = 128; // Adjust 'k' based on strength or other criteria
         const kmeans = new KMeans(meanColors, k);
-        const quantizationResult = kmeans.run(32);
+        const quantizationResult = kmeans.run(16);
 
         // Update each tile's mean color to the nearest centroid
         this.tiles.forEach((tile, index) => {
