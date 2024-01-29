@@ -638,7 +638,7 @@ Object.defineProperty(Layer.prototype, 'paint_uint32a', {
 
                 let sd_color = Color.new_uint32((color | 0) >>> 0),  a = new Color(new ArrayBuffer(4)), i = 0;
                 for (; (i | 0) < (indexes_length | 0); i = (i + 1 | 0) >>> 0) {
-                    this.simdope_pixel_color_.get_use_element(pxl_indexes[i | 0], a).blend_first_with(sd_color, opacity, false, false);
+                    this.simdope_pixel_color_.get_use_element(pxl_indexes[i | 0], a).blend_first_with(sd_color, 255, false, false);
                     this.set_uint32(pxl_indexes[i | 0], this.uint32_pixel_color_[pxl_indexes[i | 0]]);
                 }
             }

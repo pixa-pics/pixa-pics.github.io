@@ -344,7 +344,7 @@ const SuperMasterMeta = {
                             "use strict";
                             meta.super_canvas.unpile(pxl_width, pxl_height).then(function () {
                                 "use strict";
-                                meta.super_canvas.prender().then(function (bmp) {
+                                meta.super_canvas.prender().then(function () {
                                     "use strict";
                                     meta.sraf.run_frame(function () {
                                         "use strict";

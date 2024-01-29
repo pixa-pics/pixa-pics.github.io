@@ -36,7 +36,7 @@
     "react-responsive-masonry": "^2.1.7",
     "readable-stream": "~4.1.0",
     "regenerator-runtime": "~0.13.9",
-    "simdope": "~7.8.2",
+    "simdope": "~7.8.3",
     "@asaitama/boolean-array": "~6.0.0",
     "svg64": "~1.1.0",
     "svgo": "~2.8.0",
