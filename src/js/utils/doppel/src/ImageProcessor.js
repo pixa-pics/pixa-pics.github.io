@@ -93,6 +93,7 @@ export default class ImageProcessor {
         "use strict";
         const t1 = Date.now();
         this.setCanvas(width, height, image);
+        if(image.width <= width && image.height <= height){ return this.context; }
         const t2 = Date.now();
         this.updateTilesManager();
         const t3 = Date.now();
