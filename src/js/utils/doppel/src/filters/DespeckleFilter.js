@@ -45,7 +45,7 @@ export default class DespeckleFilter extends Filter {
                 const differenceAreasMiddle = Math.abs(differenceArea1Tile - differenceArea2Tile);
 
                 if(differenceAreasMiddle * 5 >= differenceAreaArea){
-                    const meanColor = new Pixel(new KMeans(neighborsClose.map(n => n.meanColor.rgba), 4).run(16).centroidsSorted[0].data);
+                    const meanColor = new Pixel(new KMeans(neighborsClose.map(n => n.meanColor.rgba), 4).run(4).centroidsSorted[0].data);
                     tileColor.setRGBA(meanColor.rgba);
                 }
                 break;

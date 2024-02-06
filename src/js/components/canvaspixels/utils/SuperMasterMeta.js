@@ -34,20 +34,6 @@ const SuperMasterMeta = {
             _previous_imported_image_pxls_positioned_keyset: new SetFixed(0)
         };
 
-        let boolean_work_variables = {
-            bool_is_resize: false,
-            bool_new_hover: false,
-            bool_old_hover: false,
-            bool_new_shape: false,
-            bool_old_shape: false,
-            bool_new_selection: false,
-            bool_old_selection: false,
-            bool_new_import: false,
-            bool_old_import: false,
-            bool_new_pixel: false,
-            bool_new_highlight: false,
-        };
-
         let meta = {
             super_state,
             super_canvas,
@@ -144,19 +130,6 @@ const SuperMasterMeta = {
 
         let pxl_indexes_of_changes = new SetFixed(sizes.width*sizes.height);
 
-        let {
-            bool_is_resize,
-            bool_new_hover,
-            bool_old_hover,
-            bool_new_shape,
-            bool_old_shape,
-            bool_new_selection,
-            bool_old_selection,
-            bool_new_import,
-            bool_old_import,
-            bool_new_pixel,
-            bool_new_highlight
-        } = boolean_work_variables;
 
         let render_canvas_promise = function(resolve0, reject0, is_there_new_dimension, is_there_different_dimension, force_update, requested_at) {
             "use strict";
@@ -277,7 +250,7 @@ const SuperMasterMeta = {
                 var meta_super_blend_next = meta_super_blend.next.bind(meta_super_blend);
                 var meta_super_blend_stack = meta_super_blend.stack.bind(meta_super_blend);
 
-                bool_new_highlight = _selection_pair_highlight !== _old_selection_pair_highlight;
+                var bool_new_highlight = _selection_pair_highlight !== _old_selection_pair_highlight;
                 meta_super_blend.update(length_l|0, full_pxls_length | 0, layers_opacity_255, _s_layers, super_canvas.getUint32());
 
                 var pxl_indexes_of_current_shape_has = _pxl_indexes_of_current_shape.has.bind(_pxl_indexes_of_current_shape);
@@ -340,32 +313,26 @@ const SuperMasterMeta = {
                     "use strict";
                     if (true || clear_canvas || is_there_new_dimension || force_update) {
 
-                        meta.super_canvas.pile().then(function () {
+                        meta.super_canvas.check(pxl_width, pxl_height).then(function () {
                             "use strict";
-                            meta.super_canvas.unpile(pxl_width, pxl_height).then(function () {
+                            meta.super_canvas.prender().then(function () {
                                 "use strict";
-                                meta.super_canvas.prender().then(function () {
+                                meta.sraf.run_frame(function () {
                                     "use strict";
-                                    meta.sraf.run_frame(function () {
-                                        "use strict";
-                                        _old_pxls_hovered.clearAndBulkAdd(Uint32Array.of(image_imported_resizer_index, _pxls_hovered));
-                                        _current_layer.clear_changes();
-                                        _pxl_indexes_of_selection_drawn.setFromSetFixed(_pxl_indexes_of_selection);
-                                        _pxl_indexes_of_old_shape.setFromSetFixed(_pxl_indexes_of_current_shape);
-                                        _previous_imported_image_pxls_positioned_keyset.setFromSetFixed(imported_image_pxls_positioned_keyset);
-                                        _pxl_indexes_of_current_shape.clear();
-                                        state._old_selection_pair_highlight = _selection_pair_highlight;
-                                        state._old_layers_string_id = ""+old_layers_string_id;
-                                        state._did_hide_canvas_content = Boolean(hide_canvas_content);
-                                        state._old_pxl_width = parseInt(pxl_width);
-                                        state._old_pxl_height = parseInt(pxl_height);
-                                        state._last_paint_timestamp = +requested_at;
-                                        return render_binding().then(function (){
-                                            return Promise.resolve();
-                                        });
-                                    }, false, clear_canvas || is_there_new_dimension || force_update,  Date.now(), "render").then(resolve0).catch(handle_reject0);
-                                }).catch(handle_reject0);
-
+                                    _old_pxls_hovered.clearAndBulkAdd(Uint32Array.of(image_imported_resizer_index, _pxls_hovered));
+                                    _current_layer.clear_changes();
+                                    _pxl_indexes_of_selection_drawn.setFromSetFixed(_pxl_indexes_of_selection);
+                                    _pxl_indexes_of_old_shape.setFromSetFixed(_pxl_indexes_of_current_shape);
+                                    _previous_imported_image_pxls_positioned_keyset.setFromSetFixed(imported_image_pxls_positioned_keyset);
+                                    _pxl_indexes_of_current_shape.clear();
+                                    state._old_selection_pair_highlight = _selection_pair_highlight;
+                                    state._old_layers_string_id = ""+old_layers_string_id;
+                                    state._did_hide_canvas_content = Boolean(hide_canvas_content);
+                                    state._old_pxl_width = parseInt(pxl_width);
+                                    state._old_pxl_height = parseInt(pxl_height);
+                                    state._last_paint_timestamp = +requested_at;
+                                    return render_binding();
+                                }, false, clear_canvas || is_there_new_dimension || force_update,  Date.now(), "render").then(resolve0).catch(handle_reject0);
                             }).catch(handle_reject0);
                         }).catch(handle_reject0);
                     } else {

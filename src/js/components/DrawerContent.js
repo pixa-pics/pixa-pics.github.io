@@ -257,6 +257,12 @@ class DrawerContent extends React.PureComponent {
                         </ListItem>
                     </Fade>
                     <Fade in={true} timeout={1200}>
+                        <ListItem button className={classes.listItemGrey} TouchRippleProps={{className: classes.rippleBlue}} onClick={(event) => this._open_link(event, "https://ico.pixa.market/")}>
+                            <ListItemIcon><DnaIcon className={classes.iconColor} /></ListItemIcon>
+                            <ListItemText primary="ICO (Newly Launched)" />
+                        </ListItem>
+                    </Fade>
+                    <Fade in={true} timeout={1500}>
                         <div style={{textAlign: "center"}} onClick={(event) => {this._open_link(event, "https://play.google.com/store/apps/details?id=pics.pixa.app.twa")}}>
                             <svg
                                 className={"playstorebadge"}
