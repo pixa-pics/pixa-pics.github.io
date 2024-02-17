@@ -1974,6 +1974,7 @@ class Pixel extends React.PureComponent {
         this.setSt4te({_loading: false, _loading_process: process}, () => {
             this._request_force_update().then(() => {
                 this._backup_state();
+                this._updated_dimensions();
             });
         });
 

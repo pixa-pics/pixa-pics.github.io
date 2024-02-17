@@ -22,7 +22,7 @@ const XXHash = {
 
         return {
             // Compute properties
-            xxh_f: {hasher: XXHashJS, create: function(seed){return this.hasher.h64(BigInt(seed)); }},
+            xxh_f: {hasher: XXHashJS, create: function(seed){return this.hasher.h64(seed); }},
             xxh_v: "64",
             xxh_t: "js",
             xxh_tt: Date.now()
@@ -89,8 +89,8 @@ const XXHash = {
                 let num = BigInt(xxh.digest());
 
                 while (num > 0) {
-                    remainder = num % base_58;
-                    num = num / base_58;
+                    remainder = Number(num % base_58);
+                    num = BigInt(num / base_58);
                     encoded[c|0] = (alphabet_58[remainder] | 0) & 0xFFFF;
                     c = (c + 1 | 0) & 0xF;
                 }
