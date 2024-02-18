@@ -479,8 +479,10 @@ QuantiMat.prototype.process_threshold = function(t) {
     var color_n_in_cluster = 0;
     var threshold = 0;
 
-    var smoothingFactor = 0.5; // Adjust this value to control sensitivity to usage percent differences
-    var dominanceFactor = 2.0; // Adjust this value to emphasize the effect of one color being more dominant
+    var baseFactor = 8.0;
+    var lowUsedFactor = 5.0; // Adjust this value to control sensitivity to usage percent differences
+    var distanceUsageFactor = 3.0; // Adjust this value to emphasize the effect of one color being more dominant
+    var totalFactor = baseFactor + lowUsedFactor + distanceUsageFactor;
 
     weighted_threshold_skin_skin = fr(weighted_threshold * SAME_SKIN_COLOR_MATCH_MULTIPLY);
     weighted_threshold_skin = fr(weighted_threshold * DISTINCT_SKIN_COLOR_MATCH_MULTIPLY);
@@ -523,12 +525,14 @@ QuantiMat.prototype.process_threshold = function(t) {
                         threshold = (color_a_skin && color_b_skin) ? weighted_threshold_skin_skin: (color_a_skin || color_b_skin) ? weighted_threshold_skin: weighted_threshold;
 
                         threshold = fr(
-                            17 * threshold +
-                            8 * (threshold * (1 - (color_a_usage_percent + color_b_usage_percent))) +
-                            4 * (threshold * Math.abs(color_a_usage_percent - color_b_usage_percent))
+                           threshold * (
+                               distanceUsageFactor * Math.abs(color_a_usage_percent - color_b_usage_percent) +
+                               lowUsedFactor * (2.0 - (color_a_usage_percent + color_b_usage_percent)) +
+                            baseFactor
+                           ) / totalFactor
                         );
                         // CIE LAB 1976 version color scheme is used to measure accurate the distance for the human eye
-                        if(color_a.cie76_match_with(color_b,  fr(threshold/29.0))) {
+                        if(color_a.cie76_match_with(color_b,  threshold)) {
 
                             color_usage_difference_positive = fr(color_b_usage / color_a_usage);
 

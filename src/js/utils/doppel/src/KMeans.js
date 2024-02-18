@@ -15,7 +15,7 @@ export default class KMeans {
                 idx = Math.floor(Math.random() * this.data.length);
             } while (chosenIndices.has(idx));
             chosenIndices.add(idx);
-            this.centroids[i] = new Float64Array(this.data[idx]);
+            this.centroids[i] = Uint32Array.from(this.data[idx]);
         }
     }
 
@@ -39,7 +39,7 @@ export default class KMeans {
 
     // Step 3: Update centroids and handle empty clusters
     updateCentroids() {
-        let sums = Array.from({ length: this.k }, () => new Float64Array(this.data[0].length).fill(0));
+        let sums = Array.from({ length: this.k }, () => new Uint32Array(this.data[0].length).fill(0));
         let counts = new Uint32Array(this.k).fill(0);
 
         this.data.forEach((point, idx) => {
@@ -53,7 +53,7 @@ export default class KMeans {
                 // Find the farthest point from any centroid and use it as a new centroid
                 const farthestPointIndex = this.findFarthestPointFromCentroids();
                 counts[i] = 1; // Ensure the new centroid has at least one point assigned
-                return new Float64Array(this.data[farthestPointIndex]);
+                return Uint32Array.from(this.data[farthestPointIndex]);
             }
             return sum.map(value => value / counts[i]);
         });
@@ -95,7 +95,7 @@ export default class KMeans {
         let hasConverged = false;
 
         while (!hasConverged && iterations < maxIterations) {
-            const oldCentroids = this.centroids.map(centroid => new Float64Array(centroid));
+            const oldCentroids = this.centroids.map(centroid => Uint32Array.from(centroid));
             this.assignClusters();
             this.updateCentroids();
             iterations++;
