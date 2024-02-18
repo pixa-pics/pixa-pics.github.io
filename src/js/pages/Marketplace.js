@@ -67,6 +67,8 @@ import actions from "../actions/utils";
 import xbrz from "../utils/xBRZ";
 import HexagonThree from "../icons/HexagonThree";
 import CloudDownload from "@material-ui/icons/CloudDownload";
+import {depixelize} from "../utils/depixelize/new/index";
+import at from "../notoemoji/react/At";
 
 const styles = theme => ({
     root: {
@@ -1056,13 +1058,14 @@ class Marketplace extends React.Component {
                 });
                 break;
             case "svg":
+            /*
+                var svg_source = depixelize(data.data, data.width, data.height);
+                var b64 = "data:image/svg+xml;base64," + btoa(svg_source);
 
-                //var url = depixelize(data, 12, 0.70);
-                //var b64 = "data:image/svg+xml;base64," + btoa(svg_source);
-
-                 /*this.setState({src: url}, () => {
+                 this.setState({src: b64}, () => {
                     this.forceUpdate();
-                });*/
+                });
+            */
                 JSLoader( () => import("../utils/xBRZ")).then((obj) => {
                     obj.default(data, 6, pool).then((imageData) => {
                         JSLoader( () => import("../utils/image_tracer")).then(({image_tracer}) => {
@@ -1364,8 +1367,8 @@ class Marketplace extends React.Component {
                     <div className={classes.leftFromDrawer} style={{zIndex: 10, pointerEvents: "all"}} ref={this.setRefFromLeft} >
                         <div style={{position: "fixed", top: 16, left: 16}}>
                             <IconButton style={{color: "#ffffff"}} onClick={() => {this.renderMedia("pixelated", openedMediaDataData.data)}}><Icon><SquareRoundedIcon/></Icon></IconButton>
-                            <IconButton style={{color: "#ffffff"}} onClick={() => {this.renderMedia("xbrz", openedMediaDataData.data)}}><Icon><GamePadRoundIcon/></Icon></IconButton>
-                            <IconButton style={{color: "#ffffff"}} onClick={() => {this.renderMedia("hex", openedMediaDataData.data, openedMediaDataData.colors)}}><Icon><HexagonThree/></Icon></IconButton>
+                            <IconButton style={{color: "#ffffff"}} onClick={() => {this.renderMedia("svg", openedMediaDataData.data, openedMediaDataData.colors)}}><Icon><GamePadRoundIcon/></Icon></IconButton>
+                            <IconButton style={{color: "#ffffff"}} onClick={() => {this.renderMedia("hex", openedMediaDataData.data)}}><Icon><HexagonThree/></Icon></IconButton>
                         </div>
                         <div style={{position: "fixed", right: window.innerWidth > 800 ? 400: 14, top: 16}}>
                             <IconButton style={{color: "#ffffff"}} onClick={() => {this.download(src, openedMediaData.name, "sophia.julio")}}><Icon><CloudDownload/></Icon></IconButton>

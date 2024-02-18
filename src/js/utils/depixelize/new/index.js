@@ -566,7 +566,6 @@ function pathToSvg(paths, width, height, f) {
 
         for (let j = 0; j < p.length; ++j) {
             const c = p[j];
-
             //svgPaths.push(<circle cx={c[0] * factor} cy={c[1] * factor} r={2} key={'circ-' + i + '-' + j} fill="red" />);
         }
     }
@@ -582,8 +581,8 @@ function processImage(binaryData, width, height) {
     graph = removeDissimilarConnectedPixels(graph);
     graph = removeDiagonals(graph, width, height);
     graph = reshape(graph, width, height);
-    var serializedReshape = graph.serialize();
-    var reshapeCopy = Graph.unserialize(serializedReshape);
+    //var serializedReshape = graph.serialize();
+    //var reshapeCopy = Graph.unserialize(serializedReshape);
     //reshapeCopy = getVisibleEdgesGraph(reshapeCopy, graph);
 
     var shapes = Graph.unserialize(graph.serialize()).shapes(colors, width, height);

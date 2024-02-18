@@ -423,27 +423,27 @@ export class Graph {
         const shapes = [];
         const seen = [];
 
-        for (let i = 0; i < this.nodes.length; ++i) {
-            const node = this.nodes[i];
+        for (let i = 0; i < nodes.length; ++i) {
+            const node = nodes[i];
 
             if(node){
-                if (seen.indexOf(findNodeIdx(this.nodes, node.id)) !== -1) {
+                if (seen.indexOf(findNodeIdx(nodes, node.id)) !== -1) {
                     continue;
                 }
 
                 const shape = new Shape();
-                const stack = [findNodeIdx(this.nodes, node.id)];
+                const stack = [findNodeIdx(nodes, node.id)];
 
-                seen.push(findNodeIdx(this.nodes, node.id));
+                seen.push(findNodeIdx(nodes, node.id));
                 shape.addPoint(node.x, node.y, colors[Math.round(node.y) * width + Math.round(node.x)], node.corners);
 
                 while (stack.length) {
                     const id = stack.pop();
-                    const n =  this.nodes[id];
+                    const n =  nodes[id];
 
                     if(n){
                         for (let j = 0; j < n.edges.length; ++j) {
-                            const edgeId = findNodeIdx(this.nodes, n.edges[j].nodeId);
+                            const edgeId = findNodeIdx(nodes, n.edges[j].nodeId);
                             const edgeNode =  this.getNode(edgeId);
 
                             if (edgeNode) {
@@ -481,7 +481,7 @@ export class Graph {
                 }
             }
         }
-        return s;
+        return sg;
     }
     serialize() {
         // for (let i = 0; i < this.nodes.length; ++i) {

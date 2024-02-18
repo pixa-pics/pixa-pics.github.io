@@ -24,7 +24,7 @@ class SuperCanvas {
                     occ2d = oc.getContext('2d', {
                         willReadFrequently: true,
                         powerPreference: 'high-performance',
-                        desynchronized: true,
+                        desynchronized: !isMobile,
                     });
                     this.setImageSmoothing(occ2d, false);
                 } catch (e) {
@@ -39,7 +39,7 @@ class SuperCanvas {
                         cc2d = canvas.getContext('2d', {
                             willReadFrequently: true,
                             powerPreference: 'high-performance',
-                            desynchronized: true,
+                            desynchronized: !isMobile,
                         });
                     }catch (e) {
                         cc2d = canvas.getContext('2d');
@@ -50,7 +50,7 @@ class SuperCanvas {
                     cc2d = canvas.getContext('2d', {
                         willReadFrequently: true,
                         powerPreference: 'high-performance',
-                        desynchronized: true,
+                        desynchronized: !isMobile,
                     });
                 }catch (e) {
                     cc2d = canvas.getContext('2d');

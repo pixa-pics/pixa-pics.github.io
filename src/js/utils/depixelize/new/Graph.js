@@ -78,6 +78,9 @@ Object.defineProperties(Graph.prototype, {
     'nodes': {
         get: function () {
             return this.nodes_;
+        },
+        set(v) {
+            this.nodes_ = v;
         }
     },
     'width': {
@@ -140,9 +143,9 @@ Object.defineProperties(Graph.prototype, {
     },
     'findNode': {
         value: function (x, y) {
-            for (let i = 0; i < this.nodes.length; ++i) {
-                if (this.nodes[i].x === x && this.nodes[i].y === y) {
-                    return this.nodes[i];
+            for (let i = 0; i < this.nodes_.length; ++i) {
+                if (this.nodes_[i].x === x && this.nodes_[i].y === y) {
+                    return this.nodes_[i];
                 }
             }
 
@@ -150,9 +153,9 @@ Object.defineProperties(Graph.prototype, {
     },
     'getNode': {
         value: function (nodeId) {
-            for (let i = 0; i < this.nodes.length; ++i) {
-                if (this.nodes[i].id === nodeId) {
-                    return this.nodes[i];
+            for (let i = 0; i < this.nodes_.length; ++i) {
+                if (this.nodes_[i].id === nodeId) {
+                    return this.nodes_[i];
                 }
             }
             return null;        }
@@ -255,41 +258,45 @@ Object.defineProperties(Graph.prototype, {
         }
     },
     'shapes': {
-        get: function () {
-            const nodes = this.nodes;
+        value: function (colors, width, height) {
+            const nodes = this.nodes_;
+            const findNodeIdx = Graph.findNodeIdx;
             const shapes = [];
             const seen = [];
 
-            for (let i = 0; i < nodes.length; ++ i) {
+            for (let i = 0; i < nodes.length; ++i) {
                 const node = nodes[i];
 
-                if (seen.indexOf(node.id) !== - 1) {
-                    continue;
-                }
+                if(node){
+                    if (seen.indexOf(findNodeIdx(nodes, node.id)) !== -1) {
+                        continue;
+                    }
 
-                const shape = new Shape();
-                const stack = [node.id];
+                    const shape = new Shape();
+                    const stack = [findNodeIdx(nodes, node.id)];
 
-                seen.push(node.id);
-                shape.addPoint(node.x, node.y, node.color, node.corners);
+                    seen.push(findNodeIdx(nodes, node.id));
+                    shape.addPoint(node.x, node.y, colors[Math.round(node.y) * width + Math.round(node.x)], node.corners);
 
-                while (stack.length) {
-                    const id = stack.pop();
-                    const n = nodes[id];
+                    while (stack.length) {
+                        const id = stack.pop();
+                        const n =  nodes[id];
 
-                    for (let j = 0; j < n.edges.length; ++ j) {
-                        const edgeId = n.edges[j].nodeId;
-                        const edgeNode = nodes[edgeId];
+                        if(typeof n !== "undefined"){
+                            for (let j = 0; j < n.edges.length; ++j) {
+                                const edgeId = findNodeIdx(nodes, n.edges[j].nodeId);
+                                const edgeNode =  this.getNode(edgeId);
 
-                        if (seen.indexOf(edgeId) === - 1) {
-                            stack.push(edgeId);
-                            seen.push(edgeId);
-                            shape.addPoint(edgeNode.x, edgeNode.y, edgeNode.color, edgeNode.corners);
+                                if (edgeId !== -1) {
+                                    stack.push(edgeId);
+                                    seen.push(edgeId);
+                                    shape.addPoint(edgeNode.x, edgeNode.y, colors[Math.round(edgeNode.y) * width + Math.round(edgeNode.x)], edgeNode.corners);
+                                }
+                            }
                         }
                     }
+                    shapes.push(shape);
                 }
-                //console.log(`pushing shape of ${shape.points.length} points`);
-                shapes.push(shape);
             }
             console.log(`there is ${shapes.length} shapes`);
             console.log(`there is ${JSON.stringify(shapes, null, 1)} shapes`);
@@ -300,8 +307,8 @@ Object.defineProperties(Graph.prototype, {
 
                 const sg = new Graph(0, this.width, this.height);
 
-                for (let i = 0; i < this.nodes.length; ++i) {
-                    const { x, y } = this.nodes[i];
+                for (let i = 0; i < this.nodes_.length; ++i) {
+                    const { x, y } = this.nodes_[i];
 
                     if (this.hasCorner(this.points, x, y)) {
                         sg.addNode(x, y);
@@ -326,7 +333,7 @@ Object.defineProperties(Graph.prototype, {
                 return sg;
             }
         }
-    },
+    },/*
     'serialize': {
         value: function (nodeId, x, y) {
             const node = this.getNode(nodeId);
@@ -338,6 +345,15 @@ Object.defineProperties(Graph.prototype, {
                     node.corners.push({ x, y });
                 }
             }
+        }
+    },*/
+    'serialize': {
+        value: function () {
+            return JSON.stringify({
+                nodes: this.nodes,
+                width: this.width,
+                height: this.height
+            });
         }
     }
 });
@@ -351,4 +367,4 @@ Graph.unserialize = function (data) {
     return g;
 }
 // Exporting the class
-export { Graph };
+module.exports = { Graph };

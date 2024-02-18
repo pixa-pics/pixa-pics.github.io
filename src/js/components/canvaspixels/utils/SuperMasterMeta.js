@@ -265,7 +265,7 @@ const SuperMasterMeta = {
                 var changesCompute = function (I, newPixel, oldHover, oldShape, newShape, oldSelection, newSelection, oldImport, newImport) {
                     "use strict";
                     I = (I | 0) >>> 0;
-                    return newPixel[I|0] | oldHover[I|0] | (oldShape[I|0] ^ newShape[I|0]) | (oldSelection[I|0] ^ newSelection[I|0]) | (oldSelection[I|0] & newHighlight[I|0]) | oldImport[I|0] | newImport[I|0];
+                    return newPixel[I] | oldHover[I] | (oldShape[I] ^ newShape[I]) | (oldSelection[I] ^ newSelection[I]) | (oldSelection[I] & newHighlight[I]) | oldImport[I] | newImport[I];
                 }
 
                 if(pxl_indexes_of_changes.length !== full_pxls_length) {

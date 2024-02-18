@@ -764,13 +764,6 @@ var depixel = function () {
         }
         return this;
     };
-    function connectVertices(vertices) {
-        var l = vertices.length;
-        vertices.forEach(function (e, i, a) {
-            e.addEdge(a[(i + 1) % l]);
-        });
-        return vertices;
-    }
     Graph.prototype.contour = function contour(startNode) {
         var UP = 0;
         var UP_RIGHT = 1;
@@ -938,6 +931,14 @@ var depixel = function () {
     };
 }();
 
+function connectVertices(vertices) {
+    var l = vertices.length;
+    vertices.forEach(function (e, i, a) {
+        e.addEdge(a[(i + 1) % l]);
+    });
+    return vertices;
+}
+
 function drawCanvas(graph, scale, reshaped, similar) {
 
     var width = graph.width;
@@ -1012,7 +1013,7 @@ function drawSVG(graph, scale) {
     for (let node of nodes) {
 
         var lines = "L";
-        var vertices = node.vertices;
+        var vertices = connectVertices(node.vertices);
 
         var v = vertices[0];
         for (var i = 0; i < vertices.length; ++i) {
@@ -1020,7 +1021,7 @@ function drawSVG(graph, scale) {
             lines += `${Math.ceil(v.x * scale)},${Math.ceil(v.y * scale)} `;
         }
 
-        pathsA.push(`<path stroke-width="10" stroke="${node.color}" d="M${Math.ceil(vertices[0].x * scale)},${Math.ceil(vertices[0].y * scale)} ${lines}Z"/>`)
+        //pathsA.push(`<path stroke-width="10" stroke="${node.color}" d="M${Math.ceil(vertices[0].x * scale)},${Math.ceil(vertices[0].y * scale)} ${lines}Z"/>`)
         pathsB.push(`<path fill="${node.color}" d="M${Math.ceil(vertices[0].x * scale)},${Math.ceil(vertices[0].y * scale)} ${lines}Z"/>`)
     }
 
@@ -1065,10 +1066,10 @@ const fu = function (image_data, scale, q) {
     graph.createVoronoiDiagram();
     graph.linearize()
 
-    var dataurl = drawCanvas(graph, scale, true, true).canvas.toDataURL("image/jpeg", q);
+    //var dataurl = drawCanvas(graph, scale, true, true).canvas.toDataURL("image/jpeg", q);
     var svg_string = drawSVG(graph, scale);
 
-    return dataurl;
+    return svg_string;
 }
 
 export default fu;

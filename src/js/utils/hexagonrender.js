@@ -74,10 +74,14 @@ function generateFinalImageData(originalImageData, radius, object_url) {
             return (data[index] << 24) | (data[index+1] << 16) | (data[index+2] << 8) | data[index+3] | 0;
         }
 
+        let uint32HexMap = {};
         function uint32ToHex(uint32) {
             "use strict";
             uint32 = (uint32 | 0) >>> 0;
-            return "#".concat("00000000".concat(uint32.toString(16)).slice(-8));
+            if(typeof uint32HexMap[uint32] != "string"){
+                uint32HexMap[uint32] = "#".concat("00000000".concat(uint32.toString(16)).slice(-8));
+            }
+            return uint32HexMap[uint32];
         }
 
         function getColor(data, w, x, y) {
