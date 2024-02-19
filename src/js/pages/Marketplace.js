@@ -55,6 +55,7 @@ import {getImageDataFromBase64} from "../utils/computeMediaPost"
 import List from '@material-ui/core/List';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
+import CloudDownload from "@material-ui/icons/CloudDownload";
 
 import CanvasPos from "../components/canvaspixels/utils/CanvasPos"
 import { createLocalBlob } from "../utils/objectURL";
@@ -66,9 +67,6 @@ import JSLoader from "../utils/JSLoader";
 import actions from "../actions/utils";
 import xbrz from "../utils/xBRZ";
 import HexagonThree from "../icons/HexagonThree";
-import CloudDownload from "@material-ui/icons/CloudDownload";
-import {depixelize} from "../utils/depixelize/new/index";
-import at from "../notoemoji/react/At";
 
 const styles = theme => ({
     root: {
@@ -766,6 +764,15 @@ class Marketplace extends React.Component {
             tabValue: 0,
             images: [
                 {
+                    src: "data:image/png;base64,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",
+                    name: "Greece",
+                    money: <PixaDollar/>,
+                    price: 99,
+                    value: 12.33,
+                    sold: true,
+                    favorite: false,
+                },
+                {
                     src: "data:image/png;base64,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\n",
                     name: "Certain",
                     money: <PixaDollar/>,
@@ -1058,14 +1065,32 @@ class Marketplace extends React.Component {
                 });
                 break;
             case "svg":
-            /*
+/*
+                async function runai(){
+                    var canvasA = document.createElement("canvas");
+                        canvasA.width = data.width;
+                        canvasA.height = data.height;
+                    var context2DA = canvasA.getContext("2d");
+                        context2DA.putImageData(data, 0, 0);
+
+                        var img = document.createElement("img");
+                        img.onload = async function (){
+                            const session = await InferenceSession.create('../../onnx/nxbrz.onnx');
+                            const feeds = { a: await Tensor.fromImage(img)}
+                            const results = await session.run(feeds);
+                            console.log(results)
+                        }
+                        img.src = canvasA.toDataURL("png");
+                }
+                runai();
+            */
                 var svg_source = depixelize(data.data, data.width, data.height);
                 var b64 = "data:image/svg+xml;base64," + btoa(svg_source);
 
                  this.setState({src: b64}, () => {
                     this.forceUpdate();
                 });
-            */
+
                 JSLoader( () => import("../utils/xBRZ")).then((obj) => {
                     obj.default(data, 6, pool).then((imageData) => {
                         JSLoader( () => import("../utils/image_tracer")).then(({image_tracer}) => {
@@ -1082,8 +1107,8 @@ class Marketplace extends React.Component {
                                 // Tracing
                                 corsenabled : false,
                                 ltres : scale,
-                                qtres : scale,
-                                pathomit : scale,
+                                qtres : scale/2,
+                                pathomit : scale/2,
                                 rightangleenhance : false,
 
                                 // Color quantization

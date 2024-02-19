@@ -27,7 +27,7 @@ export default class Tile {
         const data = this.imageData.data;
         const colors = this.extractColorData(data);
         const colorsArray = colors.map(function (c){return c.rgba; });
-        return new KMeans(colorsArray, 4).run(8);
+        return new KMeans(colorsArray, 4).run(12);
     }
 
     calculateMeanColor() {

@@ -32,7 +32,7 @@ export default class DespeckleFilter extends Filter {
             case "AREA":
                 const areaColor = new Pixel(centroidsSorted[0].data);
                 const differenceTileArea = ColorAnalysis.colorDifference(areaColor, tileColor);
-                if(differenceTileArea > 10 && differenceTileArea < 40){
+                if(differenceTileArea > 0 && differenceTileArea < 60){
                     tileColor.setRGBA(areaColor.rgba);
                 }
                 break;
