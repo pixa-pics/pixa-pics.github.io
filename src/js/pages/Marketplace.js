@@ -68,10 +68,6 @@ import actions from "../actions/utils";
 import xbrz from "../utils/xBRZ";
 import HexagonThree from "../icons/HexagonThree";
 
-import * as tf from '@tensorflow/tfjs';
-import * as onnx from "tfjs-onnx";
-
-
 const styles = theme => ({
     root: {
         textAlign: "center",

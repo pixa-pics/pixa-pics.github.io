@@ -1882,12 +1882,12 @@ class Pixel extends React.PureComponent {
             actions.trigger_voice("data_upload");
             file_to_imagedata_resized(smart_file, resize_original_to, (imagedata) => {
                 imagedata_to_base64(imagedata, mimetype, (base64_resized) => {
-                    while (Math.round(imagedata.width * scale) * Math.round(imagedata.height * scale) > resize_to_finally) { scale -= 0.01; }
+                    while (Math.round(imagedata.naturalWidth * scale) * Math.round(imagedata.naturalHeight * scale) > resize_to_finally) { scale -= 0.01; }
                     base64_sanitize(base64_resized,  (b64b) => {
                         base64_to_bitmap(b64b,  (imgbmp) => {
-                            bitmap_to_imagedata(imgbmp, resize_original_to,  (imagedata2) => {
+                            bitmap_to_imagedata(imgbmp, resize_to_finally,  (imagedata2) => {
                                 JSLoader(() => import("../utils/quantimat/QuantiMat")).then(({QuantiMatGlobal}) => {
-                                    QuantiMatGlobal(imagedata2, 256).then(([imagedata3, a, b, color_removed_n, resulting_color_n, time_ms]) => {
+                                    QuantiMatGlobal(imagedata2, 100).then(([imagedata3, a, b, color_removed_n, resulting_color_n, time_ms]) => {
                                         imagedata_to_base64(imagedata3, "image/png", (base64) => {
                                             let img = new Image();
                                             img.addEventListener("load", () => {
@@ -1900,7 +1900,6 @@ class Pixel extends React.PureComponent {
                                                         actions.jamy_update("happy");
                                                     }, 2000);
                                                 }, 1000);
-
                                             }, {once: true, capture: true});
                                             img.src = base64;
                                         }, pool);

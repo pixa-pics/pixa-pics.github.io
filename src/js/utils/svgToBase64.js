@@ -1,5 +1,5 @@
 import renderToString from 'preact-render-to-string'
-import svg64 from "svg64";
+import svg64 from "svg64/dist/svg64.module.js";
 
 function _hexToRGB(h) {
 

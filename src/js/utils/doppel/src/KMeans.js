@@ -1,3 +1,5 @@
+import { Color } from "simdope";
+
 export default class KMeans {
     constructor(data, k) {
         this.data = data;
@@ -26,7 +28,7 @@ export default class KMeans {
             let cluster = -1;
 
             this.centroids.forEach((centroid, centroidIdx) => {
-                const dist = this.euclideanDistance(point, centroid);
+                const dist = this.distance(point, centroid);
                 if (dist < minDist) {
                     minDist = dist;
                     cluster = centroidIdx;
@@ -56,7 +58,7 @@ export default class KMeans {
         this.data.forEach((point, idx) => {
             let minDistToPoint = Number.MAX_VALUE;
             this.centroids.forEach(centroid => {
-                const dist = this.euclideanDistance(point, centroid);
+                const dist = this.distance(point, centroid);
                 if (dist < minDistToPoint) {
                     minDistToPoint = dist;
                 }
@@ -70,12 +72,10 @@ export default class KMeans {
     }
 
     // Euclidean distance between two points
-    euclideanDistance(point1, point2) {
-        let sum = 0;
-        for (let i = 0; i < point1.length; i++) {
-            sum += (point1[i] - point2[i]) ** 2;
-        }
-        return Math.sqrt(sum);
+    distance(point1, point2) {
+        let c1 = new Color(point1);
+        let c2 = new Color(point2);
+        return c1.cie76_match_with(c2) * 4096;
     }
 
     // Run the KMeans algorithm with maxIterations
@@ -91,7 +91,7 @@ export default class KMeans {
             iterations++;
 
             hasConverged = this.centroids.every((centroid, idx) => {
-                return this.euclideanDistance(centroid, oldCentroids[idx]) < 1e-5;
+                return this.distance(centroid, oldCentroids[idx]) < 1e-5;
             });
         }
         var counter = this.getCentroidsPopulationCount(this.centroids, this.clusters)

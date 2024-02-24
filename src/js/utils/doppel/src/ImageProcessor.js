@@ -59,7 +59,7 @@ export default class ImageProcessor {
         this.canvas = resultPrimaryCanvas.canvas;
         this.context = resultPrimaryCanvas.context;
 
-        const resultSecondaryCanvas = ImageUtils.initializeCanvas(null, width, height);
+        const resultSecondaryCanvas = ImageUtils.initializeCanvas(undefined, width, height);
         this.targetCanvas = resultSecondaryCanvas.canvas;
         this.targetContext = resultSecondaryCanvas.context;
 
