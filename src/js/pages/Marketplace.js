@@ -68,6 +68,10 @@ import actions from "../actions/utils";
 import xbrz from "../utils/xBRZ";
 import HexagonThree from "../icons/HexagonThree";
 
+import * as tf from '@tensorflow/tfjs';
+import * as onnx from "tfjs-onnx";
+
+
 const styles = theme => ({
     root: {
         textAlign: "center",
@@ -1075,22 +1079,28 @@ class Marketplace extends React.Component {
 
                         var img = document.createElement("img");
                         img.onload = async function (){
-                            const session = await InferenceSession.create('../../onnx/nxbrz.onnx');
-                            const feeds = { a: await Tensor.fromImage(img)}
-                            const results = await session.run(feeds);
-                            console.log(results)
+                            var modelUrl = '/nxbrz.onnx';
+
+                            // Initialize the tf.model
+                            var model = new onnx.loadModel(modelUrl);
+
+                            // Now use tf.model
+                            const pixels = tf.browser.fromPixels(img);
+                            const predictions = model.predict(pixels);
+                            console.log(tf.browser.toPixels(predictions))
                         }
                         img.src = canvasA.toDataURL("png");
                 }
                 runai();
-            */
+
+
                 var svg_source = depixelize(data.data, data.width, data.height);
                 var b64 = "data:image/svg+xml;base64," + btoa(svg_source);
 
                  this.setState({src: b64}, () => {
                     this.forceUpdate();
                 });
-
+*/
                 JSLoader( () => import("../utils/xBRZ")).then((obj) => {
                     obj.default(data, 6, pool).then((imageData) => {
                         JSLoader( () => import("../utils/image_tracer")).then(({image_tracer}) => {

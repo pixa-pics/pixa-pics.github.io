@@ -47,16 +47,6 @@ export default class KMeans {
             sums[clusterIdx] = sums[clusterIdx].map((sum, i) => sum + point[i]);
             counts[clusterIdx]++;
         });
-
-        this.centroids = sums.map((sum, i) => {
-            if (counts[i] === 0) {
-                // Find the farthest point from any centroid and use it as a new centroid
-                const farthestPointIndex = this.findFarthestPointFromCentroids();
-                counts[i] = 1; // Ensure the new centroid has at least one point assigned
-                return Uint32Array.from(this.data[farthestPointIndex]);
-            }
-            return sum.map(value => value / counts[i]);
-        });
     }
 
     // Find the farthest point from any centroid

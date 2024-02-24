@@ -24,17 +24,17 @@ var F_CNK = function (n, i) { return `/client/chunk_${typeof n == "undefined" ? 
 var F_SND = function (n) { return `/src/sounds/${n}.mp3`; };
 var F_VID = function (n) { return `/src/videos/${n}.mp4`; };
 
-var INSTALL_FILES_REQUIRED = ["/client/chunk_norris.min.js", "/client/chunk_norris.min.js", "/client/chunk_main_5a2dc592.min.js", "/client/chunk_main_7a2ee6b6.min.js", "/client/chunk_main_8afe242f.min.js","/client/chunk_main_253ae210.min.js","/client/chunk_main_678f84af.min.js","/client/chunk_main_690b702c.min.js","/client/chunk_main_748942c6.min.js","/client/chunk_main_783709f3.min.js","/client/chunk_main_af9f4ef7.min.js","/client/chunk_main_d939e436.min.js","/client/chunk_main_df0f15aa.min.js", "/"];
+var INSTALL_FILES_REQUIRED = ["/client/chunk_norris.min.js", "/client/chunk_norris.min.js", "/client/chunk_main_5a2dc592.min.js", "/client/chunk_main_7a2ee6b6.min.js", "/client/chunk_main_8afe242f.min.js","/client/chunk_main_253ae210.min.js","/client/chunk_main_678f84af.min.js","/client/chunk_main_690b702c.min.js","/client/chunk_main_748942c6.min.js","/client/chunk_main_783709f3.min.js","/client/chunk_main_af9f4ef7.min.js","/client/chunk_main_d939e436.min.js", "/"];
 var INSTALL_FILES_USEFUL = ["/src/images/favicon.ico", "/src/images/manifest/logo-white.png", "/src/fonts/industry/index.css"];
-var LOAD_FILES_REQUIRED = ["/"].concat(new Array(45).map(F_CNK));
+var LOAD_FILES_REQUIRED = ["/"].concat(new Array(96).map(F_CNK));
 var LOAD_FILES_USEFUL = ["/src/fonts/normative/index.css"].concat(["illusion.jpg", "gallery/Ban.png", "gallery/Ban.svg", "gallery/sco.png", "gallery/Sco.svg", "gallery/Bud.png", "gallery/Bud.svg", "demo/Beast.jpg", "demo/Disney.jpg", "demo/Man.jpg", "demo/Masterc.jpg", "demo/Redstar.jpg",  "demo/Tower.jpg", "infographics/Rambo.svg", "infographics/TestBag.svg", "infographics/Explosion.svg", "labostration/ABDUCTION.svg", "labostration/CHEMISTRY.svg", "labostration/COMPUTING.svg", "labostration/DOWNLOAD.svg", "labostration/GENOMA.svg", "labostration/MOLECULE.svg", "labostration/NUCLEAR.svg", "labostration/SCIENCE.svg", "REMINDER.svg", "Error.svg", "laboratory.svg", "illustrations/Camo.svg", "league/Bronze.png", "league/Diamond.png", "league/Gold.png", "league/Silver.png"].map(F_IMG));
 var LOAD_FILES_STATIC = ["sfx/md/hero_decorative-celebration-02", "sfx/md/navigation_selection-complete-celebration", "sfx/md/navigation_transition-left", "sfx/md/state-change_confirm-down", "sfx/md/ui_lock", "sfx/md/ui_unlock", "sfx/md/ui_scan", "sfx/md/alert_high-intensity", "sfx/md/navigation_transition-right", "voice/cn/accessing_memory", "voice/cn/complete", "voice/cn/please_wait", "voice/cn/data_upload", "voice/cn/processing", "voice/cn/enhanced", "voice/cn/rewriting_deep_layer_protocols", "voice/cn/vision_activated", "voice/cn/vision_deactivated", "voice/cn/filtering", "music/redeclipse/track_09"].map(F_SND).concat(["presentation", "tutorial", "create", "enhanced", "pixelated", "upload", "share1", "joke1", "create", "enhanced", "pixelated", "presentation", "presentation2", "sponsors", "tutorial", "upload", "labintro", "share2", "share3", "share4", "share5", "share6", "share7", "joke2", "joke3", "joke4", "joke5", "joke6", "joke7", "joke8", "joke9", "joke10", "joke11"].map(F_VID));
 
 // Cache names
-var REQUIRED_CACHE = "unless-update-cache-v959-required";
-var USEFUL_CACHE = "unless-update-cache-v959-useful";
-var STATIC_CACHE = "unless-update-cache-v959-static";
-var OTHER_CACHE = "unless-update-cache-v959-other";
+var REQUIRED_CACHE = "unless-update-cache-v960-required";
+var USEFUL_CACHE = "unless-update-cache-v960-useful";
+var STATIC_CACHE = "unless-update-cache-v960-static";
+var OTHER_CACHE = "unless-update-cache-v960-other";
 
 // Regular expressions for chunk matching
 var MAIN_CHILD_CHUNK_REGEX = /chunk_(main_[a-z0-9]+)\.min\.js$/i;
