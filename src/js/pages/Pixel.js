@@ -1887,7 +1887,7 @@ class Pixel extends React.PureComponent {
                         base64_to_bitmap(b64b,  (imgbmp) => {
                             bitmap_to_imagedata(imgbmp, resize_to_finally,  (imagedata2) => {
                                 JSLoader(() => import("../utils/quantimat/QuantiMat")).then(({QuantiMatGlobal}) => {
-                                    QuantiMatGlobal(imagedata2, 100).then(([imagedata3, a, b, color_removed_n, resulting_color_n, time_ms]) => {
+                                    QuantiMatGlobal(imagedata2, 255).then(([imagedata3, a, b, color_removed_n, resulting_color_n, time_ms]) => {
                                         imagedata_to_base64(imagedata3, "image/png", (base64) => {
                                             let img = new Image();
                                             img.addEventListener("load", () => {
