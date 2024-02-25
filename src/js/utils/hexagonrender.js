@@ -27,7 +27,7 @@ function initConstants(radius) {
 function createCanvasWithFallback(width, height) {
     // Attempt to create an OffscreenCanvas
     var canvas;
-    if (typeof OffscreenCanvas !== 'undefined') {
+    if (false && typeof OffscreenCanvas !== 'undefined') {
         canvas = new OffscreenCanvas(width, height);
     }else {
         // Fallback to regular HTML canvas element if OffscreenCanvas is not available
@@ -65,9 +65,11 @@ function generateFinalImageData(originalImageData, radius, object_url) {
         // Create an intermediate canvas to draw hexagon onto it
         const ctx = createCanvasWithFallback(
             originalImageData.width * CONSTANTS[3] - (Math.floor(originalImageData.width/2)*CONSTANTS[2]),// Hexagons are taking 1x Diameter less 1/2 radius of width
-            originalImageData.height * (CONSTANTS[3] * CONSTANTS[4]) + (originalImageData.width % 2 === 0 ? CONSTANTS[3]: CONSTANTS[2]) // Hexagons are taking a height that is computed differently
+            originalImageData.height * CONSTANTS[3] - (Math.floor(originalImageData.height/2)*CONSTANTS[2]) // Hexagons are taking a height that is computed differently
         );
         const canvas = ctx.canvas;
+
+        const ratio = Math.fround(canvas.height / (originalImageData.height * (CONSTANTS[3] * CONSTANTS[4]) + (originalImageData.width % 2 === 0 ? CONSTANTS[3]: CONSTANTS[2])));
 
         function getUint32(data, index) {
             "use strict";
@@ -98,12 +100,12 @@ function generateFinalImageData(originalImageData, radius, object_url) {
             ctx.fillStyle = color;
             ctx.beginPath();
             // Draw all intersections in a new path
-            ctx.lineTo(vari[1] + CONSTANTS[6], vari[2] + CONSTANTS[12]);
-            ctx.lineTo(vari[1] + CONSTANTS[7], vari[2] + CONSTANTS[13]);
-            ctx.lineTo(vari[1] + CONSTANTS[8], vari[2] + CONSTANTS[14]);
-            ctx.lineTo(vari[1] + CONSTANTS[9], vari[2] + CONSTANTS[15]);
-            ctx.lineTo(vari[1] + CONSTANTS[10], vari[2] + CONSTANTS[16]);
-            ctx.lineTo(vari[1] + CONSTANTS[11], vari[2] + CONSTANTS[17]);
+            ctx.lineTo(vari[1] + CONSTANTS[6], (vari[2] + CONSTANTS[12])*ratio);
+            ctx.lineTo(vari[1] + CONSTANTS[7], (vari[2] + CONSTANTS[13])*ratio);
+            ctx.lineTo(vari[1] + CONSTANTS[8], (vari[2] + CONSTANTS[14])*ratio);
+            ctx.lineTo(vari[1] + CONSTANTS[9], (vari[2] + CONSTANTS[15])*ratio);
+            ctx.lineTo(vari[1] + CONSTANTS[10], (vari[2] + CONSTANTS[16])*ratio);
+            ctx.lineTo(vari[1] + CONSTANTS[11], (vari[2] + CONSTANTS[17])*ratio);
             // Close the path and fill the area
             ctx.closePath(); ctx.stroke(); ctx.fill();
         }
@@ -138,23 +140,12 @@ function generateFinalImageData(originalImageData, radius, object_url) {
         // Paint our new image into our working canvas
         drawGrid(ctx, originalImageData.data, canvas.width, canvas.height, originalImageData.width, originalImageData.height);
 
-        // Paint the working canvas into a new one with a ratio that is not distorted
-        // Since hexagon are placed asymmetrically in columns and lines, we have to flatten the height a bit
-        const canvas2 = document.createElement("canvas");
-        canvas2.width = canvas.width; // The width doesn't change
-        // Yet we apply the same mathematical operation of the one used for the width yet for the height
-        canvas2.height = originalImageData.height * CONSTANTS[3] - (Math.floor(originalImageData.height/2)*CONSTANTS[2]);
-        const ctx2 = canvas2.getContext('2d');
-        //ctx2.imageSmoothingEnabled = false;
-
-        // Draw the image with a correct ratio
-        ctx2.drawImage(canvas, 0, 0, canvas.width, canvas.height, 0, 0, ctx2.canvas.width, ctx2.canvas.height);
         // Return the new image data
         if(!object_url){
-            resolve(ctx2.getImageData(0, 0, ctx2.canvas.width, ctx2.canvas.height))
+            resolve(ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height))
         }else {
 
-            createObjectURLFromCanvas(ctx2.canvas, resolve);
+            createObjectURLFromCanvas(ctx.canvas, resolve);
         }
 
     });

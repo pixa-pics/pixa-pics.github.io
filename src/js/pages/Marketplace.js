@@ -1112,16 +1112,10 @@ class Marketplace extends React.Component {
                                 }),
                                 // Tracing
                                 corsenabled : false,
-                                ltres : scale,
+                                ltres : scale/2,
                                 qtres : scale/2,
-                                pathomit : scale/2,
+                                pathomit : scale,
                                 rightangleenhance : false,
-
-                                // Color quantization
-                                colorsampling : 2,
-                                numberofcolors : 512,
-                                mincolorratio : 0,
-                                colorquantcycles : 1,
 
                                 // Layering method
                                 layering : 0,
@@ -1129,7 +1123,7 @@ class Marketplace extends React.Component {
                                 // SVG rendering
                                 strokewidth : Math.ceil(scale/2),
                                 linefilter : true,
-                                scale : 1,
+                                scale : 1.5,
                                 roundcoords : 2,
                                 viewbox : true,
                                 desc : false,
@@ -1142,9 +1136,23 @@ class Marketplace extends React.Component {
 
                             }, pool).then((svg_source) => {
 
-                                this.setState({src: "data:image/svg+xml;base64," + window.btoa(svg_source)}, () => {
-                                    this.forceUpdate();
-                                })
+                                JSLoader( () => import("svgo/dist/svgo.browser")).then(({optimize}) => {
+                                    svg_source = optimize(svg_source, {
+                                        // optional but recommended field
+                                        path: 'path-to.svg',
+                                        // all config fields are also available here
+                                        multipass: true,
+                                        mergePaths: true,
+                                        mergeStyles: true,
+                                        collapseGroups: true,
+                                        reusePaths: true,
+                                        plugin: ["multipass", "mergePaths", "collapseGroups", "reusePaths", "mergeStyles"],
+                                    }).data;
+
+                                    this.setState({src: "data:image/svg+xml;base64," + window.btoa(svg_source)}, () => {
+                                        this.forceUpdate();
+                                    });
+                                });
                             });
                         });
                     });
