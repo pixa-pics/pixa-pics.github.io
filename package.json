@@ -44,6 +44,7 @@
     "react-responsive-masonry": "^2.1.7",
     "react-swipeable-views": "~0.14.0",
     "readable-stream": "~4.5.2",
+    "vtracer-color": "~0.0.5",
     "regenerator-runtime": "~0.14.1",
     "simdope": "~7.8.5",
     "snappyjs": "~0.7.0",

@@ -67,6 +67,7 @@ import JSLoader from "../utils/JSLoader";
 import actions from "../actions/utils";
 import xbrz from "../utils/xBRZ";
 import HexagonThree from "../icons/HexagonThree";
+import {createSVG} from "../utils/vtracer";
 
 const styles = theme => ({
     root: {
@@ -1099,6 +1100,12 @@ class Marketplace extends React.Component {
 */
                 JSLoader( () => import("../utils/xBRZ")).then((obj) => {
                     obj.default(data, 6, pool).then((imageData) => {
+                        createSVG(imageData).then( (url) => {
+                            this.setState({src: url}, () => {
+                                this.forceUpdate();
+                            });
+                        });
+                        /*
                         JSLoader( () => import("../utils/image_tracer")).then(({image_tracer}) => {
                             var scale = 6;
                             image_tracer(imageData, {
@@ -1154,7 +1161,7 @@ class Marketplace extends React.Component {
                                     });
                                 });
                             });
-                        });
+                        });*/
                     });
                 });
         }
