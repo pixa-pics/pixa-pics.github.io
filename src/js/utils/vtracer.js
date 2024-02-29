@@ -10,14 +10,18 @@ function createSvgUrl(svgElementId) {
     }
 
     // Use XMLSerializer to serialize the SVG content to a string
+    svgElement.removeAttribute("style");
+    svgElement.removeAttribute("id");
     const serializer = new XMLSerializer();
     const svgString = serializer.serializeToString(svgElement);
-
     // Create a Blob from the SVG string
     const blob = new Blob([svgString], { type: 'image/svg+xml' });
 
     // Create and return an Object URL for the Blob
     const url = URL.createObjectURL(blob);
+
+    // Remove svg element
+    svgElement.remove();
     return url;
 }
 
@@ -85,7 +89,7 @@ function vectorizeImageWithVtracer(options, cb) {
     class ConverterRunner {
         constructor(cb) {
             // Initialize the converter with the provided parameters
-            this.converter = ColorImageConverter.new_with_string('{"canvas_id":"frame","svg_id":"svg","mode":"spline","clustering_mode":"color","hierarchical":"stacked","corner_threshold":1.0471975513333334,"length_threshold":4,"max_iterations":10,"splice_threshold":0.7853981635,"filter_speckle":16,"color_precision":0,"layer_difference":28,"path_precision":8}');
+            this.converter = ColorImageConverter.new_with_string('{"canvas_id":"frame","svg_id":"svg","mode":"spline","clustering_mode":"color","hierarchical":"stacked","corner_threshold":0.5,"length_threshold":5,"max_iterations":10,"splice_threshold":0.5,"filter_speckle":5,"color_precision":0,"layer_difference":5,"path_precision":5}');
             this.converter.init();
             this.stopped = false;
             this.callback = cb;

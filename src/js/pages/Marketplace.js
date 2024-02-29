@@ -765,6 +765,15 @@ class Marketplace extends React.Component {
             tabValue: 0,
             images: [
                 {
+                    src: "data:image/png;base64,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",
+                    name: "Space Business",
+                    money: <PixaCoin/>,
+                    price: 128,
+                    value: 64.21,
+                    sold: true,
+                    favorite: false,
+                },
+                {
                     src: "data:image/png;base64,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",
                     name: "Greece",
                     money: <PixaDollar/>,
@@ -1040,14 +1049,14 @@ class Marketplace extends React.Component {
             let third_canvas_ctx = third_canvas.getContext("2d");
             third_canvas_ctx.putImageData(second_image_data, 0, 0);
             let base64_out = third_canvas_ctx.canvas.toDataURL("image/png");
-            this.setState({src: base64_out}, () => {
+            this.setState({src: base64_out, type: "png"}, () => {
                 this.forceUpdate();
             })
         };
 
         switch (type) {
             case "pixelated":
-                this.setState({src: this.state.openedMediaData.src}, () => {
+                this.setState({src: this.state.openedMediaData.src, type: "png"}, () => {
                     this.forceUpdate();
                 })
                 break;
@@ -1059,7 +1068,7 @@ class Marketplace extends React.Component {
             case "hex":
                 JSLoader( () => import("../utils/hexagonrender")).then((obj) => {
                     obj.hexagonrender(data, 12, true).then((out) => {
-                        this.setState({src: out}, () => {
+                        this.setState({src: out, type: "png"}, () => {
                             this.forceUpdate();
                         })
                     });
@@ -1101,67 +1110,10 @@ class Marketplace extends React.Component {
                 JSLoader( () => import("../utils/xBRZ")).then((obj) => {
                     obj.default(data, 6, pool).then((imageData) => {
                         createSVG(imageData).then( (url) => {
-                            this.setState({src: url}, () => {
+                            this.setState({src: url, type: "svg"}, () => {
                                 this.forceUpdate();
                             });
                         });
-                        /*
-                        JSLoader( () => import("../utils/image_tracer")).then(({image_tracer}) => {
-                            var scale = 6;
-                            image_tracer(imageData, {
-                                // Palette
-                                pal: colors.map((c) => {
-                                    const r = parseInt(c.slice(1, 3), 16);
-                                    const g = parseInt(c.slice(3, 5), 16);
-                                    const b = parseInt(c.slice(5, 7), 16);
-                                    const a = parseInt(c.slice(7, 9), 16);
-                                    return {r, g, b, a};
-                                }),
-                                // Tracing
-                                corsenabled : false,
-                                ltres : scale/2,
-                                qtres : scale/2,
-                                pathomit : scale,
-                                rightangleenhance : false,
-
-                                // Layering method
-                                layering : 0,
-
-                                // SVG rendering
-                                strokewidth : Math.ceil(scale/2),
-                                linefilter : true,
-                                scale : 1.5,
-                                roundcoords : 2,
-                                viewbox : true,
-                                desc : false,
-                                lcpr : 0,
-                                qcpr : 0,
-
-                                // Blur
-                                blurradius : scale,
-                                blurdelta : scale*4
-
-                            }, pool).then((svg_source) => {
-
-                                JSLoader( () => import("svgo/dist/svgo.browser")).then(({optimize}) => {
-                                    svg_source = optimize(svg_source, {
-                                        // optional but recommended field
-                                        path: 'path-to.svg',
-                                        // all config fields are also available here
-                                        multipass: true,
-                                        mergePaths: true,
-                                        mergeStyles: true,
-                                        collapseGroups: true,
-                                        reusePaths: true,
-                                        plugin: ["multipass", "mergePaths", "collapseGroups", "reusePaths", "mergeStyles"],
-                                    }).data;
-
-                                    this.setState({src: "data:image/svg+xml;base64," + window.btoa(svg_source)}, () => {
-                                        this.forceUpdate();
-                                    });
-                                });
-                            });
-                        });*/
                     });
                 });
         }
@@ -1232,8 +1184,8 @@ class Marketplace extends React.Component {
     toggleDrawer = () => {
         this.setState({openedDrawer: !this.state.openedDrawer});
     }
-    download = (src, title, artist) => {
-        let ext = src.startsWith("data:image/jpeg") ? "jpeg": src.startsWith("data:image/svg+xml;base64,") ? "svg": "png";
+    download = (src, title, artist, type) => {
+        let ext = type || (src.startsWith("data:image/jpeg") ? "jpeg": src.startsWith("data:image/svg+xml;base64,") ? "svg": "png");
         let a = document.createElement("a"); //Create <a>
         a.download = `PIXAPICS-${title}-${artist}.${ext}`; //File name Here
         a.href = src;
@@ -1242,7 +1194,7 @@ class Marketplace extends React.Component {
     }
     render() {
 
-        const { classes, tabValue, images, isSpeedDialOpen, actions, history, openedMediaData, openedMediaDataData, _h_svg_size, _h_svg, src, openedDrawer } = this.state;
+        const { classes, tabValue, images, isSpeedDialOpen, actions, history, openedMediaData, openedMediaDataData, _h_svg_size, _h_svg, src, type, openedDrawer } = this.state;
 
         const {canvas_wrapper, device_pixel_ratio, scale, canvas_event_target} = this.canvas_pos.get_state();
         const screen_zoom_ratio = this.canvas_pos.get_screen_zoom_ratio();
@@ -1417,7 +1369,7 @@ class Marketplace extends React.Component {
                             <IconButton style={{color: "#ffffff"}} onClick={() => {this.renderMedia("hex", openedMediaDataData.data)}}><Icon><HexagonThree/></Icon></IconButton>
                         </div>
                         <div style={{position: "fixed", right: window.innerWidth > 800 ? 400: 14, top: 16}}>
-                            <IconButton style={{color: "#ffffff"}} onClick={() => {this.download(src, openedMediaData.name, "sophia.julio")}}><Icon><CloudDownload/></Icon></IconButton>
+                            <IconButton style={{color: "#ffffff"}} onClick={() => {this.download(src, openedMediaData.name, "sophia.julio", type)}}><Icon><CloudDownload/></Icon></IconButton>
                             <IconButton style={{color: "#ffffff"}} onClick={() => {this.edit(openedMediaData.src);}}><Icon><ImageEditIcon/></Icon></IconButton>
                             <IconButton style={{color: "#ffffff"}} onClick={() => {this.closeMediaCard();}}><Icon><CloseIcon/></Icon></IconButton>
                         </div>
