@@ -2391,14 +2391,14 @@ class Pixel extends React.PureComponent {
     _to_auto_medium_more_contrast = () => {
 
         const { auto_adjust_contrast } = this.st4te._canvas;
-        auto_adjust_contrast(1/3);
+        auto_adjust_contrast(1/5);
         actions.trigger_voice("enhanced");
     };
 
     _to_auto_medium_more_saturation = () => {
 
         const { auto_adjust_saturation } = this.st4te._canvas;
-        auto_adjust_saturation(1/3);
+        auto_adjust_saturation(1/5);
         actions.trigger_voice("enhanced");
     };
 

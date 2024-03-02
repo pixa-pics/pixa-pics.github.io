@@ -292,7 +292,6 @@ SuperBlend.prototype.blend = function(should_return_transparent, alpha_addition)
         indexes_data_for_layers
     } = this.state;
 
-    var dest = this.destination_rgba_colors_for_blending_;
     var dest_simdope = this.destination_rgba_colors_for_blending_SIMDope_;
     var dasd = this.data_array.map(function (d){return new Colors(d.data.buffer);});
     var dasdl = dasd.length||0;
@@ -331,7 +330,7 @@ SuperBlend.prototype.blend = function(should_return_transparent, alpha_addition)
                 }
             }
 
-            resolve();
+            resolve(Array.of(indexes_data_for_layers.subarray(0, used_colors_length)));
         }else {
             for (; uint_less(i | 0, used_colors_length); i = plus_uint(i, 1)) {
                 base_rgba_colors_for_blending_SIMDope.get_use_element(i | 0, layers_color_0);

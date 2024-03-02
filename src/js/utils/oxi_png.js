@@ -573,11 +573,11 @@ function b64toblob (b64_data, pool) {
     });
 }
 
+const READER = new FileReader();
 function blobToBase64(blob) {
     return new Promise((resolve, _) => {
-        const reader = new FileReader();
-        reader.onloadend = () => resolve(reader.result);
-        reader.readAsDataURL(blob);
+        READER.onloadend = () => resolve(READER.result);
+        READER.readAsDataURL(blob);
     });
 }
 
@@ -585,8 +585,6 @@ export function oxi_png(dataurl, level = 0, interlace = false, pool = null) {
 
     return new Promise(function(resolve, reject){
         init(CONST.BYTES).then(function (){
-            delete CONST.BYTES;
-            base92 = new Base92();
             b64toblob(dataurl, pool).then(function(blob){
                 blob.arrayBuffer().then(function(array_buffer){
                     resolve(

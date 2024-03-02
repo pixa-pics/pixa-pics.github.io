@@ -206,24 +206,24 @@ Object.defineProperty(Layer.prototype, 'populate_data', {
         "use strict";
         return function(data){
             "use strict";
-            if(typeof data === "undefined") {
+            if(typeof data == "undefined") {
 
                 this.uint32_pixel_color_ =  new Uint32Array(this.width_ * this.height_);
                 this.changes_ = new SetFixed(this.uint32_pixel_color_.length);
-                this.changes_.charge();
                 this.uint8c_pixel_color_ =  new Uint8ClampedArray(this.uint32_pixel_color_.buffer);
                 this.simdope_pixel_color_ =  new Colors(this.uint32_pixel_color_.buffer);
 
                 for(var i = 0, l = this.uint32_pixel_color_.length | 0; (i|0) < (l|0); i = (i + 1 | 0) >>> 0) {
-                    this.uint32_pixel_color_[(i|0)>>>0] = (this.colors[this.indexes[(i|0)>>>0]]|0) >>> 0;
+                    this.uint32_pixel_color_[i] = (this.colors[this.indexes[i]]|0) >>> 0;
                 }
+                this.changes_.charge();
 
             }else {
                 this.uint32_pixel_color_ = data instanceof Uint32Array ? data: Uint32Array.from(data);
                 this.changes_ = new SetFixed(this.uint32_pixel_color_.length);
-                this.changes_.charge();
                 this.uint8c_pixel_color_ =  new Uint8ClampedArray(this.uint32_pixel_color_.buffer);
                 this.simdope_pixel_color_ =  new Colors(this.uint32_pixel_color_.buffer);
+                this.changes_.charge();
             }
         }
     }
@@ -249,11 +249,11 @@ Object.defineProperty(Layer.prototype, 'populate_colors', {
         return function(colors){
             "use strict";
 
-            this.uint32_colors_ = colors instanceof Uint32Array ? colors: Uint32Array.from(colors);
+            this.uint32_colors_ = colors instanceof Uint32Array ? colors.slice(0, colors.length|0): Uint32Array.from(colors);
             this.uint32_colors_length_ = this.uint32_colors_.length;
             this.uint32_colors_map_ = {};
-            for(var i = 0; (i|0) < (this.uint32_colors_length_|0); i = i + 1 | 0){
-                this.uint32_colors_map_[this.uint32_colors_[i|0]] = (i|0) >>> 0;
+            for(var i = 0; (i|0) < (this.uint32_colors_length_|0); i = (i + 1 | 0) >>> 0){
+                this.uint32_colors_map_[this.uint32_colors_[i]] = i;
             }
         }
     }
@@ -288,7 +288,7 @@ Object.defineProperty(Layer.prototype, 'get_color_index', {
         "use strict";
         return function (uint32) {
             "use strict";
-            return this.uint32_colors_map_[(uint32 | 0) >>> 0] | 0;
+            return this.uint32_colors_map_[(uint32 | 0) >>> 0];
         }
     }
 });
@@ -578,7 +578,8 @@ Object.defineProperty(Layer.prototype, 'get_uint32', {
         "use strict";
         return function (index) {
             "use strict";
-            return (this.uint32_pixel_color_[(index|0)>>>0]|0)>>>0;
+            index = (index|0)>>>0;
+            return this.uint32_pixel_color_[index];
         }
     }
 });
@@ -589,18 +590,18 @@ Object.defineProperty(Layer.prototype, 'set_uint32', {
         return function (index, uint32){
             "use strict";
             index = (index | 0) >>> 0;
-            uint32 = (uint32 | 0) >>> 0;
+            uint32 = typeof uint32 == "undefined" ? this.uint32_pixel_color_[index]: (uint32 | 0) >>> 0;
 
             // Register change
-            this.changes_.add(index|0);
+            this.changes_.add(index);
 
             // Change the color within data
-            this.uint32_pixel_color_[index|0] = (uint32 | 0) >>> 0;
+            this.uint32_pixel_color_[index] = uint32;
 
             // Change the color within indexed color pixel matrix
-            if(this.has_color((uint32 | 0) >>> 0)){// Color already exist
+            if(this.has_color(uint32)){// Color already exist
                 // Edit the index of the color used by the pixel at a specific position
-                this.color_indexes_[index|0] = this.get_color_index((uint32 | 0) >>> 0);
+                this.color_indexes_[index] = this.get_color_index(uint32);
                 return false; // Didn't add a color
             }else {
                 // Increase the index capability (eventually)
@@ -615,9 +616,9 @@ Object.defineProperty(Layer.prototype, 'set_uint32', {
                 // Add more space to the colors array
                 var new_uint32_colors = new Uint32Array(this.uint32_colors_length_+1|0);
                     new_uint32_colors.set(this.uint32_colors_, 0);
-                    new_uint32_colors[(this.uint32_colors_length_|0) >>> 0] = (uint32|0) >>> 0;
+                    new_uint32_colors[(this.uint32_colors_length_|0) >>> 0] = uint32;
                 this.populate_colors(new_uint32_colors);
-                this.color_indexes_[index|0] = this.get_color_index((uint32 | 0) >>> 0);
+                this.color_indexes_[index] = this.get_color_index(uint32);
                 return true; // Added a color
             }
         }
@@ -631,15 +632,16 @@ Object.defineProperty(Layer.prototype, 'paint_uint32a', {
         "use strict";
         return function (pxl_indexes, color, opacity) {
             "use strict";
+            color = (color | 0) >>> 0;
             opacity = Math.round(parseFloat(opacity) * 255);
             let indexes_length = pxl_indexes.length|0;
 
             if(indexes_length > 0) {
 
-                let sd_color = Color.new_uint32((color | 0) >>> 0),  a = new Color(new ArrayBuffer(4)), i = 0;
+                let sd_color = Color.new_uint32(color),  a = new Color(new ArrayBuffer(4)), i = 0;
                 for (; (i | 0) < (indexes_length | 0); i = (i + 1 | 0) >>> 0) {
-                    this.simdope_pixel_color_.get_use_element(pxl_indexes[i | 0], a).blend_first_with(sd_color, 255, false, false);
-                    this.set_uint32(pxl_indexes[i | 0], this.uint32_pixel_color_[pxl_indexes[i | 0]]);
+                    this.simdope_pixel_color_.get_use_element(pxl_indexes[i], a).blend_first_with(sd_color, opacity, false, false);
+                    this.set_uint32(pxl_indexes[i]);
                 }
             }
         }

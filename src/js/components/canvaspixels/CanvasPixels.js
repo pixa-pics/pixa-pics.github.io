@@ -339,13 +339,9 @@ class CanvasPixels extends React.PureComponent {
 
         if(state.tool !== new_props.tool && !new_props.tool.includes("SELECT")) {
 
-            var state = this.super_state.get_state();
-            state._pxl_indexes_of_selection.clear()
-            this.super_state.set_state({_pxl_indexes_of_selection_drawn: state._pxl_indexes_of_selection}).then(() => {
-
-                this._request_force_update();
-                this._notify_is_something_selected();
-            });
+            this.super_state.get_state()._pxl_indexes_of_selection.clear();
+            this._request_force_update();
+            this._notify_is_something_selected();
         }
 
         let {hide_canvas_content, show_original_image_in_background, show_transparent_image_in_background, pencil_mirror_mode, tool, select_mode} = state;
@@ -1670,7 +1666,7 @@ class CanvasPixels extends React.PureComponent {
                     }));
                     new_current_state._layer_index = parseInt(_layer_index);
                     new_current_state._s_layers = Array.from(_s_layers.map(function (l){return Layer.new_from_colors_and_indexes(l.colors_copy, l.indexes_copy, parseInt(pxl_width), parseInt(pxl_height), true)}));
-                    new_current_state._pxl_indexes_of_selection = _pxl_indexes_of_selection.indexes;
+                    new_current_state._pxl_indexes_of_selection = _pxl_indexes_of_selection.export;
                     new_current_state._pencil_mirror_index = parseInt(_pencil_mirror_index);
 
                     this._notify_layers_and_compute_thumbnails_change(Object.assign({}, old_current_state), Object.assign({}, new_current_state), (layers, layer_index, layers_changed_state) => {
@@ -1760,7 +1756,7 @@ class CanvasPixels extends React.PureComponent {
 
             this.super_state.set_state({
                 _is_something_selected: Boolean(_pxl_indexes_of_selection.size),
-                _previous_pxl_indexes_of_selection: new SetFixed(_pxl_indexes_of_selection)
+                _previous_pxl_indexes_of_selection: SetFixed.import(_pxl_indexes_of_selection.export)
             }).then(() => {
 
                 if(this.props.onSomethingSelectedChange) {
@@ -1825,7 +1821,7 @@ class CanvasPixels extends React.PureComponent {
                             _original_image_index: parseInt(state._original_image_index),
                             pxl_width: parseInt(state.pxl_width),
                             pxl_height: parseInt(state.pxl_height),
-                            _pxl_indexes_of_selection: new SetFixed(state._pxl_indexes_of_selection),
+                            _pxl_indexes_of_selection: SetFixed.import(state._pxl_indexes_of_selection),
                             _s_layers: new Array(state._s_pxls.length).fill({}).map(function (o, i){return Layer.new_from_colors_and_indexes(state._s_pxl_colors[i], state._s_pxls[i], parseInt(state.pxl_width), parseInt(state.pxl_height), true)}),
                             _layers: Array.from(state._layers.map(function(l) {
                                 "use strict";
@@ -1847,8 +1843,6 @@ class CanvasPixels extends React.PureComponent {
                 js = null;
 
                 let sh = _json_state_history.state_history[_json_state_history.history_position-1];
-
-                console.log(sh)
                 this.super_state.set_state({
                     _id: sh._id.toString(),
                     pxl_width: parseInt(sh.pxl_width),
@@ -1867,7 +1861,7 @@ class CanvasPixels extends React.PureComponent {
                     })),
                     _layer_index: parseInt(sh._layer_index) || 0,
                     _s_layers: Array.from(sh._s_layers),
-                    _pxl_indexes_of_selection: new SetFixed(sh._pxl_indexes_of_selection),
+                    _pxl_indexes_of_selection: SetFixed.import(sh._pxl_indexes_of_selection),
                     _pencil_mirror_index: parseInt(sh._pencil_mirror_index),
                     _json_state_history: _json_state_history,
                     _pxls_hovered: -1,
@@ -1907,7 +1901,7 @@ class CanvasPixels extends React.PureComponent {
                             _original_image_index: parseInt(state._original_image_index),
                             pxl_width: parseInt(state.pxl_width),
                             pxl_height: parseInt(state.pxl_height),
-                            _pxl_indexes_of_selection: state._pxl_indexes_of_selection.indexes || state._pxl_indexes_of_selection,
+                            _pxl_indexes_of_selection: state._pxl_indexes_of_selection.export,
                             _s_pxls: Array.from(state._s_layers).map(function(l){return l.indexes_copy}),
                             _s_pxl_colors:  Array.from(state._s_layers).map(function(l){return l.colors_copy}),
                             _layers: Array.from(state._layers.map(function(l) {
@@ -1979,7 +1973,7 @@ class CanvasPixels extends React.PureComponent {
                     })),
                     _layer_index: parseInt(sh._layer_index),
                     _s_layers: Array.from(sh._s_layers.map(function (l){return Layer.new_from_colors_and_indexes(l.colors_copy, l.indexes_copy, parseInt(sh.pxl_width), parseInt(sh.pxl_height), true)})),
-                    _pxl_indexes_of_selection: new SetFixed(sh._pxl_indexes_of_selection),
+                    _pxl_indexes_of_selection: SetFixed.import(sh._pxl_indexes_of_selection),
                     _pencil_mirror_index: parseInt(sh._pencil_mirror_index),
                     _json_state_history: _json_state_history,
                     _last_action_timestamp: Date.now(),
@@ -2033,7 +2027,7 @@ class CanvasPixels extends React.PureComponent {
                     })),
                     _layer_index: parseInt(sh._layer_index),
                     _s_layers: Array.from(sh._s_layers.map(function (l){return Layer.new_from_colors_and_indexes(l.colors_copy, l.indexes_copy, parseInt(sh.pxl_width), parseInt(sh.pxl_height), true)})),
-                    _pxl_indexes_of_selection: new SetFixed(sh._pxl_indexes_of_selection),
+                    _pxl_indexes_of_selection: SetFixed.import(sh._pxl_indexes_of_selection),
                     _pencil_mirror_index: parseInt(sh._pencil_mirror_index),
                     _json_state_history: _json_state_history,
                     _last_action_timestamp: Date.now(),
@@ -2471,14 +2465,9 @@ class CanvasPixels extends React.PureComponent {
 
     to_selection_none = () => {
 
-        let _pxl_indexes_of_selection = this.super_state.get_state()._pxl_indexes_of_selection;
-        _pxl_indexes_of_selection.clear();
-
-        this.super_state.set_state({_pxl_indexes_of_selection}).then(() => {
-
-            this._notify_is_something_selected();
-            this.super_master_meta.update_canvas();
-        });
+        this.super_state.get_state()._pxl_indexes_of_selection.clear();
+        this._notify_is_something_selected();
+        this.super_master_meta.update_canvas();
     };
 
     confirm_import = () => {
@@ -2872,7 +2861,7 @@ class CanvasPixels extends React.PureComponent {
 
         const { _layer_index, _s_layers } = this.super_state.get_state();
 
-        var result = this._pxl_adjust_contrast(_s_layers[_layer_index].indexes, _s_layers[_layer_index].colors, intensity);
+        var result = this._pxl_adjust_contrast(_s_layers[_layer_index].indexes_copy, _s_layers[_layer_index].colors_copy, intensity);
         _s_layers[_layer_index].set_colors_and_indexes(result[1], result[0]);
 
         this.super_state.set_state({_s_layers, _last_action_timestamp: Date.now()}).then(() => this.super_master_meta.update_canvas(true));
@@ -2882,7 +2871,7 @@ class CanvasPixels extends React.PureComponent {
 
         const { _s_layers, _layer_index } = this.super_state.get_state();
 
-        var result =  this._pxl_adjust_saturation(_s_layers[_layer_index].indexes, _s_layers[_layer_index].colors, intensity);
+        var result =  this._pxl_adjust_saturation(_s_layers[_layer_index].indexes_copy, _s_layers[_layer_index].colors_copy, intensity);
         _s_layers[_layer_index].set_colors_and_indexes(result[1], result[0]);
 
         this.super_state.set_state({_s_layers, _last_action_timestamp: Date.now()}).then(() => this.super_master_meta.update_canvas(true));
@@ -2896,7 +2885,7 @@ class CanvasPixels extends React.PureComponent {
         intensity = Math.round(parseFloat(intensity) * 255) | 0;
         let saturation = 0;
         let color;
-        let colors = Colors(pxl_colors);
+        let colors = new Colors(pxl_colors);
         let length = colors.length;
         let hsla;
 

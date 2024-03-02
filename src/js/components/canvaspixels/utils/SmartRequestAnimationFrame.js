@@ -80,8 +80,8 @@ const SmartRequestAnimationFrame = {
                             "use strict";
                             window._sraf_state[state_id].cpaf_frames++;
                             if(id === window._sraf_state[state_id].caf_id[type]) { window._sraf_state[state_id].caf_id = null;}
-                            resolve();
-                        }).catch(reject);
+                            return Promise.resolve();
+                        }).then(resolve).catch(reject);
                     }
 
                     if(requested_at_t < (window._sraf_state[state_id].lasts_raf_time[type]|0)) {

@@ -628,7 +628,7 @@ var QuantiMatGlobal = function(
         var result = QuantiMat({
             pxls: pxls,
             pxl_colors,
-            number_of_color: number_of_color === "auto" ? original_color_n/1.618|0: (parseFloat(number_of_color) < 1) ? original_color_n-5: number_of_color,
+            number_of_color: number_of_color === "auto" ? original_color_n/1.314|0: (parseFloat(number_of_color) < 1) ? original_color_n-Math.ceil(original_color_n/25): number_of_color,
             width: image_data.width,
             height: image_data.height
         }).init().run().output("split");
