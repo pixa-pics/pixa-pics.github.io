@@ -142,7 +142,7 @@ function generateFinalImageData(originalImageData, radius, object_url) {
 
         // Return the new image data
         if(!object_url){
-            resolve(ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height))
+            resolve(ctx.canvas.toDataURL("image/png"))
         }else {
 
             createObjectURLFromCanvas(ctx.canvas, resolve);

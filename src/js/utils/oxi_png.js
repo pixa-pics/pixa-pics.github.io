@@ -554,18 +554,21 @@ async function init(bytes) {
             throw new Error(getStringFromWasm0(arg0, arg1));
         };
 
-        const {instance, module} = await load(bytes, imports);
+        if(!init.__wbindgen_wasm_module){
 
-        CONST.WASM = instance.exports;
-        init.__wbindgen_wasm_module = module;
+            const {instance, module} = await load(bytes, imports);
+
+            CONST.WASM = instance.exports;
+            init.__wbindgen_wasm_module = module;
+        }
 
         return CONST.WASM;
     }
 }
 
-function b64toblob (b64_data, pool) {
+function urltoblob (url) {
     return new Promise(function(resolve, reject){
-        fetch(b64_data).then(function(response){
+        fetch(url).then(function(response){
             response.blob().then(function(blob){
                 resolve(blob);
             }).catch(reject);
@@ -574,27 +577,31 @@ function b64toblob (b64_data, pool) {
 }
 
 const READER = new FileReader();
-function blobToBase64(blob) {
+function blobToUrl(blob, useB64) {
     return new Promise((resolve, _) => {
-        READER.onloadend = () => resolve(READER.result);
-        READER.readAsDataURL(blob);
+        if(useB64) {
+            READER.onloadend = () => resolve(READER.result);
+            READER.readAsDataURL(blob);
+        }else {
+            resolve(URL.createObjectURL(blob))
+        }
     });
 }
 
-export function oxi_png(dataurl, level = 0, interlace = false, pool = null) {
+export function oxi_png(dataurl, level = 0, interlace = false, useBlob = false) {
 
     return new Promise(function(resolve, reject){
         init(CONST.BYTES).then(function (){
-            b64toblob(dataurl, pool).then(function(blob){
+            urltoblob(dataurl).then(function(blob){
                 blob.arrayBuffer().then(function(array_buffer){
                     resolve(
-                        blobToBase64(new Blob([
+                        blobToUrl(new Blob([
                             optimise(
                                 new Uint8Array(array_buffer),
                                 level,
                                 interlace
                             )
-                        ],{type: "image/png"}))
+                        ],{type: "image/png"}), !useBlob)
                     );
                 }).catch(reject);
             }).catch(reject);
