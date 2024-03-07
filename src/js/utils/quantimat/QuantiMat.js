@@ -600,6 +600,23 @@ QuantiMat.prototype.run =  function() {
     return this;
 };
 
+QuantiMat.split_image_data = function (image_data) {
+    var image_data_uint32 = new Uint32Array(image_data.data.buffer);
+    var pxl_colors = Uint32Array.from(new Set(image_data_uint32));
+    var pxl_colors_map = {};
+    var original_color_n = pxl_colors.length;
+    var pxls = new Uint32Array(image_data_uint32.length);
+
+    for(var i = 0, l = original_color_n|0; (i|0) < (l|0); i = (i+1|0)>>>0) {
+        pxl_colors_map[pxl_colors[i|0]] = (i | 0) >>> 0;
+    }
+
+    for(var i = 0, l = image_data_uint32.length|0; (i|0) < (l|0); i = (i+1|0)>>>0) {
+        pxls[i|0] = (pxl_colors_map[image_data_uint32[i|0]] | 0) >>> 0;
+    }
+
+    return [pxls, pxl_colors, image_data_uint32, original_color_n];
+}
 
 var QuantiMatGlobal = function(
     image_data,
@@ -609,21 +626,7 @@ var QuantiMatGlobal = function(
     return new Promise(function(resolve){
         "use strict";
 
-        var image_data_uint32 = new Uint32Array(image_data.data.buffer);
-        var color_index = 1;
-        var pxl_colors = Uint32Array.from(new Set(image_data_uint32));
-        var pxl_colors_map = {};
-        var original_color_n = pxl_colors.length;
-        var pxls = new Uint32Array(image_data_uint32.length);
-
-        for(var i = 0, l = original_color_n|0; (i|0) < (l|0); i = (i+1|0)>>>0) {
-            pxl_colors_map[pxl_colors[i|0]] = (i | 0) >>> 0;
-        }
-
-        for(var i = 0, l = image_data_uint32.length|0; (i|0) < (l|0); i = (i+1|0)>>>0) {
-            pxls[i|0] = (pxl_colors_map[image_data_uint32[i|0]] | 0) >>> 0;
-        }
-
+        const [pxls, pxl_colors, image_data_uint32, original_color_n] = QuantiMat.split_image_data(image_data);
         var t1 = Date.now();
         var result = QuantiMat({
             pxls: pxls,
@@ -634,12 +637,9 @@ var QuantiMatGlobal = function(
         }).init().run().output("split");
         var t2 = Date.now();
 
-        console.log(result[2]);
         var res_pxls = result[0];
         var res_pxl_length = res_pxls.length|0;
-        var res_pxl_size = res_pxls.length-1|0;
         var res_pxl_colors = result[1];
-
         for(var i = 0; (i|0) < (res_pxl_length|0); i = (i+1|0)>>>0) {
             image_data_uint32[i|0] = (res_pxl_colors[(res_pxls[i|0]|0) >>> 0] | 0) >>> 0;
         }

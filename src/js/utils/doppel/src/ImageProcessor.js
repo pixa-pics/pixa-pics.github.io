@@ -41,7 +41,7 @@ export default class ImageProcessor {
         const {colorNumber, colorNumberCertainty, colorData} = this.imageManager.computePaletteData(8, 48);
 
         if(colorNumberCertainty >= 0.25) {
-            this.options.quantizeStrength = colorNumber;
+            this.options.quantizeStrength = colorNumber*1.5;
         }
 
         const {tileSize, certainty} = this.imageManager.analyzeImageForTileSize(colorData);

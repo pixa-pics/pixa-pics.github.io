@@ -1,6 +1,7 @@
 import Pixel from "./Pixel";
 import ColorAnalysis from "./ColorAnalysis";
 import { SetFixed } from "@asaitama/boolean-array";
+import { QuantiMat } from "../../quantimat/QuantiMat";
 
 export default class ImageManager {
     constructor(contextSource) {
@@ -43,26 +44,52 @@ export default class ImageManager {
         // Update centroids
         for (let i = 0; i < k; i++) {
             if (count[i] === 0) continue; // Avoid division by zero
-            const rAvg = sum[i * 4] / count[i];
-            const gAvg = sum[i * 4 + 1] / count[i];
-            const bAvg = sum[i * 4 + 2] / count[i];
-            const aAvg = sum[i * 4 + 3] / count[i];
+            const rAvg = sum[i * 4] / count[i] | 0;
+            const gAvg = sum[i * 4 + 1] / count[i] | 0;
+            const bAvg = sum[i * 4 + 2] / count[i] | 0;
+            const aAvg = sum[i * 4 + 3] / count[i] | 0;
             centroids[i] = ((rAvg << 24) | (gAvg << 16) | (bAvg << 8) | (aAvg << 0)) >>> 0; // Assuming alpha is always 255
         }
 
         return count;
     }
-    static reassignCentroids(pixels, count, centroids) {
+    static findFarthestPixelIdFromCentroids(pixels, centroids) {
+        let maxDist = 0;
+        let farthestPixelIdColor = 0;
+        pixels.forEach((pixel) => {
+            let minDistToPoint = Number.MAX_VALUE;
+            centroids.forEach(centroid => {
+                const dist = ImageManager.colorDifference(pixel, centroid);
+                if (dist < minDistToPoint) {
+                    minDistToPoint = dist;
+                }
+            });
+            if (minDistToPoint > maxDist) {
+                maxDist = minDistToPoint;
+                farthestPixelIdColor = (pixel|0) >>> 0;
+            }
+        });
+        return farthestPixelIdColor;
+    }
+    static reassignCentroids(pixels, count, centroids, colors) {
 
         for(var i = 0; i < count.length; i++) {
             if(count[i] === 0) {
-                const randIndex = Math.floor(Math.random() * pixels.length);
-                centroids[i] = pixels[randIndex];
+                centroids[i] = colors[i] || pixels[Math.floor(Math.random() * pixels.length)];;
             }
         }
     }
     static quantizeImageData(ctx, numberOfColors) {
         const imageData = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
+        const [pxls, pxl_colors] = QuantiMat.split_image_data(imageData);
+        const result = QuantiMat({
+            pxls,
+            pxl_colors,
+            number_of_color: numberOfColors,
+            width: imageData.width,
+            height: imageData.height
+        }).init().run().output("split");
+        const colors = result[1];
         const pixels = new Uint32Array(imageData.data.buffer);
         const centroids = new Uint32Array(numberOfColors);
         let clusterAssignments = new Uint8Array(pixels.length);
@@ -73,7 +100,7 @@ export default class ImageManager {
 
         while (!hasConverged && iteration < maxIterations) {
 
-            ImageManager.reassignCentroids(pixels, count, centroids, numberOfColors);
+            ImageManager.reassignCentroids(pixels, count, centroids, numberOfColors, colors);
 
             hasConverged = true;
             // Assign pixels to the nearest centroid
@@ -100,7 +127,7 @@ export default class ImageManager {
         imageData.data.set(new Uint8ClampedArray(pixels.buffer))
 
         return {
-            imageData: imageData,
+            imageData,
             clusterAssignments,
             centroids
         };
@@ -268,7 +295,7 @@ export default class ImageManager {
             if (entries.length > 0) {
                 let n = 0;
                 let tileSize = entries[n++].length;
-                while(tileSize <= 4 || tileSize >= 16){
+                while(tileSize <= 5 || tileSize >= 16){
                     tileSize = entries[n++].length;
                 }
                 const totalCount = entries.reduce((acc, entry) => acc + entry.count, 0);
