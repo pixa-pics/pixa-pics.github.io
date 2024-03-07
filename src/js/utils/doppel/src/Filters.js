@@ -6,7 +6,7 @@ export default class Filters {
     constructor(options, tilesManager, threshold, width, height) {
         this.mergeFilter = new MergeFilter(threshold * options.mergeStrength, tilesManager, width, height);
         this.despeckleFilter = new DespeckleFilter(threshold * options.despeckleStrength, tilesManager, width, height);
-        this.quantizeFilter = new QuantizeFilter(threshold * options.quantizeStrength, tilesManager, width, height);
+        this.quantizeFilter = new QuantizeFilter(options.quantizeStrength, tilesManager, width, height);
     }
 
     applyFilters() {

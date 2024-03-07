@@ -1,3 +1,4 @@
+import ImageManager from "./ImageManager";
 import TileManager from "./TileManager";
 import Filters from "./Filters";
 import ImageUtils from "./ImageUtils";
@@ -27,16 +28,34 @@ export default class ImageProcessor {
         };
     }
 
-    updateTilesManager() {
+    updateManager() {
         "use strict";
-        this.tilesManager = new TileManager(this.context, this.targetContext, this.targetImageData, this.sizes);
+        this.imageManager = new ImageManager(this.context);
     }
     updateFilters(threshold) {
         "use strict";
         this.filters = new Filters(this.options, this.tilesManager, threshold, this.finalWidth, this.finalHeight);
     }
-    initializeTiles() {
+    computeSmartParameters(){
         "use strict";
+        const {colorNumber, colorNumberCertainty, colorData} = this.imageManager.computePaletteData(8, 48);
+
+        if(colorNumberCertainty >= 0.25) {
+            this.options.quantizeStrength = colorNumber;
+        }
+
+        const {tileSize, certainty} = this.imageManager.analyzeImageForTileSize(colorData);
+        const targetTileSize = Math.sqrt(this.tileWidth*this.tileHeight);
+        const factor = 2.0;
+
+        if(((tileSize * factor) > targetTileSize) && (tileSize < (targetTileSize*factor))) {
+            console.log("changeFinalCanvasParameters: "+(this.canvas.width / tileSize|0)+"/"+ (this.canvas.height / tileSize|0))
+            this.changeFinalCanvasParameters(this.canvas.width / tileSize|0, this.canvas.height / tileSize|0)
+        }
+    }
+    updateTiles() {
+        "use strict";
+        this.tilesManager = new TileManager(this.context, this.targetContext, this.targetImageData, this.sizes);
         this.tilesManager.createTiles();
         this.tilesManager.computeTiles();
     }
@@ -63,7 +82,24 @@ export default class ImageProcessor {
         this.targetCanvas = resultSecondaryCanvas.canvas;
         this.targetContext = resultSecondaryCanvas.context;
 
-        this.targetImageData = new ImageData(width, height);
+        this.targetImageData = this.targetContext.getImageData(0, 0, width, height);
+
+        this.finalWidth = width;
+        this.finalHeight = height;
+        this.tileWidth = Math.fround(this.canvas.width / this.targetCanvas.width);
+        this.tileHeight = Math.fround(this.canvas.height / this.targetCanvas.height);
+    }
+
+    changeFinalCanvasParameters(width, height) {
+
+        width = (width|0) || 1;
+        height = (height|0) || 1;
+
+        const resultSecondaryCanvas = ImageUtils.initializeCanvas(undefined, width, height);
+        this.targetCanvas = resultSecondaryCanvas.canvas;
+        this.targetContext = resultSecondaryCanvas.context;
+
+        this.targetImageData = this.targetContext.getImageData(0, 0, width, height);
 
         this.finalWidth = width;
         this.finalHeight = height;
@@ -86,7 +122,7 @@ export default class ImageProcessor {
         }
         const mean = colorDifferences.reduce((a, b) => a + b, 0) / colorDifferences.length;
         const stdDev = Math.sqrt(colorDifferences.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / colorDifferences.length);
-        return (mean + stdDev) / 10; // Example of dynamic threshold
+        return (mean + stdDev) / 25; // Example of dynamic threshold
     }
 
     processImage(image, width, height) {
@@ -95,9 +131,10 @@ export default class ImageProcessor {
         this.setCanvas(width, height, image);
         if(image.width <= width && image.height <= height){ return this.context; }
         const t2 = Date.now();
-        this.updateTilesManager();
+        this.updateManager();
+        this.computeSmartParameters();
         const t3 = Date.now();
-        this.initializeTiles();
+        this.updateTiles();
         const t4 = Date.now();
         this.updateFilters(this.updateThreshold());
         const t5 = Date.now();

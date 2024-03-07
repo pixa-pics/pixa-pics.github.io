@@ -41,14 +41,15 @@ export default class KMeans {
 
     // Step 3: Update centroids and handle empty clusters
     updateCentroids() {
-        let sums = Array.from({ length: this.k }, () => new Uint32Array(this.data[0].length).fill(0));
-        let counts = new Uint32Array(this.k).fill(0);
+        let sums = Array.from({ length: this.k }, () => new Uint32Array(this.data[0].length));
+        let counts = new Uint32Array(this.k);
 
         this.data.forEach((point, idx) => {
             const clusterIdx = this.clusters[idx];
             sums[clusterIdx] = sums[clusterIdx].map((sum, i) => sum + point[i]);
             counts[clusterIdx]++;
         });
+        return counts;
     }
 
     // Find the farthest point from any centroid
@@ -75,19 +76,31 @@ export default class KMeans {
     distance(point1, point2) {
         let c1 = new Color(point1);
         let c2 = new Color(point2);
-        return c1.cie76_match_with(c2) * 4096;
+        return c1.cie76_match_with(c2) * 16192;
     }
+    reassignCentroids(counts) {
 
+        for(var i = 0; i < counts.length; i++) {
+            if(counts[i] === 0) {
+                this.centroids[i] = this.findFarthestPointFromCentroids();
+            }
+        }
+    }
     // Run the KMeans algorithm with maxIterations
-    run(maxIterations = 16) {
+    run(maxIterations = 16, reassign = false) {
         this.initializeCentroids();
         let iterations = 0;
         let hasConverged = false;
+        let counts;
 
         while (!hasConverged && iterations < maxIterations) {
             const oldCentroids = this.centroids.map(centroid => Uint32Array.from(centroid));
+
             this.assignClusters();
-            this.updateCentroids();
+            counts = this.updateCentroids();
+            if(reassign){
+                this.reassignCentroids(counts)
+            }
             iterations++;
 
             hasConverged = this.centroids.every((centroid, idx) => {

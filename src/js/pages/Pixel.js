@@ -1876,16 +1876,16 @@ class Pixel extends React.PureComponent {
             const resize_original_to = parseInt(max_original_size * max_original_size);
             const resize_to_before = Math.min(parseInt(max_size * max_size), Math.max(parseInt(_import_size * _import_size), parseInt(min_size * min_size)));
             const resize_to_finally = Math.min(parseInt(max_size * max_size), parseInt(_import_size * _import_size));
-            let scale = 1;
+            let scale = 1.0;
 
             this._handle_load("image_preload");
             actions.trigger_voice("data_upload");
             file_to_imagedata_resized(smart_file, resize_original_to, (imagedata) => {
                 imagedata_to_base64(imagedata, mimetype, (base64_resized) => {
-                    while (Math.round(imagedata.naturalWidth * scale) * Math.round(imagedata.naturalHeight * scale) > resize_to_finally) { scale -= 0.01; }
+                    while ((Math.round(imagedata.width * scale) * Math.round(imagedata.height * scale)) > resize_to_finally) { scale -= 0.01; }
                     base64_sanitize(base64_resized,  (b64b) => {
                         base64_to_bitmap(b64b,  (imgbmp) => {
-                            bitmap_to_imagedata(imgbmp, resize_to_finally,  (imagedata2) => {
+                            bitmap_to_imagedata(imgbmp, imgbmp.width*imgbmp.height|0,  (imagedata2) => {
                                 JSLoader(() => import("../utils/quantimat/QuantiMat")).then(({QuantiMatGlobal}) => {
                                     QuantiMatGlobal(imagedata2, 255).then(([imagedata3, a, b, color_removed_n, resulting_color_n, time_ms]) => {
                                         imagedata_to_base64(imagedata3, "image/png", (base64) => {
@@ -1907,7 +1907,7 @@ class Pixel extends React.PureComponent {
                                 });
                             }, pool)
                         }, pool);
-                    }, pool, scale, "doppel");
+                    }, null, scale, "doppel");
                 }, pool);
             }, pool);
         }

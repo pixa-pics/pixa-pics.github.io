@@ -1,5 +1,4 @@
-import JSLoader from "./JSLoader";
-import {scaler} from "./test/doppel";
+import {scaler, ImageProcessor} from "./doppel/index";
 const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
 const AFunction = Object.getPrototypeOf( function(){}).constructor;
 
@@ -103,21 +102,22 @@ window.base64_sanitize_process_function = function (base64, scale, resizer) {
         var img = new Image();
         var is_png = base64.startsWith("data:image/png;");
         img.onload = function() {
-    
-           var canvas;
-           try {
+
+
            
-                let width = (img.naturalWidth || img.width) * scale;
-                let height = (img.naturalHeight || img.height) * scale;
-                let imgd = imgToImgD(img, width, height, resizer).getImageData(0, 0, width, height);
-                
+            let width1 = (img.width || img.naturalWidth) * scale;
+            let height1 = (img.height || img.naturalHeight) * scale;
+            let ctx1 = imgToImgD(img, width1|0, height1|0, resizer);
+
+            try {
+                let imgd = ctx1.getImageData(0, 0, ctx1.canvas.width, ctx1.canvas.height);
                 createImageBitmap(imgd).then(function(bmp){
                 
                     var canvas;
                         canvas = new OffscreenCanvas(bmp.width, bmp.height);
-                    var ctx = canvas.getContext("bitmaprenderer");
-                        ctx.imageSmoothingEnabled = false;
-                        ctx.transferFromImageBitmap(bmp);
+                    var ctx2 = canvas.getContext("bitmaprenderer");
+                        ctx2.imageSmoothingEnabled = false;
+                        ctx2.transferFromImageBitmap(bmp);
                     
                     canvas.convertToBlob({type: is_png ? "image/png": "image/jpeg"}).then(function(blb) {
                         
@@ -132,9 +132,8 @@ window.base64_sanitize_process_function = function (base64, scale, resizer) {
                 });
                 
             } catch(e){
-                let width = (img.naturalWidth || img.width) * scale;
-                let height = (img.naturalHeight || img.height) * scale;
-                let canvas = imgToImgD(img, width, height, resizer).canvas;
+
+                let canvas = ctx1.canvas;
                 resolve(canvas.toDataURL(is_png ? "image/png": "image/jpeg")); 
             }
         };

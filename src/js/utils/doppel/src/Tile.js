@@ -6,7 +6,7 @@ export default class Tile {
         this.imageData = imageData;
         this.meanColor = new Pixel(colorUint8a);
         this.coordinates = Uint16Array.of(x, y);
-        this.k = this.imageData.width >= 4 ? 5: this.imageData.width >= 2 ? 3: 2;
+        this.k = this.imageData.width >= 4 ? 6: this.imageData.width >= 2 ? 4: 2;
     }
     get x(){
         return this.coordinates[0];
@@ -24,11 +24,10 @@ export default class Tile {
     }
     quantizeColors(k) {
         "use strict";
-        k = k || Math.ceil(Math.sqrt(this.imageData.data.length));
         const data = this.imageData.data;
         const colors = this.extractColorData(data);
         const colorsArray = colors.map(function (c){return c.rgba; });
-        return new KMeans(colorsArray, this.k).run(this.k*this.k);
+        return new KMeans(colorsArray, this.k).run(4, true);
     }
 
     calculateMeanColor() {
