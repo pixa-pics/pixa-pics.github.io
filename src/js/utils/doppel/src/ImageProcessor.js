@@ -27,21 +27,18 @@ export default class ImageProcessor {
             overlapFactor: this.options.overlapFactor
         };
     }
-
-    updateManager() {
-        "use strict";
-        this.imageManager = new ImageManager(this.context);
-    }
     updateFilters(threshold) {
         "use strict";
         this.filters = new Filters(this.options, this.tilesManager, threshold, this.finalWidth, this.finalHeight);
     }
     computeSmartParameters(){
         "use strict";
-        const {colorNumber, colorNumberCertainty, colorData} = this.imageManager.computePaletteData(8, 48);
+        this.imageManager = new ImageManager(this.context);
 
+        const {colorNumber, colorNumberCertainty, colorData} = this.imageManager.computePaletteData();
+        console.log(colorNumber, colorNumberCertainty, colorData)
         if(colorNumberCertainty >= 0.25) {
-            this.options.quantizeStrength = colorNumber*1.5;
+            this.options.quantizeStrength = colorNumber;
         }
 
         const {tileSize, certainty} = this.imageManager.analyzeImageForTileSize(colorData);
@@ -131,7 +128,6 @@ export default class ImageProcessor {
         this.setCanvas(width, height, image);
         if(image.width <= width && image.height <= height){ return this.context; }
         const t2 = Date.now();
-        this.updateManager();
         this.computeSmartParameters();
         const t3 = Date.now();
         this.updateTiles();

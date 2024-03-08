@@ -1,5 +1,4 @@
 import Tile from "./Tile";
-import ColorAnalysis from "./ColorAnalysis";
 
 export default class TileManager {
     constructor(contextSource, contextDestination, imageData, sizes) {
@@ -19,25 +18,6 @@ export default class TileManager {
         this.tilePaddingWidth = (this.extendedTileWidth - this.tileWidth) / 2 | 0;
         this.tilePaddingHeight = (this.extendedTileHeight - this.tileHeight) / 2 | 0;
     }
-    static getTilesGroup(tiles, threshold) {
-        "use strict";
-        const group = [];
-        tiles.forEach((tile) => {
-            let foundGroup = false;
-            group.forEach((group) => {
-                if(ColorAnalysis.colorDifference(tile.meanColor, group[0].meanColor) < threshold){
-                    group.push(tile);
-                    foundGroup = true;
-                }
-            });
-            if(!foundGroup){
-                group.push([tile]);
-            }
-        });
-
-        group.sort((g1, g2) => g2.length-g1.length);
-        return group;
-    }
     getTiles(){
         "use strict";
         return this.tiles;
@@ -45,8 +25,8 @@ export default class TileManager {
     extractTileData(x, y){
         "use strict";
         // Adjust x and y to keep tiles centered with the new size
-        const newX = Math.imul(x, this.tileWidth) - this.tilePaddingWidth | 0;
-        const newY = Math.imul(y, this.tileHeight) - this.tilePaddingHeight | 0;
+        const newX = (x * this.tileWidth) - this.tilePaddingWidth | 0;
+        const newY = (y * this.tileHeight) - this.tilePaddingHeight | 0;
         return this.contextSource.getImageData(newX|0, newY|0, this.extendedTileWidth|0, this.extendedTileHeight|0);
     }
     createTiles() {

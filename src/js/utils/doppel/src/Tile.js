@@ -18,7 +18,7 @@ export default class Tile {
         "use strict";
         let colors = new Array(data.length/4);
         for (let i = 0; i < data.length; i += 4) {
-            colors[i/4] = new Pixel(data.subarray(i, i+4));
+            colors[i/4] = data.subarray(i, i+4);
         }
         return colors;
     }
@@ -26,13 +26,12 @@ export default class Tile {
         "use strict";
         const data = this.imageData.data;
         const colors = this.extractColorData(data);
-        const colorsArray = colors.map(function (c){return c.rgba; });
-        return new KMeans(colorsArray, this.k).run(4, true);
+        return new KMeans(colors, k).run(k);
     }
 
     calculateMeanColor() {
         "use strict";
-        const quantizedResult = this.quantizeColors();
+        const quantizedResult = this.quantizeColors(3);
         const rgba = quantizedResult.centroidsSorted[0].data;
         this.meanColor.setRGBA(rgba);
     }

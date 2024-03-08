@@ -1549,18 +1549,24 @@ class Pixel extends React.PureComponent {
 
         this.st4te._canvas.redo()
     }
-    _backup_state = () => {
-        try {
-            const { export_state, set_png_compressors } = this.st4te._canvas;
-            JSLoader( () => import("../utils/png_quant")).then(({png_quant}) => {
-                JSLoader(() => import("../utils/oxi_png")).then(({oxi_png}) => {
-                    set_png_compressors(png_quant, oxi_png);
-                    export_state();
-                });
+
+    _set_png_compressors = () => {
+        const { set_png_compressors } = this.st4te._canvas;
+        JSLoader( () => import("../utils/png_quant")).then(({png_quant}) => {
+            JSLoader(() => import("../utils/oxi_png")).then(({oxi_png}) => {
+                set_png_compressors(png_quant, oxi_png);
             });
-        } catch(e) {
-            this._request_force_update().finally(() => {this._backup_state()})
-        }
+        });
+    };
+
+    _backup_state = () => {
+        const { export_state, set_png_compressors } = this.st4te._canvas;
+        JSLoader( () => import("../utils/png_quant")).then(({png_quant}) => {
+            JSLoader(() => import("../utils/oxi_png")).then(({oxi_png}) => {
+                set_png_compressors(png_quant, oxi_png);
+                export_state();
+            });
+        });
     };
 
     _download_image = (size) => {
@@ -1886,25 +1892,21 @@ class Pixel extends React.PureComponent {
                     base64_sanitize(base64_resized,  (b64b) => {
                         base64_to_bitmap(b64b,  (imgbmp) => {
                             bitmap_to_imagedata(imgbmp, imgbmp.width*imgbmp.height|0,  (imagedata2) => {
-                                JSLoader(() => import("../utils/quantimat/QuantiMat")).then(({QuantiMatGlobal}) => {
-                                    QuantiMatGlobal(imagedata2, 255).then(([imagedata3, a, b, color_removed_n, resulting_color_n, time_ms]) => {
-                                        imagedata_to_base64(imagedata3, "image/png", (base64) => {
-                                            let img = new Image();
-                                            img.addEventListener("load", () => {
-                                                this._handle_load_complete("image_preload", {});
-                                                this.setSt4te({_kb: 0, _saved_at: 1 / 0});
-                                                set_canvas_from_image(img, base64_resized, {}, false);
-                                                setTimeout(function () {
-                                                    actions.trigger_snackbar(`I am really awesome, within ${parseFloat(time_ms / 1000).toFixed(3)}sec. I've made disappears ${color_removed_n} colors, now there are ${resulting_color_n} colors!`, 5700);
-                                                    setTimeout(function () {
-                                                        actions.jamy_update("happy");
-                                                    }, 2000);
-                                                }, 1000);
-                                            }, {once: true, capture: true});
-                                            img.src = base64;
-                                        }, pool);
-                                    }, pool);
-                                });
+                                imagedata_to_base64(imagedata2, "image/png", (base64) => {
+                                    let img = new Image();
+                                    img.addEventListener("load", () => {
+                                        this._handle_load_complete("image_preload", {});
+                                        this.setSt4te({_kb: 0, _saved_at: 1 / 0});
+                                        set_canvas_from_image(img, base64_resized, {}, false);
+                                        setTimeout(function () {
+                                            actions.trigger_snackbar(`I am really awesome, here is your pixel art!`, 5700);
+                                            setTimeout(function () {
+                                                actions.jamy_update("happy");
+                                            }, 2000);
+                                        }, 1000);
+                                    }, {once: true, capture: true});
+                                    img.src = base64;
+                                }, pool);
                             }, pool)
                         }, pool);
                     }, null, scale, "doppel");
@@ -2235,7 +2237,10 @@ class Pixel extends React.PureComponent {
 
     _set_props_callback = (callback) => {
 
-        this.setSt4te({_swipeable_drawer_set_props: callback});
+        this.setSt4te({_swipeable_drawer_set_props: callback}, () => {
+            this._set_props_bypass_this();
+            this._request_force_update();
+        });
     };
 
     _set_props_bypass_this = () => {
@@ -3082,6 +3087,7 @@ class Pixel extends React.PureComponent {
                     }}>
                         <Suspense fallback={<div className={classes.contentCanvas}/>}>
                             <CanvasPixels
+                                set_compressor={this._set_png_compressors}
                                 perspective={_perspective ? 2: 0}
                                 on_state_export={this._handle_canvas_state_will_export}
                                 on_state_exported={this._handle_canvas_state_exported}

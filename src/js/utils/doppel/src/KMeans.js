@@ -6,6 +6,8 @@ export default class KMeans {
         this.k = k;
         this.centroids = new Array(k);
         this.clusters = new Uint32Array(this.data.length); // Using Uint32Array for cluster assignments
+        this.c1 = new Color(new ArrayBuffer(4));
+        this.c2 = new Color(new ArrayBuffer(4));
     }
 
     // Step 1: Initialize centroids with unique points
@@ -74,9 +76,9 @@ export default class KMeans {
 
     // Euclidean distance between two points
     distance(point1, point2) {
-        let c1 = new Color(point1);
-        let c2 = new Color(point2);
-        return c1.cie76_match_with(c2) * 16192;
+        this.c1.set_from_array(point1);
+        this.c2.set_from_array(point2);
+        return this.c1.cie76_match_with(this.c2) * 16192 | 0;
     }
     reassignCentroids(counts) {
 

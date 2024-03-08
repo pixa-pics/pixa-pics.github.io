@@ -81,7 +81,9 @@ export default class ImageManager {
     }
     static quantizeImageData(ctx, numberOfColors) {
         const imageData = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
+        var t1 = Date.now();
         const [pxls, pxl_colors] = QuantiMat.split_image_data(imageData);
+        var t2 = Date.now();
         const result = QuantiMat({
             pxls,
             pxl_colors,
@@ -89,47 +91,26 @@ export default class ImageManager {
             width: imageData.width,
             height: imageData.height
         }).init().run().output("split");
+        var t3 = Date.now();
+
+        console.log(t2-t1, t3-t2);
+
+        const pixels = result[0];
         const colors = result[1];
-        const pixels = new Uint32Array(imageData.data.buffer);
-        const centroids = new Uint32Array(numberOfColors);
-        let clusterAssignments = new Uint8Array(pixels.length);
-        let hasConverged = false;
-        let iteration = 0;
-        const maxIterations = 8; // Adjust based on your needs
-        let count = new Uint32Array(numberOfColors);
+        const data = new Uint32Array(pixels.length);
+        const count = new Uint32Array(colors.length);
 
-        while (!hasConverged && iteration < maxIterations) {
-
-            ImageManager.reassignCentroids(pixels, count, centroids, numberOfColors, colors);
-
-            hasConverged = true;
-            // Assign pixels to the nearest centroid
-            for (let i = 0; i < pixels.length; i++) {
-                const pixel = pixels[i];
-                const nearestCentroidIndex = ImageManager.findNearestCentroid(pixel, centroids);
-                if (clusterAssignments[i] !== nearestCentroidIndex) {
-                    clusterAssignments[i] = nearestCentroidIndex;
-                    hasConverged = false;
-                }
-            }
-
-            // Update centroids
-            count = ImageManager.updateCentroids(pixels, clusterAssignments, centroids, numberOfColors);
-
-            iteration++;
+        for(var i = 0; i < pixels.length; i++){
+            count[pixels[i]]++;
+            data[i] = colors[pixels[i]];
         }
 
-        // Generate new image data based on the cluster assignments
-        for (let i = 0; i < pixels.length; i++) {
-            pixels[i] = centroids[clusterAssignments[i]];
-        }
-
-        imageData.data.set(new Uint8ClampedArray(pixels.buffer))
+        imageData.data.set(new Uint8ClampedArray(data.buffer))
 
         return {
             imageData,
-            clusterAssignments,
-            centroids
+            clusterAssignments: pixels,
+            centroids: colors
         };
     }
     static _calculateDistortions(object, originalImageData) {
@@ -220,13 +201,24 @@ export default class ImageManager {
 
         const imageData = this.contextSource.getImageData(0, 0, this.contextSource.canvas.width, this.contextSource.canvas.height);
 
-
+        var t1 = Date.now();
         const dataQuantize = ImageManager.quantizeImageData(this.contextSource, 192);
+        var t2 = Date.now();
         const distortion = ImageManager._calculateDistortions(dataQuantize, imageData); // Calculate distortions
-
+        var t3 = Date.now();
         const elbowPoint = ImageManager._findElbowPoint(distortion.clustersDistortion);
+        var t4 = Date.now();
         const elbowStrength = ImageManager._calculateElbowStrength(distortion.clustersDistortion, elbowPoint);
+        var t5 = Date.now();
         const newImageDataData = ImageManager.quantizeImageData(this.contextSource, elbowPoint).imageData;
+        var t6 = Date.now();
+        console.log({
+            "quantizeImageData1": t2-t1,
+            "_calculateDistortions": t3-t2,
+            "_findElbowPoint": t4-t3,
+            "_calculateElbowStrength+updateThreshold": t5-t4,
+            "quantizeImageData2": t6-t5
+        })
 
         return {
             colorNumber: elbowPoint,

@@ -654,8 +654,8 @@ class CanvasPixels extends React.PureComponent {
     };
 
     set_png_compressors = (png_quant, oxi_png) => {
-        this.png_quant = png_quant;
-        this.oxi_png = oxi_png;
+        this.png_quant = png_quant ? png_quant: this.png_quant;
+        this.oxi_png = oxi_png ? oxi_png: this.oxi_png;
     };
 
     get_base64_png_data_url = (scale = 1, with_palette = false, with_compression_speed = 0, with_compression_quality_min = 30, with_compression_quality_max = 35) => {
@@ -675,7 +675,10 @@ class CanvasPixels extends React.PureComponent {
                     this.png_quant(""+result.url, with_compression_quality_min, with_compression_quality_max, with_compression_speed, pool).then((base_64_out) => {
                         result.url = base_64_out;
                         resolve(result);
-                    }).catch(function(e){ reject(e);});
+                    }).catch(function(e){
+                        this.props.set_compressor();
+                        reject(e);
+                    });
 
                 }else if(this.oxi_png && with_compression_speed !== 0 && result.colors.length > 256){
 
@@ -689,7 +692,10 @@ class CanvasPixels extends React.PureComponent {
 
                             result.url = base_64_out;
                             resolve(result);
-                        }).catch(function(e){ reject(e);});
+                        }).catch(function(e){
+                            this.props.set_compressor();
+                            reject(e);
+                        });
                     });
                 }else {
 
