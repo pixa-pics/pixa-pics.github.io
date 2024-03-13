@@ -1103,11 +1103,11 @@ class Marketplace extends React.Component {
                 break;
             case "hex":
                 JSLoader( () => import("../utils/hexagonrender")).then((obj) => {
-                    obj.hexagonrender(data, 9.6, false).then((out) => {
+                    obj.hexagonrender(data, 12.8, false).then((out) => {
                         this.setState({src: out, type: "png"}, () => {
                             this.forceUpdate();
                             JSLoader(() => import("../utils/png_quant")).then(({png_quant}) => {
-                                png_quant(out, 10, 30, 9, pool).then((out2) => {
+                                png_quant(out, 0, 30, 9, pool).then((out2) => {
                                     this.setState({src: out2, type: "png"}, () => {
                                         this.forceUpdate();
                                     });
@@ -1151,34 +1151,39 @@ class Marketplace extends React.Component {
                 });
 */
                 JSLoader( () => import("../utils/xBRZ")).then((obj) => {
-                    obj.default(data, 6, pool).then((imageData) => {
-                        createSVG(imageData).then( (url) => {
-                            this.setState({src: url, type: "svg"}, () => {
-                                this.forceUpdate();
-                                const reader = new FileReader();
-                                reader.onload = (event) => {
-                                    let svgString = event.target.result;
-                                    JSLoader( () => import("svgo/dist/svgo.browser")).then(({optimize}) => {
+                    obj.default(data, 6, pool).then((data) => {
+                        obj.default(data, 2, pool).then((imageData) => {
+                            createSVG(imageData).then((url) => {
+                                this.setState({src: url, type: "svg"}, () => {
+                                    this.forceUpdate();
+                                    const reader = new FileReader();
+                                    reader.onload = (event) => {
+                                        let svgString = event.target.result;
+                                        JSLoader(() => import("svgo/dist/svgo.browser")).then(({optimize}) => {
 
-                                        svgString  = optimize(svgString, {
-                                            // optional but recommended field
-                                            path: 'path-to.svg',
-                                            // all config fields are also available here
-                                            multipass: true,
-                                            mergePaths: true,
-                                            mergeStyles: true,
-                                            collapseGroups: true,
-                                            reusePaths: true,
-                                            plugin: ["multipass", "mergePaths", "collapseGroups", "reusePaths", "mergeStyles"],
-                                        }).data;
-                                        this.setState({src: "data:image/svg+xml;base64," + window.btoa(svgString), type: "svg"}, () => {
-                                            this.forceUpdate();
+                                            svgString = optimize(svgString, {
+                                                // optional but recommended field
+                                                path: 'path-to.svg',
+                                                // all config fields are also available here
+                                                multipass: true,
+                                                mergePaths: true,
+                                                mergeStyles: true,
+                                                collapseGroups: true,
+                                                reusePaths: true,
+                                                plugin: ["multipass", "mergePaths", "collapseGroups", "reusePaths", "mergeStyles"],
+                                            }).data;
+                                            this.setState({
+                                                src: "data:image/svg+xml;base64," + window.btoa(svgString),
+                                                type: "svg"
+                                            }, () => {
+                                                this.forceUpdate();
+                                            });
                                         });
-                                    });
-                                };
-                                fetch(url).then(function(response){
-                                    response.blob().then(function(blob){
-                                        reader.readAsText(blob);
+                                    };
+                                    fetch(url).then(function (response) {
+                                        response.blob().then(function (blob) {
+                                            reader.readAsText(blob);
+                                        });
                                     });
                                 });
                             });
