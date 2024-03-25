@@ -944,24 +944,23 @@ return new Promise(function(resolve, reject){
     }
 
     try {
-        var sb = Uint8ClampedArray.from(image_data.data);
+        var sb = image_data.data;
         var width = parseInt(image_data.width);
         var height = parseInt(image_data.height);
         var source = new Uint32Array(sb.length*4);
         for (var i = 0, len = sb.length; i < len; i += 4) {
-            source[i/4|0] = sb[i + 3] << 24 | sb[i] << 16 | sb[i + 1] << 8 | sb[i + 2];
+            source[i/4|0] = (sb[i + 3] << 24 | sb[i] << 16 | sb[i + 1] << 8 | sb[i + 2]) >>> 0;
         }
-        var target = new Array(width * scale * height * scale);
-        target.fill(0);
+        var target = new Uint32Array(width * scale * height * scale);
         scaleImage(scale, source, target, width, height, 0, height);
         var target_buffer = new Uint8ClampedArray(target.length * 4);
         var pixel = 0;
-        for (var i = 0, len = target.length; i < len; ++i) {
+        for (var i = 0, i4, len = target.length; i < len; ++i, i4 = i << 2) {
             pixel = target[i];
-            target_buffer[i*4+2] = (pixel) & 0xff;
-            target_buffer[i*4+1] = (pixel >> 8) & 0xff;
-            target_buffer[i*4] = (pixel >> 16) & 0xff;
-            target_buffer[i*4+3] = (pixel >> 24) & 0xff;
+            target_buffer[i4] = (pixel >> 16) & 0xff;
+            target_buffer[i4+1] = (pixel >> 8) & 0xff;
+            target_buffer[i4+2] = (pixel) & 0xff;
+            target_buffer[i4+3] = (pixel >> 24) & 0xff;
         }
 
         try {
@@ -993,12 +992,12 @@ export default async function xbrz(image_data, scale, pool) {
         scale,
       ]).catch((e) => {
 
-          return window.xbrz_process_function(image_data, scale);
+          return fu(image_data, scale);
 
       }).timeout(20 * 1000);
 
     }else {
 
-        return window.xbrz_process_function(image_data, scale);
+        return fu(image_data, scale);
     }
 }

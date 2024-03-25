@@ -219,8 +219,8 @@ function createObjectURLFromCanvas(canvas, callback) {
 
 function generateFinalImageData(originalImageData, radius, object_url) {
     "use strict";
-    if (radius <= 2 || radius >= 32) {
-        throw new Error("Invalid radius value. Must within 2 and 32");
+    if (radius <= 1 || radius >= 100) {
+        throw new Error("Invalid radius value. Must within 1 and 100");
     }
 
     return new Promise(function (resolve, reject) {

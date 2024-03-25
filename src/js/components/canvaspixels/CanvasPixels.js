@@ -658,12 +658,12 @@ class CanvasPixels extends React.PureComponent {
         this.oxi_png = oxi_png ? oxi_png: this.oxi_png;
     };
 
-    get_base64_png_data_url = (scale = 1, with_palette = false, with_compression_speed = 0, with_compression_quality_min = 30, with_compression_quality_max = 35) => {
+    get_base64_png_data_url = (scale = 1, with_palette = false, with_compression_speed = 1, with_compression_quality_min = 30, with_compression_quality_max = 35) => {
 
         return this._get_base64_png_data_url(scale, with_palette, with_compression_speed, with_compression_quality_min, with_compression_quality_max);
     };
 
-    _get_base64_png_data_url = (scale = 1, with_palette = false, with_compression_speed = 0, with_compression_quality_min = 30, with_compression_quality_max = 35) => {
+    _get_base64_png_data_url = (scale = 1, with_palette = false, with_compression_speed = 1, with_compression_quality_min = 30, with_compression_quality_max = 35) => {
 
         const { pxl_width, pxl_height, _s_layers, _layers } = this.super_state.get_state();
 
