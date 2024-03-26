@@ -65,10 +65,9 @@ import get_svg_in_b64 from "../utils/svgToBase64";
 import pool from "../utils/worker-pool";
 import JSLoader from "../utils/JSLoader";
 import actions from "../actions/utils";
-import xbrz from "../utils/xBRZ";
 import HexagonThree from "../icons/HexagonThree";
 import {createSVG} from "../utils/vtracer";
-import ac from "../notoemoji/react/Ac";
+import StarRoundedIcon from "@material-ui/icons/StarRounded";
 
 const styles = theme => ({
     root: {
@@ -1123,6 +1122,11 @@ class Marketplace extends React.Component {
                     this.forceUpdate();
                 })
                 break;
+            case "crt":
+                JSLoader(() => import("../utils/crt")).then(({crt}) => {
+                    crt(data, Math.sqrt(1280*720) / Math.sqrt(data.width*data.height) | 0, pool).then(callback);
+                });
+                break;
             case "hex":
                 actions.trigger_loading_update(0);
                 JSLoader( () => import("../utils/hexagonrender")).then((obj) => {
@@ -1131,7 +1135,7 @@ class Marketplace extends React.Component {
                             this.forceUpdate();
                             actions.trigger_loading_update(66);
                             JSLoader(() => import("../utils/png_quant")).then(({png_quant}) => {
-                                png_quant(out, 33, 66, 1, pool).then((out2) => {
+                                png_quant(out, 30, 100, 3, pool).then((out2) => {
                                     this.setState({src: out2, type: "png"}, () => {
                                         this.forceUpdate();
                                         actions.trigger_loading_update(100);
@@ -1465,16 +1469,18 @@ class Marketplace extends React.Component {
                                       maxWidth: screen_zoom_ratio * scale.current * openedMediaDataData.width + 1 | 0,
                                       minHeight: screen_zoom_ratio * scale.current * openedMediaDataData.height | 0,
                                       maxHeight: screen_zoom_ratio * scale.current * openedMediaDataData.height + 1 | 0,
-                                      contain: "paint size style layout"
+                                      contain: "paint size style layout",
+                                      pointerEvents: "none"
                         }}>
-                            <img className={"pixelated"} src={src} style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", contain: "paint size style layout"}}/>
-                            <div style={{mixBlendMode: "screen", filter: "opacity(0.33)", background: background_image,  position: "absolute", top: 0, left: 0, width: "100%", height: "100%", contain: "paint size style layout"}}></div>
+                            <img className={"pixelated"} src={src} style={{ pointerEvents: "none", position: "absolute", top: 0, left: 0, width: "100%", height: "100%", contain: "paint size style layout"}}/>
+                            <div style={{mixBlendMode: "screen", filter: "opacity(0.33)", background: background_image, maskImage: `url('${src}')`, maskMode: "alpha", maskSize: "cover", pointerEvents: "none", position: "absolute", top: 0, left: 0, width: "100%", height: "100%", contain: "paint size style layout"}}></div>
                         </Card>
                     </div>}
                     <div className={classes.leftFromDrawer} style={{zIndex: 10, pointerEvents: "all"}} ref={this.setRefFromLeft} >
                         <div style={{position: "fixed", top: 16, left: 16}}>
                             <IconButton style={{color: "#ffffff"}} onClick={() => {this.renderMedia("pixelated", openedMediaDataData.data)}}><Icon><SquareRoundedIcon/></Icon></IconButton>
-                            <IconButton style={{color: "#ffffff"}} onClick={() => {this.renderMedia("svg", openedMediaDataData.data, openedMediaDataData.colors)}}><Icon><GamePadRoundIcon/></Icon></IconButton>
+                            <IconButton style={{color: "#ffffff"}} onClick={() => {this.renderMedia("crt", openedMediaDataData.data)}}><Icon><StarRoundedIcon/></Icon></IconButton>
+                            <IconButton style={{color: "#ffffff"}} onClick={() => {this.renderMedia("svg", openedMediaDataData.data)}}><Icon><GamePadRoundIcon/></Icon></IconButton>
                             <IconButton style={{color: "#ffffff"}} onClick={() => {this.renderMedia("hex", openedMediaDataData.data)}}><Icon><HexagonThree/></Icon></IconButton>
                         </div>
                         <div style={{position: "fixed", right: window.innerWidth > 800 ? 400: 14, top: 16}}>

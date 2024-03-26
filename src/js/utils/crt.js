@@ -21,1086 +21,346 @@ window.crt_process_function = LZEL_92("UraniumJS! H~=2;KA3wbkh=OkI4ulupd=d_&mcSM
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-
-
 var fu = function(image_data, scale) {
 
     return new Promise(function (resolve, reject) {
 
         var CRT = (function () {
 
-            class Common {
-
-                static get Threshold() {
-
-                    return this.hasOwnProperty('_Threshold') ? this._Threshold : false;
-                }
-
-                static set Threshold(v) {
-
-                    this._Threshold = v;
-                }
-
-                static get ScaleX() {
-
-                    return this.hasOwnProperty('_ScaleX') ? this._ScaleX : parseInt(0);
-                }
-
-                static set ScaleX(v) {
-
-                    this._ScaleX = parseInt(v);
-                }
-
-                static get ScaleY() {
-
-                    return this.hasOwnProperty('_ScaleY') ? this._ScaleY : parseInt(0);
-                }
-
-                static set ScaleY(v) {
-
-                    this._ScaleY = parseInt(v);
-                }
-
-                static get SizeX() {
-
-                    return this.hasOwnProperty('_SizeX') ? this._SizeX : parseInt(0);
-                }
-
-                static set SizeX(v) {
-
-                    this._SizeX = parseInt(v);
-                }
-
-                static get SizeY() {
-
-                    return this.hasOwnProperty('_SizeY') ? this._SizeY : parseInt(0);
-                }
-
-                static set SizeY(v) {
-
-                    this._SizeY = parseInt(v);
-                }
-
-                static get ScaledImage() {
-
-                    return this.hasOwnProperty('_ScaledImage') ? this._ScaledImage : [];
-                }
-
-                static set ScaledImage(v) {
-
-                    this._ScaledImage = v;
-                }
-
-                static Copy(dst, src, Length) {
-
-                    for (var i = 0; i < Length; i++)
-                        dst[i] = this._Clip8(src[i]);
-                }
-
-                static Copy2D(dst, src, dstx, dsty, srcx, srcy) {
-
-                    const Channels = 4;
-
-                    var xdim = Math.min(srcx, dstx);
-                    var ydim = Math.min(srcy, dsty);
-
-                    for (var y = 0; y < ydim; y++)
-                        for (var x = 0; x < xdim; x++)
-                            for (var Channel = 0; Channel < Channels; Channel++)
-                                dst[(y * dstx + x) * Channels + Channel] = src[(y * srcx + x) * Channels + Channel];
-                }
-
-                static CopyPadded(src, srcx, srcy, scale) {
-
-                    const Channels = 4;
-
-                    var dim = Math.max(srcx, srcy);
-                    dim = Common.NextPow(dim, scale);
-
-                    var dst = new Uint8ClampedArray(dim * dim * Channels);
-
-                    Common.Copy2D(dst, src, dim, dim, srcx, srcy);
-
-                    return dst;
-                }
-
-                static CopyCropped(dst, src, dstx, dsty, srcx, srcy) {
-
-                    Common.Copy2D(dst, src, dstx, dsty, srcx, srcy);
-                }
-
-                static ToArray(Input, srcx, srcy) {
-
-                    var dst = new Uint32Array(srcx * srcy);
-
-                    var Channels = 4;
-
-                    for (var y = 0; y < srcy; y++) {
-
-                        for (var x = 0; x < srcx; x++) {
-
-                            var index = y * srcx + x;
-                            var pixel = index * Channels;
-
-                            var r = Input[pixel];
-                            var g = Input[pixel + 1];
-                            var b = Input[pixel + 2];
-                            var a = Input[pixel + 3];
-
-                            dst[index] = this.ARGBINT(a, r, g, b);
-                        }
-                    }
-
-                    return dst;
-                }
-
-                static ToImage(dst, src, srcx, srcy) {
-
-                    var Channels = 4;
-
-                    for (var y = 0; y < srcy; y++) {
-                        for (var x = 0; x < srcx; x++) {
-
-                            var index = y * srcx + x;
-                            var pixel = index * Channels;
-
-                            dst[pixel] = this.Red(src[index]);
-                            dst[pixel + 1] = this.Green(src[index]);
-                            dst[pixel + 2] = this.Blue(src[index]);
-                            dst[pixel + 3] = this.Alpha(src[index]);
-                        }
-                    }
-                }
-
-                static _CLR(Input, srcx, srcy, x, y) {
-
-                    const Channels = 4;
-
-                    if (y >= 0 && y < srcy && x >= 0 && x < srcx) {
-
-                        var index = (y * srcx + x) * Channels;
-
-                        var r = Input[index];
-                        var g = Input[index + 1];
-                        var b = Input[index + 2];
-                        var a = Input[index + 3];
-
-                        return this.ARGBINT(a, r, g, b);
-                    }
-
-                    return 0;
-                }
-
-                static CLR(Input, srcx, srcy, x, y, dx = 0, dy = 0) {
-
-                    var xx = parseInt(x + dx);
-                    var yy = parseInt(y + dy);
-
-                    xx = Math.max(0, Math.min(srcx - 1, xx));
-                    yy = Math.max(0, Math.min(srcy - 1, yy));
-
-                    return this._CLR(Input, srcx, srcy, xx, yy);
-                }
-
-                static Alpha(rgb) {
-
-                    return parseInt(rgb >>> 24);
-                }
-
-                static Red(rgb) {
-
-                    return parseInt((rgb >>> 0 & 0x00FF0000) >> 16);
-                }
-
-                static Green(rgb) {
-
-                    return parseInt((rgb >>> 0 & 0x0000FF00) >> 8);
-                }
-
-                static Blue(rgb) {
-
-                    return parseInt(rgb >>> 0 & 0x000000FF);
-                }
-
-                static Brightness(rgb) {
-
-                    var dwordC = rgb & 0xFFFFFF;
-
-                    return this._Clip8((this.Red(dwordC) * 3 + this.Green(dwordC) * 3 + this.Blue(dwordC) * 2) >> 3);
-                }
-
-                static Luminance(rgb) {
-
-                    var r = parseFloat(this.Red(rgb));
-                    var g = parseFloat(this.Green(rgb));
-                    var b = parseFloat(this.Blue(rgb));
-
-                    return parseInt(0.299 * r + 0.587 * g + 0.114 * b);
-                }
-
-                static ChromaU(rgb) {
-
-                    var r = parseFloat(this.Red(rgb));
-                    var g = parseFloat(this.Green(rgb));
-                    var b = parseFloat(this.Blue(rgb));
-
-                    return parseInt(0.5 * r - 0.418688 * g - 0.081312 * b + 127.5);
-                }
-
-                static ChromaV(rgb) {
-
-                    var r = parseFloat(this.Red(rgb));
-                    var g = parseFloat(this.Green(rgb));
-                    var b = parseFloat(this.Blue(rgb));
-
-                    return parseInt(-0.168736 * r - 0.331264 * g + 0.5 * b + 127.5);
-                }
-
-                static IsLike(pixel1, pixel2) {
-
-                    if (!this.Threshold)
-                        return pixel1 == pixel2;
-
-                    const _LUMINANCE_TRIGGER = 48;
-                    const _CHROMA_U_TRIGGER = 7;
-                    const _CHROMA_V_TRIGGER = 6;
-
-                    var delta = this.Luminance(pixel1) - this.Luminance(pixel2);
-
-                    if (Math.abs(delta) > _LUMINANCE_TRIGGER)
-                        return false;
-
-                    delta = this.ChromaV(pixel1) - this.ChromaV(pixel2);
-
-                    if (Math.abs(delta) > _CHROMA_V_TRIGGER)
-                        return false;
-
-                    delta = this.ChromaU(pixel1) - this.ChromaU(pixel2);
-
-                    return Math.abs(delta) <= _CHROMA_U_TRIGGER;
-                }
-
-                static IsNotLike(pixel1, pixel2) {
-
-                    return !this.IsLike(pixel1, pixel2);
-                }
-
-                static _Clip8(color) {
-
-                    return Math.max(0, Math.min(255, color));
-                }
-
-                static _Write4RGBA(Output, sizex, sizey, x, y, Pixel, A, R, G, B) {
-
-                    if (x >= 0 && x < sizex && y >= 0 && y < sizey) {
-
-                        const Channels = 4;
-
-                        var dx = x * this.ScaleX;
-                        var dy = y * this.ScaleY;
-
-                        dx += (Pixel == 2 || Pixel == 4) ? 1 : 0;
-                        dy += (Pixel == 3 || Pixel == 4) ? 1 : 0;
-
-                        var dst = (dy * sizex * this.ScaleX + dx) * Channels;
-
-                        Output[dst] = this._Clip8(R);
-                        Output[dst + 1] = this._Clip8(G);
-                        Output[dst + 2] = this._Clip8(B);
-                        Output[dst + 3] = this._Clip8(A);
-                    }
-                }
-
-                static Write4RGBA(Output, sizex, sizey, x, y, Pixel, argb) {
-
-                    var R = this.Red(argb);
-                    var G = this.Green(argb);
-                    var B = this.Blue(argb);
-                    var A = this.Alpha(argb);
-
-                    this._Write4RGBA(Output, sizex, sizey, x, y, Pixel, A, R, G, B);
-                }
-
-                static _Write9RGBA(Output, sizex, sizey, x, y, Pixel, A, R, G, B) {
-                    if (x >= 0 && x < sizex && y >= 0 && y < sizey) {
-
-                        const Channels = 4;
-
-                        var deltax = 0;
-                        var deltay = 0;
-
-                        if (Pixel == 2 || Pixel == 5 || Pixel == 8) {
-
-                            deltax = 1;
+            "use asm";
+
+            var sqrt = Math.sqrt;
+            var cos = Math.cos;
+            var sin = Math.sin;
+            var min = Math.min;
+            var max = Math.max;
+            var imul = Math.imul;
+
+            function apply(imageData, srcx, srcy, scale, threshold) {
+
+                srcx = srcx | 0;
+                srcy = srcy | 0;
+                scale = scale | 0;
+                threshold = +threshold;
+
+                var Channels = 4;
+                var SizeX = srcx * scale | 0;
+                var SizeY = srcy * scale | 0;
+
+                var ScaledImage = new Uint8ClampedArray(SizeX * SizeY * Channels);
+
+                var total = SizeY | 0;
+                var current = 0;
+
+                var ppx = 0.0;
+                var ppy = 0.0;
+                var posx = 0;
+                var posy = 0;
+                var sub_posx = 0.0;
+                var sub_posy = 0.0;
+                var positionx = 0;
+                var positiony = 0;
+                var center = 0;
+                var left = 0;
+                var right = 0;
+                var midleft = 0;
+                var midright = 0;
+                var ret = 0;
+                var cr = 0;
+                var cg = 0;
+                var cb = 0;
+                var mlb = 0;
+                var mrr = 0;
+                var mrg = 0;
+                var lb = 0;
+                var rr = 0;
+                var rg = 0;
+                var alpha = 0;
+
+                for (var y = 0; y < SizeY; y = y + 1 | 0) {
+
+                    var offset = imul(y, SizeX) | 0;
+                    ppy = +(y / SizeY);
+
+                    for (var x = 0; x < SizeX; x = x + 1 | 0) {
+
+                        ppx = +(x / SizeX);
+                        posx = ~~(ppx * srcx);
+                        posy = ~~(ppy * srcy);
+                        sub_posx = +(ppx * srcx * 6) % 1.0;
+                        sub_posy = +(ppy * srcy * 6) % 1.0;
+                        positionx = posx | 0;
+                        positiony = posy | 0;
+
+                        center = CLR(imageData, srcx, srcy, positionx, positiony, 0, 0);
+                        left = CLR(imageData, srcx, srcy, positionx, positiony, -1, 0);
+                        right = CLR(imageData, srcx, srcy, positionx, positiony, 1, 0);
+
+                        if (sub_posy < 1.0 / 6.0) {
+
+                            center = mix(center, CLR(imageData, srcx, srcy, positionx, positiony, 0, -1), 0.5 - sub_posy / 2.0);
+                            left = mix(left, CLR(imageData, srcx, srcy, positionx, positiony, -1, -1), 0.5 - sub_posy / 2.0);
+                            right = mix(right, CLR(imageData, srcx, srcy, positionx, positiony, 1, -1), 0.5 - sub_posy / 2.0);
+
+                        } else if (sub_posy > 5.0 / 6.0) {
+
+                            center = mix(center, CLR(imageData, srcx, srcy, positionx, positiony, 0, 1), sub_posy / 2.0);
+                            left = mix(left, CLR(imageData, srcx, srcy, positionx, positiony, -1, 1), sub_posy / 2.0);
+                            right = mix(right, CLR(imageData, srcx, srcy, positionx, positiony, 1, 1), sub_posy / 2.0);
                         }
 
-                        if (Pixel == 3 || Pixel == 6 || Pixel == 9) {
+                        var scanline_multiplier;
 
-                            deltax = 2;
+                        if (sub_posy < 0.5) {
+
+                            scanline_multiplier = (sub_posy * 2) * 0.3 + 0.7;
+
+                        } else {
+
+                            scanline_multiplier = ((1 - sub_posy) * 2) * 0.3 + 0.7;
                         }
 
-                        if (Pixel == 4 || Pixel == 5 || Pixel == 6) {
+                        Mul(center, scanline_multiplier);
+                        Mul(left, scanline_multiplier);
+                        Mul(right, scanline_multiplier);
 
-                            deltay = 1;
+                        var odd = (ppx * srcx) & 1;
+
+                        var gradient_position;
+
+                        if (odd) {
+
+                            posy = +(posy + 0.5);
+                            posy = +(posy % 1.0);
                         }
-
-                        if (Pixel == 7 || Pixel == 8 || Pixel == 9) {
-
-                            deltay = 2;
-                        }
-
-                        var dx = x * this.ScaleX + deltax;
-                        var dy = y * this.ScaleY + deltay;
-
-                        var dst = (dy * sizex * this.ScaleX + dx) * Channels;
-
-                        Output[dst] = this._Clip8(R);
-                        Output[dst + 1] = this._Clip8(G);
-                        Output[dst + 2] = this._Clip8(B);
-                        Output[dst + 3] = this._Clip8(A);
-                    }
-                }
-
-                static Write9RGBA(Output, sizex, sizey, x, y, Pixel, argb) {
-
-                    var R = this.Red(argb);
-                    var G = this.Green(argb);
-                    var B = this.Blue(argb);
-                    var A = this.Alpha(argb);
-
-                    this._Write9RGBA(Output, sizex, sizey, x, y, Pixel, A, R, G, B);
-                }
-
-                static _Write16RGBA(Output, sizex, sizey, x, y, Pixel, A, R, G, B) {
-
-                    if (x >= 0 && x < sizex && y >= 0 && y < sizey) {
-
-                        const Channels = 4;
-
-                        var deltax = 0;
-                        var deltay = 0;
-
-                        if (Pixel == 2 || Pixel == 6 || Pixel == 10 || Pixel == 14) {
-
-                            deltax = 1;
-                        }
-
-                        if (Pixel == 3 || Pixel == 7 || Pixel == 11 || Pixel == 15) {
-
-                            deltax = 2;
-                        }
-
-                        if (Pixel == 4 || Pixel == 8 || Pixel == 12 || Pixel == 16) {
-
-                            deltax = 3;
-                        }
-
-                        if (Pixel == 5 || Pixel == 6 || Pixel == 7 || Pixel == 8) {
-
-                            deltay = 1;
-                        }
-
-                        if (Pixel == 9 || Pixel == 10 || Pixel == 11 || Pixel == 12) {
-
-                            deltay = 2;
-                        }
-
-                        if (Pixel == 13 || Pixel == 14 || Pixel == 15 || Pixel == 16) {
-
-                            deltay = 3;
-                        }
-
-                        var dx = x * this.ScaleX + deltax;
-                        var dy = y * this.ScaleY + deltay;
-
-                        var dst = (dy * sizex * this.ScaleX + dx) * Channels;
-
-                        Output[dst] = this._Clip8(R);
-                        Output[dst + 1] = this._Clip8(G);
-                        Output[dst + 2] = this._Clip8(B);
-                        Output[dst + 3] = this._Clip8(A);
-                    }
-                }
-
-                static Write16RGBA(Output, sizex, sizey, x, y, Pixel, argb) {
-
-                    var R = this.Red(argb);
-                    var G = this.Green(argb);
-                    var B = this.Blue(argb);
-                    var A = this.Alpha(argb);
-
-                    this._Write16RGBA(Output, sizex, sizey, x, y, Pixel, A, R, G, B);
-                }
-
-                static WriteMagnify(Input, Output, sizex, sizey, x, y) {
-
-                    const Channels = 4;
-
-                    var x0 = x * this.ScaleX;
-                    var y0 = y * this.ScaleY;
-
-                    for (var deltay = 0; deltay < this.ScaleY; deltay++) {
-                        for (var deltax = 0; deltax < this.ScaleX; deltax++) {
-
-                            var dx = x0 + deltax;
-                            var dy = y0 + deltay;
-
-                            var dst = (dy * sizex * this.ScaleX + dx) * Channels;
-
-                            var index = (y * sizex + x) * Channels;
-
-                            for (var Channel = 0; Channel < Channels; Channel++) {
-
-                                Output[dst + Channel] = Input[index + Channel];
-                            }
-                        }
-                    }
-                }
-
-                static RGBINT(r, g, b) {
-
-                    return parseInt((this._Clip8(r) << 16) + (this._Clip8(g) << 8) + this._Clip8(b));
-                }
-
-                static ARGBINT(a, r, g, b) {
-
-                    return ((((((a) >>> 0) << 24) >>> 0) | (((r) << 16) + ((g) << 8) + ((b)))) >>> 0);
-                }
-
-                static Truncate(color) {
-
-                    return this._Clip8(color);
-                }
-
-                static NextPow(v, scale) {
-
-                    var dim = 1;
-
-                    for (var i = 0; i < 10; i++) {
-
-                        if (v <= dim)
-                            break;
-
-                        dim *= scale;
-                    }
-
-                    return dim;
-                }
-            }
-
-// brightness control
-            class Brightness {
-
-                static AdjustBrightness(color, level) {
-
-                    return Common.Truncate(color + level);
-                }
-            }
-
-// color interpolation
-            class Interpolate {
-
-                static Interpolate3P(pixel1, pixel2, pixel3) {
-
-                    var r = parseInt(parseInt(Common.Red(pixel1) + Common.Red(pixel2) + Common.Red(pixel3)) / 3);
-                    var g = parseInt(parseInt(Common.Green(pixel1) + Common.Green(pixel2) + Common.Green(pixel3)) / 3);
-                    var b = parseInt(parseInt(Common.Blue(pixel1) + Common.Blue(pixel2) + Common.Blue(pixel3)) / 3);
-                    var a = parseInt(parseInt(Common.Alpha(pixel1) + Common.Alpha(pixel2) + Common.Alpha(pixel3)) / 3);
-
-                    return Common.ARGBINT(a, r, g, b);
-                }
-
-                static Interpolate2P(pixel1, pixel2) {
-
-                    var r = parseInt(parseInt(Common.Red(pixel1) + Common.Red(pixel2)) >> 1);
-                    var g = parseInt(parseInt(Common.Green(pixel1) + Common.Green(pixel2)) >> 1);
-                    var b = parseInt(parseInt(Common.Blue(pixel1) + Common.Blue(pixel2)) >> 1);
-                    var a = parseInt(parseInt(Common.Alpha(pixel1) + Common.Alpha(pixel2)) >> 1);
-
-                    return Common.ARGBINT(a, r, g, b);
-                }
-
-                static Interpolate2P1Q(pixel1, pixel2, quantifier) {
-
-                    var r = parseInt(parseInt(Common.Red(pixel1) * (1.0 - quantifier) + Common.Red(pixel2) * quantifier));
-                    var g = parseInt(parseInt(Common.Green(pixel1) * (1.0 - quantifier) + Common.Green(pixel2) * quantifier));
-                    var b = parseInt(parseInt(Common.Blue(pixel1) * (1.0 - quantifier) + Common.Blue(pixel2) * quantifier));
-                    var a = parseInt(parseInt(Common.Alpha(pixel1) * (1.0 - quantifier) + Common.Alpha(pixel2) * quantifier));
-
-                    return Common.ARGBINT(a, r, g, b);
-                }
-
-                static Interpolate2P2Q(pixel1, pixel2, quantifier1, quantifier2) {
-
-                    var total = (quantifier1 + quantifier2);
-
-                    var r = parseInt(((Common.Red(pixel1) * quantifier1 + Common.Red(pixel2) * quantifier2)) / total);
-                    var g = parseInt(((Common.Green(pixel1) * quantifier1 + Common.Green(pixel2) * quantifier2)) / total);
-                    var b = parseInt(((Common.Blue(pixel1) * quantifier1 + Common.Blue(pixel2) * quantifier2)) / total);
-                    var a = parseInt(((Common.Alpha(pixel1) * quantifier1 + Common.Alpha(pixel2) * quantifier2)) / total);
-
-                    return Common.ARGBINT(a, r, g, b);
-                }
-
-                static Interpolate3P3Q(pixel1, pixel2, pixel3, quantifier1, quantifier2, quantifier3) {
-
-                    var total = parseInt(quantifier1 + quantifier2 + quantifier3);
-
-                    var r = parseInt((Common.Red(pixel1) * quantifier1 + Common.Red(pixel2) * quantifier2 + Common.Red(pixel3) * quantifier3) / total);
-                    var g = parseInt((Common.Green(pixel1) * quantifier1 + Common.Green(pixel2) * quantifier2 + Common.Green(pixel3) * quantifier3) / total);
-                    var b = parseInt((Common.Blue(pixel1) * quantifier1 + Common.Blue(pixel2) * quantifier2 + Common.Blue(pixel3) * quantifier3) / total);
-                    var a = parseInt((Common.Alpha(pixel1) * quantifier1 + Common.Alpha(pixel2) * quantifier2 + Common.Alpha(pixel3) * quantifier3) / total);
-
-                    return Common.ARGBINT(a, r, g, b);
-                }
-
-                static Interpolate4P(pixel1, pixel2, pixel3, pixel4) {
-
-                    var r = parseInt((Common.Red(pixel1) + Common.Red(pixel2) + Common.Red(pixel3) + Common.Red(pixel4)) >> 2);
-                    var g = parseInt((Common.Green(pixel1) + Common.Green(pixel2) + Common.Green(pixel3) + Common.Green(pixel4)) >> 2);
-                    var b = parseInt((Common.Blue(pixel1) + Common.Blue(pixel2) + Common.Blue(pixel3) + Common.Blue(pixel4)) >> 2);
-                    var a = parseInt((Common.Alpha(pixel1) + Common.Alpha(pixel2) + Common.Alpha(pixel3) + Common.Alpha(pixel4)) >> 2);
-
-                    return Common.ARGBINT(a, r, g, b);
-                }
-
-                static Interpolate4P4Q(pixel1, pixel2, pixel3, pixel4, quantifier1, quantifier2, quantifier3, quantifier4) {
-
-                    var total = parseInt(quantifier1 + quantifier2 + quantifier3 + quantifier4);
-
-                    var r = parseInt((Common.Red(pixel1) * quantifier1 + Common.Red(pixel2) * quantifier2 + Common.Red(pixel3) * quantifier3 + Common.Red(pixel4) * quantifier4) / total);
-                    var g = parseInt((Common.Green(pixel1) * quantifier1 + Common.Green(pixel2) * quantifier2 + Common.Green(pixel3) * quantifier3 + Common.Green(pixel4) * quantifier4) / total);
-                    var b = parseInt((Common.Blue(pixel1) * quantifier1 + Common.Blue(pixel2) * quantifier2 + Common.Blue(pixel3) * quantifier3 + Common.Blue(pixel4) * quantifier4) / total);
-                    var a = parseInt((Common.Alpha(pixel1) * quantifier1 + Common.Alpha(pixel2) * quantifier2 + Common.Alpha(pixel3) * quantifier3 + Common.Alpha(pixel4) * quantifier4) / total);
-
-                    return Common.ARGBINT(a, r, g, b);
-                }
-
-                static Mixpal(c1, c2) {
-
-                    return (this.Interpolate2P2Q(c1, c2, 3, 1));
-                }
-
-                static Fix(n, min, max) {
-
-                    return Math.max(Math.min(n, max), min);
-                }
-
-                static Unmix(c1, c2) {
-
-                    var ra = Common.Red(c1);
-                    var ga = Common.Green(c1);
-                    var ba = Common.Blue(c1);
-                    var aa = Common.Alpha(c1);
-
-                    var rb = Common.Red(c2);
-                    var gb = Common.Green(c2);
-                    var bb = Common.Blue(c2);
-                    var ab = Common.Alpha(c2);
-
-                    var r = ((this.Fix((ra + (ra - rb)), 0, 255) + rb) >> 1);
-                    var g = ((this.Fix((ga + (ga - gb)), 0, 255) + gb) >> 1);
-                    var b = ((this.Fix((ba + (ba - bb)), 0, 255) + bb) >> 1);
-                    var a = ((this.Fix((aa + (aa - ab)), 0, 255) + ab) >> 1);
-
-                    return Common.ARGBINT(a, r, g, b);
-                }
-            }
-
-// image flips
-            class Flip {
-
-                static FlipUD(src, sizex, sizey) {
-
-                    const Channels = 4;
-
-                    if (src.length > 0) {
-
-                        for (var y = 0; y < sizey / 2; y++) {
-                            for (var x = 0; x < sizex; x++) {
-
-                                var index = (y * sizex + x) * Channels;
-                                var rev = ((sizey - y - 1) * sizex + x) * Channels;
-
-                                for (var Channel = 0; Channel < Channels; Channel++) {
-
-                                    var temp = src[index + Channel];
-                                    src[index + Channel] = src[rev + Channel];
-                                    src[rev + Channel] = temp;
-                                }
-                            }
-                        }
-                    }
-                }
-
-                static FlipLR(src, sizex, sizey) {
-
-                    const Channels = 4;
-
-                    if (src.length > 0) {
-
-                        for (var y = 0; y < sizey; y++) {
-                            for (var x = 0; x < sizex / 2; x++) {
-
-                                var index = (y * sizex + x) * Channels;
-                                var rev = (y * sizex + (sizex - x - 1)) * Channels;
-
-                                for (var Channel = 0; Channel < Channels; Channel++) {
-
-                                    var temp = src[index + Channel];
-                                    src[index + Channel] = src[rev + Channel];
-                                    src[rev + Channel] = temp;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            class Rotate {
-
-                static Transpose(dst, src, srcx, srcy) {
-
-                    const Channels = 4;
-
-                    for (var y = 0; y < srcy; y++) {
-                        for (var x = 0; x < srcx; x++) {
-                            for (var Channel = 0; Channel < Channels; Channel++) {
-
-                                dst[(x * srcy + y) * Channels + Channel] = src[(y * srcx + x) * Channels + Channel];
-                            }
-                        }
-                    }
-                }
-
-                static Rotate90(dst, src, srcx, srcy) {
-
-                    this.Transpose(dst, src, srcx, srcy);
-
-                    Flip.FlipUD(dst, srcy, srcx);
-                }
-
-                static Rotate180(dst, src, srcx, srcy) {
-
-                    const Channels = 4;
-
-                    Common.Copy(dst, src, srcx * srcy * Channels);
-
-                    Flip.FlipUD(dst, srcx, srcy);
-
-                    Flip.FlipLR(dst, srcx, srcy);
-                }
-
-                static Rotate270(dst, src, srcx, srcy) {
-
-                    Flip.FlipUD(src, srcx, srcy);
-
-                    this.Transpose(dst, src, srcx, srcy);
-                }
-            }
-
-            class Kreed {
-
-                static Conc2D(c00, c01, c10, c11) {
-
-                    var result = 0;
-
-                    var acAreAlike = Common.IsLike(c00, c10);
-
-                    var x = acAreAlike ? 1 : 0;
-                    var y = (Common.IsLike(c01, c10) && !(acAreAlike)) ? 1 : 0;
-
-                    var adAreAlike = Common.IsLike(c00, c11);
-
-                    x += adAreAlike ? 1 : 0;
-                    y += (Common.IsLike(c01, c11) && !(adAreAlike)) ? 1 : 0;
-
-                    if (x <= 1)
-                        result++;
-
-                    if (y <= 1)
-                        result--;
-
-                    return (result);
-                }
-            }
-
-            class ReverseAA {
-
-                static Clamp(v, min, max) {
-
-                    return parseInt(Math.min(max, Math.max(v, min)));
-                }
-
-                static FullClamp(value) {
-
-                    return Common._Clip8(value);
-                }
-
-                static _ReverseAntiAlias(b1, b, d, e, f, h, h5, d0, f4) {
-
-                    var n1 = b1;
-                    var n2 = b;
-                    var s = e;
-                    var n3 = h;
-                    var n4 = h5;
-                    var aa = n2 - n1;
-                    var bb = s - n2;
-                    var cc = n3 - s;
-                    var dd = n4 - n3;
-
-                    var tilt = (7 * (bb + cc) - 3 * (aa + dd)) / 16;
-
-                    var m = (s < 128) ? 2 * s : 2 * (255 - s);
-
-                    m = Math.min(m, 2 * Math.abs(bb));
-                    m = Math.min(m, 2 * Math.abs(cc));
-
-                    tilt = this.Clamp(tilt, -m, m);
-
-                    var s1 = s + tilt / 2;
-                    var s0 = s1 - tilt;
-
-                    n1 = d0;
-                    n2 = d;
-                    s = s0;
-                    n3 = f;
-                    n4 = f4;
-                    aa = n2 - n1;
-                    bb = s - n2;
-                    cc = n3 - s;
-                    dd = n4 - n3;
-
-                    tilt = (7 * (bb + cc) - 3 * (aa + dd)) / 16;
-
-                    m = (s < 128) ? 2 * s : 2 * (255 - s);
-
-                    m = Math.min(m, 2 * Math.abs(bb));
-                    m = Math.min(m, 2 * Math.abs(cc));
-
-                    tilt = this.Clamp(tilt, -m, m);
-
-                    var e1 = s + tilt / 2;
-                    var e0 = e1 - tilt;
-
-                    s = s1;
-                    bb = s - n2;
-                    cc = n3 - s;
-
-                    tilt = (7 * (bb + cc) - 3 * (aa + dd)) / 16;
-
-                    m = (s < 128) ? 2 * s : 2 * (255 - s);
-
-                    m = Math.min(m, 2 * Math.abs(bb));
-                    m = Math.min(m, 2 * Math.abs(cc));
-
-                    tilt = this.Clamp(tilt, -m, m);
-
-                    var e3 = s + tilt / 2;
-                    var e2 = e3 - tilt;
-
-                    return { rd: this.FullClamp(e0), gn: this.FullClamp(e1), bl: this.FullClamp(e2), alpha: this.FullClamp(e3) };
-                }
-            }
-
-// image initialization
-            class Init {
-
-                static Buffer(Length, c) {
-
-                    const Channels = 4;
-
-                    var buffer = new Uint8ClampedArray(Length * Channels);
-
-                    for (var i = 0; i < Length; i++) {
-
-                        var index = i * Channels;
-
-                        buffer[index] = parseInt(c);
-                        buffer[index + 1] = parseInt(c);
-                        buffer[index + 2] = parseInt(c);
-                        buffer[index + 3] = 255;
-                    }
-
-                    return buffer;
-                }
-
-                static New(x, y) {
-
-                    return this.Buffer(x * y, 0);
-                }
-
-                static Init(srcx, srcy, FilterScaleX, FilterScaleY, ComparisonThreshold) {
-
-                    Common.ScaleX = FilterScaleX;
-                    Common.ScaleY = FilterScaleY;
-                    Common.SizeX = srcx * FilterScaleX;
-                    Common.SizeY = srcy * FilterScaleY;
-                    Common.Threshold = ComparisonThreshold;
-
-                    Common.ScaledImage = this.New(Common.SizeX, Common.SizeY);
-                }
-            }
-
-            // CRT
-            // https://github.com/LIJI32/SameBoy/blob/master/Shaders/CRT.fsh
-            var Filter = class {
-
-                Apply(Input, srcx, srcy, scale, threshold) {
-
-                    var Channels = 4;
-
-                    scale = Math.max(1, scale);
-
-                    Init.Init(srcx, srcy, scale, scale, threshold);
-
-                    var total = Common.SizeY;
-                    var current = 0;
-
-                    for (var y = 0; y < Common.SizeY; y ++) {
-
-                        var offset = y * Common.SizeX;
-                        var positiony = y / Common.SizeY;
-
-                        for (var x = 0; x < Common.SizeX; x ++) {
-
-                            var argb = this.scale(Input, x / Common.SizeX, positiony, srcx, srcy);
-
-                            Common.ScaledImage[(offset + x) * Channels] = Common.Red(argb);
-                            Common.ScaledImage[(offset + x) * Channels + 1] = Common.Green(argb);
-                            Common.ScaledImage[(offset + x) * Channels + 2] = Common.Blue(argb);
-                            Common.ScaledImage[(offset + x) * Channels + 3] = Common.Alpha(argb);
-                        }
-
-                        current ++;
-                    }
-
-                    return new ImageData(Uint8ClampedArray.from(Common.ScaledImage), Common.SizeX,  Common.SizeY);
-                }
-
-                fract(x) {
-
-                    return x - Math.floor(x);
-                }
-
-                mix(a, b, c) {
-
-                    return Interpolate.Interpolate2P1Q(a, b, c);
-                }
-
-                Mul(x, y) {
-
-                    var r = Common.Red(x) * y;
-                    var g = Common.Green(x) * y;
-                    var b = Common.Blue(x) * y;
-                    var a = Common.Alpha(x) * y;
-
-                    return Common.ARGBINT(a, r, g, b);
-                }
-
-                scale(image, ppx, ppy, srcx, srcy) {
-
-                    const COLOR_LOW = 0.7;
-                    const COLOR_HIGH = 1.0;
-                    const VERTICAL_BORDER_DEPTH = 0.6;
-                    const SCANLINE_DEPTH = 0.3;
-                    const CURVENESS = 0.3;
-
-                    var y_curve = Math.cos(ppx - 0.5) * CURVENESS + (1 - CURVENESS);
-                    var y_multiplier = 8.0 / 7.0 / y_curve;
-
-                    ppy *= y_multiplier;
-                    ppy -= (y_multiplier - 1) / 2;
-
-                    if (ppy < 0.0) return Common.ARGBINT(0, 0, 0, 0);
-                    if (ppy > 1.0) return Common.ARGBINT(0, 0, 0, 0);
-
-                    var x_curve = Math.cos(ppy - 0.5) * CURVENESS + (1 - CURVENESS);
-                    var x_multiplier = 1 / x_curve;
-
-                    ppx *= x_multiplier;
-                    ppx -= (x_multiplier - 1) / 2;
-
-                    if (ppx < 0.0) return Common.ARGBINT(0, 0, 0, 0);
-                    if (ppx > 1.0) return Common.ARGBINT(0, 0, 0, 0);
-
-                    var posx = this.fract(ppx * srcx);
-                    var posy = this.fract(ppy * srcy);
-                    var sub_posx = this.fract(ppx * srcx * 6);
-                    var sub_posy = this.fract(ppy * srcy * 6);
-
-                    var positionx = parseInt(ppx * srcx);
-                    var positiony = parseInt(ppy * srcy);
-
-                    var center = Common.CLR(image, srcx, srcy, positionx, positiony, 0, 0);
-                    var left = Common.CLR(image, srcx, srcy, positionx, positiony, - 1, 0);
-                    var right = Common.CLR(image, srcx, srcy, positionx, positiony, 1, 0);
-
-                    if (posy < 1.0 / 6.0) {
-
-                        center = this.mix(center, Common.CLR(image, srcx, srcy, positionx, positiony, 0, - 1), 0.5 - sub_posy / 2.0);
-                        left = this.mix(left, Common.CLR(image, srcx, srcy, positionx, positiony, - 1, - 1), 0.5 - sub_posy / 2.0);
-                        right = this.mix(right, Common.CLR(image, srcx, srcy, positionx, positiony, 1, - 1), 0.5 - sub_posy / 2.0);
-
-                    } else if (posy > 5.0 / 6.0) {
-
-                        center = this.mix(center, Common.CLR(image, srcx, srcy, positionx, positiony, 0, 1), sub_posy / 2.0);
-                        left = this.mix(left, Common.CLR(image, srcx, srcy, positionx, positiony, - 1, 1), sub_posy / 2.0);
-                        right = this.mix(right, Common.CLR(image, srcx, srcy, positionx, positiony, 1, 1), sub_posy / 2.0);
-                    }
-
-                    var scanline_multiplier;
-
-                    if (posy < 0.5) {
-
-                        scanline_multiplier = (posy * 2) * SCANLINE_DEPTH + (1 - SCANLINE_DEPTH);
-
-                    } else {
-
-                        scanline_multiplier = ((1 - posy) * 2) * SCANLINE_DEPTH + (1 - SCANLINE_DEPTH);
-                    }
-
-                    this.Mul(center, scanline_multiplier);
-                    this.Mul(left, scanline_multiplier);
-                    this.Mul(right, scanline_multiplier);
-
-                    var odd = (ppx * srcx) & 1;
-
-                    var gradient_position;
-
-                    if (odd) {
-
-                        posy += 0.5;
-                        posy = this.fract(posy);
-                    }
-
-                    if (posy < 1.0 / 3.0) {
-
-                        gradient_position = posy * 3.0;
-
-                        this.Mul(center, gradient_position * VERTICAL_BORDER_DEPTH + (1 - VERTICAL_BORDER_DEPTH));
-                        this.Mul(left, gradient_position * VERTICAL_BORDER_DEPTH + (1 - VERTICAL_BORDER_DEPTH));
-                        this.Mul(right, gradient_position * VERTICAL_BORDER_DEPTH + (1 - VERTICAL_BORDER_DEPTH));
-
-                    } else if (posy > 2.0 / 3.0) {
-
-                        gradient_position = (1 - posy) * 3.0;
-
-                        this.Mul(center, gradient_position * VERTICAL_BORDER_DEPTH + (1 - VERTICAL_BORDER_DEPTH));
-                        this.Mul(left, gradient_position * VERTICAL_BORDER_DEPTH + (1 - VERTICAL_BORDER_DEPTH));
-                        this.Mul(right, gradient_position * VERTICAL_BORDER_DEPTH + (1 - VERTICAL_BORDER_DEPTH));
-                    }
-
-                    if (posx < 1.0 / 6.0 || posx > 5.0 / 6.0) {
-
-                        posy += 0.5;
-                        posy = this.fract(posy);
 
                         if (posy < 1.0 / 3.0) {
 
-                            gradient_position = posy * 3.0;
+                            gradient_position = +(posy * 3.0);
 
-                            if (posx < 0.5) {
-
-                                gradient_position = 1 - (1 - gradient_position) * (1 - (posx) * 6.0);
-
-                            } else {
-
-                                gradient_position = 1 - (1 - gradient_position) * (1 - (1 - posx) * 6.0);
-                            }
-
-                            this.Mul(center, gradient_position * VERTICAL_BORDER_DEPTH + (1 - VERTICAL_BORDER_DEPTH));
-                            this.Mul(left, gradient_position * VERTICAL_BORDER_DEPTH + (1 - VERTICAL_BORDER_DEPTH));
-                            this.Mul(right, gradient_position * VERTICAL_BORDER_DEPTH + (1 - VERTICAL_BORDER_DEPTH));
+                            Mul(center, gradient_position * 0.6 + 0.4);
+                            Mul(left, gradient_position * 0.6 + 0.4);
+                            Mul(right, gradient_position * 0.6 + 0.4);
 
                         } else if (posy > 2.0 / 3.0) {
 
-                            gradient_position = (1 - posy) * 3.0;
+                            gradient_position = +(1 - posy) * 3.0;
 
-                            if (posx < 0.5) {
-
-                                gradient_position = 1 - (1 - gradient_position) * (1 - (posx) * 6.0);
-
-                            } else {
-
-                                gradient_position = 1 - (1 - gradient_position) * (1 - (1 - posx) * 6.0);
-                            }
-
-                            this.Mul(center, gradient_position * VERTICAL_BORDER_DEPTH + (1 - VERTICAL_BORDER_DEPTH));
-                            this.Mul(left, gradient_position * VERTICAL_BORDER_DEPTH + (1 - VERTICAL_BORDER_DEPTH));
-                            this.Mul(right, gradient_position * VERTICAL_BORDER_DEPTH + (1 - VERTICAL_BORDER_DEPTH));
+                            Mul(center, gradient_position * 0.6 + 0.4);
+                            Mul(left, gradient_position * 0.6 + 0.4);
+                            Mul(right, gradient_position * 0.6 + 0.4);
                         }
+
+                        if (posx < 1.0 / 6.0 || posx > 5.0 / 6.0) {
+
+                            posy = +(posy + 0.5);
+                            posy = +(posy % 1.0);
+
+                            if (posy < 1.0 / 3.0) {
+
+                                gradient_position = +(posy * 3.0);
+
+                                if (posx < 0.5) {
+
+                                    gradient_position = +(1 - (1 - gradient_position) * (1 - (ppx) * 6.0));
+
+                                } else {
+
+                                    gradient_position = +(1 - (1 - gradient_position) * (1 - (1 - ppx) * 6.0));
+                                }
+
+                                Mul(center, gradient_position * 0.6 + 0.4);
+                                Mul(left, gradient_position * 0.6 + 0.4);
+                                Mul(right, gradient_position * 0.6 + 0.4);
+
+                            } else if (posy > 2.0 / 3.0) {
+
+                                gradient_position = +(1 - posy) * 3.0;
+
+                                if (posx < 0.5) {
+
+                                    gradient_position = +(1 - (1 - gradient_position) * (1 - (ppx) * 6.0));
+
+                                } else {
+
+                                    gradient_position = +(1 - (1 - gradient_position) * (1 - (1 - ppx) * 6.0));
+                                }
+
+                                Mul(center, gradient_position * 0.6 + 0.4);
+                                Mul(left, gradient_position * 0.6 + 0.4);
+                                Mul(right, gradient_position * 0.6 + 0.4);
+                            }
+                        }
+
+                        midleft = mix(left, center, 0.5);
+                        midright = mix(right, center, 0.5);
+
+                        cr = Red(center) | 0;
+                        cg = Green(center) | 0;
+                        cb = Blue(center) | 0;
+                        mlb = Blue(midleft) | 0;
+                        mrr = Red(midright) | 0;
+                        mrg = Green(midright) | 0;
+                        lb = Blue(left) | 0;
+                        rr = Red(right) | 0;
+                        rg = Green(right) | 0;
+                        alpha = Alpha(center) | 0;
+
+                        if (ppx < 1.0 / 6.0) {
+
+                            ret = mix(ARGBINT(alpha, cr * 255, cg * 255, lb * 255), ARGBINT(alpha, cr * 255, cg * 255, lb * 255), sub_posx);
+
+                        } else if (ppx < 2.0 / 6.0) {
+
+                            ret = mix(ARGBINT(alpha, cr * 255, cg * 255, lb * 255), ARGBINT(alpha, cr * 255, cg * 255, mlb * 255), sub_posx);
+
+                        } else if (ppx < 3.0 / 6.0) {
+
+                            ret = mix(ARGBINT(alpha, cr * 255, cg * 255, mlb * 255), ARGBINT(alpha, mrr * 255, cg * 255, cb * 255), sub_posx);
+
+                        } else if (ppx < 4.0 / 6.0) {
+
+                            ret = mix(ARGBINT(alpha, mrr * 255, cg * 255, cb * 255), ARGBINT(alpha, rr * 255, cg * 255, cb * 255), sub_posx);
+
+                        } else if (ppx < 5.0 / 6.0) {
+
+                            ret = mix(ARGBINT(alpha, rr * 255, cg * 255, cb * 255), ARGBINT(alpha, rr * 255, mrg * 255, cb * 255), sub_posx);
+
+                        } else {
+
+                            ret = mix(ARGBINT(alpha, rr * 255, mrg * 255, cb * 255), ARGBINT(alpha, rr * 255, rg * 255, cb * 255), sub_posx);
+                        }
+
+                        if (positionx < 1) {
+
+                            Mul(ret, positionx | 0);
+
+                        } else if (positionx > srcx - 1) {
+
+                            Mul(ret, srcx - positionx | 0);
+                        }
+
+                        if (positiony < 1) {
+
+                            Mul(ret, positiony | 0);
+
+                        } else if (positiony > srcy - 1) {
+
+                            Mul(ret, srcy - positiony | 0);
+                        }
+
+                        ScaledImage[offset * Channels] = Red(ret) | 0;
+                        ScaledImage[offset * Channels + 1] = Green(ret) | 0;
+                        ScaledImage[offset * Channels + 2] = Blue(ret) | 0;
+                        ScaledImage[offset * Channels + 3] = Alpha(ret) | 0;
+
                     }
 
-                    var midleft = this.mix(left, center, 0.5);
-                    var midright = this.mix(right, center, 0.5);
-
-                    var ret;
-
-                    var cr = Common.Red(center);
-                    var cg = Common.Green(center);
-                    var cb = Common.Blue(center);
-                    var mlb = Common.Blue(midleft);
-                    var mrr = Common.Red(midright);
-                    var mrg = Common.Green(midright);
-                    var lb = Common.Blue(left);
-                    var rr = Common.Red(right);
-                    var rg = Common.Green(right);
-                    var alpha = Common.Alpha(center);
-
-                    if (posx < 1.0 / 6.0) {
-
-                        ret = this.mix(Common.ARGBINT(alpha, COLOR_HIGH * cr, COLOR_LOW * cg, COLOR_HIGH * lb), Common.ARGBINT(alpha, COLOR_HIGH * cr, COLOR_LOW * cg, COLOR_LOW * lb), sub_posx);
-
-                    } else if (posx < 2.0 / 6.0) {
-
-                        ret = this.mix(Common.ARGBINT(alpha, COLOR_HIGH * cr, COLOR_LOW * cg, COLOR_LOW * lb), Common.ARGBINT(alpha, COLOR_HIGH * cr, COLOR_HIGH * cg, COLOR_LOW * mlb), sub_posx);
-
-                    } else if (posx < 3.0 / 6.0) {
-
-                        ret = this.mix(Common.ARGBINT(alpha, COLOR_HIGH * cr, COLOR_HIGH * cg, COLOR_LOW * mlb), Common.ARGBINT(alpha, COLOR_LOW * mrr, COLOR_HIGH * cg, COLOR_LOW * cb), sub_posx);
-
-                    } else if (posx < 4.0 / 6.0) {
-
-                        ret = this.mix(Common.ARGBINT(alpha, COLOR_LOW * mrr, COLOR_HIGH * cg, COLOR_LOW * cb), Common.ARGBINT(alpha, COLOR_LOW * rr, COLOR_HIGH * cg, COLOR_HIGH * cb), sub_posx);
-
-                    } else if (posx < 5.0 / 6.0) {
-
-                        ret = this.mix(Common.ARGBINT(alpha, COLOR_LOW * rr, COLOR_HIGH * cg, COLOR_HIGH * cb), Common.ARGBINT(alpha, COLOR_LOW * rr, COLOR_LOW * mrg, COLOR_HIGH * cb), sub_posx);
-
-                    } else {
-
-                        ret = this.mix(Common.ARGBINT(alpha, COLOR_LOW * rr, COLOR_LOW * mrg, COLOR_HIGH * cb), Common.ARGBINT(alpha, COLOR_HIGH * rr, COLOR_LOW * rg, COLOR_HIGH * cb), sub_posx);
-                    }
-
-                    if (positionx < 1) {
-
-                        this.Mul(ret, positionx);
-
-                    } else if (positionx > srcx - 1) {
-
-                        this.Mul(ret, srcx - positionx);
-                    }
-
-                    if (positiony < 1) {
-
-                        this.Mul(ret, positiony);
-
-                    } else if (positiony > srcy - 1) {
-
-                        this.Mul(ret, srcy - positiony);
-                    }
-
-                    return ret;
+                    current = current + 1 | 0;
                 }
+
+                return new ImageData(ScaledImage, SizeX, SizeY);
             }
-            return Filter;
+
+            function mix(a, b, c) {
+
+                a = a | 0;
+                b = b | 0;
+                c = +c;
+
+                return ((a + ((b - a) * c)) | 0);
+            }
+
+            function Mul(x, y) {
+
+                x = x | 0;
+                y = +y;
+
+                return ((x * y) | 0);
+            }
+
+            function Red(rgb) {
+
+                rgb = rgb | 0;
+
+                return ((rgb >>> 16) & 0xFF) | 0;
+            }
+
+            function Green(rgb) {
+
+                rgb = rgb | 0;
+
+                return ((rgb >>> 8) & 0xFF) | 0;
+            }
+
+            function Blue(rgb) {
+
+                rgb = rgb | 0;
+
+                return (rgb & 0xFF) | 0;
+            }
+
+            function Alpha(rgb) {
+
+                rgb = rgb | 0;
+
+                return (rgb >>> 24) | 0;
+            }
+
+            function ARGBINT(a, r, g, b) {
+
+                a = a | 0;
+                r = r | 0;
+                g = g | 0;
+                b = b | 0;
+
+                return (((((a) << 24) | (r << 16) | (g << 8) | b) >>> 0) | 0);
+            }
+
+            function CLR(Input, srcx, srcy, x, y, dx, dy) {
+
+                Input = Input | 0;
+                srcx = srcx | 0;
+                srcy = srcy | 0;
+                x = x | 0;
+                y = y | 0;
+                dx = dx | 0;
+                dy = dy | 0;
+
+                var Channels = 4;
+
+                var xx = 0;
+                var yy = 0;
+
+                xx = (x + dx) | 0;
+                yy = (y + dy) | 0;
+
+                xx = max(0, min(srcx - 1, xx)) | 0;
+                yy = max(0, min(srcy - 1, yy)) | 0;
+
+                var index = 0;
+
+                index = ((yy * srcx + xx) * Channels) | 0;
+
+                var r = 0;
+                var g = 0;
+                var b = 0;
+                var a = 0;
+
+                r = (Input[index] | 0);
+                g = (Input[index + 1] | 0);
+                b = (Input[index + 2] | 0);
+                a = (Input[index + 3] | 0);
+
+                return ARGBINT(a, r, g, b) | 0;
+            }
+
+            return { Apply: apply };
         }());
 
-        resolve(new CRT().Apply(image_data.data, image_data.width, image_data.height, scale, 0));
+        resolve(new CRT.Apply(image_data.data, image_data.width, image_data.height, scale, 0));
     });
 }
-
 
 function crt(image_data, scale, pool) {
 

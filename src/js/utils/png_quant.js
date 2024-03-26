@@ -9,7 +9,7 @@ const png_quant = function(dataurl, quality_min, quality_max, speed, pool) {
     speed = speed | 0;
     pool = pool || null;
 
-    const options = {"speed": speed.toString(), "quality": quality_min.toString() + "-" + quality_max.toString(), "nofs": true, "floyd": 0, "strip": true};
+    const options = {"speed": speed.toString(), "quality": quality_min.toString() + "-" + quality_max.toString(), "nofs": true, "floyd": 0, "strip": false};
 
     return new Promise(function(resolve, reject) {
 
@@ -21,16 +21,8 @@ const png_quant = function(dataurl, quality_min, quality_max, speed, pool) {
 
                 return window.png_quant_process_function(dataurl, options);
             }).then(function (r) {
-
                 return new Promise(function (resolve, reject) {
-
-                    if (r.match("data:image/png;base64,dW5kZWZpbmVk")) {
-
-                        resolve(dataurl);
-                    } else {
-
-                        resolve(r);
-                    }
+                    resolve(r);
                 });
             }).then(function (r) {
                 resolve(r)
