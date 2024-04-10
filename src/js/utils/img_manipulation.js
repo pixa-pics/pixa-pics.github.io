@@ -105,8 +105,8 @@ window.base64_sanitize_process_function = function (base64, scale, resizer) {
 
 
            
-            let width1 = (img.width || img.naturalWidth) * scale;
-            let height1 = (img.height || img.naturalHeight) * scale;
+            let width1 = img.naturalWidth * scale;
+            let height1 = img.naturalHeight * scale;
             let ctx1 = imgToImgD(img, width1|0, height1|0, resizer);
 
             try {
@@ -114,7 +114,13 @@ window.base64_sanitize_process_function = function (base64, scale, resizer) {
                 createImageBitmap(imgd).then(function(bmp){
                 
                     var canvas;
+                    try {
                         canvas = new OffscreenCanvas(bmp.width, bmp.height);
+                    }catch (e) {
+                        canvas = document.createElement("canvas");
+                        canvas.height = bmp.height;
+                        canvas.width = bmp.width;
+                    }
                     var ctx2 = canvas.getContext("bitmaprenderer");
                         ctx2.imageSmoothingEnabled = false;
                         ctx2.transferFromImageBitmap(bmp);
@@ -176,7 +182,10 @@ window.base64_to_bitmap_process_function = new AsyncFunction(`var t = async func
 
         return res.blob().then(function(blb){
 
-            return createImageBitmap(blb);
+            return createImageBitmap(blb, {
+                resizeQuality: "pixelated",
+                premultiplyAlpha: 'premultiply'
+            });
         });
     });
 
@@ -221,7 +230,8 @@ const bitmap_to_imagedata = (bitmap, resize_to =  1920*1080, callback_function =
             createImageBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, {
                 resizeWidth: Math.round(bitmap.width * scale),
                 resizeHeight: Math.round(bitmap.height * scale),
-                resizeQuality: "pixelated"
+                resizeQuality: "pixelated",
+                premultiplyAlpha: 'premultiply'
             }).then(function (bitmap_resized){
 
                 let canvas;
@@ -274,6 +284,7 @@ const imagedata_to_bitmap = (imgd, resize_to =  1920*1080, callback_function = (
             createImageBitmap(imgd, 0, 0, imgd.width, imgd.height, {
                 resizeWidth: Math.round(imgd.width * scale),
                 resizeHeight: Math.round(imgd.height * scale),
+                premultiplyAlpha: 'premultiply',
                 resizeQuality: "pixelated"
             }).then(function (bitmap_resized){
 
@@ -295,7 +306,7 @@ window.imagedata_to_base64_process_function = new AFunction(`var t = function(im
     
         return new Promise(function(resolve, _) {
 
-            createImageBitmap(imagedata, {
+            createImageBitmap(imagedata, 0, 0, imagedata.width, imagedata.height, {
                 premultiplyAlpha: 'premultiply',
                 resizeQuality: 'pixelated'
             }).then((bmp) => {

@@ -586,6 +586,11 @@ QuantiMat.prototype.run =  function() {
     "use strict";
 
     var t = (this.new_pxl_colors_length > 60000 ? 12: this.new_pxl_colors_length > 32000 ? 8: this.new_pxl_colors_length > 16000 ? 4: this.new_pxl_colors_length > 8192 ? 3: this.new_pxl_colors_length > 4096 ? 2: 1) | 0;
+   if(this.new_pxl_colors_length <= this.best_color_number) {
+       this.deduplicate();
+       this.clusterize();
+       return this;
+   }
     while (this.new_pxl_colors_length > this.best_color_number) {
 
         if(this.process_threshold(t|0)) {
@@ -595,7 +600,6 @@ QuantiMat.prototype.run =  function() {
 
         t = t + (this.new_pxl_colors_length > 60000 ? 12: this.new_pxl_colors_length > 32000 ? 8: this.new_pxl_colors_length > 16000 ? 4: this.new_pxl_colors_length > 8192 ? 3: this.new_pxl_colors_length > 4096 ? 2: 1) | 0;
     }
-
 
     return this;
 };

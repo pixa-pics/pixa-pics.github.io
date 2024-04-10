@@ -37,17 +37,16 @@ export default class ImageProcessor {
 
         const {colorNumber, colorNumberCertainty, colorData} = this.imageManager.computePaletteData();
         console.log(colorNumber, colorNumberCertainty, colorData)
+        this.options.quantizeStrength = colorNumber;
         if(colorNumberCertainty >= 0.25) {
-            this.options.quantizeStrength = colorNumber;
-        }
+            const {tileSize, certainty} = this.imageManager.analyzeImageForTileSize(colorData);
+            const targetTileSize = Math.sqrt(this.tileWidth*this.tileHeight);
+            const factor = 2.0;
 
-        const {tileSize, certainty} = this.imageManager.analyzeImageForTileSize(colorData);
-        const targetTileSize = Math.sqrt(this.tileWidth*this.tileHeight);
-        const factor = 2.0;
-
-        if(((tileSize * factor) > targetTileSize) && (tileSize < (targetTileSize*factor))) {
-            console.log("changeFinalCanvasParameters: "+(this.canvas.width / tileSize|0)+"/"+ (this.canvas.height / tileSize|0))
-            this.changeFinalCanvasParameters(this.canvas.width / tileSize|0, this.canvas.height / tileSize|0)
+            if(((tileSize * factor) > targetTileSize) && (tileSize < (targetTileSize*factor))) {
+                console.log("changeFinalCanvasParameters: "+(this.canvas.width / tileSize|0)+"/"+ (this.canvas.height / tileSize|0))
+                this.changeFinalCanvasParameters(this.canvas.width / tileSize|0, this.canvas.height / tileSize|0)
+            }
         }
     }
     updateTiles() {

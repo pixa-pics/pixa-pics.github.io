@@ -931,7 +931,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                                                     ref={(el) => {
                                                         this._set_canvas_ref(el, layer.thumbnail, true)
                                                     }}
-                                                    key={"layer-n-" + index_reverse_order + "-w-" + layer.thumbnail.width + "-h-" + layer.thumbnail.height}
+                                                    key={"layer-n-" + index_reverse_order + "-w-" + layer.thumbnail.width + "-h-" + layer.thumbnail.height + "-x-" + layer.thumbnail.hash}
                                                     width={layer.thumbnail.width || 0}
                                                     height={layer.thumbnail.height || 0}
                                                     style={{background: `repeating-conic-gradient(rgb(248 248 248 / 100%) 0% 25%, rgb(224 224 224 / 100%) 0% 50%) left top 50% / calc(200% / ${width}) calc(200% / ${height})`}}

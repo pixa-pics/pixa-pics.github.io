@@ -87,7 +87,7 @@ export default class ImageManager {
         const result = QuantiMat({
             pxls,
             pxl_colors,
-            number_of_color: numberOfColors,
+            number_of_color: Math.min(pxl_colors.length, numberOfColors),
             width: imageData.width,
             height: imageData.height
         }).init().run().output("split");
@@ -203,6 +203,7 @@ export default class ImageManager {
 
         var t1 = Date.now();
         const dataQuantize = ImageManager.quantizeImageData(this.contextSource, 192);
+        const initialColorNumber = dataQuantize.centroids.length;
         var t2 = Date.now();
         const distortion = ImageManager._calculateDistortions(dataQuantize, imageData); // Calculate distortions
         var t3 = Date.now();
@@ -210,7 +211,7 @@ export default class ImageManager {
         var t4 = Date.now();
         const elbowStrength = ImageManager._calculateElbowStrength(distortion.clustersDistortion, elbowPoint);
         var t5 = Date.now();
-        const newImageDataData = ImageManager.quantizeImageData(this.contextSource, elbowPoint).imageData;
+        const newImageDataData = elbowPoint === 0 ? this.contextSource.getImageData(0, 0, this.contextSource.canvas.width, this.contextSource.canvas.height): ImageManager.quantizeImageData(this.contextSource, elbowPoint).imageData;
         var t6 = Date.now();
         console.log({
             "quantizeImageData1": t2-t1,
@@ -221,7 +222,7 @@ export default class ImageManager {
         })
 
         return {
-            colorNumber: elbowPoint,
+            colorNumber: elbowPoint === 0 ? initialColorNumber: elbowPoint,
             colorNumberCertainty: elbowStrength,
             colorData: newImageDataData
         };
@@ -287,11 +288,11 @@ export default class ImageManager {
             if (entries.length > 0) {
                 let n = 0;
                 let tileSize = entries[n++].length;
-                while(tileSize <= 5 || tileSize >= 16){
+                while(tileSize <= 3.5 || tileSize >= 16){
                     tileSize = entries[n++].length;
                 }
                 const totalCount = entries.reduce((acc, entry) => acc + entry.count, 0);
-                const certainty = entries[0].count / totalCount; // Simple certainty calculation
+                const certainty = entries[n-1].count / totalCount; // Simple certainty calculation
                 return { tileSize, certainty };
             }
 

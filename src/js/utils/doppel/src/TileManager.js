@@ -15,8 +15,8 @@ export default class TileManager {
         this.tilesColorUint8a = new Uint8ClampedArray(this.tilesColorUint32a.buffer);
         this.extendedTileWidth = this.tileWidth * this.overlapFactor | 0;
         this.extendedTileHeight = this.tileHeight * this.overlapFactor | 0;
-        this.tilePaddingWidth = (this.extendedTileWidth - this.tileWidth) / 2 | 0;
-        this.tilePaddingHeight = (this.extendedTileHeight - this.tileHeight) / 2 | 0;
+        this.tilePaddingWidth = (this.extendedTileWidth - this.tileWidth) / 2 + 1.0 | 0;
+        this.tilePaddingHeight = (this.extendedTileHeight - this.tileHeight) / 2 + 1.0 | 0;
     }
     getTiles(){
         "use strict";

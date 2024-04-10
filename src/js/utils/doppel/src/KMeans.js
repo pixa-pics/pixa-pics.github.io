@@ -3,8 +3,8 @@ import { Color } from "simdope";
 export default class KMeans {
     constructor(data, k) {
         this.data = data;
-        this.k = k;
-        this.centroids = new Array(k);
+        this.k = Math.min(k, this.data.length);
+        this.centroids = new Array(this.k);
         this.clusters = new Uint32Array(this.data.length); // Using Uint32Array for cluster assignments
         this.c1 = new Color(new ArrayBuffer(4));
         this.c2 = new Color(new ArrayBuffer(4));
@@ -27,7 +27,7 @@ export default class KMeans {
     assignClusters() {
         this.data.forEach((point, idx) => {
             let minDist = Number.MAX_VALUE;
-            let cluster = -1;
+            let cluster = 0;
 
             this.centroids.forEach((centroid, centroidIdx) => {
                 const dist = this.distance(point, centroid);
@@ -100,14 +100,13 @@ export default class KMeans {
 
             this.assignClusters();
             counts = this.updateCentroids();
-            if(reassign){
+            iterations++;
+            hasConverged = this.centroids.every((centroid, idx) => {
+                return this.distance(centroid, oldCentroids[idx]) < 8;
+            });
+            if(reassign && !hasConverged){
                 this.reassignCentroids(counts)
             }
-            iterations++;
-
-            hasConverged = this.centroids.every((centroid, idx) => {
-                return this.distance(centroid, oldCentroids[idx]) < 1e-5;
-            });
         }
         var counter = this.getCentroidsPopulationCount(this.centroids, this.clusters)
         var centroidsSorted = Array.from(this.centroids).map((data, index) => {

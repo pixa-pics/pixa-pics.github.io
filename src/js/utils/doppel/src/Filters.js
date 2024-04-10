@@ -12,7 +12,7 @@ export default class Filters {
     applyFilters() {
         "use strict";
         //this.despeckleFilter.apply();
-        this.quantizeFilter.apply();
+        //this.quantizeFilter.apply();
         //this.mergeFilter.apply();
     }
 }
