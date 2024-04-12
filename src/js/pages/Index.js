@@ -21,6 +21,7 @@ const Pixel = React.lazy(() => import("../pages/Pixel"));
 const Unknown = React.lazy(() => import("../pages/Unknown"));
 const Settings = React.lazy(() =>  import("../pages/Settings"));
 const Marketplace = React.lazy(() =>  import("../pages/Marketplace"));
+const Ico = React.lazy(() =>  import("../pages/ico"));
 
 import JamyAngry from "../icons/JamyAngry";
 import JamyAnnoyed from "../icons/JamyAnnoyed";
@@ -257,17 +258,15 @@ class Index extends React.PureComponent {
             case "home":
                 return <Home settings={settings} />;
             case "pixel":
-
                 return <Suspense fallback={<div/>}><Pixel load_with={load_with} settings={settings}/></Suspense>;
             case "unknown":
-
                 return <Suspense fallback={<div/>}><Unknown /></Suspense>;
             case "settings":
-
                 return <Suspense fallback={<div/>}><Settings settings={settings} /></Suspense>;
             case "marketplace":
-
                 return <Suspense fallback={<div/>}><Marketplace settings={settings} /></Suspense>;
+            case "ico":
+                return <Suspense fallback={<div/>}><Ico settings={settings} /></Suspense>;
         }
     }
 

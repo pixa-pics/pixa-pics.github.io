@@ -30,6 +30,11 @@ const PAGE_ROUTES = [
         page_regex: /\/(marketplace)$/,
         page_name: "marketplace",
         tabs: ""
+    },
+    {
+        page_regex: /\/(ico)$/,
+        page_name: "ico",
+        tabs: ""
     }
 ];
 
