@@ -3,7 +3,6 @@ import {Fade, withStyles} from "@material-ui/core";
 
 import {List, ListItem, ListItemIcon, ListItemText, Badge} from "@material-ui/core";
 
-import DnaIcon from "../icons/Dna";
 import AppInfoDialog from "../components/AppInfoDialog";
 import CodeIcon from "@material-ui/icons/Code";
 import StoreIcon from "@material-ui/icons/Store";
@@ -12,6 +11,7 @@ import InfoIcon from "@material-ui/icons/Info";
 
 import { HISTORY } from "../utils/constants";
 import actions from "../actions/utils";
+import NewReleases from "@material-ui/icons/NewReleases";
 
 const styles = theme => ({
     nested: {
@@ -253,13 +253,13 @@ class DrawerContent extends React.PureComponent {
                     <Fade in={true} timeout={900}>
                         <ListItem button className={classes.listItemGrey} TouchRippleProps={{className: classes.rippleBlue}} onClick={() => {this._go_to("marketplace")}}>
                             <ListItemIcon><StoreIcon className={classes.iconColor} /></ListItemIcon>
-                            <ListItemText primary="PixaMarket Demo" />
+                            <ListItemText primary="PixaMarket: Demo" />
                         </ListItem>
                     </Fade>
                     <Fade in={true} timeout={1200}>
                         <ListItem button className={classes.listItemGrey} TouchRippleProps={{className: classes.rippleBlue}} onClick={(event) => this._go_to("ico")}>
-                            <ListItemIcon><DnaIcon className={classes.iconColor} /></ListItemIcon>
-                            <ListItemText primary="ICO (PixaMarket)" />
+                            <ListItemIcon><NewReleases className={classes.iconColor} /></ListItemIcon>
+                            <ListItemText primary="PixaMarket: ICO" />
                         </ListItem>
                     </Fade>
                     <Fade in={true} timeout={1500}>
