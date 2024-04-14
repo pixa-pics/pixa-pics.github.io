@@ -3,6 +3,8 @@ import {Button, withStyles} from "@material-ui/core";
 import actions from "../actions/utils";
 import FileDownload from "../icons/FileDownload";
 import Fade from "@material-ui/core/Fade";
+import Icon from "@material-ui/core/Icon";
+import LinkedIn from "../icons/LinkedIn";
 
 const styles = theme => ({
     root: {
@@ -38,14 +40,14 @@ const styles = theme => ({
         },
     },
     text: {
-        minWidth: "900px",
+        minWidth: "836px",
         width: "100%",
-        maxWidth: "900px",
+        maxWidth: "836px",
         margin: "auto",
         "@media (max-width: 948px)": {
-            margin: "24px",
+            margin: "36px",
             minWidth: "0",
-            maxWidth: "calc(100% - 48px)",
+            maxWidth: "calc(100% - 72px)",
             "& img.main": {
                 display: "none"
             }
@@ -67,10 +69,10 @@ const styles = theme => ({
             maxHeight: "100%",
             transform: "scale(1.0)",
             filter: "grayscale(1)",
-            transition: "all 175ms cubic-bezier(0.4, 0, 0.2, 1)",
+            transition: "all 175ms cubic-bezier(0.4, 0, 0.2, 1) !important",
             "&:hover": {
                 transform: "scale(1.05)",
-                filter: "grayscale(0)",
+                filter: "grayscale(0)"
             }
         }
     },
@@ -96,25 +98,23 @@ const styles = theme => ({
         textAlign: "left",
         "@media (max-width: 520px)": {
             "& img": {
-                width: "calc(100% - 64px)",
-                display: "flex"
+                width: "100%",
+                display: "inline-flex"
             },
             "& > div > div:first-child": {
                 marginRight: "0",
             }
         },
         "& img": {
-            width: "100%",
-            aspectRatio: "1 / 1",
-            marginBottom: 32,
-            maxWidth: 300,
+            marginBottom: 8,
+            height: 300,
         },
         "& > div": {
             maxWidth: "calc(100% - 64px)",
             marginBottom: 0,
         },
-        "& > div > div:first-child": {
-            marginRight: "32px",
+        "& > div > div": {
+            margin: "16px !important",
         }
     },
     actionButtonICO: {
@@ -127,6 +127,14 @@ const styles = theme => ({
             backgroundColor: "#61ff45",
             color: "#000",
             filter: "drop-shadow(0px 0px 6px #81ff6fcc) drop-shadow(0px 0px 9px #5BFF3355)",
+        }
+    },
+    buttons: {
+        "& button:last-child": {
+            "@media (max-width: 391px)": {
+                marginLeft: "0 !important",
+                marginTop: 12
+            }
         }
     }
 });
@@ -175,16 +183,20 @@ class Marketplace extends React.Component {
             <div className={classes.root}>
                 <div className={classes.text}>
                     <div style={{display: "flex"}}>
-                        <Fade in timeout={400}>
-                            <div>
+                        <div>
+                            <Fade in timeout={400}>
                                 <h1 style={{fontSize: "48px", fontWeight: "bold"}}>Onboard the Pixa's Initial Coin Offering (ICO)</h1>
+                            </Fade>
+                            <Fade in timeout={500}>
                                 <h2 style={{marginTop: "24px", color: "#c2d5fe"}}>Pixa.Market is a social media blockchain NFT platform working exclusively with 1000x more lightweight images as it is pixel-art. Our current target of timespan for NFTs is beyond 1,000 years.</h2>
+                            </Fade>
+                            <Fade in timeout={600}>
                                 <div style={{marginTop: 32}}>
                                     <Button startIcon={<FileDownload/>} onClick={() => this._open_link("https://drive.google.com/file/d/1bx-14zE2EYt4fpycxr84sMWDa_JaYliW/view")} color={"primary"} variant={"contained"}>Lite-Paper</Button>
                                     <Button startIcon={<FileDownload/>} onClick={() => this._open_link("https://drive.google.com/file/d/1nIpVDSxgViEn183Kyr3SvLBlFmaaOzwe/view")} style={{marginLeft: 8}} color={"primary"} variant={"contained"}>Pitch-Deck</Button>
                                 </div>
-                            </div>
-                        </Fade>
+                            </Fade>
+                        </div>
                         <Fade in timeout={650}>
                             <img onClick={this._edit} className={"pixelated main"} src="data:image/png;base64,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" />
                         </Fade>
@@ -254,7 +266,7 @@ class Marketplace extends React.Component {
                         </div>
                     </Fade>
                     <Fade in timeout={1200}>
-                        <div>
+                        <div className={classes.buttons}>
                             <h3 style={{fontSize: "44px", fontWeight: "bold"}}>Links</h3>
                             <Button onClick={() => this._open_link("https://openfund.com/d/PixaMarket")} className={classes.actionButtonICO} color={"secondary"} startIcon={<img style={{marginLeft: 4}} src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA0AAAAPBAMAAADNDVhEAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAAeUExURUdwTP/LPGI0Nv+iADogMhoQF/T/m9FpCv99ALlQJ68UySgAAAABdFJOUwBA5thmAAAAUUlEQVQI12NgUFJgAAEWwSQw7SlsBhaIFDYGC4Q3QmjWCkEhsIKIcgcwzRoC08qUlgKm1YwzQVJMwsaSASAThQ3LwbSgRClY3qM9AGKVKwMDAKz7C7yd/uyrAAAAAElFTkSuQmCC"/>} endIcon={<img style={{marginRight: 4}} src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPBAMAAADJ+Ih5AAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAAeUExURUdwTLVsThMTJ2I0NjogMotDNS0ZKuQtOFwlU5AqZkF9xYQAAAABdFJOUwBA5thmAAAAZklEQVQI12NgAAIXBwYIcBSBshJFxSCMFMMwMM1S7mwEptPcSxRAWhxFjWYUAfmBgqLGKu0KDK6CgoKBRk0QhqDRJAaGVDADqDg5UFBQFKSbyVRQMNgJZIyysbEJyBgGJiUlJSAFAOMzD0qzCfbZAAAAAElFTkSuQmCC"/>}>
                                 OpenFund
@@ -272,16 +284,16 @@ class Marketplace extends React.Component {
                     </Fade>
                     <Fade in timeout={1450}>
                         <div className={classes.founders}>
-                            <h3 style={{fontSize: "44px", fontWeight: "bold"}}>E-Meet Our Co-Founders</h3>
+                            <h3 style={{fontSize: "44px", fontWeight: "bold"}}>Meet The Co-Founders</h3>
                             <p>Book a call with us at any time! <a href={"mailto:business@pixa.market"} target={"_blank"}>business@pixa.market</a>. Or contact us on <a href={"https://www.linkedin.com/company/pixamarket/"} target={"_blank"}>LinkedIn</a>.</p>
                             <div style={{display: "inline-flex", marginBottom: 32, verticalAlign: "bottom", textAlign: "center"}}>
                                 <div>
                                     <img src={"src/images/ico/Matias.png"}/>
-                                    <Button onClick={() => this._open_link("https://www.linkedin.com/in/matias-affolter/")} style={{backgroundColor: "#201594", color: "#fff"}} color={"secondary"} variant={"contained"}>Matias Affolter 🇨🇭</Button>
+                                    <Button startIcon={<Icon><LinkedIn/></Icon>} onClick={() => this._open_link("https://www.linkedin.com/in/matias-affolter/")} style={{backgroundColor: "#201594", color: "#fff"}} color={"secondary"} variant={"contained"}>Matias Affolter 🇨🇭</Button>
                                 </div>
                                 <div>
                                     <img src={"src/images/ico/Mathiew.png"}/>
-                                    <Button onClick={() => this._open_link("https://www.linkedin.com/in/mathiew-estepho-b7078894/")} style={{backgroundColor: "#100662", color: "#fff"}} color={"secondary"} variant={"contained"}>Mathiew Estepho 🇨🇦</Button>
+                                    <Button startIcon={<Icon><LinkedIn/></Icon>} onClick={() => this._open_link("https://www.linkedin.com/in/mathiew-estepho-b7078894/")} style={{backgroundColor: "#100662", color: "#fff"}} color={"secondary"} variant={"contained"}>Mathiew Estepho 🇨🇦</Button>
                                 </div>
                             </div>
                         </div>
