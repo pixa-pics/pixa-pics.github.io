@@ -2,6 +2,7 @@ import React from "react";
 import {Button, withStyles} from "@material-ui/core";
 import actions from "../actions/utils";
 import FileDownload from "../icons/FileDownload";
+import Fade from "@material-ui/core/Fade";
 
 const styles = theme => ({
     root: {
@@ -22,7 +23,19 @@ const styles = theme => ({
         },
         "& a:hover": {
             color: "#ffffff"
-        }
+        },
+        "& ol": {
+            display: "flex",
+            "& li": {
+                width: "33%",
+                margin: 8,
+                color: "#c0c0c0",
+                transition: "color 225ms cubic-bezier(0.4, 0, 0.2, 1)"
+            }
+        },
+        "& ol li:hover": {
+            color: "#ffffff"
+        },
     },
     text: {
         minWidth: "900px",
@@ -51,16 +64,30 @@ const styles = theme => ({
             backgroundColor: "#ffffff",
             boxShadow: "rgb(0 123 255 / 17%) 0px 4px 8px 2px, rgb(0 6 255 / 32%) 0px 4px 5px 5px, rgb(61 0 175 / 34%) 0px 1px 10px 14px",
             maxWidth: "100%",
-            maxHeight: "100%"
+            maxHeight: "100%",
+            transform: "scale(1.0)",
+            filter: "grayscale(1)",
+            transition: "all 175ms cubic-bezier(0.4, 0, 0.2, 1)",
+            "&:hover": {
+                transform: "scale(1.05)",
+                filter: "grayscale(0)",
+            }
         }
     },
+    tableWrapper: {
+        maxWidth: "100%",
+        position: "relative",
+        overflowX: "overlay",
+    },
     table: {
+        minWidth: "max-content",
         "& tr": {
             "& th": {
-                padding: 4
+                padding: "4px 16px 4px 12px",
+                fontStyle: "underline"
             },
             "& td": {
-                padding: 4,
+                padding: "4px 16px 4px 12px",
                 marginRight: 24
             }
         }
@@ -88,6 +115,18 @@ const styles = theme => ({
         },
         "& > div > div:first-child": {
             marginRight: "32px",
+        }
+    },
+    actionButtonICO: {
+        marginLeft: 0,
+        backgroundColor: "#8eff7b",
+        color: "#000",
+        filter: "drop-shadow(0px 0px 4px #81ff6fcc) drop-shadow(0px 0px 6px #5BFF3355)",
+        transition: "all .3s cubic-bezier(0.4, 0, 0.2, 1)",
+        "&:hover": {
+            backgroundColor: "#61ff45",
+            color: "#000",
+            filter: "drop-shadow(0px 0px 6px #81ff6fcc) drop-shadow(0px 0px 9px #5BFF3355)",
         }
     }
 });
@@ -136,97 +175,117 @@ class Marketplace extends React.Component {
             <div className={classes.root}>
                 <div className={classes.text}>
                     <div style={{display: "flex"}}>
+                        <Fade in timeout={400}>
+                            <div>
+                                <h1 style={{fontSize: "48px", fontWeight: "bold"}}>Onboard the Pixa's Initial Coin Offering (ICO)</h1>
+                                <h2 style={{marginTop: "24px", color: "#c2d5fe"}}>Pixa.Market is a social media blockchain NFT platform working exclusively with 1000x more lightweight images as it is pixel-art. Our current target of timespan for NFTs is beyond 1,000 years.</h2>
+                                <div style={{marginTop: 32}}>
+                                    <Button startIcon={<FileDownload/>} onClick={() => this._open_link("https://drive.google.com/file/d/1bx-14zE2EYt4fpycxr84sMWDa_JaYliW/view")} color={"primary"} variant={"contained"}>Lite-Paper</Button>
+                                    <Button startIcon={<FileDownload/>} onClick={() => this._open_link("https://drive.google.com/file/d/1nIpVDSxgViEn183Kyr3SvLBlFmaaOzwe/view")} style={{marginLeft: 8}} color={"primary"} variant={"contained"}>Pitch-Deck</Button>
+                                </div>
+                            </div>
+                        </Fade>
+                        <Fade in timeout={650}>
+                            <img onClick={this._edit} className={"pixelated main"} src="data:image/png;base64,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" />
+                        </Fade>
+                    </div>
+                    <Fade in timeout={800}>
                         <div>
-                            <h1 style={{fontSize: "48px", fontWeight: "bold"}}>Onboard the Pixa's Initial Coin Offering (ICO)</h1>
-                            <h2 style={{marginTop: "24px", color: "#c2d5fe"}}>Pixa.Market is a social media blockchain NFT platform working exclusively with 1000x more lightweight images as it is pixel-art. Our current target of timespan for NFTs is beyond 1,000 years.</h2>
-                            <div style={{marginTop: 32}}>
-                                <Button startIcon={<FileDownload/>} onClick={() => this._open_link("https://drive.google.com/file/d/1bx-14zE2EYt4fpycxr84sMWDa_JaYliW/view")} color={"primary"} variant={"contained"}>Lite-Paper</Button>
-                                <Button startIcon={<FileDownload/>} onClick={() => this._open_link("https://drive.google.com/file/d/1nIpVDSxgViEn183Kyr3SvLBlFmaaOzwe/view")} style={{marginLeft: 8}} color={"primary"} variant={"contained"}>Pitch-Deck</Button>
+                            <div style={{fontSize: "18px"}}>
+                                <p style={{marginTop: 24, fontWeight: "bold", color: "#fff"}}>You can use it for the following advantages:</p>
+                                <ol>
+                                    <li>Make money without investing anything else but a few minutes of your spare time.</li>
+                                    <li>Possess someone else unique life story as a digital experience lasting forever.</li>
+                                    <li>Trade the best in-class or rarest artworks and keep your friends up to date.</li>
+                                </ol>
                             </div>
                         </div>
-                        <img onClick={this._edit} className={"pixelated main"} src="data:image/png;base64,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" />
-                    </div>
-                    <div>
-                        <div style={{fontSize: "18px"}}>
-                            <p style={{fontWeight: "bold", color: "#fff"}}>You can use it for the following advantages:</p>
-                            <ol style={{fontWeight: "initial", color: "#d9ffd2"}}>
-                                <li>Make money without investing anything else but a few minutes of your spare time.</li>
-                                <li>Possess someone else unique life story as a digital experience lasting forever.</li>
-                                <li>Trade the best in-class or rarest artworks and keep your friends up to date.</li>
-                            </ol>
-                        </div>
-                    </div>
-                    <div>
-                        <h3 style={{fontSize: "44px", fontWeight: "bold"}}>Price & Discount</h3>
-                        <table className={classes.table}>
-                            <tr>
-                                <th>Round's Name</th>
-                                <th>Price</th>
-                                <th>Discount</th>
-                                <th>Quantity</th>
-                                <th>Value</th>
-                            </tr>
-                            <tr style={{color: "#00ff00"}}>
-                                <td>Pre-Seed</td>
-                                <td>$ 0.03</td>
-                                <td>50.0% Off</td>
-                                <td>2 Millions</td>
-                                <td>$ 60,000</td>
-                            </tr>
-                            <tr style={{color: "#ffffff"}}>
-                                <td>Seed</td>
-                                <td>$ 0.035</td>
-                                <td>41.6% Off</td>
-                                <td>4 Millions</td>
-                                <td>$ 140,000</td>
-                            </tr>
-                            <tr style={{color: "#ffffff"}}>
-                                <td>Community</td>
-                                <td>$ 0.04</td>
-                                <td>33.3% Off</td>
-                                <td>10 Millions</td>
-                                <td>$ 400,000</td>
-                            </tr>
-                            <tr style={{color: "#ffffff"}}>
-                                <td>Strategic</td>
-                                <td>$ 0.05</td>
-                                <td>16.6% Off</td>
-                                <td>10 Millions</td>
-                                <td>$ 500,000</td>
-                            </tr>
-                            <tr style={{color: "#ffffff"}}>
-                                <td>Other</td>
-                                <td>$ 0.06</td>
-                                <td>No Discount</td>
-                                <td>1 to 10 Millions</td>
-                                <td>$ 60-600 k</td>
-                            </tr>
-                        </table>
-                    </div>
-                    <div>
-                        <h3 style={{fontSize: "44px", fontWeight: "bold"}}>Links</h3>
-                        <Button onClick={() => this._open_link("https://openfund.com/d/PixaMarket")} style={{marginLeft: 0, backgroundColor: "#0d6b00", color: "#fff"}} color={"secondary"} variant={"contained"}>OpenFund</Button>
-                        <Button onClick={() => this._open_link("https://www.linkedin.com/company/pixamarket/")} style={{marginLeft: 8}} color={"secondary"} variant={"contained"}>LinkedIn</Button>
-                    </div>
-                    <div>
-                        <h3 style={{fontSize: "44px", fontWeight: "bold"}}>800% Forecasting</h3>
-                        <p>Steem and Hive (The same technology used by Pixa) with the same parameters regarding coin inflation could demonstrate around a profits of eight times the initial input.</p>
-                        <p>The time Pixa develop its own plugin for trading post (pixel artwork) is set to one or two years, then it should be more or less driven by the same force behind the market.</p>
-                    </div>
-                    <div className={classes.founders}>
-                        <h3 style={{fontSize: "44px", fontWeight: "bold"}}>E-Meet Our Co-Founders</h3>
-                        <p>Book a call with us at any time! <a href={"mailto:business@pixa.market"} target={"_blank"}>business@pixa.market</a>. Or contact us on <a href={"https://www.linkedin.com/company/pixamarket/"} target={"_blank"}>LinkedIn</a>.</p>
-                        <div style={{display: "inline-flex", marginBottom: 32, verticalAlign: "bottom", textAlign: "center"}}>
-                            <div>
-                                <img src={"src/images/ico/Matias.png"}/>
-                                <Button onClick={() => this._open_link("https://www.linkedin.com/in/matias-affolter/")} style={{backgroundColor: "#201594", color: "#fff"}} color={"secondary"} variant={"contained"}>Matias Affolter 🇨🇭</Button>
-                            </div>
-                            <div>
-                                <img src={"src/images/ico/Mathiew.png"}/>
-                                <Button onClick={() => this._open_link("https://www.linkedin.com/in/mathiew-estepho-b7078894/")} style={{backgroundColor: "#100662", color: "#fff"}} color={"secondary"} variant={"contained"}>Mathiew Estepho 🇨🇦</Button>
+                    </Fade>
+                    <Fade in timeout={1000}>
+                        <div>
+                            <h3 style={{fontSize: "44px", fontWeight: "bold"}}>Price & Discount</h3>
+                            <div className={classes.tableWrapper}>
+
+                                <table className={classes.table}>
+                                    <tr>
+                                        <th>Round's Name</th>
+                                        <th>Price</th>
+                                        <th>Discount</th>
+                                        <th>Quantity</th>
+                                        <th>Value</th>
+                                    </tr>
+                                    <tr style={{color: "#00ff00"}}>
+                                        <td>Pre-Seed</td>
+                                        <td>$ 0.03</td>
+                                        <td>50.0% Off</td>
+                                        <td>2 Millions</td>
+                                        <td>$ 60,000</td>
+                                    </tr>
+                                    <tr style={{color: "#ff9400"}}>
+                                        <td>Seed</td>
+                                        <td>$ 0.035</td>
+                                        <td>41.6% Off</td>
+                                        <td>4 Millions</td>
+                                        <td>$ 140,000</td>
+                                    </tr>
+                                    <tr style={{color: "#ff0000"}}>
+                                        <td>Community</td>
+                                        <td>$ 0.04</td>
+                                        <td>33.3% Off</td>
+                                        <td>10 Millions</td>
+                                        <td>$ 400,000</td>
+                                    </tr>
+                                    <tr style={{color: "#ff0000"}}>
+                                        <td>Strategic</td>
+                                        <td>$ 0.05</td>
+                                        <td>16.6% Off</td>
+                                        <td>10 Millions</td>
+                                        <td>$ 500,000</td>
+                                    </tr>
+                                    <tr style={{color: "#ff0000"}}>
+                                        <td>Other</td>
+                                        <td>$ 0.06</td>
+                                        <td>No Discount</td>
+                                        <td>1 to 10 Millions</td>
+                                        <td>$ 60-600 k</td>
+                                    </tr>
+                                </table>
                             </div>
                         </div>
-                    </div>
+                    </Fade>
+                    <Fade in timeout={1200}>
+                        <div>
+                            <h3 style={{fontSize: "44px", fontWeight: "bold"}}>Links</h3>
+                            <Button onClick={() => this._open_link("https://openfund.com/d/PixaMarket")} className={classes.actionButtonICO} color={"secondary"} startIcon={<img style={{marginLeft: 4}} src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA0AAAAPBAMAAADNDVhEAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAAeUExURUdwTP/LPGI0Nv+iADogMhoQF/T/m9FpCv99ALlQJ68UySgAAAABdFJOUwBA5thmAAAAUUlEQVQI12NgUFJgAAEWwSQw7SlsBhaIFDYGC4Q3QmjWCkEhsIKIcgcwzRoC08qUlgKm1YwzQVJMwsaSASAThQ3LwbSgRClY3qM9AGKVKwMDAKz7C7yd/uyrAAAAAElFTkSuQmCC"/>} endIcon={<img style={{marginRight: 4}} src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPBAMAAADJ+Ih5AAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAAeUExURUdwTLVsThMTJ2I0NjogMotDNS0ZKuQtOFwlU5AqZkF9xYQAAAABdFJOUwBA5thmAAAAZklEQVQI12NgAAIXBwYIcBSBshJFxSCMFMMwMM1S7mwEptPcSxRAWhxFjWYUAfmBgqLGKu0KDK6CgoKBRk0QhqDRJAaGVDADqDg5UFBQFKSbyVRQMNgJZIyysbEJyBgGJiUlJSAFAOMzD0qzCfbZAAAAAElFTkSuQmCC"/>}>
+                                OpenFund
+                            </Button>
+                            <Button onClick={() => this._open_link("https://www.linkedin.com/company/pixamarket/")} style={{marginLeft: 8, backgroundColor: "#bbcaff", color: "black"}} color={"secondary"} variant={"contained"}>LinkedIn</Button>
+                            <Button onClick={() => this._open_link("https://t.me/+eziqKfod9gQ3YTJk")} style={{marginLeft: 8, backgroundColor: "#bbcaff", color: "black"}} color={"secondary"} variant={"contained"}>Telegram</Button>
+                        </div>
+                    </Fade>
+                    <Fade in timeout={1300}>
+                        <div>
+                            <h3 style={{fontSize: "44px", fontWeight: "bold"}}>800% Forecasting</h3>
+                            <p>Steem and Hive (The same technology used by Pixa) with the same parameters regarding coin inflation could demonstrate around a profits of eight times the initial input.</p>
+                            <p>The time Pixa develop its own plugin for trading post (pixel artwork) is set to one or two years, then it should be more or less driven by the same force behind the market.</p>
+                        </div>
+                    </Fade>
+                    <Fade in timeout={1450}>
+                        <div className={classes.founders}>
+                            <h3 style={{fontSize: "44px", fontWeight: "bold"}}>E-Meet Our Co-Founders</h3>
+                            <p>Book a call with us at any time! <a href={"mailto:business@pixa.market"} target={"_blank"}>business@pixa.market</a>. Or contact us on <a href={"https://www.linkedin.com/company/pixamarket/"} target={"_blank"}>LinkedIn</a>.</p>
+                            <div style={{display: "inline-flex", marginBottom: 32, verticalAlign: "bottom", textAlign: "center"}}>
+                                <div>
+                                    <img src={"src/images/ico/Matias.png"}/>
+                                    <Button onClick={() => this._open_link("https://www.linkedin.com/in/matias-affolter/")} style={{backgroundColor: "#201594", color: "#fff"}} color={"secondary"} variant={"contained"}>Matias Affolter 🇨🇭</Button>
+                                </div>
+                                <div>
+                                    <img src={"src/images/ico/Mathiew.png"}/>
+                                    <Button onClick={() => this._open_link("https://www.linkedin.com/in/mathiew-estepho-b7078894/")} style={{backgroundColor: "#100662", color: "#fff"}} color={"secondary"} variant={"contained"}>Mathiew Estepho 🇨🇦</Button>
+                                </div>
+                            </div>
+                        </div>
+                    </Fade>
                 </div>
             </div>
         );
