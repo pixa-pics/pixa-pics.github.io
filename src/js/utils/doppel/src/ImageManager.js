@@ -286,10 +286,34 @@ export default class ImageManager {
 
             // We assume the most common length of consecutive pixels might indicate the tile size
             if (entries.length > 0) {
+                let m = 0;
                 let n = 0;
                 let tileSize = entries[n++].length;
-                while(tileSize <= 3.5 || tileSize >= 16){
-                    tileSize = entries[n++].length;
+                while(tileSize >= 3 && tileSize <= 12){
+                    var tile1 = entries[n];
+
+                    var tile2a = entries[n*2-1] | 0;
+                    var tile2b = entries[n*2] | 0;
+                    var tile2c = entries[n*2+1] | 0;
+
+                    var tile3a = entries[n*4-1] | 0;
+                    var tile3b = entries[n*4] | 0;
+                    var tile3c = entries[n*4+1] | 0;
+
+                    var max1 = tile1.count;
+                    var max2 = Math.max(tile2a.count, tile2b.count, tile2c.count);
+                    var max3 = Math.max(tile3a.count, tile3b.count, tile3c.count);
+                    var max = max1 + max2 + max3;
+
+                    if(m < max) {
+                        m = max;
+                        tileSize = tile1.length;
+                        tileSize += (n*2 + [tile2a.count, tile2b.count, tile2c.count].indexOf(max2)-1) / 2;
+                        tileSize += (n*4 + [tile3a.count, tile3b.count, tile3c.count].indexOf(max3)-1) / 4;
+                        tileSize /= 3.0;
+                    }
+
+                    n++;
                 }
                 const totalCount = entries.reduce((acc, entry) => acc + entry.count, 0);
                 const certainty = entries[n-1].count / totalCount; // Simple certainty calculation

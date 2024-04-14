@@ -106,8 +106,9 @@ const styles = theme => ({
             }
         },
         "& img": {
+            width: "100%",
             marginBottom: 8,
-            height: 300,
+            height: "auto",
         },
         "& > div": {
             maxWidth: "calc(100% - 64px)",
