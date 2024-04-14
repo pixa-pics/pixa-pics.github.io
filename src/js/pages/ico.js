@@ -16,7 +16,8 @@ const styles = theme => ({
     },
     text: {
         minWidth: "900px",
-        maxWidth: "100%",
+        width: "100%",
+        maxWidth: "900px",
         margin: "auto",
         "@media (max-width: 948px)": {
             margin: "24px",
@@ -103,7 +104,7 @@ class Marketplace extends React.Component {
                     <div>
                         <div style={{fontSize: "18px"}}>
                             <p style={{fontWeight: "bold", color: "#fff"}}>You can use it for the following advantages:</p>
-                            <ol style={{fontWeight: "initial", color: "#cafec2"}}>
+                            <ol style={{fontWeight: "initial", color: "#d9ffd2"}}>
                                 <li>Make money without investing anything else but a few minutes of your spare time.</li>
                                 <li>Possess someone else unique life story as a digital experience lasting forever.</li>
                                 <li>Trade the best in-class or rarest artworks and keep your friends up to date.</li>
@@ -159,13 +160,24 @@ class Marketplace extends React.Component {
                     </div>
                     <div>
                         <h3 style={{fontSize: "44px", fontWeight: "bold"}}>Links</h3>
-                        <Button onClick={() => this._open_link("https://openfund.com/d/PixaMarket")} style={{marginLeft: 0, backgroundColor: "#4333e7", color: "#fff"}} color={"secondary"} variant={"contained"}>OpenFund</Button>
+                        <Button onClick={() => this._open_link("https://openfund.com/d/PixaMarket")} style={{marginLeft: 0, backgroundColor: "#0d6b00", color: "#fff"}} color={"secondary"} variant={"contained"}>OpenFund</Button>
                         <Button onClick={() => this._open_link("https://www.linkedin.com/company/pixamarket/")} style={{marginLeft: 8}} color={"secondary"} variant={"contained"}>LinkedIn</Button>
                     </div>
                     <div>
                         <h3 style={{fontSize: "44px", fontWeight: "bold"}}>800% Forecasting</h3>
                         <p>Steem and Hive (The same technology used by Pixa) with the same parameters regarding coin inflation could demonstrate around a profits of height times the initial input.</p>
                         <p>The time Pixa develop its own plugin for trading post (pixel artwork) is set to one or two years, then it should be more or less driven by the same force behind the market.</p>
+                    </div>
+                    <div>
+                        <h3 style={{fontSize: "44px", fontWeight: "bold"}}>Co-Founders</h3>
+                        <div style={{display: "inline-flex", marginBottom: 32}}>
+                            <img style={{width: "175px", height: "175px", display: "flex", margin: 0}} src={"src/images/ico/Matias.png"}/>
+                            <img style={{width: "175px", height: "175px", display: "flex"}} src={"src/images/ico/Mathiew.png"}/>
+                        </div>
+                        <div>
+                            <Button onClick={() => this._open_link("https://www.linkedin.com/in/matias-affolter/")} style={{marginLeft: 0, backgroundColor: "#201594", color: "#fff"}} color={"secondary"} variant={"contained"}>Matias Affolter</Button>
+                            <Button onClick={() => this._open_link("https://www.linkedin.com/in/mathiew-estepho-b7078894/")} style={{marginLeft: 64, backgroundColor: "#100662", color: "#fff"}} color={"secondary"} variant={"contained"}>Mathiew Estepho</Button>
+                        </div>
                     </div>
                 </div>
             </div>
