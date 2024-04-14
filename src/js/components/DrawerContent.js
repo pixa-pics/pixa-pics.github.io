@@ -94,9 +94,9 @@ const styles = theme => ({
     },
     styledBadgeConnected: {
         "& .MuiBadge-badge": {
-            marginRight: -8,
-            backgroundColor: "#43e",
-            color: "#43e",
+            color: "#00e93d",
+            marginRight: 16,
+            backgroundColor: "#00d707",
             boxShadow: `0 0 0 2px ${theme.palette.secondary.dark}`,
             "&::after": {
                 position: "absolute",
@@ -240,7 +240,7 @@ class DrawerContent extends React.PureComponent {
                     </Fade>
                     <Fade in={true} timeout={300}>
                         <ListItem button className={classes.listItemGrey} TouchRippleProps={{className: classes.rippleBlue}} onClick={(event) => this._open_link(event, "https://github.com/pixa-pics/pixa-pics.github.io")}>
-                            <Badge className={classes.styledBadgeConnected} overlap="circular" badgeContent=" " variant="dot"><ListItemIcon><CodeIcon className={classes.iconColor} /></ListItemIcon></Badge>
+                            <ListItemIcon><CodeIcon className={classes.iconColor} /></ListItemIcon>
                             <ListItemText primary="Source code" />
                         </ListItem>
                     </Fade>
@@ -258,7 +258,9 @@ class DrawerContent extends React.PureComponent {
                     </Fade>
                     <Fade in={true} timeout={1200}>
                         <ListItem button className={classes.listItemGrey} TouchRippleProps={{className: classes.rippleBlue}} onClick={(event) => this._go_to("ico")}>
-                            <ListItemIcon><NewReleases className={classes.iconColor} /></ListItemIcon>
+                            <Badge className={classes.styledBadgeConnected} overlap="circular" badgeContent=" " variant="dot">
+                                <ListItemIcon><NewReleases className={classes.iconColor} /></ListItemIcon>
+                            </Badge>
                             <ListItemText primary="PixaMarket: ICO" />
                         </ListItem>
                     </Fade>

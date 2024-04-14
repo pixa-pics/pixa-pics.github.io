@@ -8,11 +8,21 @@ const styles = theme => ({
         textAlign: "left",
         overflow: "overlay",
         maxHeight: "100%",
-        padding: 32,
+        paddingTop: 32,
+        paddingBottom: 32,
         backgroundColor: "#000",
         color: "#fff",
         minHeight: "100%",
         fontWeight: "initial",
+        "& a": {
+            color: "#ddefff"
+        },
+        "& a:visited": {
+            color: "#bcdcff"
+        },
+        "& a:hover": {
+            color: "#ffffff"
+        }
     },
     text: {
         minWidth: "900px",
@@ -22,16 +32,26 @@ const styles = theme => ({
         "@media (max-width: 948px)": {
             margin: "24px",
             minWidth: "0",
-            maxWidth: "calc(100% - 24px)",
-            "& img": {
+            maxWidth: "calc(100% - 48px)",
+            "& img.main": {
                 display: "none"
             }
         },
-        "& img": {
+        "@media (max-width: 520px)": {
+            margin: "16px",
+            maxWidth: "calc(100% - 32px)",
+        },
+        "& img.main": {
             width: "400px",
             height: "400px",
             marginLeft: "32px",
-            cursor: "pointer"
+            cursor: "pointer",
+            padding: 12,
+            borderRadius: 8,
+            backgroundColor: "#ffffff",
+            boxShadow: "rgb(0 123 255 / 17%) 0px 4px 8px 2px, rgb(0 6 255 / 32%) 0px 4px 5px 5px, rgb(61 0 175 / 34%) 0px 1px 10px 14px",
+            maxWidth: "100%",
+            maxHeight: "100%"
         }
     },
     table: {
@@ -43,6 +63,31 @@ const styles = theme => ({
                 padding: 4,
                 marginRight: 24
             }
+        }
+    },
+    founders: {
+        textAlign: "left",
+        "@media (max-width: 520px)": {
+            "& img": {
+                width: "calc(100% - 64px)",
+                display: "flex"
+            },
+            "& > div > div:first-child": {
+                marginRight: "0",
+            }
+        },
+        "& img": {
+            width: "100%",
+            aspectRatio: "1 / 1",
+            marginBottom: 32,
+            maxWidth: 300,
+        },
+        "& > div": {
+            maxWidth: "calc(100% - 64px)",
+            marginBottom: 0,
+        },
+        "& > div > div:first-child": {
+            marginRight: "32px",
         }
     }
 });
@@ -99,7 +144,7 @@ class Marketplace extends React.Component {
                                 <Button startIcon={<FileDownload/>} onClick={() => this._open_link("https://drive.google.com/file/d/1nIpVDSxgViEn183Kyr3SvLBlFmaaOzwe/view")} style={{marginLeft: 8}} color={"primary"} variant={"contained"}>Pitch-Deck</Button>
                             </div>
                         </div>
-                        <img onClick={this._edit} style={{padding: 12, borderRadius: 8, backgroundColor: "#fff", maxWidth: "100%", maxHeight: "100%", width: 400, height: 400}} className={"pixelated"} src="data:image/png;base64,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" />
+                        <img onClick={this._edit} className={"pixelated main"} src="data:image/png;base64,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" />
                     </div>
                     <div>
                         <div style={{fontSize: "18px"}}>
@@ -165,18 +210,21 @@ class Marketplace extends React.Component {
                     </div>
                     <div>
                         <h3 style={{fontSize: "44px", fontWeight: "bold"}}>800% Forecasting</h3>
-                        <p>Steem and Hive (The same technology used by Pixa) with the same parameters regarding coin inflation could demonstrate around a profits of height times the initial input.</p>
+                        <p>Steem and Hive (The same technology used by Pixa) with the same parameters regarding coin inflation could demonstrate around a profits of eight times the initial input.</p>
                         <p>The time Pixa develop its own plugin for trading post (pixel artwork) is set to one or two years, then it should be more or less driven by the same force behind the market.</p>
                     </div>
-                    <div>
-                        <h3 style={{fontSize: "44px", fontWeight: "bold"}}>Co-Founders</h3>
-                        <div style={{display: "inline-flex", marginBottom: 32}}>
-                            <img style={{width: "175px", height: "175px", display: "flex", margin: 0}} src={"src/images/ico/Matias.png"}/>
-                            <img style={{width: "175px", height: "175px", display: "flex"}} src={"src/images/ico/Mathiew.png"}/>
-                        </div>
-                        <div>
-                            <Button onClick={() => this._open_link("https://www.linkedin.com/in/matias-affolter/")} style={{marginLeft: 0, backgroundColor: "#201594", color: "#fff"}} color={"secondary"} variant={"contained"}>Matias Affolter</Button>
-                            <Button onClick={() => this._open_link("https://www.linkedin.com/in/mathiew-estepho-b7078894/")} style={{marginLeft: 64, backgroundColor: "#100662", color: "#fff"}} color={"secondary"} variant={"contained"}>Mathiew Estepho</Button>
+                    <div className={classes.founders}>
+                        <h3 style={{fontSize: "44px", fontWeight: "bold"}}>E-Meet Our Co-Founders</h3>
+                        <p>Book a call with us at any time! <a href={"mailto:business@pixa.market"} target={"_blank"}>business@pixa.market</a>. Or contact us on <a href={"https://www.linkedin.com/company/pixamarket/"} target={"_blank"}>LinkedIn</a>.</p>
+                        <div style={{display: "inline-flex", marginBottom: 32, verticalAlign: "bottom", textAlign: "center"}}>
+                            <div>
+                                <img src={"src/images/ico/Matias.png"}/>
+                                <Button onClick={() => this._open_link("https://www.linkedin.com/in/matias-affolter/")} style={{backgroundColor: "#201594", color: "#fff"}} color={"secondary"} variant={"contained"}>Matias Affolter 🇨🇭</Button>
+                            </div>
+                            <div>
+                                <img src={"src/images/ico/Mathiew.png"}/>
+                                <Button onClick={() => this._open_link("https://www.linkedin.com/in/mathiew-estepho-b7078894/")} style={{backgroundColor: "#100662", color: "#fff"}} color={"secondary"} variant={"contained"}>Mathiew Estepho 🇨🇦</Button>
+                            </div>
                         </div>
                     </div>
                 </div>
