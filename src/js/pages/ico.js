@@ -29,7 +29,7 @@ const styles = theme => ({
         "& ol": {
             display: "flex",
             "& li": {
-                width: "33%",
+                width: "calc(33% - 16px)",
                 margin: 8,
                 color: "#c0c0c0",
                 transition: "color 225ms cubic-bezier(0.4, 0, 0.2, 1)"
@@ -111,7 +111,7 @@ const styles = theme => ({
             height: "auto",
         },
         "& > div": {
-            maxWidth: "calc(100% - 64px)",
+            maxWidth: "100%",
             marginBottom: 0,
         },
         "& > div > div": {
@@ -131,8 +131,15 @@ const styles = theme => ({
         }
     },
     buttons: {
+        boxSizing: "border-box",
         "& button:last-child": {
-            "@media (max-width: 391px)": {
+            "@media (max-width: 395px)": {
+                marginLeft: "0 !important",
+                marginTop: 12
+            }
+        },
+        "& button": {
+            "@media (max-width: 275px)": {
                 marginLeft: "0 !important",
                 marginTop: 12
             }
@@ -205,7 +212,7 @@ class Marketplace extends React.Component {
                     <Fade in timeout={800}>
                         <div>
                             <div style={{fontSize: "18px"}}>
-                                <p style={{marginTop: 24, fontWeight: "bold", color: "#fff"}}>You can use it for the following advantages:</p>
+                                <p style={{marginTop: 24, fontSize: "21px", fontWeight: "bold", color: "#fff"}}>You can use it for the following advantages:</p>
                                 <ol>
                                     <li>Make money without investing anything else but a few minutes of your spare time.</li>
                                     <li>Possess someone else unique life story as a digital experience lasting forever.</li>
@@ -226,6 +233,7 @@ class Marketplace extends React.Component {
                                         <th>Discount</th>
                                         <th>Quantity</th>
                                         <th>Value</th>
+                                        <th>State</th>
                                     </tr>
                                     <tr style={{color: "#00ff00"}}>
                                         <td>Pre-Seed</td>
@@ -233,13 +241,15 @@ class Marketplace extends React.Component {
                                         <td>50.0% Off</td>
                                         <td>2 Millions</td>
                                         <td>$ 60,000</td>
+                                        <td>Open</td>
                                     </tr>
-                                    <tr style={{color: "#ff9400"}}>
+                                    <tr style={{color: "#ff7300"}}>
                                         <td>Seed</td>
                                         <td>$ 0.035</td>
                                         <td>41.6% Off</td>
                                         <td>4 Millions</td>
                                         <td>$ 140,000</td>
+                                        <td>Readying</td>
                                     </tr>
                                     <tr style={{color: "#ff0000"}}>
                                         <td>Community</td>
@@ -247,6 +257,7 @@ class Marketplace extends React.Component {
                                         <td>33.3% Off</td>
                                         <td>10 Millions</td>
                                         <td>$ 400,000</td>
+                                        <td>Not Open</td>
                                     </tr>
                                     <tr style={{color: "#ff0000"}}>
                                         <td>Strategic</td>
@@ -254,6 +265,7 @@ class Marketplace extends React.Component {
                                         <td>16.6% Off</td>
                                         <td>10 Millions</td>
                                         <td>$ 500,000</td>
+                                        <td>Not Open</td>
                                     </tr>
                                     <tr style={{color: "#ff0000"}}>
                                         <td>Other</td>
@@ -261,6 +273,7 @@ class Marketplace extends React.Component {
                                         <td>No Discount</td>
                                         <td>1 to 10 Millions</td>
                                         <td>$ 60-600 k</td>
+                                        <td>Not Open</td>
                                     </tr>
                                 </table>
                             </div>
@@ -289,12 +302,12 @@ class Marketplace extends React.Component {
                             <p>Book a call with us at any time! <a href={"mailto:business@pixa.market"} target={"_blank"}>business@pixa.market</a>. Or contact us on <a href={"https://www.linkedin.com/company/pixamarket/"} target={"_blank"}>LinkedIn</a>.</p>
                             <div style={{display: "inline-flex", marginBottom: 32, verticalAlign: "bottom", textAlign: "center"}}>
                                 <div>
-                                    <img src={"src/images/ico/Matias.png"}/>
                                     <Button startIcon={<Icon><LinkedIn/></Icon>} onClick={() => this._open_link("https://www.linkedin.com/in/matias-affolter/")} style={{backgroundColor: "#201594", color: "#fff"}} color={"secondary"} variant={"contained"}>Matias Affolter 🇨🇭</Button>
+                                    <img src={"src/images/ico/Matias.png"}/>
                                 </div>
                                 <div>
-                                    <img src={"src/images/ico/Mathiew.png"}/>
                                     <Button startIcon={<Icon><LinkedIn/></Icon>} onClick={() => this._open_link("https://www.linkedin.com/in/mathiew-estepho-b7078894/")} style={{backgroundColor: "#100662", color: "#fff"}} color={"secondary"} variant={"contained"}>Mathiew Estepho 🇨🇦</Button>
+                                    <img src={"src/images/ico/Mathiew.png"}/>
                                 </div>
                             </div>
                         </div>
