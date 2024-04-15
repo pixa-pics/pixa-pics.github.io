@@ -6,6 +6,7 @@ import Fade from "@material-ui/core/Fade";
 import Icon from "@material-ui/core/Icon";
 import LinkedIn from "../icons/LinkedIn";
 import Telegram from "../icons/Telegram";
+import Lottie from "../components/Lottie";
 
 const styles = theme => ({
     root: {
@@ -27,6 +28,15 @@ const styles = theme => ({
         "& a:hover": {
             color: "#ffffff"
         },
+        "@media (max-width: 520px)": {
+            "& ol": {
+                display: "block !important",
+                "& li": {
+                    width: "100% !important",
+                    margin: "12px 0px 0px 0px !important"
+                }
+            },
+        },
         "& ol": {
             display: "flex",
             "& li": {
@@ -39,6 +49,9 @@ const styles = theme => ({
         "& ol li:hover": {
             color: "#ffffff"
         },
+        "& h3": {
+            margin: "32px 0px 16px 0px"
+        }
     },
     text: {
         minWidth: "836px",
@@ -97,13 +110,16 @@ const styles = theme => ({
     },
     founders: {
         textAlign: "left",
-        "@media (max-width: 520px)": {
-            "& img": {
-                width: "100%",
-                display: "inline-flex"
+        "@media (max-width: 420px)": {
+            "& > div": {
+                display: "block !important",
             },
             "& > div > div:first-child": {
                 marginRight: "0",
+            },
+            "& > div > div": {
+                display: "block !important",
+                width: "100%"
             }
         },
         "& img": {
@@ -121,14 +137,14 @@ const styles = theme => ({
     },
     actionButtonICO: {
         marginLeft: 0,
-        backgroundColor: "#bdffaf",
-        color: "#001e04",
-        filter: "drop-shadow(0px 0px 0px #81ff6fcc) drop-shadow(0px 0px 0px #90ff7a)",
+        background: "linear-gradient(131deg, #ffd045, #fff3c1, #ffd22d, #fff8a5)",
+        color: "#1c1300",
+        filter: "drop-shadow(0px 0px 1px #fff8a5) drop-shadow(0px 0px 3px #ffd045)",
         transition: "all .3s cubic-bezier(0.4, 0, 0.2, 1)",
         "&:hover": {
-            backgroundColor: "#90ff7a",
+            background: "linear-gradient(131deg, #ffd045, #fff3c1, #ffd22d, #fff8a5)",
             color: "#000000",
-            filter: "drop-shadow(0px 0px 3px #81ff6fcc) drop-shadow(0px 0px 5px #90ff7a)",
+            filter: "drop-shadow(0px 0px 2px #fff3c1) drop-shadow(0px 0px 4px #ffd22d)",
         }
     },
     buttons: {
@@ -158,6 +174,8 @@ const styles = theme => ({
         }
     }
 });
+
+// startIcon={<img style={{marginLeft: 4}} src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA0AAAAPBAMAAADNDVhEAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAAeUExURUdwTP/LPGI0Nv+iADogMhoQF/T/m9FpCv99ALlQJ68UySgAAAABdFJOUwBA5thmAAAAUUlEQVQI12NgUFJgAAEWwSQw7SlsBhaIFDYGC4Q3QmjWCkEhsIKIcgcwzRoC08qUlgKm1YwzQVJMwsaSASAThQ3LwbSgRClY3qM9AGKVKwMDAKz7C7yd/uyrAAAAAElFTkSuQmCC"/>}
 
 class Marketplace extends React.Component {
 
@@ -206,7 +224,7 @@ class Marketplace extends React.Component {
                     <div style={{display: "flex"}}>
                         <div>
                             <Fade in timeout={400}>
-                                <h1 style={{fontSize: "48px", fontWeight: "bold"}}>Onboard the Pixa's Initial Coin Offering (ICO)</h1>
+                                <h1 style={{fontSize: "48px", fontWeight: "bold", marginTop: 0}}>Onboard the Pixa's Initial Coin Offering (ICO)</h1>
                             </Fade>
                             <Fade in timeout={500}>
                                 <h2 style={{marginTop: "24px", color: "#c2d5fe"}}>Pixa.Market is a social media blockchain NFT platform working exclusively with 1000x more lightweight images as it is pixel-art. Our current target of timespan for NFTs is beyond 1,000 years.</h2>
@@ -242,7 +260,9 @@ class Marketplace extends React.Component {
                     </Fade>
                     <Fade in timeout={1000}>
                         <div>
-                            <h3 style={{fontSize: "44px", fontWeight: "bold"}}>Price & Discount</h3>
+                            <h3 style={{fontSize: "44px", fontWeight: "bold"}}>
+                                <span>Price & Discount</span>
+                            </h3>
                             <div className={classes.tableWrapper}>
                                 <table className={classes.table}>
                                     <tr>
@@ -299,10 +319,19 @@ class Marketplace extends React.Component {
                     </Fade>
                     <Fade in timeout={1200}>
                         <div className={classes.buttons}>
-                            <h3 style={{fontSize: "44px", fontWeight: "bold"}}>Links</h3>
-                            <Tooltip title={"Buy our tokens!"}>
-                                <Button onClick={() => this._open_link("https://openfund.com/d/PixaMarket")} className={classes.actionButtonICO} color={"secondary"} startIcon={<img style={{marginLeft: 4}} src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA0AAAAPBAMAAADNDVhEAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAAeUExURUdwTP/LPGI0Nv+iADogMhoQF/T/m9FpCv99ALlQJ68UySgAAAABdFJOUwBA5thmAAAAUUlEQVQI12NgUFJgAAEWwSQw7SlsBhaIFDYGC4Q3QmjWCkEhsIKIcgcwzRoC08qUlgKm1YwzQVJMwsaSASAThQ3LwbSgRClY3qM9AGKVKwMDAKz7C7yd/uyrAAAAAElFTkSuQmCC"/>}>
-                                    OpenFund
+                            <h3 style={{fontSize: "44px", fontWeight: "bold"}}>
+                                <span>Utility Token & Links</span>
+                            </h3>
+                            <Tooltip title={"Utility token on https://openfund.com!"}>
+                                <Button onClick={() => this._open_link("https://openfund.com/d/PixaMarket")} className={classes.actionButtonICO} color={"secondary"}>
+                                    <span>BUY TOKEN</span>
+                                    <Lottie
+                                        id={"coins"}
+                                        hover={true}
+                                        autoplay={true}
+                                        loop={true}
+                                        src="/src/js/lottie/CoinsAnimated.json"
+                                        style={{position: "absolute", height: 108, width: 108, marginBottom: -64, transform: "translateY(-50%)"}}/>
                                 </Button>
                             </Tooltip>
                             <Tooltip title={"Stay tuned with Pixa on LinkedIn!"}>
@@ -315,16 +344,16 @@ class Marketplace extends React.Component {
                     </Fade>
                     <Fade in timeout={1300}>
                         <div>
-                            <h3 style={{fontSize: "44px", fontWeight: "bold"}}>Forecasting — 800% Growth!</h3>
-                            <p>Steem and Hive (The same technology used by Pixa) with the same parameters regarding coin inflation could demonstrate around a profits of eight times the initial input.</p>
-                            <p>The time Pixa develop its own plugin for trading post (pixel artwork) is set to one or two years, then it should be more or less driven by the same force behind the market.</p>
+                            <h3 style={{fontSize: "44px", fontWeight: "bold"}}>Tokenomics</h3>
+                            <p>Steem and Hive (The same technology used by Pixa) have the same parameters regarding the coin inflation and supply with a similar wind, Pixa could demonstrate around a profits of eight times the initial input.</p>
+                            <p>The time Pixa develop its own plugin for trading post (pixel artwork) is set to around one years, then it should be more or less driven by the same force behind the market which set the token price at around $ 0.30.</p>
                         </div>
                     </Fade>
                     <Fade in timeout={1450}>
                         <div className={classes.founders}>
                             <h3 style={{fontSize: "44px", fontWeight: "bold"}}>Meet The Co-Founders</h3>
                             <p>Book a call with us at any time! <a href={"mailto:business@pixa.market"} target={"_blank"}>business@pixa.market</a>. Or contact us on <a href={"https://www.linkedin.com/company/pixamarket/"} target={"_blank"}>LinkedIn</a>.</p>
-                            <div style={{display: "inline-flex", marginBottom: 32, verticalAlign: "bottom", textAlign: "center"}}>
+                            <div style={{display: "inline-flex", marginTop: 32, verticalAlign: "bottom", textAlign: "center"}}>
                                 <div>
                                     <Button startIcon={<Icon><LinkedIn/></Icon>} onClick={() => this._open_link("https://www.linkedin.com/in/matias-affolter/")} style={{backgroundColor: "#201594", color: "#fff"}} color={"secondary"} variant={"contained"}>Matias Affolter 🇨🇭</Button>
                                     <Tooltip title={"I make software. (Often available)"}>
