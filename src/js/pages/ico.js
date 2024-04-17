@@ -6,6 +6,7 @@ import Fade from "@material-ui/core/Fade";
 import Icon from "@material-ui/core/Icon";
 import LinkedIn from "../icons/LinkedIn";
 import Telegram from "../icons/Telegram";
+import Badge from "@material-ui/core/Badge"
 import Lottie from "../components/Lottie";
 
 const styles = theme => ({
@@ -95,12 +96,49 @@ const styles = theme => ({
         position: "relative",
         overflowX: "overlay",
     },
+    styledBadgeConnectedA: {
+        "& .MuiBadge-badge": {
+            color: "#00e93d",
+            marginRight: -20,
+            marginTop: 8,
+            backgroundColor: "#00d707",
+            boxShadow: `0 0 0 2px ${theme.palette.secondary.dark}`,
+            "&::after": {
+                position: "absolute",
+                top: 0,
+                right: 0,
+                width: "100%",
+                height: "100%",
+                borderRadius: "50%",
+                animation: "$rippleA 1.2s infinite ease-in-out",
+                border: "1px solid currentColor",
+                content: "\"\"",
+            }
+        },
+        "@global": {
+            "@keyframes rippleA": {
+                "0%": {
+                    transform: "scale(.8)",
+                    opacity: 1,
+                },
+                "100%": {
+                    transform: "scale(2.4)",
+                    opacity: 0,
+                },
+            }
+        }
+    },
     table: {
+        fontSize: "16px",
         minWidth: "max-content",
         "& tr": {
+            "&:hover th": {
+                backgroundColor: "rgba(255,255,255,0.36)",
+            },
             "& th": {
+                backgroundColor: "#ffffff3d",
                 padding: "4px 16px 4px 12px",
-                fontStyle: "underline"
+                transition: "all .3s cubic-bezier(0.4, 0, 0.2, 1)",
             },
             "& td": {
                 padding: "4px 16px 4px 12px",
@@ -137,14 +175,12 @@ const styles = theme => ({
     },
     actionButtonICO: {
         marginLeft: 0,
-        background: "linear-gradient(131deg, #ffd045, #fff3c1, #ffd22d, #fff8a5)",
-        color: "#1c1300",
-        filter: "drop-shadow(0px 0px 1px #fff8a5) drop-shadow(0px 0px 3px #ffd045)",
+        background: "radial-gradient(ellipse farthest-corner at right bottom, #ffffff 0%, #fff2a3 15%, #ffea37 30%, #ffdf58c4 40%, #ffd14ea8 50%, #ffbc0073 60%, #c78e2700 80%), radial-gradient(ellipse farthest-corner at left top, #fff5a9 0%, #ffff78 15%, #ffe8a7 25%, #ffcd15 62.5%, #5f3900 100%)",
+        color: "#000000",
+        filter: "drop-shadow(0px 0px 1px #fff8a599) drop-shadow(0px 0px 3px #ffd04566) brightness(.85) contrast(1.4) saturate(.88) brightness(1.1)",
         transition: "all .3s cubic-bezier(0.4, 0, 0.2, 1)",
         "&:hover": {
-            background: "linear-gradient(131deg, #ffd045, #fff3c1, #ffd22d, #fff8a5)",
-            color: "#000000",
-            filter: "drop-shadow(0px 0px 2px #fff3c1) drop-shadow(0px 0px 4px #ffd22d)",
+            filter: "drop-shadow(0px 0px 4px #fff8a599) drop-shadow(0px 0px 12px #ffd04566) brightness(.85) contrast(1.4) saturate(.88) brightness(1.1)",
         }
     },
     buttons: {
@@ -171,6 +207,35 @@ const styles = theme => ({
             backgroundColor: "#0a035d",
             color: "#fff",
             filter: "drop-shadow(0px 0px 3px #0d0041) drop-shadow(0px 0px 5px #0a035d)",
+        }
+    },
+    tableGreenActive: {
+        color: "#00ff00",
+        backgroundColor: "#072a00",
+        cursor: "pointer",
+        transition: "all .3s cubic-bezier(0.4, 0, 0.2, 1)",
+        "&:hover": {
+            color: "#4eff4e",
+            textShadow: "0px 0px 12px lightgreen",
+            backgroundColor: "#0c4600",
+        }
+    },
+    tableOrange: {
+        color: "#ff5c03",
+        backgroundColor: "#2f1200",
+        transition: "all .3s cubic-bezier(0.4, 0, 0.2, 1)",
+        "&:hover": {
+            color: "#ff6718",
+            backgroundColor: "#571f00",
+        }
+    },
+    tableRed: {
+        color: "#c20000",
+        backgroundColor: "#280000",
+        transition: "all .3s cubic-bezier(0.4, 0, 0.2, 1)",
+        "&:hover": {
+            color: "#ff1515",
+            backgroundColor: "#500000",
         }
     }
 });
@@ -273,15 +338,19 @@ class Marketplace extends React.Component {
                                         <th>Value</th>
                                         <th>State</th>
                                     </tr>
-                                    <tr style={{color: "#00ff00", backgroundColor: "#093800", cursor: "pointer"}} onClick={() => this._open_link("https://openfund.com/d/PixaMarket")}>
-                                        <td>Pre-Seed</td>
+                                    <tr className={classes.tableGreenActive} onClick={() => this._open_link("https://openfund.com/d/PixaMarket")}>
+                                        <td>
+                                            <Badge className={classes.styledBadgeConnectedA} overlap="circular" badgeContent=" " variant="dot">
+                                                <span>Pre-Seed</span>
+                                            </Badge>
+                                        </td>
                                         <td>$ 0.03</td>
                                         <td>50.0% Off</td>
                                         <td>2 Millions</td>
                                         <td>$ 60,000</td>
                                         <td>Open</td>
                                     </tr>
-                                    <tr style={{color: "#ff7300"}}>
+                                    <tr className={classes.tableOrange}>
                                         <td>Seed</td>
                                         <td>$ 0.035</td>
                                         <td>41.6% Off</td>
@@ -289,7 +358,7 @@ class Marketplace extends React.Component {
                                         <td>$ 140,000</td>
                                         <td>Readying</td>
                                     </tr>
-                                    <tr style={{color: "#ff0000"}}>
+                                    <tr className={classes.tableRed}>
                                         <td>Community</td>
                                         <td>$ 0.04</td>
                                         <td>33.3% Off</td>
@@ -297,7 +366,7 @@ class Marketplace extends React.Component {
                                         <td>$ 400,000</td>
                                         <td>Not Open</td>
                                     </tr>
-                                    <tr style={{color: "#ff0000"}}>
+                                    <tr className={classes.tableRed}>
                                         <td>Strategic</td>
                                         <td>$ 0.05</td>
                                         <td>16.6% Off</td>
@@ -305,7 +374,7 @@ class Marketplace extends React.Component {
                                         <td>$ 500,000</td>
                                         <td>Not Open</td>
                                     </tr>
-                                    <tr style={{color: "#ff0000"}}>
+                                    <tr className={classes.tableRed}>
                                         <td>Other</td>
                                         <td>$ 0.06</td>
                                         <td>No Discount</td>
@@ -324,7 +393,7 @@ class Marketplace extends React.Component {
                             </h3>
                             <Tooltip title={"Utility token on https://openfund.com!"}>
                                 <Button onClick={() => this._open_link("https://openfund.com/d/PixaMarket")} className={classes.actionButtonICO} color={"secondary"}>
-                                    <span>BUY TOKEN</span>
+                                    <span>BUY UTILITY TOKENS</span>
                                     <Lottie
                                         id={"coins"}
                                         hover={true}

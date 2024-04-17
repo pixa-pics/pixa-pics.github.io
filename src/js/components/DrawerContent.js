@@ -94,9 +94,9 @@ const styles = theme => ({
     },
     styledBadgeConnected: {
         "& .MuiBadge-badge": {
-            color: "#00e93d",
+            color: "#005de9",
             marginRight: 16,
-            backgroundColor: "#00d707",
+            backgroundColor: "#0056d7",
             boxShadow: `0 0 0 2px ${theme.palette.secondary.dark}`,
             "&::after": {
                 position: "absolute",
