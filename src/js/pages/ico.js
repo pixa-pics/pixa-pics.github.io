@@ -8,6 +8,7 @@ import LinkedIn from "../icons/LinkedIn";
 import Telegram from "../icons/Telegram";
 import Badge from "@material-ui/core/Badge"
 import Lottie from "../components/Lottie";
+import YouTube from "@material-ui/icons/YouTube";
 
 const styles = theme => ({
     root: {
@@ -174,14 +175,16 @@ const styles = theme => ({
         }
     },
     actionButtonICO: {
-        marginLeft: 0,
+        margin: "32px 0px 48px 0px",
+        fontSize: "21px",
         background: "radial-gradient(ellipse farthest-corner at right bottom, #ffffff 0%, #fff2a3 15%, #ffea37 30%, #ffdf58c4 40%, #ffd14ea8 50%, #ffbc0073 60%, #c78e2700 80%), radial-gradient(ellipse farthest-corner at left top, #fff5a9 0%, #ffff78 15%, #ffe8a7 25%, #ffcd15 62.5%, #5f3900 100%)",
         color: "#000000",
-        filter: "drop-shadow(0px 0px 1px #fff8a599) drop-shadow(0px 0px 3px #ffd04566) brightness(.85) contrast(1.4) saturate(.88) brightness(1.1)",
+        filter: "drop-shadow(0px 0px 1px #fff8a599) drop-shadow(0px 0px 3px #ffd04566) brightness(.75) contrast(.75) saturate(1.5) brightness(.5)",
         transition: "all .3s cubic-bezier(0.4, 0, 0.2, 1)",
         "&:hover": {
             filter: "drop-shadow(0px 0px 4px #fff8a599) drop-shadow(0px 0px 12px #ffd04566) brightness(.85) contrast(1.4) saturate(.88) brightness(1.1)",
-        }
+        },
+        height: 64,
     },
     buttons: {
         boxSizing: "border-box",
@@ -199,14 +202,14 @@ const styles = theme => ({
         }
     },
     firstButton: {
-        backgroundColor: "#090536",
-        color: "#fff",
-        filter: "drop-shadow(0px 0px 0px #1c0094) drop-shadow(0px 0px 0px #0a035d)",
+        backgroundColor: "#33e52e",
+        color: "#000",
+        filter: "drop-shadow(0px 0px 0px #33e52e) drop-shadow(0px 0px 0px #33e52e)",
         transition: "all .3s cubic-bezier(0.4, 0, 0.2, 1)",
         "&:hover": {
-            backgroundColor: "#0a035d",
-            color: "#fff",
-            filter: "drop-shadow(0px 0px 3px #0d0041) drop-shadow(0px 0px 5px #0a035d)",
+            backgroundColor: "#07ff00",
+            color: "#000",
+            filter: "drop-shadow(0px 0px 3px #07ff00) drop-shadow(0px 0px 5px #07ff00)",
         }
     },
     tableGreenActive: {
@@ -255,7 +258,8 @@ class Marketplace extends React.Component {
         super(props);
         this.state = {
             classes: props.classes,
-            _settings: JSON.parse(props.settings)
+            playCallback: null,
+            _settings: JSON.parse(props.settings),
         };
     }
 
@@ -285,6 +289,7 @@ class Marketplace extends React.Component {
     _edit = () => {
         actions.load_with("data:image/png;base64,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");
     }
+
 
     //endIcon={<img style={{marginRight: 4}} src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPBAMAAADJ+Ih5AAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAAeUExURUdwTLVsThMTJ2I0NjogMotDNS0ZKuQtOFwlU5AqZkF9xYQAAAABdFJOUwBA5thmAAAAZklEQVQI12NgAAIXBwYIcBSBshJFxSCMFMMwMM1S7mwEptPcSxRAWhxFjWYUAfmBgqLGKu0KDK6CgoKBRk0QhqDRJAaGVDADqDg5UFBQFKSbyVRQMNgJZIyysbEJyBgGJiUlJSAFAOMzD0qzCfbZAAAAAElFTkSuQmCC"/>}
     render() {
@@ -398,24 +403,23 @@ class Marketplace extends React.Component {
                             <h3 style={{fontSize: "44px", fontWeight: "bold"}}>
                                 <span>Utility Token & Links</span>
                             </h3>
-                            <Tooltip title={"Utility token on https://openfund.com!"}>
-                                <Button onClick={() => this._open_link("https://openfund.com/d/PixaMarket")} className={classes.actionButtonICO} color={"secondary"}>
-                                    <span>BUY UTILITY TOKENS</span>
-                                    <Lottie
-                                        id={"coins"}
-                                        hover={true}
-                                        autoplay={true}
-                                        loop={true}
-                                        src="/src/js/lottie/CoinsAnimated.json"
-                                        style={{position: "absolute", height: 108, width: 108, marginBottom: -64, transform: "translateY(-50%)"}}/>
-                                </Button>
-                            </Tooltip>
-                            <Tooltip title={"Stay tuned with Pixa on LinkedIn!"}>
-                                <Button startIcon={<LinkedIn/>} onClick={() => this._open_link("https://www.linkedin.com/company/pixamarket/")} style={{marginLeft: 16, backgroundColor: "#bbcaff", color: "black"}} color={"secondary"} variant={"contained"}>LinkedIn</Button>
-                            </Tooltip>
-                            <Tooltip title={"Chat with us on Telegram after validation!"}>
-                                <Button startIcon={<Telegram/>} onClick={() => this._open_link("https://t.me/+eziqKfod9gQ3YTJk")} style={{marginLeft: 16, backgroundColor: "#bbcaff", color: "black"}} color={"secondary"} variant={"contained"}>Telegram</Button>
-                            </Tooltip>
+                            <div style={{display: "float", position: "relative", margin: "16px 0px 32px 0px", height: 32}}>
+                                <div style={{float: "left", display: "flow-root"}}>
+                                    <Tooltip title={"Stay tuned with Pixa on LinkedIn!"}>
+                                        <Button startIcon={<LinkedIn/>} onClick={() => this._open_link("https://www.linkedin.com/company/pixamarket/")} style={{marginRight: 12, backgroundColor: "#0077B5", color: "white"}} color={"secondary"} variant={"contained"}>Blog</Button>
+                                    </Tooltip>
+                                    <Tooltip title={"Chat with us on Telegram after validation!"}>
+                                        <Button startIcon={<Telegram/>} onClick={() => this._open_link("https://t.me/+eziqKfod9gQ3YTJk")} style={{marginRight: 12, backgroundColor: "#0088cc", color: "white"}} color={"secondary"} variant={"contained"}>Chat</Button>
+                                    </Tooltip>
+                                    <Tooltip title={"See our livestream on Mathiew's YouTube channel!"}>
+                                        <Button startIcon={<YouTube/>} onClick={() => this._open_link("https://www.youtube.com/watch?v=Oa0d0uVi4f4&list=PLai3U8-WIK0FwmzgFS9TbjzhYz5R_aRRn")} style={{marginRight: 12, backgroundColor: "#FF0000", color: "white"}} color={"secondary"} variant={"contained"}>Livestreams</Button>
+                                    </Tooltip>
+                                </div>
+                                <div style={{float: "right"}}>
+                                </div>
+                            </div>
+
+
                         </div>
                     </Fade>
                     <Fade in timeout={1300}>
@@ -447,7 +451,7 @@ class Marketplace extends React.Component {
                     </Fade>
                     <Fade in timeout={1600}>
                         <div>
-                            <h3 style={{fontSize: "44px", fontWeight: "bold"}}>Meet The Team/Partners</h3>
+                            <h3 style={{fontSize: "44px", fontWeight: "bold"}}>Meet The Team & Partners</h3>
                             <div className={classes.tableWrapper}>
                                 <table className={classes.table}>
                                     <tr>
@@ -460,7 +464,7 @@ class Marketplace extends React.Component {
                                         <td className={classes.name}>Sergey G.</td>
                                         <td onClick={() => {window.open("https://crynet.io/")}} className={classes.link}>Crynet.io</td>
                                         <td>WEB3.0 Marketing Expert</td>
-                                        <td>Committed to excellence.</td>
+                                        <td>Marketing beast.</td>
                                     </tr>
                                     <tr>
                                         <td className={classes.name}>Sabrina B.</td>
@@ -482,6 +486,22 @@ class Marketplace extends React.Component {
                                     </tr>
                                 </table>
                             </div>
+                        </div>
+                    </Fade>
+                    <Fade in timeout={1800}>
+                        <div>
+                            <h3 style={{fontSize: "44px", fontWeight: "bold"}}>Buy Pixa's Utility Token <Lottie
+                                id={"coins"}
+                                hover={true}
+                                autoplay={true}
+                                loop={true}
+                                src="/src/js/notoemoji/lottie/1f61c.json"
+                                style={{height: "2em", width: "2em", transform: "translateY(25%)"}}/></h3>
+                            <Tooltip title={"Utility token on https://openfund.com!"}>
+                                <Button fullWidth={true} onClick={() => this._open_link("https://openfund.com/d/PixaMarket")} className={classes.actionButtonICO} color={"secondary"}>
+                                    <span>BUY UTILITY TOKEN</span>
+                                </Button>
+                            </Tooltip>
                         </div>
                     </Fade>
                 </div>

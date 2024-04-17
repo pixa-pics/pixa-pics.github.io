@@ -32,6 +32,7 @@ class Lottie extends React.PureComponent {
             id: "n"+props.id || "n"+(Math.random()*65553|0).toString(16),
         };
         this._lottie;
+        this._animation;
     };
 
     componentDidMount() {
@@ -46,7 +47,7 @@ class Lottie extends React.PureComponent {
 
         const {loop, autoplay, path, hover, initialSegment, id} = this.state;
 
-        this._lottie.loadAnimation({
+        this._animation = this._lottie.loadAnimation({
             container: document.getElementById(id),
             loop: loop,
             autoplay: autoplay,
@@ -67,6 +68,8 @@ class Lottie extends React.PureComponent {
             }
         }
     }
+
+
 
     render() {
 

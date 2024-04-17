@@ -738,7 +738,7 @@ class Pixel extends React.PureComponent {
     componentDidMount() {
 
 
-        actions.trigger_snackbar(`Awesome diddy! Welcome back to the laboratory.`, 3500);
+        actions.trigger_snackbar(`Awesome buddy! Welcome back to the laboratory.`, 3500);
 
         l(null, () => {
 
@@ -915,7 +915,7 @@ class Pixel extends React.PureComponent {
                                                     this._handle_load("browser");
                                                     actions.trigger_sfx("alert_high-intensity", 0.6);
                                                     actions.jamy_update("flirty");
-                                                    actions.trigger_snackbar("That's our end my little diddy! My instinctive dwelling require a browser I am supporting.", 6000);
+                                                    actions.trigger_snackbar("That's our end my little buddy! My instinctive dwelling require a browser I am supporting.", 6000);
 
                                                     setTimeout(() => {
 
@@ -1041,7 +1041,7 @@ class Pixel extends React.PureComponent {
 
         actions.trigger_loading_update(0);
         actions.jamy_update("suspicious");
-        actions.trigger_snackbar("Ok diddy! Saving yours.", 1500);
+        actions.trigger_snackbar("Ok buddy! Saving yours.", 1500);
 
         window.onbeforeunload = function(e) {
             return 'Your content that was being saved will be lost.';
@@ -1094,7 +1094,7 @@ class Pixel extends React.PureComponent {
             actions.trigger_loading_update(100);
             window.onbeforeunload = function(e) {};
             setTimeout(() => {
-                actions.trigger_snackbar("Huh, we don't store nearly empty file up here, diddy.", 2000);
+                actions.trigger_snackbar("Huh, we don't store nearly empty file up here, buddy.", 2000);
             }, 2000);
         }
     };
