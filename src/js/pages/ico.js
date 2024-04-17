@@ -237,6 +237,13 @@ const styles = theme => ({
             color: "#ff1515",
             backgroundColor: "#500000",
         }
+    },
+    link: {
+        textDecoration: "underline",
+        cursor: "pointer"
+    },
+    name: {
+        textShadow: "0px 0px 2px 4px white"
     }
 });
 
@@ -435,6 +442,45 @@ class Marketplace extends React.Component {
                                         <img src={"src/images/ico/Mathiew.png"}/>
                                     </Tooltip>
                                 </div>
+                            </div>
+                        </div>
+                    </Fade>
+                    <Fade in timeout={1600}>
+                        <div>
+                            <h3 style={{fontSize: "44px", fontWeight: "bold"}}>Meet The Team/Partners</h3>
+                            <div className={classes.tableWrapper}>
+                                <table className={classes.table}>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Company</th>
+                                        <th>Title</th>
+                                        <th>Description</th>
+                                    </tr>
+                                    <tr>
+                                        <td className={classes.name}>Sergey G.</td>
+                                        <td onClick={() => {window.open("https://crynet.io/")}} className={classes.link}>Crynet.io</td>
+                                        <td>WEB3.0 Marketing Expert</td>
+                                        <td>Committed to excellence.</td>
+                                    </tr>
+                                    <tr>
+                                        <td className={classes.name}>Sabrina B.</td>
+                                        <td onClick={() => {window.open("https://noma.pro/")}} className={classes.link}>Noma.pro</td>
+                                        <td>WEB3.0 Strategist & Coach</td>
+                                        <td>Serious as fuck.</td>
+                                    </tr>
+                                    <tr>
+                                        <td className={classes.name}>Mathieu M.</td>
+                                        <td onClick={() => {window.open("https://noma.pro/")}} className={classes.link}>Noma.pro</td>
+                                        <td>WEB3.0 Economist & Analyst</td>
+                                        <td>Smart like a crow.</td>
+                                    </tr>
+                                    <tr>
+                                        <td className={classes.name}>Arnaud D.</td>
+                                        <td onClick={() => {window.open("https://agartha.ch/")}} className={classes.link}>Agartha.ch</td>
+                                        <td>WEB3.0 Fundraising Expert</td>
+                                        <td>A hype engineer.</td>
+                                    </tr>
+                                </table>
                             </div>
                         </div>
                     </Fade>
