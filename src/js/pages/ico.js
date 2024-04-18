@@ -10,6 +10,7 @@ import Badge from "@material-ui/core/Badge"
 import Lottie from "../components/Lottie";
 import YouTube from "@material-ui/icons/YouTube";
 import MonetizationOn from "@material-ui/icons/MonetizationOn";
+import AttachMoney from "@material-ui/icons/AttachMoney";
 
 const styles = theme => ({
     root: {
@@ -203,7 +204,7 @@ const styles = theme => ({
         }
     },
     firstButton: {
-        backgroundColor: "#33e52e",
+        backgroundColor: "#94ff92",
         color: "#000",
         filter: "drop-shadow(0px 0px 0px #33e52e) drop-shadow(0px 0px 0px #33e52e)",
         transition: "all .3s cubic-bezier(0.4, 0, 0.2, 1)",
@@ -222,6 +223,15 @@ const styles = theme => ({
             color: "#4eff4e",
             textShadow: "0px 0px 12px lightgreen",
             backgroundColor: "#0c4600",
+        }
+    },
+    tableWhite: {
+        color: "#ffffff",
+        backgroundColor: "#171717",
+        transition: "all .3s cubic-bezier(0.4, 0, 0.2, 1)",
+        "&:hover": {
+            color: "#ffffff",
+            backgroundColor: "#282828",
         }
     },
     tableOrange: {
@@ -248,6 +258,45 @@ const styles = theme => ({
     },
     name: {
         textShadow: "0px 0px 2px 4px white"
+    },
+    icoState: {
+
+    },
+    icoProgressBar: {
+        borderRadius: "4px",
+        contain: "paint size style layout",
+        "@global": {
+            "@keyframes ICOProgressBufferFlux": {
+                "0%":  { left: "-60%", background: "linear-gradient(to right, rgba(0, 255, 0, 0), rgba(0, 255, 0, .5))"},
+                "100%": { left: "130%", background: "linear-gradient(to right, rgba(0, 255, 0, 0), rgba(0, 255, 0, .7))"}
+            }
+        },
+        height: "24px",
+        width: "100%",
+        margin: "36px 0 24px 0",
+        backgroundColor: "#072a00",
+        position: "relative",
+        "&::before": {
+            content: "''",
+            position: "absolute",
+            height: "24px",
+            width: "30%",
+            background: "rgba(0, 255, 0, 0)",
+            animation: "$ICOProgressBufferFlux 1.2s linear infinite 2.4s"
+        }
+    },
+    icoProgressBuffer: {
+        borderRadius: "4px",
+        backgroundColor: "#00ff00",
+        boxShadow: "0px 0px 12px #00ff00",
+        height: "100%",
+        width: "0%",
+        transition: "width 1.7s cubic-bezier(1, 0, 0.65, 0.85)"
+    },
+    icoProgressText: {
+        textAlign: "center",
+        fontSize: "24px",
+        lineHeight: "56px"
     }
 });
 
@@ -261,6 +310,9 @@ class Marketplace extends React.Component {
             classes: props.classes,
             playCallback: null,
             _settings: JSON.parse(props.settings),
+            amountRaisedUSD: 0.0,
+            amountToRaiseUSD: 0.0,
+            roundNames: []
         };
     }
 
@@ -276,6 +328,23 @@ class Marketplace extends React.Component {
 
     componentDidMount = () => {
 
+        fetch("https://openfund.com/api/v0/funding-rounds?username=PixaMarket").then((result) => {
+            result.text().then((text) => {
+                var amountRaisedUSD = 0.0;
+                var amountToRaiseUSD = 0.0;
+                var roundNames = [];
+                JSON.parse(text).forEach((obj) => {
+                    console.log(obj)
+                    roundNames.push(obj.RoundName);
+                    amountRaisedUSD += obj.AmountRaisedUSDCents / 100;
+                    amountToRaiseUSD += obj.AmountToRaiseUsdCents / 100;
+                });
+
+                this.setState({amountRaisedUSD, amountToRaiseUSD, roundNames}, () => {
+                    this.forceUpdate();
+                })
+            });
+        });
     }
 
     shouldComponentUpdate(nextProps, nextState, nextContext) {
@@ -295,6 +364,7 @@ class Marketplace extends React.Component {
     //endIcon={<img style={{marginRight: 4}} src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPBAMAAADJ+Ih5AAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAAeUExURUdwTLVsThMTJ2I0NjogMotDNS0ZKuQtOFwlU5AqZkF9xYQAAAABdFJOUwBA5thmAAAAZklEQVQI12NgAAIXBwYIcBSBshJFxSCMFMMwMM1S7mwEptPcSxRAWhxFjWYUAfmBgqLGKu0KDK6CgoKBRk0QhqDRJAaGVDADqDg5UFBQFKSbyVRQMNgJZIyysbEJyBgGJiUlJSAFAOMzD0qzCfbZAAAAAElFTkSuQmCC"/>}
     render() {
         const { classes } = this.state;
+        const { amountRaisedUSD, amountToRaiseUSD, roundNames } = this.state;
 
         return (
             <div className={classes.root}>
@@ -323,6 +393,28 @@ class Marketplace extends React.Component {
                                 <img onClick={this._edit} className={"pixelated main"} src="data:image/png;base64,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" />
                             </Tooltip>
                         </Fade>
+                    </div>
+                    <div>
+                        <h3 style={{fontSize: "44px", textAlign: "center", fontWeight: "bold"}}>
+                            <span>{roundNames[0]}</span>
+                        </h3>
+                        <div className={classes.icoState}>
+                            <div className={classes.icoProgressBar}>
+                                <span style={{position: "absolute", left: `calc(${Math.round(amountRaisedUSD/amountToRaiseUSD*100)}% + 8px)`}}>{Math.round(amountRaisedUSD/amountToRaiseUSD*100)}%</span>
+                                <span style={{position: "absolute", right: 8}}>100%</span>
+                                <div className={classes.icoProgressBuffer} style={{width: (Math.round(amountRaisedUSD/amountToRaiseUSD*100))+"%"}}></div>
+                            </div>
+                            <div className={classes.icoProgressText}>
+                                <span style={{marginRight: 32}}>
+                                    <span>{Math.round(amountRaisedUSD/1000*100)/100}</span>
+                                    <span>K / </span>
+                                    <span>{Math.round(amountToRaiseUSD/1000*100)/100}</span>K USD
+                                </span>
+                                <Tooltip title={"Buy our utility token on openfund.com"}>
+                                    <Button className={classes.firstButton} startIcon={<AttachMoney/>} onClick={() => this._open_link("https://openfund.com/d/PixaMarket")} color={"primary"} variant={"contained"}>BUY NOW</Button>
+                                </Tooltip>
+                            </div>
+                        </div>
                     </div>
                     <Fade in timeout={800}>
                         <div>
@@ -415,8 +507,8 @@ class Marketplace extends React.Component {
                                     <Tooltip title={"See our livestream on Mathiew's YouTube channel!"}>
                                         <Button startIcon={<YouTube/>} onClick={() => this._open_link("https://www.youtube.com/watch?v=Oa0d0uVi4f4&list=PLai3U8-WIK0FwmzgFS9TbjzhYz5R_aRRn")} style={{marginRight: 12, backgroundColor: "#FF0000", color: "white"}} color={"secondary"} variant={"contained"}>Livestreams</Button>
                                     </Tooltip>
-                                    <Tooltip title={"Benefits from our airdrop and stay tuned with Deso!"}>
-                                        <Button startIcon={<MonetizationOn/>} onClick={() => this._open_link("https://diamondapp.com/u/PixaMarket")} style={{marginRight: 12, backgroundColor: "#ffffff", color: "black"}} color={"secondary"} variant={"contained"}>Airdrops</Button>
+                                    <Tooltip title={"Benefits from our airdrop and stay tuned with Deso via diamondapp!"}>
+                                        <Button startIcon={<MonetizationOn/>} onClick={() => this._open_link("https://diamondapp.com/posts/85dee2f972a482e20a1ec4f457a51f577ec7f248f0fc383d4b625dddb28b38c1?tab=posts")} style={{marginRight: 12, backgroundColor: "#ffffff", color: "black"}} color={"secondary"} variant={"contained"}>Airdrops</Button>
                                     </Tooltip>
                                 </div>
                                 <div style={{float: "right"}}>
@@ -439,13 +531,13 @@ class Marketplace extends React.Component {
                             <p>Book a call with us at any time! <a href={"mailto:business@pixa.market"} target={"_blank"}>business@pixa.market</a>. Or contact us on <a href={"https://www.linkedin.com/company/pixamarket/"} target={"_blank"}>LinkedIn</a>.</p>
                             <div style={{display: "inline-flex", marginTop: 32, verticalAlign: "bottom", textAlign: "center"}}>
                                 <div>
-                                    <Button startIcon={<Icon><LinkedIn/></Icon>} onClick={() => this._open_link("https://www.linkedin.com/in/matias-affolter/")} style={{backgroundColor: "#201594", color: "#fff"}} color={"secondary"} variant={"contained"}>Matias Affolter 🇨🇭</Button>
+                                    <Button startIcon={<Icon><LinkedIn/></Icon>} onClick={() => this._open_link("https://www.linkedin.com/in/matias-affolter/")} style={{backgroundColor: "#359415", color: "#fff"}} color={"secondary"} variant={"contained"}>Matias Affolter 🇨🇭</Button>
                                     <Tooltip title={"I make software. (Often available)"}>
                                         <img src={"src/images/ico/Matias.png"}/>
                                     </Tooltip>
                                 </div>
                                 <div>
-                                    <Button startIcon={<Icon><LinkedIn/></Icon>} onClick={() => this._open_link("https://www.linkedin.com/in/mathiew-estepho-b7078894/")} style={{backgroundColor: "#100662", color: "#fff"}} color={"secondary"} variant={"contained"}>Mathiew Estepho 🇨🇦</Button>
+                                    <Button startIcon={<Icon><LinkedIn/></Icon>} onClick={() => this._open_link("https://www.linkedin.com/in/mathiew-estepho-b7078894/")} style={{backgroundColor: "#0f6206", color: "#fff"}} color={"secondary"} variant={"contained"}>Mathiew Estepho 🇨🇦</Button>
                                     <Tooltip title={"I make math video. (Sometimes available)"}>
                                         <img src={"src/images/ico/Mathiew.png"}/>
                                     </Tooltip>
@@ -464,25 +556,25 @@ class Marketplace extends React.Component {
                                         <th>Title</th>
                                         <th>Description</th>
                                     </tr>
-                                    <tr>
+                                    <tr className={classes.tableWhite}>
                                         <td className={classes.name}>Sergey G.</td>
                                         <td onClick={() => {window.open("https://crynet.io/")}} className={classes.link}>Crynet.io</td>
                                         <td>Marketing Expert</td>
                                         <td>Marketing beast.</td>
                                     </tr>
-                                    <tr>
+                                    <tr className={classes.tableWhite}>
                                         <td className={classes.name}>Sabrina B.</td>
                                         <td onClick={() => {window.open("https://noma.pro/")}} className={classes.link}>Noma.pro</td>
                                         <td>Strategist & Coach</td>
                                         <td>Serious as fuck.</td>
                                     </tr>
-                                    <tr>
+                                    <tr className={classes.tableWhite}>
                                         <td className={classes.name}>Mathieu M.</td>
                                         <td onClick={() => {window.open("https://noma.pro/")}} className={classes.link}>Noma.pro</td>
                                         <td>Economist & Analyst</td>
-                                        <td>Smart like a crow.</td>
+                                        <td>Smart like a dolphin.</td>
                                     </tr>
-                                    <tr>
+                                    <tr className={classes.tableWhite}>
                                         <td className={classes.name}>Arnaud D.</td>
                                         <td onClick={() => {window.open("https://agartha.ch/")}} className={classes.link}>Agartha.ch</td>
                                         <td>Fundraising Expert</td>
@@ -494,18 +586,13 @@ class Marketplace extends React.Component {
                     </Fade>
                     <Fade in timeout={1800}>
                         <div>
-                            <h3 style={{fontSize: "44px", fontWeight: "bold"}}>Buy Pixa's Utility Token <Lottie
+                            <h3 style={{fontSize: "44px", fontWeight: "bold"}}>Have Fun! <Lottie
                                 id={"coins"}
                                 hover={true}
                                 autoplay={true}
                                 loop={true}
                                 src="/src/js/notoemoji/lottie/1f61c.json"
                                 style={{height: "2em", width: "2em", transform: "translateY(25%)"}}/></h3>
-                            <Tooltip title={"Utility token on https://openfund.com!"}>
-                                <Button fullWidth={true} onClick={() => this._open_link("https://openfund.com/d/PixaMarket")} className={classes.actionButtonICO} color={"secondary"}>
-                                    <span>BUY UTILITY TOKEN</span>
-                                </Button>
-                            </Tooltip>
                         </div>
                     </Fade>
                 </div>
