@@ -9,6 +9,7 @@ import Telegram from "../icons/Telegram";
 import Badge from "@material-ui/core/Badge"
 import Lottie from "../components/Lottie";
 import YouTube from "@material-ui/icons/YouTube";
+import MonetizationOn from "@material-ui/icons/MonetizationOn";
 
 const styles = theme => ({
     root: {
@@ -179,7 +180,7 @@ const styles = theme => ({
         fontSize: "21px",
         background: "radial-gradient(ellipse farthest-corner at right bottom, #ffffff 0%, #fff2a3 15%, #ffea37 30%, #ffdf58c4 40%, #ffd14ea8 50%, #ffbc0073 60%, #c78e2700 80%), radial-gradient(ellipse farthest-corner at left top, #fff5a9 0%, #ffff78 15%, #ffe8a7 25%, #ffcd15 62.5%, #5f3900 100%)",
         color: "#000000",
-        filter: "drop-shadow(0px 0px 1px #fff8a599) drop-shadow(0px 0px 3px #ffd04566) brightness(.75) contrast(.75) saturate(1.5) brightness(.5)",
+        filter: "drop-shadow(0px 0px 1px #fff8a599) drop-shadow(0px 0px 3px #ffd04566) brightness(.75) contrast(.85) saturate(1.5) brightness(.95)",
         transition: "all .3s cubic-bezier(0.4, 0, 0.2, 1)",
         "&:hover": {
             filter: "drop-shadow(0px 0px 4px #fff8a599) drop-shadow(0px 0px 12px #ffd04566) brightness(.85) contrast(1.4) saturate(.88) brightness(1.1)",
@@ -401,7 +402,7 @@ class Marketplace extends React.Component {
                     <Fade in timeout={1200}>
                         <div className={classes.buttons}>
                             <h3 style={{fontSize: "44px", fontWeight: "bold"}}>
-                                <span>Utility Token & Links</span>
+                                <span>Stay Tuned Using Our Links</span>
                             </h3>
                             <div style={{display: "float", position: "relative", margin: "16px 0px 32px 0px", height: 32}}>
                                 <div style={{float: "left", display: "flow-root"}}>
@@ -413,6 +414,9 @@ class Marketplace extends React.Component {
                                     </Tooltip>
                                     <Tooltip title={"See our livestream on Mathiew's YouTube channel!"}>
                                         <Button startIcon={<YouTube/>} onClick={() => this._open_link("https://www.youtube.com/watch?v=Oa0d0uVi4f4&list=PLai3U8-WIK0FwmzgFS9TbjzhYz5R_aRRn")} style={{marginRight: 12, backgroundColor: "#FF0000", color: "white"}} color={"secondary"} variant={"contained"}>Livestreams</Button>
+                                    </Tooltip>
+                                    <Tooltip title={"Benefits from our airdrop and stay tuned with Deso!"}>
+                                        <Button startIcon={<MonetizationOn/>} onClick={() => this._open_link("https://diamondapp.com/u/PixaMarket")} style={{marginRight: 12, backgroundColor: "#ffffff", color: "black"}} color={"secondary"} variant={"contained"}>Airdrops</Button>
                                     </Tooltip>
                                 </div>
                                 <div style={{float: "right"}}>
@@ -463,25 +467,25 @@ class Marketplace extends React.Component {
                                     <tr>
                                         <td className={classes.name}>Sergey G.</td>
                                         <td onClick={() => {window.open("https://crynet.io/")}} className={classes.link}>Crynet.io</td>
-                                        <td>WEB3.0 Marketing Expert</td>
+                                        <td>Marketing Expert</td>
                                         <td>Marketing beast.</td>
                                     </tr>
                                     <tr>
                                         <td className={classes.name}>Sabrina B.</td>
                                         <td onClick={() => {window.open("https://noma.pro/")}} className={classes.link}>Noma.pro</td>
-                                        <td>WEB3.0 Strategist & Coach</td>
+                                        <td>Strategist & Coach</td>
                                         <td>Serious as fuck.</td>
                                     </tr>
                                     <tr>
                                         <td className={classes.name}>Mathieu M.</td>
                                         <td onClick={() => {window.open("https://noma.pro/")}} className={classes.link}>Noma.pro</td>
-                                        <td>WEB3.0 Economist & Analyst</td>
+                                        <td>Economist & Analyst</td>
                                         <td>Smart like a crow.</td>
                                     </tr>
                                     <tr>
                                         <td className={classes.name}>Arnaud D.</td>
                                         <td onClick={() => {window.open("https://agartha.ch/")}} className={classes.link}>Agartha.ch</td>
-                                        <td>WEB3.0 Fundraising Expert</td>
+                                        <td>Fundraising Expert</td>
                                         <td>A hype engineer.</td>
                                     </tr>
                                 </table>
