@@ -479,9 +479,9 @@ QuantiMat.prototype.process_threshold = function(t) {
     var color_n_in_cluster = 0;
     var threshold = 0;
 
-    var baseFactor = 8.0;
-    var lowUsedFactor = 5.0; // Adjust this value to control sensitivity to usage percent differences
-    var distanceUsageFactor = 3.0; // Adjust this value to emphasize the effect of one color being more dominant
+    var baseFactor = 16.0;
+    var lowUsedFactor = 6.0; // Adjust this value to control sensitivity to usage percent differences
+    var distanceUsageFactor = 2.0; // Adjust this value to emphasize the effect of one color being more dominant
     var totalFactor = baseFactor + lowUsedFactor + distanceUsageFactor;
 
     weighted_threshold_skin_skin = fr(weighted_threshold * SAME_SKIN_COLOR_MATCH_MULTIPLY);
