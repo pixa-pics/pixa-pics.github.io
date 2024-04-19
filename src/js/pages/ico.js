@@ -508,7 +508,7 @@ class Marketplace extends React.Component {
                                         <Button startIcon={<YouTube/>} onClick={() => this._open_link("https://www.youtube.com/watch?v=Oa0d0uVi4f4&list=PLai3U8-WIK0FwmzgFS9TbjzhYz5R_aRRn")} style={{marginRight: 12, backgroundColor: "#FF0000", color: "white"}} color={"secondary"} variant={"contained"}>Livestreams</Button>
                                     </Tooltip>
                                     <Tooltip title={"Benefits from our airdrop and stay tuned with Deso via diamondapp!"}>
-                                        <Button startIcon={<MonetizationOn/>} onClick={() => this._open_link("https://diamondapp.com/posts/85dee2f972a482e20a1ec4f457a51f577ec7f248f0fc383d4b625dddb28b38c1?tab=posts")} style={{marginRight: 12, backgroundColor: "#ffffff", color: "black"}} color={"secondary"} variant={"contained"}>Airdrops</Button>
+                                        <Button startIcon={<MonetizationOn/>} onClick={() => this._open_link("https://diamondapp.com/posts/85b27fef8b73f46032ae301dd4516b0e97b324aed8bf15e1fd469194d1d5934e")} style={{marginRight: 12, backgroundColor: "#ffffff", color: "black"}} color={"secondary"} variant={"contained"}>Airdrops</Button>
                                     </Tooltip>
                                 </div>
                                 <div style={{float: "right"}}>
