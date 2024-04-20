@@ -9,7 +9,6 @@ import Telegram from "../icons/Telegram";
 import Badge from "@material-ui/core/Badge"
 import Lottie from "../components/Lottie";
 import YouTube from "@material-ui/icons/YouTube";
-import MonetizationOn from "@material-ui/icons/MonetizationOn";
 import AttachMoney from "@material-ui/icons/AttachMoney";
 
 const styles = theme => ({
@@ -82,7 +81,7 @@ const styles = theme => ({
             padding: 12,
             borderRadius: 8,
             backgroundColor: "#ffffff",
-            boxShadow: "rgb(249 249 0 / 32%) 0px 4px 8px 2px, rgb(255 155 0 / 32%) 0px 4px 5px 5px, rgb(175 75 0 / 32%) 0px 1px 10px 14px",
+            boxShadow: "rgb(255 255 255 / 32%) 0px 4px 8px 2px, rgb(255 255 255 / 16%) 0px 4px 5px 5px, rgb(255 255 255 / 4%) 0px 1px 10px 14px",
             maxWidth: "100%",
             maxHeight: "100%",
             transform: "scale(1.0)",
@@ -165,6 +164,7 @@ const styles = theme => ({
         },
         "& img": {
             width: "100%",
+            minWidth: 400,
             marginBottom: 8,
             height: "auto",
         },
@@ -204,7 +204,7 @@ const styles = theme => ({
         }
     },
     firstButton: {
-        backgroundColor: "#94ff92",
+        backgroundColor: "#03b900",
         color: "#000",
         filter: "drop-shadow(0px 0px 0px #33e52e) drop-shadow(0px 0px 0px #33e52e)",
         transition: "all .3s cubic-bezier(0.4, 0, 0.2, 1)",
@@ -372,7 +372,7 @@ class Marketplace extends React.Component {
                     <div style={{display: "flex"}}>
                         <div>
                             <Fade in timeout={400}>
-                                <h1 style={{fontSize: "48px", fontWeight: "bold", marginTop: 0}}>Onboard the Pixa's Initial Coin Offering (ICO)</h1>
+                                <h1 style={{fontSize: "48px", fontWeight: "bold", marginTop: 0}}>Onboard the ICO</h1>
                             </Fade>
                             <Fade in timeout={500}>
                                 <h2 style={{marginTop: "24px", color: "#c2d5fe"}}>Pixa.Market is a social media blockchain NFT platform working exclusively with 1000x more lightweight images as it is pixel-art. Our current target of timespan for NFTs is beyond 1,000 years.</h2>
@@ -389,12 +389,12 @@ class Marketplace extends React.Component {
                             </Fade>
                         </div>
                         <Fade in timeout={700}>
-                            <Tooltip title={"Click on the image to start editing it!"}>
-                                <img onClick={this._edit} className={"pixelated main"} src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAC8AAAAuCAMAAACPpbA7AAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAA5UExURScID1QYFK9bRgEiUQAAAHw1JOivfQVEACNfBwApByNShhYgQOqhewcNIEGCFX29QczglfTCnfr/5fRfOggAAAKSSURBVEjHfZSLgqsgDEQDBETFtnv//2PvTAKK7W7jdqtySCaPIsvNqtmum9KWZTWbAPmgwe28zL7ytfPgdNv2A6brbHee8LPqAXAz58e2Hcd6tze+Hjuk7wDxQYz9LYLxBvqXHgfVHLi0J6JfecjZdkf7jj953uh+XCzv3gXJKIttWLqO6Fa4Qa/izP59A9lWpJQScZUWR9e8JKM+fcO/zp/WYiS/XC2b+NerktcyWzz0NjCzf6sPRQ+Y0VSv9pDvuVx87DG8QHiqVzvN/8ieL6KXRkKJInarsU4KTM8Ywc7Dq+Sfkkdh52E8+fXkC5Ku5aeUyu+Y45xflV7XnkTO0VP9GfUhf+HLxVvQmHOb+fbVP6w53+wP/1q51Xv8Xk4+t0Ywx5gNz7ku7/WZ+WXxeYjR5TzO0e3179y1IbZzgJrzdYRYBr9O50DlBg4z8efjcfI+P+vtcHjAZARoTV6vJ4xveyB5PzCqRmk2/6VJ1sf8a7L5fD9gNJsYfCRmDR/8TfwiETwnTThwGcGm5vb5n/FM/9INPF78yncciqkn0NgzPAV51Ps8DD6Yx0zOcUwTo4Xwya+gA5yFRD4GP1ByToF75JMPtgA+7fG0lFIOSELiiDHmMwSIgBbwG0bO8Za2FCzpO8/sgEt2PrH67AFuE9+hDNwR2HzieMpukiEhbRvHAed5cj6KrwbyK/KHSD6yOM53Mx5Z0R0TlKd4poSxAH43rMNb2u21dIdQZu7FeOQreSecUg8DHi0Mtoy7zjMfimIDxPkteQQq1+BiTh6toocgGsjPCaCJ2vkswccKXzYw4DV0KSMF592hhLHDt/C580M+eVvq63LxZup6JiM/EPV7vXb9wQePryc5Bbrjkwaz/zAjMdVs/8MtAAAAAElFTkSuQmCC" />
-                            </Tooltip>
+                            <video width="480" height="320" controls>
+                                <source src="/src/videos/demo.mp4" type="video/mp4"/>
+                            </video>
                         </Fade>
                     </div>
-                    <div>
+                    <div style={{marginTop: 32}}>
                         <h3 style={{fontSize: "44px", textAlign: "center", fontWeight: "bold"}}>
                             <span>{roundNames[0]}</span>
                         </h3>
@@ -411,7 +411,7 @@ class Marketplace extends React.Component {
                                     <span>{Math.round(amountToRaiseUSD/1000*100)/100}</span>K USD
                                 </span>
                                 <Tooltip title={"Buy our utility token on openfund.com"}>
-                                    <Button className={classes.firstButton} startIcon={<AttachMoney/>} onClick={() => this._open_link("https://openfund.com/d/PixaMarket")} color={"primary"} variant={"contained"}>BUY NOW</Button>
+                                    <Button style={{backgroundColor: "#29ff29"}} className={classes.firstButton} startIcon={<AttachMoney/>} onClick={() => this._open_link("https://openfund.com/d/PixaMarket")} color={"primary"} variant={"contained"}>BUY NOW</Button>
                                 </Tooltip>
                             </div>
                         </div>
@@ -517,7 +517,7 @@ class Marketplace extends React.Component {
                     </Fade>
                     <Fade in timeout={1300}>
                         <div>
-                            <h3 style={{fontSize: "44px", fontWeight: "bold"}}>Tokenomics</h3>
+                            <h3 style={{fontSize: "44px", fontWeight: "bold"}}>Tokenomics (800% Potential ROI)</h3>
                             <p>Steem and Hive (The same technology used by Pixa) have the same parameters regarding the coin inflation and supply with a similar wind, Pixa could demonstrate around a profits of eight times the initial input.</p>
                             <p>The time Pixa develop its own plugin for trading post (pixel artwork) is set to around one years, then it should be more or less driven by the same force behind the market which set the token price at around $ 0.30.</p>
                         </div>
@@ -528,15 +528,13 @@ class Marketplace extends React.Component {
                             <p>Book a call with us at any time! <a href={"mailto:business@pixa.market"} target={"_blank"}>business@pixa.market</a>. Or contact us on <a href={"https://www.linkedin.com/company/pixamarket/"} target={"_blank"}>LinkedIn</a>.</p>
                             <div style={{display: "inline-flex", marginTop: 32, verticalAlign: "bottom", textAlign: "center"}}>
                                 <div>
-                                    <Button startIcon={<Icon><LinkedIn/></Icon>} onClick={() => this._open_link("https://www.linkedin.com/in/matias-affolter/")} style={{backgroundColor: "#359415", color: "#fff"}} color={"secondary"} variant={"contained"}>Matias Affolter 🇨🇭</Button>
-                                    <Tooltip title={"I make software. (Often available)"}>
-                                        <img src={"src/images/ico/Matias.png"}/>
+                                    <Tooltip title={" 🇨🇭 I make software."}>
+                                        <img className={"pixelated"} src={"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIMAAAB1CAMAAABaiKJQAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAABLUExURUdwTOOxkbdfS/bmzb92W/Tv5erfyyUeIQ0IDNSKb5tiS/HSs388MGs+OLdJQmVbVkMpKJeKd44lLb9DScS1oE0ZHR0FCzIOE4twXzDgGjsAAAAJdFJOUwD////////7+1QDmskAAAmESURBVGje7ZqJcqO6EoZBliUkEIsDybz/k97eJAQmsSEwp+rWdCU1sSdBH38v6hYuin/2z/7ZP/v/t8F2lbXVfwhQVcNgbQccnf2PEIYOILqus9YOw99eHVbtRvjuRhQCOIZx6P42AhAM3TgMxo5jVZlhrLqhs9Xf4gDtR1DAgg7j2HXGdJUxBt0BUQH2VyQA7SEIRvAHrA/fAzGAEOgS+P/LCUZKgg69UHUj3L4BMQZkgCwd0EPmWgRYEVTA5YYKUIYBk7MbAGaEdyvwi4UAuVQIcAOsBJ4fkQRrAuQmMo0QkxiUIyWKvTQYK1wSbLT0D9BUVKBGSlBIDyCpLo1KqspQFILFAl2xBJbe6ogJIYdLGbgCDEP4Q/cukuBm0ZEgIIGlV5dVTPQ13fTwJ/DNV4LBIYIyVAzVXacCBWRl+xD63sI/UQbisTMW1NDLYkHuGBkCWW8TA7zNjqgwIoaLCoPcax+81to57+E7WGYBWQCIdQGqa3avSBC899qVYk7jS/hOonA4gNMukgEcADcPt1+WdV3fTA0QYsQhOmBe2AsgKnYCSMAaAENt6rokipK+QAuBwE3Nnp8blv0QERDihhxl8grEh/e9jdmK7d3JCJQO4Ii0ZlmXOUIpHgkpPU/3BsRjDwy6LBcQ+csIQQ6B3z6fAbOiz2UQjGcIoiA17DXhUP5kDEEZwnFxNgNcMjzpsAUBFBgWGBTnM/RZbXqF4cMlDK9lWDiE0uNsBBvelsFFb5xcJSvrU30q63oTIFVudEZ/sjeQYZahFltLMG8e+gIhWIYVwgrD5QSYoWczAEK5gbAFoYXiZAZwxa1Om0SZRcWWEFpfwWCr220zDernrIAO6xqG262mqzvomeRuv0tNra/R4QYyUKdEPRs1c9sgmSv0uXlBCEprpZowUcWkrlZTB/UdBVXrswju9zt4QrV0ZRUCdQfBK08QrlxgzGHp+/MYCKF0rUp+9jLnCER0y/wjReWJrhAV1KR0pFBK4TTTB5UzLAwFOwsBCQjh0SoygWjAvoBBX87ABJARanoQQYtrTw0zNM1CB6oL84tzwuEGAIQAjpha5SAsm+nrC3dDaNUQgXTQbm7hPA+BToLmFAIoxg4dMbXI4DSIEDweM8B4OREExl8aswIVD808v0cwTMAILSAQA/rA4wgzBDshhI7yg/8nnr1pHvRYHX4ZCOSFmkKhfTwwEyj38IcGrh5c6L9mBkxYxT0LjzcBGX5PgJGAKrTto2UGHLIpMn0DX80UA8JpfhteeR7/ASLY3yUDAUgsgBtanRhczEv0SQpKdNGEsniu0T3Yb2SgbLxxdwKh0LbOEQP2caw6CqHQ43zrjNBAHEDlJNeQGuHAnnRL9eCWYgFFgD6FNqtVf6KiaUfK9BOFA7TenBUhHEBAmxFurIIqAgYFrrliSBGAeaMwPjyfyIWGdhRvjyEQRWRghKIoeQPSzm1SOEpexsDj2j9V0xxguN3uGYNQlIoRkEEtGdiUIJSli7miMCPtZ0PB0hxRoU4QgOEiQlHEG3/akwSBGLQXENpNsEKpQ46oc4p7YqAG6kkHHXNFdGDf6Li1eqsOxQI4oGYOpoi/Il3bEkNrLpFRhzlEuM2Z3keoZdUIQSddUY74SxyTmtu2LDClp80Y5pZa7WPA87UtCqkZRaETwzI5pI10nKJprKCWepcriEDkQA84GeaeGNZpofmctJbEWUI0xT4Gmhnha1YizXTfMmDd5KPauszKx1w69mWFjI9u9sE82s4I+glB/qAuF+FK26hXuzOTDy9wVYHgs9/I4J7jgSuDSLhKGYrI3Qw1rUmnfnWEyBhiGuYMkhNbDKTD7iJZ06k3Fz2GqMXdZeaL3CHkC8XTpssYtLR1bhcDRwNfOJtgC8diLxjmZVQrfxDVX+mwa78iLVV2c3wOS9vEkmHOPPrdx/Ro0ppqXTv2MZAISrZBaJoiggiRajURuMigscmfIVa2T4aCHcFbTauiN/B/ODxmhmSyW2BHSSvC4LGSoTjMwFNMXLhgng0GaiCpf8MJdHrw32VW7GeQqaGlayWEnMGvKbgWNjx7Nuvhez+Dc7kvMgb1A0PsrwlDL51RHGJQqUvGey9yBkcMc38wZXsDNQuKZgydnYEUR3whBDxRushAQckzzkMaKRj7pk+pD21C19EZ4tdDOqhZhew2ZK7CMWtKDBCDn1+tWDyQnRkOyVDMMnwwg1q6gka9RzZWto/ps2o+4N0PHsY1bSfxlPCADEXsSFXMMLzwh9wmaUQ/ZwwwhT+qqoliKDrv0PGp5wEZiihDKwyqzS7ObkIhYqFUAjFVwTekBENEhiMyFDEa5jVbwviYX0cG6Ztx5Q/A+KwgZyc+G0m+OCJDgfuNQg9QXkp6pBCNfK1eQIA9UIzpq6o+wb6myKAPMeBM7UQGtbT0RpxpmMEBBEn1iIbxclyGgmXgddLaiic5bhCULrN2lTLkg61lOR5tCgd/jIHXyRCkm9DMgM1hyYWAigRXio9kgKC4vTksQ8GtqkSBc6vGkc770tljrNjkjzaKQaWKD/APnvw45TIJYldWGhh2+DMVwcfn6HROH88+4PcUlSk5IUcdjn4IR2eHCdQX4MVk8r779KwEhjegUYvTj6y/pLHPjYbsKAO5ni5WxtnfEEOZDkBDaHw22spuKUe02IUKwn6MdSt4zw0zTtppzc+Q0qo666Z5+g0Zwz6KHwhAB1cKgyZnpOdH/JAkegLehbSszNJ2MojgpfjARAZN41fsmugcmoe+bNIgiYADP9J6kELPD+fiyiYymA0GzwCZKyhlfKiGJwZzf5uBAMz92YyeZ0lsVfr0UDHv8uUDYpXZsPtbFEhgtgDIF4mBlux7S58S45jkJxf4KSBgazZcQQzvQNx/snmglaeKfZRCpwcn+GG90DSbCG9C3F9ARL/LQ9PeghYcF/KUkbl68y3Da4qnGFj45ZYG+zjWBHxO0+PC8ty57/FM1pifIO47GJ4Dg+NBEoMeGtDDiUAgqAo9v3LmBcN9hw5zWsZ35JFtdlLvmwZXpwdXfd8AlDEvGX7E2IqChRzPDyw8TnjoDfowa+OMeQnxc2RsIphZCHN3OvqBTR4kBfkyL42u+FNg3F+byxialZXmDYbcJ+YQgzH17IoFQPDmXcsut5+BL1HKY4EFwvsEiwB73svu70GYUosOkcOZ/QjfZOr9XQhj9OyNtwDGTRk2HPI+wn4bx28QVmq8APgNQqbE+qrLuLhOhW8ZzFwJCeF/yETKchS8+hEAAAAASUVORK5CYII="} onClick={() => this._open_link("https://www.linkedin.com/in/matias-affolter/")}/>
                                     </Tooltip>
                                 </div>
                                 <div>
-                                    <Button startIcon={<Icon><LinkedIn/></Icon>} onClick={() => this._open_link("https://www.linkedin.com/in/mathiew-estepho-b7078894/")} style={{backgroundColor: "#0f6206", color: "#fff"}} color={"secondary"} variant={"contained"}>Mathiew Estepho 🇨🇦</Button>
-                                    <Tooltip title={"I make math video. (Sometimes available)"}>
-                                        <img src={"src/images/ico/Mathiew.png"}/>
+                                    <Tooltip title={" 🇨🇦 I do mathematics."}>
+                                        <img className={"pixelated"} src={"data:image/png;base64,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"} onClick={() => this._open_link("https://www.linkedin.com/in/mathiew-estepho-b7078894/")}/>
                                     </Tooltip>
                                 </div>
                             </div>
