@@ -3,7 +3,6 @@ import {Button, Tooltip, withStyles} from "@material-ui/core";
 import actions from "../actions/utils";
 import FileDownload from "../icons/FileDownload";
 import Fade from "@material-ui/core/Fade";
-import Icon from "@material-ui/core/Icon";
 import LinkedIn from "../icons/LinkedIn";
 import Telegram from "../icons/Telegram";
 import Badge from "@material-ui/core/Badge"
@@ -204,14 +203,25 @@ const styles = theme => ({
         }
     },
     firstButton: {
-        backgroundColor: "#03b900",
+        background: "radial-gradient(circle 78px at 10% 50%, rgb(239 255 33) 0%, rgb(61 255 0) 100.7%)",
         color: "#000",
         filter: "drop-shadow(0px 0px 0px #33e52e) drop-shadow(0px 0px 0px #33e52e)",
         transition: "all .3s cubic-bezier(0.4, 0, 0.2, 1)",
         "&:hover": {
-            backgroundColor: "#07ff00",
+            background: "radial-gradient(circle 78px at 10% 50%, rgb(160 255 15) 0%, rgb(61 255 0) 100.7%)",
             color: "#000",
             filter: "drop-shadow(0px 0px 3px #07ff00) drop-shadow(0px 0px 5px #07ff00)",
+        }
+    },
+    whiteButton: {
+        background: "radial-gradient(circle 78px at 10% 50%, #fff 0%, #ddd 100.7%)",
+        color: "#000",
+        filter: "drop-shadow(0px 0px 0px #fff) drop-shadow(0px 0px 0px #ddd)",
+        transition: "all .3s cubic-bezier(0.4, 0, 0.2, 1)",
+        "&:hover": {
+            background: "radial-gradient(circle 78px at 10% 50%, #fff 100%, #ddd 200%)",
+            color: "#000",
+            filter: "drop-shadow(0px 0px 3px #fff) drop-shadow(0px 0px 5px #ddd)",
         }
     },
     tableGreenActive: {
@@ -260,7 +270,7 @@ const styles = theme => ({
         textShadow: "0px 0px 2px 4px white"
     },
     icoState: {
-
+        color: "chartreuse"
     },
     icoProgressBar: {
         borderRadius: "4px",
@@ -372,18 +382,18 @@ class Marketplace extends React.Component {
                     <div style={{display: "flex"}}>
                         <div>
                             <Fade in timeout={400}>
-                                <h1 style={{fontSize: "48px", fontWeight: "bold", marginTop: 0}}>Onboard the ICO</h1>
+                                <h1 style={{fontSize: "48px", fontWeight: "bold", marginTop: 0, backgroundImage: "radial-gradient(circle 477px at 1.4% 94.3%, rgb(0 231 255) 0%, rgb(73 255 0) 33.2%, rgb(230 255 0) 54.2%, rgb(239 255 0) 68.1%, rgb(255 65 65) 82%, rgb(255 0 198) 93.9%)", WebkitTextFillColor: "transparent", WebkitBackgroundClip: "text"}}>Onboard the ICO</h1>
                             </Fade>
                             <Fade in timeout={500}>
-                                <h2 style={{marginTop: "24px", color: "#c2d5fe"}}>Pixa.Market is a social media blockchain NFT platform working exclusively with 1000x more lightweight images as it is pixel-art. Our current target of timespan for NFTs is beyond 1,000 years.</h2>
+                                <h2 style={{marginTop: "24px", color: "rgb(211, 255, 224)"}}>Pixa.Market is a social media blockchain NFT platform working exclusively with 1000x more lightweight images as it is pixel-art. Our current target of timespan for NFTs is beyond 1,000 years.</h2>
                             </Fade>
                             <Fade in timeout={600}>
                                 <div style={{marginTop: 32}}>
                                     <Tooltip title={"10 Minutes Reading Presentation PDF | 3 Mo"}>
-                                        <Button style={{marginRight: 16}} className={classes.firstButton} startIcon={<FileDownload/>} onClick={() => this._open_link("https://drive.google.com/file/d/1nIpVDSxgViEn183Kyr3SvLBlFmaaOzwe/view")} color={"primary"} variant={"contained"}>Pitch-Deck</Button>
+                                        <Button style={{marginRight: 16}} className={classes.whiteButton} startIcon={<FileDownload/>} onClick={() => this._open_link("https://drive.google.com/file/d/1nIpVDSxgViEn183Kyr3SvLBlFmaaOzwe/view")} color={"primary"} variant={"contained"}>Pitch-Deck</Button>
                                     </Tooltip>
                                     <Tooltip title={"20 Minutes Reading A4 PDF | 3 Mo"}>
-                                        <Button className={classes.firstButton} startIcon={<FileDownload/>} onClick={() => this._open_link("https://drive.google.com/file/d/1bx-14zE2EYt4fpycxr84sMWDa_JaYliW/view")} color={"primary"} variant={"contained"}>Lite-Paper</Button>
+                                        <Button className={classes.whiteButton} startIcon={<FileDownload/>} onClick={() => this._open_link("https://drive.google.com/file/d/1bx-14zE2EYt4fpycxr84sMWDa_JaYliW/view")} color={"primary"} variant={"contained"}>Lite-Paper</Button>
                                     </Tooltip>
                                 </div>
                             </Fade>
