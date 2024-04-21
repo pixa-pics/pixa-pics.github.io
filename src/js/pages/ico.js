@@ -92,6 +92,11 @@ const styles = theme => ({
             }
         }
     },
+    video: {
+        "@media (max-width: 875px)": {
+            display: "none"
+        }
+    },
     tableWrapper: {
         maxWidth: "100%",
         position: "relative",
@@ -399,7 +404,7 @@ class Marketplace extends React.Component {
                             </Fade>
                         </div>
                         <Fade in timeout={700}>
-                            <video width="480" height="320" controls>
+                            <video className={classes.video} width="480" height="320" controls>
                                 <source src="/src/videos/demo.mp4" type="video/mp4"/>
                             </video>
                         </Fade>
