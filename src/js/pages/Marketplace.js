@@ -375,6 +375,7 @@ const styles = theme => ({
         contain: "paint style layout",
         cursor: "pointer",
         width: "100%",
+        maxWidth: "100vw",
         position: "relative",
         marginBottom: 24,
         borderRadius: "4px",
