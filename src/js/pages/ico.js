@@ -514,7 +514,7 @@ class Marketplace extends React.Component {
                             <div style={{display: "float", position: "relative", margin: "16px 0px 32px 0px", height: 32}}>
                                 <div style={{float: "left", display: "flow-root"}}>
                                     <Tooltip title={"Stay tuned with Pixa on LinkedIn!"}>
-                                        <Button startIcon={<LinkedIn/>} onClick={() => this._open_link("https://www.linkedin.com/company/pixamarket/")} style={{marginRight: 12, backgroundColor: "#0077B5", color: "white"}} color={"secondary"} variant={"contained"}>Blog</Button>
+                                        <Button startIcon={<LinkedIn/>} onClick={() => this._open_link("https://www.linkedin.com/company/pixagram-blockchain/")} style={{marginRight: 12, backgroundColor: "#0077B5", color: "white"}} color={"secondary"} variant={"contained"}>Blog</Button>
                                     </Tooltip>
                                     <Tooltip title={"Chat with us on Telegram after validation!"}>
                                         <Button startIcon={<Telegram/>} onClick={() => this._open_link("https://t.me/+eziqKfod9gQ3YTJk")} style={{marginRight: 12, backgroundColor: "#0088cc", color: "white"}} color={"secondary"} variant={"contained"}>Chat</Button>
