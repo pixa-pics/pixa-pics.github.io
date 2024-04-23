@@ -426,7 +426,7 @@ class Marketplace extends React.Component {
                                     <span>{Math.round(amountToRaiseUSD/1000*100)/100}</span>K USD
                                 </span>
                                 <Tooltip title={"Buy our utility token on openfund.com"}>
-                                    <Button style={{backgroundColor: "#29ff29"}} className={classes.firstButton} startIcon={<AttachMoney/>} onClick={() => this._open_link("https://openfund.com/d/PixaMarket")} color={"primary"} variant={"contained"}>BUY NOW</Button>
+                                    <Button style={{backgroundColor: "#29ff29"}} className={classes.firstButton} startIcon={<AttachMoney/>} onClick={() => this._open_link("https://openfund.com/d/Pixagram")} color={"primary"} variant={"contained"}>BUY NOW</Button>
                                 </Tooltip>
                             </div>
                         </div>
@@ -458,7 +458,7 @@ class Marketplace extends React.Component {
                                         <th>Value</th>
                                         <th>State</th>
                                     </tr>
-                                    <tr className={classes.tableGreenActive} onClick={() => this._open_link("https://openfund.com/d/PixaMarket")}>
+                                    <tr className={classes.tableGreenActive} onClick={() => this._open_link("https://openfund.com/d/Pixagram")}>
                                         <td>
                                             <Badge className={classes.styledBadgeConnectedA} overlap="circular" badgeContent=" " variant="dot">
                                                 <span>Pre-Seed</span>
@@ -540,7 +540,7 @@ class Marketplace extends React.Component {
                     <Fade in timeout={1450}>
                         <div className={classes.founders}>
                             <h3 style={{fontSize: "44px", fontWeight: "bold"}}>Meet The Co-Founders</h3>
-                            <p>Book a call with us at any time! <a href={"mailto:business@pixa.market"} target={"_blank"}>business@pixa.market</a>. Or contact us on <a href={"https://www.linkedin.com/company/pixamarket/"} target={"_blank"}>LinkedIn</a>.</p>
+                            <p>Book a call with us at any time! <a href={"mailto:business@pixa.market"} target={"_blank"}>business@pixa.market</a>. Or contact us on <a href={"https://www.linkedin.com/company/pixagram-blockchain/"} target={"_blank"}>LinkedIn</a>.</p>
                             <div style={{display: "inline-flex", marginTop: 32, verticalAlign: "bottom", textAlign: "center"}}>
                                 <div>
                                     <Tooltip title={" 🇨🇭 I make software."}>
