@@ -343,7 +343,7 @@ class Marketplace extends React.Component {
 
     componentDidMount = () => {
 
-        fetch("https://openfund.com/api/v0/funding-rounds?username=PixaMarket").then((result) => {
+        fetch("https://openfund.com/api/v0/funding-rounds?username=Pixagram").then((result) => {
             result.text().then((text) => {
                 var amountRaisedUSD = 0.0;
                 var amountToRaiseUSD = 0.0;

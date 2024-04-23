@@ -253,7 +253,7 @@ class DrawerContent extends React.PureComponent {
                     <Fade in={true} timeout={900}>
                         <ListItem button className={classes.listItemGrey} TouchRippleProps={{className: classes.rippleBlue}} onClick={() => {this._go_to("marketplace")}}>
                             <ListItemIcon><StoreIcon className={classes.iconColor} /></ListItemIcon>
-                            <ListItemText primary="PixaMarket: Demo" />
+                            <ListItemText primary="Pixagram (DEMO)" />
                         </ListItem>
                     </Fade>
                     <Fade in={true} timeout={1200}>
@@ -261,7 +261,7 @@ class DrawerContent extends React.PureComponent {
                             <Badge className={classes.styledBadgeConnected} overlap="circular" badgeContent=" " variant="dot">
                                 <ListItemIcon><NewReleases className={classes.iconColor} /></ListItemIcon>
                             </Badge>
-                            <ListItemText primary="PixaMarket: ICO" />
+                            <ListItemText primary="Pixagram (ICO)" />
                         </ListItem>
                     </Fade>
                     <Fade in={true} timeout={1500}>
