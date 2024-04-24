@@ -1,5 +1,5 @@
 import React from "react";
-import {Backdrop, Divider, ListItem, Tooltip, withStyles} from "@material-ui/core";
+import {Backdrop, Divider, ListItem, ListItemIcon, SwipeableDrawer, Tooltip, withStyles} from "@material-ui/core";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import Button from "@material-ui/core/Button";
@@ -11,6 +11,7 @@ import Fade from "@material-ui/core/Fade";
 import Grow from "@material-ui/core/Grow";
 import Pagination from '@material-ui/lab/Pagination';
 import Paper from '@material-ui/core/Paper';
+import Fab from '@material-ui/core/Fab';
 import Masonry, {ResponsiveMasonry} from "react-responsive-masonry"
 
 import AccountBalanceWallet from "@material-ui/icons/AccountBalanceWallet";
@@ -34,7 +35,6 @@ import Icon from '@material-ui/core/Icon';
 import ImageEditIcon from '../icons/ImageEdit';
 import SquareRoundedIcon from '../icons/SquareRounded';
 import GamePadRoundIcon from '../icons/GamePadRound';
-import StarCircleIcon from '../icons/StarCircle';
 import Hashtag from '../icons/Hashtag';
 import LinkBox from '../icons/LinkBox';
 import PixaDollar from "../icons/PixaDollar";
@@ -68,6 +68,18 @@ import actions from "../actions/utils";
 import HexagonThree from "../icons/HexagonThree";
 import {createSVG} from "../utils/vtracer";
 import StarRoundedIcon from "@material-ui/icons/StarRounded";
+import {
+    Fireplace,
+    HotTub,
+    SentimentSatisfied, Star,
+    StarBorder,
+    StarOutline,
+    StarOutlined,
+    TrendingUp
+} from "@material-ui/icons";
+import TimeIcon from "@material-ui/icons/Timer";
+import SettingsIcon from "@material-ui/icons/Settings";
+import MenuIcon from "@material-ui/icons/Menu";
 
 const styles = theme => ({
     root: {
@@ -76,10 +88,26 @@ const styles = theme => ({
         maxHeight: "100%",
     },
     feed: {
-        maxWidth: 1140,
+        maxWidth: 1134,
         margin: "32px auto 64px auto",
     },
+    tagFeedWrapper: {
+        marginRight: 256,
+        "@media (max-width: 1200px)": {
+            marginRight: 0,
+            display: "float"
+        }
+    },
+    tagFeed: {
+        maxWidth: 1134,
+        margin: "32px auto 64px auto",
+        "@media (max-width: 1200px)": {
+            maxWidth: 1152,
+            margin: "32px 24px 64px 24px",
+        }
+    },
     paperTabs: {
+        float: "left",
         "&.MuiPaper-root": {
             background: "#060e23",
         },
@@ -97,10 +125,23 @@ const styles = theme => ({
         "& .MuiTab-root.Mui-selected.MuiTab-textColorPrimary": {
             color: "#ffffffff"
         },
+        display: "block"
+    },
+    fab: {
+        display: "none",
+        "@media (max-width: 1200px)": {
+            marginLeft: 8,
+            float: "left",
+            display: "block"
+        }
+    },
+    paperTabsWrapper: {
         position: "fixed",
+        zIndex: 2,
         left: "50%",
         bottom: 0,
-        transform: "translateX(-50%)"
+        transform: "translateX(-50%)",
+        width: "max-content"
     },
     profileCard: {
         borderRadius: "4px",
@@ -305,6 +346,16 @@ const styles = theme => ({
     },
     linkButton: {
         margin: "16px 4px 8px 4px",
+    },
+    drawerHashtag: {
+      "& .MuiDrawer-paper": {
+          width: 256,
+          background: "white",
+          contain: "style size paint layout",
+          boxShadow: "-2px 0px 4px 0px rgb(0 0 0 / 20%), -4px 0px 5px 0px rgb(0 0 0 / 14%), -6px 0px 10px 0px rgb(0 0 0 / 12%)",
+          maxHeight: "100%",
+          height: "100%",
+      }
     },
     settingButton: {
         margin: "16px 16px 8px 4px",
@@ -620,6 +671,11 @@ const styles = theme => ({
             },
         },
     },
+    tabSort: {
+        "& .MuiTab-root": {
+            minWidth: 64
+        }
+    },
     votes: {
         position: "absolute",
         margin: 0,
@@ -793,6 +849,10 @@ class Marketplace extends React.Component {
             _settings: JSON.parse(props.settings),
             tabValue: 0,
             mainTabValue: 0,
+            tabTagValue: 0,
+            drawerHashtagOpen: true,
+            isMobile: true,
+            tagValue: "selfie",
             imagesFeed: [
                 {
                     src: "data:/png;base64,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",
@@ -812,6 +872,17 @@ class Marketplace extends React.Component {
                     value: 31.22,
                     sold: false,
                     favorite: true,
+                    nsfw: false,
+                },
+                {
+                    src: "\n" +
+                        "data:image/png;base64,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",
+                    name: "Lia's Bad Side",
+                    money: <PixaCoin/>,
+                    price: 100,
+                    value: 12.43,
+                    sold: false,
+                    favorite: false,
                     nsfw: false,
                 },
                 {
@@ -1087,6 +1158,10 @@ class Marketplace extends React.Component {
                     nsfw: false,
                 }
             ],
+            categories: [
+                {name: "photo", star: true}, {name: "selfie", star: true}, {name: "drawing", star: true}, {name: "illustration", star: true},
+                {name: "portrait", star: false},{name: "school", star: false},{name: "landscape", star: false},{name: "animal", star: false},{name: "nature", star: false},{name: "city", star: false},{name: "sexy", star: false},{name: "artistic", star: false},{name: "realistic", star: false},{name: "welcome", star: false},{name: "gaming", star: false},{name: "party", star: false},{name: "friends", star: false},{name: "fantasy", star: false}
+            ],
             tabsValue: 0,
             actions: [
                 { icon: <Person />, name: 'Profile' },
@@ -1236,10 +1311,24 @@ class Marketplace extends React.Component {
 
     updateDimension = () => {
         this.setRefFromLeft(null);
+        let documentElement = document.documentElement,
+            body = document.body || document.getElementsByTagName('body')[0],
+            _window_width = window.innerWidth || documentElement.clientWidth || body.clientWidth,
+            _window_height = window.innerHeight|| documentElement.clientHeight || body.clientHeight;
+
+        const _less_than_1280w = Boolean(_window_width < 1280);
+        this.setState({
+            isMobile: _less_than_1280w
+        });
     }
 
     handleTabChange = (event, number) => {
         this.setState({tabValue: number}, () => {
+            this.forceUpdate();
+        })
+    }
+    handleTabTagChange = (event, number) => {
+        this.setState({tabTagValue: number}, () => {
             this.forceUpdate();
         })
     }
@@ -1458,6 +1547,28 @@ class Marketplace extends React.Component {
     toggleDrawer = () => {
         this.setState({openedDrawer: !this.state.openedDrawer});
     }
+    toggleHashtagDrawer = () => {
+        this.setState({drawerHashtagOpen: !this.state.drawerHashtagOpen});
+    }
+    toggleFavoriteTag = (item) => {
+        let tags = this.state.categories;
+        for(var i = 0; i < tags.length; i++){
+            let tag = tags[i];
+            if(tag.name === item.name){
+                tags[i].star = !tag.star;
+            }
+        }
+
+        this.setState({categories: tags}, () => {
+            this.forceUpdate();
+        });
+    }
+    selectTag = (item) => {
+
+        this.setState({tagValue: item.name}, () => {
+            this.forceUpdate();
+        });
+    }
     download = (src, title, artist, type) => {
         let ext = type || (src.startsWith("data:image/jpeg") ? "jpeg": src.startsWith("data:image/svg+xml;base64,") ? "svg": "png");
         let a = document.createElement("a"); //Create <a>
@@ -1468,7 +1579,7 @@ class Marketplace extends React.Component {
     }
     render() {
 
-        const { classes, tabValue, imagesProfile, imagesFeed, mainTabValue, actions, history, openedMediaData, openedMediaDataData, _h_svg_size, _h_svg, src, type, openedDrawer } = this.state;
+        const { classes, tabValue, tagValue, imagesProfile, isMobile, imagesFeed, mainTabValue, categories, tabTagValue, actions, history, openedMediaData, openedMediaDataData, _h_svg_size, _h_svg, src, type, drawerHashtagOpen, openedDrawer } = this.state;
 
         const {canvas_wrapper, device_pixel_ratio, scale, canvas_event_target} = this.canvas_pos.get_state();
         const screen_zoom_ratio = this.canvas_pos.get_screen_zoom_ratio();
@@ -1634,23 +1745,112 @@ class Marketplace extends React.Component {
                     </ResponsiveMasonry>
                 </Fade>
                 }
-                <Paper className={classes.paperTabs}>
-                    <Tabs
-                        value={mainTabValue}
-                        onChange={this.handleMainTabChange}
-                        indicatorColor="primary"
-                        textColor="primary"
-                        centered
-                    >
-                        {actions.map((action) => (
-                            <Tab
-                                className={classes.actionButton}
-                                key={action.name}
-                                icon={action.icon}
-                            />
-                        ))}
-                    </Tabs>
-                </Paper>
+                {mainTabValue === 2 && <div>
+                    <SwipeableDrawer className={classes.drawerHashtag} style={{width: 256, zIndex: 1}} onClose={this.toggleHashtagDrawer} open={(!isMobile) || (isMobile && drawerHashtagOpen)} variant={isMobile ? "temporary": "persistent"} anchor={isMobile ? "left": "right"} disableBackdropTransition={!isMobile}>
+                        <Tabs style={{position: "fixed", background: "#ededff", overflow: "overlay", maxHeight: "100%", width: 256, right: 0, top: 0}}
+                              className={classes.tabSort}
+                              indicatorColor="secondary"
+                              textColor="secondary"
+                              centered fullWidth
+                              selectionFollowsFocus={true}
+                              value={tabTagValue}
+                              onChange={this.handleTabTagChange}>
+                            <Tab icon={<TimeIcon/>}/>
+                            <Tab icon={<Fireplace/>}/>
+                            <Tab icon={<TrendingUp/>}/>
+                            <Tab icon={<SentimentSatisfied/>}/>
+                        </Tabs>
+                        <List style={{position: "fixed", overflow: "overlay", maxHeight: "100%", width: 256, right: 0, top: 48}}>
+                            {
+                                categories.sort((itemA, itemB) => (itemA.star ? "A": "B").concat(itemA.name).localeCompare((itemB.star ? "A": "B").concat(itemB.name))).map((item) => {
+
+                                    return (
+                                        <ListItem key={item.name} button style={tagValue === item.name ? {backgroundColor: "#ededff"}: {}}>
+                                            {item.star ?
+                                                <ListItemIcon onClick={() => {this.toggleFavoriteTag(item)}}>
+                                                    <Star color={"primary"}/>
+                                                </ListItemIcon>:
+                                                <ListItemIcon onClick={() => {this.toggleFavoriteTag(item)}}>
+                                                    <StarBorder color={"primary"}/>
+                                                </ListItemIcon>
+                                            }
+                                            <ListItemText onClick={() => {this.selectTag(item)}} primary={"# "+item.name.toLocaleUpperCase()} />
+                                        </ListItem>
+                                    )
+                                })
+                            }
+                        </List>
+                    </SwipeableDrawer>
+                </div>}
+                {mainTabValue === 2 && <Fade in timeout={300}>
+                    <div className={classes.tagFeedWrapper}>
+                        <h1>{["New posts", "Hot posts", "Trending posts", "Controversial posts"][tabTagValue]+" in "+tagValue}</h1>
+                        <ResponsiveMasonry
+                            className={classes.tagFeed}
+                            columnsCountBreakPoints={{266: 1, 532: 2, 800: 3, 1152: 4}}
+                            gutter={"16px"}
+                        >
+                            <Masonry style={{gap: 24}}>
+                                {
+                                    imagesFeed.map((img, index) => {
+
+                                        return (<Grow in={true} timeout={600+index*300} key={index}>
+                                            <div className={classes.mediaCard}>
+                                                <img
+                                                    className={classes.media + " pixelated"}
+                                                    src={img.src}
+                                                    title={img.name}
+                                                    style={img.nsfw ? {filter: "blur(14px)"}: {}}
+                                                ></img>
+                                                <div className={classes.mediaOverlay} >
+                                                    <div style={{position: "absolute", top: 0, left: 0, width: "100%", height: "100%"}} onClick={() => {this.openMediaCard(img)}}></div>
+                                                    <div className={classes.votes + " top"}>
+                                                        <IconButton><AutorenewSharpIcon/><span className={classes.iconCount}>14</span></IconButton>
+                                                        <IconButton><KeyboardArrowUpOutlined/><span className={classes.iconCount}>88</span></IconButton>
+                                                        <IconButton><KeyboardArrowDownOutlined/><span className={classes.iconCount}>0</span></IconButton>
+                                                    </div>
+                                                    <IconButton className={"top " + (img.favorite ? classes.favoriteTrue: classes.favoriteFalse)} onClick={ () => {this.toggleFavoriteAtIndex(index)}}>{img.favorite ? <FavoriteOutlined/>: <FavoriteBorder/>}</IconButton>
+                                                    <span className={classes.mediaTitle + " bottom"}>
+                                                        <span className={classes.mediaTitleName}>{img.name}</span>
+                                                        <span className={classes.mediaTitleAuthor}>@sophia.julio</span>
+                                                    </span>
+                                                    <span className={classes.mediaMoney + " bottom"}>
+                                                        <span className={classes.mediaValue}>$ {img.value}</span>
+                                                        <span className={img.sold ? classes.mediaPriceUnavailable: classes.mediaPriceAvailable}>{img.price} {img.money}</span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </Grow>);
+                                    })
+                                }
+                            </Masonry>
+                        </ResponsiveMasonry>
+                    </div>
+                </Fade>}
+                <div className={classes.paperTabsWrapper}>
+                    <Paper className={classes.paperTabs}>
+                        <Tabs
+                            value={mainTabValue}
+                            onChange={this.handleMainTabChange}
+                            indicatorColor="primary"
+                            textColor="primary"
+                            centered
+                        >
+                            {actions.map((action, i) => (
+                                <Tab
+                                    className={classes.actionButton}
+                                    key={action.name}
+                                    icon={action.icon}
+                                />
+                            ))}
+                        </Tabs>
+                    </Paper>
+                    {mainTabValue === 2 &&
+                        <Fab color="secondary" className={classes.fab} onClick={this.toggleHashtagDrawer}>
+                            <MenuIcon />
+                        </Fab>
+                    }
+                </div>
                 <Backdrop className={classes.backdrop} style={{
                     backgroundImage: `url("${_h_svg}")`,
                     backgroundRepeat: "repeat",
