@@ -346,13 +346,13 @@ class Marketplace extends React.Component {
         fetch("https://openfund.com/api/v0/funding-rounds?username=Pixagram").then((result) => {
             result.text().then((text) => {
                 var amountRaisedUSD = 0.0;
-                var amountToRaiseUSD = 0.0;
+                var amountToRaiseUSD = 60000.0;
                 var roundNames = [];
                 JSON.parse(text).forEach((obj) => {
                     console.log(obj)
                     roundNames.push(obj.RoundName);
                     amountRaisedUSD += obj.AmountRaisedUSDCents / 100;
-                    amountToRaiseUSD += obj.AmountToRaiseUsdCents / 100;
+                    //amountToRaiseUSD += obj.AmountToRaiseUsdCents / 100;
                 });
 
                 this.setState({amountRaisedUSD, amountToRaiseUSD, roundNames}, () => {
