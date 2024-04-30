@@ -352,7 +352,7 @@ class Marketplace extends React.Component {
                     console.log(obj)
                     roundNames.push(obj.RoundName);
                     amountRaisedUSD += obj.AmountRaisedUSDCents / 100;
-                    //amountToRaiseUSD += obj.AmountToRaiseUsdCents / 100;
+                    //amountToRaiseUSD = obj.AmountToRaiseUsdCents / 100;
                 });
 
                 this.setState({amountRaisedUSD, amountToRaiseUSD, roundNames}, () => {
