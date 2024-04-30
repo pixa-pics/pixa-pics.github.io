@@ -68,17 +68,12 @@ import actions from "../actions/utils";
 import HexagonThree from "../icons/HexagonThree";
 import {createSVG} from "../utils/vtracer";
 import StarRoundedIcon from "@material-ui/icons/StarRounded";
-import {
-    Fireplace,
-    HotTub,
-    SentimentSatisfied, Star,
-    StarBorder,
-    StarOutline,
-    StarOutlined,
-    TrendingUp
-} from "@material-ui/icons";
+import Fireplace from "@material-ui/icons/Fireplace";
+import SentimentSatisfied from "@material-ui/icons/SentimentSatisfied";
+import Star from "@material-ui/icons/Star";
+import StarBorder from "@material-ui/icons/StarBorder";
+import TrendingUp from "@material-ui/icons/TrendingUp";
 import TimeIcon from "@material-ui/icons/Timer";
-import SettingsIcon from "@material-ui/icons/Settings";
 import MenuIcon from "@material-ui/icons/Menu";
 
 const styles = theme => ({
