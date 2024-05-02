@@ -685,7 +685,7 @@ class CanvasPixels extends React.PureComponent {
 
                 }else if(this.oxi_png && with_compression_speed !== 0 && result.colors.length > 256){
 
-                    this.oxi_png(""+result.url, Math.floor(with_compression_quality_max/30), false, pool).then((base_64_out) => {
+                    this.oxi_png(""+result.url, Math.round(with_compression_quality_max/33), false, pool).then((base_64_out) => {
 
                         result.url = base_64_out;
                         resolve(result);
@@ -1897,7 +1897,7 @@ class CanvasPixels extends React.PureComponent {
             var base64_o_i = this.super_state.get_state()._base64_original_images.map(function(img){ return img.split(","); });
             Promise.all([
                 Promise.all(base64_o_i.map((entry) => {return toBytes(entry[1]); })),
-                this.get_base64_png_data_url(1, false, 9, 30, 50)
+                this.get_base64_png_data_url(1, false, 1, 100, 100)
             ]).then((responses) => {
                 "use strict";
                 Array.from(responses[0]).forEach(function (img_1, index) {
