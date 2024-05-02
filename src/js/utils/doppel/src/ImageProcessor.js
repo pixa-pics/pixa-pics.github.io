@@ -7,8 +7,8 @@ import ColorAnalysis from "./ColorAnalysis";
 export default class ImageProcessor {
     constructor(options) {
         options = options || {};
-        this.canvas = document.createElement('canvas');
-        this.targetCanvas = document.createElement('canvas');
+        this.canvas = ImageUtils.initializeCanvas(undefined, 1, 1).canvas;
+        this.targetCanvas =  ImageUtils.initializeCanvas(undefined, 1, 1).canvas;
         this.options = {
             despeckleStrength: options.despeckleStrength || options.strength || 1.0,
             quantizeStrength: options.quantizeStrength || options.strength  || 1.0,

@@ -1,5 +1,14 @@
 import React from "react";
-import {Backdrop, ListItem, ListItemIcon, SwipeableDrawer, Tooltip, withStyles} from "@material-ui/core";
+import {
+    Backdrop,
+    ListItem,
+    ListItemIcon,
+    Menu,
+    MenuItem,
+    SwipeableDrawer,
+    Tooltip,
+    withStyles
+} from "@material-ui/core";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import Button from "@material-ui/core/Button";
@@ -51,6 +60,7 @@ import Drawer from '@material-ui/core/Drawer';
 
 import {getImageDataFromBase64} from "../utils/computeMediaPost"
 import ImageQuadTree from "../utils/quadtree"
+import PixelArtPolygonizer from "../utils/polygonize"
 import List from '@material-ui/core/List';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -1316,8 +1326,11 @@ class Marketplace extends React.Component {
         this.forceUpdate();
     };
 
-    renderMedia = (type, data) => {
+    renderMedia = (type, data, imageData) => {
 
+        this.setState({renderingMenuAnchorEl: null}, () => {
+            this.forceUpdate();
+        });
         URL.revokeObjectURL(this.state.src);
         const callback = (second_image_data) => {
             let third_canvas = document.createElement("canvas");
@@ -1457,6 +1470,20 @@ class Marketplace extends React.Component {
                     });
                 })
                 break;
+
+            case "poly":
+                actions.trigger_loading_update(0);
+                actions.trigger_voice("processing");
+                var pixelArtPolygonizer = new PixelArtPolygonizer({size: Math.sqrt(4096*2160) / Math.sqrt(imageData.width*imageData.height) | 0});
+                pixelArtPolygonizer.processImage(data, true).then((url) => {
+                    URL.revokeObjectURL(this.state.src);
+                    this.setState({src: url, type: "svg"}, () => {
+                        actions.trigger_loading_update(100);
+                        actions.trigger_voice("vision_activated");
+                        this.forceUpdate();
+                    });
+                })
+                break;
         }
 
     };
@@ -1558,9 +1585,19 @@ class Marketplace extends React.Component {
         a.click();
         a.remove();
     }
+    handleRenderingMenuOpen = (event) => {
+        this.setState({renderingMenuAnchorEl: event.currentTarget}, () => {
+            this.forceUpdate();
+        })
+    };
+    handleRenderingMenuClose = () => {
+        this.setState({renderingMenuAnchorEl: null}, () => {
+            this.forceUpdate();
+        })
+    };
     render() {
 
-        const { classes, tabValue, tagValue, imagesProfile, isMobile, imagesFeed, mainTabValue, categories, tabTagValue, actions, history, openedMediaData, openedMediaDataData, _h_svg_size, _h_svg, src, type, drawerHashtagOpen, openedDrawer } = this.state;
+        const { classes, tabValue, tagValue, renderingMenuAnchorEl, imagesProfile, isMobile, imagesFeed, mainTabValue, categories, tabTagValue, actions, history, openedMediaData, openedMediaDataData, _h_svg_size, _h_svg, src, type, drawerHashtagOpen, openedDrawer } = this.state;
 
         const {canvas_wrapper, device_pixel_ratio, scale, canvas_event_target} = this.canvas_pos.get_state();
         const screen_zoom_ratio = this.canvas_pos.get_screen_zoom_ratio();
@@ -1817,11 +1854,23 @@ class Marketplace extends React.Component {
                     </div>}
                     <div className={classes.leftFromDrawer} style={{zIndex: 10, pointerEvents: "all"}} ref={this.setRefFromLeft} >
                         <div style={{position: "fixed", top: 16, left: 16}}>
-                            <IconButton style={{color: "#ffffff"}} onClick={() => {this.renderMedia("pixelated", openedMediaDataData.data)}}><Icon><SquareRoundedIcon/></Icon></IconButton>
-                            <IconButton style={{color: "#ffffff"}} onClick={() => {this.renderMedia("crt", openedMediaDataData.data)}}><Icon><StarRoundedIcon/></Icon></IconButton>
-                            <IconButton style={{color: "#ffffff"}} onClick={() => {this.renderMedia("svg", openedMediaDataData.data)}}><Icon><GamePadRoundIcon/></Icon></IconButton>
-                            <IconButton style={{color: "#ffffff"}} onClick={() => {this.renderMedia("hex", openedMediaDataData.data)}}><Icon><HexagonThree/></Icon></IconButton>
-                            <IconButton style={{color: "#ffffff"}} onClick={() => {this.renderMedia("tree", openedMediaData.src)}}><Icon><CheckCircle/></Icon></IconButton>
+                            <IconButton style={{color: "#ffffff"}} onClick={this.handleRenderingMenuOpen}>
+                                <Icon><HexagonThree/></Icon>
+                            </IconButton>
+                            <Menu
+                                id="simple-menu"
+                                anchorEl={renderingMenuAnchorEl}
+                                keepMounted
+                                open={Boolean(renderingMenuAnchorEl)}
+                                onClose={this.handleRenderingMenuClose}
+                            >
+                                <MenuItem onClick={() => {this.renderMedia("pixelated", openedMediaDataData.data)}}>Squared</MenuItem>
+                                <MenuItem onClick={() => {this.renderMedia("crt", openedMediaDataData.data)}}>Old Screen (CRT)</MenuItem>
+                                <MenuItem onClick={() => {this.renderMedia("svg", openedMediaDataData.data)}}>Illustration</MenuItem>
+                                <MenuItem onClick={() => {this.renderMedia("hex", openedMediaDataData.data)}}>Hexagon</MenuItem>
+                                <MenuItem onClick={() => {this.renderMedia("tree", openedMediaData.src)}}>Quadratic Tree</MenuItem>
+                                <MenuItem onClick={() => {this.renderMedia("poly", openedMediaData.src, openedMediaDataData.data)}}>Polygonal</MenuItem>
+                            </Menu>
                         </div>
                         <div style={{position: "fixed", right: window.innerWidth > 800 ? 400: 14, top: 16}}>
                             <IconButton style={{color: "#ffffff"}} onClick={() => {this.download(src, openedMediaData.name, "sophia.julio", type)}}><Icon><CloudDownload/></Icon></IconButton>

@@ -164,10 +164,36 @@ module.exports = { hexagonrender: hexagonrender };
 */
 
 /* MIT License, Copyright (c) 2023 Affolter Matias*/
+function initializeCanvas(image, width, height, virtualized) {
+    "use strict";
+    image = image || {width: 0, height: 0}
+    width = image.width || width || 1;
+    height = image.height || height || 1;
+    let canvas, context;
+    try {
+        if(virtualized === false) { throw new ErrorEvent("Must support toDataURL later, skipping offrscreen canvas solution."); }
+        canvas = new OffscreenCanvas(width, height);
+        context = canvas.getContext('2d', { willReadFrequently: true, desynchronized: virtualized});
+    }catch (e) {
+        canvas = document.createElement("canvas")
+        canvas.width = width;
+        canvas.height = height;
+        context = canvas.getContext('2d', { willReadFrequently: true});
+    }
+
+    if (image instanceof ImageData) {
+        context.putImageData(image, 0, 0);
+    } else if(image.width) {
+        context.drawImage(image, 0, 0, width, height);
+    }
+
+    return { canvas, context };
+}
+
 function initConstants(radius) {
     var fr = Math.fround;
     const CONSTANTS = new Float32Array(6), CONSTANTS_X = new Float32Array(6), CONSTANTS_Y = new Float32Array(6);
-    CONSTANTS[0] = fr(Math.ceil(radius / 16) / 2 + 1); // LINE_WIDTH
+    CONSTANTS[0] = fr(Math.ceil(radius / 12) / 2 + 1); // LINE_WIDTH
     CONSTANTS[1] = fr(2 * Math.PI / 6); // A
     CONSTANTS[2] = fr(radius); // Radius
     CONSTANTS[3] = fr(radius * 2); // Diameter
@@ -187,31 +213,34 @@ function initConstants(radius) {
     };
 }
 
-function createCanvasWithFallback(width, height) {
+function createCanvasWithFallback(width, height, virtualized) {
     // Attempt to create an OffscreenCanvas
-    var canvas;
-    if (false && typeof OffscreenCanvas !== 'undefined') {
-        canvas = new OffscreenCanvas(width|0, height|0);
-    } else {
-        // Fallback to regular HTML canvas element if OffscreenCanvas is not available
-        canvas = document.createElement('canvas');
-        canvas.width = width|0;
-        canvas.height = height|0;
-    }
-
-    var ctx = canvas.getContext('2d');
-    ctx.imageSmoothingEnabled = false;
-    return ctx;
+    return initializeCanvas(undefined, width, height, virtualized).context;
 }
 
 function createObjectURLFromCanvas(canvas, callback) {
     // Convert the canvas to a Blob
-    canvas.toBlob(function(blob) {
-        // Create an object URL for the Blob
-        const url = URL.createObjectURL(blob);
-        // Call the callback function with the URL
-        callback(url);
-    });
+    try {
+        canvas.toBlob(function(blob) {
+            // Create an object URL for the Blob
+            const url = URL.createObjectURL(blob);
+            // Call the callback function with the URL
+            callback(url);
+        });
+    }catch (e) {
+
+        const base64PNG = canvas.toDataURL("image/png");
+        function dataURItoBlob(dataURI) {
+            var mime = dataURI.split(',')[0].split(':')[1].split(';')[0];
+            var binary = atob(dataURI.split(',')[1]);
+            var array = [];
+            for (var i = 0; i < binary.length; i++) {
+                array.push(binary.charCodeAt(i));
+            }
+            return new Blob([new Uint8Array(array)], {type: mime});
+        }
+        callback(URL.createObjectURL(dataURItoBlob(base64PNG)));
+    }
 }
 
 function generateFinalImageData(originalImageData, radius, object_url) {
@@ -220,7 +249,7 @@ function generateFinalImageData(originalImageData, radius, object_url) {
         throw new Error("Invalid radius value. Must within 1 and 100");
     }
 
-    return new Promise(function (resolve, reject) {
+    return new Promise( (resolve, reject) => {
 
         const {CONSTANTS, CONSTANTS_X, CONSTANTS_Y} = initConstants(radius);
 
@@ -228,6 +257,7 @@ function generateFinalImageData(originalImageData, radius, object_url) {
         const ctx = createCanvasWithFallback(
             originalImageData.width * CONSTANTS[3] - (Math.floor(originalImageData.width / 2) * CONSTANTS[2]), // Hexagons are taking 1x Diameter less 1/2 radius of width
             originalImageData.height * CONSTANTS[3] - (Math.floor(originalImageData.height / 2) * CONSTANTS[2]) // Hexagons are taking a height that is computed differently
+            , false
         );
         const canvas = ctx.canvas;
 
@@ -271,7 +301,7 @@ function generateFinalImageData(originalImageData, radius, object_url) {
         let zeros = new Float32Array(3).fill(CONSTANTS[2]);
         function getColorTile(ctx, color) {
             if (!colorTileCache[color]) {
-                let tileCtx = createCanvasWithFallback(CONSTANTS[3], CONSTANTS[3]);
+                let tileCtx = createCanvasWithFallback(CONSTANTS[3], CONSTANTS[3], true);
                 drawHexagon(tileCtx, zeros, color)
                 colorTileCache[color] = tileCtx.canvas;
             }
