@@ -76,14 +76,13 @@ import JSLoader from "../utils/JSLoader";
 import actions from "../actions/utils";
 import HexagonThree from "../icons/HexagonThree";
 import {createSVG} from "../utils/vtracer";
-import StarRoundedIcon from "@material-ui/icons/StarRounded";
 import Fireplace from "@material-ui/icons/Fireplace";
 import SentimentSatisfied from "@material-ui/icons/SentimentSatisfied";
 import Star from "@material-ui/icons/Star";
 import StarBorder from "@material-ui/icons/StarBorder";
 import TrendingUp from "@material-ui/icons/TrendingUp";
 import TimeIcon from "@material-ui/icons/Timer";
-import CheckCircle from "@material-ui/icons/CheckCircle";
+import CameraIcon from "@material-ui/icons/Camera";
 
 const styles = theme => ({
     root: {
@@ -1137,9 +1136,10 @@ class Marketplace extends React.Component {
             ],
             tabsValue: 0,
             actions: [
-                { icon: <Person />, name: 'Profile' },
-                { icon: <Hashtag />, name: 'Explore' },
-                { icon: <Group />, name: 'Communities' }
+                { icon: <Person />, name: 'Profile', action: this.handleTabChange.bind(this) },
+                { icon: <Hashtag />, name: 'Explore', action: this.handleTabChange.bind(this) },
+                { icon: <Group />, name: 'Communities', action: this.handleTabChange.bind(this) },
+                { icon: <CameraIcon />, name: 'Editor', action: this.goToEditor.bind(this) },
             ],
             openedMediaData: null,
             openedMediaDataData: {},
@@ -1280,6 +1280,11 @@ class Marketplace extends React.Component {
 
         return false;
     }
+
+    goToEditor = () => {
+
+        actions.load_with("");
+    };
 
     updateDimension = () => {
         this.setRefFromLeft(null);
@@ -1814,6 +1819,7 @@ class Marketplace extends React.Component {
                                     className={classes.actionButton}
                                     key={action.name}
                                     icon={action.icon}
+                                    onClick={(event, i) => { action.action(event, i) }}
                                 />
                             ))}
                         </Tabs>

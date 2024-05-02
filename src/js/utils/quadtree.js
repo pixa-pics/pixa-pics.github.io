@@ -3,7 +3,7 @@ class ImageQuadTree {
         parameters = parameters || {};
         this.shape = parameters.shape || "circle" || "rect";
         this.quadTree = null;
-        this.canvas = "OffscreenCanvas" in window ? new OffscreenCanvas(1, 1): document.createElement("canvas");
+        this.canvas = document.createElement("canvas");
         this.palette = new Map();
     }
 
@@ -14,7 +14,7 @@ class ImageQuadTree {
             image.onload = () => {
                 this.canvas.width = image.width;
                 this.canvas.height = image.height;
-                this.context = this.canvas.getContext('2d');
+                this.context = this.canvas.getContext('2d', {willReadFrequently: true});
                 this.context.drawImage(image, 0, 0);
                 this.quadTree = this.buildQuadTree(0, 0, image.width, image.height);
                 this.serialized = this.exportBinary();
@@ -81,7 +81,7 @@ class ImageQuadTree {
     exportBinary() {
         const nodes = [];
         const paletteArray = Array.from(this.palette.keys());
-        const paletteIndex = new Map(paletteArray.map((color, index) => [color, index]));
+        const paletteIndex = new Map(paletteArray.map(function (color, index){ return [color, index]; }));
 
         const encodeNode = (node) => {
             if (!node.children) {
@@ -89,7 +89,7 @@ class ImageQuadTree {
                 nodes.push(paletteIndex.get(node.color)); // Palette index
             } else {
                 nodes.push(255); // Internal node flag
-                node.children.forEach(child => encodeNode(child));
+                node.children.forEach(function (child){ encodeNode(child); });
             }
         };
 
@@ -97,7 +97,7 @@ class ImageQuadTree {
 
         const buffer = new ArrayBuffer(nodes.length);
         const uint8View = new Uint8Array(buffer);
-        nodes.forEach((value, index) => uint8View[index] = value);
+        nodes.forEach(function (value, index){ uint8View[index] = value});
 
         return uint8View;
     }
@@ -164,7 +164,16 @@ class ImageQuadTree {
             }
             return new Blob([new Uint8Array(array)], {type: mime});
         }
-        return URL.createObjectURL(dataURItoBlob(base64SVG));
+
+        var url;
+        try {
+            var blob = dataURItoBlob(base64SVG);
+                url = URL.createObjectURL(blob);
+        }catch (e) {
+            url = base64SVG;
+        }
+
+        return url;
     }
 
     renderQuadTree(svgElement, node, shape) {
