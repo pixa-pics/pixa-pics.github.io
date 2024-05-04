@@ -46,7 +46,7 @@
     "readable-stream": "~4.5.2",
     "vtracer-color": "~0.0.5",
     "regenerator-runtime": "~0.14.1",
-    "simdope": "~8.0.1",
+    "simdope": "~8.0.2",
     "snappyjs": "~0.7.0",
     "svg64": "~2.0.0",
     "svgo": "~2.8.0",
@@ -60,7 +60,6 @@
     "node-gyp-build": "~4.8.0"
   },
   "devDependencies": {
-    "node-gyp-build": "~4.8.0",
     "@svgr/cli": "~6.4.0",
     "babel-core": "~6.26.3",
     "babel-loader": "~7.1.5",

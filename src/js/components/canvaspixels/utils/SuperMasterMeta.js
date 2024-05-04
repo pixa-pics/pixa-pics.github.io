@@ -651,7 +651,7 @@ const SuperMasterMeta = {
                             },() => {this.update_canvas();});
                         }else {
 
-                            meta.super_state.paint_shape(_paint_or_select_hover_pxl_indexes.indexes, pxl_current_color_uint32, pxl_current_opacity, {
+                            meta.super_state.paint_shape(_paint_or_select_hover_pxl_indexes.indexes, pxl_current_color_uint32|0, pxl_current_opacity, {
                                 _pxls_hovered: pxl_index | 0,
                                 _mouse_inside: true,
                                 _paint_or_select_hover_pxl_indexes,
