@@ -2271,21 +2271,23 @@ class Pixel extends React.PureComponent {
             _slider_value_height
         } = this.st4te;
 
-        this.st4te._canvas._set_props({
-            tool: _tool,
-            hide_canvas_content: _hide_canvas_content,
-            show_original_image_in_background: _show_original_image_in_background && true,
-            show_transparent_image_in_background: _show_transparent_image_in_background,
-            select_mode: _select_mode,
-            pencil_mirror_mode: _pencil_mirror_mode,
-            hue: _hue,
-            bucket_threshold: _slider_value,
-            color_loss: _slider_value,
-            pxl_current_color: _current_color,
-            default_size: _import_size,
-            ideal_size: _import_size,
-            max_size: _import_size * 1.5,
-        });
+        if(this.st4te._canvas) {
+            this.st4te._canvas._set_props({
+                tool: _tool,
+                hide_canvas_content: _hide_canvas_content,
+                show_original_image_in_background: _show_original_image_in_background && true,
+                show_transparent_image_in_background: _show_transparent_image_in_background,
+                select_mode: _select_mode,
+                pencil_mirror_mode: _pencil_mirror_mode,
+                hue: _hue,
+                bucket_threshold: _slider_value,
+                color_loss: _slider_value,
+                pxl_current_color: _current_color,
+                default_size: _import_size,
+                ideal_size: _import_size,
+                max_size: _import_size * 1.5,
+            });
+        }
         this.st4te._swipeable_drawer_set_props({
             view_name_index: _view_name_index % 7,
             previous_view_name_index: _previous_view_name_index % 7,

@@ -208,25 +208,25 @@ const styles = theme => ({
         }
     },
     firstButton: {
-        background: "radial-gradient(circle 78px at 10% 50%, rgb(239 255 33) 0%, rgb(61 255 0) 100.7%)",
-        color: "#000",
-        filter: "drop-shadow(0px 0px 0px #33e52e) drop-shadow(0px 0px 0px #33e52e)",
+        background: "radial-gradient(circle 78px at 10% 50%, rgb(76 63 255) 0%, #2f2f8c 100.7%)",
+        color: "rgb(160,193,255)",
+        filter: "drop-shadow(0px 0px 0px #4C3FFFFF) drop-shadow(0px 0px 0px #2f2f8c)",
         transition: "all .3s cubic-bezier(0.4, 0, 0.2, 1)",
         "&:hover": {
-            background: "radial-gradient(circle 78px at 10% 50%, rgb(160 255 15) 0%, rgb(61 255 0) 100.7%)",
-            color: "#000",
-            filter: "drop-shadow(0px 0px 3px #07ff00) drop-shadow(0px 0px 5px #07ff00)",
+            background: "radial-gradient(circle 78px at 10% 50%, rgb(76 63 255) 0%, #2f2f8c 100.7%)",
+            color: "rgb(255,255,255)",
+            filter: "drop-shadow(0px 0px 2px #4C3FFFFF) drop-shadow(0px 0px 7px #2f2f8c)",
         }
     },
     whiteButton: {
-        background: "radial-gradient(circle 78px at 10% 50%, #fff 0%, #ddd 100.7%)",
+        background: "radial-gradient(circle 78px at 10% 50%, #fff 0%, #A0C1FFFF 100.7%)",
         color: "#000",
-        filter: "drop-shadow(0px 0px 0px #fff) drop-shadow(0px 0px 0px #ddd)",
+        filter: "drop-shadow(0px 0px 0px #fff) drop-shadow(0px 0px 0px #A0C1FFFF)",
         transition: "all .3s cubic-bezier(0.4, 0, 0.2, 1)",
         "&:hover": {
-            background: "radial-gradient(circle 78px at 10% 50%, #fff 100%, #ddd 200%)",
+            background: "radial-gradient(circle 78px at 10% 50%, #fff 100%, #A0C1FFFF 200%)",
             color: "#000",
-            filter: "drop-shadow(0px 0px 3px #fff) drop-shadow(0px 0px 5px #ddd)",
+            filter: "drop-shadow(0px 0px 3px #fff) drop-shadow(0px 0px 5px #A0C1FFFF)",
         }
     },
     tableGreenActive: {
@@ -275,35 +275,35 @@ const styles = theme => ({
         textShadow: "0px 0px 2px 4px white"
     },
     icoState: {
-        color: "chartreuse"
+        color: "#8aa6ff"
     },
     icoProgressBar: {
         borderRadius: "4px",
         contain: "paint size style layout",
         "@global": {
             "@keyframes ICOProgressBufferFlux": {
-                "0%":  { left: "-60%", background: "linear-gradient(to right, rgba(0, 255, 0, 0), rgba(0, 255, 0, .5))"},
-                "100%": { left: "130%", background: "linear-gradient(to right, rgba(0, 255, 0, 0), rgba(0, 255, 0, .7))"}
+                "0%":  { left: "-60%", background: "linear-gradient(90deg, rgba(255,255,255,0) 10%, #76a2ffc9 110%)"},
+                "100%": { left: "130%", background: "linear-gradient(90deg, rgba(255,255,255,0) 10%, #76a2ffc9 110%)"}
             }
         },
         height: "24px",
         width: "100%",
         margin: "36px 0 24px 0",
-        backgroundColor: "#072a00",
+        backgroundColor: "#000a42",
         position: "relative",
         "&::before": {
             content: "''",
             position: "absolute",
             height: "24px",
             width: "30%",
-            background: "rgba(0, 255, 0, 0)",
+            background: "rgba(255,255,255,0)",
             animation: "$ICOProgressBufferFlux 1.2s linear infinite 2.4s"
         }
     },
     icoProgressBuffer: {
         borderRadius: "4px",
-        backgroundColor: "#00ff00",
-        boxShadow: "0px 0px 12px #00ff00",
+        backgroundColor: "#76a2ffc9",
+        boxShadow: "0px 0px 12px #1937ff",
         height: "100%",
         width: "0%",
         transition: "width 1.7s cubic-bezier(1, 0, 0.65, 0.85)"
@@ -387,10 +387,10 @@ class Marketplace extends React.Component {
                     <div style={{display: "flex"}}>
                         <div>
                             <Fade in timeout={400}>
-                                <h1 style={{fontSize: "48px", fontWeight: "bold", marginTop: 0, backgroundImage: "radial-gradient(circle 477px at 1.4% 94.3%, rgb(0 231 255) 0%, rgb(73 255 0) 33.2%, rgb(230 255 0) 54.2%, rgb(239 255 0) 68.1%, rgb(255 65 65) 82%, rgb(255 0 198) 93.9%)", WebkitTextFillColor: "transparent", WebkitBackgroundClip: "text"}}>Onboard the ICO</h1>
+                                <h1 style={{fontSize: "56px", fontWeight: "bold", marginTop: 0, color: "white", textShadow: "rgb(255 255 255 / 56%) 0px 0px 2px, rgb(255 161 225 / 56%) 0px 0px 8px, rgb(82 46 255) 0px 0px 12px, rgb(4 41 255) 0px 0px 24px"}}>Initial Coin Offering</h1>
                             </Fade>
                             <Fade in timeout={500}>
-                                <h2 style={{marginTop: "24px", color: "rgb(211, 255, 224)"}}>Pixa.Market is a social media blockchain NFT platform working exclusively with 1000x more lightweight images as it is pixel-art. Our current target of timespan for NFTs is beyond 1,000 years.</h2>
+                                <h2 style={{marginTop: "24px", color: "#bdbdbd"}}>Pixa.Market is a social media blockchain NFT platform working exclusively with 1000x more lightweight images as it is pixel-art. Our current target of timespan for NFTs is beyond 1,000 years.</h2>
                             </Fade>
                             <Fade in timeout={600}>
                                 <div style={{marginTop: 32}}>
@@ -410,7 +410,7 @@ class Marketplace extends React.Component {
                         </Fade>
                     </div>
                     <div style={{marginTop: 32}}>
-                        <h3 style={{fontSize: "44px", textAlign: "center", fontWeight: "bold"}}>
+                        <h3 style={{fontSize: "34px", textAlign: "center", fontWeight: "bold"}}>
                             <span>{roundNames[0]}</span>
                         </h3>
                         <div className={classes.icoState}>
@@ -426,7 +426,7 @@ class Marketplace extends React.Component {
                                     <span>{Math.round(amountToRaiseUSD/1000*100)/100}</span>K USD
                                 </span>
                                 <Tooltip title={"Buy our utility token on openfund.com"}>
-                                    <Button style={{backgroundColor: "#29ff29"}} className={classes.firstButton} startIcon={<AttachMoney/>} onClick={() => this._open_link("https://openfund.com/d/Pixagram")} color={"primary"} variant={"contained"}>BUY NOW</Button>
+                                    <Button style={{backgroundColor: "#33acff"}} className={classes.firstButton} startIcon={<AttachMoney/>} onClick={() => this._open_link("https://openfund.com/d/Pixagram")} color={"primary"} variant={"contained"}>BUY NOW</Button>
                                 </Tooltip>
                             </div>
                         </div>

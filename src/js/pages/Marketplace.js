@@ -23,6 +23,7 @@ import Pagination from '@material-ui/lab/Pagination';
 import Paper from '@material-ui/core/Paper';
 import Masonry, {ResponsiveMasonry} from "react-responsive-masonry"
 
+import {t} from "../utils/t";
 import AccountBalanceWallet from "@material-ui/icons/AccountBalanceWallet";
 import ArrowDownward from "@material-ui/icons/ArrowDownward";
 import ArrowUpward from "@material-ui/icons/ArrowUpward";
@@ -45,7 +46,7 @@ import Hashtag from '../icons/Hashtag';
 import LinkBox from '../icons/LinkBox';
 import PixaDollar from "../icons/PixaDollar";
 import PixaCoin from "../icons/PixaCoin";
-import {avatars, imagesFeed, imagesProfile} from "../utils/demoData";
+import {avatars, imagesFeed, imagesProfile, comments, followers, following} from "../utils/demoData";
 
 import Timeline from '@material-ui/lab/Timeline';
 import TimelineItem from '@material-ui/lab/TimelineItem';
@@ -884,6 +885,9 @@ class Marketplace extends React.Component {
             isMobile: true,
             tagValue: "selfie",
             avatars: avatars,
+            comments: comments,
+            followers: followers,
+            following: following,
             imagesFeed: imagesFeed,
             imagesProfile: imagesProfile,
             categories: [
@@ -1326,7 +1330,7 @@ class Marketplace extends React.Component {
     };
     render() {
 
-        const { classes, tabValue, tagValue, renderingMenuAnchorEl, imagesProfile, isMobile, imagesFeed, mainTabValue, categories, tabTagValue, actions, history, openedMediaData, openedMediaDataData, _h_svg_size, _h_svg, src, type, drawerHashtagOpen, openedDrawer } = this.state;
+        const { classes, tabValue, tagValue, renderingMenuAnchorEl, imagesProfile, isMobile, imagesFeed, mainTabValue, categories, tabTagValue, actions, history, openedMediaData, openedMediaDataData, _h_svg_size, _h_svg, src, type, drawerHashtagOpen, openedDrawer, comments, followers, following } = this.state;
 
         const {canvas_wrapper, device_pixel_ratio, scale, canvas_event_target} = this.canvas_pos.get_state();
         const screen_zoom_ratio = this.canvas_pos.get_screen_zoom_ratio();
@@ -1376,8 +1380,8 @@ class Marketplace extends React.Component {
                                 <Tab className={classes.profileTab} label={"pictures"} icon={<Image />} />
                                 <Tab className={classes.profileTab} label={"comments"} icon={<Message />} />
                                 <Tab className={classes.profileTab} label={"history"} icon={<History />} />
-                                <Tab className={classes.profileTab} label={"followers"} icon={<ArrowDownward />} />
-                                <Tab className={classes.profileTab} label={"following"} icon={<ArrowUpward />} />
+                                <Tab className={classes.profileTab} label={`followers (${followers.length})`} icon={<ArrowDownward />} />
+                                <Tab className={classes.profileTab} label={`following (${following.length})`} icon={<ArrowUpward />} />
                                 <Tab className={classes.profileTab} label={"wallet"} icon={<AccountBalanceWallet />} />
                             </Tabs>
                         </CardContent>
@@ -1427,15 +1431,15 @@ class Marketplace extends React.Component {
                 </div>}
                 {mainTabValue === 0 && tabValue === 1 && <div className={classes.profileComments}>
                     <List style={{width: "100%"}}>
-                        {avatars.slice(0, 50).map((avatar, i) => {
+                        {comments.slice(0, 50).map((comment, i) => {
                             return (
                                 <Fade in timeout={i*125}>
                                 <ListItem key={"avatar"+i} alignItems="flex-start" divider={true}>
                                     <ListItemAvatar>
-                                        <Avatar className={"pixelated"} alt="Sophia Julio's friend" src={"data:image/png;base64,"+avatar} />
+                                        <Avatar className={"pixelated"} alt="Sophia Julio's friend" src={"data:image/png;base64,"+comment.avatar} />
                                     </ListItemAvatar>
                                     <ListItemText
-                                        primary="Commented on the post XYZ recently"
+                                        primary={`Commented on: "${comment.title}" ${t(comment.date.valueOf(), {mini: false})}`}
                                         secondary={
                                             <React.Fragment>
                                                 <Typography
@@ -1444,9 +1448,9 @@ class Marketplace extends React.Component {
                                                     className={classes.inline}
                                                     color="textPrimary"
                                                 >
-                                                    Ali Connors
+                                                    {comment.name}
                                                 </Typography>
-                                                {" — Thinking about all the benefits you will get with our platform…"}
+                                                {" - "+comment.comment}
                                             </React.Fragment>
                                         }
                                     />
@@ -1481,15 +1485,15 @@ class Marketplace extends React.Component {
                 </div>}
                 {mainTabValue === 0 && tabValue === 3 && <div className={classes.profileFollowers}>
                     <List style={{width: "100%"}}>
-                        {avatars.slice(50, 100).map((avatar, i) => {
+                        {followers.map((person, i) => {
                             return (
                             <Fade in timeout={i*125}>
                                 <ListItem key={"avatar"+i} alignItems="flex-start" divider={true}>
                                     <ListItemAvatar>
-                                        <Avatar className={"pixelated"} alt="Ali Connor" src={"data:image/png;base64,"+avatar} />
+                                        <Avatar className={"pixelated"} alt="Ali Connor" src={"data:image/png;base64,"+person.avatar} />
                                     </ListItemAvatar>
                                     <ListItemText
-                                        primary="Ali Connor"
+                                        primary={person.name}
                                         secondary={
                                             <React.Fragment>
                                                 <Typography
@@ -1500,7 +1504,7 @@ class Marketplace extends React.Component {
                                                 >
                                                     Follower
                                                 </Typography>
-                                                {" — Blockchain enthusiast, I am involved into this platform because I like the social features it has."}
+                                                {" - "+person.biography}
                                             </React.Fragment>
                                         }
                                     />
@@ -1512,15 +1516,15 @@ class Marketplace extends React.Component {
                 </div>}
                 {mainTabValue === 0 && tabValue === 4 && <div className={classes.profileFollowing}>
                     <List style={{width: "100%"}}>
-                        {avatars.slice(100, 150).map((avatar, i) => {
+                        {following.map((person, i) => {
                             return (
                                 <Fade in timeout={i*125}>
                                     <ListItem key={"avatar"+i} alignItems="flex-start" divider={true}>
                                         <ListItemAvatar>
-                                            <Avatar className={"pixelated"} alt="Ali Connor" src={"data:image/png;base64,"+avatar} />
+                                            <Avatar className={"pixelated"} alt="Ali Connor" src={"data:image/png;base64,"+person.avatar} />
                                         </ListItemAvatar>
                                         <ListItemText
-                                            primary="Ali Connor"
+                                            primary={person.name}
                                             secondary={
                                                 <React.Fragment>
                                                     <Typography
@@ -1531,7 +1535,7 @@ class Marketplace extends React.Component {
                                                     >
                                                         Following
                                                     </Typography>
-                                                    {" — Blockchain enthusiast, I am involved into this platform because I like the social features it has."}
+                                                    {" - "+person.biography}
                                                 </React.Fragment>
                                             }
                                         />

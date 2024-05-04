@@ -39,5 +39,5 @@ api.init().then(function (response){
                 </CssBaseline>
             </ThemeProvider>,
             element);
-    });
+    }, true);
 });

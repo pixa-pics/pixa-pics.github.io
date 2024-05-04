@@ -278,8 +278,103 @@ const imagesProfile = [
     }
 ];
 
+
+const comments = [
+    {"name": "Sandra Hofmann", "comment": "Such a great perspective!", "timestamp": "2024-04-14 03:32:55"},
+    {"name": "Sarah Martin", "comment": "Absolutely love this!", "timestamp": "2024-04-19 02:32:55"},
+    {"name": "Michael Wilson", "comment": "You’re an inspiration to us all!", "timestamp": "2024-04-17 03:32:55"},
+    {"name": "John Williams", "comment": "So proud of all the work you're doing!", "timestamp": "2024-04-17 01:32:55"},
+    {"name": "Mary Johnson", "comment": "Really inspiring stuff, thanks for sharing!", "timestamp": "2024-04-17 04:32:55"},
+    {"name": "James Smith", "comment": "So proud of all the work you're doing!", "timestamp": "2024-04-15 16:32:55"},
+    {"name": "Linda Taylor", "comment": "You never cease to amaze!", "timestamp": "2024-04-21 18:32:55"},
+    {"name": "Yara Gerber", "comment": "This really spoke to me, thank you.", "timestamp": "2024-04-19 19:32:55"},
+    {"name": "Jessica Anderson", "comment": "Really inspiring stuff, thanks for sharing!", "timestamp": "2024-04-28 17:32:55"},
+    {"name": "Helene Julio", "comment": "Really inspiring stuff, thanks for sharing!", "timestamp": "2024-04-13 14:32:55"},
+    {"name": "William Moore", "comment": "You have a great eye for detail.", "timestamp": "2024-04-23 04:32:55"},
+    {"name": "Leandro Fischer", "comment": "Every post you make is so unique!", "timestamp": "2024-04-21 00:32:55"},
+    {"name": "Jennifer Miller", "comment": "This is exactly what I needed to see today.", "timestamp": "2024-04-14 05:32:55"},
+    {"name": "Robert Davis", "comment": "Loved your last post!", "timestamp": "2024-04-29 05:32:55"},
+    {"name": "Elise Gerberz", "comment": "Stunning work as always!", "timestamp": "2024-04-17 15:32:55"},
+    {"name": "Richard Jackson", "comment": "Loved your last post!", "timestamp": "2024-04-15 17:32:55"},
+    {"name": "John Williams", "comment": "Stunning work as always!", "timestamp": "2024-04-18 20:32:55"},
+    {"name": "David Thomas", "comment": "So proud of all the work you're doing!", "timestamp": "2024-04-25 01:32:55"},
+    {"name": "Niklaus Weber", "comment": "Loved your last post!", "timestamp": "2024-04-26 11:32:55"},
+    {"name": "Barbara Jones", "comment": "You’re an inspiration to us all!", "timestamp": "2024-04-15 10:32:55"}
+];
+
+const followers = [
+    {"name": "Timo Julio", "biography": "Optician in Biel, passionate about precision and eyewear technology. Collects Swiss watches and enjoys fishing.", "timestamp": "2024-04-23 12:49:35"},
+    {"name": "Livia Weber", "biography": "Teacher in Winterthur, focusing on multilingual education. Enjoys mountain biking and Swiss chocolate making.", "timestamp": "2024-04-15 22:49:35"},
+    {"name": "Pascal Weber", "biography": "Nurse in Solothurn, specializing in geriatric care. Enjoys hiking and is an amateur wine connoisseur.", "timestamp": "2024-04-17 10:49:35"},
+    {"name": "Livia Hofmann", "biography": "Winemaker in the Lavaux region, producing award-winning wines. Passionate about sustainable farming and jazz music.", "timestamp": "2024-04-30 08:49:35"},
+    {"name": "Sandra Baumann", "biography": "Historian in St. Gallen specializing in medieval Swiss history. Frequently explores local castles and writes books.", "timestamp": "2024-04-24 18:49:35"},
+    {"name": "Milena Affolter", "biography": "Social worker in Chur, dedicated to supporting youth programs. Enjoys snowboarding and traditional Swiss folk dances.", "timestamp": "2024-04-28 06:49:35"},
+    {"name": "Yara Gerber", "biography": "Researcher in Yverdon-les-Bains, studying renewable energy. Enjoys thermal baths and collecting minerals.", "timestamp": "2024-04-24 10:49:35"},
+    {"name": "Matias Fischer", "biography": "Banker in Geneva specializing in international finance. Keen yachtsman and collector of fine wines.", "timestamp": "2024-04-24 10:49:35"},
+    {"name": "Helene Moser", "biography": "Engineer in Basel working on pharmaceutical advancements. Avid hiker and amateur photographer.", "timestamp": "2024-04-29 15:49:35"},
+    {"name": "Elise Gerber", "biography": "Dental hygienist in Geneva, passionate about community healthcare and oral hygiene education. Enjoys hiking and herbalism.", "timestamp": "2024-04-21 13:24:21"},
+    {"name": "Jonas Meier", "biography": "Civil engineer in Zurich, specializing in bridge construction. Enjoys sailing on Lake Zurich and skiing in winter.", "timestamp": "2024-04-22 17:48:56"},
+    {"name": "Simone Keller", "biography": "Startup founder in Basel focused on biotechnology. Enjoys mountain climbing and Swiss folk music festivals.", "timestamp": "2024-04-19 06:12:34"},
+    {"name": "Leandro Fischer", "biography": "Physics teacher in Bern, keen on innovative educational methods. Participates in cycling tours across Switzerland.", "timestamp": "2024-04-25 22:05:43"},
+    {"name": "Yara Brunner", "biography": "Professional sommelier in Lausanne, with a deep knowledge of Swiss and international wines. Enjoys pottery and lake swimming.", "timestamp": "2024-04-18 09:39:00"},
+    {"name": "Timo Zimmermann", "biography": "Software developer in Lugano, developing solutions for the finance sector. Enjoys espresso tasting and digital photography.", "timestamp": "2024-04-16 11:30:21"},
+    {"name": "Livia Affolter", "biography": "Conservation scientist in Lucerne, working on Alpine flora preservation. Enjoys kayaking and eco-tourism.", "timestamp": "2024-04-29 14:18:55"},
+    {"name": "Pascal Steiner", "biography": "Art curator in Zurich, involved in modern art exhibitions and Swiss art preservation. Loves urban sketching and hiking.", "timestamp": "2024-04-23 05:42:31"},
+    {"name": "Helene Julio", "biography": "Pediatric nurse in St. Gallen, devoted to child welfare and health education. Enjoys knitting and traditional dancing.", "timestamp": "2024-04-30 08:00:00"},
+    {"name": "Sandra Hofmann", "biography": "Real estate agent in Geneva, specializing in luxury properties. Enjoys sailing and gourmet cooking.", "timestamp": "2024-04-15 12:45:17"},
+    {"name": "Niklaus Weber", "biography": "Museum director in Basel, overseeing historical and contemporary exhibits. Enjoys antiquing and the opera.", "timestamp": "2024-04-14 19:20:22"},
+    {"name": "Audrey Fischer", "biography": "Environmental lobbyist in Bern, advocating for sustainable practices and policies. Enjoys bird watching and forest hiking.", "timestamp": "2024-04-28 10:33:49"},
+    {"name": "Fabian Seckler", "biography": "Veterinary surgeon in Zurich, specializing in small animals. Enjoys photography and volunteering at animal shelters.", "timestamp": "2024-04-26 13:55:02"},
+    {"name": "Lise Baumann", "biography": "Jewelry designer in Lucerne, crafting bespoke pieces inspired by Swiss nature. Enjoys glass blowing and snow sculpting.", "timestamp": "2024-04-17 08:24:36"},
+    {"name": "Jonas Frey", "biography": "Archaeologist in Bern, focused on Swiss ancient sites. Enjoys mountaineering and historical reenactments.", "timestamp": "2024-04-20 15:49:58"},
+    {"name": "Sandra Meier", "biography": "Broadcast journalist in Geneva, covering international news and cultural events. Enjoys rowing and wine tasting.", "timestamp": "2024-04-24 03:22:11"},
+    {"name": "Tim Zimmermann", "biography": "Chocolatier in Neuchâtel, innovating with local ingredients to create unique chocolate experiences. Enjoys sculpting and gourmet cooking.", "timestamp": "2024-04-14 16:47:53"},
+    {"name": "Julia Hofmann", "biography": "Musician in Aarau, plays the cello in a symphony orchestra. Interested in Alpine botany and photography.", "timestamp": "2024-04-21 08:49:35"},
+    {"name": "James Smith", "biography": "Yoga instructor from Bali, teaching and practicing yoga for over a decade. Loves nature and meditation.", "timestamp": "2024-04-20 09:42:46"},
+    {"name": "Richard Jackson", "biography": "Mom of two, avid reader, and entrepreneur. Started a small online boutique and enjoying the journey.", "timestamp": "2024-04-21 12:42:46"},
+    {"name": "Patricia Brown", "biography": "Web developer from San Francisco with a passion for coding and design. Loves coffee and hiking on weekends.", "timestamp": "2024-04-13 23:42:46"},
+    {"name": "Mary Johnson", "biography": "Veterinarian from Toronto, passionate about animal welfare and rescue missions. Owns three rescued dogs.", "timestamp": "2024-04-18 20:42:46"},
+    {"name": "Barbara Jones", "biography": "Nurse from Johannesburg, committed to healthcare and patient advocacy. Enjoys reading historical fiction.", "timestamp": "2024-04-26 13:42:46"},
+    {"name": "Robert Davis", "biography": "Musician from Nashville, plays guitar and writes songs. Currently touring small venues across the country.", "timestamp": "2024-04-14 09:42:46"},
+    {"name": "Jennifer Miller", "biography": "Gardener and floral designer from Amsterdam, creating sustainable gardens and teaching botany classes.", "timestamp": "2024-04-14 05:42:46"},
+    {"name": "David Thomas", "biography": "Veterinarian from Toronto, passionate about animal welfare and rescue missions. Owns three rescued dogs.", "timestamp": "2024-04-27 16:42:46"},
+    {"name": "Jennifer Miller", "biography": "Travel blogger based in Rome, documenting adventures and cultural explorations around the world.", "timestamp": "2024-04-15 09:42:46"},
+    {"name": "Charles Martinez", "biography": "Engineer from Boston, working in sustainable energy solutions. Enjoys chess and volunteering in local communities.", "timestamp": "2024-04-14 18:42:46"},
+    {"name": "Charles Martinez", "biography": "Freelance photographer based in New York. Capturing life’s moments and teaching photography workshops.", "timestamp": "2024-04-13 22:42:46"},
+    {"name": "Joseph Garcia", "biography": "Aspiring writer living in Seattle, currently working on my first novel. I also blog about mental health.", "timestamp": "2024-04-14 11:42:46"},
+    {"name": "James Smith", "biography": "Professional chef and food critic based in Paris. Sharing my love for gourmet food and fine wines.", "timestamp": "2024-04-23 01:42:46"},
+    {"name": "Barbara Jones", "biography": "Student from Tokyo studying environmental science and activism. Volunteers at local green initiatives.", "timestamp": "2024-04-24 13:42:46"},
+    {"name": "James Smith", "biography": "Engineer from Boston, working in sustainable energy solutions. Enjoys chess and volunteering in local communities.", "timestamp": "2024-04-24 10:42:46"},
+    {"name": "Michael Wilson", "biography": "Gardener and floral designer from Amsterdam, creating sustainable gardens and teaching botany classes.", "timestamp": "2024-04-17 23:42:46"},
+    {"name": "Sarah Martin", "biography": "Retired banker now consulting for startups in financial management. Enjoys golf and mentoring young professionals.", "timestamp": "2024-04-16 23:42:46"}
+];
+const following = [
+    {"name": "Sarah Martin", "biography": "Retired banker now consulting for startups in financial management. Enjoys golf and mentoring young professionals.", "timestamp": "2024-04-22 09:39:00"},
+    {"name": "Mary Johnson", "biography": "Web developer from San Francisco with a passion for coding and design. Loves coffee and hiking on weekends.", "timestamp": "2024-04-29 05:39:00"},
+    {"name": "Michael Wilson", "biography": "Nurse from Johannesburg, committed to healthcare and patient advocacy. Enjoys reading historical fiction.", "timestamp": "2024-04-18 21:39:00"},
+    {"name": "Karen Robinson", "biography": "Retired banker now consulting for startups in financial management. Enjoys golf and mentoring young professionals.", "timestamp": "2024-04-14 04:39:00"},
+    {"name": "James Smith", "biography": "Professional chef and food critic based in Paris. Sharing my love for gourmet food and fine wines.", "timestamp": "2024-04-14 14:39:00"},
+    {"name": "Jessica Anderson", "biography": "Nurse from Johannesburg, committed to healthcare and patient advocacy. Enjoys reading historical fiction.", "timestamp": "2024-04-28 04:39:00"},
+    {"name": "Patricia Brown", "biography": "Fitness trainer in Miami, focused on helping others achieve their best. Marathon runner and vegan.", "timestamp": "2024-04-22 10:39:00"},
+    {"name": "Sarah Martin", "biography": "Aspiring writer living in Seattle, currently working on my first novel. I also blog about mental health.", "timestamp": "2024-04-22 06:39:00"},
+    {"name": "Joseph Garcia", "biography": "Engineer from Boston, working in sustainable energy solutions. Enjoys chess and volunteering in local communities.", "timestamp": "2024-04-18 14:39:00"},
+    {"name": "Thomas Lee", "biography": "Graphic designer from London. Specializes in branding and illustration. Big fan of minimalist designs.", "timestamp": "2024-04-29 11:39:00"},
+    {"name": "Sarah Martin", "biography": "Artist from Berlin, working primarily in mixed media. Exhibits in galleries and enjoys interactive art projects.", "timestamp": "2024-04-17 15:39:00"},
+    {"name": "Jessica Anderson", "biography": "Engineer from Boston, working in sustainable energy solutions. Enjoys chess and volunteering in local communities.", "timestamp": "2024-04-29 14:39:00"},
+    {"name": "Jennifer Miller", "biography": "Digital marketer from Sydney, specializing in social media strategy. Surfing and photography are my hobbies.", "timestamp": "2024-04-29 17:39:00"},
+    {"name": "Jennifer Miller", "biography": "Professional chef and food critic based in Paris. Sharing my love for gourmet food and fine wines.", "timestamp": "2024-04-21 17:39:00"},
+    {"name": "Thomas Lee", "biography": "Musician from Nashville, plays guitar and writes songs. Currently touring small venues across the country.", "timestamp": "2024-04-27 08:39:00"},
+    {"name": "Karen Robinson", "biography": "Aspiring writer living in Seattle, currently working on my first novel. I also blog about mental health.", "timestamp": "2024-04-17 12:39:00"},
+    {"name": "Elizabeth Harris", "biography": "Mom of two, avid reader, and entrepreneur. Started a small online boutique and enjoying the journey.", "timestamp": "2024-04-15 15:39:00"}
+];
+
+
+
 module.exports = {
     avatars,
+    comments: comments.map(function (c, i){ return Object.assign(c, {title: imagesProfile[Math.ceil(Math.random()*imagesProfile.length)-1|0].name, date: new Date(c.timestamp), avatar: avatars[i]})}).sort(function (a, b){ return b.date - a.date; }),
+    followers: followers.map(function (c, i){ return Object.assign(c, {date: new Date(c.timestamp), avatar: avatars[comments.length+i]})}).sort(function (a, b){ return b.date - a.date; }),
+    following: following.map(function (c, i){ return Object.assign(c, {date: new Date(c.timestamp), avatar: avatars[comments.length+followers.length+i]})}).sort(function (a, b){ return b.date - a.date; }),
     imagesFeed,
     imagesProfile
 }

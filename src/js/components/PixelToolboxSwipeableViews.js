@@ -675,7 +675,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
         if (this.props.set_props_callback) {
 
-            this.props.set_props_callback(this._set_props.bind(this));
+            this.props.set_props_callback(this._set_props.bind(this.props));
         }
     }
 
