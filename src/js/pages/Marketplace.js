@@ -84,6 +84,7 @@ import StarBorder from "@material-ui/icons/StarBorder";
 import TrendingUp from "@material-ui/icons/TrendingUp";
 import TimeIcon from "@material-ui/icons/Timer";
 import CameraIcon from "@material-ui/icons/Camera";
+import Info from "@material-ui/icons/Info";
 
 const styles = theme => ({
     root: {
@@ -444,6 +445,15 @@ const styles = theme => ({
             maxWidth: "calc(100% - 32px)",
         },
     },
+    profileWallet: {
+        width: 1152,
+        maxWidth: "100%",
+        margin: "32px auto 16px auto",
+        "@media (max-width: 1260px)": {
+            margin: "24px 16px 16px 16px",
+            maxWidth: "calc(100% - 32px)",
+        },
+    },
     profileComments: {
         width: 1152,
         maxWidth: "100%",
@@ -728,6 +738,14 @@ const styles = theme => ({
             }
         }
     },
+    walletCards: {
+        width: "100%",
+        display: "flex",
+        textAlign: "left",
+        "@media (max-width: 1000px)": {
+            display: "initial",
+        },
+    },
     favoriteTrue: {
         position: "absolute",
         color: "#ff1200",
@@ -868,6 +886,18 @@ const styles = theme => ({
             height: "24px",
             verticalAlign: "middle"
         }
+    },
+    titleWallet: {
+        color: "#43e",
+        fontSize: 14,
+        marginRight: 72,
+        marginBottom: 8
+    },
+    tooltip: {
+        backgroundColor: theme.palette.common.white,
+        color: 'rgba(0, 0, 0, 0.87)',
+        boxShadow: theme.shadows[1],
+        fontSize: 14,
     }
 });
 
@@ -1544,6 +1574,80 @@ class Marketplace extends React.Component {
                             );
                         })}
                     </List>
+                </div>}
+                {mainTabValue === 0 && tabValue === 5 && <div className={classes.profileWallet}>
+                    <div className={classes.walletCards}>
+                        <Card style={{margin: "16px 8px"}}>
+                            <CardContent style={{position: "relative"}}>
+                                <Typography className={classes.titleWallet} color="textSecondary" variant="p" component="p">
+                                    Estimated Account Value
+                                </Typography>
+                                <Typography variant="h6" component="h6">
+                                    $436,639.88
+                                </Typography>
+                                <Tooltip className={{tooltip: classes.tooltip}} title={"The estimated value is based on an average value of PIXA in US dollars."}>
+                                    <IconButton style={{position: "absolute", right: 0, top: 0}}><Info/></IconButton>
+                                </Tooltip>
+                            </CardContent>
+                        </Card>
+                        <Card style={{margin: "16px 8px"}}>
+                            <CardContent style={{position: "relative"}}>
+                                <Typography className={classes.titleWallet} color="textSecondary" variant="p" component="p">
+                                    Available Liquidity
+                                </Typography>
+                                <Typography variant="h6" component="h6">
+                                    1.112 PIXA
+                                </Typography>
+                                <Tooltip className={{tooltip: classes.tooltip}} title={"Tradeable tokens that may be transferred anywhere at anytime. PIXA can be converted to PIXA POWER in a process called powering up."}>
+                                    <IconButton style={{position: "absolute", right: 0, top: 0}}><Info/></IconButton>
+                                </Tooltip>
+                            </CardContent>
+                        </Card>
+                        <Card style={{margin: "16px 8px"}}>
+                            <CardContent style={{position: "relative"}}>
+                                <Typography className={classes.titleWallet} color="textSecondary" variant="p" component="p">
+                                    Account's Influence Token
+                                </Typography>
+                                <Typography variant="h6" component="h6">
+                                    775.15 PIXA POWER<br/>
+                                    (+65.90 PIXA POWER)
+                                </Typography>
+                                <Tooltip className={{tooltip: classes.tooltip}} title={"Influence tokens which give you more control over post payouts and allow you to earn on curation rewards.\n" +
+                                    "Part of sophia.julio's PIXA POWER is currently delegated. Delegation is donated for influence or to help new users perform actions on Pixagram. Your delegation amount can fluctuate.\n" +
+                                    "HIVE POWER increases at an APR of approximately 2.95%, subject to blockchain variance. See FAQ for details."}>
+                                    <IconButton style={{position: "absolute", right: 0, top: 0}}><Info/></IconButton>
+                                </Tooltip>
+                            </CardContent>
+                        </Card>
+                        <Card style={{margin: "16px 8px"}}>
+                            <CardContent style={{position: "relative"}}>
+                                <Typography className={classes.titleWallet} color="textSecondary" variant="p" component="p">
+                                    Account's Stable Liquidity Token
+                                </Typography>
+                                <Typography variant="h6" component="h6">
+                                    0.00 PIXA STABLE
+                                </Typography>
+                                <Tooltip className={{tooltip: classes.tooltip}} title={"Tradeable tokens that may be transferred anywhere at anytime."}>
+                                    <IconButton style={{position: "absolute", right: 0, top: 0}}><Info/></IconButton>
+                                </Tooltip>
+                            </CardContent>
+                        </Card>
+                        <Card style={{margin: "16px 8px"}}>
+                            <CardContent style={{position: "relative"}}>
+                                <Typography className={classes.titleWallet} color="textSecondary" variant="p" component="p">
+                                    Account's Saved Token
+                                </Typography>
+                                <Typography variant="h6" component="h6">
+                                    0.001 PIXA <br/>
+                                    977.50 PIXA STABLE
+                                </Typography>
+                                <Tooltip className={{tooltip: classes.tooltip}} title={"Balances subject to 3 day withdraw waiting period.\n" +
+                                    "PIXA STABLE interest rate: 20.00% APR (as voted by the Witnesses)"}>
+                                    <IconButton style={{position: "absolute", right: 0, top: 0}}><Info/></IconButton>
+                                </Tooltip>
+                            </CardContent>
+                        </Card>
+                    </div>
                 </div>}
                 {mainTabValue === 1 && <h1>My Feed</h1>}
                     {mainTabValue === 1 && <Fade in timeout={300}>

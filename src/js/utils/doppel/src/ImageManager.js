@@ -317,7 +317,7 @@ export default class ImageManager {
                 }
                 const totalCount = entries.reduce((acc, entry) => acc + entry.count, 0);
                 const certainty = entries[n-1].count / totalCount; // Simple certainty calculation
-                return { tileSize, certainty };
+                return { tileSize: tileSize, certainty };
             }
 
             return { tileSize: 0, certainty: 0.0 };

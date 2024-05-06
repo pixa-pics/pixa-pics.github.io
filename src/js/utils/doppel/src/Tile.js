@@ -7,7 +7,7 @@ export default class Tile {
         this.meanColor = new Pixel(colorUint8a);
         this.coordinates = Uint16Array.of(x, y);
         var l = this.imageData.data.length;
-        this.k = l >= 16 ? 5: l >= 8 ? 4: l >= 4 ? 3: l >= 2 ? 1: 1;
+        this.k = l >= 16 ? 4: l >= 9 ? 3: l >= 4 ? 2: l >= 2 ? 1: 1;
     }
     get x(){
         return this.coordinates[0];
@@ -27,7 +27,7 @@ export default class Tile {
         "use strict";
         const data = this.imageData.data;
         const colors = this.extractColorData(data);
-        return new KMeans(colors, this.k).run(this.k*2, true);
+        return new KMeans(colors, this.k).run(this.k, true);
     }
 
     calculateMeanColor() {
