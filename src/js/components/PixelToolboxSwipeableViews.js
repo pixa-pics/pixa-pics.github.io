@@ -515,7 +515,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
             current_color: props.current_color,
             second_color: props.second_color,
             slider_value: parseFloat(props.slider_value),
-            layers: props.layers,
+            layers: [],
             layer_index: props.layer_index,
             filter_layer_index: 0,
             can_undo: props.can_undo,
@@ -535,10 +535,11 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
             is_something_selected: props.is_something_selected,
             previous_view_name_index: props.previous_view_name_index,
             hue: props.hue,
-            should_update: props.should_update || false,
+            should_update: true,
             slider_value_width: props.slider_value_width,
             slider_value_height: props.slider_value_height,
             _layer_opened: false,
+            _layers_has_changed: true,
             _anchor_el: null,
             _saturation: 60,
             _luminosity: 60,
@@ -711,14 +712,14 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
             is_something_selected,
             import_size,
             import_colorize,
-            layers
+            layers,
+            _layers_has_changed
         } = this.st4te;
 
         const layer_index_changed = Boolean(filter_layer_index !== new_props.layer_index);
         const _history_changed = Boolean(can_undo !== new_props.can_undo) || Boolean(can_redo !== new_props.can_redo);
         const must_compute_filter = Boolean(Boolean(Boolean(view_name_index !== new_props.view_name_index) || _history_changed || layer_index_changed) && Boolean(new_props.view_name_index === 6));
 
-        let props_override = {};
         let layers_colors_max = 0;
         Array.from(new_props.layers).forEach(function (l) {
             if (layers_colors_max < parseInt(l.number_of_colors)) {
@@ -732,9 +733,11 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
         }).join("-") !== new_props.layers.map(function (l, i) {
             return i + "_" + l.hidden + "_" + l.opacity + "_" + l.number_of_colors + "_h" + l.thumbnail.hash
         }).join("-"));
+
         const view_name_changed = Boolean(view_name_index !== new_props.view_name_index);
+        const layer_update = ((layers_changed || _layers_has_changed) && (view_name_index === 2 || new_props.view_name_index === 2));
         const something_changed_in_view = Boolean(Boolean(new_props.should_update || should_update) && Boolean(
-            layers_changed ||
+            layer_update ||
             select_mode + "" !== new_props.select_mode + "" ||
             Boolean(too_much_colors_no_vector) !== Boolean(this.st4te.too_much_colors_no_vector) ||
             parseInt(layer_index) !== parseInt(new_props.layer_index) ||
@@ -754,6 +757,11 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
             parseInt(import_size) !== parseInt(new_props.import_size) ||
             (import_colorize | 0) !== (new_props.import_colorize | 0)
         ));
+
+        let props_override = {
+            previous_view_name_index: view_name_index,
+            _layers_has_changed: layers_changed || _layers_has_changed
+        };
 
         if (must_compute_filter) {
 
@@ -794,9 +802,11 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
     _to_filter = (name) => {
 
         "use strict";
-        this.st4te.canvas.to_filter(name, this.st4te.slider_value);
-        if (!this.is_mobile) {
-            this.compute_filters_preview();
+        if(typeof this.st4te.canvas !== "undefined"){
+            this.st4te.canvas.to_filter(name, this.st4te.slider_value);
+            if (!this.is_mobile) {
+                this.compute_filters_preview();
+            }
         }
     };
 
@@ -2581,7 +2591,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
         const _list_sub_header_opened = this.st4te._list_sub_header_opened;
         const names = this.get_action_panel_names();
         const _filters_preview_progression_stepped = Math.round(parseFloat(filters_preview_progression / 7) * 7);
-        const index = name ? names.indexOf(name) : view_name_index;
+        const index = name !== null ? names.indexOf(name) : view_name_index;
         name = names[index];
 
         this._cache[name] = (
@@ -2751,6 +2761,9 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
         if (force_update) {
 
+            if(name === "layers") {
+                this.st4te._layers_has_changed = false;
+             }
             this.forceUpdate();
         }
     }

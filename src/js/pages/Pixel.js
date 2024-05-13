@@ -9,6 +9,7 @@ import {UJS} from "../utils/ujs";
 import JSLoader from "../utils/JSLoader";
 let is_mobile_or_tablet = window.mobileAndTabletCheck();
 import React, { Suspense } from "react";
+import JOYSON from "joyson";
 import dispatcher from "../dispatcher";
 const CanvasPixels = React.lazy(() =>  import("../components/canvaspixels/CanvasPixels.js"));
 import {Button, IconButton, withStyles} from "@material-ui/core";
@@ -702,7 +703,7 @@ class Pixel extends React.PureComponent {
             _time_ago_initiated: false,
             _fps_el: {},
             _xy_el: {},
-            _settings: JSON.parse(props.settings)
+            _settings: JOYSON.unpack(props.settings)
         };
         this.sraf = Object.create(SmartRequestAnimationFrame).init();
     };
@@ -720,7 +721,6 @@ class Pixel extends React.PureComponent {
         }
 
         if(typeof callback === "function") {
-
             callback();
         }
     }
@@ -857,7 +857,7 @@ class Pixel extends React.PureComponent {
 
         if(new_props.load_with !== this.st4te.load_with) {
 
-            this.setSt4te({_settings: JSON.parse(new_props.settings), ...new_props}, ()  => {
+            this.setSt4te({_settings: JOYSON.unpack(new_props.settings), ...new_props}, ()  => {
 
                 this._compute_menu_drawer();
                 this._request_force_update().then(() => {
@@ -866,7 +866,7 @@ class Pixel extends React.PureComponent {
                 });
             });
         }else {
-            this.setSt4te({_settings: JSON.parse(new_props.settings), ...new_props});
+            this.setSt4te({_settings: JOYSON.unpack(new_props.settings), ...new_props});
         }
     }
 
@@ -2842,7 +2842,7 @@ class Pixel extends React.PureComponent {
                         </div>
                         <div className={classes.drawerContainer} ref={this._set_toolbox_container_ref}>
                             <PixelToolboxSwipeableViews
-                                should_update={!_is_edit_drawer_open}
+                                should_update={!is_mobile_or_tablet}
                                 slider_value_width={_slider_value_width}
                                 slider_value_height={_slider_value_height}
                                 canvas={_canvas}
@@ -3035,7 +3035,7 @@ class Pixel extends React.PureComponent {
     };
 
     render() {
-
+        "use strict";
         const {
             classes,
             _canvas,

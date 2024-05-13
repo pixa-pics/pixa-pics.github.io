@@ -1,4 +1,5 @@
 import React from "react";
+import JOYSON from "joyson";
 import {withStyles} from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
 import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
@@ -901,13 +902,13 @@ const styles = theme => ({
     }
 });
 
-class Marketplace extends React.Component {
+class Marketplace extends React.PureComponent {
 
     constructor(props) {
         super(props);
-        this.state = {
+        this.st4te = {
             classes: props.classes,
-            _settings: JSON.parse(props.settings),
+            _settings: JOYSON.unpack(props.settings),
             tabValue: 0,
             mainTabValue: 0,
             tabTagValue: 0,
@@ -1053,7 +1054,7 @@ class Marketplace extends React.Component {
         canvas_style.id = "media-style";
         document.head.appendChild(canvas_style);
         window.addEventListener("resize", this.updateDimension);
-        this.setState({_h_svg: createLocalBlob(get_svg_in_b64(<HexGrid color={"rgba(1,17,255,0.1)"}/>)),_h_svg_size: `${Math.ceil(.5*200)}px ${Math.ceil(.5*229.3)}px`}, () => {
+        this.setst4te({_h_svg: createLocalBlob(get_svg_in_b64(<HexGrid color={"rgba(1,17,255,0.1)"}/>)),_h_svg_size: `${Math.ceil(.5*200)}px ${Math.ceil(.5*229.3)}px`}, () => {
             this.forceUpdate(() => {
                 this.updateDimension();
             })
@@ -1066,7 +1067,7 @@ class Marketplace extends React.Component {
         }, 1000);
     }
 
-    shouldComponentUpdate(nextProps, nextState, nextContext) {
+    shouldComponentUpdate(nextProps, nextst4te, nextContext) {
 
         return false;
     }
@@ -1076,6 +1077,14 @@ class Marketplace extends React.Component {
         actions.load_with("");
     };
 
+    setst4te(params, callback) {
+        "use strict";
+        this.st4te = Object.assign(this.st4te, params);
+        if(typeof callback == "function"){
+            callback();
+        }
+    }
+
     updateDimension = () => {
         this.setRefFromLeft(null);
         let documentElement = document.documentElement,
@@ -1084,34 +1093,34 @@ class Marketplace extends React.Component {
             _window_height = window.innerHeight|| documentElement.clientHeight || body.clientHeight;
 
         const _less_than_1280w = Boolean(_window_width < 1280);
-        this.setState({
+        this.setst4te({
             isMobile: _less_than_1280w
         });
     }
 
     handleTabChange = (event, number) => {
-        this.setState({tabValue: number}, () => {
+        this.setst4te({tabValue: number}, () => {
             this.forceUpdate();
         })
     }
     handleTabTagChange = (event, number) => {
-        this.setState({tabTagValue: number}, () => {
+        this.setst4te({tabTagValue: number}, () => {
             this.forceUpdate();
         })
     }
 
     handleMainTabChange = (event, number) => {
-        this.setState({mainTabValue: number}, () => {
+        this.setst4te({mainTabValue: number}, () => {
             this.forceUpdate();
         })
     }
 
     toggleFavoriteAtIndex = (index) => {
 
-        let imagesProfile = this.state.imagesProfile;
+        let imagesProfile = this.st4te.imagesProfile;
         imagesProfile[index].favorite = !imagesProfile[index].favorite;
 
-        this.setState({imagesProfile}, () => {
+        this.setst4te({imagesProfile}, () => {
             this.forceUpdate();
         })
     };
@@ -1123,10 +1132,10 @@ class Marketplace extends React.Component {
 
     renderMedia = (type, data, imageData) => {
 
-        this.setState({renderingMenuAnchorEl: null}, () => {
+        this.setst4te({renderingMenuAnchorEl: null}, () => {
             this.forceUpdate();
         });
-        URL.revokeObjectURL(this.state.src);
+        URL.revokeObjectURL(this.st4te.src);
         const callback = (second_image_data) => {
             let third_canvas = document.createElement("canvas");
             third_canvas.width = second_image_data.width;
@@ -1134,7 +1143,7 @@ class Marketplace extends React.Component {
             let third_canvas_ctx = third_canvas.getContext("2d");
             third_canvas_ctx.putImageData(second_image_data, 0, 0);
             let base64_out = third_canvas_ctx.canvas.toDataURL("image/png");
-            this.setState({src: base64_out, type: "png"}, () => {
+            this.setst4te({src: base64_out, type: "png"}, () => {
                 this.forceUpdate();
             })
         };
@@ -1142,7 +1151,7 @@ class Marketplace extends React.Component {
         switch (type) {
             case "pixelated":
                 actions.trigger_voice("vision_deactivated");
-                this.setState({src: this.state.openedMediaData.src, type: "png"}, () => {
+                this.setst4te({src: this.st4te.openedMediaData.src, type: "png"}, () => {
                     this.forceUpdate();
                 })
                 break;
@@ -1155,13 +1164,13 @@ class Marketplace extends React.Component {
                 actions.trigger_loading_update(0);
                 JSLoader( () => import("../utils/hexagonrender")).then((obj) => {
                     obj.hexagonrender(data, Math.sqrt(4096*2160) / Math.sqrt(data.width*data.height) | 0, false).then((out) => {
-                        this.setState({src: out, type: "png"}, () => {
+                        this.setst4te({src: out, type: "png"}, () => {
                             this.forceUpdate();
                             actions.trigger_loading_update(66);
                             JSLoader(() => import("../utils/png_quant")).then(({png_quant}) => {
                                 png_quant(out, 30, 100, 3, pool).then((out2) => {
-                                    URL.revokeObjectURL(this.state.src);
-                                    this.setState({src: out2, type: "png"}, () => {
+                                    URL.revokeObjectURL(this.st4te.src);
+                                    this.setst4te({src: out2, type: "png"}, () => {
                                         this.forceUpdate();
                                         actions.trigger_loading_update(100);
                                         actions.trigger_voice("enhanced");
@@ -1178,7 +1187,7 @@ class Marketplace extends React.Component {
                 JSLoader( () => import("../utils/xBRZ")).then((obj) => {
                     obj.default(data, 6, pool).then((imageData) => {
                         createSVG(imageData).then((url) => {
-                            this.setState({src: url, type: "svg"}, () => {
+                            this.setst4te({src: url, type: "svg"}, () => {
                                 actions.trigger_loading_update(75);
                                 actions.trigger_voice("vision_activated");
                                 this.forceUpdate();
@@ -1199,8 +1208,8 @@ class Marketplace extends React.Component {
                                             plugin: ["multipass", "mergePaths", "collapseGroups", "reusePaths", "mergeStyles"],
                                         }).data;
 
-                                        URL.revokeObjectURL(this.state.src);
-                                        this.setState({
+                                        URL.revokeObjectURL(this.st4te.src);
+                                        this.setst4te({
                                             src: "data:image/svg+xml;base64," + window.btoa(svgString),
                                             type: "svg"
                                         }, () => {
@@ -1225,8 +1234,8 @@ class Marketplace extends React.Component {
                 actions.trigger_voice("processing");
                 var imageQuadTreeCircle = new ImageQuadTree({shape: "circle"});
                 imageQuadTreeCircle.loadImage(data).then((url) => {
-                    URL.revokeObjectURL(this.state.src);
-                    this.setState({src: url, type: "svg"}, () => {
+                    URL.revokeObjectURL(this.st4te.src);
+                    this.setst4te({src: url, type: "svg"}, () => {
                         actions.trigger_loading_update(100);
                         actions.trigger_voice("vision_activated");
                         this.forceUpdate();
@@ -1239,8 +1248,8 @@ class Marketplace extends React.Component {
                 actions.trigger_voice("processing");
                 var pixelArtPolygonizer = new PixelArtPolygonizer({size: Math.sqrt(4096*2160) / Math.sqrt(imageData.width*imageData.height) | 0});
                 pixelArtPolygonizer.processImage(data, true).then((url) => {
-                    URL.revokeObjectURL(this.state.src);
-                    this.setState({src: url, type: "svg"}, () => {
+                    URL.revokeObjectURL(this.st4te.src);
+                    this.setst4te({src: url, type: "svg"}, () => {
                         actions.trigger_loading_update(100);
                         actions.trigger_voice("vision_activated");
                         this.forceUpdate();
@@ -1253,12 +1262,12 @@ class Marketplace extends React.Component {
     openMediaCard = (img) => {
 
         actions.trigger_sfx("navigation_selection-complete-celebration");
-        this.setState({openedMediaData: img, src: img.src}, () => {
+        this.setst4te({openedMediaData: img, src: img.src}, () => {
             this.forceUpdate();
             getImageDataFromBase64(img.src).then((data) => {
                 this.canvas_pos.set_sizes(data.width, data.height);
                 this.canvas_pos.set_current_scale_default();
-                this.setState({openedMediaDataData: data}, () => {
+                this.setst4te({openedMediaDataData: data}, () => {
                     this.forceUpdate();
                 })
             });
@@ -1267,21 +1276,21 @@ class Marketplace extends React.Component {
 
     closeMediaCard = () => {
 
-        URL.revokeObjectURL(this.state.src);
-        actions.trigger_sfx("state-change_confirm_down");
-        this.setState({openedMediaData: null}, () => {
+        URL.revokeObjectURL(this.st4te.src);
+        actions.trigger_sfx("st4te-change_confirm_down");
+        this.setst4te({openedMediaData: null}, () => {
             this.forceUpdate();
         })
     };
 
     setRefFromLeft = (element) => {
 
-        if(element != null || this.state.refleft != null) {
+        if(element != null || this.st4te.refleft != null) {
 
-            this.setState({refleft: element || this.state.refleft}, () => {
+            this.setst4te({refleft: element || this.st4te.refleft}, () => {
 
                 var wx = window.innerWidth;
-                const rect = this.state.refleft.getBoundingClientRect();
+                const rect = this.st4te.refleft.getBoundingClientRect();
                 const _canvas_container_width = wx > 800 ? rect.width - 384: rect.width;
                 const _canvas_container_height = rect.height || 0;
                 const _canvas_container_left = rect.left || 0;
@@ -1316,13 +1325,13 @@ class Marketplace extends React.Component {
         actions.load_with(b64);
     }
     toggleDrawer = () => {
-        this.setState({openedDrawer: !this.state.openedDrawer});
+        this.setst4te({openedDrawer: !this.st4te.openedDrawer});
     }
     toggleHashtagDrawer = () => {
-        this.setState({drawerHashtagOpen: !this.state.drawerHashtagOpen});
+        this.setst4te({drawerHashtagOpen: !this.st4te.drawerHashtagOpen});
     }
     toggleFavoriteTag = (item) => {
-        let tags = this.state.categories;
+        let tags = this.st4te.categories;
         for(var i = 0; i < tags.length; i++){
             let tag = tags[i];
             if(tag.name === item.name){
@@ -1330,13 +1339,13 @@ class Marketplace extends React.Component {
             }
         }
 
-        this.setState({categories: tags}, () => {
+        this.setst4te({categories: tags}, () => {
             this.forceUpdate();
         });
     }
     selectTag = (item) => {
 
-        this.setState({tagValue: item.name}, () => {
+        this.setst4te({tagValue: item.name}, () => {
             this.forceUpdate();
         });
     }
@@ -1349,23 +1358,23 @@ class Marketplace extends React.Component {
         a.remove();
     }
     handleRenderingMenuOpen = (event) => {
-        this.setState({renderingMenuAnchorEl: event.currentTarget}, () => {
+        this.setst4te({renderingMenuAnchorEl: event.currentTarget}, () => {
             this.forceUpdate();
         })
     };
     handleRenderingMenuClose = () => {
-        this.setState({renderingMenuAnchorEl: null}, () => {
+        this.setst4te({renderingMenuAnchorEl: null}, () => {
             this.forceUpdate();
         })
     };
     render() {
 
-        const { classes, tabValue, tagValue, renderingMenuAnchorEl, imagesProfile, isMobile, imagesFeed, mainTabValue, categories, tabTagValue, actions, history, openedMediaData, openedMediaDataData, _h_svg_size, _h_svg, src, type, drawerHashtagOpen, openedDrawer, comments, followers, following } = this.state;
+        const { classes, tabValue, tagValue, renderingMenuAnchorEl, imagesProfile, isMobile, imagesFeed, mainTabValue, categories, tabTagValue, actions, history, openedMediaData, openedMediaDataData, _h_svg_size, _h_svg, src, type, drawerHashtagOpen, openedDrawer, comments, followers, following } = this.st4te;
 
-        const {canvas_wrapper, device_pixel_ratio, scale, canvas_event_target} = this.canvas_pos.get_state();
+        const {canvas_wrapper, device_pixel_ratio, scale, canvas_event_target} = this.canvas_pos.get_st4te();
         const screen_zoom_ratio = this.canvas_pos.get_screen_zoom_ratio();
         const {box_shadow, will_change} = this.canvas_pos.get_style();
-        const {transform_rotate, filter, background_image} = this.canvas_pos.get_perspective_state();
+        const {transform_rotate, filter, background_image} = this.canvas_pos.get_perspective_st4te();
         return (
             <div className={classes.root}>
                 {mainTabValue === 0 && <Fade in={true} timeout={600}>
@@ -1858,7 +1867,7 @@ class Marketplace extends React.Component {
                         </div>
                         <h2>Description</h2>
                         <p style={{textAlign: "justify", margin: "8px 16px"}}>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-                        <h2>State</h2>
+                        <h2>st4te</h2>
                         <List dense={true} className={classes.list}>
                             <ListItem divider>
                                 <ListItemText primary="Created:"/>

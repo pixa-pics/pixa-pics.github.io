@@ -1,5 +1,6 @@
 "use strict";
 import React, { Suspense } from "react";
+import JOYSON from "joyson";
 import JSLoader from "../utils/JSLoader";
 import { withStyles } from "@material-ui/core";
 import Slide from '@material-ui/core/Slide';
@@ -457,7 +458,7 @@ class Index extends React.PureComponent {
             for(let i = 0; i < _page_routes.length; i++) {
                 const page_route = _page_routes[i];
                 if(new_pathname.match(page_route.page_regex)){
-                    this._page_component = this._get_page_component(page_route.page_name, JSON.stringify(this.settings), _load_with);
+                    this._page_component = this._get_page_component(page_route.page_name, JOYSON.pack(this.settings), _load_with);
                 }
             }
 

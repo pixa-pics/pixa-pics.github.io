@@ -1788,7 +1788,7 @@ class CanvasPixels extends React.PureComponent {
             number_of_colors: _s_layers[0].colors.length,
             only_scan
         };
-
+        this._maybe_save_state(undefined, true);
         if(this.props.onLoadComplete) { this.props.onLoadComplete("image_load", image_details); }
     };
 
@@ -1815,7 +1815,7 @@ class CanvasPixels extends React.PureComponent {
 
     import_JS_state = (js, callback_function) => {
         "use strict";
-        console.log(js)
+
         var _base64_original_images = Array.from(js._base64_original_images);
         Promise.all(_base64_original_images.map((entry) => {return toBase64(entry[1]); }))
             .then((response) => {

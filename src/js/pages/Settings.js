@@ -16,7 +16,7 @@ import get_svg_in_b64 from "../utils/svgToBase64";
 
 import api from "../utils/api";
 import actions from "../actions/utils";
-
+import JOYSON from "joyson";
 import fuzzy from "fuzzy";
 
 const styles = theme => ({
@@ -70,7 +70,7 @@ class Settings extends React.Component {
             _locales: LOCALES,
             _currency_countries: CURRENCY_COUNTRIES,
             _language: document.documentElement.lang,
-            ...JSON.parse(props.settings)
+            ...JOYSON.unpack(props.settings)
         };
     };
 

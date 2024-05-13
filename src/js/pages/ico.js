@@ -1,4 +1,5 @@
 import React from "react";
+import JOYSON from "joyson";
 import {Button, Tooltip, withStyles} from "@material-ui/core";
 import actions from "../actions/utils";
 import FileDownload from "../icons/FileDownload";
@@ -324,7 +325,7 @@ class Marketplace extends React.Component {
         this.state = {
             classes: props.classes,
             playCallback: null,
-            _settings: JSON.parse(props.settings),
+            _settings: JOYSON.unpack(props.settings),
             amountRaisedUSD: 0.0,
             amountToRaiseUSD: 0.0,
             roundNames: []

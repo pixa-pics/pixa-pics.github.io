@@ -5,6 +5,7 @@ import {withStyles, Button, Grow, Fade, Backdrop} from "@material-ui/core";
 import IconPlay from "@material-ui/icons/PlayArrow";
 import actions from "../actions/utils";
 
+import JOYSON from "joyson";
 import CrownEmojiSvg from "../notoemoji/react/EmojiU1F451";
 import LightingEmojiSvg from "../notoemoji/react/EmojiU26A1";
 import ScientistEmojiSvg from "../notoemoji/react/EmojiU1F4681F3Fd200D1F52C";
@@ -302,7 +303,7 @@ class Home extends React.PureComponent {
         super(props);
         this.st4te = {
             classes: props.classes,
-            _settings: JSON.parse(props.settings),
+            _settings: JOYSON.unpack(props.settings),
             _history: HISTORY,
             _image_name_infographics: "",
             _infographics_fadein_time: 300,
@@ -453,7 +454,7 @@ class Home extends React.PureComponent {
 
     componentWillReceiveProps(new_props){
 
-        this.setSt4te({_settings: JSON.parse(new_props.settings)}, this.forceUpdate);
+        this.setSt4te({_settings: JOYSON.unpack(new_props.settings)}, this.forceUpdate);
     }
 
     componentWillUnmount() {

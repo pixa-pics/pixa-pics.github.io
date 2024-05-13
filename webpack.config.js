@@ -175,14 +175,14 @@ module.exports = {
                                 'react',
                                 ["env", {
                                     targets: {
-                                        "chrome": "60",
-                                        "firefox": "60",
+                                        "chrome": "55",
+                                        "firefox": "55",
                                         "safari": "10"
                                     },
                                     forceAllTransforms: false,
                                     shippedProposals: true,
                                     bugfixes: true,
-                                    useBuiltIns: "usage"
+                                    useBuiltIns: "entry"
                                 }],
                                 'stage-0'
                             ]

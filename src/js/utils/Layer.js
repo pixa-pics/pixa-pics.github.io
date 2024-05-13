@@ -141,11 +141,11 @@ var Layer = function(image_data_or_colors_and_indexes, width, height, with_plain
 
 
     }else{
-        if(image_data_or_colors_and_indexes.data instanceof Uint8ClampedArray) { // image_data
+        if(image_data_or_colors_and_indexes.data8 instanceof Uint8ClampedArray) { // image_data
 
             this.width_ = image_data_or_colors_and_indexes.width | 0;
             this.height_ = image_data_or_colors_and_indexes.height | 0;
-            this.populate_data(new Uint32Array(image_data_or_colors_and_indexes.data.buffer));
+            this.populate_data(new Uint32Array(image_data_or_colors_and_indexes.data8.buffer));
 
         }else if(image_data_or_colors_and_indexes instanceof Uint8Array || image_data_or_colors_and_indexes instanceof Uint8ClampedArray){ // uint32 buffer
 
@@ -302,10 +302,16 @@ Object.defineProperty(Layer.prototype, 'has_color', {
     }
 });
 
+Object.defineProperty(Layer.prototype, 'data8', {
+    get: function() {
+        "use strict";
+        return this.uint8c_pixel_color_;
+    }
+})
 Object.defineProperty(Layer.prototype, 'image_data', {
     get: function() {
         "use strict";
-        return new ImageData(this.uint8c_pixel_color_, this.width_|0, this.height_|0);
+        return new ImageData(this.data8, this.width_|0, this.height_|0);
     }
 })
 Object.defineProperty(Layer.prototype, 'width', {
@@ -403,7 +409,7 @@ Object.defineProperty(Layer.prototype, 'hash_hex_async', {
         "use strict";
         return function (data){
             "use strict";
-            var h = xxhash.base58_that(new Uint8Array(this.data.buffer));
+            var h = xxhash.base58_that(data || this.data8);
             return Promise.resolve(h);
         }
     }
@@ -1158,6 +1164,7 @@ Object.defineProperty(Filters.prototype, 'use', {
             "use strict";
             copy = typeof copy == "undefined" ? false: Boolean(copy);
             var index = this.names_.indexOf(name);
+            if(typeof layer === "undefined"){ return; }
             if(index < 0){
 
                 if(copy){
