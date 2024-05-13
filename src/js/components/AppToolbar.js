@@ -1,10 +1,21 @@
 import React from "react";
-import {Fade, withStyles} from "@material-ui/core";
+import withStyles from "@material-ui/core/styles/withStyles";
 
 import Lottie from "../components/Lottie";
 import { t } from "../utils/t";
 
-import {AppBar, Toolbar, Divider, SwipeableDrawer, ListItemIcon, ListItemText, IconButton, MenuItem, Menu, Tooltip} from "@material-ui/core";
+
+import Fade from "@material-ui/core/Fade";
+import AppBar from "@material-ui/core/AppBar";
+import Toolbar from "@material-ui/core/Toolbar";
+import Divider from "@material-ui/core/Divider";
+import SwipeableDrawer from "@material-ui/core/SwipeableDrawer";
+import ListItemIcon from "@material-ui/core/ListItemIcon";
+import ListItemText from "@material-ui/core/ListItemText";
+import IconButton from "@material-ui/core/IconButton";
+import MenuItem from "@material-ui/core/MenuItem";
+import Menu from "@material-ui/core/Menu";
+import Tooltip from "@material-ui/core/Tooltip";
 
 import MenuIcon from "@material-ui/icons/Menu";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";

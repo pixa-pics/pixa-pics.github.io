@@ -1,7 +1,11 @@
 import React from "react";
 import { HISTORY } from "../utils/constants";
 import Lottie from "../components/Lottie";
-import {withStyles, Button, Grow, Fade, Backdrop} from "@material-ui/core";
+import Button from "@material-ui/core/Button";
+import Grow from "@material-ui/core/Grow";
+import Fade from "@material-ui/core/Fade";
+import Backdrop from "@material-ui/core/Backdrop";
+import withStyles from "@material-ui/core/styles/withStyles";
 import IconPlay from "@material-ui/icons/PlayArrow";
 import actions from "../actions/utils";
 

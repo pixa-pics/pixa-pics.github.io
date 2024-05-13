@@ -1,8 +1,13 @@
 import React from "react";
-import {Fade, withStyles} from "@material-ui/core";
-
-import {List, ListItem, ListItemIcon, ListItemText, Badge} from "@material-ui/core";
-
+import Collapse from "@material-ui/core/Collapse";
+import Divider from "@material-ui/core/Divider";
+import Fade from "@material-ui/core/Fade";
+import withStyles from "@material-ui/core/styles/withStyles";
+import List from "@material-ui/core/List";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemIcon from "@material-ui/core/ListItemIcon";
+import ListItemText from "@material-ui/core/ListItemText";
+import Badge from "@material-ui/core/Badge";
 import AppInfoDialog from "../components/AppInfoDialog";
 import CodeIcon from "@material-ui/icons/Code";
 import StoreIcon from "@material-ui/icons/Store";
@@ -11,7 +16,7 @@ import InfoIcon from "@material-ui/icons/Info";
 
 import { HISTORY } from "../utils/constants";
 import actions from "../actions/utils";
-import NewReleases from "@material-ui/icons/NewReleases";
+import ArrowDropDown from "@material-ui/icons/ArrowDropDown";
 
 const styles = theme => ({
     nested: {
@@ -27,6 +32,7 @@ const styles = theme => ({
         }
     },
     listItemGrey: {
+        userSelect: "none",
         "& > div > span": {
             opacity: .75,
         },
@@ -42,8 +48,27 @@ const styles = theme => ({
             backgroundColor: "rgba(0,87,255,0.12)"
         }
     },
+    listItemGreyPadding1: {
+        userSelect: "none",
+        "& > div > span": {
+            opacity: .75,
+        },
+        "& .MuiListItemText-primary": {
+            color: "#8e93b7 !important",
+            paddingLeft: 56
+        },
+        "& .MuiTouchRipple-root": {
+            backgroundColor: "#0057FF00",
+            color: "#77A7FF77",
+            transition: "all ease-out 500ms !important"
+        },
+        "&:hover .MuiTouchRipple-root": {
+            backgroundColor: "rgba(0,87,255,0.12)"
+        }
+    },
     iconColor: {
-        color: theme.palette.secondary.contrastText
+        color: theme.palette.secondary.contrastText,
+        transition: "transform ease-in-out 500ms !important"
     },
     "@global": {
         "@keyframes glow": {
@@ -94,9 +119,9 @@ const styles = theme => ({
     },
     styledBadgeConnected: {
         "& .MuiBadge-badge": {
-            color: "#005de9",
+            color: "#73a9ff",
             marginRight: 16,
-            backgroundColor: "#0056d7",
+            backgroundColor: "#73a9ff",
             boxShadow: `0 0 0 2px ${theme.palette.secondary.dark}`,
             "&::after": {
                 position: "absolute",
@@ -124,6 +149,7 @@ const styles = theme => ({
         }
     },
     labList: {
+        contain: "paint style layout",
         "& > div:first-child": {
             filter: "brightness(1) contrast(1)",
             WebkitFilter: "brightness(1) contrast(1)",
@@ -152,7 +178,9 @@ class DrawerContent extends React.PureComponent {
             classes: props.classes,
             language: props.language,
             _history: HISTORY,
-            _info_dialog_open: false
+            _info_dialog_open: 0,
+            _has_info_dialog_opened: 0,
+            _menu_opened: "pixagram"
         };
     };
 
@@ -210,7 +238,7 @@ class DrawerContent extends React.PureComponent {
 
     _open_info_dialog = () => {
 
-        this.setSt4te({_info_dialog_open: true}, () => {
+        this.setSt4te({_info_dialog_open: 1, _has_info_dialog_opened: 1}, () => {
 
             this.forceUpdate();
         });
@@ -218,7 +246,15 @@ class DrawerContent extends React.PureComponent {
 
     _close_info_dialog = () => {
 
-        this.setSt4te({_info_dialog_open: false}, () => {
+        this.setSt4te({_info_dialog_open: 0}, () => {
+
+            this.forceUpdate();
+        });
+    };
+
+    _pixagram_toggle_menu = () => {
+
+        this.setSt4te({_menu_opened: this.st4te._menu_opened === "" ? "pixagram": ""}, () => {
 
             this.forceUpdate();
         });
@@ -226,11 +262,11 @@ class DrawerContent extends React.PureComponent {
 
     render() {
 
-        const { classes, _info_dialog_open } = this.st4te;
+        const { classes, _info_dialog_open, _menu_opened, _has_info_dialog_opened } = this.st4te;
 
         return (
-            <div>
-                <AppInfoDialog open={_info_dialog_open} onClose={this._close_info_dialog}/>
+            <React.Fragment>
+                {Boolean(_info_dialog_open || _has_info_dialog_opened) && <AppInfoDialog open={_info_dialog_open} onClose={this._close_info_dialog}/>}
                 <List style={{paddingTop: 0}} className={classes.labList}>
                     <Fade in={true} timeout={0}>
                         <ListItem button className={classes.listItemGrey} TouchRippleProps={{className: classes.rippleBlue}} onClick={this._open_pixel_page}>
@@ -251,20 +287,34 @@ class DrawerContent extends React.PureComponent {
                         </ListItem>
                     </Fade>
                     <Fade in={true} timeout={900}>
-                        <ListItem button className={classes.listItemGrey} TouchRippleProps={{className: classes.rippleBlue}} onClick={() => {this._go_to("marketplace")}}>
-                            <ListItemIcon><StoreIcon className={classes.iconColor} /></ListItemIcon>
-                            <ListItemText primary="Pixagram (DEMO)" />
-                        </ListItem>
-                    </Fade>
-                    <Fade in={true} timeout={1200}>
-                        <ListItem button className={classes.listItemGrey} TouchRippleProps={{className: classes.rippleBlue}} onClick={(event) => this._go_to("ico")}>
+                        <ListItem button className={classes.listItemGrey} TouchRippleProps={{className: classes.rippleBlue}} onClick={() => {this._pixagram_toggle_menu()}}>
+
                             <Badge className={classes.styledBadgeConnected} overlap="circular" badgeContent=" " variant="dot">
-                                <ListItemIcon><NewReleases className={classes.iconColor} /></ListItemIcon>
+                                <ListItemIcon><StoreIcon className={classes.iconColor} /></ListItemIcon>
                             </Badge>
-                            <ListItemText primary="Pixagram (ICO)" />
+                            <ListItemText primary="PIXAGRAM" />
+                            <ListItemIcon><ArrowDropDown className={classes.iconColor} style={_menu_opened !== "pixagram" ? {transform: "rotate(-180deg)"}: {transform: "rotate(0deg)"}}/></ListItemIcon>
                         </ListItem>
                     </Fade>
-                    <Fade in={true} timeout={1500}>
+                    <Collapse in={_menu_opened !== "pixagram"} timeout={300}>
+                        <Divider/>
+                        <Fade in={_menu_opened !== "pixagram"} timeout={300+200}>
+                            <ListItem button className={classes.listItemGreyPadding1} TouchRippleProps={{className: classes.rippleBlue}} onClick={(event) => this._go_to("ico")}>
+                                <ListItemText primary="ICO" />
+                            </ListItem>
+                        </Fade>
+                        <Fade in={_menu_opened !== "pixagram"} timeout={300+400}>
+                            <ListItem button className={classes.listItemGreyPadding1} TouchRippleProps={{className: classes.rippleBlue}} onClick={() => {this._go_to("marketplace")}}>
+                                <ListItemText primary="DEMO" />
+                            </ListItem>
+                        </Fade>
+                        <Fade in={_menu_opened !== "pixagram"} timeout={300+600}>
+                            <ListItem button className={classes.listItemGreyPadding1} TouchRippleProps={{className: classes.rippleBlue}} onClick={(event) => this._open_link(event, "https://t.me/pixagramio")}>
+                                <ListItemText primary="CHAT" />
+                            </ListItem>
+                        </Fade>
+                    </Collapse>
+                    <Fade in={true} timeout={2000}>
                         <div style={{textAlign: "center"}} onClick={(event) => {this._open_link(event, "https://play.google.com/store/apps/details?id=pics.pixa.app.twa")}}>
                             <svg
                                 className={"playstorebadge"}
@@ -427,7 +477,7 @@ class DrawerContent extends React.PureComponent {
                         </div>
                     </Fade>
                 </List>
-            </div>
+            </React.Fragment>
         );
     }
 }

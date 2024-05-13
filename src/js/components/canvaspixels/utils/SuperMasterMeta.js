@@ -329,17 +329,17 @@ const SuperMasterMeta = {
                     }
                 }
 
-                meta_super_blend.blend(false, false).then(function (result) {
+                meta_super_blend.blend(false, false).catch(handle_reject0).then(function (result) {
                     "use strict";
                     if (result[0].length > 0 || clear_canvas || is_there_new_dimension || force_update) {
 
-                        meta.super_canvas.check(pxl_width, pxl_height).then(function () {
+                        meta.super_canvas.check(pxl_width, pxl_height).catch(handle_reject0).then(function () {
                             "use strict";
-                            meta.super_canvas.prender().then(function () {
+                            meta.super_canvas.prender().catch(handle_reject0).then(function () {
                                 "use strict";
                                 meta.sraf.run_frame(function () {
                                     "use strict";
-                                    return Promise.all(render_binding(), function () {
+                                    return Promise.allSettled(render_binding(), function () {
                                         "use strict";
                                         _old_pxls_hovered.clearAndBulkAdd(Uint32Array.of(image_imported_resizer_index, _pxls_hovered));
                                         _current_layer.clear_changes();
@@ -355,9 +355,9 @@ const SuperMasterMeta = {
                                         state._last_paint_timestamp = +requested_at;
                                         return Promise.resolve();
                                     }());
-                                }, false, clear_canvas || is_there_new_dimension || force_update,  Date.now(), "render").then(resolve0).catch(handle_reject0);
-                            }).catch(handle_reject0);
-                        }).catch(handle_reject0);
+                                }, clear_canvas || is_there_new_dimension || force_update, clear_canvas || is_there_new_dimension || force_update,  Date.now(), "render").finally(resolve0);
+                            });
+                        });
                     } else {
 
                         resolve0();
@@ -1103,7 +1103,7 @@ const SuperMasterMeta = {
                             {
                                 _paint_or_select_hover_pxl_indexes: new SetFixed([pxl_index]),
                                 _paint_or_select_hover_actions_latest_index: pxl_index,
-                                _paint_hover_old_pxls_snapshot: _current_layer.indexes_copy,
+                                _paint_hover_old_pxls_snapshot: _current_layer.indexes_copy || new Uint8Array(0),
                                 _last_action_timestamp: Date.now()
                             }, () => {this.update_canvas();});
 

@@ -2,7 +2,7 @@
 import React, { Suspense } from "react";
 import JOYSON from "joyson";
 import JSLoader from "../utils/JSLoader";
-import { withStyles } from "@material-ui/core";
+import withStyles from "@material-ui/core/styles/withStyles";
 import Slide from '@material-ui/core/Slide';
 import Snackbar from "@material-ui/core/Snackbar";
 import IconButton from "@material-ui/core/IconButton";

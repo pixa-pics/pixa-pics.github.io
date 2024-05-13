@@ -1,6 +1,6 @@
 import React from "react";
 import JOYSON from "joyson";
-import {withStyles} from '@material-ui/core/styles';
+import withStyles from "@material-ui/core/styles/withStyles";
 import Tooltip from '@material-ui/core/Tooltip';
 import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -1371,10 +1371,10 @@ class Marketplace extends React.PureComponent {
 
         const { classes, tabValue, tagValue, renderingMenuAnchorEl, imagesProfile, isMobile, imagesFeed, mainTabValue, categories, tabTagValue, actions, history, openedMediaData, openedMediaDataData, _h_svg_size, _h_svg, src, type, drawerHashtagOpen, openedDrawer, comments, followers, following } = this.st4te;
 
-        const {canvas_wrapper, device_pixel_ratio, scale, canvas_event_target} = this.canvas_pos.get_st4te();
+        const {canvas_wrapper, device_pixel_ratio, scale, canvas_event_target} = this.canvas_pos.get_state();
         const screen_zoom_ratio = this.canvas_pos.get_screen_zoom_ratio();
         const {box_shadow, will_change} = this.canvas_pos.get_style();
-        const {transform_rotate, filter, background_image} = this.canvas_pos.get_perspective_st4te();
+        const {transform_rotate, filter, background_image} = this.canvas_pos.get_perspective_state();
         return (
             <div className={classes.root}>
                 {mainTabValue === 0 && <Fade in={true} timeout={600}>

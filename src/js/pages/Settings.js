@@ -1,10 +1,19 @@
 import React from "react";
-import {Slider, Typography, withStyles} from "@material-ui/core";
 
 import { t } from "../utils/t";
-
-import {Divider, CardHeader, Container, Card, CardContent, FormControlLabel, Switch, TextField, Fade} from "@material-ui/core";
-import {Autocomplete} from "@material-ui/lab";
+import withStyles from "@material-ui/core/styles/withStyles";
+import Slider from "@material-ui/core/Slider";
+import Typography from "@material-ui/core/Typography";
+import Divider from "@material-ui/core/Divider";
+import CardHeader from "@material-ui/core/CardHeader";
+import Container from "@material-ui/core/Container";
+import Card from "@material-ui/core/Card";
+import CardContent from "@material-ui/core/CardContent";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import Switch from "@material-ui/core/Switch";
+import TextField from "@material-ui/core/TextField";
+import Fade from "@material-ui/core/Fade";
+import Autocomplete from "@material-ui/lab/Autocomplete";
 
 import { LANGUAGES, CURRENCY_COUNTRIES } from "../utils/constants";
 import LOCALES from "../utils/constant_locales";

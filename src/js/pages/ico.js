@@ -1,9 +1,11 @@
 import React from "react";
 import JOYSON from "joyson";
-import {Button, Tooltip, withStyles} from "@material-ui/core";
+import withStyles from "@material-ui/core/styles/withStyles";
 import actions from "../actions/utils";
 import FileDownload from "../icons/FileDownload";
 import Fade from "@material-ui/core/Fade";
+import Button from "@material-ui/core/Button";
+import Tooltip from "@material-ui/core/Tooltip";
 import LinkedIn from "../icons/LinkedIn";
 import Telegram from "../icons/Telegram";
 import Badge from "@material-ui/core/Badge"

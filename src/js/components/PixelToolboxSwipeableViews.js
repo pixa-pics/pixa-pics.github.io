@@ -1,5 +1,7 @@
 import React from "react";
-import {withStyles, List, ListItem, ListItemAvatar, ListItemIcon, LinearProgress, ListItemText, ListSubheader, Typography, Slider, RadioGroup, Radio, FormLabel, Collapse, Divider, FormControlLabel, Button, Badge, Menu, IconButton, ButtonBase} from "@material-ui/core";
+import withStyles from "@material-ui/core/styles/withStyles";
+
+import {List, ListItem, ListItemAvatar, ListItemIcon, LinearProgress, ListItemText, ListSubheader, Typography, Slider, RadioGroup, Radio, FormLabel, Collapse, Divider, FormControlLabel, Button, Badge, Menu, IconButton, ButtonBase} from "@material-ui/core";
 
 import {SIMDopeCreate} from "simdope";
 const {Color} = SIMDopeCreate({

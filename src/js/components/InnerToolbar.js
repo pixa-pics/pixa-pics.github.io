@@ -1,10 +1,13 @@
 import React from "react";
-import { withStyles } from "@material-ui/core";
+import withStyles from "@material-ui/core/styles/withStyles";
 import JSLoader from "../utils/JSLoader";
 import { t } from "../utils/t";
 import { HISTORY } from "../utils/constants";
 
-import {Button, LinearProgress, IconButton, Fade} from "@material-ui/core";
+import Button from "@material-ui/core/Button";
+import LinearProgress from "@material-ui/core/LinearProgress";
+import IconButton from "@material-ui/core/IconButton";
+import Fade from "@material-ui/core/Fade";
 
 import VolumeOffIcon from "@material-ui/icons/VolumeOff";
 import VolumeUpIcon from "@material-ui/icons/VolumeUp";

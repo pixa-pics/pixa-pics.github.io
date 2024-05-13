@@ -89,7 +89,7 @@ const SmartRequestAnimationFrame = {
                         resolve();
                     }else {
 
-                        let skip_frame_rate = Math.max(window._sraf_state[state_id].second_previous_cpaf_fps + window._sraf_state[state_id].previous_cpaf_fps | 0, window._sraf_state[state_id].is_mobile_or_tablet ? 30: 60);
+                        let skip_frame_rate = Math.max(window._sraf_state[state_id].second_previous_cpaf_fps + window._sraf_state[state_id].previous_cpaf_fps | 0, window._sraf_state[state_id].is_mobile_or_tablet ? 20: 40);
 
                         let running_smoothly = true;
 

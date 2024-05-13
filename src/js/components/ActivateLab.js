@@ -1,7 +1,7 @@
 import React from "react";
-import { withStyles } from "@material-ui/core/styles"
+import withStyles from "@material-ui/core/styles/withStyles";
 
-import {Dialog} from "@material-ui/core";
+import Dialog from "@material-ui/core/Dialog";
 import LabActivate from "../icons/LabActivate";
 import actions from "../actions/utils";
 import RestrictedArea from "../icons/RestrictedArea";

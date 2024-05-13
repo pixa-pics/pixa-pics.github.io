@@ -1,6 +1,11 @@
 import React from "react";
-import {IconButton, withStyles} from "@material-ui/core";
-import {Toolbar, Drawer, Box, Fade} from "@material-ui/core";
+import withStyles from "@material-ui/core/styles/withStyles";
+
+import IconButton from "@material-ui/core/IconButton";
+import Toolbar from "@material-ui/core/Toolbar";
+import Drawer from "@material-ui/core/Drawer";
+import Box from "@material-ui/core/Box";
+import Fade from "@material-ui/core/Fade";
 import DrawerContent from "../components/DrawerContent";
 
 import actions from "../actions/utils";

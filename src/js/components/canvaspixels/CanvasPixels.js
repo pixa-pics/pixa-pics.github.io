@@ -2061,7 +2061,8 @@ class CanvasPixels extends React.PureComponent {
 
         const { pxl_current_color_uint32,  _pxl_indexes_of_selection, _s_layers, _layer_index, pxl_current_opacity } = this.super_state.get_state();
 
-        let pxls =  _s_layers[_layer_index].indexes_copy;
+        let layer = _s_layers[_layer_index] || {};
+        let pxls =  layer.indexes_copy || new Uint8Array(0);
         let pxl_colors = Array.from(_s_layers[_layer_index].colors_copy);
         let pxls_of_the_border = this._get_border_from_selection(_pxl_indexes_of_selection);
 
@@ -2871,8 +2872,8 @@ class CanvasPixels extends React.PureComponent {
     _auto_adjust_contrast = (intensity = 1) => {
 
         const { _layer_index, _s_layers } = this.super_state.get_state();
-
-        var result = this._pxl_adjust_contrast(_s_layers[_layer_index].indexes_copy, _s_layers[_layer_index].colors_copy, intensity);
+        let layer = _s_layers[_layer_index] || {};
+        var result = this._pxl_adjust_contrast(layer.indexes_copy, layer.colors_copy, intensity);
         _s_layers[_layer_index].set_colors_and_indexes(result[1], result[0]);
 
         this.super_state.set_state({_s_layers, _last_action_timestamp: Date.now()}).then(() => this.super_master_meta.update_canvas(true));
@@ -2881,8 +2882,9 @@ class CanvasPixels extends React.PureComponent {
     _auto_adjust_saturation = (intensity = 1) => {
 
         const { _s_layers, _layer_index } = this.super_state.get_state();
+        let layer = _s_layers[_layer_index] || {};
 
-        var result =  this._pxl_adjust_saturation(_s_layers[_layer_index].indexes_copy, _s_layers[_layer_index].colors_copy, intensity);
+        var result =  this._pxl_adjust_saturation(layer.indexes_copy, layer.colors_copy, intensity);
         _s_layers[_layer_index].set_colors_and_indexes(result[1], result[0]);
 
         this.super_state.set_state({_s_layers, _last_action_timestamp: Date.now()}).then(() => this.super_master_meta.update_canvas(true));

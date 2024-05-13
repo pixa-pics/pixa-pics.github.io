@@ -1,6 +1,13 @@
 import React from "react";
-import { withStyles } from "@material-ui/core/styles"
-import {Breadcrumbs, Divider, Link, DialogActions, DialogContent, Button, Dialog} from "@material-ui/core";
+import withStyles from "@material-ui/core/styles/withStyles";
+
+import Breadcrumbs from "@material-ui/core/Breadcrumbs";
+import Divider from "@material-ui/core/Divider";
+import Link from "@material-ui/core/Link";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent";
+import Button from "@material-ui/core/Button";
+import Dialog from "@material-ui/core/Dialog";
 
 import {t} from "../utils/t";
 

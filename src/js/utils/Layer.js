@@ -449,8 +449,7 @@ Object.defineProperty(Layer.prototype, 'indexes', {
 Object.defineProperty(Layer.prototype, 'indexes_copy', {
     get: function() {
         "use strict";
-        var length = this.color_indexes_.length|0;
-        return this.color_indexes_.slice(0, length|0);
+        return this.indexes.slice(0, this.indexes.length|0);
     },
     enumerable: false,
     configurable: false
