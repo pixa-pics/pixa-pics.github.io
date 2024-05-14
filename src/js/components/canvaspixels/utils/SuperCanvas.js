@@ -5,6 +5,7 @@ class SuperCanvas {
     }
 
     template(c, pxlWidth, pxlHeight) {
+        "use strict";
         pxlWidth |= 0;
         pxlHeight |= 0;
 
@@ -75,6 +76,7 @@ class SuperCanvas {
     }
 
     setImageSmoothing(context, enabled) {
+        "use strict";
         context.imageSmoothingEnabled = enabled;
         ['webkit', 'moz', 'ms'].forEach(prefix => {
             context[`${prefix}ImageSmoothingEnabled`] = enabled;
@@ -82,14 +84,17 @@ class SuperCanvas {
     }
 
     ok() {
+        "use strict";
         return Boolean(this.state.s.canvasContext.canvas);
     }
 
     getUint32() {
+        "use strict";
         return this.state.fp;
     }
 
     new(c, w, h) {
+        "use strict";
         this.state = this.template(c, w, h);
         return Promise.resolve();
     }
@@ -102,23 +107,23 @@ class SuperCanvas {
     }
 
     render() {
+        "use strict";
         const { b, enablePaintType, s } = this.state;
-        return new Promise(resolve => {
-            if (enablePaintType === 'bitmap' && b) {
-                s.canvasContext.globalCompositeOperation = 'copy';
-                s.canvasContext.drawImage(b.bmp, 0, 0, b.bmp.width, b.bmp.height);
-            } else if (enablePaintType === 'offscreen') {
-                s.canvasContext.globalCompositeOperation = 'copy';
-                s.canvasContext.drawImage(s.offscreenCanvasContext.canvas, 0, 0);
-            } else {
-                s.canvasContext.putImageData(new ImageData(this.state.prUint8a, s.width, s.height), 0, 0);
-            }
-            resolve();
-        });
+        if (enablePaintType === 'bitmap' && b) {
+            s.canvasContext.globalCompositeOperation = 'copy';
+            s.canvasContext.drawImage(b.bmp, 0, 0, b.bmp.width, b.bmp.height);
+        } else if (enablePaintType === 'offscreen') {
+            s.canvasContext.globalCompositeOperation = 'copy';
+            s.canvasContext.drawImage(s.offscreenCanvasContext.canvas, 0, 0);
+        } else {
+            s.canvasContext.putImageData(new ImageData(this.state.prUint8a, s.width, s.height), 0, 0);
+        }
+        return Promise.resolve();
     }
 
     prender() {
 
+        "use strict";
         this.state.enablePaintType = this.state.s.isBitmap ? "bitmap": this.state.s.isOffscreen ? "offscreen": "";
 
         if (this.state.enablePaintType === 'bitmap') {
@@ -142,6 +147,7 @@ class SuperCanvas {
     }
 
     check(w, h) {
+        "use strict";
         const { width, height } = this.state.s;
         if (width !== w || height !== h) {
             return this.setDimensions(w, h);
@@ -150,6 +156,7 @@ class SuperCanvas {
     }
 
     setDimensions(w, h) {
+        "use strict";
         if (this.state.s.width !== w || this.state.s.height !== h) {
             this.state = this.template(this.state.s.canvasContext.canvas, w, h);
             return Promise.resolve();

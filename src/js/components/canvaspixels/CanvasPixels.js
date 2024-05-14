@@ -50,7 +50,7 @@ class CanvasPixels extends React.PureComponent {
     constructor(props) {
         super(props);
         if(!this.hasnt_been_mount) {
-            this.super_state = Object.create(SuperState).from(props);
+            this.super_state = new SuperState(props, this.forceUpdate);
             this.xxhash = Object.create(XXHash).new();
             this.bmp_layer = Object.create(BMPLayer).from(pool);
             this.color_conversion = Object.create(ColorConversion).new();
@@ -209,16 +209,15 @@ class CanvasPixels extends React.PureComponent {
             this._super_master_meta_handle_canvas_mouse_up,
             this._super_master_meta_handle_canvas_mouse_down,
             this._request_force_update,
-            this.super_state.set_cursor,
+            this._set_cursor,
             this._function_ripple
         );
         this.canvas_pos.init_speed_interval();
-        this.super_state.set_notifiers(
-            this._request_force_update
-        );
         this._update_canvas_container_size();
         this._notify_image_load_complete(true);
     }
+
+    _set_cursor = (a, b) => {this.super_state.set_cursor(a, b)}
 
     xxhashthat = (array) => {
 
@@ -1389,7 +1388,7 @@ class CanvasPixels extends React.PureComponent {
         const li = this.super_state.get_state()._layer_index;
         this.new_layer(li);
         this.change_active_layer(li+1)
-        const indexes = this.super_state.create_shape().from_text(size, text);
+        const indexes = new this.super_state.create_shape().from_text(size, text);
         this.super_state.paint_shape(indexes, this.super_state.get_state().pxl_current_color_uint32);
     };
 

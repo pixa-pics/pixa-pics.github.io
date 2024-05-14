@@ -52,7 +52,6 @@ const SuperMasterMeta = {
             update(){}
         };
 
-        let shape_creator = meta.super_state.create_shape();
         let full_pxls = new Uint32Array(0);
         let old_full_pxls = new Uint32Array(0);
 
@@ -100,7 +99,6 @@ const SuperMasterMeta = {
                         });
                         // Tell there were new dimension
                         state._is_there_new_dimension = true;
-                        shape_creator.update_state();
 
                         // Update html for css animation
                         notifiers.update(false, false).then(function () {
@@ -197,29 +195,29 @@ const SuperMasterMeta = {
 
                     _pxl_indexes_of_current_shape =
                         tool === "LINE" ?
-                            shape_creator.from_line(_shape_index_a, _pxls_hovered, _pxl_indexes_of_current_shape) :
+                            meta.super_state.shape_creator.from_line(_shape_index_a, _pxls_hovered, _pxl_indexes_of_current_shape) :
                             tool === "RECTANGLE" ?
-                                shape_creator.from_rectangle(_shape_index_a, _pxls_hovered, _pxl_indexes_of_current_shape) :
+                                meta.super_state.shape_creator.from_rectangle(_shape_index_a, _pxls_hovered, _pxl_indexes_of_current_shape) :
                                 tool === "ELLIPSE" ?
-                                    shape_creator.from_ellipse(_shape_index_a, _pxls_hovered, _pxl_indexes_of_current_shape) :
+                                    meta.super_state.shape_creator.from_ellipse(_shape_index_a, _pxls_hovered, _pxl_indexes_of_current_shape) :
                                     _pxl_indexes_of_current_shape;
 
                 } else if (Boolean(tool === "SELECT LINE" || tool === "SELECT RECTANGLE" || tool === "SELECT ELLIPSE") && _select_shape_index_a !== - 1 && _pxls_hovered !== - 1) {
 
                     _pxl_indexes_of_current_shape =
                         tool === "SELECT LINE" ?
-                            shape_creator.from_line(_select_shape_index_a, _pxls_hovered, _pxl_indexes_of_current_shape) :
+                            meta.super_state.shape_creator.from_line(_select_shape_index_a, _pxls_hovered, _pxl_indexes_of_current_shape) :
                             tool === "SELECT RECTANGLE" ?
-                                shape_creator.from_rectangle(_select_shape_index_a, _pxls_hovered, _pxl_indexes_of_current_shape) :
+                                meta.super_state.shape_creator.from_rectangle(_select_shape_index_a, _pxls_hovered, _pxl_indexes_of_current_shape) :
                                 tool === "SELECT ELLIPSE" ?
-                                    shape_creator.from_ellipse(_select_shape_index_a, _pxls_hovered, _pxl_indexes_of_current_shape) :
+                                    meta.super_state.shape_creator.from_ellipse(_select_shape_index_a, _pxls_hovered, _pxl_indexes_of_current_shape) :
                                     _pxl_indexes_of_current_shape;
 
                 } else if (Boolean(tool === "SELECT PATH" || tool === "CONTOUR") && _paint_or_select_hover_pxl_indexes.size > 0) {
 
                     const first_drawn_pixel = _paint_or_select_hover_pxl_indexes[0];
                     const last_drawn_pixel = _paint_or_select_hover_pxl_indexes[_paint_or_select_hover_pxl_indexes.size - 1];
-                    const closing_path_line = shape_creator.from_line(first_drawn_pixel, last_drawn_pixel);
+                    const closing_path_line = meta.super_state.shape_creator.from_line(first_drawn_pixel, last_drawn_pixel);
 
                     if (select_mode === "REMOVE" && tool === "SELECT PATH") {
 
@@ -329,33 +327,30 @@ const SuperMasterMeta = {
                     }
                 }
 
-                meta_super_blend.blend(false, false).catch(handle_reject0).then(function (result) {
+                meta_super_blend.blend(false, false).then(function (result) {
                     "use strict";
                     if (result[0].length > 0 || clear_canvas || is_there_new_dimension || force_update) {
 
                         meta.super_canvas.check(pxl_width, pxl_height).catch(handle_reject0).then(function () {
                             "use strict";
-                            meta.super_canvas.prender().catch(handle_reject0).then(function () {
+                            meta.super_canvas.prender().then(function () {
                                 "use strict";
+                                _old_pxls_hovered.clearAndBulkAdd(Uint32Array.of(image_imported_resizer_index, _pxls_hovered));
+                                _current_layer.clear_changes();
+                                _pxl_indexes_of_selection_drawn.setFromSetFixed(_pxl_indexes_of_selection);
+                                _pxl_indexes_of_old_shape.setFromSetFixed(_pxl_indexes_of_current_shape);
+                                _previous_imported_image_pxls_positioned_keyset.setFromSetFixed(imported_image_pxls_positioned_keyset);
+                                _pxl_indexes_of_current_shape.clear();
                                 meta.sraf.run_frame(function () {
                                     "use strict";
-                                    return Promise.allSettled(render_binding(), function () {
-                                        "use strict";
-                                        _old_pxls_hovered.clearAndBulkAdd(Uint32Array.of(image_imported_resizer_index, _pxls_hovered));
-                                        _current_layer.clear_changes();
-                                        _pxl_indexes_of_selection_drawn.setFromSetFixed(_pxl_indexes_of_selection);
-                                        _pxl_indexes_of_old_shape.setFromSetFixed(_pxl_indexes_of_current_shape);
-                                        _previous_imported_image_pxls_positioned_keyset.setFromSetFixed(imported_image_pxls_positioned_keyset);
-                                        _pxl_indexes_of_current_shape.clear();
-                                        state._old_selection_pair_highlight = _selection_pair_highlight;
-                                        state._old_layers_string_id = ""+old_layers_string_id;
-                                        state._did_hide_canvas_content = Boolean(hide_canvas_content);
-                                        state._old_pxl_width = parseInt(pxl_width);
-                                        state._old_pxl_height = parseInt(pxl_height);
-                                        state._last_paint_timestamp = +requested_at;
-                                        return Promise.resolve();
-                                    }());
-                                }, clear_canvas || is_there_new_dimension || force_update, clear_canvas || is_there_new_dimension || force_update,  Date.now(), "render").finally(resolve0);
+                                    state._old_selection_pair_highlight = _selection_pair_highlight;
+                                    state._old_layers_string_id = ""+old_layers_string_id;
+                                    state._did_hide_canvas_content = Boolean(hide_canvas_content);
+                                    state._old_pxl_width = parseInt(pxl_width);
+                                    state._old_pxl_height = parseInt(pxl_height);
+                                    state._last_paint_timestamp = +requested_at;
+                                    return render_binding();
+                                }, false, clear_canvas || is_there_new_dimension || force_update,  Date.now(), "render").finally(resolve0);
                             });
                         });
                     } else {
@@ -545,7 +540,7 @@ const SuperMasterMeta = {
                             _paint_or_select_hover_actions_latest_index = pxl_index | 0;
                         }
 
-                        _paint_or_select_hover_pxl_indexes = shape_creator.from_line(_paint_or_select_hover_actions_latest_index, pxl_index, _paint_or_select_hover_pxl_indexes);
+                        _paint_or_select_hover_pxl_indexes = meta.super_state.shape_creator.from_line(_paint_or_select_hover_actions_latest_index, pxl_index, _paint_or_select_hover_pxl_indexes);
 
                         const { pencil_mirror_mode, _pencil_mirror_index } = meta.super_state.get_state();
 
@@ -675,7 +670,7 @@ const SuperMasterMeta = {
                             _paint_or_select_hover_actions_latest_index = pxl_index;
                         }
 
-                        const new_drawn_pxl_indexes = shape_creator.from_line(_paint_or_select_hover_actions_latest_index, pxl_index);
+                        const new_drawn_pxl_indexes = meta.super_state.shape_creator.from_line(_paint_or_select_hover_actions_latest_index, pxl_index);
 
                         if(tool === "SELECT PATH") {
 
@@ -806,13 +801,13 @@ const SuperMasterMeta = {
 
                 }else if(_paint_or_select_hover_pxl_indexes.size > 0 && tool === "CONTOUR") {
 
-                    shape_creator.update_state();
+
                     let { pxl_current_opacity, pxl_current_color_uint32 } = meta.super_state.get_state();
                     const first_drawn_pixel = _paint_or_select_hover_pxl_indexes[0];
                     const last_drawn_pixel = _paint_or_select_hover_pxl_indexes[_paint_or_select_hover_pxl_indexes.size-1];
-                    const closing_path_line =  shape_creator.from_line(first_drawn_pixel, last_drawn_pixel);
+                    const closing_path_line =  meta.super_state.shape_creator.from_line(first_drawn_pixel, last_drawn_pixel);
                     _paint_or_select_hover_pxl_indexes = new SetFixed(Array.from(_paint_or_select_hover_pxl_indexes.indexes).concat(closing_path_line));
-                    _paint_or_select_hover_pxl_indexes = shape_creator.from_path(_paint_or_select_hover_pxl_indexes, _paint_or_select_hover_pxl_indexes);
+                    _paint_or_select_hover_pxl_indexes = meta.super_state.shape_creator.from_path(_paint_or_select_hover_pxl_indexes, _paint_or_select_hover_pxl_indexes);
 
                     _paint_or_select_hover_pxl_indexes.clear();
                     meta.super_state.paint_shape(_paint_or_select_hover_pxl_indexes.indexes, pxl_current_color_uint32, pxl_current_opacity,
@@ -824,12 +819,11 @@ const SuperMasterMeta = {
 
                 }else if(_paint_or_select_hover_pxl_indexes.size > 0 && tool === "SELECT PATH") {
 
-                    shape_creator.update_state();
                     const first_drawn_pixel = _paint_or_select_hover_pxl_indexes[0];
                     const last_drawn_pixel = _paint_or_select_hover_pxl_indexes[_paint_or_select_hover_pxl_indexes.size-1];
-                    const closing_path_line =  shape_creator.from_line(first_drawn_pixel, last_drawn_pixel);
+                    const closing_path_line =  meta.super_state.shape_creator.from_line(first_drawn_pixel, last_drawn_pixel);
                     _paint_or_select_hover_pxl_indexes = new SetFixed(Array.from(_paint_or_select_hover_pxl_indexes.indexes).concat(closing_path_line));
-                    _paint_or_select_hover_pxl_indexes = shape_creator.from_path(_paint_or_select_hover_pxl_indexes, _paint_or_select_hover_pxl_indexes);
+                    _paint_or_select_hover_pxl_indexes = meta.super_state.shape_creator.from_path(_paint_or_select_hover_pxl_indexes, _paint_or_select_hover_pxl_indexes);
 
                     if(select_mode === "REPLACE") {
 
@@ -943,13 +937,13 @@ const SuperMasterMeta = {
                             switch (tool) {
 
                                 case "LINE":
-                                    pxl_indexes = shape_creator.from_line(_shape_index_a, pxl_index);
+                                    pxl_indexes = meta.super_state.shape_creator.from_line(_shape_index_a, pxl_index);
                                     break;
                                 case "RECTANGLE":
-                                    pxl_indexes = shape_creator.from_rectangle(_shape_index_a, pxl_index);
+                                    pxl_indexes = meta.super_state.shape_creator.from_rectangle(_shape_index_a, pxl_index);
                                     break;
                                 case "ELLIPSE":
-                                    pxl_indexes = shape_creator.from_ellipse(_shape_index_a, pxl_index);
+                                    pxl_indexes = meta.super_state.shape_creator.from_ellipse(_shape_index_a, pxl_index);
                                     break;
                             }
 
@@ -973,12 +967,12 @@ const SuperMasterMeta = {
 
                             let pixel_indexes =
                                 tool === "SELECT LINE" ?
-                                    shape_creator.from_line(_select_shape_index_a, pxl_index):
+                                    meta.super_state.shape_creator.from_line(_select_shape_index_a, pxl_index):
                                     tool === "SELECT RECTANGLE" ?
-                                        shape_creator.from_rectangle(_select_shape_index_a, pxl_index):
+                                        meta.super_state.shape_creator.from_rectangle(_select_shape_index_a, pxl_index):
                                         tool === "SELECT ELLIPSE" ?
-                                            shape_creator.from_ellipse(_select_shape_index_a, pxl_index):
-                                            shape_creator.from_ellipse(_select_shape_index_a, pxl_index);
+                                            meta.super_state.shape_creator.from_ellipse(_select_shape_index_a, pxl_index):
+                                            meta.super_state.shape_creator.from_ellipse(_select_shape_index_a, pxl_index);
 
                             if(select_mode === "REPLACE") {
 
@@ -1287,7 +1281,7 @@ const SuperMasterMeta = {
 
                         if(tool === "BORDER") {
 
-                            shape_creator.from_border(colored_pxl_indexes, true, true).forEach((pxl_index) => {
+                            meta.super_state.shape_creator.from_border(colored_pxl_indexes, true, true).forEach((pxl_index) => {
 
                                 color_pixel(pxl_index, true);
                             });
