@@ -333,15 +333,14 @@ const SuperMasterMeta = {
 
                         meta.super_canvas.check(pxl_width, pxl_height).catch(handle_reject0).then(function () {
                             "use strict";
-                            meta.super_canvas.prender().then(function () {
+                            meta.super_canvas.prender().finally(function () {
                                 "use strict";
                                 _old_pxls_hovered.clearAndBulkAdd(Uint32Array.of(image_imported_resizer_index, _pxls_hovered));
                                 _current_layer.clear_changes();
                                 _pxl_indexes_of_selection_drawn.setFromSetFixed(_pxl_indexes_of_selection);
-                                _pxl_indexes_of_old_shape.setFromSetFixed(_pxl_indexes_of_current_shape);
                                 _previous_imported_image_pxls_positioned_keyset.setFromSetFixed(imported_image_pxls_positioned_keyset);
-                                _pxl_indexes_of_current_shape.clear();
-                                meta.sraf.run_frame(function () {
+
+                                meta.sraf.run_frame(() => {
                                     "use strict";
                                     state._old_selection_pair_highlight = _selection_pair_highlight;
                                     state._old_layers_string_id = ""+old_layers_string_id;
@@ -349,6 +348,8 @@ const SuperMasterMeta = {
                                     state._old_pxl_width = parseInt(pxl_width);
                                     state._old_pxl_height = parseInt(pxl_height);
                                     state._last_paint_timestamp = +requested_at;
+                                    _pxl_indexes_of_current_shape.clear();
+                                    _pxl_indexes_of_old_shape.setFromSetFixed(_pxl_indexes_of_current_shape);
                                     return render_binding();
                                 }, false, clear_canvas || is_there_new_dimension || force_update,  Date.now(), "render").finally(resolve0);
                             });

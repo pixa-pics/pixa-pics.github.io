@@ -109,16 +109,18 @@ class SuperCanvas {
     render() {
         "use strict";
         const { b, enablePaintType, s } = this.state;
-        if (enablePaintType === 'bitmap' && b) {
-            s.canvasContext.globalCompositeOperation = 'copy';
-            s.canvasContext.drawImage(b.bmp, 0, 0, b.bmp.width, b.bmp.height);
-        } else if (enablePaintType === 'offscreen') {
-            s.canvasContext.globalCompositeOperation = 'copy';
-            s.canvasContext.drawImage(s.offscreenCanvasContext.canvas, 0, 0);
-        } else {
-            s.canvasContext.putImageData(new ImageData(this.state.prUint8a, s.width, s.height), 0, 0);
-        }
-        return Promise.resolve();
+        return new Promise(function (resolve){
+            if (enablePaintType === 'bitmap' && b) {
+                s.canvasContext.globalCompositeOperation = 'copy';
+                s.canvasContext.drawImage(b.bmp, 0, 0, b.bmp.width, b.bmp.height);
+            } else if (enablePaintType === 'offscreen') {
+                s.canvasContext.globalCompositeOperation = 'copy';
+                s.canvasContext.drawImage(s.offscreenCanvasContext.canvas, 0, 0);
+            } else {
+                s.canvasContext.putImageData(new ImageData(this.state.prUint8a, s.width, s.height), 0, 0);
+            }
+            resolve();
+        });
     }
 
     prender() {
