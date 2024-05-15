@@ -179,34 +179,42 @@ class CreateShape {
     }
     from_path(path_indexes, onto){
         "use strict";
-        onto = typeof onto == "undefined" ? new SetFixed(this.width*this.height): onto;
+        onto = typeof onto === "undefined" ? new SetFixed(this.width * this.height) : onto;
 
+        this.context.lineWidth = 1;
         this.context.clearRect(0, 0, this.width, this.height);
-        this.context.linewidth = 1;
+        this.context.save(); // Save current state
 
-        let start_x = 0, start_y = 0;
-        path_indexes.forEach( (pxl_index, index) => {
+        let i = 0;
+        path_indexes.forEach((pxl_index) => {
+            const x = pxl_index % this.width;
+            const y = Math.floor(pxl_index / this.width);
 
-            const x = pxl_index % this.width|0;
-            const y = (pxl_index - x|0) / this.width|0;
-
-            if((index|0) == 0) {
-
-                this.context.moveTo(x|0, y|0);
+            if (i === 0) {
+                this.context.moveTo(x, y);
                 this.context.beginPath();
-                start_x = x | 0;
-                start_y = y | 0;
-            }else {
-
-                this.context.lineTo(x|0, y|0);
+            } else {
+                this.context.lineTo(x, y);
             }
-
+            i++;
         });
 
-        this.context.strokeStyle = "#ffffffff";
-        this.context.fillStyle = "#ffffffff";
-        this.context.stroke();
-        this.context.fill();
+
+
+        if (i > 0) {
+            this.from_line(path_indexes[0], path_indexes[path_indexes.length-1], new Set()).forEach((pxl_index) => {
+                const x = pxl_index % this.width;
+                const y = Math.floor(pxl_index / this.width);
+                this.context.lineTo(x, y);
+            });
+            //this.context.closePath(); // Close the path to properly fill and stroke the shape
+            this.context.strokeStyle = "rgba(255, 255, 255, 1)";
+            this.context.fillStyle = "rgba(255, 255, 255, 1)";
+            this.context.fill();
+            this.context.stroke();
+        }
+
+        //this.context.restore(); // Restore original state after drawing is complete
 
         return this.get_shadow_indexes_from_canvas_context(this.context, onto);
     }
@@ -230,17 +238,17 @@ class CreateShape {
 
                 if((c.primary.x|0) == (c.secondary.x|0) && (c.primary.y|0) == (c.secondary.y|0)) { break; }
 
-                e2 = (2 * err) | 0;
+                e2 = err + err | 0;
 
                 if ((e2|0) > (-dy|0)) {
 
-                    err = (err-dy)|0;
-                    c.primary.x  = (c.primary.x+sx)|0;
+                    err = err-dy|0;
+                    c.primary.x  = c.primary.x+sx|0;
                 }
                 if ((e2|0) < (dx|0)) {
 
-                    err = (err+dx)|0;
-                    c.primary.y  = (c.primary.y+sy)|0;
+                    err = err+dx|0;
+                    c.primary.y  = c.primary.y+sy|0;
                 }
             }
         }else {
@@ -250,17 +258,17 @@ class CreateShape {
 
                 if((c.primary.x|0) == (c.secondary.x|0) && (c.primary.y|0) == (c.secondary.y|0)) { break; }
 
-                e2 = (2 * err) | 0;
+                e2 = err + err | 0;
 
                 if ((e2|0) > (-dy|0)) {
 
-                    err = (err-dy)|0;
-                    c.primary.x  = (c.primary.x+sx)|0;
+                    err = err-dy|0;
+                    c.primary.x  = c.primary.x+sx|0;
                 }
                 if ((e2|0) < (dx|0)) {
 
-                    err = (err+dx)|0;
-                    c.primary.y  = (c.primary.y+sy)|0;
+                    err = err+dx|0;
+                    c.primary.y  = c.primary.y+sy|0;
                 }
             }
         }
@@ -307,25 +315,27 @@ class CreateShape {
         to = to | 0;
         onto = typeof onto == "undefined" ? new SetFixed(this.width*this.height): onto;
         let c = this.get_opposite_coordinates(this.width|0, from|0, to|0);
-        let ellipse_width = Math.abs(c.primary.x - c.secondary.x|0) + 1 | 0;
-        let ellipse_height = Math.abs(c.primary.y - c.secondary.y|0) + 1 | 0;
-        const ellipse_top_left_x = Math.max(c.primary.x, c.secondary.x|0) - (ellipse_width - 1|0) | 0;
-        const ellipse_top_left_y = Math.max(c.primary.y, c.secondary.y|0) - (ellipse_height - 1|0) | 0;
+        let ellipse_width = Math.abs(c.primary.x - c.secondary.x) + 1;
+        let ellipse_height = Math.abs(c.primary.y - c.secondary.y) + 1;
+        const ellipse_top_left_x = Math.max(c.primary.x, c.secondary.x) - (ellipse_width - 1);
+        const ellipse_top_left_y = Math.max(c.primary.y, c.secondary.y) - (ellipse_height - 1);
 
         let ellipse_rayon_x = ellipse_width / 2;
         let ellipse_rayon_y = ellipse_height / 2;
-        const ellipse_middle_x = ellipse_rayon_x + ellipse_top_left_x;
-        const ellipse_middle_y = ellipse_rayon_y + ellipse_top_left_y;
+        const ellipse_middle_x = ellipse_top_left_x + ellipse_rayon_x;
+        const ellipse_middle_y = ellipse_top_left_y + ellipse_rayon_y;
 
         this.context.lineWidth = 1;
-        this.context.clearRect(0, 0, this.width|0, this.height|0);
+        this.context.clearRect(0, 0, this.width, this.height);
+        this.context.save(); // Save current state
         this.context.translate(ellipse_middle_x, ellipse_middle_y);
-        this.context.rotate(0);
         this.context.scale(ellipse_rayon_x, ellipse_rayon_y);
+        this.context.beginPath(); // Start a new path for the arc
         this.context.arc(0, 0, 1, 0, 2 * Math.PI);
+        this.context.restore(); // Restore original state
 
-        this.context.fillStyle = "#ffffffff";
-        this.context.strokeStyle = "#ffffffff";
+        this.context.fillStyle = "rgba(255, 255, 255, 1)"; // White with full opacity
+        this.context.strokeStyle = "rgba(255, 255, 255, 1)";
         this.context.stroke();
         this.context.fill();
 

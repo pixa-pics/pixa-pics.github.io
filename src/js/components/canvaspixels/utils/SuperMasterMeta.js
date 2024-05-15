@@ -804,27 +804,21 @@ const SuperMasterMeta = {
 
 
                     let { pxl_current_opacity, pxl_current_color_uint32 } = meta.super_state.get_state();
-                    const first_drawn_pixel = _paint_or_select_hover_pxl_indexes[0];
-                    const last_drawn_pixel = _paint_or_select_hover_pxl_indexes[_paint_or_select_hover_pxl_indexes.size-1];
-                    const closing_path_line =  meta.super_state.shape_creator.from_line(first_drawn_pixel, last_drawn_pixel);
-                    _paint_or_select_hover_pxl_indexes = new SetFixed(Array.from(_paint_or_select_hover_pxl_indexes.indexes).concat(closing_path_line));
-                    _paint_or_select_hover_pxl_indexes = meta.super_state.shape_creator.from_path(_paint_or_select_hover_pxl_indexes, _paint_or_select_hover_pxl_indexes);
 
-                    _paint_or_select_hover_pxl_indexes.clear();
-                    meta.super_state.paint_shape(_paint_or_select_hover_pxl_indexes.indexes, pxl_current_color_uint32, pxl_current_opacity,
+                    meta.super_state.paint_shape(meta.super_state.shape_creator.from_path(_paint_or_select_hover_pxl_indexes.indexes), pxl_current_color_uint32, pxl_current_opacity,
                         {
                             _last_action_timestamp: Date.now()
                         },
-                        () => {this.update_canvas();}
+                        () => {
+
+                            _paint_or_select_hover_pxl_indexes.clear();
+                            this.update_canvas();
+                        }
                     );
 
                 }else if(_paint_or_select_hover_pxl_indexes.size > 0 && tool === "SELECT PATH") {
 
-                    const first_drawn_pixel = _paint_or_select_hover_pxl_indexes[0];
-                    const last_drawn_pixel = _paint_or_select_hover_pxl_indexes[_paint_or_select_hover_pxl_indexes.size-1];
-                    const closing_path_line =  meta.super_state.shape_creator.from_line(first_drawn_pixel, last_drawn_pixel);
-                    _paint_or_select_hover_pxl_indexes = new SetFixed(Array.from(_paint_or_select_hover_pxl_indexes.indexes).concat(closing_path_line));
-                    _paint_or_select_hover_pxl_indexes = meta.super_state.shape_creator.from_path(_paint_or_select_hover_pxl_indexes, _paint_or_select_hover_pxl_indexes);
+                    const _paint_or_select_hover_pxl_indexes_final = meta.super_state.shape_creator.from_path(_paint_or_select_hover_pxl_indexes.indexes);
 
                     if(select_mode === "REPLACE") {
 
@@ -833,14 +827,14 @@ const SuperMasterMeta = {
 
                     if(select_mode === "ADD" || select_mode === "REPLACE") {
 
-                        _paint_or_select_hover_pxl_indexes.forEach(function(pxl) {
+                        _paint_or_select_hover_pxl_indexes_final.forEach(function(pxl) {
 
                             _pxl_indexes_of_selection.add(pxl);
                         });
 
                     }else {
 
-                        _paint_or_select_hover_pxl_indexes.forEach(function(pxl) {
+                        _paint_or_select_hover_pxl_indexes_final.forEach(function(pxl) {
 
                             _pxl_indexes_of_selection.delete(pxl);
                         });
