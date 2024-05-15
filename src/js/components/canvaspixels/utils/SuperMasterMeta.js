@@ -348,8 +348,8 @@ const SuperMasterMeta = {
                                     state._old_pxl_width = parseInt(pxl_width);
                                     state._old_pxl_height = parseInt(pxl_height);
                                     state._last_paint_timestamp = +requested_at;
-                                    _pxl_indexes_of_current_shape.clear();
                                     _pxl_indexes_of_old_shape.setFromSetFixed(_pxl_indexes_of_current_shape);
+                                    _pxl_indexes_of_current_shape.clear();
                                     return render_binding();
                                 }, false, clear_canvas || is_there_new_dimension || force_update,  Date.now(), "render").finally(resolve0);
                             });
