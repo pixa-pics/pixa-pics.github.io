@@ -82,6 +82,7 @@
     "webpack-dev-server": "^4.15.2"
   },
   "scripts": {
+    "start": "electron .",
     "dev": "NODE_OPTIONS=--openssl-legacy-provider NODE_ENV=development webpack-dev-server && ECHO 'You need to delete /client folder'",
     "build": "NODE_OPTIONS=--openssl-legacy-provider NODE_ENV=production webpack --node-env \"production\"",
     "build-twemoji": "svgr ./src/js/twemoji/original -d ./src/js/twemoji/react",

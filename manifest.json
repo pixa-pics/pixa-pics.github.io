@@ -10,7 +10,7 @@
     "scope": "/"
   },
   "short_name": "PIXA PICS",
-  "description": "Pixel-Art & NFTs LAB. Make potential possible and (un)limited.",
+  "description": "Pixel-Art &amp; NFTs LAB. Make potential possible and (un)limited.",
   "display": "fullscreen",
   "theme_color": "#060f23",
   "background_color": "#ffffff",
@@ -31,10 +31,16 @@
       "short_name": "Pixa.Pics",
       "description": "Pixel art editor. Make NFTs potential (un)limited.",
       "url": "/",
-      "icons": [{ "src": "/src/images/logo-transparent.png", "sizes": "1536x1536", "type": "image/png" }]
+      "icons": [
+        {
+          "src": "/src/images/logo-transparent.png",
+          "sizes": "1536x1536",
+          "type": "image/png"
+        }
+      ]
     }
   ],
-  "screenshots" : [
+  "screenshots": [
     {
       "src": "/src/images/screenshots/pixa.pics_1.jpg",
       "sizes": "1080x1920",
@@ -91,5 +97,32 @@
       "platform": "narrow",
       "label": "View 8 - editor"
     }
-  ]
+  ],
+  "id": "pics.pixa",
+  "dir": "ltr",
+  "lang": "en",
+  "orientation": "any",
+  "prefer_related_applications": true,
+  "related_applications": [
+    {
+      "platform": "webapp",
+      "url": "https://pixa.pics/",
+      "id": "pics.pixa"
+    },
+    {
+      "platform": "play",
+      "url": "https://play.google.com/store/apps/details?id=pics.pixa.app.twa",
+      "id": "pics.pixa.app.twa"
+    }
+  ],
+  "categories": [
+    "education",
+    "entertainment",
+    "kids",
+    "photo",
+    "social"
+  ],
+  "edge_side_panel": {
+    "preferred_width": 960
+  }
 }
