@@ -17,50 +17,72 @@ class SuperCanvas {
             const isMobile = /android|bb\d+|meego|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino|android|ipad|playbook|silk/i.test(navigator.userAgent || navigator.vendor || window.opera);
             let isBitmap = 'createImageBitmap' in window;
             let isOffscreen = 'OffscreenCanvas' in window;
+            let isControl = false;
 
-            let cc2d, oc, occ2d;
-            if (isOffscreen) {
+            let new_canvas, original_canvas = canvas, new_context, original_context;
+            if(false){
                 try {
-                    oc = new OffscreenCanvas(width, height);
-                    occ2d = oc.getContext('2d', {
-                        willReadFrequently: true,
-                        powerPreference: 'high-performance',
-                        desynchronized: !isMobile,
-                    });
-                    this.setImageSmoothing(occ2d, false);
-                } catch (e) {
-                    isOffscreen = false;
-                }
-            }
-            if(isOffscreen){
-                try {
-                    cc2d = oc.transferControlToOffscreen()
-                }catch (e) {
+                    new_canvas = original_canvas.transferControlToOffscreen();
+                    isControl = true;
+
                     try {
-                        cc2d = canvas.getContext('2d', {
+                        new_context = new_canvas.getContext('2d', {
                             willReadFrequently: true,
-                            powerPreference: 'high-performance',
                             desynchronized: !isMobile,
                         });
                     }catch (e) {
-                        cc2d = canvas.getContext('2d');
+                        new_context = new_canvas.getContext('2d');
+                    }
+
+                }catch (e) {
+
+                    new_canvas = new OffscreenCanvas(width, height);
+
+                    try {
+                        original_context = original_canvas.getContext('2d', {
+                            willReadFrequently: true,
+                            desynchronized: !isMobile,
+                        });
+                        new_context = new_canvas.getContext('2d', {
+                            willReadFrequently: true,
+                            desynchronized: !isMobile,
+                        });
+                    }catch (e) {
+                        original_context = original_canvas.getContext('2d');
+                        new_context = new_canvas.getContext('2d');
                     }
                 }
             } else {
+
+                new_canvas = document.createElement("canvas");
+                new_canvas.width = width;
+                new_canvas.height = height;
+
                 try {
-                    cc2d = canvas.getContext('2d', {
+                    original_context = original_canvas.getContext('2d', {
                         willReadFrequently: true,
-                        powerPreference: 'high-performance',
+                        desynchronized: !isMobile,
+                    });
+                    new_context = new_canvas.getContext('2d', {
+                        willReadFrequently: true,
                         desynchronized: !isMobile,
                     });
                 }catch (e) {
-                    cc2d = canvas.getContext('2d');
+                    original_context = original_canvas.getContext('2d');
+                    new_context = new_canvas.getContext('2d');
                 }
             }
 
-            this.setImageSmoothing(cc2d, false);
+            if(isControl) {
+                original_context = {
+                    canvas: original_canvas
+                };
+            }else {
+                this.setImageSmoothing(original_context, false);
+            }
+            this.setImageSmoothing(new_context, false);
 
-            return { isBitmap, isOffscreen, width, height, canvasContext: cc2d, offscreenCanvasContext: occ2d };
+            return { isBitmap, isOffscreen, isControl, width, height, canvasContext: original_context, offscreenCanvasContext: new_context };
         };
 
         let state = {
@@ -108,7 +130,7 @@ class SuperCanvas {
 
     render() {
         "use strict";
-        const { b, enablePaintType, s } = this.state;
+        const { b, enablePaintType, s, prUint8a } = this.state;
         return new Promise(function (resolve){
             if (enablePaintType === 'bitmap' && b) {
                 s.canvasContext.globalCompositeOperation = 'copy';
@@ -116,8 +138,11 @@ class SuperCanvas {
             } else if (enablePaintType === 'offscreen') {
                 s.canvasContext.globalCompositeOperation = 'copy';
                 s.canvasContext.drawImage(s.offscreenCanvasContext.canvas, 0, 0);
-            } else {
-                s.canvasContext.putImageData(new ImageData(this.state.prUint8a, s.width, s.height), 0, 0);
+            } else if(enablePaintType === "control") {
+                console.log("control")
+                s.offscreenCanvasContext.putImageData(new ImageData(prUint8a, s.width, s.height), 0, 0);
+            }else {
+                s.canvasContext.putImageData(new ImageData(prUint8a, s.width, s.height), 0, 0);
             }
             resolve();
         });
@@ -126,7 +151,7 @@ class SuperCanvas {
     prender() {
 
         "use strict";
-        this.state.enablePaintType = this.state.s.isBitmap ? "bitmap": this.state.s.isOffscreen ? "offscreen": "";
+        this.state.enablePaintType = this.state.s.isControl ? "control": this.state.s.isBitmap ? "bitmap": this.state.s.isOffscreen ? "offscreen": "";
 
         if (this.state.enablePaintType === 'bitmap') {
             return createImageBitmap(new ImageData(this.state.prUint8a, this.state.s.width, this.state.s.height))
@@ -137,13 +162,14 @@ class SuperCanvas {
                     return Promise.resolve();
                 })
                 .catch(() => {
-                    this.state.s.isBitmap = false;
                     return Promise.reject();
                 });
         } else if (this.state.enablePaintType === 'offscreen') {
             this.state.s.offscreenCanvasContext.putImageData(new ImageData(this.state.prUint8a, this.state.s.width, this.state.s.height), 0, 0);
             return Promise.resolve();
-        }else {
+        }else if(this.state.s.isControl === "control") {
+            return Promise.resolve();
+        } else {
             return Promise.resolve();
         }
     }
