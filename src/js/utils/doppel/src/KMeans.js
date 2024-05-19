@@ -3,7 +3,7 @@ import { Color } from "simdope";
 export default class KMeans {
     constructor(data, k) {
         this.data = data;
-        this.k = Math.min(k, this.data.length);
+        this.k = Math.min(k, Math.ceil(Math.sqrt(this.data.length)));
         this.centroids = new Array(this.k);
         this.clusters = new Uint32Array(this.data.length); // Using Uint32Array for cluster assignments
         this.c1 = new Color(new ArrayBuffer(4));
@@ -12,15 +12,16 @@ export default class KMeans {
 
     // Step 1: Initialize centroids with unique points
     initializeCentroids() {
-        let chosenIndices = new Set();
+        let chosenIndices = new Set(), data = new Array();
         for (let i = 0; i < this.k; i++) {
             let idx;
             do {
                 idx = Math.floor(Math.random() * this.data.length);
             } while (chosenIndices.has(idx));
             chosenIndices.add(idx);
-            this.centroids[i] = Uint32Array.from(this.data[idx]);
+            data.push(Uint8Array.from(this.data[idx]));
         }
+        this.centroids = data;
     }
 
     // Step 2: Assign points to the nearest centroid
@@ -102,7 +103,7 @@ export default class KMeans {
             counts = this.updateCentroids();
             iterations++;
             hasConverged = this.centroids.every((centroid, idx) => {
-                return this.distance(centroid, oldCentroids[idx]) < 8;
+                return this.distance(centroid, oldCentroids[idx]) < 2;
             });
             if(reassign && !hasConverged){
                 this.reassignCentroids(counts)
@@ -111,7 +112,7 @@ export default class KMeans {
         var counter = this.getCentroidsPopulationCount(this.centroids, this.clusters)
         var centroidsSorted = Array.from(this.centroids).map((data, index) => {
             return {
-                data: data,
+                data: Uint8ClampedArray.from(data),
                 count: counter[index]
             }
         }).sort((a, b) => b.count-a.count)

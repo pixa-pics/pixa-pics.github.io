@@ -6,14 +6,14 @@ import ColorAnalysis from "./ColorAnalysis";
 
 export default class ImageProcessor {
     constructor(options) {
-        options = options || {};
+        this.o = options || {};
         this.canvas = ImageUtils.initializeCanvas(undefined, 1, 1).canvas;
         this.targetCanvas =  ImageUtils.initializeCanvas(undefined, 1, 1).canvas;
         this.options = {
-            despeckleStrength: options.despeckleStrength || options.strength || 1.0,
-            quantizeStrength: options.quantizeStrength || options.strength  || 1.0,
-            mergeStrength: options.mergeStrength || options.strength  || 1.0,
-            overlapFactor: options.overlapFactor || options.strength  || 1.0
+            despeckleStrength: this.o.despeckleStrength || this.o.strength || 1.0,
+            quantizeStrength: this.o.quantizeStrength || this.o.strength  || 1.0,
+            mergeStrength: this.o.mergeStrength || this.o.strength  || 1.0,
+            overlapFactor: this.o.overlapFactor || this.o.strength  || 1.0
         };
     }
 
@@ -144,7 +144,16 @@ export default class ImageProcessor {
             "updateFilters+updateThreshold": t5-t4,
             "filterTiles": t6-t5,
             "paintTiles": t7-t5,
-        })
-        return this.targetContext;
+        });
+        const result = this.targetContext;
+        this.reset();
+        return result;
+    }
+    reset() {
+        Array.of("targetContext", "tileHeight", "tileWidth", "finalWidth", "finalHeight", "targetImageData", "targetContext", "targetCanvas", "context", "canvas", "tilesManager", "filters", "imageManager").forEach((key) => {
+            delete this[key];
+        });
+        this.canvas = ImageUtils.initializeCanvas(undefined, 1, 1).canvas;
+        this.targetCanvas =  ImageUtils.initializeCanvas(undefined, 1, 1).canvas;
     }
 }
