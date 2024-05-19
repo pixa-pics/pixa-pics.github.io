@@ -264,13 +264,13 @@
                     }).then(function(r) {
                         r = r || {};
                         if(Boolean(r.active || r.installing)) {
-                            _LET_FIRE_IT(true).then(function(){resolve();});
+                            _LET_FIRE_IT(true).catch(function(){
+                                reject();
+                            }).then(function(){resolve();});
                         }else {
                             reject();
                         }
-                    }).catch(function(){
-                        reject();
-                    });
+                    })
                 }else { _LET_FIRE_IT(false).then(function(){resolve();}); }
             });
         };
@@ -282,7 +282,7 @@
                 } catch (x){
                     location.replace(location.href);
                 }
-            }, 777);
+            }, 100);
         };
 
         var _LISTEN_RELOAD = function() {

@@ -1169,6 +1169,7 @@ class Pixel extends React.PureComponent {
 
     componentWillUnmount() {
 
+        this._backup_state();
         actions.stop_sound();
         window.removeEventListener("resize", this._updated_dimensions);
         window.removeEventListener('wheel', this._prevent_ctrl_zoom);
@@ -1987,7 +1988,9 @@ class Pixel extends React.PureComponent {
         actions.trigger_loading_update(100);
         this.setSt4te({_loading: false, _loading_process: process}, () => {
             this._request_force_update().then(() => {
-                this._backup_state();
+                if(this.st4te._saved_at > Date.now()-60){
+                    this._backup_state();
+                }
                 this._updated_dimensions();
             });
         });
@@ -2422,12 +2425,6 @@ class Pixel extends React.PureComponent {
         actions.trigger_voice("enhanced");
     };
 
-    _less_colors_stepped = (increase = 1, callback_function = () => {}) => {
-
-        const { less_colors_stepped } = this.st4te._canvas;
-        less_colors_stepped(increase, callback_function);
-    };
-
     _less_colors_auto = ( ) => {
 
         const { _layers, _layer_index } = this.st4te;
@@ -2435,12 +2432,7 @@ class Pixel extends React.PureComponent {
         actions.trigger_voice("please_wait");
 
         if(parseInt((_layers[_layer_index] || {}).number_of_colors || 0) > 384) {
-
-            actions.trigger_snackbar("Ho! There is more than 384 colors, let's scan and remove the closest ones.")
-            this._less_colors_stepped(1, () => {
-
-                to_less_color("auto");
-            });
+            to_less_color("auto");
         }else {
 
             to_less_color("auto");
@@ -2741,7 +2733,7 @@ class Pixel extends React.PureComponent {
                 </ListItemIcon>
                 <ListItemText primary="Add a filter" />
             </ListItem>
-            <ListItem button divider onClick={(event) => this._less_colors_stepped(2)}>
+            <ListItem button divider onClick={(event) => {_canvas.less_colors_stepped()}}>
                 <ListItemIcon>
                     <LessColorIcon />
                 </ListItemIcon>

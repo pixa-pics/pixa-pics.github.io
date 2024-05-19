@@ -2564,7 +2564,11 @@ class CanvasPixels extends React.PureComponent {
     }
 
     less_colors_stepped = (increase = 1, callback_function = () => {}) => {
+        this._to_less_color(increase, callback_function)
+    };
 
+
+    less_colors_stepped = (increase = 1, callback_function = () => {}) => {
         let colors_removed = 0;
         let less_color_step = increase;
         const try_another = () => {
@@ -2850,7 +2854,7 @@ class CanvasPixels extends React.PureComponent {
         let { _s_layers } = this.super_state.get_state();
 
         const color_number = _s_layers[_layer_index].colors.length;
-        this._remove_close_pxl_colors(_s_layers[_layer_index].image_data, threshold).then(([pxls, pxl_colors]) => {
+        this._remove_close_pxl_colors(_s_layers[_layer_index].image_data, "auto").then(([pxls, pxl_colors]) => {
 
             _s_layers[_layer_index].set_colors_and_indexes(pxl_colors, pxls);
 

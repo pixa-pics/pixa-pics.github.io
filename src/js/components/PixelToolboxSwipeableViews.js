@@ -976,7 +976,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                                                         layer.colors.length >= 2 ?
                                                             <div style={{padding: "12px 0px"}}>
                                                                 <Button color="primary"
-                                                                        onClick={() => this._less_colors_stepped(1)}>...Less
+                                                                        onClick={() => canvas.less_colors_stepped()}>...Less
                                                                     colors</Button>
                                                             </div>
                                                             : null
@@ -2068,16 +2068,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                                 text: "Less colors by strength",
                                 sub: "Effect strength have an impact",
                                 on_click: () => {
-                                    canvas.to_less_color(slider_value / 5);
-                                    this._handle_action_close();
-                                }
-                            },
-                            {
-                                icon: <LessColorIcon/>,
-                                text: "Less colors by small steps",
-                                sub: "Remove colors slowly",
-                                on_click: () => {
-                                    this._less_colors_stepped();
+                                    canvas.to_less_color();
                                     this._handle_action_close();
                                 }
                             },
@@ -2348,12 +2339,6 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
             this.props.on_download_svg(using, optimize_render_size, download_svg, crt, photo);
         }
-    };
-
-    _less_colors_stepped = (increase = 1) => {
-
-        const {_less_colors_stepped} = this.st4te.canvas;
-        _less_colors_stepped(increase)
     };
 
     _colorize = () => {

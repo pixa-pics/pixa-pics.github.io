@@ -1,18 +1,14 @@
 
 var either_ends_with = function (possibilities, onto){
-
     var result = false;
     possibilities.forEach(function (possibility){
-
         if(onto.endsWith(possibility)){result = true;}
     });
     return result;
 };
 var either_starts_with = function (possibilities, onto){
-
     var result = false;
     possibilities.forEach(function (possibility){
-
         if(onto.startsWith(possibility)){result = true;}
     });
     return result;
@@ -24,7 +20,6 @@ var F_CNK = function (n, i) { return `/client/chunk_${typeof n == "undefined" ? 
 var F_SND = function (n) { return `/src/sounds/${n}.mp3`; };
 var F_VID = function (n) { return `/src/videos/${n}.mp4`; };
 
-var INSTALL_FILES_LOCALHOST = false;
 var INSTALL_FILES_REQUIRED = ["/", "/client/chunk_norris.min.js", "/client/chunk_main_7a2a85ee.min.js", "/client/chunk_main_7a2ee6b6.min.js", "/client/chunk_main_8afe242f.min.js","/client/chunk_main_253ae210.min.js","/client/chunk_main_678f84af.min.js","/client/chunk_main_690b702c.min.js","/client/chunk_main_748942c6.min.js","/client/chunk_main_783709f3.min.js","/client/chunk_main_af9f4ef7.min.js","/client/chunk_main_d939e436.min.js"];
 var INSTALL_FILES_USEFUL = ["/src/images/favicon.ico", "/src/images/manifest/logo-white.png", "/src/fonts/industry/index.css"];
 var LOAD_FILES_REQUIRED = [].concat(new Array(41).map(F_CNK));
@@ -32,28 +27,28 @@ var LOAD_FILES_USEFUL = ["/src/fonts/normative/index.css"].concat(["illusion.jpg
 var LOAD_FILES_STATIC = ["sfx/md/hero_decorative-celebration-02", "sfx/md/navigation_selection-complete-celebration", "sfx/md/navigation_transition-left", "sfx/md/state-change_confirm-down", "sfx/md/ui_lock", "sfx/md/ui_unlock", "sfx/md/ui_scan", "sfx/md/alert_high-intensity", "sfx/md/navigation_transition-right", "voice/cn/accessing_memory", "voice/cn/complete", "voice/cn/please_wait", "voice/cn/data_upload", "voice/cn/processing", "voice/cn/enhanced", "voice/cn/rewriting_deep_layer_protocols", "voice/cn/vision_activated", "voice/cn/vision_deactivated", "voice/cn/filtering", "music/redeclipse/track_09"].map(F_SND).concat(["presentation", "tutorial", "create", "enhanced", "pixelated", "upload", "share1", "joke1", "create", "enhanced", "pixelated", "presentation", "presentation2", "sponsors", "tutorial", "upload", "labintro", "share2", "share3", "share4", "share5", "share6", "share7", "joke2", "joke3", "joke4", "joke5", "joke6", "joke7", "joke8", "joke9", "joke10", "joke11"].map(F_VID));
 
 // Cache names
-var REQUIRED_CACHE = "unless-update-cache-v1028-required";
-var USEFUL_CACHE = "unless-update-cache-v1028-useful";
-var STATIC_CACHE = "unless-update-cache-v1028-static";
-var OTHER_CACHE = "unless-update-cache-v1028-other";
+var REQUIRED_CACHE = "unless-update-cache-v1029-required";
+var USEFUL_CACHE = "unless-update-cache-v1029-useful";
+var STATIC_CACHE = "unless-update-cache-v1029-static";
+var OTHER_CACHE = "unless-update-cache-v1029-other";
 
 // Regular expressions for chunk matching
 var MAIN_CHILD_CHUNK_REGEX = /chunk_(main_[a-z0-9]+)\.min\.js$/i;
 var CHILD_CHUNK_REGEX = /chunk_([0-9]+)\.min\.js$/i;
 
 // Cache objects and their initialization
-var required_cache_object, useful_cache_object, static_cache_object, other_cache_object;
-var required_cache = initializeCache(REQUIRED_CACHE, required_cache_object);
-var useful_cache = initializeCache(USEFUL_CACHE, useful_cache_object);
-var static_cache = initializeCache(STATIC_CACHE, static_cache_object);
-var other_cache = initializeCache(OTHER_CACHE, other_cache_object);
-
 function initializeCache(cacheName, cacheObject) {
     return caches.open(cacheName).then(function(cache) {
         cacheObject = cache;
         return cacheObject;
     });
 }
+
+var required_cache_object, useful_cache_object, static_cache_object, other_cache_object;
+var required_cache = initializeCache(REQUIRED_CACHE, required_cache_object);
+var useful_cache = initializeCache(USEFUL_CACHE, useful_cache_object);
+var static_cache = initializeCache(STATIC_CACHE, static_cache_object);
+var other_cache = initializeCache(OTHER_CACHE, other_cache_object);
 
 // Function to serve cache
 function serve_cache(cache, url) {
@@ -69,9 +64,7 @@ function serve_cache(cache, url) {
                     });
                 });
             }else if (response && response.status === 200) {
-                return response.clone().blob().then((blob) => {
-                    return URL.createObjectURL(blob);
-                });
+                return response.clone() || response;
             } else {
                 return fetchAndCache(url, cache);
             }
@@ -88,14 +81,12 @@ function fetchAndCache(url, cache) {
             try {
                 cache.put(url, response.clone());
             } catch (e){}
-            return response.clone();
+            return response.clone() || response;
         }else if (response.status === 200) {
             try {
                 cache.put(url, response.clone());
             } catch (e){}
-            return response.clone().blob().then((blob) => {
-                return URL.createObjectURL(blob);
-            });
+            return response.clone() || response;
         } else {
             return response;
         }
@@ -108,9 +99,6 @@ self.addEventListener("install", function(event) {
         Promise.all([
             required_cache.then(function(cache) {
                 return cache.addAll(INSTALL_FILES_REQUIRED);
-            }).catch(function (){
-                INSTALL_FILES_LOCALHOST = true;
-                return Promise.resolve();
             }),
             useful_cache.then(function(cache) {
                 return cache.addAll(INSTALL_FILES_USEFUL);
@@ -126,18 +114,21 @@ self.addEventListener("fetch", function(event) {
     const url = request.url;
     const same_site = true //event.request.referrer.startsWith(U.hostname);
 
-    if (event.request.headers.get('range')) {
+    if(url.startsWith('chrome-extension')){
+
+        return;
+    }if (event.request.headers.get('range') && url.indexOf('http') === 0) {
 
         event.respondWith(fetch(request));
 
     }else if(either_starts_with(["data:image", "blob:http", "data:application"], url)) {
 
-        event.respondWith(fetch(request));
+        return;
 
     }else if(either_starts_with(["data:,all"], url)) {
 
         event.respondWith(
-            Promise.allSettled([
+            Promise.all([
                 useful_cache.then(function (cache) {
                     return cache.addAll(LOAD_FILES_USEFUL);
                 }),
@@ -152,6 +143,9 @@ self.addEventListener("fetch", function(event) {
                 .catch(function(){return new Response("all", {status: 500})})
         );
 
+    } else if(!(url.indexOf('http') === 0 || url.includes('extension'))){
+
+        return;
     }else if(same_site && either_ends_with([".wasm", ".png", ".json", ".svg", ".jpg", ".jpeg", ".gif", ".ico", ".onnx"], url)) {
 
         // Serve cached image if doesn't fail
