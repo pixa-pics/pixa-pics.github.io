@@ -893,8 +893,8 @@ const SuperMasterMeta = {
 
                 if(!hide_canvas_content) {
 
-                    let pxls_copy = _current_layer.indexes || new Uint8Array(0);
-                    let pxl_colors_copy = Array.from(_current_layer.colors);
+                    let pxls_copy = _current_layer.indexes_copy || new Uint8Array(0);
+                    let pxl_colors_copy = Array.from(_current_layer.colors_copy ||new Uint32Array(0));
 
                     if(_imported_image_pxls.length > 0 && event_which === 1){
 

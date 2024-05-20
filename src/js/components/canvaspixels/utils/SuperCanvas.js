@@ -10,27 +10,31 @@ class SuperCanvas {
         pxlHeight |= 0;
 
         const createContext = (canvas, width, height) => {
-            if (!canvas) canvas = document.createElement('canvas');
-            canvas.width = width;
-            canvas.height = height;
-
+            if (!canvas) {canvas = document.createElement('canvas')};
+            canvas.width = width || canvas.width || 1;
+            canvas.height = height || canvas.height || 1;
+            width = canvas.width;
+            height = canvas.height;
             const isMobile = /android|bb\d+|meego|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino|android|ipad|playbook|silk/i.test(navigator.userAgent || navigator.vendor || window.opera);
             let isBitmap = 'createImageBitmap' in window;
             let isOffscreen = 'OffscreenCanvas' in window;
             let isControl = false;
 
             let new_canvas, original_canvas = canvas, new_context, original_context;
-            if(false){
+            if(isControl){
                 try {
                     new_canvas = original_canvas.transferControlToOffscreen();
                     isControl = true;
 
                     try {
-                        new_context = new_canvas.getContext('2d', {
-                            willReadFrequently: true,
-                            desynchronized: !isMobile,
-                        });
+                        original_context = {
+                            canvas: original_canvas
+                        };
+                        new_context = new_canvas.getContext('2d', {willReadFrequently: true});
                     }catch (e) {
+                        original_context = {
+                            canvas: original_canvas
+                        };
                         new_context = new_canvas.getContext('2d');
                     }
 
@@ -39,14 +43,8 @@ class SuperCanvas {
                     new_canvas = new OffscreenCanvas(width, height);
 
                     try {
-                        original_context = original_canvas.getContext('2d', {
-                            willReadFrequently: true,
-                            desynchronized: !isMobile,
-                        });
-                        new_context = new_canvas.getContext('2d', {
-                            willReadFrequently: true,
-                            desynchronized: !isMobile,
-                        });
+                        original_context = original_canvas.getContext('2d', {willReadFrequently: true});
+                        new_context = new_canvas.getContext('2d', {willReadFrequently: true});
                     }catch (e) {
                         original_context = original_canvas.getContext('2d');
                         new_context = new_canvas.getContext('2d');
@@ -59,27 +57,15 @@ class SuperCanvas {
                 new_canvas.height = height;
 
                 try {
-                    original_context = original_canvas.getContext('2d', {
-                        willReadFrequently: true,
-                        desynchronized: !isMobile,
-                    });
-                    new_context = new_canvas.getContext('2d', {
-                        willReadFrequently: true,
-                        desynchronized: !isMobile,
-                    });
+                    original_context = original_canvas.getContext('2d', {willReadFrequently: true});
+                    new_context = new_canvas.getContext('2d', {willReadFrequently: true});
                 }catch (e) {
                     original_context = original_canvas.getContext('2d');
                     new_context = new_canvas.getContext('2d');
                 }
             }
 
-            if(isControl) {
-                original_context = {
-                    canvas: original_canvas
-                };
-            }else {
-                this.setImageSmoothing(original_context, false);
-            }
+            this.setImageSmoothing(original_context, false);
             this.setImageSmoothing(new_context, false);
 
             return { isBitmap, isOffscreen, isControl, width, height, canvasContext: original_context, offscreenCanvasContext: new_context };
@@ -88,10 +74,10 @@ class SuperCanvas {
         let state = {
             s: createContext(c, pxlWidth, pxlHeight),
             enablePaintType: '',
-            fpBuffer: new ArrayBuffer(pxlHeight * pxlWidth * 4),
             b: { bmpX: 0, bmpY: 0, bmpT: 0, bmp: { close() {}, width: 0, height: 0 }, oldBmp: { close() {}, width: 0, height: 0 } },
         };
 
+        state.fpBuffer = new ArrayBuffer(state.s.width * state.s.height * 4);
         state.fp = new Uint32Array(state.fpBuffer)
         state.prUint8a = new Uint8ClampedArray(state.fpBuffer);
         return state;
