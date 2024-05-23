@@ -256,7 +256,7 @@ const SuperMasterMeta = {
                 var pxl_indexes_of_selection_has = _pxl_indexes_of_selection.has.bind(_pxl_indexes_of_selection);
                 var imported_image_pxls_positioned_keyset_has = imported_image_pxls_positioned_keyset.has.bind(imported_image_pxls_positioned_keyset);
 
-                var newHighlight = bool_new_highlight ? 0xFFFFFFFF: 0x00000000;
+                var newHighlight = bool_new_highlight ? Uint32Array.of(0xFFFFFFFF): Uint32Array.of(0x00000000);
 
                 if(image_imported_resizer_index >= 0) {_pxl_indexes_of_current_shape.add(image_imported_resizer_index);}
                 _pxl_indexes_of_current_shape.add(_pxls_hovered);
@@ -288,7 +288,7 @@ const SuperMasterMeta = {
                 function changesCompute(I, newPixel, oldHover, oldShape, newShape, oldSelection, newSelection, oldImport, newImport) {
                     "use strict";
                     I = (I | 0) >>> 0;
-                    return or(or(or(newPixel[I], oldHover[I]), xor(oldShape[I], newShape[I])), or(or(xor(oldSelection[I], newSelection[I]), and(oldSelection[I], newHighlight[I])), or(oldImport[I], newImport[I])));
+                    return or(or(or(newPixel[I], oldHover[I]), xor(oldShape[I], newShape[I])), or(or(xor(oldSelection[I], newSelection[I]), and(oldSelection[I], newHighlight[0])), or(oldImport[I], newImport[I])));
                 }
 
                 if(pxl_indexes_of_changes.length !== full_pxls_length) {

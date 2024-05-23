@@ -16,7 +16,9 @@ var MODE = SIMDopeCreateConfAdd({
         "reset_tail": true,
         "is_dark": true,
         "blend_first_with": true,
-        "blend_first_with_tails": true
+        "blend_first_with_tails": true,
+        "is_not_fully_transparent": true,
+        "copy": true
     }
 });
 const {simdops, Color, Colors} = SIMDopeCreate(MODE);
@@ -301,64 +303,71 @@ SuperBlend.prototype.blend = function(should_return_transparent, alpha_addition)
     return new Promise(function (resolve) {
         "use strict";
 
-        var i = 0, off = new Uint32Array(2), layer_n = 0;
+        var off = new Uint32Array(6);
+            off[4] = used_colors_length|0;
+            off[5] = dasdl|0;
         if(dest_simdope){
-            for (; uint_less(i | 0, used_colors_length); i = plus_uint(i, 1)) {
-                dest_simdope.get_use_element(indexes_data_for_layers[i|0], layers_color_0);
-                layers_color_0.set_from_simdope(transparent)
-                off[0] = multiply_int(i, all_layers_length);
+
+            for (; uint_less(off[2], off[4]); off[2] = plus_uint(off[2], 1)) {
+
+                dest_simdope.get_use_element(indexes_data_for_layers[off[2]], layers_color_0);
+
+                if(layers_color_0.is_not_fully_transparent()){
+                    layers_color_0.set_from_simdope(transparent)
+                }
+
+                off[0] = multiply_uint(off[2], all_layers_length);
                 // Sum up all colors above
-                for (layer_n = 0; int_less(layer_n, dasdl); layer_n = plus_int(layer_n, 1)) {
-
-                    dasd[layer_n|0].get_use_element(indexes_data_for_layers[i|0], layers_colors[layer_n+1|0]);
-                    layers_colors[layer_n|0].set_tail(layers_colors[layer_n+1|0], layers_opacity_255[layer_n|0]);
-                }
-                for (layer_n = dasdl; int_less(layer_n, all_layers_length); layer_n = plus_int(layer_n, 1)) {
-
-                    off[1] = plus_int(off[0], layer_n);
-                    colors_data_in_layers_uint32_SIMDope.get_use_element(off[1], layers_colors[layer_n+1|0]);
-                    layers_colors[layer_n|0].set_tail(layers_colors[layer_n+1|0], layers_opacity_255[layer_n|0]);
+                for (off[3]  = 0; uint_less(off[3] , off[5]); off[3]  = plus_uint(off[3] , 1)) {
+                    dasd[off[3] ].get_use_element(indexes_data_for_layers[off[2]], layers_colors[off[3]+1|0]);
+                    layers_colors[off[3] ].set_tail(layers_colors[off[3] +1|0], layers_opacity_255[off[3] ]);
                 }
 
-                layers_colors[layer_n|0].reset_tail();
+                for (off[3]  = off[5]; uint_less(off[3] , all_layers_length); off[3]  = plus_uint(off[3] , 1)) {
+                    off[1] = plus_uint(off[0], off[3] );
+                    colors_data_in_layers_uint32_SIMDope.get_use_element(off[1], layers_colors[off[3]+1|0]);
+                    layers_colors[off[3] ].set_tail(layers_colors[off[3]+1|0], layers_opacity_255[off[3] ]);
+                }
 
-                if((hover_data_in_layer[i | 0]|0) > 0) {
+                if((hover_data_in_layer[off[2]]|0) > 0) {
                     layers_color_0.blend_first_with_tails(alpha_addition)
-                    layers_color_0.blend_first_with(layers_color_0.is_dark() ? color_less_uint8x4 : color_full_uint8x4, hover_data_in_layer[i | 0], false, false);
+                    layers_color_0.blend_first_with(layers_color_0.is_dark() ? color_less_uint8x4 : color_full_uint8x4, hover_data_in_layer[off[2]], false, false);
                 }else {
                     layers_color_0.blend_first_with_tails(alpha_addition);
+                    layers_colors[off[3] ].reset_tail();
                 }
             }
 
             resolve(Array.of(indexes_data_for_layers.subarray(0, used_colors_length)));
         }else {
-            for (; uint_less(i | 0, used_colors_length); i = plus_uint(i, 1)) {
-                base_rgba_colors_for_blending_SIMDope.get_use_element(i | 0, layers_color_0);
-                layers_color_0.set_from_simdope(transparent)
-                off[0] = multiply_int(i, all_layers_length);
+            for (; uint_less(off[2], off[4]); off[2] = plus_uint(off[2], 1)) {
+                base_rgba_colors_for_blending_SIMDope.get_use_element(off[2], layers_color_0);
+                if(layers_color_0.is_not_fully_transparent()){
+                    layers_color_0.set_from_simdope(transparent)
+                }
+                off[0] = multiply_int(off[2], all_layers_length);
                 // Sum up all colors above
-                for (layer_n = 0; int_less(layer_n, dasdl); layer_n = plus_int(layer_n, 1)) {
+                for (off[3]  = 0; int_less(off[3] , off[5]); off[3]  = plus_int(off[3] , 1)) {
 
-                    dasd[layer_n|0].get_use_element(indexes_data_for_layers[i|0], layers_colors[layer_n+1|0]);
-                    layers_colors[layer_n|0].set_tail(layers_colors[layer_n+1|0], layers_opacity_255[layer_n|0]);
+                    dasd[off[3] ].get_use_element(indexes_data_for_layers[off[2]], layers_colors[off[3] +1|0]);
+                    layers_colors[off[3] ].set_tail(layers_colors[off[3] +1|0], layers_opacity_255[off[3] ]);
                 }
-                for (layer_n = dasdl; int_less(layer_n, all_layers_length); layer_n = plus_int(layer_n, 1)) {
+                for (off[3]  = off[5]; int_less(off[3] , all_layers_length); off[3]  = plus_int(off[3] , 1)) {
 
-                    off[1] = plus_int(off[0], layer_n);
-                    colors_data_in_layers_uint32_SIMDope.get_use_element(off[1], layers_colors[layer_n+1|0]);
-                    layers_colors[layer_n|0].set_tail(layers_colors[layer_n+1|0], layers_opacity_255[layer_n|0]);
+                    off[1] = plus_int(off[0], off[3] );
+                    colors_data_in_layers_uint32_SIMDope.get_use_element(off[1], layers_colors[off[3] +1|0]);
+                    layers_colors[off[3] ].set_tail(layers_colors[off[3] +1|0], layers_opacity_255[off[3] ]);
                 }
 
-                layers_colors[layer_n|0].reset_tail();
-
-                if((hover_data_in_layer[i | 0]|0) > 0) {
+                if((hover_data_in_layer[off[2]]|0) > 0) {
                     layers_color_0.blend_first_with_tails(alpha_addition)
-                    layers_color_0.blend_first_with(layers_color_0.is_dark() ? color_less_uint8x4 : color_full_uint8x4, hover_data_in_layer[i | 0], false, false);
+                    layers_color_0.blend_first_with(layers_color_0.is_dark() ? color_less_uint8x4 : color_full_uint8x4, hover_data_in_layer[off[2]], false, false);
                 }else {
                     layers_color_0.blend_first_with_tails(alpha_addition);
+                    layers_colors[off[3] ].reset_tail();
                 }
             }
-            resolve(Array.of(indexes_data_for_layers.subarray(0, used_colors_length), base_rgba_colors_for_blending.subarray(0, used_colors_length)));
+            resolve(Array.of(indexes_data_for_layers.subarray(0, off[4]), base_rgba_colors_for_blending.subarray(0, off[4])));
         }
     });
 };
