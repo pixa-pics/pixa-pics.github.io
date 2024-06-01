@@ -308,6 +308,10 @@ SuperBlend.prototype.blend = function(should_return_transparent, alpha_addition)
             off[5] = dasdl|0;
         if(dest_simdope){
 
+            for (off[3]  = 0; uint_less(off[3] , all_layers_length+1); off[3]  = plus_int(off[3] , 1)) {
+                layers_colors[off[3]].set_tail(layers_colors[off[3]+1|0], layers_opacity_255[off[3]]);
+            }
+
             for (; uint_less(off[2], off[4]); off[2] = plus_uint(off[2], 1)) {
 
                 dest_simdope.get_use_element(indexes_data_for_layers[off[2]], layers_color_0);
@@ -320,13 +324,11 @@ SuperBlend.prototype.blend = function(should_return_transparent, alpha_addition)
                 // Sum up all colors above
                 for (off[3]  = 0; uint_less(off[3] , off[5]); off[3]  = plus_uint(off[3] , 1)) {
                     dasd[off[3] ].get_use_element(indexes_data_for_layers[off[2]], layers_colors[off[3]+1|0]);
-                    layers_colors[off[3] ].set_tail(layers_colors[off[3] +1|0], layers_opacity_255[off[3] ]);
                 }
 
                 for (off[3]  = off[5]; uint_less(off[3] , all_layers_length); off[3]  = plus_uint(off[3] , 1)) {
                     off[1] = plus_uint(off[0], off[3] );
                     colors_data_in_layers_uint32_SIMDope.get_use_element(off[1], layers_colors[off[3]+1|0]);
-                    layers_colors[off[3] ].set_tail(layers_colors[off[3]+1|0], layers_opacity_255[off[3] ]);
                 }
 
                 if((hover_data_in_layer[off[2]]|0) > 0) {
@@ -334,29 +336,33 @@ SuperBlend.prototype.blend = function(should_return_transparent, alpha_addition)
                     layers_color_0.blend_first_with(layers_color_0.is_dark() ? color_less_uint8x4 : color_full_uint8x4, hover_data_in_layer[off[2]], false, false);
                 }else {
                     layers_color_0.blend_first_with_tails(alpha_addition);
-                    layers_colors[off[3] ].reset_tail();
                 }
             }
 
             resolve(Array.of(indexes_data_for_layers.subarray(0, used_colors_length)));
         }else {
+
+            for (off[3]  = 0; uint_less(off[3] , all_layers_length+1); off[3]  = plus_int(off[3] , 1)) {
+                layers_colors[off[3]].set_tail(layers_colors[off[3]+1|0], layers_opacity_255[off[3]]);
+            }
+
             for (; uint_less(off[2], off[4]); off[2] = plus_uint(off[2], 1)) {
                 base_rgba_colors_for_blending_SIMDope.get_use_element(off[2], layers_color_0);
                 if(layers_color_0.is_not_fully_transparent()){
                     layers_color_0.set_from_simdope(transparent)
                 }
                 off[0] = multiply_int(off[2], all_layers_length);
-                // Sum up all colors above
-                for (off[3]  = 0; int_less(off[3] , off[5]); off[3]  = plus_int(off[3] , 1)) {
 
+
+                // Sum up all colors above
+                for (off[3]  = 0; uint_less(off[3] , off[5]); off[3]  = plus_int(off[3] , 1)) {
                     dasd[off[3] ].get_use_element(indexes_data_for_layers[off[2]], layers_colors[off[3] +1|0]);
-                    layers_colors[off[3] ].set_tail(layers_colors[off[3] +1|0], layers_opacity_255[off[3] ]);
+
                 }
-                for (off[3]  = off[5]; int_less(off[3] , all_layers_length); off[3]  = plus_int(off[3] , 1)) {
+                for (off[3]  = off[5]; uint_less(off[3] , all_layers_length); off[3]  = plus_int(off[3] , 1)) {
 
                     off[1] = plus_int(off[0], off[3] );
                     colors_data_in_layers_uint32_SIMDope.get_use_element(off[1], layers_colors[off[3] +1|0]);
-                    layers_colors[off[3] ].set_tail(layers_colors[off[3] +1|0], layers_opacity_255[off[3] ]);
                 }
 
                 if((hover_data_in_layer[off[2]]|0) > 0) {
@@ -364,7 +370,6 @@ SuperBlend.prototype.blend = function(should_return_transparent, alpha_addition)
                     layers_color_0.blend_first_with(layers_color_0.is_dark() ? color_less_uint8x4 : color_full_uint8x4, hover_data_in_layer[off[2]], false, false);
                 }else {
                     layers_color_0.blend_first_with_tails(alpha_addition);
-                    layers_colors[off[3] ].reset_tail();
                 }
             }
             resolve(Array.of(indexes_data_for_layers.subarray(0, off[4]), base_rgba_colors_for_blending.subarray(0, off[4])));

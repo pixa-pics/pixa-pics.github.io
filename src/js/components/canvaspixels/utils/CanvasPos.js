@@ -679,7 +679,8 @@ const CanvasPos = {
                     previous_double_pointer_move_timestamp,
                     previous_single_pointer_down_timestamp,
                 } = this.get_pointer_state();
-                pointer_events.set(""+event.pointerId, event);
+
+                pointer_events.set(""+event.pointerId, {clientX: event.clientX, clientY: event.clientY, pageX: event.pageX, pageY: event.pageY, which: event.which, button: event.button, pointerId: event.pointerId});
 
                 if (pointer_events.size === 2) {
 
@@ -699,7 +700,6 @@ const CanvasPos = {
                     const of = Boolean(latest_pointers_distance > 0) ? parseFloat(anchor_diff / latest_pointers_distance) : 1;
 
                     const pointer_state_object = {
-                        pointer_events,
                         latest_pointers_distance: parseFloat(anchor_diff),
                         latest_pointers_client_x_center: parseInt(client_x_center),
                         latest_pointers_client_y_center: parseInt(client_y_center),
@@ -749,7 +749,6 @@ const CanvasPos = {
                 }else if(mouse_down && pointer_events.size === 1) {
 
                     const pointer_state_object = {
-                        pointer_events,
                         latest_pointers_client_x_center: parseInt(event.clientX),
                         latest_pointers_client_y_center: parseInt(event.clientY),
                         previous_double_pointer_move_timestamp: parseInt(previous_double_pointer_move_timestamp),

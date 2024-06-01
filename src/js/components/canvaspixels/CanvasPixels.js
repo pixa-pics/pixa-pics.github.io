@@ -3514,7 +3514,6 @@ class CanvasPixels extends React.PureComponent {
                  className={className}>
                 <div ref={this._set_canvas_wrapper_overflow_ref}
                      className={"Canvas-Wrapper-Overflow" + ( !is_there_new_dimension ? " Shown ": " Not-Shown ")}
-                     draggable={"false"}
                      style={{
                          display: "block",
                          height: "100%",
@@ -3532,8 +3531,8 @@ class CanvasPixels extends React.PureComponent {
                      }}>
                     <div ref={this._set_canvas_wrapper_ref}
                          className={"Canvas-Wrapper " + (_mouse_inside ? " Canvas-Focused ": " " + (tool))}
-                         draggable={"false"}
                          style={{
+                             flexShrink: 0,
                              display: "inline-block",
                              position: "fixed",
                              contain: "layout style size paint",
@@ -3564,9 +3563,9 @@ class CanvasPixels extends React.PureComponent {
                              zIndex: 4,
                          }}>
                         <canvas
-                            draggable={"false"}
                             style={{
                                 display: "block",
+                                flexShrink: 0,
                                 zIndex: 2,
                                 position: "absolute",
                                 overflow: "hidden",
@@ -3592,8 +3591,8 @@ class CanvasPixels extends React.PureComponent {
                         {
                             Boolean(perspective) &&
                             <div className={"Canvas-Pixels-Cover"}
-                                 draggable={"false"}
                                  style={{
+                                     flexShrink: 0,
                                      display: "block",
                                      backgroundImage: background_image,
                                      zIndex: 3,
@@ -3614,6 +3613,7 @@ class CanvasPixels extends React.PureComponent {
                         }
                     </div>
                     <div style={{
+                        flexShrink: 0,
                         display: "block",
                         left: 0,
                         top: 0,
@@ -3629,6 +3629,7 @@ class CanvasPixels extends React.PureComponent {
                         zIndex: 10,
                     }} onContextMenu={function (e){e.preventDefault();}} />
                     <div style={{
+                        flexShrink: 0,
                         display: "block",
                         zIndex: 1,
                         color: canvas_wrapper_background_color,

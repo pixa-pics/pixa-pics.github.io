@@ -16,7 +16,7 @@ const SuperMasterMeta = {
     init(super_state, super_canvas, super_blend, canvas_pos, color_conversion, sraf){
         "use strict";
 
-        let {clamp_uint32, plus_uint, int_less, uint_equal, uint_not_equal, clamp_uint8 } = simdops;
+        let {clamp_uint32, plus_uint, uint_less, int_less, uint_equal, uint_not_equal, clamp_uint8 } = simdops;
         let state = {
             index_changes: new Uint32Array(0),
             color_changes: new Uint32Array(0),
@@ -257,6 +257,7 @@ const SuperMasterMeta = {
                 var imported_image_pxls_positioned_keyset_has = imported_image_pxls_positioned_keyset.has.bind(imported_image_pxls_positioned_keyset);
 
                 var newHighlight = bool_new_highlight ? Uint32Array.of(0xFFFFFFFF): Uint32Array.of(0x00000000);
+                var newChanges = clear_canvas ? Uint32Array.of(0xFFFFFFFF): Uint32Array.of(0x00000000);
 
                 if(image_imported_resizer_index >= 0) {_pxl_indexes_of_current_shape.add(image_imported_resizer_index);}
                 _pxl_indexes_of_current_shape.add(_pxls_hovered);
@@ -288,7 +289,7 @@ const SuperMasterMeta = {
                 function changesCompute(I, newPixel, oldHover, oldShape, newShape, oldSelection, newSelection, oldImport, newImport) {
                     "use strict";
                     I = (I | 0) >>> 0;
-                    return or(or(or(newPixel[I], oldHover[I]), xor(oldShape[I], newShape[I])), or(or(xor(oldSelection[I], newSelection[I]), and(oldSelection[I], newHighlight[0])), or(oldImport[I], newImport[I])));
+                    return or(newChanges[0], or(or(or(newPixel[I], oldHover[I]), xor(oldShape[I], newShape[I])), or(or(xor(oldSelection[I], newSelection[I]), and(oldSelection[I], newHighlight[0])), or(oldImport[I], newImport[I]))));
                 }
 
                 if(pxl_indexes_of_changes.length !== full_pxls_length) {
@@ -298,14 +299,11 @@ const SuperMasterMeta = {
                 SetFixed.compute(full_pxls_length, pxl_indexes_of_changes, Array.of(_current_layer.setFixed, _old_pxls_hovered, _pxl_indexes_of_old_shape, _pxl_indexes_of_current_shape, _pxl_indexes_of_selection_drawn, _pxl_indexes_of_selection, _previous_imported_image_pxls_positioned_keyset, imported_image_pxls_positioned_keyset), changesCompute);
 
                 var hasChange = pxl_indexes_of_changes.has.bind(pxl_indexes_of_changes);
-                for (; int_less(index, full_pxls_length); index = plus_uint(index, 1)) {
+                for (; uint_less(index, full_pxls_length); index = plus_uint(index, 1)) {
 
-                    if (
-                        clear_canvas ||
-                        hasChange(index)
-                    ) {
+                    if (hasChange((index | 0) >>> 0)) {
 
-                        if (pxl_indexes_of_current_shape_has(index)) {
+                        if (pxl_indexes_of_current_shape_has((index | 0) >>> 0)) {
 
                             meta_super_blend_for((index | 0) >>> 0, 128);
                         } else if (pxl_indexes_of_selection_has(index)) {
