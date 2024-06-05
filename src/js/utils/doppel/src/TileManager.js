@@ -25,8 +25,8 @@ export default class TileManager {
     extractTileData(x, y){
         "use strict";
         // Adjust x and y to keep tiles centered with the new size
-        const newX = (x * this.tileWidth) - this.tilePaddingWidth | 0;
-        const newY = (y * this.tileHeight) - this.tilePaddingHeight | 0;
+        const newX = Math.max(0, (x * this.tileWidth) - this.tilePaddingWidth | 0);
+        const newY = Math.max(0, (y * this.tileHeight) - this.tilePaddingHeight | 0);
         return this.contextSource.getImageData(newX|0, newY|0, this.extendedTileWidth|0, this.extendedTileHeight|0);
     }
     createTiles() {

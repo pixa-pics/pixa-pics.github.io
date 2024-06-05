@@ -448,16 +448,16 @@ QuantiMat.prototype.process_threshold = function(t) {
     "use strict";
 
     t = (t | 0) >>> 0;
-    const exponent = 1.15;
+    const exponent = 1.618;
     function calculateN(t, max) {
         // Apply a power scale to 't'. The exponent (e.g., 0.5) determines the curve's shape.
-        const scaledT = Math.pow(t, exponent)-t;
+        const scaledT = t/10+Math.pow(t, exponent);
 
         // Calculate n using the scaled value of t
         return fr(scaledT / max);
     }
 
-    var max = Math.pow(100, exponent) - 100;
+    var max = 10+Math.pow(100, exponent);
     var weight_applied_to_color_usage_difference = calculateN(t, max); // Ensure higher precision when low color (high threshold)
     var index_merged = false;
     var latest_colors = [];
@@ -481,7 +481,7 @@ QuantiMat.prototype.process_threshold = function(t) {
 
     var baseFactor = 12.0;
     var lowUsedFactor = 6.0; // Adjust this value to control sensitivity to usage percent differences
-    var distanceUsageFactor = -6.0; // Adjust this value to emphasize the effect of one color being more dominant
+    var distanceUsageFactor = 3.0; // Adjust this value to emphasize the effect of one color being more dominant
     var totalFactor = baseFactor + lowUsedFactor + distanceUsageFactor;
 
     weighted_threshold_skin_skin = fr(weighted_threshold * SAME_SKIN_COLOR_MATCH_MULTIPLY);
@@ -532,7 +532,7 @@ QuantiMat.prototype.process_threshold = function(t) {
                            ) / totalFactor
                         );
                         // CIE LAB 1976 version color scheme is used to measure accurate the distance for the human eye
-                        if(color_a.cie76_match_with(color_b,  threshold)) {
+                        if(color_a.manhattan_match_with(color_b,  threshold)) {
 
                             color_usage_difference_positive = fr(color_b_usage / color_a_usage);
 

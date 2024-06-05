@@ -41,7 +41,7 @@ export default class ImageProcessor {
         if(colorNumberCertainty >= 0.25) {
             const {tileSize, certainty} = this.imageManager.analyzeImageForTileSize(colorData);
             const targetTileSize = Math.sqrt(this.tileWidth*this.tileHeight);
-            const factor = 2.0;
+            const factor = 2.5;
 
             if(((tileSize * factor) > targetTileSize) && (tileSize < (targetTileSize*factor))) {
                 console.log("changeFinalCanvasParameters: "+(this.canvas.width / tileSize|0)+"/"+ (this.canvas.height / tileSize|0))

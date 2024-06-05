@@ -238,21 +238,21 @@ export default class ImageManager {
         for (let y = 0; y < height; y++) {
             let consecutiveCount = 1;
             for (let x = 1; x < width; x++) {
-                const currentIndex = y * width + x;
-                const previousIndex = currentIndex - 1;
+                const currentIndex = y * width + x | 0;
+                const previousIndex = currentIndex - 1 | 0;
 
-                if (pixels[currentIndex] === pixels[previousIndex]) {
+                if (pixels[currentIndex] == pixels[previousIndex]) {
                     consecutiveCount++;
                 } else {
                     if (consecutiveCount > 1) {
-                        horizontalHistogram[consecutiveCount] = (horizontalHistogram[consecutiveCount] || 0) + 1;
+                        horizontalHistogram[consecutiveCount] = (horizontalHistogram[consecutiveCount] || 0) + 1 | 0;
                     }
                     consecutiveCount = 1;
                 }
             }
             // Check at the end of the row
             if (consecutiveCount > 1) {
-                horizontalHistogram[consecutiveCount] = (horizontalHistogram[consecutiveCount] || 0) + 1;
+                horizontalHistogram[consecutiveCount] = (horizontalHistogram[consecutiveCount] || 0) + 1 | 0;
             }
         }
 
@@ -260,21 +260,21 @@ export default class ImageManager {
         for (let x = 0; x < width; x++) {
             let consecutiveCount = 1;
             for (let y = 1; y < height; y++) {
-                const currentIndex = y * width + x;
-                const previousIndex = currentIndex - width;
+                const currentIndex = y * width + x | 0;
+                const previousIndex = currentIndex - width | 0;
 
-                if (pixels[currentIndex] === pixels[previousIndex]) {
+                if (pixels[currentIndex] == pixels[previousIndex]) {
                     consecutiveCount++;
                 } else {
                     if (consecutiveCount > 1) {
-                        verticalHistogram[consecutiveCount] = (verticalHistogram[consecutiveCount] || 0) + 1;
+                        verticalHistogram[consecutiveCount] = (verticalHistogram[consecutiveCount] || 0) + 1 | 0;
                     }
                     consecutiveCount = 1;
                 }
             }
             // Check at the end of the column
             if (consecutiveCount > 1) {
-                verticalHistogram[consecutiveCount] = (verticalHistogram[consecutiveCount] || 0) + 1;
+                verticalHistogram[consecutiveCount] = (verticalHistogram[consecutiveCount] || 0) + 1 | 0;
             }
         }
 
@@ -285,20 +285,20 @@ export default class ImageManager {
             entries.sort((a, b) => (b.length * b.count) - (a.length * a.count));
 
             // We assume the most common length of consecutive pixels might indicate the tile size
-            if (entries.length > 0) {
+            try {
                 let m = 0;
                 let n = 0;
                 let tileSize = entries[n++].length;
                 while(tileSize >= 3 && tileSize <= 12){
                     var tile1 = entries[n];
 
-                    var tile2a = entries[n*2-1] | 0;
-                    var tile2b = entries[n*2] | 0;
-                    var tile2c = entries[n*2+1] | 0;
+                    var tile2a = entries[n*2-1] || {};
+                    var tile2b = entries[n*2] || {};
+                    var tile2c = entries[n*2+1] || {};
 
-                    var tile3a = entries[n*4-1] | 0;
-                    var tile3b = entries[n*4] | 0;
-                    var tile3c = entries[n*4+1] | 0;
+                    var tile3a = entries[n*4-1] || {};
+                    var tile3b = entries[n*4] || {};
+                    var tile3c = entries[n*4+1] || {};
 
                     var max1 = tile1.count;
                     var max2 = Math.max(tile2a.count, tile2b.count, tile2c.count);
@@ -318,9 +318,10 @@ export default class ImageManager {
                 const totalCount = entries.reduce((acc, entry) => acc + entry.count, 0);
                 const certainty = entries[n-1].count / totalCount; // Simple certainty calculation
                 return { tileSize: tileSize, certainty };
-            }
+            } catch (e) {
 
-            return { tileSize: 0, certainty: 0.0 };
+                return { tileSize: 0, certainty: 0.0 };
+            }
         }
 
         const horizontalAnalysis = analyzeHistogram(horizontalHistogram);

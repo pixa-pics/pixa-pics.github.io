@@ -18,4 +18,10 @@ export default class Pixel {
         this.rgba_[2] = array[2];
         this.rgba_[3] = array[3];
     }
+    setUint32(uint32){
+        this.rgba_[3] = uint32 >> 24 & 0xFF;
+        this.rgba_[2] = uint32 >> 16 & 0xFF;
+        this.rgba_[1] = uint32 >> 8 & 0xFF;
+        this.rgba_[0] = uint32 & 0xFF;
+    }
 }

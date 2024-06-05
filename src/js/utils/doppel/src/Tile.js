@@ -1,5 +1,6 @@
 import Pixel from "./Pixel"
 import KMeans from "./KMeans";
+import {QuantiMat} from "../../quantimat/QuantiMat";
 
 export default class Tile {
     constructor(imageData, colorUint8a, x = 0, y = 0) {
@@ -7,7 +8,7 @@ export default class Tile {
         this.meanColor = new Pixel(colorUint8a);
         this.coordinates = Uint16Array.of(x, y);
         var l = this.imageData.data.length;
-        this.k = l >= 16 ? 4: l >= 9 ? 3: l >= 4 ? 2: l >= 2 ? 1: 1;
+        this.k = l >= 64 ? 4: l >= 16 ? 3: l >= 9 ? 2: l >= 2 ? 2: 1;
     }
     get x(){
         return this.coordinates[0];
@@ -25,15 +26,32 @@ export default class Tile {
     }
     quantizeColors() {
         "use strict";
-        const data = this.imageData.data;
-        const colors = this.extractColorData(data);
-        return new KMeans(colors, this.k).run(this.k, true);
+
+        const [pxls, pxl_colors] = QuantiMat.split_image_data(this.imageData);
+
+        const result = QuantiMat({
+            pxls,
+            pxl_colors,
+            number_of_color: Math.min(pxl_colors.length, this.k),
+            width: this.imageData.width,
+            height: this.imageData.height
+        }).init().run().output("split");
+
+        const pixels = result[0];
+        const colors = result[1];
+        const count = new Uint32Array(colors.length);
+
+        for(var i = 0; i < pixels.length; i++){
+            count[colors.indexOf(colors[pixels[i]])]++;
+        }
+
+        return [count, colors]
     }
 
     calculateMeanColor() {
         "use strict";
-        const quantizedResult = this.quantizeColors();
-        const rgba = quantizedResult.centroidsSorted[0].data;
-        this.meanColor.setRGBA(rgba);
+        const [count, colors] = this.quantizeColors();
+        const mostUsed = colors[count.indexOf(Math.max(...Array.from(count)))];
+        this.meanColor.setUint32(mostUsed);
     }
 }
