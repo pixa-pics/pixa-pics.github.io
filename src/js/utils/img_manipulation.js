@@ -22,7 +22,7 @@ const file_to_imagedata_resized = (file, resize_original_to, callback_function =
     }
 };
 
-window.file_to_base64_process_function = new AFunction(`var t = function(file) {
+var file_to_base64_process_function = new AFunction(`var t = function(file) {
     "use strict";
     
     try {
@@ -46,11 +46,11 @@ const file_to_base64 = (file, callback_function = () => {}, pool = null) => {
 
     if(pool !== null) {
 
-        pool.exec(window.file_to_base64_process_function, [
+        pool.exec(file_to_base64_process_function, [
             file
         ]).catch((e) => {
 
-            return window.file_to_base64_process_function(file);
+            return file_to_base64_process_function(file);
         }).timeout(5 * 1000).then((r) => {
 
             callback_function(r);
@@ -58,13 +58,13 @@ const file_to_base64 = (file, callback_function = () => {}, pool = null) => {
 
     }else {
 
-        window.file_to_base64_process_function(file).then((r) => {
+        file_to_base64_process_function(file).then((r) => {
 
             callback_function(r);
         });
     }
 };
-window.base64_sanitize_process_function = function (base64, scale, resizer) {
+var base64_sanitize_process_function = function (base64, scale, resizer) {
    
     resizer = resizer || "pixelize";
 
@@ -153,11 +153,11 @@ const base64_sanitize = (base64, callback_function = () => {}, pool = null, scal
     pool = null;
     if(pool !== null) {
 
-        pool.exec(window.base64_sanitize_process_function, [
+        pool.exec(base64_sanitize_process_function, [
             base64, scale, resizer
         ]).catch((e) => {
 
-            window.base64_sanitize_process_function(base64, scale, resizer).then((r) => {
+            base64_sanitize_process_function(base64, scale, resizer).then((r) => {
                 callback_function(r);
             });
         }).timeout(15 * 1000).then((r) => {
@@ -167,14 +167,14 @@ const base64_sanitize = (base64, callback_function = () => {}, pool = null, scal
 
     }else {
 
-        window.base64_sanitize_process_function(base64, scale, resizer).then((r) => {
+        base64_sanitize_process_function(base64, scale, resizer).then((r) => {
 
             callback_function(r);
         });
     }
 };
 
-window.base64_to_bitmap_process_function = new AsyncFunction(`var t = async function(base64) {
+var base64_to_bitmap_process_function = new AsyncFunction(`var t = async function(base64) {
 
     "use strict";
 
@@ -195,11 +195,11 @@ const base64_to_bitmap = (base64, callback_function = () => {}, pool = null) => 
 
         if(pool !== null) {
 
-            pool.exec(window.base64_to_bitmap_process_function, [
+            pool.exec(base64_to_bitmap_process_function, [
                 base64
             ]).catch((e) => {
 
-                return window.base64_to_bitmap_process_function(base64);
+                return base64_to_bitmap_process_function(base64);
             }).timeout(5 * 1000).then((r) => {
 
                 callback_function(r);
@@ -207,7 +207,7 @@ const base64_to_bitmap = (base64, callback_function = () => {}, pool = null) => 
 
         }else {
 
-            window.base64_to_bitmap_process_function(base64).then((r) => {
+            base64_to_bitmap_process_function(base64).then((r) => {
 
                 callback_function(r);
             });
@@ -297,7 +297,7 @@ const imagedata_to_bitmap = (imgd, resize_to =  1920*1080, callback_function = (
         }
 };
 
-window.imagedata_to_base64_process_function = new AFunction(`var t = function(imagedata, type) {
+var imagedata_to_base64_process_function = new AFunction(`var t = function(imagedata, type) {
 
     "use strict"
     type = type || "image/png";
@@ -351,11 +351,11 @@ const imagedata_to_base64 = (imagedata, type= "image/png", callback_function = (
 
         if(pool !== null) {
 
-            pool.exec(window.imagedata_to_base64_process_function, [
+            pool.exec(imagedata_to_base64_process_function, [
                 imagedata, type
             ]).catch((e) => {
 
-                return window.imagedata_to_base64_process_function(imagedata, type);
+                return imagedata_to_base64_process_function(imagedata, type);
             }).timeout(5 * 1000).then((r) => {
 
                 callback_function(r);
@@ -363,7 +363,7 @@ const imagedata_to_base64 = (imagedata, type= "image/png", callback_function = (
 
         }else {
 
-            window.imagedata_to_base64_process_function(imagedata, type).then((r) => {
+            imagedata_to_base64_process_function(imagedata, type).then((r) => {
 
                 callback_function(r);
             });

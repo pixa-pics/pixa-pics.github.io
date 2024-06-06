@@ -455,7 +455,7 @@ QuantiMat.prototype.process_threshold = function(t) {
     "use strict";
 
     t = (t | 0) >>> 0;
-    const exponent = .88;
+    const exponent = 1.5;
     function calculateN(t, max) {
         // Apply a power scale to 't'. The exponent (e.g., 0.5) determines the curve's shape.
         const scaledT = Math.pow(t, exponent);
@@ -486,9 +486,9 @@ QuantiMat.prototype.process_threshold = function(t) {
     var color_n_in_cluster = 0;
     var threshold = 0;
 
-    var baseFactor = .72;
-    var lowUsedFactor = .22; // Adjust this value to control sensitivity to usage percent differences
-    var distanceUsageFactor = .06; // Adjust this value to emphasize the effect of one color being more dominant
+    var baseFactor = .88;
+    var lowUsedFactor = .14; // Adjust this value to control sensitivity to usage percent differences
+    var distanceUsageFactor = .0; // Adjust this value to emphasize the effect of one color being more dominant
     var totalFactor = baseFactor + lowUsedFactor + distanceUsageFactor;
 
     weighted_threshold_skin_skin = fr(weighted_threshold * SAME_SKIN_COLOR_MATCH_MULTIPLY);

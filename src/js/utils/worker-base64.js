@@ -1,6 +1,6 @@
 
 const AFunction = Object.getPrototypeOf( function(){}).constructor;
-window.base64_process_function = new AFunction(`
+var base64_process_function = new AFunction(`
 
 var fun = function (to, data, indexes) {
     
@@ -178,15 +178,15 @@ const worker_base64 = (to, data_array, pool = null) => {
 
         if(Boolean(pool)) {
 
-            return pool.exec(window.base64_process_function, [
+            return pool.exec(base64_process_function, [
                 to, data_array_buffer.buffer, data_buffer_add_indexes
             ]).catch((e) => {
 
-                return window.base64_process_function(to, data_array_buffer.buffer, data_buffer_add_indexes);
+                return base64_process_function(to, data_array_buffer.buffer, data_buffer_add_indexes);
             }).timeout(40 * 1000);
         }else {
 
-            return window.base64_process_function(to, data_array_buffer.buffer, data_buffer_add_indexes);
+            return base64_process_function(to, data_array_buffer.buffer, data_buffer_add_indexes);
         }
     }else if(to === "bytes") {
 
@@ -207,15 +207,15 @@ const worker_base64 = (to, data_array, pool = null) => {
 
         if(Boolean(pool)) {
 
-            return pool.exec(window.base64_process_function, [
+            return pool.exec(base64_process_function, [
                 to, data_array, []
             ]).catch((e) => {
 
-                return window.base64_process_function(to, data_array, []);
+                return base64_process_function(to, data_array, []);
             }).then(handle_results).timeout(40 * 1000);
         }else {
 
-            return window.base64_process_function(to, data_array, []).then(handle_results);
+            return base64_process_function(to, data_array, []).then(handle_results);
         }
 
     }else if(to === "none") {

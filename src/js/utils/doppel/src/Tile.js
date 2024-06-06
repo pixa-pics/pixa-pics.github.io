@@ -8,7 +8,7 @@ export default class Tile {
         this.meanColor = new Pixel(colorUint8a);
         this.coordinates = Uint16Array.of(x, y);
         var l = this.imageData.data.length;
-        this.k = l >= 64 ? 4: l >= 16 ? 3: l >= 9 ? 2: l >= 2 ? 2: 1;
+        this.k = l >= 64 ? 6: l >= 16 ? 5: l >= 9 ? 4: l >= 2 ? 3: 2;
     }
     get x(){
         return this.coordinates[0];

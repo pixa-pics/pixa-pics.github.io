@@ -2,82 +2,17 @@ import Pixel from "./Pixel";
 import ColorAnalysis from "./ColorAnalysis";
 import { SetFixed } from "@asaitama/boolean-array";
 import { QuantiMat } from "../../quantimat/QuantiMat";
-
+var abs = Math.abs;
+var imul = Math.imul;
 export default class ImageManager {
     constructor(contextSource) {
         this.contextSource = contextSource;
     }
     static colorDifference(color1, color2) {
         // Simple RGB Euclidean distance
-        const rDiff = ((color1 >> 24) & 0xFF) - ((color2 >> 24) & 0xFF);
-        const gDiff = ((color1 >> 16) & 0xFF) - ((color2 >> 16) & 0xFF);
-        const bDiff = ((color1 >> 8) & 0xFF) - ((color2 >> 8) & 0xFF);
-        return Math.sqrt(rDiff * rDiff + gDiff * gDiff + bDiff * bDiff) | 0;
-    }
-    static findNearestCentroid(pixel, centroids) {
-        let minDistance = Infinity;
-        let index = 0;
-        for (let i = 0; i < centroids.length; i++) {
-            const distance = ImageManager.colorDifference(pixel, centroids[i]);
-            if (distance < minDistance) {
-                minDistance = distance;
-                index = i;
-            }
-        }
-        return index;
-    }
-    static updateCentroids(pixels, clusterAssignments, centroids, k) {
-        const sum = new Uint32Array(k * 4); // For R, G, B
-        const count = new Uint32Array(k);
-
-        // Accumulate sum and count for each cluster
-        for (let i = 0; i < pixels.length; i++) {
-            const cluster = clusterAssignments[i];
-            const pixel = pixels[i];
-            sum[cluster * 4] += (pixel >> 24) & 0xFF; // R
-            sum[cluster * 4 + 1] += (pixel >> 16) & 0xFF; // G
-            sum[cluster * 4 + 2] += (pixel >> 8) & 0xFF; // B
-            sum[cluster * 4 + 3] += (pixel >> 0) & 0xFF; // A
-            count[cluster]++;
-        }
-
-        // Update centroids
-        for (let i = 0; i < k; i++) {
-            if (count[i] === 0) continue; // Avoid division by zero
-            const rAvg = sum[i * 4] / count[i] | 0;
-            const gAvg = sum[i * 4 + 1] / count[i] | 0;
-            const bAvg = sum[i * 4 + 2] / count[i] | 0;
-            const aAvg = sum[i * 4 + 3] / count[i] | 0;
-            centroids[i] = ((rAvg << 24) | (gAvg << 16) | (bAvg << 8) | (aAvg << 0)) >>> 0; // Assuming alpha is always 255
-        }
-
-        return count;
-    }
-    static findFarthestPixelIdFromCentroids(pixels, centroids) {
-        let maxDist = 0;
-        let farthestPixelIdColor = 0;
-        pixels.forEach((pixel) => {
-            let minDistToPoint = Number.MAX_VALUE;
-            centroids.forEach(centroid => {
-                const dist = ImageManager.colorDifference(pixel, centroid);
-                if (dist < minDistToPoint) {
-                    minDistToPoint = dist;
-                }
-            });
-            if (minDistToPoint > maxDist) {
-                maxDist = minDistToPoint;
-                farthestPixelIdColor = (pixel|0) >>> 0;
-            }
-        });
-        return farthestPixelIdColor;
-    }
-    static reassignCentroids(pixels, count, centroids, colors) {
-
-        for(var i = 0; i < count.length; i++) {
-            if(count[i] === 0) {
-                centroids[i] = colors[i] || pixels[Math.floor(Math.random() * pixels.length)];;
-            }
-        }
+        var d1 = Uint8Array.of(abs(((color1 >> 24) & 0xFF) - ((color2 >> 24) & 0xFF)), abs(((color1 >> 16) & 0xFF) - ((color2 >> 16) & 0xFF)), abs(((color1 >> 8) & 0xFF) - ((color2 >> 8) & 0xFF)));
+        var d2 = Uint16Array.of(imul(d1[0], d1[0]), imul(d1[1], d1[1]), imul(d1[2], d1[2]))
+        return (Math.sqrt((((d2[0] << 1) + d2[0] | 0) + (d2[1] << 2) + (d2[2] << 1) | 0) / 10) | 0) >>> 0;
     }
     static quantizeImageData(ctx, numberOfColors) {
         const imageData = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
