@@ -174,11 +174,7 @@ module.exports = {
                             presets: [
                                 'react',
                                 ["env", {
-                                    targets: {
-                                        "chrome": "69",
-                                        "firefox": "69",
-                                        "safari": "11"
-                                    },
+                                    targets: "cover 99.5% in US",
                                     forceAllTransforms: false,
                                     shippedProposals: true,
                                     bugfixes: true,

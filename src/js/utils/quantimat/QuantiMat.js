@@ -46,8 +46,6 @@ var MODE = SIMDopeCreateConfAdd({
         "blend_first_with": true,
         "blend_first_with_tails": true,
         "blend_all": true,
-        "euclidean_match_with": true,
-        "manhattan_match_with": true,
         "cie76_match_with": true,
         "copy": true
     }
@@ -333,7 +331,7 @@ Object.defineProperty(QuantiMat.prototype, 'best_color_number', {
 });
 Object.defineProperty(QuantiMat.prototype, 'get_data', {
     get: function() {return function(){
-        return Array.of(this.new_pxls_, this.new_pxl_colors_.subarray_uint32(0, this.new_pxl_colors_.length), {
+        return Array.of(this.new_pxls_, this.new_pxl_colors_.slice_uint32(0, this.new_pxl_colors_.length), {
             deduplicate: this.get_remove_duplicate_ops(),
             simplify: this.get_simplify_ops(),
             classify: this.get_classify_on_x_bits_ops(),
@@ -448,16 +446,16 @@ QuantiMat.prototype.process_threshold = function(t) {
     "use strict";
 
     t = (t | 0) >>> 0;
-    const exponent = 1.618;
+    const exponent = .88;
     function calculateN(t, max) {
         // Apply a power scale to 't'. The exponent (e.g., 0.5) determines the curve's shape.
-        const scaledT = t/10+Math.pow(t, exponent);
+        const scaledT = Math.pow(t, exponent);
 
         // Calculate n using the scaled value of t
         return fr(scaledT / max);
     }
 
-    var max = 10+Math.pow(100, exponent);
+    var max = Math.pow(100, exponent);
     var weight_applied_to_color_usage_difference = calculateN(t, max); // Ensure higher precision when low color (high threshold)
     var index_merged = false;
     var latest_colors = [];
@@ -479,9 +477,9 @@ QuantiMat.prototype.process_threshold = function(t) {
     var color_n_in_cluster = 0;
     var threshold = 0;
 
-    var baseFactor = 12.0;
-    var lowUsedFactor = 6.0; // Adjust this value to control sensitivity to usage percent differences
-    var distanceUsageFactor = 3.0; // Adjust this value to emphasize the effect of one color being more dominant
+    var baseFactor = .88;
+    var lowUsedFactor = .10; // Adjust this value to control sensitivity to usage percent differences
+    var distanceUsageFactor = .02; // Adjust this value to emphasize the effect of one color being more dominant
     var totalFactor = baseFactor + lowUsedFactor + distanceUsageFactor;
 
     weighted_threshold_skin_skin = fr(weighted_threshold * SAME_SKIN_COLOR_MATCH_MULTIPLY);
@@ -527,12 +525,12 @@ QuantiMat.prototype.process_threshold = function(t) {
                         threshold = fr(
                            threshold * (
                                distanceUsageFactor * Math.abs(color_a_usage_percent - color_b_usage_percent) +
-                               lowUsedFactor * (2.0 - (color_a_usage_percent + color_b_usage_percent)) +
+                               lowUsedFactor * (2.0 - (color_a_usage_percent + color_b_usage_percent)) / 2.0 +
                             baseFactor
                            ) / totalFactor
                         );
                         // CIE LAB 1976 version color scheme is used to measure accurate the distance for the human eye
-                        if(color_a.manhattan_match_with(color_b,  threshold)) {
+                        if(color_a.cie76_match_with(color_b,  threshold)) {
 
                             color_usage_difference_positive = fr(color_b_usage / color_a_usage);
 
@@ -563,10 +561,8 @@ QuantiMat.prototype.process_threshold = function(t) {
 
 QuantiMat.prototype.round = function() {
     "use strict";
-
-    if(this.new_pxl_colors_length > 1024) {
-
-        var simplify_of = (this.new_pxl_colors_length > 32768 ? 24: this.new_pxl_colors_length > 32768 ? 20: this.new_pxl_colors_length > 16384 ? 16: this.new_pxl_colors_length > 8192 ? 12: this.new_pxl_colors_length > 2048 ? 8: this.new_pxl_colors_length > 1024 ? 4: 1) | 0;
+    if(this.new_pxl_colors_length > 2048){
+        var simplify_of = (this.new_pxl_colors_length > 60000 ? 4.0: this.new_pxl_colors_length > 32000 ? 3.0: this.new_pxl_colors_length > 16000 ? 2.0: this.new_pxl_colors_length > 8192 ? 1.5: this.new_pxl_colors_length > 4096 ? 1.25: 1.0) | 0;
         for(var l = 0; (l|0) < (this.new_pxl_colors_length|0); l = (l+1|0)>>>0) {
             this.get_a_new_pxl_color((l|0)>>>0).simplify(simplify_of);
         }

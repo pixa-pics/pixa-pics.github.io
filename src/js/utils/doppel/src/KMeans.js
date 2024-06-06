@@ -79,7 +79,7 @@ export default class KMeans {
     distance(point1, point2) {
         this.c1.set_from_array(point1);
         this.c2.set_from_array(point2);
-        return this.c1.cie76_match_with(this.c2) * 16192 | 0;
+        return this.c1.fast_match_with(this.c2) * 16192 | 0;
     }
     reassignCentroids(counts) {
 
