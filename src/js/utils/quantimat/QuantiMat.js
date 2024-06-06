@@ -91,6 +91,8 @@ var QuantiMat = function(opts) {
     opts.pxls = opts.pxls || new Uint32Array(0);
     this.new_pxls_ = "buffer" in opts.pxls ? new Uint32Array(opts.pxls.buffer) : Uint32Array.from(opts.pxls);
     this.new_pxl_colors_ = "buffer" in opts.pxl_colors ? new Colors(opts.pxl_colors.buffer) : new Colors(Uint32Array.from(opts.pxl_colors).buffer);
+    this.original_pxls_ = this.new_pxls_.slice(0, this.new_pxls_.length);
+    this.original_pxl_colors_ = this.new_pxl_colors_.slice_uint32(0, this.new_pxl_colors_.length);
     var l = this.new_pxl_colors_.length|0;
     this.new_pxl_colors_is_skin_mask_ = new SetFixed(l|0);
     this.set_new_pxl_skin_mask();
@@ -250,6 +252,13 @@ Object.defineProperty(QuantiMat.prototype, 'reset_cluster', {
         for(var c = 0; (c|0) < (this.max_cluster|0); c=(c+1|0)>>>0){ this.index_clusters_[c|0] = [];}
     }}
 });
+Object.defineProperty(QuantiMat.prototype, 'reset_original_data', {
+    get: function() { "use strict"; return function() {
+        "use strict";
+        this.new_pxl_colors_ = new Colors(this.original_pxl_colors_.slice(0, this.original_pxl_colors_.length).buffer);
+        this.new_pxls_ = this.original_pxls_.slice(0, this.original_pxls_.length);
+    }}
+});
 Object.defineProperty(QuantiMat.prototype, 'add_in_indexes_cluster', {
     get: function() { "use strict"; return function(cluster_index, color_index) {
         "use strict";
@@ -289,7 +298,7 @@ Object.defineProperty(QuantiMat.prototype, 'set_a_color_usage', {
     get: function() {"use strict"; return function(index, usage){"use strict";return this.pxl_colors_usage_[index|0] = (usage|0)>>>0;}}
 });
 Object.defineProperty(QuantiMat.prototype, 'get_a_color_usage_percent', {
-    get: function() {"use strict"; return function(index){"use strict";return this.pxl_colors_usage_[index|0] / this.new_pxls_.length;}}
+    get: function() {"use strict"; return function(index){"use strict";return fr(this.pxl_colors_usage_[index|0] / this.new_pxls_.length);}}
 });
 Object.defineProperty(QuantiMat.prototype, 'get_average_color_usage_percent', {
     get: function() {"use strict"; return function(start, stop){
@@ -477,9 +486,9 @@ QuantiMat.prototype.process_threshold = function(t) {
     var color_n_in_cluster = 0;
     var threshold = 0;
 
-    var baseFactor = .88;
-    var lowUsedFactor = .10; // Adjust this value to control sensitivity to usage percent differences
-    var distanceUsageFactor = .02; // Adjust this value to emphasize the effect of one color being more dominant
+    var baseFactor = .72;
+    var lowUsedFactor = .22; // Adjust this value to control sensitivity to usage percent differences
+    var distanceUsageFactor = .06; // Adjust this value to emphasize the effect of one color being more dominant
     var totalFactor = baseFactor + lowUsedFactor + distanceUsageFactor;
 
     weighted_threshold_skin_skin = fr(weighted_threshold * SAME_SKIN_COLOR_MATCH_MULTIPLY);
@@ -578,6 +587,13 @@ QuantiMat.prototype.init = function() {
     return this;
 };
 
+
+QuantiMat.prototype.reset_original = function() {
+    "use strict";
+    this.reset_original_data();
+    return this;
+};
+
 QuantiMat.prototype.run =  function() {
     "use strict";
 
@@ -597,6 +613,12 @@ QuantiMat.prototype.run =  function() {
         t = t + (this.new_pxl_colors_length > 60000 ? 12: this.new_pxl_colors_length > 32000 ? 8: this.new_pxl_colors_length > 16000 ? 4: this.new_pxl_colors_length > 8192 ? 3: this.new_pxl_colors_length > 4096 ? 2: 1) | 0;
     }
 
+    this.reset_original();
+    this.deduplicate();
+    this.clusterize();
+    this.process_threshold(t|0);
+    this.deduplicate();
+    this.clusterize();
     return this;
 };
 
