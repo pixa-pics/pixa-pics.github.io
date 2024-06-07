@@ -13,6 +13,6 @@ export default class Filters {
         "use strict";
         //this.despeckleFilter.apply();
         //this.mergeFilter.apply();
-        //this.quantizeFilter.apply();
+        this.quantizeFilter.apply();
     }
 }

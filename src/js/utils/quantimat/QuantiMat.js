@@ -46,7 +46,7 @@ var MODE = SIMDopeCreateConfAdd({
         "blend_first_with": true,
         "blend_first_with_tails": true,
         "blend_all": true,
-        "cie76_match_with": true,
+        "manhattan_match_with": true,
         "copy": true
     }
 });
@@ -539,7 +539,7 @@ QuantiMat.prototype.process_threshold = function(t) {
                            ) / totalFactor
                         );
                         // CIE LAB 1976 version color scheme is used to measure accurate the distance for the human eye
-                        if(color_a.cie76_match_with(color_b,  threshold)) {
+                        if(color_a.manhattan_match_with(color_b,  threshold)) {
 
                             color_usage_difference_positive = fr(color_b_usage / color_a_usage);
 

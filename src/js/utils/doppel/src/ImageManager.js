@@ -33,10 +33,8 @@ export default class ImageManager {
         const pixels = result[0];
         const colors = result[1];
         const data = new Uint32Array(pixels.length);
-        const count = new Uint32Array(colors.length);
 
         for(var i = 0; i < pixels.length; i++){
-            count[pixels[i]]++;
             data[i] = colors[pixels[i]];
         }
 
@@ -55,19 +53,20 @@ export default class ImageManager {
         let totalDistortion = 0;
         let originalImageDataUint32 = new Uint32Array(originalImageData.data.buffer);
         let imageDataUint32 = new Uint32Array(imageData.data.buffer);
-        let clustersDistortion = new Uint32Array(centroids.length);
+        let clustersDistortion = new BigUint64Array(centroids.length);
+        let distanceInt = 0;
 
         for (let i = 0; i < imageDataUint32.length; i++) {
 
             // Calculate the distance between the data point and its assigned centroid
-            let distanceInt = ImageManager.colorDifference(imageDataUint32[i], originalImageDataUint32[i]) | 0;
-                distanceInt = imul(distanceInt, distanceInt);
+            distanceInt = ImageManager.colorDifference(imageDataUint32[i], originalImageDataUint32[i]) | 0;
+            distanceInt = imul(distanceInt, distanceInt) | 0;
 
             totalDistortion += distanceInt;
-            clustersDistortion[clusterAssignments[i]] += distanceInt;
+            clustersDistortion[clusterAssignments[i]] += BigInt(distanceInt);
         }
 
-        return {totalDistortion, clustersDistortion: clustersDistortion.sort(function (a, b){ return b - a; })};
+        return {totalDistortion, clustersDistortion: Array.from(clustersDistortion).map(function (n){return Number(n)}).sort(function (a, b){ return b - a; })};
     }
     static _findElbowPoint(distortions) {
 
@@ -137,7 +136,7 @@ export default class ImageManager {
         const imageData = this.contextSource.getImageData(0, 0, this.contextSource.canvas.width, this.contextSource.canvas.height);
 
         var t1 = Date.now();
-        const dataQuantize = ImageManager.quantizeImageData(this.contextSource, 192);
+        const dataQuantize = ImageManager.quantizeImageData(this.contextSource, 256);
         const initialColorNumber = dataQuantize.centroids.length;
         var t2 = Date.now();
         const distortion = ImageManager._calculateDistortions(dataQuantize, imageData); // Calculate distortions
@@ -166,105 +165,98 @@ export default class ImageManager {
         const width = imageData.width;
         const height = imageData.height;
         const pixels = new Uint32Array(imageData.data.buffer);
-        const horizontalHistogram = {};
-        const verticalHistogram = {};
+        const max = 256;
+        const horizontalHistogram = new Uint32Array(max);
+        const verticalHistogram = new Uint32Array(max);
 
         // Horizontal scan
+        let consecutiveCount = 0, indexes = new Uint32Array(2);
         for (let y = 0; y < height; y++) {
-            let consecutiveCount = 1;
+            consecutiveCount = 0;
             for (let x = 1; x < width; x++) {
-                const currentIndex = y * width + x | 0;
-                const previousIndex = currentIndex - 1 | 0;
+                indexes[0] = y * width + x | 0;
+                indexes[1] = indexes[0] - 1 | 0;
 
-                if (pixels[currentIndex] == pixels[previousIndex]) {
+                if (pixels[indexes[0]] == pixels[indexes[1]]) {
                     consecutiveCount++;
                 } else {
-                    if (consecutiveCount > 1) {
-                        horizontalHistogram[consecutiveCount] = (horizontalHistogram[consecutiveCount] || 0) + 1 | 0;
+                    if (consecutiveCount > 1 && consecutiveCount < max) {
+                        horizontalHistogram[consecutiveCount] = horizontalHistogram[consecutiveCount] + 1 | 0;
                     }
                     consecutiveCount = 1;
                 }
             }
             // Check at the end of the row
-            if (consecutiveCount > 1) {
-                horizontalHistogram[consecutiveCount] = (horizontalHistogram[consecutiveCount] || 0) + 1 | 0;
+            if (consecutiveCount > 0 && consecutiveCount < max) {
+                horizontalHistogram[consecutiveCount] = horizontalHistogram[consecutiveCount] + 1 | 0;
             }
         }
 
         // Vertical scan
         for (let x = 0; x < width; x++) {
-            let consecutiveCount = 1;
+            consecutiveCount = 0;
             for (let y = 1; y < height; y++) {
-                const currentIndex = y * width + x | 0;
-                const previousIndex = currentIndex - width | 0;
+                indexes[0] = y * width + x | 0;
+                indexes[1] = indexes[0] - width | 0;
 
-                if (pixels[currentIndex] == pixels[previousIndex]) {
+                if (pixels[indexes[0]] == pixels[indexes[1]]) {
                     consecutiveCount++;
                 } else {
-                    if (consecutiveCount > 1) {
-                        verticalHistogram[consecutiveCount] = (verticalHistogram[consecutiveCount] || 0) + 1 | 0;
+                    if (consecutiveCount > 1 && consecutiveCount < max) {
+                        verticalHistogram[consecutiveCount] = verticalHistogram[consecutiveCount] + 1 | 0;
                     }
                     consecutiveCount = 1;
                 }
             }
             // Check at the end of the column
-            if (consecutiveCount > 1) {
-                verticalHistogram[consecutiveCount] = (verticalHistogram[consecutiveCount] || 0) + 1 | 0;
+            if (consecutiveCount > 0 && consecutiveCount < max) {
+                verticalHistogram[consecutiveCount] = verticalHistogram[consecutiveCount] + 1 | 0;
             }
         }
 
         // Analyze histograms to find potential tile sizes
         function analyzeHistogram(histogram) {
-
-            const entries = Object.entries(histogram).map(([length, count]) => ({ length: parseInt(length), count }));
-            entries.sort((a, b) => (b.length * b.count) - (a.length * a.count));
-
             // We assume the most common length of consecutive pixels might indicate the tile size
-            try {
-                let m = 0;
-                let n = 0;
-                let tileSize = entries[n++].length;
-                while(tileSize >= 3 && tileSize <= 12){
-                    var tile1 = entries[n];
+            let m = 0;
+            let n = 4;
+            let chosenTileSize = 1;
+            while(n >= 4 && n <= 32){
+                var tile1 = histogram[n];
 
-                    var tile2a = entries[n*2-1] || {};
-                    var tile2b = entries[n*2] || {};
-                    var tile2c = entries[n*2+1] || {};
+                var tile2a = histogram[n*2-1];
+                var tile2b = histogram[n*2];
+                var tile2c = histogram[n*2+1];
 
-                    var tile3a = entries[n*4-1] || {};
-                    var tile3b = entries[n*4] || {};
-                    var tile3c = entries[n*4+1] || {};
+                var tile3a = histogram[n*4-1];
+                var tile3b = histogram[n*4];
+                var tile3c = histogram[n*4+1];
 
-                    var max1 = tile1.count;
-                    var max2 = Math.max(tile2a.count, tile2b.count, tile2c.count);
-                    var max3 = Math.max(tile3a.count, tile3b.count, tile3c.count);
-                    var max = max1 + max2 + max3;
+                var max1 = tile1 * n * (1+n*0.1);
+                var max2 = Math.max(tile2a, tile2b, tile2c) * n * 2;
+                var max3 = Math.max(tile3a, tile3b, tile3c) * n * 4;
+                var max = max1;
 
-                    if(m < max) {
-                        m = max;
-                        tileSize = tile1.length;
-                        tileSize += (n*2 + [tile2a.count, tile2b.count, tile2c.count].indexOf(max2)-1) / 2;
-                        tileSize += (n*4 + [tile3a.count, tile3b.count, tile3c.count].indexOf(max3)-1) / 4;
-                        tileSize /= 3.0;
-                    }
-
-                    n++;
+                if(m < max) {
+                    m = max;
+                    chosenTileSize = n;
                 }
-                const totalCount = entries.reduce((acc, entry) => acc + entry.count, 0);
-                const certainty = entries[n-1].count / totalCount; // Simple certainty calculation
-                return { tileSize: tileSize, certainty };
-            } catch (e) {
-
-                return { tileSize: 0, certainty: 0.0 };
+                n++;
             }
+            var maxHistogram = 0;
+            histogram.forEach(function (repeat, number){
+                maxHistogram += repeat*number;
+            });
+            const certainty = Math.fround((chosenTileSize * histogram[chosenTileSize]) / maxHistogram); // Simple certainty calculation
+            return { tileSize: chosenTileSize, certainty };
         }
 
         const horizontalAnalysis = analyzeHistogram(horizontalHistogram);
         const verticalAnalysis = analyzeHistogram(verticalHistogram);
 
         // Combine horizontal and vertical analysis to determine final tile size and certainty
-        const tileSize = Math.round((horizontalAnalysis.tileSize + verticalAnalysis.tileSize) / 2);
-        const certainty = (horizontalAnalysis.certainty + verticalAnalysis.certainty) / 2;
+        const certainty = Math.max(horizontalAnalysis.certainty, verticalAnalysis.certainty) * 100;
+        const tileSize = certainty === horizontalAnalysis.certainty ? horizontalAnalysis.tileSize: verticalAnalysis.tileSize;
+
 
         return { tileSize, certainty };
     }
