@@ -7,14 +7,16 @@ function getImageDataFromBase64(base64) {
         base64_to_bitmap(base64, function(bitmap){
             bitmap_to_imagedata(bitmap, 999999999, function(image_data){
 
-                let new_pxls = new Uint16Array(image_data.width * image_data.height);
+                //let new_pxls = new Uint16Array(image_data.width * image_data.height);
                 let colorsuint32 = new Uint32Array(image_data.data.buffer);
                 let uint32colorssorted = new SIMDopeColors(colorsuint32.buffer).get_deduplicated_sorted_uint32a();
 
+                /*
                 for (let i = 0; i < colorsuint32.length; i += 1) {
 
                     new_pxls[i|0] = uint32colorssorted.indexOf(colorsuint32[i|0]);
                 }
+                 */
 
                 var sd = new SIMDopeColor(new ArrayBuffer(4));
                 var sdc = new SIMDopeColors(uint32colorssorted.buffer);
