@@ -19,7 +19,7 @@ module.exports = {
                     minifyWhitespace: true,
                     minifyIdentifiers: true,
                     minifySyntax: true,
-                    ecma: 6,
+                    ecma: 5,
                     parse: {},
                     module: false,
                     toplevel: true,
