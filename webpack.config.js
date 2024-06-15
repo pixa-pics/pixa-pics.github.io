@@ -4,7 +4,6 @@ var TerserPlugin = require('terser-webpack-plugin');
 var BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 var HtmlWebpackPlugin = require("html-webpack-plugin");
 
-
 module.exports = {
     devtool: process.env.NODE_ENV === 'production' ? false: false,
     entry: path.join(__dirname, "src/js/client.js"),
@@ -174,13 +173,13 @@ module.exports = {
                             presets: [
                                 'react',
                                 ["env", {
-                                    targets: "cover 99.5% in US",
+                                    targets: "cover 99.9% in US",
                                     forceAllTransforms: false,
                                     shippedProposals: true,
                                     bugfixes: true,
                                     useBuiltIns: "entry"
                                 }],
-                                'stage-0'
+                                'stage-1'
                             ]
                         }
                     }

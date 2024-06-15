@@ -1204,8 +1204,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                                         aria-labelledby="size-slider"/>
                             </div>
                         </div>
-                        <FormLabel style={{padding: "16px 24px 12px 32px"}} component="legend">ONLINE TOOLS TO ENHANCE
-                            YOUR SELECTION</FormLabel>
+                        <FormLabel style={{padding: "16px 24px 12px 32px"}} component="legend">ENHANCE YOUR IMAGE?</FormLabel>
                         <div className={"image " + classes.listItems}>
                             <RadioGroup row name="Colorize" onChange={this._set_import_colorize}
                                         key={"colorize-mode-n-" + import_colorize}
@@ -1213,25 +1212,13 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                                 <FormControlLabel
                                     value={"0"}
                                     control={<Radio color="primary"/>}
-                                    label="NONE"
+                                    label="KEEP ORIGINAL"
                                     labelPlacement="bottom"
                                 />
                                 <FormControlLabel
                                     value={"1"}
                                     control={<Radio color="primary"/>}
-                                    label="COLOR"
-                                    labelPlacement="bottom"
-                                />
-                                <FormControlLabel
-                                    value={"2"}
-                                    control={<Radio color="primary"/>}
-                                    label="SCALE"
-                                    labelPlacement="bottom"
-                                />
-                                <FormControlLabel
-                                    value={"3"}
-                                    control={<Radio color="primary"/>}
-                                    label="BOTH"
+                                    label="AI PROCESSING"
                                     labelPlacement="bottom"
                                 />
                             </RadioGroup>

@@ -97,6 +97,7 @@ const {Color} = SIMDopeCreate({
     }
 });
 import SmartRequestAnimationFrame from "../components/canvaspixels/utils/SmartRequestAnimationFrame";
+import { Client, client } from "../utils/gradio-client/index";
 
 const styles = theme => ({
     green: {
@@ -1898,34 +1899,100 @@ class Pixel extends React.PureComponent {
             const resize_to_finally = Math.min(parseInt(max_size * max_size), parseInt(_import_size * _import_size));
             let scale = 1.0;
 
-            this._handle_load("image_preload");
-            actions.trigger_voice("data_upload");
-            file_to_imagedata_resized(smart_file, resize_original_to, (imagedata) => {
-                imagedata_to_base64(imagedata, mimetype, (base64_resized) => {
-                    while ((Math.round(imagedata.width * scale) * Math.round(imagedata.height * scale)) > resize_to_finally) { scale -= 0.01; }
-                    base64_sanitize(base64_resized,  (b64b) => {
-                        base64_to_bitmap(b64b,  (imgbmp) => {
-                            bitmap_to_imagedata(imgbmp, imgbmp.width*imgbmp.height|0,  (imagedata2) => {
-                                imagedata_to_base64(imagedata2, "image/png", (base64) => {
-                                    let img = new Image();
-                                    img.addEventListener("load", () => {
-                                        this._handle_load_complete("image_preload", {});
-                                        this.setSt4te({_kb: 0, _saved_at: 1 / 0});
-                                        set_canvas_from_image(img, base64_resized, {}, false);
-                                        setTimeout(function () {
-                                            actions.trigger_snackbar(`I am really awesome, here is your pixel art!`, 5700);
+            if(parseInt(_import_colorize) === 0) {
+                this._handle_load("image_preload");
+                actions.trigger_voice("data_upload");
+                file_to_imagedata_resized(smart_file, resize_original_to, (imagedata) => {
+                    imagedata_to_base64(imagedata, mimetype, (base64_resized) => {
+                        while ((Math.round(imagedata.width * scale) * Math.round(imagedata.height * scale)) > resize_to_finally) { scale -= 0.01; }
+                        base64_sanitize(base64_resized,  (b64b) => {
+                            base64_to_bitmap(b64b,  (imgbmp) => {
+                                bitmap_to_imagedata(imgbmp, imgbmp.width*imgbmp.height|0,  (imagedata2) => {
+                                    imagedata_to_base64(imagedata2, "image/png", (base64) => {
+                                        let img = new Image();
+                                        img.addEventListener("load", () => {
+                                            this._handle_load_complete("image_preload", {});
+                                            this.setSt4te({_kb: 0, _saved_at: 1 / 0});
+                                            set_canvas_from_image(img, base64_resized, {}, false);
                                             setTimeout(function () {
-                                                actions.jamy_update("happy");
-                                            }, 2000);
-                                        }, 1000);
-                                    }, {once: true, capture: true});
-                                    img.src = base64;
-                                }, pool);
-                            }, pool)
-                        }, pool);
-                    }, null, scale, "doppel");
+                                                actions.trigger_snackbar(`I am really awesome, here is your pixel art!`, 5700);
+                                                setTimeout(function () {
+                                                    actions.jamy_update("happy");
+                                                }, 2000);
+                                            }, 1000);
+                                        }, {once: true, capture: true});
+                                        img.src = base64;
+                                    }, pool);
+                                }, pool)
+                            }, pool);
+                        }, null, scale, "doppel");
+                    }, pool);
                 }, pool);
-            }, pool);
+            }else {
+
+                this._handle_load("image_ai");
+                actions.trigger_voice("processing");
+                Client.connect("gokaygokay/paligemma-rich-captions").then((cli) => {
+                    cli.predict("/create_captions_moondream", {
+                        image: smart_file, 	// blob in 'Input Picture' Image component
+                    }).then(async(result) => {
+                        if(result.data){
+                            const prompt = "A low-palette, low color number pixel art in lucasarts style of : " + result.data;
+                            const custom_lora = "https://civitai.com/models/247890/lucasarts-adventure-game-style-xl";
+                            const app = await client("multimodalart/face-to-all");
+                            const res = await app.predict("/load_custom_lora", [custom_lora]);
+                            console.log(res);
+                            const res2 = await app.predict("/run_lora_1", [
+                                smart_file, 	// blob in 'Upload a picture of yourself' Image component
+                                prompt, // string  in 'Prompt' Textbox component
+                                "realistic, photo, real, picture, ugly, missing finger, bad shapes, too much colors...", // string  in 'Negative Prompt' Textbox component
+                                0.85, // number (numeric value between 0 and 10) in 'LoRA weight' Slider component
+                                0.90, // number (numeric value between 0 and 2) in 'Face strength' Slider component
+                                0.14, // number (numeric value between 0 and 1) in 'Image strength' Slider component
+                                7, // number (numeric value between 0 and 50) in 'Guidance Scale' Slider component
+                                0.8, // number (numeric value between 0 and 1) in 'Zoe Depth ControlNet strenght' Slider component
+                            ]);
+
+                            this._handle_load_complete("image_ai", {});
+
+                            console.log(res2)
+                            fetch(res2).then((r) => {
+                                r.blob().then((b) => {
+                                    this._handle_load("image_preload");
+                                    file_to_imagedata_resized(b, resize_original_to, (imagedata) => {
+                                        imagedata_to_base64(imagedata, mimetype, (base64_resized) => {
+                                            while ((Math.round(imagedata.width * scale) * Math.round(imagedata.height * scale)) > resize_to_finally) { scale -= 0.01; }
+                                            base64_sanitize(base64_resized,  (b64b) => {
+                                                base64_to_bitmap(b64b,  (imgbmp) => {
+                                                    bitmap_to_imagedata(imgbmp, imgbmp.width*imgbmp.height|0,  (imagedata2) => {
+                                                        imagedata_to_base64(imagedata2, "image/png", (base64) => {
+                                                            let img = new Image();
+                                                            img.addEventListener("load", () => {
+                                                                this._handle_load_complete("image_preload", {});
+                                                                this.setSt4te({_kb: 0, _saved_at: 1 / 0});
+                                                                set_canvas_from_image(img, base64_resized, {}, false);
+                                                                setTimeout(function () {
+                                                                    actions.trigger_snackbar(`I am really awesome, here is your pixel art!`, 5700);
+                                                                    setTimeout(function () {
+                                                                        actions.jamy_update("happy");
+                                                                    }, 2000);
+                                                                }, 1000);
+                                                            }, {once: true, capture: true});
+                                                            img.src = base64;
+                                                        }, pool);
+                                                    }, pool)
+                                                }, pool);
+                                            }, null, scale, "doppel");
+                                        }, pool);
+                                    }, pool);
+
+                                });
+                            })
+                        }
+                    });
+                });
+            }
+
         }
     };
 
