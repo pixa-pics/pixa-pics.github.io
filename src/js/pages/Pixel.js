@@ -1929,7 +1929,7 @@ class Pixel extends React.PureComponent {
                 }, pool);
             }else {
 
-
+                const that = this;
                 const BASE_URL = "https://gokaygokay-sd3-long-captioner-v2.hf.space";
                 const BASE_URL_FACE = "https://abidlabs-face-to-all.hf.space";
                 const LORA_URL = "https://civitai.com/models/247890/lucasarts-adventure-game-style-xl";
@@ -1979,9 +1979,7 @@ class Pixel extends React.PureComponent {
                     return null;
                 }
 
-                var that = this;
                 async function handleLoadComplete(imageUrl) {
-                    that._handle_load("image_preload");
                     const response = await fetch(imageUrl);
                     const blob = await response.blob();
                     file_to_imagedata_resized(blob, resize_original_to, (imagedata) => {
@@ -1991,11 +1989,11 @@ class Pixel extends React.PureComponent {
                                 base64_to_bitmap(b64b, (imgbmp) => {
                                     bitmap_to_imagedata(imgbmp, imgbmp.width * imgbmp.height | 0, (imagedata2) => {
                                         imagedata_to_base64(imagedata2, "image/png", (base64) => {
+                                            that._handle_load_complete("image_preload", {});
                                             let img = new Image();
                                             img.addEventListener("load", () => {
                                                 that.setSt4te({ _kb: 0, _saved_at: 1 / 0 });
                                                 set_canvas_from_image(img, base64_resized, {}, false);
-                                                that._handle_load_complete("image_preload", {});
                                                 setTimeout(function () {
                                                     actions.trigger_snackbar(`I am really awesome, here is your pixel art!`, 5700);
                                                     setTimeout(function () {
@@ -2038,12 +2036,17 @@ class Pixel extends React.PureComponent {
                 }
 
                 async function processImage(smart_file) {
+                    actions.jamy_update("angry");
                     actions.trigger_voice("processing");
+                    actions.trigger_loading_update(10);
+                    actions.trigger_snackbar("Uploading file (3 sec)");
                     const uploadResult = await uploadFile(smart_file, BASE_URL);
                     const path = uploadResult[0];
                     const imagePath = `${BASE_URL}/file=${path}`;
-                    const url = `${BASE_URL}/call/create_captions_rich`;
-
+                    const url = `${BASE_URL}/call/create_captions_rich`
+                    actions.jamy_update("annoyed", 8000);
+                    actions.trigger_loading_update(20);
+                    actions.trigger_snackbar("Creating captions (10 sec)");
                     const responseData = await createCaptions(url, imagePath);
                     const eventId = responseData.event_id;
 
@@ -2065,13 +2068,18 @@ class Pixel extends React.PureComponent {
                             const uploadResult2 = await uploadFile(smart_file, BASE_URL_FACE);
                             const path2 = uploadResult2[0];
                             const imagePath2 = `${BASE_URL_FACE}/file=${path2}`;
-
+                            actions.jamy_update("flirty", 8000);
+                            actions.trigger_loading_update(40);
+                            actions.trigger_snackbar("Loading pixel art style (3 sec)");
                             const res = await fetch(`${BASE_URL_FACE}/run/predict`, {
                                 headers: HEADERS_JSON,
                                 body: JSON.stringify({ data: [LORA_URL], event_data: null, fn_index: 0, trigger_id: 11, session_hash }),
                                 method: "POST"
                             }).then(res => res.json());
                             if (res) {
+                                actions.trigger_loading_update(50);
+                                actions.jamy_update("happy", 2000);
+                                actions.trigger_snackbar("Sending request (3 sec)");
                                 const resp = await fetch(`${BASE_URL_FACE}/queue/join`, {
                                     headers: HEADERS_JSON,
                                     body: JSON.stringify({
@@ -2093,8 +2101,9 @@ class Pixel extends React.PureComponent {
                                         session_hash
                                     }),
                                     method: "POST"
-                                }).then(res => res.json());
-
+                                }).then(res => res.json());                                actions.jamy_update("annoyed", 5000);
+                                actions.trigger_loading_update(60);
+                                actions.trigger_snackbar("Waiting on generation (14 sec)");
                                 const reader3 = await fetchEventSource(`${BASE_URL_FACE}/queue/data?session_hash=${session_hash}`);
                                 const decoder3 = new TextDecoder("utf-8");
 
@@ -2104,8 +2113,16 @@ class Pixel extends React.PureComponent {
 
                                 for (let i = 0; i < lines3.length; i++) {
                                     const line3 = lines3[i].trim();
-                                    if (line3.includes("process_completed")) {
+                                    if (line3.includes("process_completed")) {                  actions.jamy_update("flirty", 666);
+                                        actions.trigger_loading_update(100);
+                                        actions.trigger_snackbar("Receiving results (3 sec)");
                                         const final_url = extractSecondImageUrl(line3);
+                                        actions.jamy_update("happy", 666);
+                                        actions.trigger_sfx("alert_high-intensity", 1, "md");
+                                        actions.trigger_loading_update(0);
+                                        actions.trigger_snackbar("AI Processing [OK]");
+                                        that._handle_load_complete("image_ai", {});
+                                        that._handle_load("image_preload");
                                         return await handleLoadComplete(final_url);
                                     }
                                 }
@@ -2116,7 +2133,8 @@ class Pixel extends React.PureComponent {
 
                 this._handle_load("image_ai");
                 processImage(smart_file).then(() => {
-                    this._handle_load_complete("image_ai", {});
+
+
                 })
 
             }
