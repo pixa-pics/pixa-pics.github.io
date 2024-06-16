@@ -82,7 +82,7 @@ async function resolve_config(endpoint) {
     var _a;
     const headers = this.options.hf_token ? { Authorization: `Bearer ${this.options.hf_token}` } : {};
     headers["Content-Type"] = "application/json";
-    if (typeof window !== "undefined" && window.gradio_config && location.origin !== "http://localhost:9876" && !window.gradio_config.dev_mode) {
+    if (typeof window !== "undefined" && window.gradio_config && location.origin !== "http://localhost:8080" && !window.gradio_config.dev_mode) {
         const path = window.gradio_config.root;
         const config = window.gradio_config;
         let config_root = resolve_root(endpoint, config.root, false);
@@ -956,7 +956,7 @@ async function predict(endpoint, data) {
             }
             if (message.type === "status") {
                 if (message.stage === "error")
-                    reject(message);
+                    //reject(message);
                 if (message.stage === "complete") {
                     status_complete = true;
                     if (data_returned) {
@@ -1490,11 +1490,7 @@ function readable_stream(input, init = {}) {
 function submit(endpoint, data, event_data, trigger_id, all_events) {
     var _a;
     try {
-        let fire_event = function(event) {
-            if (all_events || events_to_publish[event.type]) {
-                push_event(event);
-            }
-        }, close = function() {
+        let close = function() {
             done = true;
             while (resolvers.length > 0)
                 resolvers.shift()({
@@ -1510,10 +1506,14 @@ function submit(endpoint, data, event_data, trigger_id, all_events) {
                 values.push(data2);
             }
         }, push_error = function(error) {
-            push(thenable_reject(error));
-            close();
+            //push(thenable_reject(error));
+            //close();
         }, push_event = function(event) {
             push({ value: event, done: false });
+        }, fire_event = function(event) {
+            if (all_events || events_to_publish[event.type]) {
+                push_event(event);
+            }
         }, next = function() {
             if (values.length > 0)
                 return Promise.resolve(values.shift());
@@ -2031,16 +2031,16 @@ function submit(endpoint, data, event_data, trigger_id, all_events) {
                                     } else if (type === "complete") {
                                         complete = status2;
                                     } else if (type == "unexpected_error") {
-                                        console.error("Unexpected error", status2 == null ? void 0 : status2.message);
-                                        fire_event({
+                                        //console.error("Unexpected error", status2 == null ? void 0 : status2.message);
+                                        /*fire_event({
                                             type: "status",
                                             stage: "error",
                                             message: (status2 == null ? void 0 : status2.message) || "An Unexpected Error Occurred!",
                                             queue: true,
                                             endpoint: _endpoint,
                                             fn_index,
-                                            time: /* @__PURE__ */ new Date()
-                                        });
+                                            time:  new Date()
+                                        });*/
                                     } else if (type === "log") {
                                         fire_event({
                                             type: "log",

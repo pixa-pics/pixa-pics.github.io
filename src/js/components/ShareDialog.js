@@ -29,7 +29,7 @@ import BloggerIcon from "../icons/Blogger";
 import TwitterIcon from "../icons/Twitter";
 import RedditIcon from "../icons/Reddit";
 
-import clipboard from "clipboard-polyfill/dist/es5/overwrite-globals/clipboard-polyfill.overwrite-globals.promise.es5.js";
+import clipboard from "clipboard-polyfill";
 import actions from "../actions/utils";
 
 const styles = theme => ({

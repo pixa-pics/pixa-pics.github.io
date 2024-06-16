@@ -1854,7 +1854,7 @@ class Pixel extends React.PureComponent {
             this._close_library();
         };
     };
-    _handle_file_upload = (event) => {
+    _handle_file_upload = async(event) => {
 
         if("dataTransfer" in event) {
             if(event.dataTransfer.files.length > 0) {
@@ -1932,67 +1932,185 @@ class Pixel extends React.PureComponent {
 
                 this._handle_load("image_ai");
                 actions.trigger_voice("processing");
-                Client.connect("gokaygokay/paligemma-rich-captions").then((cli) => {
-                    cli.predict("/create_captions_moondream", {
-                        image: smart_file, 	// blob in 'Input Picture' Image component
-                    }).then(async(result) => {
-                        if(result.data){
-                            const prompt = "A low-palette, low color number pixel art in lucasarts style of : " + result.data;
-                            const custom_lora = "https://civitai.com/models/247890/lucasarts-adventure-game-style-xl";
-                            const app = await client("multimodalart/face-to-all");
-                            const res = await app.predict("/load_custom_lora", [custom_lora]);
-                            console.log(res);
-                            const res2 = await app.predict("/run_lora_1", [
-                                smart_file, 	// blob in 'Upload a picture of yourself' Image component
-                                prompt, // string  in 'Prompt' Textbox component
-                                "realistic, photo, real, picture, ugly, missing finger, bad shapes, too much colors...", // string  in 'Negative Prompt' Textbox component
-                                0.85, // number (numeric value between 0 and 10) in 'LoRA weight' Slider component
-                                0.90, // number (numeric value between 0 and 2) in 'Face strength' Slider component
-                                0.14, // number (numeric value between 0 and 1) in 'Image strength' Slider component
-                                7, // number (numeric value between 0 and 50) in 'Guidance Scale' Slider component
-                                0.8, // number (numeric value between 0 and 1) in 'Zoe Depth ControlNet strenght' Slider component
-                            ]);
+                const formData = new FormData();
+                formData.append('files', smart_file);
+                const id = parseInt(Math.random() * 0XFFFFFF | 0).toString(16);
+                const upload_result = await (await fetch('https://gokaygokay-sd3-long-captioner-v2.hf.space/upload?upload_id=' + id, {
+                    method: 'POST',
+                    body: formData
+                })).json();
 
-                            this._handle_load_complete("image_ai", {});
-
-                            console.log(res2)
-                            fetch(res2).then((r) => {
-                                r.blob().then((b) => {
-                                    this._handle_load("image_preload");
-                                    file_to_imagedata_resized(b, resize_original_to, (imagedata) => {
-                                        imagedata_to_base64(imagedata, mimetype, (base64_resized) => {
-                                            while ((Math.round(imagedata.width * scale) * Math.round(imagedata.height * scale)) > resize_to_finally) { scale -= 0.01; }
-                                            base64_sanitize(base64_resized,  (b64b) => {
-                                                base64_to_bitmap(b64b,  (imgbmp) => {
-                                                    bitmap_to_imagedata(imgbmp, imgbmp.width*imgbmp.height|0,  (imagedata2) => {
-                                                        imagedata_to_base64(imagedata2, "image/png", (base64) => {
-                                                            let img = new Image();
-                                                            img.addEventListener("load", () => {
-                                                                this._handle_load_complete("image_preload", {});
-                                                                this.setSt4te({_kb: 0, _saved_at: 1 / 0});
-                                                                set_canvas_from_image(img, base64_resized, {}, false);
-                                                                setTimeout(function () {
-                                                                    actions.trigger_snackbar(`I am really awesome, here is your pixel art!`, 5700);
-                                                                    setTimeout(function () {
-                                                                        actions.jamy_update("happy");
-                                                                    }, 2000);
-                                                                }, 1000);
-                                                            }, {once: true, capture: true});
-                                                            img.src = base64;
-                                                        }, pool);
-                                                    }, pool)
-                                                }, pool);
-                                            }, null, scale, "doppel");
-                                        }, pool);
-                                    }, pool);
-
-                                });
-                            })
-                        }
-                    });
+                const path = upload_result[0];
+                const url = "https://gokaygokay-sd3-long-captioner-v2.hf.space/call/create_captions_rich";
+                const imagePath = "https://gokaygokay-sd3-long-captioner-v2.hf.space/file=" + path;
+                //First POST request
+                const response = await fetch(url, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        data: [{path: imagePath}]
+                    })
                 });
-            }
 
+                const responseData = await response.json();
+                const eventId = responseData.event_id;
+
+                // Use EventSource for Server-Sent Events
+                const r = await fetch(`${url}/${eventId}`, {
+                    headers: {
+                        "accept": "text/event-stream"
+                    }
+                });
+
+                const reader = r.body.getReader();
+                const decoder = new TextDecoder("utf-8");
+
+                let result = "";
+                let done = false;
+
+                while (!done) {
+                    const {value, done: streamDone} = await reader.read();
+                    done = streamDone;
+                    result += decoder.decode(value || new Uint8Array(), {stream: true});
+
+                    let lines = result.split("\n");
+
+                    // Process each line
+                    for (let i = 0; i < lines.length; i ++) {
+                        const line = lines[i].trim();
+                        if (line.startsWith("data:")) {
+                            const data = line.slice(5).trim();
+                            const json = JSON.parse(data);
+                            const prompt_a = json[0];
+
+                            // Process the data here
+                            const session_hash = parseInt(Math.random() * 0XFFFFFF | 0).toString(16);
+                            const prompt = "A low-palette, low color number pixel art (pixelart:1.5) in lucasarts style of : ".concat(prompt_a);
+
+                            const custom_lora = "https://civitai.com/models/247890/lucasarts-adventure-game-style-xl";
+                            var res = await (await fetch("https://abidlabs-face-to-all.hf.space/run/predict?__theme=light", {
+                                "headers": {
+                                    "accept": "*/*",
+                                    "content-type": "application/json"
+                                },
+                                "body": "{\"data\":[\"" + custom_lora + "\"],\"event_data\":null,\"fn_index\":0,\"trigger_id\":11,\"session_hash\":\"" + session_hash + "\"}",
+                                "method": "POST"
+                            })).json();
+
+                            const formData2 = new FormData();
+                            formData2.append('files', smart_file);
+                            const id2 = parseInt(Math.random() * 0XFFFFFF | 0).toString(16);
+                            const upload_result2 = await (await fetch('https://abidlabs-face-to-all.hf.space/upload?upload_id=' + id2, {
+                                method: 'POST',
+                                body: formData
+                            })).json();
+
+                            const path2 = upload_result2[0];
+                            const imagePath2 = "https://abidlabs-face-to-all.hf.space/file=" + path2;
+
+                            if(res){
+
+                                var resp = await (await fetch("https://abidlabs-face-to-all.hf.space/queue/join?__theme=light", {
+                                    "headers": {
+                                        "accept": "*/*",
+                                        "content-type": "application/json"
+                                    },
+                                    "body": "{\"data\":[{\"path\":\"" + path2 + "\",\"url\":\"" + imagePath2 + "\",\"orig_name\":\"Screenshot from 2024-06-15 12-34-10.png\",\"size\":" + smart_file.size + ",\"mime_type\":\"" + smart_file.type + "\",\"meta\":{\"_type\":\"gradio.FileData\"}},\"" + prompt + "\",\"\",0.9,null,0.92,0.17,7,0.8,null,null],\"event_data\":null,\"fn_index\":6,\"trigger_id\":18,\"session_hash\":\"" + session_hash + "\"}",
+                                    "method": "POST"
+                                })).json();
+
+
+                                function extractSecondImageUrl(jsonStr) {
+                                    const urlRegex = /"url":"(https:\/\/[^"]+)"/g;
+                                    const matches = jsonStr.match(urlRegex);
+
+                                    if (matches && matches.length > 1) {
+                                        const secondMatch = matches[1]; // Get the second match
+                                        const url = secondMatch.match(/"url":"(https:\/\/[^"]+)"/)[1]; // Extract the URL
+                                        return url;
+                                    }
+
+                                    return null; // Return null if there isn't a second URL
+                                }
+
+                                //"realistic, photo, real, picture, ugly, missing finger, bad shapes, too much colors..."
+                                const idr = resp.event_id;
+                                const r3 = await fetch("https://abidlabs-face-to-all.hf.space/queue/data?session_hash=" + session_hash, {
+                                    headers: {
+                                        "accept": "text/event-stream"
+                                    }
+                                });
+
+
+                                const reader3 = r3.body.getReader();
+                                const decoder3 = new TextDecoder("utf-8");
+                                let result3 = "";
+                                let done = false;
+
+                                while (!done) {
+                                    const {value, done: streamDone} = await reader3.read();
+                                    done = streamDone;
+                                    result3 += decoder3.decode(value || new Uint8Array(), {stream: true});
+
+                                    let lines3 = result3.split("\n");
+
+                                    // Process each line
+                                    for (let i = 0; i < lines3.length; i ++) {
+                                        const line3 = lines3[i].trim();
+                                        if (line3.includes("process_completed")) {
+                                            const data3 = line3;
+                                            console.log(data3)
+                                            const final_url = extractSecondImageUrl(data3)
+                                            console.log(final_url)
+                                            fetch(final_url).then((r) => {
+                                                r.blob().then((b) => {
+                                                    this._handle_load("image_preload");
+                                                    file_to_imagedata_resized(b, resize_original_to, (imagedata) => {
+                                                        imagedata_to_base64(imagedata, mimetype, (base64_resized) => {
+                                                            while ((Math.round(imagedata.width * scale) * Math.round(imagedata.height * scale)) > resize_to_finally) { scale -= 0.01; }
+                                                            base64_sanitize(base64_resized,  (b64b) => {
+                                                                base64_to_bitmap(b64b,  (imgbmp) => {
+                                                                    bitmap_to_imagedata(imgbmp, imgbmp.width*imgbmp.height|0,  (imagedata2) => {
+                                                                        imagedata_to_base64(imagedata2, "image/png", (base64) => {
+                                                                            let img = new Image();
+                                                                            img.addEventListener("load", () => {
+                                                                                this._handle_load_complete("image_preload", {});
+                                                                                this.setSt4te({_kb: 0, _saved_at: 1 / 0});
+                                                                                set_canvas_from_image(img, base64_resized, {}, false);
+                                                                                setTimeout(function () {
+                                                                                    actions.trigger_snackbar(`I am really awesome, here is your pixel art!`, 5700);
+                                                                                    setTimeout(function () {
+                                                                                        actions.jamy_update("happy");
+                                                                                    }, 2000);
+                                                                                }, 1000);
+                                                                            }, {once: true, capture: true});
+                                                                            img.src = base64;
+                                                                        }, pool);
+                                                                    }, pool)
+                                                                }, pool);
+                                                            }, null, scale, "doppel");
+                                                        }, pool);
+                                                    }, pool);
+
+                                                });
+                                            })
+                                            this._handle_load_complete("image_ai", {});
+                                        }
+                                    }
+
+                                    // Keep any partial line for the next iteration
+                                    result3 = lines3[lines3.length - 1];
+                                }
+                            }
+                        }
+                    }
+
+                    // Keep any partial line for the next iteration
+                    result = lines[lines.length - 1];
+                }
+            }
         }
     };
 
