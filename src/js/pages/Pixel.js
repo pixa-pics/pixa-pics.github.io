@@ -2044,9 +2044,15 @@ class Pixel extends React.PureComponent {
                     const path = uploadResult[0];
                     const imagePath = `${BASE_URL}/file=${path}`;
                     const url = `${BASE_URL}/call/create_captions_rich`
+                    const start_creating_caption = Date.now();
                     actions.jamy_update("annoyed", 8000);
                     actions.trigger_loading_update(20);
                     actions.trigger_snackbar("Creating captions (10 sec)");
+                    setTimeout(() => {
+                        actions.jamy_update("annoyed", 8000);
+                        actions.trigger_loading_update(20);
+                        actions.trigger_snackbar("Creating captions (5/10)");
+                    }, 5000)
                     const responseData = await createCaptions(url, imagePath);
                     const eventId = responseData.event_id;
 
@@ -2063,14 +2069,18 @@ class Pixel extends React.PureComponent {
                             const data = line.slice(5).trim();
                             const prompt_a = data.replaceAll("[\"", "").replaceAll("\"]", "");
                             const session_hash = generateRandomId();
-                            const prompt = `A low-palette, low color number pixel art (pixelart:1.5) in lucasarts style of : ${prompt_a}... Truthful facial traits, high fidelity face, retro video game art, masterpiece, beautiful.`;
+
+                            actions.trigger_snackbar("IMAGE: "+prompt_a, 5000);
+                            const prompt = `A palette based, low color number pixel art (pixelart:1.6) in lucasarts style of : ${prompt_a}... Truthful facial traits, highly detailed face for a pixel art, retro video game art only, masterpiece retro game art, beautiful pixel art.`;
 
                             const uploadResult2 = await uploadFile(smart_file, BASE_URL_FACE);
                             const path2 = uploadResult2[0];
                             const imagePath2 = `${BASE_URL_FACE}/file=${path2}`;
-                            actions.jamy_update("flirty", 8000);
-                            actions.trigger_loading_update(40);
-                            actions.trigger_snackbar("Loading pixel art style (3 sec)");
+                            setTimeout(() => {
+                                actions.jamy_update("flirty", 8000);
+                                actions.trigger_loading_update(40);
+                                actions.trigger_snackbar("Loading pixel art style (3 sec)");
+                            }, 4000)
                             const res = await fetch(`${BASE_URL_FACE}/run/predict`, {
                                 headers: HEADERS_JSON,
                                 body: JSON.stringify({ data: [LORA_URL], event_data: null, fn_index: 0, trigger_id: 11, session_hash }),
@@ -2085,13 +2095,13 @@ class Pixel extends React.PureComponent {
                                     body: JSON.stringify({
                                         data: [{ path: path2, url: imagePath2, orig_name: "image.png", size: smart_file.size, mime_type: smart_file.type, meta: { _type: "gradio.FileData" } },
                                             prompt,
-                                            "Photography, realistic, bad skin, untruthful, disformed, ugly face, bad lighting, too much colors, missing fingers, poor quality, bad result, unsatisfiying, photo, picture, photo-realistic, 4K, UHD, 8K, HD.",
-                                            0.88,
+                                            "Photography, realistic, bad skin, untruthful, disformed, ugly face, bad lighting, wrong colors, missing fingers, poor quality, bad result, unsatisfiying, photo, picture, photo-realistic, 4K, UHD, 8K, HD.",
+                                            0.9,
                                             null,
-                                            0.88,
-                                            0.14,
-                                            6.66,
-                                            0.88,
+                                            0.9,
+                                            0.12,
+                                            7,
+                                            0.80,
                                             null,
                                             null
                                         ],
@@ -2101,9 +2111,24 @@ class Pixel extends React.PureComponent {
                                         session_hash
                                     }),
                                     method: "POST"
-                                }).then(res => res.json());                                actions.jamy_update("annoyed", 5000);
-                                actions.trigger_loading_update(60);
-                                actions.trigger_snackbar("Waiting on generation (14 sec)");
+                                }).then(res => res.json());
+
+                                setTimeout(() => {
+                                    actions.jamy_update("annoyed", 5000);
+                                    actions.trigger_loading_update(60);
+                                    actions.trigger_snackbar("Waiting on generation (15 sec)");
+                                    setTimeout(() => {
+                                        actions.jamy_update("annoyed", 8000);
+                                        actions.trigger_loading_update(20);
+                                        actions.trigger_snackbar("Waiting on generation (5/15)");
+                                    }, 5000);
+                                    setTimeout(() => {
+                                        actions.jamy_update("annoyed", 8000);
+                                        actions.trigger_loading_update(20);
+                                        actions.trigger_snackbar("Waiting on generation (10/15)");
+                                    }, 10000);
+                                }, 4000)
+
                                 const reader3 = await fetchEventSource(`${BASE_URL_FACE}/queue/data?session_hash=${session_hash}`);
                                 const decoder3 = new TextDecoder("utf-8");
 

@@ -560,7 +560,32 @@ class Marketplace extends React.Component {
                     </Fade>
                     <Fade in timeout={1600}>
                         <div>
-                            <h3 style={{fontSize: "44px", fontWeight: "bold"}}>Meet The Team & Partners</h3>
+                            <h3 style={{fontSize: "44px", fontWeight: "bold"}}>Advisors</h3>
+                            <div className={classes.tableWrapper}>
+                                <table className={classes.table}>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Title</th>
+                                    </tr>
+                                    <tr className={classes.tableWhite}>
+                                        <td onClick={() => {window.open("https://www.linkedin.com/in/profkarenwendt/")}} className={classes.link}>Dr. Karen W.</td>
+                                        <td>Fundraising Advisor</td>
+                                    </tr>
+                                    <tr className={classes.tableWhite}>
+                                        <td onClick={() => {window.open("https://www.linkedin.com/in/mailinda-pilavi-kropf/")}} className={classes.link}>Esq. Mailinda P-K.</td>
+                                        <td>Legal Advisor</td>
+                                    </tr>
+                                    <tr className={classes.tableWhite}>
+                                        <td onClick={() => {window.open("https://www.linkedin.com/in/evdokia-bobrova/")}} className={classes.link}>Evdokia B.</td>
+                                        <td>Marketing Advisor</td>
+                                    </tr>
+                                    <tr className={classes.tableWhite}>
+                                        <td onClick={() => {window.open("https://www.linkedin.com/in/annakarolinawisniewska/")}} className={classes.link}>Ania W.</td>
+                                        <td>Marketing Advisor</td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <h3 style={{fontSize: "44px", fontWeight: "bold"}}>Partners</h3>
                             <div className={classes.tableWrapper}>
                                 <table className={classes.table}>
                                     <tr>
