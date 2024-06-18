@@ -97,7 +97,7 @@ const {Color} = SIMDopeCreate({
     }
 });
 import SmartRequestAnimationFrame from "../components/canvaspixels/utils/SmartRequestAnimationFrame";
-
+import {FaceToAllAPI, LongCaptionerAPI} from "../utils/AI";
 const styles = theme => ({
     green: {
         color: lightGreen[700],
@@ -1878,17 +1878,18 @@ class Pixel extends React.PureComponent {
             }
         }
 
-        if(smart_file === null && dumb_file === null) {
+        const longCaptionerAPI = new LongCaptionerAPI();
+        const faceToAllAPI = new FaceToAllAPI();
 
+        if (smart_file === null && dumb_file === null) {
             actions.trigger_snackbar("Looks like I can't get your file as something is erroneous.", 5700);
             actions.jamy_update("angry");
-        }else if(smart_file !== null) {
-
+        } else if (smart_file !== null) {
             const is_type_png = Boolean(smart_file.type === "image/png"); //image/png
             const mimetype = is_type_png ? "image/png" : smart_file.type;
 
-            const {_import_colorize, _import_size} = this.st4te;
-            const {set_canvas_from_image} = this.st4te._canvas;
+            const { _import_colorize, _import_size } = this.st4te;
+            const { set_canvas_from_image } = this.st4te._canvas;
 
             const max_original_size = is_mobile_or_tablet ? Math.sqrt(540 * 720) : Math.sqrt(720 * 1080);
             const max_size = is_mobile_or_tablet ? Math.sqrt(512 * 512) : Math.sqrt(512 * 512);
@@ -1898,20 +1899,20 @@ class Pixel extends React.PureComponent {
             const resize_to_finally = Math.min(parseInt(max_size * max_size), parseInt(_import_size * _import_size));
             let scale = 1.0;
 
-            if(parseInt(_import_colorize) === 0) {
+             const loadImage = async(file) => {
                 this._handle_load("image_preload");
                 actions.trigger_voice("data_upload");
-                file_to_imagedata_resized(smart_file, resize_original_to, (imagedata) => {
+                file_to_imagedata_resized(file, resize_original_to, (imagedata) => {
                     imagedata_to_base64(imagedata, mimetype, (base64_resized) => {
                         while ((Math.round(imagedata.width * scale) * Math.round(imagedata.height * scale)) > resize_to_finally) { scale -= 0.01; }
-                        base64_sanitize(base64_resized,  (b64b) => {
-                            base64_to_bitmap(b64b,  (imgbmp) => {
-                                bitmap_to_imagedata(imgbmp, imgbmp.width*imgbmp.height|0,  (imagedata2) => {
+                        base64_sanitize(base64_resized, (b64b) => {
+                            base64_to_bitmap(b64b, (imgbmp) => {
+                                bitmap_to_imagedata(imgbmp, imgbmp.width * imgbmp.height | 0, (imagedata2) => {
                                     imagedata_to_base64(imagedata2, "image/png", (base64) => {
                                         let img = new Image();
                                         img.addEventListener("load", () => {
                                             this._handle_load_complete("image_preload", {});
-                                            this.setSt4te({_kb: 0, _saved_at: 1 / 0});
+                                            this.setSt4te({ _kb: 0, _saved_at: 1 / 0 });
                                             set_canvas_from_image(img, base64_resized, {}, false);
                                             setTimeout(function () {
                                                 actions.trigger_snackbar(`I am really awesome, here is your pixel art!`, 5700);
@@ -1919,132 +1920,26 @@ class Pixel extends React.PureComponent {
                                                     actions.jamy_update("happy");
                                                 }, 2000);
                                             }, 1000);
-                                        }, {once: true, capture: true});
+                                        }, { once: true, capture: true });
                                         img.src = base64;
                                     }, pool);
-                                }, pool)
+                                }, pool);
                             }, pool);
                         }, null, scale, "doppel");
                     }, pool);
                 }, pool);
-            }else {
+            }
 
+            if (parseInt(_import_colorize) === 0) {
+
+            } else {
                 const that = this;
-                const BASE_URL = "https://gokaygokay-sd3-long-captioner-v2.hf.space";
-                const BASE_URL_FACE = "https://abidlabs-face-to-all.hf.space";
-                const LORA_URL = "https://civitai.com/models/247890/lucasarts-adventure-game-style-xl";
-                const HEADERS_JSON = {"Content-Type": "application/json"};
-                const HEADERS_STREAM = {"accept": "text/event-stream"};
-
-                function generateRandomId() {
-                    return parseInt(Math.random() * 0XFFFFFF | 0).toString(16);
-                }
-
-                async function uploadFile(file, baseUrl) {
-                    const formData = new FormData();
-                    formData.append('files', file);
-                    const id = generateRandomId();
-                    const response = await fetch(`${baseUrl}/upload?upload_id=${id}`, {
-                        method: 'POST',
-                        body: formData
-                    });
-                    return response.json();
-                }
-
-                async function createCaptions(url, imagePath) {
-                    const response = await fetch(url, {
-                        method: "POST",
-                        headers: HEADERS_JSON,
-                        body: JSON.stringify({
-                            data: [{ path: imagePath }]
-                        })
-                    });
-                    return response.json();
-                }
-
-                async function fetchEventSource(url) {
-                    const response = await fetch(url, {
-                        headers: HEADERS_STREAM
-                    });
-                    return response.body.getReader();
-                }
-
-                function extractSecondImageUrl(jsonStr) {
-                    const urlRegex = /"url":"(https:\/\/[^"]+)"/g;
-                    const matches = jsonStr.match(urlRegex);
-                    if (matches && matches.length > 1) {
-                        const secondMatch = matches[1];
-                        return secondMatch.match(/"url":"(https:\/\/[^"]+)"/)[1];
-                    }
-                    return null;
-                }
-
-                async function handleLoadComplete(imageUrl) {
-                    const response = await fetch(imageUrl);
-                    const blob = await response.blob();
-                    file_to_imagedata_resized(blob, resize_original_to, (imagedata) => {
-                        imagedata_to_base64(imagedata, mimetype, (base64_resized) => {
-                            while ((Math.round(imagedata.width * scale) * Math.round(imagedata.height * scale)) > resize_to_finally) { scale -= 0.01; }
-                            base64_sanitize(base64_resized, (b64b) => {
-                                base64_to_bitmap(b64b, (imgbmp) => {
-                                    bitmap_to_imagedata(imgbmp, imgbmp.width * imgbmp.height | 0, (imagedata2) => {
-                                        imagedata_to_base64(imagedata2, "image/png", (base64) => {
-                                            that._handle_load_complete("image_preload", {});
-                                            let img = new Image();
-                                            img.addEventListener("load", () => {
-                                                that.setSt4te({ _kb: 0, _saved_at: 1 / 0 });
-                                                set_canvas_from_image(img, base64_resized, {}, false);
-                                                setTimeout(function () {
-                                                    actions.trigger_snackbar(`I am really awesome, here is your pixel art!`, 5700);
-                                                    setTimeout(function () {
-                                                        actions.jamy_update("happy");
-                                                    }, 2000);
-                                                }, 1000);
-                                            }, { once: true, capture: true });
-                                            img.src = base64;
-                                        }, pool);
-                                    }, pool);
-                                }, pool);
-                            }, null, scale, "doppel");
-                        }, pool);
-                    }, pool);
-                }
-
-                async function readResponse(reader, decoder) {
-                    let result = "", final = "";
-                    let done = false;
-
-                    while (!done) {
-                        const { value, done: streamDone } = await reader.read();
-                        done = streamDone;
-                        result += decoder.decode(value || new Uint8Array(), { stream: true });
-
-                        let lines = result.split("\n");
-
-                        // Process each line
-                        for (let i = 0; i < lines.length; i++) {
-                            const line = lines[i].trim();
-                            if(line.includes("complete")){
-                                final = line;
-                            }
-                        }
-
-                        // Keep any partial line for the next iteration
-                        result = lines[lines.length - 1];
-                    }
-                    return final;
-                }
-
-                async function processImage(smart_file) {
+                async function processImage(file) {
                     actions.jamy_update("angry");
                     actions.trigger_voice("processing");
                     actions.trigger_loading_update(10);
                     actions.trigger_snackbar("Uploading file (3 sec)");
-                    const uploadResult = await uploadFile(smart_file, BASE_URL);
-                    const path = uploadResult[0];
-                    const imagePath = `${BASE_URL}/file=${path}`;
-                    const url = `${BASE_URL}/call/create_captions_rich`
-                    const start_creating_caption = Date.now();
+
                     actions.jamy_update("annoyed", 8000);
                     actions.trigger_loading_update(20);
                     actions.trigger_snackbar("Creating captions (10 sec)");
@@ -2052,114 +1947,51 @@ class Pixel extends React.PureComponent {
                         actions.jamy_update("annoyed", 8000);
                         actions.trigger_loading_update(20);
                         actions.trigger_snackbar("Creating captions (5/10)");
-                    }, 5000)
-                    const responseData = await createCaptions(url, imagePath);
-                    const eventId = responseData.event_id;
+                    }, 5000);
 
-                    const reader = await fetchEventSource(`${url}/${eventId}`);
-                    const decoder = new TextDecoder("utf-8");
 
-                    let result = await readResponse(reader, decoder);
+                    const prompt = await longCaptionerAPI.run(file)
+                    actions.trigger_snackbar("IMAGE: " + prompt, 5000);
 
-                    let lines = result.split("\n");
+                    setTimeout(() => {
+                        actions.jamy_update("flirty", 8000);
+                        actions.trigger_loading_update(40);
+                        actions.trigger_snackbar("Loading pixel art style (3 sec)");
+                    }, 4000);
 
-                    for (let i = 0; i < lines.length; i++) {
-                        const line = lines[i].trim();
-                        if (line.includes("complete")) {
-                            const data = line.slice(5).trim();
-                            const prompt_a = data.replaceAll("[\"", "").replaceAll("\"]", "");
-                            const session_hash = generateRandomId();
+                    setTimeout(() => {
+                        actions.jamy_update("annoyed", 5000);
+                        actions.trigger_loading_update(60);
+                        actions.trigger_snackbar("Waiting on generation (15 sec)");
+                        setTimeout(() => {
+                            actions.jamy_update("annoyed", 8000);
+                            actions.trigger_loading_update(20);
+                            actions.trigger_snackbar("Waiting on generation (5/15)");
+                        }, 5000);
+                        setTimeout(() => {
+                            actions.jamy_update("annoyed", 8000);
+                            actions.trigger_loading_update(20);
+                            actions.trigger_snackbar("Waiting on generation (10/15)");
+                        }, 10000);
+                    }, 4000);
 
-                            actions.trigger_snackbar("IMAGE: "+prompt_a, 5000);
-                            const prompt = `A palette based, low color number pixel art (pixelart:1.6) in lucasarts style of : ${prompt_a}... Truthful facial traits, highly detailed face for a pixel art, retro video game art only, masterpiece retro game art, beautiful pixel art.`;
+                    const blob = await faceToAllAPI.run(file, prompt)
+                    actions.jamy_update("flirty", 666);
+                    actions.trigger_loading_update(100);
+                    actions.trigger_snackbar("Receiving results (3 sec)");
 
-                            const uploadResult2 = await uploadFile(smart_file, BASE_URL_FACE);
-                            const path2 = uploadResult2[0];
-                            const imagePath2 = `${BASE_URL_FACE}/file=${path2}`;
-                            setTimeout(() => {
-                                actions.jamy_update("flirty", 8000);
-                                actions.trigger_loading_update(40);
-                                actions.trigger_snackbar("Loading pixel art style (3 sec)");
-                            }, 4000)
-                            const res = await fetch(`${BASE_URL_FACE}/run/predict`, {
-                                headers: HEADERS_JSON,
-                                body: JSON.stringify({ data: [LORA_URL], event_data: null, fn_index: 0, trigger_id: 11, session_hash }),
-                                method: "POST"
-                            }).then(res => res.json());
-                            if (res) {
-                                actions.trigger_loading_update(50);
-                                actions.jamy_update("happy", 2000);
-                                actions.trigger_snackbar("Sending request (3 sec)");
-                                const resp = await fetch(`${BASE_URL_FACE}/queue/join`, {
-                                    headers: HEADERS_JSON,
-                                    body: JSON.stringify({
-                                        data: [{ path: path2, url: imagePath2, orig_name: "image.png", size: smart_file.size, mime_type: smart_file.type, meta: { _type: "gradio.FileData" } },
-                                            prompt,
-                                            "Photography, realistic, bad skin, untruthful, disformed, ugly face, bad lighting, wrong colors, missing fingers, poor quality, bad result, unsatisfiying, photo, picture, photo-realistic, 4K, UHD, 8K, HD.",
-                                            0.9,
-                                            null,
-                                            0.9,
-                                            0.12,
-                                            7,
-                                            0.80,
-                                            null,
-                                            null
-                                        ],
-                                        event_data: null,
-                                        fn_index: 6,
-                                        trigger_id: 18,
-                                        session_hash
-                                    }),
-                                    method: "POST"
-                                }).then(res => res.json());
-
-                                setTimeout(() => {
-                                    actions.jamy_update("annoyed", 5000);
-                                    actions.trigger_loading_update(60);
-                                    actions.trigger_snackbar("Waiting on generation (15 sec)");
-                                    setTimeout(() => {
-                                        actions.jamy_update("annoyed", 8000);
-                                        actions.trigger_loading_update(20);
-                                        actions.trigger_snackbar("Waiting on generation (5/15)");
-                                    }, 5000);
-                                    setTimeout(() => {
-                                        actions.jamy_update("annoyed", 8000);
-                                        actions.trigger_loading_update(20);
-                                        actions.trigger_snackbar("Waiting on generation (10/15)");
-                                    }, 10000);
-                                }, 4000)
-
-                                const reader3 = await fetchEventSource(`${BASE_URL_FACE}/queue/data?session_hash=${session_hash}`);
-                                const decoder3 = new TextDecoder("utf-8");
-
-                                let result3 = await readResponse(reader3, decoder3);
-
-                                let lines3 = result3.split("\n");
-
-                                for (let i = 0; i < lines3.length; i++) {
-                                    const line3 = lines3[i].trim();
-                                    if (line3.includes("process_completed")) {                  actions.jamy_update("flirty", 666);
-                                        actions.trigger_loading_update(100);
-                                        actions.trigger_snackbar("Receiving results (3 sec)");
-                                        const final_url = extractSecondImageUrl(line3);
-                                        actions.jamy_update("happy", 666);
-                                        actions.trigger_sfx("alert_high-intensity", 1, "md");
-                                        actions.trigger_loading_update(0);
-                                        actions.trigger_snackbar("AI Processing [OK]");
-                                        that._handle_load_complete("image_ai", {});
-                                        that._handle_load("image_preload");
-                                        return await handleLoadComplete(final_url);
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    actions.jamy_update("happy", 666);
+                    actions.trigger_sfx("alert_high-intensity", 1, "md");
+                    actions.trigger_loading_update(0);
+                    actions.trigger_snackbar("AI Processing [OK]");
+                    that._handle_load_complete("image_ai", {});
+                    that._handle_load("image_preload");
+                    return Promise.resolve(blob);
                 }
 
                 this._handle_load("image_ai");
-                processImage(smart_file).then(() => {
-
-
+                processImage(smart_file).then((blob) => {
+                    loadImage(blob);
                 })
 
             }

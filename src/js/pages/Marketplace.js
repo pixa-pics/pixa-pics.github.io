@@ -86,7 +86,7 @@ import TrendingUp from "@material-ui/icons/TrendingUp";
 import TimeIcon from "@material-ui/icons/Timer";
 import CameraIcon from "@material-ui/icons/Camera";
 import Info from "@material-ui/icons/Info";
-
+import {LongCaptionerAPI} from "../utils/AI";
 const styles = theme => ({
     root: {
         textAlign: "center",
@@ -921,6 +921,7 @@ class Marketplace extends React.PureComponent {
             following: following,
             imagesFeed: imagesFeed,
             imagesProfile: imagesProfile,
+            descriptions: [],
             categories: [
                 {name: "photo", star: true}, {name: "selfie", star: true}, {name: "drawing", star: true}, {name: "illustration", star: true},
                 {name: "portrait", star: false},{name: "school", star: false},{name: "landscape", star: false},{name: "animal", star: false},{name: "nature", star: false},{name: "city", star: false},{name: "sexy", star: false},{name: "artistic", star: false},{name: "realistic", star: false},{name: "welcome", star: false},{name: "gaming", star: false},{name: "party", star: false},{name: "friends", star: false},{name: "fantasy", star: false}
@@ -1262,6 +1263,12 @@ class Marketplace extends React.PureComponent {
     openMediaCard = (img) => {
 
         actions.trigger_sfx("navigation_selection-complete-celebration");
+        const longCaptionerAPI = new LongCaptionerAPI();
+        let descriptions = this.st4te.descriptions || [];
+        longCaptionerAPI.run(img.src).then((caption) => {
+            descriptions[img.name] = caption;
+            this.setst4te({descriptions});
+        });
         this.setst4te({openedMediaData: img, src: img.src}, () => {
             this.forceUpdate();
             getImageDataFromBase64(img.src).then((data) => {
@@ -1369,7 +1376,7 @@ class Marketplace extends React.PureComponent {
     };
     render() {
 
-        const { classes, tabValue, tagValue, renderingMenuAnchorEl, imagesProfile, isMobile, imagesFeed, mainTabValue, categories, tabTagValue, actions, history, openedMediaData, openedMediaDataData, _h_svg_size, _h_svg, src, type, drawerHashtagOpen, openedDrawer, comments, followers, following } = this.st4te;
+        const { classes, tabValue, tagValue, descriptions, renderingMenuAnchorEl, imagesProfile, isMobile, imagesFeed, mainTabValue, categories, tabTagValue, actions, history, openedMediaData, openedMediaDataData, _h_svg_size, _h_svg, src, type, drawerHashtagOpen, openedDrawer, comments, followers, following } = this.st4te;
 
         const {canvas_wrapper, device_pixel_ratio, scale, canvas_event_target} = this.canvas_pos.get_state();
         const screen_zoom_ratio = this.canvas_pos.get_screen_zoom_ratio();
@@ -1866,7 +1873,7 @@ class Marketplace extends React.PureComponent {
                             }
                         </div>
                         <h2>Description</h2>
-                        <p style={{textAlign: "justify", margin: "8px 16px"}}>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                        <p style={{textAlign: "justify", margin: "8px 16px"}}>{descriptions[openedMediaData.name] || "Fetching description using Artificial Intelligence [Automatic captioning]... Please wait."}</p>
                         <h2>st4te</h2>
                         <List dense={true} className={classes.list}>
                             <ListItem divider>
