@@ -50,10 +50,11 @@ class HuggingFaceAPI {
                     const width = image.naturalWidth || image.width;
 
                    async function blober() {
-                        const canvas = new OffscreenCanvas(width, height);
-                        const context = canvas.getContext("bitmaprenderer");
-                        const bitmap = await createImageBitmap(image);
-                        context.transferFromImageBitmap(bitmap);
+                       const canvas = document.createElement("canvas")
+                       canvas.width = width;
+                       canvas.height = height;
+                       const context = canvas.getContext("2d");
+                       context.drawImage(image, 0, 0);
                         try {
                             canvas.toBlob(resolve, "image/webp", .75);
                         } catch (e) {
