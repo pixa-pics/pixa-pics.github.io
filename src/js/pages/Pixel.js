@@ -1932,6 +1932,9 @@ class Pixel extends React.PureComponent {
 
             if (parseInt(_import_colorize) === 0) {
 
+                loadImage(smart_file).then(() => {
+
+                });
             } else {
                 const that = this;
                 async function processImage(file) {
