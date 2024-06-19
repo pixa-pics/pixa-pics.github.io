@@ -16,6 +16,23 @@ var fr = Math.fround;
 import {SetFixed} from "@asaitama/boolean-array";
 import XXHashJS from "./xxhash";
 import XXHashWASM from "xxhash-wasm";
+const split_image_data = function (image_data) {
+    var image_data_uint32 = new Uint32Array(image_data.data.buffer);
+    var pxl_colors = Uint32Array.from(new Set(image_data_uint32));
+    var pxl_colors_map = {};
+    var original_color_n = pxl_colors.length;
+    var pxls = original_color_n < 0xFF ? new Uint8Array(image_data_uint32.length): original_color_n < 0xFFFF ? new Uint16Array(image_data_uint32.length): new Uint32Array(image_data_uint32.length);
+
+    for(var i = 0, l = original_color_n|0; (i|0) < (l|0); i = (i+1|0)>>>0) {
+        pxl_colors_map[pxl_colors[i|0]] = (i | 0) >>> 0;
+    }
+
+    for(var i = 0, l = image_data_uint32.length|0; (i|0) < (l|0); i = (i+1|0)>>>0) {
+        pxls[i|0] = (pxl_colors_map[image_data_uint32[i|0]] | 0) >>> 0;
+    }
+
+    return [pxls, pxl_colors, image_data_uint32, original_color_n];
+}
 
 const XXHash = {
     _get_64_js() {
@@ -126,9 +143,9 @@ var Layer = function(image_data_or_colors_and_indexes, width, height, with_plain
 
     width = (parseInt(width || 0) | 0) >>> 0;
     height = (parseInt(height || 0) | 0) >>> 0;
-    this.with_plain_data_ = typeof with_plain_data == "undefined" ? false: Boolean(with_plain_data) && true;
+    this.with_plain_data_ = typeof with_plain_data == "undefined" ? true: Boolean(with_plain_data) && true;
 
-    if(image_data_or_colors_and_indexes.length === 2){
+    if("length" in image_data_or_colors_and_indexes && image_data_or_colors_and_indexes.length === 2){
 
         // Initialize the matrix data width and height
         this.width_ = width | 0;
@@ -141,7 +158,15 @@ var Layer = function(image_data_or_colors_and_indexes, width, height, with_plain
 
 
     }else{
-        if(image_data_or_colors_and_indexes.data8 instanceof Uint8ClampedArray) { // image_data
+        if(image_data_or_colors_and_indexes instanceof ImageData){
+
+            const [pxls, pxl_colors] = split_image_data(image_data_or_colors_and_indexes);
+            this.width_ = image_data_or_colors_and_indexes.width | 0;
+            this.height_ = image_data_or_colors_and_indexes.height | 0;
+            this.bitmap_ = typeof bmp == "undefined" ? {height: this.height_, width: this.width_, destroy: function (){}, hash: ""}: bmp;
+            this.force_update_data(pxl_colors, pxls);
+
+        } else if(image_data_or_colors_and_indexes.data8 instanceof Uint8ClampedArray) { // image_data
 
             this.width_ = image_data_or_colors_and_indexes.width | 0;
             this.height_ = image_data_or_colors_and_indexes.height | 0;
@@ -1212,5 +1237,5 @@ Object.defineProperty(Filters.prototype, 'use', {
 
 
 module.exports = {
-    Layer, Layers, Filters
+    Layer, Layers, Filters, split_image_data
 }

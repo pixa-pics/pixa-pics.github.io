@@ -3,6 +3,13 @@ class HuggingFaceAPI {
         this.baseUrl = baseUrl;
     }
 
+    generateRandomSeed() {
+        try {
+            return crypto.getRandomValues(new Uint32Array(1))[0];
+        } catch (e) {
+            return Math.round(Math.random() * 0xFFFFFFFF);
+        }
+    }
     generateRandomId() {
         return Math.round(Math.random() * 0xFFFFFF).toString(16).padStart(6, "0");
     }
@@ -23,7 +30,8 @@ class HuggingFaceAPI {
         return `${this.baseUrl}/file=${path}`;
     }
 
-    async handleLoadComplete(url) {
+    async handleLoadComplete(url, output) {
+        output = typeof output === "undefined" ? "blob": output;
         const splittedUrl = url.split("/");
         const fileName = splittedUrl[splittedUrl.length-1];
         const extension = fileName.split(".")[1];
@@ -32,7 +40,7 @@ class HuggingFaceAPI {
         try {
             // Fetch the image data from the URL
 
-            const blob = await new Promise(function (resolve){
+            const response = await new Promise(function (resolve){
 
                 const image = new Image();
 
@@ -41,26 +49,52 @@ class HuggingFaceAPI {
                     const height = image.naturalHeight || image.height;
                     const width = image.naturalWidth || image.width;
 
-                    try {
+                   async function blober() {
                         const canvas = new OffscreenCanvas(width, height);
                         const context = canvas.getContext("bitmaprenderer");
-                        const bitmap = createImageBitmap(image);
+                        const bitmap = await createImageBitmap(image);
                         context.transferFromImageBitmap(bitmap);
-                        canvas.toBlob(resolve, "image/webp", .75);
-                    } catch (e) {
+                        try {
+                            canvas.toBlob(resolve, "image/webp", .75);
+                        } catch (e) {
+                            canvas.toBlob(resolve, "image/jpeg", .75);
+                        }
+                    }
+
+                    async function imagedater () {
                         const canvas = document.createElement("canvas")
                         canvas.width = width;
                         canvas.height = height;
                         const context = canvas.getContext("2d");
                         context.drawImage(image, 0, 0);
-                        canvas.toBlob(resolve, "image/jpeg", .75);
+                        resolve(context.getImageData(0, 0, width, height, {colorSpace: "srgb"}));
+                    }
+
+                    try {
+
+                        switch (output.toLowerCase()) {
+                            case "blob":
+                                blober();
+                                break;
+                            case "imagedata":
+                                imagedater();
+                                break;
+                        }
+                    } catch (e) {
+
                     }
                 };
                 image.setAttribute('src', url);
             });
 
-            const file = new File([blob], fileName, { type: mimeType });
-            return Promise.resolve(file);
+            switch (output) {
+                case "blob":
+                    const file = new File([response], fileName, { type: mimeType });
+                    return Promise.resolve(file);
+                case "imagedata":
+                    return Promise.resolve(response);
+            }
+
         } catch (error) {
             console.error('Error creating file from URL:', error);
             return Promise.reject();
@@ -180,6 +214,137 @@ class LongCaptionerAPI extends HuggingFaceAPI {
         }
     }
 }
+
+class ImageCreatorAPI extends HuggingFaceAPI {
+    constructor() {
+        super("https://pixart-alpha-pixart-sigma.hf.space");
+    }
+    getPredictHeader(prompt, hash, width = 512, height = 512, number = 1, style = "(No style)", negative_prompt="bad shape, disformed, photography, photo, realistic, photo-realistic.", solver = "DPM-Solver") {
+        const seed = this.generateRandomSeed();
+        style = typeof style === "string" ? style: ["(No style)", "Pixel Art", "Digital Art", "Anime", "Manga"]
+        return {
+            headers: this.getHeadersJson(),
+            body: JSON.stringify(
+                {
+                    data:[
+                        "A pixel art (retro style video game palette artwork) of : "+prompt,
+                        negative_prompt,
+                        style,
+                        true,
+                        number,
+                        seed,
+                        width,
+                        height,
+                        solver,
+                        4.5,
+                        3.5,
+                        17,
+                        25,
+                        true
+                    ],
+                    event_data:null,
+                    fn_index:3,
+                    trigger_id:7,
+                    session_hash:hash
+                }
+            ),
+            method: "POST"
+        };
+    }
+
+    getQueueJoinUrl() {
+        return `${this.baseUrl}/queue/join`;
+    }
+
+    getResultUrl(hash) {
+       return `${this.baseUrl}/queue/data?session_hash=${hash}`;
+    }
+
+    async readResponse(reader) {
+        const decoder = new TextDecoder("utf-8");
+        let result = "";
+        let done = false;
+        let finalData = null;
+
+        while (!done) {
+            const { value, done: streamDone } = await reader.read();
+            done = done || streamDone;
+            result += decoder.decode(value || new Uint8Array(), { stream: true });
+
+            // Split the result into lines and process each line
+            let lines = result.split("\n");
+
+            for (let line of lines) {
+                line = line.trim();
+
+                if (line.includes("complete")) {
+                    // The event is complete, so we can mark done as true
+                    done = true;
+                    finalData = line;
+                }
+            }
+
+            // Reset result to handle potential partial lines correctly
+            result = lines[lines.length - 1];
+        }
+
+        return Promise.resolve(finalData);
+    }
+
+
+    extractLastImageUrl(jsonStr, number) {
+        try {
+            console.log(jsonStr)
+            const dataObject = JSON.parse(jsonStr.slice(5).trim());
+            const imageUrls = [];
+
+            // Navigate to the array that contains the image objects
+            const data = dataObject.output.data || [];
+
+            // Extract URLs from the image objects
+            for(let i = 0; i < data.length;i++) {
+                const dataItem = data[i];
+                for (let y = 0; y < dataItem.length;y++) {
+                    const item = dataItem[y];
+                    if (item.image) {
+                        if(item.image.url){
+                            imageUrls.push(item.image.url);
+                        }
+                    }
+                }
+            }
+            return imageUrls;
+        } catch (error) {
+            console.error("Failed to parse JSON or extract image URLs:", error);
+            return [];
+        }
+    }
+
+    async run(prompt, width = 512, height = 512, number = 1) {
+
+        const hash = this.generateRandomId();
+        const header = this.getPredictHeader(prompt, hash, width, height, number);
+        const url = this.getQueueJoinUrl();
+        const responseQueue = await fetch(url, header);
+        const responseQueueJSON = await responseQueue.json();
+        const event_id = responseQueueJSON.event_id;
+        if(event_id) {
+
+            const response = await this.fetchEventSource(this.getResultUrl(hash));
+            const line = await this.readResponse(response);
+            const urls = this.extractLastImageUrl(line);
+            if(urls.length === 1) {
+                const url = urls[0];
+                const file = await this.handleLoadComplete(url, "imagedata");
+                return Promise.resolve(file);
+            }else {
+                return Promise.allSettled([urls.map(() => {return this.handleLoadComplete(url, "imagedata")})]);
+            }
+        }
+
+        return Promise.reject();
+    }
+}
 class FaceToAllAPI extends HuggingFaceAPI {
     constructor() {
         super("https://abidlabs-face-to-all.hf.space");
@@ -212,6 +377,7 @@ class FaceToAllAPI extends HuggingFaceAPI {
     }
 
     getQueueJoinHeader(path, url, size, type, prompt, hash) {
+
         const finalPrompt = `A palette based, low color number pixel art (pixelart:1.25) in lucasarts style of : ${prompt}... Truthful facial traits, highly detailed face for a pixel art, retro video game art, masterpiece retro game art, beautiful pixel art only.`;
 
         return {
@@ -298,6 +464,7 @@ class FaceToAllAPI extends HuggingFaceAPI {
             const responseQueue = await fetch(urlQueue, headerQueue);
             const responseQueueJSON = await responseQueue.json();
             if (typeof responseQueueJSON.event_id !== "undefined") {
+                const event_id = responseQueueJSON.event_id;
                 const request_url = this.getQueueDataUrl(hash);
                 const event = await this.fetchEventSource(request_url);
                 const line = await this.readResponse(event);
@@ -315,5 +482,6 @@ class FaceToAllAPI extends HuggingFaceAPI {
 module.exports = {
     HuggingFaceAPI,
     FaceToAllAPI,
-    LongCaptionerAPI
+    LongCaptionerAPI,
+    ImageCreatorAPI
 }

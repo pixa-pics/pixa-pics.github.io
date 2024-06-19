@@ -112,6 +112,20 @@ import SwapVerticalIcon from "../icons/SwapVertical";
 import actions from "../actions/utils";
 import InfoOutlined from "@material-ui/icons/InfoOutlined";
 import CloseIcon from "@material-ui/icons/Close";
+import {ImageCreatorAPI} from "../utils/AI";
+import pool from "../utils/worker-pool";
+import {file_to_base64} from "../utils/img_manipulation";
+import Input from "@material-ui/core/Input";
+import AddAPhoto from "@material-ui/icons/AddAPhoto";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import Tabs from "@material-ui/core/Tabs";
+import Tab from "@material-ui/core/Tab";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogContentText from "@material-ui/core/DialogContentText";
+import DialogActions from "@material-ui/core/DialogActions";
+import Dialog from "@material-ui/core/Dialog";
+import Send from "@material-ui/icons/Send";
+import TextField from "@material-ui/core/TextField";
 const PANEL_NAMES = ["palette", "image", "layers", "tools", "selection", "effects", "filters"];
 
 const styles = theme => ({
@@ -530,6 +544,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
             classes: props.classes,
             canvas: props.canvas,
             is_mobile: props.is_mobile || false,
+            _prompt: "",
             view_names: props.view_names,
             view_name_index: props.view_name_index,
             current_color: props.current_color,
@@ -916,7 +931,8 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
             _layer_opened,
             import_size,
             import_colorize,
-            _list_sub_header_opened
+            _list_sub_header_opened,
+            _prompt
         } = this.st4te;
 
         const ccsd = Color.new_hex(current_color);
@@ -1023,6 +1039,10 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                                     </div>
                                 );
                             })}
+                        </div>
+                        <div key={"layers-wrapper-bottom-index-" + index}>
+                            <TextField style={{margin: "8px 8px 8px 16px", width: "calc(100% - 96px)"}} defaultValue={_prompt} label="Generate background" placeholder="Insert a description for a new background" onChange={this._set_prompt} />
+                            <IconButton style={{margin: "8px 16px 8px 8px"}} onClick={this._handle_generate_import_canvas}><Send/></IconButton>
                         </div>
                     </div>
                 );
@@ -1242,7 +1262,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
         if (typeof can == "undefined") {
             return
         }
-        if (can == null) {
+        if (!can) {
             return
         }
         if (typeof can.width == "undefined") {
@@ -1254,6 +1274,31 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
         ctx.drawImage(bmp, 0, 0);
         bmp.drawn = true;
     };
+
+    _set_prompt = (event) => {
+
+        const value = event.target.value;
+        this.setSt4te({_prompt: value});
+    };
+
+    _handle_generate_import_canvas = async () => {
+
+        actions.trigger_loading_update(0);
+        actions.trigger_snackbar("Creating your background (10 seconds left)")
+        const prompt = this.st4te._prompt;
+        this.setSt4te({_prompt: ""}, () => {
+            this.update_cache_view("layers", true);
+        })
+        const { new_layer_from_image, super_state } = this.st4te.canvas;
+        const {pxl_width, pxl_height, layer_index, _layer_opened} = super_state.get_state();
+        const imgd = await (new ImageCreatorAPI()).run(prompt, pxl_width, pxl_height, 1, "imagedata");
+
+        if(imgd !== null) {
+            new_layer_from_image(imgd);
+            actions.trigger_loading_update(100);
+            actions.trigger_sfx("hero_decorative-celebration-02")
+        }
+    }
 
     get_action_panel = (index) => {
 
@@ -1552,7 +1597,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                                 icon: <MergeIcon/>, text: "Merge down layer", on_click: () => {
                                     canvas.merge_down_layer(layer_index)
                                 }
-                            },
+                            }
                         ]
                     },
                     {

@@ -35,7 +35,7 @@ export default class TileManager {
             for (let x = 0; x < this.finalWidth; x++) {
                 const tileId = x+y*this.finalWidth;
                 const tileIndexColor = tileId * 4;
-                this.tiles[tileId] =  new Tile(this.extractTileData(x, y), this.tilesColorUint8a.subarray(tileIndexColor, tileIndexColor+4), x, y);
+                this.tiles[tileId] = new Tile(this.extractTileData(x, y), this.tilesColorUint8a.subarray(tileIndexColor, tileIndexColor+4), x, y);
             }
         }
     }

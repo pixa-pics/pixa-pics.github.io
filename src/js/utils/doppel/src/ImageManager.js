@@ -165,7 +165,7 @@ export default class ImageManager {
         const width = imageData.width;
         const height = imageData.height;
         const pixels = new Uint32Array(imageData.data.buffer);
-        const max = 256;
+        const max = 64;
         const horizontalHistogram = new Uint32Array(max);
         const verticalHistogram = new Uint32Array(max);
 

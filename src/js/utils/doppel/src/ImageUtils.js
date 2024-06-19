@@ -12,7 +12,7 @@ export default class ImageUtils {
             canvas = document.createElement("canvas")
             canvas.width = width;
             canvas.height = height;
-            context = canvas.getContext('2d', { willReadFrequently: true});
+            context = canvas.getContext('2d', { willReadFrequently: true, desynchronized: true});
         }
 
         if (image instanceof ImageData) {

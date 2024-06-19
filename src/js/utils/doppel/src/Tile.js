@@ -8,21 +8,13 @@ export default class Tile {
         this.meanColor = new Pixel(colorUint8a);
         this.coordinates = Uint16Array.of(x, y);
         var l = this.imageData.data.length;
-        this.k = l >= 64 ? 8: l >= 16 ? 6: l >= 9 ? 4: l >= 2 ? 3: 1;
+        this.k = l >= 64 ? 6: l >= 16 ? 4: l >= 9 ? 3: l >= 2 ? 2: 1;
     }
     get x(){
         return this.coordinates[0];
     }
     get y(){
         return this.coordinates[1];
-    }
-    extractColorData(data) {
-        "use strict";
-        let colors = new Array(data.length/4);
-        for (let i = 0; i < data.length; i += 4) {
-            colors[i/4] = data.subarray(i, i+4);
-        }
-        return colors;
     }
     quantizeColors() {
         "use strict";
@@ -39,10 +31,10 @@ export default class Tile {
 
         const pixels = result[0];
         const colors = result[1];
-        const count = new Uint32Array(colors.length);
+        const count = pixels < 255 ? new Uint8Array(colors.length): new Uint16Array(colors.length);
 
         for(var i = 0; i < pixels.length; i++){
-            count[colors.indexOf(colors[pixels[i]])]++;
+            count[pixels[i]]++;
         }
 
         return [count, colors]

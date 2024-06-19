@@ -97,7 +97,7 @@ const {Color} = SIMDopeCreate({
     }
 });
 import SmartRequestAnimationFrame from "../components/canvaspixels/utils/SmartRequestAnimationFrame";
-import {FaceToAllAPI, LongCaptionerAPI} from "../utils/AI";
+import {FaceToAllAPI, LongCaptionerAPI, ImageCreatorAPI} from "../utils/AI";
 const styles = theme => ({
     green: {
         color: lightGreen[700],
@@ -1344,9 +1344,6 @@ class Pixel extends React.PureComponent {
         const { _tool, _view_name_index, _view_names, _is_pixel_dialog_post_edit_open } = this.st4te;
 
         if (event && !_is_pixel_dialog_post_edit_open) {
-
-            event.preventDefault();
-            event.stopPropagation();
 
             if(_tool === "MINE"){
 

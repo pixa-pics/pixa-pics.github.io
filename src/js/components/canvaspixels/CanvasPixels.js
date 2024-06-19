@@ -27,7 +27,7 @@ SOFTWARE.
 const HISTORY_TIME_GAP = 625;
 import {SetFixed} from "@asaitama/boolean-array";
 
-import {Layer, Filters} from "../../utils/Layer";
+import {Layer, Filters, split_image_data} from "../../utils/Layer";
 
 import React from "react";
 import TouchRipple from "@material-ui/core/ButtonBase/TouchRipple";
@@ -385,7 +385,7 @@ class CanvasPixels extends React.PureComponent {
             _s_layers.splice(_layer_index+1, 0, _s_layers.splice(_layer_index, 1)[0]);
 
 
-            this.super_state.set_state({
+            return this.super_state.set_state({
                 _layers,
                 _layer_index: parseInt(_layer_index + 1),
                 _s_layers,
@@ -393,6 +393,7 @@ class CanvasPixels extends React.PureComponent {
             }).then(() => {
                 this.super_master_meta.update_canvas(true);
                 this._maybe_save_state(undefined, true);
+                return Promise.resolve();
             });
         }
     };
@@ -407,7 +408,7 @@ class CanvasPixels extends React.PureComponent {
             _s_layers.splice(_layer_index-1, 0, _s_layers.splice(_layer_index, 1)[0]);
 
 
-            this.super_state.set_state({
+            return this.super_state.set_state({
                 _layers,
                 _s_layers,
                 _layer_index: parseInt(_layer_index - 1),
@@ -415,6 +416,7 @@ class CanvasPixels extends React.PureComponent {
             }).then(() => {
                 this.super_master_meta.update_canvas(true);
                 this._maybe_save_state(undefined, true);
+                return Promise.resolve();
             });
         }
     };
@@ -428,14 +430,34 @@ class CanvasPixels extends React.PureComponent {
         _s_layers.splice(at_index+1, 0, Layer.new_from_colors_and_indexes(Uint32Array.of(0), new Uint8Array(pxl_width * pxl_height), pxl_width, pxl_height, true));
         _layers.splice(at_index+1, 0, {id: Date.now(), hash: "", name: `Layer ${at_index+1}`, hidden: false, opacity: 1, colors: ["#00000000"], number_of_colors: 1});
 
-        this.super_state.set_state({
+        return this.super_state.set_state({
             _layers,
             _s_layers,
             _layer_index: at_index + 1,
             _last_action_timestamp: Date.now(),
         }).then(() => {
-            this.super_master_meta.update_canvas(true);
             this._maybe_save_state(undefined, true);
+            this.super_master_meta.update_canvas(true);
+            return Promise.resolve();
+        });
+    };
+
+    new_layer_from_image = (imageData) => {
+
+        let { _layers, _s_layers } = this.super_state.get_state();
+        const [pixels, colors] = split_image_data(imageData);
+        _s_layers.splice(0, 0, Layer.new_from_colors_and_indexes(colors, pixels, imageData.width, imageData.height, true));
+        _layers.splice(0, 0, {id: Date.now(), name: `Background`, hidden: false, opacity: 1, colors: ["#00000000"], number_of_colors: 1});
+
+        return this.super_state.set_state({
+            _layers,
+            _s_layers,
+            _layer_index: 0,
+            _last_action_timestamp: Date.now(),
+        }).then(() => {
+            this._maybe_save_state(undefined, true);
+            this.super_master_meta.update_canvas(true);
+            return Promise.resolve();
         });
     };
 
@@ -457,7 +479,7 @@ class CanvasPixels extends React.PureComponent {
             thumbnail: _layers[at_index].thumbnail,
         });
 
-        this.super_state.set_state({
+        return this.super_state.set_state({
             _layers,
             _layer_index: at_index + 1,
             _s_layers,
@@ -466,6 +488,7 @@ class CanvasPixels extends React.PureComponent {
 
             this.super_master_meta.update_canvas(true);
             this._maybe_save_state(undefined, true)
+            return Promise.resolve();
         });
 
     };
@@ -482,7 +505,7 @@ class CanvasPixels extends React.PureComponent {
             _layer_index = at_index-1;
             _layer_index = _layer_index < 0 ? 0: _layer_index;
 
-            this.super_state.set_state({
+            return this.super_state.set_state({
                 _layers,
                 _layer_index,
                 _s_layers,
@@ -490,6 +513,7 @@ class CanvasPixels extends React.PureComponent {
             }).then(() => {
                 this.super_master_meta.update_canvas(true);
                 this._maybe_save_state(undefined, true);
+                return Promise.resolve();
             });
         }
 
@@ -499,12 +523,13 @@ class CanvasPixels extends React.PureComponent {
 
         if(this.super_state.get_state()._layers.length > at_index && 0 <= at_index) {
 
-            this.super_state.set_state({
+            return this.super_state.set_state({
                 _layer_index: at_index,
                 _last_action_timestamp: 1/0,
             }).then(() => {
                 this.super_master_meta.update_canvas(true);
-                this._maybe_save_state(undefined, true)
+                this._maybe_save_state(undefined, true);
+                return Promise.resolve();
             });
         }
     };
@@ -924,45 +949,45 @@ class CanvasPixels extends React.PureComponent {
             this.props.onImageImport();
         }
 
-        setTimeout(() => {
+        return new Promise((resolve, reject) => {
+            setTimeout(() => {
 
-            const { pxl_width, pxl_height } = this.super_state.get_state();
+                const { pxl_width, pxl_height } = this.super_state.get_state();
 
-            // Draw the original image in an invisible canvas
-            let width = image_obj.width;
-            let height = image_obj.height;
+                // Draw the original image in an invisible canvas
+                let width = image_obj.width;
+                let height = image_obj.height;
 
-            if(true || pxl_width > width && pxl_height > height) {
+                if(true || pxl_width > width && pxl_height > height) {
 
-                let [canvas_ctx, canvas] = this._get_new_ctx_from_canvas(width, height, true);
-                canvas_ctx.drawImage(image_obj, 0, 0, width, height);
-                let image_data = canvas_ctx.getImageData(0, 0, width, height);
-                canvas_ctx = null;
-                canvas = null;
-                const { new_pxl_colors, new_pxls } = this._get_pixels_palette_and_list_from_image_data(image_data, true);
-                image_data = null;
+                    let [canvas_ctx, canvas] = this._get_new_ctx_from_canvas(width, height, true);
+                    canvas_ctx.drawImage(image_obj, 0, 0, width, height);
+                    let image_data = canvas_ctx.getImageData(0, 0, width, height);
+                    canvas_ctx = null;
+                    canvas = null;
+                    const { new_pxl_colors, new_pxls } = this._get_pixels_palette_and_list_from_image_data(image_data, true);
+                    image_data = null;
 
-                this.super_state.set_state({
-                    _imported_image_start_x: 0,
-                    _imported_image_start_y: 0,
-                    _imported_image_scale_delta_x: 0,
-                    _imported_image_scale_delta_y: 0,
-                    _imported_image_pxls: new_pxls,
-                    _imported_image_width: width,
-                    _imported_image_height: height,
-                    _imported_image_pxl_colors: new_pxl_colors,
+                    this.super_state.set_state({
+                        _imported_image_start_x: 0,
+                        _imported_image_start_y: 0,
+                        _imported_image_scale_delta_x: 0,
+                        _imported_image_scale_delta_y: 0,
+                        _imported_image_pxls: new_pxls,
+                        _imported_image_width: width,
+                        _imported_image_height: height,
+                        _imported_image_pxl_colors: new_pxl_colors,
 
-                }).then(() => {
-                    this._notify_image_import_complete();
-                    this._notify_is_image_import_mode();
-                    this.super_master_meta.update_canvas(true);
-                    this._maybe_save_state(undefined, true);
-                });
-
-            }
-
-        }, 50);
-
+                    }).then(() => {
+                        this._notify_image_import_complete();
+                        this._notify_is_image_import_mode();
+                        this.super_master_meta.update_canvas(true);
+                        this._maybe_save_state(undefined, true);
+                        resolve();
+                    });
+                }
+            }, 50);
+        });
     };
 
     set_canvas_from_image = (image_obj = null, loading_base64_img = "", img_d = {}, dont_smart_resize = false) => {
@@ -1675,7 +1700,7 @@ class CanvasPixels extends React.PureComponent {
                         };
                     }));
                     new_current_state._layer_index = parseInt(_layer_index);
-                    new_current_state._s_layers = Array.from(_s_layers.map(function (l){return Layer.new_from_colors_and_indexes(l.colors_copy, l.indexes_copy, parseInt(pxl_width), parseInt(pxl_height), true)}));
+                    new_current_state._s_layers = Array.from(_s_layers.map(function (l){l = l || {}; return Layer.new_from_colors_and_indexes(l.colors_copy, l.indexes_copy, parseInt(pxl_width), parseInt(pxl_height), true)}));
                     new_current_state._pxl_indexes_of_selection = _pxl_indexes_of_selection.export;
                     new_current_state._pencil_mirror_index = parseInt(_pencil_mirror_index);
 
@@ -2483,7 +2508,7 @@ class CanvasPixels extends React.PureComponent {
 
     confirm_import = () => {
 
-        this._merge_import();
+        return this._merge_import();
     };
 
     _merge_import = () => {
@@ -2496,7 +2521,7 @@ class CanvasPixels extends React.PureComponent {
             layer.set_uint32(pixel_index, imported_image_pxl_colors[color_index]);
         });
 
-        this.super_state.set_state({
+        return this.super_state.set_state({
             _s_layers,
             _imported_image_start_x: 0,
             _imported_image_start_y: 0,
@@ -2512,6 +2537,7 @@ class CanvasPixels extends React.PureComponent {
 
             this.super_master_meta.update_canvas(true);
             this._notify_is_image_import_mode();
+            return Promise.resolve();
         });
     };
 

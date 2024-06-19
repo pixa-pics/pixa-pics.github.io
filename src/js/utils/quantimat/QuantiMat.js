@@ -455,7 +455,7 @@ QuantiMat.prototype.process_threshold = function(t) {
     "use strict";
 
     t = (t | 0) >>> 0;
-    const exponent = 1.5;
+    const exponent = 0.75;
     function calculateN(t, max) {
         // Apply a power scale to 't'. The exponent (e.g., 0.5) determines the curve's shape.
         const scaledT = Math.pow(t, exponent);
