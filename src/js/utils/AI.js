@@ -33,8 +33,8 @@ class HuggingFaceAPI {
     async handleLoadComplete(url, output) {
         output = typeof output === "undefined" ? "blob": output;
         const splittedUrl = url.split("/");
-        const fileName = splittedUrl[splittedUrl.length-1];
-        const extension = fileName.split(".")[1];
+        const fileName = splittedUrl[splittedUrl.length-1] || "unknown";
+        const extension = fileName.split(".")[1] || "webp";
         const mimeType = "image/"+extension;
 
         try {
@@ -214,6 +214,119 @@ class LongCaptionerAPI extends HuggingFaceAPI {
             return Promise.resolve(json[0])
         }
     }
+}
+
+class FloranceCaptionerAPI extends HuggingFaceAPI {
+    constructor() {
+        super("https://gokaygokay-florence-2.hf.space");
+    }
+
+    getPredictHeader(path, url, size, type, hash) {
+        return {
+            headers: this.getHeadersJson(),
+            body: JSON.stringify(
+                {
+                    data:[
+                        {
+                            path: path,
+                            url: url,
+                            orig_name: "image."+type.replaceAll("image/", ""),
+                            size: size,
+                            mime_type: type,
+                            meta: { _type: "gradio.FileData" }
+                        },
+                        "More Detailed Caption",
+                        ""
+                    ],
+                    event_data:null,
+                    fn_index:3,
+                    trigger_id:7,
+                    session_hash:hash
+                }
+            ),
+            method: "POST"
+        };
+    }
+
+    getQueueJoinUrl() {
+        return `${this.baseUrl}/queue/join`;
+    }
+
+    getResultUrl(hash) {
+        return `${this.baseUrl}/queue/data?session_hash=${hash}`;
+    }
+
+    async readResponse(reader) {
+        const decoder = new TextDecoder("utf-8");
+        let result = "";
+        let done = false;
+        let finalData = null;
+
+        while (!done) {
+            const { value, done: streamDone } = await reader.read();
+            done = done || streamDone;
+            result += decoder.decode(value || new Uint8Array(), { stream: true });
+
+            // Split the result into lines and process each line
+            let lines = result.split("\n");
+
+            for (let line of lines) {
+                line = line.trim();
+
+                if (line.includes("complete")) {
+                    // The event is complete, so we can mark done as true
+                    done = true;
+                    finalData = line;
+                }
+            }
+
+            // Reset result to handle potential partial lines correctly
+            result = lines[lines.length - 1];
+        }
+
+        return Promise.resolve(finalData);
+    }
+
+    readLine(line) {
+        console.log(line)
+        line = line.slice(5).trim();
+        const json = JSON.parse(line);
+        const output = json.output || {};
+        const data = output.data || [];
+        const response = data[0];
+        const responseSliced = response.slice(29, response.length-2);
+        return responseSliced;
+    }
+
+    async run(input) {
+
+        let file;
+        if(typeof input === "string"){
+            file = await this.handleLoadComplete(input);
+        }else if(input instanceof Blob) {
+            file = input;
+        }else {
+            return Promise.reject();
+        }
+
+        const hash = this.generateRandomId();
+        const path = await this.uploadFile(file, hash);
+        const url = this.getCreateImagePathUrl(path);
+        const header = this.getPredictHeader(path, url, file.size, file.type, hash)
+        const responseQueue = await fetch(this.getQueueJoinUrl(), header);
+        const responseQueueJSON = await responseQueue.json();
+        const event_id = responseQueueJSON.event_id;
+        if(event_id) {
+
+            const response = await this.fetchEventSource(this.getResultUrl(hash));
+            const line = await this.readResponse(response);
+            return Promise.resolve(this.readLine(line));
+        }else {
+
+            return Promise.reject();
+        }
+    }
+
 }
 
 class ImageCreatorAPI extends HuggingFaceAPI {
@@ -483,6 +596,7 @@ class FaceToAllAPI extends HuggingFaceAPI {
 module.exports = {
     HuggingFaceAPI,
     FaceToAllAPI,
+    FloranceCaptionerAPI,
     LongCaptionerAPI,
     ImageCreatorAPI
 }

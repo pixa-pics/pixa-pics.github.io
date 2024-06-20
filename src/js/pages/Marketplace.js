@@ -86,7 +86,7 @@ import TrendingUp from "@material-ui/icons/TrendingUp";
 import TimeIcon from "@material-ui/icons/Timer";
 import CameraIcon from "@material-ui/icons/Camera";
 import Info from "@material-ui/icons/Info";
-import {LongCaptionerAPI} from "../utils/AI";
+import {FloranceCaptionerAPI} from "../utils/AI";
 const styles = theme => ({
     root: {
         textAlign: "center",
@@ -1263,9 +1263,9 @@ class Marketplace extends React.PureComponent {
     openMediaCard = (img) => {
 
         actions.trigger_sfx("navigation_selection-complete-celebration");
-        const longCaptionerAPI = new LongCaptionerAPI();
+        const floranceCaptionerAPI = new FloranceCaptionerAPI();
         let descriptions = this.st4te.descriptions || [];
-        longCaptionerAPI.run(img.src).then((caption) => {
+        floranceCaptionerAPI.run(img.src).then((caption) => {
             descriptions[img.name] = caption;
             this.setst4te({descriptions});
         });
