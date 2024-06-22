@@ -622,7 +622,7 @@ class FaceToAllAPI extends HuggingFaceAPI {
 
     getQueueJoinHeader(path, url, size, type, prompt, hash) {
 
-        const finalPrompt = `A palette based, low color number pixel art (pixelart:1.25) in lucasarts style of : ${prompt}... Truthful facial traits, highly detailed face for a pixel art, retro video game art, masterpiece retro game art, beautiful pixel art only.`;
+        const finalPrompt = `A low color number palette based (retrowave:1.5) pixel art (pixelart:1.75) in lucasarts style of an image with this description: "${prompt}". Truthful facial traits, highly detailed face for a pixel art, retro video game art, masterpiece retro game art, beautiful, 2D, illustration, computer art, computer retro, pixelized, crisp-edge.`;
 
         return {
             headers: this.getHeadersJson(),
