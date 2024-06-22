@@ -1341,6 +1341,7 @@ class Pixel extends React.PureComponent {
 
     _handle_keydown = (event) => {
 
+        event.preventDefault();
         const { _tool, _view_name_index, _view_names, _is_pixel_dialog_post_edit_open } = this.st4te;
 
         if (event && !_is_pixel_dialog_post_edit_open) {

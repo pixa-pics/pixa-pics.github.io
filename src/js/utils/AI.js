@@ -622,7 +622,7 @@ class FaceToAllAPI extends HuggingFaceAPI {
 
     getQueueJoinHeader(path, url, size, type, prompt, hash) {
 
-        const finalPrompt = `A low color number palette based (retrowave:1.5) pixel art (pixelart:1.75) in lucasarts style of an image with this description: "${prompt}". Truthful facial traits, highly detailed face for a pixel art, retro video game art, masterpiece retro game art, beautiful, 2D, illustration, computer art, computer retro, pixelized, crisp-edge.`;
+        const finalPrompt = `A low color number palette based (retrowave:1.25) pixel art (pixelart:1.75) in lucasarts style of ${prompt}... (lucasarts_style:1.5). Truthful facial traits, highly detailed face for a pixel art, retro video game art, masterpiece retro game art, beautiful, 2D, illustration, computer art, computer retro, pixelized, crisp-edge.`;
 
         return {
             headers: this.getHeadersJson(),
@@ -631,13 +631,13 @@ class FaceToAllAPI extends HuggingFaceAPI {
                     path: path, url: url, orig_name: "image."+type.replaceAll("image/", ""), size: size, mime_type: type, meta: { _type: "gradio.FileData" }
                 },
                     finalPrompt,
-                    "Photography, realistic, strange skin, untruthful, wrong, ugly, bad light, wrong colors, mismatched, missing fingers, poor quality, bad result, unsatisfiying, photo, picture, photo-realistic, 4K, 8K, 35mm, real.",
-                    0.9,
+                    "Photography, bad light, too much colors, missing fingers, bad result, error, unsatisfying, photo, picture, photo-realistic, real, realistic.",
+                    1.00,
                     null,
-                    0.9,
-                    0.25,
-                    10,
-                    0.80,
+                    0.85,
+                    0.10,
+                    12.5,
+                    0.75,
                     null,
                     null
                 ],
@@ -696,19 +696,20 @@ class FaceToAllAPI extends HuggingFaceAPI {
 
         const id = this.generateRandomId();
         const hash = this.generateRandomId();
-        const path = await this.uploadFile(file, id);
-        const imagePath = this.getCreateImagePathUrl(path);
+
         const header = this.getPredictHeader(style, hash);
         const predict_url = this.getPredictUrl();
         const responseStyle = await fetch(predict_url, header);
         const responseStyleJson = await responseStyle.json();
-        if (responseStyleJson) {
+        const path = await this.uploadFile(file, id);
+        const imagePath = this.getCreateImagePathUrl(path);
+        if (responseStyleJson && imagePath) {
             const headerQueue = this.getQueueJoinHeader(path, imagePath, file.size, file.type, prompt, hash);
             const urlQueue = this.getQueueJoinUrl();
             const responseQueue = await fetch(urlQueue, headerQueue);
             const responseQueueJSON = await responseQueue.json();
-            if (typeof responseQueueJSON.event_id !== "undefined") {
-                const event_id = responseQueueJSON.event_id;
+            const event_id = responseQueueJSON.event_id;
+            if (typeof event_id !== "undefined") {
                 const request_url = this.getQueueDataUrl(hash);
                 const event = await this.fetchEventSource(request_url);
                 const line = await this.readResponse(event);
