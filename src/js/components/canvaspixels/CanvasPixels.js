@@ -445,20 +445,25 @@ class CanvasPixels extends React.PureComponent {
     new_layer_from_image = (imageData) => {
 
         let { _layers, _s_layers } = this.super_state.get_state();
-        const [pixels, colors] = split_image_data(imageData);
-        _s_layers.splice(0, 0, Layer.new_from_colors_and_indexes(colors, pixels, imageData.width, imageData.height, true));
-        _layers.splice(0, 0, {id: Date.now(), name: `Background`, hidden: false, opacity: 1, colors: ["#00000000"], number_of_colors: 1});
+        return QuantiMatGlobal(imageData, 255).then((result) => {
+            const pixels = result[1];
+            const colors = result[2];
 
-        return this.super_state.set_state({
-            _layers,
-            _s_layers,
-            _layer_index: 0,
-            _last_action_timestamp: Date.now(),
-        }).then(() => {
-            this._maybe_save_state(undefined, true);
-            this.super_master_meta.update_canvas(true);
-            return Promise.resolve();
+            _s_layers.splice(0, 0, Layer.new_from_colors_and_indexes(colors, pixels, imageData.width, imageData.height, true));
+            _layers.splice(0, 0, {id: Date.now(), name: `Background`, hidden: false, opacity: 1, colors: ["#00000000"], number_of_colors: 1});
+
+            return this.super_state.set_state({
+                _layers,
+                _s_layers,
+                _layer_index: 0,
+                _last_action_timestamp: Date.now(),
+            }).then(() => {
+                this._maybe_save_state(undefined, true);
+                this.super_master_meta.update_canvas(true);
+                return Promise.resolve();
+            });
         });
+
     };
 
     duplicate_layer = (at_index) => {

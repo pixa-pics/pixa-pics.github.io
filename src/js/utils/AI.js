@@ -30,7 +30,7 @@ class HuggingFaceAPI {
         return `${this.baseUrl}/file=${path}`;
     }
 
-    async handleLoadComplete(url, output) {
+    async handleLoadComplete(url, output, finalWidth, finalHeight) {
         output = typeof output === "undefined" ? "blob": output;
         const splittedUrl = url.split("/");
         const fileName = splittedUrl[splittedUrl.length-1] || "unknown";
@@ -48,13 +48,28 @@ class HuggingFaceAPI {
                 image.onload = async () => {
                     const height = image.naturalHeight || image.height;
                     const width = image.naturalWidth || image.width;
+                    finalHeight = finalHeight || height;
+                    finalWidth = finalWidth || width;
+
+                   async function baser() {
+                       const canvas = document.createElement("canvas")
+                       canvas.width = finalWidth;
+                       canvas.height = finalHeight;
+                       const context = canvas.getContext("2d");
+                       context.drawImage(image, 0, 0, finalWidth, finalHeight);
+                        try {
+                            resolve(canvas.toDataURL("image/webp", .75));
+                        } catch (e) {
+                            resolve(canvas.toDataURL("image/jpeg", .75));
+                        }
+                    }
 
                    async function blober() {
                        const canvas = document.createElement("canvas")
-                       canvas.width = width;
-                       canvas.height = height;
+                       canvas.width = finalWidth;
+                       canvas.height = finalHeight;
                        const context = canvas.getContext("2d");
-                       context.drawImage(image, 0, 0);
+                       context.drawImage(image, 0, 0, finalWidth, finalHeight);
                         try {
                             canvas.toBlob(resolve, "image/webp", .75);
                         } catch (e) {
@@ -64,16 +79,19 @@ class HuggingFaceAPI {
 
                     async function imagedater () {
                         const canvas = document.createElement("canvas")
-                        canvas.width = width;
-                        canvas.height = height;
+                        canvas.width = finalWidth;
+                        canvas.height = finalHeight;
                         const context = canvas.getContext("2d");
-                        context.drawImage(image, 0, 0);
-                        resolve(context.getImageData(0, 0, width, height, {colorSpace: "srgb"}));
+                        context.drawImage(image, 0, 0, finalWidth, finalHeight);
+                        resolve(context.getImageData(0, 0, finalWidth, finalHeight, {colorSpace: "srgb"}));
                     }
 
                     try {
 
                         switch (output.toLowerCase()) {
+                            case "base64":
+                                baser();
+                                break;
                             case "blob":
                                 blober();
                                 break;
@@ -92,6 +110,8 @@ class HuggingFaceAPI {
                 case "blob":
                     const file = new File([response], fileName, { type: mimeType });
                     return Promise.resolve(file);
+                case "base64":
+                    return Promise.resolve(response);
                 case "imagedata":
                     return Promise.resolve(response);
             }
@@ -130,8 +150,6 @@ class LongCaptionerAPI extends HuggingFaceAPI {
     }
 
     getReadCaptions(line) {
-
-        console.log(line)
         return line;
     }
 
@@ -329,13 +347,124 @@ class FloranceCaptionerAPI extends HuggingFaceAPI {
 
 }
 
+class RemoveBackgroundAPI extends HuggingFaceAPI {
+    constructor() {
+        super("https://kenjiedec-rembg.hf.space");
+    }
+
+    getQueuePushUrl() {
+        return `${this.baseUrl}/api/queue/push/`
+    }
+
+    getPredictHeader(base64, hash) {
+        return {
+            headers: this.getHeadersJson(),
+            body: JSON.stringify(
+                {
+                    action: "predict",
+                    data:[
+                        base64,
+                        "Mask only",
+                        "isnet-general-use"
+                    ],
+                    fn_index:0,
+                    session_hash:hash
+                }
+            ),
+            method: "POST"
+        };
+    }
+
+    getPredictResult(result) {
+        const json = JSON.parse(result) || result || {};
+        const hash = json.hash || "";
+        return hash;
+    }
+
+    getQueueStatusUrl() {
+        return `${this.baseUrl}/api/queue/status/`;
+    }
+
+    getResultHeader(hash) {
+        return {
+            headers: this.getHeadersJson(),
+            body: JSON.stringify(
+                {
+                    hash: hash
+                }
+            ),
+            method: "POST"
+        };
+    }
+
+    getResultResult(result) {
+        const json = JSON.parse(result) || {};
+        const status = json.status || "";
+        if(status === "COMPLETE"){
+            const data = json.data;
+            const base64 = data[0];
+            return base64;
+        }
+
+        return "";
+    }
+
+    async run(input, w, h) {
+
+        return new Promise(async(resolve, reject) => {
+
+            let file;
+            if(typeof input !== "string"){
+                file = await this.handleLoadComplete(input, "base64");
+            }else if(input.startsWith("blob:")){
+                file = await this.handleLoadComplete(input, "base64");
+            }else {
+                file = input;
+            }
+
+            const hash = this.generateRandomId();
+
+            const json = await (await fetch(this.getQueuePushUrl(), this.getPredictHeader(file, hash))).json();
+            const id = json.hash;
+
+            const timeout = setTimeout(() => {
+
+                clearInterval(interval);
+                reject();
+            }, 10000);
+
+            const interval = setInterval(async() => {
+
+                const data = await (await fetch(this.getQueueStatusUrl(), this.getResultHeader(id))).json();
+                const data2 = data.data || {};
+                const data3 = data2.data || [];
+                if(data3.length) {
+                    const imgd = await this.handleLoadComplete(data3[0], "imagedata", w, h);
+                    const uint8ca = imgd.data;
+                    var average = 0;
+                    var indexes = [];
+                    for(var i = 0, l = uint8ca.length; (i|0) < (l|0); i = i + 4 | 0) {
+                        average = (uint8ca[i|0]+uint8ca[i+1|0]+uint8ca[i+2|0]|0) / 3 | 0;
+                        if((average | 0) < 32){
+                            indexes.push(i/4|0);
+                        }
+                    }
+                    resolve(indexes);
+                    clearInterval(interval);
+                    clearTimeout(timeout);
+                }
+            }, 1000);
+        });
+    }
+}
+
 class ImageCreatorAPI extends HuggingFaceAPI {
     constructor() {
         super("https://pixart-alpha-pixart-sigma.hf.space");
     }
     getPredictHeader(prompt, hash, width = 512, height = 512, number = 1, style = "(No style)", negative_prompt="bad shape, disformed, photography, photo, realistic, photo-realistic.", solver = "DPM-Solver") {
         const seed = this.generateRandomSeed();
-        style = typeof style === "string" ? style: ["(No style)", "Pixel Art", "Digital Art", "Anime", "Manga"]
+        style = typeof style === "string" ? style: ["(No style)", "Pixel Art", "Digital Art", "Anime", "Manga"][style]
         return {
             headers: this.getHeadersJson(),
             body: JSON.stringify(
@@ -437,7 +566,7 @@ class ImageCreatorAPI extends HuggingFaceAPI {
     async run(prompt, width = 512, height = 512, number = 1) {
 
         const hash = this.generateRandomId();
-        const header = this.getPredictHeader(prompt, hash, width, height, number);
+        const header = this.getPredictHeader(prompt, hash, width, height, number, 1);
         const url = this.getQueueJoinUrl();
         const responseQueue = await fetch(url, header);
         const responseQueueJSON = await responseQueue.json();
@@ -447,6 +576,7 @@ class ImageCreatorAPI extends HuggingFaceAPI {
             const response = await this.fetchEventSource(this.getResultUrl(hash));
             const line = await this.readResponse(response);
             const urls = this.extractLastImageUrl(line);
+
             if(urls.length === 1) {
                 const url = urls[0];
                 const file = await this.handleLoadComplete(url, "imagedata");
@@ -598,5 +728,6 @@ module.exports = {
     FaceToAllAPI,
     FloranceCaptionerAPI,
     LongCaptionerAPI,
+    RemoveBackgroundAPI,
     ImageCreatorAPI
 }

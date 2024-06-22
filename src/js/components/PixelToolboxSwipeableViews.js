@@ -42,6 +42,8 @@ import AllLayersIcon from "../icons/AllLayers";
 import SelectIcon from "../icons/Select";
 import ImageEffectIcon from "../icons/ImageEffect";
 import ImageFilterMagicIcon from "../icons/ImageFilterMagic";
+import AIIcon from "../icons/AI";
+import BgAiIcon from "../icons/BgAi";
 import SwipeableViews from "react-swipeable-views";
 
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
@@ -112,20 +114,10 @@ import SwapVerticalIcon from "../icons/SwapVertical";
 import actions from "../actions/utils";
 import InfoOutlined from "@material-ui/icons/InfoOutlined";
 import CloseIcon from "@material-ui/icons/Close";
-import {ImageCreatorAPI} from "../utils/AI";
-import pool from "../utils/worker-pool";
-import {file_to_base64} from "../utils/img_manipulation";
-import Input from "@material-ui/core/Input";
-import AddAPhoto from "@material-ui/icons/AddAPhoto";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import Tabs from "@material-ui/core/Tabs";
-import Tab from "@material-ui/core/Tab";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
-import DialogActions from "@material-ui/core/DialogActions";
-import Dialog from "@material-ui/core/Dialog";
+import {ImageCreatorAPI, RemoveBackgroundAPI} from "../utils/AI";
 import Send from "@material-ui/icons/Send";
 import TextField from "@material-ui/core/TextField";
+import BgAi from "../icons/BgAi";
 const PANEL_NAMES = ["palette", "image", "layers", "tools", "selection", "effects", "filters"];
 
 const styles = theme => ({
@@ -1044,6 +1036,9 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                             <TextField style={{margin: "8px 8px 8px 16px", width: "calc(100% - 96px)"}} defaultValue={_prompt} label="Generate background" placeholder="Insert a description for a new background" onChange={this._set_prompt} />
                             <IconButton style={{margin: "8px 16px 8px 8px"}} onClick={this._handle_generate_import_canvas}><Send/></IconButton>
                         </div>
+                        <div key={"layers-wrapper-AItools-index-" + index}>
+                            <Button style={{margin: "8px 16px 8px 16px"}} onClick={this._handle_remove_background_canvas} color={"primary"} endIcon={<BgAi/>}>Remove Background</Button>
+                        </div>
                     </div>
                 );
             case "palette":
@@ -1291,13 +1286,28 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
         })
         const { new_layer_from_image, super_state } = this.st4te.canvas;
         const {pxl_width, pxl_height, layer_index, _layer_opened} = super_state.get_state();
-        const imgd = await (new ImageCreatorAPI()).run(prompt, pxl_width, pxl_height, 1, "imagedata");
+        const imgd = await new ImageCreatorAPI().run(prompt, pxl_width, pxl_height, 1, "imagedata");
 
         if(imgd !== null) {
             new_layer_from_image(imgd);
             actions.trigger_loading_update(100);
             actions.trigger_sfx("hero_decorative-celebration-02")
         }
+    }
+
+    _handle_remove_background_canvas = async () => {
+
+        actions.trigger_loading_update(0);
+        actions.trigger_snackbar("Removing your background")
+        const { new_layer_from_image, erase_selection, super_state, canvas_pos } = this.st4te.canvas;
+        const {pxl_width, pxl_height, _pxl_indexes_of_selection, _base64_original_images, _original_image_index} = super_state.get_state();
+        const b64img = _base64_original_images[_original_image_index]
+        const indexes = await new RemoveBackgroundAPI().run(b64img, pxl_width, pxl_height);
+        _pxl_indexes_of_selection.clearAndBulkAdd(indexes);
+        erase_selection();
+        _pxl_indexes_of_selection.clear();
+        actions.trigger_loading_update(100);
+        actions.trigger_sfx("hero_decorative-celebration-02");
     }
 
     get_action_panel = (index) => {
