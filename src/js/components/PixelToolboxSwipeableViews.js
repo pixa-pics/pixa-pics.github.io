@@ -967,7 +967,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                                                 <canvas
                                                     className={"pixelated " + classes.layerThumbnail + " " + index}
                                                     ref={(el) => {
-                                                        this._set_canvas_ref(el, layer.thumbnail, true)
+                                                        this._set_canvas_ref(el, layer.thumbnail, false)
                                                     }}
                                                     key={"layer-n-" + index_reverse_order + "-w-" + layer.thumbnail.width + "-h-" + layer.thumbnail.height + "-x-" + layer.thumbnail.hash}
                                                     width={layer.thumbnail.width || 0}
@@ -1033,7 +1033,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                             })}
                         </div>
                         <div key={"layers-wrapper-bottom-index-" + index}>
-                            <TextField style={{margin: "8px 8px 8px 16px", width: "calc(100% - 96px)"}} defaultValue={_prompt} label="Generate background" placeholder="Insert a description for a new background" onChange={this._set_prompt} />
+                            <TextField style={{margin: "8px 8px 8px 16px", width: "calc(100% - 96px)"}} className={"keyboard-input"} defaultValue={_prompt} label="Generate background" placeholder="Insert a description for a new background" onChange={this._set_prompt} />
                             <IconButton style={{margin: "8px 16px 8px 8px"}} onClick={this._handle_generate_import_canvas}><Send/></IconButton>
                         </div>
                         <div key={"layers-wrapper-AItools-index-" + index}>
@@ -1299,15 +1299,19 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
 
         actions.trigger_loading_update(0);
         actions.trigger_snackbar("Removing your background")
-        const { new_layer_from_image, erase_selection, super_state, canvas_pos } = this.st4te.canvas;
+        const { erase_selection, super_state } = this.st4te.canvas;
         const {pxl_width, pxl_height, _pxl_indexes_of_selection, _base64_original_images, _original_image_index} = super_state.get_state();
         const b64img = _base64_original_images[_original_image_index]
+        actions.trigger_loading_update(25);
         const indexes = await new RemoveBackgroundAPI().run(b64img, pxl_width, pxl_height);
+        actions.trigger_loading_update(75);
         _pxl_indexes_of_selection.clearAndBulkAdd(indexes);
         erase_selection();
         _pxl_indexes_of_selection.clear();
-        actions.trigger_loading_update(100);
-        actions.trigger_sfx("hero_decorative-celebration-02");
+        setTimeout(() => {
+            actions.trigger_loading_update(100);
+            actions.trigger_sfx("hero_decorative-celebration-02");
+        }, 500)
     }
 
     get_action_panel = (index) => {
@@ -2227,7 +2231,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                                 icon: <canvas
                                     className={"pixelated"}
                                     ref={(el) => {
-                                        this._set_canvas_ref(el, bmp, true)
+                                        this._set_canvas_ref(el, bmp, false)
                                     }}
                                     width={width || 1}
                                     height={height || 1}

@@ -1340,15 +1340,21 @@ class Pixel extends React.PureComponent {
     };
 
     _handle_keydown = (event) => {
+        if(event.ctrlKey){
+            if(!document.getElementsByClassName("MuiInput-root Mui-focused").length) {
+                event.preventDefault();
+                event.stopImmediatePropagation();
+            }else if(!event.key === "c" && !event.key === "v"){
+                event.preventDefault();
+                event.stopImmediatePropagation();
+            }
+        }
 
-        event.preventDefault();
-        const { _tool, _view_name_index, _view_names, _is_pixel_dialog_post_edit_open } = this.st4te;
+        const { _tool, _view_name_index, _view_names, _is_pixel_dialog_post_edit_open,  } = this.st4te;
 
         if (event && !_is_pixel_dialog_post_edit_open) {
 
             if(_tool === "MINE"){
-
-                event.preventDefault();
 
                 switch (event.keyCode) {
 
@@ -1785,12 +1791,19 @@ class Pixel extends React.PureComponent {
 
     _handle_keyup = (event) => {
 
+        if(event.ctrlKey){
+            if(!document.getElementsByClassName("MuiInput-root Mui-focused").length) {
+                event.preventDefault();
+                event.stopImmediatePropagation();
+            }else if(!event.key === "c" && !event.key === "v"){
+                event.preventDefault();
+                event.stopImmediatePropagation();
+            }
+        }
+
         const { _is_pixel_dialog_post_edit_open } = this.st4te;
 
         if (event && !_is_pixel_dialog_post_edit_open) {
-
-            event.preventDefault();
-            event.stopPropagation();
 
             const { _tool, _memory_tool, _previous_tool_timestamp } = this.st4te;
 
