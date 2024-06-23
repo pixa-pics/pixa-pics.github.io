@@ -1,6 +1,7 @@
 class HuggingFaceAPI {
-    constructor(baseUrl) {
+    constructor(baseUrl, msgCallback) {
         this.baseUrl = baseUrl;
+        this.msgCallback = msgCallback || function(){};
     }
 
     generateRandomSeed() {
@@ -10,6 +11,41 @@ class HuggingFaceAPI {
             return Math.round(Math.random() * 0xFFFFFFFF);
         }
     }
+
+    message(line) {
+        try {
+            const data = JSON.parse(line.slice(5)) || {};
+            const message = data.msg;
+            const previous_date = this.date_message || Date.now() - 3000;
+
+            if(previous_date + 3000 <= Date.now()) {
+                this.date_message = Date.now();
+                switch (message) {
+                    case "estimation":
+                        const rank_eta = data.rank_eta || 0;
+                        const queue_size = data.queue_size || 0;
+                        const queue_length = queue_size - 1;
+                        const rank = data.rank || 0;
+                        const string1 = `Estimated waiting duration: ${parseInt(rank_eta)} seconds. ${queue_length > rank ? `Process will start after ${queue_length} remaining job${queue_length ? "s": ""}`: "Process will start immediately"}`;
+                        this.msgCallback(string1);
+                        break;
+                    case "progress":
+                        const progress_data = data.progress_data || [];
+                        const progress_data_inside = progress_data[0] || {};
+                        const index = progress_data_inside.index;
+                        const length = progress_data_inside.length;
+                        const unit = progress_data_inside.unit;
+                        const string2 = `Processing: ${index}/${length} ${unit}.`
+                        this.msgCallback(string2);
+                        break;
+                }
+            }
+
+        } catch (e) {
+
+        }
+    }
+
     generateRandomId() {
         return Math.round(Math.random() * 0xFFFFFF).toString(16).padStart(6, "0");
     }
@@ -139,10 +175,19 @@ class HuggingFaceAPI {
         });
         return Promise.resolve(response.body.getReader());
     }
+
+    async fetchEventSourceJSON(url) {
+        const response = await fetch(url, {
+            headers: this.getHeadersJson()
+        });
+        const text = await response.clone().text();
+        const json_text = text.replaceAll("event: complete\ndata: ", "")
+        return Promise.resolve(JSON.parse(json_text));
+    }
 }
 class LongCaptionerAPI extends HuggingFaceAPI {
-    constructor() {
-        super("https://gokaygokay-sd3-long-captioner-v2.hf.space");
+    constructor(msgCallback) {
+        super("https://gokaygokay-sd3-long-captioner-v2.hf.space", msgCallback);
     }
 
     getCreateCaptionsUrl() {
@@ -150,7 +195,7 @@ class LongCaptionerAPI extends HuggingFaceAPI {
     }
 
     getReadCaptions(line) {
-        return line;
+        return JSON.parse(line.slice(5));
     }
 
     async readResponse(reader) {
@@ -169,20 +214,11 @@ class LongCaptionerAPI extends HuggingFaceAPI {
 
             for (let line of lines) {
                 line = line.trim();
-
-                if (line.startsWith("event: complete")) {
+                this.message(line);
+                if (line.includes("complete")) {
                     // The event is complete, so we can mark done as true
                     done = true;
-                }
-
-                if (line.startsWith("data:") && done) {
-                    // Extract the data part of the final complete event
-                    try {
-                        let jsonData = JSON.parse(line.slice(5)); // Remove 'data: ' and parse JSON
-                        finalData = jsonData;
-                    } catch (error) {
-                        console.error("Failed to parse data as JSON", error);
-                    }
+                    finalData = line;
                 }
             }
 
@@ -220,26 +256,17 @@ class LongCaptionerAPI extends HuggingFaceAPI {
         const path = await this.uploadFile(file, id);
         const url = this.getCreateCaptionsUrl();
         const eventId = await this.createCaptions(path);
-        const response = await this.fetchEventSource(`${url}/${eventId}`);
-
-        try {
-
-            const line = await this.readResponse(response);
-            const caption = this.getReadCaptions(line);
-            return Promise.resolve(caption);
-        }catch (e) {
-            const json = await response();
-            return Promise.resolve(json[0])
-        }
+        const response = await this.fetchEventSourceJSON(`${url}/${eventId}`);
+        return Promise.resolve(response[0])
     }
 }
 
 class FloranceCaptionerAPI extends HuggingFaceAPI {
-    constructor() {
-        super("https://gokaygokay-florence-2.hf.space");
+    constructor(msgCallback) {
+        super("https://gokaygokay-florence-2.hf.space", msgCallback);
     }
 
-    getPredictHeader(path, url, size, type, hash) {
+    getPredictHeader(path, url, size, type, hash, short) {
         return {
             headers: this.getHeadersJson(),
             body: JSON.stringify(
@@ -253,12 +280,12 @@ class FloranceCaptionerAPI extends HuggingFaceAPI {
                             mime_type: type,
                             meta: { _type: "gradio.FileData" }
                         },
-                        "More Detailed Caption",
-                        ""
+                        short ? "Caption": "More Detailed Caption",
+                        short ? "microsoft/Florence-2-large-ft": ""
                     ],
                     event_data:null,
                     fn_index:3,
-                    trigger_id:7,
+                    trigger_id: short ? 9: 7,
                     session_hash:hash
                 }
             ),
@@ -290,7 +317,7 @@ class FloranceCaptionerAPI extends HuggingFaceAPI {
 
             for (let line of lines) {
                 line = line.trim();
-
+                this.message(line);
                 if (line.includes("complete")) {
                     // The event is complete, so we can mark done as true
                     done = true;
@@ -305,18 +332,22 @@ class FloranceCaptionerAPI extends HuggingFaceAPI {
         return Promise.resolve(finalData);
     }
 
-    readLine(line) {
+    readLine(line, short) {
         console.log(line)
-        line = line.slice(5).trim();
+        line = line.slice(5);
         const json = JSON.parse(line);
-        const output = json.output || {};
-        const data = output.data || [];
-        const response = data[0];
-        const responseSliced = response.slice(29, response.length-2);
-        return responseSliced;
+        if(json.success){
+            const output = json.output || {};
+            const data = output.data || [];
+            const response = data[0];
+            const responseSliced = short ? response.slice(16, response.length-2): response.slice(29, response.length-2);
+            return Promise.resolve(responseSliced);
+        } else {
+            return Promise.resolve("");
+        }
     }
 
-    async run(input) {
+    async run(input, short) {
 
         let file;
         if(typeof input === "string"){
@@ -330,7 +361,7 @@ class FloranceCaptionerAPI extends HuggingFaceAPI {
         const hash = this.generateRandomId();
         const path = await this.uploadFile(file, hash);
         const url = this.getCreateImagePathUrl(path);
-        const header = this.getPredictHeader(path, url, file.size, file.type, hash)
+        const header = this.getPredictHeader(path, url, file.size, file.type, hash, short)
         const responseQueue = await fetch(this.getQueueJoinUrl(), header);
         const responseQueueJSON = await responseQueue.json();
         const event_id = responseQueueJSON.event_id;
@@ -338,7 +369,7 @@ class FloranceCaptionerAPI extends HuggingFaceAPI {
 
             const response = await this.fetchEventSource(this.getResultUrl(hash));
             const line = await this.readResponse(response);
-            return Promise.resolve(this.readLine(line));
+            return this.readLine(line, short);
         }else {
 
             return Promise.reject();
@@ -348,8 +379,8 @@ class FloranceCaptionerAPI extends HuggingFaceAPI {
 }
 
 class RemoveBackgroundAPI extends HuggingFaceAPI {
-    constructor() {
-        super("https://kenjiedec-rembg.hf.space");
+    constructor(msgCallback) {
+        super("https://kenjiedec-rembg.hf.space", msgCallback);
     }
 
     getQueuePushUrl() {
@@ -459,8 +490,8 @@ class RemoveBackgroundAPI extends HuggingFaceAPI {
 }
 
 class ImageCreatorAPI extends HuggingFaceAPI {
-    constructor() {
-        super("https://pixart-alpha-pixart-sigma.hf.space");
+    constructor(msgCallback) {
+        super("https://pixart-alpha-pixart-sigma.hf.space", msgCallback);
     }
     getPredictHeader(prompt, hash, width = 512, height = 512, number = 1, style = "(No style)", negative_prompt="bad shape, disformed, photography, photo, realistic, photo-realistic.", solver = "DPM-Solver") {
         const seed = this.generateRandomSeed();
@@ -519,7 +550,7 @@ class ImageCreatorAPI extends HuggingFaceAPI {
 
             for (let line of lines) {
                 line = line.trim();
-
+                this.message(line);
                 if (line.includes("complete")) {
                     // The event is complete, so we can mark done as true
                     done = true;
@@ -590,8 +621,8 @@ class ImageCreatorAPI extends HuggingFaceAPI {
     }
 }
 class FaceToAllAPI extends HuggingFaceAPI {
-    constructor() {
-        super("https://abidlabs-face-to-all.hf.space");
+    constructor(msgCallback) {
+        super("https://abidlabs-face-to-all.hf.space", msgCallback);
     }
 
     getPredictUrl() {
@@ -622,7 +653,7 @@ class FaceToAllAPI extends HuggingFaceAPI {
 
     getQueueJoinHeader(path, url, size, type, prompt, hash) {
 
-        const finalPrompt = `A low color number palette based (retrowave:1.25) pixel art (pixelart:1.75) in lucasarts style of ${prompt}... (lucasarts_style:1.5). Truthful facial traits, highly detailed face for a pixel art, retro video game art, masterpiece retro game art, beautiful, 2D, illustration, computer art, computer retro, pixelized, crisp-edge.`;
+        const finalPrompt = `A low color number (retrowave:1.25) pixel art (pixelart:1.75) in lucasarts style of "${prompt}"(0.5). Truthful palette, (lucasarts_style:1.5). Truthful facial traits, highly detailed face for a pixel art, retro video game art, masterpiece retro game art, beautiful, 2D, illustration, computer art, computer retro, pixelized, crisp-edge.`;
 
         return {
             headers: this.getHeadersJson(),
@@ -631,12 +662,12 @@ class FaceToAllAPI extends HuggingFaceAPI {
                     path: path, url: url, orig_name: "image."+type.replaceAll("image/", ""), size: size, mime_type: type, meta: { _type: "gradio.FileData" }
                 },
                     finalPrompt,
-                    "Photography, bad light, too much colors, missing fingers, bad result, error, unsatisfying, photo, picture, photo-realistic, real, realistic.",
-                    1.00,
+                    "Photography, bad light, too much colors, missing fingers, bad result, error, unsatisfying, photo, picture, photo-realistic.",
+                    0.95,
                     null,
                     0.85,
                     0.10,
-                    12.5,
+                    9.0,
                     0.75,
                     null,
                     null
@@ -669,6 +700,7 @@ class FaceToAllAPI extends HuggingFaceAPI {
             // Process each line
             for (let i = 0; i < lines.length; i++) {
                 const line = lines[i].trim();
+                this.message(line);
                 if (line.includes("complete")) {
                     done = true;
                     finalLine = line;

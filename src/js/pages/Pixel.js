@@ -1889,8 +1889,8 @@ class Pixel extends React.PureComponent {
             }
         }
 
-        const longCaptionerAPI = new LongCaptionerAPI();
-        const faceToAllAPI = new FaceToAllAPI();
+        const longCaptionerAPI = new LongCaptionerAPI(actions.trigger_snackbar);
+        const faceToAllAPI = new FaceToAllAPI(actions.trigger_snackbar);
 
         if (smart_file === null && dumb_file === null) {
             actions.trigger_snackbar("Looks like I can't get your file as something is erroneous.", 5700);
@@ -1952,42 +1952,17 @@ class Pixel extends React.PureComponent {
                     actions.jamy_update("angry");
                     actions.trigger_voice("processing");
                     actions.trigger_loading_update(10);
-                    actions.trigger_snackbar("Uploading file (3 sec)");
 
                     actions.jamy_update("annoyed", 8000);
                     actions.trigger_loading_update(20);
-                    actions.trigger_snackbar("Creating captions (10 sec)");
                     setTimeout(() => {
                         actions.jamy_update("annoyed", 8000);
                         actions.trigger_loading_update(20);
-                        actions.trigger_snackbar("Creating captions (5/10)");
                     }, 5000);
 
 
-                    const prompt = await longCaptionerAPI.run(file)
+                    const prompt = await longCaptionerAPI.run(file);
                     actions.trigger_snackbar("IMAGE: " + prompt, 5000);
-
-                    setTimeout(() => {
-                        actions.jamy_update("flirty", 8000);
-                        actions.trigger_loading_update(40);
-                        actions.trigger_snackbar("Loading pixel art style (3 sec)");
-                    }, 4000);
-
-                    setTimeout(() => {
-                        actions.jamy_update("annoyed", 5000);
-                        actions.trigger_loading_update(60);
-                        actions.trigger_snackbar("Waiting on generation (15 sec)");
-                        setTimeout(() => {
-                            actions.jamy_update("annoyed", 8000);
-                            actions.trigger_loading_update(20);
-                            actions.trigger_snackbar("Waiting on generation (5/15)");
-                        }, 5000);
-                        setTimeout(() => {
-                            actions.jamy_update("annoyed", 8000);
-                            actions.trigger_loading_update(20);
-                            actions.trigger_snackbar("Waiting on generation (10/15)");
-                        }, 10000);
-                    }, 4000);
 
                     const blob = await faceToAllAPI.run(file, prompt)
                     actions.jamy_update("flirty", 666);
