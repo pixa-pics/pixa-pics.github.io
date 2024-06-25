@@ -653,7 +653,7 @@ class FaceToAllAPI extends HuggingFaceAPI {
 
     getQueueJoinHeader(path, url, size, type, prompt, hash) {
 
-        const finalPrompt = `A low color number (retrowave:1.25) pixel art (pixelart:1.75) in lucasarts style of "${prompt}"(0.5). Truthful palette, (lucasarts_style:1.5). Truthful facial traits, highly detailed face for a pixel art, retro video game art, masterpiece retro game art, beautiful, 2D, illustration, computer art, computer retro, pixelized, crisp-edge.`;
+        const finalPrompt = `A pixel art (pixel_art) in lucasarts style of the image described as  "${prompt}" that you must render using a color palette, given truthful face, great art face, highly pixelized, truthful retro game art and retro video game art, nice color and light, masterpiece and high quality beautiful, 2D, pixelized, illustration, computer art, computer retro, pixelize, crisp-edge.`;
 
         return {
             headers: this.getHeadersJson(),
@@ -662,13 +662,13 @@ class FaceToAllAPI extends HuggingFaceAPI {
                     path: path, url: url, orig_name: "image."+type.replaceAll("image/", ""), size: size, mime_type: type, meta: { _type: "gradio.FileData" }
                 },
                     finalPrompt,
-                    "Photography, bad light, too much colors, missing fingers, bad result, error, unsatisfying, photo, picture, photo-realistic.",
-                    0.95,
+                    "Photography, bad light, too much colors, ugly palette, missing fingers, bad result, error, bad colors, error with lighting, non-real pixel art, unsatisfying result, photo result, picture not being pixel art, photo-realistic, horrible palette, bad colors, ugly, worst, 3D, CGI, Animation, screenshot, movie.",
+                    0.9630,
                     null,
-                    0.85,
-                    0.10,
-                    9.0,
-                    0.75,
+                    0.9630,
+                    0.0963,
+                    11.111,
+                    0.7777,
                     null,
                     null
                 ],
