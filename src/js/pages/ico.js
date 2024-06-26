@@ -86,13 +86,6 @@ const styles = theme => ({
             boxShadow: "rgb(255 255 255 / 32%) 0px 4px 8px 2px, rgb(255 255 255 / 16%) 0px 4px 5px 5px, rgb(255 255 255 / 4%) 0px 1px 10px 14px",
             maxWidth: "100%",
             maxHeight: "100%",
-            transform: "scale(1.0)",
-            filter: "grayscale(1)",
-            transition: "all 175ms cubic-bezier(0.4, 0, 0.2, 1) !important",
-            "&:hover": {
-                transform: "scale(1.05)",
-                filter: "grayscale(0)"
-            }
         }
     },
     video: {
@@ -172,6 +165,14 @@ const styles = theme => ({
             width: "100%",
             marginBottom: 8,
             height: "auto",
+            filter: "sepia(1) saturate(2.0) hue-rotate(187deg) brightness(0.9) contrast(0.9)",
+            transform: "scale(1)",
+            transition: "all .3s cubic-bezier(0.4, 0, 0.2, 1)",
+        },
+        "& img:hover": {
+            filter: "grayscale(0)",
+            transform: "scale(1.05)",
+            transition: "all .6s cubic-bezier(0.4, 0, 0.2, 1)",
         },
         "& > div": {
             display: "grid !important",
@@ -200,6 +201,14 @@ const styles = theme => ({
             width: "100%",
             marginBottom: 8,
             height: "auto",
+            filter: "sepia(1) saturate(2.0) hue-rotate(187deg) brightness(0.9) contrast(0.9)",
+            transform: "scale(1)",
+            transition: "all .3s cubic-bezier(0.4, 0, 0.2, 1)",
+        },
+        "& img:hover": {
+            filter: "grayscale(0)",
+            transform: "scale(1.05)",
+            transition: "all .6s cubic-bezier(0.4, 0, 0.2, 1)",
         },
         "& > div": {
             display: "grid !important",

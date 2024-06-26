@@ -271,7 +271,7 @@ class DrawerContent extends React.PureComponent {
         return (
             <React.Fragment>
                 {Boolean(_info_dialog_open || _has_info_dialog_opened) && <AppInfoDialog open={_info_dialog_open} onClose={this._close_info_dialog}/>}
-                <List style={{paddingTop: 0}} className={classes.labList}>
+                <List style={{paddingTop: 0, height: "100%"}} className={classes.labList}>
                     <Fade in={true} timeout={0}>
                         <ListItem button className={classes.listItemGrey} TouchRippleProps={{className: classes.rippleBlue}} onClick={this._open_pixel_page}>
                             <ListItemIcon><PaletteIcon className={classes.iconColor} /></ListItemIcon>
@@ -319,7 +319,7 @@ class DrawerContent extends React.PureComponent {
                         </Fade>
                     </Collapse>
                     <Fade in={true} timeout={2000}>
-                        <div style={{textAlign: "center"}} onClick={(event) => {this._open_link(event, "https://play.google.com/store/apps/details?id=pics.pixa.app.twa")}}>
+                        <div style={{textAlign: "center", position: "absolute", bottom: 48, left: 16}} onClick={(event) => {this._open_link(event, "https://play.google.com/store/apps/details?id=pics.pixa.app.twa")}}>
                             <svg
                                 className={"playstorebadge"}
                                 xmlns="http://www.w3.org/2000/svg"

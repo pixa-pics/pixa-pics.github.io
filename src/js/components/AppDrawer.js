@@ -77,6 +77,7 @@ const styles = theme => ({
     },
     drawerPaper: {
         width: 256,
+        height: "100%",
         backgroundColor: theme.palette.secondary.dark,
         color: theme.palette.secondary.contrastText,
         border: 0,
@@ -98,7 +99,8 @@ const styles = theme => ({
         },
     },
     drawerContainer: {
-        overflow: "auto"
+        overflow: "auto",
+        height: "100%",
     },
     drawerPrivacyHint: {
         position: "absolute",

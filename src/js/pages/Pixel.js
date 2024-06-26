@@ -97,7 +97,7 @@ const {Color} = SIMDopeCreate({
     }
 });
 import SmartRequestAnimationFrame from "../components/canvaspixels/utils/SmartRequestAnimationFrame";
-import {FaceToAllAPI, LongCaptionerAPI, ImageCreatorAPI} from "../utils/AI";
+import {FaceToAllAPI, LongCaptionerAPI, FaceToAllAPI2} from "../utils/AI";
 const styles = theme => ({
     green: {
         color: lightGreen[700],
@@ -1891,6 +1891,7 @@ class Pixel extends React.PureComponent {
 
         const longCaptionerAPI = new LongCaptionerAPI(actions.trigger_snackbar);
         const faceToAllAPI = new FaceToAllAPI(actions.trigger_snackbar);
+        const faceToAllAPI2 = new FaceToAllAPI2(actions.trigger_snackbar);
 
         if (smart_file === null && dumb_file === null) {
             actions.trigger_snackbar("Looks like I can't get your file as something is erroneous.", 5700);
@@ -1964,18 +1965,40 @@ class Pixel extends React.PureComponent {
                     const prompt = await longCaptionerAPI.run(file);
                     actions.trigger_snackbar("IMAGE: " + prompt, 5000);
 
-                    const blob = await faceToAllAPI.run(file, prompt)
-                    actions.jamy_update("flirty", 666);
-                    actions.trigger_loading_update(100);
-                    actions.trigger_snackbar("Receiving results (3 sec)");
+                    return faceToAllAPI.run(file, prompt).then((blob) => {
+                        actions.jamy_update("flirty", 666);
+                        actions.trigger_loading_update(100);
+                        actions.trigger_snackbar("Receiving results (3 sec)");
 
-                    actions.jamy_update("happy", 666);
-                    actions.trigger_sfx("alert_high-intensity", 1, "md");
-                    actions.trigger_loading_update(0);
-                    actions.trigger_snackbar("AI Processing [OK]");
-                    that._handle_load_complete("image_ai", {});
-                    that._handle_load("image_preload");
-                    return Promise.resolve(blob);
+                        actions.jamy_update("happy", 666);
+                        actions.trigger_sfx("alert_high-intensity", 1, "md");
+                        actions.trigger_loading_update(0);
+                        actions.trigger_snackbar("AI Processing [OK]");
+                        that._handle_load_complete("image_ai", {});
+                        that._handle_load("image_preload");
+                        return Promise.resolve(blob);
+                    }).catch(() => {
+                        return faceToAllAPI2.run(file, prompt).then((blob) => {
+                            actions.jamy_update("flirty", 666);
+                            actions.trigger_loading_update(100);
+                            actions.trigger_snackbar("Receiving results (3 sec)");
+
+                            actions.jamy_update("happy", 666);
+                            actions.trigger_sfx("alert_high-intensity", 1, "md");
+                            actions.trigger_loading_update(0);
+                            actions.trigger_snackbar("AI Processing [OK]");
+                            that._handle_load_complete("image_ai", {});
+                            that._handle_load("image_preload");
+                            return Promise.resolve(blob);
+                        }).catch(() => {
+                            actions.trigger_loading_update(0);
+                            actions.trigger_snackbar("AI PROCESSING FAILED! Fallback to normal mode.");
+                            that._handle_load_complete("image_ai", {});
+                            that._handle_load("image_preload");
+                            return Promise.resolve(file);
+                        });
+                    });
+
                 }
 
                 this._handle_load("image_ai");

@@ -761,8 +761,8 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
             return i + "_" + l.hidden + "_" + l.opacity + "_" + l.number_of_colors + "_h" + l.thumbnail.hash
         }).join("-"));
 
-        const view_name_changed = Boolean(view_name_index !== new_props.view_name_index);
-        const layer_update = ((layers_changed || _layers_has_changed) && (view_name_index === 2 || new_props.view_name_index === 2));
+        const view_name_changed = Boolean(parseInt(view_name_index) !== parseInt(new_props.view_name_index));
+        const layer_update = ((layers_changed || _layers_has_changed) && (parseInt(view_name_index) === 2 || parseInt(new_props.view_name_index) === 2));
         const something_changed_in_view = Boolean(Boolean(new_props.should_update || should_update) && Boolean(
             layer_update ||
             select_mode + "" !== new_props.select_mode + "" ||
@@ -782,7 +782,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
             Boolean(pencil_mirror_mode) !== Boolean(new_props.pencil_mirror_mode) ||
             Boolean(is_something_selected) !== Boolean(new_props.is_something_selected) ||
             parseInt(import_size) !== parseInt(new_props.import_size) ||
-            (import_colorize | 0) !== (new_props.import_colorize | 0)
+            (parseInt(import_colorize) | 0) !== (parseInt(new_props.import_colorize) | 0)
         ));
 
         let props_override = {
@@ -1233,7 +1233,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                                 <FormControlLabel
                                     value={"1"}
                                     control={<Radio color="primary"/>}
-                                    label="AI PROCESSING"
+                                    label="PORTRAIT PROCESSING (AI)"
                                     labelPlacement="bottom"
                                 />
                             </RadioGroup>
