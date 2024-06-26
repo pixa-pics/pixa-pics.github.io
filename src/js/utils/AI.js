@@ -69,10 +69,10 @@ class HuggingFaceAPI {
     async handleLoadComplete(url, output, finalWidth, finalHeight) {
         output = typeof output === "undefined" ? "blob": output;
         let splittedUrl = (url || "/unknown.webp").split("/");
-        let fileName = splittedUrl[splittedUrl.length-1] || "unknown.jpeg";
-        let extension = fileName.split(".")[1] || "jpeg";
+        let fileName = splittedUrl[splittedUrl.length-1] || "unknown.png";
+        let extension = fileName.split(".")[1] || "png";
         let mimeType = "image/"+extension;
-            extension = extension === "jpeg" ? "jpg": extension;
+            extension = (extension === "jpeg") ? "jpg": extension;
 
         try {
             // Fetch the image data from the URL
@@ -211,7 +211,7 @@ class LongCaptionerAPI extends HuggingFaceAPI {
             result += decoder.decode(value || new Uint8Array(), { stream: true });
 
             // Split the result into lines and process each line
-            let lines = (result || "undefined\nundefined").split("\n");
+            let lines = (result || "\n").split("\n");
 
             for (let line of lines) {
                 line = line.trim();
@@ -267,7 +267,8 @@ class FloranceCaptionerAPI extends HuggingFaceAPI {
         super("https://gokaygokay-florence-2.hf.space", msgCallback);
     }
 
-    getPredictHeader(path, url, size, type, hash, short) {
+    getPredictHeader(path, url, size, type, hash, detail) {
+        detail = detail || 1;
         return {
             headers: this.getHeadersJson(),
             body: JSON.stringify(
@@ -281,12 +282,13 @@ class FloranceCaptionerAPI extends HuggingFaceAPI {
                             mime_type: type,
                             meta: { _type: "gradio.FileData" }
                         },
-                        short ? "Caption": "More Detailed Caption",
-                        short ? "microsoft/Florence-2-large-ft": ""
+                        detail === 1 ? "Caption": detail === 2 ? "Detailed Caption": "More Detailed Caption",
+                        "",
+                        "microsoft/Florence-2-large"
                     ],
                     event_data:null,
-                    fn_index:3,
-                    trigger_id: short ? 9: 7,
+                    fn_index:4,
+                    trigger_id: 10,
                     session_hash:hash
                 }
             ),
@@ -314,7 +316,7 @@ class FloranceCaptionerAPI extends HuggingFaceAPI {
             result += decoder.decode(value || new Uint8Array(), { stream: true });
 
             // Split the result into lines and process each line
-            let lines = (result || "undefined\nundefined").split("\n");
+            let lines = (result || "\n").split("\n");
 
             for (let line of lines) {
                 line = line.trim();
@@ -333,7 +335,7 @@ class FloranceCaptionerAPI extends HuggingFaceAPI {
         return Promise.resolve(finalData);
     }
 
-    readLine(line, short) {
+    readLine(line, detail) {
         console.log(line)
         line = line.slice(5);
         const json = JSON.parse(line);
@@ -341,14 +343,14 @@ class FloranceCaptionerAPI extends HuggingFaceAPI {
             const output = json.output || {};
             const data = output.data || [];
             const response = data[0];
-            const responseSliced = short ? response.slice(16, response.length-2): response.slice(29, response.length-2);
+            const responseSliced = detail === 1 ? response.slice(15, response.length-2): detail === 2 ? response.slice(24, response.length-2): response.slice(29, response.length-2);
             return Promise.resolve(responseSliced);
         } else {
             return Promise.resolve("");
         }
     }
 
-    async run(input, short) {
+    async run(input, detail) {
 
         let file;
         if(typeof input === "string"){
@@ -362,7 +364,7 @@ class FloranceCaptionerAPI extends HuggingFaceAPI {
         const hash = this.generateRandomId();
         const path = await this.uploadFile(file, hash);
         const url = this.getCreateImagePathUrl(path);
-        const header = this.getPredictHeader(path, url, file.size, file.type, hash, short)
+        const header = this.getPredictHeader(path, url, file.size, file.type, hash, detail)
         const responseQueue = await fetch(this.getQueueJoinUrl(), header);
         const responseQueueJSON = await responseQueue.json();
         const event_id = responseQueueJSON.event_id;
@@ -370,7 +372,7 @@ class FloranceCaptionerAPI extends HuggingFaceAPI {
 
             const response = await this.fetchEventSource(this.getResultUrl(hash));
             const line = await this.readResponse(response);
-            return this.readLine(line, short);
+            return this.readLine(line, detail);
         }else {
 
             return Promise.reject();
@@ -407,12 +409,6 @@ class RemoveBackgroundAPI extends HuggingFaceAPI {
         };
     }
 
-    getPredictResult(result) {
-        const json = JSON.parse(result) || result || {};
-        const hash = json.hash || "";
-        return hash;
-    }
-
     getQueueStatusUrl() {
         return `${this.baseUrl}/api/queue/status/`;
     }
@@ -427,18 +423,6 @@ class RemoveBackgroundAPI extends HuggingFaceAPI {
             ),
             method: "POST"
         };
-    }
-
-    getResultResult(result) {
-        const json = JSON.parse(result) || {};
-        const status = json.status || "";
-        if(status === "COMPLETE"){
-            const data = json.data;
-            const base64 = data[0];
-            return base64;
-        }
-
-        return "";
     }
 
     async run(input, w, h) {
@@ -547,7 +531,7 @@ class ImageCreatorAPI extends HuggingFaceAPI {
             result += decoder.decode(value || new Uint8Array(), { stream: true });
 
             // Split the result into lines and process each line
-            let lines = (result || "undefined\nundefined").split("\n");
+            let lines = (result || "\n").split("\n");
 
             for (let line of lines) {
                 line = line.trim();
@@ -697,7 +681,7 @@ class FaceToAllAPI extends HuggingFaceAPI {
             done = done || streamDone;
             result += "".concat(decoder.decode(value || new Uint8Array(), { stream: true }));
 
-            let lines = (result || "undefined\nundefined").split("\n");
+            let lines = (result || "\n").split("\n");
 
             // Process each line
             for (let i = 0; i < lines.length; i++) {
@@ -832,7 +816,7 @@ class FaceToAllAPI2 extends HuggingFaceAPI {
             done = done || streamDone;
             result += "".concat(decoder.decode(value || new Uint8Array(), { stream: true }));
 
-            let lines = (result || "undefined\nundefined").split("\n");
+            let lines = (result || "\n").split("\n");
 
             // Process each line
             for (let i = 0; i < lines.length; i++) {

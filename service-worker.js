@@ -27,10 +27,10 @@ var LOAD_FILES_USEFUL = ["/src/fonts/normative/index.css"].concat(["illusion.jpg
 var LOAD_FILES_STATIC = ["sfx/md/hero_decorative-celebration-02", "sfx/md/navigation_selection-complete-celebration", "sfx/md/navigation_transition-left", "sfx/md/state-change_confirm-down", "sfx/md/ui_lock", "sfx/md/ui_unlock", "sfx/md/ui_scan", "sfx/md/alert_high-intensity", "sfx/md/navigation_transition-right", "voice/cn/accessing_memory", "voice/cn/complete", "voice/cn/please_wait", "voice/cn/data_upload", "voice/cn/processing", "voice/cn/enhanced", "voice/cn/rewriting_deep_layer_protocols", "voice/cn/vision_activated", "voice/cn/vision_deactivated", "voice/cn/filtering", "music/redeclipse/track_09"].map(F_SND).concat(["presentation", "tutorial", "create", "enhanced", "pixelated", "upload", "share1", "joke1", "create", "enhanced", "pixelated", "presentation", "presentation2", "sponsors", "tutorial", "upload", "labintro", "share2", "share3", "share4", "share5", "share6", "share7", "joke2", "joke3", "joke4", "joke5", "joke6", "joke7", "joke8", "joke9", "joke10", "joke11"].map(F_VID));
 
 // Cache names
-var REQUIRED_CACHE = "unless-update-cache-v1062-required";
-var USEFUL_CACHE = "unless-update-cache-v1062-useful";
-var STATIC_CACHE = "unless-update-cache-v1062-static";
-var OTHER_CACHE = "unless-update-cache-v1062-other";
+var REQUIRED_CACHE = "unless-update-cache-v1063-required";
+var USEFUL_CACHE = "unless-update-cache-v1063-useful";
+var STATIC_CACHE = "unless-update-cache-v1063-static";
+var OTHER_CACHE = "unless-update-cache-v1063-other";
 
 // Regular expressions for chunk matching
 var MAIN_CHILD_CHUNK_REGEX = /chunk_(main_[a-z0-9]+)\.min\.js$/i;
@@ -114,10 +114,7 @@ self.addEventListener("fetch", function(event) {
     const url = request.url;
     const same_site = event.request.referrer.startsWith(url.hostname);
 
-    if(url.includes('extension')){
-
-        event.respondWith(fetch(request));
-    }if (event.request.headers.get('range') && url.indexOf('http') === 0) {
+    if (event.request.headers.get('range') && url.indexOf('http') === 0) {
 
         event.respondWith(fetch(request));
 
@@ -143,10 +140,7 @@ self.addEventListener("fetch", function(event) {
                 .catch(function(){return new Response("all", {status: 500})})
         );
 
-    } else if(!(url.indexOf('http') === 0 || url.includes('extension'))){
-
-        event.respondWith(fetch(request));
-    }else if(same_site && either_ends_with([".wasm", ".png", ".json", ".svg", ".jpg", ".jpeg", ".gif", ".ico", ".onnx"], url)) {
+    } if(same_site && either_ends_with([".wasm", ".png", ".json", ".svg", ".jpg", ".jpeg", ".gif", ".ico", ".onnx"], url)) {
 
         // Serve cached image if doesn't fail
         event.respondWith(serve_cache(useful_cache, url));
@@ -177,7 +171,7 @@ self.addEventListener("fetch", function(event) {
 
         event.respondWith(serve_cache(required_cache, "/"));
 
-    } else {
+    } else if(event.request.method === "GET") {
 
         event.respondWith(
             Promise.any([
@@ -200,6 +194,11 @@ self.addEventListener("fetch", function(event) {
                 fetch(request)
             ])
         );
+    } else if(url.startsWith('https') || url.contains('extension')){
+
+        return;
+    }else {
+        return;
     }
 });
 

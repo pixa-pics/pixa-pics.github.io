@@ -97,7 +97,7 @@ const {Color} = SIMDopeCreate({
     }
 });
 import SmartRequestAnimationFrame from "../components/canvaspixels/utils/SmartRequestAnimationFrame";
-import {FaceToAllAPI, LongCaptionerAPI, FaceToAllAPI2} from "../utils/AI";
+import {FaceToAllAPI, FloranceCaptionerAPI, FaceToAllAPI2} from "../utils/AI";
 const styles = theme => ({
     green: {
         color: lightGreen[700],
@@ -1889,7 +1889,7 @@ class Pixel extends React.PureComponent {
             }
         }
 
-        const longCaptionerAPI = new LongCaptionerAPI(actions.trigger_snackbar);
+        const floranceCaptionerAPI = new FloranceCaptionerAPI(actions.trigger_snackbar);
         const faceToAllAPI = new FaceToAllAPI(actions.trigger_snackbar);
         const faceToAllAPI2 = new FaceToAllAPI2(actions.trigger_snackbar);
 
@@ -1962,7 +1962,7 @@ class Pixel extends React.PureComponent {
                     }, 5000);
 
 
-                    const prompt = await longCaptionerAPI.run(file);
+                    const prompt = await floranceCaptionerAPI.run(file, 1);
                     actions.trigger_snackbar("IMAGE: " + prompt, 5000);
 
                     return faceToAllAPI.run(file, prompt).then((blob) => {

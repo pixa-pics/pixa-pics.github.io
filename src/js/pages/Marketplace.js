@@ -1265,7 +1265,7 @@ class Marketplace extends React.PureComponent {
         actions.trigger_sfx("navigation_selection-complete-celebration");
         const floranceCaptionerAPI = new FloranceCaptionerAPI();
         let descriptions = this.st4te.descriptions || [];
-        floranceCaptionerAPI.run(img.src).then((caption) => {
+        floranceCaptionerAPI.run(img.src, 3).then((caption) => {
             descriptions[img.name] = caption;
             this.setst4te({descriptions});
         });
@@ -1284,7 +1284,7 @@ class Marketplace extends React.PureComponent {
     closeMediaCard = () => {
 
         URL.revokeObjectURL(this.st4te.src);
-        actions.trigger_sfx("st4te-change_confirm_down");
+        actions.trigger_sfx("state-change_confirm_down");
         this.setst4te({openedMediaData: null}, () => {
             this.forceUpdate();
         })
@@ -1873,8 +1873,8 @@ class Marketplace extends React.PureComponent {
                             }
                         </div>
                         <h2>Description</h2>
-                        <p style={{textAlign: "justify", margin: "8px 16px"}}>{descriptions[openedMediaData.name] || "Fetching description using Artificial Intelligence [Automatic captioning]... Please wait."}</p>
-                        <h2>st4te</h2>
+                        <p style={{textAlign: "justify", margin: "8px 16px"}}>{descriptions[openedMediaData.name] || "[Automatic captioning]..."}</p>
+                        <h2>Status</h2>
                         <List dense={true} className={classes.list}>
                             <ListItem divider>
                                 <ListItemText primary="Created:"/>
