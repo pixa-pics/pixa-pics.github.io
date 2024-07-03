@@ -57,6 +57,9 @@ class HuggingFaceAPI {
     getHeadersStream() {
         return { "accept": "text/event-stream" };
     }
+    getHeadersAll() {
+        return { "accept": "*/*" };
+    }
 
     getUploadUrl(uploadId) {
         return `${this.baseUrl}/upload?upload_id=${uploadId}`;
@@ -172,7 +175,8 @@ class HuggingFaceAPI {
 
     async fetchEventSource(url) {
         const response = await fetch(url, {
-            headers: this.getHeadersStream()
+            headers: this.getHeadersStream(),
+            method: "GET"
         });
         return Promise.resolve(response.body.getReader());
     }
@@ -184,6 +188,37 @@ class HuggingFaceAPI {
         const text = await response.clone().text();
         const json_text = text.replaceAll("event: complete\ndata: ", "")
         return Promise.resolve(JSON.parse(json_text));
+    }
+    async readResponse(reader) {
+        const decoder = new TextDecoder("utf-8");
+        let result = "";
+        let done = false;
+        let finalData = null;
+
+        while (!done) {
+            const { value, done: streamDone } = await reader.read();
+            done = done || streamDone;
+            result += decoder.decode(value || new Uint8Array(), { stream: true });
+
+            // Split the result into lines and process each line
+            let lines = (result || "\n").split("\n");
+
+            for (let line of lines) {
+                line = line.trim();
+                this.message(line);
+                console.log(line)
+                if (line.includes("complete")) {
+                    // The event is complete, so we can mark done as true
+                    done = true;
+                    finalData = line;
+                }
+            }
+
+            // Reset result to handle potential partial lines correctly
+            result = lines[lines.length - 1];
+        }
+
+        return Promise.resolve(finalData);
     }
 }
 class LongCaptionerAPI extends HuggingFaceAPI {
@@ -304,36 +339,7 @@ class FloranceCaptionerAPI extends HuggingFaceAPI {
         return `${this.baseUrl}/queue/data?session_hash=${hash}`;
     }
 
-    async readResponse(reader) {
-        const decoder = new TextDecoder("utf-8");
-        let result = "";
-        let done = false;
-        let finalData = null;
 
-        while (!done) {
-            const { value, done: streamDone } = await reader.read();
-            done = done || streamDone;
-            result += decoder.decode(value || new Uint8Array(), { stream: true });
-
-            // Split the result into lines and process each line
-            let lines = (result || "\n").split("\n");
-
-            for (let line of lines) {
-                line = line.trim();
-                this.message(line);
-                if (line.includes("complete")) {
-                    // The event is complete, so we can mark done as true
-                    done = true;
-                    finalData = line;
-                }
-            }
-
-            // Reset result to handle potential partial lines correctly
-            result = lines[lines.length - 1];
-        }
-
-        return Promise.resolve(finalData);
-    }
 
     readLine(line, detail) {
         console.log(line)
@@ -639,7 +645,7 @@ class FaceToAllAPI extends HuggingFaceAPI {
 
     getQueueJoinHeader(path, url, size, type, prompt, hash) {
 
-        const finalPrompt = `a pixel art of a person in lucasarts style within an image described as: "${prompt}"`;
+        const finalPrompt = `A 2D illustration in retro game style pixel art of ${prompt.replaceAll("\\n", "").replaceAll("\\", "")} in lucasarts style. Video game, low color number, high quality."`;
 
         return {
             headers: this.getHeadersJson(),
@@ -648,7 +654,7 @@ class FaceToAllAPI extends HuggingFaceAPI {
                     path: path, url: url, orig_name: "image."+type.replaceAll("image/", ""), size: size, mime_type: type, meta: { _type: "gradio.FileData" }
                 },
                     finalPrompt,
-                    "Realistic, photography, real.",
+                    "Realistic, photography, real, CGI, 3D.",
                     0.95,
                     null,
                     0.90,
@@ -718,10 +724,10 @@ class FaceToAllAPI extends HuggingFaceAPI {
         const header = this.getPredictHeader(style, hash);
         const predict_url = this.getPredictUrl();
         const responseStyle = await fetch(predict_url, header);
-        const responseStyleJson = await responseStyle.json();
+        const ok = responseStyle.ok;
         const path = await this.uploadFile(file, id);
         const imagePath = this.getCreateImagePathUrl(path);
-        if (responseStyleJson && imagePath) {
+        if (ok && imagePath) {
             const headerQueue = this.getQueueJoinHeader(path, imagePath, file.size, file.type, prompt, hash);
             const urlQueue = this.getQueueJoinUrl();
             const responseQueue = await fetch(urlQueue, headerQueue);
@@ -741,19 +747,37 @@ class FaceToAllAPI extends HuggingFaceAPI {
     }
 }
 
+
 class FaceToAllAPI2 extends HuggingFaceAPI {
     constructor(msgCallback) {
         super("https://multimodalart-face-to-all.hf.space", msgCallback);
     }
 
     getPredictUrl() {
-        return `${this.baseUrl}/run/predict`;
+        return `${this.baseUrl}/queue/join`;
     }
 
     getPredictHeader(lora_url, hash) {
         return {
             headers: this.getHeadersJson(),
             body: JSON.stringify({ data: [lora_url], event_data: null, fn_index: 0, trigger_id: 11, session_hash: hash }),
+            method: "POST"
+        };
+    }
+
+    getCheckHeader(hash) {
+        return {
+            headers: this.getHeadersJson(),
+            body: JSON.stringify({
+                "data": [
+                    null,
+                    null
+                ],
+                "event_data": null,
+                "fn_index": 5,
+                "trigger_id": 18,
+                "session_hash": hash
+            }),
             method: "POST"
         };
     }
@@ -774,7 +798,7 @@ class FaceToAllAPI2 extends HuggingFaceAPI {
 
     getQueueJoinHeader(path, url, size, type, prompt, hash) {
 
-        const finalPrompt = `a pixel art of a person in lucasarts style within an image described as: "${prompt}"`;
+        const finalPrompt = `A 2D illustration in retro video game art of style pixel art of : ${prompt.replaceAll("\\n", "").replaceAll("\\", "")} in lucasarts style. palette, high quality, truthful shapes and colors, great ouput."`;
 
         return {
             headers: this.getHeadersJson(),
@@ -783,12 +807,12 @@ class FaceToAllAPI2 extends HuggingFaceAPI {
                     path: path, url: url, orig_name: "image."+type.replaceAll("image/", ""), size: size, mime_type: type, meta: { _type: "gradio.FileData" }
                 },
                     finalPrompt,
-                    "Realistic, photography, real.",
-                    0.95,
-                    null,
+                    "Realistic, Photography, Real, Photo-realistic, CGI, 3D, Screenshot, Filters, Retro, Bad Quality, Worst settings, bad shapes.",
                     0.90,
-                    0.12,
-                    7.75,
+                    null,
+                    0.85,
+                    0.10,
+                    7.0,
                     0.80,
                     null,
                     null
@@ -822,7 +846,7 @@ class FaceToAllAPI2 extends HuggingFaceAPI {
             for (let i = 0; i < lines.length; i++) {
                 const line = lines[i].trim();
                 this.message(line);
-                if (line.includes("complete")) {
+                if (line.includes("complete") && line.includes("success\":true") && !line.includes("custom_lora_card") && !line.includes("data\":[]")) {
                     done = true;
                     finalLine = line;
                 }
@@ -853,10 +877,13 @@ class FaceToAllAPI2 extends HuggingFaceAPI {
         const header = this.getPredictHeader(style, hash);
         const predict_url = this.getPredictUrl();
         const responseStyle = await fetch(predict_url, header);
-        const responseStyleJson = await responseStyle.json();
+        const ok = responseStyle.ok;
         const path = await this.uploadFile(file, id);
         const imagePath = this.getCreateImagePathUrl(path);
-        if (responseStyleJson && imagePath) {
+        //const check_header = this.getCheckHeader(hash);
+        //const responseCheck = await fetch(predict_url, check_header);
+        //const ok2 = responseCheck.ok;
+        if (ok && imagePath) {
             const headerQueue = this.getQueueJoinHeader(path, imagePath, file.size, file.type, prompt, hash);
             const urlQueue = this.getQueueJoinUrl();
             const responseQueue = await fetch(urlQueue, headerQueue);

@@ -8,7 +8,6 @@ import Menu from '@material-ui/core/Menu';
 import Backdrop from '@material-ui/core/Backdrop';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItem from '@material-ui/core/ListItem';
-import Divider from '@material-ui/core/Divider';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import Avatar from '@material-ui/core/Avatar';
 import Card from "@material-ui/core/Card";
@@ -72,7 +71,6 @@ import CanvasPos from "../components/canvaspixels/utils/CanvasPos"
 import { createLocalBlob } from "../utils/objectURL";
 import HexGrid from "../icons/HexGrid";
 import get_svg_in_b64 from "../utils/svgToBase64";
-
 import pool from "../utils/worker-pool";
 import JSLoader from "../utils/JSLoader";
 import actions from "../actions/utils";
@@ -1187,42 +1185,41 @@ class Marketplace extends React.PureComponent {
                 actions.trigger_voice("processing");
                 JSLoader( () => import("../utils/xBRZ")).then((obj) => {
                     obj.default(data, 6, pool).then((imageData) => {
-                        createSVG(imageData).then((url) => {
+                        actions.trigger_loading_update(22);
+                        createSVG(imageData).then(([url, str]) => {
+                            function svgStrToUrl(svgString) {
+                                const blob = new Blob([svgString], { type: 'image/svg+xml' });
+                                return URL.createObjectURL(blob);
+                            }
+
+                            URL.revokeObjectURL(this.st4te.src);
                             this.setst4te({src: url, type: "svg"}, () => {
-                                actions.trigger_loading_update(75);
+                                actions.trigger_loading_update(66);
                                 actions.trigger_voice("vision_activated");
                                 this.forceUpdate();
-                                const reader = new FileReader();
-                                reader.onload = (event) => {
-                                    let svgString = event.target.result;
-                                    JSLoader(() => import("svgo/dist/svgo.browser")).then(({optimize}) => {
+                                JSLoader(() => import("svgo/dist/svgo.browser")).then(({optimize}) => {
 
-                                        svgString = optimize(svgString, {
-                                            // optional but recommended field
-                                            path: 'path-to.svg',
-                                            // all config fields are also available here
-                                            multipass: true,
-                                            mergePaths: true,
-                                            mergeStyles: true,
-                                            collapseGroups: true,
-                                            reusePaths: true,
-                                            plugin: ["multipass", "mergePaths", "collapseGroups", "reusePaths", "mergeStyles"],
-                                        }).data;
+                                    str = optimize(str, {
+                                        // optional but recommended field
+                                        path: 'path-to.svg',
+                                        // all config fields are also available here
+                                        multipass: true,
+                                        mergePaths: true,
+                                        mergeStyles: true,
+                                        collapseGroups: false,
+                                        reusePaths: false,
+                                        plugin: ["multipass", "mergePaths", "collapseGroups", "reusePaths", "mergeStyles"],
+                                    }).data;
 
-                                        URL.revokeObjectURL(this.st4te.src);
-                                        this.setst4te({
-                                            src: "data:image/svg+xml;base64," + window.btoa(svgString),
-                                            type: "svg"
-                                        }, () => {
-                                            this.forceUpdate();
-                                            actions.trigger_loading_update(100);
-                                            actions.trigger_voice("enhanced");
-                                        });
-                                    });
-                                };
-                                fetch(url).then(function (response) {
-                                    response.blob().then(function (blob) {
-                                        reader.readAsText(blob);
+                                    actions.trigger_loading_update(88);
+                                    URL.revokeObjectURL(this.st4te.src);
+                                    this.setst4te({
+                                        src: svgStrToUrl(str),
+                                        type: "svg"
+                                    }, () => {
+                                        this.forceUpdate();
+                                        actions.trigger_loading_update(100);
+                                        actions.trigger_voice("enhanced");
                                     });
                                 });
                             });

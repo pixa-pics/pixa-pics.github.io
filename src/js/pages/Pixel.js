@@ -1965,7 +1965,7 @@ class Pixel extends React.PureComponent {
                     const prompt = await floranceCaptionerAPI.run(file, 1);
                     actions.trigger_snackbar("IMAGE: " + prompt, 5000);
 
-                    return faceToAllAPI.run(file, prompt).then((blob) => {
+                    return faceToAllAPI2.run(file, prompt).then((blob) => {
                         actions.jamy_update("flirty", 666);
                         actions.trigger_loading_update(100);
                         actions.trigger_snackbar("Receiving results (3 sec)");
@@ -1978,7 +1978,7 @@ class Pixel extends React.PureComponent {
                         that._handle_load("image_preload");
                         return Promise.resolve(blob);
                     }).catch(() => {
-                        return faceToAllAPI2.run(file, prompt).then((blob) => {
+                        return faceToAllAPI.run(file, prompt).then((blob) => {
                             actions.jamy_update("flirty", 666);
                             actions.trigger_loading_update(100);
                             actions.trigger_snackbar("Receiving results (3 sec)");

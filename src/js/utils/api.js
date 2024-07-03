@@ -365,6 +365,7 @@ const set_settings = (info = {}, callback_function_info = () => {}, attachment_a
 
                                     let ap = Object.assign({}, window._pixa_settings.attachment_previews);
                                     delete ap[name_id];
+                                    delete window._pixa_settings.attachment_previews[name_id];
                                     window._pixa_settings = Object.assign(window._pixa_settings, {attachment_previews: ap});
 
                                     attachments_to_process--;

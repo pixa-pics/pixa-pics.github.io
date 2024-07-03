@@ -22,7 +22,7 @@ function createSvgUrl(svgElementId) {
 
     // Remove svg element
     svgElement.remove();
-    return url;
+    return [url, svgString];
 }
 
 function vectorizeImageWithVtracer(options, cb) {
@@ -89,7 +89,7 @@ function vectorizeImageWithVtracer(options, cb) {
     class ConverterRunner {
         constructor(cb) {
             // Initialize the converter with the provided parameters
-            this.converter = ColorImageConverter.new_with_string('{"canvas_id":"frame","svg_id":"svg","mode":"spline","clustering_mode":"color","hierarchical":"stacked","corner_threshold":0.5,"length_threshold":5,"max_iterations":10,"splice_threshold":0.5,"filter_speckle":5,"color_precision":0,"layer_difference":5,"path_precision":5}');
+            this.converter = ColorImageConverter.new_with_string('{"canvas_id":"frame","svg_id":"svg","mode":"spline","clustering_mode":"color","hierarchical":"stacked","corner_threshold":0.5,"length_threshold":5,"max_iterations":5,"splice_threshold":0.5,"filter_speckle":5,"color_precision":1,"layer_difference":5,"path_precision":5}');
             this.converter.init();
             this.stopped = false;
             this.callback = cb;
