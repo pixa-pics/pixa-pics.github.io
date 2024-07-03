@@ -46,8 +46,16 @@ class HuggingFaceAPI {
         }
     }
 
-    generateRandomId() {
-        return Math.round(Math.random() * 0xFFFFFF).toString(16).padStart(6, "0");
+    generateRandomId(count = 6) {
+        var str = "";
+        while (count >= 6) {
+            str += Math.round(Math.random() * 0xFFFFFF).toString(16).padStart(6, "0");
+            count -= 6;
+        }
+        if(count > 0) {
+            str += Math.round(Math.random() * 0xFFFFFF).toString(16).padStart(6, "0").slice(0, count);
+        }
+        return str;
     }
 
     getHeadersJson() {
@@ -60,7 +68,6 @@ class HuggingFaceAPI {
     getHeadersAll() {
         return { "accept": "*/*" };
     }
-
     getUploadUrl(uploadId) {
         return `${this.baseUrl}/upload?upload_id=${uploadId}`;
     }
@@ -175,7 +182,7 @@ class HuggingFaceAPI {
 
     async fetchEventSource(url) {
         const response = await fetch(url, {
-            headers: this.getHeadersStream(),
+            headers: this.getHeadersAll(),
             method: "GET"
         });
         return Promise.resolve(response.body.getReader());
@@ -183,11 +190,16 @@ class HuggingFaceAPI {
 
     async fetchEventSourceJSON(url) {
         const response = await fetch(url, {
-            headers: this.getHeadersJson()
+            headers: this.getHeadersJson(),
+            method: "GET"
         });
         const text = await response.clone().text();
         const json_text = text.replaceAll("event: complete\ndata: ", "")
-        return Promise.resolve(JSON.parse(json_text));
+        try {
+            return Promise.resolve(JSON.parse(json_text));
+        }catch (e) {
+            return Promise.reject();
+        }
     }
     async readResponse(reader) {
         const decoder = new TextDecoder("utf-8");
@@ -231,7 +243,11 @@ class LongCaptionerAPI extends HuggingFaceAPI {
     }
 
     getReadCaptions(line) {
-        return JSON.parse(line.slice(5));
+        try {
+            return JSON.parse(line.slice(5));
+        }catch (e) {
+            return "";
+        }
     }
 
     async readResponse(reader) {
@@ -262,7 +278,7 @@ class LongCaptionerAPI extends HuggingFaceAPI {
             result = lines[lines.length - 1];
         }
 
-        return Promise.resolve(finalData);
+        return done ? Promise.resolve(finalData): Promise.reject("Error");
     }
 
     async createCaptions(imagePath) {
@@ -273,8 +289,12 @@ class LongCaptionerAPI extends HuggingFaceAPI {
                 data: [{ path: imagePath }]
             })
         });
-        const data = await response.json();
-        return Promise.resolve(data.event_id);
+        try {
+            const data = await response.json();
+            return Promise.resolve(data.event_id);
+        } catch (e) {
+            return Promise.reject("Error");
+        }
     }
 
     async run(input) {
@@ -292,8 +312,11 @@ class LongCaptionerAPI extends HuggingFaceAPI {
         const path = await this.uploadFile(file, id);
         const url = this.getCreateCaptionsUrl();
         const eventId = await this.createCaptions(path);
-        const response = await this.fetchEventSourceJSON(`${url}/${eventId}`);
-        return Promise.resolve(response[0])
+        return this.fetchEventSourceJSON(`${url}/${eventId}`).then(function (r){
+            return r[0];
+        }).catch(function (){
+            return "";
+        });
     }
 }
 
@@ -344,15 +367,19 @@ class FloranceCaptionerAPI extends HuggingFaceAPI {
     readLine(line, detail) {
         console.log(line)
         line = line.slice(5);
-        const json = JSON.parse(line);
-        if(json.success){
-            const output = json.output || {};
-            const data = output.data || [];
-            const response = data[0];
-            const responseSliced = detail === 1 ? response.slice(15, response.length-2): detail === 2 ? response.slice(24, response.length-2): response.slice(29, response.length-2);
-            return Promise.resolve(responseSliced);
-        } else {
-            return Promise.resolve("");
+        try {
+            const json = JSON.parse(line);
+            if(json.success){
+                const output = json.output || {};
+                const data = output.data || [];
+                const response = data[0];
+                const responseSliced = detail === 1 ? response.slice(15, response.length-2): detail === 2 ? response.slice(24, response.length-2): response.slice(29, response.length-2);
+                return Promise.resolve(responseSliced.replaceAll("\\n", "").replaceAll("\n", ""));
+            } else {
+                return Promise.reject("");
+            }
+        } catch (e) {
+            return Promise.reject();
         }
     }
 
@@ -377,8 +404,11 @@ class FloranceCaptionerAPI extends HuggingFaceAPI {
         if(event_id) {
 
             const response = await this.fetchEventSource(this.getResultUrl(hash));
-            const line = await this.readResponse(response);
-            return this.readLine(line, detail);
+            return this.readResponse(response).then((line) => {
+                return this.readLine(line, detail);
+            }).catch(function (){
+                return Promise.reject();
+            });
         }else {
 
             return Promise.reject();
@@ -518,7 +548,7 @@ class ImageCreatorAPI extends HuggingFaceAPI {
     }
 
     getQueueJoinUrl() {
-        return `${this.baseUrl}/queue/join`;
+        return `${this.baseUrl}/queue/join?__theme=light`;
     }
 
     getResultUrl(hash) {
@@ -630,7 +660,7 @@ class FaceToAllAPI extends HuggingFaceAPI {
     }
 
     getQueueJoinUrl() {
-        return `${this.baseUrl}/queue/join`;
+        return `${this.baseUrl}/queue/join?__theme=light`;
     }
 
     extractSecondImageUrl(jsonStr) {
@@ -765,23 +795,6 @@ class FaceToAllAPI2 extends HuggingFaceAPI {
         };
     }
 
-    getCheckHeader(hash) {
-        return {
-            headers: this.getHeadersJson(),
-            body: JSON.stringify({
-                "data": [
-                    null,
-                    null
-                ],
-                "event_data": null,
-                "fn_index": 5,
-                "trigger_id": 18,
-                "session_hash": hash
-            }),
-            method: "POST"
-        };
-    }
-
     getQueueJoinUrl() {
         return `${this.baseUrl}/queue/join`;
     }
@@ -819,6 +832,20 @@ class FaceToAllAPI2 extends HuggingFaceAPI {
                 ],
                 event_data: null,
                 fn_index: 6,
+                trigger_id: 18,
+                session_hash: hash
+            }),
+            method: "POST"
+        };
+    }
+
+    getUselessBullshit(hash) {
+        return {
+            headers: this.getHeadersJson(),
+            body: JSON.stringify({
+                data: [null, null],
+                event_data: null,
+                fn_index: 5,
                 trigger_id: 18,
                 session_hash: hash
             }),
@@ -871,8 +898,8 @@ class FaceToAllAPI2 extends HuggingFaceAPI {
             return Promise.reject();
         }
 
-        const id = this.generateRandomId();
-        const hash = this.generateRandomId();
+        const id = this.generateRandomId(8);
+        const hash = this.generateRandomId(11);
 
         const header = this.getPredictHeader(style, hash);
         const predict_url = this.getPredictUrl();
@@ -880,23 +907,35 @@ class FaceToAllAPI2 extends HuggingFaceAPI {
         const ok = responseStyle.ok;
         const path = await this.uploadFile(file, id);
         const imagePath = this.getCreateImagePathUrl(path);
-        //const check_header = this.getCheckHeader(hash);
-        //const responseCheck = await fetch(predict_url, check_header);
-        //const ok2 = responseCheck.ok;
         if (ok && imagePath) {
             const headerQueue = this.getQueueJoinHeader(path, imagePath, file.size, file.type, prompt, hash);
             const urlQueue = this.getQueueJoinUrl();
             const responseQueue = await fetch(urlQueue, headerQueue);
-            const responseQueueJSON = await responseQueue.json();
-            const event_id = responseQueueJSON.event_id;
-            if (typeof event_id !== "undefined") {
-                const request_url = this.getQueueDataUrl(hash);
-                const event = await this.fetchEventSource(request_url);
-                const line = await this.readResponse(event);
-                const url = this.extractSecondImageUrl(line);
-                const file = await this.handleLoadComplete(url);
-                return Promise.resolve(file);
+            const ok2 = responseQueue.ok;
+            if(ok2) {
+                const responseQueueJSON = await responseQueue.json();
+                const event_id = responseQueueJSON.event_id;
+                if (typeof event_id !== "undefined") {
+
+
+                    const request_url = this.getQueueDataUrl(hash);
+                    const bullshitResponse = await fetch(request_url, this.getUselessBullshit(hash));
+
+                    if(bullshitResponse.ok){
+
+                        const bullshitResponseJSON = await bullshitResponse.json();
+
+                        if(bullshitResponseJSON.event_id) {
+                            const event = await this.fetchEventSource(request_url);
+                            const line = await this.readResponse(event);
+                            const url = this.extractSecondImageUrl(line);
+                            const file = await this.handleLoadComplete(url);
+                            return Promise.resolve(file);
+                        }
+                    }
+                }
             }
+
         }
 
         return Promise.reject();

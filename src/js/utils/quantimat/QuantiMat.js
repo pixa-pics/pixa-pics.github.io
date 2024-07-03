@@ -597,20 +597,21 @@ QuantiMat.prototype.reset_original = function() {
 QuantiMat.prototype.run =  function() {
     "use strict";
 
-    var t = (this.new_pxl_colors_length > 60000 ? 12: this.new_pxl_colors_length > 32000 ? 8: this.new_pxl_colors_length > 16000 ? 4: this.new_pxl_colors_length > 8192 ? 3: this.new_pxl_colors_length > 4096 ? 2: 1) | 0;
-   if(this.new_pxl_colors_length <= this.best_color_number) {
-       this.deduplicate();
-       this.clusterize();
-       return this;
+    var t = 0;
+    if(this.new_pxl_colors_length <= this.best_color_number) {
+        this.reset_original();
+        this.deduplicate();
+        this.clusterize();
+        return this;
    }
-    while (this.new_pxl_colors_length > this.best_color_number) {
+    while (this.new_pxl_colors_length >= this.best_color_number) {
+
+        t = t + (this.new_pxl_colors_length > 60000 ? 12: this.new_pxl_colors_length > 32000 ? 8: this.new_pxl_colors_length > 16000 ? 4: this.new_pxl_colors_length > 8192 ? 3: this.new_pxl_colors_length > 4096 ? 2: 1) | 0;
 
         if(this.process_threshold(t|0)) {
             this.deduplicate();
             this.clusterize();
         }
-
-        t = t + (this.new_pxl_colors_length > 60000 ? 12: this.new_pxl_colors_length > 32000 ? 8: this.new_pxl_colors_length > 16000 ? 4: this.new_pxl_colors_length > 8192 ? 3: this.new_pxl_colors_length > 4096 ? 2: 1) | 0;
     }
 
     this.reset_original();
@@ -639,36 +640,253 @@ QuantiMat.split_image_data = function (image_data) {
 
     return [pxls, pxl_colors, image_data_uint32, original_color_n];
 }
+// Helper functions for color space conversion
+function rgbToLab(r, g, b) {
+    let [x, y, z] = rgbToXyz(r, g, b);
+    return xyzToLab(x, y, z);
+}
+
+function rgbToXyz(r, g, b) {
+    r = r / 255; g = g / 255; b = b / 255;
+    r = r > 0.04045 ? Math.pow((r + 0.055) / 1.055, 2.4) : r / 12.92;
+    g = g > 0.04045 ? Math.pow((g + 0.055) / 1.055, 2.4) : g / 12.92;
+    b = b > 0.04045 ? Math.pow((b + 0.055) / 1.055, 2.4) : b / 12.92;
+    r *= 100; g *= 100; b *= 100;
+    let x = r * 0.4124 + g * 0.3576 + b * 0.1805;
+    let y = r * 0.2126 + g * 0.7152 + b * 0.0722;
+    let z = r * 0.0193 + g * 0.1192 + b * 0.9505;
+    return [x, y, z];
+}
+
+function xyzToLab(x, y, z) {
+    x /= 95.047; y /= 100.000; z /= 108.883;
+    x = x > 0.008856 ? Math.pow(x, 1 / 3) : (7.787 * x) + (16 / 116);
+    y = y > 0.008856 ? Math.pow(y, 1 / 3) : (7.787 * y) + (16 / 116);
+    z = z > 0.008856 ? Math.pow(z, 1 / 3) : (7.787 * z) + (16 / 116);
+    let l = (116 * y) - 16;
+    let a = 500 * (x - y);
+    let b = 200 * (y - z);
+    return [l, a, b];
+}
+
+// K-means clustering algorithm
+function kMeans(data, k) {
+    let centroids = initializeCentroids(data, k);
+    let clusters = new Array(data.length).fill(-1);
+    let changed = true;
+
+    while (changed) {
+        changed = false;
+        for (let i = 0; i < data.length; i++) {
+            let minDist = Infinity;
+            let bestCluster = -1;
+            for (let j = 0; j < centroids.length; j++) {
+                let dist = euclideanDistance(data[i], centroids[j]);
+                if (dist < minDist) {
+                    minDist = dist;
+                    bestCluster = j;
+                }
+            }
+            if (clusters[i] !== bestCluster) {
+                clusters[i] = bestCluster;
+                changed = true;
+            }
+        }
+
+        let sums = new Array(k).fill(null).map(() => new Array(3).fill(0));
+        let counts = new Array(k).fill(0);
+        for (let i = 0; i < data.length; i++) {
+            let cluster = clusters[i];
+            for (let j = 0; j < 3; j++) {
+                sums[cluster][j] += data[i][j];
+            }
+            counts[cluster]++;
+        }
+        for (let j = 0; j < centroids.length; j++) {
+            for (let l = 0; l < 3; l++) {
+                centroids[j][l] = counts[j] ? sums[j][l] / counts[j] : centroids[j][l];
+            }
+        }
+    }
+
+    return { centroids, clusters };
+}
+
+function initializeCentroids(data, k) {
+    let centroids = [];
+    let usedIndices = new Set();
+    while (centroids.length < k) {
+        let index = Math.floor(Math.random() * data.length);
+        if (!usedIndices.has(index)) {
+            centroids.push(data[index]);
+            usedIndices.add(index);
+        }
+    }
+    return centroids;
+}
+
+function euclideanDistance(a, b) {
+    return Math.sqrt(a.reduce((sum, val, i) => sum + Math.pow(val - b[i], 2), 0));
+}
+
+// Calculate entropy
+function calculateEntropy(data) {
+    let counts = {};
+    for (let val of data) {
+        counts[val] = (counts[val] || 0) + 1;
+    }
+    let entropy = 0;
+    let total = data.length;
+    for (let key in counts) {
+        let p = counts[key] / total;
+        entropy -= p * Math.log2(p);
+    }
+    return entropy;
+}
+
+// Full Structural Similarity Index (SSIM) function
+function calculateSSIM(original, processed) {
+    const K1 = 0.01, K2 = 0.03, L = 255;
+    let [muX, muY, sigmaX, sigmaY, sigmaXY] = [0, 0, 0, 0, 0];
+
+    for (let i = 0; i < original.length; i += 4) {
+        muX += original[i];
+        muY += processed[i];
+    }
+    muX /= (original.length / 4);
+    muY /= (processed.length / 4);
+
+    for (let i = 0; i < original.length; i += 4) {
+        sigmaX += Math.pow(original[i] - muX, 2);
+        sigmaY += Math.pow(processed[i] - muY, 2);
+        sigmaXY += (original[i] - muX) * (processed[i] - muY);
+    }
+    sigmaX /= (original.length / 4 - 1);
+    sigmaY /= (processed.length / 4 - 1);
+    sigmaXY /= (original.length / 4 - 1);
+
+    const c1 = Math.pow((K1 * L), 2);
+    const c2 = Math.pow((K2 * L), 2);
+    const ssim = ((2 * muX * muY + c1) * (2 * sigmaXY + c2)) /
+        ((Math.pow(muX, 2) + Math.pow(muY, 2) + c1) * (sigmaX + sigmaY + c2));
+    return ssim;
+}
+
+// Full Perceptual Loss function using Euclidean distance as a proxy
+function calculatePerceptualLoss(original, processed) {
+    let loss = 0;
+    for (let i = 0; i < original.length; i += 4) {
+        let rDiff = original[i] - processed[i];
+        let gDiff = original[i + 1] - processed[i + 1];
+        let bDiff = original[i + 2] - processed[i + 2];
+        loss += Math.sqrt(rDiff * rDiff + gDiff * gDiff + bDiff * bDiff);
+    }
+    return loss / (original.length / 4);
+}
+
+// Main function to detect ideal color count
+function detectIdealColorCount(imageData, minColors = 12, maxColors = 64) {
+    const labImage = [];
+    for (let i = 0; i < imageData.length; i += 4) {
+        let [r, g, b] = [imageData[i], imageData[i + 1], imageData[i + 2]];
+        labImage.push(rgbToLab(r, g, b));
+    }
+
+    let bestColorCount = minColors;
+    let bestScore = -Infinity;
+
+    for (let k = minColors; k <= maxColors; k++) {
+        const { centroids, clusters } = kMeans(labImage, k);
+        const quantizedImage = new Uint8ClampedArray(imageData.length);
+        for (let i = 0; i < clusters.length; i++) {
+            let [r, g, b] = labToRgb(centroids[clusters[i]]);
+            quantizedImage.set([r, g, b, imageData[i * 4 + 3]], i * 4);
+        }
+        const entropy = calculateEntropy(clusters);
+        const ssim = calculateSSIM(imageData, quantizedImage);
+        const perceptualLoss = calculatePerceptualLoss(imageData, quantizedImage);
+
+        const score = (ssim / (perceptualLoss + 1)) - entropy;
+        if (score > bestScore) {
+            bestScore = score;
+            bestColorCount = k;
+        }
+    }
+
+    return bestColorCount;
+}
+
+// Function to convert LAB to RGB (necessary for quantized image creation)
+function labToRgb(lab) {
+    let [l, a, b] = lab;
+    let y = (l + 16) / 116;
+    let x = a / 500 + y;
+    let z = y - b / 200;
+    y = Math.pow(y, 3) > 0.008856 ? Math.pow(y, 3) : (y - 16 / 116) / 7.787;
+    x = Math.pow(x, 3) > 0.008856 ? Math.pow(x, 3) : (x - 16 / 116) / 7.787;
+    z = Math.pow(z, 3) > 0.008856 ? Math.pow(z, 3) : (z - 16 / 116) / 7.787;
+    x *= 95.047;
+    y *= 100.000;
+    z *= 108.883;
+
+    x /= 100; y /= 100; z /= 100;
+    let r1 = x * 3.2406 + y * -1.5372 + z * -0.4986;
+    let g1 = x * -0.9689 + y * 1.8758 + z * 0.0415;
+    let b1 = x * 0.0557 + y * -0.2040 + z * 1.0570;
+    r1 = r1 > 0.0031308 ? 1.055 * Math.pow(r1, 1 / 2.4) - 0.055 : 12.92 * r1;
+    g1 = g1 > 0.0031308 ? 1.055 * Math.pow(g1, 1 / 2.4) - 0.055 : 12.92 * g1;
+    b1 = b1 > 0.0031308 ? 1.055 * Math.pow(b1, 1 / 2.4) - 0.055 : 12.92 * b1;
+    return [Math.min(Math.max(0, r1 * 255), 255), Math.min(Math.max(0, g1 * 255), 255), Math.min(Math.max(0, b1 * 255), 255)];
+}
+
 
 var QuantiMatGlobal = function(
     image_data,
-    number_of_color
+    color_n
 ) {
-
     return new Promise(function(resolve){
         "use strict";
 
         const [pxls, pxl_colors, image_data_uint32, original_color_n] = QuantiMat.split_image_data(image_data);
         var t1 = Date.now();
-        var result = QuantiMat({
-            pxls: pxls,
-            pxl_colors,
-            number_of_color: number_of_color === "auto" ? original_color_n/1.314|0: (parseFloat(number_of_color) < 1) ? original_color_n-Math.ceil(original_color_n/25): number_of_color,
-            width: image_data.width,
-            height: image_data.height
-        }).init().run().output("split");
-        var t2 = Date.now();
+        var is_auto = color_n === "auto";
+        var is_percent = parseFloat(color_n) > 0.0 && parseFloat(color_n) < 1.0;
+        var is_negative = parseInt(color_n) < 0;
+        var is_fixed = !is_percent && !is_negative;
+        var number_of_color = is_auto ? "auto":
+            is_fixed ? parseInt(color_n):
+                is_negative ? Math.max(1, original_color_n + parseInt(color_n)):
+                    is_percent ? Math.max(1, parseFloat(color_n) * original_color_n):
+                        original_color_n;
 
-        var res_pxls = result[0];
-        var res_pxl_length = res_pxls.length|0;
-        var res_pxl_colors = result[1];
-        for(var i = 0; (i|0) < (res_pxl_length|0); i = (i+1|0)>>>0) {
-            image_data_uint32[i|0] = (res_pxl_colors[(res_pxls[i|0]|0) >>> 0] | 0) >>> 0;
+        if(number_of_color === "auto") {
+            number_of_color = detectIdealColorCount(image_data.data, 24, 64);
         }
 
-        image_data = new ImageData(new Uint8ClampedArray(image_data_uint32.buffer), image_data.width, image_data.height);
+        if(number_of_color >= original_color_n) {
+            resolve([image_data, pxls, pxl_colors, 0, pxl_colors.length, 0]);
+        }else {
 
-        resolve([image_data, res_pxls, res_pxl_colors, original_color_n - res_pxl_colors.length, res_pxl_colors.length, t2-t1]);
+            var result = QuantiMat({
+                pxls: pxls,
+                pxl_colors,
+                number_of_color: Math.min(original_color_n, number_of_color),
+                width: image_data.width,
+                height: image_data.height
+            }).init().run().output("split");
+            var t2 = Date.now();
+
+            var res_pxls = result[0];
+            var res_pxl_length = res_pxls.length|0;
+            var res_pxl_colors = result[1];
+            for(var i = 0; (i|0) < (res_pxl_length|0); i = (i+1|0)>>>0) {
+                image_data_uint32[i|0] = (res_pxl_colors[(res_pxls[i|0]|0) >>> 0] | 0) >>> 0;
+            }
+
+            image_data = new ImageData(new Uint8ClampedArray(image_data_uint32.buffer), image_data.width, image_data.height);
+
+            resolve([image_data, res_pxls, res_pxl_colors, original_color_n - res_pxl_colors.length, res_pxl_colors.length, t2-t1]);
+        }
     });
 };
 

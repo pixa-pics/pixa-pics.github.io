@@ -1002,8 +1002,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                                                         layer.colors.length >= 2 ?
                                                             <div style={{padding: "12px 0px"}}>
                                                                 <Button color="primary"
-                                                                        onClick={() => canvas.less_colors_stepped()}>...Less
-                                                                    colors</Button>
+                                                                        onClick={() => canvas._to_less_color("auto")}>...Less colors</Button>
                                                             </div>
                                                             : null
                                                     }
@@ -2132,7 +2131,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                                 text: "Less colors by strength",
                                 sub: "Effect strength have an impact",
                                 on_click: () => {
-                                    canvas.to_less_color();
+                                    canvas.to_less_color(slider_value);
                                     this._handle_action_close();
                                 }
                             },

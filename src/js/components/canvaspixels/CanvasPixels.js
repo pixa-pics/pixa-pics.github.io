@@ -2594,39 +2594,12 @@ class CanvasPixels extends React.PureComponent {
         this._to_vignette(color, intensity);
     }
 
-    less_colors_stepped = (increase = 1, callback_function = () => {}) => {
-        this._to_less_color(increase, callback_function)
-    };
-
-
-    less_colors_stepped = (increase = 1, callback_function = () => {}) => {
-        let colors_removed = 0;
-        let less_color_step = increase;
-        const try_another = () => {
-
-            this.to_less_color(less_color_step / 64, (result) => {
-
-                colors_removed = result.colors_removed;
-                less_color_step += increase;
-                increase -= colors_removed > 0 ? 1: 0;
-                if(colors_removed < 1) {
-                    try_another();
-                }else {
-
-                    callback_function(result);
-                }
-            });
-        };
-
-        try_another();
-    };
-
-    to_less_color = (threshold = 1/16, callback_function = () => {}) => {
+    to_less_color = (t, callback_function = () => {}) => {
 
 
         if(this.props.onLoad) {
 
-            if(threshold === "auto") {
+            if(t === "auto") {
 
                 this.props.onLoad("less_color_auto");
             }else {
@@ -2635,11 +2608,11 @@ class CanvasPixels extends React.PureComponent {
             }
         }
 
-        this._to_less_color(threshold, (results) => {
+        this._to_less_color(t, (results) => {
 
             if(this.props.onLoadComplete) {
 
-                if(threshold === "auto") {
+                if(t === "auto") {
 
                     if(this.props.onLoadComplete) { this.props.onLoadComplete("less_color_auto", results); }
                 }else {
@@ -2879,13 +2852,13 @@ class CanvasPixels extends React.PureComponent {
         this.super_state.set_state({_layer_index, _last_action_timestamp: Date.now()}).then(() => this.super_master_meta.update_canvas(true));
     }
 
-    _to_less_color = (threshold, callback_function = () => {}) => {
+    _to_less_color = (threshold = "auto", callback_function = () => {}) => {
 
         const { _layer_index } = this.super_state.get_state();
         let { _s_layers } = this.super_state.get_state();
 
         const color_number = _s_layers[_layer_index].colors.length;
-        this._remove_close_pxl_colors(_s_layers[_layer_index].image_data, "auto").then(([pxls, pxl_colors]) => {
+        this._remove_close_pxl_colors(_s_layers[_layer_index].image_data, threshold).then(([pxls, pxl_colors]) => {
 
             _s_layers[_layer_index].set_colors_and_indexes(pxl_colors, pxls);
 

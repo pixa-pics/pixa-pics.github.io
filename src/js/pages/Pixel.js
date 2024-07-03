@@ -97,7 +97,7 @@ const {Color} = SIMDopeCreate({
     }
 });
 import SmartRequestAnimationFrame from "../components/canvaspixels/utils/SmartRequestAnimationFrame";
-import {FaceToAllAPI, FloranceCaptionerAPI, FaceToAllAPI2} from "../utils/AI";
+import {FaceToAllAPI, FloranceCaptionerAPI, LongCaptionerAPI, FaceToAllAPI2} from "../utils/AI";
 const styles = theme => ({
     green: {
         color: lightGreen[700],
@@ -1890,6 +1890,7 @@ class Pixel extends React.PureComponent {
         }
 
         const floranceCaptionerAPI = new FloranceCaptionerAPI(actions.trigger_snackbar);
+        const longCaptionerAPI = new LongCaptionerAPI(actions.trigger_snackbar);
         const faceToAllAPI = new FaceToAllAPI(actions.trigger_snackbar);
         const faceToAllAPI2 = new FaceToAllAPI2(actions.trigger_snackbar);
 
@@ -1962,7 +1963,9 @@ class Pixel extends React.PureComponent {
                     }, 5000);
 
 
-                    const prompt = await floranceCaptionerAPI.run(file, 1);
+                    const prompt = await floranceCaptionerAPI.run(file, 1).catch(() => {
+                        return longCaptionerAPI.run(file);
+                    });
                     actions.trigger_snackbar("IMAGE: " + prompt, 5000);
 
                     return faceToAllAPI2.run(file, prompt).then((blob) => {
@@ -1978,7 +1981,7 @@ class Pixel extends React.PureComponent {
                         that._handle_load("image_preload");
                         return Promise.resolve(blob);
                     }).catch(() => {
-                        return faceToAllAPI.run(file, prompt).then((blob) => {
+                        return faceToAllAPI2.run(file, prompt).then((blob) => {
                             actions.jamy_update("flirty", 666);
                             actions.trigger_loading_update(100);
                             actions.trigger_snackbar("Receiving results (3 sec)");
@@ -2512,7 +2515,7 @@ class Pixel extends React.PureComponent {
         const { to_less_color } = this.st4te._canvas;
         actions.trigger_voice("please_wait");
 
-        if(parseInt((_layers[_layer_index] || {}).number_of_colors || 0) > 384) {
+        if(parseInt((_layers[_layer_index] || {}).number_of_colors || 0) > 256) {
             to_less_color("auto");
         }else {
 
@@ -2814,17 +2817,17 @@ class Pixel extends React.PureComponent {
                 </ListItemIcon>
                 <ListItemText primary="Add a filter" />
             </ListItem>
-            <ListItem button divider onClick={(event) => {_canvas.less_colors_stepped()}}>
+            <ListItem button divider onClick={(event) => {_canvas._to_less_color("0.9")}}>
                 <ListItemIcon>
                     <LessColorIcon />
                 </ListItemIcon>
-                <ListItemText primary="Reduce color number" />
+                <ListItemText primary="Remove 10% of all colors" />
             </ListItem>
             <ListItem button divider onClick={this._less_colors_auto}>
                 <ListItemIcon>
                     <LessColorIcon />
                 </ListItemIcon>
-                <ListItemText primary="To auto colors number" />
+                <ListItemText primary="Remove automatically some colors" />
             </ListItem>
             <ListItem button divider onClick={(event) => this._smooth_adjust(1)}>
                 <ListItemIcon>
