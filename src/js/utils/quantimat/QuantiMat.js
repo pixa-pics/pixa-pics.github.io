@@ -486,9 +486,9 @@ QuantiMat.prototype.process_threshold = function(t) {
     var color_n_in_cluster = 0;
     var threshold = 0;
 
-    var baseFactor = .9;
-    var lowUsedFactor = .05; // Adjust this value to control sensitivity to usage percent differences
-    var distanceUsageFactor = .05; // Adjust this value to emphasize the effect of one color being more dominant
+    var baseFactor = .8;
+    var lowUsedFactor = .2; // Adjust this value to control sensitivity to usage percent differences
+    var distanceUsageFactor = .0; // Adjust this value to emphasize the effect of one color being more dominant
     var totalFactor = baseFactor + lowUsedFactor + distanceUsageFactor;
 
     weighted_threshold_skin_skin = fr(weighted_threshold * SAME_SKIN_COLOR_MATCH_MULTIPLY);
@@ -604,11 +604,12 @@ QuantiMat.prototype.run =  function() {
         this.clusterize();
         return this;
    }
-    while (this.new_pxl_colors_length >= this.best_color_number) {
 
-        t = t + (this.new_pxl_colors_length > 60000 ? 12: this.new_pxl_colors_length > 32000 ? 8: this.new_pxl_colors_length > 16000 ? 4: this.new_pxl_colors_length > 8192 ? 3: this.new_pxl_colors_length > 4096 ? 2: 1) | 0;
+    while (this.new_pxl_colors_length > this.best_color_number && t < 100) {
 
-        if(this.process_threshold(t|0)) {
+        t++;
+
+        if(this.process_threshold(t|0) > 0) {
             this.deduplicate();
             this.clusterize();
         }
@@ -819,7 +820,7 @@ var QuantiMatGlobal = function(
                         original_color_n;
 
         if(number_of_color === "auto") {
-            number_of_color = detectIdealColorCount(image_data.data, 16, 64);
+            number_of_color = detectIdealColorCount(image_data.data, 32, 96);
         }
 
         if(number_of_color >= original_color_n) {
