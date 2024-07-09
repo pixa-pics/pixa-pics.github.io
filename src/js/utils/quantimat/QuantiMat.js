@@ -46,7 +46,7 @@ var MODE = SIMDopeCreateConfAdd({
         "blend_first_with": true,
         "blend_first_with_tails": true,
         "blend_all": true,
-        "manhattan_match_with": true,
+        "euclidean_match_with": true,
         "copy": true
     }
 });
@@ -455,7 +455,7 @@ QuantiMat.prototype.process_threshold = function(t) {
     "use strict";
 
     t = (t | 0) >>> 0;
-    const exponent = 0.75;
+    const exponent = 0.666;
     function calculateN(t, max) {
         // Apply a power scale to 't'. The exponent (e.g., 0.5) determines the curve's shape.
         const scaledT = Math.pow(t, exponent);
@@ -466,7 +466,7 @@ QuantiMat.prototype.process_threshold = function(t) {
 
     var max = Math.pow(100, exponent);
     var weight_applied_to_color_usage_difference = calculateN(t, max); // Ensure higher precision when low color (high threshold)
-    var index_merged = false;
+    var index_merged = 0;
     var latest_colors = [];
     var latest_amounts = [];
     var start = 0;
@@ -486,9 +486,9 @@ QuantiMat.prototype.process_threshold = function(t) {
     var color_n_in_cluster = 0;
     var threshold = 0;
 
-    var baseFactor = .88;
-    var lowUsedFactor = .14; // Adjust this value to control sensitivity to usage percent differences
-    var distanceUsageFactor = .0; // Adjust this value to emphasize the effect of one color being more dominant
+    var baseFactor = .9;
+    var lowUsedFactor = .05; // Adjust this value to control sensitivity to usage percent differences
+    var distanceUsageFactor = .05; // Adjust this value to emphasize the effect of one color being more dominant
     var totalFactor = baseFactor + lowUsedFactor + distanceUsageFactor;
 
     weighted_threshold_skin_skin = fr(weighted_threshold * SAME_SKIN_COLOR_MATCH_MULTIPLY);
@@ -532,19 +532,19 @@ QuantiMat.prototype.process_threshold = function(t) {
                         threshold = (color_a_skin && color_b_skin) ? weighted_threshold_skin_skin: (color_a_skin || color_b_skin) ? weighted_threshold_skin: weighted_threshold;
 
                         threshold = fr(
-                           threshold * (
-                               distanceUsageFactor * Math.abs(color_a_usage_percent - color_b_usage_percent) +
-                               lowUsedFactor * (2.0 - (color_a_usage_percent + color_b_usage_percent)) / 2.0 +
-                            baseFactor
-                           ) / totalFactor
+                            threshold * (
+                                distanceUsageFactor * Math.abs(color_a_usage_percent - color_b_usage_percent) +
+                                lowUsedFactor * (2.0 - (color_a_usage_percent + color_b_usage_percent)) / 2.0 +
+                                baseFactor
+                            ) / totalFactor
                         );
                         // CIE LAB 1976 version color scheme is used to measure accurate the distance for the human eye
-                        if(color_a.manhattan_match_with(color_b,  threshold)) {
+                        if(color_a.euclidean_match_with(color_b,  threshold)) {
 
                             color_usage_difference_positive = fr(color_b_usage / color_a_usage);
 
                             // Update color usage and relative variables
-                            index_merged = true;
+                            index_merged++;
 
                             // Adds color to blend to processed colors and stack it to what will be set to be equals with all other color blended
                             this.set_a_color_usage(index_of_color_b|0, 0);
@@ -639,107 +639,102 @@ QuantiMat.split_image_data = function (image_data) {
     }
 
     return [pxls, pxl_colors, image_data_uint32, original_color_n];
-}
-// Helper functions for color space conversion
-function rgbToLab(r, g, b) {
-    let [x, y, z] = rgbToXyz(r, g, b);
-    return xyzToLab(x, y, z);
-}
+} // Helper functions for color space conversion
 
-function rgbToXyz(r, g, b) {
-    r = r / 255; g = g / 255; b = b / 255;
-    r = r > 0.04045 ? Math.pow((r + 0.055) / 1.055, 2.4) : r / 12.92;
-    g = g > 0.04045 ? Math.pow((g + 0.055) / 1.055, 2.4) : g / 12.92;
-    b = b > 0.04045 ? Math.pow((b + 0.055) / 1.055, 2.4) : b / 12.92;
-    r *= 100; g *= 100; b *= 100;
-    let x = r * 0.4124 + g * 0.3576 + b * 0.1805;
-    let y = r * 0.2126 + g * 0.7152 + b * 0.0722;
-    let z = r * 0.0193 + g * 0.1192 + b * 0.9505;
-    return [x, y, z];
-}
-
-function xyzToLab(x, y, z) {
-    x /= 95.047; y /= 100.000; z /= 108.883;
-    x = x > 0.008856 ? Math.pow(x, 1 / 3) : (7.787 * x) + (16 / 116);
-    y = y > 0.008856 ? Math.pow(y, 1 / 3) : (7.787 * y) + (16 / 116);
-    z = z > 0.008856 ? Math.pow(z, 1 / 3) : (7.787 * z) + (16 / 116);
-    let l = (116 * y) - 16;
-    let a = 500 * (x - y);
-    let b = 200 * (y - z);
-    return [l, a, b];
-}
-
-// K-means clustering algorithm
-function kMeans(data, k) {
-    let centroids = initializeCentroids(data, k);
-    let clusters = new Array(data.length).fill(-1);
-    let changed = true;
-
-    while (changed) {
-        changed = false;
-        for (let i = 0; i < data.length; i++) {
-            let minDist = Infinity;
-            let bestCluster = -1;
-            for (let j = 0; j < centroids.length; j++) {
-                let dist = euclideanDistance(data[i], centroids[j]);
-                if (dist < minDist) {
-                    minDist = dist;
-                    bestCluster = j;
-                }
-            }
-            if (clusters[i] !== bestCluster) {
-                clusters[i] = bestCluster;
-                changed = true;
-            }
-        }
-
-        let sums = new Array(k).fill(null).map(() => new Array(3).fill(0));
-        let counts = new Array(k).fill(0);
-        for (let i = 0; i < data.length; i++) {
-            let cluster = clusters[i];
-            for (let j = 0; j < 3; j++) {
-                sums[cluster][j] += data[i][j];
-            }
-            counts[cluster]++;
-        }
-        for (let j = 0; j < centroids.length; j++) {
-            for (let l = 0; l < 3; l++) {
-                centroids[j][l] = counts[j] ? sums[j][l] / counts[j] : centroids[j][l];
-            }
-        }
+// Median Cut Quantization
+function medianCutQuantize(data, numColors) {
+    const colors = [];
+    for (let i = 0; i < data.length; i += 4) {
+        colors.push((data[i] << 16) | (data[i + 1] << 8) | data[i + 2]);
     }
 
-    return { centroids, clusters };
+    let boxes = [colors];
+
+    while (boxes.length < numColors) {
+        let newBoxes = [];
+        for (let box of boxes) {
+            let { axis, median } = findMedianCut(box);
+            let [box1, box2] = splitBox(box, axis, median);
+            newBoxes.push(box1, box2);
+        }
+        boxes = newBoxes;
+    }
+
+    const palette = boxes.map(box => {
+        const r = (box.reduce((sum, c) => sum + ((c >> 16) & 0xFF), 0) / box.length) | 0;
+        const g = (box.reduce((sum, c) => sum + ((c >> 8) & 0xFF), 0) / box.length) | 0;
+        const b = (box.reduce((sum, c) => sum + (c & 0xFF), 0) / box.length) | 0;
+        return (r << 16) | (g << 8) | b;
+    });
+
+    const quantizedData = new Uint8ClampedArray(data.length);
+    for (let i = 0; i < data.length; i += 4) {
+        const originalColor = (data[i] << 16) | (data[i + 1] << 8) | data[i + 2];
+        const nearestColor = findNearestColor(originalColor, palette);
+        quantizedData[i] = (nearestColor >> 16) & 0xFF;
+        quantizedData[i + 1] = (nearestColor >> 8) & 0xFF;
+        quantizedData[i + 2] = nearestColor & 0xFF;
+        quantizedData[i + 3] = data[i + 3];
+    }
+
+    return quantizedData;
 }
 
-function initializeCentroids(data, k) {
-    let centroids = [];
-    let usedIndices = new Set();
-    while (centroids.length < k) {
-        let index = Math.floor(Math.random() * data.length);
-        if (!usedIndices.has(index)) {
-            centroids.push(data[index]);
-            usedIndices.add(index);
+function findMedianCut(colors) {
+    const ranges = [0, 1, 2].map(axis => {
+        const values = colors.map(c => (c >> (8 * (2 - axis))) & 0xFF);
+        return Math.max(...values) - Math.min(...values);
+    });
+    const axis = ranges.indexOf(Math.max(...ranges));
+    const sortedColors = colors.slice().sort((a, b) => ((a >> (8 * (2 - axis))) & 0xFF) - ((b >> (8 * (2 - axis))) & 0xFF));
+    const median = ((sortedColors[sortedColors.length >> 1] >> (8 * (2 - axis))) & 0xFF);
+
+    return { axis, median };
+}
+
+function splitBox(box, axis, median) {
+    const box1 = [];
+    const box2 = [];
+    const shift = 8 * (2 - axis);
+    for (let color of box) {
+        (((color >> shift) & 0xFF) <= median ? box1 : box2).push(color);
+    }
+    return [box1, box2];
+}
+
+function findNearestColor(color, palette) {
+    let minDist = Infinity;
+    let nearestColor = palette[0];
+    for (let paletteColor of palette) {
+        const dist = getColorDistance(color, paletteColor);
+        if (dist < minDist) {
+            minDist = dist;
+            nearestColor = paletteColor;
         }
     }
-    return centroids;
+    return nearestColor;
 }
 
-function euclideanDistance(a, b) {
-    return Math.sqrt(a.reduce((sum, val, i) => sum + Math.pow(val - b[i], 2), 0));
+function getColorDistance(color1, color2) {
+    const rDiff = ((color1 >> 16) & 0xFF) - ((color2 >> 16) & 0xFF);
+    const gDiff = ((color1 >> 8) & 0xFF) - ((color2 >> 8) & 0xFF);
+    const bDiff = (color1 & 0xFF) - (color2 & 0xFF);
+    return rDiff * rDiff + gDiff * gDiff + bDiff * bDiff;
 }
 
 // Calculate entropy
 function calculateEntropy(data) {
-    let counts = {};
+    const counts = new Int32Array(256);
     for (let val of data) {
-        counts[val] = (counts[val] || 0) + 1;
+        counts[val]++;
     }
     let entropy = 0;
-    let total = data.length;
-    for (let key in counts) {
-        let p = counts[key] / total;
-        entropy -= p * Math.log2(p);
+    const total = data.length;
+    for (let i = 0; i < counts.length; i++) {
+        if (counts[i] > 0) {
+            const p = counts[i] / total;
+            entropy -= p * Math.log2(p);
+        }
     }
     return entropy;
 }
@@ -753,58 +748,46 @@ function calculateSSIM(original, processed) {
         muX += original[i];
         muY += processed[i];
     }
-    muX /= (original.length / 4);
-    muY /= (processed.length / 4);
+    muX /= (original.length >> 2);
+    muY /= (processed.length >> 2);
 
     for (let i = 0; i < original.length; i += 4) {
-        sigmaX += Math.pow(original[i] - muX, 2);
-        sigmaY += Math.pow(processed[i] - muY, 2);
+        sigmaX += (original[i] - muX) * (original[i] - muX);
+        sigmaY += (processed[i] - muY) * (processed[i] - muY);
         sigmaXY += (original[i] - muX) * (processed[i] - muY);
     }
-    sigmaX /= (original.length / 4 - 1);
-    sigmaY /= (processed.length / 4 - 1);
-    sigmaXY /= (original.length / 4 - 1);
+    sigmaX /= (original.length >> 2) - 1;
+    sigmaY /= (processed.length >> 2) - 1;
+    sigmaXY /= (original.length >> 2) - 1;
 
-    const c1 = Math.pow((K1 * L), 2);
-    const c2 = Math.pow((K2 * L), 2);
-    const ssim = ((2 * muX * muY + c1) * (2 * sigmaXY + c2)) /
-        ((Math.pow(muX, 2) + Math.pow(muY, 2) + c1) * (sigmaX + sigmaY + c2));
-    return ssim;
+    const c1 = (K1 * L) * (K1 * L);
+    const c2 = (K2 * L) * (K2 * L);
+    return ((2 * muX * muY + c1) * (2 * sigmaXY + c2)) /
+        ((muX * muX + muY * muY + c1) * (sigmaX + sigmaY + c2));
 }
 
 // Full Perceptual Loss function using Euclidean distance as a proxy
 function calculatePerceptualLoss(original, processed) {
     let loss = 0;
     for (let i = 0; i < original.length; i += 4) {
-        let rDiff = original[i] - processed[i];
-        let gDiff = original[i + 1] - processed[i + 1];
-        let bDiff = original[i + 2] - processed[i + 2];
+        const rDiff = original[i] - processed[i];
+        const gDiff = original[i + 1] - processed[i + 1];
+        const bDiff = original[i + 2] - processed[i + 2];
         loss += Math.sqrt(rDiff * rDiff + gDiff * gDiff + bDiff * bDiff);
     }
-    return loss / (original.length / 4);
+    return loss / (original.length >> 2);
 }
 
 // Main function to detect ideal color count
 function detectIdealColorCount(imageData, minColors = 12, maxColors = 64) {
-    const labImage = [];
-    for (let i = 0; i < imageData.length; i += 4) {
-        let [r, g, b] = [imageData[i], imageData[i + 1], imageData[i + 2]];
-        labImage.push(rgbToLab(r, g, b));
-    }
-
     let bestColorCount = minColors;
     let bestScore = -Infinity;
 
     for (let k = minColors; k <= maxColors; k++) {
-        const { centroids, clusters } = kMeans(labImage, k);
-        const quantizedImage = new Uint8ClampedArray(imageData.length);
-        for (let i = 0; i < clusters.length; i++) {
-            let [r, g, b] = labToRgb(centroids[clusters[i]]);
-            quantizedImage.set([r, g, b, imageData[i * 4 + 3]], i * 4);
-        }
-        const entropy = calculateEntropy(clusters);
-        const ssim = calculateSSIM(imageData, quantizedImage);
-        const perceptualLoss = calculatePerceptualLoss(imageData, quantizedImage);
+        const quantizedData = medianCutQuantize(imageData, k);
+        const entropy = calculateEntropy(new Uint8Array(quantizedData.buffer));
+        const ssim = calculateSSIM(imageData, quantizedData);
+        const perceptualLoss = calculatePerceptualLoss(imageData, quantizedData);
 
         const score = (ssim / (perceptualLoss + 1)) - entropy;
         if (score > bestScore) {
@@ -815,30 +798,6 @@ function detectIdealColorCount(imageData, minColors = 12, maxColors = 64) {
 
     return bestColorCount;
 }
-
-// Function to convert LAB to RGB (necessary for quantized image creation)
-function labToRgb(lab) {
-    let [l, a, b] = lab;
-    let y = (l + 16) / 116;
-    let x = a / 500 + y;
-    let z = y - b / 200;
-    y = Math.pow(y, 3) > 0.008856 ? Math.pow(y, 3) : (y - 16 / 116) / 7.787;
-    x = Math.pow(x, 3) > 0.008856 ? Math.pow(x, 3) : (x - 16 / 116) / 7.787;
-    z = Math.pow(z, 3) > 0.008856 ? Math.pow(z, 3) : (z - 16 / 116) / 7.787;
-    x *= 95.047;
-    y *= 100.000;
-    z *= 108.883;
-
-    x /= 100; y /= 100; z /= 100;
-    let r1 = x * 3.2406 + y * -1.5372 + z * -0.4986;
-    let g1 = x * -0.9689 + y * 1.8758 + z * 0.0415;
-    let b1 = x * 0.0557 + y * -0.2040 + z * 1.0570;
-    r1 = r1 > 0.0031308 ? 1.055 * Math.pow(r1, 1 / 2.4) - 0.055 : 12.92 * r1;
-    g1 = g1 > 0.0031308 ? 1.055 * Math.pow(g1, 1 / 2.4) - 0.055 : 12.92 * g1;
-    b1 = b1 > 0.0031308 ? 1.055 * Math.pow(b1, 1 / 2.4) - 0.055 : 12.92 * b1;
-    return [Math.min(Math.max(0, r1 * 255), 255), Math.min(Math.max(0, g1 * 255), 255), Math.min(Math.max(0, b1 * 255), 255)];
-}
-
 
 var QuantiMatGlobal = function(
     image_data,
@@ -860,7 +819,7 @@ var QuantiMatGlobal = function(
                         original_color_n;
 
         if(number_of_color === "auto") {
-            number_of_color = detectIdealColorCount(image_data.data, 24, 64);
+            number_of_color = detectIdealColorCount(image_data.data, 32, 64);
         }
 
         if(number_of_color >= original_color_n) {

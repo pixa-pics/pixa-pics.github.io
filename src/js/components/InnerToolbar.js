@@ -15,6 +15,10 @@ import CloseIcon from "@material-ui/icons/Close";
 import InfoIcon from "@material-ui/icons/InfoOutlined";
 import api from "../utils/api";
 import actions from "../actions/utils";
+import Created from "@material-ui/icons/Timer";
+import Hot from "../icons/Hot";
+import Trending from "@material-ui/icons/TrendingUp";
+import SendSharp from "@material-ui/icons/SendSharp";
 
 const styles = theme => ({
     "@keyframes innerToolbarCyberPunkAnimation": {
@@ -330,12 +334,7 @@ class InnerToolbar extends React.PureComponent {
     _toggle_info_bar_activation = () => {
 
         let { _is_info_bar_active } = this.st4te;
-        if(!_is_info_bar_active) {
-
-            window.dispatchEvent(new Event("art-action-gethelp"));
-        }
         this.setSt4te({_is_info_bar_active: !_is_info_bar_active}, () => {
-
             this.forceUpdate();
         });
     };
@@ -427,6 +426,14 @@ class InnerToolbar extends React.PureComponent {
 
     };
 
+    _change_sorting = (sorting) => {
+        const { pathname } = this.st4te;
+        let pathname_splitted = pathname.split("/");
+        pathname_splitted.shift();
+        var tag = pathname_splitted[0];
+        this._go_to("/marketplace/"+tag+"/"+sorting)
+    };
+
     render() {
 
         const { classes, pathname, logged_account, know_if_logged, loaded_progress_percent, _is_info_bar_active, music_enabled, _actions_triggered } = this.st4te;
@@ -443,7 +450,7 @@ class InnerToolbar extends React.PureComponent {
         let pathname_splitted = pathname.split("/");
         pathname_splitted.shift();
 
-        const pathame_items = !_is_info_bar_active ? pathname_splitted.map((element, index, array) => {
+        let pathame_items = !_is_info_bar_active ? pathname_splitted.map((element, index, array) => {
 
             let link_to = "/";
             for (let i = 0; i <= index; i++) {
@@ -457,7 +464,7 @@ class InnerToolbar extends React.PureComponent {
 
         const usrnm = (know_if_logged ? logged_account ? logged_account.name: "https://pixa.pics/": "https://pixa.pics/");
 
-        const tip_items = _is_info_bar_active ? [
+        var tip_items = pathname.includes("pixe") ? _is_info_bar_active ?  [
             <a key="tip-contrast"
                onClick={() => {this._trigger_canvas_action("contrast")}}
                className={_actions_triggered.has("contrast") ?  classes.linkDone:  classes.link}>
@@ -488,8 +495,62 @@ class InnerToolbar extends React.PureComponent {
                className={_actions_triggered.has("render") ?  classes.linkDone:  classes.link}>
                 &nbsp;5)&nbsp;Render*&nbsp;
             </a>,
-    ]: null;
+    ]: []: [];
 
+        if(pathname.includes("marketplace") && _is_info_bar_active) {
+
+            pathame_items = null;
+            tip_items = [
+                <a key="created"
+                   onClick={() => {this._change_sorting("created")}}
+                   className={classes.link}>
+                    &nbsp;created&nbsp;
+                </a>,
+                <a key="hot"
+                   onClick={() => {this._change_sorting("hot")}}
+                   className={classes.link}>
+                    &nbsp;hot&nbsp;
+                </a>,
+                <a key="trending"
+                   onClick={() => {this._change_sorting("trending")}}
+                   className={classes.link}>
+                    &nbsp;trending&nbsp;
+                </a>
+            ]
+        }
+
+        var marketplace_icon = <CloseIcon />;
+        if(pathname.includes("marketplace")) {
+
+            if(!_is_info_bar_active) {
+
+                if (pathname_splitted[0] === "profile") {
+                    marketplace_icon = <SendSharp/>
+                } else {
+                    var sorting = pathname_splitted[1] || "hot";
+                    switch (sorting) {
+                        case "created":
+                            marketplace_icon = <Created onClick={this._toggle_info_bar_activation}/>;
+                            break;
+                        case "hot":
+                            marketplace_icon = <Hot onClick={this._toggle_info_bar_activation}/>;
+                            break;
+                        case "trending":
+                            marketplace_icon = <Trending onClick={this._toggle_info_bar_activation}/>;
+                            break;
+                        default:
+                            marketplace_icon = <Hot onClick={this._toggle_info_bar_activation}/>;
+
+                    }
+                }
+                var tag = pathname_splitted[0] || "feed";
+                pathame_items = [
+                    <Fade key={"1"} in={true} timeout={125}><a className={classes.link}>{tag}</a></Fade>
+                ]
+           }else {
+                pathame_items = [];
+            }
+        }
         return (
             <div className={classes.root}>
                 <Button className={classes.innerToolbar} style={Boolean(parseInt(camo) > 0 && parseInt(camo) < _cams.length) ? {backgroundImage: `url("${_cams[parseInt(camo)]}")`}: {}} disableFocusRipple>
@@ -522,8 +583,11 @@ class InnerToolbar extends React.PureComponent {
                         </span>
                     </span>
                 </Button>
-                <IconButton aria-label="main-account-button" style={pathname.includes("/pixel") ? {}: {display: "none"}} className={classes.infoIcon} onClick={this._toggle_info_bar_activation}>
+                <IconButton aria-label="main-account-button" style={pathname.includes("/pixe") ? {}: {display: "none"}} className={classes.infoIcon} onClick={this._toggle_info_bar_activation}>
                     {_is_info_bar_active ? <CloseIcon />: <InfoIcon className={classes.glow} />}
+                </IconButton>
+                <IconButton aria-label="marketplace-button" style={pathname.includes("/marketplace") ? {}: {display: "none"}} className={classes.infoIcon} onClick={this._toggle_info_bar_activation}>
+                    {marketplace_icon}
                 </IconButton>
                 <IconButton aria-label="current-page-options-button" style={pathname === "/" ? {}: {display: "none"}} className={classes.infoIcon} onClick={this._handle_music_enabled_switch_change}>
                     {music_enabled ? <VolumeOffIcon />: <VolumeUpIcon />}

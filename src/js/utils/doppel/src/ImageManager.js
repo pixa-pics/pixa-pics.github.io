@@ -136,7 +136,7 @@ export default class ImageManager {
         const imageData = this.contextSource.getImageData(0, 0, this.contextSource.canvas.width, this.contextSource.canvas.height);
 
         var t1 = Date.now();
-        const dataQuantize = ImageManager.quantizeImageData(this.contextSource, 256);
+        const dataQuantize = ImageManager.quantizeImageData(this.contextSource, 128);
         const initialColorNumber = dataQuantize.centroids.length;
         var t2 = Date.now();
         const distortion = ImageManager._calculateDistortions(dataQuantize, imageData); // Calculate distortions

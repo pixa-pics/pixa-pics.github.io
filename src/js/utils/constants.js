@@ -27,7 +27,7 @@ const PAGE_ROUTES = [
         tabs: ""
     },
     {
-        page_regex: /\/(marketplace)$/,
+        page_regex: /\/(marketplace)(\/(profile|feed))?(\/([a-z+]))?$/,
         page_name: "marketplace",
         tabs: ""
     },
