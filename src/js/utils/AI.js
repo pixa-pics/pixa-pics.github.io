@@ -942,11 +942,146 @@ class FaceToAllAPI2 extends HuggingFaceAPI {
     }
 }
 
+class FaceToAllAPI3 extends HuggingFaceAPI {
+    constructor(msgCallback) {
+        super("https://neil-ni-face-to-all.hf.space", msgCallback);
+    }
+
+    getPredictUrl() {
+        return `${this.baseUrl}/run/predict`;
+    }
+
+    getPredictHeader(lora_url, hash) {
+        return {
+            headers: this.getHeadersJson(),
+            body: JSON.stringify({ data: [lora_url], event_data: null, fn_index: 0, trigger_id: 11, session_hash: hash }),
+            method: "POST"
+        };
+    }
+
+    getQueueJoinUrl() {
+        return `${this.baseUrl}/queue/join`;
+    }
+
+    extractSecondImageUrl(jsonStr) {
+        const urlRegex = /"url":"(https:\/\/[^"]+)"/g;
+        const matches = jsonStr.match(urlRegex);
+        if (matches && matches.length > 1) {
+            const secondMatch = matches[1];
+            return secondMatch.match(/"url":"(https:\/\/[^"]+)"/)[1];
+        }
+        return null;
+    }
+
+    getQueueJoinHeader(path, url, size, type, prompt, hash) {
+
+        const finalPrompt = `a pixel art of a person in lucasarts style within an image described as: "${prompt}"`;
+
+        return {
+            headers: this.getHeadersJson(),
+            body: JSON.stringify({
+                data: [{
+                    path: path, url: url, orig_name: "image."+type.replaceAll("image/", ""), size: size, mime_type: type, meta: { _type: "gradio.FileData" }
+                },
+                    finalPrompt,
+                    "Realistic, photography, real.",
+                    0.95,
+                    null,
+                    0.90,
+                    0.12,
+                    7.75,
+                    0.80,
+                    null,
+                    null
+                ],
+                event_data: null,
+                fn_index: 6,
+                trigger_id: 18,
+                session_hash: hash
+            }),
+            method: "POST"
+        };
+    }
+
+    getQueueDataUrl(hash) {
+        return `${this.baseUrl}/queue/data?session_hash=${hash}`;
+    }
+
+    async readResponse(reader) {
+        const decoder = new TextDecoder("utf-8");
+        let result = "", finalLine = "";
+        let done = false;
+
+        while (!done) {
+            const { value, done: streamDone } = await reader.read();
+            done = done || streamDone;
+            result += "".concat(decoder.decode(value || new Uint8Array(), { stream: true }));
+
+            let lines = (result || "\n").split("\n");
+
+            // Process each line
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i].trim();
+                this.message(line);
+                if (line.includes("complete")) {
+                    done = true;
+                    finalLine = line;
+                }
+            }
+
+            // Keep any partial line for the next iteration
+            result = lines[lines.length - 1];
+        }
+
+        // Process the finalLine to extract the data
+        return Promise.resolve(finalLine);
+    }
+
+    async run(input, prompt, style = "https://civitai.com/models/247890/lucasarts-adventure-game-style-xl") {
+
+        let file;
+        if(typeof input === "string"){
+            file = await this.handleLoadComplete(input);
+        }else if(input instanceof Blob) {
+            file = input;
+        }else {
+            return Promise.reject();
+        }
+
+        const id = this.generateRandomId();
+        const hash = this.generateRandomId();
+
+        const header = this.getPredictHeader(style, hash);
+        const predict_url = this.getPredictUrl();
+        const responseStyle = await fetch(predict_url, header);
+        const responseStyleJson = await responseStyle.json();
+        const path = await this.uploadFile(file, id);
+        const imagePath = this.getCreateImagePathUrl(path);
+        if (responseStyleJson && imagePath) {
+            const headerQueue = this.getQueueJoinHeader(path, imagePath, file.size, file.type, prompt, hash);
+            const urlQueue = this.getQueueJoinUrl();
+            const responseQueue = await fetch(urlQueue, headerQueue);
+            const responseQueueJSON = await responseQueue.json();
+            const event_id = responseQueueJSON.event_id;
+            if (typeof event_id !== "undefined") {
+                const request_url = this.getQueueDataUrl(hash);
+                const event = await this.fetchEventSource(request_url);
+                const line = await this.readResponse(event);
+                const url = this.extractSecondImageUrl(line);
+                const file = await this.handleLoadComplete(url);
+                return Promise.resolve(file);
+            }
+        }
+
+        return Promise.reject();
+    }
+}
 
 module.exports = {
     HuggingFaceAPI,
     FaceToAllAPI,
     FaceToAllAPI2,
+    FaceToAllAPI3,
     FloranceCaptionerAPI,
     LongCaptionerAPI,
     RemoveBackgroundAPI,
