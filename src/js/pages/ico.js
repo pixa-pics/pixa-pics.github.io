@@ -352,6 +352,22 @@ const styles = theme => ({
         textAlign: "center",
         fontSize: "24px",
         lineHeight: "56px"
+    },
+    litepaper: {
+        aspectRatio: "163 / 220",
+        width: 300,
+        cursor: "pointer",
+        "@media (max-width: 915px)": {
+            width: "100%",
+        }
+    },
+    pitchdeck: {
+        aspectRatio: "733 / 441",
+        width: 536,
+        cursor: "pointer",
+        "@media (max-width: 915px)": {
+            width: "100%",
+        }
     }
 });
 
@@ -490,6 +506,7 @@ class Marketplace extends React.Component {
                             <h3 style={{fontSize: "44px", fontWeight: "bold"}}>
                                 <span>Price & Discount</span>
                             </h3>
+                            <p>Take advantage of our exclusive pre-seed offers and discounts:</p>
                             <div className={classes.tableWrapper}>
                                 <table className={classes.table}>
                                     <tr>
@@ -553,19 +570,28 @@ class Marketplace extends React.Component {
                             <h3 style={{fontSize: "44px", fontWeight: "bold"}}>
                                 <span>Stay Tuned Using Our Links</span>
                             </h3>
+                            <p><b>Stay updated and engaged with the latest developments and news from Pixagram! We offer multiple channels to keep you informed and connected:</b></p>
+                            <br/>
                             <div style={{display: "float", position: "relative", margin: "16px 0px 32px 0px", height: 32}}>
                                 <div style={{float: "left", display: "flow-root"}}>
                                     <Tooltip title={"Stay tuned with Pixa on LinkedIn!"}>
                                         <Button size={"large"} startIcon={<LinkedIn/>} onClick={() => this._open_link("https://www.linkedin.com/company/pixagram-blockchain/")} style={{marginRight: 12, backgroundColor: "#0077B5", color: "white"}} color={"secondary"} variant={"contained"}>Blog</Button>
                                     </Tooltip>
+                                    <span>Visit our blog for in-depth articles, updates, and insights about Pixagram’s journey and innovations.</span>
+                                    <br/>
+                                    <br/>
                                     <Tooltip title={"Chat with us on Telegram after validation!"}>
                                         <Button  size={"large"} startIcon={<Telegram/>} onClick={() => this._open_link("https://t.me/+eziqKfod9gQ3YTJk")} style={{marginRight: 12, backgroundColor: "#0088cc", color: "white"}} color={"secondary"} variant={"contained"}>Chat</Button>
                                     </Tooltip>
+                                    <span>Join our Telegram chat to interact with the Pixagram community, ask questions, and share your thoughts.</span>
+                                    <br/>
+                                    <br/>
                                     <Tooltip title={"See our livestream on Mathiew's YouTube channel!"}>
                                         <Button  size={"large"} startIcon={<YouTube/>} onClick={() => this._open_link("https://www.youtube.com/watch?v=Oa0d0uVi4f4&list=PLai3U8-WIK0FwmzgFS9TbjzhYz5R_aRRn")} style={{marginRight: 12, backgroundColor: "#FF0000", color: "white"}} color={"secondary"} variant={"contained"}>Livestreams</Button>
                                     </Tooltip>
-                                </div>
-                                <div style={{float: "right"}}>
+                                    <span>Tune in to our YouTube livestreams for live updates, announcements, and special events.</span>
+                                    <br/>
+                                    <br/>
                                 </div>
                             </div>
 
@@ -575,9 +601,11 @@ class Marketplace extends React.Component {
                     <Fade in timeout={1300}>
                         <div>
                             <h3 style={{fontSize: "44px", fontWeight: "bold"}}>Tokenomics</h3>
-                            <h4 style={{fontSize: "22px", fontWeight: "bold", marginTop: "12px", marginBottom: "8px"}}>Height Times Cheaper Than STEEM & HIVE</h4>
-                            <p>Steem <a href={"https://steem.com/SteemWhitePaper.pdf"} target="_blank">(WHITEPAPER HERE)</a> and Hive (The same technology used by Pixa) have the same parameters regarding the coin inflation and supply with a similar wind, Pixa could demonstrate around a profits of eight times the initial input.</p>
-                            <p>The time Pixa develop its own plugin for trading post (pixel artwork) is set to around one years, then it should be more or less driven by the same force behind the market which set the token price at around $ 0.30.</p>
+                            <ul style={{lineHeight: "2em"}}>
+                                <li><b>Height Times Cheaper Than STEEM & HIVE:</b> Leveraging similar technology to Steem and Hive, Pixagram offers a unique economic model designed to maximize returns.</li>
+                                <li><b>Projected Profits:</b> Based on our initial projections, Pixagram could demonstrate profits up to eight times the initial input.</li>
+                                <li><b>Development Timeline:</b> Our plugin for the trading post (pixel artwork) is expected to launch within a year, driving the token price around $0.30.</li>
+                            </ul>
                         </div>
                     </Fade>
                     <Fade in timeout={1450}>
@@ -586,13 +614,13 @@ class Marketplace extends React.Component {
                             <p>Book a call with us at any time! <a href={"mailto:omnibus@pixagram.io"} target={"_blank"}>omnibus@pixagram.io</a>. Or contact us on <a href={"https://www.linkedin.com/company/pixagram-blockchain/"} target={"_blank"}>LinkedIn</a>.</p>
                             <div style={{display: "inline-flex", marginTop: 32, verticalAlign: "bottom", textAlign: "center"}}>
                                 <div>
-                                    <Tooltip title={"I make software."}>
+                                    <Tooltip title={"A strategic thinker and innovator from Switzerland."}>
                                         <img className={"pixelated"} src={"data:image/png;base64,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"} onClick={() => this._open_link("https://www.linkedin.com/in/matias-affolter/")}/>
                                     </Tooltip>
                                     <b>Matias Affolter 🇨🇭 </b>
                                 </div>
                                 <div>
-                                    <Tooltip title={"I do mathematics."}>
+                                    <Tooltip title={"A strategic thinker and innovator from Switzerland."}>
                                         <img className={"pixelated"} src={"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAANwAAADcCAMAAAAshD+zAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAABjUExURUdwTPmxeJyo2EEHBEtejf3UlaM5JgQCLiI2YgwbR2UWDf30t++MXatyVn9INcphQ30NCNKRZTlJJfb638rR6YqFhumoQ5RzN4FgY72xs1h1xbapfVE6GlIxQHNZJC5DSEMFDvi6LDAAAAABdFJOUwBA5thmAAATQ0lEQVR42uyci27cOg6G47sk27KdTNGiOLv7/m+5IkVKlGwnbZqcWoEJNE2bQeNvft6l9Onptttuu+2222677bbbbrvttttuu+2222677bbbbrvttttuu+222267jezF2dclE/Z1yb4U4MvL6HEqtK4bvwre6OxlmqZKWvc16DzZlNF1oF/xeOM4JWwdmodD9xxLdslJwHV7c3S2YNX619iceOPLXCScI3PGcN2JOe1s6WyncE682RbH1vcBrnoNzllhdJPXLQr3Gtw4zwX6pBDuVeWqbS5KuD6He41u2zZbXMD1SXPyGl1BjslsKVwlM+SYpZRi6MYTuOorwAW2fvoN6QrLJnvpoGXGiW4HV0rUCTawxVmVWlYI8EMZcFK4ZUHlAI/k81JuXRcg/W+FlDoJ1y8cdajfcQUnxiJ6sCl3yzcaMIYroo5nbD6v5HDOVadFhFwpfnkE5+RbgKUKk3k3ZsqV0YJlIVdFIIQKlY7RgluWAJcUgddm8ACH5c8pN5cE5wFZmRM45EO42ZYF54Q7WS2MvkmpKhJvKw0OisBRN8Jsni6wzXPhcF0GF9mKg8OE8hpbUK4CttLgwKZDPIAJ6dK9B/Bnc3k4Q2jGLGxVEnFdZ7d5GAag47CbppLgVtMMjWkMIkLtnnyDAiSDN2vn2XJOQekKgVscWzDvnC7rw/Rj498D3sae2RUDtzSCzZmTD4byfulN+DunbGMdHtMVA2eH1BB4wUhELmer89gGjXYPzkcLgHMQngiefkAJG587KdWsEdr0i7U+0xQBN1iAc4/tkorxjCZpNz1b76LNfXHtZ6DzcBbOKy+M9vLinrtvVmsaa4I+K7eawEbhCMHmNF36ZaGjHmuxtF+4gi9L04fgCsmj8Wu+aunTVOM8l9g6VHAc++XK7YkPLUgp3yJb0yzYmFQNwvmEAxUPCiFVdvDOcbkwHNIBHLB9k3STXzNjjvnxAxG7yjUqTQI3XRqOokvAAUeAq1bM/j9QwJdua0zoN4Ftm7q+v7Byjq7yfmk9HWBYy8p13bKu1v74MQxu4DEmDg2QYFwGvTTcQHC9c8C5YTPTRCcEE/SbZnW2uHBzxZtPDSyydctUBNza+1SCFuA6/KNjcxpDczIKuHWFsLsuHGSTKpTr1VCudIUgnO0ENc1MgyvBgZrukwtvLSezVtxnBd2gykUOyCZQHJZOTORu+BmdnJeGc31/hPORh2xeOTqLg6jL1g0dtCfwuguzPVnXXlWLoCM299QBzqVJ+GMn2TpsvS4OB41lShc2Kt3LGPZDcsXnFxAlwLkBoOlfhxNJJLAhXIf6Xnv55UaCA7glVjTpjbw5cs3XCG/A5eFgKbQ/ootXGMYkk/BM4JqT7uJsQHcENwm4Izpr8cBknK4O1zc7uI47lPGly/NkgAPHvfiawXGZJaXr/NrSw424Mtl5JWxS3N9cHA6mlhTOdigc6eWkW6pY9ARcN15euSqHcx3j4i+kVJObvV1G3N/asLhj6K5/E3/Zw7lGEpLKMjUIV+V0lYMzznuXy8O5lGIFneuGe1ruLTDGAUx+9AObr6dCzIiMsq68DIPy7jvmjoIw3GqzBV0mNYKO4MIqj2/ZpBFX0v10N4cyHDhkE5aYjbXb/uK9tUXdTwc6PoNsxB4W4OaZT1XDGn3eyoKzPR9CJitmVGlGoKjbtpWlXGNmi4O43+2F9TnCWQsncxvrVshNhmC8XGgYDruwiu5q2wbOHecKLv8CW1nCgXRIh2ANZcy+g08ckfXLL3/gaLfSlEM453rkkT5b+oO5ZuWqsG3QmMy2SLiG4JpQ5oYBNnsLwVUVJROnnykOrgE49kncoJMZaFXcAGegfOMNlK6ooGugwDnpmthjrninaF3idEqFAWaCsjJKAoenA94abrk2D2ch8Lqy4J4MJnwqCeL6iQm122VKYyFfYiiW5ZfWVXBD9zQiXePv6Pk67n4Z8x9kK0w66Cktn/bzdSmDcMBFcHjnAap7XRpdaLpc/4zaVeOIbJRL6QW41avrsvBiS+kakg0uxMJZ4+h8km5GERtG4TCURScvosx417fie6RN6F4Gml8Brky6Zp43hINbbFTa+Gu8KxoGXRSdjUMq0jn96D5zZDOBrTQ4E90SfBEGHT8ERLi5KpNO98aEazYW4NwMS4N4hO4inCom7Ib6QfWNLhHRFQYhG8BWEk6pMuj0o4arl8bf+BVXUuY53gizYlNkCK4EuscDtwsmXOVusovPg/fRuL1EuCLoQDhcnZicKbK6DCrgukEDXFsA3OOhaC9kmiM8ZJurA7gC6OoEbo/XNE61SsLNDHd5urpWAGf5nk3K5/PKhvU8Cifg6ktHXq09Bm3Ue98qR7QGNkPYiXXVDs7RYadZXxdOMxychMRTA6oH2GiiZ1ZcCXSAa1sn+/fvF8WrGY5XKF5BwDOCTcKRcAzXEl19xYgjt2TpGkotiGbsxHBV+EHxHM7RffvfBYPvp4fTmn6Mh/zSJ044mZwmYMPpVTRfOzi0i2UXeBitQxtCHkmndfQDdZv/Yc4q6ywjnGpjcr0MX/3z8WA4TT+MFOlWhJsIbov/Y0NgC3DDAL9LvCs0JgrGsgjHHhngTC+Ei+lkaJXEU9p/orBeDleoffV/K4elHZuO26E1gzNmy/7TpQ0eP4NTWhNcC/sKVf9lvLp+/ANpBOIF4XxKYawIt/YpHDjlDs7hKUwtvI1p/yadY3v8bFGEAKeznEJw6f9H9B0CLoPT/Ln7AP841pa/hldDIvGOGOD4N8Jaj+EGzCaBLYXDj09PnFxa/Tfw4HseTG0Ue94xV/JKPJtbGA5fIISLcJrp2phC/0LqdB4p0Np2RzewaCwdRV1nnvFVMdCIhZVsZYHg2qD+Rbw6yobTQKslXKCLwsFBpIf75/mZvHIHlzhm26Z4/5Z6Es1/ohO4VsUf4gxsPuqG52eE08LzkMfDtYdw9Nb9K+qJYIPijTJIOD+/5Hx+W0tsvwCX0PE/+Ok7XJlIahpRlR4CnmpTOmEBTWv58AinEK5VoUS0ubGrfC6b6G+9Pyod4VTyVidchObh0gdn5ZD0jM5/s7b+RLSYGHV0zwCnY6u4Z4spR4d3geFUgAtFot0bvmf158sWnRITpA5srJ3O4fJiod6AO8RrP4kuRJv2jUiAU/S4WqeN8HHMiR5bSzgV4UChMzj3rn1C3CUtCbhWWC1IOKFdq8/SCY5uOZ5Xzgdd+xqcUnX7WbVNc8DV7GAeDniVlquDlqlkzImAU4JOwHm6U7/0qfZT0ABOezY9BMUYDpO8CqleCTKZTrTsHTXB6T3cMZvGTvQzHJIiZg+nIxw5q8pLwnN4CwY1eEId6n6r4yjO1f0Qzm8j2g9n8w9GcG2AGyRcDDR8uIN00upYNzj0AJXKCEHpEzqEc35df3D+hyRCRLw1CQO4ZONmSYmNT2TTMo0q8a7pMKyeF/KWktEHHXwxW61qOChkhlAHKAwjW2Di6BGVTrqtNAxUJbBOHdMvXyAj1R/I5vyw9WwY1LXwP62lbjrL5bJFSf02gYuFWwm6Azh4BYZp/edsPG54tSjVkVfqqBt3VSlcSnfKdgJ3QOfj0teS+kPYSJS61RFONMs6lIIkkaiELsANr8HpOPKoQ8ckODr4+gg2oqgDW4teGTJnNoJjoUsWylTKhzfZfglO8SCv6j/3SU4Ugi3P+sP+weX6xxfzt+C4vxFDwX5qhb8IS4r6T9h0li5yOJ1mleGULhTw/Z6MX5pWA30MpxLh1PvpQDdNNTfC+AKrE/GO5ZB0engeRMSFvkS8MC91hwnz4+BiKpFwyrd3MveLGSbdYUa6VCoVujN1CNee+eUOrv4z4fZwXOqOnPNYPGwstOi60ux/AqeO4OD9EODvo6PGWKgjev4jOP54gie+RG/+KZyU7i049cdwKodrWz0cwOkDOKaIX9GHbCp2YG/BqQSufh+c0nmm9N8d9ov5l6h3PuxBiE0Kp38J7nCTooYE7j3S1QIuDTmfzvTehtMI1DnbwBNtBtkmLVhCcgb3nukAT7n3yvE312em5A4zK2ro3wM75SFcG395OB2OFUTCbCXc7zdhD96QHLL5/uqMTh0kT3q9yys4hmcJRDEllAxa0fLIOuQbTs1w/H789rao9oXgGG7nq+mX1MFSD4hiHlIqf7viRSkc18Q8nkun+PRLlIt3OOWQ1ID4KMw2HIpKD7+Do/N8OijQKvsnY+rQbVK8MzqVHe3hJ/U74PbSUcevdz2n6EbUQVKJmYiVU1n+FWlRp31X6pgBTo4O7e+mylC0EgZ1DhfpKMfqtEWmToVoshwk4fxlG97O0vb5BI5e9//Szka3bR2GwqjjmGKa9HrokqxrN9z3f8prWRJ5SEl20jtgwH4a159JieQhrQ5Pb5VMfmlRF85uN4G1TC9wx3SLmuS02QKNYimlhc5ylgRHNrn1N+C8XxI4nb+/+CwwHhu49ShghUvSdPkwG8PFrHq0puPSrFxDZANufEKAHgTO0anhhCgE2CmrXFHgTqfbLcOtXwgbCnu44pZmnbEo1LmixGb6k3BqHwenElfB4nYqlX1T4M4XLsEZ4VKqilmWiu3lxlmQ0nrWeaPvwQ26B2JOLPaAmEYh7NBxhDtRhtMtUvNwk2PVbVcGcV4HxEQiG5+gGwY0HcKpr+m9mQzD/Y1MpY5JqXkCtYTnSoEW3PhtuFJol3wQ4Ryb5FKBq/RefJgkFIRGzG+JrwHNl8bAAA4HOvJnh+ec0kSDXIgxqN850RLhCu8Z/hWrOignkn2x+q57jHLvnBtd6RHrQMf4JJxhK6YrcGzEKmcibm0tImBm+SW4kp5tt1L0VugY5ByMZdhGqiMMGA+lzwNoJxgN8riJXJ0w/PbhAoNw59yyxZbSEVd8j7kZy0Z2yl8V8lEQw2PFDhm6IHPnhGxkk3pbytZw6UG0LBfMlF64kSu/VV8KjLJFhvszTXM81vWRg7x//vz4cHTcgLNslSbQcMt6zQEmtNBvMkHm4PKqwFUd/3uxWTqv8IED5t+n6cM7phUkuYITrRZmUGrLhVYoULI41ni//72tv04GTuYSwSdLvhnSqcPv0+tx33TnOEg4mLSkEkSETToJobXVpUW/DZfXjvYjX263Wj7Lmi4sOBlV+neBS8cK75+4eHxZD6CZTbrsMvx0J2xC2+ilEO5ZLrS3HqK/9ziyTuf0bT4/P7U/gr1YMNxq0kM8N//4Gn1zz3Tvx4/5auHICD5Q75hbIztC1FlzAdKvWkT6+np7u3+dP3/cq46kg9OL0jytByY/cJb38TgvcBcLR3WjCp6+bwv04py1nH7Q3v35fLvd73fjlGToyleX6y9w8fit4z7cy9yGU5lfJdhmz7cb52q39B9MguZtXXO49QarOPlrHhLY62K8nS3l5XPZTy6XUw1HfhBFd9Em0h4ch+ZTkRwU4jib2tdf8pDMdjzuw61nPl2i6cg24MxbA1z+RURI/2YHxPcNuJ4vV51i26e0jyU65ZSOU96Bu0SfXOBcLADLNdU+l2VAZhy0+vt/cKwblttr4hsM6Wz9eYvtbbr8iXBqOMKiBdmCEQgsnFVXJHHG3fIZONI1VyRRCAcL3Hk9Ymyx3LyVPP9z+qDokzbOgelUdQjcUhnQchaO0XLZXXtwbvoZ3HJ9og5uiQaXH+u5vNM23PTn7bDSeThCuNIpZ/BA0FTJqOUMXglwRYjhakfZhuM61tFhfSEj/jiVLbgwzb9+Hcx2UsGZxNfW1QpXNsxcV4h+pyn1FpwreNpwmENTfGFv+b01YzqE+PNlVq/EJRea03mh7mvpIGsxlcBJ9i/Jdl5zbkvycMHAlTBk4XJaPfOmlDL8ptmwMVWzJjmp9KIxvDTMWnir94iaYEIa6BQBB7et1IBwDTb5HG8KRcPva0JzcJoftOHkW+hIqI9zbN1y3Y/yhsJmN6rW3HrBkWuntHDyePdfGoBywJgO4KjZIiijZzZD8eMz+MTcJlnJzanrw9ZwVm4wcyuPw3ENxxWciwU+PmgDXBXnEuhMAWz6A/oYVlyYoJM0mskOMT4CF38SGdsGIwZxTerbcKn+51ogwtvwcO5lktHMRts3FEpBAWmdHfPbUJqH4QpTURq1LRx34EpkHjuJcxhBSafmS6GufMtuirmlrA8wHOnwaZftSqOZirLpM+mkCddw+qrSWFcFsunswDXGBLpwmI2TuvKGV16vlsivOTQlN2pWJqsylA3FWq4EuorGemn0Tgen86v56jk6wouGG9OV1Jh6cnjOrFBL5gcKcGPTLfV5sAZFyM9VuyS/An1JHspQ9x5cPRTUKFBZBSin/unMYgBT9eEg0peozvgdVpu0XnnqwIX+MNgmnBtzNfMoZEzwHJyrwvNeBREsN0C4M+xYVHaZgeuMSw3cgSNT0unFrUGDhbNu2VhzvmspIyojkwksq4zCPcOVylw7J0OjJRLn2DpwD21rFo6+AyefgLfwUluuM+jIsnvCQNUYxn4j/Ak6eVWiD2dDQQyAmnS6ApXgDwrHXTjtFBa4Eg+223J+1XX2bAno2DZowOl/j1AG9uCIoIdAoXq5F+OdvMNgXgACuv8AEfgyxOvsQMoAAAAASUVORK5CYII="} onClick={() => this._open_link("https://www.linkedin.com/in/mathiew-estepho-b7078894/")}/>
                                     </Tooltip>
                                     <b>Mathiew Estepho 🇨🇦 </b>
@@ -606,25 +634,25 @@ class Marketplace extends React.Component {
                             <p>Book a call with us at any time! <a href={"mailto:omnibus@pixagram.io"} target={"_blank"}>omnibus@pixagram.io</a>. Or contact us on <a href={"https://www.linkedin.com/company/pixagram-blockchain/"} target={"_blank"}>LinkedIn</a>.</p>
                             <div style={{display: "inline-flex", marginTop: 32, verticalAlign: "bottom", textAlign: "center"}}>
                                 <div>
-                                    <Tooltip title={"I think about the marketing."}>
+                                    <Tooltip title={"A smart marketing expert from Switzerland."}>
                                         <img className={"pixelated"} src={_eve} onClick={(e) => {this._edit(_eve)}}/>
                                     </Tooltip>
                                     <b style={{cursor: "pointer"}} onClick={() => this._open_link("https://www.linkedin.com/in/evdokia-bobrova/")}>Eve B. 🇨🇭 </b>
                                 </div>
                                 <div>
-                                    <Tooltip title={"I think about the marketing."}>
+                                    <Tooltip title={"A dedicated strategist in marketing."}>
                                         <img className={"pixelated"} src={_ania}  onClick={(e) => {this._edit(_ania)}}/>
                                     </Tooltip>
                                     <b style={{cursor: "pointer"}} onClick={() => this._open_link("https://www.linkedin.com/in/annakarolinawisniewska/")}>Ania W. 🇨🇭 </b>
                                 </div>
                                 <div>
-                                    <Tooltip title={"I think about the legislations."}>
+                                    <Tooltip title={"A serious and professional legal advisor."}>
                                         <img className={"pixelated"} src={_mailinda} onClick={(e) => {this._edit(_mailinda)}}/>
                                     </Tooltip>
                                     <b style={{cursor: "pointer"}} onClick={() => this._open_link("https://www.linkedin.com/in/mailinda-pilavi-kropf/")}>Esq. Mailinda P-K. 🇨🇭 </b>
                                 </div>
                                 <div>
-                                    <Tooltip title={"I think about the fundraising."}>
+                                    <Tooltip title={"A friendly and approachable economist."}>
                                         <img className={"pixelated"} src={_karen} onClick={(e) => {this._edit(_karen)}}/>
                                     </Tooltip>
                                     <b style={{cursor: "pointer"}} onClick={() => this._open_link("https://www.linkedin.com/in/profkarenwendt/")}>Dr. Karen W. 🇨🇭 </b>
@@ -685,10 +713,10 @@ class Marketplace extends React.Component {
                     <Fade in timeout={2500}>
                         <div style={{display: "inline-block"}}>
                             <Tooltip title={"20 Minutes Reading A4 PDF | 5 Mo"}>
-                                <img style={{aspectRatio: "163 / 220", maxWidth: 400, cursor: "pointer"}} src={"/src/images/ico/litepaper.png"} onClick={() => this._open_link("https://drive.google.com/file/d/1bx-14zE2EYt4fpycxr84sMWDa_JaYliW/view")}/>
+                                <img className={classes.litepaper} src={"/src/images/ico/litepaper.png"} onClick={() => this._open_link("https://drive.google.com/file/d/1bx-14zE2EYt4fpycxr84sMWDa_JaYliW/view")}/>
                             </Tooltip>
                             <Tooltip title={"10 Minutes Reading Presentation PDF | 10 Mo"}>
-                                <img style={{aspectRatio: "733 / 441", maxWidth: 400, cursor: "pointer"}} src={"/src/images/ico/pitchdeck.png"} onClick={() => this._open_link("https://drive.google.com/file/d/1nIpVDSxgViEn183Kyr3SvLBlFmaaOzwe/view")}/>
+                                <img className={classes.pitchdeck} src={"/src/images/ico/pitchdeck.png"} onClick={() => this._open_link("https://drive.google.com/file/d/1nIpVDSxgViEn183Kyr3SvLBlFmaaOzwe/view")}/>
                             </Tooltip>
                         </div>
                     </Fade>
