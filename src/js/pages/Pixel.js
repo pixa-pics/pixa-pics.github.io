@@ -1967,6 +1967,7 @@ class Pixel extends React.PureComponent {
                     const prompt = await floranceCaptionerAPI.run(file, 1).catch(() => {
                         return longCaptionerAPI.run(file);
                     });
+
                     actions.trigger_snackbar("IMAGE: " + prompt, 5000);
 
                     return faceToAllAPI3.run(file, prompt).then((blob) => {
