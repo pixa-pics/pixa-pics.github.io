@@ -654,9 +654,17 @@ function medianCutQuantize(data, numColors) {
     while (boxes.length < numColors) {
         let newBoxes = [];
         for (let box of boxes) {
+            if (box.length <= 1) {
+                newBoxes.push(box);
+                continue;
+            }
             let { axis, median } = findMedianCut(box);
             let [box1, box2] = splitBox(box, axis, median);
-            newBoxes.push(box1, box2);
+            if (box1.length > 0 && box2.length > 0) {
+                newBoxes.push(box1, box2);
+            } else {
+                newBoxes.push(box); // Avoid infinite loop by not splitting further
+            }
         }
         boxes = newBoxes;
     }
@@ -688,7 +696,8 @@ function findMedianCut(colors) {
     });
     const axis = ranges.indexOf(Math.max(...ranges));
     const sortedColors = colors.slice().sort((a, b) => ((a >> (8 * (2 - axis))) & 0xFF) - ((b >> (8 * (2 - axis))) & 0xFF));
-    const median = ((sortedColors[sortedColors.length >> 1] >> (8 * (2 - axis))) & 0xFF);
+    const medianIndex = sortedColors.length >> 1;
+    const median = ((sortedColors[medianIndex] >> (8 * (2 - axis))) & 0xFF);
 
     return { axis, median };
 }
@@ -722,6 +731,7 @@ function getColorDistance(color1, color2) {
     const bDiff = (color1 & 0xFF) - (color2 & 0xFF);
     return rDiff * rDiff + gDiff * gDiff + bDiff * bDiff;
 }
+
 
 // Calculate entropy
 function calculateEntropy(data) {
