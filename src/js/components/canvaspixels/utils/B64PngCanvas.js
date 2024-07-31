@@ -25,6 +25,9 @@ SOFTWARE.
 
 import SuperBlend from "./SuperBlend";
 import {Color, Colors} from "simdope";
+import XXHash from "../../canvaspixels/utils/XXHash";
+const xxhash = Object.create(XXHash).new();
+
 var fu = function(
             pxl_width,
             pxl_height,
@@ -60,19 +63,22 @@ var fu = function(
                         var ctx = canvas.getContext("bitmaprenderer");
                         ctx.imageSmoothingEnabled = false;
                         ctx.transferFromImageBitmap(bmp);
-
                         canvas.convertToBlob({type: type}).then((blb) => {
                             try {
                                 resolve(new FileReaderSync().readAsDataURL(blb));
                             } catch (e2) {
-                                var reader = new FileReader();
-                                reader.onload = function () {
-                                    resolve(reader.result)
-                                };
-                                reader.onerror = function (){
-                                  reject();
-                                };
-                                reader.readAsDataURL(blb);
+                                try {
+                                    var reader = new FileReader();
+                                    reader.onload = function () {
+                                        resolve(reader.result)
+                                    };
+                                    reader.onerror = function (){
+                                        reject();
+                                    };
+                                    reader.readAsDataURL(blb);
+                                } catch(e3) {
+                                    resolve(URL.createObjectURL(blb))
+                                }
                             }
                         });
                     });
@@ -131,9 +137,9 @@ var fu = function(
             let image_data = new ImageData(new Uint8ClampedArray(colors.get_image_data().buffer), pxl_width, pxl_height);
             png_encode_id(image_data, scale).then(function (url){
                 if (with_palette) {
-                    resolve(Object.assign({}, {"url": url, "colors": Array.from(hex)}));
+                    resolve(Object.assign({}, {"hash": xxhash.base58_that(image_data.data), "url": url, "colors": Array.from(hex)}));
                 } else {
-                    resolve(Object.assign({}, {"url": url}));
+                    resolve(Object.assign({}, {"hash": xxhash.base58_that(image_data.data), "url": url}));
                 }
             })
         })

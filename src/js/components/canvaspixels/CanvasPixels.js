@@ -686,8 +686,8 @@ class CanvasPixels extends React.PureComponent {
     };
 
     set_png_compressors = (png_quant, oxi_png) => {
-        this.png_quant = png_quant ? png_quant: this.png_quant;
-        this.oxi_png = oxi_png ? oxi_png: this.oxi_png;
+        this.png_quant = Boolean(png_quant) ? png_quant: this.png_quant;
+        this.oxi_png = Boolean(oxi_png) ? oxi_png: this.oxi_png;
     };
 
     get_base64_png_data_url = (scale = 1, with_palette = false, with_compression_speed = 1, with_compression_quality_min = 30, with_compression_quality_max = 35) => {
@@ -701,37 +701,21 @@ class CanvasPixels extends React.PureComponent {
 
         return new Promise( (resolve, reject) => {
             B64PngCanvas.from(pool, parseInt(pxl_width), parseInt(pxl_height), _s_layers.map(function (l){return l.indexes}), _s_layers.map(function (l){return l.colors}), _layers, parseInt(scale), true).render().then((result) => {
-
-                if(this.png_quant && with_compression_speed !== 0 && result.colors.length <= 256) {
-
+                if(result.colors.length > 256){
+                    resolve(result);
+                }else if(typeof this.png_quant == "function" && with_compression_speed !== 0) {
                     this.png_quant(""+result.url, with_compression_quality_min, with_compression_quality_max, with_compression_speed, pool).then((base_64_out) => {
                         result.url = base_64_out;
                         resolve(result);
-                    }).catch(function(e){
-                        this.props.set_compressor();
-                        reject(e);
-                    });
-
-                }else if(this.oxi_png && with_compression_speed !== 0 && result.colors.length > 256){
-
-                    this.oxi_png(""+result.url, Math.round(with_compression_quality_max/33), false, pool).then((base_64_out) => {
-
-                        result.url = base_64_out;
-                        resolve(result);
-                    }).catch(function(e){
-
-                        this.png_quant(""+result.url, with_compression_quality_min, with_compression_quality_max, with_compression_speed, pool).then((base_64_out) => {
-
-                            result.url = base_64_out;
-                            resolve(result);
-                        }).catch(function(e){
-                            this.props.set_compressor();
-                            reject(e);
+                    }).catch((e) => {
+                        this.props.set_compressor().then(() => {
+                            this._get_base64_png_data_url(scale, with_palette, with_compression_speed, with_compression_quality_min, with_compression_quality_max).then(resolve).catch(reject)
                         });
                     });
                 }else {
-
-                    resolve(result);
+                    this.props.set_compressor().then(() => {
+                        this._get_base64_png_data_url(scale, with_palette, with_compression_speed, with_compression_quality_min, with_compression_quality_max).then(resolve).catch(reject)
+                    });
                 }
             }).catch(function(e){ reject(e); });
         });

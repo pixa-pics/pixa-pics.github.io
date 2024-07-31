@@ -455,7 +455,7 @@ QuantiMat.prototype.process_threshold = function(t) {
     "use strict";
 
     t = (t | 0) >>> 0;
-    const exponent = 0.666;
+    const exponent = 1.0;
     function calculateN(t, max) {
         // Apply a power scale to 't'. The exponent (e.g., 0.5) determines the curve's shape.
         const scaledT = Math.pow(t, exponent);
@@ -464,7 +464,7 @@ QuantiMat.prototype.process_threshold = function(t) {
         return fr(scaledT / max);
     }
 
-    var max = Math.pow(100, exponent);
+    var max = Math.pow(128, exponent);
     var weight_applied_to_color_usage_difference = calculateN(t, max); // Ensure higher precision when low color (high threshold)
     var index_merged = 0;
     var latest_colors = [];
@@ -477,7 +477,7 @@ QuantiMat.prototype.process_threshold = function(t) {
     var color_a_usage = 0, color_b_usage = 0;
     var color_a_usage_percent = 0, color_b_usage_percent = 0, average_color_usage_percent = 0;
     var color_usage_difference_positive = 0.0;
-    var weighted_threshold = weight_applied_to_color_usage_difference;
+    var weighted_threshold = fr(weight_applied_to_color_usage_difference);
     var weighted_threshold_skin = 0.0;
     var weighted_threshold_skin_skin = 0.0;
     var index_of_color_a = 0;
@@ -579,7 +579,7 @@ QuantiMat.prototype.round = function() {
     }
 };
 
-QuantiMat.prototype.init = function() {
+QuantiMat.prototype.init = function(rounding) {
     "use strict";
     this.round();
     this.deduplicate();
@@ -603,7 +603,7 @@ QuantiMat.prototype.run =  function() {
         this.deduplicate();
         this.clusterize();
         return this;
-   }
+    }
 
     while (this.new_pxl_colors_length > this.best_color_number && t < 100) {
 

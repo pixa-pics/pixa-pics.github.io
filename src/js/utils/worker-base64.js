@@ -39,6 +39,7 @@ var fun = function (to, data, indexes) {
         }
 
         function base64ToBytes(str) {
+            str = typeof str == "string" ? str: "";
             var tmp;
             switch (str.length % 4) {
                 case 2:

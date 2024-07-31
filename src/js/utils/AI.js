@@ -92,13 +92,13 @@ class HuggingFaceAPI {
                 const image = new Image();
 
                 image.setAttribute('crossorigin', 'anonymous');
-                image.onload = async () => {
+                image.onload = () => {
                     const height = image.naturalHeight || image.height;
                     const width = image.naturalWidth || image.width;
                     finalHeight = finalHeight || height;
                     finalWidth = finalWidth || width;
 
-                   async function baser() {
+                   function baser() {
                        const canvas = document.createElement("canvas")
                        canvas.width = finalWidth;
                        canvas.height = finalHeight;
@@ -111,7 +111,7 @@ class HuggingFaceAPI {
                         }
                     }
 
-                   async function blober() {
+                   function blober() {
                        const canvas = document.createElement("canvas")
                        canvas.width = finalWidth;
                        canvas.height = finalHeight;
@@ -124,7 +124,7 @@ class HuggingFaceAPI {
                         }
                     }
 
-                    async function imagedater () {
+                    function imagedater () {
                         const canvas = document.createElement("canvas")
                         canvas.width = finalWidth;
                         canvas.height = finalHeight;
@@ -510,6 +510,7 @@ class RemoveBackgroundAPI extends HuggingFaceAPI {
     }
 }
 
+// https://huggingface.co/spaces/artificialguybr/Pixart-Sigma
 class ImageCreatorAPI extends HuggingFaceAPI {
     constructor(msgCallback) {
         super("https://pixart-alpha-pixart-sigma.hf.space", msgCallback);
@@ -615,7 +616,7 @@ class ImageCreatorAPI extends HuggingFaceAPI {
         }
     }
 
-    async run(prompt, width = 512, height = 512, number = 1) {
+    async run(prompt, width = 512, height = 512, number = 1, output = "imagedata") {
 
         const hash = this.generateRandomId();
         const header = this.getPredictHeader(prompt, hash, width, height, number, 1);
@@ -631,10 +632,10 @@ class ImageCreatorAPI extends HuggingFaceAPI {
 
             if(urls.length === 1) {
                 const url = urls[0];
-                const file = await this.handleLoadComplete(url, "imagedata");
+                const file = await this.handleLoadComplete(url, output);
                 return Promise.resolve(file);
             }else {
-                return Promise.allSettled([urls.map(() => {return this.handleLoadComplete(url, "imagedata")})]);
+                return Promise.allSettled([urls.map(() => {return this.handleLoadComplete(url, output)})]);
             }
         }
 
@@ -811,7 +812,7 @@ class FaceToAllAPI2 extends HuggingFaceAPI {
 
     getQueueJoinHeader(path, url, size, type, prompt, hash) {
 
-        const finalPrompt = `A 2D illustration in retro video game art of style pixel art of : ${prompt.replaceAll("\\n", "").replaceAll("\\", "")} in lucasarts style. palette, high quality, truthful shapes and colors, great ouput."`;
+        const finalPrompt = `A pixel art person image in lucasarts of : ${prompt.replaceAll("\\n", "").replaceAll("\\", "")} in lucasarts style. High fidelity, high quality, truthful."`;
 
         return {
             headers: this.getHeadersJson(),
@@ -820,12 +821,12 @@ class FaceToAllAPI2 extends HuggingFaceAPI {
                     path: path, url: url, orig_name: "image."+type.replaceAll("image/", ""), size: size, mime_type: type, meta: { _type: "gradio.FileData" }
                 },
                     finalPrompt,
-                    "Realistic, Photography, Real, Photo-realistic, CGI, 3D, Screenshot, Filters, Retro, Bad Quality, Worst settings, bad shapes.",
+                    "Realistic, Photography, Real, Photo-realistic, Screenshot, Filters, Retro, Bad Quality, Worst settings.",
                     0.90,
                     null,
                     0.85,
-                    0.10,
-                    7.0,
+                    0.17,
+                    7.5,
                     0.80,
                     null,
                     null
@@ -975,8 +976,7 @@ class FaceToAllAPI3 extends HuggingFaceAPI {
 
     getQueueJoinHeader(path, url, size, type, prompt, hash) {
 
-        const finalPrompt = `a pixel art of a person in lucasarts style within an image described as: "${prompt}"`;
-
+        const finalPrompt = `A pixel art person image in lucasarts of : ${prompt.replaceAll("\\n", "").replaceAll("\\", "")} in lucasarts style. High fidelity, high quality, truthful."`;
         return {
             headers: this.getHeadersJson(),
             body: JSON.stringify({
@@ -988,8 +988,8 @@ class FaceToAllAPI3 extends HuggingFaceAPI {
                     0.95,
                     null,
                     0.90,
-                    0.12,
-                    7.75,
+                    0.17,
+                    7.5,
                     0.80,
                     null,
                     null

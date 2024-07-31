@@ -1,5 +1,4 @@
 import Pixel from "./Pixel"
-import KMeans from "./KMeans";
 import {QuantiMat} from "../../quantimat/QuantiMat";
 
 export default class Tile {

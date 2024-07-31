@@ -1,5 +1,6 @@
 import React from "react";
 import withStyles from "@material-ui/core/styles/withStyles";
+import SmartRequestAnimationFrame from "../components/canvaspixels/utils/SmartRequestAnimationFrame";
 
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
@@ -587,7 +588,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
             _crt: false,
             _list_sub_header_opened: ""
         };
-
+        this.sraf = Object.create(SmartRequestAnimationFrame).init();
         this._cache = {
             "palette": null,
             "image": null,
@@ -638,6 +639,21 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
             callback();
         }
     }
+
+    _request_force_update = (can_be_cancelable, especially_dont_force) => {
+
+        "use strict";
+
+        can_be_cancelable = typeof can_be_cancelable == "undefined" ? true: can_be_cancelable;
+        especially_dont_force = typeof especially_dont_force == "undefined" ? true: especially_dont_force;
+        return this.sraf.run_frame(  () => {
+            "use strict";
+            return new Promise((resolve, reject) => {
+                "use strict";
+                this.forceUpdate(resolve);
+            });
+        }, !Boolean(can_be_cancelable), !Boolean(especially_dont_force), Date.now(), "drawer_tools_pixel_page").catch(() => {return this._request_force_update(can_be_cancelable, especially_dont_force)});
+    };
 
     _scroll_to_id = (classname) => {
 
@@ -744,8 +760,8 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
         } = this.st4te;
 
         const layer_index_changed = Boolean(filter_layer_index !== new_props.layer_index);
-        const _history_changed = Boolean(can_undo !== new_props.can_undo) || Boolean(can_redo !== new_props.can_redo);
-        const must_compute_filter = Boolean(Boolean(Boolean(view_name_index !== new_props.view_name_index) || _history_changed || layer_index_changed) && Boolean(new_props.view_name_index === 6));
+        const _history_changed = Boolean(can_undo != new_props.can_undo) || Boolean(can_redo !== new_props.can_redo);
+        const must_compute_filter = Boolean(Boolean(Boolean(view_name_index != new_props.view_name_index) || _history_changed || layer_index_changed) && Boolean(new_props.view_name_index === 6));
 
         let layers_colors_max = 0;
         Array.from(new_props.layers).forEach(function (l) {
@@ -756,33 +772,35 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
         const too_much_colors_no_vector = Boolean(layers_colors_max > 256);
 
         const layers_changed = Boolean(layers.map(function (l, i) {
-            return i + "_" + l.hidden + "_" + l.opacity + "_" + l.number_of_colors + "_h" + l.thumbnail.hash
-        }).join("-") !== new_props.layers.map(function (l, i) {
-            return i + "_" + l.hidden + "_" + l.opacity + "_" + l.number_of_colors + "_h" + l.thumbnail.hash
-        }).join("-"));
+            "use strict";
+            return i.toString(10) + "_v" + l.hidden + "_o" + l.opacity + "_n" + l.number_of_colors + "_h" + (l.thumbnail.hash ? l.thumbnail.hash: (Math.random()*0xFFFF|0).toString(16))
+        }).join("|") !== new_props.layers.map(function (l, i) {
+            "use strict";
+            return i.toString(10) + "_v" + l.hidden + "_o" + l.opacity + "_n" + l.number_of_colors + "_h" + (l.thumbnail.hash ? l.thumbnail.hash: (Math.random()*0xFFFF|0).toString(16))
+        }).join("|"));
 
-        const view_name_changed = Boolean(parseInt(view_name_index) !== parseInt(new_props.view_name_index));
-        const layer_update = ((layers_changed || _layers_has_changed) && (parseInt(view_name_index) === 2 || parseInt(new_props.view_name_index) === 2));
+        const view_name_changed = Boolean(parseInt(view_name_index) != parseInt(new_props.view_name_index));
+        const layer_update = (Boolean(layers_changed || _layers_has_changed) && Boolean(parseInt(view_name_index) == 2 || parseInt(new_props.view_name_index) == 2));
         const something_changed_in_view = Boolean(Boolean(new_props.should_update || should_update) && Boolean(
             layer_update ||
-            select_mode + "" !== new_props.select_mode + "" ||
-            Boolean(too_much_colors_no_vector) !== Boolean(this.st4te.too_much_colors_no_vector) ||
-            parseInt(layer_index) !== parseInt(new_props.layer_index) ||
-            Boolean(is_image_import_mode) !== Boolean(new_props.is_image_import_mode) ||
-            Boolean(hide_canvas_content) !== Boolean(new_props.hide_canvas_content) ||
-            Boolean(show_original_image_in_background) !== Boolean(new_props.show_original_image_in_background) ||
-            Boolean(show_transparent_image_in_background) !== Boolean(new_props.show_transparent_image_in_background) ||
-            Boolean(can_undo) !== Boolean(new_props.can_undo) ||
-            Boolean(can_redo) !== Boolean(new_props.can_redo) ||
-            current_color + "" !== new_props.current_color + "" ||
-            second_color + "" !== new_props.second_color + "" ||
-            tool + "" !== new_props.tool + "" ||
-            parseInt(width) !== parseInt(new_props.width) ||
-            parseInt(height) !== parseInt(new_props.height) ||
-            Boolean(pencil_mirror_mode) !== Boolean(new_props.pencil_mirror_mode) ||
-            Boolean(is_something_selected) !== Boolean(new_props.is_something_selected) ||
-            parseInt(import_size) !== parseInt(new_props.import_size) ||
-            (parseInt(import_colorize) | 0) !== (parseInt(new_props.import_colorize) | 0)
+            select_mode + "" != new_props.select_mode + "" ||
+            Boolean(too_much_colors_no_vector) != Boolean(this.st4te.too_much_colors_no_vector) ||
+            parseInt(layer_index) != parseInt(new_props.layer_index) ||
+            Boolean(is_image_import_mode) != Boolean(new_props.is_image_import_mode) ||
+            Boolean(hide_canvas_content) != Boolean(new_props.hide_canvas_content) ||
+            Boolean(show_original_image_in_background) != Boolean(new_props.show_original_image_in_background) ||
+            Boolean(show_transparent_image_in_background) != Boolean(new_props.show_transparent_image_in_background) ||
+            Boolean(can_undo) != Boolean(new_props.can_undo) ||
+            Boolean(can_redo) != Boolean(new_props.can_redo) ||
+            current_color + "" != new_props.current_color + "" ||
+            second_color + "" != new_props.second_color + "" ||
+            tool + "" != new_props.tool + "" ||
+            parseInt(width) != parseInt(new_props.width) ||
+            parseInt(height) != parseInt(new_props.height) ||
+            Boolean(pencil_mirror_mode) != Boolean(new_props.pencil_mirror_mode) ||
+            Boolean(is_something_selected) != Boolean(new_props.is_something_selected) ||
+            parseInt(import_size) != parseInt(new_props.import_size) ||
+            (parseInt(import_colorize) | 0) != (parseInt(new_props.import_colorize) | 0)
         ));
 
         let props_override = {
@@ -803,7 +821,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
             if (something_changed_in_view) {
                 this.update_cache_view(null, true);
             } else if (view_name_changed) {
-                this.forceUpdate();
+                this._request_force_update(false, false);
             } else {
                 //this.update_cache_view(null, false);
             }
@@ -1160,7 +1178,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                             PICTURES INTO PIXEL ART!</FormLabel>
                         <div className={"image " + classes.listItems}>
                             <input
-                                accept="image/jpg, image/jpeg, image/png, image/svg, image/webp, image/gif"
+                                accept="image/jpg, image/jpeg, image/png, image/svg, image/webp, image/gif, image/avif"
                                 style={{display: "none"}}
                                 id={`button-file-drawer-upload-key-${(layers[layer_index] || {}).hash}`}
                                 key={`input-button-file-drawer-upload-key-${(layers[layer_index] || {}).hash}`}
@@ -1168,35 +1186,18 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                                 onChange={this._upload_image}
                             />
                             <ListItem component="label" button
+                                      style={{contain: "style size layout"}}
                                       key={`list-item-button-file-drawer-upload-key-${(layers[layer_index] || {}).hash}`}
                                       htmlFor={`button-file-drawer-upload-key-${(layers[layer_index] || {}).hash}`}>
-                                <ListItemIcon className={classes.listItemIconBlueBold}>
-                                    <ImagePlusIcon/>
-                                </ListItemIcon>
-                                <ListItemText className={classes.ListItemTextBold}
-                                              primary={"UPLOAD IMAGE"} secondary={"NETWORK NOT REQUIRED"}/>
-                            </ListItem>
-                            {false && <ListItem button onClick={() => {
-                                this._upload_image_from_library()
-                            }}>
                                 <ListItemIcon className={classes.listItemIconBlue}>
-                                    <ImagePlusIcon/>
+                                    <Badge className={classes.styledBadgeConnected} overlap="rectangular"
+                                                           badgeContent="FREE" variant="standard">
+                                        <ImagePlusIcon/>
+                                </Badge>
                                 </ListItemIcon>
                                 <ListItemText className={classes.listItemIconBlueBold}
-                                              primary={"OPEN FROM LIBRARY"} secondary={""}/>
-                            </ListItem>}
-                            {false && <ListItem button style={{contain: "style size layout"}} onClick={() => {
-                                window.open("https://www.artstation.com/pixapics/store")
-                            }}>
-                                <ListItemIcon className={classes.listItemIconBlueBold}>
-                                    <Badge className={classes.styledBadgeConnected} overlap="rectangular"
-                                           badgeContent="3+" variant="standard">
-                                        <StoreIcon/>
-                                    </Badge>
-                                </ListItemIcon>
-                                <ListItemText className={classes.ListItemTextBold}
-                                              primary={"BUY PREMIUM ASSETS"} secondary={"DON'T WAIT ANYMORE"}/>
-                            </ListItem>}
+                                              primary={"UPLOAD IMAGE"} secondary={"NETWORK NOT REQUIRED"}/>
+                            </ListItem>
                         </div>
                         <div className={"image " + classes.listItems}>
                             <div style={{
@@ -1250,7 +1251,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
         if (typeof bmp.width == "undefined") {
             return
         }
-        if (force != true && bmp.drawn == true) {
+        if (force !== true && bmp.drawn === true) {
             return
         }
         if (typeof can == "undefined") {
@@ -1263,9 +1264,10 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
             return
         }
 
-        let ctx = can.getContext("2d");
+        let ctx = can.ctx ? can.ctx : can.getContext("2d");
         ctx.globalCompositeOperation = "copy"
         ctx.drawImage(bmp, 0, 0);
+        can.ctx = ctx;
         bmp.drawn = true;
     };
 
@@ -1288,6 +1290,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
         const imgd = await new ImageCreatorAPI().run(prompt, pxl_width, pxl_height, 1, "imagedata");
 
         if(imgd !== null) {
+            console.log(imgd)
             new_layer_from_image(imgd);
             actions.trigger_loading_update(100);
             actions.trigger_sfx("hero_decorative-celebration-02")
@@ -1356,7 +1359,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                         name: "pixelated",
                         tutorial: "Here are the buttons to download your image in simple size or enlarged so as to have enlarged but still very clear edges!",
                         icon: <DownloadIcon/>,
-                        text: "Download pixelated",
+                        text: "Export (Pixelated)",
                         description: "Simple way to upscale your source file to be sure to have a file that is interpreted correctly with crisp edges.",
                         local_i: 1,
                         label: "matrix",
@@ -1364,7 +1367,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                             {
                                 icon: <FileDownloadIcon/>,
                                 class: classes.animatedDownload,
-                                text: "Render (1x size)",
+                                text: "Export (Original Size)",
                                 sub: "[CTRL + Q]", on_click: () => {
                                     this._download_png(1)
                                 }
@@ -1372,63 +1375,10 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                             {
                                 icon: <FileDownloadIcon/>,
                                 class: classes.animatedDownload,
-                                text: "Render (2x size)",
-                                sub: "Upscale 2x",
+                                text: "Export (Bigger Size)",
+                                sub: "Upscale Automatically",
                                 on_click: () => {
-                                    this._download_png(2)
-                                }
-                            },
-                            {
-                                icon: <FileDownloadIcon/>,
-                                class: classes.animatedDownload,
-                                text: "Render (4x size)",
-                                sub: "Upscale 4x",
-                                on_click: () => {
-                                    this._download_png(4)
-                                }
-                            },
-                            {
-                                icon: <FileDownloadIcon/>,
-                                class: classes.animatedDownload,
-                                text: "Render (8x size)",
-                                sub: "Upscale 8x",
-                                on_click: () => {
-                                    this._download_png(8)
-                                }
-                            },
-                            {
-                                icon: <FileDownloadIcon/>,
-                                class: classes.animatedDownload,
-                                text: "Render (16x size)",
-                                sub: "Upscale 16x", on_click: () => {
-                                    this._download_png(16)
-                                }
-                            },
-                            {
-                                icon: <FileDownloadIcon/>,
-                                class: classes.animatedDownload,
-                                text: "Render (24x size)",
-                                sub: "Upscale 24x",
-                                on_click: () => {
-                                    this._download_png(24)
-                                }
-                            },
-                            {
-                                icon: <FileDownloadIcon/>,
-                                class: classes.animatedDownload,
-                                text: "Render (32x size)",
-                                sub: "Upscale 32x",
-                                on_click: () => {
-                                    this._download_png(32)
-                                }
-                            },
-                            {
-                                icon: <FileDownloadIcon/>,
-                                class: classes.animatedDownload,
-                                text: "Render (48x size)",
-                                sub: "Upscale 48x",
-                                on_click: () => {
-                                    this._download_png(48)
+                                    this._download_png("auto")
                                 }
                             }
                         ]
@@ -1693,15 +1643,6 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                                 }
                             },
                             {
-                                icon: <MirrorIcon/>,
-                                disabled: tool === "SET PENCIL MIRROR",
-                                text: "Set pencil mirror",
-                                sub: "[M]",
-                                on_click: () => {
-                                    this._set_tool("SET PENCIL MIRROR")
-                                }
-                            },
-                            {
                                 icon: <MoveIcon/>,
                                 disabled: tool === "MOVE",
                                 text: "Move",
@@ -1799,47 +1740,7 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
                                 }
                             },
                         ]
-                    },
-                    {
-                        icon: <MirrorIcon/>,
-                        text: "Set pencil mirrors",
-                        label: "mirror",
-                        local_i: 4,
-                        tools: [
-                            {
-                                icon: <MirrorIcon/>,
-                                disabled: pencil_mirror_mode === "NONE",
-                                text: "None",
-                                on_click: () => {
-                                    this._set_pencil_mirror_mode("NONE")
-                                }
-                            },
-                            {
-                                icon: <MirrorIcon/>,
-                                disabled: pencil_mirror_mode === "VERTICAL",
-                                text: "Vertical",
-                                on_click: () => {
-                                    this._set_pencil_mirror_mode("VERTICAL")
-                                }
-                            },
-                            {
-                                icon: <MirrorIcon/>,
-                                disabled: pencil_mirror_mode === "HORIZONTAL",
-                                text: "Horizontal",
-                                on_click: () => {
-                                    this._set_pencil_mirror_mode("HORIZONTAL")
-                                }
-                            },
-                            {
-                                icon: <MirrorIcon/>,
-                                disabled: pencil_mirror_mode === "BOTH",
-                                text: "Both",
-                                on_click: () => {
-                                    this._set_pencil_mirror_mode("BOTH")
-                                }
-                            },
-                        ]
-                    },
+                    }
                 ];
             case "selection":
                 return [
@@ -2348,11 +2249,26 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
         return get_rgba_from_hex(hex);
     };
 
-    _download_png = (scale) => {
+    _download_png = (scale = "auto") => {
 
         if (this.props.on_download_image) {
 
-            this.props.on_download_image(scale);
+            if(scale === "auto"){
+                if(Boolean(this.st4te.canvas)){
+                    const { super_state } = this.st4te.canvas;
+                    if(typeof super_state.get_state == "function"){
+                        const {pxl_width, pxl_height} = super_state.get_state();
+                        const scale = Math.sqrt(1920*1080) / Math.sqrt(pxl_width*pxl_height) | 0;
+                        this.props.on_download_image(scale);
+                    }
+                }else {
+                    setTimeout(() => {
+                        this._download_png(scale)
+                    }, 100)
+                }
+            }else {
+                this.props.on_download_image(scale);
+            }
         }
     };
 
@@ -2814,7 +2730,8 @@ class PixelToolboxSwipeableViews extends React.PureComponent {
             if(name === "layers") {
                 this.st4te._layers_has_changed = false;
              }
-            this.forceUpdate();
+
+            this._request_force_update(false, false);
         }
     }
 

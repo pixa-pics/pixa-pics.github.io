@@ -34,19 +34,6 @@ export default class ImageProcessor {
     computeSmartParameters(){
         "use strict";
         this.imageManager = new ImageManager(this.context);
-
-        const {colorNumber, colorNumberCertainty, colorData} = this.imageManager.computePaletteData();
-        if(colorNumberCertainty > 0.25) {
-            this.options.quantizeStrength = colorNumber;
-            const {tileSize, certainty} = this.imageManager.analyzeImageForTileSize(colorData);
-            const targetTileSize = Math.sqrt(this.tileWidth * this.tileHeight);
-            const factor = 4;
-            console.log(certainty, tileSize)
-            if (((tileSize * factor) > targetTileSize) && (tileSize < (targetTileSize * factor))) {
-                console.log("changeFinalCanvasParameters: " + (this.canvas.width / tileSize | 0) + "/" + (this.canvas.height / tileSize | 0))
-                this.changeFinalCanvasParameters(this.canvas.width / tileSize | 0, this.canvas.height / tileSize | 0)
-            }
-        }
     }
     updateTiles() {
         "use strict";

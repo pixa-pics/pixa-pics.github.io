@@ -1162,7 +1162,7 @@ class Marketplace extends React.PureComponent {
             case "hex":
                 actions.trigger_loading_update(0);
                 JSLoader( () => import("../utils/hexagonrender")).then((obj) => {
-                    obj.hexagonrender(data, Math.sqrt(4096*2160) / Math.sqrt(data.width*data.height) | 0, false).then((out) => {
+                    obj.hexagonrender(data, Math.sqrt(1920*1080) / Math.sqrt(data.width*data.height) | 0, false).then((out) => {
                         this.setst4te({src: out, type: "png"}, () => {
                             this.forceUpdate();
                             actions.trigger_loading_update(66);

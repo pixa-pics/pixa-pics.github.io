@@ -1570,9 +1570,10 @@ class Pixel extends React.PureComponent {
 
     _set_png_compressors = () => {
         const { set_png_compressors } = this.st4te._canvas;
-        JSLoader( () => import("../utils/png_quant")).then(({png_quant}) => {
-            JSLoader(() => import("../utils/oxi_png")).then(({oxi_png}) => {
-                set_png_compressors(png_quant, oxi_png);
+        return new Promise((resolve, reject) => {
+            JSLoader( () => import("../utils/png_quant")).then(({png_quant}) => {
+                set_png_compressors(png_quant);
+                resolve();
             });
         });
     };
@@ -1580,35 +1581,28 @@ class Pixel extends React.PureComponent {
     _backup_state = () => {
         const { export_state, set_png_compressors } = this.st4te._canvas;
         JSLoader( () => import("../utils/png_quant")).then(({png_quant}) => {
-            JSLoader(() => import("../utils/oxi_png")).then(({oxi_png}) => {
-                set_png_compressors(png_quant, oxi_png);
-                export_state();
-            });
+            set_png_compressors(png_quant);
+            export_state();
         });
     };
 
     _download_image = (size) => {
 
-        const { get_base64_png_data_url, xxhashthat, set_png_compressors } = this.st4te._canvas;
-
         window.dispatchEvent(new Event(`art-download-raster${size}`));
-        if(typeof get_base64_png_data_url != "undefined" && typeof xxhashthat != "undefined" && typeof set_png_compressors != "undefined"){
-            JSLoader( () => import("../utils/png_quant")).then(({png_quant}) => {
-                JSLoader( () => import("../utils/oxi_png")).then(({oxi_png}) => {
-                    set_png_compressors(png_quant, oxi_png);
-                    get_base64_png_data_url(size, false, 1, 100, 100).then(({url}) => {
-                        const hash = xxhashthat(url);
-                        let a = document.createElement("a"); //Create <a>
-                        a.download = `PIXAPICS-${hash}-PIXELATED-${size}x_RAS.png`; //File name Here
-                        a.href = url;
-                        a.click();
-                        a.remove();
-
-                        this._propose_selling_nft();
-                    });
+        JSLoader( () => import("../utils/png_quant")).then(({png_quant}) => {
+            const { get_base64_png_data_url, set_png_compressors } = this.st4te._canvas;
+            if(typeof get_base64_png_data_url != "undefined" && typeof set_png_compressors != "undefined"){
+                set_png_compressors(png_quant);
+                get_base64_png_data_url(size, false, 1, 100, 100).then(({hash, url}) => {
+                    let a = document.createElement("a"); //Create <a>
+                    a.download = `PIXA-${hash}-PIXELATED-${size}x_RAS.png`; //File name Here
+                    a.href = url;
+                    a.click();
+                    a.remove();
+                    this._propose_selling_nft();
                 });
-            });
-        }
+            }
+        });
     };
 
     _download_svg = (using = "xbrz", optimize_render_size = false, download_svg = false, download_crt = false, photo = false) => {
@@ -1631,7 +1625,7 @@ class Pixel extends React.PureComponent {
 
                         let { _files_waiting_download } = this.st4te;
                         _files_waiting_download.push({
-                            name: `PIXAPICS-${hash}-PIXELATED-1x_RAS.png`,
+                            name: `PIXA-${hash}-PIXELATED-1x_RAS.png`,
                             url: url
                         });
                         this.setSt4te({_files_waiting_download}, () => {
@@ -1644,7 +1638,7 @@ class Pixel extends React.PureComponent {
 
                             let {_files_waiting_download} = this.st4te;
                             _files_waiting_download.push({
-                                name: `PIXAPICS-${hash}-${using.toUpperCase()}-${size}x_RAS.png`,
+                                name: `PIXA-${hash}-${using.toUpperCase()}-${size}x_RAS.png`,
                                 url: "" + image_base64
                             });
                             this.setSt4te({_files_waiting_download}, () => {
@@ -1678,7 +1672,7 @@ class Pixel extends React.PureComponent {
                                                                 }).then((base64) => {
 
                                                                     _files_waiting_download.push({
-                                                                        name: `PIXAPICS-${hash}-${"PHOTO-REAL"}-${"BIG"}+AI_RAS-#${num}.jpg`,
+                                                                        name: `PIXA-${hash}-${"PHOTO-REAL"}-${"BIG"}+AI_RAS-#${num}.jpg`,
                                                                         url: "" + base64
                                                                     });
 
@@ -1703,7 +1697,7 @@ class Pixel extends React.PureComponent {
 
                                 let { _files_waiting_download } = this.st4te;
                                 _files_waiting_download.push({
-                                    name: `PIXAPICS-${hash}-${using.toUpperCase()}-${size}x_VEC.svg`,
+                                    name: `PIXA-${hash}-${using.toUpperCase()}-${size}x_VEC.svg`,
                                     url: svg_base64
                                 });
                                 this.setSt4te({_files_waiting_download}, () => {
@@ -1724,7 +1718,7 @@ class Pixel extends React.PureComponent {
 
                                 let { _files_waiting_download } = this.st4te;
                                 _files_waiting_download.push({
-                                    name: `PIXAPICS-${hash}-${using.toUpperCase()}-${size}+CRT.png`,
+                                    name: `PIXA-${hash}-${using.toUpperCase()}-${size}+CRT.png`,
                                     url: crt_base64
                                 });
                                 this.setSt4te({_files_waiting_download}, () => {

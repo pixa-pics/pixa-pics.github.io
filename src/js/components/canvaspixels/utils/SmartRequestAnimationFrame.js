@@ -68,7 +68,6 @@ const SmartRequestAnimationFrame = {
                 do_not_cancel_animation = do_not_cancel_animation || false;
                 force_update = force_update || false;
                 requested_at_t = requested_at_t || Date.now();
-                type = "_"+type;
 
                 return new Promise(function(resolve, reject){
                     "use strict";
