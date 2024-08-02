@@ -2919,7 +2919,7 @@ class CanvasPixels extends React.PureComponent {
                 ), intensity, false, false);
         }
 
-        pxl_colors = colors.slice_uint32(0, length);
+        pxl_colors = colors.subarray_uint32(0, length);
         return [pxls, pxl_colors, alpha, beta];
     };
 

@@ -98,7 +98,7 @@ var QuantiMat = function(opts) {
     this.set_new_pxl_skin_mask();
     this.best_color_number_ = opts.number_of_color;
 
-    this.max_cluster_ = l > 65536 ? 65536+1: l > 16384 ? 4096+1: l > 8192 ? 256+1: l > 512 ? 16+1: 1;
+    this.max_cluster_ = this.new_pxl_colors_.length > 16384 ? 65536+1: this.new_pxl_colors_.length > 4096 ? 4096+1: this.new_pxl_colors_.length > 1024 ? 256+1: this.new_pxl_colors_.length > 256 ? 16+1: 1;
     this.index_clusters_ = new Array(this.max_cluster_);
     this.length_clusters_ = new Uint32Array(this.max_cluster_);
 
@@ -245,9 +245,9 @@ Object.defineProperty(QuantiMat.prototype, 'get_a_new_pxl_color_from_pxl_index',
 });
 
 Object.defineProperty(QuantiMat.prototype, 'reset_cluster', {
-    get: function() { "use strict"; return function() {
+    get: function() { "use strict"; return function(one) {
         "use strict";
-        this.max_cluster_ = this.new_pxl_colors_.length > 65536 ? 65536+1: this.new_pxl_colors_.length > 16384 ? 4096+1: this.new_pxl_colors_.length > 8192 ? 256+1: this.new_pxl_colors_.length > 512 ? 16+1: 1;
+        this.max_cluster_ = Boolean(one) ? 1: this.new_pxl_colors_.length > 16384 ? 65536+1: this.new_pxl_colors_.length > 4096 ? 4096+1: this.new_pxl_colors_.length > 1024 ? 256+1: this.new_pxl_colors_.length > 256 ? 16+1: 1;
         this.length_clusters_.fill(0, 0, this.max_cluster|0);
         for(var c = 0; (c|0) < (this.max_cluster|0); c=(c+1|0)>>>0){ this.index_clusters_[c|0] = [];}
     }}
@@ -404,10 +404,10 @@ QuantiMat.prototype.deduplicate = function() {
     this.set_new_pxl_colors(clean_pxl_colors_length);
 }
 
-QuantiMat.prototype.clusterize = function() {
+QuantiMat.prototype.clusterize = function(one) {
     "use strict";
 
-    this.reset_cluster();
+    this.reset_cluster(one);
 
     var l = 0;
 
@@ -464,7 +464,7 @@ QuantiMat.prototype.process_threshold = function(t) {
         return fr(scaledT / max);
     }
 
-    var max = Math.pow(128, exponent);
+    var max = Math.pow(255, exponent);
     var weight_applied_to_color_usage_difference = calculateN(t, max); // Ensure higher precision when low color (high threshold)
     var index_merged = 0;
     var latest_colors = [];
@@ -486,8 +486,8 @@ QuantiMat.prototype.process_threshold = function(t) {
     var color_n_in_cluster = 0;
     var threshold = 0;
 
-    var baseFactor = .8;
-    var lowUsedFactor = .2; // Adjust this value to control sensitivity to usage percent differences
+    var baseFactor = .777;
+    var lowUsedFactor = .223; // Adjust this value to control sensitivity to usage percent differences
     var distanceUsageFactor = .0; // Adjust this value to emphasize the effect of one color being more dominant
     var totalFactor = baseFactor + lowUsedFactor + distanceUsageFactor;
 
@@ -605,7 +605,7 @@ QuantiMat.prototype.run =  function() {
         return this;
     }
 
-    while (this.new_pxl_colors_length > this.best_color_number && t < 100) {
+    while (this.new_pxl_colors_length > this.best_color_number && t < 255) {
 
         t++;
 
@@ -617,7 +617,7 @@ QuantiMat.prototype.run =  function() {
 
     this.reset_original();
     this.deduplicate();
-    this.clusterize();
+    this.clusterize(this.new_pxl_colors_length < 4096);
     this.process_threshold(t|0);
     this.deduplicate();
     this.clusterize();
@@ -642,174 +642,6 @@ QuantiMat.split_image_data = function (image_data) {
     return [pxls, pxl_colors, image_data_uint32, original_color_n];
 } // Helper functions for color space conversion
 
-// Median Cut Quantization
-function medianCutQuantize(data, numColors) {
-    const colors = [];
-    for (let i = 0; i < data.length; i += 4) {
-        colors.push((data[i] << 16) | (data[i + 1] << 8) | data[i + 2]);
-    }
-
-    let boxes = [colors];
-
-    while (boxes.length < numColors) {
-        let newBoxes = [];
-        for (let box of boxes) {
-            if (box.length <= 1) {
-                newBoxes.push(box);
-                continue;
-            }
-            let { axis, median } = findMedianCut(box);
-            let [box1, box2] = splitBox(box, axis, median);
-            if (box1.length > 0 && box2.length > 0) {
-                newBoxes.push(box1, box2);
-            } else {
-                newBoxes.push(box); // Avoid infinite loop by not splitting further
-            }
-        }
-        boxes = newBoxes;
-    }
-
-    const palette = boxes.map(box => {
-        const r = (box.reduce((sum, c) => sum + ((c >> 16) & 0xFF), 0) / box.length) | 0;
-        const g = (box.reduce((sum, c) => sum + ((c >> 8) & 0xFF), 0) / box.length) | 0;
-        const b = (box.reduce((sum, c) => sum + (c & 0xFF), 0) / box.length) | 0;
-        return (r << 16) | (g << 8) | b;
-    });
-
-    const quantizedData = new Uint8ClampedArray(data.length);
-    for (let i = 0; i < data.length; i += 4) {
-        const originalColor = (data[i] << 16) | (data[i + 1] << 8) | data[i + 2];
-        const nearestColor = findNearestColor(originalColor, palette);
-        quantizedData[i] = (nearestColor >> 16) & 0xFF;
-        quantizedData[i + 1] = (nearestColor >> 8) & 0xFF;
-        quantizedData[i + 2] = nearestColor & 0xFF;
-        quantizedData[i + 3] = data[i + 3];
-    }
-
-    return quantizedData;
-}
-
-function findMedianCut(colors) {
-    const ranges = [0, 1, 2].map(axis => {
-        const values = colors.map(c => (c >> (8 * (2 - axis))) & 0xFF);
-        return Math.max(...values) - Math.min(...values);
-    });
-    const axis = ranges.indexOf(Math.max(...ranges));
-    const sortedColors = colors.slice().sort((a, b) => ((a >> (8 * (2 - axis))) & 0xFF) - ((b >> (8 * (2 - axis))) & 0xFF));
-    const medianIndex = sortedColors.length >> 1;
-    const median = ((sortedColors[medianIndex] >> (8 * (2 - axis))) & 0xFF);
-
-    return { axis, median };
-}
-
-function splitBox(box, axis, median) {
-    const box1 = [];
-    const box2 = [];
-    const shift = 8 * (2 - axis);
-    for (let color of box) {
-        (((color >> shift) & 0xFF) <= median ? box1 : box2).push(color);
-    }
-    return [box1, box2];
-}
-
-function findNearestColor(color, palette) {
-    let minDist = Infinity;
-    let nearestColor = palette[0];
-    for (let paletteColor of palette) {
-        const dist = getColorDistance(color, paletteColor);
-        if (dist < minDist) {
-            minDist = dist;
-            nearestColor = paletteColor;
-        }
-    }
-    return nearestColor;
-}
-
-function getColorDistance(color1, color2) {
-    const rDiff = ((color1 >> 16) & 0xFF) - ((color2 >> 16) & 0xFF);
-    const gDiff = ((color1 >> 8) & 0xFF) - ((color2 >> 8) & 0xFF);
-    const bDiff = (color1 & 0xFF) - (color2 & 0xFF);
-    return rDiff * rDiff + gDiff * gDiff + bDiff * bDiff;
-}
-
-
-// Calculate entropy
-function calculateEntropy(data) {
-    const counts = new Int32Array(256);
-    for (let val of data) {
-        counts[val]++;
-    }
-    let entropy = 0;
-    const total = data.length;
-    for (let i = 0; i < counts.length; i++) {
-        if (counts[i] > 0) {
-            const p = counts[i] / total;
-            entropy -= p * Math.log2(p);
-        }
-    }
-    return entropy;
-}
-
-// Full Structural Similarity Index (SSIM) function
-function calculateSSIM(original, processed) {
-    const K1 = 0.01, K2 = 0.03, L = 255;
-    let [muX, muY, sigmaX, sigmaY, sigmaXY] = [0, 0, 0, 0, 0];
-
-    for (let i = 0; i < original.length; i += 4) {
-        muX += original[i];
-        muY += processed[i];
-    }
-    muX /= (original.length >> 2);
-    muY /= (processed.length >> 2);
-
-    for (let i = 0; i < original.length; i += 4) {
-        sigmaX += (original[i] - muX) * (original[i] - muX);
-        sigmaY += (processed[i] - muY) * (processed[i] - muY);
-        sigmaXY += (original[i] - muX) * (processed[i] - muY);
-    }
-    sigmaX /= (original.length >> 2) - 1;
-    sigmaY /= (processed.length >> 2) - 1;
-    sigmaXY /= (original.length >> 2) - 1;
-
-    const c1 = (K1 * L) * (K1 * L);
-    const c2 = (K2 * L) * (K2 * L);
-    return ((2 * muX * muY + c1) * (2 * sigmaXY + c2)) /
-        ((muX * muX + muY * muY + c1) * (sigmaX + sigmaY + c2));
-}
-
-// Full Perceptual Loss function using Euclidean distance as a proxy
-function calculatePerceptualLoss(original, processed) {
-    let loss = 0;
-    for (let i = 0; i < original.length; i += 4) {
-        const rDiff = original[i] - processed[i];
-        const gDiff = original[i + 1] - processed[i + 1];
-        const bDiff = original[i + 2] - processed[i + 2];
-        loss += Math.sqrt(rDiff * rDiff + gDiff * gDiff + bDiff * bDiff);
-    }
-    return loss / (original.length >> 2);
-}
-
-// Main function to detect ideal color count
-function detectIdealColorCount(imageData, minColors = 12, maxColors = 64) {
-    let bestColorCount = minColors;
-    let bestScore = -Infinity;
-
-    for (let k = minColors; k <= maxColors; k++) {
-        const quantizedData = medianCutQuantize(imageData, k);
-        const entropy = calculateEntropy(new Uint8Array(quantizedData.buffer));
-        const ssim = calculateSSIM(imageData, quantizedData);
-        const perceptualLoss = calculatePerceptualLoss(imageData, quantizedData);
-
-        const score = (ssim / (perceptualLoss + 1)) - entropy;
-        if (score > bestScore) {
-            bestScore = score;
-            bestColorCount = k;
-        }
-    }
-
-    return bestColorCount;
-}
-
 var QuantiMatGlobal = function(
     image_data,
     color_n
@@ -830,7 +662,7 @@ var QuantiMatGlobal = function(
                         original_color_n;
 
         if(number_of_color === "auto") {
-            number_of_color = detectIdealColorCount(image_data.data, 32, 96);
+            number_of_color = original_color_n > 255 ? 255: original_color_n/2|0;
         }
 
         if(number_of_color >= original_color_n) {

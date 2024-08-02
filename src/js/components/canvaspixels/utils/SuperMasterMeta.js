@@ -771,10 +771,11 @@ const SuperMasterMeta = {
             _notify_position_change (position, date) {
                 "use strict";
                 date = date || Date.now();
+                const frametime = 30;
                 const _notified_position_at = meta.super_state.get_notified_pos_at() | 0;
                 const now = Date.now() | 0;
 
-                if (((now - _notified_position_at|0) >= 100 && date == null) || (date|0) > (_notified_position_at|0) && (now - date|0) >= 100) {
+                if (((now - _notified_position_at|0) >= frametime && date == null) || (date|0) > (_notified_position_at|0) && (now - date|0) >= frametime) {
 
                     position = {
                         x: typeof position.x == "undefined" ? -1 : position.x,
@@ -785,9 +786,9 @@ const SuperMasterMeta = {
                     meta.super_state.set_state({_notified_position_at: now}).then(function () {
                         notifiers.position(position, meta.sraf.get_state().previous_cpaf_fps);
                     });
-                } else if ((now|0) < (date + 100|0)) {
+                } else if ((now|0) < (date + frametime|0)) {
 
-                    setTimeout(this._notify_position_change, 100-(date-now|0)|0, {x: position.x, y: position.y}, now|0);
+                    setTimeout(this._notify_position_change, frametime-(date-now|0)|0, {x: position.x, y: position.y}, now|0);
                 }
             },
             _handle_canvas_mouse_up() {

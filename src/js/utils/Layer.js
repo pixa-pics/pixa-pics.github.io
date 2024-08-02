@@ -156,7 +156,6 @@ var Layer = function(image_data_or_colors_and_indexes, width, height, with_plain
         // Fill the dual data set (linear, matrix) from color and indexes
         this.force_update_data(image_data_or_colors_and_indexes[0], image_data_or_colors_and_indexes[1]);
 
-
     }else{
         if(image_data_or_colors_and_indexes instanceof ImageData){
 
@@ -235,20 +234,20 @@ Object.defineProperty(Layer.prototype, 'populate_data', {
 
                 this.uint32_pixel_color_ =  new Uint32Array(this.width_ * this.height_);
                 this.changes_ = new SetFixed(this.uint32_pixel_color_.length);
+                this.changes_.charge();
                 this.uint8c_pixel_color_ =  new Uint8ClampedArray(this.uint32_pixel_color_.buffer);
                 this.simdope_pixel_color_ =  new Colors(this.uint32_pixel_color_.buffer);
 
                 for(var i = 0, l = this.uint32_pixel_color_.length | 0; (i|0) < (l|0); i = (i + 1 | 0) >>> 0) {
                     this.uint32_pixel_color_[i] = (this.colors[this.indexes[i]]|0) >>> 0;
                 }
-                this.changes_.charge();
 
             }else {
-                this.uint32_pixel_color_ = data instanceof Uint32Array ? data: Uint32Array.from(data);
+                this.uint32_pixel_color_ = data instanceof Uint32Array ? data: data instanceof ArrayBuffer ? new Uint32Array(data): Uint32Array.from(data);
                 this.changes_ = new SetFixed(this.uint32_pixel_color_.length);
+                this.changes_.charge();
                 this.uint8c_pixel_color_ =  new Uint8ClampedArray(this.uint32_pixel_color_.buffer);
                 this.simdope_pixel_color_ =  new Colors(this.uint32_pixel_color_.buffer);
-                this.changes_.charge();
             }
         }
     }
@@ -274,7 +273,7 @@ Object.defineProperty(Layer.prototype, 'populate_colors', {
         return function(colors){
             "use strict";
 
-            this.uint32_colors_ = colors instanceof Uint32Array ? colors.slice(0, colors.length|0): Uint32Array.from(colors);
+            this.uint32_colors_ = colors instanceof Uint32Array ? ((this.uint32_colors_ || {}).length === colors.length) ? colors: colors.slice(0, colors.length|0): colors instanceof ArrayBuffer ? new Uint32Array(colors): Uint32Array.from(colors);
             this.uint32_colors_length_ = this.uint32_colors_.length;
             this.uint32_colors_map_ = {};
             for(var i = 0; (i|0) < (this.uint32_colors_length_|0); i = (i + 1 | 0) >>> 0){
@@ -293,7 +292,7 @@ Object.defineProperty(Layer.prototype, 'populate_indexes', {
 
                 this.color_indexes_length_ = indexes.length;
                 this.color_indexes_constructor_ = this.uint32_colors_length_ < (1 << 8) ? Uint8Array : (this.uint32_colors_length_ + 1 | 0) < (1 << 16) ? Uint16Array : Uint32Array;
-                this.color_indexes_ = indexes instanceof this.color_indexes_constructor_ ? indexes: this.color_indexes_constructor_.from(indexes);
+                this.color_indexes_ = indexes instanceof this.color_indexes_constructor_ ? indexes: indexes instanceof ArrayBuffer ? new this.color_indexes_constructor_(indexes) :this.color_indexes_constructor_.from(indexes);
             }else {
                 this.color_indexes_length_ = this.uint32_pixel_color_.length;
                 this.color_indexes_constructor_ = this.uint32_colors_length_ < (1 << 8) ? Uint8Array : (this.uint32_colors_length_ + 1 | 0) < (1 << 16) ? Uint16Array : Uint32Array;
@@ -944,6 +943,7 @@ Object.defineProperty(FilterGreyscale.prototype, 'filter_colors', {
             var uint8_colors = new Uint8Array(colors.buffer);
             var new_uint8_colors_length = uint8_colors.length|0;
             var new_uint8_colors = new Uint8Array(new_uint8_colors_length|0);
+                new_uint8_colors.set(uint8_colors, 0)
             var new_uint32_colors = new Uint32Array(new_uint8_colors.buffer);
 
             for(var i4 = 0; (i4|0) < (new_uint8_colors_length|0); i4 = (i4+4|0)>>>0){
@@ -958,10 +958,10 @@ Object.defineProperty(FilterGreyscale.prototype, 'filter_colors', {
             var new_uint32_colors_length = new_uint32_colors.length|0;
 
             for(var i = 0; (i|0) < (new_uint32_colors_length|0); i = (i+1|0)>>>0){
-                old_simdope_colors.get_use_element(i|0, temp_simdope_colors_a).blend_with(new_simdope_colors.get_use_element(i|0,temp_simdope_colors_b), intensity, false, false);
+                new_simdope_colors.get_use_element(i|0, temp_simdope_colors_a).blend_first_with(old_simdope_colors.get_use_element(i|0,temp_simdope_colors_b), 255-intensity, false, false);
             }
 
-            return colors;
+            return new_uint32_colors;
         };
     },
     enumerable: false,
@@ -1007,12 +1007,13 @@ Object.defineProperty(FilterScreen.prototype, 'filter_colors', {
             var uint8_colors = new Uint8Array(colors.buffer);
             var new_uint8_colors_length = uint8_colors.length|0;
             var new_uint8_colors = new Uint8Array(new_uint8_colors_length|0);
+                new_uint8_colors.set(uint8_colors, 0)
             var new_uint32_colors = new Uint32Array(new_uint8_colors.buffer);
 
             for(var i4 = 0; (i4|0) < (new_uint8_colors_length|0); i4 = (i4+4|0)>>>0){
-                new_uint8_colors[i4|0] = SCREEN_COMP(new_uint8_colors[i4|0]);
-                new_uint8_colors[i4+1|0] = SCREEN_COMP(new_uint8_colors[i4+1|0]);
-                new_uint8_colors[i4+2|0] = SCREEN_COMP(new_uint8_colors[i4+2|0]);
+                new_uint8_colors[i4|0] = SCREEN_COMP(uint8_colors[i4|0]);
+                new_uint8_colors[i4+1|0] = SCREEN_COMP(uint8_colors[i4+1|0]);
+                new_uint8_colors[i4+2|0] = SCREEN_COMP(uint8_colors[i4+2|0]);
                 new_uint8_colors[i4+3|0] = uint8_colors[i4+3|0];
             }
 
@@ -1023,10 +1024,10 @@ Object.defineProperty(FilterScreen.prototype, 'filter_colors', {
             var new_uint32_colors_length = new_uint32_colors.length|0;
 
             for(var i = 0; (i|0) < (new_uint32_colors_length|0); i = (i+1|0)>>>0){
-                old_simdope_colors.get_use_element(i|0, temp_simdope_colors_a).blend_with(new_simdope_colors.get_use_element(i|0,temp_simdope_colors_b), intensity, false, false);
+                new_simdope_colors.get_use_element(i|0, temp_simdope_colors_a).blend_first_with(old_simdope_colors.get_use_element(i|0,temp_simdope_colors_b), 255-intensity, false, false);
             }
 
-            return colors;
+            return new_uint32_colors;
         };
     },
     enumerable: false,
@@ -1042,7 +1043,6 @@ var FilterDifference = function(){
     }
 };
 
-
 Object.defineProperty(FilterDifference.prototype, 'filter_colors', {
     get: function() {
         "use strict";
@@ -1052,12 +1052,13 @@ Object.defineProperty(FilterDifference.prototype, 'filter_colors', {
             var uint8_colors = new Uint8Array(colors.buffer);
             var new_uint8_colors_length = uint8_colors.length|0;
             var new_uint8_colors = new Uint8Array(new_uint8_colors_length|0);
+                new_uint8_colors.set(uint8_colors, 0)
             var new_uint32_colors = new Uint32Array(new_uint8_colors.buffer);
 
             for(var i4 = 0; (i4|0) < (new_uint8_colors_length|0); i4 = (i4+4|0)>>>0){
-                new_uint8_colors[i4|0] = DIFFERENCE_COMP(new_uint8_colors[i4|0]);
-                new_uint8_colors[i4+1|0] = DIFFERENCE_COMP(new_uint8_colors[i4+1|0]);
-                new_uint8_colors[i4+2|0] = DIFFERENCE_COMP(new_uint8_colors[i4+2|0]);
+                new_uint8_colors[i4|0] = DIFFERENCE_COMP(uint8_colors[i4|0]);
+                new_uint8_colors[i4+1|0] = DIFFERENCE_COMP(uint8_colors[i4+1|0]);
+                new_uint8_colors[i4+2|0] = DIFFERENCE_COMP(uint8_colors[i4+2|0]);
                 new_uint8_colors[i4+3|0] = uint8_colors[i4+3|0];
             }
 
@@ -1068,10 +1069,10 @@ Object.defineProperty(FilterDifference.prototype, 'filter_colors', {
             var new_uint32_colors_length = new_uint32_colors.length|0;
 
             for(var i = 0; (i|0) < (new_uint32_colors_length|0); i = (i+1|0)>>>0){
-                old_simdope_colors.get_use_element(i|0, temp_simdope_colors_a).blend_with(new_simdope_colors.get_use_element(i|0,temp_simdope_colors_b), intensity, false, false);
+                new_simdope_colors.get_use_element(i|0, temp_simdope_colors_a).blend_first_with(old_simdope_colors.get_use_element(i|0,temp_simdope_colors_b), 255-intensity, false, false);
             }
 
-            return colors;
+            return new_uint32_colors;
         };
     },
     enumerable: false,
@@ -1095,6 +1096,7 @@ Object.defineProperty(FilterSepia.prototype, 'filter_colors', {
             var uint8_colors = new Uint8Array(colors.buffer);
             var new_uint8_colors_length = uint8_colors.length|0;
             var new_uint8_colors = new Uint8Array(new_uint8_colors_length|0);
+                new_uint8_colors.set(uint8_colors, 0)
             var new_uint32_colors = new Uint32Array(new_uint8_colors.buffer);
 
 
@@ -1112,10 +1114,10 @@ Object.defineProperty(FilterSepia.prototype, 'filter_colors', {
             var new_uint32_colors_length = new_uint32_colors.length|0;
 
             for(var i = 0; (i|0) < (new_uint32_colors_length|0); i = (i+1|0)>>>0){
-                old_simdope_colors.get_use_element(i|0, temp_simdope_colors_a).blend_with(new_simdope_colors.get_use_element(i|0,temp_simdope_colors_b), intensity, false, false);
+                new_simdope_colors.get_use_element(i|0, temp_simdope_colors_a).blend_first_with(old_simdope_colors.get_use_element(i|0,temp_simdope_colors_b), 255-intensity, false, false);
             }
 
-            return colors;
+            return new_uint32_colors;
         };
     },
     enumerable: false,
@@ -1131,6 +1133,7 @@ Object.defineProperty(Filter.prototype, 'filter_colors', {
             var uint8_colors = new Uint8Array(colors.buffer);
             var new_uint8_colors_length = uint8_colors.length|0;
             var new_uint8_colors = new Uint8Array(new_uint8_colors_length|0);
+                new_uint8_colors.set(uint8_colors, 0)
             var new_uint32_colors = new Uint32Array(new_uint8_colors.buffer);
 
             for(var i4 = 0; (i4|0) < (new_uint8_colors_length|0); i4 = (i4+4|0)>>>0){
@@ -1147,10 +1150,10 @@ Object.defineProperty(Filter.prototype, 'filter_colors', {
             var new_uint32_colors_length = new_uint32_colors.length|0;
 
             for(var i = 0; (i|0) < (new_uint32_colors_length|0); i = (i+1|0)>>>0){
-                old_simdope_colors.get_use_element(i|0, temp_simdope_colors_a).blend_with(new_simdope_colors.get_use_element(i|0, temp_simdope_colors_b), intensity, false, false);
+                new_simdope_colors.get_use_element(i|0, temp_simdope_colors_a).blend_first_with(old_simdope_colors.get_use_element(i|0,temp_simdope_colors_b), 255-intensity, false, false);
             }
 
-            return colors;
+            return new_uint32_colors;
         };
     },
     enumerable: false,
@@ -1194,13 +1197,13 @@ Object.defineProperty(Filters.prototype, 'use', {
                 if(copy){
                     switch (name){
                         case "Sepia":
-                            return Layer.new_from_colors_and_indexes(this.filter_sepia_.filter_colors(layer.colors_copy, intensity), layer.indexes, layer.width, layer.height);
+                            return Layer.new_from_colors_and_indexes(this.filter_sepia_.filter_colors(layer.colors_copy, intensity), layer.indexes_copy, layer.width, layer.height);
                         case "Screen":
-                            return Layer.new_from_colors_and_indexes(this.filter_screen_.filter_colors(layer.colors_copy, intensity), layer.indexes, layer.width, layer.height);
+                            return Layer.new_from_colors_and_indexes(this.filter_screen_.filter_colors(layer.colors_copy, intensity), layer.indexes_copy, layer.width, layer.height);
                         case "Difference":
-                            return Layer.new_from_colors_and_indexes(this.filter_difference_.filter_colors(layer.colors_copy, intensity), layer.indexes, layer.width, layer.height);
+                            return Layer.new_from_colors_and_indexes(this.filter_difference_.filter_colors(layer.colors_copy, intensity), layer.indexes_copy, layer.width, layer.height);
                         default:
-                            return Layer.new_from_colors_and_indexes(this.filter_greyscale_.filter_colors(layer.colors_copy, intensity), layer.indexes, layer.width, layer.height);
+                            return Layer.new_from_colors_and_indexes(this.filter_greyscale_.filter_colors(layer.colors_copy, intensity), layer.indexes_copy, layer.width, layer.height);
                     }
                 }else {
                     switch (name){
@@ -1221,7 +1224,7 @@ Object.defineProperty(Filters.prototype, 'use', {
 
             }else {
                 if(copy){
-                    return Layer.new_from_colors_and_indexes(this.filters_[index].filter_colors(layer.colors_copy, intensity), layer.indexes, layer.width, layer.height);
+                    return Layer.new_from_colors_and_indexes(this.filters_[index].filter_colors(layer.colors_copy, intensity), layer.indexes_copy, layer.width, layer.height);
                 }else {
 
                     layer.set_colors(this.filters_[index].filter_colors(layer.colors_copy, intensity));
