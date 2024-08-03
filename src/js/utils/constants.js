@@ -35,6 +35,11 @@ const PAGE_ROUTES = [
         page_regex: /\/(ico)$/,
         page_name: "ico",
         tabs: ""
+    },
+    {
+        page_regex: /\/(omnibus)$/,
+        page_name: "omnibus",
+        tabs: ""
     }
 ];
 

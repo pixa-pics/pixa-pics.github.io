@@ -11,6 +11,7 @@ import Badge from "@material-ui/core/Badge";
 import AppInfoDialog from "../components/AppInfoDialog";
 import CodeIcon from "@material-ui/icons/Code";
 import StoreIcon from "@material-ui/icons/Store";
+import DashboardIcon from "@material-ui/icons/Dashboard";
 import PaletteIcon from "@material-ui/icons/Palette";
 import InfoIcon from "@material-ui/icons/Info";
 
@@ -180,7 +181,8 @@ class DrawerContent extends React.PureComponent {
             _history: HISTORY,
             _info_dialog_open: 0,
             _has_info_dialog_opened: 0,
-            _menu_opened: "pixagram"
+            _menu_opened1: "",
+            _menu_opened2: ""
         };
     };
 
@@ -258,7 +260,14 @@ class DrawerContent extends React.PureComponent {
 
     _pixagram_toggle_menu = () => {
 
-        this.setSt4te({_menu_opened: this.st4te._menu_opened === "" ? "pixagram": ""}, () => {
+        this.setSt4te({_menu_opened1: this.st4te._menu_opened1 !== "pixagram" ? "pixagram": ""}, () => {
+
+            this.forceUpdate();
+        });
+    };
+    _omnibus_toggle_menu = () => {
+
+        this.setSt4te({_menu_opened2: this.st4te._menu_opened2 !== "omnibus" ? "omnibus": ""}, () => {
 
             this.forceUpdate();
         });
@@ -266,7 +275,7 @@ class DrawerContent extends React.PureComponent {
 
     render() {
 
-        const { classes, _info_dialog_open, _menu_opened, _has_info_dialog_opened } = this.st4te;
+        const { classes, _info_dialog_open, _menu_opened1, _menu_opened2, _has_info_dialog_opened } = this.st4te;
 
         return (
             <React.Fragment>
@@ -275,19 +284,19 @@ class DrawerContent extends React.PureComponent {
                     <Fade in={true} timeout={0}>
                         <ListItem button className={classes.listItemGrey} TouchRippleProps={{className: classes.rippleBlue}} onClick={this._open_pixel_page}>
                             <ListItemIcon><PaletteIcon className={classes.iconColor} /></ListItemIcon>
-                            <ListItemText primary="Draw" />
+                            <ListItemText primary="DRAW" />
                         </ListItem>
                     </Fade>
                     <Fade in={true} timeout={300}>
                         <ListItem button className={classes.listItemGrey} TouchRippleProps={{className: classes.rippleBlue}} onClick={(event) => this._open_link(event, "https://github.com/pixa-pics/pixa-pics.github.io")}>
                             <ListItemIcon><CodeIcon className={classes.iconColor} /></ListItemIcon>
-                            <ListItemText primary="Source code" />
+                            <ListItemText primary="CODE" />
                         </ListItem>
                     </Fade>
                     <Fade in={true} timeout={600}>
                         <ListItem button className={classes.listItemGrey} TouchRippleProps={{className: classes.rippleBlue}} onClick={this._open_info_dialog}>
                             <ListItemIcon><InfoIcon className={classes.iconColor} /></ListItemIcon>
-                            <ListItemText primary="About" />
+                            <ListItemText primary="ABOUT" />
                         </ListItem>
                     </Fade>
                     <Fade in={true} timeout={900}>
@@ -297,27 +306,28 @@ class DrawerContent extends React.PureComponent {
                                 <ListItemIcon><StoreIcon className={classes.iconColor} /></ListItemIcon>
                             </Badge>
                             <ListItemText primary="PIXAGRAM" />
-                            <ListItemIcon><ArrowDropDown className={classes.iconColor} style={_menu_opened !== "pixagram" ? {transform: "rotate(-180deg)"}: {transform: "rotate(0deg)"}}/></ListItemIcon>
+                            <ListItemIcon><ArrowDropDown className={classes.iconColor} style={_menu_opened1 !== "pixagram" ? {transform: "rotate(-180deg)"}: {transform: "rotate(0deg)"}}/></ListItemIcon>
                         </ListItem>
                     </Fade>
-                    <Collapse in={_menu_opened !== "pixagram"} timeout={300}>
+                    <Collapse in={_menu_opened1 !== "pixagram"} timeout={300}>
                         <Divider/>
-                        <Fade in={_menu_opened !== "pixagram"} timeout={300+200}>
+                        <Fade in={_menu_opened1 !== "pixagram"} timeout={300+200}>
                             <ListItem button className={classes.listItemGreyPadding1} TouchRippleProps={{className: classes.rippleBlue}} onClick={(event) => this._go_to("ico")}>
                                 <ListItemText primary="ICO" />
                             </ListItem>
                         </Fade>
-                        <Fade in={_menu_opened !== "pixagram"} timeout={300+400}>
+                        <Fade in={_menu_opened1 !== "pixagram"} timeout={300+400}>
                             <ListItem button className={classes.listItemGreyPadding1} TouchRippleProps={{className: classes.rippleBlue}} onClick={() => {this._go_to("marketplace")}}>
                                 <ListItemText primary="DEMO" />
                             </ListItem>
                         </Fade>
-                        <Fade in={_menu_opened !== "pixagram"} timeout={300+600}>
-                            <ListItem button className={classes.listItemGreyPadding1} TouchRippleProps={{className: classes.rippleBlue}} onClick={(event) => this._open_link(event, "https://t.me/pixagramio")}>
-                                <ListItemText primary="CHAT" />
-                            </ListItem>
-                        </Fade>
                     </Collapse>
+                    <Fade in={true} timeout={1200}>
+                        <ListItem button className={classes.listItemGrey} TouchRippleProps={{className: classes.rippleBlue}} onClick={(event) => this._go_to("omnibus")}>
+                            <ListItemIcon><DashboardIcon className={classes.iconColor} /></ListItemIcon>
+                            <ListItemText primary="OMNIBUS" />
+                        </ListItem>
+                    </Fade>
                     <Fade in={true} timeout={2000}>
                         <div style={{textAlign: "center", position: "absolute", bottom: 48, left: 16}} onClick={(event) => {this._open_link(event, "https://play.google.com/store/apps/details?id=pics.pixa.app.twa")}}>
                             <svg

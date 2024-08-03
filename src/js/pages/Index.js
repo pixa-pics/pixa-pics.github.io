@@ -23,6 +23,7 @@ const Unknown = React.lazy(() => import("../pages/Unknown"));
 const Settings = React.lazy(() =>  import("../pages/Settings"));
 const Marketplace = React.lazy(() =>  import("../pages/Marketplace"));
 const Ico = React.lazy(() =>  import("../pages/ico"));
+const Omnibus = React.lazy(() =>  import("../pages/Omnibus"));
 
 import JamyAngry from "../icons/JamyAngry";
 import JamyAnnoyed from "../icons/JamyAnnoyed";
@@ -268,6 +269,8 @@ class Index extends React.PureComponent {
                 return <Suspense fallback={<div/>}><Marketplace settings={settings} /></Suspense>;
             case "ico":
                 return <Suspense fallback={<div/>}><Ico settings={settings} /></Suspense>;
+            case "omnibus":
+                return <Suspense fallback={<div/>}><Omnibus/></Suspense>;
         }
     }
 
@@ -299,7 +302,7 @@ class Index extends React.PureComponent {
 
                 case "TRIGGER_SFX":
                     if (_sfx_enabled) {
-                        this._trigger_sound("sfx", event.data.pack, event.data.name, event.data.volume, false);
+                        this._trigger_sound("sfx", event.data.pack, event.data.name, event.data.volume/1.25, false);
                     }
                     break;
 
@@ -317,7 +320,7 @@ class Index extends React.PureComponent {
 
                 case "TRIGGER_VOICE":
                     if (_voice_enabled) {
-                        this._trigger_sound("voice", event.data.pack, event.data.name, event.data.volume, false);
+                        this._trigger_sound("voice", event.data.pack, event.data.name, event.data.volume/2, false);
                     }
                     break;
 
