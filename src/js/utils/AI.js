@@ -643,9 +643,43 @@ class ImageCreatorAPI extends HuggingFaceAPI {
     }
 }
 
+const pixelart_style = {
+    lucasArt: {
+        url: "https://civitai.com/models/247890/lucasarts-adventure-game-style-xl",
+        weight: 1.0,
+        face: 0.90,
+        image: 0.12,
+        scale: 7.75,
+        strength: 0.80,
+        prompt: "A 2D illustration in retro game style pixel art of '${prompt}' in lucasarts style. Video game, low color number, high quality.",
+        negative: "Realistic, photography, real."
+    },
+    thimbled: {
+        url: "https://civitai.com/models/174301/pixelartthimbledweed",
+        weight: 1.2,
+        face: 0.90,
+        image: 0.15,
+        scale: 9.0,
+        strength: 0.80,
+        prompt: "A 2D illustration in retro game style pixel art of '${prompt}'. Video game, low color number, high quality.",
+        negative: "Realistic, photography, real."
+    },
+    arsMJ: {
+        url: "https://civitai.com/models/547343/pixel-art-pony-sdxl",
+        weight: 0.8,
+        face: 0.90,
+        image: 0.20,
+        scale: 9.0,
+        strength: 0.80,
+        prompt: "A 2D illustration in retro game style Pixel Art of '${prompt}'. Video game, low color number, high quality.",
+        negative: "Realistic, photography, real."
+    }
+};
+
 class FaceToAllAPI extends HuggingFaceAPI {
     constructor(msgCallback) {
         super("https://abidlabs-face-to-all.hf.space", msgCallback);
+        this.styles = pixelart_style;
     }
 
     getPredictUrl() {
@@ -674,9 +708,9 @@ class FaceToAllAPI extends HuggingFaceAPI {
         return null;
     }
 
-    getQueueJoinHeader(path, url, size, type, prompt, hash) {
-
-        const finalPrompt = `A 2D illustration in retro game style pixel art of ${prompt.replaceAll("\\n", "").replaceAll("\\", "")} in lucasarts style. Video game, low color number, high quality."`;
+    getQueueJoinHeader(path, url, size, type, prompt, style, hash) {
+        const styleConfig = this.styles[style];
+        const finalPrompt = styleConfig.prompt.replace('${prompt}', prompt.replaceAll("\\n", "").replaceAll("\\", ""));
 
         return {
             headers: this.getHeadersJson(),
@@ -685,13 +719,13 @@ class FaceToAllAPI extends HuggingFaceAPI {
                     path: path, url: url, orig_name: "image."+type.replaceAll("image/", ""), size: size, mime_type: type, meta: { _type: "gradio.FileData" }
                 },
                     finalPrompt,
-                    "Realistic, photography, real, CGI, 3D.",
-                    0.95,
+                    styleConfig.negative,
+                    styleConfig.face,
                     null,
-                    0.90,
-                    0.12,
-                    7.75,
-                    0.80,
+                    styleConfig.weight,
+                    styleConfig.image,
+                    styleConfig.scale,
+                    styleConfig.strength,
                     null,
                     null
                 ],
@@ -720,7 +754,6 @@ class FaceToAllAPI extends HuggingFaceAPI {
 
             let lines = (result || "\n").split("\n");
 
-            // Process each line
             for (let i = 0; i < lines.length; i++) {
                 const line = lines[i].trim();
                 this.message(line);
@@ -730,36 +763,33 @@ class FaceToAllAPI extends HuggingFaceAPI {
                 }
             }
 
-            // Keep any partial line for the next iteration
             result = lines[lines.length - 1];
         }
 
-        // Process the finalLine to extract the data
         return Promise.resolve(finalLine);
     }
 
-    async run(input, prompt, style = "https://civitai.com/models/247890/lucasarts-adventure-game-style-xl") {
-
+    async run(input, prompt, style = "lucasArt") {
         let file;
-        if(typeof input === "string"){
+        if (typeof input === "string") {
             file = await this.handleLoadComplete(input);
-        }else if(input instanceof Blob) {
+        } else if (input instanceof Blob) {
             file = input;
-        }else {
+        } else {
             return Promise.reject();
         }
 
         const id = this.generateRandomId();
         const hash = this.generateRandomId();
 
-        const header = this.getPredictHeader(style, hash);
+        const header = this.getPredictHeader(this.styles[style].url, hash);
         const predict_url = this.getPredictUrl();
         const responseStyle = await fetch(predict_url, header);
         const ok = responseStyle.ok;
         const path = await this.uploadFile(file, id);
         const imagePath = this.getCreateImagePathUrl(path);
         if (ok && imagePath) {
-            const headerQueue = this.getQueueJoinHeader(path, imagePath, file.size, file.type, prompt, hash);
+            const headerQueue = this.getQueueJoinHeader(path, imagePath, file.size, file.type, prompt, style, hash);
             const urlQueue = this.getQueueJoinUrl();
             const responseQueue = await fetch(urlQueue, headerQueue);
             const responseQueueJSON = await responseQueue.json();
@@ -778,10 +808,10 @@ class FaceToAllAPI extends HuggingFaceAPI {
     }
 }
 
-
 class FaceToAllAPI2 extends HuggingFaceAPI {
     constructor(msgCallback) {
         super("https://multimodalart-face-to-all.hf.space", msgCallback);
+        this.styles = pixelart_style;
     }
 
     getPredictUrl() {
@@ -796,10 +826,6 @@ class FaceToAllAPI2 extends HuggingFaceAPI {
         };
     }
 
-    getQueueJoinUrl() {
-        return `${this.baseUrl}/queue/join`;
-    }
-
     extractSecondImageUrl(jsonStr) {
         const urlRegex = /"url":"(https:\/\/[^"]+)"/g;
         const matches = jsonStr.match(urlRegex);
@@ -810,9 +836,9 @@ class FaceToAllAPI2 extends HuggingFaceAPI {
         return null;
     }
 
-    getQueueJoinHeader(path, url, size, type, prompt, hash) {
-
-        const finalPrompt = `A pixel art person image in lucasarts of : ${prompt.replaceAll("\\n", "").replaceAll("\\", "")} in lucasarts style. High fidelity, high quality, truthful."`;
+    getQueueJoinHeader(path, url, size, type, prompt, style, hash) {
+        const styleConfig = this.styles[style];
+        const finalPrompt = styleConfig.prompt.replace('${prompt}', prompt.replaceAll("\\n", "").replaceAll("\\", ""));
 
         return {
             headers: this.getHeadersJson(),
@@ -821,13 +847,13 @@ class FaceToAllAPI2 extends HuggingFaceAPI {
                     path: path, url: url, orig_name: "image."+type.replaceAll("image/", ""), size: size, mime_type: type, meta: { _type: "gradio.FileData" }
                 },
                     finalPrompt,
-                    "Realistic, Photography, Real, Photo-realistic, Screenshot, Filters, Retro, Bad Quality, Worst settings.",
-                    0.90,
+                    styleConfig.negative,
+                    styleConfig.face,
                     null,
-                    0.85,
-                    0.17,
-                    7.5,
-                    0.80,
+                    styleConfig.weight,
+                    styleConfig.image,
+                    styleConfig.scale,
+                    styleConfig.strength,
                     null,
                     null
                 ],
@@ -838,24 +864,6 @@ class FaceToAllAPI2 extends HuggingFaceAPI {
             }),
             method: "POST"
         };
-    }
-
-    getUselessBullshit(hash) {
-        return {
-            headers: this.getHeadersJson(),
-            body: JSON.stringify({
-                data: [null, null],
-                event_data: null,
-                fn_index: 5,
-                trigger_id: 18,
-                session_hash: hash
-            }),
-            method: "POST"
-        };
-    }
-
-    getQueueDataUrl(hash) {
-        return `${this.baseUrl}/queue/data?session_hash=${hash}`;
     }
 
     async readResponse(reader) {
@@ -870,7 +878,6 @@ class FaceToAllAPI2 extends HuggingFaceAPI {
 
             let lines = (result || "\n").split("\n");
 
-            // Process each line
             for (let i = 0; i < lines.length; i++) {
                 const line = lines[i].trim();
                 this.message(line);
@@ -880,36 +887,33 @@ class FaceToAllAPI2 extends HuggingFaceAPI {
                 }
             }
 
-            // Keep any partial line for the next iteration
             result = lines[lines.length - 1];
         }
 
-        // Process the finalLine to extract the data
         return Promise.resolve(finalLine);
     }
 
-    async run(input, prompt, style = "https://civitai.com/models/247890/lucasarts-adventure-game-style-xl") {
-
+    async run(input, prompt, style = "lucasArt") {
         let file;
-        if(typeof input === "string"){
+        if (typeof input === "string") {
             file = await this.handleLoadComplete(input);
-        }else if(input instanceof Blob) {
+        } else if (input instanceof Blob) {
             file = input;
-        }else {
+        } else {
             return Promise.reject();
         }
 
         const id = this.generateRandomId(8);
         const hash = this.generateRandomId(11);
 
-        const header = this.getPredictHeader(style, hash);
+        const header = this.getPredictHeader(this.styles[style].url, hash);
         const predict_url = this.getPredictUrl();
         const responseStyle = await fetch(predict_url, header);
         const ok = responseStyle.ok;
         const path = await this.uploadFile(file, id);
         const imagePath = this.getCreateImagePathUrl(path);
         if (ok && imagePath) {
-            const headerQueue = this.getQueueJoinHeader(path, imagePath, file.size, file.type, prompt, hash);
+            const headerQueue = this.getQueueJoinHeader(path, imagePath, file.size, file.type, prompt, style, hash);
             const urlQueue = this.getQueueJoinUrl();
             const responseQueue = await fetch(urlQueue, headerQueue);
             const ok2 = responseQueue.ok;
@@ -917,15 +921,11 @@ class FaceToAllAPI2 extends HuggingFaceAPI {
                 const responseQueueJSON = await responseQueue.json();
                 const event_id = responseQueueJSON.event_id;
                 if (typeof event_id !== "undefined") {
-
-
                     const request_url = this.getQueueDataUrl(hash);
                     const bullshitResponse = await fetch(request_url, this.getUselessBullshit(hash));
 
                     if(bullshitResponse.ok){
-
                         const bullshitResponseJSON = await bullshitResponse.json();
-
                         if(bullshitResponseJSON.event_id) {
                             const event = await this.fetchEventSource(request_url);
                             const line = await this.readResponse(event);
@@ -936,7 +936,6 @@ class FaceToAllAPI2 extends HuggingFaceAPI {
                     }
                 }
             }
-
         }
 
         return Promise.reject();
@@ -946,6 +945,7 @@ class FaceToAllAPI2 extends HuggingFaceAPI {
 class FaceToAllAPI3 extends HuggingFaceAPI {
     constructor(msgCallback) {
         super("https://neil-ni-face-to-all.hf.space", msgCallback);
+        this.styles = pixelart_style;
     }
 
     getPredictUrl() {
@@ -960,10 +960,6 @@ class FaceToAllAPI3 extends HuggingFaceAPI {
         };
     }
 
-    getQueueJoinUrl() {
-        return `${this.baseUrl}/queue/join`;
-    }
-
     extractSecondImageUrl(jsonStr) {
         const urlRegex = /"url":"(https:\/\/[^"]+)"/g;
         const matches = jsonStr.match(urlRegex);
@@ -974,9 +970,10 @@ class FaceToAllAPI3 extends HuggingFaceAPI {
         return null;
     }
 
-    getQueueJoinHeader(path, url, size, type, prompt, hash) {
+    getQueueJoinHeader(path, url, size, type, prompt, style, hash) {
+        const styleConfig = this.styles[style];
+        const finalPrompt = styleConfig.prompt.replace('${prompt}', prompt.replaceAll("\\n", "").replaceAll("\\", ""));
 
-        const finalPrompt = `A pixel art person image in lucasarts of : ${prompt.replaceAll("\\n", "").replaceAll("\\", "")} in lucasarts style. High fidelity, high quality, truthful."`;
         return {
             headers: this.getHeadersJson(),
             body: JSON.stringify({
@@ -984,13 +981,13 @@ class FaceToAllAPI3 extends HuggingFaceAPI {
                     path: path, url: url, orig_name: "image."+type.replaceAll("image/", ""), size: size, mime_type: type, meta: { _type: "gradio.FileData" }
                 },
                     finalPrompt,
-                    "Realistic, photography, real.",
-                    0.95,
+                    styleConfig.negative,
+                    styleConfig.face,
                     null,
-                    0.90,
-                    0.17,
-                    7.5,
-                    0.80,
+                    styleConfig.weight,
+                    styleConfig.image,
+                    styleConfig.scale,
+                    styleConfig.strength,
                     null,
                     null
                 ],
@@ -1001,10 +998,6 @@ class FaceToAllAPI3 extends HuggingFaceAPI {
             }),
             method: "POST"
         };
-    }
-
-    getQueueDataUrl(hash) {
-        return `${this.baseUrl}/queue/data?session_hash=${hash}`;
     }
 
     async readResponse(reader) {
@@ -1019,7 +1012,6 @@ class FaceToAllAPI3 extends HuggingFaceAPI {
 
             let lines = (result || "\n").split("\n");
 
-            // Process each line
             for (let i = 0; i < lines.length; i++) {
                 const line = lines[i].trim();
                 this.message(line);
@@ -1029,36 +1021,33 @@ class FaceToAllAPI3 extends HuggingFaceAPI {
                 }
             }
 
-            // Keep any partial line for the next iteration
             result = lines[lines.length - 1];
         }
 
-        // Process the finalLine to extract the data
         return Promise.resolve(finalLine);
     }
 
-    async run(input, prompt, style = "https://civitai.com/models/247890/lucasarts-adventure-game-style-xl") {
-
+    async run(input, prompt, style = "lucasArt") {
         let file;
-        if(typeof input === "string"){
+        if (typeof input === "string") {
             file = await this.handleLoadComplete(input);
-        }else if(input instanceof Blob) {
+        } else if (input instanceof Blob) {
             file = input;
-        }else {
+        } else {
             return Promise.reject();
         }
 
         const id = this.generateRandomId();
         const hash = this.generateRandomId();
 
-        const header = this.getPredictHeader(style, hash);
+        const header = this.getPredictHeader(this.styles[style].url, hash);
         const predict_url = this.getPredictUrl();
         const responseStyle = await fetch(predict_url, header);
         const responseStyleJson = await responseStyle.json();
         const path = await this.uploadFile(file, id);
         const imagePath = this.getCreateImagePathUrl(path);
         if (responseStyleJson && imagePath) {
-            const headerQueue = this.getQueueJoinHeader(path, imagePath, file.size, file.type, prompt, hash);
+            const headerQueue = this.getQueueJoinHeader(path, imagePath, file.size, file.type, prompt, style, hash);
             const urlQueue = this.getQueueJoinUrl();
             const responseQueue = await fetch(urlQueue, headerQueue);
             const responseQueueJSON = await responseQueue.json();
