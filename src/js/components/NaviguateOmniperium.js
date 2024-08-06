@@ -18,23 +18,23 @@ const styles = theme => ({
             overflow: "hidden"
         },
         "& .MuiBackdrop-root": {
-            background: "rgba(1,3,15,0.57)",
+            background: "rgba(1,3,15,0.75)",
         },
         "& svg:first-child": {
             //filter: "drop-shadow(0px 0px 24px #0c00ffaa) drop-shadow(0px 0px 12px #0a00db55) drop-shadow(0px 0px 6px #0900bb66) drop-shadow(0px 0px 3px #07008f77)"
         }
     },
-    "@keyframes glitch": {
-        "0%": { opacity: ".10"},
+    "@keyframes glitchmenu": {
+        "0%": { opacity: "0.15"},
         "25%": { opacity: "0"},
-        "50%": { opacity: ".80"},
+        "50%": { opacity: "0.7"},
         "75%": { opacity: "0"},
-        "100%": { opacity: ".90"},
+        "100%": { opacity: "1"},
     },
     activateSVG: {
         cursor: "pointer",
         animationFillMode: "both",
-        animationName: "$glitch",
+        animationName: "$glitchmenu",
         animationDuration: "750ms",
         animationTimingFunction: "cubic-bezier(0.4, 0, 0.2, 1)",
         animationDirection: "alternate",
@@ -43,12 +43,12 @@ const styles = theme => ({
     },
     restrictedSVG: {
         animationFillMode: "both",
-        animationName: "$glitch",
-        animationDuration: "250ms",
+        animationName: "$glitchmenu",
+        animationDuration: "750ms",
         animationTimingFunction: "cubic-bezier(0.4, 0, 0.2, 1)",
         animationDirection: "alternate",
         animationIterationCount: "1",
-        animationDelay: "50ms",
+        animationDelay: "1050ms",
     },
     dialogContentContainer: {
         marginTop: 16,
@@ -165,16 +165,18 @@ class NavigateOmniperium extends React.PureComponent {
                         keepMounted={true}>
                     <OmniperiumMenu onHoverPathChange={(path) => {this.omniperium_hover(path)}} onPathChange={(path) => {this.omniperium_naviguate(path)}} className={classes.activateSVG} style={{height: "min(75vh, 75vw)", width: "min(75vh, 75vw)", margin: "auto"}}/>
                 </Dialog>
-                <img src="/src/videos/omniperium/poster.jpg" width="720" height="720" style={{display: open ? "inherit": "none",  pointerEvents: "none", zIndex: "1500", cursor: "pointer", aspectRatio: "1 / 1", width: "min(300px, 19vw)", height: "min(300px, 19vw)", position: "fixed", left: "0%", bottom: "0%", mixBlendMode: "color-dodge"}}/>
-                <video width="720" height="720" style={{display: open ? "inherit": "none",  pointerEvents: "none", zIndex: "1500", cursor: "pointer", aspectRatio: "1 / 1", width: "min(300px, 19vw)", height: "min(300px, 19vw)", position: "fixed", left: "0%", bottom: "0%", mixBlendMode: "screen"}}  key={hover} autoPlay={open} id="explanation-video">
+                <img src="/src/videos/omniperium/poster.png" width="720" height="720" style={{display: open ? "inherit": "none",  pointerEvents: "none", zIndex: "1400", cursor: "pointer", aspectRatio: "1 / 1", width: "min(360px, 30vh)", height: "min(360px, 30vh)", position: "fixed", left: "0%", bottom: "0%", mixBlendMode: "lighten"}}/>
+                <img src="/src/videos/omniperium/poster.png" width="720" height="720" style={{display: open ? "inherit": "none",  pointerEvents: "none", zIndex: "1401", cursor: "pointer", aspectRatio: "1 / 1", width: "min(360px, 30vh)", height: "min(360px, 30vh)", position: "fixed", left: "0%", bottom: "0%", mixBlendMode: "multiply"}}/>
+                <video width="720" height="720" style={{display: open ? "inherit": "none",  pointerEvents: "none", zIndex: "1500", cursor: "pointer", aspectRatio: "1 / 1", width: "min(360px, 30vh)", height: "min(360px, 30vh)", position: "fixed", left: "0%", bottom: "0%", mixBlendMode: "lighten"}}  key={hover} autoPlay={open} id="explanation-video">
                     <source src={"/src/videos/omniperium/"+hover+".mp4"} type="video/mp4"/>
                 </video>
-                <video width="1920" height="1080" style={{display: open ? "inherit": "none", zIndex: "1401", pointerEvents: "none", minWidth: "100vw", aspectRatio: "16 / 9", position: "fixed", left: "0", bottom: "0", mixBlendMode: "screen"}} id="particles-video" loop={false}>
-                    <source src="/src/videos/particles3.mp4" type="video/mp4"/>
+                <video width="1920" height="1080" style={{display: open ? "inherit": "none", zIndex: "1401", pointerEvents: "none", minWidth: "100vw", aspectRatio: "16 / 9", position: "fixed", left: "0", bottom: "0", mixBlendMode: "lighten"}} id="particles-video" loop={false}>
+                    <source src="/src/videos/omnintro.mp4" type="video/mp4"/>
                 </video>
-                <video width="1920" height="1080" style={{display: open ? "inherit": "none", zIndex: "1400", pointerEvents: "none", minWidth: "100vw", aspectRatio: "16 / 9", position: "fixed", left: "0", bottom: "0", mixBlendMode: "color-dodge"}} id="particles-background-video" key={open} autoPlay={open} loop={open}>
+                <video width="1920" height="1080" style={{display: open ? "inherit": "none", zIndex: "1400", pointerEvents: "none", minWidth: "100vw", aspectRatio: "16 / 9", position: "fixed", left: "0", bottom: "0", mixBlendMode: "lighten"}} id="particles-background-video" key={open} autoPlay={open} loop={open}>
                     <source src="/src/videos/particles.mp4" type="video/mp4"/>
                 </video>
+                <img src="/src/images/omniperium/caution.svg" className={classes.restrictedSVG} style={{display: open ? "inherit": "none",  pointerEvents: "none", zIndex: "1501", cursor: "pointer", aspectRatio: "340 / 23", width: "95vw", position: "fixed", left: "2.5vw", bottom: "5vh"}}/>
                 <IconButton style={{position: "absolute", top: 16, right: 16, color: "white", zIndex: "1402",}} onClick={() => {this.omniperium_hover("explanation")}}>
                     <InfoIcon style={{color: "currentColor"}}/>
                 </IconButton>
