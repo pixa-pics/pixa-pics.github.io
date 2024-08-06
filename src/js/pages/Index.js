@@ -23,7 +23,7 @@ const Unknown = React.lazy(() => import("../pages/Unknown"));
 const Settings = React.lazy(() =>  import("../pages/Settings"));
 const Marketplace = React.lazy(() =>  import("../pages/Marketplace"));
 const Ico = React.lazy(() =>  import("../pages/ico"));
-const Omnibus = React.lazy(() =>  import("../pages/Omnibus"));
+import Omniperium from "../pages/Omniperium";
 
 import JamyAngry from "../icons/JamyAngry";
 import JamyAnnoyed from "../icons/JamyAnnoyed";
@@ -37,6 +37,7 @@ import api from "../utils/api";
 import { update_meta_title } from "../utils/meta-tags";
 import {PAGE_ROUTES, UTC_OFFSET_PER_COUNTRIES} from "../utils/constants";
 import ActivateLab from "../components/ActivateLab";
+import NaviguateOmniperium from "../components/NaviguateOmniperium";
 
 const styles = theme => ({
     root: {
@@ -115,6 +116,7 @@ class Index extends React.PureComponent {
             _database_attempt: 0,
             _is_share_dialog_open: 0,
             _is_activatelab_dialog_open: 0,
+            _is_naviguate_omniperium_dialog_open: false,
             _count_presentation_open: 0,
             _datasyncserviceworkerallfiles: 0,
             _history_unlisten: function(){},
@@ -269,8 +271,8 @@ class Index extends React.PureComponent {
                 return <Suspense fallback={<div/>}><Marketplace settings={settings} /></Suspense>;
             case "ico":
                 return <Suspense fallback={<div/>}><Ico settings={settings} /></Suspense>;
-            case "omnibus":
-                return <Suspense fallback={<div/>}><Omnibus/></Suspense>;
+            case "omniperium":
+                return <Omniperium settings={settings} />;
         }
     }
 
@@ -316,6 +318,14 @@ class Index extends React.PureComponent {
                             })
                         }
                     });
+                    break;
+
+                case "OMNIPERIUM":
+                    if(typeof event.data.p === "string" && event.data.p !== "undefined"){
+                        this._handle_naviguate_omniperium_dialog_close(event.data.p)
+                    }else {
+                        this._handle_naviguate_omniperium_dialog_open();
+                    }
                     break;
 
                 case "TRIGGER_VOICE":
@@ -588,6 +598,25 @@ class Index extends React.PureComponent {
         actions.jamy_update("angry");
     };
 
+    _handle_naviguate_omniperium_dialog_close = (page) => {
+
+        const { _history } = this.st4te;
+        page = ""+page;
+        setTimeout(() => {
+
+            this.setSt4te({_is_naviguate_omniperium_dialog_open: false}, () => {
+                this.forceUpdate(() => {
+                    if(page.length > 0 && page !== "undefined") {
+                        _history.push("/omniperium/"+page);
+                    }
+                });
+            });
+        }, 400);
+
+        actions.trigger_sfx("labactive");
+        actions.jamy_update("angry");
+    };
+
     _handle_share_dialog_open = () => {
 
         this.setSt4te({_is_share_dialog_open: Math.abs(this.st4te._is_share_dialog_open)+1}, () => {
@@ -614,7 +643,14 @@ class Index extends React.PureComponent {
                 this.st4te._history.push("/pixel");
             });
         }
+    };
 
+    _handle_naviguate_omniperium_dialog_open = () => {
+         this.setSt4te({_is_naviguate_omniperium_dialog_open: true}, () => {
+            this.forceUpdate();
+        });
+        actions.trigger_sfx("hero_decorative-celebration-02");
+        actions.jamy_update("happy");
     };
 
     _handle_presentation_open = () => {
@@ -627,7 +663,7 @@ class Index extends React.PureComponent {
 
     render() {
         "use strict";
-        const { classes, _snackbar_open, _snackbar_message, _snackbar_auto_hide_duration, _is_share_dialog_open, _count_presentation_open, _is_activatelab_dialog_open, _presentation_n, _know_if_logged, _loaded_progress_percent, _jamy_state_of_mind } = this.st4te;
+        const { classes, _snackbar_open, _snackbar_message, _snackbar_auto_hide_duration, _is_share_dialog_open, _count_presentation_open, _is_activatelab_dialog_open, _is_naviguate_omniperium_dialog_open, _presentation_n, _know_if_logged, _loaded_progress_percent, _jamy_state_of_mind } = this.st4te;
         const {_ret, _camo, _bdi, _music_enabled, _jamy_enabled, _language, _know_the_settings} = this.settings;
         const JAMY = this.JAMY;
 
@@ -687,6 +723,9 @@ class Index extends React.PureComponent {
                     {_language && <ActivateLab
                         open={_is_activatelab_dialog_open > 0}
                         onClose={this._handle_labactivate_dialog_close}/>}
+                    {_language && <NaviguateOmniperium
+                        open={_is_naviguate_omniperium_dialog_open > 0}
+                        onClose={() => {this._handle_naviguate_omniperium_dialog_close()}}/>}
                 </React.Fragment>
             </React.StrictMode>
         );

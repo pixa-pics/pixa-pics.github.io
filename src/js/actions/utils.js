@@ -18,6 +18,23 @@ function load_with(b64 = "", activation) {
     }
 }
 // Functions enabling events to be dispatched and received elsewhere in the code with data
+function trigger_omniperium_menu(p) {
+
+    p = p || undefined;
+    if(!dispatcher.isDispatching()) {
+
+        dispatcher.dispatch({
+            type: "OMNIPERIUM",
+            data: { p: p }
+        });
+    }else {
+
+        setTimeout(() => {
+            trigger_omniperium_menu(p);
+        }, 10);
+    }
+}
+// Functions enabling events to be dispatched and received elsewhere in the code with data
 function jamy_update(state_of_mind = "shocked", duration = 2500) {
 
     if(!dispatcher.isDispatching()) {
@@ -250,6 +267,7 @@ module.exports = {
     trigger_presentation: trigger_presentation,
     trigger_snackbar: trigger_snackbar,
     trigger_login_update: trigger_login_update,
+    trigger_omniperium_menu: trigger_omniperium_menu,
     trigger_settings_update: trigger_settings_update,
     trigger_loading_update: trigger_loading_update,
     trigger_page_render_complete: trigger_page_render_complete,

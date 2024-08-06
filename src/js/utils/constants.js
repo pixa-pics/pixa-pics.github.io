@@ -37,8 +37,8 @@ const PAGE_ROUTES = [
         tabs: ""
     },
     {
-        page_regex: /\/(omnibus)$/,
-        page_name: "omnibus",
+        page_regex: /\/(omniperium)(\/(actions|reports|dashboard|analytics|guides|documentation)(\/)?)?$/,
+        page_name: "omniperium",
         tabs: ""
     }
 ];

@@ -231,6 +231,11 @@ class DrawerContent extends React.PureComponent {
         window.open(url);
     };
 
+    _omniperium = () =>{
+
+        actions.trigger_omniperium_menu();
+    };
+
     _go_to = (url) => {
 
         const { _history } = this.st4te;
@@ -300,6 +305,12 @@ class DrawerContent extends React.PureComponent {
                         </ListItem>
                     </Fade>
                     <Fade in={true} timeout={900}>
+                        <ListItem button className={classes.listItemGrey} TouchRippleProps={{className: classes.rippleBlue}} onClick={(event) => this._omniperium()}>
+                            <ListItemIcon><DashboardIcon className={classes.iconColor} /></ListItemIcon>
+                            <ListItemText primary="OMNIPERIUM" />
+                        </ListItem>
+                    </Fade>
+                    <Fade in={true} timeout={1200}>
                         <ListItem button className={classes.listItemGrey} TouchRippleProps={{className: classes.rippleBlue}} onClick={() => {this._pixagram_toggle_menu()}}>
 
                             <Badge className={classes.styledBadgeConnected} overlap="circular" badgeContent=" " variant="dot">
@@ -322,13 +333,7 @@ class DrawerContent extends React.PureComponent {
                             </ListItem>
                         </Fade>
                     </Collapse>
-                    <Fade in={true} timeout={1200}>
-                        <ListItem button className={classes.listItemGrey} TouchRippleProps={{className: classes.rippleBlue}} onClick={(event) => this._go_to("omnibus")}>
-                            <ListItemIcon><DashboardIcon className={classes.iconColor} /></ListItemIcon>
-                            <ListItemText primary="OMNIBUS" />
-                        </ListItem>
-                    </Fade>
-                    <Fade in={true} timeout={2000}>
+                    <Fade in={true} timeout={1500}>
                         <div style={{textAlign: "center", position: "absolute", bottom: 48, left: 16}} onClick={(event) => {this._open_link(event, "https://play.google.com/store/apps/details?id=pics.pixa.app.twa")}}>
                             <svg
                                 className={"playstorebadge"}
