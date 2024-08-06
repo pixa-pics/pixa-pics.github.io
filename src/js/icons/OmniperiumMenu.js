@@ -9,11 +9,15 @@ export default class OmniperiumMenu extends React.PureComponent {
         };
     }
 
-    change_active_path = (path) => {
+    change_active_path = (path, name) => {
 
         this.setState({
             _active_path: path
         }, () => {
+
+            if(typeof this.props.onHoverPathChange === "function"){
+                this.props.onHoverPathChange(name);
+            }
 
             this.forceUpdate();
         })
@@ -115,7 +119,7 @@ export default class OmniperiumMenu extends React.PureComponent {
                                     />
                                 </radialGradient>
                                 <path
-                                    onPointerEnter={() => {this.change_active_path("m429.99 369.379-91.463 158.418H155.601L64.138 369.379l91.463-158.418h182.926l91.463 158.418z", "attributes")}}
+                                    onPointerEnter={() => {this.change_active_path("m429.99 369.379-91.463 158.418H155.601L64.138 369.379l91.463-158.418h182.926l91.463 158.418z", "documentation")}}
                                     onClick={() => {this.click_path("documentation")}}
                                     fill="url(#b)"
                                     fillRule="evenodd"
@@ -162,7 +166,7 @@ export default class OmniperiumMenu extends React.PureComponent {
                                 </radialGradient>
                                 <path
                                     fill="url(#c)"
-                                    onPointerEnter={() => {this.change_active_path("m725.59 200.384-91.463 158.419H451.201l-91.463-158.419 91.463-158.418h182.926l91.463 158.418z", "methods")}}
+                                    onPointerEnter={() => {this.change_active_path("m725.59 200.384-91.463 158.419H451.201l-91.463-158.419 91.463-158.418h182.926l91.463 158.418z", "guides")}}
                                     onClick={() => {this.click_path("guides")}}
                                     fillRule="evenodd"
                                     d="m725.59 200.384-91.463 158.419H451.201l-91.463-158.419 91.463-158.418h182.926l91.463 158.418z"
@@ -208,7 +212,7 @@ export default class OmniperiumMenu extends React.PureComponent {
                                 </radialGradient>
                                 <path
                                     fill="url(#d)"
-                                    onPointerEnter={() => {this.change_active_path("m1022.702 369.379-91.463 158.418H748.313L656.85 369.379l91.463-158.418h182.926l91.463 158.418z", "metrics")}}
+                                    onPointerEnter={() => {this.change_active_path("m1022.702 369.379-91.463 158.418H748.313L656.85 369.379l91.463-158.418h182.926l91.463 158.418z", "analytics")}}
                                     onClick={() => {this.click_path("analytics")}}
                                     fillRule="evenodd"
                                     d="m1022.702 369.379-91.463 158.418H748.313L656.85 369.379l91.463-158.418h182.926l91.463 158.418z"
@@ -254,7 +258,7 @@ export default class OmniperiumMenu extends React.PureComponent {
                                 </radialGradient>
                                 <path
                                     fill="url(#e)"
-                                    onPointerEnter={() => {this.change_active_path("m1022.702 708.893-91.463 158.419H748.313L656.85 708.893l91.463-158.418h182.926l91.463 158.418z", "control")}}
+                                    onPointerEnter={() => {this.change_active_path("m1022.702 708.893-91.463 158.419H748.313L656.85 708.893l91.463-158.418h182.926l91.463 158.418z", "dashboard")}}
                                     onClick={() => {this.click_path("dashboard")}}
                                     fillRule="evenodd"
                                     d="m1022.702 708.893-91.463 158.419H748.313L656.85 708.893l91.463-158.418h182.926l91.463 158.418z"
@@ -300,7 +304,7 @@ export default class OmniperiumMenu extends React.PureComponent {
                                 </radialGradient>
                                 <path
                                     fill="url(#f)"
-                                    onPointerEnter={() => {this.change_active_path("m725.59 882.295-91.463 158.418H451.201l-91.463-158.418 91.463-158.419h182.926l91.463 158.419z", "disruptions")}}
+                                    onPointerEnter={() => {this.change_active_path("m725.59 882.295-91.463 158.418H451.201l-91.463-158.418 91.463-158.419h182.926l91.463 158.419z", "reports")}}
                                     onClick={() => {this.click_path("reports")}}
                                     fillRule="evenodd"
                                     d="m725.59 882.295-91.463 158.418H451.201l-91.463-158.418 91.463-158.419h182.926l91.463 158.419z"
@@ -347,7 +351,7 @@ export default class OmniperiumMenu extends React.PureComponent {
                                 <path
                                     fill="url(#g)"
                                     onPointerEnter={() => {this.change_active_path("m429.992 708.893-91.463 158.419H155.603L64.138 708.893l91.465-158.418h182.926l91.463 158.418z", "viability")}}
-                                    onClick={() => {this.click_path("actions")}}
+                                    onClick={() => {this.click_path("viability")}}
                                     fillRule="evenodd"
                                     d="m429.992 708.893-91.463 158.419H155.603L64.138 708.893l91.465-158.418h182.926l91.463 158.418z"
                                 />

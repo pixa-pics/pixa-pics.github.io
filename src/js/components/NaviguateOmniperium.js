@@ -4,7 +4,8 @@ import withStyles from "@material-ui/core/styles/withStyles";
 import Dialog from "@material-ui/core/Dialog";
 import OmniperiumMenu from "../icons/OmniperiumMenu";
 import actions from "../actions/utils";
-import RestrictedArea from "../icons/RestrictedArea";
+import InfoIcon from "@material-ui/icons/Info";
+import IconButton from "@material-ui/core/IconButton";
 
 const styles = theme => ({
     dialogMobileFullscreen: {
@@ -17,7 +18,7 @@ const styles = theme => ({
             overflow: "hidden"
         },
         "& .MuiBackdrop-root": {
-            background: "rgba(1,3,15,0.9)",
+            background: "rgba(1,3,15,0.57)",
         },
         "& svg:first-child": {
             //filter: "drop-shadow(0px 0px 24px #0c00ffaa) drop-shadow(0px 0px 12px #0a00db55) drop-shadow(0px 0px 6px #0900bb66) drop-shadow(0px 0px 3px #07008f77)"
@@ -34,11 +35,11 @@ const styles = theme => ({
         cursor: "pointer",
         animationFillMode: "both",
         animationName: "$glitch",
-        animationDuration: "500ms",
+        animationDuration: "750ms",
         animationTimingFunction: "cubic-bezier(0.4, 0, 0.2, 1)",
         animationDirection: "alternate",
         animationIterationCount: "1",
-        animationDelay: "350ms",
+        animationDelay: "750ms",
     },
     restrictedSVG: {
         animationFillMode: "both",
@@ -60,12 +61,14 @@ const styles = theme => ({
 });
 
 
-class ActivateLab extends React.PureComponent {
+class NavigateOmniperium extends React.PureComponent {
 
     constructor(props) {
         super(props);
         this.st4te = {
             classes: props.classes,
+            hover: "welcome",
+            video: {pause: function (){}},
             open: props.open
         };
     };
@@ -90,7 +93,19 @@ class ActivateLab extends React.PureComponent {
 
     omniperium_naviguate = (path) => {
 
-        actions.trigger_omniperium_menu(path)
+        actions.trigger_omniperium_menu(path);
+    }
+
+    omniperium_hover = (path) => {
+        if(path !== this.st4te.hover) {
+            //this.st4te.video.pause();
+            this.setSt4te({hover: path}, () => {
+                this.forceUpdate(( ) => {
+                    document.getElementById("explanation-video").play();
+                });
+            });
+        }
+
     }
 
     componentDidMount() {
@@ -111,27 +126,12 @@ class ActivateLab extends React.PureComponent {
                 this.forceUpdate(() => {
                     if(open_changed) {
                         if(this.st4te.open) {
-
                             try {
-                                var video = document.getElementById("explanation-video");
-                                video.play();
+                                document.getElementById("particles-video").play();
+                                document.getElementById("explanation-video").play();
+                                document.getElementById("particles-background-video").play();
                             } catch(e){}
-                            try {
-                                var video = document.getElementById("particles-video");
-                                video.play();
-                            } catch(e){}
-
                         }else {
-
-                            try {
-                                var video = document.getElementById("presentation-video");
-                                video.play();
-                            }catch(e){}
-
-                            try {
-                                var video = document.getElementById("explanation-video");
-                                video.pause();
-                            } catch(e){}
                         }
                     }
                 });
@@ -151,7 +151,8 @@ class ActivateLab extends React.PureComponent {
 
         const {
             classes,
-            open
+            open,
+            hover
         } = this.st4te;
 
         return (
@@ -162,17 +163,24 @@ class ActivateLab extends React.PureComponent {
                         onClose={this.props.onClose}
                         disablePortal={true}
                         keepMounted={true}>
-                    <OmniperiumMenu onPathChange={(path) => {this.omniperium_naviguate(path)}} className={classes.activateSVG} style={{height: "min(75vh, 75vw)", width: "min(75vh, 75vw)", margin: "auto"}}/>
+                    <OmniperiumMenu onHoverPathChange={(path) => {this.omniperium_hover(path)}} onPathChange={(path) => {this.omniperium_naviguate(path)}} className={classes.activateSVG} style={{height: "min(75vh, 75vw)", width: "min(75vh, 75vw)", margin: "auto"}}/>
                 </Dialog>
-                <video width="720" height="720" style={{display: open ? "inherit": "none",  pointerEvents: "none", zIndex: "1500", cursor: "pointer", aspectRatio: "1 / 1", width: "360px", height: "360px", position: "fixed", left: "0%", bottom: "0%", mixBlendMode: "screen"}} autoPlay={false} id="explanation-video">
-                    <source src="/src/videos/omniperium.mp4" type="video/mp4"/>
+                <img src="/src/videos/omniperium/poster.jpg" width="720" height="720" style={{display: open ? "inherit": "none",  pointerEvents: "none", zIndex: "1500", cursor: "pointer", aspectRatio: "1 / 1", width: "min(300px, 19vw)", height: "min(300px, 19vw)", position: "fixed", left: "0%", bottom: "0%", mixBlendMode: "color-dodge"}}/>
+                <video width="720" height="720" style={{display: open ? "inherit": "none",  pointerEvents: "none", zIndex: "1500", cursor: "pointer", aspectRatio: "1 / 1", width: "min(300px, 19vw)", height: "min(300px, 19vw)", position: "fixed", left: "0%", bottom: "0%", mixBlendMode: "screen"}}  key={hover} autoPlay={open} id="explanation-video">
+                    <source src={"/src/videos/omniperium/"+hover+".mp4"} type="video/mp4"/>
                 </video>
-                <video width="1920" height="1080" style={{display: open ? "inherit": "none", zIndex: "1400", pointerEvents: "none", minWidth: "100vw", aspectRatio: "16 / 9", position: "fixed", left: "0", bottom: "0", mixBlendMode: "screen"}} autoPlay={false} id="particles-video" loop={false}>
-                    <source src="/src/videos/omnintro.mp4" type="video/mp4"/>
+                <video width="1920" height="1080" style={{display: open ? "inherit": "none", zIndex: "1401", pointerEvents: "none", minWidth: "100vw", aspectRatio: "16 / 9", position: "fixed", left: "0", bottom: "0", mixBlendMode: "screen"}} id="particles-video" loop={false}>
+                    <source src="/src/videos/particles3.mp4" type="video/mp4"/>
                 </video>
+                <video width="1920" height="1080" style={{display: open ? "inherit": "none", zIndex: "1400", pointerEvents: "none", minWidth: "100vw", aspectRatio: "16 / 9", position: "fixed", left: "0", bottom: "0", mixBlendMode: "color-dodge"}} id="particles-background-video" key={open} autoPlay={open} loop={open}>
+                    <source src="/src/videos/particles.mp4" type="video/mp4"/>
+                </video>
+                <IconButton style={{position: "absolute", top: 16, right: 16, color: "white", zIndex: "1402",}} onClick={() => {this.omniperium_hover("explanation")}}>
+                    <InfoIcon style={{color: "currentColor"}}/>
+                </IconButton>
             </React.Fragment>
         );
     }
 }
 
-export default withStyles(styles)(ActivateLab);
+export default withStyles(styles)(NavigateOmniperium);
