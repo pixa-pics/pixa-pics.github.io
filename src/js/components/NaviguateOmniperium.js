@@ -6,16 +6,18 @@ import OmniperiumMenu from "../icons/OmniperiumMenu";
 import actions from "../actions/utils";
 import InfoIcon from "@material-ui/icons/Info";
 import IconButton from "@material-ui/core/IconButton";
+import ShufflingSpanText from "./ShufflingSpanText";
 
 const styles = theme => ({
     dialogMobileFullscreen: {
+        overflow: "visible",
         "& .MuiPaper-root": {
             background: "transparent",
             backgroundSize: "contain",
             contentVisibility: "auto",
-            contain: "paint style layout",
+            contain: "style layout",
             boxShadow: "none",
-            overflow: "hidden"
+            overflow: "visible",
         },
         "& .MuiBackdrop-root": {
             background: "rgba(1,3,15,0.75)",
@@ -277,7 +279,7 @@ class NavigateOmniperium extends React.PureComponent {
                         keepMounted={true}
                         ref={this.setWrapperRef}>
                     <div style={{perspective: 200}} ref={this.setMenuRef} className={classes.glitch}>
-                        <OmniperiumMenu onHoverPathChange={(path) => {this.omniperium_hover(path)}} onPathChange={(path) => {this.omniperium_naviguate(path)}} className={classes.activateSVG} style={{height: "min(75vh, 75vw)", width: "min(75vh, 75vw)", margin: "auto", transform: _transform_rotate, filter: _filter}}/>
+                        <OmniperiumMenu onHoverPathChange={(path) => {this.omniperium_hover(path)}} onPathChange={(path) => {this.omniperium_naviguate(path)}} className={classes.activateSVG} style={{height: "min(75vh, 90vw)", width: "min(75vh, 90vw)", margin: "min(12.5vh, 5vw)", transform: _transform_rotate, filter: _filter}}/>
                     </div>
                 </Dialog>
                 {
@@ -288,13 +290,19 @@ class NavigateOmniperium extends React.PureComponent {
                         <video width="720" height="720" style={{display: open ? "inherit": "none",  pointerEvents: "none", userSelect: "none",  zIndex: "1500", cursor: "pointer", aspectRatio: "1 / 1", width: "min(360px, 30vh)", height: "min(360px, 30vh)", position: "fixed", left: "0%", bottom: "0%", mixBlendMode: "lighten"}}  key={hover} autoPlay={open} id="explanation-video">
                             <source src={"/src/videos/omniperium/"+hover+".mp4"} type="video/mp4"/>
                         </video>
-                        <video width="1920" height="1080" style={{display: open ? "inherit": "none", zIndex: "1401", userSelect: "none",  pointerEvents: "none", minWidth: "100vw", aspectRatio: "16 / 9", position: "fixed", left: "0", bottom: "0", mixBlendMode: "lighten"}} id="particles-video" loop={false}>
+                        <video width="1920" height="1080" style={{display: open ? "inherit": "none", zIndex: "1401", userSelect: "none",  pointerEvents: "none", minWidth: "100%", minHeight: "100%", aspectRatio: "16 / 9", position: "fixed", left: "0", bottom: "0", mixBlendMode: "lighten"}} id="particles-video" loop={false}>
                             <source src="/src/videos/particles3.mp4" type="video/mp4"/>
                         </video>
-                        <video width="1920" height="1080" style={{display: open ? "inherit": "none", zIndex: "1250", userSelect: "none",  pointerEvents: "none", minWidth: "100vw", aspectRatio: "16 / 9", position: "fixed", left: "0", bottom: "0", mixBlendMode: "lighten"}} id="particles-background-video" key={open} autoPlay={open} loop={open}>
+                        <video width="1920" height="1080" style={{display: open ? "inherit": "none", zIndex: "1250", userSelect: "none",  pointerEvents: "none", minWidth: "100%", minHeight: "100%", aspectRatio: "16 / 9", position: "fixed", left: "0", bottom: "0", mixBlendMode: "lighten"}} id="particles-background-video" key={open} autoPlay={open} loop={open}>
                             <source src="/src/videos/particles.mp4" type="video/mp4"/>
                         </video>
-                        <img src="/src/images/omniperium/caution.svg" className={classes.restrictedSVG} style={{display: open ? "inherit": "none",  userSelect: "none", pointerEvents: "none", zIndex: "1501", cursor: "pointer", aspectRatio: "340 / 23", width: "95vw", position: "fixed", left: "2.5vw", bottom: "5vh"}}/>
+                        <img src="/src/images/omniperium/caution.svg" className={classes.restrictedSVG} style={{display: open ? "inherit": "none",  userSelect: "none", pointerEvents: "none", zIndex: "1501", cursor: "pointer", aspectRatio: "340 / 23", width: "95%", position: "fixed", left: "2.5%", bottom: "5%"}}/>
+                        <div style={{position: "fixed", width: "100%", height: "100%", top: 0, left: 0, zIndex: "1450", pointerEvents: "none"}}>
+                            <div style={{position: "fixed", left: 32, top: 24}}>
+                                <img style={{width: 42, height: 42, marginTop: -8}} src="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1080 1080' width='1440' height='1440' xmlns:v='https://vecta.io/nano'%3e%3cdefs%3e%3cclipPath id='A'%3e%3cpath d='M0 0h1080v1080H0z'/%3e%3c/clipPath%3e%3c/defs%3e%3cg clip-path='url(%23A)'%3e%3cpath d='M837.17 160.04v-16.86h99.65v99.65h-16.86v-82.79h-82.79zm82.79 677.13h16.86v99.65h-99.65v-16.86h82.79v-82.79zm-677.13 82.79v16.86h-99.65v-99.65h16.86v82.79h82.79zm-82.79-677.13h-16.86v-99.65h99.65v16.86h-82.79v82.79z' fill-rule='evenodd' fill='%23fff' fill-opacity='.66'/%3e%3cpath d='M540 290.73l-275.2 428.2h550.4L540 290.73h0zm20.8 138.1l-9.18 179.93h-23.25l-9.18-179.93h41.61 0zm0 249.13h-41.6v-41.37h41.6v41.37h0z' fill='red' fill-opacity='.66'/%3e%3c/g%3e%3c/svg%3e"/>
+                                <span style={{fontSize: "14px", marginTop: "6px", color: "#FFFFFF", verticalAlign: "top"}}>OMNIPERIUM: <ShufflingSpanText style={{color: "#FFFFFFCC"}} pre="<! " app=" !>" text={"CONTROL AND COMMUNICATE WITH PIXA'S DECENTRALIZED AUTONOMOUS ORGANIZATION"} animation_delay_ms={500} animation_duration_ms={1000}></ShufflingSpanText></span>
+                            </div>
+                        </div>
                         <IconButton style={{position: "fixed", left: 16, right: 16, color: "white", zIndex: "1402",}} onClick={() => {this.omniperium_hover("explanation")}}>
                             <InfoIcon style={{color: "currentColor"}}/>
                         </IconButton>
