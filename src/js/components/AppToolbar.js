@@ -496,9 +496,10 @@ class AppToolbar extends React.PureComponent {
         this.setSt4te({_presentation_open: true}, () => {
 
             this.forceUpdate(() => {
-
-                var video = document.getElementById("presentation-video");
-                video.play();
+                try {
+                    var video = document.getElementById("presentation-video");
+                    video.play();
+                } catch (e) {}
             });
         });
     };
@@ -508,9 +509,10 @@ class AppToolbar extends React.PureComponent {
         this.setSt4te({_presentation_open: true}, () => {
 
             this.forceUpdate(() => {
-
-                var video = document.getElementById("presentation-video-2");
-                video.play();
+                try {
+                    var video = document.getElementById("presentation-video-2");
+                    video.play();
+                } catch (e) {}
             });
         });
     };

@@ -215,6 +215,10 @@ class DrawerContent extends React.PureComponent {
         }
     }
 
+    componentDidMount() {
+        this.forceUpdate();
+    }
+
     _open_pixel_page = () => {
 
         if(this.props){

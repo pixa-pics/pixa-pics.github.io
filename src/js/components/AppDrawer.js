@@ -214,6 +214,7 @@ class AppDrawer extends React.PureComponent {
 
     componentDidMount() {
 
+        this.forceUpdate();
         this._updated_dimensions();
         window.addEventListener("resize", this._updated_dimensions);
     }
@@ -288,9 +289,10 @@ class AppDrawer extends React.PureComponent {
         this.setSt4te({_presentation_open: true}, () => {
 
             this.forceUpdate(() => {
-
-                var video = document.getElementById("presentation-video");
+                try {
+                    var video = document.getElementById("presentation-video");
                     video.play();
+                } catch (e) {}
             });
         });
     };
@@ -302,8 +304,10 @@ class AppDrawer extends React.PureComponent {
 
             this.forceUpdate(() => {
 
-                var video = document.getElementById("presentation-video-2");
-                video.play();
+                try {
+                    var video = document.getElementById("presentation-video-2");
+                    video.play();
+                } catch (e) {}
             });
         });
     };
