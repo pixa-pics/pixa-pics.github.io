@@ -5,22 +5,26 @@ export default class OmniperiumMenu extends React.PureComponent {
     constructor(props) {
         super(props);
         this.state = {
-            _active_path: "m429.99 369.379-91.463 158.418H155.601L64.138 369.379l91.463-158.418h182.926l91.463 158.418z"
+            _active_path: "",
+            _active_name: ""
         };
     }
 
     change_active_path = (path, name) => {
 
+        const changed = Boolean(name != this.state.name);
         this.setState({
-            _active_path: path
+            _active_path: path,
+            _active_name: name
         }, () => {
-
-            if(typeof this.props.onHoverPathChange === "function"){
-                this.props.onHoverPathChange(name);
+            if(changed){
+                this.forceUpdate( () => {
+                    if(typeof this.props.onHoverPathChange === "function"){
+                        this.props.onHoverPathChange(name);
+                    }
+                });
             }
-
-            this.forceUpdate();
-        })
+        });
     };
 
     click_path = (path) => {

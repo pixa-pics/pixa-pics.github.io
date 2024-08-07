@@ -20,7 +20,8 @@ const styles = theme => ({
             overflow: "visible",
         },
         "& .MuiBackdrop-root": {
-            background: "rgba(1,3,15,0.75)",
+            background: "url(\"data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 843 843' width='1124' height='1124' xmlns:v='https://vecta.io/nano'%3e%3cdefs%3e%3cclipPath id='A'%3e%3cpath d='M0 0h843v843H0z'/%3e%3c/clipPath%3e%3c/defs%3e%3cg clip-path='url(%23A)'%3e%3cpath d='M2 688L0 137 127 0h81v156L77 285v214H2h75l79 84v231l-29 29 29-29h0l-29 29 29-29V583l-79-84V285l131-129h212V0v156 158H314L208 423v420l106-106V511l60-58h233v199H447l-27 29v162-162l27-29h160 130l29 29v84l-29 29h-79l-51 49 51-49h79l29-29 77-77V137h-77l-83 72v165l-76 79 76-79V209H579L474 314h-54 54l105-105V27l28-27' fill='none' stroke-width='3' stroke='rgba(15, 4, 255, .2)' stroke-miterlimit='1'/%3e%3c/g%3e%3c/svg%3e\") top center / 421px 421px repeat fixed padding-box content-box rgba(1,3,15,0.75)",
+            backdropFilter: "blur(7px)"
         },
         "& svg:first-child": {
             //filter: "drop-shadow(0px 0px 24px #0c00ffaa) drop-shadow(0px 0px 12px #0a00db55) drop-shadow(0px 0px 6px #0900bb66) drop-shadow(0px 0px 3px #07008f77)"
@@ -300,7 +301,7 @@ class NavigateOmniperium extends React.PureComponent {
                         <div style={{position: "fixed", width: "100%", height: "100%", top: 0, left: 0, zIndex: "1450", pointerEvents: "none"}}>
                             <div style={{position: "fixed", left: 32, top: 24}}>
                                 <img style={{width: 42, height: 42, marginTop: -8}} src="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1080 1080' width='1440' height='1440' xmlns:v='https://vecta.io/nano'%3e%3cdefs%3e%3cclipPath id='A'%3e%3cpath d='M0 0h1080v1080H0z'/%3e%3c/clipPath%3e%3c/defs%3e%3cg clip-path='url(%23A)'%3e%3cpath d='M837.17 160.04v-16.86h99.65v99.65h-16.86v-82.79h-82.79zm82.79 677.13h16.86v99.65h-99.65v-16.86h82.79v-82.79zm-677.13 82.79v16.86h-99.65v-99.65h16.86v82.79h82.79zm-82.79-677.13h-16.86v-99.65h99.65v16.86h-82.79v82.79z' fill-rule='evenodd' fill='%23fff' fill-opacity='.66'/%3e%3cpath d='M540 290.73l-275.2 428.2h550.4L540 290.73h0zm20.8 138.1l-9.18 179.93h-23.25l-9.18-179.93h41.61 0zm0 249.13h-41.6v-41.37h41.6v41.37h0z' fill='red' fill-opacity='.66'/%3e%3c/g%3e%3c/svg%3e"/>
-                                <span style={{fontSize: "14px", marginTop: "6px", color: "#FFFFFF", verticalAlign: "top"}}>OMNIPERIUM: <ShufflingSpanText style={{color: "#FFFFFFCC"}} pre="<! " app=" !>" text={"CONTROL AND COMMUNICATE WITH PIXA'S DECENTRALIZED AUTONOMOUS ORGANIZATION"} animation_delay_ms={500} animation_duration_ms={1000}></ShufflingSpanText></span>
+                                <span style={{fontSize: "14px", marginTop: "6px", color: "#FFFFFF", verticalAlign: "top"}}><ShufflingSpanText style={{color: "#FFFFFFCC"}} pre="" app=":" text={"OMNIPERIUM"} animation_delay_ms={250} animation_duration_ms={250}></ShufflingSpanText> <ShufflingSpanText style={{color: "#FFFFFFCC"}} pre="<! " app=" !>" text={"CONTROL AND COMMUNICATE WITH PIXA'S DECENTRALIZED AUTONOMOUS ORGANIZATION"} animation_delay_ms={500} animation_duration_ms={1250}></ShufflingSpanText></span>
                             </div>
                         </div>
                         <IconButton style={{position: "fixed", left: 16, right: 16, color: "white", zIndex: "1402",}} onClick={() => {this.omniperium_hover("explanation")}}>

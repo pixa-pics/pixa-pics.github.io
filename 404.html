@@ -263,13 +263,9 @@
                         scope: "/"
                     }).then(function(r) {
                         r = r || {};
-                        if(Boolean(r.active || r.installing)) {
-                            _LET_FIRE_IT(true).catch(function(){
-                                reject();
-                            }).then(function(){resolve();});
-                        }else {
-                            reject();
-                        }
+                         _LET_FIRE_IT(true).catch(function(){
+                             reject();
+                         }).then(function(){resolve();});
                     })
                 }else { _LET_FIRE_IT(false).then(function(){resolve();}); }
             });
