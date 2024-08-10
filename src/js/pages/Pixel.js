@@ -1961,7 +1961,7 @@ class Pixel extends React.PureComponent {
 
                     actions.trigger_snackbar("IMAGE: " + prompt, 5000);
 
-                    return faceToAllAPI3.run(file, prompt).then((blob) => {
+                    const success = (blob) => {
                         actions.jamy_update("flirty", 666);
                         actions.trigger_loading_update(100);
                         actions.trigger_snackbar("Receiving results (3 sec)");
@@ -1973,12 +1973,28 @@ class Pixel extends React.PureComponent {
                         that._handle_load_complete("image_ai", {});
                         that._handle_load("image_preload");
                         return Promise.resolve(blob);
-                    }).catch(() => {
+                    };
+
+                    const failed = (file) => {
                         actions.trigger_loading_update(0);
                         actions.trigger_snackbar("AI PROCESSING FAILED! Fallback to normal mode.");
                         that._handle_load_complete("image_ai", {});
                         that._handle_load("image_preload");
                         return Promise.resolve(file);
+                    };
+
+                    return faceToAllAPI.run(file, prompt).then((blob) => {
+                        success(blob);
+                    }).catch(() => {
+                        return faceToAllAPI2.run(file, prompt).then((blob) => {
+                            success(blob);
+                        }).catch(() => {
+                            return faceToAllAPI3.run(file, prompt).then((blob) => {
+                                success(blob);
+                            }).catch(() => {
+                                failed(file);
+                            });
+                        });
                     });
 
                 }

@@ -195,7 +195,6 @@ class NavigateOmniperium extends React.PureComponent {
 
         if(typeof element === "undefined") {return}
         if(element === null) {return}
-        console.log(element)
         const rect = element.getBoundingClientRect();
         this.setSt4te({_menu_ref: element, _menu_pos: rect});
 
@@ -249,7 +248,6 @@ class NavigateOmniperium extends React.PureComponent {
             const filter_force = (1 + (-rotate_y + rotate_x) / 80).toFixed(2);
             const filter = any_rotation ? `brightness(${filter_force}) contrast(${filter_force})`: "";
 
-            console.log(transform_rotate)
             this.setSt4te({
                 _transform_rotate: transform_rotate,
                 _background_image: background_image,

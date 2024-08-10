@@ -4,7 +4,6 @@ import Lottie from "../components/Lottie";
 import Button from "@material-ui/core/Button";
 import Grow from "@material-ui/core/Grow";
 import Fade from "@material-ui/core/Fade";
-import Backdrop from "@material-ui/core/Backdrop";
 import withStyles from "@material-ui/core/styles/withStyles";
 import IconPlay from "@material-ui/icons/PlayArrow";
 import actions from "../actions/utils";
@@ -18,11 +17,6 @@ import ShufflingSpanText from "../components/ShufflingSpanText";
 const styles = theme => ({
     bold: {
         fontWeight: "bold",
-    },
-    backdrop:{
-        background: "rgba(1,3,15,0.9)",
-        userSelect: "none",
-        zIndex: 1,
     },
     revelantText: {
         fontWeight: "bold",
@@ -341,7 +335,7 @@ class Home extends React.PureComponent {
                 autoplay={true}
                 src="/src/js/lottie/camera.json"
                 style={{ height: '1.5em', width: '1.5em' }}/>
-                }, () => {
+        }, () => {
             this.forceUpdate();
         });
 
@@ -522,26 +516,11 @@ class Home extends React.PureComponent {
         }
     };
 
-    _handle_video_close = () => {
-
-        this.setSt4te({_is_video_open: 0}, () => {
-
-            this.forceUpdate();
-        });
-    }
-    _handle_video_open = (video_n = 1) => {
-
-        this.setSt4te({_is_video_open: video_n}, () => {
-
-            this.forceUpdate();
-        });
-    }
-
     render() {
 
         const { classes, _hundred, _money, _camera, _infographics_fadein_time, _infographics_in } = this.st4te;
-        let { _image_name_infographics, _join_now_button_update, _less_than_960w, _less_than_690h, _is_video_open } = this.st4te;
-       
+        let { _image_name_infographics, _join_now_button_update, _less_than_960w, _less_than_690h } = this.st4te;
+
         let first_image = false;
 
         if(_image_name_infographics.startsWith("data:image/png;base64,")) {
@@ -629,22 +608,6 @@ class Home extends React.PureComponent {
                         </Fade>
                     </div>
                 </div>
-                <Backdrop className={classes.backdrop} open={_is_video_open > 0} onClick={this._handle_video_close}>
-                    {_is_video_open === 1 && (
-                        <iframe style={{width: "min(1280px, calc(100% - 96px))", height: "auto", aspectRatio: "16/9"}}
-                                width="1280" height="720" src="https://www.youtube-nocookie.com/embed/U77EWqamAgE"
-                                title="YouTube video player" frameBorder="0"
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                                allowFullScreen></iframe>
-                    )}
-                    {_is_video_open === 2 && (
-                        <iframe style={{width: "min(1280px, calc(100% - 96px))", height: "auto", aspectRatio: "16/9"}}
-                                width="1280" height="720" src="https://www.youtube-nocookie.com/embed/5FkqNhdoRPE"
-                                title="YouTube video player" frameBorder="0"
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                                allowFullScreen></iframe>
-                    )}
-                </Backdrop>
             </React.Fragment>
         );
     }
