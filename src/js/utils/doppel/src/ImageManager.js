@@ -22,6 +22,7 @@ export default class ImageManager {
         const result = QuantiMat({
             pxls,
             pxl_colors,
+            speed: 3,
             number_of_color: Math.min(pxl_colors.length, numberOfColors),
             width: imageData.width,
             height: imageData.height

@@ -445,7 +445,7 @@ class CanvasPixels extends React.PureComponent {
     new_layer_from_image = (imageData) => {
 
         let { _layers, _s_layers } = this.super_state.get_state();
-        return QuantiMatGlobal(imageData, 255).then((result) => {
+        return QuantiMatGlobal(imageData, 255, 3).then((result) => {
             const pixels = result[1];
             const colors = result[2];
 

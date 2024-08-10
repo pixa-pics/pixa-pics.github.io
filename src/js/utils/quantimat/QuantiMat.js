@@ -54,8 +54,8 @@ var MODE = SIMDopeCreateConfAdd({
 });
 
 var fr = Math.fround;
-var DISTINCT_SKIN_COLOR_MATCH_MULTIPLY = fr(1.0);
-var SAME_SKIN_COLOR_MATCH_MULTIPLY = fr(0.777);
+var DISTINCT_SKIN_COLOR_MATCH_MULTIPLY = fr(0.777);
+var SAME_SKIN_COLOR_MATCH_MULTIPLY = fr(0.888);
 
 const {simdops, Color, Colors} = SIMDopeCreate(MODE);
 const {
@@ -91,6 +91,8 @@ var QuantiMat = function(opts) {
 
     opts.pxl_colors = opts.pxl_colors || new Uint32Array(0);
     opts.pxls = opts.pxls || new Uint32Array(0);
+
+    this.speed = opts.speed || "auto";
     this.new_pxls_ = "buffer" in opts.pxls ? new Uint32Array(opts.pxls.buffer) : Uint32Array.from(opts.pxls);
     this.new_pxl_colors_ = "buffer" in opts.pxl_colors ? new Colors(opts.pxl_colors.buffer) : new Colors(Uint32Array.from(opts.pxl_colors).buffer);
     var l = this.new_pxl_colors_.length|0;
@@ -444,21 +446,15 @@ QuantiMat.prototype.clusterize = function() {
     this.set_all_cluster_indexes();
 }
 
-QuantiMat.prototype.process_threshold = function(t) {
+QuantiMat.prototype.process_threshold = function(t, n) {
     "use strict";
 
     t = (t | 0) >>> 0;
-    function calculateN(t, max) {
-        // Apply a power scale to 't'. The exponent (e.g., 0.5) determines the curve's shape.
-        const exponent = .88;
-        const scaledT = Math.pow(t, exponent)-t;
-
-        // Calculate n using the scaled value of t
-        return fr(scaledT / max);
+    function easeOutCubic(x) {
+        return 1 - Math.pow(1 - x, 3);
     }
 
-    var max = Math.pow(256, .88) - 256;
-    var weight_applied_to_color_usage_difference = calculateN(t, max); // Ensure higher precision when low color (high threshold)
+    var weight_applied_to_color_usage_difference = easeOutCubic(t/100); // Ensure higher precision when low color (high threshold)
     var index_merged = false;
     var latest_colors = [];
     var latest_amounts = [];
@@ -479,9 +475,9 @@ QuantiMat.prototype.process_threshold = function(t) {
     var color_n_in_cluster = 0;
     var threshold = 0;
 
-    var baseFactor = 16.0;
-    var lowUsedFactor = 4.0; // Adjust this value to control sensitivity to usage percent differences
-    var distanceUsageFactor = 0.0; // Adjust this value to emphasize the effect of one color being more dominant
+    var baseFactor = 9.0;
+    var lowUsedFactor = 0.9; // Adjust this value to control sensitivity to usage percent differences
+    var distanceUsageFactor = 0.1; // Adjust this value to emphasize the effect of one color being more dominant
     var totalFactor = baseFactor + lowUsedFactor + distanceUsageFactor;
 
     weighted_threshold_skin_skin = fr(weighted_threshold * SAME_SKIN_COLOR_MATCH_MULTIPLY);
@@ -532,7 +528,7 @@ QuantiMat.prototype.process_threshold = function(t) {
                             ) / totalFactor
                         );
                         // CIE LAB 1976 version color scheme is used to measure accurate the distance for the human eye
-                        if(color_a.manhattan_match_with(color_b,  threshold)) {
+                        if(color_a[n](color_b,  threshold)) {
 
                             color_usage_difference_positive = fr(color_b_usage / color_a_usage);
 
@@ -585,15 +581,18 @@ QuantiMat.prototype.init = function() {
 QuantiMat.prototype.run =  function() {
     "use strict";
 
-    var t = (this.new_pxl_colors_length > 60000 ? 12: this.new_pxl_colors_length > 32000 ? 8: this.new_pxl_colors_length > 16000 ? 4: this.new_pxl_colors_length > 8192 ? 3: this.new_pxl_colors_length > 4096 ? 2: 1) | 0;
+    var t = (this.new_pxl_colors_length > 60000 ? 32: this.new_pxl_colors_length > 32000 ? 24: this.new_pxl_colors_length > 16000 ? 12: this.new_pxl_colors_length > 8192 ? 8: this.new_pxl_colors_length > 4096 ? 4: 2) | 0;
     if(this.new_pxl_colors_length <= this.best_color_number) {
         this.deduplicate();
         this.clusterize();
         return this;
     }
-    while (this.new_pxl_colors_length > this.best_color_number) {
 
-        if(this.process_threshold(t|0)) {
+    var function_names = ["manhattan_match_with", "euclidean_match_with", "euclidean_match_with"];
+    var f_name = this.speed = "auto" ? this.new_pxl_colors_length > 16384 ? function_names[0]: this.new_pxl_colors_length > 256 ? function_names[1]: function_names[2]: this.speed === 1 ? function_names[2]: this.speed === 2 ? function_names[1]: function_names[0];
+
+    while (this.new_pxl_colors_length > this.best_color_number) {
+        if(this.process_threshold(t|0, f_name)) {
             this.deduplicate();
             this.clusterize();
         }
@@ -624,7 +623,8 @@ QuantiMat.split_image_data = function (image_data) {
 
 var QuantiMatGlobal = function(
     image_data,
-    color_n
+    color_n,
+    speed = "auto"
 ) {
     return new Promise(function(resolve){
         "use strict";
@@ -652,6 +652,7 @@ var QuantiMatGlobal = function(
             var result = QuantiMat({
                 pxls: pxls,
                 pxl_colors,
+                speed,
                 number_of_color: Math.min(original_color_n, number_of_color),
                 width: image_data.width,
                 height: image_data.height

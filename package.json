@@ -48,7 +48,7 @@
     "react-swipeable-views": "~0.14.0",
     "readable-stream": "~4.5.2",
     "regenerator-runtime": "~0.14.1",
-    "simdope": "~8.5.0",
+    "simdope": "~8.7.0",
     "snappyjs": "~0.7.0",
     "svg64": "~2.0.0",
     "svgo": "~2.8.0",

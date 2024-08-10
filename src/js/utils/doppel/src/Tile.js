@@ -23,6 +23,7 @@ export default class Tile {
         const result = QuantiMat({
             pxls,
             pxl_colors,
+            speed: 3,
             number_of_color: Math.min(pxl_colors.length, this.k),
             width: this.imageData.width,
             height: this.imageData.height

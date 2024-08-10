@@ -916,7 +916,7 @@ class Pixel extends React.PureComponent {
 
                                         bitmap_to_imagedata(bitmap, resize_to_before, (imagedata_received) => {
 
-                                            QuantiMatGlobal(imagedata_received, 256).then(([imagedata2, a, b, color_removed_n, resulting_color_n, time_ms]) => {
+                                            QuantiMatGlobal(imagedata_received, 256, 3).then(([imagedata2, a, b, color_removed_n, resulting_color_n, time_ms]) => {
 
                                                 if(imagedata2 === null) {
 
