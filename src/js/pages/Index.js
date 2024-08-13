@@ -38,6 +38,7 @@ import { update_meta_title } from "../utils/meta-tags";
 import {PAGE_ROUTES, UTC_OFFSET_PER_COUNTRIES} from "../utils/constants";
 import ActivateLab from "../components/ActivateLab";
 import NaviguateOmniperium from "../components/NaviguateOmniperium";
+import WalletDialog from "../components/WalletDialog";
 
 const styles = theme => ({
     root: {
@@ -108,6 +109,7 @@ class Index extends React.PureComponent {
             _load_with: "",
             _intervals: [],
             _jamy_state_of_mind: "shocked",
+            _is_wallet_dialog_open: 0,
             _unlisten: null,
             _snackbar_open: false,
             _snackbar_message: "",
@@ -357,6 +359,10 @@ class Index extends React.PureComponent {
                     this._trigger_snackbar(event.data.message, event.data.auto_hide_duration);
                     break;
 
+                case "WALLET":
+                    this._handle_wallet_dialog_open();
+                    break;
+
                 case "JAMY_UPDATE":
                     this._update_jamy(event.data.state_of_mind, event.data.duration);
                     break;
@@ -579,6 +585,26 @@ class Index extends React.PureComponent {
 
             this.forceUpdate();
         });
+        actions.trigger_sfx("labactive");
+        actions.jamy_update("suspicious");
+    };
+
+    _handle_wallet_dialog_close = () => {
+
+        this.setSt4te({_is_wallet_dialog_open: 0}, () => {
+
+            this.forceUpdate();
+        });
+        actions.trigger_sfx("labactive");
+        actions.jamy_update("suspicious");
+    };
+
+    _handle_wallet_dialog_open = () => {
+
+        this.setSt4te({_is_wallet_dialog_open: 1}, () => {
+
+            this.forceUpdate();
+        });
         actions.trigger_sfx("state-change_confirm-down");
         actions.jamy_update("suspicious");
     };
@@ -663,7 +689,7 @@ class Index extends React.PureComponent {
 
     render() {
         "use strict";
-        const { classes, _snackbar_open, _snackbar_message, _snackbar_auto_hide_duration, _is_share_dialog_open, _count_presentation_open, _is_activatelab_dialog_open, _is_naviguate_omniperium_dialog_open, _presentation_n, _know_if_logged, _loaded_progress_percent, _jamy_state_of_mind } = this.st4te;
+        const { classes, _snackbar_open, _snackbar_message, _snackbar_auto_hide_duration, _is_wallet_dialog_open, _is_share_dialog_open, _count_presentation_open, _is_activatelab_dialog_open, _is_naviguate_omniperium_dialog_open, _presentation_n, _know_if_logged, _loaded_progress_percent, _jamy_state_of_mind } = this.st4te;
         const {_ret, _camo, _bdi, _music_enabled, _jamy_enabled, _language, _know_the_settings} = this.settings;
         const JAMY = this.JAMY;
 
@@ -726,6 +752,9 @@ class Index extends React.PureComponent {
                     {_language && <NaviguateOmniperium
                         open={_is_naviguate_omniperium_dialog_open > 0}
                         onClose={() => {this._handle_naviguate_omniperium_dialog_close()}}/>}
+                    {_language && <WalletDialog
+                        open={_is_wallet_dialog_open > 0}
+                        onClose={() => {this._handle_wallet_dialog_close()}}/>}
                 </React.Fragment>
             </React.StrictMode>
         );

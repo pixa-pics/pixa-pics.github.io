@@ -18,6 +18,7 @@ import InfoIcon from "@material-ui/icons/Info";
 import { HISTORY } from "../utils/constants";
 import actions from "../actions/utils";
 import ArrowDropDown from "@material-ui/icons/ArrowDropDown";
+import AccountBalanceWalletOutlined from "@material-ui/icons/AccountBalanceWallet";
 
 const styles = theme => ({
     nested: {
@@ -251,6 +252,11 @@ class DrawerContent extends React.PureComponent {
         actions.trigger_settings_update();
     };
 
+    _on_wallet_creator_click = () => {
+
+        actions.trigger_wallet();
+    };
+
     _open_info_dialog = () => {
 
         this.setSt4te({_info_dialog_open: 1, _has_info_dialog_opened: 1}, () => {
@@ -312,6 +318,12 @@ class DrawerContent extends React.PureComponent {
                         <ListItem button className={classes.listItemGrey} TouchRippleProps={{className: classes.rippleBlue}} onClick={(event) => this._omniperium()}>
                             <ListItemIcon><DashboardIcon className={classes.iconColor} /></ListItemIcon>
                             <ListItemText primary="OMNIPERIUM" />
+                        </ListItem>
+                    </Fade>
+                    <Fade in={true} timeout={900}>
+                        <ListItem button className={classes.listItemGrey} TouchRippleProps={{className: classes.rippleBlue}} onClick={(event) => this._on_wallet_creator_click()}>
+                            <ListItemIcon><AccountBalanceWalletOutlined className={classes.iconColor} /></ListItemIcon>
+                            <ListItemText primary="WALLET (ICO)" />
                         </ListItem>
                     </Fade>
                     <Fade in={true} timeout={1200}>

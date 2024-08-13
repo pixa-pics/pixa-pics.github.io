@@ -136,6 +136,23 @@ function trigger_share() {
         }, 10);
     }
 }
+
+function trigger_wallet() {
+
+    if(!dispatcher.isDispatching()) {
+
+        dispatcher.dispatch({
+            type: "WALLET",
+            data: {}
+        });
+    }else {
+
+        setTimeout(() => {
+
+            trigger_share();
+        }, 10);
+    }
+}
 function trigger_presentation(number) {
 
     if(!dispatcher.isDispatching()) {
@@ -267,6 +284,7 @@ module.exports = {
     trigger_presentation: trigger_presentation,
     trigger_snackbar: trigger_snackbar,
     trigger_login_update: trigger_login_update,
+    trigger_wallet: trigger_wallet,
     trigger_omniperium_menu: trigger_omniperium_menu,
     trigger_settings_update: trigger_settings_update,
     trigger_loading_update: trigger_loading_update,
