@@ -45,10 +45,10 @@ var LOAD_FILES_USEFUL = ["/src/fonts/normative/index.css"].concat(["illusion.jpg
 var LOAD_FILES_STATIC = ["sfx/md/hero_decorative-celebration-02", "sfx/md/navigation_selection-complete-celebration", "sfx/md/navigation_transition-left", "sfx/md/state-change_confirm-down", "sfx/md/ui_lock", "sfx/md/ui_unlock", "sfx/md/ui_scan", "sfx/md/alert_high-intensity", "sfx/md/navigation_transition-right", "voice/cn/accessing_memory", "voice/cn/complete", "voice/cn/please_wait", "voice/cn/data_upload", "voice/cn/processing", "voice/cn/enhanced", "voice/cn/rewriting_deep_layer_protocols", "voice/cn/vision_activated", "voice/cn/vision_deactivated", "voice/cn/filtering", "music/redeclipse/track_09"].map(F_SND).concat(["presentation", "tutorial", "create", "enhanced", "pixelated", "upload", "share1", "joke1", "create", "enhanced", "pixelated", "presentation", "presentation2", "sponsors", "tutorial", "upload", "labintro", "share2", "share3", "share4", "share5", "share6", "share7", "joke2", "joke3", "joke4", "joke5", "joke6", "joke7", "joke8", "joke9", "joke10", "joke11"].map(F_VID));
 
 // Cache names
-var REQUIRED_CACHE = "unless-update-cache-v1089-required";
-var USEFUL_CACHE = "unless-update-cache-v1089-useful";
-var STATIC_CACHE = "unless-update-cache-v1089-static";
-var OTHER_CACHE = "unless-update-cache-v1089-other";
+var REQUIRED_CACHE = "unless-update-cache-v1090-required";
+var USEFUL_CACHE = "unless-update-cache-v1090-useful";
+var STATIC_CACHE = "unless-update-cache-v1090-static";
+var OTHER_CACHE = "unless-update-cache-v1090-other";
 
 // Regular expressions for chunk matching
 var MAIN_CHILD_CHUNK_REGEX = /chunk_(main_[a-z0-9]+)\.min\.js$/i;
