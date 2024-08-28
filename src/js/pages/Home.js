@@ -299,7 +299,7 @@ class Home extends React.PureComponent {
 
     constructor(props) {
         super(props);
-        this.st4te = {
+        this.state = {
             classes: props.classes,
             _settings: JOYSON.unpack(props.settings),
             _history: HISTORY,
