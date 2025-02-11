@@ -1930,7 +1930,7 @@ class Pixel extends React.PureComponent {
                                     }, pool);
                                 }, pool);
                             }, pool);
-                        }, null, scale, "doppel");
+                        }, null, scale, "pixelize");
                     }, pool);
                 }, pool);
             }

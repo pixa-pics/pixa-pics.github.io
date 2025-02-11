@@ -1,24 +1,17 @@
 import React from "react";
-import Collapse from "@material-ui/core/Collapse";
-import Divider from "@material-ui/core/Divider";
 import Fade from "@material-ui/core/Fade";
 import withStyles from "@material-ui/core/styles/withStyles";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
-import Badge from "@material-ui/core/Badge";
 import AppInfoDialog from "../components/AppInfoDialog";
 import CodeIcon from "@material-ui/icons/Code";
-import StoreIcon from "@material-ui/icons/Store";
-import DashboardIcon from "@material-ui/icons/Dashboard";
 import PaletteIcon from "@material-ui/icons/Palette";
 import InfoIcon from "@material-ui/icons/Info";
 
 import { HISTORY } from "../utils/constants";
 import actions from "../actions/utils";
-import ArrowDropDown from "@material-ui/icons/ArrowDropDown";
-import AccountBalanceWalletOutlined from "@material-ui/icons/AccountBalanceWallet";
 
 const styles = theme => ({
     nested: {
@@ -314,41 +307,6 @@ class DrawerContent extends React.PureComponent {
                             <ListItemText primary="ABOUT" />
                         </ListItem>
                     </Fade>
-                    <Fade in={true} timeout={900}>
-                        <ListItem button className={classes.listItemGrey} TouchRippleProps={{className: classes.rippleBlue}} onClick={(event) => this._omniperium()}>
-                            <ListItemIcon><DashboardIcon className={classes.iconColor} /></ListItemIcon>
-                            <ListItemText primary="OMNIPERIUM" />
-                        </ListItem>
-                    </Fade>
-                    <Fade in={true} timeout={900}>
-                        <ListItem button className={classes.listItemGrey} TouchRippleProps={{className: classes.rippleBlue}} onClick={(event) => this._on_wallet_creator_click()}>
-                            <ListItemIcon><AccountBalanceWalletOutlined className={classes.iconColor} /></ListItemIcon>
-                            <ListItemText primary="WALLET (ICO)" />
-                        </ListItem>
-                    </Fade>
-                    <Fade in={true} timeout={1200}>
-                        <ListItem button className={classes.listItemGrey} TouchRippleProps={{className: classes.rippleBlue}} onClick={() => {this._pixagram_toggle_menu()}}>
-
-                            <Badge className={classes.styledBadgeConnected} overlap="circular" badgeContent=" " variant="dot">
-                                <ListItemIcon><StoreIcon className={classes.iconColor} /></ListItemIcon>
-                            </Badge>
-                            <ListItemText primary="PIXAGRAM" />
-                            <ListItemIcon><ArrowDropDown className={classes.iconColor} style={_menu_opened1 !== "pixagram" ? {transform: "rotate(-180deg)"}: {transform: "rotate(0deg)"}}/></ListItemIcon>
-                        </ListItem>
-                    </Fade>
-                    <Collapse in={_menu_opened1 !== "pixagram"} timeout={300}>
-                        <Divider/>
-                        <Fade in={_menu_opened1 !== "pixagram"} timeout={300+200}>
-                            <ListItem button className={classes.listItemGreyPadding1} TouchRippleProps={{className: classes.rippleBlue}} onClick={(event) => this._go_to("ico")}>
-                                <ListItemText primary="ICO" />
-                            </ListItem>
-                        </Fade>
-                        <Fade in={_menu_opened1 !== "pixagram"} timeout={300+400}>
-                            <ListItem button className={classes.listItemGreyPadding1} TouchRippleProps={{className: classes.rippleBlue}} onClick={() => {this._go_to("marketplace")}}>
-                                <ListItemText primary="DEMO" />
-                            </ListItem>
-                        </Fade>
-                    </Collapse>
                     <Fade in={true} timeout={1500}>
                         <div style={{textAlign: "center", position: "absolute", bottom: 48, left: 16}} onClick={(event) => {this._open_link(event, "https://play.google.com/store/apps/details?id=pics.pixa.app.twa")}}>
                             <svg
